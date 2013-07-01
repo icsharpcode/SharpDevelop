@@ -170,5 +170,17 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 		{
 			return null;
 		}
+		
+		public System.Collections.Generic.ICollection<PackageReferenceSet> PackageAssemblyReferences {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public Version MinClientVersion {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

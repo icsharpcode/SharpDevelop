@@ -10,5 +10,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackagePathResolver PathResolver { get; }
 		bool IsInstalled(string packageId);
+		bool HasOlderPackageInstalled(IPackage package);
 	}
 }

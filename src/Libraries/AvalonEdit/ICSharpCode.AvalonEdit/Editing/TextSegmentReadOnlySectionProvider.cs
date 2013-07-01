@@ -61,6 +61,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (segment == null)
 				throw new ArgumentNullException("segment");
 			
+			if (segment.Length == 0 && CanInsert(segment.Offset)) {
+				yield return segment;
+				yield break;
+			}
+			
 			int readonlyUntil = segment.Offset;
 			foreach (TextSegment ts in segments.FindOverlappingSegments(segment)) {
 				int start = ts.StartOffset;

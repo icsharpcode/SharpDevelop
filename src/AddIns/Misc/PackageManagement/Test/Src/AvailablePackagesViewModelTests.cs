@@ -419,7 +419,6 @@ namespace PackageManagement.Tests
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
 		
-		
 		[Test]
 		public void GetPackagesFromPackageSource_RepositoryHasThreePackagesWithSameIdButDifferentVersions_LatestPackageVersionOnlyRequestedFromPackageSource()
 		{
@@ -454,6 +453,90 @@ namespace PackageManagement.Tests
 			bool containsEnabledPackageSource = packageSources.Contains(registeredPackageRepositories.PackageSources[1]);
 			Assert.IsFalse(containsDisabledPackageSource);
 			Assert.IsTrue(containsEnabledPackageSource);
+		}
+		
+		[Test]
+		public void IsInstallAllPackagesEnabled_RepositoryHasTwoPackages_ReturnsFalse()
+		{
+			CreateViewModel();
+			var package1 = new FakePackage("Test", "0.1.0.0");
+			var package2 = new FakePackage("Test", "0.2.0.0");
+			var packages = new FakePackage[] {
+				package1, package2
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			bool enabled = viewModel.IsUpdateAllPackagesEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
+		
+		[Test]
+		public void ShowPrerelease_ByDefault_ReturnsTrue()
+		{
+			CreateViewModel();
+			
+			bool show = viewModel.ShowPrerelease;
+			
+			Assert.IsTrue(show);
+		}
+		
+		[Test]
+		public void ReadPackages_RepositoryHasPrereleasePackageAndIncludePrereleaseIsTrue_HasPrereleasePackageInList()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = true;
+			var prereleasePackage = new FakePackage("Test", "1.1.0-alpha") { IsLatestVersion = false };
+			var expectedPackages = new FakePackage[] { prereleasePackage };
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(expectedPackages);
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void ReadPackages_RepositoryHasThreePrereleasePackagesWithSameIdButDifferentVersionsAndIncludePrereleaseIsTrue_HasLatestPreleasePackageVersionOnly()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = true;
+			var package1 = new FakePackage("Test", "0.1.0.0-alpha") { IsLatestVersion = false };
+			var package2 = new FakePackage("Test", "0.2.0.0-alpha") { IsLatestVersion = false };
+			var package3 = new FakePackage("Test", "0.3.0.0-alpha") { IsLatestVersion = false };
+			var packages = new FakePackage[] {
+				package1, package2, package3
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				package3
+			};
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void PackageViewModels_GetParentOfPackageViewModel_ReturnsAvailablePackagesViewModel()
+		{
+			CreateViewModel();
+			var package1 = new FakePackage("Test", "0.1.0.0");
+			var package2 = new FakePackage("Test", "0.2.0.0");
+			var packages = new FakePackage[] {
+				package1, package2
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			PackageViewModel childViewModel = viewModel.PackageViewModels.First();
+			
+			IPackageViewModelParent parent = childViewModel.GetParent();
+			
+			Assert.AreEqual(viewModel, parent);
 		}
 	}
 }

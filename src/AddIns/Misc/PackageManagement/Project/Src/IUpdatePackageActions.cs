@@ -7,10 +7,8 @@ using ICSharpCode.PackageManagement.Scripting;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IUpdatePackageActions
+	public interface IUpdatePackageActions : IUpdatePackageSettings
 	{
-		bool UpdateDependencies { get; set; }
-		bool AllowPrereleaseVersions { get; set; }
 		IPackageScriptRunner PackageScriptRunner { get; set; }
 		
 		IEnumerable<UpdatePackageAction> CreateActions();

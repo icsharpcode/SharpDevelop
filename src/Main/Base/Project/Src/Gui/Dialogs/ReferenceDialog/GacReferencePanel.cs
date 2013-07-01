@@ -49,7 +49,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		CheckBox chooseSpecificVersionCheckBox;
 		TextBox filterTextBox;
 		ToolTip toolTip = new ToolTip();
-		ToolTip filterTextboxToolTip = new ToolTip();
 		ISelectReferenceDialog selectDialog;
 		ColumnSorter sorter;
 		BackgroundWorker worker;
@@ -97,7 +96,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			};
 			
 			filterTextBox = new TextBox { Width = 150, Dock = DockStyle.Right };
-			filterTextboxToolTip.SetToolTip(filterTextBox, "Search by type name");
 			filterTextBox.TextChanged += delegate { Search(); };
 			
 			IButtonControl defaultButton = null;

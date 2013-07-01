@@ -72,7 +72,12 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public FakePackage AddFakePackageWithVersionToActiveRepository(string version)
 		{
-			var package = FakePackage.CreatePackageWithVersion("Test", version);
+			return AddFakePackageWithVersionToActiveRepository("Test", version);
+		}
+		
+		public FakePackage AddFakePackageWithVersionToActiveRepository(string id, string version)
+		{
+			var package = FakePackage.CreatePackageWithVersion(id, version);
 			FakeActiveRepository.FakePackages.Add(package);
 			return package;
 		}

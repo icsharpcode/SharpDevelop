@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -21,6 +22,11 @@ namespace PackageManagement.Tests
 		void AddFakePackageToProjectLocalRepository(string packageId, string version)
 		{
 			projectManager.AddFakePackageToProjectLocalRepository(packageId, version);
+		}
+		
+		FakePackage CreatePackage(string packageId, string version)
+		{
+			return FakePackage.CreatePackageWithVersion(packageId, version);
 		}
 		
 		[Test]
@@ -42,6 +48,41 @@ namespace PackageManagement.Tests
 			bool installed = projectManager.IsInstalled("Test");
 			
 			Assert.IsTrue(installed);
+		}
+		
+		[Test]
+		public void HasOlderPackageInstalled_ProjectLocalRepositoryDoesNotHavePackage_ReturnsFalse()
+		{
+			CreateProjectManager();
+			FakePackage package = CreatePackage("Test", "1.0");
+			
+			bool installed = projectManager.HasOlderPackageInstalled(package);
+			
+			Assert.IsFalse(installed);
+		}
+		
+		[Test]
+		public void HasOlderPackageInstalled_ProjectLocalRepositoryHasOlderPackage_ReturnsTrue()
+		{
+			CreateProjectManager();
+			projectManager.AddFakePackageToProjectLocalRepository("Test", "1.0");
+			FakePackage package = CreatePackage("Test", "1.1");
+			
+			bool installed = projectManager.HasOlderPackageInstalled(package);
+			
+			Assert.IsTrue(installed);
+		}
+		
+		[Test]
+		public void HasOlderPackageInstalled_ProjectLocalRepositoryHasSamePackageVersion_ReturnsFalse()
+		{
+			CreateProjectManager();
+			projectManager.AddFakePackageToProjectLocalRepository("Test", "1.1");
+			FakePackage package = CreatePackage("Test", "1.1");
+			
+			bool installed = projectManager.HasOlderPackageInstalled(package);
+			
+			Assert.IsFalse(installed);
 		}
 	}
 }

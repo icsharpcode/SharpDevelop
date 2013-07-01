@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Construction;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -107,6 +108,27 @@ namespace PackageManagement.Tests.Helpers
 			FileProjectItem dependentFile = AddFile(include);
 			dependentFile.DependentUpon = dependentUpon;
 			return dependentFile;
+		}
+		
+		public ProjectImportElement GetLastMSBuildChildElement()
+		{
+			lock (SyncRoot) {
+				return MSBuildProjectFile.LastChild as ProjectImportElement;
+			}
+		}
+		
+		public ProjectImportElement GetFirstMSBuildChildElement()
+		{
+			lock (SyncRoot) {
+				return MSBuildProjectFile.FirstChild as ProjectImportElement;
+			}
+		}
+		
+		public ICollection<ProjectImportElement> GetImports()
+		{
+			lock (SyncRoot) {
+				return MSBuildProjectFile.Imports;
+			}
 		}
 	}
 }

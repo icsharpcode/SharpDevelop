@@ -49,7 +49,7 @@ namespace PackageManagement.Tests
 			AddPackageReference("PackageId", "1.3.4.5");
 			InstallPackages();
 			
-			var actions = new List<ProcessPackageAction>(fakeActionRunner.ActionsRunInOneCall);
+			var actions = new List<IPackageAction>(fakeActionRunner.ActionsRunInOneCall);
 			var action = actions[0] as InstallPackageAction;
 			
 			var expectedVersion = new SemanticVersion("1.3.4.5");

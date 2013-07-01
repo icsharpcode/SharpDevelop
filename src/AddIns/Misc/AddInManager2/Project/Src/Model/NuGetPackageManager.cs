@@ -33,6 +33,11 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				_events.OnPackageMessageLogged(new PackageMessageLoggedEventArgs(level, message, args));
 			}
+			
+			public FileConflictResolution ResolveFileConflict(string message)
+			{
+				return FileConflictResolution.IgnoreAll;
+			}
 		}
 		
 		private NuGetPackageManagerImplementation _packageManager = null;

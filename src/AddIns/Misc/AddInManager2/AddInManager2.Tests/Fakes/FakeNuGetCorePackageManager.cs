@@ -12,6 +12,7 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 		{
 		}
 		
+		#pragma warning disable 0067
 		public event EventHandler<NuGet.PackageOperationEventArgs> PackageInstalled;
 		
 		public event EventHandler<NuGet.PackageOperationEventArgs> PackageInstalling;
@@ -19,6 +20,7 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 		public event EventHandler<NuGet.PackageOperationEventArgs> PackageUninstalled;
 		
 		public event EventHandler<NuGet.PackageOperationEventArgs> PackageUninstalling;
+		#pragma warning restore 0067
 		
 		public NuGet.IFileSystem FileSystem
 		{

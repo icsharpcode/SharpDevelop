@@ -177,7 +177,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			DocumentLine caretLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
 			VisualLine visualLine = textArea.TextView.GetOrConstructVisualLine(caretLine);
 			TextViewPosition caretPosition = textArea.Caret.Position;
-			TextLine textLine = visualLine.GetTextLine(caretPosition.VisualColumn);
+			TextLine textLine = visualLine.GetTextLine(caretPosition.VisualColumn, caretPosition.IsAtEndOfLine);
 			switch (direction) {
 				case CaretMovementType.CharLeft:
 					MoveCaretLeft(textArea, caretPosition, visualLine, CaretPositioningMode.Normal);
@@ -204,10 +204,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 					SetCaretPosition(textArea, -1, textArea.Document.TextLength);
 					break;
 				case CaretMovementType.LineStart:
-					MoveCaretToStartOfLine(textArea, visualLine);
+					MoveCaretToStartOfLine(textArea, visualLine, textLine);
 					break;
 				case CaretMovementType.LineEnd:
-					MoveCaretToEndOfLine(textArea, visualLine);
+					MoveCaretToEndOfLine(textArea, visualLine, textLine);
 					break;
 				default:
 					throw new NotSupportedException(direction.ToString());
@@ -216,9 +216,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		#endregion
 		
 		#region Home/End
-		static void MoveCaretToStartOfLine(TextArea textArea, VisualLine visualLine)
+		static void MoveCaretToStartOfLine(TextArea textArea, VisualLine visualLine, TextLine textLine)
 		{
-			int newVC = visualLine.GetNextCaretPosition(-1, LogicalDirection.Forward, CaretPositioningMode.WordStart, textArea.Selection.EnableVirtualSpace);
+			int newVC = visualLine.GetTextLineVisualStartColumn(textLine);
+			if (newVC == 0)
+				newVC = visualLine.GetNextCaretPosition(newVC - 1, LogicalDirection.Forward, CaretPositioningMode.WordStart, textArea.Selection.EnableVirtualSpace);
 			if (newVC < 0)
 				throw ThrowUtil.NoValidCaretPosition();
 			// when the caret is already at the start of the text, jump to start before whitespace
@@ -228,11 +230,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 			SetCaretPosition(textArea, newVC, offset);
 		}
 		
-		static void MoveCaretToEndOfLine(TextArea textArea, VisualLine visualLine)
+		static void MoveCaretToEndOfLine(TextArea textArea, VisualLine visualLine, TextLine textLine)
 		{
-			int newVC = visualLine.VisualLength;
+			int newVC = visualLine.GetTextLineVisualStartColumn(textLine) + textLine.Length - textLine.TrailingWhitespaceLength;
 			int offset = visualLine.FirstDocumentLine.Offset + visualLine.GetRelativeOffset(newVC);
-			SetCaretPosition(textArea, newVC, offset);
+			SetCaretPosition(textArea, newVC, offset, isAtEndOfLine: true);
 		}
 		#endregion
 		
@@ -365,9 +367,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 			SetCaretPosition(textArea, newVisualColumn, newOffset);
 		}
 		
-		static void SetCaretPosition(TextArea textArea, int newVisualColumn, int newOffset)
+		static void SetCaretPosition(TextArea textArea, int newVisualColumn, int newOffset, bool isAtEndOfLine = false)
 		{
-			textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(newOffset), newVisualColumn);
+			textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(newOffset), newVisualColumn) { IsAtEndOfLine = isAtEndOfLine };
 			textArea.Caret.DesiredXPos = double.NaN;
 		}
 		#endregion

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -190,6 +191,52 @@ namespace PackageManagement.Tests
 			};
 		
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackagesUpdated_PackageViewModelsIsUpdated()
+		{
+			CreateViewModel();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			FakePackage package = AddPackageToProjectLocalRepository();
+			ClearReadPackagesTasks();
+			
+			packageManagementEvents.OnParentPackagesUpdated(new FakePackage[] { package });
+			CompleteReadPackagesTask();
+		
+			IPackage firstPackage = viewModel.PackageViewModels[0].GetPackage();
+			Assert.AreEqual(package, firstPackage);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackagesUpdatedAfterViewModelIsDisposed_PackageViewModelsIsNotUpdated()
+		{
+			CreateViewModel();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			FakePackage package = AddPackageToProjectLocalRepository();
+			ClearReadPackagesTasks();
+			
+			viewModel.Dispose();
+			
+			packageManagementEvents.OnParentPackagesUpdated(new FakePackage[] { package });
+			CompleteReadPackagesTask();
+		
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void PackageViewModels_ChildViewModelParent_IsInstalledPackagesViewModel()
+		{
+			CreateViewModel();
+			FakePackage package = AddPackageToProjectLocalRepository();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+		
+			PackageViewModel childViewModel = viewModel.PackageViewModels.First();
+			IPackageViewModelParent parent = childViewModel.GetParent();
+			Assert.AreEqual(viewModel, parent);
 		}
 	}
 }

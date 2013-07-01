@@ -124,8 +124,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				start = new TextViewPosition(textView.Document.GetLocation(sel.StartOffset), sel.StartVisualColumn);
 				end = new TextViewPosition(textView.Document.GetLocation(sel.EndOffset), sel.EndVisualColumn);
 			} else {
-				start = new TextViewPosition(textView.Document.GetLocation(segmentStart), -1);
-				end = new TextViewPosition(textView.Document.GetLocation(segmentEnd), -1);
+				start = new TextViewPosition(textView.Document.GetLocation(segmentStart));
+				end = new TextViewPosition(textView.Document.GetLocation(segmentEnd));
 			}
 			
 			foreach (VisualLine vl in textView.VisualLines) {

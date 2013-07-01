@@ -19,9 +19,10 @@ namespace ICSharpCode.PackageManagement
 			
 			packageManagementEvents.ParentPackageInstalled += ProjectChanged;
 			packageManagementEvents.ParentPackageUninstalled += ProjectChanged;
+			packageManagementEvents.ParentPackagesUpdated += ProjectChanged;
 		}
 		
-		void ProjectChanged(object sender, ParentPackageOperationEventArgs e)
+		void ProjectChanged(object sender, EventArgs e)
 		{
 			projectService.RefreshProjectBrowser();
 		}

@@ -30,16 +30,17 @@ namespace ICSharpCode.PackageManagement
 			this.workbench = workbench;
 		}
 		
-		public void Run(ProcessPackageAction action)
+		public void Run(IPackageAction action)
 		{
-			var actions = new List<ProcessPackageAction>();
+			var actions = new List<IPackageAction>();
 			actions.Add(action);
 			Run(actions);
 		}
 		
-		public void Run(IEnumerable<ProcessPackageAction> actions)
+		public void Run(IEnumerable<IPackageAction> actions)
 		{
 			CreateConsolePadIfConsoleHostIsNotRunning();
+			ShowConsolePad();
 			AddNewActionsToRun(actions);
 			InvokeProcessPackageActionsCmdlet();
 		}
@@ -51,14 +52,19 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		void AddNewActionsToRun(IEnumerable<ProcessPackageAction> actions)
+		void ShowConsolePad()
 		{
-			foreach (ProcessPackageAction action in actions) {
+			workbench.ShowConsolePad();
+		}
+		
+		void AddNewActionsToRun(IEnumerable<IPackageAction> actions)
+		{
+			foreach (IPackageAction action in actions) {
 				AddNewActionToRun(action);
 			}
 		}
 		
-		void AddNewActionToRun(ProcessPackageAction action)
+		void AddNewActionToRun(IPackageAction action)
 		{
 			packageActionsToRun.AddAction(action);
 		}

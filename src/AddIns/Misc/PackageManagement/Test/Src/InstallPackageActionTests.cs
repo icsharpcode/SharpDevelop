@@ -34,14 +34,8 @@ namespace PackageManagement.Tests
 		
 		void AddInstallOperationWithFile(string fileName)
 		{
-			var package = new FakePackage();
-			package.AddFile(fileName);
-			
-			var operation = new PackageOperation(package, PackageAction.Install);
-			var operations = new List<PackageOperation>();
-			operations.Add(operation);
-			
-			action.Operations = operations;
+			action.Operations =
+				PackageOperationHelper.CreateListWithOneInstallOperationWithFile(fileName);
 		}
 		
 		[Test]

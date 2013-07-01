@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<Template originator="Mike Krueger">
+<Template originator   = "Mike Krueger"
+          lastModified = "28/06/2013">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -19,13 +20,15 @@
 	<Project language = "C#">
 		<PropertyGroup>
 			<OutputType>Exe</OutputType>
-			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+			<MonoTargetFrameworkVersion>v4.0</MonoTargetFrameworkVersion>
 		</PropertyGroup>
+		
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />
 			<Reference Include="System.Xml" />
 		</ProjectItems>
+		
 		<Imports clear="True">
 			<Import Project="$(MonoBuildTasksPath)\Mono.Build.CSharp.targets" />
 		</Imports>

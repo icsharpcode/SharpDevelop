@@ -16,6 +16,7 @@ namespace PackageManagement.Tests
 	{
 		TestableProcessPackageAction action;
 		FakePackageManagementProject fakeProject;
+		ExceptionThrowingProcessPackageAction exceptionThrowingAction;
 		
 		void CreateAction()
 		{
@@ -28,6 +29,11 @@ namespace PackageManagement.Tests
 			var logger = new NullLogger();
 			action.Logger = logger;
 			return logger;
+		}
+		
+		void CreateActionWithExceptionThrownInExecuteCore()
+		{
+			exceptionThrowingAction = new ExceptionThrowingProcessPackageAction();
 		}
 		
 		[Test]
@@ -67,7 +73,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_MethodCalled_RunPackageScriptsActionCreatedUsingPackageScriptRunner()
+		public void Execute_PackageScriptRunnerSet_RunPackageScriptsActionCreatedUsingPackageScriptRunner()
 		{
 			CreateAction();
 			var expectedRunner = new FakePackageScriptRunner();
@@ -80,7 +86,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_MethodCalled_RunPackageScriptsActionCreatedUsingProject()
+		public void Execute_PackageScriptRunnerSet_RunPackageScriptsActionCreatedUsingProject()
 		{
 			CreateAction();
 			var expectedProject = new FakePackageManagementProject();
@@ -88,13 +94,13 @@ namespace PackageManagement.Tests
 			action.PackageScriptRunner = new FakePackageScriptRunner();
 			action.Execute();
 			
-			var actualProject = action.ProjectPassedToCreateRunPackageScriptsAction;
+			IPackageManagementProject actualProject = action.ProjectPassedToCreateRunPackageScriptsAction;
 			
 			Assert.AreEqual(expectedProject, actualProject);
 		}
 		
 		[Test]
-		public void Execute_MethodCalled_RunPackageScriptsActionIsDisposed()
+		public void Execute_PackageScriptRunnerSet_RunPackageScriptsActionIsDisposed()
 		{
 			CreateAction();
 			action.PackageScriptRunner = new FakePackageScriptRunner();
@@ -104,12 +110,50 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_NullSession_RunPackageScriptsActionIsNotCreated()
+		public void Execute_NullPackageScriptRunner_RunPackageScriptsActionIsNotCreated()
 		{
 			CreateAction();
+			action.PackageScriptRunner = null;
+			
 			action.Execute();
 			
 			Assert.IsFalse(action.IsRunPackageScriptsActionCreated);
+		}
+		
+		[Test]
+		public void Execute_NullPackageScriptRunner_ActionIsExecuted()
+		{
+			CreateAction();
+			action.PackageScriptRunner = new FakePackageScriptRunner();
+			
+			action.Execute();
+			
+			Assert.IsTrue(action.IsExecuteCoreCalled);
+		}
+		
+		[Test]
+		public void Execute_ExceptionThrownInExecuteCore_ErrorEventFired()
+		{
+			CreateActionWithExceptionThrownInExecuteCore();
+			var expectedException = new Exception("ExecuteCore error");
+			exceptionThrowingAction.ExceptionToThrowInExecuteCore = expectedException;
+			
+			Exception exception = Assert.Throws<Exception>(() => exceptionThrowingAction.Execute());
+			
+			Exception exceptionReported = exceptionThrowingAction.FakePackageManagementEvents.ExceptionPassedToOnPackageOperationError;
+			Assert.AreEqual(expectedException, exceptionReported);
+		}
+		
+		[Test]
+		public void Execute_ExceptionThrownInExecuteCore_ExceptionThrownByExecuteMethod()
+		{
+			CreateActionWithExceptionThrownInExecuteCore();
+			var expectedException = new Exception("Error");
+			exceptionThrowingAction.ExceptionToThrowInExecuteCore = expectedException;
+			
+			Exception exception = Assert.Throws<Exception>(() => exceptionThrowingAction.Execute());
+			
+			Assert.AreEqual(expectedException, exception);
 		}
 	}
 }

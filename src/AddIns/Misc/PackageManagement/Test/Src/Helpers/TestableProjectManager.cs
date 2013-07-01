@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -21,6 +22,7 @@ namespace PackageManagement.Tests.Helpers
 		public IPackage PackagePassedToUpdatePackageReference;
 		public bool UpdateDependenciesPassedToUpdatePackageReference;
 		public bool AllowPrereleaseVersionsPassedToUpdatePackageReference;
+		public List<IPackage> PackagesPassedToUpdatePackageReference = new List<IPackage>();
 		
 		public FakePackageRepository FakeLocalRepository {
 			get { return LocalRepository as FakePackageRepository; }
@@ -67,6 +69,8 @@ namespace PackageManagement.Tests.Helpers
 			PackagePassedToUpdatePackageReference = package;
 			UpdateDependenciesPassedToUpdatePackageReference = updateDependencies;
 			AllowPrereleaseVersionsPassedToUpdatePackageReference = allowPrereleaseVersions;
+			
+			PackagesPassedToUpdatePackageReference.Add(package);
 		}
 		
 		public FakePackage AddFakePackageToProjectLocalRepository(string packageId, string version)

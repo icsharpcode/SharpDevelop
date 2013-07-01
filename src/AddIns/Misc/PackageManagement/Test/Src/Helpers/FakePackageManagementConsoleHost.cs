@@ -10,6 +10,7 @@ using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -135,6 +136,23 @@ namespace PackageManagement.Tests.Helpers
 		public void SetDefaultRunspace()
 		{
 			IsSetDefaultRunspaceCalled = true;
+		}
+		
+		public IConsoleHostFileConflictResolver FakeFileConflictResolver =
+			MockRepository.GenerateStub<IConsoleHostFileConflictResolver>();
+		
+		public FileConflictAction LastFileConflictActionUsedWhenCreatingResolver = 
+			(FileConflictAction)(-1);
+		
+		public IConsoleHostFileConflictResolver CreateFileConflictResolver(FileConflictAction fileConflictAction)
+		{
+			LastFileConflictActionUsedWhenCreatingResolver = fileConflictAction;
+			return FakeFileConflictResolver;
+		}
+		
+		public void AssertFileConflictResolverIsDisposed()
+		{
+			FakeFileConflictResolver.AssertWasCalled(resolver => resolver.Dispose());
 		}
 	}
 }

@@ -225,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			DisplayActiveCategory();
 			SD.ProjectService.CurrentSolutionChanged += OnSolutionLoaded;
 			
-			textEditor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(textEditor.TextArea));
+			SearchPanel.Install(textEditor);
 		}
 
 		void OnSolutionLoaded(object sender, EventArgs e)

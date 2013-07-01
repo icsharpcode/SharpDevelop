@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement.Design
 			this.Name = name;
 		}
 		
-		public FakeInstallPackageAction FakeInstallPackageAction;
+		private FakeInstallPackageAction FakeInstallPackageAction;
 		public FakeUninstallPackageAction FakeUninstallPackageAction;
 		
 		public FakeUpdatePackageAction FirstFakeUpdatePackageActionCreated {
@@ -101,7 +101,7 @@ namespace ICSharpCode.PackageManagement.Design
 			var package = new FakePackage("MyPackage");
 			var operation = new FakePackageOperation(package, PackageAction.Uninstall);
 			FakeInstallOperations.Add(operation);
-			return operation;			
+			return operation;
 		}
 		
 		public FakePackageRepository FakeSourceRepository = new FakePackageRepository();
@@ -136,16 +136,19 @@ namespace ICSharpCode.PackageManagement.Design
 			IsUpdatePackageCalled = true;
 		}
 		
+		public FakeInstallPackageAction LastInstallPackageCreated;
+		
 		public virtual InstallPackageAction CreateInstallPackageAction()
 		{
-			return FakeInstallPackageAction;
+			LastInstallPackageCreated = new FakeInstallPackageAction(this);
+			return LastInstallPackageCreated;
 		}
 		
 		public virtual UninstallPackageAction CreateUninstallPackageAction()
 		{
 			return FakeUninstallPackageAction;
 		}
-				
+		
 		public UpdatePackageAction CreateUpdatePackageAction()
 		{
 			var action = new FakeUpdatePackageAction(this);
@@ -212,6 +215,49 @@ namespace ICSharpCode.PackageManagement.Design
 		public void AddFakePackageToSourceRepository(string packageId)
 		{
 			FakeSourceRepository.AddFakePackage(packageId);
+		}
+		
+		public void UpdatePackages(UpdatePackagesAction action)
+		{
+		}
+		
+		public List<UpdatePackagesAction> UpdatePackagesActionsCreated = 
+			new List<UpdatePackagesAction>();
+		
+		public UpdatePackagesAction CreateUpdatePackagesAction()
+		{
+			var action = new UpdatePackagesAction(this, null);
+			UpdatePackagesActionsCreated.Add(action);
+			return action;
+		}
+		
+		public UpdatePackagesAction UpdatePackagesActionPassedToGetUpdatePackagesOperations;
+		public IUpdatePackageSettings SettingsPassedToGetUpdatePackagesOperations;
+		public List<IPackage> PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations;
+		public List<PackageOperation> PackageOperationsToReturnFromGetUpdatePackagesOperations =
+			new List<PackageOperation>();
+		
+		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
+			IEnumerable<IPackage> packages,
+			IUpdatePackageSettings settings)
+		{
+			SettingsPassedToGetUpdatePackagesOperations = settings;
+			PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations = packages.ToList();
+			return PackageOperationsToReturnFromGetUpdatePackagesOperations;
+		}
+		
+		public void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations)
+		{
+		}
+		
+		public bool HasOlderPackageInstalled(IPackage package)
+		{
+			return false;
+		}
+		
+		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

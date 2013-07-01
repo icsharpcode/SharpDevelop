@@ -44,5 +44,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			return FormattedMessagesLogged.Any(message => message.Contains(text));
 		}
+		
+		public FileConflictResolution ResolveFileConflict(string message)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
