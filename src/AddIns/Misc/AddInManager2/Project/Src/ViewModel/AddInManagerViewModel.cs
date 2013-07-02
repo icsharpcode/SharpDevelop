@@ -59,6 +59,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				viewModel.PropertyChanged += ViewModel_PropertyChanged;
 			}
 			
+			AddInManager.Events.OnAddInManagerViewOpened();
+			
 			// Expand the first view
 			InstalledAddInsViewModel.IsExpandedInView = true;
 			

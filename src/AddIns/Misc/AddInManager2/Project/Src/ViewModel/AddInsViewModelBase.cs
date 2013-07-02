@@ -494,7 +494,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			}
 			set
 			{
-				SD.Log.Debug("[AddInManager2] AddInsViewModelBase: Changed package source");
+				SD.Log.DebugFormatted("[AddInManager2] AddInsViewModelBase: Changed package source to {0}", (value != null) ? value.Name : "<null>");
 				
 				_activePackageSource = value;
 				if (_activePackageSource != null)

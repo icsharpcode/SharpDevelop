@@ -7,23 +7,15 @@ using ICSharpCode.AddInManager2.View;
 
 namespace ICSharpCode.AddInManager2
 {
-	public class ShowCommand : SimpleCommand
+	public class ShowAddInManagerCommand : SimpleCommand
 	{
 		public override void Execute(object parameter)
 		{
 			// Open AddInManager2 main dialog
-			using (AddInManagerView view = CreateManagerView())
+			using (AddInManagerView view = AddInManagerView.Create())
 			{
 				view.ShowDialog();
 			}
-		}
-		
-		private AddInManagerView CreateManagerView()
-		{
-			return new AddInManagerView()
-			{
-				Owner = SD.Workbench.MainWindow
-			};
 		}
 	}
 	
@@ -33,6 +25,16 @@ namespace ICSharpCode.AddInManager2
 		{
 			// Remove all unreferenced NuGet packages
 			AddInManagerServices.Setup.RemoveUnreferencedNuGetPackages();
+		}
+	}
+	
+	public class AddInManagerVisualInitializationCommand : SimpleCommand
+	{
+		public override void Execute(object parameter)
+		{
+			// Initialize UpdateNotifier and let it check for available updates
+			UpdateNotifier updateNotifier = new UpdateNotifier();
+			updateNotifier.StartUpdateLookup();
 		}
 	}
 }

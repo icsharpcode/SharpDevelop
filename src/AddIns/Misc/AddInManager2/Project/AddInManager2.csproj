@@ -116,6 +116,7 @@
     <Compile Include="Src\Model\AddInManagerEvents.cs" />
     <Compile Include="Src\Model\AddInOperationErrorEventArgs.cs" />
     <Compile Include="Src\Model\NuGetPackageOperationEventArgs.cs" />
+    <Compile Include="Src\Model\PackageListDownloadEndedEventArgs.cs" />
     <Compile Include="Src\Model\PackageMessageLoggedEventArgs.cs" />
     <Compile Include="Src\Model\PackageRepositories.cs" />
     <Compile Include="Src\Model\PackageRepository.cs" />

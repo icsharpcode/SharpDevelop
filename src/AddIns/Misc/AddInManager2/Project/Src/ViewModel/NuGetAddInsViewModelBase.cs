@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.AddInManager2.Model;
 using NuGet;
 
@@ -17,8 +18,6 @@ namespace ICSharpCode.AddInManager2.ViewModel
 	{
 		private AddInManagerTask<ReadPackagesResult> _task;
 		private IEnumerable<IPackage> _allPackages;
-		
-		public event EventHandler PackageListDownloadEnded;
 		
 		public NuGetAddInsViewModelBase()
 			: base()
@@ -73,8 +72,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private void CreateReadPackagesTask()
 		{
 			_task = AddInManagerTask.Create(
-				() => GetPackagesForSelectedPageResult(),
-				(result) => OnPackagesReadForSelectedPage(result));
+				GetPackagesForSelectedPageResult,
+				OnPackagesReadForSelectedPage);
 //			SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Created task");
 		}
 		
@@ -89,6 +88,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 //			SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Task has returned");
 			
 			IsReadingPackages = false;
+			bool wasSuccessful = false;
+			bool wasCancelled = false;
 			if (task.IsFaulted)
 			{
 				SaveError(task.Exception);
@@ -97,14 +98,17 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			{
 				// Ignore
 //				SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Task ignored, because cancelled");
+				wasCancelled = true;
 			}
 			else
 			{
+//				SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Task successfully finished.");
 				UpdatePackagesForSelectedPage(task.Result);
+				wasSuccessful = true;
 			}
 			
 			base.OnPropertyChanged(null);
-			OnPackageListDownloadEnded();
+			AddInManager.Events.OnPackageListDownloadEnded(this, new PackageListDownloadEndedEventArgs(wasSuccessful, wasCancelled));
 		}
 
 		private void UpdatePackagesForSelectedPage(ReadPackagesResult result)
@@ -228,14 +232,6 @@ namespace ICSharpCode.AddInManager2.ViewModel
 					StartReadPackagesTask();
 					base.OnPropertyChanged(null);
 				}
-			}
-		}
-		
-		private void OnPackageListDownloadEnded()
-		{
-			if (PackageListDownloadEnded != null)
-			{
-				PackageListDownloadEnded(this, new EventArgs());
 			}
 		}
 	}

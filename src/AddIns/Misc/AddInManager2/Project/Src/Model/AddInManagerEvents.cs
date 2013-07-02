@@ -32,6 +32,37 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 		}
 		
+		public event EventHandler AddInManagerViewOpened;
+		
+		public void OnAddInManagerViewOpened(EventArgs e)
+		{
+			if (AddInManagerViewOpened != null)
+			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] AddInManagerView opened.");
+				AddInManagerViewOpened(this, e);
+			}
+		}
+		
+		public void OnAddInManagerViewOpened()
+		{
+			if (AddInManagerViewOpened != null)
+			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] AddInManagerView opened.");
+				AddInManagerViewOpened(this, new EventArgs());
+			}
+		}
+		
+		public event EventHandler<PackageListDownloadEndedEventArgs> PackageListDownloadEnded;
+		
+		public void OnPackageListDownloadEnded(object sender, PackageListDownloadEndedEventArgs e)
+		{
+			if (PackageListDownloadEnded != null)
+			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] Package list download ended (success: {0}).", e.WasSuccessful);
+				PackageListDownloadEnded(sender, e);
+			}
+		}
+		
 		public event EventHandler<AddInInstallationEventArgs> AddInInstalled;
 		
 		public void OnAddInInstalled(AddInInstallationEventArgs e)
