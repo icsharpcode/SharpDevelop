@@ -316,6 +316,7 @@
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordAction" />
 		<Class class="CSharpBinding.Refactoring.MoveTypeToFileContextAction" />
 		<Class class="CSharpBinding.Refactoring.RenameFileToMatchTypeNameContextAction" />
+		<Class class="CSharpBinding.Refactoring.ParamRangeCheckContextAction" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">

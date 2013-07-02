@@ -110,6 +110,7 @@
     <Compile Include="Src\Refactoring\IssueOptionsViewModel.cs" />
     <Compile Include="Src\Refactoring\MoveTypeToFileContextAction.cs" />
     <Compile Include="Src\Refactoring\Options.cs" />
+    <Compile Include="Src\Refactoring\ParamRangeCheckContextAction.cs" />
     <Compile Include="Src\Refactoring\RefactoringExtensions.cs" />
     <Compile Include="Src\Refactoring\OverrideEqualsGetHashCodeMethodsDialog.xaml.cs">
       <DependentUpon>OverrideEqualsGetHashCodeMethodsDialog.xaml</DependentUpon>

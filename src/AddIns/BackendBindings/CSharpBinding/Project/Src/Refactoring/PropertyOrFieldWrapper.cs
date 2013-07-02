@@ -75,16 +75,13 @@ namespace CSharpBinding.Refactoring
 		public bool IsNullable {
 			get {
 				// true = reference, null = generic or unknown
-				return Member.ReturnType.IsReferenceType != false
-					|| (Member.ReturnType.FullName == "System.Nullable");
+				return Member.ReturnType.IsNullable();
 			}
 		}
 		
 		public bool HasRange {
 			get {
-				return IsTypeWithRange(Member.ReturnType) ||
-					(Member.ReturnType.FullName == "System.Nullable")
-					&& IsTypeWithRange(Member.ReturnType.TypeArguments.First());
+				return Member.ReturnType.HasRange();
 			}
 		}
 		
@@ -102,19 +99,6 @@ namespace CSharpBinding.Refactoring
 			set {
 				addRangeCheck = value;
 			}
-		}
-		
-		bool IsTypeWithRange(IType type)
-		{
-			string crtType = type.FullName;
-			return crtType == "System.Int32" ||
-				crtType == "System.Int16" ||
-				crtType == "System.Int64" ||
-				crtType == "System.Single" ||
-				crtType == "System.Double" ||
-				crtType == "System.UInt16" ||
-				crtType == "System.UInt32" ||
-				crtType == "System.UInt64";
 		}
 		
 		static string ToParameterName(string memberName)
