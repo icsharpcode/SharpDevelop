@@ -45,7 +45,18 @@ namespace FSharpBinding
 				if (d.TryGetValue(node, out xmlElem))
 					itemNode.AppendChild(xmlElem);
 			}
-			doc.Save(project.FileName);
+			
+			SaveProjectXml(doc, project as FSharpProject);
+		}
+		
+		static void SaveProjectXml(XmlDocument doc, FSharpProject project)
+		{
+			project.DisableWatcher();
+			try {
+				doc.Save(project.FileName);
+			} finally {
+				project.EnableWatcher();
+			}
 		}
 	}
 	

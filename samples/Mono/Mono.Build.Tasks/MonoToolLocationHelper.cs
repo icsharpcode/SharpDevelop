@@ -200,7 +200,7 @@ namespace Mono.Build.Tasks
 		static string ReadRegistryValue(string keyName, string name)
 		{
 			try {
-				RegistryKey key = Registry.LocalMachine.OpenSubKey(keyName);
+				RegistryKey key = OpenLocalMachineOrUserRegistryKey(keyName);
 				if (key != null) {
 					string readValue = (string)key.GetValue(name);
 					key.Close();
@@ -211,6 +211,15 @@ namespace Mono.Build.Tasks
 			} catch (SecurityException) { }
 			
 			return String.Empty;
+		}
+		
+		static RegistryKey OpenLocalMachineOrUserRegistryKey(string keyName)
+		{
+			RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName);
+			if (key != null) {
+				return key;
+			}
+			return Registry.LocalMachine.OpenSubKey(keyName);
 		}
 	}
 }
