@@ -41,6 +41,16 @@ namespace FSharpBinding
 		{
 			return new FSharpProjectBehavior(this, base.CreateDefaultBehavior());
 		}
+		
+		public void DisableWatcher()
+		{
+			watcher.Disable();
+		}
+		
+		public void EnableWatcher()
+		{
+			watcher.Enable();
+		}
 	}
 	
 	public class FSharpProjectBehavior : ProjectBehavior
