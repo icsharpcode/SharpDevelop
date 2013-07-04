@@ -18,6 +18,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		IServiceProvider _serviceProvider;
 		
 		XamlTypeFinder _typeFinder;
+
+        int namespacePrefixCounter;
 		
 		internal XmlDocument XmlDocument {
 			get { return _xmlDoc; }
@@ -165,10 +167,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (forProperty != null && hasStringConverter) {
 				return new XamlTextValue(this, c.ConvertToInvariantString(ctx, instance));
 			}
-			
-			
-			XmlElement xml = _xmlDoc.CreateElement(elementType.Name, GetNamespaceFor(elementType));
-			
+
+            string ns = GetNamespaceFor(elementType);
+            string prefix = GetPrefixForNamespace(ns);
+
+            XmlElement xml = _xmlDoc.CreateElement(prefix, elementType.Name, ns);
+
 			if (hasStringConverter &&
 			    XamlObject.GetContentPropertyName(elementType) != null)
 			{
@@ -182,5 +186,43 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			return _typeFinder.GetXmlNamespaceFor(type.Assembly, type.Namespace);
 		}
+
+        internal string GetPrefixForNamespace(string @namespace)
+        {
+            if (@namespace == XamlConstants.PresentationNamespace)
+            {
+                return null;
+            }
+
+            string prefix = _xmlDoc.DocumentElement.GetPrefixOfNamespace(@namespace);
+
+            if (String.IsNullOrEmpty(prefix))
+            {
+                prefix = _typeFinder.GetPrefixForXmlNamespace(@namespace);
+
+                string existingNamespaceForPrefix = null;
+                if (!String.IsNullOrEmpty(prefix))
+                {
+                    existingNamespaceForPrefix = _xmlDoc.DocumentElement.GetNamespaceOfPrefix(prefix);
+                }
+
+                if (String.IsNullOrEmpty(prefix) ||
+                    !String.IsNullOrEmpty(existingNamespaceForPrefix) &&
+                    existingNamespaceForPrefix != @namespace)
+                {
+                    do
+                    {
+                        prefix = "Controls" + namespacePrefixCounter++;
+                    } while (!String.IsNullOrEmpty(_xmlDoc.DocumentElement.GetNamespaceOfPrefix(prefix)));
+                }
+
+                string xmlnsPrefix = _xmlDoc.DocumentElement.GetPrefixOfNamespace(XamlConstants.XmlnsNamespace);
+                System.Diagnostics.Debug.Assert(!String.IsNullOrEmpty(xmlnsPrefix));
+
+                _xmlDoc.DocumentElement.SetAttribute(xmlnsPrefix + ":" + prefix, @namespace);
+            }
+
+            return prefix;
+        }
 	}
 }
