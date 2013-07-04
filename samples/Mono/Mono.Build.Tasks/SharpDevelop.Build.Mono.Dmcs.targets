@@ -28,7 +28,9 @@
 		</AssemblySearchPaths> 
 	</PropertyGroup>
 	
-	<Target	Name="GetFrameworkPaths">
+	<Target
+		Name="GetFrameworkPaths"
+		Returns="@(_ExplicitReference)">
 		<!-- Get the path to the target Mono Framework directory. -->
 		<GetMonoFrameworkPath TargetFrameworkVersion="$(MonoTargetFrameworkVersion)">
 			<Output TaskParameter="Path" PropertyName="TargetFrameworkDirectory"/>
@@ -40,6 +42,11 @@
 			<Output TaskParameter="Path" PropertyName="TargetFrameworkSDKDirectory"/>
 			<Output TaskParameter="Path" ItemName="_TargetFrameworkSDKDirectoryItem"/>
 		</GetMonoFrameworkSDKPath>
+		
+		<ItemGroup>
+			<_ExplicitReference Remove="1"/>
+			<_ExplicitReference Include="$(TargetFrameworkDirectory)\mscorlib.dll"/>
+		</ItemGroup>
 	</Target>
 	
 	<!-- Modify what the ResolveAssemblyReferences tasks depends on so the
@@ -47,7 +54,6 @@
 	<PropertyGroup>
 		<ResolveAssemblyReferencesDependsOn>
 			GetFrameworkPaths;
-            GetReferenceAssemblyPaths;
 			PrepareForBuild;
 			AddMonoAssemblySearchPaths
 		</ResolveAssemblyReferencesDependsOn>
@@ -59,6 +65,9 @@
 			
 			<Output TaskParameter="Paths" PropertyName="AssemblySearchPaths"/>
 		</AddMonoAssemblySearchPaths>
+	</Target>
+	
+	<Target Name="GetReferenceAssemblyPaths">
 	</Target>
 	
     <Target
@@ -108,6 +117,6 @@
               WarningLevel="$(WarningLevel)"
               Win32Icon="$(ApplicationIcon)"
               Win32Resource="$(Win32Resource)" />
-    </Target>	
+    </Target>
 
 </Project>

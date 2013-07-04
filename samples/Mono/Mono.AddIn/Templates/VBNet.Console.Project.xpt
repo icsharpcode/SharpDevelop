@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>Console Application</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Subcategory>Mono</Subcategory>
 		<Icon>VBNet.Project.DOSProject</Icon>
 		<Description>Console project for Mono.</Description>

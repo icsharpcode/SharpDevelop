@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>Gtk# Application</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Subcategory>Mono</Subcategory>
 		<Icon>VBNet.Project.Form</Icon>
 		<Description>A project that creates a Gtk# application.</Description>
