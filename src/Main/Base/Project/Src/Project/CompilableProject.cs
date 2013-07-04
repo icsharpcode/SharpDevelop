@@ -327,7 +327,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Type System
 		volatile ProjectContentContainer projectContentContainer;
-		ITypeDefinitionModelCollection typeDefinitionModels;
+		IAssemblyModel assemblyModel;
 		
 		protected void InitializeProjectContent(IProjectContent initialProjectContent)
 		{
@@ -351,20 +351,20 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override ITypeDefinitionModelCollection TypeDefinitionModels {
+		public override IAssemblyModel AssemblyModel {
 			get {
 				SD.MainThread.VerifyAccess();
-				if (typeDefinitionModels == null) {
-					typeDefinitionModels = SD.GetRequiredService<IModelFactory>().CreateTopLevelTypeDefinitionCollection(new ProjectEntityModelContext(this, ".cs"));
+				if (assemblyModel == null) {
+					assemblyModel = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(new ProjectEntityModelContext(this, ".cs"));
 					var pc = ProjectContent;
-					if (pc != null) {
+					if (pc != null && assemblyModel is IUpdateableAssemblyModel) {
 						// Add the already loaded files into the model
 						foreach (var file in pc.Files) {
-							typeDefinitionModels.Update(null, file);
+							((IUpdateableAssemblyModel)assemblyModel).Update(null, file);
 						}
 					}
 				}
-				return typeDefinitionModels;
+				return assemblyModel;
 			}
 		}
 		
@@ -376,8 +376,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			// OnParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
 			// To ensure events are raised in the same order, we always invoke on the main thread.
 			SD.MainThread.InvokeAsyncAndForget(delegate {
-				if (typeDefinitionModels != null) {
-					typeDefinitionModels.Update(args.OldUnresolvedFile, args.NewUnresolvedFile);
+				if (assemblyModel is IUpdateableAssemblyModel) {
+					((IUpdateableAssemblyModel)assemblyModel).Update(args.OldUnresolvedFile, args.NewUnresolvedFile);
 				}
 				ParseInformationUpdated(null, args);
 			});

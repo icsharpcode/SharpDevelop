@@ -326,10 +326,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		void OnParseInformationUpdated(ParseInformationEventArgs args);
 		
 		/// <summary>
-		/// Gets the models for the top-level type definitions in this project.
-		/// Never returns null, but may return a permanently empty collection if this project does not support such models.
+		/// Gets the assembly model for the project. This property never returns null.
 		/// </summary>
-		ITypeDefinitionModelCollection TypeDefinitionModels { get; }
+		IAssemblyModel AssemblyModel { get; }
 		
 		/// <summary>
 		/// Gets whether this project was unloaded.

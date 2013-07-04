@@ -74,6 +74,22 @@ namespace ICSharpCode.SharpDevelop
 			return SD.ResourceService.GetBitmap("Icons.16x16.MiscFiles");
 		}
 		
+		public static System.Windows.Media.ImageSource GetImageSource(string name)
+		{
+			System.Windows.Media.ImageSource img;
+			try {
+				img = SD.ResourceService.GetImageSource(name);
+			} catch (ResourceNotFoundException ex) {
+				LoggingService.Warn(ex);
+				img = null;
+			}
+			if (img != null) {
+				return img;
+			}
+			
+			return SD.ResourceService.GetImageSource("Icons.16x16.MiscFiles");
+		}
+		
 		public static string GetImageForProjectType(string projectType)
 		{
 			if (projectFileHashtable.ContainsKey(projectType)) {

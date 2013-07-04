@@ -691,9 +691,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public virtual ICSharpCode.SharpDevelop.Dom.ITypeDefinitionModelCollection TypeDefinitionModels {
+		public virtual IAssemblyModel AssemblyModel {
 			get {
-				return EmptyTypeDefinitionModelCollection.Instance;
+				return EmptyAssemblyModel.Instance;
 			}
 		}
 		

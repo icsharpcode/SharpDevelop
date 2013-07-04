@@ -84,6 +84,10 @@
     </Compile>
     <Compile Include="Designer\IDesignerTypeResolutionService.cs" />
     <Compile Include="Designer\TypeResolutionService.cs" />
+    <Compile Include="Dom\ClassBrowser\ClassBrowserTreeView.cs" />
+    <Compile Include="Dom\ClassBrowser\ClassBrowserWorkspace.cs" />
+    <Compile Include="Dom\ClassBrowser\WorkspaceTreeNode.cs" />
+    <Compile Include="Dom\IAssemblyModel.cs" />
     <Compile Include="Dom\IEntityModelContext.cs" />
     <Compile Include="Dom\IEventModel.cs" />
     <Compile Include="Dom\IFieldModel.cs" />
@@ -98,8 +102,10 @@
     <Compile Include="Dom\IEntityModel.cs" />
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
+    <Compile Include="Dom\KeyedModelCollection.cs" />
     <Compile Include="Dom\ModelCollectionLinq.cs" />
     <Compile Include="Dom\ImmutableModelCollection.cs" />
+    <Compile Include="Dom\ModelCollectionTreeNode.cs" />
     <Compile Include="Dom\SimpleModelCollection.cs" />
     <Compile Include="Dom\SynchronizedModelCollection.cs" />
     <Compile Include="Editor\AvalonEditTextEditorAdapter.cs" />
@@ -811,6 +817,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />
+    <Folder Include="Dom\ClassBrowser" />
     <Folder Include="Src\Editor\Dialogs" />
     <Folder Include="Templates" />
     <Folder Include="Project\Configuration" />
