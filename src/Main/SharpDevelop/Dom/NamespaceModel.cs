@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				if (parent == null || string.IsNullOrEmpty(parent.name))
 					return name;
-				return parent.name + "." + name;
+				return parent.FullName + "." + name;
 			}
 		}
 		

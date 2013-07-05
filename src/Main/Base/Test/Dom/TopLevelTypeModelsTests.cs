@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public void EmptyProject()
 		{
 			Assert.AreEqual(0, assemblyModel.TopLevelTypeDefinitions.Count);
+			Assert.AreEqual(0, assemblyModel.Namespaces.Count);
 			Assert.IsNull(assemblyModel.TopLevelTypeDefinitions[new TopLevelTypeName("MissingClass")]);
 		}
 		

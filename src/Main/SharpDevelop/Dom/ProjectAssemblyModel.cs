@@ -60,41 +60,58 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		void TypeDeclarationsCollectionChanged(IReadOnlyCollection<ITypeDefinitionModel> removedItems, IReadOnlyCollection<ITypeDefinitionModel> addedItems)
 		{
-			NamespaceModel ns;
-			foreach (ITypeDefinitionModel addedItem in addedItems) {
-				if (!namespaces.TryGetValue(addedItem.Namespace, out ns)) {
-					string[] parts = addedItem.Namespace.Split('.');
-					int level = 0;
-					ns = rootNamespace;
-					while (level < parts.Length) {
-						var nextNS = ns.ChildNamespaces
-							.FirstOrDefault(n => n.Name == parts[level]);
-						if (nextNS == null) break;
-						ns = nextNS;
-						level++;
-					}
-					while (level < parts.Length) {
-						var child = new NamespaceModel(context, ns, parts[level]);
-						ns.ChildNamespaces.Add(child);
-						ns = child;
-						level++;
-					}
-					if (!namespaces.Contains(ns))
-						namespaces.Add(ns);
-					ns.Types.Add(addedItem);
-				}
-			}
-			foreach (ITypeDefinitionModel removedItem in removedItems) {
-				if (namespaces.TryGetValue(removedItem.Namespace, out ns)) {
-					ns.Types.Remove(removedItem);
-					if (ns.Types.Count == 0)
-						namespaces.Remove(ns);
-					while (ns.ParentNamespace != null) {
-						if (ns.ChildNamespaces.Count == 0 && ns.Types.Count == 0)
-							((NamespaceModel)ns.ParentNamespace).ChildNamespaces.Remove(ns);
-						ns = (NamespaceModel)ns.ParentNamespace;
+			List<IDisposable> batchList = new List<IDisposable>();
+			try {
+				NamespaceModel ns;
+				foreach (ITypeDefinitionModel addedItem in addedItems) {
+					if (!namespaces.TryGetValue(addedItem.Namespace, out ns)) {
+						string[] parts = addedItem.Namespace.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
+						int level = 0;
+						ns = rootNamespace;
+						while (level < parts.Length) {
+							var nextNS = ns.ChildNamespaces
+								.FirstOrDefault(n => n.Name == parts[level]);
+							if (nextNS == null) break;
+							ns = nextNS;
+							level++;
+						}
+						while (level < parts.Length) {
+							var child = new NamespaceModel(context, ns, parts[level]);
+							batchList.AddIfNotNull(ns.ChildNamespaces.BatchUpdate());
+							ns.ChildNamespaces.Add(child);
+							ns = child;
+							level++;
+						}
+						if (!namespaces.Contains(ns)) {
+							batchList.AddIfNotNull(namespaces.BatchUpdate());
+							namespaces.Add(ns);
+						}
+						batchList.AddIfNotNull(ns.Types.BatchUpdate());
+						ns.Types.Add(addedItem);
 					}
 				}
+				foreach (ITypeDefinitionModel removedItem in removedItems) {
+					if (namespaces.TryGetValue(removedItem.Namespace, out ns)) {
+						batchList.AddIfNotNull(ns.Types.BatchUpdate());
+						ns.Types.Remove(removedItem);
+						if (ns.Types.Count == 0) {
+							batchList.AddIfNotNull(namespaces.BatchUpdate());
+							namespaces.Remove(ns);
+						}
+						while (ns.ParentNamespace != null) {
+							var p = ((NamespaceModel)ns.ParentNamespace);
+							if (ns.ChildNamespaces.Count == 0 && ns.Types.Count == 0) {
+								batchList.AddIfNotNull(p.ChildNamespaces.BatchUpdate());
+								p.ChildNamespaces.Remove(ns);
+							}
+							ns = p;
+						}
+					}
+				}
+			} finally {
+				batchList.Reverse();
+				foreach (IDisposable d in batchList)
+					d.Dispose();
 			}
 		}
 	}

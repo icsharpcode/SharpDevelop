@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CodeConverterTests.cs" />
+    <Compile Include="Dom\AssemblyModelNamespaceTests.cs" />
     <Compile Include="Dom\CSharpModelTestBase.cs" />
     <Compile Include="Dom\ProjectEntityModelContextTests.cs" />
     <Compile Include="Dom\TopLevelTypeModelsTests.cs" />
