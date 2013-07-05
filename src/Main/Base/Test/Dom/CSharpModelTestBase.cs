@@ -21,8 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected IProject project;
 		protected IProjectContent projectContent;
 		protected IEntityModelContext context;
-		protected ITypeDefinitionModelCollection topLevelTypeModels;
-		protected List<RemovedAndAddedPair<ITypeDefinitionModel>> topLevelChangeEventArgs = new List<RemovedAndAddedPair<ITypeDefinitionModel>>();
+		protected IUpdateableAssemblyModel assemblyModel;
 		
 		protected class RemovedAndAddedPair<T>
 		{
@@ -45,11 +44,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			project = MockRepository.GenerateStrictMock<IProject>();
 			projectContent = new CSharpProjectContent().AddAssemblyReferences(AssemblyLoader.Corlib);
 			context = new ProjectEntityModelContext(project, ".cs");
-			topLevelTypeModels = new TopLevelTypeDefinitionModelCollection(context);
+			assemblyModel = new ProjectAssemblyModel(context);
 			
 			SD.ParserService.Stub(p => p.GetCompilation(project)).WhenCalled(c => c.ReturnValue = projectContent.CreateCompilation());
-			topLevelChangeEventArgs.Clear();
-			topLevelTypeModels.CollectionChanged += (oldItems, newItems) => topLevelChangeEventArgs.Add(new RemovedAndAddedPair<ITypeDefinitionModel>(oldItems, newItems));
 		}
 		
 		[TearDown]
@@ -64,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Assert.IsNull(oldFile, "Duplicate file name: " + fileName);
 			var newFile = Parse(fileName, code);
 			projectContent = projectContent.AddOrUpdateFiles(newFile);
-			topLevelTypeModels.Update(oldFile, newFile);
+			assemblyModel.Update(oldFile, newFile);
 		}
 		
 		IUnresolvedFile Parse(string fileName, string code)
@@ -81,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Assert.IsNotNull(oldFile, "Could not update file (missing old file): " + fileName);
 			var newFile = Parse(fileName, code);
 			projectContent = projectContent.AddOrUpdateFiles(newFile);
-			topLevelTypeModels.Update(oldFile, newFile);
+			assemblyModel.Update(oldFile, newFile);
 		}
 		
 		protected void RemoveCodeFile(string fileName)
@@ -89,7 +86,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			var oldFile = projectContent.GetFile(fileName);
 			Assert.IsNotNull(oldFile, "Could not remove file (missing old file): " + fileName);
 			projectContent = projectContent.RemoveFiles(fileName);
-			topLevelTypeModels.Update(oldFile, null);
+			assemblyModel.Update(oldFile, null);
+		}
+		
+		protected List<RemovedAndAddedPair<T>> ListenForChanges<T>(IModelCollection<T> collection)
+		{
+			var list = new List<RemovedAndAddedPair<T>>();
+			collection.CollectionChanged += (oldItems, newItems) => list.Add(new RemovedAndAddedPair<T>(oldItems, newItems));
+			return list;
 		}
 		#endregion
 	}

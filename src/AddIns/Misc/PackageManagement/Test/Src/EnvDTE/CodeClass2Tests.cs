@@ -21,7 +21,7 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateClass(string code)
 		{
 			AddCodeFile("class.cs", code);
-			ITypeDefinitionModel typeModel = topLevelTypeModels.Single();
+			ITypeDefinitionModel typeModel = assemblyModel.TopLevelTypeDefinitions.Single();
 			codeClass = new CodeClass2(codeModelContext, typeModel);
 		}
 		
