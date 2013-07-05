@@ -32,6 +32,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			dict.Remove(getKeyForValue(item));
 		}
 		
+		protected override void ValidateItem(TValue item)
+		{
+			base.ValidateItem(item);
+			if (dict.ContainsKey(getKeyForValue(item)))
+				throw new ArgumentException("An item with the same key has already been added to the collection.");
+		}
+		
 		public TValue this[TKey key] {
 			get { return dict[key]; }
 		}

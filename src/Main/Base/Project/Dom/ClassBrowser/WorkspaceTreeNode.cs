@@ -24,6 +24,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			this.workspace = workspace;
 		}
 		
+		protected override object GetModel()
+		{
+			return workspace;
+		}
+		
 		protected override IModelCollection<object> ModelChildren {
 			get { return workspace.LoadedAssemblies; }
 		}
@@ -62,6 +67,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			this.solution = solution;
 		}
 		
+		protected override object GetModel()
+		{
+			return solution;
+		}
+		
 		public override object Text {
 			get { return "Solution " + solution.Name; }
 		}
@@ -88,6 +98,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (project == null)
 				throw new ArgumentNullException("project");
 			this.project = project;
+		}
+		
+		protected override object GetModel()
+		{
+			return project;
 		}
 		
 		public override object Text {
@@ -118,6 +133,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			this.model = model;
 		}
 		
+		protected override object GetModel()
+		{
+			return model;
+		}
+		
 		protected override IComparer<SharpTreeNode> NodeComparer {
 			get { return NodeTextComparer; }
 		}
@@ -136,6 +156,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (model == null)
 				throw new ArgumentNullException("model");
 			this.model = model;
+		}
+		
+		protected override object GetModel()
+		{
+			return model;
 		}
 		
 		protected override IComparer<SharpTreeNode> NodeComparer {
@@ -164,6 +189,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (definition == null)
 				throw new ArgumentNullException("definition");
 			this.definition = definition;
+		}
+		
+		protected override object GetModel()
+		{
+			return definition;
 		}
 		
 		public override object Icon {

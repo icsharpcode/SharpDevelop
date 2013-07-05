@@ -61,16 +61,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		void TypeDeclarationsCollectionChanged(IReadOnlyCollection<ITypeDefinitionModel> removedItems, IReadOnlyCollection<ITypeDefinitionModel> addedItems)
 		{
 			NamespaceModel ns;
-			foreach (ITypeDefinitionModel removedItem in removedItems) {
-				if (namespaces.TryGetValue(removedItem.Namespace, out ns)) {
-					ns.Types.Remove(removedItem);
-					while (ns.ParentNamespace != null && ns.Types.Count == 0 && ns.ChildNamespaces.Count == 0) {
-						((NamespaceModel)ns.ParentNamespace).ChildNamespaces.Remove(ns);
-						namespaces.Remove(ns);
-						ns = (NamespaceModel)ns.ParentNamespace;
-					}
-				}
-			}
 			foreach (ITypeDefinitionModel addedItem in addedItems) {
 				if (!namespaces.TryGetValue(addedItem.Namespace, out ns)) {
 					string[] parts = addedItem.Namespace.Split('.');
@@ -84,11 +74,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 						level++;
 					}
 					while (level < parts.Length) {
-						ns = new NamespaceModel(context, ns, parts[level]);
-						namespaces.Add(ns);
+						var child = new NamespaceModel(context, ns, parts[level]);
+						ns.ChildNamespaces.Add(child);
+						ns = child;
 						level++;
 					}
+					if (!namespaces.Contains(ns))
+						namespaces.Add(ns);
 					ns.Types.Add(addedItem);
+				}
+			}
+			foreach (ITypeDefinitionModel removedItem in removedItems) {
+				if (namespaces.TryGetValue(removedItem.Namespace, out ns)) {
+					ns.Types.Remove(removedItem);
+					if (ns.Types.Count == 0)
+						namespaces.Remove(ns);
+					while (ns.ParentNamespace != null) {
+						if (ns.ChildNamespaces.Count == 0 && ns.Types.Count == 0)
+							((NamespaceModel)ns.ParentNamespace).ChildNamespaces.Remove(ns);
+						ns = (NamespaceModel)ns.ParentNamespace;
+					}
 				}
 			}
 		}
