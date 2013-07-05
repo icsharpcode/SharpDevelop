@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
-	public class WorkspaceTreeNodesFactory : ITreeNodeFactory
+	public class ClassBrowserTreeNodesFactory : ITreeNodeFactory
 	{
 		public Type GetSupportedType(object model)
 		{
