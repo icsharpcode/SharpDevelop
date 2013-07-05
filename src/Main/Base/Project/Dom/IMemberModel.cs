@@ -25,11 +25,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		new IMember Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot);
 		
 		/// <summary>
-		/// Updates the member model with the specified new member.
-		/// </summary>
-		void Update(IUnresolvedMember newMember);
-		
-		/// <summary>
 		/// Gets if the member is virtual. Is true only if the "virtual" modifier was used, but non-virtual
 		/// members can be overridden, too; if they are abstract or overriding a method.
 		/// </summary>

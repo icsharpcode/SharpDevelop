@@ -39,6 +39,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public event PropertyChangedEventHandler PropertyChanged { add {} remove {} }
 		
+		/// <summary>
+		/// Updates the member model with the specified new member.
+		/// </summary>
 		public void Update(IUnresolvedMember newMember)
 		{
 			if (newMember == null)
