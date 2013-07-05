@@ -22,7 +22,7 @@ namespace ICSharpCode.UnitTesting
 		
 		/// <summary>
 		/// Gets whether this test allows expanding the list of nested tests.
-		/// If possible, this property should return the same value as NestedTests.Count.
+		/// If possible, this property should return the same value as <c>NestedTests.Count &gt; 0</c>.
 		/// However, when doing so is expensive (e.g. due to lazy initialization), this
 		/// property may return true even if there are no nested tests.
 		/// </summary>

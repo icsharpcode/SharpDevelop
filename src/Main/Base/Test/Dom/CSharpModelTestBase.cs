@@ -15,7 +15,6 @@ using Rhino.Mocks;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	[TestFixture]
 	public class CSharpModelTestBase
 	{
 		protected IProject project;
