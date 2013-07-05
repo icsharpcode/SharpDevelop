@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.childNamespaces = new NullSafeSimpleModelCollection<NamespaceModel>();
 		}
 		
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged { add {} remove {} }
 
 		public string FullName {
 			get {

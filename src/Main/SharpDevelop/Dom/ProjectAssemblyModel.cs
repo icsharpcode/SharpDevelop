@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.namespaces = new KeyedModelCollection<string, NamespaceModel>(value => value.FullName);
 		}
 		
-		public string Name {
+		public string AssemblyName {
 			get {
 				return context.Project.AssemblyName;
 			}
