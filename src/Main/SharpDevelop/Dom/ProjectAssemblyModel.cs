@@ -86,9 +86,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 							batchList.AddIfNotNull(namespaces.BatchUpdate());
 							namespaces.Add(ns);
 						}
-						batchList.AddIfNotNull(ns.Types.BatchUpdate());
-						ns.Types.Add(addedItem);
 					}
+					batchList.AddIfNotNull(ns.Types.BatchUpdate());
+					ns.Types.Add(addedItem);
 				}
 				foreach (ITypeDefinitionModel removedItem in removedItems) {
 					if (namespaces.TryGetValue(removedItem.Namespace, out ns)) {
