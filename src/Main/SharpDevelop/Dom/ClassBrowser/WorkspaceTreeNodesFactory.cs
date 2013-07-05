@@ -22,6 +22,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				return typeof(INamespaceModel);
 			if (model is ITypeDefinitionModel)
 				return typeof(ITypeDefinitionModel);
+			if (model is IMemberModel)
+				return typeof(IMemberModel);
 			return null;
 		}
 		
@@ -35,6 +37,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				return new NamespaceTreeNode((INamespaceModel)model);
 			if (model is ITypeDefinitionModel)
 				return new TypeDefinitionTreeNode((ITypeDefinitionModel)model);
+			if (model is IMemberModel)
+				return new MemberTreeNode((IMemberModel)model);
 			return null;
 		}
 	}
