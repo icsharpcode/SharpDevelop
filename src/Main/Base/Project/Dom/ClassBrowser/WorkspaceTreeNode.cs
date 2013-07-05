@@ -212,5 +212,12 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		protected override IModelCollection<object> ModelChildren {
 			get { return definition.Members; }
 		}
+		
+		public override void ActivateItem(System.Windows.RoutedEventArgs e)
+		{
+			var target = definition.Resolve();
+			if (target != null)
+				NavigationService.NavigateTo(target);
+		}
 	}
 }
