@@ -226,7 +226,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 		void AddNode(MemberDescriptor md)
 		{
-			var designProperties = SelectedItems.Select(item => item.Properties[md.Name]).ToArray();
+			var designProperties = SelectedItems.Select(item => item.Properties.GetProperty(md)).ToArray();
 			if (!Metadata.IsBrowsable(designProperties[0])) return;
 
 			PropertyNode node;
@@ -252,7 +252,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		Category PickCategory(PropertyNode node)
 		{
 			if (Metadata.IsPopularProperty(node.FirstProperty)) return popularCategory;
-			if (node.FirstProperty.Name.Contains(".")) return attachedCategory;
+			if (node.FirstProperty.IsAttachedDependencyProperty()) return attachedCategory;
 			var typeName = node.FirstProperty.DeclaringType.FullName;
 			if (typeName.StartsWith("System.Windows.") || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls."))
 				return otherCategory;

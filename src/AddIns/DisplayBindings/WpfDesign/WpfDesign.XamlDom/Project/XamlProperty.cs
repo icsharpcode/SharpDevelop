@@ -327,21 +327,34 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		internal XmlAttribute SetAttribute(string value)
 		{
-			string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
 			string name;
-			if (IsAttached)
-				name = PropertyTargetType.Name + "." + PropertyName;
-			else
-				name = PropertyName;
-
 			var element = ParentObject.XmlElement;
-			if (string.IsNullOrEmpty(element.GetPrefixOfNamespace(ns))) {
-				element.SetAttribute(name, value);
-				return element.GetAttributeNode(name);
-			} else {
-				element.SetAttribute(name, ns, value);
-				return element.GetAttributeNode(name, ns);
+
+			if (IsAttached)
+			{
+				name = PropertyTargetType.Name + "." + PropertyName;
+
+				string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
+                string prefix = element.GetPrefixOfNamespace(ns);
+
+                if (String.IsNullOrEmpty(prefix))
+                {
+                    prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
+                }
+
+                if (!string.IsNullOrEmpty(prefix))
+				{
+					element.SetAttribute(name, ns, value);
+					return element.GetAttributeNode(name, ns);
+				}
 			}
+			else
+			{
+				name = PropertyName;
+			}
+
+			element.SetAttribute(name, value);
+			return element.GetAttributeNode(name);
 		}
 
 		internal string GetNameForMarkupExtension()
