@@ -8,7 +8,7 @@
 		<Name>${res:Templates.Project.WindowsApplication.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
-		<Icon>VBNet.Project.Form</Icon>
+		<Icon>VB.Project.Form</Icon>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
 		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
