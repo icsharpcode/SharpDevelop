@@ -67,7 +67,7 @@ namespace SearchAndReplace
 					if (ProjectService.CurrentProject == null)
 						break;
 					foreach (FileProjectItem item in ProjectService.CurrentProject.Items.OfType<FileProjectItem>())
-						files.Add(new FileName(item.FileName));
+						files.Add(item.FileName);
 					break;
 				case SearchTarget.WholeSolution:
 					if (ProjectService.OpenSolution == null)
@@ -75,7 +75,7 @@ namespace SearchAndReplace
 					foreach (var item in ProjectService.OpenSolution.AllItems.OfType<ISolutionFileItem>())
 						files.Add(item.FileName);
 					foreach (var item in ProjectService.OpenSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>())
-						files.Add(new FileName(item.FileName));
+						files.Add(item.FileName);
 					break;
 				case SearchTarget.Directory:
 					if (!Directory.Exists(BaseDirectory))

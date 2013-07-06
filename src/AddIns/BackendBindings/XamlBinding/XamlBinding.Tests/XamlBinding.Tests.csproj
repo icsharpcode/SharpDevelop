@@ -71,9 +71,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="CodeCompletionTests.cs" />
     <Compile Include="CodeInsertionTests.cs" />
     <Compile Include="CompletionTestsBase.xaml.cs">
