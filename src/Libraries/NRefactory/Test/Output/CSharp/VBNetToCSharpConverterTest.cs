@@ -913,7 +913,48 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 			TestStatement(@"Dim xml = <A>&quot;</A>",
 			              @"var xml = new XElement(""A"", ""\"""");");
 		}
-		
+
+        [Test]
+        public void XmlLINQDescendants()
+        {
+            TestStatement(@"Dim element = someXml...<somename>",
+                          @"var element = someXml.Descendants(""somename"");");
+        }
+        [Test]
+        public void XmlLINQElements()
+        {
+            TestStatement(@"Dim element = someXml.<somename>",
+                          @"var element = someXml.Elements(""somename"");");
+        }
+
+        [Test]
+        public void XmlLINQAttribute()
+        {
+            TestStatement(@"Dim value = someXml.@attr",
+                          @"var value = someXml.Attribute(""attr"").Value;");
+        }
+
+        [Test]
+        public void XmlLINQAttributeSetConstant()
+        {
+            TestStatement(@"someElement.@someAttr = 8",
+                          @"someElement.SetAttributeValue(""someAttr"", 8);");
+        }
+
+        [Test]
+        public void XmlLINQAttributeSetExpression()
+        {
+            TestStatement(@"someElement.@someAttr = string.Format(""{0}"", 19)",
+                          @"someElement.SetAttributeValue(""someAttr"", string.Format(""{0}"", 19));");
+        }
+
+        [Test]
+        public void LinqQueryWhereSelect()
+        {
+            TestStatement(@"Dim value = From value In values Where value = ""someValue"" Select value",
+                          @"var value = from value in values where value == ""someValue"" select value;");
+        }
+
 		[Test]
 		public void SD2_1500a()
 		{
