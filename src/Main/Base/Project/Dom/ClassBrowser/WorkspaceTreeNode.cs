@@ -4,10 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Media;
-using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.TreeView;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {

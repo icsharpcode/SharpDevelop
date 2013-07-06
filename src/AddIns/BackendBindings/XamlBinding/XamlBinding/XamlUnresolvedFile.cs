@@ -111,14 +111,17 @@ namespace ICSharpCode.XamlBinding
 		
 		public static ITypeReference CreateTypeReference(string @namespace, string localName)
 		{
-			if (@namespace.StartsWith("clr-namespace:", StringComparison.OrdinalIgnoreCase)) {
+			if (@namespace == null)
+				return new UnknownType(null, localName);
+			if (@namespace.StartsWith("clr-namespace:", StringComparison.OrdinalIgnoreCase))
 				return CreateClrNamespaceTypeReference(@namespace.Substring("clr-namespace:".Length), localName);
-			}
 			return new XamlTypeReference(@namespace, localName);
 		}
 		
 		public static ITypeReference CreateClrNamespaceTypeReference(string @namespace, string localName)
 		{
+			if (@namespace == null)
+				return new UnknownType(null, localName);
 			int assemblyNameIndex = @namespace.IndexOf(";assembly=", StringComparison.OrdinalIgnoreCase);
 			IAssemblyReference asm = DefaultAssemblyReference.CurrentAssembly;
 			if (assemblyNameIndex > -1) {

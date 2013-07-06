@@ -3,19 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Remoting.Lifetime;
-using System.Threading;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.Xml;
-using ICSharpCode.SharpDevelop.Parser;
-using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -37,12 +28,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			string prefix, memberName;
 			string name = ParseName(expression, out prefix, out memberName);
-			string namespaceUrl;
-			
-			if (prefix == "")
-				namespaceUrl = context.ActiveElement.Namespace;
-			else
-				namespaceUrl = context.ActiveElement.ResolvePrefix(prefix);
+			string namespaceUrl = context.ActiveElement.LookupNamespace(prefix);
 			if (string.IsNullOrEmpty(memberName)) {
 				IType type = ResolveType(namespaceUrl, context.ActiveElement.LocalName);
 				IMember member = type.GetMembers(m => m.Name == name).FirstOrDefault();

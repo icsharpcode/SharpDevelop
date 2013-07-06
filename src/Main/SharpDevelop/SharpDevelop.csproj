@@ -107,7 +107,7 @@
       <Link>Project\Build\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
     <Compile Include="Dom\ClassBrowser\ClassBrowserPad.cs" />
-    <Compile Include="Dom\ClassBrowser\ClassBrowserTreeNodesFactory.cs" />
+    <Compile Include="Dom\ClassBrowser\WorkspaceTreeNodesFactory.cs" />
     <Compile Include="Dom\ModelFactory.cs" />
     <Compile Include="Dom\MemberModel.cs" />
     <Compile Include="Dom\NamespaceModel.cs" />
