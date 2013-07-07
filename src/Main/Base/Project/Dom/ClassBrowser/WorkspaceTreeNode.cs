@@ -3,11 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Media;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.TreeView;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
@@ -41,6 +37,12 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public override object Text {
 			get {
 				return "Workspace " + workspace.Name;
+			}
+		}
+		
+		public override object Icon {
+			get {
+				return SD.ResourceService.GetImageSource("PadIcons.ClassBrowser");
 			}
 		}
 		

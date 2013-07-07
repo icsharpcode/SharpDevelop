@@ -11,10 +11,11 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
-	public class ClassBrowserPad : AbstractPadContent
+	class ClassBrowserPad : AbstractPadContent
 	{
 		IProjectService projectService;
 		ClassBrowserTreeView treeView;
+		ClassBrowserSettings settings;
 		DockPanel panel;
 		ToolBar toolBar;
 
@@ -26,6 +27,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public ClassBrowserPad(IProjectService projectService)
 		{
 			this.projectService = projectService;
+			this.settings = new ClassBrowserSettings();
 			
 			panel = new DockPanel();
 			treeView = new ClassBrowserTreeView(); // treeView must be created first because it's used by CreateToolBar
@@ -59,9 +61,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		void ProjectServiceCurrentSolutionChanged(object sender, EventArgs e)
 		{
 			if (projectService.CurrentSolution == null) {
-				treeView.Workspace = ClassBrowserSettings.LoadDefaultWorkspace();
+				treeView.Workspace = settings.LoadDefaultWorkspace();
 			} else {
-				treeView.Workspace = ClassBrowserSettings.LoadForSolution(projectService.CurrentSolution);
+				treeView.Workspace = settings.LoadForSolution(projectService.CurrentSolution);
 			}
 		}
 		

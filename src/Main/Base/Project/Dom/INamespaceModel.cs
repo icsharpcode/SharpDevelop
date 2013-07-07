@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 		}
 		
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged { add {} remove {} }
 
 		public string FullName {
 			get { return string.Empty; }

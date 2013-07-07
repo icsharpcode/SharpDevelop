@@ -18,19 +18,19 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	public class ClassBrowserWorkspace
 	{
 		ISolution assignedSolution;
-		IModelCollection<IUnresolvedAssembly> loadedAssemblies;
+		IModelCollection<IAssemblyModel> loadedAssemblies;
 		string workspaceName;
 		
-		public ClassBrowserWorkspace(ISolution assignedSolution, IEnumerable<IUnresolvedAssembly> assemblies = null)
+		public ClassBrowserWorkspace(ISolution assignedSolution, IEnumerable<IAssemblyModel> assemblies = null)
 			: this(assignedSolution.FileName, assemblies)
 		{
 			this.assignedSolution = assignedSolution;
 		}
 		
-		public ClassBrowserWorkspace(string workspaceName, IEnumerable<IUnresolvedAssembly> assemblies = null)
+		public ClassBrowserWorkspace(string workspaceName, IEnumerable<IAssemblyModel> assemblies = null)
 		{
 			this.workspaceName = workspaceName;
-			this.loadedAssemblies = new SimpleModelCollection<IUnresolvedAssembly>(assemblies ?? EmptyList<IUnresolvedAssembly>.Instance);
+			this.loadedAssemblies = new SimpleModelCollection<IAssemblyModel>(assemblies ?? EmptyList<IAssemblyModel>.Instance);
 		}
 		
 		public bool IsAssigned {
@@ -45,38 +45,49 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			get { return workspaceName; }
 		}
 		
-		public IModelCollection<IUnresolvedAssembly> LoadedAssemblies {
+		public IModelCollection<IAssemblyModel> LoadedAssemblies {
 			get { return loadedAssemblies; }
 		}
 	}
 	
-	public static class ClassBrowserSettings
+	public class ClassBrowserSettings
 	{
-		static IUnresolvedAssembly[] LoadAssemblyList(string name)
+		IAssemblyReference[] ResolveReferences(IUnresolvedAssembly asm)
+		{
+			return new IAssemblyReference[0];
+		}
+
+		IAssemblyModel[] LoadAssemblyList(string name)
 		{
 			var assemblyNames = Container.GetList<string>("AssemblyList." + name);
 			CecilLoader loader = new CecilLoader();
-			return assemblyNames.Select(loader.LoadAssemblyFile).ToArray();
+			var factory = SD.GetRequiredService<IModelFactory>();
+			return assemblyNames
+				.Select(loader.LoadAssemblyFile)
+				.Select(asm => new AssemblyEntityModelContext(asm, ResolveReferences(asm)))
+				.Select(factory.CreateAssemblyModel)
+				.ToArray();
 		}
 
-		static readonly Properties Container = SD.PropertyService.NestedProperties(typeof(ClassBrowserSettings).FullName);
+		readonly Properties Container = SD.PropertyService.NestedProperties(typeof(ClassBrowserSettings).FullName);
 		
-		public static ClassBrowserWorkspace LoadDefaultWorkspace()
+		public ClassBrowserWorkspace LoadDefaultWorkspace()
 		{
 			return LoadWorkspace("<default>");
 		}
 		
-		public static ClassBrowserWorkspace LoadWorkspace(string name)
+		public ClassBrowserWorkspace LoadWorkspace(string name)
 		{
 			return new ClassBrowserWorkspace(name, LoadAssemblyList(name));
 		}
 		
-		public static ClassBrowserWorkspace LoadForSolution(ISolution solution)
+		public ClassBrowserWorkspace LoadForSolution(ISolution solution)
 		{
+			// maybe use solution.Preferences?
 			return new ClassBrowserWorkspace(solution, LoadAssemblyList(solution.FileName));
 		}
 		
-		public static void SaveWorkspace(ClassBrowserWorkspace workspace)
+		public void SaveWorkspace(ClassBrowserWorkspace workspace)
 		{
 			
 		}

@@ -537,7 +537,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			foreach (var memberModel in typeModel.Members) {
 				if (memberModel.Name == member.Name) {
-					if (memberModel.Resolve(snapshot) == member.MemberDefinition) {
+					if (memberModel.Resolve() == member.MemberDefinition) {
 						return memberModel;
 					}
 				}
@@ -580,7 +580,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			foreach (var memberModel in typeModel.Members) {
 				if (memberModel.Name == unresolvedMember.Name) {
-					if (memberModel.Resolve(snapshot) == member.MemberDefinition) {
+					if (memberModel.Resolve() == member.MemberDefinition) {
 						return memberModel;
 					}
 				}

@@ -10,7 +10,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public IAssemblyModel CreateAssemblyModel(IEntityModelContext context)
 		{
-			return new ProjectAssemblyModel(context);
+			return new AssemblyModel(context);
 		}
 		
 		public ITypeDefinitionModel CreateTypeDefinitionModel(IEntityModelContext context, params IUnresolvedTypeDefinition[] parts)

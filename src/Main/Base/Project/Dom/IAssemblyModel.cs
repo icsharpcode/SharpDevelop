@@ -53,9 +53,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		/// <remarks>
 		/// <paramref name="oldFile"/> is null if the file is newly added to the assemly.
-		/// <paramref name="newFile"/> is null if the file is removed from the assembly. 
+		/// <paramref name="newFile"/> is null if the file is removed from the assembly.
 		/// </remarks>
 		void Update(IUnresolvedFile oldFile, IUnresolvedFile newFile);
+		
+		/// <summary>
+		/// Gets the assembly name (short name).
+		/// </summary>
+		new string AssemblyName { get; set; }
 	}
 	
 	public sealed class EmptyAssemblyModel : IAssemblyModel

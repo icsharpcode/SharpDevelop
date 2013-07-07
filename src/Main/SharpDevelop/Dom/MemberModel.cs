@@ -77,13 +77,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region Resolve
 		public IMember Resolve()
 		{
-			var compilation = context.GetCompilation(null);
+			var compilation = context.GetCompilation();
 			return member.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 		}
 		
-		public IMember Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		public IMember Resolve(ICompilation compilation)
 		{
-			var compilation = context.GetCompilation(solutionSnapshot);
 			return member.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 		}
 		
@@ -92,9 +91,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return Resolve();
 		}
 		
-		IEntity IEntityModel.Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		IEntity IEntityModel.Resolve(ICompilation compilation)
 		{
-			return Resolve(solutionSnapshot);
+			return Resolve(compilation);
 		}
 		#endregion
 		

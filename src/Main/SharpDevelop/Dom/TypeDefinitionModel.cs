@@ -79,13 +79,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region Resolve
 		public ITypeDefinition Resolve()
 		{
-			var compilation = context.GetCompilation(null);
+			var compilation = context.GetCompilation();
 			return compilation.MainAssembly.GetTypeDefinition(fullTypeName);
 		}
 		
-		public ITypeDefinition Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		public ITypeDefinition Resolve(ICompilation compilation)
 		{
-			var compilation = context.GetCompilation(solutionSnapshot);
 			return compilation.MainAssembly.GetTypeDefinition(fullTypeName);
 		}
 		
@@ -94,9 +93,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return Resolve();
 		}
 		
-		IEntity IEntityModel.Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		IEntity IEntityModel.Resolve(ICompilation compilation)
 		{
-			return Resolve(solutionSnapshot);
+			return Resolve(compilation);
 		}
 		#endregion
 		

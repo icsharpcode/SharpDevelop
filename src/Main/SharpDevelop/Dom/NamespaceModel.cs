@@ -11,17 +11,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	sealed class NamespaceModel : INamespaceModel
 	{
-		IEntityModelContext context;
+		IProject parentProject;
 		string name;
 		NamespaceModel parent;
 		NullSafeSimpleModelCollection<NamespaceModel> childNamespaces;
 		NullSafeSimpleModelCollection<ITypeDefinitionModel> typeDefinitions;
 		
-		public NamespaceModel(IEntityModelContext context, NamespaceModel parent, string name)
+		public NamespaceModel(IProject parentProject, NamespaceModel parent, string name)
 		{
-			if (context == null)
-				throw new ArgumentNullException("context");
-			this.context = context;
+			this.parentProject = parentProject;
 			this.parent = parent;
 			this.name = name;
 			this.typeDefinitions = new NullSafeSimpleModelCollection<ITypeDefinitionModel>();
@@ -67,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public IProject ParentProject {
-			get { return context.Project; }
+			get { return parentProject; }
 		}
 		
 		public DomRegion Region {

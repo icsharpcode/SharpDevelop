@@ -16,11 +16,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		ClassBrowserWorkspace currentWorkspace;
 		
-		public ClassBrowserTreeView()
-		{
-			Workspace = ClassBrowserSettings.LoadDefaultWorkspace();
-		}
-		
 		public ClassBrowserWorkspace Workspace {
 			get { return currentWorkspace; }
 			set {
