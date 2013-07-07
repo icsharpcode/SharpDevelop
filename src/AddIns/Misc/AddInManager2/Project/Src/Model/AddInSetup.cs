@@ -445,26 +445,34 @@ namespace ICSharpCode.AddInManager2.Model
 				{
 					Directory.Delete(targetDir, true);
 				}
-				Directory.CreateDirectory(targetDir);
-				var packageContentsFiles = Directory.EnumerateFiles(packageDirectory, "*.*", SearchOption.TopDirectoryOnly);
-				if (packageContentsFiles != null)
-				{
-					foreach (var file in packageContentsFiles)
-					{
-						// Don't copy the .nupkg file
-						FileInfo fileInfo = new FileInfo(file);
-						if (fileInfo.Extension != ".nupkg")
-						{
-							File.Copy(file, Path.Combine(targetDir, fileInfo.Name));
-						}
-					}
-				}
+				DeepCopy(packageDirectory, targetDir);
 				
 				return true;
 			}
 			catch (Exception)
 			{
 				return false;
+			}
+		}
+		
+		void DeepCopy(string packageDirectory, string targetDirectory)
+		{
+			Directory.CreateDirectory(targetDirectory);
+			
+			foreach (string file in Directory.EnumerateFiles(packageDirectory, "*.*", SearchOption.TopDirectoryOnly))
+			{
+				// Don't copy the .nupkg file
+				FileInfo fileInfo = new FileInfo(file);
+				if (fileInfo.Extension != ".nupkg")
+				{
+					File.Copy(file, Path.Combine(targetDirectory, fileInfo.Name));
+				}
+			}
+			
+			foreach (string packageSubDirectory in Directory.EnumerateDirectories(packageDirectory))
+			{
+				string newTargetDirectory = Path.Combine(targetDirectory, Path.GetFileName(packageSubDirectory));
+				DeepCopy(packageSubDirectory, newTargetDirectory);
 			}
 		}
 
