@@ -77,6 +77,7 @@
     <Compile Include="Src\Completion\OverrideEqualsGetHashCodeCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideToStringCompletionData.cs" />
     <Compile Include="Src\Completion\SegmentTrackingOutputFormatter.cs" />
+    <Compile Include="Src\Completion\TypeCompletionData.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
     <Compile Include="Src\FormsDesigner\CSharpDesignerGenerator.cs" />
     <Compile Include="Src\FormsDesigner\CSharpDesignerLoader.cs" />

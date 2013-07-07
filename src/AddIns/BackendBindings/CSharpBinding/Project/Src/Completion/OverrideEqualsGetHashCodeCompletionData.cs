@@ -30,7 +30,7 @@ namespace CSharpBinding.Completion
 	/// </summary>
 	class OverrideEqualsGetHashCodeCompletionData : OverrideCompletionData
 	{
-		public OverrideEqualsGetHashCodeCompletionData(int declarationBegin, IMember m, CSharpTypeResolveContext contextAtCaret)
+		public OverrideEqualsGetHashCodeCompletionData(int declarationBegin, IMember m, CSharpResolver contextAtCaret)
 			: base(declarationBegin, m, contextAtCaret)
 		{
 		}
@@ -42,7 +42,7 @@ namespace CSharpBinding.Completion
 				return;
 			}
 			
-			TypeSystemAstBuilder b = new TypeSystemAstBuilder(new CSharpResolver(contextAtCaret));
+			TypeSystemAstBuilder b = new TypeSystemAstBuilder(contextAtCaret);
 			b.ShowTypeParameterConstraints = false;
 			b.GenerateBody = true;
 			

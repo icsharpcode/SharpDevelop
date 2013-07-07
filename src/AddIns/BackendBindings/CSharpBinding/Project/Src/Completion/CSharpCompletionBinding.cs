@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
@@ -39,7 +40,7 @@ namespace CSharpBinding.Completion
 			if (completionContext == null)
 				return false;
 			
-			var completionFactory = new CSharpCompletionDataFactory(this, editor, completionContext.TypeResolveContextAtCaret);
+			var completionFactory = new CSharpCompletionDataFactory(completionContext, new CSharpResolver(completionContext.TypeResolveContextAtCaret));
 			CSharpCompletionEngine cce = new CSharpCompletionEngine(
 				editor.Document,
 				completionContext.CompletionContextProvider,

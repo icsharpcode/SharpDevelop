@@ -25,9 +25,9 @@ namespace CSharpBinding.Completion
 	class OverrideCompletionData : EntityCompletionData
 	{
 		protected readonly int declarationBegin;
-		protected readonly CSharpTypeResolveContext contextAtCaret;
+		protected readonly CSharpResolver contextAtCaret;
 		
-		public OverrideCompletionData(int declarationBegin, IMember m, CSharpTypeResolveContext contextAtCaret)
+		public OverrideCompletionData(int declarationBegin, IMember m, CSharpResolver contextAtCaret)
 			: base(m)
 		{
 			this.declarationBegin = declarationBegin;
@@ -44,7 +44,7 @@ namespace CSharpBinding.Completion
 				return;
 			}
 			
-			TypeSystemAstBuilder b = new TypeSystemAstBuilder(new CSharpResolver(contextAtCaret));
+			TypeSystemAstBuilder b = new TypeSystemAstBuilder(contextAtCaret);
 			b.ShowTypeParameterConstraints = false;
 			b.GenerateBody = true;
 			

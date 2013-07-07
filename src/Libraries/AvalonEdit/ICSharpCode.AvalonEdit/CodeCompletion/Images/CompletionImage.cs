@@ -2,11 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {
@@ -135,6 +137,10 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					return field.IsReadOnly ? imageFieldReadOnly : imageField;
 				case SymbolKind.Method:
 					IMethod method = (IMethod)entity;
+					if (method.IsExtensionMethod)
+						return imageExtensionMethod;
+					if (method.IsStatic && method.Attributes.Any(a => a.AttributeType.Name == "DllImportAttribute"))
+						return imagePInvokeMethod;
 					return method.IsOverridable ? imageVirtualMethod : imageMethod;
 				case SymbolKind.Property:
 					return imageProperty;
@@ -174,6 +180,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					return field.IsReadOnly ? imageFieldReadOnly : imageField;
 				case SymbolKind.Method:
 					IUnresolvedMethod method = (IUnresolvedMethod)entity;
+					// We cannot reliably detect extension methods in the unresolved type system (e.g. in VB we need to resolve an attribute),
+					// but at least we can do it for C#:
+					var defMethod = method as DefaultUnresolvedMethod;
+					if (defMethod != null && defMethod.IsExtensionMethod)
+						return imageExtensionMethod;
 					return method.IsOverridable ? imageVirtualMethod : imageMethod;
 				case SymbolKind.Property:
 					return imageProperty;

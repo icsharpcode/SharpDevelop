@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
@@ -18,18 +20,17 @@ namespace CSharpBinding.Completion
 {
 	sealed class CSharpCompletionDataFactory : ICompletionDataFactory, IParameterCompletionDataFactory
 	{
-		readonly CSharpCompletionBinding binding;
-		readonly ITextEditor editor;
-		readonly CSharpTypeResolveContext contextAtCaret;
+		readonly CSharpCompletionContext completionContext;
+		readonly CSharpResolver contextAtCaret;
+		readonly TypeSystemAstBuilder builder;
 		
-		public CSharpCompletionDataFactory(CSharpCompletionBinding binding, ITextEditor editor, CSharpTypeResolveContext contextAtCaret)
+		public CSharpCompletionDataFactory(CSharpCompletionContext completionContext, CSharpResolver contextAtCaret)
 		{
-			Debug.Assert(binding != null);
-			Debug.Assert(editor != null);
+			Debug.Assert(completionContext != null);
 			Debug.Assert(contextAtCaret != null);
-			this.binding = binding;
-			this.editor = editor;
+			this.completionContext = completionContext;
 			this.contextAtCaret = contextAtCaret;
+			this.builder = new TypeSystemAstBuilder(contextAtCaret);
 		}
 		
 		#region ICompletionDataFactory implementation
@@ -48,16 +49,31 @@ namespace CSharpBinding.Completion
 		
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData(IType type, bool showFullName, bool isInAttributeContext)
 		{
-			var typeDef = type.GetDefinition();
-			if (typeDef != null)
-				return new EntityCompletionData(typeDef);
+			var data = new TypeCompletionData(type);
+			if (showFullName) {
+				string text = builder.ConvertType(type).ToString();
+				data.CompletionText = text;
+				data.DisplayText = text;
+			}
+			if (isInAttributeContext) {
+				data.CompletionText = StripAttributeSuffix(data.CompletionText);
+				data.DisplayText = StripAttributeSuffix(data.DisplayText);
+			}
+			return data;
+		}
+		
+		static string StripAttributeSuffix(string text)
+		{
+			if (text.Length > "Attribute".Length && text.EndsWith("Attribute", StringComparison.Ordinal))
+				return text.Substring(0, text.Length - "Attribute".Length);
 			else
-				return new CompletionData(type.Name);
+				return text;
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateMemberCompletionData(IType type, IEntity member)
 		{
-			return new CompletionData(type.Name + "." + member.Name);
+			string typeName = builder.ConvertType(type).ToString();
+			return new CompletionData(typeName + "." + member.Name);
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateLiteralCompletionData(string title, string description, string insertText)
@@ -116,7 +132,7 @@ namespace CSharpBinding.Completion
 		
 		IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData()
 		{
-			yield break;
+			return completionContext.ParseInformation.SyntaxTree.ConditionalSymbols.Select(def => new CompletionData(def));
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName)
@@ -132,7 +148,7 @@ namespace CSharpBinding.Completion
 		#region IParameterCompletionDataFactory implementation
 		IParameterDataProvider CreateMethodDataProvider(int startOffset, IEnumerable<IParameterizedMember> methods)
 		{
-			return new CSharpMethodInsight(binding, editor, startOffset, from m in methods where m != null select new CSharpInsightItem(m));
+			return new CSharpMethodInsight(completionContext.Editor, startOffset, from m in methods where m != null select new CSharpInsightItem(m));
 		}
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateConstructorProvider(int startOffset, IType type)
