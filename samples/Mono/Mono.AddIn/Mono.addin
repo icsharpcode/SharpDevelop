@@ -1,4 +1,4 @@
-<AddIn name        = "Mono AddIn"
+<AddIn name        = "Mono"
        author      = "Matt Ward"
        copyright   = ""
        description = "Mono support for SharpDevelop">
@@ -45,23 +45,6 @@
 			</Condition>
 		</Condition>
 	</Path>
-	
-	<Path name = "/Workspace/ProjectContentRegistry">
-		<ComplexCondition>
-			<And>
-				<Or>
-					<Condition name="CompareProjectProperty" property="MonoTargetFrameworkVersion" equals="v1.1"/>
-					<Condition name="CompareProjectProperty" property="MonoTargetFrameworkVersion" equals="v2.0"/>
-					<Condition name="CompareProjectProperty" property="MonoTargetFrameworkVersion" equals="v4.0"/>
-				</Or>
-				<Or>
-					<Condition name="ProjectActive" activeproject="C#"/>
-					<Condition name="ProjectActive" activeproject="VBNet"/>
-				</Or>
-			</And>
-			<ProjectContentRegistry id="MonoGac" class="Mono.AddIn.MonoProjectContentRegistry"/>
-		</ComplexCondition>
-	</Path>
 
 	<!-- 
 		Register path to SharpDevelop.Build.Mono.*.targets for the MSBuild engine.
@@ -69,9 +52,9 @@
 	-->
 	<Path name="/SharpDevelop/MSBuildEngine/AdditionalProperties">
 		<String id="MonoBuildTasksPath" text="${AddInPath:Mono.AddIn}"/>
-	</Path>	
+	</Path>
 
 	<Path name="/SharpDevelop/BackendBindings/Templates">
-		<Directory id="Mono" path="./Templates"/>
+		<TemplateFile id="Mono" path="./Templates"/>
 	</Path>
 </AddIn>

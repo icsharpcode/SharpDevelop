@@ -8,7 +8,7 @@
 		<Name>Console Application</Name>
 		<Category>VB</Category>
 		<Subcategory>Mono</Subcategory>
-		<Icon>VBNet.Project.DOSProject</Icon>
+		<Icon>VB.Project.DOSProject</Icon>
 		<Description>Console project for Mono.</Description>
 	</TemplateConfiguration>
 	
