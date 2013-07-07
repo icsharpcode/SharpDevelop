@@ -3,7 +3,9 @@
 
 using System;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.TreeView;
 using ICSharpCode.SharpDevelop.Workbench;
@@ -30,6 +32,20 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					this.ShowRoot = currentWorkspace.LoadedAssemblies.Count > 0 || !currentWorkspace.IsAssigned;
 				} else {
 					this.Root = null;
+				}
+			}
+		}
+		
+		protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+		{
+			if (e.ChangedButton == MouseButton.Right) {
+				var treeNode = this.SelectedItem as ModelCollectionTreeNode;
+				if (treeNode != null) {
+					var model = treeNode.Model;
+					if (model is IEntityModel) {
+						var ctx = MenuService.ShowContextMenu(e.Source as UIElement, (IEntityModel) model, "/SharpDevelop/EntityContextMenu");
+						e.Handled = true;
+					}
 				}
 			}
 		}
