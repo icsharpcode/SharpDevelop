@@ -63,6 +63,7 @@
     <Compile Include="Src\IsMonoInstalledCondition.cs" />
     <Compile Include="Src\MonoGacReferencePanel.cs" />
     <Compile Include="Src\SelectMonoReferenceDialog.cs" />
+    <None Include="Mono.nuspec" />
     <None Include="Templates\DefaultApp.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
