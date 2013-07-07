@@ -360,6 +360,12 @@ They will stop working after removing this AddIn! Are you sure you want to conti
   <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
     <value>SharpDevelop AddIns|*.sdaddin;*.addin|All files|*.*</value>
   </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleText" xml:space="preserve">
+    <value>Click here to see the updates.</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleTitle" xml:space="preserve">
+    <value>Updates for SharpDevelop are available</value>
+  </data>
   <data name="AddInManager2.Views.Available" xml:space="preserve">
     <value>Available</value>
   </data>
