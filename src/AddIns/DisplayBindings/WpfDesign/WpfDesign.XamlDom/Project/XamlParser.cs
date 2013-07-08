@@ -265,7 +265,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		void ParseObjectContent(XamlObject obj, XmlElement element, XamlPropertyInfo defaultProperty, XamlTextValue initializeFromTextValueInsteadOfConstructor)
 		{
-			XamlPropertyValue setDefaultValueTo = null;
+			bool isDefaultValueSet = false;
 			object defaultPropertyValue = null;
 			XamlProperty defaultCollectionProperty = null;
 			
@@ -290,11 +290,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						continue;
 					
 					if (ObjectChildElementIsPropertyElement(childElement)) {
-						// I don't know why the official XamlReader runs the property getter
-						// here, but let's try to imitate it as good as possible
-						if (defaultProperty != null && !defaultProperty.IsCollection) {
-							defaultProperty.GetValue(obj.Instance);
-						}
 						ParseObjectChildElementAsPropertyElement(obj, childElement, defaultProperty, defaultPropertyValue);
 						continue;
 					}
@@ -307,23 +302,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						defaultCollectionProperty.ParserAddCollectionElement(null, childValue);
 						CollectionSupport.AddToCollection(defaultProperty.ReturnType, defaultPropertyValue, childValue);
 					} else {
-						if (setDefaultValueTo != null)
+						if (defaultProperty == null)
+							throw new XamlLoadException("This element does not have a default value, cannot assign to it");
+						
+						if (isDefaultValueSet)
 							throw new XamlLoadException("default property may have only one value assigned");
-						setDefaultValueTo = childValue;
+						
+						obj.AddProperty(new XamlProperty(obj, defaultProperty, childValue));
+						isDefaultValueSet = true;
 					}
 				}
-			}
-			
-			if (defaultProperty != null && !defaultProperty.IsCollection && !element.IsEmpty) {
-				// Runs even when defaultValueSet==false!
-				// Again, no idea why the official XamlReader does this.
-				defaultProperty.GetValue(obj.Instance);
-			}
-			if (setDefaultValueTo != null) {
-				if (defaultProperty == null) {
-					throw new XamlLoadException("This element does not have a default value, cannot assign to it");
-				}
-				obj.AddProperty(new XamlProperty(obj, defaultProperty, setDefaultValueTo));
 			}
 		}
 		
