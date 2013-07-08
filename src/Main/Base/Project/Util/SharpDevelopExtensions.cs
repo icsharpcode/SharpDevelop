@@ -510,7 +510,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			IProject project = typeDefinition.ParentAssembly.GetProject();
 			if (project != null)
-				return project.TypeDefinitionModels[typeDefinition.FullTypeName];
+				return project.AssemblyModel.TopLevelTypeDefinitions[typeDefinition.FullTypeName];
 			else
 				return null;
 		}
@@ -564,7 +564,7 @@ namespace ICSharpCode.SharpDevelop
 			IUnresolvedTypeDefinition unresolvedTypeDefinition = entity as IUnresolvedTypeDefinition ?? entity.DeclaringTypeDefinition;
 			if (unresolvedTypeDefinition == null)
 				return null;
-			ITypeDefinitionModel typeModel = project.TypeDefinitionModels[unresolvedTypeDefinition.FullTypeName];
+			ITypeDefinitionModel typeModel = project.AssemblyModel.TopLevelTypeDefinitions[unresolvedTypeDefinition.FullTypeName];
 			if (entity is IUnresolvedTypeDefinition || typeModel == null)
 				return typeModel;
 			

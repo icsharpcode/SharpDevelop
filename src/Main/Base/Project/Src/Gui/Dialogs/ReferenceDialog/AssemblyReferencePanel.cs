@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			Button browseButton   = new Button();
 			browseButton.Location = new Point(10, 10);
+			browseButton.Name = "browseButton"; // requested by HP for UI automation purposes
 			
 			browseButton.Text     = StringParser.Parse("${res:Global.BrowseButtonText}");
 			browseButton.Click   += new EventHandler(SelectReferenceDialog);

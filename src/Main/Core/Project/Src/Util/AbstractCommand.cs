@@ -8,6 +8,7 @@ namespace ICSharpCode.Core
 {
 	/// <summary>
 	/// For compatibility with SD 4.x.
+	/// New code should use SimpleCommand instead.
 	/// 
 	/// TODO: make obsolete
 	/// </summary>
@@ -36,6 +37,7 @@ namespace ICSharpCode.Core
 	
 	/// <summary>
 	/// For compatibility with SD 4.x.
+	/// New code should use SimpleCommand instead.
 	/// 
 	/// TODO: make obsolete
 	/// </summary>

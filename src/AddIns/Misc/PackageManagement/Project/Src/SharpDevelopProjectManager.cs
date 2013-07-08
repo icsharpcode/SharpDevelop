@@ -21,5 +21,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			return LocalRepository.Exists(packageId);
 		}
+		
+		public bool HasOlderPackageInstalled(IPackage package)
+		{
+			IPackage installedPackage = LocalRepository.FindPackage(package.Id);
+			return (installedPackage != null) &&
+				(installedPackage.Version < package.Version);
+		}
 	}
 }

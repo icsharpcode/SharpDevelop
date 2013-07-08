@@ -26,6 +26,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		void SetDefaultRunspace();
 		
+		IConsoleHostFileConflictResolver CreateFileConflictResolver(FileConflictAction fileConflictAction);
+		
 		IPackageManagementProject GetProject(string packageSource, string projectName);
 		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
 		PackageSource GetActivePackageSource(string source);

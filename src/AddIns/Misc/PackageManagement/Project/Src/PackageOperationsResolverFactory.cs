@@ -22,5 +22,16 @@ namespace ICSharpCode.PackageManagement
 				installAction.IgnoreDependencies,
 				installAction.AllowPrereleaseVersions);
 		}
+		
+		public IPackageOperationResolver CreateUpdatePackageOperationResolver(IPackageRepository localRepository, IPackageRepository sourceRepository, ILogger logger, IUpdatePackageSettings settings)
+		{
+			return new InstallWalker(
+				localRepository,
+				sourceRepository,
+				null,
+				logger,
+				!settings.UpdateDependencies,
+				settings.AllowPrereleaseVersions);
+		}
 	}
 }

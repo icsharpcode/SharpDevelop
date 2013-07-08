@@ -3,7 +3,7 @@
 	
 	<Config
 		  name        = "${res:Templates.File.WinFXUserControl.Name}"
-		  icon        = "VBNet.File.WPFUserControl"
+		  icon        = "VB.File.WPFUserControl"
 		  category    = "VB"
 		  subcategory = "WPF"
 		  defaultname = "UserControl${Number}.xaml"

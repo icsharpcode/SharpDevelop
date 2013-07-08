@@ -7,10 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Interop;
 using ICSharpCode.AddInManager2.Model;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel

@@ -17,5 +17,15 @@ namespace ICSharpCode.PackageManagement
 				return package.Description;
 			return package.Summary;
 		}
+		
+		/// <summary>
+		/// Returns package Id if it has no title.
+		/// </summary>
+		public static string GetName(this IPackage package)
+		{
+			if (String.IsNullOrEmpty(package.Title))
+				return package.Id;
+			return package.Title;
+		}
 	}
 }

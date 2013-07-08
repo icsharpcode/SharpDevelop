@@ -116,6 +116,7 @@
     <Compile Include="Src\Model\AddInManagerEvents.cs" />
     <Compile Include="Src\Model\AddInOperationErrorEventArgs.cs" />
     <Compile Include="Src\Model\NuGetPackageOperationEventArgs.cs" />
+    <Compile Include="Src\Model\PackageListDownloadEndedEventArgs.cs" />
     <Compile Include="Src\Model\PackageMessageLoggedEventArgs.cs" />
     <Compile Include="Src\Model\PackageRepositories.cs" />
     <Compile Include="Src\Model\PackageRepository.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Src\Model\Model.cs" />
     <Compile Include="Src\Model\ReadPackagesResult.cs" />
     <Compile Include="Src\Model\SDAddInManagement.cs" />
+    <Compile Include="Src\UpdateNotifier.cs" />
     <Compile Include="Src\ViewModel\AddInManagerViewModel.cs" />
     <Compile Include="Src\ViewModel\AddInPackageViewModelBase.cs" />
     <Compile Include="Src\ViewModel\AddInsViewModelBase.cs" />

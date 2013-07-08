@@ -38,6 +38,15 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		[Test]
+		public void EmptyDeletionPossibleWhenNothingIsReadOnly()
+		{
+			var result = provider.GetDeletableSegments(new SimpleSegment(10, 0)).ToList();
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(10, result[0].Offset);
+			Assert.AreEqual(0, result[0].Length);
+		}
+		
+		[Test]
 		public void InsertionPossibleBeforeReadOnlySegment()
 		{
 			segments.Add(new TextSegment { StartOffset = 10, EndOffset = 15 });
@@ -82,6 +91,34 @@ namespace ICSharpCode.AvalonEdit.Editing
 			segments.Add(new TextSegment { StartOffset = 10, Length = 5 });
 			var result = provider.GetDeletableSegments(new SimpleSegment(11, 2)).ToList();
 			Assert.AreEqual(0, result.Count);
+		}
+		
+		[Test]
+		public void EmptyDeletionImpossibleInReadOnlySegment()
+		{
+			segments.Add(new TextSegment { StartOffset = 10, Length = 5 });
+			var result = provider.GetDeletableSegments(new SimpleSegment(11, 0)).ToList();
+			Assert.AreEqual(0, result.Count);
+		}
+		
+		[Test]
+		public void EmptyDeletionPossibleAtStartOfReadOnlySegment()
+		{
+			segments.Add(new TextSegment { StartOffset = 10, Length = 5 });
+			var result = provider.GetDeletableSegments(new SimpleSegment(10, 0)).ToList();
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(10, result[0].Offset);
+			Assert.AreEqual(0, result[0].Length);
+		}
+		
+		[Test]
+		public void EmptyDeletionPossibleAtEndOfReadOnlySegment()
+		{
+			segments.Add(new TextSegment { StartOffset = 10, Length = 5 });
+			var result = provider.GetDeletableSegments(new SimpleSegment(15, 0)).ToList();
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(15, result[0].Offset);
+			Assert.AreEqual(0, result[0].Length);
 		}
 		
 		[Test]

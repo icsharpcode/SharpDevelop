@@ -129,14 +129,12 @@
 		     class    = "ICSharpCode.SharpDevelop.Project.ProjectBrowserPad"
 		     defaultPosition = "Left" />
 		
-		<!--
 		<Pad id       = "ClassBrowser"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
-		     class    = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad"
+		     class    = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserPad"
 		     defaultPosition = "Right" />
-		-->
 		
 		<Pad id       = "SideBar"
 		     category = "Main"
@@ -2274,6 +2272,10 @@
 	<Path name = "/SharpDevelop/Views/ClassBrowser/ProjectNodeBuilders">
 		<Class id = "DefaultProjectBuilder"
 		       class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.DefaultProjectNodeBuilder"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/TreeNodeFactories">
+		<Class id="WorkspaceTreeNodesFactory" class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.WorkspaceTreeNodesFactory" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Views/ClassBrowser/ClassNodeBuilders">

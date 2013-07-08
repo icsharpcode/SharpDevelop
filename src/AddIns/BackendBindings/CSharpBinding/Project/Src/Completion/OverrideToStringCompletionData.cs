@@ -26,7 +26,7 @@ namespace CSharpBinding.Completion
 	/// </summary>
 	class OverrideToStringCompletionData : OverrideCompletionData
 	{
-		public OverrideToStringCompletionData(int declarationBegin, IMember m, CSharpTypeResolveContext contextAtCaret)
+		public OverrideToStringCompletionData(int declarationBegin, IMember m, CSharpResolver contextAtCaret)
 			: base(declarationBegin, m, contextAtCaret)
 		{
 		}
@@ -38,7 +38,7 @@ namespace CSharpBinding.Completion
 				return;
 			}
 			
-			TypeSystemAstBuilder b = new TypeSystemAstBuilder(new CSharpResolver(contextAtCaret));
+			TypeSystemAstBuilder b = new TypeSystemAstBuilder(contextAtCaret);
 			b.ShowTypeParameterConstraints = false;
 			b.GenerateBody = true;
 			
@@ -129,6 +129,7 @@ namespace CSharpBinding.Completion
 			
 			foreach (var f in sourceType.GetFields().Where(field => !field.IsConst
 			                                               && field.IsStatic == sourceType.GetDefinition().IsStatic
+			                                               && field.DeclaringType.FullName == sourceType.FullName
 			                                               && field.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(f) { Index = i };
 				i++;
@@ -137,6 +138,7 @@ namespace CSharpBinding.Completion
 			foreach (var p in sourceType.GetProperties().Where(prop => prop.CanGet && !prop.IsIndexer
 			                                                   && prop.IsAutoImplemented()
 			                                                   && prop.IsStatic == sourceType.GetDefinition().IsStatic
+			                                                   && prop.DeclaringType.FullName == sourceType.FullName
 			                                                   && prop.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(p) { Index = i };
 				i++;

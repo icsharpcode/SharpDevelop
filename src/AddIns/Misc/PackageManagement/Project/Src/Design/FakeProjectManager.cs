@@ -116,5 +116,14 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			throw new NotImplementedException();
 		}
+		
+		public IPackage PackagePassedToHasOlderPackageInstalled;
+		public bool HasOlderPackageInstalledReturnValue;
+		
+		public bool HasOlderPackageInstalled(IPackage package)
+		{
+			PackagePassedToHasOlderPackageInstalled = package;
+			return HasOlderPackageInstalledReturnValue;
+		}
 	}
 }

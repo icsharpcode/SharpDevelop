@@ -28,6 +28,7 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace Mono.AddIn
@@ -46,7 +47,7 @@ namespace Mono.AddIn
 				return;
 			}
 			using (SelectMonoReferenceDialog selDialog = new SelectMonoReferenceDialog(project)) {
-				if (selDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {				
+				if (selDialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
 						ProjectService.AddProjectItem(project, reference);
 					}

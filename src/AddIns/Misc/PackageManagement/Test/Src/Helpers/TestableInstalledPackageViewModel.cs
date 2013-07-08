@@ -19,13 +19,16 @@ namespace PackageManagement.Tests.Helpers
 		public ILogger LoggerUsedWhenCreatingPackageResolver;
 		public FakePackageActionRunner FakeActionRunner;
 		
-		public TestableInstalledPackageViewModel()
-			: this(new FakePackageManagementSolution())
+		public TestableInstalledPackageViewModel(IPackageViewModelParent parent)
+			: this(parent, new FakePackageManagementSolution())
 		{
 		}
 		
-		public TestableInstalledPackageViewModel(FakePackageManagementSolution solution)
+		public TestableInstalledPackageViewModel(
+			IPackageViewModelParent parent,
+			FakePackageManagementSolution solution)
 			: this(
+				parent,
 				new FakePackage(),
 				new SelectedProjectsForInstalledPackages(solution),
 				new FakePackageManagementEvents(),
@@ -37,12 +40,14 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public TestableInstalledPackageViewModel(
+			IPackageViewModelParent parent,
 			FakePackage package,
 			SelectedProjectsForInstalledPackages selectedProjects,
 			FakePackageManagementEvents packageManagementEvents,
 			FakePackageActionRunner actionRunner,
 			FakeLogger logger)
 			: base(
+				parent,
 				package,
 				selectedProjects,
 				packageManagementEvents,

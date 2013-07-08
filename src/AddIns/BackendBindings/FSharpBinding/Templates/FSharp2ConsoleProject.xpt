@@ -5,7 +5,7 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
+		<Name>F# 2.0 ${res:Templates.Project.ConsoleProject.Name}</Name>
 		<Category>F#</Category>
 		<Icon>F#.Project.DOSProject</Icon>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
@@ -18,6 +18,20 @@
 	
 	<!-- Template Content -->
 	<Project language = "F#">
+	
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="FSharp.Core" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+		</PropertyGroup>
+		
+		<Imports clear="True">
+			<Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
+		</Imports>
+		
 		<Files>
 			<File name="file.fs"><![CDATA[#light
 module MyNamespace.MyModule

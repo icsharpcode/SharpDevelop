@@ -24,7 +24,6 @@ namespace ICSharpCode.AddInManager2.Tests
 		AddIn _addIn1;
 		AddIn _addIn1_new;
 		AddIn _addIn2;
-		AddIn _addIn2_new;
 		AddIn _addIn_noVersion;
 		
 		public InstalledAddInsViewModelTests()

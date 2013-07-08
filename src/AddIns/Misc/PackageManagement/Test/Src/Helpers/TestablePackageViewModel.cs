@@ -16,8 +16,11 @@ namespace PackageManagement.Tests.Helpers
 		public FakeLogger FakeLogger;
 		public FakePackageActionRunner FakeActionRunner;
 		
-		public TestablePackageViewModel(FakePackageManagementSolution solution)
+		public TestablePackageViewModel(
+			IPackageViewModelParent parent,
+			FakePackageManagementSolution solution)
 			: this(
+				parent,
 				new FakePackage("Test"),
 				new PackageManagementSelectedProjects(solution),
 				new FakePackageManagementEvents(),
@@ -28,12 +31,14 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public TestablePackageViewModel(
+			IPackageViewModelParent parent,
 			FakePackage package,
 			PackageManagementSelectedProjects selectedProjects,
 			FakePackageManagementEvents packageManagementEvents,
 			FakePackageActionRunner actionRunner,
 			FakeLogger logger)
 			: base(
+				parent,
 				package,
 				selectedProjects,
 				packageManagementEvents,
@@ -72,7 +77,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public PackageOperation AddOneFakeUninstallPackageOperation()
 		{
-			var package = new FakePackage("PackageToUninstall");			
+			var package = new FakePackage("PackageToUninstall");
 			var operation = new FakePackageOperation(package, PackageAction.Uninstall);
 			FakeSolution.FakeProjectToReturnFromGetProject.FakeInstallOperations.Add(operation);
 			return operation;

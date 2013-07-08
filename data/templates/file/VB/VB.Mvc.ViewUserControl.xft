@@ -3,7 +3,7 @@
 
 	<Config
 		name="MVC View User Control"
-		icon="VBNet.File.WebFile"
+		icon="VB.File.WebFile"
 		category="VB"
 		subcategory="ASP.NET MVC"
 		defaultname="ViewUserControl${Number}.ascx"

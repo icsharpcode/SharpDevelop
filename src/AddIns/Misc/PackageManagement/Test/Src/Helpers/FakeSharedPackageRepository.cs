@@ -38,5 +38,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException();
 		}
+		
+		public bool IsSolutionReferenced(string packageId, SemanticVersion version)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

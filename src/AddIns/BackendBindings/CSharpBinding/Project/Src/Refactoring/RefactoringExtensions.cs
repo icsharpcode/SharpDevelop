@@ -47,6 +47,43 @@ namespace CSharpBinding.Refactoring
 		}
 		
 		/// <summary>
+		/// Checks whether a type is nullable.
+		/// </summary>
+		/// <param name="type">Checked type</param>
+		/// <returns>True if nullable, false otherwise.</returns>
+		public static bool IsNullable(this IType type)
+		{
+			// true = reference, null = generic or unknown
+			return type.IsReferenceType != false
+				|| (type.FullName == "System.Nullable");
+		}
+		
+		/// <summary>
+		/// Checks whether a type has a range.
+		/// </summary>
+		/// <param name="type">Checked type</param>
+		/// <returns>True if type has range, false otherwise.</returns>
+		public static bool HasRange(this IType type)
+		{
+			return IsTypeWithRange(type) ||
+				(type.FullName == "System.Nullable")
+				&& IsTypeWithRange(type.TypeArguments.First());
+		}
+		
+		static bool IsTypeWithRange(IType type)
+		{
+			string crtType = type.FullName;
+			return crtType == "System.Int32" ||
+				crtType == "System.Int16" ||
+				crtType == "System.Int64" ||
+				crtType == "System.Single" ||
+				crtType == "System.Double" ||
+				crtType == "System.UInt16" ||
+				crtType == "System.UInt32" ||
+				crtType == "System.UInt64";
+		}
+		
+		/// <summary>
 		/// Retrieves the declaration for the specified entity.
 		/// Returns null if the entity is not defined in C# source code.
 		/// </summary>

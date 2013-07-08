@@ -30,5 +30,25 @@ namespace PackageManagement.Tests.Helpers
 			
 			return FakeInstallPackageOperationResolver;
 		}
+		
+		public IPackageRepository LocalRepositoryPassedToCreateUpdatePackageOperationsResolver;
+		public IPackageRepository SourceRepositoryPassedToCreateUpdatePackageOperationsResolver;
+		public IPackageOperationResolver UpdatePackageOperationsResolver = new FakePackageOperationResolver();
+		public ILogger LoggerPassedToCreateUpdatePackageOperationResolver;
+		public IUpdatePackageSettings SettingsPassedToCreatePackageOperationResolver;
+		
+		public IPackageOperationResolver CreateUpdatePackageOperationResolver(
+			IPackageRepository localRepository,
+			IPackageRepository sourceRepository,
+			ILogger logger,
+			IUpdatePackageSettings settings)
+		{
+			LocalRepositoryPassedToCreateUpdatePackageOperationsResolver = localRepository;
+			SourceRepositoryPassedToCreateUpdatePackageOperationsResolver = sourceRepository;
+			LoggerPassedToCreateUpdatePackageOperationResolver = logger;
+			SettingsPassedToCreatePackageOperationResolver = settings;
+			
+			return UpdatePackageOperationsResolver;
+		}
 	}
 }

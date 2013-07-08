@@ -8,7 +8,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageActionRunner
 	{
-		void Run(ProcessPackageAction action);
-		void Run(IEnumerable<ProcessPackageAction> actions);
+		void Run(IPackageAction action);
+		void Run(IEnumerable<IPackageAction> actions);
 	}
 }

@@ -13,12 +13,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[SDService]
 	public interface IModelFactory
 	{
-		/// <summary>
-		/// Creates an empty type definition collection that holds the top-level types for a project.
-		/// </summary>
-		ITypeDefinitionModelCollection CreateTopLevelTypeDefinitionCollection(IEntityModelContext context);
-		
 		ITypeDefinitionModel CreateTypeDefinitionModel(IEntityModelContext context, params IUnresolvedTypeDefinition[] parts);
 		IMemberModel CreateMemberModel(IEntityModelContext context, IUnresolvedMember member);
+		IAssemblyModel CreateAssemblyModel(IEntityModelContext context);
 	}
 }

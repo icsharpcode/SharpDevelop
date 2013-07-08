@@ -26,31 +26,21 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
-using System.IO;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using Mono.Build.Tasks;
 
-namespace Mono.AddIn
+namespace Mono.Build.Tasks
 {
-	public class MonoProjectContentRegistry : ProjectContentRegistry
-	{		
-		protected override IProjectContent LoadProjectContent(string itemInclude, string itemFileName)
+	/// <summary>
+	/// MSBuild task for Mono's DMCS.
+	/// </summary>
+	public class Dmcs : MonoCSharpCompilerTask
+	{
+		protected override string ToolName {
+			get { return "Dmcs.exe"; }
+		}
+		
+		protected override string GenerateFullPathToTool()
 		{
-			if (File.Exists(itemFileName)) {
-				return AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference(itemInclude, itemFileName);
-			}
-			MonoAssemblyName assemblyName = MonoGlobalAssemblyCache.FindAssemblyName(itemInclude);
-			if (assemblyName != null && assemblyName.FileName != null) {
-				return CecilReader.LoadAssembly(assemblyName.FileName, this);
-			} else {
-				if (MonoToolLocationHelper.IsMonoInstalled) {
-					HostCallback.ShowAssemblyLoadError(itemFileName, itemInclude, "Could not find assembly in Mono's GAC.");
-				} else {
-					HostCallback.ShowAssemblyLoadError(itemFileName, itemInclude, "Could not find assembly in Mono's GAC - Mono is not installed.");
-				}
-				return null;
-			}
+			return MonoToolLocationHelper.GetPathToTool(ToolName);
 		}
 	}
 }

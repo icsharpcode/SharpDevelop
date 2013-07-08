@@ -12,22 +12,28 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IRegisteredPackageRepositories registeredRepositories;
 		IPowerShellDetection powerShellDetection;
 		IPackageManagementConsoleHost consoleHost;
+		IPackageManagementEvents packageEvents;
 		
 		public PackageManagementConsoleHostProvider(
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredRepositories)
-			: this(solution, registeredRepositories, new PowerShellDetection())
+			: this(solution,
+				registeredRepositories,
+				new PowerShellDetection(),
+				PackageManagementServices.PackageManagementEvents)
 		{
 		}
 		
 		public PackageManagementConsoleHostProvider(
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredRepositories,
-			IPowerShellDetection powerShellDetection)
+			IPowerShellDetection powerShellDetection,
+			IPackageManagementEvents packageEvents)
 		{
 			this.solution = solution;
 			this.registeredRepositories = registeredRepositories;
 			this.powerShellDetection = powerShellDetection;
+			this.packageEvents = packageEvents;
 		}
 		
 		public IPackageManagementConsoleHost ConsoleHost {
@@ -42,7 +48,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void CreateConsoleHost()
 		{
 			if (powerShellDetection.IsPowerShell2Installed()) {
-				consoleHost = new PackageManagementConsoleHost(solution, registeredRepositories);
+				consoleHost = new PackageManagementConsoleHost(solution, registeredRepositories, packageEvents);
 			} else {
 				consoleHost = new PowerShellMissingConsoleHost();
 			}

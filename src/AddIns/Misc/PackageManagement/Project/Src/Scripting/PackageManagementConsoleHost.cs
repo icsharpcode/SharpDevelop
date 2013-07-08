@@ -19,12 +19,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IPowerShellHostFactory powerShellHostFactory;
 		IPowerShellHost powerShellHost;
 		IPackageManagementAddInPath addinPath;
+		IPackageManagementEvents packageEvents;
 		int autoIndentSize = 0;
 		string prompt = "PM> ";
 		
 		public PackageManagementConsoleHost(
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredRepositories,
+			IPackageManagementEvents packageEvents,
 			IPowerShellHostFactory powerShellHostFactory,
 			IPackageManagementAddInPath addinPath)
 		{
@@ -32,14 +34,17 @@ namespace ICSharpCode.PackageManagement.Scripting
 			this.registeredRepositories = registeredRepositories;
 			this.powerShellHostFactory = powerShellHostFactory;
 			this.addinPath = addinPath;
+			this.packageEvents = packageEvents;
 		}
 		
 		public PackageManagementConsoleHost(
 			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredRepositories)
+			IRegisteredPackageRepositories registeredRepositories,
+			IPackageManagementEvents packageEvents)
 			: this(
 				solution,
 				registeredRepositories,
+				packageEvents,
 				new PowerShellHostFactory(),
 				new PackageManagementAddInPath())
 		{
@@ -259,6 +264,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public void SetDefaultRunspace()
 		{
 			powerShellHost.SetDefaultRunspace();
+		}
+		
+		public IConsoleHostFileConflictResolver CreateFileConflictResolver(FileConflictAction fileConflictAction)
+		{
+			return new ConsoleHostFileConflictResolver(packageEvents, fileConflictAction);
 		}
 	}
 }

@@ -8,9 +8,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	sealed class ModelFactory : IModelFactory
 	{
-		public ITypeDefinitionModelCollection CreateTopLevelTypeDefinitionCollection(IEntityModelContext context)
+		public IAssemblyModel CreateAssemblyModel(IEntityModelContext context)
 		{
-			return new TopLevelTypeDefinitionModelCollection(context);
+			return new ProjectAssemblyModel(context);
 		}
 		
 		public ITypeDefinitionModel CreateTypeDefinitionModel(IEntityModelContext context, params IUnresolvedTypeDefinition[] parts)

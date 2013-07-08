@@ -302,11 +302,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		/// <summary>
-		/// Gets the list of items in the project. This member is thread-safe.
-		/// The returned collection is guaranteed not to change - adding new items or removing existing items
-		/// will create a new collection.
-		/// </summary>
 		[Browsable(false)]
 		public virtual IMutableModelCollection<ProjectItem> Items {
 			get {
@@ -691,9 +686,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public virtual ICSharpCode.SharpDevelop.Dom.ITypeDefinitionModelCollection TypeDefinitionModels {
+		public virtual IAssemblyModel AssemblyModel {
 			get {
-				return EmptyTypeDefinitionModelCollection.Instance;
+				return EmptyAssemblyModel.Instance;
 			}
 		}
 		

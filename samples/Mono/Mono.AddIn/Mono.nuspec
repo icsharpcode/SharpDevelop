@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+		<id>Mono</id>
+		<version>1.0</version>
+		<authors>Matt Ward</authors>
+		<owners>SharpDevelop</owners>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Mono support for SharpDevelop</description>
+		<iconUrl>http://community.sharpdevelop.net/blogs/mattward/SharpDevelop.png</iconUrl>
+		<summary>Mono support for SharpDevelop</summary>
+		<releaseNotes></releaseNotes>
+		<language>en-US</language>
+		<tags>mono</tags>
+	</metadata>
+	<files>
+		<file src="..\..\..\AddIns\Samples\Mono.Addin\**\*.*" target="" />
+	</files>
+</package>

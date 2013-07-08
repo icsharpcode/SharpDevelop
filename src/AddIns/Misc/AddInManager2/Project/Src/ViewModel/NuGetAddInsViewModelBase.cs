@@ -3,17 +3,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Windows.Input;
-using ICSharpCode.AddInManager2.Model;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.AddInManager2.Model;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
 {
+	/// <summary>
+	/// Base class for view models displaying NuGet 
+	/// </summary>
 	public class NuGetAddInsViewModelBase : AddInsViewModelBase
 	{
 		private AddInManagerTask<ReadPackagesResult> _task;
@@ -72,8 +72,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private void CreateReadPackagesTask()
 		{
 			_task = AddInManagerTask.Create(
-				() => GetPackagesForSelectedPageResult(),
-				(result) => OnPackagesReadForSelectedPage(result));
+				GetPackagesForSelectedPageResult,
+				OnPackagesReadForSelectedPage);
 //			SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Created task");
 		}
 		
@@ -88,6 +88,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 //			SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Task has returned");
 			
 			IsReadingPackages = false;
+			bool wasSuccessful = false;
+			bool wasCancelled = false;
 			if (task.IsFaulted)
 			{
 				SaveError(task.Exception);
@@ -96,14 +98,17 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			{
 				// Ignore
 //				SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Task ignored, because cancelled");
+				wasCancelled = true;
 			}
 			else
 			{
+//				SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Task successfully finished.");
 				UpdatePackagesForSelectedPage(task.Result);
+				wasSuccessful = true;
 			}
+			
 			base.OnPropertyChanged(null);
-			
-			
+			AddInManager.Events.OnPackageListDownloadEnded(this, new PackageListDownloadEndedEventArgs(wasSuccessful, wasCancelled));
 		}
 
 		private void UpdatePackagesForSelectedPage(ReadPackagesResult result)

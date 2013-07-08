@@ -10,24 +10,13 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class SelectProjectsService : ISelectProjectsService
+	public class SelectProjectsService : ServiceWithWorkbenchOwner, ISelectProjectsService
 	{
-		Window owner;
-		
-		public Window Owner {
-			get {
-				if (owner == null) {
-					owner = SD.Workbench.MainWindow;
-				}
-				return owner;
-			}
-			set { owner = value; }
-		}
 		
 		public bool SelectProjects(IEnumerable<IPackageManagementSelectedProject> projects)
 		{
 			SelectProjectsView view = CreateSelectProjectsView(projects);
-			return view.ShowDialog() ?? false;			
+			return view.ShowDialog() ?? false;
 		}
 		
 		SelectProjectsView CreateSelectProjectsView(IEnumerable<IPackageManagementSelectedProject> projects)

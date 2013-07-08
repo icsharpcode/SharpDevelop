@@ -15,7 +15,7 @@
 	<Path name = "/SharpDevelop/Workbench/Tools">
 		<MenuItem id="ShowAddInManager2"
 		          label="${res:AddInManager.Title}"
-		          class="ICSharpCode.AddInManager2.ShowCommand"/>
+		          class="ICSharpCode.AddInManager2.ShowAddInManagerCommand"/>
 	</Path>
 	
 	<!-- Option dialog -->
@@ -35,5 +35,9 @@
 	<Path name = "/SharpDevelop/Autostart">
 		<Class id    = "AddInManagerInitialization"
 		       class = "ICSharpCode.AddInManager2.AddInManagerInitializationCommand"/>
+	</Path>
+	<Path name = "/SharpDevelop/Workbench/AutostartAfterWorkbenchInitialized">
+		<Class id    = "AddInManagerVisualInitialization"
+		       class = "ICSharpCode.AddInManager2.AddInManagerVisualInitializationCommand"/>
 	</Path>
 </AddIn>

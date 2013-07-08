@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement.Scripting;
 
 namespace ICSharpCode.PackageManagement.Design
 {
@@ -21,6 +22,17 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		protected override void BeforeExecute()
 		{
+		}
+		
+		protected override RunPackageScriptsAction CreateRunPackageScriptsAction(
+			IPackageScriptRunner scriptRunner,
+			IPackageManagementProject project)
+		{
+			return new RunPackageScriptsAction(
+				project,
+				scriptRunner,
+				new PackageScriptFactory(),
+				new NullGlobalMSBuildProjectCollection());
 		}
 	}
 }

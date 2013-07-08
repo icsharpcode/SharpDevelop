@@ -37,8 +37,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets the list of items in the project. This member is thread-safe.
-		/// The returned collection is guaranteed not to change - adding new items or removing existing items
-		/// will create a new collection.
+		/// The returned collection is thread-safe; any accesses will synchronize with the project's <see cref="SyncRoot"/>.
+		/// Enumerating the items collection will create a snapshot of the collection.
 		/// </summary>
 		IMutableModelCollection<ProjectItem> Items { get; }
 		
@@ -326,10 +326,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		void OnParseInformationUpdated(ParseInformationEventArgs args);
 		
 		/// <summary>
-		/// Gets the models for the top-level type definitions in this project.
-		/// Never returns null, but may return a permanently empty collection if this project does not support such models.
+		/// Gets the assembly model for the project. This property never returns null.
 		/// </summary>
-		ITypeDefinitionModelCollection TypeDefinitionModels { get; }
+		IAssemblyModel AssemblyModel { get; }
 		
 		/// <summary>
 		/// Gets whether this project was unloaded.

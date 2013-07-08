@@ -407,5 +407,29 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual("MyPackage 1.1", result);
 		}
+		
+		[Test]
+		public void MinClientVersion_PackageHasMinClientVersion_ReturnsWrappedPackageMinClientVersion()
+		{
+			CreatePackage();
+			var expectedVersion = new Version("1.1");
+			fakePackage.MinClientVersion = expectedVersion;
+			
+			Version version = package.MinClientVersion;
+			
+			Assert.AreEqual(expectedVersion, version);
+		}
+		
+		[Test]
+		public void PackageAssemblyReferences_PackageHasOnePackageAssemblyReference_ReturnsWrappedPackagePackageAssemblyReferences()
+		{
+			CreatePackage();
+			fakePackage.AddPackageReferences("Test");
+			List<PackageReferenceSet> expectedReferences = fakePackage.PackageAssemblyReferences.ToList();
+			
+			List<PackageReferenceSet> result = package.PackageAssemblyReferences.ToList();
+			
+			Assert.AreEqual(expectedReferences, result);
+		}
 	}
 }

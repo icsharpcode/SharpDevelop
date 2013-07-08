@@ -9,6 +9,7 @@ using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -20,6 +21,7 @@ namespace PackageManagement.Tests
 		FakePackageManagementProject fakeProject;
 		FakePackageActionRunner fakeActionRunner;
 		FakePackageManagementEvents fakePackageManagementEvents;
+		IPackageViewModelParent viewModelParent;
 		
 		void CreateViewModel()
 		{
@@ -29,7 +31,8 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel(FakePackageManagementSolution fakeSolution)
 		{
-			viewModel = new TestableUpdatedPackageViewModel(fakeSolution);
+			viewModelParent = MockRepository.GenerateStub<IPackageViewModelParent>();
+			viewModel = new TestableUpdatedPackageViewModel(viewModelParent, fakeSolution);
 			fakeProject = fakeSolution.FakeProjectToReturnFromGetProject;
 			fakeActionRunner = viewModel.FakeActionRunner;
 			fakePackageManagementEvents = viewModel.FakePackageManagementEvents;
@@ -38,7 +41,6 @@ namespace PackageManagement.Tests
 		FakeUpdatePackageAction FirstUpdatePackageActionCreated {
 			get { return fakeProject.FirstFakeUpdatePackageActionCreated; }
 		}
-
 		
 		void CreateFakeSolution()
 		{
@@ -106,7 +108,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddPackage();
 			
-			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
+			IPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
 
 			Assert.AreEqual(FirstUpdatePackageActionCreated, actionExecuted);
 		}
@@ -120,10 +122,10 @@ namespace PackageManagement.Tests
 			viewModel.ManagePackage();
 			
 			FakePackage expectedPackage = viewModel.FakePackage;
-			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
 			var updatePackageAction = actions[0] as UpdatePackageAction;
 			IPackage actualPackage = updatePackageAction.Package;
-						
+			
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
 	}

@@ -5,7 +5,7 @@
 		<Name>Silverlight Application</Name>
 		<Category>VB</Category>
 		<Subcategory>Silverlight</Subcategory>
-		<Icon>VBNet.Project.Form</Icon>
+		<Icon>VB.Project.Form</Icon>
 		<Description>Default Silverlight Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>

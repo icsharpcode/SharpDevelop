@@ -274,6 +274,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 		
 		#region Update
+		/// <summary>
+		/// Updates this type definition model by replacing oldPart with newPart.
+		/// Either oldPart or newPart may be null when adding/removed a part.
+		/// </summary>
 		public void Update(IUnresolvedTypeDefinition oldPart, IUnresolvedTypeDefinition newPart)
 		{
 			SD.MainThread.VerifyAccess();

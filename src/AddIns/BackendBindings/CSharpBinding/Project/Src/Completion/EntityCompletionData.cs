@@ -17,28 +17,11 @@ namespace CSharpBinding.Completion
 			get { return entity; }
 		}
 		
-		public EntityCompletionData(IEntity entity)
+		public EntityCompletionData(IEntity entity) : base(entity.Name)
 		{
 			this.entity = entity;
-			this.CompletionText = entity.Name;
-			this.DisplayText = entity.Name;
 			this.Description = entity.Documentation;
 			this.Image = ClassBrowserIconService.GetIcon(entity);
-		}
-		
-		List<ICompletionData> overloads = new List<ICompletionData>();
-		
-		public override void AddOverload(ICompletionData data)
-		{
-			overloads.Add(data);
-		}
-		
-		public override bool HasOverloads {
-			get { return overloads.Count > 0; }
-		}
-		
-		public override IEnumerable<ICompletionData> OverloadedData {
-			get { return overloads; }
 		}
 	}
 }

@@ -50,6 +50,9 @@
         <command:parameter required="false" position="named">
           <maml:name>IncludePrerelease</maml:name>
         </command:parameter>
+        <command:parameter required="false" position="named">
+          <maml:name>FileConflictAction</maml:name>
+        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
 
@@ -104,6 +107,12 @@
           <maml:para>Indicates whether this command will consider prerelease packages. If omitted, only stable packages are considered.</maml:para>
         </maml:description>
       </command:parameter>
+        <command:parameter required="false" position="named">
+            <maml:name>FileConflictAction</maml:name>
+            <maml:description>
+                <maml:para>Indicates what this command should do if a file from the package's content folder already exists in the project.</maml:para>
+            </maml:description>
+        </command:parameter>
     </command:parameters>
 
     <!-- Examples section  -->
@@ -175,7 +184,7 @@
         Get-Package
       </command:name>
       <maml:description>
-        <maml:para>Gets the set of packages available from the package source. Use the -ListAvailable flag to list packages available from the package source.</maml:para>
+        <maml:para>Gets the set of installed packages. Use the -ListAvailable flag to list packages available from the package source.</maml:para>
       </maml:description>
       <command:verb>Get</command:verb>
       <command:noun>Package</command:noun>
@@ -183,7 +192,7 @@
     </command:details>
 
     <maml:description>
-      <maml:para>Gets the set of packages available from the package source. Defaults to only showing the list of installed packages. Use the -ListAvailable flag to list packages available from the package source.</maml:para>
+      <maml:para>Gets the set of installed packages. Use the -ListAvailable flag to list packages available from the package source.</maml:para>
     </maml:description>
 
     <!-- Cmdlet syntax section-->
@@ -202,6 +211,7 @@
         </command:parameter>
         <command:parameter required="false" position="named">
           <maml:name>ProjectName</maml:name>
+          <command:parameterValue required="true">string</command:parameterValue>
         </command:parameter>
         <command:parameter required="false" position="named">
           <maml:name>Filter</maml:name>
@@ -567,6 +577,9 @@
         <command:parameter required="false" position="named">
           <maml:name>Reinstall</maml:name>
         </command:parameter>
+        <command:parameter required="false" position="named">
+          <maml:name>FileConflictAction</maml:name>
+        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
 
@@ -633,6 +646,12 @@
           <maml:para>Reinstall packages with the existing versions.</maml:para>
         </maml:description>
       </command:parameter>
+        <command:parameter required="false" position="named">
+            <maml:name>FileConflictAction</maml:name>
+            <maml:description>
+                <maml:para>Indicates what this command should do if a file from the package's content folder already exists in the project.</maml:para>
+            </maml:description>
+        </command:parameter>
     </command:parameters>
 
     <command:examples>

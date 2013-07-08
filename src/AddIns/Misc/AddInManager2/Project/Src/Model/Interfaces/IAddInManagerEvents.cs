@@ -15,6 +15,13 @@ namespace ICSharpCode.AddInManager2.Model
 		void OnOperationStarted(EventArgs e);
 		void OnOperationStarted();
 		
+		event EventHandler AddInManagerViewOpened;
+		void OnAddInManagerViewOpened(EventArgs e);
+		void OnAddInManagerViewOpened();
+		
+		event EventHandler<PackageListDownloadEndedEventArgs> PackageListDownloadEnded;
+		void OnPackageListDownloadEnded(object sender, PackageListDownloadEndedEventArgs e);
+		
 		event EventHandler<AddInInstallationEventArgs> AddInInstalled;
 		void OnAddInInstalled(AddInInstallationEventArgs e);
 		

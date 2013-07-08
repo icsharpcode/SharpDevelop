@@ -13,6 +13,9 @@ using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
 {
+	/// <summary>
+	/// View model representing a NuGet package in gallery.
+	/// </summary>
 	public class NuGetPackageViewModel : AddInPackageViewModelBase
 	{
 		private IPackage _package;

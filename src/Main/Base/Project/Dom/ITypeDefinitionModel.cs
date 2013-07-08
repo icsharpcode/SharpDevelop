@@ -38,12 +38,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		ITypeDefinitionModel GetNestedType(string name, int additionalTypeParameterCount);
 		
-		/// <summary>
-		/// Updates this type definition model by replacing oldPart with newPart.
-		/// Either oldPart or newPart may be null when adding/removed a part.
-		/// </summary>
-		void Update(IUnresolvedTypeDefinition oldPart, IUnresolvedTypeDefinition newPart);
-		
 		bool IsPartial { get; }
 	}
 }
