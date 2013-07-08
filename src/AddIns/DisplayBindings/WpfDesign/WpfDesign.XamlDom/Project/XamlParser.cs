@@ -275,15 +275,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			
 			foreach (XmlNode childNode in GetNormalizedChildNodes(element)) {
-				
-				// I don't know why the official XamlReader runs the property getter
-				// here, but let's try to imitate it as good as possible
-				if (defaultProperty != null && !defaultProperty.IsCollection) {
-					for (; combinedNormalizedChildNodes > 0; combinedNormalizedChildNodes--) {
-						defaultProperty.GetValue(obj.Instance);
-					}
-				}
-				
 				XmlElement childElement = childNode as XmlElement;
 				if (childElement != null) {
 					if (childElement.NamespaceURI == XamlConstants.XamlNamespace)
@@ -314,9 +305,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 			}
 		}
-		
-		int combinedNormalizedChildNodes;
-		
+
 		IEnumerable<XmlNode> GetNormalizedChildNodes(XmlElement element)
 		{
 			XmlNode node = element.FirstChild;
@@ -334,8 +323,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					       && (node.NodeType == XmlNodeType.Text
 					           || node.NodeType == XmlNodeType.CDATA
 					           || node.NodeType == XmlNodeType.SignificantWhitespace)) {
-						combinedNormalizedChildNodes++;
-						
 						if (text != null) text.Value += node.Value;
 						else cData.Value += node.Value;
 						XmlNode nodeToDelete = node;
