@@ -33,15 +33,16 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportPage page)
 		{
-			Console.WriteLine("page visitor");
 			UIElement = documentCreator.CreateFixedPage(page);
 		}
 	
 		
 		public override void Visit(ExportContainer exportColumn)
 		{
+			
 //			Console.WriteLine("Wpf-Visit ExportContainer {0} - {1} - {2} - {3}", exportColumn.Name,exportColumn.Size,
 //			                  exportColumn.Location,exportColumn.BackColor);
+			
 			var canvas = documentCreator.CreateContainer(exportColumn);
 			UIElement = canvas;
 		}
@@ -49,7 +50,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportText exportColumn)
 		{
-			Console.WriteLine("Wpf-Visit ExportText {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.DesiredSize);
+//			Console.WriteLine("Wpf-Visit ExportText {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.DesiredSize);
 			var textBlock = documentCreator.CreateTextBlock(exportColumn);
 			UIElement = textBlock;
 		}
@@ -57,7 +58,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportColumn exportColumn)
 		{
-//			Console.WriteLine("Wpf-Visit ExportColumn {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
+//			Console.WriteLine("Wpf-Visit ExportColumn {0} - {1} - {2}", exportColumn.Name,exportColumn.Location,exportColumn.Size,);
 		}
 		
 		public UIElement UIElement {get; private set;}

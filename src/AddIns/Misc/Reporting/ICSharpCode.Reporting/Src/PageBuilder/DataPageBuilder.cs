@@ -147,17 +147,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		IExportContainer CreateContainerIfNotExist(IReportContainer container, IExportContainer parent, Point position)
 		{
-//			if (container.Items[0] is IExportContainer) {
-//				return container.Items[0].CreateExportColumn() as IExportContainer;
-//			} else {
-//				var row = CreateContainerForSection(position);
-//				row.Name = "Row";
-//				row.Parent = parent;
-//				row.Location = new Point(50, position.Y);
-//				row.Size = new Size(400, 40);
-//				row.BackColor = Color.Green;
-//				return row;
-//			}
 			var row = CreateContainerForSection(position);
 				row.Name = "Row";
 				row.Parent = parent;

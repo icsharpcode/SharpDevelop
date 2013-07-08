@@ -48,6 +48,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 				var exportColumn = ExportColumnFactory.CreateItem(element);
 				exportColumn.Parent = exportContainer;
 				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
+//				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
 				itemsList.Add(exportColumn);
 			}
 			return itemsList;

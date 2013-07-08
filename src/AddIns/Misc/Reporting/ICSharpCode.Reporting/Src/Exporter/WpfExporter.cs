@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Markup;
@@ -53,127 +54,82 @@ namespace ICSharpCode.Reporting.Exporter
 			page.Accept(visitor);
 			fixedPage = (FixedPage)visitor.UIElement;
 			foreach (var item in page.ExportedItems) {
-				ShowContainerRecursive_2(null,item);
+				ShowContainerRecursive(null,item);
 			}
 		}
 
-		void ShowContainerRecursive (string parentCanvas,IExportColumn item){
-			var exportContainer = item as IExportContainer;
-			string name = string.Empty;
-			
-			Console.WriteLine("perform {0}",parentCanvas);
-			
-			if (exportContainer != null) {
-				
-				if (exportContainer.Name =="ReportDetail") {
-					Console.WriteLine(item.Name);
-				}
-//
-				if (exportContainer.Name == "Row") {
-					Console.WriteLine(item.Name);
-				}
-				name = item.Name;
-//				var containerCanvas = CreateContainer(exportContainer);
-
-//				fixedPage.Children.Add(containerCanvas);
-//				Console.WriteLine(fixedPage.Children.Count);
-//				Console.WriteLine(containerCanvas.Children.Count);
-				
-				foreach (var element in exportContainer.ExportedItems) {
-					var el = element as IExportContainer;
-					if (el == null) {
-//						CreateSingleEntry(ref containerCanvas, element);
-//						Console.WriteLine(containerCanvas.Children.Count);
-						name = element.Name;
-					}
-					
-					ShowContainerRecursive(name,element);
-				}
-			}
-		}
 		
-		void ShowContainerRecursive_2(Canvas parentCanvas,IExportColumn item)
+		void ShowContainerRecursive(Canvas parentCanvas,IExportColumn item)
 		{
 			var exportContainer = item as IExportContainer;
-			
-			if (exportContainer != null) {
-				
-				if (exportContainer.Name =="ReportDetail") {
-					Console.WriteLine(item.Name);
-				}
-//
-				if (exportContainer.Name == "Row") {
-					Console.WriteLine("\t {0}",item.Name);
-				}
-				
-				foreach (var element in exportContainer.ExportedItems) {
-//					Console.WriteLine(element.Name);
-					var el = element as IExportContainer;
-					if (el == null) {
-						Console.WriteLine("\t\t {0}",element.Name);
-					}
-					ShowContainerRecursive_2(null,exportContainer.ExportedItems[0]);
-				}
-				
-			}
-			
-			
-		}
-		
-		
-		
-		void ShowContainerRecursive_1(Canvas parentCanvas,IExportColumn item)
-		{
-			var exportContainer = item as IExportContainer;
-			
-			if (exportContainer != null) {
-				
-				if (exportContainer.Name =="ReportDetail") {
-					Console.WriteLine(item.Name);
-				}
-//
-				if (exportContainer.Name == "Row") {
-					Console.WriteLine(item.Name);
-				}
-				
-				var containerCanvas = CreateContainer(exportContainer);
 
-				fixedPage.Children.Add(containerCanvas);
-				Console.WriteLine(fixedPage.Children.Count);
-				Console.WriteLine(containerCanvas.Children.Count);
+			Canvas containerCanvas = null;
+			
+			if (exportContainer != null) {
 				
-				foreach (var element in exportContainer.ExportedItems) {
-					var el = element as IExportContainer;
-					if (el == null) {
-						CreateSingleEntry(ref containerCanvas, element);
-						Console.WriteLine(containerCanvas.Children.Count);
-					}
+				if (exportContainer.Name =="ReportDetail") {
+					Console.WriteLine(item.Name);
+				}
+
+				if (exportContainer.Name == "Row") {
+					Console.WriteLine(item.Name);
 					
-					ShowContainerRecursive_1(containerCanvas,element);
+				}
+				
+				if (parentCanvas == null) {
+					containerCanvas = CreateContainer(fixedPage,exportContainer);
+					Console.WriteLine("Section {0}  at {1}",item.Name,CanvasHelper.GetPosition(containerCanvas));
+					fixedPage.Children.Add(containerCanvas);
+					parentCanvas = containerCanvas;
+				} else {
+					containerCanvas = CreateContainer(parentCanvas,exportContainer);
+					Console.WriteLine("Row {0}  at {1}",item.Name,CanvasHelper.GetPosition(containerCanvas));
+					parentCanvas.Children.Add(containerCanvas);
+				}
+				
+				Console.WriteLine("canvas at {0}",CanvasHelper.GetPosition(containerCanvas));
+				
+				foreach (var element in exportContainer.ExportedItems) {
+					var el = element as IExportContainer;
+					if (el == null) {
+						var t = CreateSingleEntry(parentCanvas,element);
+						containerCanvas.Children.Add(t);
+					}									
+					ShowContainerRecursive(parentCanvas,element);
 				}
 			}
 		}
-
 		
-		Canvas CreateContainer(IExportContainer exportContainer)
+		
+//		http://stackoverflow.com/questions/4523208/wpf-positioning-uielement-on-a-canvas
+//http://stackoverflow.com/questions/1123101/changing-position-of-an-element-programmatically-in-wpf
+//http://stackoverflow.com/questions/1923697/how-can-i-get-the-position-of-a-child-element-relative-to-a-parent		
+		
+		
+		Canvas CreateContainer(UIElement parent,IExportContainer exportContainer)
 		{
 			var containerAcceptor = exportContainer as IAcceptor;
 			containerAcceptor.Accept(visitor);
 			var containerCanvas = (Canvas)visitor.UIElement;
+//			Console.WriteLine("CreateContainer bevore {0}",CanvasHelper.GetPosition(containerCanvas));
+			CanvasHelper.SetPosition(containerCanvas,
+			                         new Point(exportContainer.Location.X,exportContainer.Location.Y));
+//			Console.WriteLine("CreateContainer after {0}",CanvasHelper.GetPosition(containerCanvas));
 			return containerCanvas;
 		}
 
 		
-		void CreateSingleEntry(ref Canvas canvas, IExportColumn element)
+		UIElement CreateSingleEntry(UIElement parent, IExportColumn element)
 		{
 			var v = element as IAcceptor;
 			v.Accept(visitor);
 			var c = visitor.UIElement;
 
-			CanvasHelper.SetLeft(c,element.Location.X);
-			CanvasHelper.SetTop(c,10);
-//			CanvasHelper.SetTop(c,element.Location.Y);
-			canvas.AddChild(c);
+//			CanvasHelper.SetLeft(c,element.Location.X);
+//			CanvasHelper.SetTop(c,10);
+			CanvasHelper.SetPosition(c,new Point(element.Location.X,element.Location.Y));
+				Console.WriteLine("CreateSingleEntry after {0}",CanvasHelper.GetPosition(c));
+			return c;
 		}
 		
 		

@@ -48,9 +48,6 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			
 		public  UIElement CreateContainer(ExportContainer container)
 		{
-//			http://tech.pro/tutorial/736/wpf-tutorial-creating-a-custom-panel-control
-			Console.WriteLine();
-			Console.WriteLine("create container {0} {1} {2}",container.Name,container.Location,container.Size);
 			var canvas = CreateCanvas(container);
 			
 			var size = new Size(container.DesiredSize.Width,container.DesiredSize.Height);
@@ -175,7 +172,6 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		Brush ConvertBrush(System.Drawing.Color color)
 		{
 			if (brushConverter.IsValid(color.Name)){
-				Console.WriteLine(color.Name);
 				return brushConverter.ConvertFromString(color.Name) as SolidColorBrush;
 			} else{
 				return brushConverter.ConvertFromString("Black") as SolidColorBrush;
