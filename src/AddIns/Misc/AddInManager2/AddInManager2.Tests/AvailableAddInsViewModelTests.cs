@@ -272,6 +272,68 @@ namespace ICSharpCode.AddInManager2.Tests
 			Assert.That(firstAddIn.Version, Is.EqualTo(_addIn2.Version), "Version of 1st AddIn");
 		}
 		
+		[Test]
+		public void SearchInstallableAddInsWithMultipleReleasesAndDownloadCountSorting()
+		{
+			CreateAddIns();
+			_addIn1.Enabled = true;
+			
+			// Package to be shown in repository
+			FakePackage fakePackage2 = new FakePackage()
+			{
+				Id = _addIn2.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn2.Version),
+				Tags = SharpDevelopAddInTag
+			};
+			FakePackage fakePackage1 = new FakePackage()
+			{
+				Id = _addIn1.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn1.Version),
+				Tags = SharpDevelopAddInTag,
+				DownloadCount = 10
+			};
+			FakePackage fakePackage2_new = new FakePackage()
+			{
+				Id = _addIn2_new.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn2_new.Version),
+				Tags = SharpDevelopAddInTag,
+				DownloadCount = 20
+			};
+			
+			// List of NuGet repositories
+			List<PackageSource> registeredPackageSources = new List<PackageSource>();
+			registeredPackageSources.Add(new PackageSource("", "Test Repository"));
+			_services.FakeRepositories.RegisteredPackageSources = registeredPackageSources;
+			
+			List<IPackageRepository> registeredPackageRepositories = new List<IPackageRepository>();
+			FakeCorePackageRepository remoteRepository = new FakeCorePackageRepository();
+			remoteRepository.Source = registeredPackageSources[0].Source;
+			remoteRepository.ReturnedPackages = (new IPackage[] { fakePackage2, fakePackage1, fakePackage2_new }).AsQueryable();
+			_services.FakeRepositories.RegisteredPackageRepositories = registeredPackageRepositories;
+			
+			// PackageRepository service should return remoteRepository instance
+			_services.FakeRepositories.GetRepositoryFromSourceCallback = delegate(PackageSource packageSource)
+			{
+				return remoteRepository;
+			};
+			
+			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
+			_services.FakeNuGet.FakeCorePackageManager.LocalRepository = localRepository;
+			localRepository.ReturnedPackages = (new IPackage[] { }).AsQueryable();
+			
+			var viewModel = new AvailableAddInsViewModel(_services);
+			viewModel.ReadPackagesAndWaitForUpdate();
+			
+			// There must be only 2 packages in list, because user should see only latest releases
+			Assert.That(viewModel.AddInPackages.Count, Is.EqualTo(2), "AddIn list must contain 2 items.");
+			
+			// fakePackage2_new is the first one, because it has a greater download count
+			AddInPackageViewModelBase firstAddIn = viewModel.AddInPackages[0];
+			Assert.That(firstAddIn.Id, Is.EqualTo(_addIn2_new.Manifest.PrimaryIdentity), "Primary identity of 1st AddIn");
+			Assert.That(firstAddIn.Name, Is.EqualTo(_addIn2_new.Manifest.PrimaryIdentity), "Name of 1st AddIn");
+			Assert.That(firstAddIn.Version, Is.EqualTo(_addIn2_new.Version), "Version of 1st AddIn");
+		}
+		
 //		[Test]
 //		public void FilteringOutNonSharpDevelopPackages()
 //		{
@@ -335,7 +397,7 @@ namespace ICSharpCode.AddInManager2.Tests
 			{
 				fakePackages[i] = new FakePackage()
 				{
-					Id = _addIn1.Manifest.PrimaryIdentity + i.ToString(),
+					Id = _addIn1.Manifest.PrimaryIdentity + i.ToString("00"),
 					Version = new SemanticVersion(_addIn1.Version),
 					Tags = SharpDevelopAddInTag
 				};

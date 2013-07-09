@@ -143,7 +143,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			return _allPackages;
 		}
 		
-		protected virtual IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
+		private IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
 		{
 			return packages
 				.OrderBy(package => package.Id);

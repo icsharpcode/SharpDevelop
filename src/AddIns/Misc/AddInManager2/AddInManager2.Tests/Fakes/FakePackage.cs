@@ -182,5 +182,10 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 				throw new NotImplementedException();
 			}
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("[FakePackage Id={0}, Version={1}]", Id, Version);
+		}
 	}
 }
