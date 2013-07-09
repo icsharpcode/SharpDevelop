@@ -146,7 +146,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
 		{
 			return packages
-				.OrderBy(package => package.Id);
+				.OrderBy(package => package.Id)
+				.ThenBy(package => package.Version);
 		}
 		
 		private IQueryable<IPackage> FilterPackagesBySearchCriteria(IQueryable<IPackage> packages)

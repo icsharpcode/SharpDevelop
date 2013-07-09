@@ -225,7 +225,7 @@ namespace ICSharpCode.AddInManager2.Tests
 			CreateAddIns();
 			_addIn1.Enabled = true;
 			
-			// Package to be shown in repository
+			// Packages to be shown in repository
 			FakePackage fakePackage1 = new FakePackage()
 			{
 				Id = _addIn1.Manifest.PrimaryIdentity,
@@ -278,12 +278,14 @@ namespace ICSharpCode.AddInManager2.Tests
 			CreateAddIns();
 			_addIn1.Enabled = true;
 			
-			// Package to be shown in repository
-			FakePackage fakePackage2 = new FakePackage()
+			// Packages to be shown in repository
+			// To test correct sorting we let the newer release of addIn2 appear before the older one.
+			FakePackage fakePackage2_new = new FakePackage()
 			{
-				Id = _addIn2.Manifest.PrimaryIdentity,
-				Version = new SemanticVersion(_addIn2.Version),
-				Tags = SharpDevelopAddInTag
+				Id = _addIn2_new.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn2_new.Version),
+				Tags = SharpDevelopAddInTag,
+				DownloadCount = 30
 			};
 			FakePackage fakePackage1 = new FakePackage()
 			{
@@ -292,12 +294,11 @@ namespace ICSharpCode.AddInManager2.Tests
 				Tags = SharpDevelopAddInTag,
 				DownloadCount = 10
 			};
-			FakePackage fakePackage2_new = new FakePackage()
+			FakePackage fakePackage2 = new FakePackage()
 			{
-				Id = _addIn2_new.Manifest.PrimaryIdentity,
-				Version = new SemanticVersion(_addIn2_new.Version),
-				Tags = SharpDevelopAddInTag,
-				DownloadCount = 20
+				Id = _addIn2.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn2.Version),
+				Tags = SharpDevelopAddInTag
 			};
 			
 			// List of NuGet repositories
@@ -308,7 +309,7 @@ namespace ICSharpCode.AddInManager2.Tests
 			List<IPackageRepository> registeredPackageRepositories = new List<IPackageRepository>();
 			FakeCorePackageRepository remoteRepository = new FakeCorePackageRepository();
 			remoteRepository.Source = registeredPackageSources[0].Source;
-			remoteRepository.ReturnedPackages = (new IPackage[] { fakePackage2, fakePackage1, fakePackage2_new }).AsQueryable();
+			remoteRepository.ReturnedPackages = (new IPackage[] { fakePackage2_new, fakePackage1, fakePackage2 }).AsQueryable();
 			_services.FakeRepositories.RegisteredPackageRepositories = registeredPackageRepositories;
 			
 			// PackageRepository service should return remoteRepository instance
