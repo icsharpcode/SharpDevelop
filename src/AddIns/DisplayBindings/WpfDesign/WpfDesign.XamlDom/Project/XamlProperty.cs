@@ -267,6 +267,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				oldPropertyElement.ParentNode.RemoveChild(oldPropertyElement);
 			}
 		}
+
+        XmlElement CreatePropertyElement()
+        {
+            string ns = parentObject.OwnerDocument.GetNamespaceFor(parentObject.ElementType);
+            return parentObject.OwnerDocument.XmlDocument.CreateElement(
+                parentObject.OwnerDocument.GetPrefixForNamespace(ns),
+                parentObject.ElementType.Name + "." + this.PropertyName,
+                ns
+                );
+        }
 		
 		internal void AddChildNodeToProperty(XmlNode newChildNode)
 		{
@@ -280,10 +290,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					parentObject.XmlElement.InsertBefore(newChildNode, parentObject.XmlElement.FirstChild);
 					return;
 				}
-				_propertyElement = parentObject.OwnerDocument.XmlDocument.CreateElement(
-					this.PropertyTargetType.Name + "." + this.PropertyName,
-					parentObject.OwnerDocument.GetNamespaceFor(this.PropertyTargetType)
-				);
+                _propertyElement = CreatePropertyElement();
 				parentObject.XmlElement.InsertBefore(_propertyElement, parentObject.XmlElement.FirstChild);
 			}
 			_propertyElement.AppendChild(newChildNode);
@@ -296,10 +303,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (collection == null) {
 				if (collectionElements.Count == 0 && this.PropertyName != this.ParentObject.ContentPropertyName) {
 					// we have to create the collection element
-					_propertyElement = parentObject.OwnerDocument.XmlDocument.CreateElement(
-						ParentObject.ElementType.Name + "." + this.PropertyName,
-						parentObject.OwnerDocument.GetNamespaceFor(ParentObject.ElementType)
-					);
+                    _propertyElement = CreatePropertyElement();
 
 					if (this.IsResources) {
 						parentObject.XmlElement.PrependChild(_propertyElement);
