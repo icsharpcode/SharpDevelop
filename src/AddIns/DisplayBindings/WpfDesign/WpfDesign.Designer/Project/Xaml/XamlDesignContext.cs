@@ -89,6 +89,15 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			loadSettings.ReportErrors(xamlErrorService);
 			
+			if (_doc == null) {
+				string message;
+				if (xamlErrorService != null && xamlErrorService.Errors.Count > 0)
+					message = xamlErrorService.Errors[0].Message;
+				else
+					message = "Could not load document.";
+				throw new XamlLoadException(message);
+			}
+			
 			_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
 			
 			if(_rootItem!=null){
