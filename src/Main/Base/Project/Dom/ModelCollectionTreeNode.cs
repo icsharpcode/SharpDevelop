@@ -54,6 +54,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public virtual void ShowContextMenu()
+		{
+			// Do nothing in base class
+		}
+		
 		#region Manage Children
 		protected override void LoadChildren()
 		{

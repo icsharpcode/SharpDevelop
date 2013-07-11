@@ -36,17 +36,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
-		protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+		protected override void OnContextMenuOpening(ContextMenuEventArgs e)
 		{
-			if (e.ChangedButton == MouseButton.Right) {
-				var treeNode = this.SelectedItem as ModelCollectionTreeNode;
-				if (treeNode != null) {
-					var model = treeNode.Model;
-					if (model is IEntityModel) {
-						var ctx = MenuService.ShowContextMenu(e.Source as UIElement, (IEntityModel) model, "/SharpDevelop/EntityContextMenu");
-						e.Handled = true;
-					}
-				}
+			var treeNode = this.SelectedItem as ModelCollectionTreeNode;
+			if (treeNode != null) {
+				treeNode.ShowContextMenu();
 			}
 		}
 	}

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Media;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.TreeView;
@@ -220,6 +221,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (target != null)
 				NavigationService.NavigateTo(target);
 		}
+		
+		public override void ShowContextMenu()
+		{
+			var model = this.Model;
+			if (model is IEntityModel) {
+				var ctx = MenuService.ShowContextMenu(null, (IEntityModel) model, "/SharpDevelop/EntityContextMenu");
+			}
+		}
 	}
 	
 	public class MemberTreeNode : ModelCollectionTreeNode
@@ -281,6 +290,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			var target = model.Resolve();
 			if (target != null)
 				NavigationService.NavigateTo(target);
+		}
+		
+		public override void ShowContextMenu()
+		{
+			var model = this.Model;
+			if (model is IEntityModel) {
+				var ctx = MenuService.ShowContextMenu(null, (IEntityModel) model, "/SharpDevelop/EntityContextMenu");
+			}
 		}
 	}
 }
