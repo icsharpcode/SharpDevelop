@@ -8,6 +8,8 @@
  */
 using System;
 using System.Windows;
+using System.Windows.Controls;
+
 using ICSharpCode.Reporting.ExportRenderer;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
@@ -39,19 +41,15 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportContainer exportColumn)
 		{
-			
-//			Console.WriteLine("Wpf-Visit ExportContainer {0} - {1} - {2} - {3}", exportColumn.Name,exportColumn.Size,
-//			                  exportColumn.Location,exportColumn.BackColor);
-			
-			var canvas = documentCreator.CreateContainer(exportColumn);
+			var canvas = (Canvas)documentCreator.CreateContainer(exportColumn);
 			UIElement = canvas;
 		}
 		
 		
 		public override void Visit(ExportText exportColumn)
 		{
-//			Console.WriteLine("Wpf-Visit ExportText {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.DesiredSize);
-			var textBlock = documentCreator.CreateTextBlock(exportColumn);
+			TextBlock textBlock = documentCreator.CreateTextBlock(exportColumn);
+			CanvasHelper.SetPosition(textBlock,new Point(exportColumn.Location.X,exportColumn.Location.Y));
 			UIElement = textBlock;
 		}
 		

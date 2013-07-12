@@ -90,32 +90,34 @@ namespace ICSharpCode.Reporting.Exporter
 				Console.WriteLine("canvas at {0}",CanvasHelper.GetPosition(containerCanvas));
 				
 				foreach (var element in exportContainer.ExportedItems) {
-					var el = element as IExportContainer;
-					if (el == null) {
-						var t = CreateSingleEntry(parentCanvas,element);
-						containerCanvas.Children.Add(t);
-					}									
+					
+					if (!IsContainer(element)) {
+						
+						var singleItem = CreateSingleEntry(containerCanvas,element);
+						
+						Console.WriteLine("TEST  {0} - {1}",CanvasHelper.GetPosition(singleItem),CanvasHelper.GetPosition(containerCanvas));
+						containerCanvas.Children.Add(singleItem);
+					}
 					ShowContainerRecursive(parentCanvas,element);
 				}
 			}
 		}
 		
 		
-//		http://stackoverflow.com/questions/4523208/wpf-positioning-uielement-on-a-canvas
-//http://stackoverflow.com/questions/1123101/changing-position-of-an-element-programmatically-in-wpf
-//http://stackoverflow.com/questions/1923697/how-can-i-get-the-position-of-a-child-element-relative-to-a-parent		
-		
+		bool IsContainer (IExportColumn column) {
+			var container = column as IExportContainer;
+			if (container == null) {
+				return false;
+			}
+			return true;
+		}
 		
 		Canvas CreateContainer(UIElement parent,IExportContainer exportContainer)
 		{
 			var containerAcceptor = exportContainer as IAcceptor;
 			containerAcceptor.Accept(visitor);
-			var containerCanvas = (Canvas)visitor.UIElement;
-//			Console.WriteLine("CreateContainer bevore {0}",CanvasHelper.GetPosition(containerCanvas));
-			CanvasHelper.SetPosition(containerCanvas,
-			                         new Point(exportContainer.Location.X,exportContainer.Location.Y));
-//			Console.WriteLine("CreateContainer after {0}",CanvasHelper.GetPosition(containerCanvas));
-			return containerCanvas;
+			var canvas = (Canvas)visitor.UIElement;
+			return canvas;
 		}
 
 		
@@ -125,10 +127,7 @@ namespace ICSharpCode.Reporting.Exporter
 			v.Accept(visitor);
 			var c = visitor.UIElement;
 
-//			CanvasHelper.SetLeft(c,element.Location.X);
-//			CanvasHelper.SetTop(c,10);
-			CanvasHelper.SetPosition(c,new Point(element.Location.X,element.Location.Y));
-				Console.WriteLine("CreateSingleEntry after {0}",CanvasHelper.GetPosition(c));
+			Console.WriteLine("CreateSingleEntry after {0}",CanvasHelper.GetPosition(c));
 			return c;
 		}
 		

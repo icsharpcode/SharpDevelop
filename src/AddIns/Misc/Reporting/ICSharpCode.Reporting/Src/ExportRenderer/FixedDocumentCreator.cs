@@ -65,9 +65,13 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		public TextBlock CreateTextBlock(ExportText exportText)
 		{
 			var textBlock = new TextBlock();
+			
 			textBlock.Text = exportText.Text;
+		
 			textBlock.Foreground = ConvertBrush(exportText.ForeColor);
 			SetFont(textBlock,exportText);
+			textBlock.Background = ConvertBrush(exportText.BackColor);
+			
 			textBlock.TextWrapping = TextWrapping.WrapWithOverflow;
 			
 //			string [] inlines = exportText.Text.Split(System.Environment.NewLine.ToCharArray());
@@ -84,8 +88,6 @@ namespace ICSharpCode.Reporting.ExportRenderer
 //		    textBlock.Background = ConvertBrush(exportText.StyleDecorator.BackColor);
 //		    SetContendAlignment(textBlock,exportText.StyleDecorator);
 			
-			SetPositionAndSize(textBlock,exportText);
-			textBlock.Background = ConvertBrush(exportText.BackColor);
 			return textBlock;
 		}
 		
@@ -94,6 +96,8 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		{
 			var canvas = new Canvas();
 			SetPositionAndSize(canvas,container);
+
+			canvas.Name = container.Name;
 			canvas.Background = ConvertBrush(container.BackColor);
 			return canvas;
 		}
