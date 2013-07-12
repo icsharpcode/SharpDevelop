@@ -50,13 +50,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
 			return base.GetFilteredPackagesBeforePagingResults(allPackages)
-				.Where(package => package.IsReleaseVersion())
-				.DistinctLast(PackageEqualityComparer.Id);
-		}
-		
-		protected override IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
-		{
-			return packages.OrderByDescending(package => package.DownloadCount);
+				.OrderByDescending(package => package.DownloadCount)
+				.ThenBy(package => package.Id);
 		}
 		
 		protected override void UpdatePrereleaseFilter()
