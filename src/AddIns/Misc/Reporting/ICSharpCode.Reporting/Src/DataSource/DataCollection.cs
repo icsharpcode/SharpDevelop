@@ -20,7 +20,7 @@ namespace ICSharpCode.Reporting.DataSource
 	/// <summary>
 	/// Description of DataCollection.
 	/// </summary>
-	internal class DataCollection<T> : IList<T>,ITypedList
+	class DataCollection<T> : IList<T>,ITypedList
 	{
 		Collection<T> list = new Collection<T>();
 		Type elementType;
@@ -197,7 +197,7 @@ namespace ICSharpCode.Reporting.DataSource
 		}
 		
 		[DebuggerStepThrough]
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			return list.GetEnumerator();
 		}

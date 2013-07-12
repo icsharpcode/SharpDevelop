@@ -12,7 +12,8 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-using ICSharpCode.Reporting.Exporter.Visitors;
+using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using Brush = System.Windows.Media.Brush;
@@ -25,7 +26,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 	/// <summary>
 	/// Description of FixedDocumentCreator.
 	/// </summary>
-	internal class FixedDocumentCreator
+	class FixedDocumentCreator
 	{
 		BrushConverter brushConverter ;
 		ReportSettings reportSettings;
@@ -54,7 +55,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			
 			canvas.Measure(size);
 			
-			canvas.Arrange(new Rect(new System.Windows.Point(),size ));
+			canvas.Arrange(new Rect(new Point(),size ));
 
 			canvas.UpdateLayout();
 			
@@ -103,24 +104,26 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		void SetPositionAndSize(FrameworkElement element,ExportColumn column) {
+			if (column == null)
+				throw new ArgumentNullException("column");
 			SetPosition(element,column);
 			SetDimension(element,column);	
 		}
 		
-		static void SetDimension (FrameworkElement element,ExportColumn exportColumn)
+		static void SetDimension (FrameworkElement element,IExportColumn exportColumn)
 		{
 			element.Width = exportColumn.DesiredSize.Width;
 			element.Height = exportColumn.DesiredSize.Height;
 		}
 		
 		
-		static void SetPosition (FrameworkElement element,ExportColumn exportColumn) {
+		static void SetPosition (UIElement element,IExportColumn exportColumn) {
 			FixedPage.SetLeft(element,exportColumn.Location.X );
 			FixedPage.SetTop(element,exportColumn.Location.Y);
 		}
 		
 		
-		void SetFont(TextBlock textBlock,ExportText exportText)
+		void SetFont(TextBlock textBlock,IExportText exportText)
 		{
 			textBlock.FontFamily = new FontFamily(exportText.Font.FontFamily.Name);
 		
@@ -134,7 +137,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			}
 			
 			if (exportText.Font.Italic) {
-				textBlock.FontStyle = System.Windows.FontStyles.Italic ;
+				textBlock.FontStyle = FontStyles.Italic ;
 			}
 			if (exportText.Font.Strikeout) {
 				CreateStrikeout(textBlock,exportText);
@@ -142,8 +145,12 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		void CreateStrikeout (TextBlock textBlock,ExportColumn exportColumn )
+		void CreateStrikeout (TextBlock textBlock,IExportText exportColumn )
 		{
+			if (textBlock == null)
+				throw new ArgumentNullException("textBlock");
+			if (exportColumn == null)
+				throw new ArgumentNullException("exportColumn");
 			var strikeOut = new TextDecoration();
 			strikeOut.Location = TextDecorationLocation.Strikethrough;
 
@@ -154,8 +161,12 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		void CreateUnderline(TextBlock textBlock,ExportColumn exportColumn)
+		void CreateUnderline(TextBlock textBlock,IExportText exportColumn)
 		{
+			if (exportColumn == null)
+				throw new ArgumentNullException("exportColumn");
+			if (textBlock == null)
+				throw new ArgumentNullException("textBlock");
 			var underLine = new TextDecoration();
 			Pen p = CreateWpfPen(exportColumn);
 			underLine.Pen = p ;
@@ -164,8 +175,10 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		Pen CreateWpfPen(ICSharpCode.Reporting.Interfaces.IReportObject exportColumn)
+		Pen CreateWpfPen(IReportObject exportColumn)
 		{
+			if (exportColumn == null)
+				throw new ArgumentNullException("exportColumn");
 			var myPen = new Pen();
 			myPen.Brush = ConvertBrush(exportColumn.ForeColor);
 			myPen.Thickness = 1.5;

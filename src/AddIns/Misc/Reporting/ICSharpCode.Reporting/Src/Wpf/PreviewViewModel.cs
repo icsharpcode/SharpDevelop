@@ -28,7 +28,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 	public class PreviewViewModel:INotifyPropertyChanged
 	{
 		
-		private FixedDocument document ;
+		FixedDocument document ;
 		
 		public PreviewViewModel(ReportSettings reportSettings, Collection<ExportPage> pages)
 		{

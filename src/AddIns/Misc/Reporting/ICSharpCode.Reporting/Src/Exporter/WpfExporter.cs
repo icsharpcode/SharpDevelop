@@ -27,8 +27,8 @@ namespace ICSharpCode.Reporting.Exporter
 	{
 		
 
-		private WpfVisitor visitor;
-		private ReportSettings reportSettings;
+		WpfVisitor visitor;
+		ReportSettings reportSettings;
 		FixedPage fixedPage;
 		
 		public WpfExporter(ReportSettings reportSettings,Collection<ExportPage> pages):base(pages)

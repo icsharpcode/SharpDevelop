@@ -16,7 +16,7 @@ namespace ICSharpCode.Reporting.DataSource
 	/// <summary>
 	/// Description of ExtendedPropertyDescriptor.
 	/// </summary>
-	internal class ExtendedPropertyDescriptor : PropertyDescriptor
+	class ExtendedPropertyDescriptor : PropertyDescriptor
 	{
 	
 		Type componentType;
