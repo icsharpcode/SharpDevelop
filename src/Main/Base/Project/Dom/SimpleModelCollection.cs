@@ -16,6 +16,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public class SimpleModelCollection<T> : IMutableModelCollection<T>
 	{
+		readonly ModelCollectionChangedEvent<T> collectionChangedEvent;
 		readonly List<T> list;
 		List<T> addedItems;
 		List<T> removedItems;
@@ -23,11 +24,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public SimpleModelCollection()
 		{
 			this.list = new List<T>();
+			collectionChangedEvent = new ModelCollectionChangedEvent<T>();
 		}
 		
 		public SimpleModelCollection(IEnumerable<T> items)
 		{
 			this.list = new List<T>(items);
+			collectionChangedEvent = new ModelCollectionChangedEvent<T>();
 		}
 		
 		protected void CheckReentrancy()
@@ -41,7 +44,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		#region CollectionChanged / BatchUpdate()
-		public event ModelCollectionChangedEventHandler<T> CollectionChanged;
+		public event ModelCollectionChangedEventHandler<T> CollectionChanged
+		{
+			add {
+				collectionChangedEvent.AddHandler(value);
+			}
+			remove {
+				collectionChangedEvent.RemoveHandler(value);
+			}
+		}
 		
 		bool isWithinBatchOperation;
 		bool isRaisingEvent;
@@ -64,9 +75,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		protected virtual void OnCollectionChanged(IReadOnlyCollection<T> removedItems, IReadOnlyCollection<T> addedItems)
 		{
-			var handler = CollectionChanged;
-			if (handler != null)
-				handler(removedItems, addedItems);
+			collectionChangedEvent.Fire(removedItems, addedItems);
 		}
 		
 		public virtual IDisposable BatchUpdate()

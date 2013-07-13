@@ -16,6 +16,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	sealed class TopLevelTypeDefinitionModelCollection : ITypeDefinitionModelCollection
 	{
+		readonly ModelCollectionChangedEvent<ITypeDefinitionModel> collectionChangedEvent;
 		readonly IEntityModelContext context;
 		Dictionary<TopLevelTypeName, TypeDefinitionModel> dict = new Dictionary<TopLevelTypeName, TypeDefinitionModel>();
 		
@@ -24,9 +25,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
+			collectionChangedEvent = new ModelCollectionChangedEvent<ITypeDefinitionModel>();
 		}
 		
-		public event ModelCollectionChangedEventHandler<ITypeDefinitionModel> CollectionChanged;
+		public event ModelCollectionChangedEventHandler<ITypeDefinitionModel> CollectionChanged
+		{
+			add {
+				collectionChangedEvent.AddHandler(value);
+			}
+			remove {
+				collectionChangedEvent.RemoveHandler(value);
+			}
+		}
 		
 		public IReadOnlyCollection<ITypeDefinitionModel> CreateSnapshot()
 		{
@@ -122,9 +132,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			// Raise the event if necessary:
-			if (CollectionChanged != null && (oldModels != null || newModels != null)) {
+			if (collectionChangedEvent.ContainsHandlers && (oldModels != null || newModels != null)) {
 				IReadOnlyCollection<ITypeDefinitionModel> emptyList = EmptyList<ITypeDefinitionModel>.Instance;
-				CollectionChanged(oldModels ?? emptyList, newModels ?? emptyList);
+				collectionChangedEvent.Fire(oldModels ?? emptyList, newModels ?? emptyList);
 			}
 		}
 		

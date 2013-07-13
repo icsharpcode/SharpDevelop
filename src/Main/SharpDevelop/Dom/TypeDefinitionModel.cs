@@ -105,12 +105,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region Members collection
 		sealed class MemberCollection : IModelCollection<MemberModel>
 		{
+			readonly ModelCollectionChangedEvent<MemberModel> collectionChangedEvent;
 			readonly TypeDefinitionModel parent;
 			List<List<MemberModel>> lists = new List<List<MemberModel>>();
 			
 			public MemberCollection(TypeDefinitionModel parent)
 			{
 				this.parent = parent;
+				collectionChangedEvent = new ModelCollectionChangedEvent<MemberModel>();
 			}
 			
 			public void InsertPart(int partIndex, IUnresolvedTypeDefinition newPart)
@@ -120,16 +122,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 					newItems.Add(new MemberModel(parent.context, newMember) { strongParentCollectionReference = this });
 				}
 				lists.Insert(partIndex, newItems);
-				if (collectionChanged != null)
-					collectionChanged(EmptyList<MemberModel>.Instance, newItems);
+				collectionChangedEvent.Fire(EmptyList<MemberModel>.Instance, newItems);
 			}
 			
 			public void RemovePart(int partIndex)
 			{
 				var oldItems = lists[partIndex];
 				lists.RemoveAt(partIndex);
-				if (collectionChanged != null)
-					collectionChanged(oldItems, EmptyList<MemberModel>.Instance);
+				collectionChangedEvent.Fire(oldItems, EmptyList<MemberModel>.Instance);
 			}
 			
 			public void UpdatePart(int partIndex, IUnresolvedTypeDefinition newPart)
@@ -158,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// We might try to be clever here and find a LCS so that we only update the members that were actually changed,
 				// or we might consider moving members around (INotifyCollectionChanged supports moves)
 				// However, the easiest solution by far is to just remove + readd the whole middle portion.
-				var oldItems = collectionChanged != null ? list.GetRange(startPos, endPosOld - startPos) : null;
+				var oldItems = collectionChangedEvent.ContainsHandlers ? list.GetRange(startPos, endPosOld - startPos) : null;
 				list.RemoveRange(startPos, endPosOld - startPos);
 				var newItems = new MemberModel[endPosNew - startPos];
 				for (int i = 0; i < newItems.Length; i++) {
@@ -166,8 +166,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					newItems[i].strongParentCollectionReference = this;
 				}
 				list.InsertRange(startPos, newItems);
-				if (collectionChanged != null && (oldItems.Count > 0 || newItems.Length > 0)) {
-					collectionChanged(oldItems, newItems);
+				if (collectionChangedEvent.ContainsHandlers && (oldItems.Count > 0 || newItems.Length > 0)) {
+					collectionChangedEvent.Fire(oldItems, newItems);
 				}
 			}
 			
@@ -176,18 +176,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return memberModel.SymbolKind == newMember.SymbolKind && memberModel.Name == newMember.Name;
 			}
 			
-			ModelCollectionChangedEventHandler<MemberModel> collectionChanged;
-			
 			public event ModelCollectionChangedEventHandler<MemberModel> CollectionChanged {
 				add {
-					collectionChanged += value;
+					collectionChangedEvent.AddHandler(value);
 					// Set strong reference to collection while there are event listeners
-					if (collectionChanged != null)
+					if (collectionChangedEvent.ContainsHandlers)
 						parent.membersStrongReference = this;
 				}
 				remove {
-					collectionChanged -= value;
-					if (collectionChanged == null)
+					collectionChangedEvent.RemoveHandler(value);
+					if (!collectionChangedEvent.ContainsHandlers)
 						parent.membersStrongReference = null;
 				}
 			}

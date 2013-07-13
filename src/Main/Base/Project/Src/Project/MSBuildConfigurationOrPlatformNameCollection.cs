@@ -16,9 +16,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	class MSBuildConfigurationOrPlatformNameCollection : IConfigurationOrPlatformNameCollection
 	{
-		public event ModelCollectionChangedEventHandler<string> CollectionChanged;
-		
 		volatile IReadOnlyList<string> listSnapshot = EmptyList<string>.Instance;
+		readonly ModelCollectionChangedEvent<string> collectionChangedEvent;
 		readonly MSBuildBasedProject project;
 		readonly bool isPlatform;
 		
@@ -26,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.project = project;
 			this.isPlatform = isPlatform;
+			collectionChangedEvent = new ModelCollectionChangedEvent<string>();
 		}
 		
 		internal void SetContents(IEnumerable<string> updatedItems)
@@ -33,13 +33,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.listSnapshot = updatedItems.ToArray();
 		}
 		
+		public event ModelCollectionChangedEventHandler<string> CollectionChanged
+		{
+			add {
+				collectionChangedEvent.AddHandler(value);
+			}
+			remove {
+				collectionChangedEvent.RemoveHandler(value);
+			}
+		}
+		
 		internal void OnCollectionChanged(IReadOnlyCollection<string> oldItems, IReadOnlyCollection<string> newItems)
 		{
 			if (oldItems.SequenceEqual(newItems))
 				return;
-			var eh = CollectionChanged;
-			if (eh != null)
-				eh(oldItems, newItems);
+			collectionChangedEvent.Fire(oldItems, newItems);
 		}
 		
 		#region IReadOnlyCollection implementation
