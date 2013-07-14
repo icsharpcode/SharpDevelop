@@ -3252,9 +3252,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
             return null;
         }
 
-	    public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause whereClause, object data)
+		public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause whereClause, object data)
 		{
-            outputFormatter.Space();
+			if (!outputFormatter.LastCharacterIsWhiteSpace) {
+				outputFormatter.Space();
+			}
 			outputFormatter.PrintToken(Tokens.Where);
 			outputFormatter.Space();
 			return whereClause.Condition.AcceptVisitor(this, data);
