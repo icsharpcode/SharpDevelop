@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.TreeView;
 
@@ -54,6 +55,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			var target = definition.Resolve();
 			if (target != null)
 				NavigationService.NavigateTo(target);
+		}
+		
+		public override void ShowContextMenu()
+		{
+			var model = this.Model;
+			if (model is IEntityModel) {
+				var ctx = MenuService.ShowContextMenu(null, (IEntityModel) model, "/SharpDevelop/EntityContextMenu");
+			}
 		}
 	}
 }

@@ -2,12 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
-	public class MemberTreeNode : SharpTreeNode
+	public class MemberTreeNode : ModelCollectionTreeNode
 	{
 		IMemberModel model;
 		
@@ -53,11 +54,27 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			return ambience.ConvertEntity(member);
 		}
 		
+		protected override IModelCollection<object> ModelChildren {
+			get { return ImmutableModelCollection<object>.Empty; }
+		}
+		
+		protected override System.Collections.Generic.IComparer<SharpTreeNode> NodeComparer {
+			get { return NodeTextComparer; }
+		}
+		
 		public override void ActivateItem(System.Windows.RoutedEventArgs e)
 		{
 			var target = model.Resolve();
 			if (target != null)
 				NavigationService.NavigateTo(target);
+		}
+		
+		public override void ShowContextMenu()
+		{
+			var model = this.Model;
+			if (model is IEntityModel) {
+				var ctx = MenuService.ShowContextMenu(null, (IEntityModel) model, "/SharpDevelop/EntityContextMenu");
+			}
 		}
 	}
 }
