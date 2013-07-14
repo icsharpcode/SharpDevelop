@@ -128,9 +128,9 @@ namespace ICSharpCode.AddInManager2
 					_notifyIcon.Click += NotifyIcon_Click;
 					_notifyIcon.BalloonTipClicked += NotifyIcon_Click;
 					
-					_notifyIcon.Text = "Updates for SharpDevelop are available";
-					_notifyIcon.BalloonTipTitle = "Updates for SharpDevelop are available";
-					_notifyIcon.BalloonTipText = "Click here to see the updates";
+					_notifyIcon.Text = SD.ResourceService.GetString("AddInManager2.UpdateNotifier.BubbleTitle");
+					_notifyIcon.BalloonTipTitle = _notifyIcon.Text;
+					_notifyIcon.BalloonTipText = SD.ResourceService.GetString("AddInManager2.UpdateNotifier.BubbleText");
 					
 					_notifyIcon.Visible = true;
 					_notifyIcon.ShowBalloonTip(40000);

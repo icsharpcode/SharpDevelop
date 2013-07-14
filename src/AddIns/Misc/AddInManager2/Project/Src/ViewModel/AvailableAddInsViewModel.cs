@@ -9,7 +9,7 @@ using ICSharpCode.SharpDevelop;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
-{	
+{
 	public class AvailableAddInsViewModel : NuGetAddInsViewModelBase
 	{
 		public AvailableAddInsViewModel()
@@ -44,19 +44,15 @@ namespace ICSharpCode.AddInManager2.ViewModel
 
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			return (ActiveRepository ?? AddInManager.Repositories.AllRegistered).GetPackages();
+			return (ActiveRepository ?? AddInManager.Repositories.AllRegistered).GetPackages()
+				.Where(package => package.IsLatestVersion);
 		}
 		
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
 			return base.GetFilteredPackagesBeforePagingResults(allPackages)
-				.Where(package => package.IsReleaseVersion())
-				.DistinctLast(PackageEqualityComparer.Id);
-		}
-		
-		protected override IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
-		{
-			return packages.OrderByDescending(package => package.DownloadCount);
+				.OrderByDescending(package => package.DownloadCount)
+				.ThenBy(package => package.Id);
 		}
 		
 		protected override void UpdatePrereleaseFilter()
