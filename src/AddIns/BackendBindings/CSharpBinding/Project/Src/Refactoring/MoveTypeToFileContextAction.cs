@@ -41,7 +41,30 @@ namespace CSharpBinding.Refactoring
 				return false;
 			return identifier.Parent is TypeDeclaration || identifier.Parent is DelegateDeclaration;
 		}
-
+		
+		public override string DisplayName
+		{
+			get {
+				return "Move type to file";
+			}
+		}
+		
+		public override string GetDisplayName(EditorRefactoringContext context)
+		{
+			CSharpFullParseInformation parseInformation = context.GetParseInformation() as CSharpFullParseInformation;
+			if (parseInformation != null) {
+				SyntaxTree st = parseInformation.SyntaxTree;
+				Identifier identifier = (Identifier) st.GetNodeAt(context.CaretLocation, node => node.Role == Roles.Identifier);
+				if (identifier == null)
+					return DisplayName;
+				
+				return StringParser.Parse("${res:SharpDevelop.Refactoring.MoveClassToFile}",
+				                          new StringTagPair("FileName", MakeValidFileName(identifier.Name)));
+			}
+			
+			return DisplayName;
+		}
+		
 		public override async void Execute(EditorRefactoringContext context)
 		{
 			SyntaxTree st = await context.GetSyntaxTreeAsync().ConfigureAwait(false);
@@ -130,10 +153,6 @@ namespace CSharpBinding.Refactoring
 			if (name.IndexOfAny(Path.GetInvalidFileNameChars()) > -1)
 				return name.RemoveAny(Path.GetInvalidFileNameChars()) + ".cs";
 			return name + ".cs";
-		}
-
-		public override string DisplayName {
-			get { return "Move type to file"; }
 		}
 	}
 }

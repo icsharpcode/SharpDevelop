@@ -25,9 +25,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 				ChildActions = childActions
 			};
 		}
-		
+
 		public string DisplayName { get; private set; }
+		
 		public IEntity Entity { get; private set; }
+		
+		public string GetDisplayName(EditorRefactoringContext context)
+		{
+			return DisplayName;
+		}
 		
 		public GoToEntityAction(IEntity entity, string displayName)
 		{

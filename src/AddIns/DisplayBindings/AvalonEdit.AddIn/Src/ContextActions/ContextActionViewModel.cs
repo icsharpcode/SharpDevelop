@@ -33,7 +33,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		}
 		
 		public string Name {
-			get { return this.action != null ? this.action.DisplayName : string.Empty; }
+			get { return this.action != null ? this.action.GetDisplayName(context) : string.Empty; }
 		}
 		
 		public string Comment { get; set; }

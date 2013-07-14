@@ -52,11 +52,27 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 
-		public override string DisplayName {
+		public override string DisplayName
+		{
 			get {
-				// TODO Use the string from resource file! But this needs to become GetDisplayName(context) first.
 				return "Rename file to match type name";
 			}
+		}
+		
+		public override string GetDisplayName(EditorRefactoringContext context)
+		{
+			CSharpFullParseInformation parseInformation = context.GetParseInformation() as CSharpFullParseInformation;
+			if (parseInformation != null) {
+				SyntaxTree st = parseInformation.SyntaxTree;
+				Identifier identifier = (Identifier) st.GetNodeAt(context.CaretLocation, node => node.Role == Roles.Identifier);
+				if (identifier == null)
+					return DisplayName;
+				
+				return StringParser.Parse("${res:SharpDevelop.Refactoring.RenameFileTo}",
+				                          new StringTagPair("FileName", MakeValidFileName(identifier.Name)));
+			}
+			
+			return DisplayName;
 		}
 		
 		string MakeValidFileName(string name)
