@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -12,13 +13,21 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	/// </summary>
 	public class WorkspaceTreeNode : ModelCollectionTreeNode
 	{
-		ClassBrowserWorkspace workspace;
+		WorkspaceModel workspace;
 		
-		public WorkspaceTreeNode(ClassBrowserWorkspace workspace)
+		public IMutableModelCollection<SharpTreeNode> SpecialNodes {
+			get { return workspace.SpecialNodes; }
+		}
+
+		public AssemblyList AssemblyList {
+			get { return workspace.AssemblyList; }
+			set { workspace.AssemblyList = value; }
+		}
+		
+		public WorkspaceTreeNode()
 		{
-			if (workspace == null)
-				throw new ArgumentNullException("workspace");
-			this.workspace = workspace;
+			this.workspace = new WorkspaceModel();
+			this.workspace.SpecialNodes.CollectionChanged += SpecialNodesModelCollectionChanged;
 		}
 		
 		protected override object GetModel()
@@ -27,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		}
 		
 		protected override IModelCollection<object> ModelChildren {
-			get { return workspace.LoadedAssemblies; }
+			get { return workspace.AssemblyList.Assemblies; }
 		}
 		
 		protected override IComparer<SharpTreeNode> NodeComparer {
@@ -36,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Text {
 			get {
-				return "Workspace " + workspace.Name;
+				return "Workspace " + AssemblyList.Name;
 			}
 		}
 		
@@ -53,9 +62,12 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		protected override void InsertSpecialNodes()
 		{
-			if (workspace.IsAssigned) {
-				InsertChildren(new[] { workspace.AssignedSolution });
-			}
+			Children.AddRange(workspace.SpecialNodes);
+		}
+		
+		void SpecialNodesModelCollectionChanged(IReadOnlyCollection<SharpTreeNode> removedItems, IReadOnlyCollection<SharpTreeNode> addedItems)
+		{
+			SynchronizeModelChildren();
 		}
 	}
 }

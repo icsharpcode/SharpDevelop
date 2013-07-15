@@ -134,6 +134,7 @@
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
 		     class    = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserPad"
+		     serviceInterface = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.IClassBrowser"
 		     defaultPosition = "Right" />
 		
 		<Pad id       = "SideBar"

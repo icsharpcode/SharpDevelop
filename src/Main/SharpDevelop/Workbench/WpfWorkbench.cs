@@ -432,6 +432,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				throw new ArgumentException("Pad is already loaded");
 			
 			padDescriptorCollection.Add(content);
+			if (content.ServiceInterface != null) {
+				SD.Services.AddService(content.ServiceInterface, delegate { return content.PadContent; });
+			}
 			
 			if (WorkbenchLayout != null) {
 				WorkbenchLayout.ShowPad(content);

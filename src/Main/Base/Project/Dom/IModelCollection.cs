@@ -19,22 +19,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		List<ModelCollectionChangedEventHandler<T>> _handlers = new List<ModelCollectionChangedEventHandler<T>>();
 		
-//		public static ModelCollectionChangedEvent<T> operator+(ModelCollectionChangedEvent<T> eventObject, ModelCollectionChangedEventHandler<T> handler)
-//		{
-//			eventObject._handlers.Add(handler);
-//			return eventObject;
-//		}
-		
 		public void AddHandler(ModelCollectionChangedEventHandler<T> handler)
 		{
 			_handlers.Add(handler);
 		}
-		
-//		public static ModelCollectionChangedEvent<T> operator-(ModelCollectionChangedEvent<T> eventObject, ModelCollectionChangedEventHandler<T> handler)
-//		{
-//			eventObject._handlers.Remove(handler);
-//			return eventObject;
-//		}
 		
 		public void RemoveHandler(ModelCollectionChangedEventHandler<T> handler)
 		{

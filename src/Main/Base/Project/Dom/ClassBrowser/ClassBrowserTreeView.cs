@@ -2,33 +2,38 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Diagnostics;
-using System.Windows;
+using System.Collections.Generic;
 using System.Windows.Controls;
-using System.Windows.Input;
-using ICSharpCode.Core.Presentation;
 using ICSharpCode.TreeView;
-using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
 	public class ClassBrowserTreeView : SharpTreeView, IClassBrowserTreeView
 	{
-		ClassBrowserWorkspace currentWorkspace;
+		#region IClassBrowser implementation
+
+		public ICollection<SharpTreeNode> SpecialNodes {
+			get { return ((WorkspaceTreeNode)Root).SpecialNodes; }
+		}
+
+		public AssemblyList AssemblyList {
+			get { return ((WorkspaceTreeNode)Root).AssemblyList; }
+			set { ((WorkspaceTreeNode)Root).AssemblyList = value; }
+		}
+
+		#endregion
 		
-		public ClassBrowserWorkspace Workspace {
-			get { return currentWorkspace; }
-			set {
-				if (currentWorkspace == value)
-					return;
-				currentWorkspace = value;
-				if (currentWorkspace != null) {
-					this.Root = new WorkspaceTreeNode(currentWorkspace);
-					this.ShowRoot = currentWorkspace.LoadedAssemblies.Count > 0 || !currentWorkspace.IsAssigned;
-				} else {
-					this.Root = null;
-				}
-			}
+		public ClassBrowserTreeView()
+		{
+			WorkspaceTreeNode root = new WorkspaceTreeNode();
+			ClassBrowserTreeView instance = this;
+			root.SpecialNodes.CollectionChanged += delegate {
+				instance.ShowRoot = root.Children.Count > 1;
+			};
+			root.PropertyChanged += delegate {
+				instance.ShowRoot = root.Children.Count > 1;
+			};
+			this.Root = root;
 		}
 		
 		protected override void OnContextMenuOpening(ContextMenuEventArgs e)
@@ -40,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		}
 	}
 	
-	public interface IClassBrowserTreeView
+	public interface IClassBrowserTreeView : IClassBrowser
 	{
 		
 	}

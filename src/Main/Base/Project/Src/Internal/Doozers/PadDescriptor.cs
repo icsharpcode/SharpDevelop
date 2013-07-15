@@ -37,6 +37,9 @@ namespace ICSharpCode.SharpDevelop
 		AddIn addIn;
 		Type padType;
 		
+		string serviceInterfaceName;
+		Type serviceInterface;
+		
 		IPadContent padContent;
 		bool        padContentCreated;
 		
@@ -53,6 +56,7 @@ namespace ICSharpCode.SharpDevelop
 			icon = codon.Properties["icon"];
 			title = codon.Properties["title"];
 			@class = codon.Properties["class"];
+			serviceInterfaceName = codon.Properties["serviceInterface"];
 			if (!string.IsNullOrEmpty(codon.Properties["defaultPosition"])) {
 				DefaultPosition = (DefaultPadPositions)Enum.Parse(typeof(DefaultPadPositions), codon.Properties["defaultPosition"]);
 			}
@@ -75,6 +79,7 @@ namespace ICSharpCode.SharpDevelop
 			this.icon = icon;
 			this.category = "none";
 			this.shortcut = "";
+			this.serviceInterface = null;
 		}
 		
 		/// <summary>
@@ -131,6 +136,18 @@ namespace ICSharpCode.SharpDevelop
 		public string Class {
 			get {
 				return @class;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the type of the service interface.
+		/// </summary>
+		public Type ServiceInterface {
+			get {
+				if (serviceInterface == null && addIn != null && !string.IsNullOrEmpty(serviceInterfaceName)) {
+					serviceInterface = addIn.FindType(serviceInterfaceName);
+				}
+				return serviceInterface;
 			}
 		}
 		
