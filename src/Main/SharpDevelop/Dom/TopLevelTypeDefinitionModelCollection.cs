@@ -87,13 +87,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 					// Existing type changed
 					// Find a matching old part:
 					IUnresolvedTypeDefinition oldPart = null;
-					for (int i = 0; i < oldTypeDefHandled.Length; i++) {
-						if (oldTypeDefHandled[i])
-							continue;
-						if (oldFile[i].FullTypeName == newFullTypeName) {
-							oldTypeDefHandled[i] = true;
-							oldPart = oldFile[i];
-							break;
+					if (oldTypeDefHandled != null) {
+						for (int i = 0; i < oldTypeDefHandled.Length; i++) {
+							if (oldTypeDefHandled[i])
+								continue;
+							if (oldFile[i].FullTypeName == newFullTypeName) {
+								oldTypeDefHandled[i] = true;
+								oldPart = oldFile[i];
+								break;
+							}
 						}
 					}
 					model.Update(oldPart, newPart);
