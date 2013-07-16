@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			project = MockRepository.GenerateStrictMock<IProject>();
 			projectContent = new CSharpProjectContent().AddAssemblyReferences(AssemblyLoader.Corlib);
 			context = new ProjectEntityModelContext(project, ".cs");
-			assemblyModel = new ProjectAssemblyModel(context);
+			assemblyModel = new AssemblyModel(context);
 			
 			SD.ParserService.Stub(p => p.GetCompilation(project)).WhenCalled(c => c.ReturnValue = projectContent.CreateCompilation());
 		}
