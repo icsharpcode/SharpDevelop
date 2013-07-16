@@ -68,6 +68,15 @@
 		</MenuItem>
 	</Path>
 	
+	<Path name="/SharpDevelop/Workbench/MainMenu/Debug">
+		<Condition name = "IsProcessRunning" isdebugging="False" action="Disable">
+			<MenuItem id = "DebugExecutable"
+			          insertbefore = "ExecutionControlSeparator"
+			          label = "${res:MainWindow.Windows.Debug.DebugExecutable}"
+			          class = "Debugger.AddIn.DebugExecutableMenuCommand"/>
+		</Condition>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id    = "BreakPointsPad"
 		     category = "Debugger"

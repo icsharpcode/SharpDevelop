@@ -466,7 +466,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			CurrentProcess = e.Process;
 			CurrentThread = e.Thread;
-			CurrentStackFrame = CurrentThread != null ? CurrentThread.MostRecentUserStackFrame : null;
+			CurrentStackFrame = CurrentThread != null ? CurrentThread.MostRecentStackFrame : null;
 			
 			// We can have several events happening at the same time
 			bool breakProcess = e.Break;

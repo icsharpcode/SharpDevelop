@@ -3,11 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
+using Microsoft.Win32;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn
@@ -28,7 +31,7 @@ namespace Debugger.AddIn
 		public override void Run()
 		{
 			ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
-				
+			
 			if (textEditor == null || DebuggerService.CurrentDebugger == null)
 				return;
 			
@@ -95,6 +98,43 @@ namespace Debugger.AddIn
 		public bool IsValid(object caller, Condition condition)
 		{
 			return BreakpointUtil.BreakpointsOnCaret.Any();
+		}
+	}
+	
+	public class DebugExecutableMenuCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (DebuggingOptions.Instance.AskForArguments) {
+				var window = new ExecuteProcessWindow { Owner = SD.Workbench.MainWindow };
+				if (window.ShowDialog() == true) {
+					string fileName = window.SelectedExecutable;
+					
+					// execute the process
+					StartExecutable(fileName, window.WorkingDirectory, window.Arguments);
+				}
+			} else {
+				OpenFileDialog dialog = new OpenFileDialog() {
+					Filter = ".NET Executable (*.exe) | *.exe",
+					RestoreDirectory = true,
+					DefaultExt = "exe"
+				};
+				if (dialog.ShowDialog() == true) {
+					string fileName = dialog.FileName;
+					// execute the process
+					StartExecutable(fileName);
+				}
+			}
+		}
+		
+		void StartExecutable(string fileName, string workingDirectory = null, string arguments = null)
+		{
+			DebuggerService.CurrentDebugger.BreakAtBeginning = DebuggingOptions.Instance.BreakAtBeginning;
+			DebuggerService.CurrentDebugger.Start(new ProcessStartInfo {
+			                      	FileName = fileName,
+			                      	WorkingDirectory = workingDirectory ?? Path.GetDirectoryName(fileName),
+			                      	Arguments = arguments
+			                      });
 		}
 	}
 }
