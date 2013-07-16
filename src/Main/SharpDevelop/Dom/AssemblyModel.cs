@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -50,6 +51,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public void Update(IUnresolvedFile oldFile, IUnresolvedFile newFile)
+		{
+			IList<IUnresolvedTypeDefinition> old = EmptyList<IUnresolvedTypeDefinition>.Instance;
+			IList<IUnresolvedTypeDefinition> @new = EmptyList<IUnresolvedTypeDefinition>.Instance;
+			if (oldFile != null)
+				old = oldFile.TopLevelTypeDefinitions;
+			if (newFile != null)
+				@new = newFile.TopLevelTypeDefinitions;
+			
+			typeDeclarations.Update(old, @new);
+		}
+		
+		public void Update(IList<IUnresolvedTypeDefinition> oldFile, IList<IUnresolvedTypeDefinition> newFile)
 		{
 			typeDeclarations.Update(oldFile, newFile);
 		}

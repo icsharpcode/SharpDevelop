@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 
@@ -56,6 +57,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <paramref name="newFile"/> is null if the file is removed from the assembly.
 		/// </remarks>
 		void Update(IUnresolvedFile oldFile, IUnresolvedFile newFile);
+		
+		/// <summary>
+		/// Updates the parse information with the given list of top-level type definitions.
+		/// </summary>
+		void Update(IList<IUnresolvedTypeDefinition> oldFile, IList<IUnresolvedTypeDefinition> newFile);
 		
 		/// <summary>
 		/// Gets the assembly name (short name).

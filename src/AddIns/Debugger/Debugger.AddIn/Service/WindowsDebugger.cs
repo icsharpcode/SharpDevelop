@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Debugger;
+using ICSharpCode.SharpDevelop.Gui.Pads;
 using Debugger.AddIn;
 using Debugger.AddIn.Tooltips;
 using Debugger.AddIn.TreeModel;
@@ -232,6 +233,7 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void Detach()
 		{
+			ClassBrowserSupport.Detach(CurrentProcess);
 			CurrentDebugger.Detach();
 		}
 		
@@ -438,6 +440,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			CurrentProcess.Paused         += debuggedProcess_DebuggingPaused;
 			CurrentProcess.Resumed        += debuggedProcess_DebuggingResumed;
 			CurrentProcess.Exited         += (s, e) => debugger_ProcessExited();
+			ClassBrowserSupport.Attach(CurrentProcess);
 			
 			UpdateBreakpointIcons();
 		}
@@ -448,6 +451,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				DebugStopped(this, EventArgs.Empty);
 			}
 			
+			ClassBrowserSupport.Detach(CurrentProcess);
 			CurrentProcess = null;
 			CurrentThread = null;
 			CurrentStackFrame = null;

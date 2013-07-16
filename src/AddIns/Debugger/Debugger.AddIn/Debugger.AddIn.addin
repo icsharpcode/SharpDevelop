@@ -149,4 +149,8 @@
 		<Class class="Debugger.AddIn.Visualizers.ObjectGraphVisualizerDescriptor" />
 		<Class class="Debugger.AddIn.Visualizers.GridVisualizerDescriptor" />
 	</Path>
+
+	<Path name="/SharpDevelop/TreeNodeFactories">
+		<Class id="DebuggerTreeNodesFactory" class="ICSharpCode.SharpDevelop.Gui.Pads.DebuggerTreeNodesFactory" />
+	</Path>
 </AddIn>

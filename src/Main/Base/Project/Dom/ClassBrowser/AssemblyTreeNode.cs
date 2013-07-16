@@ -34,6 +34,18 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				return model.Namespaces;
 			}
 		}
+		
+		public override object Text {
+			get {
+				return model.AssemblyName;
+			}
+		}
+		
+		public override object Icon {
+			get {
+				return base.Icon;
+			}
+		}
 	}
 }
 

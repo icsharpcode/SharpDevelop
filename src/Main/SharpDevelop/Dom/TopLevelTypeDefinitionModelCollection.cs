@@ -72,49 +72,45 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Updates the parse information.
 		/// </summary>
-		public void Update(IUnresolvedFile oldFile, IUnresolvedFile newFile)
+		public void Update(IList<IUnresolvedTypeDefinition> oldFile, IList<IUnresolvedTypeDefinition> newFile)
 		{
 			List<ITypeDefinitionModel> oldModels = null;
 			List<ITypeDefinitionModel> newModels = null;
 			bool[] oldTypeDefHandled = null;
-			if (oldFile != null) {
-				oldTypeDefHandled = new bool[oldFile.TopLevelTypeDefinitions.Count];
+			if (oldFile.Count > 0) {
+				oldTypeDefHandled = new bool[oldFile.Count];
 			}
-			if (newFile != null) {
-				foreach (var newPart in newFile.TopLevelTypeDefinitions) {
-					FullTypeName newFullTypeName = newPart.FullTypeName;
-					TypeDefinitionModel model;
-					if (dict.TryGetValue(newFullTypeName.TopLevelTypeName, out model)) {
-						// Existing type changed
-						// Find a matching old part:
-						IUnresolvedTypeDefinition oldPart = null;
-						if (oldFile != null) {
-							for (int i = 0; i < oldTypeDefHandled.Length; i++) {
-								if (oldTypeDefHandled[i])
-									continue;
-								if (oldFile.TopLevelTypeDefinitions[i].FullTypeName == newFullTypeName) {
-									oldTypeDefHandled[i] = true;
-									oldPart = oldFile.TopLevelTypeDefinitions[i];
-									break;
-								}
-							}
+			foreach (var newPart in newFile) {
+				FullTypeName newFullTypeName = newPart.FullTypeName;
+				TypeDefinitionModel model;
+				if (dict.TryGetValue(newFullTypeName.TopLevelTypeName, out model)) {
+					// Existing type changed
+					// Find a matching old part:
+					IUnresolvedTypeDefinition oldPart = null;
+					for (int i = 0; i < oldTypeDefHandled.Length; i++) {
+						if (oldTypeDefHandled[i])
+							continue;
+						if (oldFile[i].FullTypeName == newFullTypeName) {
+							oldTypeDefHandled[i] = true;
+							oldPart = oldFile[i];
+							break;
 						}
-						model.Update(oldPart, newPart);
-					} else {
-						// New type added
-						model = new TypeDefinitionModel(context, newPart);
-						dict.Add(newFullTypeName.TopLevelTypeName, model);
-						if (newModels == null)
-							newModels = new List<ITypeDefinitionModel>();
-						newModels.Add(model);
 					}
+					model.Update(oldPart, newPart);
+				} else {
+					// New type added
+					model = new TypeDefinitionModel(context, newPart);
+					dict.Add(newFullTypeName.TopLevelTypeName, model);
+					if (newModels == null)
+						newModels = new List<ITypeDefinitionModel>();
+					newModels.Add(model);
 				}
 			}
 			// Remove all old parts that weren't updated:
-			if (oldFile != null) {
+			if (oldTypeDefHandled != null) {
 				for (int i = 0; i < oldTypeDefHandled.Length; i++) {
 					if (!oldTypeDefHandled[i]) {
-						IUnresolvedTypeDefinition oldPart = oldFile.TopLevelTypeDefinitions[i];
+						IUnresolvedTypeDefinition oldPart = oldFile[i];
 						TopLevelTypeName topLevelTypeName = oldPart.FullTypeName.TopLevelTypeName;
 						TypeDefinitionModel model;
 						if (dict.TryGetValue(topLevelTypeName, out model)) {
