@@ -191,9 +191,7 @@
     <Page Include="Src\View\AddInsView.xaml" />
     <Page Include="Src\View\LicenseAcceptanceView.xaml" />
     <Page Include="Src\View\PagedResultsView.xaml" />
-    <Page Include="Src\View\PackageRepositoriesView.xaml">
-      <DependentUpon>PagedResultsView.xaml</DependentUpon>
-    </Page>
+    <Page Include="Src\View\PackageRepositoriesView.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
