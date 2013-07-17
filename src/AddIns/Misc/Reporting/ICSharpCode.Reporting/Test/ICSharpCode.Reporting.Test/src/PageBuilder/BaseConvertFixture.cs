@@ -37,7 +37,6 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		
 		[Test]
-		[IgnoreAttribute]
 		public void ExportContainerContainsExportText() {
 			reportCreator.BuildExportList();
 			var page = reportCreator.Pages[0];

@@ -36,26 +36,28 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		{
 			var exportContainer = (ExportContainer)reportContainer.CreateExportColumn();
 			exportContainer.Location = CurrentLocation;
-			exportContainer.DesiredSize = Measure(exportContainer);
+//			exportContainer.DesiredSize = Measure(exportContainer);
 			return exportContainer;
 		}
 
 		
-		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,IExportContainer exportContainer,Point position){
+		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,
+		                                               IExportContainer exportContainer,
+		                                               Point position){
 
 			var itemsList = new List<IExportColumn>();
-			foreach (var element in reportContainer.Items) {
-				var exportColumn = ExportColumnFactory.CreateItem(element);
+			foreach (var item in reportContainer.Items) {
+				var exportColumn = ExportColumnFactory.CreateItem(item);
 				exportColumn.Parent = exportContainer;
-				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
-//				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
+				exportColumn.Location = new Point(item.Location.X,item.Location.Y + position.Y);
 				itemsList.Add(exportColumn);
 			}
 			return itemsList;
 		}
 
-		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,IExportContainer exportContainer)
-		{
+		
+		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer
+		                                        ,IExportContainer exportContainer){
 //			Console.WriteLine("CreateConvertedList {0}",reportContainer.Name);
 			var itemsList = new List<IExportColumn>();
 			foreach (var element in reportContainer.Items) {
@@ -69,20 +71,14 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			return itemsList;
 		}
 
-		public Size Measure(IExportColumn element)
-		{
-//			Console.WriteLine("Measure {0}",element.Name);
-			var measureStrategy = element.MeasurementStrategy();
-			return measureStrategy.Measure(element, Graphics);
-		}
-
+	/*
 		public void ArrangeContainer(IExportContainer exportContainer)
 		{
-//			Console.WriteLine("ArrangeContainer {0}",exportContainer.Name);
+			Console.WriteLine("ArrangeContainer {0}",exportContainer.Name);
 			var exportArrange = exportContainer.GetArrangeStrategy();
 			exportArrange.Arrange(exportContainer);
 		}
-		
+	*/	
 		
 		internal IReportContainer Container { get; private set; }
 

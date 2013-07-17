@@ -16,23 +16,26 @@ namespace ICSharpCode.Reporting.Test.Model
 		private ReportModel model;
 		
 		[Test]
-		public void ReportHeaderOneItem () {
+		public void ReportHeaderContainsOneItem () {
 			var section = model.ReportHeader;
 			Assert.That(section.Items.Count,Is.EqualTo(1));
 		}
 		
 		
 		[Test]
-		public void PageHeaderOneItem () {
+		public void PageHeaderContainsOneItem () {
 			var section = model.ReportHeader;
 			Assert.That(section.Items.Count,Is.EqualTo(1));
 		}
+		
 		
 		[Test]
 		public void DetailContainsOneDataItem() {
 			var section = model.DetailSection;
 			Assert.That(section.Items.Count,Is.EqualTo(1));
 		}
+		
+		
 		[SetUp]
 		public void LoadModelFromStream()
 		{

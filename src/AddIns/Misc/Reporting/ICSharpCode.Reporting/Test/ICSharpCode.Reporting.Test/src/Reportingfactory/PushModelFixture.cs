@@ -74,6 +74,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 			Assert.That(result,Is.AssignableFrom(typeof(ExportContainer)));
 		}
 		
+		
 		[Test]
 		public void ParentOfSectionsIsPage() {
 			reportCreator.BuildExportList();

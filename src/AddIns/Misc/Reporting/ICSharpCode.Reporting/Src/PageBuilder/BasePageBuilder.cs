@@ -115,10 +115,12 @@ namespace ICSharpCode.Reporting.PageBuilder
 		{
 			var containerConverter = new ContainerConverter(Graphics, location);
 			var convertedContainer = containerConverter.Convert(container);
+			
 			var list = containerConverter.CreateConvertedList(container,convertedContainer);
 			convertedContainer.ExportedItems.AddRange(list);
-			containerConverter.Measure(convertedContainer);
-			containerConverter.ArrangeContainer(convertedContainer);
+			
+			convertedContainer.DesiredSize = MeasureElement(convertedContainer);
+			ArrangeContainer(convertedContainer);
 			return convertedContainer;
 		}
 		
@@ -129,6 +131,19 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentPage.ExportedItems.Add(header);
 		}
 		
+		
+		protected Size MeasureElement (IExportColumn element) {
+			var measureStrategy = element.MeasurementStrategy();
+			return measureStrategy.Measure(element, Graphics);
+		}
+		  
+		
+		protected void ArrangeContainer(IExportContainer exportContainer)
+		{
+			var exportArrange = exportContainer.GetArrangeStrategy();
+			exportArrange.Arrange(exportContainer);
+		}
+
 		
 		IPageInfo CreatePageInfo()
 		{

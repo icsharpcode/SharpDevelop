@@ -32,10 +32,10 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 		}
 		
 		[Test]
-		[Ignore]
 		public void ItemAtTopOfContainer() {
 			var container = CreateContainer();
 			container.ExportedItems[0].Location = container.Location;
+			Measure(container);
 			strategy.Arrange(container);
 			
 			var containerRect = new Rectangle(container.Location,container.DesiredSize);

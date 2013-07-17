@@ -20,7 +20,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		IExportContainer Convert(IReportContainer reportContainer);
 		List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,IExportContainer exportContainer);
 		List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,IExportContainer exportContainer,Point position);
-		Size Measure(IExportColumn element);
-		void ArrangeContainer(IExportContainer exportContainer);
+//		Size Measure(IExportColumn element);
+//		void ArrangeContainer(IExportContainer exportContainer);
 	}
 }

@@ -46,7 +46,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void aaBuildDetail()
 		{
 			
-			Container = ReportModel.DetailSection;
+			CurrentSection = ReportModel.DetailSection;
 			var collectionSource = new CollectionSource(List,ElementType,ReportModel.ReportSettings);
 			IExportContainer detail = null;
 			if(collectionSource.Count > 0) {
@@ -60,7 +60,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 
 				
 				do {
-					collectionSource.Fill(Container.Items);
+					collectionSource.Fill(CurrentSection.Items);
 					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection,detail,position);
 					if (PageFull(convertedItems)) {
 						detail.ExportedItems.AddRange(convertedItems);
@@ -77,7 +77,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 					} else {
 						detail.ExportedItems.AddRange(convertedItems);
 						MeasureAndArrangeContainer(converter,detail);
-						position = new Point(Container.Location.Y,position.Y + Container.Size.Height);
+						position = new Point(CurrentSection.Location.Y,position.Y + CurrentSection.Size.Height);
 					}
 				}
 				
@@ -96,7 +96,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void BuildDetail()
 		{
 			
-			Container = ReportModel.DetailSection;
+			CurrentSection = ReportModel.DetailSection;
 			var collectionSource = new CollectionSource(List,ElementType,ReportModel.ReportSettings);
 			IExportContainer detail = null;
 			if(collectionSource.Count > 0) {
@@ -108,9 +108,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 
 				do {
 					
-					var row = CreateContainerIfNotExist(Container,detail, position);
-					collectionSource.Fill(Container.Items);
-
+					var row = CreateContainerIfNotExist(CurrentSection,detail, position);
+					collectionSource.Fill(CurrentSection.Items);
+//var convertedItems	 =  converter.CreateConvertedList(ReportModel.DetailSection,row);
 					var convertedItems	 =  converter.CreateConvertedList(ReportModel.DetailSection,row,position);
 					MeasureAndArrangeContainer(converter,row);
 					row.ExportedItems.AddRange(convertedItems);
@@ -123,13 +123,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 						detail = CreateDetail(DetailStart);
 						CurrentLocation = DetailStart;
 						
-						row = CreateContainerIfNotExist(Container,detail,position);
+						row = CreateContainerIfNotExist(CurrentSection,detail,position);
 						var recreate =  converter.CreateConvertedList(ReportModel.DetailSection,row,position);
 						MeasureAndArrangeContainer(converter,row);
 						row.ExportedItems.AddRange(recreate);
 					}
 					detail.ExportedItems.Add(row);
-					position = new Point(Container.Location.Y,position.Y + Container.Size.Height);
+					position = new Point(CurrentSection.Location.Y,position.Y + CurrentSection.Size.Height);
 				}
 				
 				while (collectionSource.MoveNext());
@@ -147,13 +147,17 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		IExportContainer CreateContainerIfNotExist(IReportContainer container, IExportContainer parent, Point position)
 		{
-			var row = CreateContainerForSection(position);
+			var isContainer = container.Items[0] is IReportContainer;
+			if (!isContainer) {
+				var row = CreateContainerForSection(position);
 				row.Name = "Row";
 				row.Parent = parent;
 				row.Location = new Point(50, position.Y);
 				row.Size = new Size(400, 40);
 				row.BackColor = Color.Green;
 				return row;
+			}
+			return CreateContainerForSection(container.Items[0].Location);
 		}
 
 		
@@ -173,14 +177,14 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		void MeasureAndArrangeContainer(IContainerConverter converter,IExportContainer container)
 		{
-			converter.Measure(container);
-			converter.ArrangeContainer(container);
+			container.DesiredSize = MeasureElement(container);
+			ArrangeContainer(container);
 		}
 
 		
 		IExportContainer CreateContainerForSection(Point location )
 		{
-			var detail = (ExportContainer)Container.CreateExportColumn();
+			var detail = (ExportContainer)CurrentSection.CreateExportColumn();
 			detail.Location = location;
 			return detail;
 		}
@@ -196,7 +200,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		internal IReportContainer Container { get; private set; }
+//		internal IReportContainer Container { get; private set; }
+		internal IReportContainer CurrentSection { get; private set; }
 		
 		public IEnumerable List {get; private set;}
 		
