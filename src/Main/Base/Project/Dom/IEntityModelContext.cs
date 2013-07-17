@@ -34,6 +34,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Returns true if part1 is considered a better candidate for the primary part than part2.
 		/// </summary>
 		bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2);
+		
+		/// <summary>
+		/// Short name of current assembly.
+		/// </summary>
+		string AssemblyName { get; }
+		
+		/// <summary>
+		/// Full path and file name of the assembly. Output assembly for projects.
+		/// </summary>
+		string Location { get; }
 	}
 	
 	public class ProjectEntityModelContext : IEntityModelContext
@@ -51,6 +61,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string AssemblyName {
 			get { return project.AssemblyName; }
+		}
+		
+		public string Location {
+			get { return project.OutputAssemblyFullPath; }
 		}
 		
 		public IProject Project {
@@ -86,6 +100,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string AssemblyName {
 			get { return mainAssembly.AssemblyName; }
+		}
+		
+		public string Location {
+			get { return mainAssembly.Location; }
 		}
 		
 		public ICompilation GetCompilation()

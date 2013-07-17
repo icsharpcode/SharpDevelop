@@ -2,6 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
@@ -12,7 +16,17 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		public override void Execute(object parameter)
 		{
-			throw new NotImplementedException();
+			var classBrowser = SD.GetService<IClassBrowser>();
+			if (classBrowser != null) {
+				OpenFileDialog openFileDialog = new OpenFileDialog();
+				openFileDialog.Filter = "Assembly files (*.exe, *.dll)|*.exe;*.dll";
+				openFileDialog.CheckFileExists = true;
+				openFileDialog.CheckPathExists = true;
+				if (openFileDialog.ShowDialog() ?? false)
+				{
+					classBrowser.AssemblyList.Assemblies.Add(ClassBrowserPad.CreateAssemblyModelFromFile(openFileDialog.FileName));
+				}
+			}
 		}
 	}
 	

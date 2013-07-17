@@ -42,6 +42,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// This always is the namespace without a name - it's unrelated to the 'root namespace' project setting.
 		/// </remarks>
 		INamespaceModel RootNamespace { get; }
+		
+		/// <summary>
+		/// Gets the <see cref="IEntityModelContext"/> of this assembly model.
+		/// </summary>
+		IEntityModelContext Context { get; }
 	}
 	
 	/// <summary>
@@ -91,6 +96,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 
 		public INamespaceModel RootNamespace {
 			get { return EmptyNamespaceModel.Instance; }
+		}
+		
+		public IEntityModelContext Context {
+			get {
+				return null;
+			}
 		}
 	}
 }
