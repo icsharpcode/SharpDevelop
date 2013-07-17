@@ -8,6 +8,7 @@ using System.Xml;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using NUnit.Framework;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Xaml;
@@ -234,6 +235,53 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			AssertCanvasDesignerOutput("<Canvas>\n" +
 			                           "</Canvas>", canvas.Context);
 			AssertLog("");
+		}
+		
+		[Test]
+		public void AddMultiBindingToTextBox()
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			DesignItem canvas = button.Parent;
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			
+			textBox.Properties[TextBox.TextProperty].SetValue(new MultiBinding());
+			DesignItem multiBindingItem = textBox.Properties[TextBox.TextProperty].Value;
+			multiBindingItem.Properties["Converter"].SetValue(new MyMultiConverter());
+
+			DesignItemProperty bindingsProp = multiBindingItem.ContentProperty;
+			Assert.IsTrue(bindingsProp.IsCollection);
+			Assert.AreEqual(bindingsProp.Name, "Bindings");
+			
+			DesignItem bindingItem = canvas.Services.Component.RegisterComponentForDesigner(new Binding());
+			bindingItem.Properties["Path"].SetValue("SomeProperty");
+			bindingsProp.CollectionElements.Add(bindingItem);
+			
+			string expectedXaml = "<Button />\n" +
+			                      "<TextBox>\n" +
+			                      "  <MultiBinding>\n" +
+			                      "    <MultiBinding.Converter>\n" +
+			                      "      <t:MyMultiConverter />\n" +
+			                      "    </MultiBinding.Converter>\n" +
+			                      "    <Binding Path=\"SomeProperty\" />\n" +
+			                      "  </MultiBinding>\n" +
+			                      "</TextBox>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, button.Context);
+			AssertLog("");
+		}
+	}
+	
+	public class MyMultiConverter : IMultiValueConverter
+	{
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			return null;
+		}
+		
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+		{
+			return new object[targetTypes.Length];
 		}
 	}
 }

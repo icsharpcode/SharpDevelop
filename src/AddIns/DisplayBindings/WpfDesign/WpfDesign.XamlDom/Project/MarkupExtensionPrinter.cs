@@ -18,6 +18,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static bool CanPrint(XamlObject obj)
 		{
+			if (obj.ElementType == typeof(System.Windows.Data.MultiBinding) ||
+				obj.ElementType == typeof(System.Windows.Data.PriorityBinding)) {
+				return false;
+			}
+
 			return true;
 		}
 		
