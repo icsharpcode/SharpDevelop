@@ -38,7 +38,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
 	/// </summary>
 	[TextEditorService, ViewContentService]
-	public class CodeEditor : Grid, IDisposable, ICSharpCode.SharpDevelop.Gui.IEditable
+	public class CodeEditor
+		: Grid, IDisposable, ICSharpCode.SharpDevelop.Gui.IEditable, IFileDocumentProvider
 	{
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		
@@ -205,6 +206,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(ITextEditor), adapter);
 			textView.Services.AddService(typeof(CodeEditor), this);
 			textView.Services.AddService(typeof(ICSharpCode.SharpDevelop.Gui.IEditable), this);
+			textView.Services.AddService(typeof(IFileDocumentProvider), this);
 			
 			codeEditorView.TextArea.TextEntering += TextAreaTextEntering;
 			codeEditorView.TextArea.TextEntered += TextAreaTextEntered;
@@ -405,6 +407,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get {
 				return this.Document.Text;
 			}
+		}
+		#endregion
+		
+		#region IFileDocumentProvider
+		public IDocument GetDocumentForFile(ICSharpCode.SharpDevelop.Workbench.OpenedFile file)
+		{
+			if (file.FileName == this.FileName)
+				return this.Document;
+			else
+				return null;
 		}
 		#endregion
 		
