@@ -363,19 +363,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		internal string GetNameForMarkupExtension()
 		{
-			string name;
-			if (IsAttached)
-				name = PropertyTargetType.Name + "." + PropertyName;
+			if (IsAttached) {
+				string name = PropertyTargetType.Name + "." + PropertyName;
+				
+				var element = ParentObject.XmlElement;
+				string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
+				var prefix = element.GetPrefixOfNamespace(ns);
+				if (string.IsNullOrEmpty(prefix))
+					return name;
+				else
+					return prefix + ":" + name;
+			}
 			else
-				name = PropertyName;
-
-			var element = ParentObject.XmlElement;
-			string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
-			var prefix = element.GetPrefixOfNamespace(ns);
-			if (string.IsNullOrEmpty(prefix))
-				return name;
-			else
-				return prefix + ":" + name;
+				return PropertyName;
 		}
 		
 		/// <summary>
