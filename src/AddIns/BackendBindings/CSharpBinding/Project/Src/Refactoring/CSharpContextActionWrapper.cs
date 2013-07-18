@@ -47,6 +47,11 @@ namespace CSharpBinding.Refactoring
 			get { return description; }
 		}
 		
+		public string GetDisplayName(EditorRefactoringContext context)
+		{
+			return DisplayName;
+		}
+		
 		public void Execute(EditorRefactoringContext context)
 		{
 			SD.AnalyticsMonitor.TrackFeature(provider.ID);

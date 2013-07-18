@@ -111,6 +111,7 @@
     <Compile Include="Pads\CallStackPad.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Pads\ClassBrowserSupport.cs" />
     <Compile Include="Pads\WatchPadCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Options\DebuggingOptions.cs" />
@@ -137,6 +138,9 @@
     <Compile Include="Service\EditBreakpointScriptWindow.xaml.cs">
       <DependentUpon>EditBreakpointScriptWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\ExecuteProcessWindow.xaml.cs">
+      <DependentUpon>ExecuteProcessWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Tooltips\DebuggerTooltipControl.xaml.cs" />
     <Compile Include="Tooltips\VisualizerPicker.cs" />
@@ -311,6 +315,7 @@
     <Page Include="Options\DebuggingSymbolsPanel.xaml" />
     <Page Include="Pads\CommonResources.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
+    <Page Include="Service\ExecuteProcessWindow.xaml" />
     <Page Include="Tooltips\DebuggerTooltipControl.xaml" />
     <Page Include="Tooltips\VisualizerPicker.xaml" />
     <Page Include="Visualizers\GraphVisualizer\Presentation\NodeControlResources.xaml" />

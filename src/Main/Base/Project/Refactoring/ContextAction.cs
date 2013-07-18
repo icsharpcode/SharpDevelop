@@ -22,6 +22,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public abstract string DisplayName { get; }
 		
+		public virtual string GetDisplayName(EditorRefactoringContext context)
+		{
+			return DisplayName;
+		}
+		
 		public virtual string Category {
 			get { return string.Empty; }
 		}

@@ -22,8 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </remarks>
 	class SolutionConfigurationOrPlatformNameCollection : IConfigurationOrPlatformNameCollection
 	{
-		public event ModelCollectionChangedEventHandler<string> CollectionChanged;
-		
+		readonly ModelCollectionChangedEvent<string> collectionChangedEvent;
 		readonly List<string> list = new List<string>();
 		volatile IReadOnlyList<string> listSnapshot = EmptyList<string>.Instance;
 		readonly ISolution solution;
@@ -33,14 +32,23 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.solution = solution;
 			this.isPlatform = isPlatform;
+			collectionChangedEvent = new ModelCollectionChangedEvent<string>();
 		}
 		
 		void OnCollectionChanged(IReadOnlyCollection<string> oldItems, IReadOnlyCollection<string> newItems)
 		{
 			this.listSnapshot = list.ToArray();
-			var eh = CollectionChanged;
-			if (eh != null)
-				eh(oldItems, newItems);
+			collectionChangedEvent.Fire(oldItems, newItems);
+		}
+		
+		public event ModelCollectionChangedEventHandler<string> CollectionChanged
+		{
+			add {
+				collectionChangedEvent.AddHandler(value);
+			}
+			remove {
+				collectionChangedEvent.RemoveHandler(value);
+			}
 		}
 		
 		#region IReadOnlyCollection implementation

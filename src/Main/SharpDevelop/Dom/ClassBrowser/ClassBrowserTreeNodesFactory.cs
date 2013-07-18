@@ -2,15 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Windows.Media;
-using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.TreeView;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
-	public class WorkspaceTreeNodesFactory : ITreeNodeFactory
+	class ClassBrowserTreeNodesFactory : ITreeNodeFactory
 	{
 		public Type GetSupportedType(object model)
 		{

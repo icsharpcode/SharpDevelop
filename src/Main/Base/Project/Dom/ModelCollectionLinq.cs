@@ -70,6 +70,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		sealed class SelectManyModelCollection<TSource, TCollection, TResult> : IModelCollection<TResult>
 		{
+			readonly ModelCollectionChangedEvent<TResult> collectionChangedEvent;
 			readonly IModelCollection<TSource> source;
 			readonly Func<TSource, IModelCollection<TCollection>> collectionSelector;
 			readonly Func<TSource, TCollection, TResult> resultSelector;
@@ -80,9 +81,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.source = source;
 				this.collectionSelector = collectionSelector;
 				this.resultSelector = resultSelector;
+				collectionChangedEvent = new ModelCollectionChangedEvent<TResult>();
 			}
-			
-			ModelCollectionChangedEventHandler<TResult> collectionChanged;
 			
 			public event ModelCollectionChangedEventHandler<TResult> CollectionChanged {
 				add {
@@ -97,13 +97,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 							inputCollections.Add(inputCollection);
 						}
 					}
-					collectionChanged += value;
+					collectionChangedEvent.AddHandler(value);
 				}
 				remove {
-					if (collectionChanged == null)
+					if (!collectionChangedEvent.ContainsHandlers)
 						return;
-					collectionChanged -= value;
-					if (collectionChanged == null) {
+					collectionChangedEvent.RemoveHandler(value);
+					if (!collectionChangedEvent.ContainsHandlers) {
 						source.CollectionChanged -= OnSourceCollectionChanged;
 						foreach (var inputCollection in inputCollections) {
 							inputCollection.UnregisterEvent();
@@ -115,8 +115,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			void OnCollectionChanged(IReadOnlyCollection<TResult> removedItems, IReadOnlyCollection<TResult> addedItems)
 			{
-				if (collectionChanged != null)
-					collectionChanged(removedItems, addedItems);
+				collectionChangedEvent.Fire(removedItems, addedItems);
 			}
 			
 			void OnSourceCollectionChanged(IReadOnlyCollection<TSource> removedItems, IReadOnlyCollection<TSource> addedItems)

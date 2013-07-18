@@ -15,6 +15,37 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </remarks>
 	public delegate void ModelCollectionChangedEventHandler<in T>(IReadOnlyCollection<T> removedItems, IReadOnlyCollection<T> addedItems);
 	
+	public class ModelCollectionChangedEvent<T>
+	{
+		List<ModelCollectionChangedEventHandler<T>> _handlers = new List<ModelCollectionChangedEventHandler<T>>();
+		
+		public void AddHandler(ModelCollectionChangedEventHandler<T> handler)
+		{
+			_handlers.Add(handler);
+		}
+		
+		public void RemoveHandler(ModelCollectionChangedEventHandler<T> handler)
+		{
+			_handlers.Remove(handler);
+		}
+		
+		public void Fire(IReadOnlyCollection<T> removedItems, IReadOnlyCollection<T> addedItems)
+		{
+			foreach (var handler in _handlers) {
+				if (handler != null) {
+					handler(removedItems, addedItems);
+				}
+			}
+		}
+		
+		public bool ContainsHandlers
+		{
+			get {
+				return _handlers.Count > 0;
+			}
+		}
+	}
+	
 	/// <summary>
 	/// A read-only collection that provides change notifications.
 	/// </summary>

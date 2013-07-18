@@ -44,15 +44,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool IsShadowing { get; }
 		
 		/// <summary>
-		/// Resolves the entity in the current solution snapshot.
+		/// Resolves the entity in the current compilation.
 		/// Returns null if the entity could not be resolved.
 		/// </summary>
 		IEntity Resolve();
 		
 		/// <summary>
-		/// Resolves the entity in the specified solution snapshot.
+		/// Resolves the entity in the specified compilation.
 		/// Returns null if the entity could not be resolved.
 		/// </summary>
-		IEntity Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot);
+		IEntity Resolve(ICompilation compilation);
 	}
 }

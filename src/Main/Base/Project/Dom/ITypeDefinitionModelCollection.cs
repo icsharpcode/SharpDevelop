@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Updates the collection when the parse information has changed.
 		/// </summary>
-		void Update(IUnresolvedFile oldFile, IUnresolvedFile newFile);
+		void Update(IList<IUnresolvedTypeDefinition> oldFile, IList<IUnresolvedTypeDefinition> newFile);
 	}
 	
 	public sealed class EmptyTypeDefinitionModelCollection : ITypeDefinitionModelCollection
@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return Enumerable.Empty<ITypeDefinitionModel>().GetEnumerator();
 		}
 		
-		void ITypeDefinitionModelCollection.Update(IUnresolvedFile oldFile, IUnresolvedFile newFile)
+		void ITypeDefinitionModelCollection.Update(IList<IUnresolvedTypeDefinition> oldFile, IList<IUnresolvedTypeDefinition> newFile)
 		{
 			throw new NotSupportedException();
 		}

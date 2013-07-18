@@ -26,9 +26,10 @@ namespace Debugger
 		#region Module Loading
 		static ConditionalWeakTable<IUnresolvedAssembly, ModuleMetadataInfo> weakTable = new ConditionalWeakTable<IUnresolvedAssembly, ModuleMetadataInfo>();
 		
-		class ModuleMetadataInfo
+		internal class ModuleMetadataInfo
 		{
 			public readonly Module Module;
+			public readonly Mono.Cecil.ModuleDefinition CecilModule;
 			Dictionary<IUnresolvedEntity, uint> metadataTokens = new Dictionary<IUnresolvedEntity, uint>();
 			Dictionary<uint, IUnresolvedMethod> tokenToMethod = new Dictionary<uint, IUnresolvedMethod>();
 			Dictionary<IUnresolvedMember, ITypeReference[]> localVariableTypes = new Dictionary<IUnresolvedMember, ITypeReference[]>();
@@ -38,7 +39,7 @@ namespace Debugger
 			public ModuleMetadataInfo(Module module, Mono.Cecil.ModuleDefinition cecilModule)
 			{
 				this.Module = module;
-				
+				this.CecilModule = cecilModule;
 				typeRefLoader = new CecilLoader();
 				typeRefLoader.SetCurrentModule(cecilModule);
 			}
@@ -160,7 +161,7 @@ namespace Debugger
 			return asm;
 		}
 		
-		static ModuleMetadataInfo GetInfo(IAssembly assembly)
+		internal static ModuleMetadataInfo GetInfo(IAssembly assembly)
 		{
 			ModuleMetadataInfo info;
 			if (!weakTable.TryGetValue(assembly.UnresolvedAssembly, out info))

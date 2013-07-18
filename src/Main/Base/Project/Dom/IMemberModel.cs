@@ -13,16 +13,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public interface IMemberModel : IEntityModel
 	{
 		/// <summary>
-		/// Resolves the member in the current solution snapshot.
+		/// Resolves the member in the current compilation.
 		/// Returns null if the member could not be resolved.
 		/// </summary>
 		new IMember Resolve();
 		
 		/// <summary>
-		/// Resolves the member in the specified solution snapshot.
+		/// Resolves the member in the specified compilation.
 		/// Returns null if the member could not be resolved.
 		/// </summary>
-		new IMember Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot);
+		new IMember Resolve(ICompilation compilation);
 		
 		/// <summary>
 		/// Gets if the member is virtual. Is true only if the "virtual" modifier was used, but non-virtual

@@ -159,6 +159,9 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		protected override void InstallFromArchive()
 		{
+			// Notify about new operation
+			AddInManager.Events.OnOperationStarted();
+			
 			OpenFileDialog dlg = new OpenFileDialog();
 			dlg.Filter = SD.ResourceService.GetString("AddInManager2.SDAddInFileFilter");
 			dlg.Multiselect = true;

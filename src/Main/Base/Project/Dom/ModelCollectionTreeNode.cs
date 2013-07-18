@@ -54,6 +54,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public virtual void ShowContextMenu()
+		{
+			// Do nothing in base class
+		}
+		
 		#region Manage Children
 		protected override void LoadChildren()
 		{
@@ -73,12 +78,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		void SynchronizeModelChildren()
+		protected void SynchronizeModelChildren()
 		{
 			HashSet<object> set = new HashSet<object>(ModelChildren);
 			Children.RemoveAll(n => !set.Contains(n.Model));
 			set.ExceptWith(Children.Select(n => n.Model));
 			InsertChildren(set);
+			if (IsSpecialNode())
+				InsertSpecialNodes();
 		}
 		
 		void ModelChildrenCollectionChanged(IReadOnlyCollection<object> removedItems, IReadOnlyCollection<object> addedItems)

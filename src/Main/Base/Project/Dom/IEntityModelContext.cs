@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -27,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// The solution snapshot provided to <see cref="IEntityModel.Resolve(ISolutionSnapshotWithProjectMapping)"/>,
 		/// or null if the <see cref="IEntityModel.Resolve()"/> overload was used.
 		/// </param>
-		ICompilation GetCompilation(ISolutionSnapshotWithProjectMapping solutionSnapshot);
+		ICompilation GetCompilation();
 		
 		/// <summary>
 		/// Returns true if part1 is considered a better candidate for the primary part than part2.
@@ -48,21 +49,57 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.primaryCodeFileExtension = primaryCodeFileExtension;
 		}
 		
+		public string AssemblyName {
+			get { return project.AssemblyName; }
+		}
+		
 		public IProject Project {
 			get { return project; }
 		}
 		
-		public ICompilation GetCompilation(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		public ICompilation GetCompilation()
 		{
-			if (solutionSnapshot != null)
-				return solutionSnapshot.GetCompilation(project);
-			else
-				return SD.ParserService.GetCompilation(project);
+			return SD.ParserService.GetCompilation(project);
 		}
 		
 		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)
 		{
 			return EntityModelContextUtils.IsBetterPart(part1, part2, primaryCodeFileExtension);
+		}
+	}
+	
+	public class AssemblyEntityModelContext : IEntityModelContext
+	{
+		ICompilation compilation;
+		IUnresolvedAssembly mainAssembly;
+		IAssemblyReference[] references;
+		
+		public AssemblyEntityModelContext(IUnresolvedAssembly mainAssembly, params IAssemblyReference[] references)
+		{
+			if (mainAssembly == null)
+				throw new ArgumentNullException("mainAssembly");
+			this.mainAssembly = mainAssembly;
+			this.references = references;
+			// implement lazy init + weak caching
+			this.compilation = new SimpleCompilation(mainAssembly, references);
+		}
+		
+		public string AssemblyName {
+			get { return mainAssembly.AssemblyName; }
+		}
+		
+		public ICompilation GetCompilation()
+		{
+			return compilation;
+		}
+		
+		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)
+		{
+			return false;
+		}
+		
+		public IProject Project {
+			get { return null; }
 		}
 	}
 	

@@ -134,6 +134,7 @@
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
 		     class    = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserPad"
+		     serviceInterface = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.IClassBrowser"
 		     defaultPosition = "Right" />
 		
 		<Pad id       = "SideBar"
@@ -919,6 +920,10 @@
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserNavigateForward"/>
 		
 		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
+		<ToolbarItem id      = "OpenAssembly"
+		             icon    = "Icons.16x16.OpenProjectIcon"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.OpenAssembly.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenAssemblyCommand"/>
 		<ToolbarItem id      = "SelectFilter"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.FindInFiles"
@@ -2275,7 +2280,7 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/TreeNodeFactories">
-		<Class id="WorkspaceTreeNodesFactory" class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.WorkspaceTreeNodesFactory" />
+		<Class id="ClassBrowserTreeNodesFactory" class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserTreeNodesFactory" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Views/ClassBrowser/ClassNodeBuilders">

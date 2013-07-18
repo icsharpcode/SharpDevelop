@@ -84,8 +84,15 @@
     </Compile>
     <Compile Include="Designer\IDesignerTypeResolutionService.cs" />
     <Compile Include="Designer\TypeResolutionService.cs" />
+    <Compile Include="Dom\ClassBrowser\AssemblyTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserTreeView.cs" />
-    <Compile Include="Dom\ClassBrowser\ClassBrowserWorkspace.cs" />
+    <Compile Include="Dom\ClassBrowser\IClassBrowser.cs" />
+    <Compile Include="Dom\ClassBrowser\MemberTreeNode.cs" />
+    <Compile Include="Dom\ClassBrowser\NamespaceTreeNode.cs" />
+    <Compile Include="Dom\ClassBrowser\ProjectTreeNode.cs" />
+    <Compile Include="Dom\ClassBrowser\SolutionTreeNode.cs" />
+    <Compile Include="Dom\ClassBrowser\TypeDefinitionTreeNode.cs" />
+    <Compile Include="Dom\ClassBrowser\WorkspaceModel.cs" />
     <Compile Include="Dom\ClassBrowser\WorkspaceTreeNode.cs" />
     <Compile Include="Dom\IAssemblyModel.cs" />
     <Compile Include="Dom\IEntityModelContext.cs" />

@@ -88,19 +88,22 @@ namespace ICSharpCode.AddInManager2.Tests
 			{
 				Id = _addIn1.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn1.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = false
 			};
 			FakePackage fakePackage1_new = new FakePackage()
 			{
 				Id = _addIn1_new.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn1_new.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			FakePackage fakePackage2 = new FakePackage()
 			{
 				Id = _addIn2.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn2.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			
 			// List of NuGet repositories
@@ -155,13 +158,15 @@ namespace ICSharpCode.AddInManager2.Tests
 			{
 				Id = _addIn1.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn1.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			FakePackage fakePackage2 = new FakePackage()
 			{
 				Id = _addIn2.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn2.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			
 			// List of NuGet repositories
@@ -230,13 +235,15 @@ namespace ICSharpCode.AddInManager2.Tests
 			{
 				Id = _addIn1.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn1.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			FakePackage fakePackage2 = new FakePackage()
 			{
 				Id = _addIn2.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn2.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			
 			// List of NuGet repositories
@@ -285,20 +292,23 @@ namespace ICSharpCode.AddInManager2.Tests
 				Id = _addIn2_new.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn2_new.Version),
 				Tags = SharpDevelopAddInTag,
-				DownloadCount = 30
+				DownloadCount = 30,
+				IsLatestVersion = true
 			};
 			FakePackage fakePackage1 = new FakePackage()
 			{
 				Id = _addIn1.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn1.Version),
 				Tags = SharpDevelopAddInTag,
-				DownloadCount = 10
+				DownloadCount = 10,
+				IsLatestVersion = true
 			};
 			FakePackage fakePackage2 = new FakePackage()
 			{
 				Id = _addIn2.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn2.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = false
 			};
 			
 			// List of NuGet repositories
@@ -340,7 +350,7 @@ namespace ICSharpCode.AddInManager2.Tests
 //		{
 //			CreateAddIns();
 //			_addIn1.Enabled = true;
-//			
+//
 //			// Package to be shown in repository
 //			FakePackage fakePackage1 = new FakePackage()
 //			{
@@ -353,33 +363,33 @@ namespace ICSharpCode.AddInManager2.Tests
 //				Version = new SemanticVersion(_addIn2.Version),
 //				Tags = SharpDevelopAddInTag
 //			};
-//			
+//
 //			// List of NuGet repositories
 //			List<PackageSource> registeredPackageSources = new List<PackageSource>();
 //			registeredPackageSources.Add(new PackageSource("", "Test Repository"));
 //			_services.FakeRepositories.RegisteredPackageSources = registeredPackageSources;
-//			
+//
 //			List<IPackageRepository> registeredPackageRepositories = new List<IPackageRepository>();
 //			FakeCorePackageRepository remoteRepository = new FakeCorePackageRepository();
 //			remoteRepository.Source = registeredPackageSources[0].Source;
 //			remoteRepository.ReturnedPackages = (new IPackage[] { fakePackage1, fakePackage2 }).AsQueryable();
 //			_services.FakeRepositories.RegisteredPackageRepositories = registeredPackageRepositories;
-//			
+//
 //			// PackageRepository service should return remoteRepository instance
 //			_services.FakeRepositories.GetRepositoryFromSourceCallback = delegate(PackageSource packageSource)
 //			{
 //				return remoteRepository;
 //			};
-//			
+//
 //			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
 //			_services.FakeNuGet.FakeCorePackageManager.LocalRepository = localRepository;
 //			localRepository.ReturnedPackages = (new IPackage[] { }).AsQueryable();
-//			
+//
 //			var viewModel = new AvailableAddInsViewModel(_services);
 //			viewModel.ReadPackagesAndWaitForUpdate();
-//			
+//
 //			Assert.That(viewModel.AddInPackages.Count, Is.EqualTo(1), "AddIn list must contain 1 item.");
-//			
+//
 //			AddInPackageViewModelBase firstAddIn = viewModel.AddInPackages[0];
 //			Assert.That(firstAddIn.Id, Is.EqualTo(_addIn2.Manifest.PrimaryIdentity), "Primary identity of 1st AddIn");
 //			Assert.That(firstAddIn.Name, Is.EqualTo(_addIn2.Manifest.PrimaryIdentity), "Name of 1st AddIn");
@@ -400,7 +410,8 @@ namespace ICSharpCode.AddInManager2.Tests
 				{
 					Id = _addIn1.Manifest.PrimaryIdentity + i.ToString("00"),
 					Version = new SemanticVersion(_addIn1.Version),
-					Tags = SharpDevelopAddInTag
+					Tags = SharpDevelopAddInTag,
+					IsLatestVersion = true
 				};
 			}
 			
@@ -478,13 +489,15 @@ namespace ICSharpCode.AddInManager2.Tests
 			{
 				Id = _addIn1.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn1.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			FakePackage fakePackage2 = new FakePackage()
 			{
 				Id = _addIn2.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn2.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			
 			_addIn1.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage1.Id);
@@ -575,13 +588,15 @@ namespace ICSharpCode.AddInManager2.Tests
 			{
 				Id = _addIn_noVersion.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion("1.0.2.0"),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			FakePackage fakePackage2 = new FakePackage()
 			{
 				Id = _addIn2.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn2.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			
 			_addIn_noVersion.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage1.Id);
@@ -672,19 +687,22 @@ namespace ICSharpCode.AddInManager2.Tests
 			{
 				Id = _addIn1.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn1.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = false
 			};
 			FakePackage fakePackage1_new = new FakePackage()
 			{
 				Id = _addIn1_new.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn1_new.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			FakePackage fakePackage2 = new FakePackage()
 			{
 				Id = _addIn2.Manifest.PrimaryIdentity,
 				Version = new SemanticVersion(_addIn2.Version),
-				Tags = SharpDevelopAddInTag
+				Tags = SharpDevelopAddInTag,
+				IsLatestVersion = true
 			};
 			
 			_addIn1.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage1_old.Id);

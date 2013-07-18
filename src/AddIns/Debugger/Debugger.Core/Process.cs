@@ -85,7 +85,7 @@ namespace Debugger
 		}
 		
 		public string Filename { get; private set; }
-				
+		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string filename, string workingDirectory)
 		{
 			this.debugger = debugger;
@@ -561,7 +561,7 @@ namespace Debugger
 			}
 		}
 		
-		#region Break at begining
+		#region Break at beginning
 		
 		int lastAssignedModuleOrderOfLoading = 0;
 		
@@ -570,21 +570,22 @@ namespace Debugger
 			module.OrderOfLoading = lastAssignedModuleOrderOfLoading++;
 			module.AppDomain.InvalidateCompilation();
 			
-			if (this.BreakInMain) {
-				if (module.SymReader == null) return; // No symbols
-				
+			if (BreakInMain) {
 				try {
 					// create a BP at entry point
-					uint entryPoint = module.SymReader.GetUserEntryPoint();
-					if (entryPoint == 0) return; // no EP
-					var corBreakpoint = module.CorModule.GetFunctionFromToken(entryPoint).CreateBreakpoint();
-					corBreakpoint.Activate(1);
-					this.tempBreakpoints.Add(corBreakpoint);
+					uint entryPoint = module.GetEntryPoint();
+					if (entryPoint != 0) { // no EP
+						var corBreakpoint = module.CorModule
+							.GetFunctionFromToken(entryPoint)
+							.CreateBreakpoint();
+						corBreakpoint.Activate(1);
+						tempBreakpoints.Add(corBreakpoint);
+						
+						BreakInMain = false;
+					}
 				} catch {
 					// the app does not have an entry point - COM exception
 				}
-				
-				this.BreakInMain = false;
 			}
 			
 			if (this.ModuleLoaded != null) {

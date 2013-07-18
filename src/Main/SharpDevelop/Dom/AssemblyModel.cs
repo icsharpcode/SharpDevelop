@@ -5,35 +5,32 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	sealed class ProjectAssemblyModel : IUpdateableAssemblyModel
+	sealed class AssemblyModel : IUpdateableAssemblyModel
 	{
 		IEntityModelContext context;
 		TopLevelTypeDefinitionModelCollection typeDeclarations;
 		KeyedModelCollection<string, NamespaceModel> namespaces;
 		NamespaceModel rootNamespace;
 		
-		public ProjectAssemblyModel(IEntityModelContext context)
+		public AssemblyModel(IEntityModelContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
-			this.rootNamespace = new NamespaceModel(context, null, "");
+			this.rootNamespace = new NamespaceModel(context.Project, null, "");
 			this.typeDeclarations = new TopLevelTypeDefinitionModelCollection(context);
 			this.typeDeclarations.CollectionChanged += TypeDeclarationsCollectionChanged;
 			this.namespaces = new KeyedModelCollection<string, NamespaceModel>(value => value.FullName);
 		}
 		
-		public string AssemblyName {
-			get {
-				return context.Project.AssemblyName;
-			}
-		}
+		public string AssemblyName { get; set; }
 		
 		public ITypeDefinitionModelCollection TopLevelTypeDefinitions {
 			get {
@@ -54,6 +51,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public void Update(IUnresolvedFile oldFile, IUnresolvedFile newFile)
+		{
+			IList<IUnresolvedTypeDefinition> old = EmptyList<IUnresolvedTypeDefinition>.Instance;
+			IList<IUnresolvedTypeDefinition> @new = EmptyList<IUnresolvedTypeDefinition>.Instance;
+			if (oldFile != null)
+				old = oldFile.TopLevelTypeDefinitions;
+			if (newFile != null)
+				@new = newFile.TopLevelTypeDefinitions;
+			
+			typeDeclarations.Update(old, @new);
+		}
+		
+		public void Update(IList<IUnresolvedTypeDefinition> oldFile, IList<IUnresolvedTypeDefinition> newFile)
 		{
 			typeDeclarations.Update(oldFile, newFile);
 		}
@@ -76,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 							level++;
 						}
 						while (level < parts.Length) {
-							var child = new NamespaceModel(context, ns, parts[level]);
+							var child = new NamespaceModel(context.Project, ns, parts[level]);
 							batchList.AddIfNotNull(ns.ChildNamespaces.BatchUpdate());
 							ns.ChildNamespaces.Add(child);
 							ns = child;
@@ -114,7 +123,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 					d.Dispose();
 			}
 		}
-	}
+	}	
 }
-
-

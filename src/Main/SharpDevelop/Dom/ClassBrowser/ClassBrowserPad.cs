@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Controls;
 using ICSharpCode.Core.Presentation;
@@ -11,8 +13,21 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
-	public class ClassBrowserPad : AbstractPadContent
+	class ClassBrowserPad : AbstractPadContent, IClassBrowser
 	{
+		#region IClassBrowser implementation
+
+		public ICollection<SharpTreeNode> SpecialNodes {
+			get { return treeView.SpecialNodes; }
+		}
+
+		public AssemblyList AssemblyList {
+			get { return treeView.AssemblyList; }
+			set { treeView.AssemblyList = value; }
+		}
+
+		#endregion
+
 		IProjectService projectService;
 		ClassBrowserTreeView treeView;
 		DockPanel panel;
@@ -26,7 +41,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public ClassBrowserPad(IProjectService projectService)
 		{
 			this.projectService = projectService;
-			
 			panel = new DockPanel();
 			treeView = new ClassBrowserTreeView(); // treeView must be created first because it's used by CreateToolBar
 
@@ -37,7 +51,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			panel.Children.Add(treeView);
 			
 			//treeView.ContextMenu = CreateContextMenu("/SharpDevelop/Pads/UnitTestsPad/ContextMenu");
-			
 			projectService.CurrentSolutionChanged += ProjectServiceCurrentSolutionChanged;
 			ProjectServiceCurrentSolutionChanged(null, null);
 		}
@@ -58,11 +71,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		void ProjectServiceCurrentSolutionChanged(object sender, EventArgs e)
 		{
-			if (projectService.CurrentSolution == null) {
-				treeView.Workspace = ClassBrowserSettings.LoadDefaultWorkspace();
-			} else {
-				treeView.Workspace = ClassBrowserSettings.LoadForSolution(projectService.CurrentSolution);
-			}
+			foreach (var node in treeView.SpecialNodes.OfType<SolutionTreeNode>().ToArray())
+				treeView.SpecialNodes.Remove(node);
+			if (projectService.CurrentSolution != null)
+				treeView.SpecialNodes.Add(new SolutionTreeNode(projectService.CurrentSolution));
 		}
 		
 		/// <summary>

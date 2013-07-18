@@ -417,10 +417,19 @@ namespace ICSharpCode.AddInManager2.Model
 					{
 						Directory.Delete(targetDir, true);
 					}
-					Directory.CreateDirectory(targetDir);
+					var directoryInfo = Directory.CreateDirectory(targetDir);
 					FastZip fastZip = new FastZip();
 					fastZip.CreateEmptyDirectories = true;
 					fastZip.ExtractZip(zipFile, targetDir, null);
+					
+					if (addIn.FileName == null) {
+						// Find .addin file to set it in AddIn object
+						var addInFiles = directoryInfo.GetFiles("*.addin", SearchOption.TopDirectoryOnly);
+						var addInFile = addInFiles.FirstOrDefault();
+						if (addInFile != null) {
+							addIn.FileName = addInFile.FullName;
+						}
+					} 
 					
 					return true;
 				}
