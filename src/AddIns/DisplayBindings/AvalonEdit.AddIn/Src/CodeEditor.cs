@@ -38,14 +38,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
 	/// </summary>
 	[TextEditorService, ViewContentService]
-	public class CodeEditor : Grid, IDisposable
+	public class CodeEditor : Grid, IDisposable, ICSharpCode.SharpDevelop.Gui.IEditable
 	{
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		
 		QuickClassBrowser quickClassBrowser;
 		readonly CodeEditorView primaryTextEditor;
 		readonly CodeEditorAdapter primaryTextEditorAdapter;
-		GridSplitter gridSplitter;
 		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
 		readonly IChangeWatcher changeWatcher;
@@ -205,6 +204,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			TextView textView = codeEditorView.TextArea.TextView;
 			textView.Services.AddService(typeof(ITextEditor), adapter);
 			textView.Services.AddService(typeof(CodeEditor), this);
+			textView.Services.AddService(typeof(ICSharpCode.SharpDevelop.Gui.IEditable), this);
 			
 			codeEditorView.TextArea.TextEntering += TextAreaTextEntering;
 			codeEditorView.TextArea.TextEntered += TextAreaTextEntered;
@@ -391,6 +391,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return primaryTextEditor.ActiveInsightWindow;
 			}
 		}
+		
+		#region IEditable
+		public ITextSource CreateSnapshot()
+		{
+			return this.Document.CreateSnapshot();
+		}
+		
+		/// <summary>
+		/// Gets the document text.
+		/// </summary>
+		public string Text {
+			get {
+				return this.Document.Text;
+			}
+		}
+		#endregion
 		
 		void TextAreaTextEntering(object sender, TextCompositionEventArgs e)
 		{

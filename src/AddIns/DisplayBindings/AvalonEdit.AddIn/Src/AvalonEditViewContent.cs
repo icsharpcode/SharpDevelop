@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	}
 	
 	public class AvalonEditViewContent
-		: AbstractViewContent, IEditable, IMementoCapable, ICodeEditorProvider, IPositionable, IToolsHost
+		: AbstractViewContent, IMementoCapable, ICodeEditorProvider, IPositionable, IToolsHost
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		IAnalyticsMonitorTrackedFeature trackedFeature;
@@ -293,22 +293,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			return "[" + GetType().Name + " " + this.PrimaryFileName + "]";
 		}
-		
-		#region IEditable
-		public ITextSource CreateSnapshot()
-		{
-			return codeEditor.Document.CreateSnapshot();
-		}
-		
-		/// <summary>
-		/// Gets the document text.
-		/// </summary>
-		public string Text {
-			get {
-				return codeEditor.Document.Text;
-			}
-		}
-		#endregion
 		
 		#region IMementoCapable
 		public Properties CreateMemento()
