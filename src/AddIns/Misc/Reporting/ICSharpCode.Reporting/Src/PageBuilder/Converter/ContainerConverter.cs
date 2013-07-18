@@ -36,7 +36,6 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		{
 			var exportContainer = (ExportContainer)reportContainer.CreateExportColumn();
 			exportContainer.Location = CurrentLocation;
-//			exportContainer.DesiredSize = Measure(exportContainer);
 			return exportContainer;
 		}
 
@@ -44,7 +43,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,
 		                                               IExportContainer exportContainer,
 		                                               Point position){
-
+Console.WriteLine("CreateConvertedList {0}",reportContainer.Name);
 			var itemsList = new List<IExportColumn>();
 			foreach (var item in reportContainer.Items) {
 				var exportColumn = ExportColumnFactory.CreateItem(item);
@@ -58,7 +57,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		
 		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer
 		                                        ,IExportContainer exportContainer){
-//			Console.WriteLine("CreateConvertedList {0}",reportContainer.Name);
+			Console.WriteLine("CreateConvertedList {0}",reportContainer.Name);
 			var itemsList = new List<IExportColumn>();
 			foreach (var element in reportContainer.Items) {
 				var exportColumn = ExportColumnFactory.CreateItem(element);
@@ -71,14 +70,6 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			return itemsList;
 		}
 
-	/*
-		public void ArrangeContainer(IExportContainer exportContainer)
-		{
-			Console.WriteLine("ArrangeContainer {0}",exportContainer.Name);
-			var exportArrange = exportContainer.GetArrangeStrategy();
-			exportArrange.Arrange(exportContainer);
-		}
-	*/	
 		
 		internal IReportContainer Container { get; private set; }
 

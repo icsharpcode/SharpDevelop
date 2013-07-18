@@ -101,9 +101,21 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		protected bool PageFull(System.Collections.Generic.List<IExportColumn> columns)
+		
+		protected bool old_PageFull(System.Collections.Generic.List<IExportColumn> columns)
 		{
 			var rectToPrint = new Rectangle(columns[0].Location,columns[0].Size);
+			Console.WriteLine("{0} - {1}",CurrentLocation,rectToPrint.ToString());
+			if (rectToPrint.Bottom > DetailEnds.Y) {
+				Console.WriteLine("----------PB---");
+				return  true;
+			}
+			return false;
+		}
+		
+		
+		protected bool PageFull(IExportContainer row) {
+			var rectToPrint = new Rectangle(row.Location,row.DesiredSize);
 			if (rectToPrint.Bottom > DetailEnds.Y) {
 				return  true;
 			}
