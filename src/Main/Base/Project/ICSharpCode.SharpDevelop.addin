@@ -1905,10 +1905,6 @@
 				          shortcut = "Shift|Control|Tab"
 				          class = "ICSharpCode.SharpDevelop.Commands.SelectPrevWindow" />
 				<MenuItem id ="NxtPrvSeparator" type = "Separator" />
-				<MenuItem id = "SplitView"
-				          label = "${res:XML.MainMenu.WindowMenu.Split}"
-				          icon  = "Icons.16x16.SplitWindow"
-				          command = "ICSharpCode.SharpDevelop.SharpDevelopRoutedCommands.SplitView"/>
 				<MenuItem id    = "CloseAll"
 				          label = "${res:XML.MainMenu.FileMenu.CloseAll}"
 				          icon  = "Icons.16x16.CloseAllDocuments"

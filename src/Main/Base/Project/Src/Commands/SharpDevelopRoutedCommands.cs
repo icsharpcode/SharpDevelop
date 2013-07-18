@@ -11,7 +11,5 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public static class SharpDevelopRoutedCommands
 	{
-		public static readonly RoutedCommand SplitView = new RoutedCommand(
-			"SplitView", typeof(SharpDevelopRoutedCommands));
 	}
 }
