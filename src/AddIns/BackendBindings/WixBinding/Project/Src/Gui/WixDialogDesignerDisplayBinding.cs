@@ -37,8 +37,7 @@ namespace ICSharpCode.WixBinding
 		
 		bool IsViewTextEditorProvider(IViewContent view)
 		{
-			ITextEditorProvider textEditorProvider = view as ITextEditorProvider;
-			return textEditorProvider != null;
+			return view.GetService<ITextEditor>() != null;
 		}
 	}
 }

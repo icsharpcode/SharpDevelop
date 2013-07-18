@@ -12,7 +12,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 	/// <summary>
 	/// Mock implementation of the IEditable and IViewContent.
 	/// </summary>
-	public class MockEditableViewContent : MockViewContent, IEditable, ITextEditorProvider
+	public class MockEditableViewContent : MockViewContent, IEditable
 	{
 		public MockTextEditor MockTextEditor = new MockTextEditor();
 		
@@ -35,15 +35,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public MockTextEditorOptions MockTextEditorOptions {
 			get { return MockTextEditor.MockTextEditorOptions; }
 			set { MockTextEditor.MockTextEditorOptions = value; }
-		}
-		
-		public ITextEditor TextEditor {
-			get { return MockTextEditor; }
-		}
-		
-		public IDocument GetDocumentForFile(OpenedFile file)
-		{
-			throw new NotImplementedException();
 		}
 		
 		public override object GetService(Type serviceType)

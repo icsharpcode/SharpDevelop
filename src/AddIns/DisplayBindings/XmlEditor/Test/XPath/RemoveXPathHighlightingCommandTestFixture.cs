@@ -69,11 +69,5 @@ namespace XmlEditor.Tests.XPath
 		{
 			Assert.IsTrue(markerService.TextMarkers.Count() > 0);
 		}
-		
-		[Test]
-		public void MockViewContentDoesNotImplementITextEditorProviderInterface()
-		{
-			Assert.IsNull(nonTextEditorProviderView as ITextEditorProvider);
-		}
 	}
 }

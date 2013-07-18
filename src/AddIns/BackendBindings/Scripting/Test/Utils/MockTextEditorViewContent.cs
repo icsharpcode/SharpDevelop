@@ -13,22 +13,13 @@ namespace ICSharpCode.Scripting.Tests.Utils
 	/// A mock IViewContent implementation that also implements the
 	/// ITextEditorControlProvider interface.
 	/// </summary>
-	public class MockTextEditorViewContent : MockViewContent, ITextEditorProvider
+	public class MockTextEditorViewContent : MockViewContent
 	{
 		ITextEditor textEditor;
 		
 		public MockTextEditorViewContent()
 		{
 			textEditor = new AvalonEditTextEditorAdapter(new TextEditor());
-		}
-		
-		public ITextEditor TextEditor {
-			get { return textEditor; }
-		}
-		
-		public IDocument GetDocumentForFile(OpenedFile file)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

@@ -39,7 +39,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	[TextEditorService, ViewContentService]
 	public class CodeEditor
-		: Grid, IDisposable, ICSharpCode.SharpDevelop.Gui.IEditable, IFileDocumentProvider
+		: Grid, IDisposable, ICSharpCode.SharpDevelop.Gui.IEditable, IFileDocumentProvider, ICSharpCode.SharpDevelop.Gui.IPositionable, IServiceProvider
 	{
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		
@@ -206,6 +206,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(ITextEditor), adapter);
 			textView.Services.AddService(typeof(CodeEditor), this);
 			textView.Services.AddService(typeof(ICSharpCode.SharpDevelop.Gui.IEditable), this);
+			textView.Services.AddService(typeof(ICSharpCode.SharpDevelop.Gui.IPositionable), this);
 			textView.Services.AddService(typeof(IFileDocumentProvider), this);
 			
 			codeEditorView.TextArea.TextEntering += TextAreaTextEntering;
@@ -417,6 +418,28 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return this.Document;
 			else
 				return null;
+		}
+		#endregion
+		
+		#region IPositionable
+		public int Line {
+			get { return this.PrimaryTextEditor.Adapter.Caret.Line; }
+		}
+		
+		public int Column {
+			get { return this.PrimaryTextEditor.Adapter.Caret.Column; }
+		}
+		
+		public void JumpTo(int line, int column)
+		{
+			this.PrimaryTextEditor.JumpTo(line, column);
+		}
+		#endregion
+		
+		#region IServiceProvider implementation
+		public object GetService(Type serviceType)
+		{
+			return this.primaryTextEditor.Adapter.GetService(serviceType);
 		}
 		#endregion
 		

@@ -24,7 +24,7 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public abstract class AbstractConsolePad : AbstractPadContent, IEditable, IPositionable, ITextEditorProvider, IToolsHost
+	public abstract class AbstractConsolePad : AbstractPadContent, IEditable, IPositionable, IToolsHost
 	{
 		const string toolBarTreePath = "/SharpDevelop/Pads/CommonConsole/ToolBar";
 		

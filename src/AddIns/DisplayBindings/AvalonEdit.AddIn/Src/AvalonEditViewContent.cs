@@ -24,15 +24,8 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	[ViewContentService]
-	public interface ICodeEditorProvider : ITextEditorProvider
-	{
-		[Obsolete("Use viewContent.GetService<CodeEditor>() instead.")]
-		CodeEditor CodeEditor { get; }
-	}
-	
 	public class AvalonEditViewContent
-		: AbstractViewContent, IMementoCapable, ICodeEditorProvider, IPositionable, IToolsHost
+		: AbstractViewContent, IMementoCapable, IToolsHost
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		IAnalyticsMonitorTrackedFeature trackedFeature;
@@ -95,10 +88,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void codeEditor_TextCopied(object sender, ICSharpCode.AvalonEdit.Editing.TextEventArgs e)
 		{
 			TextEditorSideBar.Instance.PutInClipboardRing(e.Text);
-		}
-		
-		public CodeEditor CodeEditor {
-			get { return codeEditor; }
 		}
 		
 		public override object Control {
@@ -194,17 +183,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public override INavigationPoint BuildNavPoint()
 		{
-			int lineNumber = this.Line;
+			int lineNumber = codeEditor.Line;
 			string txt = codeEditor.Document.GetText(codeEditor.Document.GetLineByNumber(lineNumber));
-			return new TextNavigationPoint(this.PrimaryFileName, lineNumber, this.Column, txt);
+			return new TextNavigationPoint(this.PrimaryFileName, lineNumber, codeEditor.Column, txt);
 		}
 		
 		void CaretChanged(object sender, EventArgs e)
 		{
 			NavigationService.Log(this.BuildNavPoint());
 			var document = codeEditor.Document;
-			int lineOffset = document.GetLineByNumber(this.Line).Offset;
-			int chOffset = this.Column;
+			int lineOffset = document.GetLineByNumber(codeEditor.Line).Offset;
+			int chOffset = codeEditor.Column;
 			int col = 1;
 			for (int i = 1; i < chOffset; i++) {
 				if (document.GetCharAt(lineOffset + i - 1) == '\t')
@@ -212,7 +201,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				else
 					col += 1;
 			}
-			SD.StatusBar.SetCaretPosition(col, this.Line, chOffset);
+			SD.StatusBar.SetCaretPosition(col, codeEditor.Line, chOffset);
 		}
 		
 		public override bool IsReadOnly {
@@ -311,35 +300,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			} catch (ArgumentOutOfRangeException) {
 				// ignore caret out of range - maybe file was changed externally?
 			}
-		}
-		#endregion
-		
-		#region ITextEditorProvider
-		public ITextEditor TextEditor {
-			get { return codeEditor.ActiveTextEditorAdapter; }
-		}
-		
-		public IDocument GetDocumentForFile(OpenedFile file)
-		{
-			if (file == this.PrimaryFile)
-				return codeEditor.Document;
-			else
-				return null;
-		}
-		#endregion
-		
-		#region IPositionable
-		public int Line {
-			get { return this.TextEditor.Caret.Line; }
-		}
-		
-		public int Column {
-			get { return this.TextEditor.Caret.Column; }
-		}
-		
-		public void JumpTo(int line, int column)
-		{
-			codeEditor.ActiveTextEditor.JumpTo(line, column);
 		}
 		#endregion
 		
