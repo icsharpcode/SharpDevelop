@@ -62,9 +62,6 @@ Console.WriteLine("CreateConvertedList {0}",reportContainer.Name);
 			foreach (var element in reportContainer.Items) {
 				var exportColumn = ExportColumnFactory.CreateItem(element);
 				exportColumn.Parent = exportContainer;
-//				exportColumn.Location = new Point(element.Location.X,element.Location.Y + exportContainer.Location.Y);
-//				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
-//				exportColumn.DesiredSize = Measure(exportColumn);
 				itemsList.Add(exportColumn);
 			}
 			return itemsList;

@@ -68,7 +68,8 @@ namespace ICSharpCode.Reporting.Exporter
 			if (exportContainer != null) {
 				
 				if (exportContainer.Name =="ReportDetail") {
-					Console.WriteLine(item.Name);
+					Console.WriteLine("Section {0}",item.Name);
+					exportContainer.BackColor = System.Drawing.Color.LightBlue;
 				}
 
 				if (exportContainer.Name == "Row") {
@@ -78,7 +79,7 @@ namespace ICSharpCode.Reporting.Exporter
 				
 				if (parentCanvas == null) {
 					containerCanvas = CreateContainer(fixedPage,exportContainer);
-					Console.WriteLine("Section {0}  at {1}",item.Name,CanvasHelper.GetPosition(containerCanvas));
+					Console.WriteLine("Section {0}  at {1} size {2}",item.Name,CanvasHelper.GetPosition(containerCanvas),containerCanvas.DesiredSize);
 					fixedPage.Children.Add(containerCanvas);
 					parentCanvas = containerCanvas;
 				} else {
@@ -87,7 +88,7 @@ namespace ICSharpCode.Reporting.Exporter
 					parentCanvas.Children.Add(containerCanvas);
 				}
 				
-				Console.WriteLine("canvas at {0}",CanvasHelper.GetPosition(containerCanvas));
+//				Console.WriteLine("canvas at {0}",CanvasHelper.GetPosition(containerCanvas));
 				
 				foreach (var element in exportContainer.ExportedItems) {
 					
@@ -95,7 +96,7 @@ namespace ICSharpCode.Reporting.Exporter
 						
 						var singleItem = CreateSingleEntry(containerCanvas,element);
 						
-						Console.WriteLine("TEST  {0} - {1}",CanvasHelper.GetPosition(singleItem),CanvasHelper.GetPosition(containerCanvas));
+//						Console.WriteLine("TEST  {0} - {1}",CanvasHelper.GetPosition(singleItem),CanvasHelper.GetPosition(containerCanvas));
 						containerCanvas.Children.Add(singleItem);
 					}
 					ShowContainerRecursive(parentCanvas,element);
@@ -127,7 +128,7 @@ namespace ICSharpCode.Reporting.Exporter
 			v.Accept(visitor);
 			var c = visitor.UIElement;
 
-			Console.WriteLine("CreateSingleEntry after {0}",CanvasHelper.GetPosition(c));
+//			Console.WriteLine("CreateSingleEntry after {0}",CanvasHelper.GetPosition(c));
 			return c;
 		}
 		

@@ -172,13 +172,14 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void BuildDetail()
 		{
 			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
-			var position = DetailStart;
-			CurrentSection = ReportModel.DetailSection;
+//			var position = DetailStart;
+			var position = new Point(DetailStart.X,1);
 			var collectionSource = new CollectionSource(List,ElementType,ReportModel.ReportSettings);
+			CurrentSection = ReportModel.DetailSection;
+			
 			IExportContainer detail = null;
 			if(collectionSource.Count > 0) {
 				collectionSource.Bind();
-				
 				
 				detail = CreateDetail(DetailStart);
 
@@ -186,7 +187,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 					
 					var row = CreateContainerIfNotExist(CurrentSection,detail, position);
 					collectionSource.Fill(CurrentSection.Items);
-					
 					var convertedItems	 =  converter.CreateConvertedList(ReportModel.DetailSection,row);
 
 					MeasureAndArrangeContainer(converter,row);
@@ -241,6 +241,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		{
 			var detail = CreateContainerForSection(startLocation);
 			detail.Parent = CurrentPage;
+			detail.DesiredSize = new Size(detail.Size.Width,DetailEnds.Y - DetailStart.Y);
 			return detail;
 		}
 

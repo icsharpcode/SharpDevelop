@@ -42,6 +42,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		public override void Visit(ExportContainer exportColumn)
 		{
 			var canvas = (Canvas)documentCreator.CreateContainer(exportColumn);
+			CanvasHelper.SetPosition(canvas,new Point(exportColumn.Location.X,exportColumn.Location.Y));
 			UIElement = canvas;
 		}
 		
