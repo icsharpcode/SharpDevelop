@@ -11,10 +11,9 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace CSharpBinding.Completion
 {
@@ -127,7 +126,8 @@ namespace CSharpBinding.Completion
 		
 		IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData()
 		{
-			yield break;
+			return completionContext.Editor.GetSnippets().OfType<ISnippetCompletionItem>()
+				.Select(snippet => new SnippetCompletionData(snippet));
 		}
 		
 		IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData()

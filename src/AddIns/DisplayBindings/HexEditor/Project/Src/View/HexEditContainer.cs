@@ -51,8 +51,7 @@ namespace HexEditor.View
 				ToolStripControlHost bytesPerLine = new ToolStripControlHost(tSTBCharsPerLine);
 				this.toolStrip1.Items.Insert(1, bytesPerLine);
 				
-				ToolStripControlHost viewMode = new ToolStripControlHost(tCBViewMode);
-				this.toolStrip1.Items.Insert(3, viewMode);
+				this.toolStrip1.Items.Insert(3, tCBViewMode);
 				
 				hexEditControl.BytesPerLine = Settings.BytesPerLine;
 				tSTBCharsPerLine.Text = hexEditControl.BytesPerLine.ToString();
