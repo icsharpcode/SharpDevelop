@@ -319,8 +319,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			AssertLog("");
 		}
 		
-		[Test]
-		public void AddBindingWithStaticResourceWhereResourceOnSameElement()
+		void AddBindingWithStaticResourceWhereResourceOnSameElement(bool setBindingPropertiesAfterSet)
 		{
 			DesignItem button = CreateCanvasContext("<Button/>");
 			DesignItem canvas = button.Parent;
@@ -334,10 +333,17 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			resProp.CollectionElements.Add(exampleClassItem);
 			
 			DesignItem bindingItem = canvas.Services.Component.RegisterComponentForDesigner(new Binding());
-			bindingItem.Properties["Path"].SetValue("StringProp");
-			bindingItem.Properties["Source"].SetValue(new StaticResourceExtension());
-			bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
+			if (!setBindingPropertiesAfterSet) {
+				bindingItem.Properties["Path"].SetValue("StringProp");
+				bindingItem.Properties["Source"].SetValue(new StaticResourceExtension());
+				bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
+			}
 			textBox.Properties[TextBox.TextProperty].SetValue(bindingItem);
+			if (setBindingPropertiesAfterSet) {
+				bindingItem.Properties["Path"].SetValue("StringProp");
+				bindingItem.Properties["Source"].SetValue(new StaticResourceExtension());
+				bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
+			}
 			
 			string expectedXaml = "<Button />\n" +
 								  "<TextBox>\n" +
@@ -349,6 +355,18 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			
 			AssertCanvasDesignerOutput(expectedXaml, button.Context);
 			AssertLog("");
+		}
+		
+		[Test]
+		public void AddBindingWithStaticResourceWhereResourceOnSameElement()
+		{
+			AddBindingWithStaticResourceWhereResourceOnSameElement(false);
+		}
+		
+		[Test]
+		public void AddBindingWithStaticResourceWhereResourceOnSameElementAlt()
+		{
+			AddBindingWithStaticResourceWhereResourceOnSameElement(true);
 		}
 	}
 	

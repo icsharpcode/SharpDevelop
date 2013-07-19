@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Markup;
 using System.Xml;
 using System.Windows.Data;
@@ -143,8 +144,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		internal override void AddNodeTo(XamlProperty property)
-		{	
-			if (!UpdateXmlAttribute(true)) {
+		{
+			XamlObject holder;
+			if (!UpdateXmlAttribute(true, out holder)) {
 				property.AddChildNodeToProperty(element);
 			}
 			UpdateMarkupExtensionChain();
@@ -156,7 +158,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				XmlAttribute.OwnerElement.RemoveAttribute(XmlAttribute.Name);
 				xmlAttribute = null;
 			} else {
-				if (!UpdateXmlAttribute(false)) {
+				XamlObject holder;
+				if (!UpdateXmlAttribute(false, out holder)) {
 					element.ParentNode.RemoveChild(element);
 				}
 			}			
@@ -167,8 +170,28 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		//TODO: reseting path property for binding doesn't work in XamlProperty
 		//use CanResetValue()
 		internal void OnPropertyChanged(XamlProperty property)
-		{			
-			UpdateXmlAttribute(false);
+		{
+			XamlObject holder;
+			if (!UpdateXmlAttribute(false, out holder)) {
+				if (holder != null &&
+					holder.XmlAttribute != null) {
+					holder.XmlAttribute.OwnerElement.RemoveAttributeNode(holder.XmlAttribute);
+					holder.xmlAttribute = null;
+					holder.ParentProperty.AddChildNodeToProperty(holder.element);
+					
+					bool isThisUpdated = false;
+					foreach(XamlObject propXamlObject in holder.Properties.Where((prop) => prop.IsSet).Select((prop) => prop.PropertyValue).OfType<XamlObject>()) {
+						XamlObject innerHolder;
+						bool updateResult = propXamlObject.UpdateXmlAttribute(true, out innerHolder);
+						Debug.Assert(updateResult);
+						
+						if (propXamlObject == this)
+							isThisUpdated = true;
+					}
+					if (!isThisUpdated)
+						this.UpdateXmlAttribute(true, out holder);
+				}
+			}
 			UpdateMarkupExtensionChain();
 		}
 
@@ -181,9 +204,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}			
 		}
 
-		bool UpdateXmlAttribute(bool force)
+		bool UpdateXmlAttribute(bool force, out XamlObject holder)
 		{
-			var holder = FindXmlAttributeHolder();
+			holder = FindXmlAttributeHolder();
 			if (holder == null && force && IsMarkupExtension) {
 				holder = this;
 			}
