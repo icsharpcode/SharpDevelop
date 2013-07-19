@@ -55,8 +55,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			file.IsDirtyChanged += PrimaryFile_IsDirtyChanged;
 			codeEditor.Document.UndoStack.PropertyChanged += codeEditor_Document_UndoStack_PropertyChanged;
-			codeEditor.CaretPositionChanged += CaretChanged;
-			codeEditor.TextCopied += codeEditor_TextCopied;
 		}
 		
 		bool IsKnownFileExtension(string filetype)
@@ -84,12 +82,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 		}
-		
-		void codeEditor_TextCopied(object sender, ICSharpCode.AvalonEdit.Editing.TextEventArgs e)
-		{
-			TextEditorSideBar.Instance.PutInClipboardRing(e.Text);
-		}
-		
+
 		public override object Control {
 			get { return codeEditor; }
 		}
@@ -183,25 +176,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public override INavigationPoint BuildNavPoint()
 		{
-			int lineNumber = codeEditor.Line;
-			string txt = codeEditor.Document.GetText(codeEditor.Document.GetLineByNumber(lineNumber));
-			return new TextNavigationPoint(this.PrimaryFileName, lineNumber, codeEditor.Column, txt);
-		}
-		
-		void CaretChanged(object sender, EventArgs e)
-		{
-			NavigationService.Log(this.BuildNavPoint());
-			var document = codeEditor.Document;
-			int lineOffset = document.GetLineByNumber(codeEditor.Line).Offset;
-			int chOffset = codeEditor.Column;
-			int col = 1;
-			for (int i = 1; i < chOffset; i++) {
-				if (document.GetCharAt(lineOffset + i - 1) == '\t')
-					col += CodeEditorOptions.Instance.IndentationSize;
-				else
-					col += 1;
-			}
-			SD.StatusBar.SetCaretPosition(col, codeEditor.Line, chOffset);
+			return codeEditor.BuildNavPoint();
 		}
 		
 		public override bool IsReadOnly {

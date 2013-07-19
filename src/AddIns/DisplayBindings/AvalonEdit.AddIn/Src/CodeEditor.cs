@@ -235,12 +235,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return codeEditorView;
 		}
 		
-		public event EventHandler<TextEventArgs> TextCopied;
-
 		void textEditor_TextArea_TextCopied(object sender, TextEventArgs e)
 		{
-			if (TextCopied != null)
-				TextCopied(this, e);
+			ICSharpCode.SharpDevelop.Gui.TextEditorSideBar.Instance.PutInClipboardRing(e.Text);
 		}
 
 		protected virtual void DisposeTextEditor(CodeEditorView textEditor)
@@ -364,12 +361,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void HandleCaretPositionChange()
 		{
+			if (CaretPositionChanged != null)
+				CaretPositionChanged(this, EventArgs.Empty);
+			
 			if (quickClassBrowser != null) {
 				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditor.TextArea.Caret.Location);
 			}
 			
-			if (CaretPositionChanged != null)
-				CaretPositionChanged(this, EventArgs.Empty);
+			NavigationService.Log(this.BuildNavPoint());
+			var document = this.Document;
+			int lineOffset = document.GetLineByNumber(this.Line).Offset;
+			int chOffset = this.Column;
+			int col = 1;
+			for (int i = 1; i < chOffset; i++) {
+				if (document.GetCharAt(lineOffset + i - 1) == '\t')
+					col += CodeEditorOptions.Instance.IndentationSize;
+				else
+					col += 1;
+			}
+			SD.StatusBar.SetCaretPosition(col, this.Line, chOffset);
+		}
+		
+		public INavigationPoint BuildNavPoint()
+		{
+			int lineNumber = this.Line;
+			string txt = this.Document.GetText(this.Document.GetLineByNumber(lineNumber));
+			return new TextNavigationPoint(this.FileName, lineNumber, this.Column, txt);
 		}
 		
 		volatile static ReadOnlyCollection<ICodeCompletionBinding> codeCompletionBindings;

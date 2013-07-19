@@ -177,7 +177,12 @@ namespace ICSharpCode.ILSpyAddIn
 			// TODO: show Save As dialog to allow the user to save the decompiled file
 		}
 		#endregion
-
+		
+		public override INavigationPoint BuildNavPoint()
+		{
+			return codeEditor.BuildNavPoint();
+		}
+		
 		#region JumpToEntity
 		public void JumpToEntity(string entityIdString)
 		{
