@@ -22,6 +22,35 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				obj.ElementType == typeof(System.Windows.Data.PriorityBinding)) {
 				return false;
 			}
+			
+			foreach (var property in obj.Properties.Where((prop) => prop.IsSet))
+			{
+				var value = property.PropertyValue;
+				if (value is XamlTextValue)
+					continue;
+				else
+				{
+					XamlObject xamlObject = value as XamlObject;
+					if (xamlObject == null || !xamlObject.IsMarkupExtension)
+						return false;
+					else {
+						var staticResource = xamlObject.Instance as System.Windows.StaticResourceExtension;
+						if (staticResource != null &&
+							staticResource.ResourceKey != null) {
+							XamlObject parent = GetNonMarkupExtensionParent(xamlObject);
+							
+							if (parent != null) {
+								var parentLocalResource = parent.ServiceProvider.Resolver.FindLocalResource(staticResource.ResourceKey);
+								
+								// If resource with the specified key is declared locally on the same object as the StaticResource is being used the markup extension
+								// must be printed as element to find the resource, otherwise it will search from parent-parent and find none or another resource.
+								if (parentLocalResource != null)
+									return false;
+							}
+						}
+					}
+				}
+			}
 
 			return true;
 		}
@@ -57,6 +86,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			sb.Append("}");
 			return sb.ToString();
+		}
+		
+		private static XamlObject GetNonMarkupExtensionParent(XamlObject markupExtensionObject)
+		{
+			System.Diagnostics.Debug.Assert(markupExtensionObject.IsMarkupExtension);
+			
+			XamlObject obj = markupExtensionObject;
+			while (obj != null && obj.IsMarkupExtension) {
+				obj = obj.ParentObject;
+			}
+			return obj;
 		}
 	}
 }

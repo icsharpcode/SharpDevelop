@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Windows;
@@ -267,6 +268,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				oldPropertyElement.ParentNode.RemoveChild(oldPropertyElement);
 			}
 		}
+		
+		bool IsFirstChildResources(XamlObject obj)
+		{
+			return obj.XmlElement.FirstChild != null &&
+				obj.XmlElement.FirstChild.Name.EndsWith("." + XamlConstants.ResourcesPropertyName) &&
+				obj.Properties.Where((prop) => prop.IsResources).FirstOrDefault() != null;
+		}
 
         XmlElement CreatePropertyElement()
         {
@@ -287,11 +295,22 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			if (_propertyElement == null) {
 				if (PropertyName == parentObject.ContentPropertyName) {
-					parentObject.XmlElement.InsertBefore(newChildNode, parentObject.XmlElement.FirstChild);
+					if (IsFirstChildResources(parentObject)) {
+						// Resources element should always be first
+						parentObject.XmlElement.InsertAfter(newChildNode, parentObject.XmlElement.FirstChild);
+					}
+					else
+						parentObject.XmlElement.InsertBefore(newChildNode, parentObject.XmlElement.FirstChild);
 					return;
 				}
-                _propertyElement = CreatePropertyElement();
-				parentObject.XmlElement.InsertBefore(_propertyElement, parentObject.XmlElement.FirstChild);
+				_propertyElement = CreatePropertyElement();
+				
+				if (IsFirstChildResources(parentObject)) {
+					// Resources element should always be first
+					parentObject.XmlElement.InsertAfter(_propertyElement, parentObject.XmlElement.FirstChild);
+				}
+				else
+					parentObject.XmlElement.InsertBefore(_propertyElement, parentObject.XmlElement.FirstChild);
 			}
 			_propertyElement.AppendChild(newChildNode);
 		}
