@@ -3,22 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
-using System.Threading;
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Xml;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Parser;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -162,6 +153,7 @@ namespace ICSharpCode.XamlBinding
 								Accessibility = Accessibility.Public,
 								ReturnType = KnownTypeReference.Void
 							});
+						TypeDefinition.BaseTypes.Add(CreateTypeReference(rootElement.Namespace, rootElement.LocalName));
 					}
 				}
 				base.VisitDocument(document);
