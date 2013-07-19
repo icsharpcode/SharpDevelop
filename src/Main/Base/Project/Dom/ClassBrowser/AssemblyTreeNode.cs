@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Icon {
 			get {
-				return base.Icon;
+				return SD.ResourceService.GetImageSource("Icons.16x16.Assembly");
 			}
 		}
 	}

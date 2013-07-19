@@ -238,7 +238,7 @@
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
 			<ToolbarItem id = "PropertySeparator" type = "Separator"/>
 			<ToolbarItem id      = "Collapse"
-			             icon    = "Icons.16x16.Assembly"
+			             icon    = "Icons.16x16.Collection"
 			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.CollapseAllProjectBrowser"/>
 		</Condition>
@@ -921,9 +921,18 @@
 		
 		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
 		<ToolbarItem id      = "OpenAssembly"
-		             icon    = "Icons.16x16.OpenProjectIcon"
-		             tooltip = "${res:MainWindow.Windows.ClassBrowser.OpenAssembly.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenAssemblyCommand"/>
+		             type    = "DropDownButton"
+		             icon    = "Icons.16x16.AssemblyFromFile"
+		             tooltip = "Open assembly">
+			<MenuItem id    = "OpenAssemblyFromFile"
+			          icon    = "Icons.16x16.AssemblyFromFile"
+			          label = "Open assembly from file"
+			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.OpenAssemblyFromFileCommand"/>
+			<MenuItem id    = "OpenAssemblyFromGAC"
+			          icon  = "Icons.16x16.AssemblyFromGAC"
+			          label = "Open assembly from GAC"
+			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.OpenAssemblyFromGACCommand"/>
+		</ToolbarItem>
 		<ToolbarItem id      = "SelectFilter"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.FindInFiles"
@@ -957,7 +966,7 @@
 		</ToolbarItem>
 		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
 		<ToolbarItem id      = "Collapse"
-		             icon    = "Icons.16x16.Assembly"
+		             icon    = "Icons.16x16.Collection"
 		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserCollapseAll"/>
 	</Path>
@@ -2178,12 +2187,12 @@
 	<Path name = "/SharpDevelop/Pads/SearchResultPanel/Toolbar">
 		<Condition name = "Ownerstate" ownerstate = "DefaultMode" action = "Exclude">
 			<ToolbarItem id      = "ExpandAll"
-			             icon    = "Icons.16x16.OpenAssembly"
+			             icon    = "Icons.16x16.OpenCollection"
 			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip}"
 			             class   = "SearchAndReplace.ExpandAll"/>
 			
 			<ToolbarItem id      = "CollapseAll"
-			             icon    = "Icons.16x16.Assembly"
+			             icon    = "Icons.16x16.Collection"
 			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 			             class   = "SearchAndReplace.CollapseAll"/>
 			<ToolbarItem id = "ExpandCollapseSeparator" type = "Separator" />

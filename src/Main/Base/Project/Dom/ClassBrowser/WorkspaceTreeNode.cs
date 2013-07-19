@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Icon {
 			get {
-				return SD.ResourceService.GetImageSource("PadIcons.ClassBrowser");
+				return SD.ResourceService.GetImageSource("Icons.16x16.Workspace");
 			}
 		}
 		

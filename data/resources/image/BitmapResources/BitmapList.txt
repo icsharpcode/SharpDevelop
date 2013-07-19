@@ -23,7 +23,7 @@ BitmapResources-data\Icons.16x16.AdjustColor.png
 BitmapResources-data\Icons.16x16.ArrowDown.png
 BitmapResources-data\Icons.16x16.ArrowLeftRight.png
 BitmapResources-data\Icons.16x16.ArrowUp.png
-BitmapResources-data\Icons.16x16.Assembly.png
+BitmapResources-data\Icons.16x16.Collection.png
 BitmapResources-data\Icons.16x16.BoldText.png
 BitmapResources-data\Icons.16x16.BrowserAfter.png
 BitmapResources-data\Icons.16x16.BrowserBefore.png
@@ -85,7 +85,7 @@ BitmapResources-data\Icons.16x16.LowerToUpperCase.png
 BitmapResources-data\Icons.16x16.MyComputer.png
 BitmapResources-data\Icons.16x16.NETWORK.png
 BitmapResources-data\Icons.16x16.OK.png
-BitmapResources-data\Icons.16x16.OpenAssembly.png
+BitmapResources-data\Icons.16x16.OpenCollection.png
 BitmapResources-data\Icons.16x16.OutDent.png
 BitmapResources-data\Icons.16x16.PasteIcon.png
 BitmapResources-data\Icons.16x16.PersonalFiles.png
@@ -555,7 +555,11 @@ ClassBrowserIcons\Icons.16x16.NameSpace.png
 ClassBrowserIcons\Icons.16x16.Operator.png
 ClassBrowserIcons\Icons.16x16.Parameter.png
 ClassBrowserIcons\Icons.16x16.Struct.png
-
+ClassBrowserIcons\Icons.16x16.Workspace.png
+ClassBrowserIcons\Icons.16x16.Assembly.png
+ClassBrowserIcons\Icons.16x16.Module.png
+ClassBrowserIcons\Icons.16x16.AssemblyFromFile.png
+ClassBrowserIcons\Icons.16x16.AssemblyFromGAC.png
 
 -------------------------------------------------------------------------------
 Left original (other source than Fugue Iconlibrary)

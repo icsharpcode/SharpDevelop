@@ -87,13 +87,13 @@ namespace SearchAndReplace
 				
 				Button expandAll = new Button();
 				expandAll.SetValueToExtension(Button.ToolTipProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip"));
-				expandAll.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.OpenAssembly") };
+				expandAll.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.OpenCollection") };
 				expandAll.Click += delegate { ExpandCollapseAll(true); };
 				toolbarItems.Add(expandAll);
 				
 				Button collapseAll = new Button();
 				collapseAll.SetValueToExtension(Button.ToolTipProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip"));
-				collapseAll.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.Assembly") };
+				collapseAll.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.Collection") };
 				collapseAll.Click += delegate { ExpandCollapseAll(false); };
 				toolbarItems.Add(collapseAll);
 			}

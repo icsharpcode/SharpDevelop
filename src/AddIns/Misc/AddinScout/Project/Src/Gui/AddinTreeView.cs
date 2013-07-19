@@ -26,8 +26,8 @@ namespace AddInScout
 			treeView.ImageList = new ImageList();
 			treeView.ImageList.ColorDepth = ColorDepth.Depth32Bit;
 			treeView.ImageList.Images.Add(IconService.GetBitmap("Icons.16x16.Class"));
-			treeView.ImageList.Images.Add(IconService.GetBitmap("Icons.16x16.Assembly"));
-			treeView.ImageList.Images.Add(IconService.GetBitmap("Icons.16x16.OpenAssembly"));
+			treeView.ImageList.Images.Add(IconService.GetBitmap("Icons.16x16.Collection"));
+			treeView.ImageList.Images.Add(IconService.GetBitmap("Icons.16x16.OpenCollection"));
 			treeView.ImageList.Images.Add(IconService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
 			treeView.ImageList.Images.Add(IconService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
 			

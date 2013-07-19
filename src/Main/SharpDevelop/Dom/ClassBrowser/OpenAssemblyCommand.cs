@@ -2,17 +2,28 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
 	/// <summary>
-	/// Description of OpenAssemblyCommand.
+	/// Description of OpenAssemblyFromFileCommand.
 	/// </summary>
-	class OpenAssemblyCommand : SimpleCommand
+	class OpenAssemblyFromFileCommand : SimpleCommand
 	{
 		public override void Execute(object parameter)
 		{
+			throw new NotImplementedException();
+		}
+	}
+	
+	/// <summary>
+	/// Description of OpenAssemblyFromGACCommand.
+	/// </summary>
+	class OpenAssemblyFromGACCommand : SimpleCommand
+	{
+		public override void Execute(object parameter)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
