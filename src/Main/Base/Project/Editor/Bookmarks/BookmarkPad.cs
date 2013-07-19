@@ -69,6 +69,16 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 				if (bm != null)
 					OnItemActivated(bm);
 			};
+			
+			this.control.listView.KeyDown += delegate(object sender, System.Windows.Input.KeyEventArgs e) {
+				SDBookmark bm = this.control.listView.SelectedItem as SDBookmark;
+				if (bm == null) return;
+				switch (e.Key) {
+					case System.Windows.Input.Key.Delete:
+						SD.BookmarkManager.RemoveMark(bm);
+						break;
+				}
+			};
 		}
 		
 		public override void Dispose()
