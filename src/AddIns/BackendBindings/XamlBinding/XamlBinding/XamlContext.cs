@@ -4,17 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Windows.Media;
-using System.Xml;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Xml;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Parser;
-using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {

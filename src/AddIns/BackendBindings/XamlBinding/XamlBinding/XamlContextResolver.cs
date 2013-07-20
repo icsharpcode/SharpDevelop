@@ -9,7 +9,6 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.XamlBinding
 {

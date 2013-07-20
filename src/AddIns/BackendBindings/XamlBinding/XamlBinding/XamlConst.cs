@@ -6,15 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-using System.Threading;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.SharpDevelop.Parser;
-
 namespace ICSharpCode.XamlBinding
 {
 	/// <summary>

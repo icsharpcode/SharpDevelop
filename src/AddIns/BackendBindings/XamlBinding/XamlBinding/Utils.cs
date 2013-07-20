@@ -1,18 +1,10 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Xml;
-using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Xml;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.XmlEditor;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.XamlBinding
 {

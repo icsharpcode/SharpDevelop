@@ -4,8 +4,6 @@
 using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
 
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
