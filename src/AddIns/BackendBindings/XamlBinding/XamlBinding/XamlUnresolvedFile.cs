@@ -142,10 +142,12 @@ namespace ICSharpCode.XamlBinding
 				AXmlElement rootElement = currentDocument.Children.OfType<AXmlElement>().FirstOrDefault();
 				if (rootElement != null) {
 					string className = rootElement.GetAttributeValue(XamlConst.XamlNamespace, "Class");
+					string modifier = rootElement.GetAttributeValue(XamlConst.XamlNamespace, "ClassModifier");
 					if (className != null) {
 						TypeDefinition = new DefaultUnresolvedTypeDefinition(className) {
 							Kind = TypeKind.Class,
 							UnresolvedFile = file,
+							Accessibility = Accessibility.Public,
 							Region = new DomRegion(file.FileName, textDocument.GetLocation(rootElement.StartOffset), textDocument.GetLocation(rootElement.EndOffset))
 						};
 						TypeDefinition.Members.Add(
@@ -153,7 +155,35 @@ namespace ICSharpCode.XamlBinding
 								Accessibility = Accessibility.Public,
 								ReturnType = KnownTypeReference.Void
 							});
+						TypeDefinition.Members.Add(
+							new DefaultUnresolvedField(TypeDefinition, "_contentLoaded") {
+								Accessibility = Accessibility.Private,
+								ReturnType = KnownTypeReference.Boolean
+							});
+						
+						var connectMember =
+							new DefaultUnresolvedMethod(TypeDefinition, "Connect") {
+							Accessibility = Accessibility.Private,
+							ReturnType = KnownTypeReference.Void
+						};
+						connectMember.Parameters.Add(new DefaultUnresolvedParameter(KnownTypeReference.Int32, "connectionId"));
+						connectMember.Parameters.Add(new DefaultUnresolvedParameter(KnownTypeReference.Object, "target"));
+						TypeDefinition.Members.Add(connectMember);
+						connectMember.ExplicitInterfaceImplementations.Add(
+							new DefaultMemberReference(SymbolKind.Method, new GetClassTypeReference(new FullTypeName(typeof(System.Windows.Markup.IComponentConnector).FullName)), "Connect"));
+						
+						var browsableAttribute = new DefaultUnresolvedAttribute(new GetClassTypeReference(new FullTypeName(typeof(System.ComponentModel.EditorBrowsableAttribute).FullName)));
+						
+						browsableAttribute.PositionalArguments.Add(
+							new SimpleConstantValue(
+								new GetClassTypeReference(new FullTypeName(typeof(System.ComponentModel.EditorBrowsableAttribute).FullName)), System.ComponentModel.EditorBrowsableState.Never
+							));
+						
+						connectMember.Attributes.Add(browsableAttribute);
 						TypeDefinition.BaseTypes.Add(CreateTypeReference(rootElement.Namespace, rootElement.LocalName));
+						TypeDefinition.BaseTypes.Add(new GetClassTypeReference(new FullTypeName(typeof(System.Windows.Markup.IComponentConnector).FullName)));
+						if (modifier != null)
+							TypeDefinition.Accessibility = ParseAccessibility(modifier);
 					}
 				}
 				base.VisitDocument(document);
