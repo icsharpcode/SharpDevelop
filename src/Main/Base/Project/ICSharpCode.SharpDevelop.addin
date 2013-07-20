@@ -922,7 +922,7 @@
 		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
 		<ToolbarItem id      = "OpenAssembly"
 		             type    = "DropDownButton"
-		             icon    = "Icons.16x16.AssemblyFromFile"
+		             icon    = "Icons.16x16.Assembly"
 		             tooltip = "Open assembly">
 			<MenuItem id    = "OpenAssemblyFromFile"
 			          icon    = "Icons.16x16.AssemblyFromFile"
