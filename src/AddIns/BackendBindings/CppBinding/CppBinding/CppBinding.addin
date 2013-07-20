@@ -77,7 +77,7 @@
 	<!--
 	<Path name="/SharpDevelop/Parser">
 		<Parser id="C++"
-				supportedextensions=".cpp;.c;.hpp;.h"
+				supportedfilenamepattern="\.(cpp|c|hpp|h)$"
 				projectfileextension="vcxproj"
 				class="ICSharpCode.CppBinding.Parser.CppParser" />
 	</Path>
