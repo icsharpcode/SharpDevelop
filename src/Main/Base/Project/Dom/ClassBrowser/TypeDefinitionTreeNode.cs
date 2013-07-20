@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
 	public class TypeDefinitionTreeNode : ModelCollectionTreeNode
 	{
+		static readonly IComparer<SharpTreeNode> TypeMemberNodeComparer =  new TypeDefinitionMemberNodeComparer();
 		ITypeDefinitionModel definition;
 		
 		public TypeDefinitionTreeNode(ITypeDefinitionModel definition)
@@ -40,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		protected override IComparer<SharpTreeNode> NodeComparer {
 			get {
-				return NodeTextComparer;
+				return TypeMemberNodeComparer;
 			}
 		}
 		
@@ -62,6 +64,29 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			var entityModel = this.Model as IEntityModel;
 			if ((entityModel != null) && (entityModel.ParentProject != null)) {
 				var ctx = MenuService.ShowContextMenu(null, entityModel, "/SharpDevelop/EntityContextMenu");
+			}
+		}
+		
+		class TypeDefinitionMemberNodeComparer : IComparer<SharpTreeNode>
+		{
+			public int Compare(SharpTreeNode x, SharpTreeNode y)
+			{
+				var a = x.Model as IMemberModel;
+				var b = y.Model as IMemberModel;
+				
+				if (a == null && b == null)
+					return NodeTextComparer.Compare(x, y);
+				if (a == null)
+					return -1;
+				if (b == null)
+					return 1;
+				
+				if (a.SymbolKind < b.SymbolKind)
+					return -1;
+				if (a.SymbolKind > b.SymbolKind)
+					return 1;
+				
+				return NodeTextComparer.Compare(x, y);
 			}
 		}
 	}
