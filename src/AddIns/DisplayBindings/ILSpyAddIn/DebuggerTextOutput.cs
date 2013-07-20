@@ -10,7 +10,7 @@ using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {
-	sealed class DebuggerTextOutput : ITextOutput
+	public sealed class DebuggerTextOutput : ITextOutput
 	{
 		readonly ITextOutput output;
 		

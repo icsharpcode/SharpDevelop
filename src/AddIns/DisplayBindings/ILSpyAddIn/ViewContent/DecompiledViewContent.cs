@@ -16,7 +16,7 @@ using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Disassembler;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.ILSpyAddIn.LaunchILSpy;
+using ICSharpCode.ILSpyAddIn;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -34,10 +34,10 @@ namespace ICSharpCode.ILSpyAddIn
 	{
 		readonly FileName assemblyFile;
 		readonly string fullTypeName;
-		public FileName VirtualFileName { get; private set; }
+		public DecompiledTypeReference DecompiledTypeName { get; private set; }
 		
 		public override FileName PrimaryFileName {
-			get { return this.VirtualFileName; }
+			get { return this.DecompiledTypeName.ToFileName(); }
 		}
 		
 		/// <summary>
@@ -56,7 +56,7 @@ namespace ICSharpCode.ILSpyAddIn
 		#region Constructor
 		public DecompiledViewContent(FileName assemblyFile, string fullTypeName, string entityTag)
 		{
-			this.VirtualFileName = FileName.Create("ilspy://" + assemblyFile + "/" + fullTypeName + ".cs");
+			this.DecompiledTypeName = new DecompiledTypeReference(assemblyFile, new FullTypeName(fullTypeName));
 			
 			this.Services = codeEditor.GetRequiredService<IServiceContainer>();
 			
@@ -76,17 +76,11 @@ namespace ICSharpCode.ILSpyAddIn
 			SD.BookmarkManager.BookmarkRemoved += BookmarkManager_Removed;
 			SD.BookmarkManager.BookmarkAdded += BookmarkManager_Added;
 			
-			this.codeEditor.FileName = this.VirtualFileName;
+			this.codeEditor.FileName = this.DecompiledTypeName.ToFileName();
 			this.codeEditor.ActiveTextEditor.IsReadOnly = true;
 			this.codeEditor.ActiveTextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
 		}
 		#endregion
-		
-		public static DecompiledViewContent Get(FileName virtualFileName)
-		{
-			var viewContents = SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>();
-			return viewContents.FirstOrDefault(c => c.VirtualFileName == virtualFileName);
-		}
 		
 		public static DecompiledViewContent Get(IEntity entity)
 		{
@@ -201,11 +195,13 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			try {
 				StringWriter writer = new StringWriter();
-				RunDecompiler(assemblyFile, fullTypeName, new DebuggerTextOutput(new PlainTextOutput(writer)), cancellation.Token);
+				var file = ILSpyDecompilerService.DecompileType(DecompiledTypeName);
+				memberLocations = file.TextOutput.MemberLocations;
+				this.DebugSymbols = file.TextOutput.DebugSymbols;
 //				if (!cancellation.IsCancellationRequested) {
 //					SD.MainThread.InvokeAsyncAndForget(() => OnDecompilationFinished(writer));
 //				}
-				OnDecompilationFinished(writer);
+				OnDecompilationFinished(file.Writer);
 			} catch (OperationCanceledException) {
 				// ignore cancellation
 			} catch (Exception ex) {
@@ -221,31 +217,6 @@ namespace ICSharpCode.ILSpyAddIn
 				writer.WriteLine(ex.ToString());
 				SD.MainThread.InvokeAsyncAndForget(() => OnDecompilationFinished(writer));
 			}
-		}
-		
-		void RunDecompiler(string assemblyFile, string fullTypeName, DebuggerTextOutput textOutput, CancellationToken cancellationToken)
-		{
-			ReaderParameters readerParameters = new ReaderParameters();
-			// Use new assembly resolver instance so that the AssemblyDefinitions can be garbage-collected
-			// once the code is decompiled.
-			readerParameters.AssemblyResolver = new ILSpyAssemblyResolver(Path.GetDirectoryName(assemblyFile));
-			
-			ModuleDefinition module = ModuleDefinition.ReadModule(assemblyFile, readerParameters);
-			TypeDefinition typeDefinition = module.GetType(fullTypeName);
-			if (typeDefinition == null)
-				throw new InvalidOperationException("Could not find type");
-			DecompilerContext context = new DecompilerContext(module);
-			context.CancellationToken = cancellationToken;
-			AstBuilder astBuilder = new AstBuilder(context);
-			astBuilder.AddType(typeDefinition);
-			astBuilder.GenerateCode(textOutput);
-			
-			// ReflectionDisassembler disasm = new ReflectionDisassembler(textOutput, true, cancellationToken);
-			// disasm.DisassembleType(typeDefinition);
-			
-			// save decompilation data
-			memberLocations = textOutput.MemberLocations;
-			this.DebugSymbols = textOutput.DebugSymbols;
 		}
 		
 		void OnDecompilationFinished(StringWriter output)
@@ -280,7 +251,7 @@ namespace ICSharpCode.ILSpyAddIn
 				codeView.IconBarManager.Bookmarks.Add(bookmark);
 			}
 		}
-		*/
+		 */
 		#endregion
 		
 		#region Bookmarks
@@ -296,7 +267,7 @@ namespace ICSharpCode.ILSpyAddIn
 		void BookmarkManager_Added(object sender, BookmarkEventArgs e)
 		{
 			var mark = e.Bookmark;
-			if (mark != null && mark.FileName == VirtualFileName) {
+			if (mark != null && mark.FileName == PrimaryFileName) {
 				codeEditor.IconBarManager.Bookmarks.Add(mark);
 				mark.Document = this.codeEditor.Document;
 			}

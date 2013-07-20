@@ -52,28 +52,28 @@ namespace ICSharpCode.ILSpyAddIn
 				seq = seqs.Where(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To))
 				          .OrderByDescending(p => p.ILRanges.Last().To - p.ILRanges.First().From)
 				          .FirstOrDefault();
-				return seq.ToDebugger(symbols, content.VirtualFileName);
+				return seq.ToDebugger(symbols, content.PrimaryFileName);
 			}
 			return null;
 		}
 		
 		public Debugger.SequencePoint GetSequencePoint(Module module, string filename, int line, int column)
 		{
-			var content = DecompiledViewContent.Get(new FileName(filename));
-			if (content == null)
+			var decompiledFile = ILSpyDecompilerService.DecompileType(DecompiledTypeReference.FromFileName(filename));
+			if (decompiledFile == null)
 				return null;
-			if (!FileUtility.IsEqualFileName(module.FullPath, content.AssemblyFile))
+			if (!FileUtility.IsEqualFileName(module.FullPath, decompiledFile.AssemblyFile))
 				return null;
 			
 			TextLocation loc = new TextLocation(line, column);
-			foreach(var symbols in content.DebugSymbols.Values.Where(s => s.StartLocation <= loc && loc <= s.EndLocation)) {
+			foreach(var symbols in decompiledFile.DebugSymbols.Values.Where(s => s.StartLocation <= loc && loc <= s.EndLocation)) {
 				Decompiler.SequencePoint seq = null;
 				if (column != 0)
 					seq = symbols.SequencePoints.FirstOrDefault(p => p.StartLocation <= loc && loc <= p.EndLocation);
 				if (seq == null)
 					seq = symbols.SequencePoints.FirstOrDefault(p => line <= p.StartLocation.Line);
 				if (seq != null)
-					return seq.ToDebugger(symbols, content.VirtualFileName);
+					return seq.ToDebugger(symbols, decompiledFile.FileName);
 			}
 			return null;
 		}

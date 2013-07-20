@@ -20,6 +20,13 @@
 		<Class id="ILSpy" class="ICSharpCode.ILSpyAddIn.NavigateToDecompiledEntityService"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Parser">
+		<Parser id    = "ILSpy"
+		        insertbefore="C#"
+		        supportedfilenamepattern="^ilspy\://"
+		        class = "ICSharpCode.ILSpyAddIn.ILSpyParser" />
+	</Path>
+	
 	<!-- Text editor context menu: Launch ILSpy command -->
 	<Path name="/SharpDevelop/EntityContextMenu">
 		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.OpenInILSpyCommand"/>

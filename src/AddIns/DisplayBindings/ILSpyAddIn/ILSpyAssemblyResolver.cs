@@ -11,7 +11,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
 using Mono.Cecil;
 
-namespace ICSharpCode.ILSpyAddIn.LaunchILSpy
+namespace ICSharpCode.ILSpyAddIn
 {
 	class ILSpyAssemblyResolver : IAssemblyResolver
 	{
