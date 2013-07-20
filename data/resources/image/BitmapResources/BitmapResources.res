@@ -86,6 +86,7 @@ Icons.16x16.Debug.Continue							= DebuggerIcons\Icons.16x16.Debug.Continue.png
 Icons.16x16.Debug.StepOver							= DebuggerIcons\Icons.16x16.Debug.StepOver.png
 Icons.16x16.Debug.StepInto							= DebuggerIcons\Icons.16x16.Debug.StepInto.png
 Icons.16x16.Debug.StepOut							= DebuggerIcons\Icons.16x16.Debug.StepOut.png
+Icons.16x16.Debug.Assembly							= DebuggerIcons\Icons.16x16.Debug.Assembly.png
 
 # TestRunner
 Icons.16x16.TestRunner.Yellow						= BitmapResources-data\Icons.16x16.TestRunner.Yellow.png

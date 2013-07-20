@@ -239,6 +239,7 @@ CodeCoverageIcons\CodeCoverage.Icons.16x16.Pad.png
 CodeCoverageIcons\CodeCoverage.Icons.16x16.Run.png
 DebuggerIcons\Icons.16x16.Debug.Start.png
 DebuggerIcons\Icons.16x16.Debug.StartWithoutDebugging.png
+DebuggerIcons\Icons.16x16.Debug.Assembly.png
 NavigationIcons\Icons.16x16.NavigateBack.disabled.png
 NavigationIcons\Icons.16x16.NavigateBack.png
 NavigationIcons\Icons.16x16.NavigateForward.png
