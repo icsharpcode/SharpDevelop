@@ -454,7 +454,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			try {
 				IViewContent content = OpenFile(fileName);
-				IPositionable positionable = content.GetService<IPositionable>();
+				IPositionable positionable = content != null ? content.GetService<IPositionable>() : null;
 				if (positionable != null) {
 					content.WorkbenchWindow.ActiveViewContent = content;
 					NavigationService.ResumeLogging();

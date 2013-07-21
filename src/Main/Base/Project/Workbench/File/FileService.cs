@@ -233,10 +233,5 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		#endregion Events
-		
-		public static object CreateUntitledOpenedFile(string plainFileName, byte[] byte1)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

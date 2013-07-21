@@ -59,6 +59,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (f != null)
 				f.Freeze();
 		}
+		
+		public static T FreezeAndReturn<T>(T item) where T : IFreezable
+		{
+			item.Freeze();
+			return item;
+		}
+		
+		/// <summary>
+		/// If the item is not frozen, this method creates and returns a frozen clone.
+		/// If the item is already frozen, it is returned without creating a clone.
+		/// </summary>
+		public static T GetFrozenClone<T>(T item) where T : IFreezable, ICloneable
+		{
+			if (!item.IsFrozen) {
+				item = (T)item.Clone();
+				item.Freeze();
+			}
+			return item;
+		}
 	}
 
 	[Serializable]

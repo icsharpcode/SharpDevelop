@@ -102,6 +102,7 @@
     <Compile Include="Document\DocumentChangeOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
+    <Compile Include="Document\DocumentTextWriter.cs" />
     <Compile Include="Document\ILineTracker.cs" />
     <Compile Include="Document\SimpleSegment.cs" />
     <Compile Include="Document\RopeTextSource.cs" />
@@ -196,6 +197,8 @@
     <Compile Include="Highlighting\HighlightingEngine.cs" />
     <Compile Include="Highlighting\HighlightingManager.cs" />
     <Compile Include="Highlighting\HtmlClipboard.cs" />
+    <Compile Include="Highlighting\HtmlOptions.cs" />
+    <Compile Include="Highlighting\HtmlRichTextWriter.cs" />
     <Compile Include="Highlighting\IHighlighter.cs" />
     <Compile Include="Highlighting\IHighlightingDefinition.cs" />
     <Compile Include="Highlighting\HighlightingRule.cs" />
@@ -204,6 +207,9 @@
     <Compile Include="Highlighting\HighlightingSpan.cs" />
     <Compile Include="Highlighting\IHighlightingDefinitionReferenceResolver.cs">
     </Compile>
+    <Compile Include="Highlighting\RichTextColorizer.cs" />
+    <Compile Include="Highlighting\RichTextModel.cs" />
+    <Compile Include="Highlighting\RichTextModelWriter.cs" />
     <Compile Include="Highlighting\Xshd\HighlightingLoader.cs" />
     <Compile Include="Highlighting\Xshd\IXshdVisitor.cs" />
     <Compile Include="Highlighting\Xshd\SaveXshdVisitor.cs" />
@@ -354,7 +360,9 @@
     <Compile Include="Utils\FileReader.cs" />
     <Compile Include="Utils\NullSafeCollection.cs" />
     <Compile Include="Utils\ObserveAddRemoveCollection.cs" />
+    <Compile Include="Utils\PlainRichTextWriter.cs" />
     <Compile Include="Utils\PropertyChangedWeakEventManager.cs" />
+    <Compile Include="Utils\RichTextWriter.cs" />
     <Compile Include="Utils\Rope.cs" />
     <Compile Include="Utils\RopeNode.cs" />
     <Compile Include="Utils\RopeTextReader.cs" />

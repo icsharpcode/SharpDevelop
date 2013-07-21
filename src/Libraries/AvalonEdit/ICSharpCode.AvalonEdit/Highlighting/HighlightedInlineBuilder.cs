@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -73,11 +74,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			stateChanges.Add(new HighlightingState());
 		}
 		
-		HighlightedInlineBuilder(string text, int[] offsets, HighlightingState[] states)
+		HighlightedInlineBuilder(string text, List<int> offsets, List<HighlightingState> states)
 		{
 			this.text = text;
-			stateChangeOffsets.AddRange(offsets);
-			stateChanges.AddRange(states);
+			stateChangeOffsets = offsets;
+			stateChanges = states;
 		}
 		
 		/// <summary>
@@ -207,8 +208,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		public HighlightedInlineBuilder Clone()
 		{
 			return new HighlightedInlineBuilder(this.text,
-			                                    stateChangeOffsets.ToArray(), 
-			                                    stateChanges.Select(sc => sc.Clone()).ToArray());
+			                                    stateChangeOffsets.ToList(),
+			                                    stateChanges.Select(sc => sc.Clone()).ToList());
 		}
 	}
 }

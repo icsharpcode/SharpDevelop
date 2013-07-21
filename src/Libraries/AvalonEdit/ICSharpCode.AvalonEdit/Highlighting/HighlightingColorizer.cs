@@ -211,7 +211,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// Gets whether the color is empty (has no effect on a VisualLineTextElement).
 		/// For example, the C# "Punctuation" is an empty color.
 		/// </summary>
-		bool IsEmptyColor(HighlightingColor color)
+		internal static bool IsEmptyColor(HighlightingColor color)
 		{
 			if (color == null)
 				return true;
@@ -224,13 +224,18 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		protected virtual void ApplyColorToElement(VisualLineElement element, HighlightingColor color)
 		{
+			ApplyColorToElement(element, color, CurrentContext);
+		}
+		
+		internal static void ApplyColorToElement(VisualLineElement element, HighlightingColor color, ITextRunConstructionContext context)
+		{
 			if (color.Foreground != null) {
-				Brush b = color.Foreground.GetBrush(CurrentContext);
+				Brush b = color.Foreground.GetBrush(context);
 				if (b != null)
 					element.TextRunProperties.SetForegroundBrush(b);
 			}
 			if (color.Background != null) {
-				Brush b = color.Background.GetBrush(CurrentContext);
+				Brush b = color.Background.GetBrush(context);
 				if (b != null)
 					element.BackgroundBrush = b;
 			}

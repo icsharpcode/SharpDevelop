@@ -1,6 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-
+#define DATACONSISTENCYTEST
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -411,8 +411,26 @@ namespace ICSharpCode.AvalonEdit.Utils
 				}
 				prevNode = n;
 			}
+			CheckProperties();
 		}
-
+		
+		/// <summary>
+		/// Applies the conversion function to the elements in the specified range.
+		/// </summary>
+		public void TransformRange(int index, int length, Func<T, T> converter)
+		{
+			if (root == null)
+				return;
+			int endIndex = index + length;
+			int pos = index;
+			while (pos < endIndex) {
+				int endPos = Math.Min(endIndex, GetEndOfRun(pos));
+				T oldValue = this[pos];
+				T newValue = converter(oldValue);
+				SetRange(pos, endPos - pos, newValue);
+				pos = endPos;
+			}
+		}
 		
 		/// <summary>
 		/// Inserts the specified <paramref name="item"/> at <paramref name="index"/>
