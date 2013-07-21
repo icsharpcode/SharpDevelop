@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 
-using ICSharpCode.AvalonEdit;
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
@@ -24,14 +24,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public class DefinitionViewPad : AbstractPadContent
 	{
 		AvalonEdit.TextEditor ctl;
+		DispatcherTimer timer;
 		
 		/// <summary>
 		/// The control representing the pad
 		/// </summary>
 		public override object Control {
-			get {
-				return ctl;
-			}
+			get { return ctl; }
 		}
 		
 		/// <summary>
@@ -42,8 +41,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ctl = Editor.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
 			ctl.IsReadOnly = true;
 			ctl.MouseDoubleClick += OnDoubleClick;
-			throw new NotImplementedException();
-			//ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
+			SD.ParserService.ParseInformationUpdated += OnParserUpdateStep;
+			SD.ParserService.LoadSolutionProjectsThread.Finished += LoadThreadFinished;
+			timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(2) };
+			timer.Tick += delegate { UpdateTick(null); };
+			timer.IsEnabled = !SD.ParserService.LoadSolutionProjectsThread.IsRunning;
 			ctl.IsVisibleChanged += delegate { UpdateTick(null); };
 		}
 		
@@ -52,47 +54,55 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public override void Dispose()
 		{
-			//ParserService.ParserUpdateStepFinished -= OnParserUpdateStep;
+			SD.ParserService.ParseInformationUpdated -= OnParserUpdateStep;
+			SD.ParserService.LoadSolutionProjectsThread.Finished -= LoadThreadFinished;
 			ctl.Document = null;
 			base.Dispose();
 		}
 		
 		void OnDoubleClick(object sender, EventArgs e)
 		{
-			string fileName = currentFileName;
+			FileName fileName = currentFileName;
 			if (fileName != null) {
 				var caret = ctl.TextArea.Caret;
-				FileService.JumpToFilePosition(fileName, caret.Line, caret.Column);
+				SD.FileService.JumpToFilePosition(fileName, caret.Line, caret.Column);
 				
 				// refresh DefinitionView to show the definition of the expression that was double-clicked
 				UpdateTick(null);
 			}
 		}
 		
-		void OnParserUpdateStep(object sender, ParserUpdateStepEventArgs e)
+		void LoadThreadFinished(object sender, EventArgs e)
+		{
+			timer.IsEnabled = true;
+			UpdateTick(null);
+		}
+		
+		void OnParserUpdateStep(object sender, ParseInformationEventArgs e)
 		{
 			UpdateTick(e);
 		}
 		
-		async void UpdateTick(ParserUpdateStepEventArgs e)
+		async void UpdateTick(ParseInformationEventArgs e)
 		{
+			timer.IsEnabled = ctl.IsVisible;
 			if (!ctl.IsVisible) return;
 			LoggingService.Debug("DefinitionViewPad.Update");
 			
 			ResolveResult res = await ResolveAtCaretAsync(e);
 			if (res == null) return;
 			var pos = res.GetDefinitionRegion();
-			if (pos.IsEmpty) return;
+			if (pos.IsEmpty) return; // TODO : try to decompile?
 			OpenFile(pos);
 		}
 		
-		Task<ResolveResult> ResolveAtCaretAsync(ParserUpdateStepEventArgs e)
+		Task<ResolveResult> ResolveAtCaretAsync(ParseInformationEventArgs e)
 		{
 			IWorkbenchWindow window = SD.Workbench.ActiveWorkbenchWindow;
-			if (window == null) 
+			if (window == null)
 				return Task.FromResult<ResolveResult>(null);
 			IViewContent viewContent = window.ActiveViewContent;
-			if (viewContent == null) 
+			if (viewContent == null)
 				return Task.FromResult<ResolveResult>(null);
 			ITextEditor editor = viewContent.GetService<ITextEditor>();
 			if (editor == null)
@@ -107,14 +117,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		DomRegion oldPosition;
-		string currentFileName;
+		FileName currentFileName;
 		
 		void OpenFile(DomRegion pos)
 		{
 			if (pos.Equals(oldPosition)) return;
 			oldPosition = pos;
 			if (pos.FileName != currentFileName)
-				LoadFile(pos.FileName);
+				LoadFile(new FileName(pos.FileName));
 			ctl.TextArea.Caret.Location = pos.Begin;
 			Rect r = ctl.TextArea.Caret.CalculateCaretRectangle();
 			if (!r.IsEmpty) {
@@ -126,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Loads the file from the corresponding text editor window if it is
 		/// open otherwise the file is loaded from the file system.
 		/// </summary>
-		void LoadFile(string fileName)
+		void LoadFile(FileName fileName)
 		{
 			// Load the text into the definition view's text editor.
 			ctl.Document = new TextDocument(SD.FileService.GetFileContent(fileName));
