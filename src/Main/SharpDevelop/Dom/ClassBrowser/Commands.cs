@@ -23,11 +23,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				openFileDialog.CheckPathExists = true;
 				if (openFileDialog.ShowDialog() ?? false)
 				{
-					try {
 					classBrowser.AssemblyList.Assemblies.Add(ClassBrowserPad.CreateAssemblyModelFromFile(openFileDialog.FileName));
-					} catch (BadImageFormatException ex) {
-						SD.MessageService.ShowWarningFormatted("{0} is not a valid .NET assembly.", Path.GetFileName(openFileDialog.FileName));
-					}
 				}
 			}
 		}

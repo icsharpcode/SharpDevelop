@@ -44,6 +44,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Full path and file name of the assembly. Output assembly for projects.
 		/// </summary>
 		string Location { get; }
+		
+		/// <summary>
+		/// Returns whether this is a valid context (based on a existing and readable definition).
+		/// </summary>
+		bool IsValid { get; }
 	}
 	
 	public class ProjectEntityModelContext : IEntityModelContext
@@ -79,6 +84,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)
 		{
 			return EntityModelContextUtils.IsBetterPart(part1, part2, primaryCodeFileExtension);
+		}
+		
+		public bool IsValid {
+			get { return true; }
 		}
 	}
 	
@@ -118,6 +127,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IProject Project {
 			get { return null; }
+		}
+		
+		public bool IsValid {
+			get { return true; }
 		}
 	}
 	

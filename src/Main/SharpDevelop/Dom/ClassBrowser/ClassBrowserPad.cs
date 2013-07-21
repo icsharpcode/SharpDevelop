@@ -2,13 +2,16 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Controls;
+using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TreeView;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Workbench;
@@ -25,6 +28,50 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public string Name { get; set; }
 		public List<String> AssemblyFiles { get; set; }
 		public bool IsActive { get; set; }
+	}
+	
+	class UnresolvedAssemblyEntityModelContext : IEntityModelContext
+	{
+		string assemblyName;
+		string location;
+		
+		public UnresolvedAssemblyEntityModelContext(string assemblyName, string location)
+		{
+			this.assemblyName = assemblyName;
+			this.location = location;
+		}
+		
+		public ICompilation GetCompilation()
+		{
+			return null;
+		}
+		
+		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)
+		{
+			return false;
+		}
+		
+		public IProject Project {
+			get {
+				return null;
+			}
+		}
+		
+		public string AssemblyName {
+			get {
+				return assemblyName;
+			}
+		}
+		
+		public string Location {
+			get {
+				return location;
+			}
+		}
+		
+		public bool IsValid {
+			get { return false; }
+		}
 	}
 	
 	class ClassBrowserPad : AbstractPadContent, IClassBrowser
@@ -171,19 +218,33 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public static IAssemblyModel CreateAssemblyModelFromFile(string fileName)
 		{
-			var loader = new CecilLoader();
-			loader.IncludeInternalMembers = true;
-			loader.LazyLoad = true;
-			var assembly = loader.LoadAssemblyFile(fileName);
-			
-			IEntityModelContext context = new AssemblyEntityModelContext(assembly);
-			IAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
-			
-			if (model is IUpdateableAssemblyModel) {
-				((IUpdateableAssemblyModel)model).Update(EmptyList<IUnresolvedTypeDefinition>.Instance, assembly.TopLevelTypeDefinitions.ToList());
-				((IUpdateableAssemblyModel) model).AssemblyName = assembly.AssemblyName;
+			try {
+				var loader = new CecilLoader();
+				loader.IncludeInternalMembers = true;
+				loader.LazyLoad = true;
+				var assembly = loader.LoadAssemblyFile(fileName);
+				
+				IEntityModelContext context = new AssemblyEntityModelContext(assembly);
+				IAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
+				if (model is IUpdateableAssemblyModel) {
+					((IUpdateableAssemblyModel)model).Update(EmptyList<IUnresolvedTypeDefinition>.Instance, assembly.TopLevelTypeDefinitions.ToList());
+					((IUpdateableAssemblyModel) model).AssemblyName = assembly.AssemblyName;
+				}
+				return model;
+			} catch (BadImageFormatException ex) {
+				SD.MessageService.ShowWarningFormatted("{0} is not a valid .NET assembly.", Path.GetFileName(fileName));
+			} catch (FileNotFoundException ex) {
+				SD.MessageService.ShowWarningFormatted("{0} is not accessible or doesn't exist anymore.", fileName);
 			}
-			return model;
+			
+			// AssemblyModel for unresolved file references
+			IEntityModelContext unresolvedContext = new UnresolvedAssemblyEntityModelContext(Path.GetFileName(fileName), fileName);
+			IAssemblyModel unresolvedModel = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(unresolvedContext);
+			if (unresolvedModel is IUpdateableAssemblyModel) {
+				((IUpdateableAssemblyModel) unresolvedModel).AssemblyName = unresolvedContext.AssemblyName;
+			}
+			
+			return unresolvedModel;
 		}
 		
 		void AppendAssemblyFileToList(string assemblyFile)

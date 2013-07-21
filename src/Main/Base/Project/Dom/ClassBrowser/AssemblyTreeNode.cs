@@ -44,7 +44,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Icon {
 			get {
-				return SD.ResourceService.GetImageSource("Icons.16x16.Assembly");
+				if (model.Context.IsValid) {
+					return SD.ResourceService.GetImageSource("Icons.16x16.Assembly");
+				} else {
+					return SD.ResourceService.GetImageSource("Icons.16x16.AssemblyError");
+				}
 			}
 		}
 		
