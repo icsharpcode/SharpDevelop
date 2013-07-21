@@ -4,12 +4,13 @@
 using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.UnitTesting
 {
 	public interface IUnitTestTaskService
 	{
-		MessageViewCategory BuildMessageViewCategory { get; }
+		IOutputCategory BuildMessageViewCategory { get; }
 		void ClearExceptCommentTasks();
 		void Add(SDTask task);
 		bool SomethingWentWrong { get; }

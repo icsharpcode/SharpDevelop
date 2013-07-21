@@ -14,7 +14,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// <summary>
 	/// Stores rich-text formatting.
 	/// </summary>
-	public sealed class RichTextModel
+	public sealed class RichTextModel // TODO: maybe rename to HighlightingModel?
 	{
 		CompressingTreeList<HighlightingColor> list = new CompressingTreeList<HighlightingColor>(object.Equals);
 		
@@ -32,6 +32,16 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		public RichTextModel(int documentLength)
 		{
 			list.InsertRange(0, documentLength, HighlightingColor.Empty);
+		}
+		
+		/// <summary>
+		/// Creates a RichTextModel from a CONTIGUOUS list of HighlightedSections.
+		/// </summary>
+		internal RichTextModel(IEnumerable<HighlightedSection> sections)
+		{
+			foreach (var section in sections) {
+				list.InsertRange(section.Offset, section.Length, section.Color);
+			}
 		}
 		
 		#region UpdateOffsets
@@ -80,7 +90,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Gets the HighlightingColor for the specified offset.
 		/// </summary>
-		public HighlightingColor GetHighlighting(int offset)
+		public HighlightingColor GetHighlightingAt(int offset)
 		{
 			return list[offset];
 		}

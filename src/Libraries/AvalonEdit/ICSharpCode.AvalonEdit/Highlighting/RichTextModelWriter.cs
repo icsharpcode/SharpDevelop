@@ -37,7 +37,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (richTextModel.DocumentLength == 0)
 				currentColor = HighlightingColor.Empty;
 			else
-				currentColor = richTextModel.GetHighlighting(Math.Max(0, insertionOffset - 1));
+				currentColor = richTextModel.GetHighlightingAt(Math.Max(0, insertionOffset - 1));
 		}
 		
 		/// <summary>

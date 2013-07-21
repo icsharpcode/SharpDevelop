@@ -296,5 +296,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			}
 			return builder;
 		}
+		
+		/// <summary>
+		/// Creates a <see cref="RichText"/> that stores the text and highlighting of this line.
+		/// </summary>
+		public RichText ToRichText()
+		{
+			return ToInlineBuilder().ToRichText();
+		}
 	}
 }

@@ -330,6 +330,7 @@
     <Compile Include="Workbench\File\FileService.cs" />
     <Compile Include="Workbench\File\IRecentOpen.cs" />
     <Compile Include="Workbench\ICustomizedCommands.cs" />
+    <Compile Include="Workbench\IOutputPad.cs" />
     <Compile Include="Workbench\IPadContent.cs" />
     <Compile Include="Workbench\IShutdownService.cs" />
     <Compile Include="Workbench\IViewContent.cs" />

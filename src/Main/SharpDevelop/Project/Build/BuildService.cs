@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 					buildable = buildModifiedProjectsOnly.WrapBuildable(buildable, options.BuildDetection);
 					
-					var sink = new UIBuildFeedbackSink(TaskService.BuildMessageViewCategory, SD.StatusBar);
+					var sink = new UIBuildFeedbackSink(SD.OutputPad.BuildCategory, SD.StatusBar);
 					// Actually run the build:
 					var results = await BuildEngine.BuildAsync(buildable, options, sink, progressMonitor);
 					

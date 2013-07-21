@@ -19,6 +19,7 @@ using ICSharpCode.Core;
 using Microsoft.Win32.SafeHandles;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -38,7 +39,7 @@ namespace ICSharpCode.SharpDevelop
 	
 	public interface IProcessRunner : IDisposable
 	{
-		Task<int> RunInOutputPadAsync(MessageViewCategory outputCategory, string program, params string[] arguments);
+		Task<int> RunInOutputPadAsync(IOutputCategory outputCategory, string program, params string[] arguments);
 		string WorkingDirectory { get; set; }
 		ProcessCreationFlags CreationFlags { get; set; }
 		IDictionary<string, string> EnvironmentVariables { get; }
@@ -245,7 +246,7 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 		
 		#region RunInOutputPad
-		public async Task<int> RunInOutputPadAsync(MessageViewCategory outputCategory, string program, params string[] arguments)
+		public async Task<int> RunInOutputPadAsync(IOutputCategory outputCategory, string program, params string[] arguments)
 		{
 			RedirectStandardOutputAndErrorToSingleStream = true;
 			Start(program, arguments);

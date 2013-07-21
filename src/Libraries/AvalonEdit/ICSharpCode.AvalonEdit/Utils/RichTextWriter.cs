@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {
@@ -18,6 +19,26 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// that is not overwritten gets called.
 		/// </summary>
 		protected abstract void BeginUnhandledSpan();
+		
+		/// <summary>
+		/// Writes the RichText instance.
+		/// </summary>
+		public void Write(RichText richText)
+		{
+			Write(richText, 0, richText.Length);
+		}
+		
+		/// <summary>
+		/// Writes the RichText instance.
+		/// </summary>
+		public virtual void Write(RichText richText, int offset, int length)
+		{
+			foreach (var section in richText.GetHighlightedSections(offset, length)) {
+				BeginSpan(section.Color);
+				Write(richText.Text.Substring(section.Offset, section.Length));
+				EndSpan();
+			}
+		}
 		
 		/// <summary>
 		/// Begin a colored span.

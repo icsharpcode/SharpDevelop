@@ -3,6 +3,9 @@
 
 using System;
 using System.Globalization;
+using System.IO;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -163,6 +166,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				                     StringParser.Parse(this.IsWarning ? "${res:Global.WarningText}" : "${res:Global.ErrorText}"),
 				                     this.ErrorCode, this.ErrorText);
 			}
+		}
+		
+		public RichText ToRichText()
+		{
+			// TODO: add some color
+			return new RichText(ToString());
 		}
 	}
 }

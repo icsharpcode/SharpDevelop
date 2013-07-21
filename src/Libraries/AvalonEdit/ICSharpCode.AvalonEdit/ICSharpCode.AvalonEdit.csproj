@@ -207,6 +207,7 @@
     <Compile Include="Highlighting\HighlightingSpan.cs" />
     <Compile Include="Highlighting\IHighlightingDefinitionReferenceResolver.cs">
     </Compile>
+    <Compile Include="Highlighting\RichText.cs" />
     <Compile Include="Highlighting\RichTextColorizer.cs" />
     <Compile Include="Highlighting\RichTextModel.cs" />
     <Compile Include="Highlighting\RichTextModelWriter.cs" />

@@ -66,11 +66,9 @@ namespace SearchAndReplace
 
 			textBlock.Inlines.Add("(" + location.Line + ", " + location.Column + ")\t");
 			
-			string displayText = result.DisplayText;
+			RichText displayText = result.DisplayText;
 			if (displayText != null) {
-				textBlock.Inlines.Add(displayText);
-			} else if (result.Builder != null) {
-				HighlightedInlineBuilder builder = result.Builder;
+				HighlightedInlineBuilder builder = new HighlightedInlineBuilder(displayText);
 				if (IsSelected) {
 					builder = builder.Clone();
 					builder.SetForeground(0, builder.Text.Length, null);

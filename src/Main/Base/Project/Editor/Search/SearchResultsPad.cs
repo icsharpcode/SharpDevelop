@@ -149,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			return new DummySearchResult { Text = title };
 		}
 		
-		public static HighlightedInlineBuilder CreateInlineBuilder(TextLocation startPosition, TextLocation endPosition, IDocument document, IHighlighter highlighter)
+		public static RichText CreateInlineBuilder(TextLocation startPosition, TextLocation endPosition, IDocument document, IHighlighter highlighter)
 		{
 			if (startPosition.Line >= 1 && startPosition.Line <= document.LineCount) {
 				var inlineBuilder = highlighter.HighlightLine(startPosition.Line).ToInlineBuilder();
@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 						inlineBuilder.SetFontWeight(startOffset, endOffset - startOffset, FontWeights.Bold);
 					}
 				}
-				return inlineBuilder;
+				return inlineBuilder.ToRichText();
 			}
 			return null;
 		}
