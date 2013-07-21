@@ -298,7 +298,9 @@ Icons.16x16.AssemblyFromGAC							= ClassBrowserIcons\Icons.16x16.AssemblyFromGA
 
 Icons.16x16.Workspace								= ClassBrowserIcons\Icons.16x16.Workspace.png
 Icons.16x16.Assembly								= ClassBrowserIcons\Icons.16x16.Assembly.png
+Icons.16x16.AssemblyError							= ClassBrowserIcons\Icons.16x16.AssemblyError.png
 Icons.16x16.Module									= ClassBrowserIcons\Icons.16x16.Module.png
+Icons.16x16.ModuleError								= ClassBrowserIcons\Icons.16x16.ModuleError.png
 Icons.16x16.NameSpace								= ClassBrowserIcons\Icons.16x16.NameSpace.png
 Icons.16x16.Literal									= ClassBrowserIcons\Icons.16x16.Literal.png
 Icons.16x16.Reference								= ClassBrowserIcons\Icons.16x16.Reference.png
