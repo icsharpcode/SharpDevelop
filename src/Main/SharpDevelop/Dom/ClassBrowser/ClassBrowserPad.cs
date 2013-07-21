@@ -171,8 +171,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public static IAssemblyModel CreateAssemblyModelFromFile(string fileName)
 		{
-			// TODO References?
-			
 			var loader = new CecilLoader();
 			loader.IncludeInternalMembers = true;
 			loader.LazyLoad = true;
