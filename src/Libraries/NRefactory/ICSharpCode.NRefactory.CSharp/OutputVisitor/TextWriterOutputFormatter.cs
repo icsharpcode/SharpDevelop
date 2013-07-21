@@ -17,14 +17,16 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Globalization;
 using System.IO;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
 	/// Writes C# code into a TextWriter.
 	/// </summary>
-	public class TextWriterOutputFormatter : IOutputFormatter
+	public class TextWriterTokenWriter : ITokenWriter
 	{
 		readonly TextWriter textWriter;
 		int indentation;
@@ -42,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string IndentationString { get; set; }
 		
-		public TextWriterOutputFormatter(TextWriter textWriter)
+		public TextWriterTokenWriter(TextWriter textWriter)
 		{
 			if (textWriter == null)
 				throw new ArgumentNullException("textWriter");
@@ -50,21 +52,23 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.IndentationString = "\t";
 		}
 		
-		public void WriteIdentifier(string ident)
+		public void WriteIdentifier(Identifier identifier)
 		{
 			WriteIndentation();
-			textWriter.Write(ident);
+			if (identifier.IsVerbatim)
+				textWriter.Write('@');
+			textWriter.Write(identifier.Name);
 			isAtStartOfLine = false;
 		}
 		
-		public void WriteKeyword(string keyword)
+		public void WriteKeyword(Role role, string keyword)
 		{
 			WriteIndentation();
 			textWriter.Write(keyword);
 			isAtStartOfLine = false;
 		}
 		
-		public void WriteToken(string token)
+		public void WriteToken(Role role, string token)
 		{
 			WriteIndentation();
 			textWriter.Write(token);
@@ -75,79 +79,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			WriteIndentation();
 			textWriter.Write(' ');
-		}
-		
-		public void OpenBrace(BraceStyle style)
-		{
-			switch (style) {
-				case BraceStyle.DoNotChange:
-				case BraceStyle.EndOfLine:
-				case BraceStyle.BannerStyle:
-					WriteIndentation();
-					if (!isAtStartOfLine)
-						textWriter.Write(' ');
-					textWriter.Write('{');
-					break;
-				case BraceStyle.EndOfLineWithoutSpace:
-					WriteIndentation();
-					textWriter.Write('{');
-					break;
-				case BraceStyle.NextLine:
-					if (!isAtStartOfLine)
-						NewLine();
-					WriteIndentation();
-					textWriter.Write('{');
-					break;
-					
-				case BraceStyle.NextLineShifted:
-					NewLine ();
-					Indent();
-					WriteIndentation();
-					textWriter.Write('{');
-					NewLine();
-					return;
-				case BraceStyle.NextLineShifted2:
-					NewLine ();
-					Indent();
-					WriteIndentation();
-					textWriter.Write('{');
-					break;
-				default:
-					throw new ArgumentOutOfRangeException ();
-			}
-			Indent();
-			NewLine();
-		}
-		
-		public void CloseBrace(BraceStyle style)
-		{
-			switch (style) {
-				case BraceStyle.DoNotChange:
-				case BraceStyle.EndOfLine:
-				case BraceStyle.EndOfLineWithoutSpace:
-				case BraceStyle.NextLine:
-					Unindent();
-					WriteIndentation();
-					textWriter.Write('}');
-					isAtStartOfLine = false;
-					break;
-				case BraceStyle.BannerStyle:
-				case BraceStyle.NextLineShifted:
-					WriteIndentation();
-					textWriter.Write('}');
-					isAtStartOfLine = false;
-					Unindent();
-					break;
-				case BraceStyle.NextLineShifted2:
-					Unindent();
-					WriteIndentation();
-					textWriter.Write('}');
-					isAtStartOfLine = false;
-					Unindent();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException ();
-			}
 		}
 		
 		protected void WriteIndentation()
@@ -218,6 +149,167 @@ namespace ICSharpCode.NRefactory.CSharp
 				textWriter.Write(argument);
 			}
 			NewLine();
+		}
+		
+		public static string PrintPrimitiveValue(object value)
+		{
+			TextWriter writer = new StringWriter();
+			TextWriterTokenWriter tokenWriter = new TextWriterTokenWriter(writer);
+			tokenWriter.WritePrimitiveValue(value);
+			return writer.ToString();
+		}
+		
+		public void WritePrimitiveValue(object value)
+		{
+			if (value == null) {
+				// usually NullReferenceExpression should be used for this, but we'll handle it anyways
+				textWriter.Write("null");
+				return;
+			}
+			
+			if (value is bool) {
+				if ((bool)value) {
+					textWriter.Write("true");
+				} else {
+					textWriter.Write("false");
+				}
+				return;
+			}
+			
+			if (value is string) {
+				textWriter.Write("\"" + ConvertString(value.ToString()) + "\"");
+			} else if (value is char) {
+				textWriter.Write("'" + ConvertCharLiteral((char)value) + "'");
+			} else if (value is decimal) {
+				textWriter.Write(((decimal)value).ToString(NumberFormatInfo.InvariantInfo) + "m");
+			} else if (value is float) {
+				float f = (float)value;
+				if (float.IsInfinity(f) || float.IsNaN(f)) {
+					// Strictly speaking, these aren't PrimitiveExpressions;
+					// but we still support writing these to make life easier for code generators.
+					textWriter.Write("float");
+					WriteToken(Roles.Dot, ".");
+					if (float.IsPositiveInfinity(f)) {
+						textWriter.Write("PositiveInfinity");
+					} else if (float.IsNegativeInfinity(f)) {
+						textWriter.Write("NegativeInfinity");
+					} else {
+						textWriter.Write("NaN");
+					}
+					return;
+				}
+				if (f == 0 && 1 / f == float.NegativeInfinity) {
+					// negative zero is a special case
+					// (again, not a primitive expression, but it's better to handle
+					// the special case here than to do it in all code generators)
+					textWriter.Write("-");
+				}
+				textWriter.Write(f.ToString("R", NumberFormatInfo.InvariantInfo) + "f");
+			} else if (value is double) {
+				double f = (double)value;
+				if (double.IsInfinity(f) || double.IsNaN(f)) {
+					// Strictly speaking, these aren't PrimitiveExpressions;
+					// but we still support writing these to make life easier for code generators.
+					textWriter.Write("double");
+					textWriter.Write(".");
+					if (double.IsPositiveInfinity(f)) {
+						textWriter.Write("PositiveInfinity");
+					} else if (double.IsNegativeInfinity(f)) {
+						textWriter.Write("NegativeInfinity");
+					} else {
+						textWriter.Write("NaN");
+					}
+					return;
+				}
+				if (f == 0 && 1 / f == double.NegativeInfinity) {
+					// negative zero is a special case
+					// (again, not a primitive expression, but it's better to handle
+					// the special case here than to do it in all code generators)
+					textWriter.Write("-");
+				}
+				string number = f.ToString("R", NumberFormatInfo.InvariantInfo);
+				if (number.IndexOf('.') < 0 && number.IndexOf('E') < 0) {
+					number += ".0";
+				}
+				textWriter.Write(number);
+			} else if (value is IFormattable) {
+				StringBuilder b = new StringBuilder ();
+//				if (primitiveExpression.LiteralFormat == LiteralFormat.HexadecimalNumber) {
+//					b.Append("0x");
+//					b.Append(((IFormattable)val).ToString("x", NumberFormatInfo.InvariantInfo));
+//				} else {
+					b.Append(((IFormattable)value).ToString(null, NumberFormatInfo.InvariantInfo));
+//				}
+				if (value is uint || value is ulong) {
+					b.Append("u");
+				}
+				if (value is long || value is ulong) {
+					b.Append("L");
+				}
+				textWriter.Write(b.ToString());
+			} else {
+				textWriter.Write(value.ToString());
+			}
+		}
+		
+		static string ConvertCharLiteral(char ch)
+		{
+			if (ch == '\'') {
+				return "\\'";
+			}
+			return ConvertChar(ch);
+		}
+		
+		/// <summary>
+		/// Gets the escape sequence for the specified character.
+		/// </summary>
+		/// <remarks>This method does not convert ' or ".</remarks>
+		public static string ConvertChar(char ch)
+		{
+			switch (ch) {
+				case '\\':
+					return "\\\\";
+				case '\0':
+					return "\\0";
+				case '\a':
+					return "\\a";
+				case '\b':
+					return "\\b";
+				case '\f':
+					return "\\f";
+				case '\n':
+					return "\\n";
+				case '\r':
+					return "\\r";
+				case '\t':
+					return "\\t";
+				case '\v':
+					return "\\v";
+				default:
+					if (char.IsControl(ch) || char.IsSurrogate(ch) ||
+					    // print all uncommon white spaces as numbers
+					    (char.IsWhiteSpace(ch) && ch != ' ')) {
+						return "\\u" + ((int)ch).ToString("x4");
+					} else {
+						return ch.ToString();
+					}
+			}
+		}
+		
+		/// <summary>
+		/// Converts special characters to escape sequences within the given string.
+		/// </summary>
+		public static string ConvertString(string str)
+		{
+			StringBuilder sb = new StringBuilder ();
+			foreach (char ch in str) {
+				if (ch == '"') {
+					sb.Append("\\\"");
+				} else {
+					sb.Append(ConvertChar(ch));
+				}
+			}
+			return sb.ToString();
 		}
 		
 		public virtual void StartNode(AstNode node)

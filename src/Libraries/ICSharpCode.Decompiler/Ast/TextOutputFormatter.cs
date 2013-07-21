@@ -27,7 +27,7 @@ using Mono.Cecil;
 
 namespace ICSharpCode.Decompiler.Ast
 {
-	public class TextOutputFormatter : IOutputFormatter
+	public class TextTokenWriter : ITokenWriter
 	{
 		readonly ITextOutput output;
 		readonly Stack<AstNode> nodeStack = new Stack<AstNode>();
@@ -40,37 +40,37 @@ namespace ICSharpCode.Decompiler.Ast
 		
 		public bool FoldBraces = false;
 		
-		public TextOutputFormatter(ITextOutput output)
+		public TextTokenWriter(ITextOutput output)
 		{
 			if (output == null)
 				throw new ArgumentNullException("output");
 			this.output = output;
 		}
 		
-		public void WriteIdentifier(string identifier)
+		public void WriteIdentifier(Identifier identifier)
 		{
 			var definition = GetCurrentDefinition();
 			if (definition != null) {
-				output.WriteDefinition(identifier, definition, false);
+				output.WriteDefinition(identifier.Name, definition, false);
 				return;
 			}
 			
 			object memberRef = GetCurrentMemberReference();
 
 			if (memberRef != null) {
-				output.WriteReference(identifier, memberRef);
+				output.WriteReference(identifier.Name, memberRef);
 				return;
 			}
 
 			definition = GetCurrentLocalDefinition();
 			if (definition != null) {
-				output.WriteDefinition(identifier, definition);
+				output.WriteDefinition(identifier.Name, definition);
 				return;
 			}
 
 			memberRef = GetCurrentLocalReference();
 			if (memberRef != null) {
-				output.WriteReference(identifier, memberRef, true);
+				output.WriteReference(identifier.Name, memberRef, true);
 				return;
 			}
 
@@ -79,7 +79,7 @@ namespace ICSharpCode.Decompiler.Ast
 				firstUsingDeclaration = false;
 			}
 
-			output.Write(identifier);
+			output.Write(identifier.Name);
 		}
 
 		MemberReference GetCurrentMemberReference()
@@ -160,12 +160,12 @@ namespace ICSharpCode.Decompiler.Ast
 			return null;
 		}
 		
-		public void WriteKeyword(string keyword)
+		public void WriteKeyword(Role role, string keyword)
 		{
 			output.Write(keyword);
 		}
 		
-		public void WriteToken(string token)
+		public void WriteToken(Role role, string token)
 		{
 			// Attach member reference to token only if there's no identifier in the current node.
 			MemberReference memberRef = GetCurrentMemberReference();
@@ -265,6 +265,11 @@ namespace ICSharpCode.Decompiler.Ast
 				output.Write(argument);
 			}
 			output.WriteLine();
+		}
+		
+		public void WritePrimitiveValue(object value)
+		{
+			
 		}
 		
 		Stack<TextLocation> startLocations = new Stack<TextLocation>();

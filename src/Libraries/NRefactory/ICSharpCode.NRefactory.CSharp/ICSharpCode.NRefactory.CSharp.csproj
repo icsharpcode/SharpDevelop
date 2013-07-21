@@ -208,6 +208,7 @@
     <Compile Include="OutputVisitor\CodeDomConvertVisitor.cs" />
     <Compile Include="OutputVisitor\CSharpAmbience.cs" />
     <Compile Include="OutputVisitor\InsertParenthesesVisitor.cs" />
+    <Compile Include="OutputVisitor\InsertRequiredSpacesDecorator.cs" />
     <Compile Include="OutputVisitor\IOutputFormatter.cs" />
     <Compile Include="OutputVisitor\CSharpOutputVisitor.cs" />
     <Compile Include="OutputVisitor\TextWriterOutputFormatter.cs" />

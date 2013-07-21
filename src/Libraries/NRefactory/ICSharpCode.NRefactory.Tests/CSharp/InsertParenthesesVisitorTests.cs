@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			expr.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
 			StringWriter w = new StringWriter();
 			w.NewLine = " ";
-			expr.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "" }, policy));
+			expr.AcceptVisitor(new CSharpOutputVisitor(new TextWriterTokenWriter(w) { IndentationString = "" }, policy));
 			return w.ToString();
 		}
 		
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			expr.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = false });
 			StringWriter w = new StringWriter();
 			w.NewLine = " ";
-			expr.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "" }, policy));
+			expr.AcceptVisitor(new CSharpOutputVisitor(new TextWriterTokenWriter(w) { IndentationString = "" }, policy));
 			return w.ToString();
 		}
 		

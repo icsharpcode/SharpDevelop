@@ -424,11 +424,11 @@ namespace Debugger.AddIn
 				sb.Append("}");
 				return sb.ToString();
 			} else if (val.Type.IsKnownType(KnownTypeCode.Char)) {
-				return "'" + CSharpOutputVisitor.ConvertChar((char)val.PrimitiveValue) + "'";
+				return "'" + TextWriterTokenWriter.ConvertChar((char)val.PrimitiveValue) + "'";
 			} else if (val.Type.IsKnownType(KnownTypeCode.String)) {
-				return "\"" + CSharpOutputVisitor.ConvertString((string)val.PrimitiveValue) + "\"";
+				return "\"" + TextWriterTokenWriter.ConvertString((string)val.PrimitiveValue) + "\"";
 			} else if (val.Type.IsPrimitiveType()) {
-				return CSharpOutputVisitor.PrintPrimitiveValue(val.PrimitiveValue);
+				return TextWriterTokenWriter.PrintPrimitiveValue(val.PrimitiveValue);
 			} else {
 				return val.InvokeToString(evalThread);
 			}

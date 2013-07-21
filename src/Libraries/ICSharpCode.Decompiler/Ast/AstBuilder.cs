@@ -151,6 +151,13 @@ namespace ICSharpCode.Decompiler.Ast
 		}
 		
 		/// <summary>
+		/// Gets the context used by this AstBuilder.
+		/// </summary>
+		public DecompilerContext Context {
+			get { return context; }
+		}
+		
+		/// <summary>
 		/// Generates C# code from the abstract source tree.
 		/// </summary>
 		/// <remarks>This method adds ParenthesizedExpressions into the AST, and will run transformations if <see cref="RunTransformations"/> was not called explicitly</remarks>
@@ -160,7 +167,7 @@ namespace ICSharpCode.Decompiler.Ast
 				RunTransformations();
 			
 			syntaxTree.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
-			var outputFormatter = new TextOutputFormatter(output) { FoldBraces = context.Settings.FoldBraces };
+			var outputFormatter = new TextTokenWriter(output) { FoldBraces = context.Settings.FoldBraces };
 			var formattingPolicy = context.Settings.CSharpFormattingOptions;
 			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, formattingPolicy));
 		}

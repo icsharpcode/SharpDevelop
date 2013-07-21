@@ -126,10 +126,10 @@ namespace ICSharpCode.Decompiler.Disassembler
 				output.Write("pinvokeimpl");
 				if (method.HasPInvokeInfo && method.PInvokeInfo != null) {
 					PInvokeInfo info = method.PInvokeInfo;
-					output.Write("(\"" + NRefactory.CSharp.CSharpOutputVisitor.ConvertString(info.Module.Name) + "\"");
+					output.Write("(\"" + NRefactory.CSharp.TextWriterTokenWriter.ConvertString(info.Module.Name) + "\"");
 					
 					if (!string.IsNullOrEmpty(info.EntryPoint) && info.EntryPoint != method.Name)
-						output.Write(" as \"" + NRefactory.CSharp.CSharpOutputVisitor.ConvertString(info.EntryPoint) + "\"");
+						output.Write(" as \"" + NRefactory.CSharp.TextWriterTokenWriter.ConvertString(info.EntryPoint) + "\"");
 					
 					if (info.IsNoMangle)
 						output.Write(" nomangle");
@@ -346,7 +346,7 @@ namespace ICSharpCode.Decompiler.Disassembler
 			output.Write(" = ");
 			if (na.Argument.Value is string) {
 				// secdecls use special syntax for strings
-				output.Write("string('{0}')", NRefactory.CSharp.CSharpOutputVisitor.ConvertString((string)na.Argument.Value).Replace("'", "\'"));
+				output.Write("string('{0}')", NRefactory.CSharp.TextWriterTokenWriter.ConvertString((string)na.Argument.Value).Replace("'", "\'"));
 			} else {
 				WriteConstant(na.Argument.Value);
 			}
@@ -574,10 +574,10 @@ namespace ICSharpCode.Decompiler.Disassembler
 					if (cmi == null)
 						goto default;
 					output.Write("custom(\"{0}\", \"{1}\"",
-					             NRefactory.CSharp.CSharpOutputVisitor.ConvertString(cmi.ManagedType.FullName),
-					             NRefactory.CSharp.CSharpOutputVisitor.ConvertString(cmi.Cookie));
+					             NRefactory.CSharp.TextWriterTokenWriter.ConvertString(cmi.ManagedType.FullName),
+					             NRefactory.CSharp.TextWriterTokenWriter.ConvertString(cmi.Cookie));
 					if (cmi.Guid != Guid.Empty || !string.IsNullOrEmpty(cmi.UnmanagedType)) {
-						output.Write(", \"{0}\", \"{1}\"", cmi.Guid.ToString(), NRefactory.CSharp.CSharpOutputVisitor.ConvertString(cmi.UnmanagedType));
+						output.Write(", \"{0}\", \"{1}\"", cmi.Guid.ToString(), NRefactory.CSharp.TextWriterTokenWriter.ConvertString(cmi.UnmanagedType));
 					}
 					output.Write(')');
 					break;
