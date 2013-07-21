@@ -255,7 +255,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the new offset where the specified offset moves after this document change.
 		/// </summary>
-		public int GetNewOffset(int oldOffset, AnchorMovementType movementType)
+		public int GetNewOffset(int oldOffset, AnchorMovementType movementType = AnchorMovementType.Default)
 		{
 			int insertionLength = this.InsertionLength;
 			int removalLength = this.RemovalLength;

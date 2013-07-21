@@ -127,7 +127,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public RichTextModel ToRichTextModel()
 		{
-			return new RichTextModel(GetHighlightedSections(0, this.Length));
+			return new RichTextModel(stateChangeOffsets, stateChanges);
 		}
 		
 		/// <summary>

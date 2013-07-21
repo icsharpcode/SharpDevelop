@@ -34,10 +34,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				throw new ArgumentNullException("richTextModel");
 			this.richTextModel = richTextModel;
 			this.documentTextWriter = (DocumentTextWriter)base.textWriter;
-			if (richTextModel.DocumentLength == 0)
-				currentColor = HighlightingColor.Empty;
-			else
-				currentColor = richTextModel.GetHighlightingAt(Math.Max(0, insertionOffset - 1));
+			currentColor = richTextModel.GetHighlightingAt(Math.Max(0, insertionOffset - 1));
 		}
 		
 		/// <summary>

@@ -4,6 +4,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Media;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.AvalonEdit.Document;
@@ -14,52 +16,77 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// <summary>
 	/// Stores rich-text formatting.
 	/// </summary>
-	public sealed class RichTextModel // TODO: maybe rename to HighlightingModel?
+	public sealed class RichTextModel : AbstractFreezable
 	{
-		CompressingTreeList<HighlightingColor> list = new CompressingTreeList<HighlightingColor>(object.Equals);
+		List<int> stateChangeOffsets = new List<int>();
+		List<HighlightingColor> stateChanges = new List<HighlightingColor>();
 		
-		/// <summary>
-		/// Gets the length of the document.
-		/// This has an effect on which coordinates are valid for this RichTextModel.
-		/// </summary>
-		public int DocumentLength {
-			get { return list.Count; }
+		int GetIndexForOffset(int offset)
+		{
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException("offset");
+			int index = stateChangeOffsets.BinarySearch(offset);
+			if (index < 0) {
+				// If no color change exists directly at offset,
+				// create a new one.
+				index = ~index;
+				stateChanges.Insert(index, stateChanges[index - 1].Clone());
+				stateChangeOffsets.Insert(index, offset);
+			}
+			return index;
+		}
+		
+		int GetIndexForOffsetUseExistingSegment(int offset)
+		{
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException("offset");
+			int index = stateChangeOffsets.BinarySearch(offset);
+			if (index < 0) {
+				// If no color change exists directly at offset,
+				// return the index of the color segment that contains offset.
+				index = ~index - 1;
+			}
+			return index;
+		}
+		
+		int GetEnd(int index)
+		{
+			// Gets the end of the color segment no. index.
+			if (index + 1 < stateChangeOffsets.Count)
+				return stateChangeOffsets[index + 1];
+			else
+				return int.MaxValue;
 		}
 		
 		/// <summary>
-		/// Creates a new RichTextModel that needs manual calls to <see cref="UpdateOffsets(DocumentChangeEventArgs)"/>.
+		/// Creates a new RichTextModel.
 		/// </summary>
-		public RichTextModel(int documentLength)
+		public RichTextModel()
 		{
-			list.InsertRange(0, documentLength, HighlightingColor.Empty);
+			stateChangeOffsets.Add(0);
+			stateChanges.Add(new HighlightingColor());
 		}
 		
 		/// <summary>
 		/// Creates a RichTextModel from a CONTIGUOUS list of HighlightedSections.
 		/// </summary>
-		internal RichTextModel(IEnumerable<HighlightedSection> sections)
+		internal RichTextModel(int[] stateChangeOffsets, HighlightingColor[] stateChanges)
 		{
-			foreach (var section in sections) {
-				list.InsertRange(section.Offset, section.Length, section.Color);
-			}
+			this.stateChangeOffsets.AddRange(stateChangeOffsets);
+			this.stateChanges.AddRange(stateChanges);
 		}
 		
 		#region UpdateOffsets
 		/// <summary>
 		/// Updates the start and end offsets of all segments stored in this collection.
 		/// </summary>
-		/// <param name="e">DocumentChangeEventArgs instance describing the change to the document.</param>
-		public void UpdateOffsets(DocumentChangeEventArgs e)
+		/// <param name="e">TextChangeEventArgs instance describing the change to the document.</param>
+		public void UpdateOffsets(TextChangeEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException("e");
-			OffsetChangeMap map = e.OffsetChangeMapOrNull;
-			if (map != null) {
-				foreach (OffsetChangeMapEntry entry in map) {
-					UpdateOffsetsInternal(entry);
-				}
-			} else {
-				UpdateOffsetsInternal(e.CreateSingleChangeMapEntry());
+			for (int i = 0; i < stateChangeOffsets.Count; i++) {
+				stateChangeOffsets[i] = e.GetNewOffset(stateChangeOffsets[i]);
 			}
 		}
 		
@@ -69,30 +96,18 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <param name="change">OffsetChangeMapEntry instance describing the change to the document.</param>
 		public void UpdateOffsets(OffsetChangeMapEntry change)
 		{
-			UpdateOffsetsInternal(change);
-		}
-		
-		void UpdateOffsetsInternal(OffsetChangeMapEntry entry)
-		{
-			HighlightingColor color;
-			if (entry.RemovalLength > 0) {
-				color = list[entry.Offset];
-				list.RemoveRange(entry.Offset, entry.RemovalLength);
-			} else if (list.Count > 0) {
-				color = list[Math.Max(0, entry.Offset - 1)];
-			} else {
-				color = HighlightingColor.Empty;
+			for (int i = 0; i < stateChangeOffsets.Count; i++) {
+				stateChangeOffsets[i] = change.GetNewOffset(stateChangeOffsets[i]);
 			}
-			list.InsertRange(entry.Offset, entry.InsertionLength, color);
 		}
 		#endregion
 		
 		/// <summary>
-		/// Gets the HighlightingColor for the specified offset.
+		/// Gets a copy of the HighlightingColor for the specified offset.
 		/// </summary>
 		public HighlightingColor GetHighlightingAt(int offset)
 		{
-			return list[offset];
+			return stateChanges[GetIndexForOffsetUseExistingSegment(offset)].Clone();
 		}
 		
 		/// <summary>
@@ -101,12 +116,17 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public void ApplyHighlighting(int offset, int length, HighlightingColor color)
 		{
-			list.TransformRange(offset, length, c => {
-			                    	var newColor = c.Clone();
-			                    	newColor.MergeWith(color);
-			                    	newColor.Freeze();
-			                    	return newColor;
-			                    });
+			if (color == null || color.IsEmptyForMerge) {
+				// Optimization: don't split the HighlightingState when we're not changing
+				// any property. For example, the "Punctuation" color in C# is
+				// empty by default.
+				return;
+			}
+			int startIndex = GetIndexForOffset(offset);
+			int endIndex = GetIndexForOffset(offset + length);
+			for (int i = startIndex; i < endIndex; i++) {
+				stateChanges[i].MergeWith(color);
+			}
 		}
 		
 		/// <summary>
@@ -115,7 +135,61 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public void SetHighlighting(int offset, int length, HighlightingColor color)
 		{
-			list.SetRange(offset, length, FreezableHelper.GetFrozenClone(color));
+			if (length <= 0)
+				return;
+			int startIndex = GetIndexForOffset(offset);
+			int endIndex = GetIndexForOffset(offset + length);
+			stateChanges[startIndex] = color != null ? color.Clone() : new HighlightingColor();
+			stateChanges.RemoveRange(startIndex + 1, endIndex - (startIndex + 1));
+			stateChangeOffsets.RemoveRange(startIndex + 1, endIndex - (startIndex + 1));
+		}
+		
+		/// <summary>
+		/// Sets the foreground brush on the specified text segment.
+		/// </summary>
+		public void SetForeground(int offset, int length, HighlightingBrush brush)
+		{
+			int startIndex = GetIndexForOffset(offset);
+			int endIndex = GetIndexForOffset(offset + length);
+			for (int i = startIndex; i < endIndex; i++) {
+				stateChanges[i].Foreground = brush;
+			}
+		}
+		
+		/// <summary>
+		/// Sets the background brush on the specified text segment.
+		/// </summary>
+		public void SetBackground(int offset, int length, HighlightingBrush brush)
+		{
+			int startIndex = GetIndexForOffset(offset);
+			int endIndex = GetIndexForOffset(offset + length);
+			for (int i = startIndex; i < endIndex; i++) {
+				stateChanges[i].Background = brush;
+			}
+		}
+		
+		/// <summary>
+		/// Sets the font weight on the specified text segment.
+		/// </summary>
+		public void SetFontWeight(int offset, int length, FontWeight weight)
+		{
+			int startIndex = GetIndexForOffset(offset);
+			int endIndex = GetIndexForOffset(offset + length);
+			for (int i = startIndex; i < endIndex; i++) {
+				stateChanges[i].FontWeight = weight;
+			}
+		}
+		
+		/// <summary>
+		/// Sets the font style on the specified text segment.
+		/// </summary>
+		public void SetFontStyle(int offset, int length, FontStyle style)
+		{
+			int startIndex = GetIndexForOffset(offset);
+			int endIndex = GetIndexForOffset(offset + length);
+			for (int i = startIndex; i < endIndex; i++) {
+				stateChanges[i].FontStyle = style;
+			}
 		}
 		
 		/// <summary>
@@ -124,52 +198,19 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public IEnumerable<HighlightedSection> GetHighlightedSections(int offset, int length)
 		{
+			int index = GetIndexForOffsetUseExistingSegment(offset);
 			int pos = offset;
 			int endOffset = offset + length;
 			while (pos < endOffset) {
-				int endPos = Math.Min(endOffset, list.GetEndOfRun(pos));
+				int endPos = Math.Min(endOffset, GetEnd(index));
 				yield return new HighlightedSection {
 					Offset = pos,
 					Length = endPos - pos,
-					Color = list[pos]
+					Color = stateChanges[index].Clone()
 				};
 				pos = endPos;
+				index++;
 			}
 		}
-		
-		#region WriteDocumentTo
-		/// <summary>
-		/// Writes the specified document, with the formatting from this rich text model applied,
-		/// to the RichTextWriter.
-		/// </summary>
-		public void WriteDocumentTo(ITextSource document, RichTextWriter writer)
-		{
-			WriteDocumentTo(document, new SimpleSegment(0, DocumentLength), writer);
-		}
-		
-		/// <summary>
-		/// Writes a segment of the specified document, with the formatting from this rich text model applied,
-		/// to the RichTextWriter.
-		/// </summary>
-		public void WriteDocumentTo(ITextSource document, ISegment segment, RichTextWriter writer)
-		{
-			if (document == null)
-				throw new ArgumentNullException("document");
-			if (segment == null)
-				throw new ArgumentNullException("segment");
-			if (writer == null)
-				throw new ArgumentNullException("writer");
-			
-			int pos = segment.Offset;
-			int endOffset = segment.EndOffset;
-			while (pos < endOffset) {
-				int endPos = Math.Min(endOffset, list.GetEndOfRun(pos));
-				writer.BeginSpan(list[pos]);
-				document.WriteTextTo(writer, pos, endPos - pos);
-				writer.EndSpan();
-				pos = endPos;
-			}
-		}
-		#endregion
 	}
 }

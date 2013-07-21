@@ -254,5 +254,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (color.background != null)
 				this.background = color.background;
 		}
+		
+		internal bool IsEmptyForMerge {
+			get {
+				return fontWeight == null && fontStyle == null && foreground == null && background == null;
+			}
+		}
 	}
 }

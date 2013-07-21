@@ -286,13 +286,26 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Creates a <see cref="HighlightedInlineBuilder"/> that stores the text and highlighting of this line.
 		/// </summary>
+		[Obsolete("Use ToRichText() instead")]
 		public HighlightedInlineBuilder ToInlineBuilder()
 		{
 			HighlightedInlineBuilder builder = new HighlightedInlineBuilder(Document.GetText(DocumentLine));
 			int startOffset = DocumentLine.Offset;
-			// copy only the foreground and background colors
 			foreach (HighlightedSection section in Sections) {
 				builder.SetHighlighting(section.Offset - startOffset, section.Length, section.Color);
+			}
+			return builder;
+		}
+		
+		/// <summary>
+		/// Creates a <see cref="RichTextModel"/> that stores the highlighting of this line.
+		/// </summary>
+		public RichTextModel ToRichTextModel()
+		{
+			var builder = new RichTextModel();
+			int startOffset = DocumentLine.Offset;
+			foreach (HighlightedSection section in Sections) {
+				builder.ApplyHighlighting(section.Offset - startOffset, section.Length, section.Color);
 			}
 			return builder;
 		}
@@ -302,7 +315,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public RichText ToRichText()
 		{
-			return ToInlineBuilder().ToRichText();
+			return new RichText(Document.GetText(DocumentLine), ToRichTextModel());
 		}
 	}
 }

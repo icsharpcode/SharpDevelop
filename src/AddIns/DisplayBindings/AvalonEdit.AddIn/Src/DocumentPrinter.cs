@@ -50,16 +50,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 //				TableRow row = new TableRow();
 //				trg.Rows.Add(row);
 //				row.Cells.Add(new TableCell(new Paragraph(new Run(lineNumber.ToString()))) { TextAlignment = TextAlignment.Right });
-				HighlightedInlineBuilder inlineBuilder = new HighlightedInlineBuilder(document.GetText(line));
-				if (highlighter != null) {
-					HighlightedLine highlightedLine = highlighter.HighlightLine(lineNumber);
-					int lineStartOffset = line.Offset;
-					foreach (HighlightedSection section in highlightedLine.Sections)
-						inlineBuilder.SetHighlighting(section.Offset - lineStartOffset, section.Length, section.Color);
-				}
 //				Paragraph p = new Paragraph();
 //				row.Cells.Add(new TableCell(p));
-				p.Inlines.AddRange(inlineBuilder.CreateRuns());
+				if (highlighter != null) {
+					HighlightedLine highlightedLine = highlighter.HighlightLine(lineNumber);
+					p.Inlines.AddRange(highlightedLine.ToRichText().CreateRuns());
+				} else {
+					p.Inlines.Add(document.GetText(line));
+				}
 			}
 			return p;
 		}

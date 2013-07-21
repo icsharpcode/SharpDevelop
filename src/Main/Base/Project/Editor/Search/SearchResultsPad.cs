@@ -152,21 +152,23 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public static RichText CreateInlineBuilder(TextLocation startPosition, TextLocation endPosition, IDocument document, IHighlighter highlighter)
 		{
 			if (startPosition.Line >= 1 && startPosition.Line <= document.LineCount) {
-				var inlineBuilder = highlighter.HighlightLine(startPosition.Line).ToInlineBuilder();
+				var highlightedLine = highlighter.HighlightLine(startPosition.Line);
+				var documentLine = highlightedLine.DocumentLine;
+				var inlineBuilder = highlightedLine.ToRichTextModel();
 				// reset bold/italics
-				inlineBuilder.SetFontWeight(0, inlineBuilder.Text.Length, FontWeights.Normal);
-				inlineBuilder.SetFontStyle(0, inlineBuilder.Text.Length, FontStyles.Normal);
+				inlineBuilder.SetFontWeight(0, documentLine.Length, FontWeights.Normal);
+				inlineBuilder.SetFontStyle(0, documentLine.Length, FontStyles.Normal);
 				
 				// now highlight the match in bold
 				if (startPosition.Column >= 1) {
 					if (endPosition.Line == startPosition.Line && endPosition.Column > startPosition.Column) {
 						// subtract one from the column to get the offset inside the line's text
 						int startOffset = startPosition.Column - 1;
-						int endOffset = Math.Min(inlineBuilder.Text.Length, endPosition.Column - 1);
+						int endOffset = Math.Min(documentLine.Length, endPosition.Column - 1);
 						inlineBuilder.SetFontWeight(startOffset, endOffset - startOffset, FontWeights.Bold);
 					}
 				}
-				return inlineBuilder.ToRichText();
+				return new RichText(document.GetText(documentLine), inlineBuilder);
 			}
 			return null;
 		}

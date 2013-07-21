@@ -22,6 +22,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// into a TextBlock.
 	/// In SharpDevelop, we use it to provide syntax highlighting inside the search results pad.
 	/// </remarks>
+	[Obsolete("Use RichText / RichTextModel instead")]
 	public sealed class HighlightedInlineBuilder
 	{
 		static HighlightingBrush MakeBrush(Brush b)
@@ -157,19 +158,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			int endIndex = GetIndexForOffset(offset + length);
 			for (int i = startIndex; i < endIndex; i++) {
 				stateChanges[i].FontStyle = style;
-			}
-		}
-		
-		/// <summary>
-		/// Sets the font family on the specified text segment.
-		/// </summary>
-		public void SetFontFamily(int offset, int length, FontFamily family)
-		{
-			int startIndex = GetIndexForOffset(offset);
-			int endIndex = GetIndexForOffset(offset + length);
-			for (int i = startIndex; i < endIndex; i++) {
-				throw new NotSupportedException();
-				//stateChanges[i].FontFamily = family;
 			}
 		}
 		
