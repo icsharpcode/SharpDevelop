@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (formattingPolicy == null) {
 				throw new ArgumentNullException ("formattingPolicy");
 			}
-			this.writer = new InsertRequiredSpacesDecorator(new TextWriterTokenWriter(textWriter));
+			this.writer = new InsertSpecialsDecorator(new InsertRequiredSpacesDecorator(new TextWriterTokenWriter(textWriter)));
 			this.policy = formattingPolicy;
 		}
 		
@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (formattingPolicy == null) {
 				throw new ArgumentNullException ("formattingPolicy");
 			}
-			this.writer = new InsertRequiredSpacesDecorator(writer);
+			this.writer = new InsertSpecialsDecorator(new InsertRequiredSpacesDecorator(writer));
 			this.policy = formattingPolicy;
 		}
 		
@@ -907,7 +907,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (!string.IsNullOrEmpty(primitiveExpression.LiteralValue)) {
 				writer.WriteToken(primitiveExpression.Role, primitiveExpression.LiteralValue);
 			} else {
-				TextWriterTokenWriter.PrintPrimitiveValue(primitiveExpression.Value);
+				writer.WritePrimitiveValue(primitiveExpression.Value);
 			}
 			EndNode(primitiveExpression);
 		}
@@ -2480,6 +2480,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	class InsertSpecialsDecorator : DecoratingTokenWriter
 	{
 		readonly Stack<AstNode> positionStack = new Stack<AstNode>();
+		int visitorWroteNewLine = 0;
 		
 		public InsertSpecialsDecorator(ITokenWriter writer)
 			: base(writer)
@@ -2523,6 +2524,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			base.WriteToken(role, token);
 		}
 		
+		public override void NewLine()
+		{
+			if (visitorWroteNewLine >= 0)
+				base.NewLine();
+			visitorWroteNewLine++;
+		}
+		
 		#region WriteSpecials
 		/// <summary>
 		/// Writes all specials from start to end (exclusive). Does not touch the positionStack.
@@ -2532,14 +2540,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			for (AstNode pos = start; pos != end; pos = pos.NextSibling) {
 				if (pos.Role == Roles.Comment) {
 					var node = (Comment)pos;
-					WriteComment(node.CommentType, node.Content);
+					base.WriteComment(node.CommentType, node.Content);
 				}
-				if (pos.Role == Roles.NewLine) {
-					NewLine();
-				}
+				// see CSharpOutputVisitor.VisitNewLine()
+//				if (pos.Role == Roles.NewLine) {
+//					if (visitorWroteNewLine <= 0)
+//						base.NewLine();
+//					visitorWroteNewLine--;
+//				}
 				if (pos.Role == Roles.PreProcessorDirective) {
 					var node = (PreProcessorDirective)pos;
-					WritePreProcessorDirective(node.Type, node.Argument);
+					base.WritePreProcessorDirective(node.Type, node.Argument);
 				}
 			}
 		}

@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					format.Append ('"');
 					if (verbatim)
 						format.Insert (0, '@');
-					formatLiteral.LiteralValue = format.ToString ();
+					formatLiteral.SetValue(format.ToString(), format.ToString());
 					script.Replace (expr, formatInvocation);
 				}, node);
 		}

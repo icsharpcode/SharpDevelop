@@ -163,7 +163,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteTypeDeclarationName(ITypeDefinition typeDef, ITokenWriter writer, CSharpFormattingOptions formattingPolicy)
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
-			TypeDeclaration node = (TypeDeclaration)astBuilder.ConvertEntity(typeDef);
+			EntityDeclaration node = astBuilder.ConvertEntity(typeDef);
 			if (typeDef.DeclaringTypeDefinition != null) {
 				WriteTypeDeclarationName(typeDef.DeclaringTypeDefinition, writer, formattingPolicy);
 				writer.WriteToken(Roles.Dot, ".");
@@ -226,7 +226,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					break;
 				default:
-					writer.WriteIdentifier(node.NameToken);
+					writer.WriteIdentifier(Identifier.Create(member.Name));
 					break;
 			}
 			if ((ConversionFlags & ConversionFlags.ShowTypeParameterList) == ConversionFlags.ShowTypeParameterList && member.SymbolKind == SymbolKind.Method) {

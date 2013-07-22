@@ -1,6 +1,6 @@
 ﻿// 
 // PrimitiveExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -58,20 +58,24 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public object Value {
 			get { return this.value; }
-			set { 
-				ThrowIfFrozen(); 
+			set {
+				ThrowIfFrozen();
 				this.value = value;
+				literalValue = null;
 			}
 		}
 		
 		public string LiteralValue {
 			get { return literalValue; }
-			set {
-				if (value == null)
-					throw new ArgumentNullException();
-				ThrowIfFrozen();
-				literalValue = value;
-			}
+		}
+		
+		public void SetValue(object value, string literalValue)
+		{
+			if (value == null)
+				throw new ArgumentNullException();
+			ThrowIfFrozen();
+			this.value = value;
+			this.literalValue = literalValue;
 		}
 		
 		public PrimitiveExpression (object value)
@@ -97,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitPrimitiveExpression (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitPrimitiveExpression (this);
@@ -119,7 +123,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					switch (*p) {
 						case '\r':
 							char* nextp = p + 1;
-							if (nextp < endPtr && *nextp == '\n') 
+							if (nextp < endPtr && *nextp == '\n')
 								p++;
 							goto case '\n';
 						case '\n':
