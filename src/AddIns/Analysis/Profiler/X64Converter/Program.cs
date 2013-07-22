@@ -25,6 +25,9 @@ namespace X64Converter
 				
 				foreach (string path in map) {
 					CSharpParser parser = new CSharpParser();
+					#if DEBUG
+					parser.CompilerSettings.ConditionalSymbols.Add("DEBUG");
+					#endif
 					string filePath = path + ".cs";
 					
 					if (File.Exists(filePath)) {
@@ -66,6 +69,12 @@ namespace X64Converter
 	class Converter : DepthFirstAstVisitor<object>
 	{
 		bool copyAllMembers;
+		
+		public override object VisitNewLine(NewLineNode newLineNode)
+		{
+			newLineNode.Remove();
+			return base.VisitNewLine(newLineNode);
+		}
 		
 		public override object VisitSimpleType(SimpleType simpleType)
 		{
