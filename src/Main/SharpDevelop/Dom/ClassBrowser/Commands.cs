@@ -36,7 +36,16 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		public override void Execute(object parameter)
 		{
-//			throw new NotImplementedException();
+			var classBrowser = SD.GetService<IClassBrowser>();
+			if (classBrowser != null) {
+				OpenFromGacDialog gacDialog = new OpenFromGacDialog();
+				if (gacDialog.ShowDialog() ?? false)
+				{
+					foreach (string assemblyFile in gacDialog.SelectedFileNames) {
+						classBrowser.AssemblyList.Assemblies.Add(ClassBrowserPad.CreateAssemblyModelFromFile(assemblyFile));
+					}
+				}
+			}
 		}
 	}
 	
