@@ -135,6 +135,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
+		public override void ShowContextMenu()
+		{
+			// Don't show context menu as for usual AssemblyTreeNodes.
+		}
+		
 		static IAssemblyModel CreateAssemblyModel(Module module)
 		{
 			// references??
