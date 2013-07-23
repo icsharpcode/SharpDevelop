@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="Designer\IDesignerTypeResolutionService.cs" />
     <Compile Include="Designer\TypeResolutionService.cs" />
+    <Compile Include="Dom\ClassBrowser\AssemblyLoadErrorTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\AssemblyTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserTreeView.cs" />
     <Compile Include="Dom\ClassBrowser\IClassBrowser.cs" />

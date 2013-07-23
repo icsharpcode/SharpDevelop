@@ -9,7 +9,7 @@ using Microsoft.Win32;
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
 	/// <summary>
-	/// Description of OpenAssemblyFromFileCommand.
+	/// OpenAssemblyFromFileCommand.
 	/// </summary>
 	class OpenAssemblyFromFileCommand : SimpleCommand
 	{
@@ -23,14 +23,20 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				openFileDialog.CheckPathExists = true;
 				if (openFileDialog.ShowDialog() ?? false)
 				{
-					classBrowser.AssemblyList.Assemblies.Add(ClassBrowserPad.CreateAssemblyModelFromFile(openFileDialog.FileName));
+					try {
+						classBrowser.AssemblyList.Assemblies.Add(ClassBrowserPad.CreateAssemblyModelFromFile(openFileDialog.FileName));
+					} catch (BadImageFormatException) {
+						SD.MessageService.ShowWarningFormatted("{0} is not a valid .NET assembly.", Path.GetFileName(openFileDialog.FileName));
+					} catch (FileNotFoundException) {
+						SD.MessageService.ShowWarningFormatted("{0} is not accessible or doesn't exist anymore.", openFileDialog.FileName);
+					}
 				}
 			}
 		}
 	}
 	
 	/// <summary>
-	/// Description of OpenAssemblyFromGACCommand.
+	/// OpenAssemblyFromGACCommand.
 	/// </summary>
 	class OpenAssemblyFromGACCommand : SimpleCommand
 	{
@@ -42,7 +48,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				if (gacDialog.ShowDialog() ?? false)
 				{
 					foreach (string assemblyFile in gacDialog.SelectedFileNames) {
-						classBrowser.AssemblyList.Assemblies.Add(ClassBrowserPad.CreateAssemblyModelFromFile(assemblyFile));
+						try {
+							classBrowser.AssemblyList.Assemblies.Add(ClassBrowserPad.CreateAssemblyModelFromFile(assemblyFile));
+						} catch (BadImageFormatException) {
+							SD.MessageService.ShowWarningFormatted("{0} is not a valid .NET assembly.", Path.GetFileName(assemblyFile));
+						} catch (FileNotFoundException) {
+							SD.MessageService.ShowWarningFormatted("{0} is not accessible or doesn't exist anymore.", assemblyFile);
+						}
 					}
 				}
 			}
@@ -50,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	}
 	
 	/// <summary>
-	/// Description of RemoveAssemblyCommand.
+	/// RemoveAssemblyCommand.
 	/// </summary>
 	class RemoveAssemblyCommand : SimpleCommand
 	{
@@ -66,20 +78,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
 				classBrowser.AssemblyList.Assemblies.Remove(assemblyModel);
 			}
-		}
-	}
-	
-	/// <summary>
-	/// Description of RemoveAssemblyCommand.
-	/// </summary>
-	class ClassBrowserCollapseAllCommand : SimpleCommand
-	{
-		public override void Execute(object parameter)
-		{
-//			var classBrowser = SD.GetService<IClassBrowser>() as ClassBrowserPad;
-//			if (classBrowser != null) {
-//				classBrowser.TreeView
-//			}
 		}
 	}
 }

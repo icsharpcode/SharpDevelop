@@ -36,6 +36,17 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
+		protected override void LoadChildren()
+		{
+			Children.Clear();
+			if (model.Context.IsValid) {
+				base.LoadChildren();
+			} else {
+				// This assembly could not be loaded correctly, add sub-node with error text
+				Children.Add(new AssemblyLoadErrorTreeNode());
+			}
+		}
+		
 		public override object Text {
 			get {
 				return model.AssemblyName;
