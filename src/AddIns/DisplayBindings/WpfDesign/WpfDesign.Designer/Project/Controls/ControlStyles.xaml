@@ -89,7 +89,7 @@
 								<Label Margin="4,0,0,0" Content="{TemplateBinding Window.Title}" />
 							</DockPanel>
 							<Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-								<Border BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" Background="{TemplateBinding Panel.Background}">
+								<Border ClipToBounds="True" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" Background="{TemplateBinding Panel.Background}">
 									<AdornerDecorator>
 										<ContentPresenter ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" Content="{TemplateBinding ContentControl.Content}" />
 									</AdornerDecorator>
