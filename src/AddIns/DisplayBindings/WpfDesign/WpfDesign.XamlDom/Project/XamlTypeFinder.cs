@@ -170,6 +170,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 			}
 		}
+
+        public void RegisterFixNamespaces()
+        {
+            var ns = namespaces[XamlConstants.DesignTimeNamespace] = new XamlNamespace(XamlConstants.DesignTimeNamespace);
+            AddMappingToNamespace(ns, new AssemblyNamespaceMapping(typeof(DesignTimeProperties).Assembly, typeof(DesignTimeProperties).Namespace));
+            ns = namespaces[XamlConstants.DesignTimeNamespace] = new XamlNamespace(XamlConstants.MarkupCompatibilityNamespace);
+            AddMappingToNamespace(ns, new AssemblyNamespaceMapping(typeof(DesignTimeProperties).Assembly, typeof(DesignTimeProperties).Namespace));        
+        }
 		
 		/// <summary>
 		/// Load the assembly with the specified name.
@@ -228,6 +236,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			static WpfTypeFinder()
 			{
 				Instance = new XamlTypeFinder();
+                Instance.RegisterFixNamespaces();
 				Instance.RegisterAssembly(typeof(MarkupExtension).Assembly); // WindowsBase
 				Instance.RegisterAssembly(typeof(IAddChild).Assembly); // PresentationCore
 				Instance.RegisterAssembly(typeof(XamlReader).Assembly); // PresentationFramework

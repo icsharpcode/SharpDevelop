@@ -162,6 +162,11 @@ namespace ICSharpCode.TreeView
 			}
 		}
 		
+        public virtual ContextMenu GetContextMenu()
+        {
+            return null;
+        }
+
 		#endregion
 		
 		#region OnChildrenChanged

@@ -4,16 +4,17 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.Designer.Services
 {	
 	class DesignerKeyBindings : IKeyBindingService
     {
-        private readonly DesignSurface _surface;
+        private readonly Control _surface;
         private Collection<KeyBinding> _bindings;
 
-        public DesignerKeyBindings(DesignSurface surface)
+        public DesignerKeyBindings(Control surface)
         {
             Debug.Assert(surface != null);
             this._surface = surface;

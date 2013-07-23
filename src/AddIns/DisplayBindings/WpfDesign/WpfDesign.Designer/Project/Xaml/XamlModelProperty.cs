@@ -180,8 +180,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				XamlDesignItem designItem = value as XamlDesignItem;
 				if (designItem == null) designItem = (XamlDesignItem)componentService.GetDesignItem(value);
 				if (designItem != null) {
-					if (designItem.Parent != null)
-						throw new DesignerException("Cannot set value to design item that already has a parent");
+                    //Removed this, or I can not set 
+                    if (designItem.Parent != null)
+                        throw new DesignerException("Cannot set value to design item that already has a parent");
 					newValue = designItem.XamlObject;
 				} else {
 					XamlPropertyValue val = _property.ParentObject.OwnerDocument.CreatePropertyValue(value, _property);

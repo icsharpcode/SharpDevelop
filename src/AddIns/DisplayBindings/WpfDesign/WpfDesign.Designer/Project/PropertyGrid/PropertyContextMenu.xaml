@@ -3,10 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              >
     
-    <MenuItem Header="Reset"
-              Click="Click_Reset" />    
-    <MenuItem Header="Binding" 
-              Click="Click_Binding" /><!-- 
+    <MenuItem Header="Reset" IsEnabled="{Binding IsSet}" Click="Click_Reset" />    
+    <MenuItem Header="Binding" Click="Click_Binding" />
+    <!-- 
     <MenuItem Header="TODO:"
               IsEnabled="False" />
     <MenuItem x:Name="uxStaticResource" 

@@ -17,24 +17,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	[ExtensionFor(typeof(Canvas), OverrideExtension=typeof(DefaultPlacementBehavior))]
 	public sealed class CanvasPlacementSupport : SnaplinePlacementBehavior
 	{
-		static double GetLeft(UIElement element)
+		static double GetCanvasProperty(UIElement element, DependencyProperty d)
 		{
-			double v = (double)element.GetValue(Canvas.LeftProperty);
+			double v = (double)element.GetValue(d);
 			if (double.IsNaN(v))
 				return 0;
 			else
 				return v;
 		}
-		
-		static double GetTop(UIElement element)
-		{
-			double v = (double)element.GetValue(Canvas.TopProperty);
-			if (double.IsNaN(v))
-				return 0;
-			else
-				return v;
-		}
-		
+
+        static bool IsPropertySet(UIElement element, DependencyProperty d)
+        {
+            return element.ReadLocalValue(d) != DependencyProperty.UnsetValue;
+        }
+       
 		public override void SetPosition(PlacementInformation info)
 		{
 			base.SetPosition(info);
@@ -43,16 +39,48 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			UIElement child = info.Item.View;
 			Rect newPosition = info.Bounds;
 
-			if (newPosition.Left != GetLeft(child)) {
+            if (IsPropertySet(child, Canvas.RightProperty))
+            {
+                var newR = ((Canvas) ExtendedItem.Component).ActualWidth - newPosition.Right;
+                if (newR != GetCanvasProperty(child, Canvas.RightProperty))
+                    info.Item.Properties.GetAttachedProperty(Canvas.RightProperty).SetValue(newR);
+            }
+            else if (newPosition.Left != GetCanvasProperty(child, Canvas.LeftProperty))
+            {
 				info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(newPosition.Left);
 			}
-			if (newPosition.Top != GetTop(child)) {
+
+
+            if (IsPropertySet(child, Canvas.BottomProperty))
+            {
+                var newB = ((Canvas)ExtendedItem.Component).ActualHeight - newPosition.Bottom;
+                if (newB != GetCanvasProperty(child, Canvas.BottomProperty))
+                    info.Item.Properties.GetAttachedProperty(Canvas.BottomProperty).SetValue(newB);
+            }
+            else if (newPosition.Top != GetCanvasProperty(child, Canvas.TopProperty))
+            {
 				info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(newPosition.Top);
 			}
+
+            if (info.Item == Services.Selection.PrimarySelection)
+            {
+                var cv = this.ExtendedItem.View as Canvas;
+                var b = new Rect(0, 0, cv.ActualWidth, cv.ActualHeight);
+                // only for primary selection:
+                if (grayOut != null)
+                {
+                    grayOut.AnimateActiveAreaRectTo(b);
+                }
+                else
+                {
+                    GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View, b);
+                }
+            }
 		}
 		
 		public override void LeaveContainer(PlacementOperation operation)
 		{
+            GrayOutDesignerExceptActiveArea.Stop(ref grayOut);
 			base.LeaveContainer(operation);
 			foreach (PlacementInformation info in operation.PlacedItems) {
 				info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).Reset();
@@ -69,5 +97,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				info.Item.Properties[FrameworkElement.MarginProperty].Reset();
 			}
 		}
+
+        GrayOutDesignerExceptActiveArea grayOut;
+
+        public override void EndPlacement(PlacementOperation operation)
+        {
+            GrayOutDesignerExceptActiveArea.Stop(ref grayOut);            
+            base.EndPlacement(operation);
+        }
+		
 	}
 }

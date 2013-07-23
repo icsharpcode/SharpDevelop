@@ -135,9 +135,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		static string GetAttributeNamespace(XmlAttribute attribute)
 		{
 			if (attribute.NamespaceURI.Length > 0)
-				return attribute.NamespaceURI;
+			    return attribute.NamespaceURI;
 			else
-				return attribute.OwnerElement.GetNamespaceOfPrefix("");
+			{
+			    var ns = attribute.OwnerElement.GetNamespaceOfPrefix("");
+                if (string.IsNullOrEmpty(ns))
+                {
+                    ns = XamlConstants.XamlNamespace;
+                }
+			    return ns;
+			}
 		}
 		
 		readonly static object[] emptyObjectArray = new object[0];
@@ -210,7 +217,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				instance = settings.CreateInstanceCallback(elementType, emptyObjectArray);
 			}
 			
-			XamlObject obj = new XamlObject(document, element, elementType, instance);
+		    XamlObject obj = new XamlObject(document, element, elementType, instance);
 			currentXamlObject = obj;
 			obj.ParentObject = parentXamlObject;
 
@@ -455,14 +462,49 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		static XamlPropertyInfo GetPropertyInfo(object elementInstance, Type elementType, XmlAttribute attribute, XamlTypeFinder typeFinder)
 		{
-			if (attribute.LocalName.Contains(".")) {
-				return GetPropertyInfo(typeFinder, elementInstance, elementType, GetAttributeNamespace(attribute), attribute.LocalName);
-			} else {
-				return FindProperty(elementInstance, elementType, attribute.LocalName);
-			}
+		    var ret = GetXamlSpecialProperty(attribute);
+
+		    if (ret != null)
+		        return ret;
+            
+            if (attribute.LocalName.Contains("."))
+		    {
+		        return GetPropertyInfo(typeFinder, elementInstance, elementType, GetAttributeNamespace(attribute),
+		            attribute.LocalName);
+		    }
+		    else
+		    {
+		        return FindProperty(elementInstance, elementType, attribute.LocalName);
+		    }
 		}
-		
-		internal static XamlPropertyInfo GetPropertyInfo(XamlTypeFinder typeFinder, object elementInstance, Type elementType, string xmlNamespace, string localName)
+
+        internal static XamlPropertyInfo GetXamlSpecialProperty(XmlAttribute attribute)
+	    {
+            if (attribute.LocalName == "Ignorable" &&
+                attribute.NamespaceURI == XamlConstants.MarkupCompatibilityNamespace)
+            {
+                return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+            }
+            else if (attribute.LocalName == "DesignHeight" &&
+                attribute.NamespaceURI == XamlConstants.DesignTimeNamespace)
+            {
+                return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+            }
+            else if (attribute.LocalName == "DesignWidth" &&
+                attribute.NamespaceURI == XamlConstants.DesignTimeNamespace)
+            {
+                return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+            }
+            else if (attribute.LocalName == "IsHidden" &&
+                attribute.NamespaceURI == XamlConstants.DesignTimeNamespace)
+            {
+                return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+            }
+
+            return null;
+	    }
+
+	    internal static XamlPropertyInfo GetPropertyInfo(XamlTypeFinder typeFinder, object elementInstance, Type elementType, string xmlNamespace, string localName)
 		{
 			string typeName, propertyName;
 			SplitQualifiedIdentifier(localName, out typeName, out propertyName);
@@ -488,7 +530,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute)
 		{
 			try {
-				ParseObjectAttribute(obj, attribute, true);
+				ParseObjectAttribute(obj, attribute, true /*false*/ /*true*/);
 			} catch (Exception x) {
 				ReportException(x, attribute);
 			}
@@ -572,14 +614,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			currentXmlSpace = oldXmlSpace;
 		}
 
-		internal static object CreateObjectFromAttributeText(string valueText, XamlPropertyInfo targetProperty, XamlObject scope)
-		{
-			return targetProperty.TypeConverter.ConvertFromString(
-				scope.OwnerDocument.GetTypeDescriptorContext(scope),
-				CultureInfo.InvariantCulture, valueText);
-		}
+	    internal static object CreateObjectFromAttributeText(string valueText, XamlPropertyInfo targetProperty, XamlObject scope)
+	    {
+	        return targetProperty.TypeConverter.ConvertFromString(
+	            scope.OwnerDocument.GetTypeDescriptorContext(scope),
+	            CultureInfo.InvariantCulture, valueText);
+	    }
 
-		internal static object CreateObjectFromAttributeText(string valueText, Type targetType, XamlObject scope)
+	    internal static object CreateObjectFromAttributeText(string valueText, Type targetType, XamlObject scope)
 		{
 			var converter =
 				XamlNormalPropertyInfo.GetCustomTypeConverter(targetType) ??

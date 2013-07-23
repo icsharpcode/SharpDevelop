@@ -15,6 +15,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Value: "http://www.w3.org/2000/xmlns/"
 		/// </summary>
 		public const string XmlnsNamespace = "http://www.w3.org/2000/xmlns/";
+
+        /// <summary>
+        /// The namespace used to identify "xmlns".
+        /// Value: "xmlns"
+        /// </summary>
+        public const string Xmlns = "xmlns";
 		
 		/// <summary>
 		/// The namespace used for the XAML schema.
@@ -27,5 +33,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Value: "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		/// </summary>
 		public const string PresentationNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+
+        public const string DesignTimeNamespace = "http://schemas.microsoft.com/expression/blend/2008";
+
+	    public const string MarkupCompatibilityNamespace = "http://schemas.openxmlformats.org/markup-compatibility/2006";
 	}
 }

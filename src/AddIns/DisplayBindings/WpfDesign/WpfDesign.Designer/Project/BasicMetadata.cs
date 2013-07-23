@@ -236,7 +236,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(TabControl));
 			Metadata.AddPopularControl(typeof(TextBlock));
 			Metadata.AddPopularControl(typeof(TextBox));
-			Metadata.AddPopularControl(typeof(TreeView));
+			Metadata.AddPopularControl(typeof(System.Windows.Controls.TreeView));
 			Metadata.AddPopularControl(typeof(ToolBar));
 			Metadata.AddPopularControl(typeof(Viewbox));
 			Metadata.AddPopularControl(typeof(Viewport3D));
@@ -259,7 +259,7 @@ namespace ICSharpCode.WpfDesign.Designer
             var s2=new Size(120,120);
             Metadata.AddDefaultSize(typeof(InkCanvas),s2);
             Metadata.AddDefaultSize(typeof(Image),s2);
-            Metadata.AddDefaultSize(typeof(TreeView),s2);
+            Metadata.AddDefaultSize(typeof(System.Windows.Controls.TreeView), s2);
             
             var s3=new Size(130,120);
             Metadata.AddDefaultSize(typeof(Label),s3);

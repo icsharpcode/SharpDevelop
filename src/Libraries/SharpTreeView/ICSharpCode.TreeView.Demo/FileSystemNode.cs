@@ -30,41 +30,39 @@ namespace ICSharpCode.TreeView.Demo
 			return FullPath;
 		}
 
-		public override bool CanCopy(SharpTreeNode[] nodes)
-		{
-			return true;
-		}
+        //public override bool CanCopy(SharpTreeNode[] nodes)
+        //{
+        //    return true;
+        //}
 
 		public override IDataObject Copy(SharpTreeNode[] nodes)
 		{
 			var data = new DataObject();
-			var paths = SharpTreeNode.ActiveNodes.Cast<FileSystemNode>().Select(n => n.FullPath).ToArray();
+			var paths = nodes.Cast<FileSystemNode>().Select(n => n.FullPath).ToArray();
 			data.SetData(typeof(string[]), paths);
 			return data;
 		}
 
-		public override bool CanPaste(IDataObject data)
+        //public override bool CanPaste(IDataObject data)
+        //{
+        //    return true;
+        //}
+
+		public override bool CanDelete()
 		{
-			return true;
+		    return this.Parent != null;
 		}
 
-		public override bool CanDelete(SharpTreeNode[] nodes)
-		{
-			return nodes.All(n => n.Parent != null);
-		}
-
-		public override void Delete(SharpTreeNode[] nodes)
+		public override void Delete()
 		{
 			if (MessageBox.Show("Sure?", "Delete", MessageBoxButton.OKCancel) == MessageBoxResult.OK) {
-				DeleteCore(nodes);
+				DeleteCore();
 			}
 		}
 
-		public override void DeleteCore(SharpTreeNode[] nodes)
+		public override void DeleteCore()
 		{
-			foreach (var node in nodes.ToArray()) {
-				node.Parent.Children.Remove(node);
-			}
+		    this.Parent.Children.Remove(this);			
 		}
 
 		public override bool CanDrag(SharpTreeNode[] nodes)
@@ -74,17 +72,18 @@ namespace ICSharpCode.TreeView.Demo
 
 		ContextMenu menu;
 
-		public override ContextMenu GetContextMenu()
-		{
-			if (menu == null) {
-				menu = new ContextMenu();
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Cut });
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Copy });
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Paste });
-				menu.Items.Add(new Separator());
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Delete });
-			}
-			return menu;
-		}
+        public override ContextMenu GetContextMenu()
+        {
+            if (menu == null)
+            {
+                menu = new ContextMenu();
+                menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Cut });
+                menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Copy });
+                menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Paste });
+                menu.Items.Add(new Separator());
+                menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Delete });
+            }
+            return menu;
+        }
 	}
 }

@@ -118,7 +118,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		internal override void RemoveNodeFromParent()
 		{
-			if (attribute != null)
+            if (attribute != null && attribute.OwnerElement != null)
 				attribute.OwnerElement.RemoveAttribute(attribute.Name);
 			else if (textNode != null)
 				textNode.ParentNode.RemoveChild(textNode);

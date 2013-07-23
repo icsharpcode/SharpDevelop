@@ -4,9 +4,10 @@
 using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-
+using System.Windows.Media;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Extensions;
@@ -21,7 +22,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	public sealed class ResizeThumbExtension : SelectionAdornerProvider
 	{
 		readonly AdornerPanel adornerPanel;
-		readonly ResizeThumb[] resizeThumbs;
+		readonly Thumb[] thumbs;
 		/// <summary>An array containing this.ExtendedItem as only element</summary>
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
@@ -43,7 +44,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			adornerPanel.Order = AdornerOrder.Foreground;
 			this.Adorners.Add(adornerPanel);
 			
-			resizeThumbs = new ResizeThumb[] {
+			thumbs = new [] {
 				CreateThumb(PlacementAlignment.TopLeft, Cursors.SizeNWSE),
 				CreateThumb(PlacementAlignment.Top, Cursors.SizeNS),
 				CreateThumb(PlacementAlignment.TopRight, Cursors.SizeNESW),
@@ -51,8 +52,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				CreateThumb(PlacementAlignment.Right, Cursors.SizeWE),
 				CreateThumb(PlacementAlignment.BottomLeft, Cursors.SizeNESW),
 				CreateThumb(PlacementAlignment.Bottom, Cursors.SizeNS),
-				CreateThumb(PlacementAlignment.BottomRight, Cursors.SizeNWSE)
-			};
+				CreateThumb(PlacementAlignment.BottomRight, Cursors.SizeNWSE),
+                CreateRotateThumb(),
+			};            
 		}
 		
 		ResizeThumb CreateThumb(PlacementAlignment alignment, Cursor cursor)
@@ -64,13 +66,100 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			adornerPanel.Children.Add(resizeThumb);
 			
 			DragListener drag = new DragListener(resizeThumb);
-			drag.Started += new DragHandler(drag_Started);
-			drag.Changed += new DragHandler(drag_Changed);
-			drag.Completed += new DragHandler(drag_Completed);
+			drag.Started += drag_Started;
+			drag.Changed += drag_Changed;
+			drag.Completed += drag_Completed;
 			return resizeThumb;
 		}
-		
-		/// <summary>
+
+        ResizeThumb CreateRotateThumb()
+        {
+            ResizeThumb rotateThumb = new RotateThumb();
+            rotateThumb.Cursor = Cursors.Hand;
+            rotateThumb.Cursor = ZoomControl.GetCursor("Images/rotate.cur");
+            rotateThumb.Alignment = PlacementAlignment.Top;
+            AdornerPanel.SetPlacement(rotateThumb,
+                new RelativePlacement(HorizontalAlignment.Center, VerticalAlignment.Top) { WidthRelativeToContentWidth = 1, HeightOffset = 0 });
+            adornerPanel.Children.Add(rotateThumb);
+
+            DragListener drag = new DragListener(rotateThumb);
+            drag.Started += drag_Rotate_Started;
+            drag.Changed += drag_Rotate_Changed;
+            //drag.Completed += drag_Completed;
+            return rotateThumb;
+        }
+
+        #region Rotate 
+        
+        private Point centerPoint;
+	    private UIElement parent;
+        private Vector startVector;
+        private RotateTransform rotateTransform;
+        private double initialAngle;
+	    private DesignItem rtTransform;
+	    private double angle;
+
+	    private void drag_Rotate_Started(DragListener drag)
+	    {
+	        var designerItem = this.ExtendedItem.Component as FrameworkElement;
+            this.parent = VisualTreeHelper.GetParent(designerItem) as UIElement;
+	        this.centerPoint = designerItem.TranslatePoint(
+	            new Point(designerItem.ActualWidth*designerItem.RenderTransformOrigin.X,
+	                designerItem.ActualHeight*designerItem.RenderTransformOrigin.Y),
+                this.parent);
+
+            Point startPoint = Mouse.GetPosition(this.parent);
+	        this.startVector = Point.Subtract(startPoint, this.centerPoint);
+
+	        if (this.rotateTransform == null)
+	        {
+                this.initialAngle = 0;
+	        }
+	        else
+	        {
+	            this.initialAngle = this.rotateTransform.Angle;
+	        }
+
+	        rtTransform = this.ExtendedItem.Properties[FrameworkElement.RenderTransformProperty].Value;
+
+            operation = PlacementOperation.Start(extendedItemArray, PlacementType.Resize);
+	    }
+
+	    private void drag_Rotate_Changed(DragListener drag)
+	    {
+            Point currentPoint = Mouse.GetPosition(this.parent);
+	        Vector deltaVector = Point.Subtract(currentPoint, this.centerPoint);
+
+	        double angle = Vector.AngleBetween(this.startVector, deltaVector);
+
+	        var destAngle = this.initialAngle + Math.Round(angle, 0);
+
+            if (!Keyboard.IsKeyDown(Key.LeftCtrl))
+                destAngle = ((int)destAngle / 15) * 15;
+
+	        if (destAngle == 0)
+	        {
+                this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Reset();
+	            rtTransform = null;
+	            rotateTransform = null;
+	        }
+	        else
+	        {
+	            if (rtTransform == null)
+	            {
+	                if (this.rotateTransform == null)
+	                    this.rotateTransform = new RotateTransform(0);
+                    this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).SetValue(rotateTransform);
+                    rtTransform = this.ExtendedItem.Properties[FrameworkElement.RenderTransformProperty].Value;            
+	            }
+                rtTransform.Properties["Angle"].SetValue(destAngle);
+                this.angle = destAngle * Math.PI / 180.0;       
+	        }	        
+	    }
+
+        #endregion
+
+        /// <summary>
 		/// Places resize thumbs at their respective positions
 		/// and streches out thumbs which are at the center of outline to extend resizability across the whole outline
 		/// </summary>
@@ -125,7 +214,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		void drag_Changed(DragListener drag)
 		{
-			double dx = 0;
+            double dx = 0;
 			double dy = 0;
 			var alignment = (drag.Target as ResizeThumb).Alignment;
 			
@@ -133,13 +222,44 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (alignment.Horizontal == HorizontalAlignment.Right) dx = drag.Delta.X;
 			if (alignment.Vertical == VerticalAlignment.Top) dy = -drag.Delta.Y;
 			if (alignment.Vertical == VerticalAlignment.Bottom) dy = drag.Delta.Y;
-			
-			var newWidth = Math.Max(0, oldSize.Width + dx);
-			var newHeight = Math.Max(0, oldSize.Height + dy);
 
-			ModelTools.Resize(ExtendedItem, newWidth, newHeight);
 
-			if (operation != null) {
+		    var designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+            if (designPanel != null)
+            {
+                var zoom = designPanel.Parent as ZoomControl;
+                if (zoom != null)
+                {
+                    dx = dx * (1 / zoom.CurrentZoom);
+                    dy = dy * (1 / zoom.CurrentZoom);
+                }
+            }
+
+		    var newWidth = Math.Max(0, oldSize.Width + dx*(1 - Math.Sin(this.angle)) + dy*(1 - Math.Cos(-this.angle)));
+            var newHeight = Math.Max(0, oldSize.Height + dy * (1 - Math.Sin(this.angle)) + dx * (1 - Math.Cos(-this.angle)));
+
+            if (operation.CurrentContainerBehavior is GridPlacementSupport)
+		    {
+                var hor = (HorizontalAlignment)this.ExtendedItem.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
+                var ver = (VerticalAlignment)this.ExtendedItem.Properties[FrameworkElement.VerticalAlignmentProperty].ValueOnInstance;
+		        if (hor == HorizontalAlignment.Stretch)
+		            this.ExtendedItem.Properties[FrameworkElement.WidthProperty].Reset();
+		        else
+		            this.ExtendedItem.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(newWidth);
+
+                if (ver == VerticalAlignment.Stretch)
+                    this.ExtendedItem.Properties[FrameworkElement.HeightProperty].Reset();
+                else
+                    this.ExtendedItem.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(newHeight);
+                
+		    }
+            else
+            {
+                ModelTools.Resize(ExtendedItem, newWidth, newHeight);
+            }
+
+
+		    if (operation != null) {
 				var info = operation.PlacedItems[0];
 				var result = info.OriginalBounds;
 				
@@ -181,6 +301,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);
 			UpdateAdornerVisibility();
 			OnPrimarySelectionChanged(null, null);
+
+            var designerItem = this.ExtendedItem.Component as FrameworkElement;
+            this.rotateTransform = designerItem.RenderTransform as RotateTransform;
+		    if (rotateTransform != null)
+		        angle = rotateTransform.Angle;
 		}
 		
 		void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -206,7 +331,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		void UpdateAdornerVisibility()
 		{
 			FrameworkElement fe = this.ExtendedItem.View as FrameworkElement;
-			foreach (ResizeThumb r in resizeThumbs) {
+			foreach (ResizeThumb r in thumbs) {
 				bool isVisible = resizeBehavior != null && resizeBehavior.CanPlace(extendedItemArray, PlacementType.Resize, r.Alignment);
 				r.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
 			}

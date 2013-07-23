@@ -129,17 +129,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public IList<XamlPropertyValue> CollectionElements {
 			get { return collectionElements ?? emptyCollectionElementsArray; }
 		}
-		
-		/// <summary>
-		/// Gets if the property is set.
-		/// </summary>
-		public bool IsSet {
-			get { return propertyValue != null ||
-					_propertyElement != null; // collection
-			}
-		}
-		
-		/// <summary>
+
+	    /// <summary>
+	    /// Gets if the property is set.
+	    /// </summary>
+	    public bool IsSet
+	    {
+	        get { return propertyValue != null || _propertyElement != null; // collection
+	        }
+	    }
+
+	    /// <summary>
 		/// Occurs when the value of the IsSet property has changed.
 		/// </summary>
 		public event EventHandler IsSetChanged;
@@ -310,12 +310,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
 			string name;
-			if (IsAttached)
-				name = PropertyTargetType.Name + "." + PropertyName;
-			else
-				name = PropertyName;
+		    if (IsAttached)
+		    {
+		        if (PropertyTargetType == typeof (DesignTimeProperties))
+		            name = PropertyName;
+		        else
+		            name = PropertyTargetType.Name + "." + PropertyName;
+		    }
+		    else
+		        name = PropertyName;
 
-			var element = ParentObject.XmlElement;
+		    var element = ParentObject.XmlElement;
 			if (string.IsNullOrEmpty(element.GetPrefixOfNamespace(ns))) {
 				element.SetAttribute(name, value);
 				return element.GetAttributeNode(name);

@@ -14,13 +14,23 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 {
 	public class ZoomControl : ZoomScrollViewer
 	{
-		static ZoomControl()
+        static ZoomControl()
 		{
 			PanToolCursor = GetCursor("Images/PanToolCursor.cur");
 			PanToolCursorMouseDown = GetCursor("Images/PanToolCursorMouseDown.cur");
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(ZoomControl), new FrameworkPropertyMetadata(typeof(ZoomControl)));
 		}
-		
-		static Cursor GetCursor(string path)
+
+        public object AdditionalControls
+        {
+            get { return (object)GetValue(AdditionalControlsProperty); }
+            set { SetValue(AdditionalControlsProperty, value); }
+        }
+
+        public static readonly DependencyProperty AdditionalControlsProperty =
+            DependencyProperty.Register("AdditionalControls", typeof(object), typeof(ZoomControl), new PropertyMetadata(null));
+        
+		internal static Cursor GetCursor(string path)
 		{
 			var a = Assembly.GetExecutingAssembly();
 			var m = new ResourceManager(a.GetName().Name + ".g", a);

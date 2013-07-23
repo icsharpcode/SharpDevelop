@@ -97,10 +97,10 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
             var s = Metadata.GetDefaultSize(createdItem.ComponentType);
             if (double.IsNaN(s.Width)) {
-                s.Width = GetWidth(createdItem.View);
+                //s.Width = GetWidth(createdItem.View);
             }
             if (double.IsNaN(s.Height)) {
-                s.Height = GetHeight(createdItem.View);
+                //s.Height = GetHeight(createdItem.View);
             }
 			return s;
 		}

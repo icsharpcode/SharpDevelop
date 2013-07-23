@@ -4,25 +4,28 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.ComponentModel;
-using ICSharpCode.WpfDesign;
-using System.Collections.ObjectModel;
-using System.Collections;
-using ICSharpCode.WpfDesign.Designer;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Threading;
+using ICSharpCode.TreeView;
 using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
-	public class OutlineNode : INotifyPropertyChanged
+	public class OutlineNode : SharpTreeNode, INotifyPropertyChanged
 	{
 		//Used to check if element can enter other containers
 		public static PlacementType DummyPlacementType;
 		
 		static OutlineNode()
 		{
-			DummyPlacementType = PlacementType.Register("DummyPlacement");
+			DummyPlacementType = PlacementType.Register("DummyPlacement");            
 		}
+
 		public static OutlineNode Create(DesignItem designItem)
 		{
 			OutlineNode node;
@@ -38,13 +41,23 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 
 		OutlineNode(DesignItem designItem)
 		{
-			DesignItem = designItem;
-			UpdateChildren();
+            PropertyChanged += OutlineNode_PropertyChanged;
+		    IsExpanded = true;
+
+            DesignItem = designItem;
+            UpdateChildren();
+
+		    var hidden = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).ValueOnInstance;
+		    if (hidden != null && (bool) hidden == true)
+		    {
+		        this._isDesignTimeVisible = false;
+		        ((FrameworkElement) this.DesignItem.Component).Visibility = Visibility.Hidden;
+		    }			
 
 			//TODO
-			DesignItem.NameChanged += new EventHandler(DesignItem_NameChanged);
-			DesignItem.PropertyChanged += new PropertyChangedEventHandler(DesignItem_PropertyChanged);
-			SelectionService.SelectionChanged += new EventHandler<DesignItemCollectionEventArgs>(Selection_SelectionChanged);
+			DesignItem.NameChanged += DesignItem_NameChanged;
+			DesignItem.PropertyChanged += DesignItem_PropertyChanged;
+			SelectionService.SelectionChanged += Selection_SelectionChanged;
 		}
 
 		public DesignItem DesignItem { get; private set; }
@@ -52,40 +65,14 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		public ISelectionService SelectionService {
 			get { return DesignItem.Services.Selection; }
 		}
-
-		bool isExpanded = true;
-
-		public bool IsExpanded {
-			get {
-				return isExpanded;
-			}
-			set {
-				isExpanded = value;
-				RaisePropertyChanged("IsExpanded");
-			}
-		}
-
-		bool isSelected;
-
-		public bool IsSelected {
-			get {
-				return isSelected;
-			}
-			set {
-				if (isSelected != value) {
-					isSelected = value;
-					SelectionService.SetSelectedComponents(new[] { DesignItem },
-					                                       value ? SelectionTypes.Add : SelectionTypes.Remove);
-					RaisePropertyChanged("IsSelected");
-				}
-			}
-		}
-
-		ObservableCollection<OutlineNode> children = new ObservableCollection<OutlineNode>();
-
-		public ObservableCollection<OutlineNode> Children  {
-			get { return children; }
-		}
+       	
+	    public override object Text
+        {
+            get
+            {
+                return Name;
+            }
+        }
 
 		public string Name {
 			get  {
@@ -96,14 +83,44 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			}
 		}
 
-		void Selection_SelectionChanged(object sender, DesignItemCollectionEventArgs e)
-		{
-			IsSelected = DesignItem.Services.Selection.IsComponentSelected(DesignItem);
-		}
+        void OutlineNode_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsSelected")
+            {
+                SelectionService.SetSelectedComponents(new[] { DesignItem }, IsSelected ? SelectionTypes.Add : SelectionTypes.Remove);
+            }        
+        }
+
+        private bool _isDesignTimeVisible = true;
+        public bool IsDesignTimeVisible
+	    {
+	        get { return _isDesignTimeVisible; }
+	        set
+	        {
+	            _isDesignTimeVisible = value;
+	            var ctl = DesignItem.Component as UIElement;
+                ctl.Visibility = _isDesignTimeVisible ? Visibility.Visible : Visibility.Hidden;
+
+                RaisePropertyChanged("IsDesignTimeVisible");
+
+	            if (!value)
+	                DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).SetValue(true);
+	                //ctl.SetValue(DesignTimeProperties.IsHiddenProperty, true);
+                else
+                    DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).Reset();
+                    //ctl.ClearValue(DesignTimeProperties.IsHiddenProperty);	            
+	        }
+	    }
+
+	    void Selection_SelectionChanged(object sender, DesignItemCollectionEventArgs e)
+	    {
+	        IsSelected = DesignItem.Services.Selection.IsComponentSelected(DesignItem);
+	    }
 
 		void DesignItem_NameChanged(object sender, EventArgs e)
 		{
 			RaisePropertyChanged("Name");
+            RaisePropertyChanged("Text");
 		}
 
 		void DesignItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -140,21 +157,81 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			}
 		}
 
-		public bool CanInsert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
-		{
-			var placementBehavior = DesignItem.GetBehavior<IPlacementBehavior>();
-			if (placementBehavior == null)
-				return false;
-			var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
-			if (operation != null) {
-				bool canEnter = placementBehavior.CanEnterContainer(operation);
-				operation.Abort();
-				return canEnter;
-			}
-			return false;
-		}
+        #region Drag Drop
 
-		public void Insert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
+        public override bool CanDrag(SharpTreeNode[] nodes)
+        {
+            return true;
+        }
+
+        public override IDataObject Copy(SharpTreeNode[] nodes)
+        {
+            var data = new DataObject();
+            data.SetData(typeof(OutlineNode[]), nodes.Cast<OutlineNode>().ToArray());
+            return data;
+        }
+
+        public bool CanInsert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
+        {
+            var placementBehavior = DesignItem.GetBehavior<IPlacementBehavior>();
+            if (placementBehavior == null)
+                return false;
+            var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
+            if (operation != null)
+            {
+                bool canEnter = placementBehavior.CanEnterContainer(operation);
+                operation.Abort();
+                return canEnter;
+            }
+            return false;
+        }
+
+	    public override bool CanDelete()
+	    {
+	        return true;
+	    }
+
+        public override void Delete()
+        {
+            //Todo!
+        }
+
+	    public override void DeleteCore()
+	    {
+	        //Todo!
+	    }
+
+	    public override bool CanDrop(DragEventArgs e, int index)
+        {
+            var copy = (e.KeyStates & DragDropKeyStates.ControlKey) > 0;
+            e.Effects = copy ? DragDropEffects.Copy : DragDropEffects.Move;
+
+            var nodes = e.Data.GetData(typeof(OutlineNode[])) as OutlineNode[];
+
+            var placementBehavior = DesignItem.GetBehavior<IPlacementBehavior>();
+            if (placementBehavior == null)
+                return false;
+            var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
+            if (operation != null)
+            {
+                bool canEnter = placementBehavior.CanEnterContainer(operation);
+                operation.Abort();
+                return canEnter;
+            }
+            return false;
+        }
+
+        public override void Drop(DragEventArgs e, int index)
+        {
+            var copy = (e.KeyStates & DragDropKeyStates.ControlKey) > 0;
+            e.Effects = copy ? DragDropEffects.Copy : DragDropEffects.Move;
+
+            var nodes = (e.Data.GetData(typeof(OutlineNode[])) as OutlineNode[]).ToList();
+            
+            Insert(nodes, Children[index] as OutlineNode, copy);            
+        }
+
+        public void Insert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
 		{
 			using (var moveTransaction = DesignItem.Context.OpenGroup("Item moved in outline view", nodes.Select(n => n.DesignItem).ToList())) {
 				if (copy) {
@@ -178,18 +255,21 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 				moveTransaction.Commit();
 			}
 		}
-
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		void RaisePropertyChanged(string name)
-		{
-			if (PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(name));
-			}
-		}
-
-		#endregion
+        #endregion
+        
+        ContextMenu menu;
+	    public override ContextMenu GetContextMenu()
+        {
+            if (menu == null)
+            {
+                menu = new ContextMenu();
+                menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Cut });
+                menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Copy });
+                menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Paste });
+                menu.Items.Add(new Separator());
+                menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Delete });
+            }
+            return menu;
+        }	
 	}
 }

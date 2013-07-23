@@ -68,8 +68,8 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				}
 				
 				foreach (PlacementInformation info in operation.PlacedItems) {
-					info.Bounds = new Rect(info.OriginalBounds.Left + Math.Round(v.X, PlacementInformation.BoundsPrecision),
-					                       info.OriginalBounds.Top + Math.Round(v.Y, PlacementInformation.BoundsPrecision),
+					info.Bounds = new Rect(info.OriginalBounds.Left + Math.Round(v.X, 0), // PlacementInformation.BoundsPrecision),
+					                       info.OriginalBounds.Top + Math.Round(v.Y, 0), // PlacementInformation.BoundsPrecision),
 					                       info.OriginalBounds.Width,
 					                       info.OriginalBounds.Height);
 				}

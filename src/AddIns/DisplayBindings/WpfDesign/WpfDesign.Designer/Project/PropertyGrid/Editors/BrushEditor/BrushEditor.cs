@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using System.Windows.Media;
 using System.Reflection;
 using System.Windows;
+using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 {
@@ -73,8 +75,9 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 			}
 			set {
 				if (property != null && property.Value != value) {
-					property.Value = value;
-					DetermineCurrentKind();
+                    property.Value = value;                   
+                    
+				    DetermineCurrentKind();
 					RaisePropertyChanged("Brush");
 				}
 			}

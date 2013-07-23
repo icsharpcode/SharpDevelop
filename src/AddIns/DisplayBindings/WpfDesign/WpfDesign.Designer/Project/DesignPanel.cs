@@ -16,7 +16,7 @@ using ICSharpCode.WpfDesign.Designer.Controls;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
-	sealed class DesignPanel : Decorator, IDesignPanel
+	public class DesignPanel : Decorator, IDesignPanel, INotifyPropertyChanged
 	{
 		#region Hit Testing
 		/// <summary>
@@ -133,8 +133,8 @@ namespace ICSharpCode.WpfDesign.Designer
 		DesignContext _context;
 		readonly EatAllHitTestRequests _eatAllHitTestRequests;
 		readonly AdornerLayer _adornerLayer;
-		
-		public DesignPanel()
+	    
+	    public DesignPanel()
 		{
 			this.Focusable = true;
 			this.Margin = new Thickness(16);
@@ -157,7 +157,11 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// </summary>
 		public DesignContext Context {
 			get { return _context; }
-			set { _context = value; }
+			set
+			{
+			    OnContextChanged(_context, value);
+                _context = value;
+			}
 		}
 		
 		public ICollection<AdornerPanel> Adorners {
@@ -181,11 +185,40 @@ namespace ICSharpCode.WpfDesign.Designer
 			get { return _adornerLayer.IsHitTestVisible; }
 			set { _adornerLayer.IsHitTestVisible = value; }
 		}
-		
-		#endregion
-		
-		#region Visual Child Management
-		public override UIElement Child {
+
+	    private bool _useSnaplinePlacement = true;
+	    public bool UseSnaplinePlacement
+	    {
+	        get { return _useSnaplinePlacement; }
+            set { _useSnaplinePlacement = value; OnPropertyChanged("UseSnaplinePlacement"); }
+	    }
+
+        private bool _useRasterPlacement = false;
+	    public bool UseRasterPlacement
+	    {
+	        get { return _useRasterPlacement; }
+            set { _useRasterPlacement = value; OnPropertyChanged("UseRasterPlacement"); }
+	    }
+
+        private int _rasterWidth = 5;
+	    public int RasterWidth
+	    {
+	        get { return _rasterWidth; }
+            set { _rasterWidth = value; OnPropertyChanged("RasterWidth"); }
+	    }
+
+        private bool _canRootElementBeSelected = true;
+        public bool CanRootElementBeSelected
+        {
+            get { return _canRootElementBeSelected; }
+            set { _canRootElementBeSelected = value; OnPropertyChanged("CanRootElementBeSelected"); }
+        }
+
+	    #endregion
+
+	    #region Visual Child Management
+
+	    public override UIElement Child {
 			get { return base.Child; }
 			set {
 				if (base.Child == value)
@@ -260,5 +293,36 @@ namespace ICSharpCode.WpfDesign.Designer
 				}
 			}
 		}
+
+        protected void OnContextChanged(DesignContext oldContext, DesignContext newContext)
+        {
+            if (oldContext != null)
+            {
+                oldContext.Services.Selection.SelectionChanged -= OnContextSelectionChangedChanged;
+            }
+            if (newContext != null)
+            {
+                newContext.Services.Selection.SelectionChanged += OnContextSelectionChangedChanged;
+            }
+        }
+
+        protected void OnContextSelectionChangedChanged(object o, DesignItemCollectionEventArgs e)
+        {
+            if (!CanRootElementBeSelected)
+            {
+                if (Context.Services.Selection.IsComponentSelected(Context.RootItem))
+                {
+                    Context.Services.Selection.SetSelectedComponents(new[] { Context.RootItem }, SelectionTypes.Remove);
+                }
+            }
+        }
+
+	    public event PropertyChangedEventHandler PropertyChanged;
+
+	    private void OnPropertyChanged(string propertyName)
+	    {
+	        PropertyChangedEventHandler handler = PropertyChanged;
+	        if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+	    }
 	}
 }

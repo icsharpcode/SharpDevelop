@@ -3,7 +3,7 @@
 	xmlns:Default="clr-namespace:ICSharpCode.WpfDesign.Designer.OutlineView"
 	xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters"
 >
-	<Converters:LevelConverter x:Key="LevelConverter" />
+	<!--<Converters:LevelConverter x:Key="LevelConverter" />-->
 	
 	<Style TargetType="{x:Type Default:IconItem}">
 		<Setter Property="Template">
@@ -67,13 +67,14 @@
 	
 	<Brush x:Key="InsertBrush">#FFC73C</Brush>
 	
-	<Style TargetType="{x:Type Default:DragTreeView}">
+	<!--<Style TargetType="{x:Type Default:DragTreeView}">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type Default:DragTreeView}">
 					<Grid Background="White">
-						<ScrollViewer HorizontalScrollBarVisibility="Auto"
-						              VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer x:Name="scroller" 
+                                HorizontalScrollBarVisibility="Auto"
+						        VerticalScrollBarVisibility="Auto" >
 							<ItemsPresenter />
 						</ScrollViewer>
 						<Border x:Name="PART_InsertLine"
@@ -146,6 +147,6 @@
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
-	</Style>
+	</Style>-->
 
 </ResourceDictionary>

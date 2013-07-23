@@ -21,7 +21,8 @@
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Performance#CA1800;-Microsoft.Performance#CA1810;-Microsoft.Performance#CA1822</CodeAnalysisRules>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,6 +46,12 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpDevelop.Widgets">
+      <HintPath>..\..\..\..\..\..\bin\ICSharpCode.SharpDevelop.Widgets.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.TreeView">
+      <HintPath>..\..\..\..\..\..\bin\ICSharpCode.TreeView.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
@@ -79,6 +86,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
     <Compile Include="Controls\ContainerDragHandle.cs" />
+    <Compile Include="Controls\CanvasPositionHandle.cs" />
     <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\EnterTextBox.cs" />
     <Compile Include="Controls\EnumBar.xaml.cs">
@@ -98,6 +106,7 @@
     <Compile Include="Controls\PageClone.cs" />
     <Compile Include="Controls\PanelMoveAdorner.cs" />
     <Compile Include="Controls\QuickOperationMenu.cs" />
+    <Compile Include="Controls\RotateThumb.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
@@ -107,17 +116,17 @@
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="Controls\ZoomControl.cs" />
     <Compile Include="Converters.cs" />
+    <Compile Include="DesignSurface.cs" />
     <Compile Include="DesignCommand.cs" />
     <Compile Include="DesignPanel.cs" />
-    <Compile Include="DesignSurface.xaml.cs">
-      <DependentUpon>DesignSurface.xaml</DependentUpon>
-    </Compile>
     <Compile Include="DragDropExceptionHandler.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Extensions\CanvasPlacementSupport.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\BorderForInvisibleControl.cs" />
+    <Compile Include="Extensions\CanvasPositionExtension.cs" />
+    <Compile Include="Extensions\RasterPlacementBehavior.cs" />
     <Compile Include="Extensions\Initializers.cs" />
     <Compile Include="Extensions\DefaultPlacementBehavior.cs">
       <SubType>Code</SubType>
@@ -143,8 +152,6 @@
     <Compile Include="Extensions\ResizeThumbExtension.cs" />
     <Compile Include="BasicMetadata.cs" />
     <Compile Include="OutlineView\DragListener.cs" />
-    <Compile Include="OutlineView\DragTreeView.cs" />
-    <Compile Include="OutlineView\DragTreeViewItem.cs" />
     <Compile Include="OutlineView\IconItem.cs" />
     <Compile Include="OutlineView\Outline.xaml.cs">
       <DependentUpon>Outline.xaml</DependentUpon>
@@ -152,7 +159,6 @@
     </Compile>
     <Compile Include="OutlineView\OutlineNode.cs">
     </Compile>
-    <Compile Include="OutlineView\OutlineTreeView.cs" />
     <Compile Include="PropertyGrid\Editors\BoolEditor.xaml.cs">
       <DependentUpon>BoolEditor.xaml</DependentUpon>
     </Compile>
@@ -228,11 +234,6 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
-      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
-      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
       <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
       <Name>WpfDesign.XamlDom</Name>
@@ -249,10 +250,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\GridUnitSelector.xaml" />
-    <Page Include="Controls\ControlStyles.xaml" />
-    <Page Include="DesignSurface.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Controls\ControlStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DesignSurface.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="OutlineView\Outline.xaml">
       <SubType>Designer</SubType>
@@ -325,5 +328,15 @@
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="Configuration\CodeAnalysisDictionary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Raster.png" />
+    <Resource Include="Images\Snapline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="OutlineView\eye_watch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\rotate.cur" />
   </ItemGroup>
 </Project>

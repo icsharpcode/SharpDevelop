@@ -60,7 +60,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// <summary>
 		/// Gets the Stub for this handle
 		/// </summary>
-		public MarginStub Stub {get; private set;}
+		public MarginStub Stub {get; protected set;}
 		
 		/// <summary>
 		/// Gets/Sets the angle by which handle rotates.
@@ -70,7 +70,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// <summary>
 		/// Gets/Sets the angle by which the Margin display has to be rotated
 		/// </summary>
-		public double TextTransform{
+		public virtual double TextTransform{
 			get{
 				if((double)orientation==90 || (double)orientation == 180)
 					return 180;
@@ -109,7 +109,10 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			get { return orientation; }
 		}
 
-		public MarginHandle(DesignItem adornedControlItem, AdornerPanel adornerPanel, HandleOrientation orientation)
+	    internal MarginHandle()
+	    { }
+
+	    public MarginHandle(DesignItem adornedControlItem, AdornerPanel adornerPanel, HandleOrientation orientation)
 		{
 			Debug.Assert(adornedControlItem!=null);
 			this.adornedControlItem = adornedControlItem;
@@ -228,13 +231,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
 		{
 			base.OnMouseEnter(e);
-			this.Cursor = Cursors.Hand;
+			//this.Cursor = Cursors.Hand;
 		}
 
 		protected override void OnMouseLeave(MouseEventArgs e)
 		{
 			base.OnMouseLeave(e);
-			this.Cursor = Cursors.Arrow;
+			//this.Cursor = Cursors.Arrow;
 		}
 		
 		public override void OnApplyTemplate()
