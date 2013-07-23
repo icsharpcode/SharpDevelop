@@ -86,6 +86,7 @@ Icons.16x16.Debug.Continue							= DebuggerIcons\Icons.16x16.Debug.Continue.png
 Icons.16x16.Debug.StepOver							= DebuggerIcons\Icons.16x16.Debug.StepOver.png
 Icons.16x16.Debug.StepInto							= DebuggerIcons\Icons.16x16.Debug.StepInto.png
 Icons.16x16.Debug.StepOut							= DebuggerIcons\Icons.16x16.Debug.StepOut.png
+Icons.16x16.Debug.Assembly							= DebuggerIcons\Icons.16x16.Debug.Assembly.png
 
 # TestRunner
 Icons.16x16.TestRunner.Yellow						= BitmapResources-data\Icons.16x16.TestRunner.Yellow.png
@@ -107,7 +108,7 @@ Icons.16x16.AdjustBackgroundColor					= BitmapResources-data\Icons.16x16.AdjustB
 Icons.16x16.HelpOpenFolder							= BitmapResources-data\Icons.16x16.HelpOpenFolder.png
 Icons.16x16.SmallIconsIcon							= BitmapResources-data\Icons.16x16.SmallIconsIcon.png
 Icons.16x16.HtmlElements.AnchorElement				= BitmapResources-data\Icons.16x16.HtmlElements.AnchorElement.png
-Icons.16x16.Assembly								= BitmapResources-data\Icons.16x16.Assembly.png
+Icons.16x16.Collection								= BitmapResources-data\Icons.16x16.Collection.png
 Icons.16x16.TipOfTheDay								= BitmapResources-data\Icons.16x16.TipOfTheDay.png
 Icons.16x16.Right									= BitmapResources-data\Icons.16x16.Right.png
 Icons.16x16.CDROM									= BitmapResources-data\Icons.16x16.CDROM.png
@@ -169,7 +170,7 @@ Icons.16x16.BuildCurrentSelectedProject				= BitmapResources-data\Icons.16x16.Bu
 Icons.16x16.HelpTopic								= BitmapResources-data\Icons.16x16.HelpTopic.png
 Icons.16x16.PrevWindowIcon							= BitmapResources-data\Icons.16x16.PrevWindowIcon.png
 Icons.16x16.HtmlElements.SelectElement				= BitmapResources-data\Icons.16x16.HtmlElements.SelectElement.png
-Icons.16x16.OpenAssembly							= BitmapResources-data\Icons.16x16.OpenAssembly.png
+Icons.16x16.OpenCollection							= BitmapResources-data\Icons.16x16.OpenCollection.png
 Icons.16x16.HtmlElements.InputSubmitElement			= BitmapResources-data\Icons.16x16.HtmlElements.InputSubmitElement.png
 Icons.16x16.CancelIcon								= BitmapResources-data\Icons.16x16.CancelIcon.png
 Icons.16x16.ItalicText								= BitmapResources-data\Icons.16x16.ItalicText.png
@@ -292,6 +293,14 @@ Icons.16x16.SharpQuery.AddConnection				= SharpQueryIcons\Icons.16x16.SharpQuery
 Icons.16x16.SharpQuery.Remove						= SharpQueryIcons\Icons.16x16.SharpQuery.Remove.png
 
 #ClassBrowser icons
+Icons.16x16.AssemblyFromFile						= ClassBrowserIcons\Icons.16x16.AssemblyFromFile.png
+Icons.16x16.AssemblyFromGAC							= ClassBrowserIcons\Icons.16x16.AssemblyFromGAC.png
+
+Icons.16x16.Workspace								= ClassBrowserIcons\Icons.16x16.Workspace.png
+Icons.16x16.Assembly								= ClassBrowserIcons\Icons.16x16.Assembly.png
+Icons.16x16.AssemblyError							= ClassBrowserIcons\Icons.16x16.AssemblyError.png
+Icons.16x16.Module									= ClassBrowserIcons\Icons.16x16.Module.png
+Icons.16x16.ModuleError								= ClassBrowserIcons\Icons.16x16.ModuleError.png
 Icons.16x16.NameSpace								= ClassBrowserIcons\Icons.16x16.NameSpace.png
 Icons.16x16.Literal									= ClassBrowserIcons\Icons.16x16.Literal.png
 Icons.16x16.Reference								= ClassBrowserIcons\Icons.16x16.Reference.png

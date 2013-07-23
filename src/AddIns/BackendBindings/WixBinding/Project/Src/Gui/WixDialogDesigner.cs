@@ -83,7 +83,7 @@ namespace ICSharpCode.WixBinding
 				// and text selection operations done by the WiX designer actually
 				// become visible in the text editor.
 				if (!this.SourceCodeStorage.ContainsFile(file)) {
-					ITextEditor editor = ((ITextEditorProvider)this.PrimaryViewContent).TextEditor;
+					ITextEditor editor = this.PrimaryViewContent.GetService<ITextEditor>();
 					this.SourceCodeStorage.AddFile(file, editor.Document, SD.FileService.DefaultFileEncoding, true);
 				}
 				
@@ -224,13 +224,7 @@ namespace ICSharpCode.WixBinding
 		/// Gets the active text area control.
 		/// </summary>
 		ITextEditor ActiveTextEditor {
-			get {
-				ITextEditorProvider provider = this.PrimaryViewContent as ITextEditorProvider;
-				if (provider != null) {
-					return provider.TextEditor;
-				}
-				return null;
-			}
+			get { return PrimaryViewContent.GetService<ITextEditor>(); }
 		}
 		
 		void AddToErrorList(XmlException ex)

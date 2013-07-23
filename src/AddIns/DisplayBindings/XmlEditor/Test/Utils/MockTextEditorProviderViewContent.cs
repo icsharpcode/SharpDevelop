@@ -9,21 +9,12 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace XmlEditor.Tests.Utils
 {
-	public class MockTextEditorProviderViewContent : MockViewContent, ITextEditorProvider
+	public class MockTextEditorProviderViewContent : MockViewContent
 	{
 		MockTextEditor textEditor = new MockTextEditor();
 		
-		public ITextEditor TextEditor {
-			get { return textEditor; }
-		}
-		
 		public MockTextEditor MockTextEditor {
 			get { return textEditor; }
-		}
-		
-		public IDocument GetDocumentForFile(OpenedFile file)
-		{
-			throw new NotImplementedException();
 		}
 		
 		public override object GetService(Type serviceType)

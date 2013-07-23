@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,16 +10,13 @@ using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
 
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {

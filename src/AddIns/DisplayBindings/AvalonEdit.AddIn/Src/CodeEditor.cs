@@ -38,17 +38,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
 	/// </summary>
 	[TextEditorService, ViewContentService]
-	public class CodeEditor : Grid, IDisposable
+	public class CodeEditor
+		: Grid, IDisposable, ICSharpCode.SharpDevelop.Gui.IEditable, IFileDocumentProvider, ICSharpCode.SharpDevelop.Gui.IPositionable, IServiceProvider
 	{
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		
 		QuickClassBrowser quickClassBrowser;
 		readonly CodeEditorView primaryTextEditor;
 		readonly CodeEditorAdapter primaryTextEditorAdapter;
-		CodeEditorView secondaryTextEditor;
-		CodeEditorView activeTextEditor;
-		CodeEditorAdapter secondaryTextEditorAdapter;
-		GridSplitter gridSplitter;
 		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
 		readonly IChangeWatcher changeWatcher;
@@ -58,14 +55,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return primaryTextEditor; }
 		}
 		
+		[Obsolete()]
 		public CodeEditorView ActiveTextEditor {
-			get { return activeTextEditor; }
-			private set {
-				if (activeTextEditor != value) {
-					activeTextEditor = value;
-					HandleCaretPositionChange();
-				}
-			}
+			get { return primaryTextEditor; }
 		}
 		
 		TextDocument document;
@@ -114,8 +106,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.document.FileName = fileName;
 					
 					primaryTextEditorAdapter.FileNameChanged();
-					if (secondaryTextEditorAdapter != null)
-						secondaryTextEditorAdapter.FileNameChanged();
 					
 					if (this.errorPainter == null) {
 						this.errorPainter = new ErrorPainter(primaryTextEditorAdapter);
@@ -143,12 +133,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
 			primaryTextEditor.UpdateCustomizedHighlighting();
 
-			if (secondaryTextEditor != null) {
-				secondaryTextEditor.SyntaxHighlighting = highlighting;
-				secondaryTextEditor.TextArea.TextView.LineTransformers.RemoveAll(t => t is HighlightingColorizer);
-				secondaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
-				secondaryTextEditor.UpdateCustomizedHighlighting();
-			}
 			// Dispose the old highlighter; necessary to avoid memory leaks as
 			// semantic highlighters might attach to global parser events.
 			if (oldHighlighter != null) {
@@ -159,9 +143,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void Redraw(ISegment segment, DispatcherPriority priority)
 		{
 			primaryTextEditor.TextArea.TextView.Redraw(segment, priority);
-			if (secondaryTextEditor != null) {
-				secondaryTextEditor.TextArea.TextView.Redraw(segment, priority);
-			}
 		}
 		
 		const double minRowHeight = 40;
@@ -175,7 +156,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.FlowDirection = FlowDirection.LeftToRight; // code editing is always left-to-right
 			this.document = new TextDocument();
 			var documentServiceContainer = document.GetRequiredService<IServiceContainer>();
-			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
 			
 			textMarkerService = new TextMarkerService(document);
 			documentServiceContainer.AddService(typeof(ITextMarkerService), textMarkerService);
@@ -189,7 +169,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditor = CreateTextEditor();
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
-			activeTextEditor = primaryTextEditor;
 			
 			this.ColumnDefinitions.Add(new ColumnDefinition());
 			this.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -210,8 +189,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// CustomizableHighlightingColorizer loads the new values automatically, we just need
 			// to force a refresh in AvalonEdit.
 			primaryTextEditor.UpdateCustomizedHighlighting();
-			if (secondaryTextEditor != null)
-				secondaryTextEditor.UpdateCustomizedHighlighting();
 			foreach (var bookmark in SD.BookmarkManager.GetBookmarks(fileName).OfType<SDMarkerBookmark>())
 				bookmark.SetMarker();
 		}
@@ -228,6 +205,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			TextView textView = codeEditorView.TextArea.TextView;
 			textView.Services.AddService(typeof(ITextEditor), adapter);
 			textView.Services.AddService(typeof(CodeEditor), this);
+			textView.Services.AddService(typeof(ICSharpCode.SharpDevelop.Gui.IEditable), this);
+			textView.Services.AddService(typeof(ICSharpCode.SharpDevelop.Gui.IPositionable), this);
+			textView.Services.AddService(typeof(IFileDocumentProvider), this);
 			
 			codeEditorView.TextArea.TextEntering += TextAreaTextEntering;
 			codeEditorView.TextArea.TextEntered += TextAreaTextEntered;
@@ -251,17 +231,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			codeEditorView.TextArea.MouseRightButtonDown += TextAreaMouseRightButtonDown;
 			codeEditorView.TextArea.ContextMenuOpening += TextAreaContextMenuOpening;
 			codeEditorView.TextArea.TextCopied += textEditor_TextArea_TextCopied;
-			codeEditorView.GotFocus += textEditor_GotFocus;
 			
 			return codeEditorView;
 		}
 		
-		public event EventHandler<TextEventArgs> TextCopied;
-
 		void textEditor_TextArea_TextCopied(object sender, TextEventArgs e)
 		{
-			if (TextCopied != null)
-				TextCopied(this, e);
+			ICSharpCode.SharpDevelop.Gui.TextEditorSideBar.Instance.PutInClipboardRing(e.Text);
 		}
 
 		protected virtual void DisposeTextEditor(CodeEditorView textEditor)
@@ -273,12 +249,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (highlighter != null)
 				highlighter.Dispose();
 			textEditor.Dispose();
-		}
-		
-		void textEditor_GotFocus(object sender, RoutedEventArgs e)
-		{
-			Debug.Assert(sender is CodeEditorView);
-			this.ActiveTextEditor = (CodeEditorView)sender;
 		}
 		
 		void TextAreaContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -376,48 +346,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void OnSplitView(object sender, ExecutedRoutedEventArgs e)
-		{
-			if (secondaryTextEditor == null) {
-				// create secondary editor
-				this.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star), MinHeight = minRowHeight });
-				secondaryTextEditor = CreateTextEditor();
-				secondaryTextEditorAdapter = (CodeEditorAdapter)secondaryTextEditor.TextArea.GetService(typeof(ITextEditor));
-				Debug.Assert(primaryTextEditorAdapter != null);
-				
-				secondaryTextEditor.SetBinding(TextEditor.IsReadOnlyProperty,
-				                               new Binding(TextEditor.IsReadOnlyProperty.Name) { Source = primaryTextEditor });
-				secondaryTextEditor.SyntaxHighlighting = primaryTextEditor.SyntaxHighlighting;
-				secondaryTextEditor.UpdateCustomizedHighlighting();
-				
-				gridSplitter = new GridSplitter {
-					Height = 4,
-					HorizontalAlignment = HorizontalAlignment.Stretch,
-					VerticalAlignment = VerticalAlignment.Top
-				};
-				SetRow(gridSplitter, 2);
-				this.Children.Add(gridSplitter);
-				
-				secondaryTextEditor.Margin = new Thickness(0, 4, 0, 0);
-				SetRow(secondaryTextEditor, 2);
-				this.Children.Add(secondaryTextEditor);
-				
-				secondaryTextEditorAdapter.FileNameChanged();
-				FetchParseInformation();
-			} else {
-				// remove secondary editor
-				this.Children.Remove(secondaryTextEditor);
-				this.Children.Remove(gridSplitter);
-				secondaryTextEditorAdapter.DetachExtensions();
-				DisposeTextEditor(secondaryTextEditor);
-				secondaryTextEditor = null;
-				secondaryTextEditorAdapter = null;
-				gridSplitter = null;
-				this.RowDefinitions.RemoveAt(this.RowDefinitions.Count - 1);
-				this.ActiveTextEditor = primaryTextEditor;
-			}
-		}
-		
 		public event EventHandler CaretPositionChanged;
 		
 		void TextAreaCaretPositionChanged(object sender, EventArgs e)
@@ -433,12 +361,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void HandleCaretPositionChange()
 		{
+			if (CaretPositionChanged != null)
+				CaretPositionChanged(this, EventArgs.Empty);
+			
 			if (quickClassBrowser != null) {
 				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditor.TextArea.Caret.Location);
 			}
 			
-			if (CaretPositionChanged != null)
-				CaretPositionChanged(this, EventArgs.Empty);
+			NavigationService.Log(this.BuildNavPoint());
+			var document = this.Document;
+			int lineOffset = document.GetLineByNumber(this.Line).Offset;
+			int chOffset = this.Column;
+			int col = 1;
+			for (int i = 1; i < chOffset; i++) {
+				if (document.GetCharAt(lineOffset + i - 1) == '\t')
+					col += CodeEditorOptions.Instance.IndentationSize;
+				else
+					col += 1;
+			}
+			SD.StatusBar.SetCaretPosition(col, this.Line, chOffset);
+		}
+		
+		public INavigationPoint BuildNavPoint()
+		{
+			int lineNumber = this.Line;
+			string txt = this.Document.GetText(this.Document.GetLineByNumber(lineNumber));
+			return new TextNavigationPoint(this.FileName, lineNumber, this.Column, txt);
 		}
 		
 		volatile static ReadOnlyCollection<ICodeCompletionBinding> codeCompletionBindings;
@@ -454,17 +402,63 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		SharpDevelopCompletionWindow CompletionWindow {
 			get {
-				return primaryTextEditor.ActiveCompletionWindow
-					?? (secondaryTextEditor == null ? null : secondaryTextEditor.ActiveCompletionWindow);
+				return primaryTextEditor.ActiveCompletionWindow;
 			}
 		}
 		
 		SharpDevelopInsightWindow InsightWindow {
 			get {
-				return primaryTextEditor.ActiveInsightWindow
-					?? (secondaryTextEditor == null ? null : secondaryTextEditor.ActiveInsightWindow);
+				return primaryTextEditor.ActiveInsightWindow;
 			}
 		}
+		
+		#region IEditable
+		public ITextSource CreateSnapshot()
+		{
+			return this.Document.CreateSnapshot();
+		}
+		
+		/// <summary>
+		/// Gets the document text.
+		/// </summary>
+		public string Text {
+			get {
+				return this.Document.Text;
+			}
+		}
+		#endregion
+		
+		#region IFileDocumentProvider
+		public IDocument GetDocumentForFile(ICSharpCode.SharpDevelop.Workbench.OpenedFile file)
+		{
+			if (file.FileName == this.FileName)
+				return this.Document;
+			else
+				return null;
+		}
+		#endregion
+		
+		#region IPositionable
+		public int Line {
+			get { return this.PrimaryTextEditor.Adapter.Caret.Line; }
+		}
+		
+		public int Column {
+			get { return this.PrimaryTextEditor.Adapter.Caret.Column; }
+		}
+		
+		public void JumpTo(int line, int column)
+		{
+			this.PrimaryTextEditor.JumpTo(line, column);
+		}
+		#endregion
+		
+		#region IServiceProvider implementation
+		public object GetService(Type serviceType)
+		{
+			return this.primaryTextEditor.Adapter.GetService(serviceType);
+		}
+		#endregion
 		
 		void TextAreaTextEntering(object sender, TextCompositionEventArgs e)
 		{
@@ -635,8 +629,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			iconBarManager.UpdateClassMemberBookmarks(parseInfo != null ? parseInfo.UnresolvedFile : null, document);
 			primaryTextEditor.UpdateParseInformationForFolding(parseInfo);
-			if (secondaryTextEditor != null)
-				secondaryTextEditor.UpdateParseInformationForFolding(parseInfo);
 		}
 		
 		public void Dispose()
@@ -647,8 +639,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			if (primaryTextEditorAdapter.Language != null)
 				primaryTextEditorAdapter.DetachExtensions();
-			if (secondaryTextEditorAdapter != null && secondaryTextEditorAdapter.Language != null)
-				secondaryTextEditorAdapter.DetachExtensions();
 			
 			if (errorPainter != null)
 				errorPainter.Dispose();
@@ -656,8 +646,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				changeWatcher.Dispose();
 			this.Document = null;
 			DisposeTextEditor(primaryTextEditor);
-			if (secondaryTextEditor != null)
-				DisposeTextEditor(secondaryTextEditor);
 		}
 	}
 }

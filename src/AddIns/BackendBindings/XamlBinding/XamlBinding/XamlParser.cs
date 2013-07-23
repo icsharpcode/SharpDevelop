@@ -7,13 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop;
@@ -21,7 +19,6 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -31,11 +28,6 @@ namespace ICSharpCode.XamlBinding
 	public class XamlParser : IParser
 	{
 		public IReadOnlyList<string> TaskListTokens { get; set; }
-
-//		public LanguageProperties Language
-//		{
-//			get { return LanguageProperties.CSharp; }
-//		}
 		
 		public XamlParser()
 		{

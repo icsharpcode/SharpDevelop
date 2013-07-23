@@ -10,8 +10,6 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Xml;
-using ICSharpCode.SharpDevelop.Parser;
-using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {

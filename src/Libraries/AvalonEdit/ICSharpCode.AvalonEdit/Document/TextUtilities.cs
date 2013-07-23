@@ -14,7 +14,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	public enum CaretPositioningMode
 	{
 		/// <summary>
-		/// Normal positioning (stop at every caret position)
+		/// Normal positioning (stop after every grapheme)
 		/// </summary>
 		Normal,
 		/// <summary>
@@ -32,7 +32,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Stop only on word borders, and anywhere in the middle of symbols.
 		/// </summary>
-		WordBorderOrSymbol
+		WordBorderOrSymbol,
+		/// <summary>
+		/// Stop between every Unicode codepoint, even within the same grapheme.
+		/// This is used to implement deleting the previous grapheme when Backspace is pressed.
+		/// </summary>
+		EveryCodepoint
 	}
 	
 	/// <summary>
@@ -199,35 +204,41 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			if (c == '\r' || c == '\n')
 				return CharacterClass.LineTerminator;
-			else if (char.IsWhiteSpace(c))
-				return CharacterClass.Whitespace;
-			else if (char.IsLetterOrDigit(c) || c == '_')
+			if (c == '_')
 				return CharacterClass.IdentifierPart;
-			else
-				return CharacterClass.Other;
+			return GetCharacterClass(char.GetUnicodeCategory(c));
 		}
 		
 		static CharacterClass GetCharacterClass(char highSurrogate, char lowSurrogate)
 		{
 			if (char.IsSurrogatePair(highSurrogate, lowSurrogate)) {
-				switch (char.GetUnicodeCategory(highSurrogate.ToString() + lowSurrogate.ToString(), 0)) {
-					case UnicodeCategory.SpaceSeparator:
-					case UnicodeCategory.LineSeparator:
-					case UnicodeCategory.ParagraphSeparator:
-						return CharacterClass.Whitespace;
-					case UnicodeCategory.UppercaseLetter:
-					case UnicodeCategory.LowercaseLetter:
-					case UnicodeCategory.TitlecaseLetter:
-					case UnicodeCategory.ModifierLetter:
-					case UnicodeCategory.OtherLetter:
-					case UnicodeCategory.DecimalDigitNumber:
-						return CharacterClass.IdentifierPart;
-					default:
-						return CharacterClass.Other;
-				}
+				return GetCharacterClass(char.GetUnicodeCategory(highSurrogate.ToString() + lowSurrogate.ToString(), 0));
 			} else {
 				// malformed surrogate pair
 				return CharacterClass.Other;
+			}
+		}
+		
+		static CharacterClass GetCharacterClass(UnicodeCategory c)
+		{
+			switch (c) {
+				case UnicodeCategory.SpaceSeparator:
+				case UnicodeCategory.LineSeparator:
+				case UnicodeCategory.ParagraphSeparator:
+					return CharacterClass.Whitespace;
+				case UnicodeCategory.UppercaseLetter:
+				case UnicodeCategory.LowercaseLetter:
+				case UnicodeCategory.TitlecaseLetter:
+				case UnicodeCategory.ModifierLetter:
+				case UnicodeCategory.OtherLetter:
+				case UnicodeCategory.DecimalDigitNumber:
+					return CharacterClass.IdentifierPart;
+				case UnicodeCategory.NonSpacingMark:
+				case UnicodeCategory.SpacingCombiningMark:
+				case UnicodeCategory.EnclosingMark:
+					return CharacterClass.CombiningMark;
+				default:
+					return CharacterClass.Other;
 			}
 		}
 		#endregion
@@ -251,13 +262,16 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");
-			if (mode != CaretPositioningMode.Normal
-			    && mode != CaretPositioningMode.WordBorder
-			    && mode != CaretPositioningMode.WordStart
-			    && mode != CaretPositioningMode.WordBorderOrSymbol
-			    && mode != CaretPositioningMode.WordStartOrSymbol)
-			{
-				throw new ArgumentException("Unsupported CaretPositioningMode: " + mode, "mode");
+			switch (mode) {
+				case CaretPositioningMode.Normal:
+				case CaretPositioningMode.EveryCodepoint:
+				case CaretPositioningMode.WordBorder:
+				case CaretPositioningMode.WordBorderOrSymbol:
+				case CaretPositioningMode.WordStart:
+				case CaretPositioningMode.WordStartOrSymbol:
+					break; // OK
+				default:
+					throw new ArgumentException("Unsupported CaretPositioningMode: " + mode, "mode");
 			}
 			if (direction != LogicalDirection.Backward
 			    && direction != LogicalDirection.Forward)
@@ -267,7 +281,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			int textLength = textSource.TextLength;
 			if (textLength <= 0) {
 				// empty document? has a normal caret position at 0, though no word borders
-				if (mode == CaretPositioningMode.Normal) {
+				if (IsNormal(mode)) {
 					if (offset > 0 && direction == LogicalDirection.Backward) return 0;
 					if (offset < 0 && direction == LogicalDirection.Forward) return 0;
 				}
@@ -286,14 +300,14 @@ namespace ICSharpCode.AvalonEdit.Document
 				if (nextPos == 0) {
 					// at the document start, there's only a word border
 					// if the first character is not whitespace
-					if (mode == CaretPositioningMode.Normal || !char.IsWhiteSpace(textSource.GetCharAt(0)))
+					if (IsNormal(mode) || !char.IsWhiteSpace(textSource.GetCharAt(0)))
 						return nextPos;
 				} else if (nextPos == textLength) {
 					// at the document end, there's never a word start
 					if (mode != CaretPositioningMode.WordStart && mode != CaretPositioningMode.WordStartOrSymbol) {
 						// at the document end, there's only a word border
 						// if the last character is not whitespace
-						if (mode == CaretPositioningMode.Normal || !char.IsWhiteSpace(textSource.GetCharAt(textLength - 1)))
+						if (IsNormal(mode) || !char.IsWhiteSpace(textSource.GetCharAt(textLength - 1)))
 							return nextPos;
 					}
 				} else {
@@ -320,9 +334,19 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
+		static bool IsNormal(CaretPositioningMode mode)
+		{
+			return mode == CaretPositioningMode.Normal || mode == CaretPositioningMode.EveryCodepoint;
+		}
+		
 		static bool StopBetweenCharacters(CaretPositioningMode mode, CharacterClass charBefore, CharacterClass charAfter)
 		{
-			// Stop after every character in normal mode
+			if (mode == CaretPositioningMode.EveryCodepoint)
+				return true;
+			// Don't stop in the middle of a grapheme
+			if (charAfter == CharacterClass.CombiningMark)
+				return false;
+			// Stop after every grapheme in normal mode
 			if (mode == CaretPositioningMode.Normal)
 				return true;
 			if (charBefore == charAfter) {
@@ -370,6 +394,11 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// The character is line terminator (\r or \n).
 		/// </summary>
-		LineTerminator
+		LineTerminator,
+		/// <summary>
+		/// The character is a unicode combining mark that modifies the previous character.
+		/// Corresponds to the Unicode designations "Mn", "Mc" and "Me".
+		/// </summary>
+		CombiningMark
 	}
 }

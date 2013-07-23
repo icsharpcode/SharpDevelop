@@ -42,6 +42,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Dialogs
 			
 			// Set focus into TextBox
 			this.symbolNameTextBox.Focus();
+			this.IsVisibleChanged += (sender, e) => this.symbolNameTextBox.SelectAll();
 		}
 		
 		public string OldSymbolName

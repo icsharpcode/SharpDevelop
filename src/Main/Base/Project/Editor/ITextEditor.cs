@@ -13,15 +13,6 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
-	[ViewContentService]
-	public interface ITextEditorProvider : IFileDocumentProvider
-	{
-		[Obsolete("Use viewContent.GetService<ITextEditor>() instead.")]
-		ITextEditor TextEditor {
-			get;
-		}
-	}
-	
 	/// <summary>
 	/// Interface for text editors.
 	/// </summary>

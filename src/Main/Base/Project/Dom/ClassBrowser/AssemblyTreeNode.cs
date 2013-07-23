@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -43,7 +44,19 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Icon {
 			get {
-				return base.Icon;
+				if (model.Context.IsValid) {
+					return SD.ResourceService.GetImageSource("Icons.16x16.Assembly");
+				} else {
+					return SD.ResourceService.GetImageSource("Icons.16x16.AssemblyError");
+				}
+			}
+		}
+		
+		public override void ShowContextMenu()
+		{
+			var assemblyModel = this.Model as IAssemblyModel;
+			if (assemblyModel != null) {
+				var ctx = MenuService.ShowContextMenu(null, assemblyModel, "/SharpDevelop/Pads/ClassBrowser/AssemblyContextMenu");
 			}
 		}
 	}

@@ -29,8 +29,8 @@ namespace ICSharpCode.Scripting
 		void Init(IViewContent view)
 		{
 			this.view = view;
-			editable = view as IEditable;
-			textEditor = view.GetService(typeof(ITextEditor)) as ITextEditor;
+			editable = view.GetService<IEditable>();
+			textEditor = view.GetService<ITextEditor>();
 			textEditorOptions = textEditor.Options;
 		}
 		

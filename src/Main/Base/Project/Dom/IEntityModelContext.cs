@@ -34,6 +34,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Returns true if part1 is considered a better candidate for the primary part than part2.
 		/// </summary>
 		bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2);
+		
+		/// <summary>
+		/// Short name of current assembly.
+		/// </summary>
+		string AssemblyName { get; }
+		
+		/// <summary>
+		/// Full path and file name of the assembly. Output assembly for projects.
+		/// </summary>
+		string Location { get; }
+		
+		/// <summary>
+		/// Returns whether this is a valid context (based on a existing and readable definition).
+		/// </summary>
+		bool IsValid { get; }
 	}
 	
 	public class ProjectEntityModelContext : IEntityModelContext
@@ -53,6 +68,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return project.AssemblyName; }
 		}
 		
+		public string Location {
+			get { return project.OutputAssemblyFullPath; }
+		}
+		
 		public IProject Project {
 			get { return project; }
 		}
@@ -65,6 +84,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)
 		{
 			return EntityModelContextUtils.IsBetterPart(part1, part2, primaryCodeFileExtension);
+		}
+		
+		public bool IsValid {
+			get { return true; }
 		}
 	}
 	
@@ -88,6 +111,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return mainAssembly.AssemblyName; }
 		}
 		
+		public string Location {
+			get { return mainAssembly.Location; }
+		}
+		
 		public ICompilation GetCompilation()
 		{
 			return compilation;
@@ -100,6 +127,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IProject Project {
 			get { return null; }
+		}
+		
+		public bool IsValid {
+			get { return true; }
 		}
 	}
 	

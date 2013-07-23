@@ -101,7 +101,7 @@
 			             class="ICSharpCode.UnitTesting.AddNUnitReferenceCommand"/>
 			<ToolbarItem id = "CollapseSeparator" type = "Separator"/>
 			<ToolbarItem id      = "Collapse"
-			             icon    = "Icons.16x16.Assembly"
+			             icon    = "Icons.16x16.Collection"
 			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 			             class   = "ICSharpCode.UnitTesting.CollapseAllTestsCommand"/>
 		</Condition>

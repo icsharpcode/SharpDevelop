@@ -30,7 +30,7 @@ namespace ICSharpCode.ILSpyAddIn
 	/// <summary>
 	/// Hosts a decompiled type.
 	/// </summary>
-	class DecompiledViewContent : AbstractViewContentWithoutFile, IPositionable
+	class DecompiledViewContent : AbstractViewContentWithoutFile
 	{
 		readonly FileName assemblyFile;
 		readonly string fullTypeName;
@@ -58,8 +58,7 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			this.VirtualFileName = FileName.Create("ilspy://" + assemblyFile + "/" + fullTypeName + ".cs");
 			
-			this.Services = codeEditor.PrimaryTextEditor.GetRequiredService<IServiceContainer>();
-			this.Services.AddService(typeof(IPositionable), this);
+			this.Services = codeEditor.GetRequiredService<IServiceContainer>();
 			
 			this.assemblyFile = assemblyFile;
 			this.fullTypeName = fullTypeName;
@@ -178,7 +177,12 @@ namespace ICSharpCode.ILSpyAddIn
 			// TODO: show Save As dialog to allow the user to save the decompiled file
 		}
 		#endregion
-
+		
+		public override INavigationPoint BuildNavPoint()
+		{
+			return codeEditor.BuildNavPoint();
+		}
+		
 		#region JumpToEntity
 		public void JumpToEntity(string entityIdString)
 		{
@@ -188,7 +192,7 @@ namespace ICSharpCode.ILSpyAddIn
 			}
 			TextLocation location;
 			if (entityIdString != null && memberLocations != null && memberLocations.TryGetValue(entityIdString, out location))
-				this.JumpTo(location.Line, location.Column);
+				codeEditor.JumpTo(location.Line, location.Column);
 		}
 		#endregion
 		
@@ -296,21 +300,6 @@ namespace ICSharpCode.ILSpyAddIn
 				codeEditor.IconBarManager.Bookmarks.Add(mark);
 				mark.Document = this.codeEditor.Document;
 			}
-		}
-		#endregion
-		
-		#region IPositionable
-		public int Line {
-			get { return codeEditor.ActiveTextEditorAdapter.Caret.Line; }
-		}
-		
-		public int Column {
-			get { return codeEditor.ActiveTextEditorAdapter.Caret.Column; }
-		}
-		
-		public void JumpTo(int line, int column)
-		{
-			codeEditor.ActiveTextEditor.JumpTo(line, column);
 		}
 		#endregion
 		

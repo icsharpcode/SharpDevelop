@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override object Icon {
 			get {
-				return IconService.GetImageSource("Icons.16x16.Debug.Start");
+				return IconService.GetImageSource("Icons.16x16.Debug.Assembly");
 			}
 		}
 	}
@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override object Icon {
 			get {
-				return IconService.GetImageSource("PadIcons.LoadedModules");
+				return SD.ResourceService.GetImageSource("Icons.16x16.Module");
 			}
 		}
 		

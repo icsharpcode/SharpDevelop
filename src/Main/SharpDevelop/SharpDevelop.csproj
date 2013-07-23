@@ -108,7 +108,11 @@
     </Compile>
     <Compile Include="Dom\ClassBrowser\ClassBrowserPad.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserTreeNodesFactory.cs" />
-    <Compile Include="Dom\ClassBrowser\OpenAssemblyCommand.cs" />
+    <Compile Include="Dom\ClassBrowser\Commands.cs" />
+    <Compile Include="Dom\ClassBrowser\OpenFromGacDialog.xaml.cs">
+      <DependentUpon>OpenFromGacDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Dom\ModelFactory.cs" />
     <Compile Include="Dom\MemberModel.cs" />
     <Compile Include="Dom\NamespaceModel.cs" />
@@ -331,6 +335,7 @@
     <Folder Include="Workbench\DisplayBinding" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Dom\ClassBrowser\OpenFromGacDialog.xaml" />
     <Page Include="OptionPanels\LoadSaveOptions.xaml" />
     <Page Include="Startup\App.xaml" />
     <Page Include="Workbench\WpfWorkbench.xaml" />

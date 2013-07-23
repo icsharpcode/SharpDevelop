@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -13,7 +14,25 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	/// </summary>
 	public class WorkspaceTreeNode : ModelCollectionTreeNode
 	{
+		class WorkspaceChildComparer : IComparer<SharpTreeNode>
+		{
+			IComparer<string> stringComparer = StringComparer.OrdinalIgnoreCase;
+			
+			public int Compare(SharpTreeNode x, SharpTreeNode y)
+			{
+				// Solution node has precedence over other nodes
+				if ((x is SolutionTreeNode) && !(y is SolutionTreeNode))
+					return -1;
+				if (!(x is SolutionTreeNode) && (y is SolutionTreeNode))
+					return 1;
+				
+				// Both nodes are solutions or not solutions, compare their Text property
+				return stringComparer.Compare(x.Text.ToString(), y.Text.ToString());
+			}
+		}
+		
 		WorkspaceModel workspace;
+		protected static readonly IComparer<SharpTreeNode> ChildNodeComparer = new WorkspaceChildComparer();
 		
 		public IMutableModelCollection<SharpTreeNode> SpecialNodes {
 			get { return workspace.SpecialNodes; }
@@ -40,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		}
 		
 		protected override IComparer<SharpTreeNode> NodeComparer {
-			get { return NodeTextComparer; }
+			get { return ChildNodeComparer; }
 		}
 		
 		public override object Text {
@@ -51,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Icon {
 			get {
-				return SD.ResourceService.GetImageSource("PadIcons.ClassBrowser");
+				return SD.ResourceService.GetImageSource("Icons.16x16.Workspace");
 			}
 		}
 		
@@ -62,7 +81,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		protected override void InsertSpecialNodes()
 		{
-			Children.AddRange(workspace.SpecialNodes);
+			foreach (var node in workspace.SpecialNodes) {
+				Children.OrderedInsert(node, ChildNodeComparer);
+			}
 		}
 		
 		void SpecialNodesModelCollectionChanged(IReadOnlyCollection<SharpTreeNode> removedItems, IReadOnlyCollection<SharpTreeNode> addedItems)

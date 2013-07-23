@@ -454,12 +454,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			try {
 				IViewContent content = OpenFile(fileName);
-				if (content is IPositionable) {
-					// TODO: enable jumping to a particular view
+				IPositionable positionable = content.GetService<IPositionable>();
+				if (positionable != null) {
 					content.WorkbenchWindow.ActiveViewContent = content;
 					NavigationService.ResumeLogging();
 					loggingResumed = true;
-					((IPositionable)content).JumpTo(Math.Max(1, line), Math.Max(1, column));
+					positionable.JumpTo(Math.Max(1, line), Math.Max(1, column));
 				} else {
 					NavigationService.ResumeLogging();
 					loggingResumed = true;

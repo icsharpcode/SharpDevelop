@@ -45,7 +45,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		public bool CanAttachTo(IViewContent content)
 		{
 			if (Path.GetExtension(content.PrimaryFileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase)) {
-				IEditable editable = content as IEditable;
+				IEditable editable = content.GetService<IEditable>();
 				if (editable != null) {
 					try {
 						XmlTextReader r = new XmlTextReader(editable.CreateSnapshot().CreateReader());

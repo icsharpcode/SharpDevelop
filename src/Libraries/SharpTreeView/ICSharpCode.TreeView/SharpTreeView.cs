@@ -239,9 +239,18 @@ namespace ICSharpCode.TreeView
 					}
 					break;
 				case Key.Return:
-				case Key.Space:
 					if (container != null && Keyboard.Modifiers == ModifierKeys.None && this.SelectedItems.Count == 1 && this.SelectedItem == container.Node) {
 						container.Node.ActivateItem(e);
+					}
+					break;
+				case Key.Space:
+					if (container != null && Keyboard.Modifiers == ModifierKeys.None && this.SelectedItems.Count == 1 && this.SelectedItem == container.Node) {
+						if(container.Node.IsCheckable) {
+							if(container.Node.IsChecked == null) // If partially selected, we want to select everything
+								container.Node.IsChecked = true;
+							else
+								container.Node.IsChecked = !container.Node.IsChecked;
+						}
 					}
 					break;
 				case Key.Add:

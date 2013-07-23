@@ -6,10 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 
