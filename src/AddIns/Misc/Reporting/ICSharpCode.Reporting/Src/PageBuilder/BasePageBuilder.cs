@@ -69,7 +69,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
 			
 			var pageFooter = CreateSection(ReportModel.PageFooter,CurrentLocation);	
-			DetailEnds = new Point(pageFooter.Location.X,pageFooter.Location.Y -1);
+//			DetailEnds = new Point(pageFooter.Location.X,pageFooter.Location.Y -1);
+			DetailEnds = new Point(pageFooter.Location.X + pageFooter.Size.Width,pageFooter.Location.Y -1);
 			AddSectionToPage(pageFooter);
 		}
 		
@@ -101,7 +102,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		
 		protected bool old_PageFull(System.Collections.Generic.List<IExportColumn> columns)
 		{
 			var rectToPrint = new Rectangle(columns[0].Location,columns[0].Size);
@@ -114,9 +114,22 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		protected bool PageFull(IExportContainer row) {
+		protected bool old_1_PageFull(IExportContainer row) {
 			var rectToPrint = new Rectangle(row.Location,row.DesiredSize);
-			if (rectToPrint.Bottom > DetailEnds.Y) {
+			Console.WriteLine("{0} - {1}",rectToPrint.Bottom.ToString(),DetailEnds.Y);
+			if (rectToPrint.Bottom > DetailEnds.Y) {	
+				Console.WriteLine("-----------PB----------");
+				return  true;
+			}
+			return false;
+		}
+		
+
+		
+		protected bool PageFull(IExportContainer row) {
+			var rectToPrint = new Rectangle(new Point(row.Location.X,row.Location.Y + DetailsRectangle.Location.Y),
+			                                row.DesiredSize);
+			if (!DetailsRectangle.Contains(rectToPrint)) {
 				return  true;
 			}
 			return false;
@@ -189,6 +202,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 	    internal Point DetailStart {get;private set;}
 	    
 	    internal Point DetailEnds {get; private set;}
+	    
+	    internal Rectangle DetailsRectangle {
+	    	get {
+	    		var s = new Size(DetailEnds.X - DetailStart.X,DetailEnds.Y - DetailStart.Y);
+	    		return new Rectangle(DetailStart,s);
+	    	}
+	    }
 	    
 	    protected Graphics Graphics {get;private set;}
 	    

@@ -111,7 +111,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 					var row = CreateContainerIfNotExist(CurrentSection,detail, position);
 					collectionSource.Fill(CurrentSection.Items);
 					
-//var convertedItems	 =  converter.CreateConvertedList(ReportModel.DetailSection,row);
+					//var convertedItems	 =  converter.CreateConvertedList(ReportModel.DetailSection,row);
 					var convertedItems	 =  converter.CreateConvertedList(ReportModel.DetailSection,row,position);
 
 					MeasureAndArrangeContainer(converter,row);
@@ -135,8 +135,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 						MeasureAndArrangeContainer(converter,row);
 						row.ExportedItems.AddRange(recreate);
 					}
-					*/
-				
+					 */
+					
 					if (old_PageFull(convertedItems)) {
 						InsertDetailAtPosition(detail);
 						Pages.Add(CurrentPage);
@@ -148,7 +148,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 						
 						row = CreateContainerIfNotExist(CurrentSection,detail,position);
 						var recreate =  converter.CreateConvertedList(ReportModel.DetailSection,row,position);
-//						var recreate =  converter.CreateConvertedList(ReportModel.DetailSection,row);
 						MeasureAndArrangeContainer(converter,row);
 						row.ExportedItems.AddRange(recreate);
 					}
@@ -159,7 +158,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 				
 				while (collectionSource.MoveNext());
 				InsertDetailAtPosition(detail);
-//				base.BuildReportFooter();
 				
 			} else {
 				detail = CreateContainerForSection(DetailStart);
@@ -168,12 +166,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 			}
 		}
 
-	
+		
 		void BuildDetail()
 		{
 			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
-//			var position = DetailStart;
-			var position = new Point(DetailStart.X,1);
+			var position = ResetPosition();
 			var collectionSource = new CollectionSource(List,ElementType,ReportModel.ReportSettings);
 			CurrentSection = ReportModel.DetailSection;
 			
@@ -184,14 +181,10 @@ namespace ICSharpCode.Reporting.PageBuilder
 				detail = CreateDetail(DetailStart);
 
 				do {
-					
-					var row = CreateContainerIfNotExist(CurrentSection,detail, position);
 					collectionSource.Fill(CurrentSection.Items);
-					var convertedItems	 =  converter.CreateConvertedList(ReportModel.DetailSection,row);
-
-					MeasureAndArrangeContainer(converter,row);
-					row.ExportedItems.AddRange(convertedItems);
 					
+					var row = CreateAndArrangeContainer(converter,position,detail);
+					Console.WriteLine("position {0}",position);
 					if (PageFull(row)) {
 						InsertDetailAtPosition(detail);
 						Pages.Add(CurrentPage);
@@ -200,13 +193,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 						position = ResetPosition();
 						detail = CreateDetail(DetailStart);
 						CurrentLocation = DetailStart;
-						
-						row = CreateContainerIfNotExist(CurrentSection,detail,position);
-						var recreate =  converter.CreateConvertedList(ReportModel.DetailSection,row);
-						MeasureAndArrangeContainer(converter,row);
-						row.ExportedItems.AddRange(recreate);
+						row = CreateAndArrangeContainer(converter,position,detail);
 					}
-				
+					
 					detail.ExportedItems.Add(row);
 					position = new Point(CurrentSection.Location.Y,position.Y + CurrentSection.Size.Height);
 				}
@@ -218,6 +207,16 @@ namespace ICSharpCode.Reporting.PageBuilder
 				InsertDetailAtPosition(detail);
 				base.BuildReportFooter();
 			}
+		}
+		
+	
+		IExportContainer CreateAndArrangeContainer(ContainerConverter converter, Point position,IExportContainer parent)
+		{
+			var row = CreateContainerIfNotExist(CurrentSection, parent, position);
+			var recreate = converter.CreateConvertedList(ReportModel.DetailSection, row);
+			MeasureAndArrangeContainer(converter, row);
+			row.ExportedItems.AddRange(recreate);
+			return row;
 		}
 		
 		
@@ -248,7 +247,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		
 		Point ResetPosition () {
-			return DetailStart;
+			return new Point(DetailStart.X,1);
 		}
 		
 		
@@ -277,7 +276,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-//		internal IReportContainer Container { get; private set; }
 		internal IReportContainer CurrentSection { get; private set; }
 		
 		public IEnumerable List {get; private set;}
