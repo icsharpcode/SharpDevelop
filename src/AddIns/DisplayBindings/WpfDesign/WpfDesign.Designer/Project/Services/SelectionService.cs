@@ -156,6 +156,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				if (PrimarySelectionChanged != null) {
 					PrimarySelectionChanged(this, EventArgs.Empty);
 				}
+				RaisePropertyChanged("PrimarySelection");
 			}
 
 			if (!_selectedComponents.SequenceEqual(prevSelectedItems)) {
