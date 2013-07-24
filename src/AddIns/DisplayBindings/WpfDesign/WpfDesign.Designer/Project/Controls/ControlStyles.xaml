@@ -17,6 +17,11 @@
 	<Style TargetType="{x:Type Controls:EnumButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
 		<Setter Property="Margin" Value="3 3 0 3" />
 		<Setter Property="MinWidth" Value="50" />
+		<Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="SkyBlue" />
+            </Trigger>
+        </Style.Triggers>
 	</Style>
 	<Style TargetType="{x:Type Controls:ResizeThumb}">
 		<Setter Property="Template">
