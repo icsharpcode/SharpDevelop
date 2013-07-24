@@ -231,10 +231,7 @@
 				             Value="False">
 					<Setter TargetName="editorContainer"
 					        Property="Opacity"
-					        Value="0.5" />
-					<Setter TargetName="editorContainer"
-					        Property="IsHitTestVisible"
-					        Value="False" />
+					        Value="0.5" />					
 				</DataTrigger>
 			</DataTemplate.Triggers>
 		</DataTemplate>
