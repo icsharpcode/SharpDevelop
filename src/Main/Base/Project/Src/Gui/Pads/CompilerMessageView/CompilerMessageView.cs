@@ -50,7 +50,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return this.SelectedMessageViewCategory;
 			}
 			set {
-				throw new NotImplementedException();
+				int index = messageCategories.IndexOf(value as MessageViewCategory);
+				if (index >= 0)
+					SelectedCategoryIndex = index;
 			}
 		}
 		

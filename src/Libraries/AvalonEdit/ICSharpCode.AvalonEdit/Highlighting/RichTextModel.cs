@@ -4,6 +4,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using ICSharpCode.NRefactory.Editor;
@@ -72,6 +74,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		internal RichTextModel(int[] stateChangeOffsets, HighlightingColor[] stateChanges)
 		{
+			Debug.Assert(stateChangeOffsets[0] == 0);
 			this.stateChangeOffsets.AddRange(stateChangeOffsets);
 			this.stateChanges.AddRange(stateChanges);
 		}
@@ -85,9 +88,18 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			if (e == null)
 				throw new ArgumentNullException("e");
-			for (int i = 0; i < stateChangeOffsets.Count; i++) {
-				stateChangeOffsets[i] = e.GetNewOffset(stateChangeOffsets[i]);
-			}
+			UpdateOffsets(e.GetNewOffset);
+		}
+		
+		/// <summary>
+		/// Updates the start and end offsets of all segments stored in this collection.
+		/// </summary>
+		/// <param name="change">OffsetChangeMap instance describing the change to the document.</param>
+		public void UpdateOffsets(OffsetChangeMap change)
+		{
+			if (change == null)
+				throw new ArgumentNullException("change");
+			UpdateOffsets(change.GetNewOffset);
 		}
 		
 		/// <summary>
@@ -96,11 +108,51 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <param name="change">OffsetChangeMapEntry instance describing the change to the document.</param>
 		public void UpdateOffsets(OffsetChangeMapEntry change)
 		{
-			for (int i = 0; i < stateChangeOffsets.Count; i++) {
-				stateChangeOffsets[i] = change.GetNewOffset(stateChangeOffsets[i]);
+			UpdateOffsets(change.GetNewOffset);
+		}
+		
+		void UpdateOffsets(Func<int, AnchorMovementType, int> updateOffset)
+		{
+			int readPos = 1;
+			int writePos = 1;
+			while (readPos < stateChangeOffsets.Count) {
+				Debug.Assert(writePos <= readPos);
+				int newOffset = updateOffset(stateChangeOffsets[readPos], AnchorMovementType.Default);
+				if (newOffset == stateChangeOffsets[writePos - 1]) {
+					// offset moved to same position as previous offset
+					// -> previous segment has length 0 and gets overwritten with this segment
+					stateChanges[writePos - 1] = stateChanges[readPos];
+				} else {
+					stateChangeOffsets[writePos] = newOffset;
+					stateChanges[writePos] = stateChanges[readPos];
+					writePos++;
+				}
+				readPos++;
 			}
+			// Delete all entries that were not written to
+			stateChangeOffsets.RemoveRange(writePos, stateChangeOffsets.Count - writePos);
+			stateChanges.RemoveRange(writePos, stateChanges.Count - writePos);
 		}
 		#endregion
+		
+		/// <summary>
+		/// Appends another RichTextModel after this one.
+		/// </summary>
+		internal void Append(int offset, int[] newOffsets, HighlightingColor[] newColors)
+		{
+			Debug.Assert(newOffsets.Length == newColors.Length);
+			Debug.Assert(newOffsets[0] == 0);
+			// remove everything before offset:
+			while (stateChangeOffsets.Count > 0 && stateChangeOffsets.Last() <= offset) {
+				stateChangeOffsets.RemoveAt(stateChangeOffsets.Count - 1);
+				stateChanges.RemoveAt(stateChanges.Count - 1);
+			}
+			// Append the new segments
+			for (int i = 0; i < newOffsets.Length; i++) {
+				stateChangeOffsets.Add(offset + newOffsets[i]);
+				stateChanges.Add(newColors[i]);
+			}
+		}
 		
 		/// <summary>
 		/// Gets a copy of the HighlightingColor for the specified offset.

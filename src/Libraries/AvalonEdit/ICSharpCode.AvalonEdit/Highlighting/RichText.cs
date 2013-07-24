@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Documents;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
@@ -16,6 +18,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// </summary>
 	public class RichText
 	{
+		/// <summary>
+		/// The empty string without any formatting information.
+		/// </summary>
+		public static readonly RichText Empty = new RichText(string.Empty);
+		
 		readonly string text;
 		internal readonly int[] stateChangeOffsets;
 		internal readonly HighlightingColor[] stateChanges;
@@ -53,6 +60,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		internal RichText(string text, int[] offsets, HighlightingColor[] states)
 		{
 			this.text = text;
+			Debug.Assert(offsets[0] == 0);
+			Debug.Assert(offsets.Last() <= text.Length);
 			this.stateChangeOffsets = offsets;
 			this.stateChanges = states;
 		}
@@ -191,9 +200,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public RichText Substring(int offset, int length)
 		{
-//			if (offset == 0 && length == this.Length)
-//				return this;
-			throw new NotImplementedException();
+			if (offset == 0 && length == this.Length)
+				return this;
+			string newText = text.Substring(offset, length);
+			RichTextModel model = ToRichTextModel();
+			OffsetChangeMap map = new OffsetChangeMap(2);
+			map.Add(new OffsetChangeMapEntry(offset + length, text.Length - offset - length, 0));
+			map.Add(new OffsetChangeMapEntry(0, offset, 0));
+			model.UpdateOffsets(map);
+			return new RichText(newText, model);
 		}
 		
 		/// <summary>
@@ -201,7 +216,18 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public static RichText Concat(params RichText[] texts)
 		{
-			throw new NotImplementedException();
+			if (texts == null || texts.Length == 0)
+				return Empty;
+			else if (texts.Length == 1)
+				return texts[0];
+			string newText = string.Concat(texts.Select(txt => txt.text));
+			RichTextModel model = texts[0].ToRichTextModel();
+			int offset = texts[0].Length;
+			for (int i = 1; i < texts.Length; i++) {
+				model.Append(offset, texts[i].stateChangeOffsets, texts[i].stateChanges);
+				offset += texts[i].Length;
+			}
+			return new RichText(newText, model);
 		}
 		
 		/// <summary>
