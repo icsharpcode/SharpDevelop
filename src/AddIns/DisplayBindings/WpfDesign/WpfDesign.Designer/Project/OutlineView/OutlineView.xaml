@@ -113,6 +113,15 @@
 							</Border>
 						</DockPanel>
 						<ItemsPresenter x:Name="itemsHost" />
+					<DockPanel.ContextMenu>
+					<ContextMenu>
+						<MenuItem Command="ApplicationCommands.Cut" />
+						<MenuItem Command="ApplicationCommands.Copy" />
+						<MenuItem Command="ApplicationCommands.Paste" />
+						<Separator />
+						<MenuItem Command="ApplicationCommands.Delete" />
+					</ContextMenu>
+					</DockPanel.ContextMenu>
 					</DockPanel>
 					
 					<ControlTemplate.Triggers>
