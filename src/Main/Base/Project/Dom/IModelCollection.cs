@@ -21,7 +21,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void AddHandler(ModelCollectionChangedEventHandler<T> handler)
 		{
-			_handlers.Add(handler);
+			if (handler != null)
+				_handlers.Add(handler);
 		}
 		
 		public void RemoveHandler(ModelCollectionChangedEventHandler<T> handler)
@@ -31,10 +32,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void Fire(IReadOnlyCollection<T> removedItems, IReadOnlyCollection<T> addedItems)
 		{
-			foreach (var handler in _handlers) {
-				if (handler != null) {
-					handler(removedItems, addedItems);
-				}
+			foreach (var handler in _handlers.ToArray()) {
+				handler(removedItems, addedItems);
 			}
 		}
 		
