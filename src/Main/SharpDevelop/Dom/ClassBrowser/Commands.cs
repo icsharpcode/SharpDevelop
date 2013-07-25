@@ -23,13 +23,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				openFileDialog.CheckPathExists = true;
 				if (openFileDialog.ShowDialog() ?? false)
 				{
-					try {
-						classBrowser.AssemblyList.Assemblies.Add(ClassBrowserPad.CreateAssemblyModelFromFile(openFileDialog.FileName));
-					} catch (BadImageFormatException) {
-						SD.MessageService.ShowWarningFormatted("{0} is not a valid .NET assembly.", Path.GetFileName(openFileDialog.FileName));
-					} catch (FileNotFoundException) {
-						SD.MessageService.ShowWarningFormatted("{0} is not accessible or doesn't exist anymore.", openFileDialog.FileName);
-					}
+					IAssemblyModel assemblyModel = ClassBrowserPad.CreateAssemblyModelFromFile(openFileDialog.FileName);
+					if (assemblyModel != null)
+						classBrowser.AssemblyList.Assemblies.Add(assemblyModel);
 				}
 			}
 		}
@@ -48,13 +44,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				if (gacDialog.ShowDialog() ?? false)
 				{
 					foreach (string assemblyFile in gacDialog.SelectedFileNames) {
-						try {
-							classBrowser.AssemblyList.Assemblies.Add(ClassBrowserPad.CreateAssemblyModelFromFile(assemblyFile));
-						} catch (BadImageFormatException) {
-							SD.MessageService.ShowWarningFormatted("{0} is not a valid .NET assembly.", Path.GetFileName(assemblyFile));
-						} catch (FileNotFoundException) {
-							SD.MessageService.ShowWarningFormatted("{0} is not accessible or doesn't exist anymore.", assemblyFile);
-						}
+						IAssemblyModel assemblyModel = ClassBrowserPad.CreateAssemblyModelFromFile(assemblyFile);
+						if (assemblyModel != null)
+							classBrowser.AssemblyList.Assemblies.Add(assemblyModel);
 					}
 				}
 			}
