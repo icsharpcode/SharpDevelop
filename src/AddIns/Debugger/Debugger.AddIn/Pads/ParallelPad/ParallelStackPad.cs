@@ -92,31 +92,37 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 			}
 			using(new PrintTimes("Run algorithm")) {
-				if (isMethodView)
+				debuggedProcess.EnqueueWork(Dispatcher.CurrentDispatcher, () => 
 				{
-					// build method view for threads
-					CreateMethodViewStacks();
-				}
-				else
-				{
-					// normal view
-					CreateCommonStacks();
-				}
+					if (isMethodView)
+					{
+						// build method view for threads
+						CreateMethodViewStacks();
+					}
+					else
+					{
+						// normal view
+						CreateCommonStacks();
+					}
+				});
 			}
 			
 			using(new PrintTimes("Graph refresh")) {
-				// paint the ThreadStaks
-				graph = new ParallelStacksGraph();
-				foreach (var stack in this.currentThreadStacks.FindAll(ts => ts.ThreadStackParents == null ))
+				debuggedProcess.EnqueueWork(Dispatcher.CurrentDispatcher, () => 
 				{
-					graph.AddVertex(stack);
+					// paint the ThreadStaks
+					graph = new ParallelStacksGraph();
+					foreach (var stack in this.currentThreadStacks.FindAll(ts => ts.ThreadStackParents == null ))
+					{
+						graph.AddVertex(stack);
+						
+						// add the children
+						AddChildren(stack);
+					}
 					
-					// add the children
-					AddChildren(stack);
-				}
-				
-				if (graph.VertexCount > 0)
-					surface.SetGraph(graph);
+					if (graph.VertexCount > 0)
+						surface.SetGraph(graph);
+				});
 			}
 		}
 		
@@ -672,3 +678,5 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 	}
 }
+
+
