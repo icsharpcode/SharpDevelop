@@ -140,7 +140,9 @@ SharpQueryIcons\Icons.16x16.SharpQuery.Column.png
 SharpQueryIcons\Icons.16x16.SharpQuery.NodeError.png
 SharpQueryIcons\Icons.16x16.SharpQuery.Remove.png
 SharpQueryIcons\Icons.16x16.SharpQuery.Table.png
-
+ClassBrowserIcons\Icons.16x16.Workspace.png
+ClassBrowserIcons\Icons.16x16.Assembly.png
+ClassBrowserIcons\Icons.16x16.AssemblyError.png
 
 -------------------------------------------------------------------------------
 Copied from the Fugue Icon Library and modified or mashed up with other Fugue 
@@ -239,6 +241,11 @@ CodeCoverageIcons\CodeCoverage.Icons.16x16.Pad.png
 CodeCoverageIcons\CodeCoverage.Icons.16x16.Run.png
 DebuggerIcons\Icons.16x16.Debug.Start.png
 DebuggerIcons\Icons.16x16.Debug.StartWithoutDebugging.png
+DebuggerIcons\Icons.16x16.Debug.Assembly.png
+ClassBrowserIcons\Icons.16x16.Module.png
+ClassBrowserIcons\Icons.16x16.ModuleError.png
+ClassBrowserIcons\Icons.16x16.AssemblyFromFile.png
+ClassBrowserIcons\Icons.16x16.AssemblyFromGAC.png
 NavigationIcons\Icons.16x16.NavigateBack.disabled.png
 NavigationIcons\Icons.16x16.NavigateBack.png
 NavigationIcons\Icons.16x16.NavigateForward.png
@@ -555,11 +562,6 @@ ClassBrowserIcons\Icons.16x16.NameSpace.png
 ClassBrowserIcons\Icons.16x16.Operator.png
 ClassBrowserIcons\Icons.16x16.Parameter.png
 ClassBrowserIcons\Icons.16x16.Struct.png
-ClassBrowserIcons\Icons.16x16.Workspace.png
-ClassBrowserIcons\Icons.16x16.Assembly.png
-ClassBrowserIcons\Icons.16x16.Module.png
-ClassBrowserIcons\Icons.16x16.AssemblyFromFile.png
-ClassBrowserIcons\Icons.16x16.AssemblyFromGAC.png
 
 -------------------------------------------------------------------------------
 Left original (other source than Fugue Iconlibrary)

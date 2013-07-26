@@ -549,6 +549,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		/// <summary>
+		/// Gets the text view position from the specified visual column.
+		/// </summary>
+		public TextViewPosition GetTextViewPosition(int visualColumn)
+		{
+			int documentOffset = GetRelativeOffset(visualColumn) + this.FirstDocumentLine.Offset;
+			return new TextViewPosition(this.Document.GetLocation(documentOffset), visualColumn);
+		}
+		
+		/// <summary>
 		/// Gets the text view position from the specified visual position.
 		/// If the position is within a character, it is rounded to the next character boundary.
 		/// </summary>
@@ -690,12 +699,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		static bool HasStopsInVirtualSpace(CaretPositioningMode mode)
 		{
-			return mode == CaretPositioningMode.Normal;
+			return mode == CaretPositioningMode.Normal || mode == CaretPositioningMode.EveryCodepoint;
 		}
 		
 		static bool HasImplicitStopAtLineStart(CaretPositioningMode mode)
 		{
-			return mode == CaretPositioningMode.Normal;
+			return mode == CaretPositioningMode.Normal || mode == CaretPositioningMode.EveryCodepoint;
 		}
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "mode",

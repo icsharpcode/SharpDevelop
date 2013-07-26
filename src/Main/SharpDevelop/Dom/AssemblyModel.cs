@@ -50,6 +50,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public IEntityModelContext Context {
+			get {
+				return context;
+			}
+		}
+		
 		public void Update(IUnresolvedFile oldFile, IUnresolvedFile newFile)
 		{
 			IList<IUnresolvedTypeDefinition> old = EmptyList<IUnresolvedTypeDefinition>.Instance;

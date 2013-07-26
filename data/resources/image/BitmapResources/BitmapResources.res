@@ -86,6 +86,7 @@ Icons.16x16.Debug.Continue							= DebuggerIcons\Icons.16x16.Debug.Continue.png
 Icons.16x16.Debug.StepOver							= DebuggerIcons\Icons.16x16.Debug.StepOver.png
 Icons.16x16.Debug.StepInto							= DebuggerIcons\Icons.16x16.Debug.StepInto.png
 Icons.16x16.Debug.StepOut							= DebuggerIcons\Icons.16x16.Debug.StepOut.png
+Icons.16x16.Debug.Assembly							= DebuggerIcons\Icons.16x16.Debug.Assembly.png
 
 # TestRunner
 Icons.16x16.TestRunner.Yellow						= BitmapResources-data\Icons.16x16.TestRunner.Yellow.png
@@ -297,7 +298,9 @@ Icons.16x16.AssemblyFromGAC							= ClassBrowserIcons\Icons.16x16.AssemblyFromGA
 
 Icons.16x16.Workspace								= ClassBrowserIcons\Icons.16x16.Workspace.png
 Icons.16x16.Assembly								= ClassBrowserIcons\Icons.16x16.Assembly.png
+Icons.16x16.AssemblyError							= ClassBrowserIcons\Icons.16x16.AssemblyError.png
 Icons.16x16.Module									= ClassBrowserIcons\Icons.16x16.Module.png
+Icons.16x16.ModuleError								= ClassBrowserIcons\Icons.16x16.ModuleError.png
 Icons.16x16.NameSpace								= ClassBrowserIcons\Icons.16x16.NameSpace.png
 Icons.16x16.Literal									= ClassBrowserIcons\Icons.16x16.Literal.png
 Icons.16x16.Reference								= ClassBrowserIcons\Icons.16x16.Reference.png

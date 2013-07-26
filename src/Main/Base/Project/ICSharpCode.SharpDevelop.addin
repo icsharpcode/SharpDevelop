@@ -908,7 +908,7 @@
 	
 	<!-- ClassBrowser -->
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/Toolbar">
-		<ToolbarItem id      = "Back"
+		<!--<ToolbarItem id      = "Back"
 		             icon    = "Icons.16x16.BrowserBefore"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.BackButton.ToolTip}"
 		             loadclasslazy = "false"
@@ -919,21 +919,21 @@
 		             loadclasslazy = "false"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserNavigateForward"/>
 		
-		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
+		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>-->
 		<ToolbarItem id      = "OpenAssembly"
 		             type    = "DropDownButton"
-		             icon    = "Icons.16x16.AssemblyFromFile"
+		             icon    = "Icons.16x16.Assembly"
 		             tooltip = "Open assembly">
 			<MenuItem id    = "OpenAssemblyFromFile"
 			          icon    = "Icons.16x16.AssemblyFromFile"
 			          label = "Open assembly from file"
-			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.OpenAssemblyFromFileCommand"/>
+			          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenAssemblyFromFileCommand"/>
 			<MenuItem id    = "OpenAssemblyFromGAC"
 			          icon  = "Icons.16x16.AssemblyFromGAC"
 			          label = "Open assembly from GAC"
-			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.OpenAssemblyFromGACCommand"/>
+			          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenAssemblyFromGACCommand"/>
 		</ToolbarItem>
-		<ToolbarItem id      = "SelectFilter"
+		<!--<ToolbarItem id      = "SelectFilter"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.FindInFiles"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettingsButton.ToolTip}"
@@ -968,7 +968,7 @@
 		<ToolbarItem id      = "Collapse"
 		             icon    = "Icons.16x16.Collection"
 		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserCollapseAll"/>
+		             class   = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserCollapseAll"/>-->
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/Searchbar">
@@ -986,6 +986,13 @@
 		             icon    = "OutputPad.Toolbar.ClearOutputWindow"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ClearSearch.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserCancelSearch"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/AssemblyContextMenu">
+		<MenuItem id = "RemoveAssembly"
+		          label = "Remove"
+		          icon = "Icons.16x16.DeleteIcon"
+		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.RemoveAssemblyCommand"/>
 	</Path>
 	
 	<!-- end ClassBrowser -->

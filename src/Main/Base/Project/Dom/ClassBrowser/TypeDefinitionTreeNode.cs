@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.TreeView;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
@@ -48,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		protected override IModelCollection<object> ModelChildren {
 			get {
-				return definition.Members;
+				return definition.NestedTypes.Concat<object>(definition.Members);
 			}
 		}
 		

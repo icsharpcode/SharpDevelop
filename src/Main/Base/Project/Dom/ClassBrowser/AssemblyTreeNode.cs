@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -35,6 +36,17 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
+		protected override void LoadChildren()
+		{
+			Children.Clear();
+			if (model.Context.IsValid) {
+				base.LoadChildren();
+			} else {
+				// This assembly could not be loaded correctly, add sub-node with error text
+				Children.Add(new AssemblyLoadErrorTreeNode());
+			}
+		}
+		
 		public override object Text {
 			get {
 				return model.AssemblyName;
@@ -43,7 +55,19 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Icon {
 			get {
-				return SD.ResourceService.GetImageSource("Icons.16x16.Assembly");
+				if (model.Context.IsValid) {
+					return SD.ResourceService.GetImageSource("Icons.16x16.Assembly");
+				} else {
+					return SD.ResourceService.GetImageSource("Icons.16x16.AssemblyError");
+				}
+			}
+		}
+		
+		public override void ShowContextMenu()
+		{
+			var assemblyModel = this.Model as IAssemblyModel;
+			if (assemblyModel != null) {
+				var ctx = MenuService.ShowContextMenu(null, assemblyModel, "/SharpDevelop/Pads/ClassBrowser/AssemblyContextMenu");
 			}
 		}
 	}
