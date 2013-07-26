@@ -207,6 +207,7 @@
     <Compile Include="Formatter\Indent.cs" />
     <Compile Include="OutputVisitor\CodeDomConvertVisitor.cs" />
     <Compile Include="OutputVisitor\CSharpAmbience.cs" />
+    <Compile Include="OutputVisitor\InsertMissingTokensDecorator.cs" />
     <Compile Include="OutputVisitor\InsertParenthesesVisitor.cs" />
     <Compile Include="OutputVisitor\InsertRequiredSpacesDecorator.cs" />
     <Compile Include="OutputVisitor\CSharpOutputVisitor.cs" />

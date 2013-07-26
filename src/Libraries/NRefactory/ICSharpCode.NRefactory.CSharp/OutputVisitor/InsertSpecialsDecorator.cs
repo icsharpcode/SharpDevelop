@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		readonly Stack<AstNode> positionStack = new Stack<AstNode>();
 		int visitorWroteNewLine = 0;
 		
-		public InsertSpecialsDecorator(ITokenWriter writer) : base(writer)
+		public InsertSpecialsDecorator(TokenWriter writer) : base(writer)
 		{
 		}
 		

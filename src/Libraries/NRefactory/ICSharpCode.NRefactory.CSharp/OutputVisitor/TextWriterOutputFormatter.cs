@@ -26,20 +26,21 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Writes C# code into a TextWriter.
 	/// </summary>
-	public class TextWriterTokenWriter : ITokenWriter
+	public class TextWriterTokenWriter : TokenWriter, ILocatable
 	{
 		readonly TextWriter textWriter;
 		int indentation;
 		bool needsIndent = true;
 		bool isAtStartOfLine = true;
+		int line, column;
 
 		public int Indentation {
-			get {
-				return this.indentation;
-			}
-			set {
-				this.indentation = value;
-			}
+			get { return this.indentation; }
+			set { this.indentation = value; }
+		}
+		
+		public TextLocation Location {
+			get { return new TextLocation(line, column + (needsIndent ? indentation * IndentationString.Length : 0)); }
 		}
 		
 		public string IndentationString { get; set; }
@@ -50,34 +51,42 @@ namespace ICSharpCode.NRefactory.CSharp
 				throw new ArgumentNullException("textWriter");
 			this.textWriter = textWriter;
 			this.IndentationString = "\t";
+			this.line = 1;
+			this.column = 1;
 		}
 		
-		public void WriteIdentifier(Identifier identifier)
+		public override void WriteIdentifier(Identifier identifier)
 		{
 			WriteIndentation();
-			if (identifier.IsVerbatim)
+			if (identifier.IsVerbatim) {
 				textWriter.Write('@');
+				column++;
+			}
 			textWriter.Write(identifier.Name);
+			column += identifier.Name.Length;
 			isAtStartOfLine = false;
 		}
 		
-		public void WriteKeyword(Role role, string keyword)
+		public override void WriteKeyword(Role role, string keyword)
 		{
 			WriteIndentation();
+			column += keyword.Length;
 			textWriter.Write(keyword);
 			isAtStartOfLine = false;
 		}
 		
-		public void WriteToken(Role role, string token)
+		public override void WriteToken(Role role, string token)
 		{
 			WriteIndentation();
+			column += token.Length;
 			textWriter.Write(token);
 			isAtStartOfLine = false;
 		}
 		
-		public void Space()
+		public override void Space()
 		{
 			WriteIndentation();
+			column++;
 			textWriter.Write(' ');
 		}
 		
@@ -88,33 +97,37 @@ namespace ICSharpCode.NRefactory.CSharp
 				for (int i = 0; i < indentation; i++) {
 					textWriter.Write(this.IndentationString);
 				}
+				column += indentation * IndentationString.Length;
 			}
 		}
 		
-		public void NewLine()
+		public override void NewLine()
 		{
 			textWriter.WriteLine();
+			column = 1;
+			line++;
 			needsIndent = true;
 			isAtStartOfLine = true;
 		}
 		
-		public void Indent()
+		public override void Indent()
 		{
 			indentation++;
 		}
 		
-		public void Unindent()
+		public override void Unindent()
 		{
 			indentation--;
 		}
 		
-		public void WriteComment(CommentType commentType, string content)
+		public override void WriteComment(CommentType commentType, string content)
 		{
 			WriteIndentation();
 			switch (commentType) {
 				case CommentType.SingleLine:
 					textWriter.Write("//");
 					textWriter.WriteLine(content);
+					column += 2 + content.Length;
 					needsIndent = true;
 					isAtStartOfLine = true;
 					break;
@@ -122,31 +135,59 @@ namespace ICSharpCode.NRefactory.CSharp
 					textWriter.Write("/*");
 					textWriter.Write(content);
 					textWriter.Write("*/");
+				column += 2;
+					UpdateEndLocation(content, ref line, ref column);
+					column += 2;
 					isAtStartOfLine = false;
 					break;
 				case CommentType.Documentation:
 					textWriter.Write("///");
 					textWriter.WriteLine(content);
+					column += 3 + content.Length;
 					needsIndent = true;
 					isAtStartOfLine = true;
 					break;
 				default:
 					textWriter.Write(content);
+					column += content.Length;
 					break;
 			}
 		}
 		
-		public void WritePreProcessorDirective(PreProcessorDirectiveType type, string argument)
+		static void UpdateEndLocation(string content, ref int line, ref int column)
+		{
+			if (string.IsNullOrEmpty(content))
+				return;
+			for (int i = 0; i < content.Length; i++) {
+				char ch = content[i];
+				switch (ch) {
+					case '\r':
+						if (i + 1 < content.Length && content[i + 1] == '\n')
+							i++;
+						goto case '\n';
+					case '\n':
+						line++;
+						column = 0;
+						break;
+				}
+				column++;
+			}
+		}
+		
+		public override void WritePreProcessorDirective(PreProcessorDirectiveType type, string argument)
 		{
 			// pre-processor directive must start on its own line
 			if (!isAtStartOfLine)
 				NewLine();
 			WriteIndentation();
 			textWriter.Write('#');
-			textWriter.Write(type.ToString().ToLowerInvariant());
+			string directive = type.ToString().ToLowerInvariant();
+			textWriter.Write(directive);
+			column += 1 + directive.Length;
 			if (!string.IsNullOrEmpty(argument)) {
 				textWriter.Write(' ');
 				textWriter.Write(argument);
+				column += 1 + argument.Length;
 			}
 			NewLine();
 		}
@@ -159,42 +200,61 @@ namespace ICSharpCode.NRefactory.CSharp
 			return writer.ToString();
 		}
 		
-		public void WritePrimitiveValue(object value)
+		public override void WritePrimitiveValue(object value, string literalValue = null)
 		{
+			if (literalValue != null) {
+				textWriter.Write(literalValue);
+				column += literalValue.Length;
+				return;
+			}
+			
 			if (value == null) {
 				// usually NullReferenceExpression should be used for this, but we'll handle it anyways
 				textWriter.Write("null");
+				column += 4;
 				return;
 			}
 			
 			if (value is bool) {
 				if ((bool)value) {
 					textWriter.Write("true");
+					column += 4;
 				} else {
 					textWriter.Write("false");
+					column += 5;
 				}
 				return;
 			}
 			
 			if (value is string) {
-				textWriter.Write("\"" + ConvertString(value.ToString()) + "\"");
+				string tmp = "\"" + ConvertString(value.ToString()) + "\"";
+				column += tmp.Length;
+				textWriter.Write(tmp);
 			} else if (value is char) {
-				textWriter.Write("'" + ConvertCharLiteral((char)value) + "'");
+				string tmp = "'" + ConvertCharLiteral((char)value) + "'";
+				column += tmp.Length;
+				textWriter.Write(tmp);
 			} else if (value is decimal) {
-				textWriter.Write(((decimal)value).ToString(NumberFormatInfo.InvariantInfo) + "m");
+				string str = ((decimal)value).ToString(NumberFormatInfo.InvariantInfo) + "m";
+				column += str.Length;
+				textWriter.Write(str);
 			} else if (value is float) {
 				float f = (float)value;
 				if (float.IsInfinity(f) || float.IsNaN(f)) {
 					// Strictly speaking, these aren't PrimitiveExpressions;
 					// but we still support writing these to make life easier for code generators.
 					textWriter.Write("float");
+					column += 5;
 					WriteToken(Roles.Dot, ".");
 					if (float.IsPositiveInfinity(f)) {
 						textWriter.Write("PositiveInfinity");
+						column += "PositiveInfinity".Length;
 					} else if (float.IsNegativeInfinity(f)) {
 						textWriter.Write("NegativeInfinity");
+						column += "NegativeInfinity".Length;
 					} else {
 						textWriter.Write("NaN");
+						column += 3;
 					}
 					return;
 				}
@@ -203,21 +263,28 @@ namespace ICSharpCode.NRefactory.CSharp
 					// (again, not a primitive expression, but it's better to handle
 					// the special case here than to do it in all code generators)
 					textWriter.Write("-");
+					column++;
 				}
-				textWriter.Write(f.ToString("R", NumberFormatInfo.InvariantInfo) + "f");
+				var str = f.ToString("R", NumberFormatInfo.InvariantInfo) + "f";
+				column += str.Length;
+				textWriter.Write(str);
 			} else if (value is double) {
 				double f = (double)value;
 				if (double.IsInfinity(f) || double.IsNaN(f)) {
 					// Strictly speaking, these aren't PrimitiveExpressions;
 					// but we still support writing these to make life easier for code generators.
 					textWriter.Write("double");
-					textWriter.Write(".");
+					column += 6;
+					WriteToken(Roles.Dot, ".");
 					if (double.IsPositiveInfinity(f)) {
 						textWriter.Write("PositiveInfinity");
+						column += "PositiveInfinity".Length;
 					} else if (double.IsNegativeInfinity(f)) {
 						textWriter.Write("NegativeInfinity");
+						column += "NegativeInfinity".Length;
 					} else {
 						textWriter.Write("NaN");
+						column += 3;
 					}
 					return;
 				}
@@ -312,7 +379,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			return sb.ToString();
 		}
 		
-		public virtual void StartNode(AstNode node)
+		public override void WritePrimitiveType(string type)
+		{
+			textWriter.Write(type);
+			column += type.Length;
+			if (type == "new") {
+				textWriter.Write("()");
+				column += 2;
+			}
+		}
+		
+		public override void StartNode(AstNode node)
 		{
 			// Write out the indentation, so that overrides of this method
 			// can rely use the current output length to identify the position of the node
@@ -320,7 +397,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteIndentation();
 		}
 		
-		public virtual void EndNode(AstNode node)
+		public override void EndNode(AstNode node)
 		{
 		}
 	}

@@ -27,7 +27,7 @@ using Mono.Cecil;
 
 namespace ICSharpCode.Decompiler.Ast
 {
-	public class TextTokenWriter : ITokenWriter
+	public class TextTokenWriter : TokenWriter
 	{
 		readonly ITextOutput output;
 		readonly Stack<AstNode> nodeStack = new Stack<AstNode>();
@@ -47,7 +47,7 @@ namespace ICSharpCode.Decompiler.Ast
 			this.output = output;
 		}
 		
-		public void WriteIdentifier(Identifier identifier)
+		public override void WriteIdentifier(Identifier identifier)
 		{
 			var definition = GetCurrentDefinition();
 			if (definition != null) {
@@ -160,12 +160,12 @@ namespace ICSharpCode.Decompiler.Ast
 			return null;
 		}
 		
-		public void WriteKeyword(Role role, string keyword)
+		public override void WriteKeyword(Role role, string keyword)
 		{
 			output.Write(keyword);
 		}
 		
-		public void WriteToken(Role role, string token)
+		public override void WriteToken(Role role, string token)
 		{
 			// Attach member reference to token only if there's no identifier in the current node.
 			MemberReference memberRef = GetCurrentMemberReference();
@@ -176,7 +176,7 @@ namespace ICSharpCode.Decompiler.Ast
 				output.Write(token);
 		}
 		
-		public void Space()
+		public override void Space()
 		{
 			output.Write(' ');
 		}
@@ -203,17 +203,17 @@ namespace ICSharpCode.Decompiler.Ast
 				braceLevelWithinType--;
 		}
 		
-		public void Indent()
+		public override void Indent()
 		{
 			output.Indent();
 		}
 		
-		public void Unindent()
+		public override void Unindent()
 		{
 			output.Unindent();
 		}
 		
-		public void NewLine()
+		public override void NewLine()
 		{
 			if (lastUsingDeclaration) {
 				output.MarkFoldEnd();
@@ -223,7 +223,7 @@ namespace ICSharpCode.Decompiler.Ast
 			output.WriteLine();
 		}
 		
-		public void WriteComment(CommentType commentType, string content)
+		public override void WriteComment(CommentType commentType, string content)
 		{
 			switch (commentType) {
 				case CommentType.SingleLine:
@@ -255,7 +255,7 @@ namespace ICSharpCode.Decompiler.Ast
 			}
 		}
 		
-		public void WritePreProcessorDirective(PreProcessorDirectiveType type, string argument)
+		public override void WritePreProcessorDirective(PreProcessorDirectiveType type, string argument)
 		{
 			// pre-processor directive must start on its own line
 			output.Write('#');
@@ -267,7 +267,12 @@ namespace ICSharpCode.Decompiler.Ast
 			output.WriteLine();
 		}
 		
-		public void WritePrimitiveValue(object value)
+		public override void WritePrimitiveValue(object value, string literalValue = null)
+		{
+			
+		}
+		
+		public override void WritePrimitiveType(string type)
 		{
 			
 		}
@@ -275,7 +280,7 @@ namespace ICSharpCode.Decompiler.Ast
 		Stack<TextLocation> startLocations = new Stack<TextLocation>();
 		Stack<MethodDebugSymbols> symbolsStack = new Stack<MethodDebugSymbols>();
 		
-		public void StartNode(AstNode node)
+		public override void StartNode(AstNode node)
 		{
 			if (nodeStack.Count == 0) {
 				if (IsUsingDeclaration(node)) {
@@ -303,7 +308,7 @@ namespace ICSharpCode.Decompiler.Ast
 			return node is UsingDeclaration || node is UsingAliasDeclaration;
 		}
 
-		public void EndNode(AstNode node)
+		public override void EndNode(AstNode node)
 		{
 			if (nodeStack.Pop() != node)
 				throw new InvalidOperationException();

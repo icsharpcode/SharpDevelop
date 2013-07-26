@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			Division
 		}
 		
-		public InsertRequiredSpacesDecorator(ITokenWriter writer)
+		public InsertRequiredSpacesDecorator(TokenWriter writer)
 			: base(writer)
 		{
 		}
@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			lastWritten = LastWritten.Whitespace;
 		}
 		
-		public override void WritePrimitiveValue(object value)
+		public override void WritePrimitiveValue(object value, string literalValue = null)
 		{
 			base.WritePrimitiveValue(value);
 			if (value == null || value is bool)
@@ -177,9 +177,18 @@ namespace ICSharpCode.NRefactory.CSharp
 				lastWritten = LastWritten.Other;
 			}
 		}
+		
+		public override void WritePrimitiveType(string type)
+		{
+			if (lastWritten == LastWritten.KeywordOrIdentifier) {
+				Space();
+			}
+			base.WritePrimitiveType(type);
+			if (type == "new") {
+				lastWritten = LastWritten.Other;
+			} else {
+				lastWritten = LastWritten.KeywordOrIdentifier;
+			}
+		}
 	}
-	
-	
 }
-
-

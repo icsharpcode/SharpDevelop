@@ -17,110 +17,141 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.IO;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public interface ITokenWriter
+	public abstract class TokenWriter
 	{
-		void StartNode(AstNode node);
-		void EndNode(AstNode node);
+		public abstract void StartNode(AstNode node);
+		public abstract void EndNode(AstNode node);
 		
 		/// <summary>
 		/// Writes an identifier.
 		/// </summary>
-		void WriteIdentifier(Identifier identifier);
+		public abstract void WriteIdentifier(Identifier identifier);
 		
 		/// <summary>
 		/// Writes a keyword to the output.
 		/// </summary>
-		void WriteKeyword(Role role, string keyword);
+		public abstract void WriteKeyword(Role role, string keyword);
 		
 		/// <summary>
 		/// Writes a token to the output.
 		/// </summary>
-		void WriteToken(Role role, string token);
+		public abstract void WriteToken(Role role, string token);
 		
 		/// <summary>
 		/// Writes a primitive/literal value
 		/// </summary>
-		void WritePrimitiveValue(object value);
+		public abstract void WritePrimitiveValue(object value, string literalValue = null);
 		
-		void Space();
-		void Indent();
-		void Unindent();
-		void NewLine();
+		public abstract void WritePrimitiveType(string type);
 		
-		void WriteComment(CommentType commentType, string content);
-		void WritePreProcessorDirective(PreProcessorDirectiveType type, string argument);
+		public abstract void Space();
+		public abstract void Indent();
+		public abstract void Unindent();
+		public abstract void NewLine();
+		
+		public abstract void WriteComment(CommentType commentType, string content);
+		public abstract void WritePreProcessorDirective(PreProcessorDirectiveType type, string argument);
+		
+		public static TokenWriter Create(TextWriter writer, string indentation = "\t")
+		{
+			return new InsertSpecialsDecorator(new InsertRequiredSpacesDecorator(new TextWriterTokenWriter(writer) { IndentationString = indentation }));
+		}
+		
+		public static TokenWriter CreateWriterThatSetsLocationsInAST(TextWriter writer, string indentation = "\t")
+		{
+			var target = new TextWriterTokenWriter(writer) { IndentationString = indentation };
+			return new InsertSpecialsDecorator(new InsertRequiredSpacesDecorator(new InsertMissingTokensDecorator(target, target)));
+		}
+		
+		public static TokenWriter WrapInWriterThatSetsLocationsInAST(TokenWriter writer, string indentation = "\t")
+		{
+			if (!(writer is ILocatable))
+				throw new InvalidOperationException("writer does not provide locations!");
+			return new InsertSpecialsDecorator(new InsertRequiredSpacesDecorator(new InsertMissingTokensDecorator(writer, (ILocatable)writer)));
+		}
 	}
 	
-	public abstract class DecoratingTokenWriter : ITokenWriter
+	public interface ILocatable
 	{
-		ITokenWriter decoratedWriter;
+		TextLocation Location { get; }
+	}
+	
+	public abstract class DecoratingTokenWriter : TokenWriter
+	{
+		TokenWriter decoratedWriter;
 		
-		protected DecoratingTokenWriter(ITokenWriter decoratedWriter)
+		protected DecoratingTokenWriter(TokenWriter decoratedWriter)
 		{
 			if (decoratedWriter == null)
 				throw new ArgumentNullException("decoratedWriter");
 			this.decoratedWriter = decoratedWriter;
 		}
 		
-		public virtual void StartNode(AstNode node)
+		public override void StartNode(AstNode node)
 		{
 			decoratedWriter.StartNode(node);
 		}
 		
-		public virtual void EndNode(AstNode node)
+		public override void EndNode(AstNode node)
 		{
 			decoratedWriter.EndNode(node);
 		}
 		
-		public virtual void WriteIdentifier(Identifier identifier)
+		public override void WriteIdentifier(Identifier identifier)
 		{
 			decoratedWriter.WriteIdentifier(identifier);
 		}
 		
-		public virtual void WriteKeyword(Role role, string keyword)
+		public override void WriteKeyword(Role role, string keyword)
 		{
 			decoratedWriter.WriteKeyword(role, keyword);
 		}
 		
-		public virtual void WriteToken(Role role, string token)
+		public override void WriteToken(Role role, string token)
 		{
 			decoratedWriter.WriteToken(role, token);
 		}
 		
-		public virtual void WritePrimitiveValue(object value)
+		public override void WritePrimitiveValue(object value, string literalValue = null)
 		{
-			decoratedWriter.WritePrimitiveValue(value);
+			decoratedWriter.WritePrimitiveValue(value, literalValue);
 		}
 		
-		public virtual void Space()
+		public override void WritePrimitiveType(string type)
+		{
+			decoratedWriter.WritePrimitiveType(type);
+		}
+		
+		public override void Space()
 		{
 			decoratedWriter.Space();
 		}
 		
-		public virtual void Indent()
+		public override void Indent()
 		{
 			decoratedWriter.Indent();
 		}
 		
-		public virtual void Unindent()
+		public override void Unindent()
 		{
 			decoratedWriter.Unindent();
 		}
 		
-		public virtual void NewLine()
+		public override void NewLine()
 		{
 			decoratedWriter.NewLine();
 		}
 		
-		public virtual void WriteComment(CommentType commentType, string content)
+		public override void WriteComment(CommentType commentType, string content)
 		{
 			decoratedWriter.WriteComment(commentType, content);
 		}
 		
-		public virtual void WritePreProcessorDirective(PreProcessorDirectiveType type, string argument)
+		public override void WritePreProcessorDirective(PreProcessorDirectiveType type, string argument)
 		{
 			decoratedWriter.WritePreProcessorDirective(type, argument);
 		}

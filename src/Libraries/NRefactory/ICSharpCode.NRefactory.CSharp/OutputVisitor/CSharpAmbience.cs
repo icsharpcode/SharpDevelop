@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return writer.ToString();
 		}
 		
-		public void ConvertEntity(IEntity entity, ITokenWriter writer, CSharpFormattingOptions formattingPolicy)
+		public void ConvertEntity(IEntity entity, TokenWriter writer, CSharpFormattingOptions formattingPolicy)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
@@ -160,7 +160,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return astBuilder;
 		}
 		
-		void WriteTypeDeclarationName(ITypeDefinition typeDef, ITokenWriter writer, CSharpFormattingOptions formattingPolicy)
+		void WriteTypeDeclarationName(ITypeDefinition typeDef, TokenWriter writer, CSharpFormattingOptions formattingPolicy)
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			EntityDeclaration node = astBuilder.ConvertEntity(typeDef);
@@ -178,7 +178,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		void WriteMemberDeclarationName(IMember member, ITokenWriter writer, CSharpFormattingOptions formattingPolicy)
+		void WriteMemberDeclarationName(IMember member, TokenWriter writer, CSharpFormattingOptions formattingPolicy)
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			EntityDeclaration node = astBuilder.ConvertEntity(member);
@@ -235,7 +235,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		void PrintModifiers(Modifiers modifiers, ITokenWriter writer)
+		void PrintModifiers(Modifiers modifiers, TokenWriter writer)
 		{
 			foreach (var m in CSharpModifierToken.AllModifiers) {
 				if ((modifiers & m) == m) {
@@ -245,7 +245,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		void WriteQualifiedName(string name, ITokenWriter writer, CSharpFormattingOptions formattingPolicy)
+		void WriteQualifiedName(string name, TokenWriter writer, CSharpFormattingOptions formattingPolicy)
 		{
 			var node = AstType.Create(name);
 			var outputVisitor = new CSharpOutputVisitor(writer, formattingPolicy);
@@ -270,7 +270,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return astType.ToString();
 		}
 		
-		public void ConvertType(IType type, ITokenWriter writer, CSharpFormattingOptions formattingPolicy)
+		public void ConvertType(IType type, TokenWriter writer, CSharpFormattingOptions formattingPolicy)
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			AstType astType = astBuilder.ConvertType(type);

@@ -42,6 +42,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		internal void SetStartLocation(TextLocation value)
+		{
+			ThrowIfFrozen();
+			this.startLocation = value;
+		}
+		
 		string literalValue;
 		TextLocation? endLocation;
 		public override TextLocation EndLocation {
