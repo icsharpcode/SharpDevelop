@@ -60,7 +60,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			this.TargetCPU = new List<KeyItemPair>();
 			supports32BitPreferred = false;
 			if (DotnetDetection.IsDotnet45Installed()) {
-				supports32BitPreferred = projectOptions.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2010;
+				var upgradableProject = projectOptions.Project as IUpgradableProject;
+				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.IsBasedOn(TargetFramework.Net45))
+					supports32BitPreferred = projectOptions.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2010;
 				// Show 32 vs. 64 options even for library projects;
 				// it's relevant for web applications.
 			}
