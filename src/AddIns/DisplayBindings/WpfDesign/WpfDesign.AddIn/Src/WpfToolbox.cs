@@ -2,11 +2,18 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
+using System.Windows;
 using System.Windows.Forms;
+using System.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
 using WPF = System.Windows.Controls;
 
@@ -48,6 +55,53 @@ namespace ICSharpCode.WpfDesign.AddIn
 			sideBar.ActiveTab = sideTab;
 		}
 		
+		static bool IsControl(Type t)
+		{
+			return !t.IsAbstract && !t.IsGenericTypeDefinition && t.IsSubclassOf(typeof(FrameworkElement));
+		}
+
+
+		private static HashSet<string> addedAssemblys = new HashSet<string>();
+		public void AddProjectDlls(OpenedFile file)
+		{
+			var pc = MyTypeFinder.GetProjectContent(file);
+			foreach (ReflectionProjectContent referencedProjectContent in pc.ThreadSafeGetReferencedContents().Where(x=> x is ReflectionProjectContent))
+			{
+				if (!addedAssemblys.Contains(referencedProjectContent.AssemblyLocation))
+				{
+					try
+					{
+						var assembly = Assembly.LoadFrom(referencedProjectContent.AssemblyLocation);
+
+						SideTab sideTab = new SideTab(sideBar, assembly.FullName.Split(new[] {','})[0]);
+						sideTab.DisplayName = StringParser.Parse(sideTab.Name);
+						sideTab.CanBeDeleted = false;
+						sideTab.ChoosedItemChanged += OnChoosedItemChanged;
+
+						sideTab.Items.Add(new WpfSideTabItem());
+
+						foreach (var t in assembly.GetExportedTypes())
+						{
+							if (IsControl(t))
+							{
+								sideTab.Items.Add(new WpfSideTabItem(t));
+							}
+						}
+
+						if (sideTab.Items.Count > 1)
+							sideBar.Tabs.Add(sideTab);
+
+						addedAssemblys.Add(referencedProjectContent.AssemblyLocation);
+					}
+					catch (Exception ex)
+					{
+						WpfViewContent.DllLoadErrors.Add(
+							new Task(new BuildError(referencedProjectContent.AssemblyLocation, ex.Message)));
+					}
+				}
+			}
+		}
+
 		void OnChoosedItemChanged(object sender, EventArgs e)
 		{
 			if (toolService != null) {

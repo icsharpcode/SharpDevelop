@@ -36,6 +36,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			BasicMetadata.Register();
 			
+			WpfToolbox.Instance.AddProjectDlls(file);
+			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
 		}
@@ -131,6 +133,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			}
 		}
 		
+		public static List<Task> DllLoadErrors = new List<Task>();
 		void UpdateTasks(XamlErrorService xamlErrorService)
 		{
 			Debug.Assert(xamlErrorService != null);
@@ -145,6 +148,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 				tasks.Add(task);
 				TaskService.Add(task);
 			}
+			
+			TaskService.AddRange(DllLoadErrors);
 			
 			if (xamlErrorService.Errors.Count != 0) {
 				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
