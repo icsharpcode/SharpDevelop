@@ -111,6 +111,7 @@
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
     <Compile Include="Dom\KeyedModelCollection.cs" />
+    <Compile Include="Dom\ModelCollectionChangedEvent.cs" />
     <Compile Include="Dom\ModelCollectionLinq.cs" />
     <Compile Include="Dom\ImmutableModelCollection.cs" />
     <Compile Include="Dom\ModelCollectionTreeNode.cs" />
