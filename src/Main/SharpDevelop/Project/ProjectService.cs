@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		public SDProjectService()
 		{
-			allSolutions = new SimpleModelCollection<ISolution>();
+			allSolutions = new NullSafeSimpleModelCollection<ISolution>();
 			allProjects = allSolutions.SelectMany(s => s.Projects);
 			
 			SD.GetFutureService<IWorkbench>().ContinueWith(t => t.Result.ActiveViewContentChanged += ActiveViewContentChanged);

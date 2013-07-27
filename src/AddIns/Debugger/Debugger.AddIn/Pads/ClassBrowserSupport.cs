@@ -67,7 +67,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (process == null)
 				throw new ArgumentNullException("process");
 			this.process = process;
-			this.modules = new SimpleModelCollection<Debugger.Module>(this.process.Modules);
+			this.modules = new NullSafeSimpleModelCollection<Debugger.Module>();
+			this.modules.AddRange(this.process.Modules);
 			this.process.ModuleLoaded += ModuleLoaded;
 			this.process.ModuleUnloaded += ModuleUnloaded;
 		}
