@@ -44,6 +44,11 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		[Parameter(ParameterSetName = "Updated")]
 		public SwitchParameter Updates { get; set; }
 		
+		[Parameter(ParameterSetName = "Available")]
+		[Parameter(ParameterSetName = "Updates")]
+		[Alias("Prerelease")]
+		public SwitchParameter IncludePrerelease { get; set; }
+		
 		[Parameter(Position = 0)]
 		public string Filter { get; set; }
 		
@@ -140,7 +145,11 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> FilterPackages(IQueryable<IPackage> packages)
 		{
-			return packages.Find(Filter);
+			IQueryable<IPackage> filteredPackages = packages.Find(Filter);
+			if (IncludePrerelease.IsPresent) {
+				return filteredPackages;
+			}
+			return filteredPackages.Where(package => package.IsLatestVersion);
 		}
 		
 		IQueryable<IPackage> GetUpdatedPackages()

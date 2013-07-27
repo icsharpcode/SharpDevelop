@@ -50,6 +50,11 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.Updates = new SwitchParameter(true);
 		}
 		
+		void EnablePrereleaseParameter()
+		{
+			cmdlet.IncludePrerelease = new SwitchParameter(true);
+		}
+		
 		FakePackage AddPackageToSpecifiedProjectManagerLocalRepository(string id, string version)
 		{
 			FakePackage package = FakePackage.CreatePackageWithVersion(id, version);
@@ -522,6 +527,46 @@ namespace PackageManagement.Cmdlets.Tests
 			string projectName = fakeConsoleHost.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual("Test", projectName);
+		}
+		
+		[Test]
+		public void ProcessRecord_ListAvailableAndPrereleasePackagesWithFilter_ReturnsFilteredPrereleasePackages()
+		{
+			CreateCmdlet();
+			FakePackageRepository repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			FakePackage expectedPackage = repository.AddFakePackageWithVersion("B", "2.1.0-beta");
+			EnableListAvailableParameter();
+			EnablePrereleaseParameter();
+			SetFilterParameter("B");
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				expectedPackage
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_ListAvailableWithFilterAndOnlineRepositoryHasPrereleasePackages_ReturnsNoPrereleasePackages()
+		{
+			CreateCmdlet();
+			FakePackageRepository repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			FakePackage expectedPackage = repository.AddFakePackageWithVersion("B", "2.1.0");
+			FakePackage package = repository.AddFakePackageWithVersion("B", "2.1.0-beta");
+			EnableListAvailableParameter();
+			SetFilterParameter("B");
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				expectedPackage
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
 		}
 	}
 }
