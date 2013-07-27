@@ -724,7 +724,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void QuerySimpleWhere()
 		{
 			TestExpression("from n in numbers\n" +
-			               "  where n < 5\n" +
+			               "   where n < 5\n" +
 			               "  select n");
 		}
 		
@@ -732,9 +732,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void QueryMultipleFrom()
 		{
 			TestExpression("from c in customers\n" +
-			               "  where c.Region == \"WA\"\n" +
+			               "   where c.Region == \"WA\"\n" +
 			               "  from o in c.Orders\n" +
-			               "  where o.OrderDate >= cutoffDate\n" +
+			               "   where o.OrderDate >= cutoffDate\n" +
 			               "  select new {\n" +
 			               "    c.CustomerID,\n" +
 			               "    o.OrderID\n" +
