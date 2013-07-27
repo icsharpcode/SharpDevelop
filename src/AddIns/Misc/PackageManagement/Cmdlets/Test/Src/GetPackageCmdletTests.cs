@@ -77,11 +77,6 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.Source = source;
 		}
 		
-		void EnableRecentParameter()
-		{
-			cmdlet.Recent = new SwitchParameter(true);
-		}
-		
 		void SetSkipParameter(int skip)
 		{
 			cmdlet.Skip = skip;
@@ -384,44 +379,6 @@ namespace PackageManagement.Cmdlets.Tests
 			string actualProjectName = fakeConsoleHost.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual("MyProject", actualProjectName);
-		}
-		
-		[Test]
-		public void ProcessRecord_RecentPackagesRequested_RecentPackagesReturned()
-		{
-			CreateCmdlet();
-			
-			FakePackageRepository recentPackageRepository = fakeRegisteredPackageRepositories.FakeRecentPackageRepository;
-			recentPackageRepository.AddFakePackage("A");
-			
-			EnableRecentParameter();
-			RunCmdlet();
-			
-			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
-			List<FakePackage> expectedPackages = recentPackageRepository.FakePackages;
-			
-			Assert.AreEqual(expectedPackages, actualPackages);
-		}
-		
-		[Test]
-		public void ProcessRecord_RecentPackagesRequestedWithFilter_FilteredRecentPackagesReturned()
-		{
-			CreateCmdlet();
-			
-			FakePackageRepository recentPackageRepository = fakeRegisteredPackageRepositories.FakeRecentPackageRepository;
-			recentPackageRepository.AddFakePackage("A");
-			FakePackage packageB = recentPackageRepository.AddFakePackage("B");
-			
-			EnableRecentParameter();
-			SetFilterParameter("B");
-			RunCmdlet();
-			
-			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
-			var expectedPackages = new FakePackage[] {
-				packageB
-			};
-			
-			Assert.AreEqual(expectedPackages, actualPackages);
 		}
 		
 		[Test]

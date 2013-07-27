@@ -54,9 +54,6 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		[Parameter(ParameterSetName = "Updated")]
 		public string Source { get; set; }
 		
-		[Parameter(ParameterSetName = "Recent")]
-		public SwitchParameter Recent { get; set; }
-		
 		[Parameter]
 		[ValidateRange(0, Int32.MaxValue)]
 		public int Skip {
@@ -91,7 +88,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		bool ParametersRequireProject()
 		{
-			if (ListAvailable.IsPresent || Recent.IsPresent) {
+			if (ListAvailable.IsPresent) {
 				return false;
 			}
 			return true;
@@ -108,8 +105,6 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 				return GetAvailablePackages();
 			} else if (Updates.IsPresent) {
 				return GetUpdatedPackages();
-			} else if (Recent.IsPresent) {
-				return GetRecentPackages();
 			}
 			return GetInstalledPackages();
 		}
@@ -181,12 +176,6 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		bool HasSelectedProjectName()
 		{
 			return ProjectName != null;
-		}
-		
-		IQueryable<IPackage> GetRecentPackages()
-		{
-			IQueryable<IPackage> packages = registeredPackageRepositories.RecentPackageRepository.GetPackages();
-			return FilterPackages(packages);
 		}
 		
 		IQueryable<IPackage> GetInstalledPackages()
