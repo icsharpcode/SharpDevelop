@@ -12,5 +12,13 @@ namespace Grunwald.BooBinding
 		public override IFormattingStrategy FormattingStrategy {
 			get { return new BooFormattingStrategy(); }
 		}
+        public override IBracketSearcher BracketSearcher
+        {
+            get
+            {
+                return new BooBrachetsSearcher();
+            }
+        }
+        
 	}
 }

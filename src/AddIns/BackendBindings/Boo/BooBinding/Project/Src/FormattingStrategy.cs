@@ -277,4 +277,53 @@ namespace Grunwald.BooBinding
 		*/
 		#endregion
 	}
+    public class BooBrachetsSearcher : IBracketSearcher
+    {
+        public BracketSearchResult SearchBracket(IDocument document, int offset)
+        {
+            int beforepos = -1;
+            int afterpos = -1;
+            int beforebalance = 0;
+            int afterbalance = 0;
+            char curchar;
+            int beforeborder = Math.Max(0, offset - 1000);
+            int afterborder = Math.Min(document.TextLength, offset + 1000);
+            for (var i = offset - 1; i > beforeborder; i--)
+            {
+                curchar = document.GetCharAt(i);
+                if (curchar == ')')
+                    beforebalance++;
+                else if (curchar == '(')
+                {
+                    if (beforebalance == 0)
+                    {
+                        beforepos = i;
+                        break;
+                    }
+                    else
+                        beforebalance--;
+                }
+            }
+            for (var i = offset; i < afterborder; i++)
+            {
+                curchar = document.GetCharAt(i);
+                if (curchar == '(')
+                    afterbalance++;
+                else if (curchar == ')')
+                {
+                    if (afterbalance == 0)
+                    {
+                        afterpos = i;
+                        break;
+                    }
+                    else
+                        afterbalance--;
+                }
+            }
+            if ((beforepos >= 0) && (afterpos >= 0))
+                return new BracketSearchResult(beforepos, 1, afterpos, 1);
+            else
+                return null;
+        }
+    }
 }
