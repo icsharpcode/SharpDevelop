@@ -29,8 +29,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		TextArea textArea;
 		
-		Typeface typeface;
-		double emSize;
+		protected Typeface typeface;
+		protected double emSize;
 		
 		/// <inheritdoc/>
 		protected override Size MeasureOverride(Size availableSize)
@@ -114,7 +114,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			return ReceiveWeakEvent(managerType, sender, e);
 		}
 		
-		int maxLineNumberLength = 1;
+		protected int maxLineNumberLength = 1;
 		
 		void OnDocumentLineCountChanged()
 		{
