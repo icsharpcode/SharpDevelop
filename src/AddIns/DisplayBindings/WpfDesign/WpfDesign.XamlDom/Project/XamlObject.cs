@@ -100,11 +100,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get { return xmlAttribute; }
 			set {
 				xmlAttribute = value;
-				element = VirualAttachTo(XmlElement, value.OwnerElement);
+				element = VirtualAttachTo(XmlElement, value.OwnerElement);
 			}
 		}
 
-		static XmlElement VirualAttachTo(XmlElement e, XmlElement target) 
+		static XmlElement VirtualAttachTo(XmlElement e, XmlElement target) 
 		{
 			var prefix = target.GetPrefixOfNamespace(e.NamespaceURI);
 			XmlElement newElement = e.OwnerDocument.CreateElement(prefix, e.LocalName, e.NamespaceURI);
