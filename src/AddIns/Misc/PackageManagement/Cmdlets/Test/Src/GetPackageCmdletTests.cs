@@ -589,5 +589,23 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			CollectionAssert.AreEqual(expectedPackages, actualPackages);
 		}
+		
+		[Test]
+		public void ProcessRecord_NoParametersPassedWhenMultipleVersionsOfPackageInstalledInSolution_ReturnsAllPackageVersions()
+		{
+			CreateCmdlet();
+			FakePackage expectedPackage1 = fakeSolution.AddPackageToSharedLocalRepository("One", "1.0");
+			FakePackage expectedPackage2 = fakeSolution.AddPackageToSharedLocalRepository("One", "1.1");
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				expectedPackage1,
+				expectedPackage2
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
 	}
 }

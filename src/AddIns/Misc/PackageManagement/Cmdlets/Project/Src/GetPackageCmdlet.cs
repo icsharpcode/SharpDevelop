@@ -77,16 +77,24 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		protected override void ProcessRecord()
 		{
 			ValidateParameters();
-			IEnumerable<IPackage> packages = GetFilteredPackages();
+			IEnumerable<IPackage> packages = GetPackagesForDisplay();
 			WritePackagesToOutputPipeline(packages);
 		}
 		
-		IEnumerable<IPackage> GetFilteredPackages()
+		IEnumerable<IPackage> GetPackagesForDisplay()
 		{
 			IQueryable<IPackage> packages = GetPackages();
 			packages = OrderPackages(packages);
-			IEnumerable<IPackage> distinctPackages = packages.DistinctLast(PackageEqualityComparer.Id);
+			IEnumerable<IPackage> distinctPackages = DistinctPackagesById(packages);
 			return SelectPackageRange(distinctPackages);
+		}
+		
+		IEnumerable<IPackage> DistinctPackagesById(IQueryable<IPackage> packages)
+		{
+			if (ListAvailable.IsPresent) {
+				return packages.DistinctLast(PackageEqualityComparer.Id);
+			}
+			return packages;
 		}
 		
 		void ValidateParameters()
