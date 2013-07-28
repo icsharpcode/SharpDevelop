@@ -62,14 +62,14 @@ namespace PackageManagement.Cmdlets.Tests
 			return package;
 		}
 		
-		FakePackage AddPackageToAggregateRepository(string version)
+		FakePackage AddPackageToSelectedRepositoryInConsoleHost(string id)
 		{
-			return AddPackageToAggregateRepository("Test", version);
+			return AddPackageToSelectedRepositoryInConsoleHost(id, "1.0");
 		}
 		
-		FakePackage AddPackageToAggregateRepository(string id, string version)
+		FakePackage AddPackageToSelectedRepositoryInConsoleHost(string id, string version)
 		{
-			return fakeRegisteredPackageRepositories.AddFakePackageWithVersionToAggregrateRepository(id, version);
+			return fakeRegisteredPackageRepositories.FakePackageRepository.AddFakePackageWithVersion(id, version);
 		}
 		
 		void SetFilterParameter(string filter)
@@ -92,9 +92,9 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.First = first;
 		}
 		
-		void AddPackageWithVersionToSolution(string version)
+		void AddPackageToSolution(string id, string version)
 		{
-			fakeSolution.AddPackageToSharedLocalRepository("Test", version);
+			fakeSolution.AddPackageToSharedLocalRepository(id, version);
 		}
 
 		[Test]
@@ -227,10 +227,10 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_UpdatedPackagesRequestedAndNoProjectName_ReturnsUpdatedPackagesForSolution()
 		{
 			CreateCmdlet();
-			AddPackageWithVersionToSolution("1.0.0.0");
-			FakePackage updatedPackage = AddPackageToAggregateRepository("1.1.0.0");
-			
+			AddPackageToSolution("Test", "1.0.0.0");
+			FakePackage updatedPackage = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.1.0.0");
 			EnableUpdatesParameter();
+			
 			RunCmdlet();
 			
 			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
@@ -242,7 +242,7 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_UpdatedPackagesRequestedAndProjectNameSpecified_AggregateRepositoryUsedWhenCreatingProject()
+		public void ProcessRecord_UpdatedPackagesRequestedAndProjectNameSpecified_ActiveRepositoryUsedWhenCreatingProject()
 		{
 			CreateCmdlet();
 			EnableUpdatesParameter();
@@ -250,9 +250,22 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			IPackageRepository actualRepository = fakeConsoleHost.PackageRepositoryPassedToGetProject;
-			FakePackageRepository expectedRepository = fakeRegisteredPackageRepositories.FakeAggregateRepository;
-			
+			FakePackageRepository expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
 			Assert.AreEqual(expectedRepository, actualRepository);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdatedPackagesRequestedWhenNoPackageSourceSpecified_PackageSourceTakenFromConsoleHost()
+		{
+			CreateCmdlet();
+			PackageSource source = AddPackageSourceToConsoleHost();
+			fakeConsoleHost.PackageSourceToReturnFromGetActivePackageSource = source;
+			EnableUpdatesParameter();
+			
+			RunCmdlet();
+			
+			PackageSource actualSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
+			Assert.AreEqual(source, actualSource);
 		}
 		
 		[Test]
@@ -301,9 +314,9 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			fakeSolution.AddPackageToSharedLocalRepository("A", "1.0.0.0");
-			AddPackageToAggregateRepository("A", "1.1.0.0");
+			AddPackageToSelectedRepositoryInConsoleHost("A", "1.1.0.0");
 			fakeSolution.AddPackageToSharedLocalRepository("B", "2.0.0.0");
-			FakePackage updatedPackage = AddPackageToAggregateRepository("B", "2.1.0.0");
+			FakePackage updatedPackage = AddPackageToSelectedRepositoryInConsoleHost("B", "2.1.0.0");
 			
 			EnableUpdatesParameter();
 			SetFilterParameter("B");
@@ -322,9 +335,9 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			AddPackageToSpecifiedProjectManagerLocalRepository("A", "1.0.0.0");
-			AddPackageToAggregateRepository("A", "1.1.0.0");
+			AddPackageToSelectedRepositoryInConsoleHost("A", "1.1.0.0");
 			AddPackageToSpecifiedProjectManagerLocalRepository("B", "2.0.0.0");
-			FakePackage updatedPackage = AddPackageToAggregateRepository("B", "2.1.0.0");
+			FakePackage updatedPackage = AddPackageToSelectedRepositoryInConsoleHost("B", "2.1.0.0");
 			
 			EnableUpdatesParameter();
 			SetFilterParameter("B");

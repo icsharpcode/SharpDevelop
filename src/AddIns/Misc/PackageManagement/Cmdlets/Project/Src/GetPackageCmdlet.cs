@@ -167,19 +167,19 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> GetUpdatedPackages()
 		{
-			IPackageRepository aggregateRepository = registeredPackageRepositories.CreateAggregateRepository();
-			UpdatedPackages updatedPackages = CreateUpdatedPackages(aggregateRepository);
+			IPackageRepository repository = CreatePackageRepositoryForActivePackageSource();
+			UpdatedPackages updatedPackages = CreateUpdatedPackages(repository);
 			updatedPackages.SearchTerms = Filter;
 			return updatedPackages.GetUpdatedPackages().AsQueryable();
 		}
 		
-		UpdatedPackages CreateUpdatedPackages(IPackageRepository aggregateRepository)
+		UpdatedPackages CreateUpdatedPackages(IPackageRepository repository)
 		{
-			IPackageManagementProject project = GetSelectedProject(aggregateRepository);
+			IPackageManagementProject project = GetSelectedProject(repository);
 			if (project != null) {
-				return new UpdatedPackages(project, aggregateRepository);
+				return new UpdatedPackages(project, repository);
 			}
-			return new UpdatedPackages(GetSolutionPackages(), aggregateRepository);
+			return new UpdatedPackages(GetSolutionPackages(), repository);
 		}
 		
 		IQueryable<IPackage> GetSolutionPackages()
