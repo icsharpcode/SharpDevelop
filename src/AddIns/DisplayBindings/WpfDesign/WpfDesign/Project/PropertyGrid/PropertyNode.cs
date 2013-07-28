@@ -34,7 +34,24 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		/// <summary>
 		/// Gets the name of the property.
 		/// </summary>
-		public string Name { get { return FirstProperty.Name; } }
+		public string Name
+		{
+			get
+			{
+				var dp = FirstProperty.DependencyProperty;
+				if (dp != null)
+				{
+					var dpd = DependencyPropertyDescriptor.FromProperty(dp, FirstProperty.DesignItem.ComponentType);
+					if (dpd.IsAttached)
+					{
+						// Will return the attached property name in the form of <DeclaringType>.<PropertyName>
+						return dpd.Name;
+					}
+				}
+
+				return FirstProperty.Name;
+			}
+		}
 		
 		/// <summary>
 		/// Gets if this property node represents an event.
@@ -366,7 +383,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 				if (ValueItem != null) {
 					var list = TypeHelper.GetAvailableProperties(ValueItem.Component)
 						.OrderBy(d => d.Name)
-						.Select(d => new PropertyNode(new[] { ValueItem.Properties[d.Name] }, this));
+						.Select(d => new PropertyNode(new[] { ValueItem.Properties.GetProperty(d) }, this));
 
 					foreach (var node in list) {
 						if (Metadata.IsBrowsable(node.FirstProperty)) {

@@ -16,7 +16,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 	{
 		public readonly ICollection<Assembly> DesignerAssemblies = new List<Assembly>();
 		public readonly List<Action<XamlDesignContext>> CustomServiceRegisterFunctions = new List<Action<XamlDesignContext>>();
-		public Action<XamlErrorService> ReportErrors;
+		public Action<XamlErrorService> ReportErrors = (errorService) => { };
 		XamlTypeFinder typeFinder = XamlTypeFinder.CreateWpfTypeFinder();
 		
 		public XamlTypeFinder TypeFinder {

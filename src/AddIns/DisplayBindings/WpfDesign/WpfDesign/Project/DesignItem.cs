@@ -65,6 +65,11 @@ namespace ICSharpCode.WpfDesign
 		public abstract string Name { get; set; }
 		
 		/// <summary>
+		/// Gets/Sets the value of the "x:Key" attribute on the design item.
+		/// </summary>
+		public abstract string Key { get; set; }
+		
+		/// <summary>
 		/// Is raised when the name of the design item changes.
 		/// </summary>
 		public abstract event EventHandler NameChanged;

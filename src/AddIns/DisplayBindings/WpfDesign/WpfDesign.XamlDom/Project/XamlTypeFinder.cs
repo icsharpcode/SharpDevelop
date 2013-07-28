@@ -43,10 +43,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		sealed class XamlNamespace
 		{
+            internal readonly string XmlNamespacePrefix;
 			internal readonly string XmlNamespace;
 			
-			internal XamlNamespace(string xmlNamespace)
+			internal XamlNamespace(string xmlNamespacePrefix, string xmlNamespace)
 			{
+                this.XmlNamespacePrefix = xmlNamespacePrefix;
 				this.XmlNamespace = xmlNamespace;
 			}
 			
@@ -54,7 +56,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			internal XamlNamespace Clone()
 			{
-				XamlNamespace copy = new XamlNamespace(this.XmlNamespace);
+				XamlNamespace copy = new XamlNamespace(this.XmlNamespacePrefix, this.XmlNamespace);
 				// AssemblyNamespaceMapping is immutable
 				copy.ClrNamespaces.AddRange(this.ClrNamespaces);
 				return copy;
@@ -108,6 +110,24 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return "clr-namespace:" + mapping.Namespace + ";assembly=" + mapping.Assembly.GetName().Name;
 			}
 		}
+
+        /// <summary>
+        /// Gets the prefix to use for the specified XML namespace,
+        /// or null if no suitable prefix could be found.
+        /// </summary>
+        public string GetPrefixForXmlNamespace(string xmlNamespace)
+        {
+            XamlNamespace ns;
+
+            if (namespaces.TryGetValue(xmlNamespace, out ns))
+            {
+                return ns.XmlNamespacePrefix;
+            }
+            else
+            {
+                return null;
+            }
+        }
 		
 		XamlNamespace ParseNamespace(string xmlNamespace)
 		{
@@ -127,7 +147,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 				assembly = name.Substring("assembly=".Length);
 			}
-			XamlNamespace ns = new XamlNamespace(xmlNamespace);
+			XamlNamespace ns = new XamlNamespace(null, xmlNamespace);
 			Assembly asm = LoadAssembly(assembly);
 			if (asm != null) {
 				AddMappingToNamespace(ns, new AssemblyNamespaceMapping(asm, namespaceName));
@@ -155,10 +175,18 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			if (assembly == null)
 				throw new ArgumentNullException("assembly");
+
+            Dictionary<string, string> namespacePrefixes = new Dictionary<string, string>();
+            foreach (XmlnsPrefixAttribute xmlnsPrefix in assembly.GetCustomAttributes(typeof(XmlnsPrefixAttribute), true)) {
+                namespacePrefixes.Add(xmlnsPrefix.XmlNamespace, xmlnsPrefix.Prefix);
+            }
+
 			foreach (XmlnsDefinitionAttribute xmlnsDef in assembly.GetCustomAttributes(typeof(XmlnsDefinitionAttribute), true)) {
 				XamlNamespace ns;
 				if (!namespaces.TryGetValue(xmlnsDef.XmlNamespace, out ns)) {
-					ns = namespaces[xmlnsDef.XmlNamespace] = new XamlNamespace(xmlnsDef.XmlNamespace);
+                    string prefix;
+                    namespacePrefixes.TryGetValue(xmlnsDef.XmlNamespace, out prefix);
+                    ns = namespaces[xmlnsDef.XmlNamespace] = new XamlNamespace(prefix, xmlnsDef.XmlNamespace);
 				}
 				if (string.IsNullOrEmpty(xmlnsDef.AssemblyName)) {
 					AddMappingToNamespace(ns, new AssemblyNamespaceMapping(assembly, xmlnsDef.ClrNamespace));
