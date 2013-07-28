@@ -107,7 +107,7 @@
 							              Margin="{TemplateBinding Level, Converter={StaticResource LevelConverter}}"
 							              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" />
 							<Border x:Name="contentBorder"
-							        HorizontalAlignment="Left">
+							        HorizontalAlignment="Stretch">
 								<ContentPresenter x:Name="PART_Header"
 									ContentSource="Header" />
 							</Border>
