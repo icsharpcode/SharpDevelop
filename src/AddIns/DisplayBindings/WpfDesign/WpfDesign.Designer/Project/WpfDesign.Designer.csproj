@@ -129,6 +129,7 @@
     <Compile Include="Extensions\InPlaceEditorExtension.cs" />
     <Compile Include="Extensions\MarginHandleExtension.cs" />
     <Compile Include="Extensions\QuickOperationMenuExtension.cs" />
+    <Compile Include="Extensions\RasterPlacementBehavior.cs" />
     <Compile Include="Extensions\SizeDisplayExtension.cs" />
     <Compile Include="Extensions\SnaplinePlacementBehavior.cs">
       <SubType>Code</SubType>
@@ -330,5 +331,9 @@
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="Configuration\CodeAnalysisDictionary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Raster.png" />
+    <Resource Include="Images\Snapline.png" />
   </ItemGroup>
 </Project>

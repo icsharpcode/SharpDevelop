@@ -16,7 +16,7 @@ using ICSharpCode.WpfDesign.Designer.Controls;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
-	sealed class DesignPanel : Decorator, IDesignPanel
+	sealed class DesignPanel : Decorator, IDesignPanel, INotifyPropertyChanged
 	{
 		#region Hit Testing
 		/// <summary>
@@ -182,6 +182,36 @@ namespace ICSharpCode.WpfDesign.Designer
 			set { _adornerLayer.IsHitTestVisible = value; }
 		}
 		
+		/// <summary>
+		/// Enables / Disables the Snapline Placement
+		/// </summary>
+		private bool _useSnaplinePlacement = true;
+		public bool UseSnaplinePlacement
+		{
+			get { return _useSnaplinePlacement; }
+			set { _useSnaplinePlacement = value; OnPropertyChanged("UseSnaplinePlacement"); }
+		}
+
+		/// <summary>
+		/// Enables / Disables the Raster Placement
+		/// </summary>
+		private bool _useRasterPlacement = false;
+		public bool UseRasterPlacement
+		{
+			get { return _useRasterPlacement; }
+			set { _useRasterPlacement = value; OnPropertyChanged("UseRasterPlacement"); }
+		}
+		
+		/// <summary>
+		/// Sets the with of the Raster when using Raster Placement
+		/// </summary>
+        private int _rasterWidth = 5;
+	    public int RasterWidth
+	    {
+	        get { return _rasterWidth; }
+            set { _rasterWidth = value; OnPropertyChanged("RasterWidth"); }
+	    }
+		
 		#endregion
 		
 		#region Visual Child Management
@@ -259,6 +289,13 @@ namespace ICSharpCode.WpfDesign.Designer
 					e.Handled = true;
 				}
 			}
+		}
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		private void OnPropertyChanged(string propertyName)
+		{
+			PropertyChangedEventHandler handler = PropertyChanged;
+			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }
