@@ -18,9 +18,19 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		{
 			PanToolCursor = GetCursor("Images/PanToolCursor.cur");
 			PanToolCursorMouseDown = GetCursor("Images/PanToolCursorMouseDown.cur");
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(ZoomControl), new FrameworkPropertyMetadata(typeof(ZoomControl)));
+		}
+
+		public object AdditionalControls
+		{
+			get { return (object)GetValue(AdditionalControlsProperty); }
+			set { SetValue(AdditionalControlsProperty, value); }
 		}
 		
-		static Cursor GetCursor(string path)
+		public static readonly DependencyProperty AdditionalControlsProperty =
+			DependencyProperty.Register("AdditionalControls", typeof(object), typeof(ZoomControl), new PropertyMetadata(null));
+
+		internal static Cursor GetCursor(string path)
 		{
 			var a = Assembly.GetExecutingAssembly();
 			var m = new ResourceManager(a.GetName().Name + ".g", a);
