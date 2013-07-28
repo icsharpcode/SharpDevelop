@@ -620,5 +620,43 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			CollectionAssert.AreEqual(expectedPackages, actualPackages);
 		}
+		
+		[Test]
+		public void ProcessRecord_UpdatedPackagesIncludingPrereleasesRequestedAndNoProjectName_ReturnsUpdatedPrereleasePackagesForSolution()
+		{
+			CreateCmdlet();
+			AddPackageToSolution("Test", "1.0.0.0");
+			FakePackage updatedPackage = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.1.0-alpha");
+			EnableUpdatesParameter();
+			EnablePrereleaseParameter();
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				updatedPackage
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdatedPackagesOnlyRequestedAndNoProjectNameAndRepositoryHasPrereleases_ReturnsUpdatedPackagesButNoPrereleasesForSolution()
+		{
+			CreateCmdlet();
+			AddPackageToSolution("Test", "1.0.0.0");
+			AddPackageToSelectedRepositoryInConsoleHost("Test", "1.2.0-alpha");
+			FakePackage updatedPackage = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.1.0");
+			EnableUpdatesParameter();
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				updatedPackage
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
 	}
 }

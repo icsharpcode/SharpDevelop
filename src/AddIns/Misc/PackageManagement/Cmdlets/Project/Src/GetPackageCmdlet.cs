@@ -45,7 +45,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		public SwitchParameter Updates { get; set; }
 		
 		[Parameter(ParameterSetName = "Available")]
-		[Parameter(ParameterSetName = "Updates")]
+		[Parameter(ParameterSetName = "Updated")]
 		[Alias("Prerelease")]
 		public SwitchParameter IncludePrerelease { get; set; }
 		
@@ -170,7 +170,9 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			IPackageRepository repository = CreatePackageRepositoryForActivePackageSource();
 			UpdatedPackages updatedPackages = CreateUpdatedPackages(repository);
 			updatedPackages.SearchTerms = Filter;
-			return updatedPackages.GetUpdatedPackages().AsQueryable();
+			return updatedPackages
+				.GetUpdatedPackages(IncludePrerelease.IsPresent)
+				.AsQueryable();
 		}
 		
 		UpdatedPackages CreateUpdatedPackages(IPackageRepository repository)
