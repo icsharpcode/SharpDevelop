@@ -78,6 +78,7 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
+    <Compile Include="Controls\CanvasPositionHandle.cs" />
     <Compile Include="Controls\ContainerDragHandle.cs" />
     <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\EnterTextBox.cs" />
@@ -118,6 +119,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\BorderForInvisibleControl.cs" />
+    <Compile Include="Extensions\CanvasPositionExtension.cs" />
     <Compile Include="Extensions\Initializers.cs" />
     <Compile Include="Extensions\DefaultPlacementBehavior.cs">
       <SubType>Code</SubType>

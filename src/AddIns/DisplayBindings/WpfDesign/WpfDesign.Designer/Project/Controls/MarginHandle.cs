@@ -60,7 +60,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// <summary>
 		/// Gets the Stub for this handle
 		/// </summary>
-		public MarginStub Stub {get; private set;}
+		public MarginStub Stub {get; protected set;}
 		
 		/// <summary>
 		/// Gets/Sets the angle by which handle rotates.
@@ -70,7 +70,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// <summary>
 		/// Gets/Sets the angle by which the Margin display has to be rotated
 		/// </summary>
-		public double TextTransform{
+		public virtual double TextTransform{
 			get{
 				if((double)orientation==90 || (double)orientation == 180)
 					return 180;
@@ -109,6 +109,9 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			get { return orientation; }
 		}
 
+		protected MarginHandle()
+		{ }
+		 
 		public MarginHandle(DesignItem adornedControlItem, AdornerPanel adornerPanel, HandleOrientation orientation)
 		{
 			Debug.Assert(adornedControlItem!=null);
