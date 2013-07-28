@@ -24,7 +24,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		Type elementType;
 		object instance;
 		List<XamlProperty> properties = new List<XamlProperty>();
-		
+		string contentPropertyName;
+		XamlProperty nameProperty;
+		string runtimeNameProperty;
+
 		/// <summary>For use by XamlParser only.</summary>
 		internal XamlObject(XamlDocument document, XmlElement element, Type elementType, object instance)
 		{
@@ -37,6 +40,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 			ServiceProvider = new XamlObjectServiceProvider(this);
 			CreateWrapper();
+			
+			var rnpAttrs = elementType.GetCustomAttributes(typeof(RuntimeNamePropertyAttribute), true) as RuntimeNamePropertyAttribute[];
+			if (rnpAttrs != null && rnpAttrs.Length > 0 && !String.IsNullOrEmpty(rnpAttrs[0].Name)) {
+				runtimeNameProperty = rnpAttrs[0].Name;
+			}
 		}
 		
 		/// <summary>For use by XamlParser only.</summary>
@@ -193,6 +201,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 			}
 			UpdateMarkupExtensionChain();
+			
+			if (property == NameProperty) {
+				if (NameChanged != null)
+					NameChanged(this, EventArgs.Empty);
+			}
 		}
 
 		void UpdateMarkupExtensionChain()
@@ -273,8 +286,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
-		string contentPropertyName;
-
 		/// <summary>
 		/// Gets the name of the content property.
 		/// </summary>
@@ -284,6 +295,54 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 		
+		/// <summary>
+		/// Gets which property name of the type maps to the XAML x:Name attribute.
+		/// </summary>
+		public string RuntimeNameProperty {
+			get {
+				return runtimeNameProperty;
+			}
+		}
+
+		/// <summary>
+		/// Gets which property of the type maps to the XAML x:Name attribute.
+		/// </summary>
+		public XamlProperty NameProperty {
+			get {
+				if(nameProperty == null && runtimeNameProperty != null)
+					nameProperty = FindOrCreateProperty(runtimeNameProperty);
+				
+				return nameProperty;
+			}
+		}
+		
+		/// <summary>
+		/// Gets/Sets the name of this XamlObject.
+		/// </summary>
+		public string Name {
+			get 
+			{
+				string name = GetXamlAttribute("Name");
+				
+				if (String.IsNullOrEmpty(name)) {
+					if (NameProperty != null && NameProperty.IsSet)
+						name = (string)NameProperty.ValueOnInstance;
+				}
+				
+				if (name == String.Empty)
+					name = null;
+				
+				return name;
+			}
+			set
+			{
+				if (String.IsNullOrEmpty(value))
+					this.SetXamlAttribute("Name", null);
+				else
+					this.SetXamlAttribute("Name", value);
+			}
+		}
+
 		/// <summary>
 		/// Finds the specified property, or creates it if it doesn't exist.
 		/// </summary>
@@ -353,10 +412,51 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public void SetXamlAttribute(string name, string value)
 		{
+			XamlProperty runtimeNameProperty = null;
+			bool isNameChange = false;
+			
+			if (name == "Name") {
+				isNameChange = true;
+				string oldName = GetXamlAttribute("Name");
+				
+				if (String.IsNullOrEmpty(oldName)) {
+					runtimeNameProperty = this.NameProperty;
+					if (runtimeNameProperty != null) {
+						if (runtimeNameProperty.IsSet)
+							oldName = (string)runtimeNameProperty.ValueOnInstance;
+						else
+							runtimeNameProperty = null;
+					}
+				}
+				
+				if (String.IsNullOrEmpty(oldName))
+					oldName = null;
+				
+				NameScopeHelper.NameChanged(this, oldName, value);
+			}
+
 			if (value == null)
 				element.RemoveAttribute(name, XamlConstants.XamlNamespace);
 			else
 				element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			
+			if (isNameChange) {
+				bool nameChangedAlreadyRaised = false;
+				if (runtimeNameProperty != null) {
+					var handler = new EventHandler((sender, e) => nameChangedAlreadyRaised = true);
+					this.NameChanged += handler;
+					
+					try {
+						runtimeNameProperty.Reset();
+					}
+					finally {
+						this.NameChanged -= handler;
+					}
+				}
+				
+				if (NameChanged != null && !nameChangedAlreadyRaised)
+					NameChanged(this, EventArgs.Empty);
+			}
 		}
 
 		/// <summary>
@@ -399,6 +499,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			return markupExtensionName;
 		}
+		
+		/// <summary>
+		/// Is raised when the name of this XamlObject changes.
+		/// </summary>
+		public event EventHandler NameChanged;
 	}
 
 	abstract class MarkupExtensionWrapper

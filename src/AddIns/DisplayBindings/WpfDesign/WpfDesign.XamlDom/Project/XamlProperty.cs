@@ -124,7 +124,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
-		/// Gets if the property represents the FrameworkElement.Resources property that holds a locally-defined resource dictionary. 
+		/// Gets if the property represents the FrameworkElement.Resources property that holds a locally-defined resource dictionary.
 		/// </summary>
 		public bool IsResources {
 			get { return isResources; }
@@ -276,15 +276,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				obj.Properties.Where((prop) => prop.IsResources).FirstOrDefault() != null;
 		}
 
-        XmlElement CreatePropertyElement()
-        {
-            string ns = parentObject.OwnerDocument.GetNamespaceFor(parentObject.ElementType);
-            return parentObject.OwnerDocument.XmlDocument.CreateElement(
-                parentObject.OwnerDocument.GetPrefixForNamespace(ns),
-                parentObject.ElementType.Name + "." + this.PropertyName,
-                ns
-                );
-        }
+		XmlElement CreatePropertyElement()
+		{
+			string ns = parentObject.OwnerDocument.GetNamespaceFor(parentObject.ElementType);
+			return parentObject.OwnerDocument.XmlDocument.CreateElement(
+				parentObject.OwnerDocument.GetPrefixForNamespace(ns),
+				parentObject.ElementType.Name + "." + this.PropertyName,
+				ns
+			);
+		}
 		
 		internal void AddChildNodeToProperty(XmlNode newChildNode)
 		{
@@ -322,7 +322,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (collection == null) {
 				if (collectionElements.Count == 0 && this.PropertyName != this.ParentObject.ContentPropertyName) {
 					// we have to create the collection element
-                    _propertyElement = CreatePropertyElement();
+					_propertyElement = CreatePropertyElement();
 
 					if (this.IsResources) {
 						parentObject.XmlElement.PrependChild(_propertyElement);
@@ -353,26 +353,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			string name;
 			var element = ParentObject.XmlElement;
 
-			if (IsAttached)
-			{
+			if (IsAttached) {
 				name = PropertyTargetType.Name + "." + PropertyName;
 
 				string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
-                string prefix = element.GetPrefixOfNamespace(ns);
+				string prefix = element.GetPrefixOfNamespace(ns);
 
-                if (String.IsNullOrEmpty(prefix))
-                {
-                    prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
-                }
+				if (String.IsNullOrEmpty(prefix)) {
+					prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
+				}
 
-                if (!string.IsNullOrEmpty(prefix))
-				{
+				if (!string.IsNullOrEmpty(prefix)) {
 					element.SetAttribute(name, ns, value);
 					return element.GetAttributeNode(name, ns);
 				}
-			}
-			else
-			{
+			} else {
 				name = PropertyName;
 			}
 
@@ -392,8 +387,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					return name;
 				else
 					return prefix + ":" + name;
-			}
-			else
+			} else
 				return PropertyName;
 		}
 		
@@ -453,39 +447,22 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		void PossiblyNameChanged(XamlPropertyValue oldValue, XamlPropertyValue newValue)
 		{
-			if (PropertyName == "Name" && ReturnType == typeof(string)) {
-
+			if (ParentObject.RuntimeNameProperty != null && PropertyName == ParentObject.RuntimeNameProperty) {
+				
+				if (!String.IsNullOrEmpty(ParentObject.GetXamlAttribute("Name"))) {
+					throw new XamlLoadException("The property 'Name' is set more than once.");
+				}
+				
 				string oldName = null;
 				string newName = null;
-
+				
 				var oldTextValue = oldValue as XamlTextValue;
 				if (oldTextValue != null) oldName = oldTextValue.Text;
 				
 				var newTextValue = newValue as XamlTextValue;
 				if (newTextValue != null) newName = newTextValue.Text;
-
-				var obj = ParentObject;
-				while (obj != null) {
-					var nameScope = obj.Instance as INameScope;
-					if (nameScope == null) {
-						if (obj.Instance is DependencyObject)
-							nameScope = NameScope.GetNameScope((DependencyObject)obj.Instance);
-					}
-					if (nameScope != null) {
-						if (oldName != null) {
-							try {
-								nameScope.UnregisterName(oldName);
-							} catch (Exception x) {
-								Debug.WriteLine(x.Message);
-							}
-						}
-						if (newName != null) {
-							nameScope.RegisterName(newName, ParentObject.Instance);
-						}
-						break;
-					}
-					obj = obj.ParentObject;
-				}
+				
+				NameScopeHelper.NameChanged(ParentObject, oldName, newName);
 			}
 		}
 

@@ -244,8 +244,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (attribute.Name == "xml:space") {
 					continue;
 				}
-				if (GetAttributeNamespace(attribute) == XamlConstants.XamlNamespace)
+				if (GetAttributeNamespace(attribute) == XamlConstants.XamlNamespace) {
+					if (attribute.LocalName == "Name") {
+						try {
+							NameScopeHelper.NameChanged(obj, null, attribute.Value);
+						} catch (Exception x) {
+							ReportException(x, attribute);
+						}
+					}
 					continue;
+				}
+					
 				ParseObjectAttribute(obj, attribute);
 			}
 			

@@ -109,7 +109,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 					try {
 						if (string.IsNullOrEmpty(value)) {
 							OldName = null;
-							SingleItem.Properties["Name"].Reset();
+							SingleItem.Name = null;
 						} else {
 							OldName = SingleItem.Name;
 							SingleItem.Name = value;
