@@ -568,5 +568,26 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			CollectionAssert.AreEqual(expectedPackages, actualPackages);
 		}
+		
+		[Test]
+		public void ProcessRecord_ListAvailableAndPrereleasePackagesWithFilterWhenMultiplePackageVersions_ReturnsLatestPrereleasePackages()
+		{
+			CreateCmdlet();
+			FakePackageRepository repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			repository.AddFakePackageWithVersion("B", "2.0.1-beta");
+			FakePackage expectedPackage = repository.AddFakePackageWithVersion("B", "2.1.0-beta");
+			EnableListAvailableParameter();
+			EnablePrereleaseParameter();
+			SetFilterParameter("B");
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				expectedPackage
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
 	}
 }

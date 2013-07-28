@@ -77,11 +77,16 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		protected override void ProcessRecord()
 		{
 			ValidateParameters();
-			
+			IEnumerable<IPackage> packages = GetFilteredPackages();
+			WritePackagesToOutputPipeline(packages);
+		}
+		
+		IEnumerable<IPackage> GetFilteredPackages()
+		{
 			IQueryable<IPackage> packages = GetPackages();
 			packages = OrderPackages(packages);
-			packages = SelectPackageRange(packages);
-			WritePackagesToOutputPipeline(packages);
+			IEnumerable<IPackage> distinctPackages = packages.DistinctLast(PackageEqualityComparer.Id);
+			return SelectPackageRange(distinctPackages);
 		}
 		
 		void ValidateParameters()
@@ -119,7 +124,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			return packages.OrderBy(package => package.Id);
 		}
 		
-		IQueryable<IPackage> SelectPackageRange(IQueryable<IPackage> packages)
+		IEnumerable<IPackage> SelectPackageRange(IEnumerable<IPackage> packages)
 		{
 			if (skip.HasValue) {
 				packages = packages.Skip(skip.Value);
@@ -210,7 +215,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			return null;
 		}
 		
-		void WritePackagesToOutputPipeline(IQueryable<IPackage> packages)
+		void WritePackagesToOutputPipeline(IEnumerable<IPackage> packages)
 		{
 			foreach (IPackage package in packages) {
 				WriteObject(package);
