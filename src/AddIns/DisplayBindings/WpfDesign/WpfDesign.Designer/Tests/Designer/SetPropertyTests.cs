@@ -30,7 +30,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			AssertCanvasDesignerOutput("<Button Width=\"100\" Height=\"200\" Content=\"{StaticResource ResourceKey=MyBrush}\" />", button.Context);
 		}
 		
-		[Test, Ignore("x-Namespace is not resolved properly and properties are not present in XAML DOM")]
+		[Test, Ignore("Properties are not present in XAML DOM")]
 		public void SetContentToXStatic()
 		{
 			DesignItem button = CreateCanvasContext("<Button Width='100' Height='200'/>");
