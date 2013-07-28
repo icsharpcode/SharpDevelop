@@ -49,6 +49,10 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		[Alias("Prerelease")]
 		public SwitchParameter IncludePrerelease { get; set; }
 		
+		[Parameter(ParameterSetName = "Available")]
+		[Parameter(ParameterSetName = "Updated")]
+		public SwitchParameter AllVersions { get; set; }
+		
 		[Parameter(Position = 0)]
 		public string Filter { get; set; }
 		
@@ -91,7 +95,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IEnumerable<IPackage> DistinctPackagesById(IQueryable<IPackage> packages)
 		{
-			if (ListAvailable.IsPresent) {
+			if (ListAvailable && !AllVersions) {
 				return packages.DistinctLast(PackageEqualityComparer.Id);
 			}
 			return packages;
@@ -106,7 +110,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		bool ParametersRequireProject()
 		{
-			if (ListAvailable.IsPresent) {
+			if (ListAvailable) {
 				return false;
 			}
 			return true;
@@ -119,9 +123,9 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> GetPackages()
 		{
-			if (ListAvailable.IsPresent) {
+			if (ListAvailable) {
 				return GetAvailablePackages();
-			} else if (Updates.IsPresent) {
+			} else if (Updates) {
 				return GetUpdatedPackages();
 			}
 			return GetInstalledPackages();
@@ -159,7 +163,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		IQueryable<IPackage> FilterPackages(IQueryable<IPackage> packages)
 		{
 			IQueryable<IPackage> filteredPackages = packages.Find(Filter);
-			if (IncludePrerelease.IsPresent) {
+			if (IncludePrerelease || AllVersions) {
 				return filteredPackages;
 			}
 			return filteredPackages.Where(package => package.IsLatestVersion);
@@ -171,7 +175,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			UpdatedPackages updatedPackages = CreateUpdatedPackages(repository);
 			updatedPackages.SearchTerms = Filter;
 			return updatedPackages
-				.GetUpdatedPackages(IncludePrerelease.IsPresent)
+				.GetUpdatedPackages(IncludePrerelease)
 				.AsQueryable();
 		}
 		

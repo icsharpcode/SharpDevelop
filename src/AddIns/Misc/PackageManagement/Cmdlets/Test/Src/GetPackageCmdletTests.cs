@@ -55,6 +55,11 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.IncludePrerelease = new SwitchParameter(true);
 		}
 		
+		void EnableAllVersionsParameter()
+		{
+			cmdlet.AllVersions = new SwitchParameter(true);
+		}
+		
 		FakePackage AddPackageToSpecifiedProjectManagerLocalRepository(string id, string version)
 		{
 			FakePackage package = FakePackage.CreatePackageWithVersion(id, version);
@@ -446,7 +451,7 @@ namespace PackageManagement.Cmdlets.Tests
 			FakePackageRepository repository = fakeRegisteredPackageRepositories.FakePackageRepository;
 			repository.AddFakePackage("A");
 			repository.AddFakePackage("B");
-			FakePackage packageC = repository.AddFakePackage("C");			
+			FakePackage packageC = repository.AddFakePackage("C");
 			
 			EnableListAvailableParameter();
 			SetSkipParameter(2);
@@ -656,6 +661,43 @@ namespace PackageManagement.Cmdlets.Tests
 				updatedPackage
 			};
 			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_ListAvailablePackagesAndTwoVersionsOfSamePackageInOnlineRepository_OutputIsLatestPackageVersion()
+		{
+			CreateCmdlet();
+			AddPackageToSelectedRepositoryInConsoleHost("Test", "1.0");
+			FakePackage expectedPackage = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.1");
+			EnableListAvailableParameter();
+			var expectedPackages = new FakePackage[] {
+				expectedPackage,
+			};
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_ListAvailablePackagesAndAllVersionsAndTwoVersionsOfSamePackageInOnlineRepository_OutputIsAllPackageVersions()
+		{
+			CreateCmdlet();
+			FakePackage expectedPackage1 = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.0");
+			expectedPackage1.IsLatestVersion = false;
+			FakePackage expectedPackage2 = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.1");
+			EnableListAvailableParameter();
+			EnableAllVersionsParameter();
+			var expectedPackages = new FakePackage[] {
+				expectedPackage1,
+				expectedPackage2
+			};
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
 			CollectionAssert.AreEqual(expectedPackages, actualPackages);
 		}
 	}
