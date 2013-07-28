@@ -149,17 +149,21 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		void AssemblyListCollectionChanged(IReadOnlyCollection<IAssemblyModel> removedItems, IReadOnlyCollection<IAssemblyModel> addedItems)
 		{
-			foreach (var assembly in addedItems) {
-				// Add this assembly to current workspace
-				if (activeWorkspace != null) {
-					activeWorkspace.AssemblyFiles.Add(assembly.Context.Location);
+			if (addedItems != null) {
+				foreach (var assembly in addedItems) {
+					// Add this assembly to current workspace
+					if (activeWorkspace != null) {
+						activeWorkspace.AssemblyFiles.Add(assembly.Context.Location);
+					}
 				}
 			}
 			
-			foreach (var assembly in removedItems) {
-				// Add this assembly to current workspace
-				if (activeWorkspace != null) {
-					activeWorkspace.AssemblyFiles.Remove(assembly.Context.Location);
+			if (removedItems != null) {
+				foreach (var assembly in removedItems) {
+					// Add this assembly to current workspace
+					if (activeWorkspace != null) {
+						activeWorkspace.AssemblyFiles.Remove(assembly.Context.Location);
+					}
 				}
 			}
 			

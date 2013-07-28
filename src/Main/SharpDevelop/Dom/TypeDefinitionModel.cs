@@ -270,6 +270,44 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
+		#region Base Types collection
+		NestedTypeDefinitionModelCollection baseTypes;
+		
+		IList<IUnresolvedTypeDefinition> GetBaseTypes(IUnresolvedTypeDefinition definition)
+		{
+			var compilation = context.GetCompilation();
+			if (compilation != null) {
+				var typeResolveContext = new SimpleTypeResolveContext(compilation.MainAssembly).WithCurrentTypeDefinition(Resolve());
+				var baseTypeList = new List<IUnresolvedTypeDefinition>();
+				foreach (var baseTypeRef in definition.BaseTypes) {
+					var resolvedTypeDefinition = baseTypeRef.Resolve(typeResolveContext).GetDefinition();
+					if (resolvedTypeDefinition != null) {
+						baseTypeList.Add(resolvedTypeDefinition.Parts[0]);
+					}
+				}
+				
+				return baseTypeList;
+			}
+			
+			return null;
+		}
+		
+		public IModelCollection<ITypeDefinitionModel> BaseTypes {
+			get {
+				if (baseTypes == null) {
+					baseTypes = new NestedTypeDefinitionModelCollection(context);
+					foreach (var part in parts) {
+						var baseTypeList = GetBaseTypes(part);
+						if (baseTypeList != null) {
+							baseTypes.Update(null, baseTypeList);
+						}
+					}
+				}
+				return baseTypes;
+			}
+		}
+		#endregion
+		
 		#region Update
 		/// <summary>
 		/// Updates this type definition model by replacing oldPart with newPart.
@@ -310,6 +348,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (nestedTypes != null) {
 				nestedTypes.Update(oldPart != null ? oldPart.NestedTypes : null, newPart != null ? newPart.NestedTypes : null);
+			}
+			if (baseTypes != null) {
+				baseTypes.Update(oldPart != null ? GetBaseTypes(oldPart) : null, newPart != null ? GetBaseTypes(newPart) : null);
 			}
 		}
 		#endregion

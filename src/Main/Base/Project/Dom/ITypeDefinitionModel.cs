@@ -17,6 +17,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string Namespace { get; }
 		TypeKind TypeKind { get; }
 		IModelCollection<ITypeDefinitionModel> NestedTypes { get; }
+		IModelCollection<ITypeDefinitionModel> BaseTypes { get; }
 		IModelCollection<IMemberModel> Members { get; }
 		
 		IEnumerable<DomRegion> GetPartRegions();
