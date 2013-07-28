@@ -355,17 +355,20 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 			if (IsAttached)
 			{
-				name = PropertyTargetType.Name + "." + PropertyName;
+				if (PropertyTargetType == typeof (DesignTimeProperties) || PropertyTargetType == typeof (MarkupCompatibilityProperties))
+					name = PropertyName;
+				else
+					name = PropertyTargetType.Name + "." + PropertyName;
 
 				string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
-                string prefix = element.GetPrefixOfNamespace(ns);
+				string prefix = element.GetPrefixOfNamespace(ns);
 
-                if (String.IsNullOrEmpty(prefix))
-                {
-                    prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
-                }
+				if (String.IsNullOrEmpty(prefix))
+				{
+					prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
+				}
 
-                if (!string.IsNullOrEmpty(prefix))
+				if (!string.IsNullOrEmpty(prefix))
 				{
 					element.SetAttribute(name, ns, value);
 					return element.GetAttributeNode(name, ns);
@@ -454,16 +457,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		void PossiblyNameChanged(XamlPropertyValue oldValue, XamlPropertyValue newValue)
 		{
 			if (PropertyName == "Name" && ReturnType == typeof(string)) {
-
+				
 				string oldName = null;
 				string newName = null;
-
+				
 				var oldTextValue = oldValue as XamlTextValue;
 				if (oldTextValue != null) oldName = oldTextValue.Text;
 				
 				var newTextValue = newValue as XamlTextValue;
 				if (newTextValue != null) newName = newTextValue.Text;
-
+				
 				var obj = ParentObject;
 				while (obj != null) {
 					var nameScope = obj.Instance as INameScope;

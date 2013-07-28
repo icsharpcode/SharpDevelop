@@ -430,11 +430,29 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		static XamlPropertyInfo GetPropertyInfo(object elementInstance, Type elementType, XmlAttribute attribute, XamlTypeFinder typeFinder)
 		{
+			var ret = GetXamlSpecialProperty(attribute);
+			if (ret != null)
+				return ret;
 			if (attribute.LocalName.Contains(".")) {
 				return GetPropertyInfo(typeFinder, elementInstance, elementType, GetAttributeNamespace(attribute), attribute.LocalName);
 			} else {
 				return FindProperty(elementInstance, elementType, attribute.LocalName);
 			}
+		}
+		
+		internal static XamlPropertyInfo GetXamlSpecialProperty(XmlAttribute attribute)
+		{
+			if (attribute.LocalName == "Ignorable" && attribute.NamespaceURI == XamlConstants.MarkupCompatibilityNamespace) {
+				return FindAttachedProperty(typeof(MarkupCompatibilityProperties), attribute.LocalName);
+			} else if (attribute.LocalName == "DesignHeight" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
+				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+			} else if (attribute.LocalName == "DesignWidth" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
+				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+			} else if (attribute.LocalName == "IsHidden" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
+				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+			}
+
+			return null;
 		}
 		
 		internal static XamlPropertyInfo GetPropertyInfo(XamlTypeFinder typeFinder, object elementInstance, Type elementType, string xmlNamespace, string localName)
@@ -449,7 +467,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return FindAttachedProperty(propertyType, propertyName);
 			}
 		}
-		
+		 
 		static void SplitQualifiedIdentifier(string qualifiedName, out string typeName, out string propertyName)
 		{
 			int pos = qualifiedName.IndexOf('.');

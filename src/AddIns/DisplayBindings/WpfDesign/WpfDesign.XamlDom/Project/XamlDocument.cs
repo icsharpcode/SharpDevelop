@@ -170,7 +170,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
             string ns = GetNamespaceFor(elementType);
             string prefix = GetPrefixForNamespace(ns);
-
+		    
             XmlElement xml = _xmlDoc.CreateElement(prefix, elementType.Name, ns);
 
 			if (hasStringConverter &&
@@ -184,6 +184,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		internal string GetNamespaceFor(Type type)
 		{
+			if (type == typeof (DesignTimeProperties))
+				return XamlConstants.DesignTimeNamespace;
+			if (type == typeof (MarkupCompatibilityProperties))
+				return XamlConstants.MarkupCompatibilityNamespace;
+
 			return _typeFinder.GetXmlNamespaceFor(type.Assembly, type.Namespace);
 		}
 
@@ -220,6 +225,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
                 System.Diagnostics.Debug.Assert(!String.IsNullOrEmpty(xmlnsPrefix));
 
                 _xmlDoc.DocumentElement.SetAttribute(xmlnsPrefix + ":" + prefix, @namespace);
+                
+                if (@namespace == XamlConstants.DesignTimeNamespace)
+                {
+                	var ignorableProp = new XamlProperty(this._rootElement,new XamlDependencyPropertyInfo(MarkupCompatibilityProperties.IgnorableProperty,true));
+                	ignorableProp.SetAttribute(prefix);
+                }
             }
 
             return prefix;
