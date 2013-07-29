@@ -142,6 +142,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
 			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);
 			OnPrimarySelectionChanged(null, null);
+			
+			var designerItem = this.ExtendedItem.Component as FrameworkElement;
+			this.rotateTransform = designerItem.RenderTransform as RotateTransform;
+			if (rotateTransform != null)
+				angle = rotateTransform.Angle;
 		}
 		
 		void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
