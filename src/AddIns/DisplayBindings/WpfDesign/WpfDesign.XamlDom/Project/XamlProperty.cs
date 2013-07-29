@@ -361,25 +361,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					name = PropertyTargetType.Name + "." + PropertyName;
 
 				string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
-				string prefix = element.GetPrefixOfNamespace(ns);
+                string prefix = element.GetPrefixOfNamespace(ns);
 
-				if (String.IsNullOrEmpty(prefix))
-				{
-					prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
-				}
+				if (String.IsNullOrEmpty(prefix)) {
+                    prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
+                }
 
-				if (!string.IsNullOrEmpty(prefix))
-				{
+				if (!string.IsNullOrEmpty(prefix)) {
 					element.SetAttribute(name, ns, value);
 					return element.GetAttributeNode(name, ns);
 				}
-			}
-			else
-			{
+			} else {
 				name = PropertyName;
 			}
 
-			element.SetAttribute(name, value);
+			element.SetAttribute(name, string.Empty, value);
 			return element.GetAttributeNode(name);
 		}
 
@@ -395,8 +391,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					return name;
 				else
 					return prefix + ":" + name;
-			}
-			else
+			} else
 				return PropertyName;
 		}
 		
@@ -456,39 +451,22 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		void PossiblyNameChanged(XamlPropertyValue oldValue, XamlPropertyValue newValue)
 		{
-			if (PropertyName == "Name" && ReturnType == typeof(string)) {
+			if (ParentObject.RuntimeNameProperty != null && PropertyName == ParentObject.RuntimeNameProperty) {
 				
+				if (!String.IsNullOrEmpty(ParentObject.GetXamlAttribute("Name"))) {
+					throw new XamlLoadException("The property 'Name' is set more than once.");
+				}
+
 				string oldName = null;
 				string newName = null;
-				
+
 				var oldTextValue = oldValue as XamlTextValue;
 				if (oldTextValue != null) oldName = oldTextValue.Text;
 				
 				var newTextValue = newValue as XamlTextValue;
 				if (newTextValue != null) newName = newTextValue.Text;
-				
-				var obj = ParentObject;
-				while (obj != null) {
-					var nameScope = obj.Instance as INameScope;
-					if (nameScope == null) {
-						if (obj.Instance is DependencyObject)
-							nameScope = NameScope.GetNameScope((DependencyObject)obj.Instance);
-					}
-					if (nameScope != null) {
-						if (oldName != null) {
-							try {
-								nameScope.UnregisterName(oldName);
-							} catch (Exception x) {
-								Debug.WriteLine(x.Message);
-							}
-						}
-						if (newName != null) {
-							nameScope.RegisterName(newName, ParentObject.Instance);
-						}
-						break;
-					}
-					obj = obj.ParentObject;
-				}
+
+				NameScopeHelper.NameChanged(ParentObject, oldName, newName);
 			}
 		}
 

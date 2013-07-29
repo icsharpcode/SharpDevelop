@@ -49,8 +49,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		}
 		
 		public override string Name {
-			get { return (string)this.Properties["Name"].ValueOnInstance; }
-			set { this.Properties["Name"].SetValue(value); }
+			get { return _xamlObject.Name; }
+			set { _xamlObject.Name = value; }
 		}
 		
 		public override string Key {
@@ -70,13 +70,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				#if EventHandlerDebugging
 				Debug.WriteLine("Add event handler to " + this.ComponentType.Name + " (handler count=" + (++totalEventHandlerCount) + ")");
 				#endif
-				this.Properties["Name"].ValueChanged += value;
+				_xamlObject.NameChanged += value;
 			}
 			remove {
 				#if EventHandlerDebugging
 				Debug.WriteLine("Remove event handler from " + this.ComponentType.Name + " (handler count=" + (--totalEventHandlerCount) + ")");
 				#endif
-				this.Properties["Name"].ValueChanged -= value;
+				_xamlObject.NameChanged -= value;
 			}
 		}
 		

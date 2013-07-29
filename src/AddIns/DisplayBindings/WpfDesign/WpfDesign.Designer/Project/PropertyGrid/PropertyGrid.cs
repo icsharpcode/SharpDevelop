@@ -31,12 +31,12 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		}
 
 		Category specialCategory = new Category("Special");
-		Category popularCategory = new Category("Popular");
+		Category popularCategory = new Category("Popular");		
 		Category otherCategory = new Category("Other");
 		Category attachedCategory = new Category("Attached");
 
 		Dictionary<MemberDescriptor, PropertyNode> nodeFromDescriptor = new Dictionary<MemberDescriptor, PropertyNode>();
-		
+
 		public CategoriesCollection Categories { get; private set; }
 		public PropertyNodeCollection Events { get; private set; }
 
@@ -126,7 +126,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 					try {
 						if (string.IsNullOrEmpty(value)) {
 							OldName = null;
-							SingleItem.Properties["Name"].Reset();
+							SingleItem.Name = null;
 						} else {
 							OldName = SingleItem.Name;
 							SingleItem.Name = value;
@@ -245,7 +245,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		{
 			var designProperties = SelectedItems.Select(item => item.Properties.GetProperty(md)).ToArray();
 			if (!Metadata.IsBrowsable(designProperties[0])) return;
-			
+
 			PropertyNode node;
 			if (nodeFromDescriptor.TryGetValue(md, out node)) {
 				node.Load(designProperties);
