@@ -31,6 +31,8 @@ namespace ICSharpCode.XamlDesigner
 		{
 			var assembly = Assembly.LoadFile(path);
 			
+			MyTypeFinder.Instance.RegisterAssembly(assembly);
+			
 			var node = new AssemblyNode();
 			node.Assembly = assembly;
 			node.Path = path;
