@@ -65,13 +65,25 @@ namespace ICSharpCode.WpfDesign.AddIn
 		public void AddProjectDlls(OpenedFile file)
 		{
 			var pc = MyTypeFinder.GetProjectContent(file);
-			foreach (ReflectionProjectContent referencedProjectContent in pc.ThreadSafeGetReferencedContents().Where(x=> x is ReflectionProjectContent))
+			foreach (var referencedProjectContent in pc.ThreadSafeGetReferencedContents())
 			{
-				if (!addedAssemblys.Contains(referencedProjectContent.AssemblyLocation))
+				string f = null;
+				if (referencedProjectContent is ParseProjectContent)
+				{
+					var prj = ((ParseProjectContent)referencedProjectContent).Project as AbstractProject;
+					if (prj != null)
+						f = prj.OutputAssemblyFullPath;
+				}
+				else if (referencedProjectContent is ReflectionProjectContent)
+				{
+					f = ((ReflectionProjectContent) referencedProjectContent).AssemblyLocation;
+				}
+				
+				if (f != null && !addedAssemblys.Contains(f))
 				{
 					try
 					{
-						var assembly = Assembly.LoadFrom(referencedProjectContent.AssemblyLocation);
+						var assembly = Assembly.LoadFrom(f);
 
 						SideTab sideTab = new SideTab(sideBar, assembly.FullName.Split(new[] {','})[0]);
 						sideTab.DisplayName = StringParser.Parse(sideTab.Name);
@@ -91,12 +103,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 						if (sideTab.Items.Count > 1)
 							sideBar.Tabs.Add(sideTab);
 
-						addedAssemblys.Add(referencedProjectContent.AssemblyLocation);
+						addedAssemblys.Add(f);
 					}
 					catch (Exception ex)
 					{
 						WpfViewContent.DllLoadErrors.Add(
-							new Task(new BuildError(referencedProjectContent.AssemblyLocation, ex.Message)));
+							new Task(new BuildError(f, ex.Message)));
 					}
 				}
 			}
