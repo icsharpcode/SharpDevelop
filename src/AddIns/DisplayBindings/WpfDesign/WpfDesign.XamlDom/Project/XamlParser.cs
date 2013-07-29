@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Xml;
 
@@ -154,10 +155,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			if (errorSink != null) {
 				var lineInfo = node as IXmlLineInfo;
+				var msg = x.Message;
+				if (x.InnerException != null)
+					msg += " (" + x.InnerException.Message + ")";
 				if (lineInfo != null) {
-					errorSink.ReportError(x.Message, lineInfo.LineNumber, lineInfo.LinePosition);
+					errorSink.ReportError(msg, lineInfo.LineNumber, lineInfo.LinePosition);
 				} else {
-					errorSink.ReportError(x.Message, 0, 0);
+					errorSink.ReportError(msg, 0, 0);
 				}
 				if (currentXamlObject != null) {
 					currentXamlObject.HasErrors = true;
@@ -473,7 +477,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return FindAttachedProperty(propertyType, propertyName);
 			}
 		}
-		 
+		
 		static void SplitQualifiedIdentifier(string qualifiedName, out string typeName, out string propertyName)
 		{
 			int pos = qualifiedName.IndexOf('.');
