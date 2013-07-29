@@ -5,6 +5,11 @@ using System;
 using System.ComponentModel;
 using System.Windows.Markup;
 using System.Xml;
+using System.IO;
+using System.Linq;
+using System.Windows.Documents;
+using System.Windows.Media;
+using System.Collections.Generic;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -173,10 +178,25 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		    
             XmlElement xml = _xmlDoc.CreateElement(prefix, elementType.Name, ns);
 
-			if (hasStringConverter &&
-			    XamlObject.GetContentPropertyName(elementType) != null)
-			{
+			if (hasStringConverter && XamlObject.GetContentPropertyName(elementType) != null) {
 				xml.InnerText = c.ConvertToInvariantString(instance);
+			} else if (instance is Brush) {
+				var s = new MemoryStream();
+				XamlWriter.Save(instance, s);
+				s.Seek(0, SeekOrigin.Begin);
+				XmlDocument doc = new XmlDocument();
+				doc.Load(s);
+				xml = (XmlElement)_xmlDoc.ImportNode(doc.DocumentElement, true);
+
+				var attLst = xml.Attributes.Cast<XmlAttribute>().ToList();
+				foreach (XmlAttribute att in attLst) {
+					if (att.Name.StartsWith(XamlConstants.Xmlns)) {
+						var rootAtt = doc.DocumentElement.GetAttributeNode(att.Name);
+						if (rootAtt != null && rootAtt.Value == att.Value) {
+							xml.Attributes.Remove(att);
+						}
+					}
+				}
 			}
 
 			return new XamlObject(this, xml, elementType, instance);
