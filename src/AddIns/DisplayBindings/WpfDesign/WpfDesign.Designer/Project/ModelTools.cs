@@ -86,6 +86,9 @@ namespace ICSharpCode.WpfDesign.Designer
 				if (selectionService.SelectionCount == 0 && !items.Contains(parent)) {
 					selectionService.SetSelectedComponents(new DesignItem[] { parent });
 				}
+				foreach (var designItem in items) {
+					designItem.Name = null;
+				}
 				operation.DeleteItemsAndCommit();
 			} catch {
 				operation.Abort();
