@@ -18,6 +18,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.OutlineView;
@@ -37,9 +38,16 @@ namespace ICSharpCode.WpfDesign.AddIn
 			BasicMetadata.Register();
 			
 			WpfToolbox.Instance.AddProjectDlls(file);
+
+			ProjectService.ProjectItemAdded += ProjectService_ProjectItemAdded;
 			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
+		}
+
+		void ProjectService_ProjectItemAdded(object sender, ProjectItemEventArgs e)
+		{
+			WpfToolbox.Instance.AddProjectDlls(this.Files[0]);
 		}
 		
 		static WpfViewContent()
@@ -227,6 +235,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public override void Dispose()
 		{
+			ProjectService.ProjectItemAdded -= ProjectService_ProjectItemAdded;
+
 			propertyContainer.Clear();
 			base.Dispose();
 		}
