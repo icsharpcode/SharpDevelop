@@ -235,4 +235,20 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 			return Enum.Parse(targetType, parameterString);
 		}
 	}
+	
+	public class InvertedZoomConverter : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly InvertedZoomConverter Instance = new InvertedZoomConverter();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return 1.0 / ((double)value);
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return 1.0 / ((double)value);
+		}
+	}
 }

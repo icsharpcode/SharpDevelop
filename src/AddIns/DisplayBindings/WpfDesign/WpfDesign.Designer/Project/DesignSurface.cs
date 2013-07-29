@@ -61,7 +61,6 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		internal DesignPanel _designPanel;
 		private ContentControl _partDesignContent;
-		private ZoomControl _zoom;
 		private Border _sceneContainer;
 
 		public override void OnApplyTemplate()
@@ -69,19 +68,21 @@ namespace ICSharpCode.WpfDesign.Designer
 			_partDesignContent = this.Template.FindName("PART_DesignContent", this) as ContentControl;
 			_partDesignContent.Content = _designPanel;
 
-			this._zoom = this.Template.FindName("PART_Zoom", this) as ZoomControl;
+			this.ZoomControl = this.Template.FindName("PART_Zoom", this) as ZoomControl;
 			
 			base.OnApplyTemplate();
 		}
 
 		protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
-			if (_zoom != null && e.OriginalSource == _zoom)
+			if (ZoomControl != null && e.OriginalSource == ZoomControl)
 			{
 				UnselectAll();
 			}
 		}
 
+		public ZoomControl ZoomControl { get; private set; }
+		
 		DesignContext _designContext;
 
 		/// <summary>
