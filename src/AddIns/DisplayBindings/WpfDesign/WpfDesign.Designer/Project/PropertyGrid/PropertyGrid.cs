@@ -21,26 +21,43 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 	{
 		public PropertyGrid()
 		{
-			Categories = new ObservableCollection<Category>(new [] {
-				specialCategory, 
-				popularCategory, 				
-				otherCategory,
-				attachedCategory
-			});
+			Categories = new CategoriesCollection();
+			Categories.Add(specialCategory);
+			Categories.Add(popularCategory);
+			Categories.Add(otherCategory);
+			Categories.Add(attachedCategory);
 
 			Events = new PropertyNodeCollection();
 		}
 
 		Category specialCategory = new Category("Special");
-		Category popularCategory = new Category("Popular");		
+		Category popularCategory = new Category("Popular");
 		Category otherCategory = new Category("Other");
 		Category attachedCategory = new Category("Attached");
 
 		Dictionary<MemberDescriptor, PropertyNode> nodeFromDescriptor = new Dictionary<MemberDescriptor, PropertyNode>();
-
-		public ObservableCollection<Category> Categories { get; private set; }
+		
+		public CategoriesCollection Categories { get; private set; }
 		public PropertyNodeCollection Events { get; private set; }
 
+		private PropertyGridGroupMode _groupMode;
+		
+		public PropertyGridGroupMode GroupMode
+		{
+			get { return _groupMode; }
+			set
+			{
+				if (_groupMode != value)
+				{
+					_groupMode = value;
+
+					RaisePropertyChanged("GroupMode");
+
+					Reload();
+				}
+			}
+		}
+		
 		PropertyGridTab currentTab;
 
 		public PropertyGridTab CurrentTab {
@@ -228,7 +245,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		{
 			var designProperties = SelectedItems.Select(item => item.Properties.GetProperty(md)).ToArray();
 			if (!Metadata.IsBrowsable(designProperties[0])) return;
-
+			
 			PropertyNode node;
 			if (nodeFromDescriptor.TryGetValue(md, out node)) {
 				node.Load(designProperties);
@@ -286,6 +303,21 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		//        return i1.CompareTo(i2);
 		//    }
 		//}
+	}
+	
+	public class CategoriesCollection : SortedObservableCollection<Category, string>
+	{
+		public CategoriesCollection()
+			: base(n => n.Name)
+		{
+		}
+	}
+
+	public enum PropertyGridGroupMode
+	{
+		GroupByPopularCategorys,
+		GroupByCategorys,
+		Ungrouped,
 	}
 	
 	public enum PropertyGridTab

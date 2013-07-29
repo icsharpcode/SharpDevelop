@@ -4,5 +4,6 @@
 		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/Controls/ControlStyles.xaml" />
 		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/OutlineView/OutlineView.xaml" />
 		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/DesignSurface.xaml" />
+	 	<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/PropertyGrid/PropertyGridView.xaml" />       
 	</ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

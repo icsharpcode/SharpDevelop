@@ -177,4 +177,62 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 			throw new NotImplementedException();
 		}
 	}
+	
+	public class EnumBoolean : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly EnumBoolean Instance = new EnumBoolean();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			if (Enum.IsDefined(value.GetType(), value) == false)
+				return DependencyProperty.UnsetValue;
+
+			object parameterValue = Enum.Parse(value.GetType(), parameterString);
+
+			return parameterValue.Equals(value);
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			return Enum.Parse(targetType, parameterString);
+		}
+	}
+	
+	public class EnumVisibility : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly EnumVisibility Instance = new EnumVisibility();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			if (Enum.IsDefined(value.GetType(), value) == false)
+				return DependencyProperty.UnsetValue;
+
+			object parameterValue = Enum.Parse(value.GetType(), parameterString);
+
+			return parameterValue.Equals(value) ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			return Enum.Parse(targetType, parameterString);
+		}
+	}
 }

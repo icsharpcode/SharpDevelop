@@ -18,10 +18,10 @@
 		<Setter Property="Margin" Value="3 3 0 3" />
 		<Setter Property="MinWidth" Value="50" />
 		<Style.Triggers>
-            <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Background" Value="SkyBlue" />
-            </Trigger>
-        </Style.Triggers>
+			<Trigger Property="IsChecked" Value="True">
+				<Setter Property="Background" Value="SkyBlue" />
+			</Trigger>
+		</Style.Triggers>
 	</Style>
 	<Style TargetType="{x:Type Controls:ResizeThumb}">
 		<Setter Property="Template">
@@ -390,6 +390,192 @@
 						<ContentControl Grid.Column="1" Grid.Row="1" Content="{TemplateBinding AdditionalControls}" />
 						<ScrollBar Name="PART_VerticalScrollBar" Grid.Column="3" Grid.Row="0" Minimum="0" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Value="{TemplateBinding VerticalOffset}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
 						<ScrollBar Name="PART_HorizontalScrollBar" Orientation="Horizontal" Grid.Column="2" Grid.Row="1" Minimum="0" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}" Value="{TemplateBinding HorizontalOffset}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style TargetType="{x:Type Button}" x:Key="ClearButtonStyle">
+		<Setter Property="Background" Value="#FFaaaaaa" />
+		<Setter Property="BorderBrush" Value="#FFaaaaaa" />
+		<Setter Property="Foreground" Value="White" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Button">
+					<Grid Width="14" Height="14">
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="FocusStates">
+								<VisualState x:Name="Focused" />
+								<VisualState x:Name="Unfocused" />
+							</VisualStateGroup>
+							<VisualStateGroup x:Name="CommonStates">
+								<VisualStateGroup.Transitions>
+									<VisualTransition GeneratedDuration="00:00:00.2000000" />
+								</VisualStateGroup.Transitions>
+								<VisualState x:Name="Normal" />
+								<VisualState x:Name="MouseOver">
+									<Storyboard>
+										<DoubleAnimation Duration="0"
+										                 Storyboard.TargetName="ellipseHighlight"
+										                 Storyboard.TargetProperty="(UIElement.Opacity)"
+										                 To="1" />
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Pressed">
+									<Storyboard>
+										<DoubleAnimation Duration="0"
+										                 Storyboard.TargetName="ellipseHighlight"
+										                 Storyboard.TargetProperty="(UIElement.Opacity)"
+										                 To="1" />
+										<DoubleAnimation Duration="0"
+										                 Storyboard.TargetName="pathHighlight"
+										                 Storyboard.TargetProperty="(UIElement.Opacity)"
+										                 To="1" />
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Disabled" />
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+						<Ellipse x:Name="ellipse"
+						         Fill="{TemplateBinding Background}"
+						         Stroke="{TemplateBinding BorderBrush}" />
+						<Ellipse x:Name="ellipseHighlight"
+						         Fill="#FFBD7777"
+						         Opacity="0"
+						         Stroke="Red" />
+						<Path x:Name="path"
+						      Margin="4.5"
+						      HorizontalAlignment="Center"
+						      VerticalAlignment="Center"
+						      Data="M0.5,0.5 L8.5,8.5 M8.5000095,0.50000072 L0.50000954,8.500001"
+						      Stretch="Fill"
+						      Stroke="{TemplateBinding Foreground}"
+						      UseLayoutRounding="False" />
+						<Path x:Name="pathHighlight"
+						      Margin="4.5"
+						      HorizontalAlignment="Center"
+						      VerticalAlignment="Center"
+						      Data="M0.5,0.5 L8.5,8.5 M8.5000095,0.50000072 L0.50000954,8.500001"
+						      Opacity="0"
+						      Stretch="Fill"
+						      Stroke="Red"
+						      UseLayoutRounding="False" />
+						<ContentPresenter x:Name="contentPresenter"
+							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							Visibility="Collapsed" />
+						<Rectangle x:Name="DisabledVisualElement"
+						           Fill="#FFFFFFFF"
+						           IsHitTestVisible="false"
+						           Opacity="0"
+						           RadiusX="3"
+						           RadiusY="3" />
+						<Rectangle x:Name="FocusVisualElement"
+						           Margin="1"
+						           IsHitTestVisible="false"
+						           Opacity="0"
+						           RadiusX="2"
+						           RadiusY="2"
+						           Stroke="#FF6DBDD1"
+						           StrokeThickness="1" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style TargetType="{x:Type Controls:ClearableTextBox}">
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
+		<Setter Property="BorderBrush" Value="#888" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="Padding" Value="1,0,0,0" />
+		<Setter Property="AllowDrop" Value="true" />
+		<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+		<Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
+		<Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Controls:ClearableTextBox}">
+					<Grid>
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="TextRemoverStates">
+								<VisualStateGroup.Transitions>
+									<VisualTransition GeneratedDuration="00:00:00.3000000" />
+								</VisualStateGroup.Transitions>
+								<VisualState x:Name="TextRemoverVisible">
+									<Storyboard>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+										</DoubleAnimationUsingKeyFrames>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+										</DoubleAnimationUsingKeyFrames>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.Opacity)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+										</DoubleAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="TextRemoverHidden">
+									<Storyboard>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="0" />
+										</DoubleAnimationUsingKeyFrames>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="0" />
+										</DoubleAnimationUsingKeyFrames>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.Opacity)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="0" />
+										</DoubleAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+						<Border x:Name="Border"
+						        Background="{TemplateBinding Background}"
+						        BorderBrush="{TemplateBinding BorderBrush}"
+						        BorderThickness="{TemplateBinding BorderThickness}"
+						        CornerRadius="1" />
+						<ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"
+						              Margin="0,0,18,0"
+						              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+						<Viewbox Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,3,3,3">
+							<Button x:Name="TextRemover"
+							        Width="14"
+							        Height="14"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        IsTabStop="False"
+							        RenderTransformOrigin="0.5,0.5"
+							        Style="{StaticResource ClearButtonStyle}">
+								<Button.RenderTransform>
+									<TransformGroup>
+										<ScaleTransform ScaleX="1" ScaleY="1" />
+										<SkewTransform />
+										<RotateTransform />
+										<TranslateTransform />
+									</TransformGroup>
+								</Button.RenderTransform>
+							</Button>
+						</Viewbox>
 					</Grid>
 				</ControlTemplate>
 			</Setter.Value>

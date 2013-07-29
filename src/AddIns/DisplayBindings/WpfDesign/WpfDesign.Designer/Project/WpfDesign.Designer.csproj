@@ -79,6 +79,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
     <Compile Include="Controls\CanvasPositionHandle.cs" />
+    <Compile Include="Controls\ClearableTextBox.cs" />
     <Compile Include="Controls\ContainerDragHandle.cs" />
     <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\EnterTextBox.cs" />
@@ -193,9 +194,7 @@
       <DependentUpon>PropertyContextMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="PropertyGrid\PropertyGrid.cs" />
-    <Compile Include="PropertyGrid\PropertyGridView.xaml.cs">
-      <DependentUpon>PropertyGridView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="PropertyGrid\PropertyGridView.cs" />
     <Compile Include="RootItemBehavior.cs" />
     <Compile Include="Services\ChooseClass.cs" />
     <Compile Include="Services\ChooseClassDialog.xaml.cs">
@@ -339,4 +338,12 @@
   <ItemGroup>
     <Resource Include="Images\rotate.cur" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\events.png" />
+    <Resource Include="Images\group.png" />
+    <Resource Include="Images\group2.png" />
+    <Resource Include="Images\properties.png" />
+    <Resource Include="Images\sort.png" />
+  </ItemGroup>
 </Project>
+

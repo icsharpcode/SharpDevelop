@@ -19,16 +19,29 @@ using ICSharpCode.WpfDesign.PropertyGrid;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 {
-	public partial class PropertyGridView
+	[TemplatePart(Name = "PART_Thumb", Type = typeof(Thumb))]
+	public class PropertyGridView : Control
 	{
+		static PropertyGridView()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyGridView), new FrameworkPropertyMetadata(typeof(PropertyGridView)));
+		}
+		
+		
 		public PropertyGridView()
 		{
 			PropertyGrid = new PropertyGrid();
 			DataContext = PropertyGrid;
-
-			InitializeComponent();
+		}
+		
+		private Thumb thumb;
+		public override void OnApplyTemplate()
+		{
+			thumb = GetTemplateChild("PART_Thumb") as Thumb;
 
 			thumb.DragDelta += new DragDeltaEventHandler(thumb_DragDelta);
+
+			base.OnApplyTemplate();
 		}
 
 		static PropertyContextMenu propertyContextMenu = new PropertyContextMenu();
@@ -37,7 +50,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 		public static readonly DependencyProperty FirstColumnWidthProperty =
 			DependencyProperty.Register("FirstColumnWidth", typeof(double), typeof(PropertyGridView),
-			new PropertyMetadata(120.0));
+			                            new PropertyMetadata(120.0));
 
 		public double FirstColumnWidth {
 			get { return (double)GetValue(FirstColumnWidthProperty); }
@@ -75,11 +88,6 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			contextMenu.HorizontalOffset = -30;
 			contextMenu.PlacementTarget = row;
 			contextMenu.IsOpen = true;
-		}
-
-		void clearButton_Click(object sender, RoutedEventArgs e)
-		{
-			PropertyGrid.ClearFilter();
 		}
 
 		void thumb_DragDelta(object sender, DragDeltaEventArgs e)
