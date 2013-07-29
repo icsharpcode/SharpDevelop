@@ -199,6 +199,7 @@
 							              Style="{StaticResource ExpandButtonStyle}"
 							              IsChecked="{Binding IsExpanded}"
 							              Visibility="{Binding HasChildren, Converter={x:Static Converters:HiddenWhenFalse.Instance}}" />
+							<Rectangle Width="8" Height="8" Stroke="Black" Fill="{Binding IsSet, Converter={x:Static Converters:BlackWhenTrue.Instance}}" StrokeThickness="1" DockPanel.Dock="Right" Margin="4,0,4,0" VerticalAlignment="Center"/>							
 							<TextBlock Text="{Binding Name}"
 							           TextTrimming="CharacterEllipsis"
 							           VerticalAlignment="Center"
