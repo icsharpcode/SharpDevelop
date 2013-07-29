@@ -87,6 +87,7 @@
       <DependentUpon>EnumBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\EnumButton.cs" />
+    <Compile Include="Controls\InfoTextEnterArea.cs" />
     <Compile Include="Controls\GrayOutDesignerExceptActiveArea.cs">
       <SubType>Code</SubType>
     </Compile>

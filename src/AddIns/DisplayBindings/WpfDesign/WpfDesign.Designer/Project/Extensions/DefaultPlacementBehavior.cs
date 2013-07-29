@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Input;
 using ICSharpCode.WpfDesign.Extensions;
 using System.Windows.Controls;
 using System.Windows;
@@ -32,7 +33,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			_contentControlsNotAllowedToAdd.Add(typeof (HeaderedContentControl));
 			_contentControlsNotAllowedToAdd.Add(typeof (Label));
 			_contentControlsNotAllowedToAdd.Add(typeof (ListBoxItem));
-			_contentControlsNotAllowedToAdd.Add(typeof (ButtonBase));
+			//_contentControlsNotAllowedToAdd.Add(typeof (ButtonBase));
 			_contentControlsNotAllowedToAdd.Add(typeof (StatusBarItem));
 			_contentControlsNotAllowedToAdd.Add(typeof (ToolTip));
 		}
@@ -63,6 +64,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void EndPlacement(PlacementOperation operation)
 		{
+			InfoTextEnterArea.Stop(ref infoTextEnterArea);			
 		}
 
 		public virtual Rect GetPosition(PlacementOperation operation, DesignItem item)
@@ -98,8 +100,27 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 
-		public virtual bool CanEnterContainer(PlacementOperation operation)
+		private static InfoTextEnterArea infoTextEnterArea;
+		
+		public virtual bool CanEnterContainer(PlacementOperation operation, bool shouldAlwaysEnter)
 		{
+			var canEnter = internalCanEnterContainer(operation);
+			
+			if (canEnter && !shouldAlwaysEnter && !Keyboard.IsKeyDown(Key.LeftAlt) && !Keyboard.IsKeyDown(Key.RightAlt))
+			{
+				var b = new Rect(0, 0, ((FrameworkElement)this.ExtendedItem.View).ActualWidth, ((FrameworkElement)this.ExtendedItem.View).ActualHeight);
+				InfoTextEnterArea.Start(ref infoTextEnterArea, this.Services, this.ExtendedItem.View, b, "Press \"Alt\" to Enter Container");						
+				
+				return false;
+			}
+			
+			return canEnter;
+		}
+		
+		private bool internalCanEnterContainer(PlacementOperation operation)
+		{
+			InfoTextEnterArea.Stop(ref infoTextEnterArea);												
+			
 			if (ExtendedItem.Component is Expander)
 			{
 				if (!((Expander) ExtendedItem.Component).IsExpanded)

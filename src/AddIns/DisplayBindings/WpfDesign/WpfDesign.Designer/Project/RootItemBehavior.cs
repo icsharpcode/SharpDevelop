@@ -73,7 +73,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			throw new NotImplementedException();
 		}
 		
-		public bool CanEnterContainer(PlacementOperation operation)
+		public bool CanEnterContainer(PlacementOperation operation, bool shouldAlwaysEnter)
 		{
 			return false;
 		}

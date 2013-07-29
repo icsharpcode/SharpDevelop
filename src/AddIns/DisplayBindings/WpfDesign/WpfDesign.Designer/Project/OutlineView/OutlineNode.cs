@@ -178,7 +178,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 				return false;
 			var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
 			if (operation != null) {
-				bool canEnter = placementBehavior.CanEnterContainer(operation);
+				bool canEnter = placementBehavior.CanEnterContainer(operation, true);
 				operation.Abort();
 				return canEnter;
 			}
