@@ -16,7 +16,7 @@ using ICSharpCode.WpfDesign.Designer.Controls;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
-	sealed class DesignPanel : Decorator, IDesignPanel, INotifyPropertyChanged
+	public sealed class DesignPanel : Decorator, IDesignPanel, INotifyPropertyChanged
 	{
 		#region Hit Testing
 		/// <summary>
@@ -205,12 +205,12 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// <summary>
 		/// Sets the with of the Raster when using Raster Placement
 		/// </summary>
-        private int _rasterWidth = 5;
-	    public int RasterWidth
-	    {
-	        get { return _rasterWidth; }
-            set { _rasterWidth = value; OnPropertyChanged("RasterWidth"); }
-	    }
+		private int _rasterWidth = 5;
+		public int RasterWidth
+		{
+			get { return _rasterWidth; }
+			set { _rasterWidth = value; OnPropertyChanged("RasterWidth"); }
+		}
 		
 		#endregion
 		

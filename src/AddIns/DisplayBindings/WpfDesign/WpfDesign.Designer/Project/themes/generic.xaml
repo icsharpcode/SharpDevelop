@@ -3,5 +3,6 @@
 	<ResourceDictionary.MergedDictionaries>
 		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/Controls/ControlStyles.xaml" />
 		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/OutlineView/OutlineView.xaml" />
+		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/DesignSurface.xaml" />
 	</ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

@@ -111,9 +111,7 @@
     <Compile Include="Converters.cs" />
     <Compile Include="DesignCommand.cs" />
     <Compile Include="DesignPanel.cs" />
-    <Compile Include="DesignSurface.xaml.cs">
-      <DependentUpon>DesignSurface.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="DesignSurface.cs" />
     <Compile Include="DragDropExceptionHandler.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Extensions\CanvasPlacementSupport.cs">
