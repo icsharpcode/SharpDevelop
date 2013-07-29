@@ -137,7 +137,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (attribute.NamespaceURI.Length > 0)
 				return attribute.NamespaceURI;
 			else
-				return attribute.OwnerElement.GetNamespaceOfPrefix("");
+			{
+				var ns = attribute.OwnerElement.GetNamespaceOfPrefix("");
+				if (string.IsNullOrEmpty(ns)) {
+					ns = XamlConstants.PresentationNamespace;
+				}
+				return ns;
+			}
 		}
 		
 		readonly static object[] emptyObjectArray = new object[0];
@@ -603,6 +609,25 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if(xmlnsAttribute!=null)
 					element.Attributes.Remove(xmlnsAttribute);
 
+				//Remove namespace Attributes defined in the Xaml Root from the Pasted Snippet!
+				List<XmlAttribute> removeAttributes = new List<XmlAttribute>();
+				foreach (XmlAttribute attrib in element.Attributes) {
+					if (attrib.Name.StartsWith("xmlns:")) {
+						var rootPrefix = root.OwnerDocument.GetPrefixForNamespace(attrib.Value);
+						if (rootPrefix == null) {
+							//todo: check if we can add to root, (maybe same ns exists)
+							root.OwnerDocument.XmlDocument.Attributes.Append((XmlAttribute)attrib.CloneNode(true));
+							removeAttributes.Add(attrib);
+						} else if (rootPrefix == attrib.Name.Substring(6)) {
+							removeAttributes.Add(attrib);
+						}
+					}
+				}
+				foreach (var removeAttribute in removeAttributes) {
+					element.Attributes.Remove(removeAttribute);
+				}
+				//end remove
+				
 				XamlParser parser = new XamlParser();
 				parser.settings = settings;
 				parser.document = root.OwnerDocument;
