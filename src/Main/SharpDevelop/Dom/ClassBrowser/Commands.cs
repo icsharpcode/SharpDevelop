@@ -16,14 +16,15 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public override void Execute(object parameter)
 		{
 			var classBrowser = SD.GetService<IClassBrowser>();
-			if (classBrowser != null) {
+			var modelFactory = SD.GetService<IModelFactory>();
+			if ((classBrowser != null) && (modelFactory != null)) {
 				OpenFileDialog openFileDialog = new OpenFileDialog();
 				openFileDialog.Filter = "Assembly files (*.exe, *.dll)|*.exe;*.dll";
 				openFileDialog.CheckFileExists = true;
 				openFileDialog.CheckPathExists = true;
 				if (openFileDialog.ShowDialog() ?? false)
 				{
-					IAssemblyModel assemblyModel = ClassBrowserPad.CreateAssemblyModelFromFile(openFileDialog.FileName);
+					IAssemblyModel assemblyModel = modelFactory.SafelyCreateAssemblyModelFromFile(openFileDialog.FileName);
 					if (assemblyModel != null)
 						classBrowser.AssemblyList.Assemblies.Add(assemblyModel);
 				}
@@ -39,12 +40,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public override void Execute(object parameter)
 		{
 			var classBrowser = SD.GetService<IClassBrowser>();
-			if (classBrowser != null) {
+			var modelFactory = SD.GetService<IModelFactory>();
+			if ((classBrowser != null) && (modelFactory != null)) {
 				OpenFromGacDialog gacDialog = new OpenFromGacDialog();
 				if (gacDialog.ShowDialog() ?? false)
 				{
 					foreach (string assemblyFile in gacDialog.SelectedFileNames) {
-						IAssemblyModel assemblyModel = ClassBrowserPad.CreateAssemblyModelFromFile(assemblyFile);
+						IAssemblyModel assemblyModel = modelFactory.SafelyCreateAssemblyModelFromFile(assemblyFile);
 						if (assemblyModel != null)
 							classBrowser.AssemblyList.Assemblies.Add(assemblyModel);
 					}
