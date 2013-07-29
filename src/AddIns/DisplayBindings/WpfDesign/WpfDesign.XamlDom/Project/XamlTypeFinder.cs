@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Markup;
+using System.Xaml;
+using XamlReader = System.Windows.Markup.XamlReader;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -120,7 +122,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			XamlNamespace ns;
 
 			if (namespaces.TryGetValue(xmlNamespace, out ns)) {
-				return ns.XmlNamespacePrefix; 
+				return ns.XmlNamespacePrefix;
 			} else {
 				return null;
 			}
@@ -204,7 +206,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			var ns = namespaces[XamlConstants.DesignTimeNamespace] = new XamlNamespace("d", XamlConstants.DesignTimeNamespace);
 			AddMappingToNamespace(ns, new AssemblyNamespaceMapping(typeof(DesignTimeProperties).Assembly, typeof(DesignTimeProperties).Namespace));
 			ns = namespaces[XamlConstants.MarkupCompatibilityNamespace] = new XamlNamespace("mc", XamlConstants.MarkupCompatibilityNamespace);
-			AddMappingToNamespace(ns, new AssemblyNamespaceMapping(typeof(MarkupCompatibilityProperties).Assembly, typeof(MarkupCompatibilityProperties).Namespace));        
+			AddMappingToNamespace(ns, new AssemblyNamespaceMapping(typeof(MarkupCompatibilityProperties).Assembly, typeof(MarkupCompatibilityProperties).Namespace));
 		}
 		
 		/// <summary>
@@ -268,6 +270,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				Instance.RegisterAssembly(typeof(MarkupExtension).Assembly); // WindowsBase
 				Instance.RegisterAssembly(typeof(IAddChild).Assembly); // PresentationCore
 				Instance.RegisterAssembly(typeof(XamlReader).Assembly); // PresentationFramework
+				Instance.RegisterAssembly(typeof(XamlType).Assembly); // System.Xaml
 			}
 		}
 	}
