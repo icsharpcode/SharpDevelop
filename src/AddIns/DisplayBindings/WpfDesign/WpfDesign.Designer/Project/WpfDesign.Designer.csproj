@@ -99,6 +99,7 @@
     <Compile Include="Controls\PageClone.cs" />
     <Compile Include="Controls\PanelMoveAdorner.cs" />
     <Compile Include="Controls\QuickOperationMenu.cs" />
+    <Compile Include="Controls\RotateThumb.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="Extensions\MarginHandleExtension.cs" />
     <Compile Include="Extensions\QuickOperationMenuExtension.cs" />
     <Compile Include="Extensions\RasterPlacementBehavior.cs" />
+    <Compile Include="Extensions\RotateThumbExtension.cs" />
     <Compile Include="Extensions\SizeDisplayExtension.cs" />
     <Compile Include="Extensions\SnaplinePlacementBehavior.cs">
       <SubType>Code</SubType>
@@ -335,5 +337,8 @@
   <ItemGroup>
     <Resource Include="Images\Raster.png" />
     <Resource Include="Images\Snapline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\rotate.cur" />
   </ItemGroup>
 </Project>
