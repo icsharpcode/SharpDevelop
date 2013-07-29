@@ -67,10 +67,16 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			_partDesignContent = this.Template.FindName("PART_DesignContent", this) as ContentControl;
 			_partDesignContent.Content = _designPanel;
+			_partDesignContent.RequestBringIntoView += _partDesignContent_RequestBringIntoView;
 
 			this.ZoomControl = this.Template.FindName("PART_Zoom", this) as ZoomControl;
 			
 			base.OnApplyTemplate();
+		}
+
+		void _partDesignContent_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
+		{
+			e.Handled = true;
 		}
 
 		protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
