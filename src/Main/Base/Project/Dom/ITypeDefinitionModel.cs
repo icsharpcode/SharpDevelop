@@ -13,11 +13,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public interface ITypeDefinitionModel : IEntityModel
 	{
+		event EventHandler Updated;
+		
 		FullTypeName FullTypeName { get; }
 		string Namespace { get; }
 		TypeKind TypeKind { get; }
 		IModelCollection<ITypeDefinitionModel> NestedTypes { get; }
-		IModelCollection<ITypeDefinitionModel> BaseTypes { get; }
 		IModelCollection<IMemberModel> Members { get; }
 		
 		IEnumerable<DomRegion> GetPartRegions();

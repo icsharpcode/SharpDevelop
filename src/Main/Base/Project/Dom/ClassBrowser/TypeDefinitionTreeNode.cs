@@ -57,7 +57,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		protected override void LoadChildren()
 		{
 			base.LoadChildren();
-			Children.Insert(0, new BaseTypesTreeNode(definition));
+			var baseTypesTreeNode = new BaseTypesTreeNode(definition);
+			Children.Insert(0, baseTypesTreeNode);
 		}
 		
 		public override void ActivateItem(System.Windows.RoutedEventArgs e)
