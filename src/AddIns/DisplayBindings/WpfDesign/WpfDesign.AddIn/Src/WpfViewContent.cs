@@ -152,7 +152,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			tasks.Clear();
 			
 			foreach (XamlError error in xamlErrorService.Errors) {
-				var task = new Task(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line - 1, TaskType.Error);
+				var task = new Task(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line, TaskType.Error);
 				tasks.Add(task);
 				TaskService.Add(task);
 			}
