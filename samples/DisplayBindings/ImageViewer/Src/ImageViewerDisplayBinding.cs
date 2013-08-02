@@ -42,5 +42,15 @@ namespace ImageViewer
 			ImageViewContent vc = new ImageViewContent(file);
 			return vc;
 		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, System.IO.Stream fileContent, string detectedMimeType)
+		{
+			return 0;
+		}
 	}
 }

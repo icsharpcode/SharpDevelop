@@ -1040,7 +1040,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (visualLine.FirstDocumentLine != visualLine.LastDocumentLine) {
 				// Check whether the lines are collapsed correctly:
 				double firstLinePos = heightTree.GetVisualPosition(visualLine.FirstDocumentLine.NextLine);
-				double lastLinePos = heightTree.GetVisualPosition(visualLine.LastDocumentLine);
+				double lastLinePos = heightTree.GetVisualPosition(visualLine.LastDocumentLine.NextLine ?? visualLine.LastDocumentLine);
 				if (!firstLinePos.IsClose(lastLinePos)) {
 					for (int i = visualLine.FirstDocumentLine.LineNumber + 1; i <= visualLine.LastDocumentLine.LineNumber; i++) {
 						if (!heightTree.GetIsCollapsed(i))
@@ -1165,7 +1165,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					}
 				}
 			}
-			InvalidateCursor();
+			InvalidateCursorIfMouseWithinTextView();
 			
 			return finalSize;
 		}
@@ -1636,6 +1636,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			}
 		}
 		
+		internal void InvalidateCursorIfMouseWithinTextView()
+		{
+			// Don't unnecessarily call Mouse.UpdateCursor() if the mouse is outside the text view.
+			// Unnecessary updates may cause the mouse pointer to flicker
+			// (e.g. if it is over a window border, it blinks between Resize and Normal)
+			if (this.IsMouseOver)
+				InvalidateCursor();
+		}
+		
 		/// <inheritdoc/>
 		protected override void OnQueryCursor(QueryCursorEventArgs e)
 		{
@@ -1739,7 +1748,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				int offset = documentLine.Offset + position.Column - 1;
 				visualColumn = visualLine.GetVisualColumn(offset - visualLine.FirstDocumentLine.Offset);
 			}
-			return visualLine.GetVisualPosition(visualColumn, yPositionMode);
+			return visualLine.GetVisualPosition(visualColumn, position.IsAtEndOfLine, yPositionMode);
 		}
 		
 		/// <summary>
@@ -1757,9 +1766,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			VisualLine line = GetVisualLineFromVisualTop(visualPosition.Y);
 			if (line == null)
 				return null;
-			int visualColumn = line.GetVisualColumn(visualPosition);
-			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
-			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
+			return line.GetTextViewPosition(visualPosition, Options.EnableVirtualSpace);
 		}
 		
 		/// <summary>
@@ -1777,9 +1784,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			VisualLine line = GetVisualLineFromVisualTop(visualPosition.Y);
 			if (line == null)
 				return null;
-			int visualColumn = line.GetVisualColumnFloor(visualPosition);
-			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
-			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
+			return line.GetTextViewPositionFloor(visualPosition, Options.EnableVirtualSpace);
 		}
 		#endregion
 		

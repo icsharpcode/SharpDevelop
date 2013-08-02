@@ -77,8 +77,8 @@
 		Name="CreateManifestResourceNames"
 		DependsOnTargets="$(CreateManifestResourceNamesDependsOn)"
 	>
-		<CallTarget Targets="CreateManifestResourceNames_35" Condition="'$(MSBuildToolsVersion)' == '3.5'"/>
-		<CallTarget Targets="CreateManifestResourceNames_20" Condition="'$(MSBuildToolsVersion)' != '3.5'"/>
+		<CallTarget Targets="CreateManifestResourceNames_35" Condition="'$(MSBuildToolsVersion)' &gt;= '3.5'"/>
+		<CallTarget Targets="CreateManifestResourceNames_20" Condition="'$(MSBuildToolsVersion)' &lt; '3.5'"/>
 	</Target>
 	
 	<Target

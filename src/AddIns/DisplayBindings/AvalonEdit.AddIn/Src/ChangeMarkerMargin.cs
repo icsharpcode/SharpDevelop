@@ -245,10 +245,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					}
 				};
 				
+				const double borderThickness = 1;
 				tooltip.Child = new Border() {
 					Child = differ,
 					BorderBrush = editor.TextArea.Foreground,
-					BorderThickness = new Thickness(1)
+					BorderThickness = new Thickness(borderThickness)
 				};
 				
 				if (tooltip.IsOpen)
@@ -259,7 +260,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				tooltip.Closed += delegate {
 					if (marker != null) markerService.Remove(marker);
 				};
-				tooltip.HorizontalOffset = -10;
+				tooltip.HorizontalOffset = -borderThickness - TextView.ScrollOffset.X;
 				tooltip.VerticalOffset =
 					TextView.GetVisualTopByDocumentLine(startLine) - TextView.ScrollOffset.Y;
 				tooltip.Placement = PlacementMode.Top;

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
@@ -10,6 +11,7 @@ using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -26,6 +28,7 @@ namespace PackageManagement.Tests
 		TestableProjectManager testableProjectManager;
 		FakeFileSystem fakeFileSystem;
 		FakePackageOperationResolverFactory fakePackageOperationResolverFactory;
+		IPackageOperationResolver fakePackageOperationResolver;
 		
 		void CreatePackageManager(IProject project, PackageReferenceRepositoryHelper packageRefRepositoryHelper)
 		{
@@ -76,9 +79,9 @@ namespace PackageManagement.Tests
 			packageManager.ProjectManager = testableProjectManager;
 		}
 		
-		FakePackage CreateFakePackage()
+		FakePackage CreateFakePackage(string id = "Test", string version = "1.0.0.0")
 		{
-			return new FakePackage("Test", "1.0.0.0");
+			return new FakePackage(id, version);
 		}
 		
 		FakePackage InstallPackage()
@@ -160,7 +163,7 @@ namespace PackageManagement.Tests
 		}
 		
 		FakePackage UninstallPackage()
-		{	
+		{
 			FakePackage package = CreateFakePackage();
 			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
 			
@@ -170,7 +173,7 @@ namespace PackageManagement.Tests
 
 		FakePackage UninstallPackageAndForceRemove()
 		{
-			FakePackage package = CreateFakePackage();			
+			FakePackage package = CreateFakePackage();
 			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
 			
 			bool removeDependencies = false;
@@ -192,11 +195,9 @@ namespace PackageManagement.Tests
 			return package;
 		}
 		
-		PackageOperation CreateOneInstallPackageOperation()
+		PackageOperation CreateOneInstallPackageOperation(string id = "PackageToInstall", string version = "1.0")
 		{
-			FakePackage package = CreateFakePackage();
-			package.Id = "PackageToInstall";
-			
+			FakePackage package = CreateFakePackage(id, version);
 			return new PackageOperation(package, PackageAction.Install);
 		}
 		
@@ -267,9 +268,48 @@ namespace PackageManagement.Tests
 			updateAction.UpdateDependencies = updateDependencies;
 			updateAction.AllowPrereleaseVersions = allowPrereleaseVersions;
 			packageManager.UpdatePackage(package, updateAction);
-			return package;			
+			return package;
 		}
-
+		
+		UpdatePackagesAction CreateUpdatePackagesAction()
+		{
+			return new UpdatePackagesAction(new FakePackageManagementProject(), null);
+		}
+		
+		UpdatePackagesAction CreateUpdatePackagesActionWithPackages(params IPackageFromRepository[] packages)
+		{
+			UpdatePackagesAction action = CreateUpdatePackagesAction();
+			action.AddPackages(packages);
+			return action;
+		}
+		
+		UpdatePackagesAction CreateUpdatePackagesActionWithOperations(params PackageOperation[] operations)
+		{
+			UpdatePackagesAction action = CreateUpdatePackagesAction();
+			action.AddOperations(operations);
+			return action;
+		}
+		
+		PackageOperation AddInstallOperationForPackage(IPackage package)
+		{
+			var operation = new PackageOperation(package, PackageAction.Install);
+			AddInstallOperationsForPackage(package, operation);
+			return operation;
+		}
+		
+		void AddInstallOperationsForPackage(IPackage package, params PackageOperation[] operations)
+		{
+			fakePackageOperationResolver
+				.Stub(resolver => resolver.ResolveOperations(package))
+				.Return(operations);
+		}
+		
+		void CreateFakePackageResolverForUpdatePackageOperations()
+		{
+			fakePackageOperationResolver = MockRepository.GenerateStub<IPackageOperationResolver>();
+			fakePackageOperationResolverFactory.UpdatePackageOperationsResolver = fakePackageOperationResolver;
+		}
+		
 		[Test]
 		public void ProjectManager_InstanceCreated_SourceRepositoryIsSharedRepositoryPassedToPackageManager()
 		{
@@ -566,7 +606,7 @@ namespace PackageManagement.Tests
 		public void GetInstallPackageOperations_PackageOperationResolverFactoryUsed_PackageOperationsReturnedFromPackageOperationsResolverCreated()
 		{
 			CreatePackageManager();
-			var package = new FakePackage();			
+			var package = new FakePackage();
 			IEnumerable<PackageOperation> operations = GetInstallPackageOperations(package);
 			
 			IEnumerable<PackageOperation> expectedOperations = fakePackageOperationResolverFactory.FakeInstallPackageOperationResolver.PackageOperations;
@@ -649,8 +689,8 @@ namespace PackageManagement.Tests
 			bool result = fakePackageOperationResolverFactory.IgnoreDependenciesPassedToCreateInstallPackageOperationResolver;
 			
 			Assert.IsTrue(result);
-    	}
-    
+		}
+		
 		[Test]
 		public void GetInstallPackageOperations_AllowPrereleaseVersionsIsTrue_PackageOperationResolverAllowsPrereleaseVersions()
 		{
@@ -661,7 +701,7 @@ namespace PackageManagement.Tests
 			bool result = fakePackageOperationResolverFactory.AllowPrereleaseVersionsPassedToCreateInstallPackageOperationResolver;
 			
 			Assert.IsTrue(result);
-    	}
+		}
 		
 		[Test]
 		public void GetInstallPackageOperations_AllowPrereleaseVersionsIsFalse_PackageOperationResolverDoesNotAllowPrereleaseVersions()
@@ -673,7 +713,7 @@ namespace PackageManagement.Tests
 			bool result = fakePackageOperationResolverFactory.AllowPrereleaseVersionsPassedToCreateInstallPackageOperationResolver;
 			
 			Assert.IsFalse(result);
-    	}
+		}
 		
 		public void UpdatePackage_PackageInstanceAndNoPackageOperationsPassed_UpdatesReferenceInProject()
 		{
@@ -734,6 +774,199 @@ namespace PackageManagement.Tests
 			UpdatePackageWithNoPackageOperationsAndDoNotUpdateDependencies();
 			
 			Assert.IsFalse(testableProjectManager.UpdateDependenciesPassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackages_OnePackage_PackageReferencedIsAddedToProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			FakePackage package = CreateFakePackage("Test", "1.1");
+			UpdatePackagesAction action = CreateUpdatePackagesActionWithPackages(package);
+			
+			packageManager.UpdatePackages(action);
+			
+			Assert.AreEqual(package, testableProjectManager.PackagePassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackages_TwoPackages_PackageReferencedIsAddedToProjectForBothPackages()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			FakePackage package1 = CreateFakePackage("First", "1.1");
+			FakePackage package2 = CreateFakePackage("Second", "2.0");
+			var expectedPackages = new FakePackage[] { package1, package2 };
+			UpdatePackagesAction action = CreateUpdatePackagesActionWithPackages(expectedPackages);
+			
+			packageManager.UpdatePackages(action);
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, testableProjectManager.PackagesPassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackages_UpdateDependenciesIsTrue_UpdateDependenciesPassedToProjectManager()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			FakePackage package = CreateFakePackage("Test", "1.1");
+			UpdatePackagesAction action = CreateUpdatePackagesActionWithPackages(package);
+			action.UpdateDependencies = true;
+			
+			packageManager.UpdatePackages(action);
+			
+			Assert.IsTrue(testableProjectManager.UpdateDependenciesPassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackages_UpdateDependenciesIsFalse_UpdateDependenciesPassedToProjectManager()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			FakePackage package = CreateFakePackage("Test", "1.1");
+			UpdatePackagesAction action = CreateUpdatePackagesActionWithPackages(package);
+			action.UpdateDependencies = false;
+			
+			packageManager.UpdatePackages(action);
+			
+			Assert.IsFalse(testableProjectManager.UpdateDependenciesPassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackages_AllowPrereleaseVersionsIsTrue_AllowPrereleaseVersionsPassedToProjectManager()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			FakePackage package = CreateFakePackage("Test", "1.1");
+			UpdatePackagesAction action = CreateUpdatePackagesActionWithPackages(package);
+			action.AllowPrereleaseVersions = true;
+			
+			packageManager.UpdatePackages(action);
+			
+			Assert.IsTrue(testableProjectManager.AllowPrereleaseVersionsPassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackages_AllowPrereleaseVersionsIsFalse_AllowPrereleaseVersionsPassedToProjectManager()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			FakePackage package = CreateFakePackage("Test", "1.1");
+			UpdatePackagesAction action = CreateUpdatePackagesActionWithPackages(package);
+			action.AllowPrereleaseVersions = false;
+			
+			packageManager.UpdatePackages(action);
+			
+			Assert.IsFalse(testableProjectManager.AllowPrereleaseVersionsPassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackages_TwoPackageOperations_BothPackagesInOperationsAddedToSharedRepository()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			PackageOperation operation1 = CreateOneInstallPackageOperation("First", "1.0");
+			PackageOperation operation2 = CreateOneInstallPackageOperation("Second", "1.0");
+			UpdatePackagesAction action = CreateUpdatePackagesActionWithOperations(operation1, operation2);
+			var expectedPackages = new FakePackage[] {
+				operation1.Package as FakePackage,
+				operation2.Package as FakePackage
+			};
+			
+			packageManager.UpdatePackages(action);
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, fakeSolutionSharedRepository.PackagesAdded);
+		}
+		
+		[Test]
+		public void GetUpdatePackageOperations_PackageOperationResolverFactoryUsed_PackageManagerUsesLoggerWhenGettingPackageOperations()
+		{
+			CreatePackageManager();
+			FakePackage package = CreateFakePackage("Test", "1.1");
+			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package);
+			
+			packageManager.GetUpdatePackageOperations(updateAction.Packages, updateAction);
+			
+			ILogger expectedLogger = packageManager.Logger;
+			ILogger actualLogger = fakePackageOperationResolverFactory.LoggerPassedToCreateUpdatePackageOperationResolver;
+			Assert.AreEqual(expectedLogger, actualLogger);
+		}
+		
+		[Test]
+		public void GetUpdatePackageOperations_PackageOperationResolverFactoryUsed_PackageManagerUsesLocalRepositoryWhenGettingPackageOperations()
+		{
+			CreatePackageManager();
+			FakePackage package = CreateFakePackage("Test", "1.1");
+			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package);
+			
+			packageManager.GetUpdatePackageOperations(updateAction.Packages, updateAction);
+			
+			IPackageRepository expectedRepository = packageManager.LocalRepository;
+			IPackageRepository actualRepository = fakePackageOperationResolverFactory.LocalRepositoryPassedToCreateUpdatePackageOperationsResolver;
+			Assert.AreEqual(expectedRepository, actualRepository);
+		}
+		
+		[Test]
+		public void GetUpdatePackageOperations_PackageOperationResolverFactoryUsed_PackageManagerUsesSourceRepositoryWhenGettingPackageOperations()
+		{
+			CreatePackageManager();
+			FakePackage package = CreateFakePackage("Test", "1.1");
+			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package);
+			
+			packageManager.GetUpdatePackageOperations(updateAction.Packages, updateAction);
+			
+			IPackageRepository expectedRepository = packageManager.SourceRepository;
+			IPackageRepository actualRepository = fakePackageOperationResolverFactory.SourceRepositoryPassedToCreateUpdatePackageOperationsResolver;
+			Assert.AreEqual(expectedRepository, actualRepository);
+		}
+		
+		[Test]
+		public void GetUpdatePackageOperations_PackageOperationResolverFactoryUsed_PackageManagerUsesUpdatePackageSettingsWhenGettingPackageOperations()
+		{
+			CreatePackageManager();
+			FakePackage package = CreateFakePackage("Test", "1.1");
+			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package);
+			
+			packageManager.GetUpdatePackageOperations(updateAction.Packages, updateAction);
+			
+			IUpdatePackageSettings settings = fakePackageOperationResolverFactory.SettingsPassedToCreatePackageOperationResolver;
+			Assert.AreEqual(updateAction, settings);
+		}
+		
+		[Test]
+		public void GetUpdatePackageOperations_TwoPackages_ReturnsPackageOperationsForBothPackages()
+		{
+			CreatePackageManager();
+			CreateFakePackageResolverForUpdatePackageOperations();
+			IPackageFromRepository package1 = CreateFakePackage("Test", "1.0");
+			IPackageFromRepository package2 = CreateFakePackage("Test2", "1.0");
+			PackageOperation operation1 = AddInstallOperationForPackage(package1);
+			PackageOperation operation2 = AddInstallOperationForPackage(package2);
+			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package1, package2);
+			
+			List<PackageOperation> operations = packageManager.GetUpdatePackageOperations(updateAction.Packages, updateAction).ToList();
+			
+			Assert.AreEqual(2, operations.Count());
+			Assert.Contains(operation1, operations);
+			Assert.Contains(operation2, operations);
+		}
+		
+		[Test]
+		public void RunPackageOperations_TwoPackageOperations_BothPackagesInOperationsAddedToSharedRepository()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			PackageOperation operation1 = CreateOneInstallPackageOperation("First", "1.0");
+			PackageOperation operation2 = CreateOneInstallPackageOperation("Second", "1.0");
+			var operations = new PackageOperation[] { operation1, operation2 };
+			var expectedPackages = new FakePackage[] {
+				operation1.Package as FakePackage,
+				operation2.Package as FakePackage
+			};
+			
+			packageManager.RunPackageOperations(operations);
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, fakeSolutionSharedRepository.PackagesAdded);
 		}
 	}
 }

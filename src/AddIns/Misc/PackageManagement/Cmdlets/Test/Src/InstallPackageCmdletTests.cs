@@ -19,7 +19,6 @@ namespace PackageManagement.Cmdlets.Tests
 		TestableInstallPackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementProject fakeProject;
-		FakeInstallPackageAction fakeInstallPackageAction;
 		
 		void CreateCmdletWithoutActiveProject()
 		{
@@ -27,9 +26,8 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakeProject = fakeConsoleHost.FakeProject;
-			fakeInstallPackageAction = fakeProject.FakeInstallPackageAction;
 		}
-				
+		
 		void CreateCmdletWithActivePackageSourceAndProject()
 		{
 			CreateCmdletWithoutActiveProject();
@@ -90,8 +88,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualPackageId = fakeInstallPackageAction.PackageId;
-			
+			string actualPackageId = fakeProject.LastInstallPackageCreated.PackageId;
 			Assert.AreEqual("Test", actualPackageId);
 		}
 		
@@ -104,8 +101,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnableIgnoreDependenciesParameter();
 			RunCmdlet();
 			
-			bool result = fakeInstallPackageAction.IgnoreDependencies;
-			
+			bool result = fakeProject.LastInstallPackageCreated.IgnoreDependencies;
 			Assert.IsTrue(result);
 		}
 		
@@ -117,8 +113,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			bool result = fakeInstallPackageAction.IgnoreDependencies;
-			
+			bool result = fakeProject.LastInstallPackageCreated.IgnoreDependencies;
 			Assert.IsFalse(result);
 		}
 		
@@ -131,8 +126,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnablePrereleaseParameter();
 			RunCmdlet();
 			
-			bool result = fakeInstallPackageAction.AllowPrereleaseVersions;
-			
+			bool result = fakeProject.LastInstallPackageCreated.AllowPrereleaseVersions;
 			Assert.IsTrue(result);
 		}
 		
@@ -144,8 +138,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			bool result = fakeInstallPackageAction.AllowPrereleaseVersions;
-			
+			bool result = fakeProject.LastInstallPackageCreated.AllowPrereleaseVersions;
 			Assert.IsFalse(result);
 		}
 		
@@ -158,8 +151,8 @@ namespace PackageManagement.Cmdlets.Tests
 			SetSourceParameter("http://sharpdevelop.net/packages");
 			RunCmdlet();
 			
-			var expected = "http://sharpdevelop.net/packages";
-			var actual = fakeConsoleHost.PackageSourcePassedToGetProject;
+			string expected = "http://sharpdevelop.net/packages";
+			string actual = fakeConsoleHost.PackageSourcePassedToGetProject;
 			
 			Assert.AreEqual(expected, actual);
 		}
@@ -174,8 +167,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetVersionParameter(version);
 			RunCmdlet();
 			
-			SemanticVersion actualVersion = fakeInstallPackageAction.PackageVersion;
-			
+			SemanticVersion actualVersion = fakeProject.LastInstallPackageCreated.PackageVersion;
 			Assert.AreEqual(version, actualVersion);
 		}
 		
@@ -187,8 +179,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualVersion = fakeInstallPackageAction.PackageVersion;
-			
+			SemanticVersion actualVersion = fakeProject.LastInstallPackageCreated.PackageVersion;
 			Assert.IsNull(actualVersion);
 		}
 		
@@ -230,8 +221,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			bool result = fakeInstallPackageAction.IsExecuteCalled;
-			
+			bool result = fakeProject.LastInstallPackageCreated.IsExecuteCalled;
 			Assert.IsTrue(result);
 		}
 		
@@ -244,9 +234,62 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			IPackageScriptRunner scriptRunner = fakeInstallPackageAction.PackageScriptRunner;
-			
+			IPackageScriptRunner scriptRunner = fakeProject.LastInstallPackageCreated.PackageScriptRunner;
 			Assert.AreEqual(cmdlet, scriptRunner);
+		}
+		
+		[Test]
+		public void ProcessRecord_FileConflictActionIsOverwrite_FileConflictResolverCreatedWithOverwriteAction()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			cmdlet.FileConflictAction = FileConflictAction.Overwrite;
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(FileConflictAction.Overwrite, fakeConsoleHost.LastFileConflictActionUsedWhenCreatingResolver);
+		}
+		
+		[Test]
+		public void ProcessRecord_FileConflictActionIsIgnore_FileConflictResolverCreatedWithIgnoreAction()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			cmdlet.FileConflictAction = FileConflictAction.Ignore;
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(FileConflictAction.Ignore, fakeConsoleHost.LastFileConflictActionUsedWhenCreatingResolver);
+		}
+		
+		[Test]
+		public void ProcessRecord_FileConflictActionNotSet_FileConflictResolverCreatedWithNoneFileConflictAction()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(FileConflictAction.None, fakeConsoleHost.LastFileConflictActionUsedWhenCreatingResolver);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_FileConflictResolverIsDisposed()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			
+			RunCmdlet();
+			
+			fakeConsoleHost.AssertFileConflictResolverIsDisposed();
 		}
 	}
 }

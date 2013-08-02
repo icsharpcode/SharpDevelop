@@ -159,9 +159,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					Category cat = GetCategory(StringParser.Parse(titem.Template.Category), StringParser.Parse(titem.Template.Subcategory));
 					cat.Templates.Add(titem);
 					
-					if (cat.Selected == false && template.WizardPath == null) {
-						cat.Selected = true;
-					}
+					cat.Selected = true;
 					if (!cat.HasSelectedTemplate && titem.Template.FileDescriptionTemplates.Count == 1) {
 						if (((FileDescriptionTemplate)titem.Template.FileDescriptionTemplates[0]).Name.StartsWith("Empty")) {
 							titem.Selected = true;
@@ -473,16 +471,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 						StringParserPropertyContainer.FileCreation["StandardNamespace"] = CustomToolsService.GetDefaultNamespace(project, fileName);
 					}
 				}
+				
+				FileTemplateOptions options = new FileTemplateOptions();
+				options.ClassName = GenerateValidClassOrNamespaceName(Path.GetFileNameWithoutExtension(fileName), false);
+				options.FileName = FileName.Create(fileName);
+				options.IsUntitled = allowUntitledFiles;
+				options.Namespace = StringParserPropertyContainer.FileCreation["StandardNamespace"];
+				
 				StringParserPropertyContainer.FileCreation["FullName"]                 = fileName;
 				StringParserPropertyContainer.FileCreation["FileName"]                 = Path.GetFileName(fileName);
 				StringParserPropertyContainer.FileCreation["FileNameWithoutExtension"] = Path.GetFileNameWithoutExtension(fileName);
 				StringParserPropertyContainer.FileCreation["Extension"]                = Path.GetExtension(fileName);
 				StringParserPropertyContainer.FileCreation["Path"]                     = Path.GetDirectoryName(fileName);
 				
-				StringParserPropertyContainer.FileCreation["ClassName"] = GenerateValidClassOrNamespaceName(Path.GetFileNameWithoutExtension(fileName), false);
+				StringParserPropertyContainer.FileCreation["ClassName"] = options.ClassName;
 				
 				// when adding a file to a project (but not when creating a standalone file while a project is open):
 				if (ProjectService.CurrentProject != null && !this.allowUntitledFiles) {
+					options.Project = ProjectService.CurrentProject;
 					// add required assembly references to the project
 					bool changes = false;
 					foreach (ReferenceProjectItem reference in item.Template.RequiredAssemblyReferences) {
@@ -525,6 +531,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				foreach (KeyValuePair<string, FileDescriptionTemplate> entry in createdFiles) {
 					FileService.FireFileCreated(entry.Key, false);
 				}
+				item.Template.RunActions(options);
 			}
 		}
 		

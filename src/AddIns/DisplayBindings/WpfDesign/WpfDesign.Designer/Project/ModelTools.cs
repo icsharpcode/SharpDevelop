@@ -37,6 +37,7 @@ namespace ICSharpCode.WpfDesign.Designer
 						return 0;
 					}
 				}
+				tmp = tmp.Parent;
 			}
 			return 0;
 		}

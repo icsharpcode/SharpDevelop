@@ -69,13 +69,13 @@ namespace ICSharpCode.PackageManagement
 		
 		public IPackageRepository CreateAggregateRepository()
 		{
-			IEnumerable<IPackageRepository> allRepositories = CreateAllRepositories();
+			IEnumerable<IPackageRepository> allRepositories = CreateAllEnabledRepositories();
 			return CreateAggregateRepository(allRepositories);
 		}
 		
-		IEnumerable<IPackageRepository> CreateAllRepositories()
+		IEnumerable<IPackageRepository> CreateAllEnabledRepositories()
 		{
-			foreach (PackageSource source in registeredPackageSources) {
+			foreach (PackageSource source in registeredPackageSources.GetEnabledPackageSources()) {
 				yield return CreateRepository(source.Source);
 			}
 		}

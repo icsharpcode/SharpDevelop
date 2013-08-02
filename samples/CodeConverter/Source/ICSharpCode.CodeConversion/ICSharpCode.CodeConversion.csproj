@@ -65,9 +65,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Dependencies\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.Scripting">
+      <HintPath>..\..\Dependencies\ICSharpCode.Scripting.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpDevelop.Dom, Version=3.0.0.3091, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Dependencies\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\Dependencies\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="NRefactoryToBooConverter, Version=3.0.0.3091, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -7,10 +7,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Exceptions;
 
 namespace ICSharpCode.WixBinding
 {
@@ -41,6 +42,17 @@ namespace ICSharpCode.WixBinding
 			SetProperty("OutputType", "Package");
 			AddWixTargetsPathProperties();
 			AddImport(DefaultTargetsFile, null);
+			CheckWixIsInstalled();
+		}
+		
+		void CheckWixIsInstalled()
+		{
+			try {
+				ReevaluateIfNecessary();
+			} catch (InvalidProjectFileException ex) {
+				LoggingService.Error(ex);
+				throw new InvalidProjectFileException(StringParser.Parse("${res:ICSharpCode.WixBinding.WixNotInstalled}"));
+			}
 		}
 		
 		void AddWixTargetsPathProperties()

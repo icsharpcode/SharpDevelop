@@ -10,7 +10,7 @@ using System.Windows.Interop;
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// Extends WPF popup to prevent it from being the topmost window on the screen.
+	/// Extends WPF popup to hide the popup while SharpDevelop isn't the active application.
 	/// </summary>
 	public class ExtendedPopup : Popup
 	{
@@ -19,7 +19,7 @@ namespace ICSharpCode.Core.Presentation
 		protected override void OnOpened(EventArgs e)
 		{
 			hwnd = ((HwndSource)PresentationSource.FromVisual(Child)).Handle;
-			SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, NoChangeFlags);
+			SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, NoChangeFlags);
 			
 			Application.Current.Activated += ApplicationActivated;
 			Application.Current.Deactivated += ApplicationDeactivated;

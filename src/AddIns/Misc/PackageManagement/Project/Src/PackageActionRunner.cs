@@ -31,7 +31,7 @@ namespace ICSharpCode.PackageManagement
 			this.powerShellDetection = powerShellDetection;
 		}
 		
-		public void Run(IEnumerable<ProcessPackageAction> actions)
+		public void Run(IEnumerable<IPackageAction> actions)
 		{
 			if (ShouldRunActionsInConsole(actions)) {
 				consolePackageActionRunner.Run(actions);
@@ -42,9 +42,9 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		bool ShouldRunActionsInConsole(IEnumerable<ProcessPackageAction> actions)
+		bool ShouldRunActionsInConsole(IEnumerable<IPackageAction> actions)
 		{
-			foreach (ProcessPackageAction action in actions) {
+			foreach (IPackageAction action in actions) {
 				if (ShouldRunActionInConsole(action)) {
 					return true;
 				}
@@ -52,7 +52,7 @@ namespace ICSharpCode.PackageManagement
 			return false;
 		}
 		
-		public void Run(ProcessPackageAction action)
+		public void Run(IPackageAction action)
 		{
 			if (ShouldRunActionInConsole(action)) {
 				consolePackageActionRunner.Run(action);
@@ -61,7 +61,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		bool ShouldRunActionInConsole(ProcessPackageAction action)
+		bool ShouldRunActionInConsole(IPackageAction action)
 		{
 			if (action.HasPackageScriptsToRun()) {
 				if (powerShellDetection.IsPowerShell2Installed()) {

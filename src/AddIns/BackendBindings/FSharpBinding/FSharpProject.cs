@@ -23,13 +23,6 @@ namespace FSharpBinding
 		
 		public FSharpProject(ProjectCreateInformation info) : base(info)
 		{
-			try {
-				base.AddImport(@"$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets", null);
-				base.ReevaluateIfNecessary(); // provoke exception if import is invalid
-			} catch (InvalidProjectFileException ex) {
-				Dispose();
-				throw new ProjectLoadException("Please ensure that the F# compiler is installed on your computer.\n\n" + ex.Message, ex);
-			}
 		}
 		
 		public override string Language {
@@ -47,6 +40,16 @@ namespace FSharpBinding
 		protected override ProjectBehavior CreateDefaultBehavior()
 		{
 			return new FSharpProjectBehavior(this, base.CreateDefaultBehavior());
+		}
+		
+		public void DisableWatcher()
+		{
+			watcher.Disable();
+		}
+		
+		public void EnableWatcher()
+		{
+			watcher.Enable();
 		}
 	}
 	

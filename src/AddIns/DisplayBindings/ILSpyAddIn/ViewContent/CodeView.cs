@@ -71,7 +71,7 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			this.adapter.TextEditor.MouseHoverStopped += TextEditorMouseHoverStopped;
 			this.adapter.TextEditor.MouseLeave += TextEditorMouseLeave;
 			
-			this.adapter.TextEditor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(this.adapter.TextEditor.TextArea));
+			SearchPanel.Install(this.adapter.TextEditor.TextArea);
 		}
 
 		#region Popup

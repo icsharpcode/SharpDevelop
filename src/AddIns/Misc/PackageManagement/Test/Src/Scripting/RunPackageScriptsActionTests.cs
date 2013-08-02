@@ -8,6 +8,7 @@ using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests.Scripting
 {
@@ -18,13 +19,19 @@ namespace PackageManagement.Tests.Scripting
 		FakePackageManagementProject fakeProject;
 		FakePackageScriptFactory fakeScriptFactory;
 		FakePackageScriptRunner fakeScriptRunner;
-			
+		IGlobalMSBuildProjectCollection globalMSBuildProjectCollection;
+		
 		void CreateAction()
 		{
 			fakeProject = new FakePackageManagementProject();
 			fakeScriptFactory = new FakePackageScriptFactory();
 			fakeScriptRunner = new FakePackageScriptRunner();
-			action = new RunPackageScriptsAction(fakeProject, fakeScriptRunner, fakeScriptFactory);
+			globalMSBuildProjectCollection = MockRepository.GenerateStub<IGlobalMSBuildProjectCollection>();
+			action = new RunPackageScriptsAction(
+				fakeProject,
+				fakeScriptRunner,
+				fakeScriptFactory,
+				globalMSBuildProjectCollection);
 		}
 		
 		PackageOperationEventArgs CreatePackageOperationEventArgs()
@@ -228,6 +235,24 @@ namespace PackageManagement.Tests.Scripting
 			IPackage package = fakeScriptFactory.FirstPackageUninstallScriptCreated.Package;
 			
 			Assert.AreEqual(expectedPackage, package);
+		}
+		
+		[Test]
+		public void Dispose_OneProjectAddedToGlobalMSBuildProjectCollection_GlobalMSBuildProjectCollectionIsDisposed()
+		{
+			CreateAction();
+			
+			action.Dispose();
+			
+			globalMSBuildProjectCollection.AssertWasCalled(projectCollection => projectCollection.Dispose());
+		}
+		
+		[Test]
+		public void Constructor_NewInstance_OneProjectAddedToGlobalMSBuildProjectCollection()
+		{
+			CreateAction();
+			
+			globalMSBuildProjectCollection.AssertWasCalled(collection => collection.AddProject(fakeProject));
 		}
 	}
 }

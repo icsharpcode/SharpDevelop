@@ -36,6 +36,14 @@ namespace XmlEditor.Tests.Utils
 		}
 		
 		/// <summary>
+		/// Reads the XSL Transforms schema.
+		/// </summary>
+		public static StreamReader ReadXsltSchema()
+		{
+			return manager.ReadXml("xslt.xsd");
+		}
+		
+		/// <summary>
 		/// Returns the xml read from the specified file which is embedded
 		/// in this assembly as a resource.
 		/// </summary>

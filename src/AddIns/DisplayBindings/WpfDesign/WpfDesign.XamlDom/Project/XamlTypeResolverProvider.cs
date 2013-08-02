@@ -96,5 +96,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			return null;
 		}
+		
+		public object FindLocalResource(object key)
+		{
+			FrameworkElement el = containingObject.Instance as FrameworkElement;
+			if (el != null) {
+				return el.Resources[key];
+			}
+			return null;
+		}
 	}
 }

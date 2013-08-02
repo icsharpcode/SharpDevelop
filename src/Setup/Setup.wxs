@@ -240,11 +240,15 @@
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>
-				<ComponentRef Id="EmptyCSharpMvcWebProjectTemplate"/>
-				<ComponentRef Id="CSharpMvcWebProjectTemplate"/>
+				<ComponentRef Id="EmptyCSharpMvc3WebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc3WebProjectTemplate"/>
+				<ComponentRef Id="EmptyCSharpMvc4WebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc4WebProjectTemplate"/>
 				<ComponentRef Id="VBFileTemplates"/>
-				<ComponentRef Id="EmptyVBMvcWebProjectTemplate"/>
-				<ComponentRef Id="VBMvcWebProjectTemplate"/>
+				<ComponentRef Id="EmptyVBMvc3WebProjectTemplate"/>
+				<ComponentRef Id="VBMvc3WebProjectTemplate"/>
+				<ComponentRef Id="EmptyVBMvc4WebProjectTemplate"/>
+				<ComponentRef Id="VBMvc4WebProjectTemplate"/>
 				<ComponentRef Id="CSharpMvcControllerFileTemplate"/>
 				<ComponentRef Id="CSharpMvcViewPageFileTemplate"/>
 				<ComponentRef Id="CSharpMvcViewContentPageFileTemplate"/>
@@ -417,8 +421,11 @@
 				<ComponentRef Id="RubyBindingSdTestRunnerRb"/>
 				
 				<ComponentRef Id="FSharpBindingDll"/>
-				<ComponentRef Id="FSharpBindingAddin"/>	
-				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
+				<ComponentRef Id="FSharpBindingAddin"/>
+				<ComponentRef Id="FSharp2ConsoleProjectTemplate"/>
+				<ComponentRef Id="FSharp3ConsoleProjectTemplate"/>
+				<ComponentRef Id="FSharp2LibraryProjectTemplate"/>
+				<ComponentRef Id="FSharp3LibraryProjectTemplate"/>
 				<ComponentRef Id="FSharpEmptyClassTemplate"/>
 				
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
@@ -485,6 +492,7 @@
 				<ComponentRef Id="SharpDevelopEnvDteDll"/>
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
 				<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>
+				<ComponentRef Id="MicrosoftWebXmlTransformDll"/>
 				<ComponentRef Id="JQuery172NuGetPackage"/>
 				<ComponentRef Id="Modernizr253NuGetPackage"/>
 			
@@ -543,8 +551,10 @@
 				<ComponentRef Id="VBMvcRazorLayoutPageFileTemplate"/>
 				<ComponentRef Id="VBMvcRazorPartialPageFileTemplate"/>
 				<ComponentRef Id="VBMvcRazorViewPageFileTemplate"/>
-				<ComponentRef Id="CSharpMvcRazorProjectTemplate"/>
-				<ComponentRef Id="VBMvcRazorProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc3RazorProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc4RazorProjectTemplate"/>
+				<ComponentRef Id="VBMvc3RazorProjectTemplate"/>
+				<ComponentRef Id="VBMvc4RazorProjectTemplate"/>
 
 				<ComponentRef Id="JavaScriptBindingDll"/>
 				<ComponentRef Id="JavaScriptBindingAddin"/>

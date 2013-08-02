@@ -51,16 +51,13 @@
     <Reference Include="ICSharpCode.SharpDevelop.Dom">
       <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop.Dom">
-      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\bin\Tools\NUnit\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="UnitTesting">
-      <HintPath>..\..\..\AddIns\AddIns\Misc\UnitTesting\UnitTesting.dll</HintPath>
+      <HintPath>..\..\..\AddIns\Analysis\UnitTesting\UnitTesting.dll</HintPath>
     </Reference>
     <Reference Include="UnitTesting.Tests">
       <HintPath>..\..\..\bin\UnitTests\UnitTesting.Tests.dll</HintPath>
@@ -80,7 +77,7 @@
     <Compile Include="GallioEchoConsoleProcessStartInfoTestFixture.cs" />
     <Compile Include="GallioTestFailureTestFixture.cs" />
     <Compile Include="GallioTestFrameworkIsTestClassTests.cs" />
-    <Compile Include="GallioTestFrameworkIsTestMethodTests.cs" />
+    <Compile Include="GallioTestFrameworkIsTestMemberTests.cs" />
     <Compile Include="GallioTestFrameworkIsTestProjectTests.cs" />
     <Compile Include="GallioTestToSharpDevelopTestResultConversionTests.cs" />
     <Compile Include="TestResultsWriterTestFixture.cs" />

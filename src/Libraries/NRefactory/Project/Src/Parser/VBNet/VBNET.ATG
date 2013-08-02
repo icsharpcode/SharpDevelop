@@ -3014,7 +3014,9 @@ Block<out Statement stmt>
 	}
 	(.
 		stmt = blockStmt;
-		if (t != null) blockStmt.EndLocation = t.EndLocation;
+		// Use start of 'End'/'Next' keyword, not the end of the previous statement
+		// this is necessary to have local variables available for code completion (CodeCompletionTests.TestLocalVariablesAvailableAtEndOfForLoop)
+		if (la != null) blockStmt.EndLocation = la.Location;
 		BlockEnd();
 	.)
 .

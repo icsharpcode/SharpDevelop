@@ -9,6 +9,7 @@ using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -19,6 +20,7 @@ namespace PackageManagement.Tests
 		PackageManagementEvents packageManagementEvents;
 		FakeLicenseAcceptanceService fakeLicenseAcceptanceService;
 		FakeSelectProjectsService fakeSelectProjectsService;
+		IFileConflictResolver fakeFileConflictResolver;
 		FakePackageManagementSolution fakeSolution;
 		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		FakeTaskFactory fakeTaskFactory;
@@ -57,10 +59,12 @@ namespace PackageManagement.Tests
 			fakeTaskFactory = new FakeTaskFactory();
 			fakeLicenseAcceptanceService = new FakeLicenseAcceptanceService();
 			fakeSelectProjectsService = new FakeSelectProjectsService();
+			fakeFileConflictResolver = MockRepository.GenerateStub<IFileConflictResolver>();
 			userPrompts = new ManagePackagesUserPrompts(
 				packageManagementEvents,
 				fakeLicenseAcceptanceService,
-				fakeSelectProjectsService);
+				fakeSelectProjectsService,
+				fakeFileConflictResolver);
 			fakeActionRunner = new FakePackageActionRunner();
 			
 			packagesViewModels = new PackagesViewModels(
@@ -175,11 +179,11 @@ namespace PackageManagement.Tests
 				Id = "Test",
 				Version = new SemanticVersion("2.0.0.0")
 			};
-			fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages.Add(newPackage);
+			fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages.Add(newPackage);
 			
 			CreateViewModel(fakeSolution);
 			
-			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages;
+			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.UpdatedPackagesViewModel.PackageViewModels);
 		}

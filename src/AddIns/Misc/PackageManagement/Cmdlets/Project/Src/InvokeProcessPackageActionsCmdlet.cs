@@ -36,18 +36,18 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		void ExecutePackageActions()
 		{
-			ProcessPackageAction action = null;
+			IPackageAction action = null;
 			while (GetNextAction(out action)) {
 				Execute(action);
 			}
 		}
 		
-		bool GetNextAction(out ProcessPackageAction action)
+		bool GetNextAction(out IPackageAction action)
 		{
 			return actionsToRun.GetNextAction(out action);
 		}
 		
-		void Execute(ProcessPackageAction action)
+		void Execute(IPackageAction action)
 		{
 			action.PackageScriptRunner = this;
 			action.Execute();

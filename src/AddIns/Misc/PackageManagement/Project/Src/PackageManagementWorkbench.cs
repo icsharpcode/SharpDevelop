@@ -12,15 +12,25 @@ namespace ICSharpCode.PackageManagement
 	{
 		public void CreateConsolePad()
 		{
-			PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(PackageManagementConsolePad));
-			pad.BringPadToFront();
+			PadDescriptor pad = GetConsolePad();
 			EnsurePackageManagementConsoleViewModelIsCreated(pad);
+		}
+		
+		PadDescriptor GetConsolePad()
+		{
+			return WorkbenchSingleton.Workbench.GetPad(typeof(PackageManagementConsolePad));
 		}
 		
 		void EnsurePackageManagementConsoleViewModelIsCreated(PadDescriptor pad)
 		{
 			// Force creation of view model.
 			object control = pad.PadContent.Control;
+		}
+		
+		public void ShowConsolePad()
+		{
+			PadDescriptor pad = GetConsolePad();
+			pad.BringPadToFront();
 		}
 		
 		public bool InvokeRequired {
@@ -35,6 +45,11 @@ namespace ICSharpCode.PackageManagement
 		public void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
 			WorkbenchSingleton.SafeThreadAsyncCall<A, B>(method, arg1, arg2);
+		}
+		
+		public R SafeThreadFunction<R>(Func<R> method)
+		{
+			return WorkbenchSingleton.SafeThreadFunction<R>(method);
 		}
 	}
 }

@@ -348,7 +348,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				RevalidateVisualColumn(visualLine);
 			}
 			
-			TextLine textLine = visualLine.GetTextLine(position.VisualColumn);
+			TextLine textLine = visualLine.GetTextLine(position.VisualColumn, position.IsAtEndOfLine);
 			double xPos = visualLine.GetTextLineVisualXPosition(textLine, position.VisualColumn);
 			double lineTop = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
 			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextBottom);

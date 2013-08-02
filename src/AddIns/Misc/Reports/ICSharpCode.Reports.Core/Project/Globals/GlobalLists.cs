@@ -64,6 +64,7 @@ namespace ICSharpCode.Reports.Core.Globals
 		private static readonly string[] MyDataTypeList = new string[] {
 			"System.String",
 			"System.DateTime",
+			"System.TimeSpan",
 			"System.Decimal",
 			"System.Int"};
 		#endregion
@@ -155,7 +156,9 @@ namespace ICSharpCode.Reports.Core.Globals
             "Ddd, dd MMM yyyy HH\':\'mm\'\"ss \'GMT\'",
             "yyyy-MM-dd HH:mm:ss",
             "yyyy-MM-dd HH:mm:ss GMT",
-            "HH:mm", "HH:mm:ss",
+            "HH:mm",
+            "HH:mm:ss",
+            "hh:mm:ss",
             "yyyy-MM-dd HH:mm:ss", "html"};
  
        #endregion

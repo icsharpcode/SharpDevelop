@@ -22,6 +22,7 @@ namespace ICSharpCode.GitAddIn
 	
 	public static class GitStatusCache
 	{
+		static object getStatusLock = new object();
 		static List<KeyValuePair<string, GitStatusSet>> statusSetDict = new List<KeyValuePair<string, GitStatusSet>>();
 		
 		public static void ClearCachedStatus(string fileName)
@@ -46,17 +47,24 @@ namespace ICSharpCode.GitAddIn
 		
 		public static GitStatusSet GetStatusSet(string wcRoot)
 		{
-			lock (statusSetDict) {
+			// Prevent multiple GetStatusSet calls from running in parallel
+			lock (getStatusLock) {
 				GitStatusSet statusSet;
-				foreach (var pair in statusSetDict) {
-					if (FileUtility.IsEqualFileName(pair.Key, wcRoot))
-						return pair.Value;
+				// Don't hold statusSetDict during the whole operation; we don't want
+				// to slow down other threads calling ClearCachedStatus()
+				lock (statusSetDict) {
+					foreach (var pair in statusSetDict) {
+						if (FileUtility.IsEqualFileName(pair.Key, wcRoot))
+							return pair.Value;
+					}
 				}
 				
 				statusSet = new GitStatusSet();
 				GitGetFiles(wcRoot, statusSet);
 				GitGetStatus(wcRoot, statusSet);
-				statusSetDict.Add(new KeyValuePair<string, GitStatusSet>(wcRoot, statusSet));
+				lock (statusSetDict) {
+					statusSetDict.Add(new KeyValuePair<string, GitStatusSet>(wcRoot, statusSet));
+				}
 				return statusSet;
 			}
 		}

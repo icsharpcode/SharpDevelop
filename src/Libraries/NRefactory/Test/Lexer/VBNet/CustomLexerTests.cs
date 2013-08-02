@@ -114,5 +114,14 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			ILexer lexer = GenerateLexer(new StringReader("REM c"));
 			Assert.That(lexer.NextToken().Kind, Is.EqualTo(Tokens.EOF));
 		}
+		
+		[Test]
+		public void OverflowingDouble()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("1e20000"));
+			var t = lexer.NextToken();
+			Assert.AreEqual(Tokens.LiteralDouble, t.Kind);
+			Assert.AreEqual(1, lexer.Errors.Count);
+		}
 	}
 }

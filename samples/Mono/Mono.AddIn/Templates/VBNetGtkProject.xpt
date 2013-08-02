@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <Template originator   = "Matt Ward"
           created      = "15/02/2006"
-          lastModified = "15/02/2006">
+          lastModified = "28/06/2013">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>Gtk# Application</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Subcategory>Mono</Subcategory>
 		<Icon>VBNet.Project.Form</Icon>
 		<Description>A project that creates a Gtk# application.</Description>
@@ -20,7 +20,7 @@
 	<Project language="VBNet">
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
-			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+			<MonoTargetFrameworkVersion>v4.0</MonoTargetFrameworkVersion>
 			<StartupObject>${StandardNamespace}.MainWindow</StartupObject>
 		</PropertyGroup>
 		

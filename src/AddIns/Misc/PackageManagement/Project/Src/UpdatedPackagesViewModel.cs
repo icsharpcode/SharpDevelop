@@ -14,11 +14,13 @@ namespace ICSharpCode.PackageManagement
 		PackageManagementSelectedProjects selectedProjects;
 		UpdatedPackages updatedPackages;
 		string errorMessage = String.Empty;
+		ILogger logger;
+		IPackageManagementEvents packageManagementEvents;
 		
 		public UpdatedPackagesViewModel(
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			UpdatedPackageViewModelFactory packageViewModelFactory,			
+			UpdatedPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(
 				registeredPackageRepositories,
@@ -26,14 +28,32 @@ namespace ICSharpCode.PackageManagement
 				taskFactory)
 		{
 			this.selectedProjects = new PackageManagementSelectedProjects(solution);
+			this.logger = packageViewModelFactory.Logger;
+			this.packageManagementEvents = packageViewModelFactory.PackageManagementEvents;
+			
+			packageManagementEvents.ParentPackagesUpdated += PackagesUpdated;
+			
+			ShowPackageSources = true;
+			ShowUpdateAllPackages = true;
+			ShowPrerelease = true;
+		}
+		
+		void PackagesUpdated(object sender, EventArgs e)
+		{
+			ReadPackages();
+		}
+		
+		protected override void OnDispose()
+		{
+			packageManagementEvents.ParentPackagesUpdated -= PackagesUpdated;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
 			try {
-				IPackageRepository aggregateRepository = RegisteredPackageRepositories.CreateAggregateRepository();
-				IQueryable<IPackage> installedPackages = GetInstalledPackages(aggregateRepository);
-				updatedPackages = new UpdatedPackages(installedPackages, aggregateRepository);
+				IPackageRepository repository = RegisteredPackageRepositories.ActiveRepository;
+				IQueryable<IPackage> installedPackages = GetInstalledPackages(repository);
+				updatedPackages = new UpdatedPackages(installedPackages, repository);
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}
@@ -59,7 +79,19 @@ namespace ICSharpCode.PackageManagement
 		
 		IQueryable<IPackage> GetUpdatedPackages()
 		{
-			return updatedPackages.GetUpdatedPackages().AsQueryable();
+			return updatedPackages.GetUpdatedPackages(IncludePrerelease).AsQueryable();
+		}
+		
+		protected override void TryUpdatingAllPackages()
+		{
+			var factory = new UpdatePackagesActionFactory(logger, packageManagementEvents);
+			IUpdatePackagesAction action = factory.CreateAction(selectedProjects, GetPackagesFromViewModels());
+			ActionRunner.Run(action);
+		}
+		
+		IEnumerable<IPackageFromRepository> GetPackagesFromViewModels()
+		{
+			return PackageViewModels.Select(viewModel => viewModel.GetPackage() as IPackageFromRepository);
 		}
 	}
 }

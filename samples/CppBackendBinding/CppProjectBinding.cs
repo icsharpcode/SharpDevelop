@@ -33,5 +33,11 @@ namespace CppBackendBinding
 		{
 			throw new NotImplementedException();
 		}
+		
+		public bool HandlingMissingProject {
+			get {
+				return false;
+			}
+		}
 	}
 }

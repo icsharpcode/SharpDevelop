@@ -34,7 +34,12 @@ namespace ICSharpCode.SharpDevelop
 			// aren't used with project content registries, and this code
 			// will be removed in SD5.
 			#pragma warning disable 618
-			return codon.GetFailedAction(project) == ConditionFailedAction.Nothing;
+			try {
+				return codon.GetFailedAction(project) == ConditionFailedAction.Nothing;
+			} catch (ObjectDisposedException) {
+				// This method may be used on a background thread, so there's a chance that the project got disposed.
+				return false;
+			}
 		}
 		
 		public ProjectContentRegistryDescriptor(Codon codon)

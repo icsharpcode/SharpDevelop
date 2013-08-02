@@ -44,6 +44,9 @@
 	
 	<!-- REQUIRED to open views -->
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id = "AutoDetect"
+			            title = "Auto-detect file type"
+			            class = "ICSharpCode.SharpDevelop.AutoDetectDisplayBinding"/>
 	</Path>
 	
 	<!-- REQUIRED to open views -->

@@ -94,5 +94,20 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			throw new NotImplementedException();
 		}
+		
+		public void AddFile(string path, Action<Stream> writeToStream)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void MakeFileWritable(string path)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public Stream CreateFile(string path)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

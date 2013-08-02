@@ -32,7 +32,8 @@ Extended Requirements (building SharpDevelop)
  - Windows SDK 7.1
  - Windows SDK 7.0 (optional; C++ compiler needed for profiler)
  - Windows PowerShell
-
+ - if you have cloned the SD git repository: git must be available on your PATH
+ 
 Libraries and integrated tools:
 	AvalonDock: New BSD License (BSD) (thanks to Adolfo Marinucci) 
 	GraphSharp

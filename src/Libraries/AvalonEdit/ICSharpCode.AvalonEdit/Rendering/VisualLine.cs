@@ -308,12 +308,20 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public TextLine GetTextLine(int visualColumn)
 		{
+			return GetTextLine(visualColumn, false);
+		}
+		
+		/// <summary>
+		/// Gets the text line containing the specified visual column.
+		/// </summary>
+		public TextLine GetTextLine(int visualColumn, bool isAtEndOfLine)
+		{
 			if (visualColumn < 0)
 				throw new ArgumentOutOfRangeException("visualColumn");
 			if (visualColumn >= VisualLengthWithEndOfLineMarker)
 				return TextLines[TextLines.Count - 1];
 			foreach (TextLine line in TextLines) {
-				if (visualColumn < line.Length)
+				if (isAtEndOfLine ? visualColumn <= line.Length : visualColumn < line.Length)
 					return line;
 				else
 					visualColumn -= line.Length;
@@ -403,6 +411,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return new Point(xPos, yPos);
 		}
 		
+		internal Point GetVisualPosition(int visualColumn, bool isAtEndOfLine, VisualYPosition yPositionMode)
+		{
+			TextLine textLine = GetTextLine(visualColumn, isAtEndOfLine);
+			double xPos = GetTextLineVisualXPosition(textLine, visualColumn);
+			double yPos = GetTextLineVisualYPosition(textLine, yPositionMode);
+			return new Point(xPos, yPos);
+		}
+		
 		/// <summary>
 		/// Gets the distance to the left border of the text area of the specified visual column.
 		/// The visual column must belong to the specified text line.
@@ -435,6 +451,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public int GetVisualColumn(Point point, bool allowVirtualSpace)
 		{
 			return GetVisualColumn(GetTextLineByVisualYPosition(point.Y), point.X, allowVirtualSpace);
+		}
+		
+		internal int GetVisualColumn(Point point, bool allowVirtualSpace, out bool isAtEndOfLine)
+		{
+			var textLine = GetTextLineByVisualYPosition(point.Y);
+			int vc = GetVisualColumn(textLine, point.X, allowVirtualSpace);
+			isAtEndOfLine = (vc >= GetTextLineVisualStartColumn(textLine) + textLine.Length);
+			return vc;
 		}
 		
 		/// <summary>
@@ -498,8 +522,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public int GetVisualColumnFloor(Point point, bool allowVirtualSpace)
 		{
+			bool tmp;
+			return GetVisualColumnFloor(point, allowVirtualSpace, out tmp);
+		}
+		
+		internal int GetVisualColumnFloor(Point point, bool allowVirtualSpace, out bool isAtEndOfLine)
+		{
 			TextLine textLine = GetTextLineByVisualYPosition(point.Y);
 			if (point.X > textLine.WidthIncludingTrailingWhitespace) {
+				isAtEndOfLine = true;
 				if (allowVirtualSpace && textLine == TextLines[TextLines.Count - 1]) {
 					// clicking virtual space in the last line
 					int virtualX = (int)((point.X - textLine.WidthIncludingTrailingWhitespace) / textView.WideSpaceWidth);
@@ -510,9 +541,45 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					// specially and return the line's end column instead.
 					return GetTextLineVisualStartColumn(textLine) + textLine.Length;
 				}
+			} else {
+				isAtEndOfLine = false;
 			}
 			CharacterHit ch = textLine.GetCharacterHitFromDistance(point.X);
 			return ch.FirstCharacterIndex;
+		}
+		
+		/// <summary>
+		/// Gets the text view position from the specified visual position.
+		/// If the position is within a character, it is rounded to the next character boundary.
+		/// </summary>
+		/// <param name="visualPosition">The position in WPF device-independent pixels relative
+		/// to the top left corner of the document.</param>
+		/// <param name="allowVirtualSpace">Controls whether positions in virtual space may be returned.</param>
+		public TextViewPosition GetTextViewPosition(Point visualPosition, bool allowVirtualSpace)
+		{
+			bool isAtEndOfLine;
+			int visualColumn = GetVisualColumn(visualPosition, allowVirtualSpace, out isAtEndOfLine);
+			int documentOffset = GetRelativeOffset(visualColumn) + this.FirstDocumentLine.Offset;
+			TextViewPosition pos = new TextViewPosition(this.Document.GetLocation(documentOffset), visualColumn);
+			pos.IsAtEndOfLine = isAtEndOfLine;
+			return pos;
+		}
+		
+		/// <summary>
+		/// Gets the text view position from the specified visual position.
+		/// If the position is inside a character, the position in front of the character is returned.
+		/// </summary>
+		/// <param name="visualPosition">The position in WPF device-independent pixels relative
+		/// to the top left corner of the document.</param>
+		/// <param name="allowVirtualSpace">Controls whether positions in virtual space may be returned.</param>
+		public TextViewPosition GetTextViewPositionFloor(Point visualPosition, bool allowVirtualSpace)
+		{
+			bool isAtEndOfLine;
+			int visualColumn = GetVisualColumnFloor(visualPosition, allowVirtualSpace, out isAtEndOfLine);
+			int documentOffset = GetRelativeOffset(visualColumn) + this.FirstDocumentLine.Offset;
+			TextViewPosition pos = new TextViewPosition(this.Document.GetLocation(documentOffset), visualColumn);
+			pos.IsAtEndOfLine = isAtEndOfLine;
+			return pos;
 		}
 		
 		/// <summary>

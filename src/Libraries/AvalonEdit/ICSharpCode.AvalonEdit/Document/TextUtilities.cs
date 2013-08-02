@@ -205,6 +205,30 @@ namespace ICSharpCode.AvalonEdit.Document
 			else
 				return CharacterClass.Other;
 		}
+		
+		static CharacterClass GetCharacterClass(char highSurrogate, char lowSurrogate)
+		{
+			if (char.IsSurrogatePair(highSurrogate, lowSurrogate)) {
+				switch (char.GetUnicodeCategory(highSurrogate.ToString() + lowSurrogate.ToString(), 0)) {
+					case UnicodeCategory.SpaceSeparator:
+					case UnicodeCategory.LineSeparator:
+					case UnicodeCategory.ParagraphSeparator:
+						return CharacterClass.Whitespace;
+					case UnicodeCategory.UppercaseLetter:
+					case UnicodeCategory.LowercaseLetter:
+					case UnicodeCategory.TitlecaseLetter:
+					case UnicodeCategory.ModifierLetter:
+					case UnicodeCategory.OtherLetter:
+					case UnicodeCategory.DecimalDigitNumber:
+						return CharacterClass.IdentifierPart;
+					default:
+						return CharacterClass.Other;
+				}
+			} else {
+				// malformed surrogate pair
+				return CharacterClass.Other;
+			}
+		}
 		#endregion
 		
 		#region GetNextCaretPosition
@@ -256,44 +280,36 @@ namespace ICSharpCode.AvalonEdit.Document
 				if (nextPos < 0 || nextPos > textLength)
 					return -1;
 				
-				// stop at every caret position? we can stop immediately.
-				if (mode == CaretPositioningMode.Normal)
-					return nextPos;
-				// not normal mode? we're looking for word borders...
-				
 				// check if we've run against the textSource borders.
 				// a 'textSource' usually isn't the whole document, but a single VisualLineElement.
 				if (nextPos == 0) {
 					// at the document start, there's only a word border
 					// if the first character is not whitespace
-					if (!char.IsWhiteSpace(textSource.GetCharAt(0)))
+					if (mode == CaretPositioningMode.Normal || !char.IsWhiteSpace(textSource.GetCharAt(0)))
 						return nextPos;
 				} else if (nextPos == textLength) {
 					// at the document end, there's never a word start
 					if (mode != CaretPositioningMode.WordStart && mode != CaretPositioningMode.WordStartOrSymbol) {
 						// at the document end, there's only a word border
 						// if the last character is not whitespace
-						if (!char.IsWhiteSpace(textSource.GetCharAt(textLength - 1)))
+						if (mode == CaretPositioningMode.Normal || !char.IsWhiteSpace(textSource.GetCharAt(textLength - 1)))
 							return nextPos;
 					}
 				} else {
-					CharacterClass charBefore = GetCharacterClass(textSource.GetCharAt(nextPos - 1));
-					CharacterClass charAfter = GetCharacterClass(textSource.GetCharAt(nextPos));
-					if (charBefore == charAfter) {
-						if (charBefore == CharacterClass.Other &&
-						    (mode == CaretPositioningMode.WordBorderOrSymbol || mode == CaretPositioningMode.WordStartOrSymbol))
-						{
-							// With the "OrSymbol" modes, there's a word border and start between any two unknown characters
-							return nextPos;
+					char charBefore = textSource.GetCharAt(nextPos - 1);
+					char charAfter = textSource.GetCharAt(nextPos);
+					// Don't stop in the middle of a surrogate pair
+					if (!char.IsSurrogatePair(charBefore, charAfter)) {
+						CharacterClass classBefore = GetCharacterClass(charBefore);
+						CharacterClass classAfter = GetCharacterClass(charAfter);
+						// get correct class for characters outside BMP:
+						if (char.IsLowSurrogate(charBefore) && nextPos >= 2) {
+							classBefore = GetCharacterClass(textSource.GetCharAt(nextPos - 2), charBefore);
 						}
-					} else {
-						// this looks like a possible border
-						
-						// if we're looking for word starts, check that this is a word start (and not a word end)
-						// if we're just checking for word borders, accept unconditionally
-						if (!((mode == CaretPositioningMode.WordStart || mode == CaretPositioningMode.WordStartOrSymbol)
-						      && (charAfter == CharacterClass.Whitespace || charAfter == CharacterClass.LineTerminator)))
-						{
+						if (char.IsHighSurrogate(charAfter) && nextPos + 1 < textLength) {
+							classAfter = GetCharacterClass(charAfter, textSource.GetCharAt(nextPos + 1));
+						}
+						if (StopBetweenCharacters(mode, classBefore, classAfter)) {
 							return nextPos;
 						}
 					}
@@ -301,6 +317,32 @@ namespace ICSharpCode.AvalonEdit.Document
 				// we'll have to continue searching...
 				offset = nextPos;
 			}
+		}
+		
+		static bool StopBetweenCharacters(CaretPositioningMode mode, CharacterClass charBefore, CharacterClass charAfter)
+		{
+			// Stop after every character in normal mode
+			if (mode == CaretPositioningMode.Normal)
+				return true;
+			if (charBefore == charAfter) {
+				if (charBefore == CharacterClass.Other &&
+				    (mode == CaretPositioningMode.WordBorderOrSymbol || mode == CaretPositioningMode.WordStartOrSymbol))
+				{
+					// With the "OrSymbol" modes, there's a word border and start between any two unknown characters
+					return true;
+				}
+			} else {
+				// this looks like a possible border
+				
+				// if we're looking for word starts, check that this is a word start (and not a word end)
+				// if we're just checking for word borders, accept unconditionally
+				if (!((mode == CaretPositioningMode.WordStart || mode == CaretPositioningMode.WordStartOrSymbol)
+				      && (charAfter == CharacterClass.Whitespace || charAfter == CharacterClass.LineTerminator)))
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 		#endregion
 	}

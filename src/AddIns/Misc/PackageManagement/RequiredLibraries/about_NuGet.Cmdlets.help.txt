@@ -13,7 +13,8 @@ LONG DESCRIPTION
 
         Cmdlet					Description
         ------------------		----------------------------------------------
-        Get-Package				Gets the set of packages available from the package source.
+        Get-Package				Gets the set of installed packages.  With -ListAvailable, 
+                                gets the set of packages available from the package source.
 
         Install-Package			Installs a package and its dependencies into the project.
 

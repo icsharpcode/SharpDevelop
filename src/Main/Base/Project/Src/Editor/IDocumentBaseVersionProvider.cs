@@ -79,6 +79,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		void FileChanged(object sender, FileSystemEventArgs e)
 		{
 			if (!alreadyCalled) {
+				if (e.Name.EndsWith(".lock", StringComparison.OrdinalIgnoreCase))
+					return;
 				alreadyCalled = true;
 				LoggingService.Info(e.Name + " changed!" + e.ChangeType);
 				if (WorkbenchSingleton.Workbench.IsActiveWindow) {

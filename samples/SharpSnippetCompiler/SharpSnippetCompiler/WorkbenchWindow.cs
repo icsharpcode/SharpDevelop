@@ -29,6 +29,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Media;
+
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -36,21 +38,12 @@ namespace ICSharpCode.SharpSnippetCompiler
 {
 	public class WorkbenchWindow : IWorkbenchWindow
 	{
-		TabControl tabControl;
-		SnippetTabPage tabPage;
-		
-		public WorkbenchWindow(TabControl tabControl, SnippetTabPage tabPage)
-		{
-			this.tabControl = tabControl;
-			this.tabPage = tabPage;
-		}
-		
 		public event EventHandler ActiveViewContentChanged;
-		public event EventHandler WindowSelected;		
+		public event EventHandler WindowSelected;
 		public event EventHandler WindowDeselected;
 		public event EventHandler TitleChanged;
 		public event EventHandler CloseEvent;
-				
+		
 		public string Title {
 			get {
 				throw new NotImplementedException();
@@ -68,7 +61,7 @@ namespace ICSharpCode.SharpSnippetCompiler
 			set { }
 		}
 		
-		public Icon Icon {
+		public ImageSource Icon {
 			get {
 				throw new NotImplementedException();
 			}
@@ -95,7 +88,7 @@ namespace ICSharpCode.SharpSnippetCompiler
 		
 		public void SelectWindow()
 		{
-			tabControl.SelectedTab = tabPage;
+			//tabControl.SelectedTab = tabPage;
 			OnWindowSelected(new EventArgs());
 		}
 		
@@ -137,6 +130,6 @@ namespace ICSharpCode.SharpSnippetCompiler
 			if (CloseEvent != null) {
 				CloseEvent(this, e);
 			}
-		}		
+		}
 	}
 }

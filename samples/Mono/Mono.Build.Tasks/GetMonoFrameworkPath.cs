@@ -38,6 +38,7 @@ namespace Mono.Build.Tasks
 	{
 		public const string TargetMonoFrameworkVersion11 = "v1.1";
 		public const string TargetMonoFrameworkVersion20 = "v2.0";
+		public const string TargetMonoFrameworkVersion40 = "v4.0";		
 		
 		string path = String.Empty;
 		TargetMonoFrameworkVersion targetFrameworkVersion = TargetMonoFrameworkVersion.VersionLatest;
@@ -76,16 +77,21 @@ namespace Mono.Build.Tasks
 					return TargetMonoFrameworkVersion11;
 				case TargetMonoFrameworkVersion.Version20:
 					return TargetMonoFrameworkVersion20;
+				case TargetMonoFrameworkVersion.Version40:
+					return TargetMonoFrameworkVersion40;
 			}
 			return null;
 		}
 		
 		static TargetMonoFrameworkVersion ConvertToEnum(string frameworkVersion)
 		{
-			if (frameworkVersion == TargetMonoFrameworkVersion11) {
-				return TargetMonoFrameworkVersion.Version11;
-			} else if (frameworkVersion == TargetMonoFrameworkVersion20) {
-				return TargetMonoFrameworkVersion.Version20;
+			switch (frameworkVersion) {
+				case TargetMonoFrameworkVersion11:
+					return TargetMonoFrameworkVersion.Version11;
+				case TargetMonoFrameworkVersion20:
+					return TargetMonoFrameworkVersion.Version20;
+				case TargetMonoFrameworkVersion40:
+					return TargetMonoFrameworkVersion.Version40;
 			}
 			throw new ArgumentException("Unknown Mono target framework version: " + frameworkVersion);
 		}

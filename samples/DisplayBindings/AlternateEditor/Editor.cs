@@ -53,17 +53,18 @@ namespace AlternateEditor
 		}
 		
 		public Editor(OpenedFile file)
-		{			
+		{
 			Files.Add(file);
 			OnFileNameChanged(file);
 			file.ForceInitializeView(this);
 
 			rtb.Dock = DockStyle.Fill;
-			rtb.TextChanged += TextChanged;			
+			rtb.TextChanged += TextChanged;
 		}
 		
 		public override void Dispose()
 		{
+			base.Dispose();
 			rtb.Dispose();
 		}
 		

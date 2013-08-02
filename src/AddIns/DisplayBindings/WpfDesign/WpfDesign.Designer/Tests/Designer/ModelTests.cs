@@ -8,6 +8,7 @@ using System.Xml;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using NUnit.Framework;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Xaml;
@@ -234,6 +235,161 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			AssertCanvasDesignerOutput("<Canvas>\n" +
 			                           "</Canvas>", canvas.Context);
 			AssertLog("");
+		}
+		
+		[Test]
+		public void AddMultiBindingToTextBox()
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			DesignItem canvas = button.Parent;
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			
+			textBox.Properties[TextBox.TextProperty].SetValue(new MultiBinding());
+			DesignItem multiBindingItem = textBox.Properties[TextBox.TextProperty].Value;
+			multiBindingItem.Properties["Converter"].SetValue(new MyMultiConverter());
+
+			DesignItemProperty bindingsProp = multiBindingItem.ContentProperty;
+			Assert.IsTrue(bindingsProp.IsCollection);
+			Assert.AreEqual(bindingsProp.Name, "Bindings");
+			
+			DesignItem bindingItem = canvas.Services.Component.RegisterComponentForDesigner(new Binding());
+			bindingItem.Properties["Path"].SetValue("SomeProperty");
+			bindingsProp.CollectionElements.Add(bindingItem);
+			
+			string expectedXaml = "<Button />\n" +
+			                      "<TextBox>\n" +
+			                      "  <MultiBinding>\n" +
+			                      "    <MultiBinding.Converter>\n" +
+			                      "      <t:MyMultiConverter />\n" +
+			                      "    </MultiBinding.Converter>\n" +
+			                      "    <Binding Path=\"SomeProperty\" />\n" +
+			                      "  </MultiBinding>\n" +
+			                      "</TextBox>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void AddSimpleBinding()
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			DesignItem canvas = button.Parent;
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			
+			textBox.Properties[TextBox.TextProperty].SetValue(new Binding());
+			textBox.Properties[TextBox.TextProperty].Value.Properties["Path"].SetValue("SomeProperty");
+			
+			string expectedXaml = "<Button />\n" +
+								  "<TextBox Text=\"{Binding Path=SomeProperty}\" />\n";
+			
+			AssertCanvasDesignerOutput(expectedXaml, button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void AddBindingWithStaticResource()
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			DesignItem canvas = button.Parent;
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			
+			DesignItemProperty resProp = canvas.Properties.GetProperty("Resources");
+			Assert.IsTrue(resProp.IsCollection);
+			DesignItem exampleClassItem = canvas.Services.Component.RegisterComponentForDesigner(new ExampleClass());
+			exampleClassItem.Key = "bindingSource";
+			resProp.CollectionElements.Add(exampleClassItem);
+			
+			DesignItem bindingItem = canvas.Services.Component.RegisterComponentForDesigner(new Binding());
+			textBox.Properties[TextBox.TextProperty].SetValue(bindingItem);
+			bindingItem.Properties["Path"].SetValue("StringProp");
+			bindingItem.Properties["Source"].SetValue(new StaticResourceExtension());
+			bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
+			
+			string expectedXaml = "<Canvas.Resources>\n" +
+								  "  <t:ExampleClass x:Key=\"bindingSource\" />\n" +
+								  "</Canvas.Resources>\n" +
+								  "<Button />\n" +
+								  "<TextBox Text=\"{Binding Path=StringProp, Source={StaticResource ResourceKey=bindingSource}}\" />";
+			
+			AssertCanvasDesignerOutput(expectedXaml, button.Context);
+			AssertLog("");
+		}
+		
+		void AddBindingWithStaticResourceWhereResourceOnSameElement(bool setBindingPropertiesAfterSet)
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			DesignItem canvas = button.Parent;
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			
+			DesignItemProperty resProp = textBox.Properties.GetProperty("Resources");
+			Assert.IsTrue(resProp.IsCollection);
+			DesignItem exampleClassItem = canvas.Services.Component.RegisterComponentForDesigner(new ExampleClass());
+			exampleClassItem.Key = "bindingSource";
+			resProp.CollectionElements.Add(exampleClassItem);
+			
+			DesignItem bindingItem = canvas.Services.Component.RegisterComponentForDesigner(new Binding());
+			if (!setBindingPropertiesAfterSet) {
+				bindingItem.Properties["Path"].SetValue("StringProp");
+				bindingItem.Properties["Source"].SetValue(new StaticResourceExtension());
+				bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
+			}
+			textBox.Properties[TextBox.TextProperty].SetValue(bindingItem);
+			if (setBindingPropertiesAfterSet) {
+				bindingItem.Properties["Path"].SetValue("StringProp");
+				bindingItem.Properties["Source"].SetValue(new StaticResourceExtension());
+				bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
+			}
+			
+			string expectedXaml = "<Button />\n" +
+								  "<TextBox>\n" +
+								  "  <TextBox.Resources>\n" +
+								  "    <t:ExampleClass x:Key=\"bindingSource\" />\n" +
+								  "  </TextBox.Resources>\n" +
+								  "  <Binding Path=\"StringProp\" Source=\"{StaticResource ResourceKey=bindingSource}\" />\n" +
+								  "</TextBox>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void AddBindingWithStaticResourceWhereResourceOnSameElement()
+		{
+			AddBindingWithStaticResourceWhereResourceOnSameElement(false);
+		}
+		
+		[Test]
+		public void AddBindingWithStaticResourceWhereResourceOnSameElementAlt()
+		{
+			AddBindingWithStaticResourceWhereResourceOnSameElement(true);
+		}
+	}
+	
+	public class MyMultiConverter : IMultiValueConverter
+	{
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			return null;
+		}
+		
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+		{
+			return new object[targetTypes.Length];
+		}
+	}
+	
+	public class ExampleClass
+	{
+		string stringProp;
+		
+		public string StringProp {
+			get { return stringProp; }
+			set { stringProp = value; }
 		}
 	}
 }

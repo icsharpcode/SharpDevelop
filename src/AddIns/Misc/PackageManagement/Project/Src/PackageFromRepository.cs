@@ -169,5 +169,28 @@ namespace ICSharpCode.PackageManagement
 		{
 			return package.GetSupportedFrameworks();
 		}
+		
+		public override string ToString()
+		{
+			return package.ToString();
+		}
+		
+		public ICollection<PackageReferenceSet> PackageAssemblyReferences {
+			get { return package.PackageAssemblyReferences; }
+		}
+		
+		public Version MinClientVersion {
+			get { return package.MinClientVersion; }
+		}
+		
+		public Uri GalleryUrl {
+			get {
+				var dataServicePackage = package as DataServicePackage;
+				if (dataServicePackage != null) {
+					return dataServicePackage.GalleryDetailsUrl;
+				}
+				return null;
+			}
+		}
 	}
 }

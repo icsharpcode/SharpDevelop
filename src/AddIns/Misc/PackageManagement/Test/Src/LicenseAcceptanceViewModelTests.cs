@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -65,7 +67,14 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModelWithOnePackage();
 			
-			CollectionAssert.AreEqual(packages, viewModel.Packages);
+			List<PackageLicenseViewModel> packageViewModels = viewModel.Packages.ToList();
+			PackageLicenseViewModel firstPackageViewModel = packageViewModels.FirstOrDefault();
+			
+			FakePackage expectedPackage = packages[0];
+			Assert.AreEqual(1, packageViewModels.Count);
+			Assert.AreEqual(expectedPackage.Id, firstPackageViewModel.Id);
+			Assert.AreEqual(expectedPackage.LicenseUrl, firstPackageViewModel.LicenseUrl);
+			Assert.AreEqual(expectedPackage.SummaryOrDescription(), firstPackageViewModel.Summary);
 		}
 		
 		[Test]

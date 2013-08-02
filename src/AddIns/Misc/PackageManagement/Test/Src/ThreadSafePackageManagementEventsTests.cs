@@ -453,5 +453,119 @@ namespace PackageManagement.Tests
 			
 			Assert.IsFalse(eventHandlerFired);
 		}
+		
+		[Test]
+		public void OnResolveFileConflict_NoInvokeRequired_NonThreadSafeOnResolveFileConflictMethodCalledWithMessage()
+		{
+			CreateEvents();
+			threadSafeEvents.OnResolveFileConflict("message");
+			
+			Assert.AreEqual("message", fakeEvents.MessagePassedToOnResolveFileConflict);
+		}
+		
+		[Test]
+		public void OnResolveFileConflict_NoInvokeRequired_ValueReturnedFromNonThreadSafeOnResolveFileConflict()
+		{
+			CreateEvents();
+			fakeEvents.FileConflictResolutionToReturn = FileConflictResolution.OverwriteAll;
+			FileConflictResolution result = threadSafeEvents.OnResolveFileConflict("message");
+			
+			Assert.AreEqual(FileConflictResolution.OverwriteAll, result);
+		}
+		
+		[Test]
+		public void OnResolveFileConflict_UnsafeEventFired_ThreadSafeEventFired()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			bool fired = false;
+			threadSafeEvents.ResolveFileConflict += (sender, e) => fired = true;
+			unsafeEvents.OnResolveFileConflict("message");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void ResolveFileConflict_UnsafeEventFired_ThreadSafeEventFired()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			bool fired = false;
+			threadSafeEvents.ResolveFileConflict += (sender, e) => fired = true;
+			unsafeEvents.OnResolveFileConflict("message");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void ResolveFileConflict_UnsafeEventFiredAfterEventHandlerRemoved_ThreadSafeEventIsNotFired()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			eventHandlerFired = false;
+			threadSafeEvents.ResolveFileConflict += OnEventHandlerFired;
+			threadSafeEvents.ResolveFileConflict -= OnEventHandlerFired;
+			unsafeEvents.OnResolveFileConflict("message");
+			
+			Assert.IsFalse(eventHandlerFired);
+		}
+		
+		[Test]
+		public void OnParentPackagesUpdated_NoInvokeRequired_NonThreadSafeOnParentPackagesUpdatedMethodCalled()
+		{
+			CreateEvents();
+			var expectedPackages = new FakePackage[] { new FakePackage() };
+			
+			threadSafeEvents.OnParentPackagesUpdated(expectedPackages);
+			
+			IEnumerable<IPackage> packages = fakeEvents.PackagesPassedToOnParentPackageUpdated;
+			Assert.AreEqual(expectedPackages, packages);
+		}
+		
+		[Test]
+		public void ParentPackagesUpdated_UnsafeEventFired_ThreadSafeEventFired()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			bool fired = false;
+			threadSafeEvents.ParentPackagesUpdated += (sender, e) => fired = true;
+			unsafeEvents.OnParentPackagesUpdated(null);
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void ParentPackagesUpdated_UnsafeEventFiredAndInvokeRequired_ThreadSafeEventIsSafelyInvoked()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			fakeWorkbench.InvokeRequiredReturnValue = true;
+			threadSafeEvents.ParentPackagesUpdated += OnEventHandlerFired;
+			var expectedPackages = new FakePackage[] { new FakePackage() };
+			
+			unsafeEvents.OnParentPackagesUpdated(expectedPackages);
+			
+			var eventArgs = fakeWorkbench.Arg2PassedToSafeThreadAsyncCall as ParentPackagesOperationEventArgs;
+			Assert.AreEqual(expectedPackages, eventArgs.Packages);
+		}
+		
+		[Test]
+		public void ParentPackagesUpdated_UnsafeEventFiredAndInvokeRequiredButNoEventHandlerRegistered_ThreadSafeEventIsNotInvoked()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			fakeWorkbench.InvokeRequiredReturnValue = true;
+			var packages = new FakePackage[] { new FakePackage() };
+			unsafeEvents.OnParentPackagesUpdated(packages);
+			
+			Assert.IsFalse(fakeWorkbench.IsSafeThreadAsyncCallMade);
+		}
+		
+		[Test]
+		public void Dispose_ParentPackagesUpdatedHandlerExistsAndThreadUnsafeEventFiredAfterDispose_ThreadSafeEventIsNotFired()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			eventHandlerFired = false;
+			threadSafeEvents.ParentPackagesUpdated += OnEventHandlerFired;
+			threadSafeEvents.Dispose();
+			
+			unsafeEvents.OnParentPackagesUpdated(new FakePackage[0]);
+			
+			Assert.IsFalse(eventHandlerFired);
+		}
 	}
 }

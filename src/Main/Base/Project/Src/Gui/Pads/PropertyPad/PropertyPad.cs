@@ -238,13 +238,68 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SetDesignableObjects(null);
 		}
 		
+		/// <summary>
+		/// Wrap objects in the combobox in order to replace their ToString() implementation.
+		/// </summary>
+		class ComboBoxItemWrapper
+		{
+			// This class is important because the default ToString() for some WinForms controls throws exceptions in some circumstances.
+			// e.g. System.NullReferenceException
+			// in System.Windows.Forms.ToolStripControlHost.get_Text()
+			// in System.Windows.Forms.ToolStripItem.ToString()
+			// in System.Convert.ToString(Object value, IFormatProvider provider)
+			// in System.Windows.Forms.ListControl.GetItemText(Object item)
+			// in System.Windows.Forms.ComboBox.NativeAdd(Object item)
+			// in System.Windows.Forms.ComboBox.ObjectCollection.AddInternal(Object item)
+			// in System.Windows.Forms.ComboBox.ObjectCollection.Add(Object item)
+			
+			// We need this even though we're using owner drawing.
+			
+			public readonly object Item;
+			
+			public ComboBoxItemWrapper(object item)
+			{
+				if (item == null)
+					throw new ArgumentNullException("item");
+				this.Item = item;
+			}
+			
+			public override int GetHashCode()
+			{
+				return Item.GetHashCode();
+			}
+			
+			public override bool Equals(object obj)
+			{
+				ComboBoxItemWrapper o = obj as ComboBoxItemWrapper;
+				return o != null && this.Item.Equals(o.Item);
+			}
+			
+			public override string ToString()
+			{
+				IComponent component = Item as IComponent;
+				if (component != null) {
+					ISite site = component.Site;
+					if (site != null) {
+						return site.Name + " - " + Item.GetType().ToString();
+					}
+				}
+				return Item.GetType().ToString();
+			}
+		}
+		
+		object GetComboBoxItem(int index)
+		{
+			return ((ComboBoxItemWrapper)comboBox.Items[index]).Item;
+		}
+		
 		void ComboBoxMeasureItem(object sender, MeasureItemEventArgs mea)
 		{
 			if (mea.Index < 0 || mea.Index >= comboBox.Items.Count) {
 				mea.ItemHeight = comboBox.Font.Height;
 				return;
 			}
-			object item = comboBox.Items[mea.Index];
+			object item = GetComboBoxItem(mea.Index);
 			SizeF size = mea.Graphics.MeasureString(item.GetType().ToString(), comboBox.Font);
 			
 			mea.ItemHeight = (int)size.Height;
@@ -280,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				g.FillRectangle(SystemBrushes.Window, dea.Bounds);
 			}
 			
-			object item = comboBox.Items[dea.Index];
+			object item = GetComboBoxItem(dea.Index);
 			int   xPos  = dea.Bounds.X;
 			
 			if (item is IComponent) {
@@ -301,11 +356,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ComboBoxSelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (!inUpdate) {
-				if (host!=null) {
-					ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
+			if (!inUpdate && host!=null) {
+				ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
+				if (selectionService != null) {
 					if (comboBox.SelectedIndex >= 0) {
-						selectionService.SetSelectedComponents(new object[] {comboBox.Items[comboBox.SelectedIndex] });
+						selectionService.SetSelectedComponents(new object[] { GetComboBoxItem(comboBox.SelectedIndex) });
 					} else {
 						SetDesignableObject(null);
 						selectionService.SetSelectedComponents(new object[] { });
@@ -318,7 +373,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (grid.SelectedObjects != null && grid.SelectedObjects.Length == 1) {
 				for (int i = 0; i < comboBox.Items.Count; ++i) {
-					if (grid.SelectedObject == comboBox.Items[i]) {
+					if (grid.SelectedObject == GetComboBoxItem(i)) {
 						comboBox.SelectedIndex = i;
 					}
 				}
@@ -395,7 +450,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				comboBox.Items.Clear();
 				if (coll != null) {
 					foreach (object obj in SortObjectsBySiteName(coll)) {
-						comboBox.Items.Add(obj);
+						comboBox.Items.Add(new ComboBoxItemWrapper(obj));
 					}
 				}
 				SelectedObjectsChanged();

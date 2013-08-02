@@ -38,20 +38,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region Cache management
 		public string SaveProjectContent(ReflectionProjectContent pc)
 		{
-			// create cache directory, if necessary
-			Directory.CreateDirectory(cacheDirectory);
-			
-			string assemblyFullName = pc.AssemblyFullName;
-			int pos = assemblyFullName.IndexOf(',');
-			string fileName = Path.Combine(cacheDirectory,
-			                               assemblyFullName.Substring(0, pos)
-			                               + "." + pc.AssemblyLocation.GetHashCode().ToString("x", CultureInfo.InvariantCulture)
-			                               + ".dat");
-			AddFileNameToCacheIndex(Path.GetFileName(fileName), pc);
-			using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write)) {
-				WriteProjectContent(pc, fs);
+			try {
+				// create cache directory, if necessary
+				Directory.CreateDirectory(cacheDirectory);
+				
+				string assemblyFullName = pc.AssemblyFullName;
+				int pos = assemblyFullName.IndexOf(',');
+				string fileName = Path.Combine(cacheDirectory,
+				                               assemblyFullName.Substring(0, pos)
+				                               + "." + pc.AssemblyLocation.GetHashCode().ToString("x", CultureInfo.InvariantCulture)
+				                               + ".dat");
+				AddFileNameToCacheIndex(Path.GetFileName(fileName), pc);
+				using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write)) {
+					WriteProjectContent(pc, fs);
+				}
+				return fileName;
+			} catch (IOException) {
+				return null;
+			} catch (UnauthorizedAccessException) {
+				return null;
 			}
-			return fileName;
 		}
 		
 		public ReflectionProjectContent LoadProjectContentByAssemblyName(string assemblyName)

@@ -31,7 +31,6 @@ $Log: /CoreServices/Hsi/ExpressionEvaluator/Parser/Functions/ToString.cs $
 
 using System;
 using System.Text.RegularExpressions;
-using SimpleExpressionEvaluator.Compilation.Functions;
 using SimpleExpressionEvaluator.Utilities;
 
 namespace SimpleExpressionEvaluator.Compilation.Functions
