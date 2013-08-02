@@ -46,6 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			ThrowIfFrozen();
 			this.startLocation = value;
+			this.endLocation = null;
 		}
 		
 		string literalValue;

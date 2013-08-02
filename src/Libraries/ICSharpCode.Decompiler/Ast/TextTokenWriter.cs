@@ -274,7 +274,10 @@ namespace ICSharpCode.Decompiler.Ast
 		
 		public override void WritePrimitiveType(string type)
 		{
-			
+			output.Write(type);
+			if (type == "new") {
+				output.Write("()");
+			}
 		}
 		
 		Stack<TextLocation> startLocations = new Stack<TextLocation>();

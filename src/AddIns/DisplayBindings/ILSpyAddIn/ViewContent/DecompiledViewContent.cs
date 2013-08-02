@@ -82,6 +82,12 @@ namespace ICSharpCode.ILSpyAddIn
 		}
 		#endregion
 		
+		public static DecompiledViewContent Get(DecompiledTypeReference name)
+		{
+			var viewContents = SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>();
+			return viewContents.FirstOrDefault(c => c.DecompiledTypeName == name);
+		}
+		
 		public static DecompiledViewContent Get(IEntity entity)
 		{
 			if (entity == null)
@@ -194,13 +200,9 @@ namespace ICSharpCode.ILSpyAddIn
 		void DecompilationThread()
 		{
 			try {
-				StringWriter writer = new StringWriter();
 				var file = ILSpyDecompilerService.DecompileType(DecompiledTypeName);
-				memberLocations = file.TextOutput.MemberLocations;
-				this.DebugSymbols = file.TextOutput.DebugSymbols;
-//				if (!cancellation.IsCancellationRequested) {
-//					SD.MainThread.InvokeAsyncAndForget(() => OnDecompilationFinished(writer));
-//				}
+				memberLocations = file.MemberLocations;
+				DebugSymbols = file.DebugSymbols;
 				OnDecompilationFinished(file.Writer);
 			} catch (OperationCanceledException) {
 				// ignore cancellation

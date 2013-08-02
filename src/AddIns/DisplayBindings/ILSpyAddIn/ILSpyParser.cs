@@ -9,6 +9,7 @@ using System.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -36,7 +37,10 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
+			var decompiledParseInfo = parseInfo as ILSpyFullParseInformation;
+			if (decompiledParseInfo == null)
+				throw new ArgumentException("Parse info does not have SyntaxTree");
+			return ResolveAtLocation.Resolve(compilation, null, decompiledParseInfo.SyntaxTree, location, cancellationToken);
 		}
 		
 		public ResolveResult ResolveSnippet(ParseInformation parseInfo, TextLocation location, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken)

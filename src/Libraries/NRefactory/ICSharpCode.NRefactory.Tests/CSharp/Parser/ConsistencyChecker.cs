@@ -68,12 +68,13 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		static void CheckWhitespace(AstNode startNode, TextLocation whitespaceStart, AstNode endNode, TextLocation whitespaceEnd, string currentFileName, IDocument currentDocument)
 		{
+			if (whitespaceStart == whitespaceEnd || startNode == endNode)
+				return;
 			Assert.Greater(whitespaceStart.Line, 0);
 			Assert.Greater(whitespaceStart.Column, 0);
 			Assert.Greater(whitespaceEnd.Line, 0);
 			Assert.Greater(whitespaceEnd.Column, 0);
-			if (whitespaceStart == whitespaceEnd || startNode == endNode)
-				return;
+			Assert.IsTrue(whitespaceEnd >= whitespaceStart, endNode.GetType().Name + ".StartLocation < " + startNode.GetType().Name + ".EndLocation: " + whitespaceEnd + " < " + whitespaceStart);
 			int start = currentDocument.GetOffset(whitespaceStart.Line, whitespaceStart.Column);
 			int end = currentDocument.GetOffset(whitespaceEnd.Line, whitespaceEnd.Column);
 			string text = currentDocument.GetText(start, end - start);

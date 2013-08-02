@@ -19,7 +19,6 @@ namespace ICSharpCode.ILSpyAddIn
 	public class ILSpyUnresolvedFile : IUnresolvedFile
 	{
 		DecompiledTypeReference name;
-		DebuggerTextOutput textOutput;
 		StringWriter writer;
 		IList<Error> errors;
 		IList<IUnresolvedTypeDefinition> topLevel;
@@ -27,13 +26,20 @@ namespace ICSharpCode.ILSpyAddIn
 		public static ILSpyUnresolvedFile Create(DecompiledTypeReference name, AstBuilder builder)
 		{
 			var writer = new StringWriter();
-			var output = new DebuggerTextOutput(new PlainTextOutput(writer));
-			builder.GenerateCode(output);
+			var target = new TextWriterTokenWriter(writer) { IndentationString = "\t" };
+			var output = new DebugInfoTokenWriterDecorator(target, target);
+			builder.RunTransformations();
+			var syntaxTree = builder.SyntaxTree;
+			
+			syntaxTree.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
+			var outputFormatter = TokenWriter.WrapInWriterThatSetsLocationsInAST(output);
+			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, FormattingOptionsFactory.CreateSharpDevelop()));
 			ILSpyUnresolvedFile file = new ILSpyUnresolvedFile(name, builder.SyntaxTree.Errors);
 			builder.SyntaxTree.FileName = name.ToFileName();
 			var ts = builder.SyntaxTree.ToTypeSystem();
 			file.topLevel = ts.TopLevelTypeDefinitions;
-			file.textOutput = output;
+			file.MemberLocations = output.MemberLocations;
+			file.DebugSymbols = output.DebugSymbols;
 			file.writer = writer;
 			
 			return file;
@@ -45,19 +51,17 @@ namespace ICSharpCode.ILSpyAddIn
 			this.errors = errors;
 		}
 		
-		public DebuggerTextOutput TextOutput {
-			get { return textOutput; }
-		}
+		public Dictionary<string, TextLocation> MemberLocations { get; private set; }
 		
+		public Dictionary<string, MethodDebugSymbols> DebugSymbols { get; private set; }
+
 		public StringWriter Writer {
 			get { return writer; }
 		}
-
+		
 		public FileName AssemblyFile {
 			get { return name.AssemblyFile; }
 		}
-		
-		public Dictionary<string, MethodDebugSymbols> DebugSymbols { get; private set; }
 		
 		public IUnresolvedTypeDefinition GetTopLevelTypeDefinition(TextLocation location)
 		{

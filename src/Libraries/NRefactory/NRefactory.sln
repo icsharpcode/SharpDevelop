@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 5.0
+# SharpDevelop 4.3
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DC98210E-1646-483B-819A-2BB8272461E4}"
 	ProjectSection(SolutionItems) = preProject
 		Packages\ICSharpCode.NRefactory.nuspec = Packages\ICSharpCode.NRefactory.nuspec
@@ -17,8 +17,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil", "..\cecil\Mono.Cecil.csproj", "{D68133BD-1E63-496E-9EDE-4FBDBF77B486}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.CSharp", "ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj", "{53DCA265-3C3C-42F9-B647-F72BA678122B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.GtkDemo", "ICSharpCode.NRefactory.GtkDemo\ICSharpCode.NRefactory.GtkDemo.csproj", "{A7EEF7F8-238F-459D-95A9-96467539641D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.ConsistencyCheck", "ICSharpCode.NRefactory.ConsistencyCheck\ICSharpCode.NRefactory.ConsistencyCheck.csproj", "{D81206EF-3DCA-4A30-897B-E262A2AD9EE3}"
 EndProject
@@ -104,22 +102,6 @@ Global
 		{53DCA265-3C3C-42F9-B647-F72BA678122B}.net_4_5_Release|Any CPU.Build.0 = net_4_5_Release|Any CPU
 		{53DCA265-3C3C-42F9-B647-F72BA678122B}.net_4_5_Release|x86.ActiveCfg = net_4_5_Release|Any CPU
 		{53DCA265-3C3C-42F9-B647-F72BA678122B}.net_4_5_Release|x86.Build.0 = net_4_5_Release|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.Debug|x86.Build.0 = Debug|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.Release|x86.ActiveCfg = Release|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.Release|x86.Build.0 = Release|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.net_4_5_Debug|Any CPU.ActiveCfg = net_4_5_Debug|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.net_4_5_Debug|Any CPU.Build.0 = net_4_5_Debug|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.net_4_5_Debug|x86.ActiveCfg = net_4_5_Debug|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.net_4_5_Debug|x86.Build.0 = net_4_5_Debug|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.net_4_5_Release|Any CPU.ActiveCfg = net_4_5_Release|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.net_4_5_Release|Any CPU.Build.0 = net_4_5_Release|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.net_4_5_Release|x86.ActiveCfg = net_4_5_Release|Any CPU
-		{A7EEF7F8-238F-459D-95A9-96467539641D}.net_4_5_Release|x86.Build.0 = net_4_5_Release|Any CPU
 		{D81206EF-3DCA-4A30-897B-E262A2AD9EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D81206EF-3DCA-4A30-897B-E262A2AD9EE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D81206EF-3DCA-4A30-897B-E262A2AD9EE3}.Debug|x86.ActiveCfg = Debug|x86

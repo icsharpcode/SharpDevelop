@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return new InsertSpecialsDecorator(new InsertRequiredSpacesDecorator(new InsertMissingTokensDecorator(target, target)));
 		}
 		
-		public static TokenWriter WrapInWriterThatSetsLocationsInAST(TokenWriter writer, string indentation = "\t")
+		public static TokenWriter WrapInWriterThatSetsLocationsInAST(TokenWriter writer)
 		{
 			if (!(writer is ILocatable))
 				throw new InvalidOperationException("writer does not provide locations!");

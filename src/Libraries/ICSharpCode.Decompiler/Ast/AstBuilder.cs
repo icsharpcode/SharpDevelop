@@ -151,13 +151,6 @@ namespace ICSharpCode.Decompiler.Ast
 		}
 		
 		/// <summary>
-		/// Gets the context used by this AstBuilder.
-		/// </summary>
-		public DecompilerContext Context {
-			get { return context; }
-		}
-		
-		/// <summary>
 		/// Generates C# code from the abstract source tree.
 		/// </summary>
 		/// <remarks>This method adds ParenthesizedExpressions into the AST, and will run transformations if <see cref="RunTransformations"/> was not called explicitly</remarks>

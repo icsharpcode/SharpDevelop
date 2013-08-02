@@ -37,11 +37,11 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public Debugger.SequencePoint GetSequencePoint(IMethod method, int iloffset)
 		{
-			var symbols = GetSymbols(method);
-			if (symbols == null)
-				return null;
-			
+			string id = IdStringProvider.GetIdString(method.MemberDefinition);
 			var content = DecompiledViewContent.Get(method);
+			if (content == null || !content.DebugSymbols.ContainsKey(id))
+				return null;
+			var symbols = content.DebugSymbols[id];
 			var seqs = symbols.SequencePoints;
 			var seq = seqs.FirstOrDefault(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To));
 			if (seq == null)
@@ -50,8 +50,8 @@ namespace ICSharpCode.ILSpyAddIn
 				// Use the widest sequence point containing the IL offset
 				iloffset = seq.ILOffset;
 				seq = seqs.Where(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To))
-				          .OrderByDescending(p => p.ILRanges.Last().To - p.ILRanges.First().From)
-				          .FirstOrDefault();
+					.OrderByDescending(p => p.ILRanges.Last().To - p.ILRanges.First().From)
+					.FirstOrDefault();
 				return seq.ToDebugger(symbols, content.PrimaryFileName);
 			}
 			return null;
@@ -59,21 +59,22 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public Debugger.SequencePoint GetSequencePoint(Module module, string filename, int line, int column)
 		{
-			var decompiledFile = ILSpyDecompilerService.DecompileType(DecompiledTypeReference.FromFileName(filename));
-			if (decompiledFile == null)
+			var name = DecompiledTypeReference.FromFileName(filename);
+			var content = DecompiledViewContent.Get(name);
+			if (content == null)
 				return null;
-			if (!FileUtility.IsEqualFileName(module.FullPath, decompiledFile.AssemblyFile))
+			if (!FileUtility.IsEqualFileName(module.FullPath, content.AssemblyFile))
 				return null;
 			
 			TextLocation loc = new TextLocation(line, column);
-			foreach(var symbols in decompiledFile.DebugSymbols.Values.Where(s => s.StartLocation <= loc && loc <= s.EndLocation)) {
+			foreach(var symbols in content.DebugSymbols.Values.Where(s => s.StartLocation <= loc && loc <= s.EndLocation)) {
 				Decompiler.SequencePoint seq = null;
 				if (column != 0)
 					seq = symbols.SequencePoints.FirstOrDefault(p => p.StartLocation <= loc && loc <= p.EndLocation);
 				if (seq == null)
 					seq = symbols.SequencePoints.FirstOrDefault(p => line <= p.StartLocation.Line);
 				if (seq != null)
-					return seq.ToDebugger(symbols, decompiledFile.FileName);
+					return seq.ToDebugger(symbols, content.PrimaryFileName);
 			}
 			return null;
 		}
@@ -96,12 +97,12 @@ namespace ICSharpCode.ILSpyAddIn
 				return null;
 			
 			return symbols.LocalVariables.Select(v => new Debugger.ILLocalVariable() {
-					Index = v.OriginalVariable.Index,
-					Type = method.Compilation.FindType(KnownTypeCode.Object), // TODO
-				Name = v.Name,
-				IsCompilerGenerated = false,
-				ILRanges = new [] { new Debugger.ILRange(0, int.MaxValue) }
-			});
+			                                     	Index = v.OriginalVariable.Index,
+			                                     	Type = method.Compilation.FindType(KnownTypeCode.Object), // TODO
+			                                     	Name = v.Name,
+			                                     	IsCompilerGenerated = false,
+			                                     	ILRanges = new [] { new Debugger.ILRange(0, int.MaxValue) }
+			                                     });
 		}
 	}
 	

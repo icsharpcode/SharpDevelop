@@ -65,7 +65,7 @@ namespace ICSharpCode.ILSpyAddIn
 		}
 	}
 	
-	public class DecompiledTypeReference
+	public class DecompiledTypeReference : IEquatable<DecompiledTypeReference>
 	{
 		public FileName AssemblyFile { get; private set; }
 		public FullTypeName Type { get; private set; }
@@ -94,5 +94,43 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			return new DecompiledTypeReference(new FileName(asm), new FullTypeName(typeName));
 		}
+		
+		#region Equals and GetHashCode implementation
+		public override bool Equals(object obj)
+		{
+			DecompiledTypeReference other = (DecompiledTypeReference)obj;
+			if (other == null)
+				return false;
+			return Equals(other);
+		}
+		
+		public bool Equals(DecompiledTypeReference other)
+		{
+			return object.Equals(this.AssemblyFile, other.AssemblyFile) && this.Type == other.Type;
+		}
+
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (AssemblyFile != null)
+					hashCode += 1000000007 * AssemblyFile.GetHashCode();
+				hashCode += 1000000009 * Type.GetHashCode();
+			}
+			return hashCode;
+		}
+
+		public static bool operator ==(DecompiledTypeReference lhs, DecompiledTypeReference rhs) {
+			if (ReferenceEquals(lhs, rhs))
+				return true;
+			if (ReferenceEquals(lhs, null) || ReferenceEquals(rhs, null))
+				return false;
+			return lhs.Equals(rhs);
+		}
+
+		public static bool operator !=(DecompiledTypeReference lhs, DecompiledTypeReference rhs) {
+			return !(lhs == rhs);
+		}
+		#endregion
 	}
 }

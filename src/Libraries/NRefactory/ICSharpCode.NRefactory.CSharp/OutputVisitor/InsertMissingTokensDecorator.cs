@@ -61,7 +61,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void WriteToken(Role role, string token)
 		{
 			CSharpTokenNode t = new CSharpTokenNode(locationProvider.Location, (TokenRole)role);
-			currentList.Add(t);
+			EmptyStatement node = nodes.Peek().LastOrDefault() as EmptyStatement;
+			if (node == null)
+				currentList.Add(t);
+			else {
+				node.Location = locationProvider.Location;
+			}
 			base.WriteToken(role, token);
 		}
 		
@@ -75,6 +80,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				t = new CSharpModifierToken(start, CSharpModifierToken.GetModifierValue(keyword));
 			else if (keyword == "this") {
 				ThisReferenceExpression node = nodes.Peek().LastOrDefault() as ThisReferenceExpression;
+				if (node != null)
+					node.Location = start;
+			} else if (keyword == "base") {
+				BaseReferenceExpression node = nodes.Peek().LastOrDefault() as BaseReferenceExpression;
 				if (node != null)
 					node.Location = start;
 			}

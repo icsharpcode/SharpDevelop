@@ -314,8 +314,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					b.Append("L");
 				}
 				textWriter.Write(b.ToString());
+				column += b.Length;
 			} else {
 				textWriter.Write(value.ToString());
+				column += value.ToString().Length;
 			}
 		}
 		
