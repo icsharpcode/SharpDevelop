@@ -48,9 +48,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			try {
 				return modelFactory.CreateAssemblyModelFromFile(fileName);
 			} catch (BadImageFormatException) {
-				SD.MessageService.ShowWarningFormatted("{0} is not a valid .NET assembly.", Path.GetFileName(fileName));
+				SD.MessageService.ShowWarningFormatted("${res:ICSharpCode.SharpDevelop.Dom.AssemblyInvalid}", Path.GetFileName(fileName));
 			} catch (FileNotFoundException) {
-				SD.MessageService.ShowWarningFormatted("{0} is not accessible or doesn't exist anymore.", fileName);
+				SD.MessageService.ShowWarningFormatted("${res:ICSharpCode.SharpDevelop.Dom.AssemblyNotAccessible}", fileName);
 			}
 			
 			return null;

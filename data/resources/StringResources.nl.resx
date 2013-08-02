@@ -358,6 +358,12 @@ Deze stoppen met werken na verwijderen van deze AddIn.</value>
   <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
     <value>SharpDevelop AddIns|*.sdaddin;*.addin|Alle bestanden|*.*</value>
   </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleText" xml:space="preserve">
+    <value>Hier klikken om de updates te zien.</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleTitle" xml:space="preserve">
+    <value>Er zijn updates voor SharpDevelop beschikbaar.</value>
+  </data>
   <data name="AddInManager2.Views.Available" xml:space="preserve">
     <value>Beschikbaar</value>
   </data>
