@@ -208,6 +208,7 @@
     <Compile Include="Src\UpdatedPackagesTests.cs" />
     <Compile Include="Src\UpdatePackagesActionTests.cs" />
     <Compile Include="Src\UpdateSolutionPackagesActionTests.cs" />
+    <Compile Include="Src\UserAgentGeneratorForRepositoryRequestsTests.cs" />
     <Compile Include="Src\VirtualMethodUpdaterTests.cs" />
     <Compile Include="Src\NewProjectsCreatedTests.cs" />
     <Compile Include="Src\PackageActionRunnerTests.cs" />
