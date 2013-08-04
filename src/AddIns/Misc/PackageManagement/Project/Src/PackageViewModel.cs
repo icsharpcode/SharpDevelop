@@ -181,10 +181,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			ClearReportedMessages();
 			logger.LogAddingPackage();
-			using (IDisposable operation = package.StartInstallOperation()) {
+			using (IDisposable operation = StartInstallOperation(package)) {
 				TryInstallingPackage();
 			}
 			logger.LogAfterPackageOperationCompletes();
+		}
+		
+		protected virtual IDisposable StartInstallOperation(IPackageFromRepository package)
+		{
+			return package.StartInstallOperation();
 		}
 		
 		void ClearReportedMessages()

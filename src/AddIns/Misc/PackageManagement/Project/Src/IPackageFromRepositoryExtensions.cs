@@ -11,5 +11,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			return package.Repository.StartInstallOperation(package.Id);
 		}
+		
+		public static IDisposable StartUpdateOperation(this IPackageFromRepository package)
+		{
+			return package.Repository.StartUpdateOperation(package.Id);
+		}
 	}
 }
