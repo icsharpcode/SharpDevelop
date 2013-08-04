@@ -37,7 +37,7 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeUpdateAllPackagesInSolution = fakeUpdateActionsFactory.FakeUpdateAllPackagesInSolution;
 			fakeUpdatePackageInAllProjects = fakeUpdateActionsFactory.FakeUpdatePackageInAllProjects;
 		}
-				
+		
 		FakeUpdatePackageAction UpdatePackageInSingleProjectAction {
 			get { return fakeProject.FirstFakeUpdatePackageActionCreated; }
 		}
@@ -142,11 +142,12 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateUpdateActionWhenUpdatingAllPackagesInSolution(packageId2);
 		}
 		
-		void CreateUpdateActionWhenUpdatingAllPackagesInSolution(string packageId)
+		FakeUpdatePackageAction CreateUpdateActionWhenUpdatingAllPackagesInSolution(string packageId)
 		{
 			var action = new FakeUpdatePackageAction(fakeProject);
 			action.PackageId = packageId;
 			fakeUpdateActionsFactory.FakeUpdateAllPackagesInSolution.FakeActions.Add(action);
+			return action;
 		}
 		
 		void CreateTwoUpdateActionsWhenUpdatingPackageInAllProjects(string packageId1, string packageId2)
@@ -155,11 +156,12 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateUpdateActionWhenUpdatingPackageInAllProjects(packageId2);
 		}
 		
-		void CreateUpdateActionWhenUpdatingPackageInAllProjects(string packageId)
+		FakeUpdatePackageAction CreateUpdateActionWhenUpdatingPackageInAllProjects(string packageId)
 		{
 			var action = new FakeUpdatePackageAction(fakeProject);
 			action.PackageId = packageId;
 			fakeUpdateActionsFactory.FakeUpdatePackageInAllProjects.FakeActions.Add(action);
+			return action;
 		}
 		
 		[Test]
@@ -768,6 +770,52 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			fakeConsoleHost.AssertFileConflictResolverIsDisposed();
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdAndProjectNameSpecifiedSpecifiedAndSourceRepositoryIsOperationAware_UpdateOperationStartedAndDisposedForPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("TestProject");
+			SetIdParameter("Test");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakeProject.FakeSourceRepository = operationAwareRepository;
+			
+			RunCmdlet();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, "Test");
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecifiedAndSourceRepositoryIsOperationAware_UpdateOperationStartedAndDisposedForPackage()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			FakeUpdatePackageAction action = CreateUpdateActionWhenUpdatingPackageInAllProjects("Test");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			action.FakeProject.FakeSourceRepository = operationAwareRepository;
+			
+			RunCmdlet();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, "Test");
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesIsSolutionAndTwoUpdateActionsAndSourceRepositoryIsOperationAware_UpdateOperationStartedAndDisposedForSecondPackage()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			CreateUpdateActionWhenUpdatingAllPackagesInSolution("Test1");
+			FakeUpdatePackageAction action = CreateUpdateActionWhenUpdatingAllPackagesInSolution("Test2");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			action.FakeProject.FakeSourceRepository = operationAwareRepository;
+			
+			RunCmdlet();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, "Test2");
 		}
 	}
 }
