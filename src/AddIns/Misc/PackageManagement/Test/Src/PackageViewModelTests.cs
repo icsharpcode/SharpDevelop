@@ -912,7 +912,7 @@ namespace PackageManagement.Tests
 			
 			string expectedMessage = String.Empty;
 			string actualMessage = fakeLogger.LastFormattedMessageLogged;
-						
+			
 			Assert.AreEqual(expectedMessage, actualMessage);
 		}
 		
@@ -1488,6 +1488,52 @@ namespace PackageManagement.Tests
 			exceptionThrowingProject.ExceptionToThrowWhenCreateInstallPackageActionCalled = ex;
 		
 			viewModel.AddPackage();
+			
+			Assert.AreEqual(RepositoryOperationNames.Install, operationAwareRepository.OperationStarted);
+			Assert.AreEqual("MyPackage", operationAwareRepository.MainPackageIdForOperationStarted);
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsAndFirstSelectedAndUserAcceptsSelectedProjectsAndSourceRepositoryIsOperationAware_InstallOperationStartedForPackage()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			fakePackageManagementEvents.ProjectsToSelect.Add("Project A");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			
+			viewModel.ManagePackage();
+			
+			Assert.AreEqual(RepositoryOperationNames.Install, operationAwareRepository.OperationStarted);
+			Assert.AreEqual("MyPackage", operationAwareRepository.MainPackageIdForOperationStarted);
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsAndFirstSelectedAndUserAcceptsSelectedProjectsAndSourceRepositoryIsOperationAware_InstallOperationStartedIsDisposed()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			fakePackageManagementEvents.ProjectsToSelect.Add("Project A");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			
+			viewModel.ManagePackage();
+			
+			operationAwareRepository.AssertOperationIsDisposed();
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsNeitherSelectedAndSourceRepositoryIsOperationAware_InstallOperationStarted()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			
+			viewModel.ManagePackage();
 			
 			Assert.AreEqual(RepositoryOperationNames.Install, operationAwareRepository.OperationStarted);
 			Assert.AreEqual("MyPackage", operationAwareRepository.MainPackageIdForOperationStarted);
