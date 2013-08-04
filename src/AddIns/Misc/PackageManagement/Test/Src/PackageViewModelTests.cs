@@ -1460,21 +1460,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 			
-			Assert.AreEqual(RepositoryOperationNames.Install, operationAwareRepository.OperationStarted);
-			Assert.AreEqual("MyPackage", operationAwareRepository.MainPackageIdForOperationStarted);
-		}
-		
-		[Test]
-		public void AddPackage_PackageRepositoryIsOperationAwareAndPackageAddedSuccessfully_InstallOperationStartedIsDisposed()
-		{
-			CreateViewModel();
-			var operationAwareRepository = new FakeOperationAwarePackageRepository();
-			fakePackage.FakePackageRepository = operationAwareRepository;
-			fakePackage.Id = "MyPackage";
-			
-			viewModel.AddPackage();
-			
-			operationAwareRepository.AssertOperationIsDisposed();
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "MyPackage");
 		}
 		
 		[Test]
@@ -1489,8 +1475,7 @@ namespace PackageManagement.Tests
 		
 			viewModel.AddPackage();
 			
-			Assert.AreEqual(RepositoryOperationNames.Install, operationAwareRepository.OperationStarted);
-			Assert.AreEqual("MyPackage", operationAwareRepository.MainPackageIdForOperationStarted);
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "MyPackage");
 		}
 		
 		[Test]
@@ -1505,23 +1490,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.ManagePackage();
 			
-			Assert.AreEqual(RepositoryOperationNames.Install, operationAwareRepository.OperationStarted);
-			Assert.AreEqual("MyPackage", operationAwareRepository.MainPackageIdForOperationStarted);
-		}
-		
-		[Test]
-		public void ManagePackage_TwoProjectsAndFirstSelectedAndUserAcceptsSelectedProjectsAndSourceRepositoryIsOperationAware_InstallOperationStartedIsDisposed()
-		{
-			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
-			UserAcceptsProjectSelection();
-			fakePackageManagementEvents.ProjectsToSelect.Add("Project A");
-			var operationAwareRepository = new FakeOperationAwarePackageRepository();
-			fakePackage.FakePackageRepository = operationAwareRepository;
-			fakePackage.Id = "MyPackage";
-			
-			viewModel.ManagePackage();
-			
-			operationAwareRepository.AssertOperationIsDisposed();
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "MyPackage");
 		}
 		
 		[Test]
@@ -1535,8 +1504,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.ManagePackage();
 			
-			Assert.AreEqual(RepositoryOperationNames.Install, operationAwareRepository.OperationStarted);
-			Assert.AreEqual("MyPackage", operationAwareRepository.MainPackageIdForOperationStarted);
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "MyPackage");
 		}
 	}
 }

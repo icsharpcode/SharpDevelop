@@ -140,22 +140,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 			
-			Assert.AreEqual(RepositoryOperationNames.Update, operationAwareRepository.OperationStarted);
-			Assert.AreEqual("MyPackage", operationAwareRepository.MainPackageIdForOperationStarted);
-		}
-		
-		[Test]
-		public void AddPackage_PackageRepositoryIsOperationAwareAndPackageAddedSuccessfully_UpdateperationStartedIsDisposed()
-		{
-			CreateViewModel();
-			var operationAwareRepository = new FakeOperationAwarePackageRepository();
-			FakePackage fakePackage = viewModel.FakePackage;
-			fakePackage.FakePackageRepository = operationAwareRepository;
-			fakePackage.Id = "MyPackage";
-			
-			viewModel.AddPackage();
-			
-			operationAwareRepository.AssertOperationIsDisposed();
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, "MyPackage");
 		}
 	}
 }

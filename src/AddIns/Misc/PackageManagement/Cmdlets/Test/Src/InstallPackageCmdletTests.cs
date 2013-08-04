@@ -293,7 +293,7 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_SourceRepositoryIsOperationAware_InstallOperationStartedForPackage()
+		public void ProcessRecord_SourceRepositoryIsOperationAware_InstallOperationStartedForPackageAndDisposed()
 		{
 			CreateCmdletWithoutActiveProject();
 			AddDefaultProjectToConsoleHost();
@@ -304,23 +304,7 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			RunCmdlet();
 			
-			Assert.AreEqual(RepositoryOperationNames.Install, operationAwareRepository.OperationStarted);
-			Assert.AreEqual("Test", operationAwareRepository.MainPackageIdForOperationStarted);
-		}
-		
-		[Test]
-		public void ProcessRecord_SourceRepositoryIsOperationAware_InstallOperationStartedIsDisposed()
-		{
-			CreateCmdletWithoutActiveProject();
-			AddDefaultProjectToConsoleHost();
-			var operationAwareRepository = new FakeOperationAwarePackageRepository();
-			fakeConsoleHost.FakeProject.FakeSourceRepository = operationAwareRepository;
-			AddPackageSourceToConsoleHost();
-			SetIdParameter("Test");
-			
-			RunCmdlet();
-			
-			operationAwareRepository.AssertOperationIsDisposed();
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "Test");
 		}
 	}
 }

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
+using NUnit.Framework;
 using Rhino.Mocks;
 
 namespace PackageManagement.Tests.Helpers
@@ -15,16 +16,23 @@ namespace PackageManagement.Tests.Helpers
 		
 		IDisposable Operation = MockRepository.GenerateStub<IDisposable>();
 		
-		public void AssertOperationIsDisposed()
-		{
-			Operation.AssertWasCalled(o => o.Dispose());
-		}
-		
 		public IDisposable StartOperation(string operationName, string mainPackageId)
 		{
 			OperationStarted = operationName;
 			MainPackageIdForOperationStarted = mainPackageId;
 			return Operation;
+		}
+		
+		public void AssertOperationWasStartedAndDisposed(string expectedOperationName, string expectedMainPackageId)
+		{
+			Assert.AreEqual(expectedOperationName, OperationStarted);
+			Assert.AreEqual(expectedMainPackageId, MainPackageIdForOperationStarted);
+			AssertOperationIsDisposed();
+		}
+		
+		void AssertOperationIsDisposed()
+		{
+			Operation.AssertWasCalled(o => o.Dispose());
 		}
 	}
 }

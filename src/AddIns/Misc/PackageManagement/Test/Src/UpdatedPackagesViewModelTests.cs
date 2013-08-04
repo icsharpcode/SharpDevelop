@@ -768,9 +768,7 @@ namespace PackageManagement.Tests
 			
 			RunUpdateAllPackagesCommand();
 			
-			Assert.AreEqual(RepositoryOperationNames.Update, operationAwareRepository.OperationStarted);
-			Assert.IsNull(operationAwareRepository.MainPackageIdForOperationStarted);
-			operationAwareRepository.AssertOperationIsDisposed();
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, null);
 		}
 	}
 }
