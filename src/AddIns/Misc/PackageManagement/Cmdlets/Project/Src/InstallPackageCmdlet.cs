@@ -63,8 +63,10 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		void InstallPackage()
 		{
 			IPackageManagementProject project = GetProject();
-			InstallPackageAction action = CreateInstallPackageTask(project);
-			action.Execute();
+			using (project.SourceRepository.StartInstallOperation(Id)) {
+				InstallPackageAction action = CreateInstallPackageTask(project);
+				action.Execute();
+			}
 		}
 		
 		IPackageManagementProject GetProject()
