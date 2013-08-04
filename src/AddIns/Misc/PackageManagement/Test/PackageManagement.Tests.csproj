@@ -115,6 +115,7 @@
     <Compile Include="Src\Helpers\ExceptionThrowingPackageActionRunner.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingProcessPackageAction.cs" />
     <Compile Include="Src\Helpers\FakeCodeGenerator.cs" />
+    <Compile Include="Src\Helpers\FakeOperationAwarePackageRepository.cs" />
     <Compile Include="Src\Helpers\FieldHelper.cs" />
     <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />

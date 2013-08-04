@@ -181,7 +181,9 @@ namespace ICSharpCode.PackageManagement
 		{
 			ClearReportedMessages();
 			logger.LogAddingPackage();
-			TryInstallingPackage();
+			using (IDisposable operation = package.StartInstallOperation()) {
+				TryInstallingPackage();
+			}
 			logger.LogAfterPackageOperationCompletes();
 		}
 		

@@ -1449,5 +1449,48 @@ namespace PackageManagement.Tests
 			
 			Assert.IsTrue(result);
 		}
+		
+		[Test]
+		public void AddPackage_PackageRepositoryIsOperationAwareAndPackageAddedSuccessfully_InstallOperationStartedForPackage()
+		{
+			CreateViewModel();
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			
+			viewModel.AddPackage();
+			
+			Assert.AreEqual(RepositoryOperationNames.Install, operationAwareRepository.OperationStarted);
+			Assert.AreEqual("MyPackage", operationAwareRepository.MainPackageIdForOperationStarted);
+		}
+		
+		[Test]
+		public void AddPackage_PackageRepositoryIsOperationAwareAndPackageAddedSuccessfully_InstallOperationStartedIsDisposed()
+		{
+			CreateViewModel();
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			
+			viewModel.AddPackage();
+			
+			operationAwareRepository.AssertOperationIsDisposed();
+		}
+		
+		[Test]
+		public void AddPackage_PackageRepositoryIsOperationAwareAndExceptionThrownWhenCreatingInstallPackageAction_InstallOperationStartedForPackageBeforeInstallPackageActionCreatedAndPackageOperationsRequested()
+		{
+			CreateViewModelWithExceptionThrowingProject();
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			Exception ex = new Exception("Test");
+			exceptionThrowingProject.ExceptionToThrowWhenCreateInstallPackageActionCalled = ex;
+		
+			viewModel.AddPackage();
+			
+			Assert.AreEqual(RepositoryOperationNames.Install, operationAwareRepository.OperationStarted);
+			Assert.AreEqual("MyPackage", operationAwareRepository.MainPackageIdForOperationStarted);
+		}
 	}
 }
