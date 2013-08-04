@@ -753,5 +753,24 @@ namespace PackageManagement.Tests
 			IPackageViewModelParent parent = childViewModel.GetParent();
 			Assert.AreEqual(viewModel, parent);
 		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_SourceRepositoryIsOperationAware_UpdateOperationStartedAndDisposed()
+		{
+			CreateViewModel();
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			registeredPackageRepositories.FakeActiveRepository = operationAwareRepository;
+			AddPackageToLocalRepository("Test", "1.0.0.0");
+			AddPackageToActiveRepository("Test", "1.0.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0.0");
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			RunUpdateAllPackagesCommand();
+			
+			Assert.AreEqual(RepositoryOperationNames.Update, operationAwareRepository.OperationStarted);
+			Assert.IsNull(operationAwareRepository.MainPackageIdForOperationStarted);
+			operationAwareRepository.AssertOperationIsDisposed();
+		}
 	}
 }
