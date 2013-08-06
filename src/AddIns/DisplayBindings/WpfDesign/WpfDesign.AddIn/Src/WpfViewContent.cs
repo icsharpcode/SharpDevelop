@@ -35,6 +35,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 	{
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
+			SharpDevelopTranslations.Init();
+			
 			BasicMetadata.Register();
 			
 			WpfToolbox.Instance.AddProjectDlls(file);

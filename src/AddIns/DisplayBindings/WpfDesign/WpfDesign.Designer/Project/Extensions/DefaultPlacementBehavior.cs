@@ -109,7 +109,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (canEnter && !shouldAlwaysEnter && !Keyboard.IsKeyDown(Key.LeftAlt) && !Keyboard.IsKeyDown(Key.RightAlt))
 			{
 				var b = new Rect(0, 0, ((FrameworkElement)this.ExtendedItem.View).ActualWidth, ((FrameworkElement)this.ExtendedItem.View).ActualHeight);
-				InfoTextEnterArea.Start(ref infoTextEnterArea, this.Services, this.ExtendedItem.View, b, "Press \"Alt\" to Enter Container");						
+				InfoTextEnterArea.Start(ref infoTextEnterArea, this.Services, this.ExtendedItem.View, b, Translations.Instance.PressAltText);						
 				
 				return false;
 			}
