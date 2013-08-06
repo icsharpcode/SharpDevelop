@@ -23,7 +23,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			base.BeginPlacement(operation);
 
-			raster = ((DesignPanel) ExtendedItem.Services.DesignPanel).RasterWidth;
+			try {
+				raster = ((DesignPanel) ExtendedItem.Services.DesignPanel).RasterWidth;
+			}
+			catch (Exception ex)
+			{ }
+			
 			CreateSurface(operation);
 		}
 
