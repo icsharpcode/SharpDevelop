@@ -177,11 +177,11 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 		[Test]
 		public void CanInsertIntoButton()
 		{
-			/* Insert Image into the Grid's button. This has to be false since some of the
-			 * ContentControl are not allowed to add element's by moving elements
+			/* Insert Image into the Grid's button. This has now to be true because a button can now
+			 * add element's by moving elements
 			 * See DefaultPlacementBehavior.CanContentControlAdd() */
 
-			Assert.IsFalse(_gridButtonNode.CanInsert(new[] {_stackPanelImageNode}, null, false));
+			Assert.IsTrue(_gridButtonNode.CanInsert(new[] {_stackPanelImageNode}, null, false));
 		}
 
 		#region Insert element by Cut operation.
