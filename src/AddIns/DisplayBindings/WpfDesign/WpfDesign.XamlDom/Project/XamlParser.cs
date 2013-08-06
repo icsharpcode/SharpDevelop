@@ -568,8 +568,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				XamlPropertyValue childValue = ParseValue(childNode);
 				if (childValue != null) {
 					if (propertyInfo.IsCollection) {
-						CollectionSupport.AddToCollection(propertyInfo.ReturnType, collectionInstance, childValue);
-						collectionProperty.ParserAddCollectionElement(element, childValue);
+						if (collectionInstance!=null) {
+							CollectionSupport.AddToCollection(propertyInfo.ReturnType, collectionInstance, childValue);
+							collectionProperty.ParserAddCollectionElement(element, childValue);
+						}
 					} else {
 						if (valueWasSet)
 							throw new XamlLoadException("non-collection property may have only one child element");
