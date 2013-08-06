@@ -47,7 +47,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 
 		void ProjectService_ProjectItemAdded(object sender, ProjectItemEventArgs e)
 		{
-			WpfToolbox.Instance.AddProjectDlls(this.Files[0]);
+			if (e.ProjectItem is ReferenceProjectItem)
+				WpfToolbox.Instance.AddProjectDlls(this.Files[0]);
 		}
 		
 		static WpfViewContent()
