@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -23,6 +24,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			this.GotFocus += this.TextBoxGotFocus;
 			this.LostFocus += this.TextBoxLostFocus;
 			this.TextChanged += this.TextBoxTextChanged;
+			this.KeyUp += this.ClearableTextBox_KeyUp;
+		}
+
+		void ClearableTextBox_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Escape)
+				this.TextRemoverClick(sender, null);
 		}
 
 		public override void OnApplyTemplate()
