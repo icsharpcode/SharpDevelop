@@ -70,6 +70,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		private UIElement parent;
 		private Vector startVector;
 		private RotateTransform rotateTransform;
+		private Point renderTransformOrigin;
 		private double initialAngle;
 		private DesignItem rtTransform;
 		private double angle;
@@ -122,6 +123,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			{
 				if (rtTransform == null)
 				{
+					if (!this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).IsSet) {
+						this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(0.5,0.5));
+					}
+					
 					if (this.rotateTransform == null)
 						this.rotateTransform = new RotateTransform(0);
 					this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).SetValue(rotateTransform);
@@ -145,6 +150,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			var designerItem = this.ExtendedItem.Component as FrameworkElement;
 			this.rotateTransform = designerItem.RenderTransform as RotateTransform;
+			
 			if (rotateTransform != null)
 				angle = rotateTransform.Angle;
 		}
