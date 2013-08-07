@@ -189,30 +189,42 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// Enables / Disables the Snapline Placement
 		/// </summary>
 		private bool _useSnaplinePlacement = true;
-		public bool UseSnaplinePlacement
-		{
+		public bool UseSnaplinePlacement {
 			get { return _useSnaplinePlacement; }
-			set { _useSnaplinePlacement = value; OnPropertyChanged("UseSnaplinePlacement"); }
+			set {
+				if (_useSnaplinePlacement != value) {
+					_useSnaplinePlacement = value;
+					OnPropertyChanged("UseSnaplinePlacement");
+				}
+			}
 		}
 
 		/// <summary>
 		/// Enables / Disables the Raster Placement
 		/// </summary>
 		private bool _useRasterPlacement = false;
-		public bool UseRasterPlacement
-		{
+		public bool UseRasterPlacement {
 			get { return _useRasterPlacement; }
-			set { _useRasterPlacement = value; OnPropertyChanged("UseRasterPlacement"); }
+			set {
+				if (_useRasterPlacement != value) {
+					_useRasterPlacement = value;
+					OnPropertyChanged("UseRasterPlacement");
+				}
+			}
 		}
 		
 		/// <summary>
 		/// Sets the with of the Raster when using Raster Placement
 		/// </summary>
 		private int _rasterWidth = 5;
-		public int RasterWidth
-		{
+		public int RasterWidth {
 			get { return _rasterWidth; }
-			set { _rasterWidth = value; OnPropertyChanged("RasterWidth"); }
+			set {
+				if (_rasterWidth != value) {
+					_rasterWidth = value;
+					OnPropertyChanged("RasterWidth");
+				}
+			}
 		}
 		
 		#endregion

@@ -13,21 +13,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	public class RasterPlacementBehavior : DefaultPlacementBehavior
 	{
-		int raster = 5;
-
 		Canvas surface;
 		AdornerPanel adornerPanel;
-		private bool rasterDrawn = false;
+		bool rasterDrawn = false;
+		int raster = 5;
 
 		public override void BeginPlacement(PlacementOperation operation)
 		{
 			base.BeginPlacement(operation);
-
-			try {
-				raster = ((DesignPanel) ExtendedItem.Services.DesignPanel).RasterWidth;
-			}
-			catch (Exception ex)
-			{ }
+			
+			DesignPanel designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+			if (designPanel != null)
+				raster = designPanel.RasterWidth;
 			
 			CreateSurface(operation);
 		}
@@ -79,7 +76,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			base.BeforeSetPosition(operation);
 			if (surface == null) return;
 
-			if (!((DesignPanel) ExtendedItem.Services.DesignPanel).UseRasterPlacement)
+			DesignPanel designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+			if (designPanel == null || !designPanel.UseRasterPlacement)
 				return;
 
 			if (Keyboard.IsKeyDown(Key.LeftCtrl))

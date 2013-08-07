@@ -59,7 +59,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			base.BeforeSetPosition(operation);
 			if (surface == null) return;
 
-			if (!((DesignPanel)ExtendedItem.Services.DesignPanel).UseSnaplinePlacement)
+			DesignPanel designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+			if (designPanel == null || !designPanel.UseSnaplinePlacement)
 				return;
 			
 			surface.Children.Clear();

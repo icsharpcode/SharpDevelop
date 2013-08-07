@@ -10,9 +10,11 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using ICSharpCode.WpfDesign.Adorners;
 using NUnit.Framework;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Xaml;
+using Rhino.Mocks;
 
 namespace ICSharpCode.WpfDesign.Tests.Designer
 {
@@ -35,6 +37,11 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			context.Services.Component.ComponentUnregistered += delegate(object sender, DesignItemEventArgs e) {
 				log.AppendLine("Unregister " + ItemIdentity(e.Item));
 			};*/
+			
+			// create required service mocks
+			var designPanel = MockRepository.GenerateStub<IDesignPanel>();
+			designPanel.Stub(dp => dp.Adorners).Return(new System.Collections.Generic.List<AdornerPanel>());
+			context.Services.AddService(typeof(IDesignPanel), designPanel);
 			return context;
 		}
 		
