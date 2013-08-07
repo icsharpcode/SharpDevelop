@@ -24,8 +24,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			var pc = MyTypeFinder.GetProjectContent(file);
 			foreach (var referencedProjectContent in pc.ThreadSafeGetReferencedContents()) {
+				string fileName = null;
 				try{
-					string fileName = null;
 					if (referencedProjectContent is ParseProjectContent)
 					{
 						var prj = ((ParseProjectContent)referencedProjectContent).Project as AbstractProject;
@@ -39,8 +39,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 					var assembly = Assembly.LoadFrom(fileName);
 					f.RegisterAssembly(assembly);
 				}
-				catch (Exception ex)
-				{}
+				catch (Exception ex) {
+					ICSharpCode.Core.LoggingService.Warn("Error loading Assembly : "+ (fileName ?? ""), ex);
+				}
 			}
 			return f;
 		}
