@@ -34,6 +34,16 @@ namespace ICSharpCode.WpfDesign.Adorners
 			return (AdornerPlacement)adorner.GetValue(PlacementProperty);
 		}
 		
+		public Vector AbsoluteToRelative(Vector absolute)
+		{
+			return new Vector(absolute.X / ((FrameworkElement) this._adornedElement).ActualWidth, absolute.Y / ((FrameworkElement) this._adornedElement).ActualHeight);
+		}
+		
+		public Vector RelativeToAbsolute(Vector relative)
+		{
+			return new Vector(relative.X * ((FrameworkElement) this._adornedElement).ActualWidth, relative.Y * ((FrameworkElement) this._adornedElement).ActualHeight);
+		}
+		
 		/// <summary>
 		/// Sets the placement of the specified adorner.
 		/// </summary>

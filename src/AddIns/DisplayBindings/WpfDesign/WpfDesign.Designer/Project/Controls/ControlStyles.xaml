@@ -581,4 +581,16 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
+	<Style TargetType="{x:Type Controls:RenderTransformOriginThumb}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Controls:RenderTransformOriginThumb}">
+					<Grid>
+						<Ellipse Width="2" Height="2" Fill="Black"/>
+						<Ellipse Width="10" Height="10" Fill="Transparent" Stroke="Black" StrokeThickness="2" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 </ResourceDictionary>

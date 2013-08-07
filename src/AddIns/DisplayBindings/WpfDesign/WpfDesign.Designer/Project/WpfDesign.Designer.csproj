@@ -79,6 +79,8 @@
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Controls\RenderTransformOriginThumb.cs" />
+    <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
     <Compile Include="Translations.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
