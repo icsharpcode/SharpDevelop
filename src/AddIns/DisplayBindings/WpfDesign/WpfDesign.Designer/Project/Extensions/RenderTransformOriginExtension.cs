@@ -58,7 +58,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			AdornerPanel.SetPlacement(renderTransformOriginThumb,
 			                          new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Top){ XRelativeToContentWidth = pRel.X, YRelativeToContentHeight = pRel.Y });
 			
-			this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(pRel.X,pRel.Y));
+			this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(Math.Round(pRel.X, 4), Math.Round(pRel.Y, 4)));
 		}
 		
 		Point renderTransformOrigin = new Point(0.5, 0.5);

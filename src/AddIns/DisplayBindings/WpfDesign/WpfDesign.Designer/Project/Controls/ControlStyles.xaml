@@ -587,7 +587,7 @@
 				<ControlTemplate TargetType="{x:Type Controls:RenderTransformOriginThumb}">
 					<Grid>
 						<Ellipse Width="2" Height="2" Fill="Black"/>
-						<Ellipse Width="10" Height="10" Fill="Transparent" Stroke="Black" StrokeThickness="2" />
+						<Ellipse Width="10" Height="10" Fill="Transparent" Stroke="Black" StrokeThickness="1" />
 					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
