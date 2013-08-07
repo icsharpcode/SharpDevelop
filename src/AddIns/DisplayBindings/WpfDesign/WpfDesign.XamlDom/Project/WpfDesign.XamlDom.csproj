@@ -69,7 +69,9 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CollectionElementsCollection.cs" />
     <Compile Include="CollectionSupport.cs" />
+    <Compile Include="DesignTimeProperties.cs" />
     <Compile Include="IXamlErrorSink.cs" />
+    <Compile Include="MarkupCompatibilityProperties.cs" />
     <Compile Include="MarkupExtensionParser.cs" />
     <Compile Include="MarkupExtensionPrinter.cs" />
     <Compile Include="NameScopeHelper.cs" />

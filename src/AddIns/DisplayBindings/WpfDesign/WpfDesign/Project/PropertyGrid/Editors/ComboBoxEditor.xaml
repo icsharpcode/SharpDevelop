@@ -7,4 +7,9 @@
     Background="{x:Null}"
     Focusable="False"
     >
+ 	<ComboBox.ItemsPanel>
+        <ItemsPanelTemplate>
+            <VirtualizingStackPanel />
+        </ItemsPanelTemplate>
+    </ComboBox.ItemsPanel>
 </ComboBox>

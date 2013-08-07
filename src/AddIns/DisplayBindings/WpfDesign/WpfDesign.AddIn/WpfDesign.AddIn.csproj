@@ -68,6 +68,8 @@
     <Compile Include="Src\Commands\Remove.cs" />
     <Compile Include="Src\Commands\UndoRedo.cs" />
     <Compile Include="Src\Commands\ViewXaml.cs" />
+    <Compile Include="Src\SharpDevelopTranslations.cs" />
+    <Compile Include="Src\ThumbnailViewPad.cs" />
     <Compile Include="Src\CSharpEventHandlerService.cs" />
     <Compile Include="Src\FileUriContext.cs" />
     <Compile Include="Src\IdeChooseClassService.cs" />
@@ -152,9 +154,5 @@
     <Page Include="Src\ImageSourceEditor\ImageSourceEditor.xaml" />
     <Page Include="Src\ObjectEditor.xaml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images" />
-    <Folder Include="Src\ImageSourceEditor" />
-    <Folder Include="Src\Commands" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Markup;
+using System.Xaml;
+using XamlReader = System.Windows.Markup.XamlReader;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -43,12 +45,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		sealed class XamlNamespace
 		{
-            internal readonly string XmlNamespacePrefix;
+			internal readonly string XmlNamespacePrefix;
 			internal readonly string XmlNamespace;
 			
 			internal XamlNamespace(string xmlNamespacePrefix, string xmlNamespace)
 			{
-                this.XmlNamespacePrefix = xmlNamespacePrefix;
+				this.XmlNamespacePrefix = xmlNamespacePrefix;
 				this.XmlNamespace = xmlNamespace;
 			}
 			
@@ -111,23 +113,20 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
-        /// <summary>
-        /// Gets the prefix to use for the specified XML namespace,
-        /// or null if no suitable prefix could be found.
-        /// </summary>
-        public string GetPrefixForXmlNamespace(string xmlNamespace)
-        {
-            XamlNamespace ns;
+		/// <summary>
+		/// Gets the prefix to use for the specified XML namespace,
+		/// or null if no suitable prefix could be found.
+		/// </summary>
+		public string GetPrefixForXmlNamespace(string xmlNamespace)
+		{
+			XamlNamespace ns;
 
-            if (namespaces.TryGetValue(xmlNamespace, out ns))
-            {
-                return ns.XmlNamespacePrefix;
-            }
-            else
-            {
-                return null;
-            }
-        }
+			if (namespaces.TryGetValue(xmlNamespace, out ns)) {
+				return ns.XmlNamespacePrefix;
+			} else {
+				return null;
+			}
+		}
 		
 		XamlNamespace ParseNamespace(string xmlNamespace)
 		{
@@ -176,17 +175,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (assembly == null)
 				throw new ArgumentNullException("assembly");
 
-            Dictionary<string, string> namespacePrefixes = new Dictionary<string, string>();
-            foreach (XmlnsPrefixAttribute xmlnsPrefix in assembly.GetCustomAttributes(typeof(XmlnsPrefixAttribute), true)) {
-                namespacePrefixes.Add(xmlnsPrefix.XmlNamespace, xmlnsPrefix.Prefix);
-            }
+			Dictionary<string, string> namespacePrefixes = new Dictionary<string, string>();
+			foreach (XmlnsPrefixAttribute xmlnsPrefix in assembly.GetCustomAttributes(typeof(XmlnsPrefixAttribute), true)) {
+				namespacePrefixes.Add(xmlnsPrefix.XmlNamespace, xmlnsPrefix.Prefix);
+			}
 
 			foreach (XmlnsDefinitionAttribute xmlnsDef in assembly.GetCustomAttributes(typeof(XmlnsDefinitionAttribute), true)) {
 				XamlNamespace ns;
 				if (!namespaces.TryGetValue(xmlnsDef.XmlNamespace, out ns)) {
-                    string prefix;
-                    namespacePrefixes.TryGetValue(xmlnsDef.XmlNamespace, out prefix);
-                    ns = namespaces[xmlnsDef.XmlNamespace] = new XamlNamespace(prefix, xmlnsDef.XmlNamespace);
+					string prefix;
+					namespacePrefixes.TryGetValue(xmlnsDef.XmlNamespace, out prefix);
+					ns = namespaces[xmlnsDef.XmlNamespace] = new XamlNamespace(prefix, xmlnsDef.XmlNamespace);
 				}
 				if (string.IsNullOrEmpty(xmlnsDef.AssemblyName)) {
 					AddMappingToNamespace(ns, new AssemblyNamespaceMapping(assembly, xmlnsDef.ClrNamespace));
@@ -197,6 +196,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					}
 				}
 			}
+		}
+		
+		/// <summary>
+		/// Register the Namspaces not found in any Assembly, but used by VS and Expression Blend
+		/// </summary>
+		public void RegisterFixNamespaces()
+		{
+			var ns = namespaces[XamlConstants.DesignTimeNamespace] = new XamlNamespace("d", XamlConstants.DesignTimeNamespace);
+			AddMappingToNamespace(ns, new AssemblyNamespaceMapping(typeof(DesignTimeProperties).Assembly, typeof(DesignTimeProperties).Namespace));
+			ns = namespaces[XamlConstants.MarkupCompatibilityNamespace] = new XamlNamespace("mc", XamlConstants.MarkupCompatibilityNamespace);
+			AddMappingToNamespace(ns, new AssemblyNamespaceMapping(typeof(MarkupCompatibilityProperties).Assembly, typeof(MarkupCompatibilityProperties).Namespace));
 		}
 		
 		/// <summary>
@@ -256,9 +266,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			static WpfTypeFinder()
 			{
 				Instance = new XamlTypeFinder();
+				Instance.RegisterFixNamespaces();
 				Instance.RegisterAssembly(typeof(MarkupExtension).Assembly); // WindowsBase
 				Instance.RegisterAssembly(typeof(IAddChild).Assembly); // PresentationCore
 				Instance.RegisterAssembly(typeof(XamlReader).Assembly); // PresentationFramework
+				Instance.RegisterAssembly(typeof(XamlType).Assembly); // System.Xaml
 			}
 		}
 	}

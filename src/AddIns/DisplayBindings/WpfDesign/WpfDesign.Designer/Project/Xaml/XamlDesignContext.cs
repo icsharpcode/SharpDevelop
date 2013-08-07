@@ -22,6 +22,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 	{
 		readonly XamlDocument _doc;
 		readonly XamlDesignItem _rootItem;
+		readonly XamlParserSettings _parserSettings;
 		internal readonly XamlComponentService _componentService;
 		
 		readonly XamlEditOperations _xamlEditOperations;
@@ -81,11 +82,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				EditorManager.RegisterAssembly(designerAssembly);
 			}
 			
-			XamlParserSettings parserSettings = new XamlParserSettings();
-			parserSettings.TypeFinder = loadSettings.TypeFinder;
-			parserSettings.CreateInstanceCallback = this.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory;
-			parserSettings.ServiceProvider = this.Services;
-			_doc = XamlParser.Parse(xamlReader, parserSettings);
+			_parserSettings = new XamlParserSettings();
+			_parserSettings.TypeFinder = loadSettings.TypeFinder;
+			_parserSettings.CreateInstanceCallback = this.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory;
+			_parserSettings.ServiceProvider = this.Services;
+			_doc = XamlParser.Parse(xamlReader, _parserSettings);
 			
 			loadSettings.ReportErrors(xamlErrorService);
 			
@@ -106,7 +107,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 				
 			
-			_xamlEditOperations=new XamlEditOperations(this,parserSettings);
+			_xamlEditOperations=new XamlEditOperations(this,_parserSettings);
 		}
 		
 		
@@ -124,6 +125,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		public override DesignItem RootItem {
 			get { return _rootItem; }
 		}
+		
+		/// <summary>
+		/// Gets the parser Settings being used
+		/// </summary>
+		public XamlParserSettings ParserSettings {
+	        get { return _parserSettings; }
+	    }
 		
 		/// <summary>
 		/// Opens a new change group used to batch several changes.
