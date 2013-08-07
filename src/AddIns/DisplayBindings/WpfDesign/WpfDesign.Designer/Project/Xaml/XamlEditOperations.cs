@@ -161,7 +161,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		void AddInParent(DesignItem parent,IList<DesignItem> pastedItems)
 		{
 			IEnumerable<Rect> rects = pastedItems.Select(i => new Rect(new Point(0, 0), new Point((double)i.Properties["Width"].ValueOnInstance, (double)i.Properties["Height"].ValueOnInstance)));
-			var operation = PlacementOperation.TryStartInsertNewComponents(parent, pastedItems, rects.ToList(), PlacementType.AddItem);
+			var operation = PlacementOperation.TryStartInsertNewComponents(parent, pastedItems, rects.ToList(), PlacementType.PasteItem);
 			ISelectionService selection = _context.Services.Selection;
 			selection.SetSelectedComponents(pastedItems);
 			if(operation!=null)

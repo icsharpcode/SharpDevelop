@@ -17,6 +17,8 @@ using System.Windows.Shapes;
 using System.Xml;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.Designer.Services;
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Designer.Controls;
 using System.Diagnostics;
 using ICSharpCode.WpfDesign.XamlDom;
 using System.Threading;
@@ -27,18 +29,21 @@ namespace ICSharpCode.WpfDesign.Designer
 	/// <summary>
 	/// Surface hosting the WPF designer.
 	/// </summary>
-	public partial class DesignSurface
+	[TemplatePart(Name = "PART_DesignContent", Type = typeof(ContentControl))]
+	[TemplatePart(Name = "PART_Zoom", Type = typeof(ZoomControl))]
+	public class DesignSurface : ContentControl
 	{
 		private FocusNavigator _focusNav;
+		
 		static DesignSurface()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(DesignSurface), new FrameworkPropertyMetadata(typeof(DesignSurface)));
+		}
+		
+		public DesignSurface()
 		{
 			//TODO: this is for converters (see PropertyGrid)
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-		}
-
-		public DesignSurface()
-		{
-			InitializeComponent();
 
 			this.AddCommandHandler(ApplicationCommands.Undo, Undo, CanUndo);
 			this.AddCommandHandler(ApplicationCommands.Redo, Redo, CanRedo);
@@ -48,23 +53,42 @@ namespace ICSharpCode.WpfDesign.Designer
 			this.AddCommandHandler(ApplicationCommands.Paste, Paste, CanPaste);
 			this.AddCommandHandler(ApplicationCommands.SelectAll, SelectAll, CanSelectAll);
 			
-			#if DEBUG || CODE_ANALYSIS
-			if (_designPanel == null) {
-				Environment.FailFast("designpanel should be initialized earlier");
-				// Fake call to DesignPanel constructor because FxCop doesn't look inside XAML files
-				// and we'd get tons of warnings about uncalled private code.
-				_designPanel = new DesignPanel();
-			}
-			#endif
+			_sceneContainer = new Border() { AllowDrop = false, UseLayoutRounding = true };
+			_sceneContainer.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Ideal);
+
+			_designPanel = new DesignPanel() {Child = _sceneContainer};
+		}
+
+		internal DesignPanel _designPanel;
+		private ContentControl _partDesignContent;
+		private Border _sceneContainer;
+
+		public override void OnApplyTemplate()
+		{
+			_partDesignContent = this.Template.FindName("PART_DesignContent", this) as ContentControl;
+			_partDesignContent.Content = _designPanel;
+			_partDesignContent.RequestBringIntoView += _partDesignContent_RequestBringIntoView;
+
+			this.ZoomControl = this.Template.FindName("PART_Zoom", this) as ZoomControl;
+			
+			base.OnApplyTemplate();
+		}
+
+		void _partDesignContent_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
+		{
+			e.Handled = true;
 		}
 
 		protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
-			if (e.OriginalSource == uxZoom) {
+			if (ZoomControl != null && e.OriginalSource == ZoomControl)
+			{
 				UnselectAll();
 			}
 		}
 
+		public ZoomControl ZoomControl { get; private set; }
+		
 		DesignContext _designContext;
 
 		/// <summary>
@@ -72,6 +96,13 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// </summary>
 		public DesignContext DesignContext {
 			get { return _designContext; }
+		}
+		
+		/// <summary>
+		/// Gets the DesignPanel
+		/// </summary>
+		public DesignPanel DesignPanel {
+			get { return _designPanel; }
 		}
 		
 		/// <summary>
@@ -127,7 +158,7 @@ namespace ICSharpCode.WpfDesign.Designer
 					IDisposable d = o as IDisposable;
 					if (d != null) d.Dispose();
 				}
-			}			
+			}
 			_designContext = null;
 			_designPanel.Context = null;
 			_sceneContainer.Child = null;
@@ -170,18 +201,18 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			ISelectionService selectionService = GetService<ISelectionService>();
 			if(selectionService!=null){
-            if (selectionService.SelectedItems.Count == 0)
-                return false;
-            if (selectionService.SelectedItems.Count == 1 && selectionService.PrimarySelection == DesignContext.RootItem)
-                return false;
+				if (selectionService.SelectedItems.Count == 0)
+					return false;
+				if (selectionService.SelectedItems.Count == 1 && selectionService.PrimarySelection == DesignContext.RootItem)
+					return false;
 			}
-		    return true;
+			return true;
 		}
 
 		public void Copy()
 		{
 			XamlDesignContext xamlContext = _designContext as XamlDesignContext;
-			ISelectionService selectionService = GetService<ISelectionService>();			
+			ISelectionService selectionService = GetService<ISelectionService>();
 			if(xamlContext != null && selectionService != null){
 				xamlContext.XamlEditAction.Copy(selectionService.SelectedItems);
 			}
@@ -190,7 +221,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		public void Cut()
 		{
 			XamlDesignContext xamlContext = _designContext as XamlDesignContext;
-			ISelectionService selectionService = GetService<ISelectionService>();			
+			ISelectionService selectionService = GetService<ISelectionService>();
 			if(xamlContext != null && selectionService != null){
 				xamlContext.XamlEditAction.Cut(selectionService.SelectedItems);
 			}

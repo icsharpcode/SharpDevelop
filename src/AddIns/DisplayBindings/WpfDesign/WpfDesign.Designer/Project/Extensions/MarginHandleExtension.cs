@@ -85,6 +85,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 								var leftMargin = position.Left - GetColumnOffset(column);
 								margin.Left = leftMargin;
 								this.ExtendedItem.Properties[FrameworkElement.HorizontalAlignmentProperty].Reset();
+								this.ExtendedItem.Properties[FrameworkElement.WidthProperty].Reset();
 							}
 						} else {
 							if (_leftHandle.Visibility == Visibility.Visible) {
@@ -111,6 +112,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 								var topMargin = position.Top - GetRowOffset(row);
 								margin.Top = topMargin;
 								this.ExtendedItem.Properties[FrameworkElement.VerticalAlignmentProperty].Reset();
+								this.ExtendedItem.Properties[FrameworkElement.HeightProperty].Reset();
 							}
 						} else {
 							if (_topHandle.Visibility == Visibility.Visible) {
@@ -137,6 +139,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 								var rightMargin = GetColumnOffset(column + columnSpan) - position.Right;
 								margin.Right = rightMargin;
 								this.ExtendedItem.Properties[FrameworkElement.HorizontalAlignmentProperty].Reset();
+								this.ExtendedItem.Properties[FrameworkElement.WidthProperty].Reset();
 							}
 						} else {
 							if (_rightHandle.Visibility == Visibility.Visible) {
@@ -163,6 +166,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 								var bottomMargin = GetRowOffset(row + rowSpan) - position.Bottom;
 								margin.Bottom = bottomMargin;
 								this.ExtendedItem.Properties[FrameworkElement.VerticalAlignmentProperty].Reset();
+								this.ExtendedItem.Properties[FrameworkElement.HeightProperty].Reset();
 							}
 						} else {
 							if (_bottomHandle.Visibility == Visibility.Visible) {

@@ -1,4 +1,4 @@
-﻿<Window x:Class="ICSharpCode.XamlDesigner.MainWindow"
+<Window x:Class="ICSharpCode.XamlDesigner.MainWindow"
         x:Name="root"
         xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -112,6 +112,11 @@
 					</AvalonDock:DockableContent>
 				</AvalonDock:DockablePane>
 			
+				<AvalonDock:DockablePane>
+					<AvalonDock:DockableContent x:Name="content5" Title="Thumbnail">
+						<sd:ThumbnailView x:Name="uxThumbnailView" DesignSurface="{Binding DataContext.CurrentDocument.DesignSurface, ElementName=root, FallbackValue={x:Null}}" />
+					</AvalonDock:DockableContent>
+				</AvalonDock:DockablePane>
 			</AvalonDock:ResizingPanel>
 		</AvalonDock:DockingManager>
 	</DockPanel>

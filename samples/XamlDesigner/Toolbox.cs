@@ -14,45 +14,47 @@ namespace ICSharpCode.XamlDesigner
 	public class Toolbox
 	{
 		public Toolbox()
-        {
-            AssemblyNodes = new ObservableCollection<AssemblyNode>();
+		{
+			AssemblyNodes = new ObservableCollection<AssemblyNode>();
 			LoadSettings();
-        }
+		}
 
 		public static Toolbox Instance = new Toolbox();
-        public ObservableCollection<AssemblyNode> AssemblyNodes { get; private set; }
+		public ObservableCollection<AssemblyNode> AssemblyNodes { get; private set; }
 
 		public void AddAssembly(string path)
-        {
+		{
 			AddAssembly(path, true);
 		}
 
-        void AddAssembly(string path, bool updateSettings)
-        {
-            var assembly = Assembly.LoadFile(path);
-            
-            var node = new AssemblyNode();
-            node.Assembly = assembly;
-            node.Path = path;
-            foreach (var t in assembly.GetExportedTypes()) {
-                if (IsControl(t) && Metadata.IsPopularControl(t)) {
-                    node.Controls.Add(new ControlNode() { Type = t });
-                }
-            }
+		void AddAssembly(string path, bool updateSettings)
+		{
+			var assembly = Assembly.LoadFile(path);
+			
+			MyTypeFinder.Instance.RegisterAssembly(assembly);
+			
+			var node = new AssemblyNode();
+			node.Assembly = assembly;
+			node.Path = path;
+			foreach (var t in assembly.GetExportedTypes()) {
+				if (IsControl(t) /* && Metadata.IsPopularControl(t) */) {
+					node.Controls.Add(new ControlNode() { Type = t });
+				}
+			}
 
-            node.Controls.Sort(delegate(ControlNode c1, ControlNode c2)  {
-                return c1.Name.CompareTo(c2.Name); 
-            });
+			node.Controls.Sort(delegate(ControlNode c1, ControlNode c2)  {
+			                   	return c1.Name.CompareTo(c2.Name);
+			                   });
 
-            AssemblyNodes.Add(node);
+			AssemblyNodes.Add(node);
 
 			if (updateSettings) {
 				if (Settings.Default.AssemblyList == null) {
 					Settings.Default.AssemblyList = new StringCollection();
-				}			
+				}
 				Settings.Default.AssemblyList.Add(path);
 			}
-        }
+		}
 
 		public void Remove(AssemblyNode node)
 		{
@@ -61,42 +63,47 @@ namespace ICSharpCode.XamlDesigner
 		}
 
 		public void LoadSettings()
-		{	
+		{
 			if (Settings.Default.AssemblyList != null) {
 				foreach (var path in Settings.Default.AssemblyList) {
-					AddAssembly(Environment.ExpandEnvironmentVariables(path), false);
+					try
+					{
+						AddAssembly(Environment.ExpandEnvironmentVariables(path), false);
+					}
+					catch (Exception ex)
+					{ }
 				}
 			}
 		}
 
-        static bool IsControl(Type t)
-        {
-            return !t.IsAbstract && !t.IsGenericTypeDefinition && t.IsSubclassOf(typeof(FrameworkElement));
-        }
+		static bool IsControl(Type t)
+		{
+			return !t.IsAbstract && !t.IsGenericTypeDefinition && t.IsSubclassOf(typeof(FrameworkElement));
+		}
 	}
 
 	public class AssemblyNode
-    {
-        public AssemblyNode()
-        {
-            Controls = new List<ControlNode>();
-        }
+	{
+		public AssemblyNode()
+		{
+			Controls = new List<ControlNode>();
+		}
 
-        public Assembly Assembly { get; set; }
-        public List<ControlNode> Controls { get; private set; }
-        public string Path { get; set; }
+		public Assembly Assembly { get; set; }
+		public List<ControlNode> Controls { get; private set; }
+		public string Path { get; set; }
 
-        public string Name {
-            get { return Assembly.GetName().Name; }
-        }
-    }
+		public string Name {
+			get { return Assembly.GetName().Name; }
+		}
+	}
 
-    public class ControlNode
-    {
-        public Type Type { get; set; }
+	public class ControlNode
+	{
+		public Type Type { get; set; }
 
-        public string Name {
-            get { return Type.Name; } 
-        }
-    }
+		public string Name {
+			get { return Type.Name; }
+		}
+	}
 }

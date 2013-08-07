@@ -5,6 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Linq;
+using System.IO;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Markup;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Xps.Serialization;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -86,6 +93,9 @@ namespace ICSharpCode.WpfDesign.Designer
 				if (selectionService.SelectionCount == 0 && !items.Contains(parent)) {
 					selectionService.SetSelectedComponents(new DesignItem[] { parent });
 				}
+				foreach (var designItem in items) {
+					designItem.Name = null;
+				}
 				operation.DeleteItemsAndCommit();
 			} catch {
 				operation.Abort();
@@ -93,15 +103,56 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
+		internal static void CreateVisualTree(this UIElement element)
+		{
+			try {
+				var fixedDoc = new FixedDocument();
+				var pageContent = new PageContent();
+				var fixedPage = new FixedPage();
+				fixedPage.Children.Add(element);
+				(pageContent as IAddChild).AddChild(fixedPage);
+				fixedDoc.Pages.Add(pageContent);
+
+				var f = new XpsSerializerFactory();
+				var w = f.CreateSerializerWriter(new MemoryStream());
+				w.Write(fixedDoc);
+
+				fixedPage.Children.Remove(element);
+			}
+			catch (Exception)
+			{ }
+		}
+		 
 		internal static Size GetDefaultSize(DesignItem createdItem)
 		{
-            var s = Metadata.GetDefaultSize(createdItem.ComponentType);
-            if (double.IsNaN(s.Width)) {
-                s.Width = GetWidth(createdItem.View);
-            }
-            if (double.IsNaN(s.Height)) {
-                s.Height = GetHeight(createdItem.View);
-            }
+			CreateVisualTree(createdItem.View);
+			
+			var s = Metadata.GetDefaultSize(createdItem.ComponentType, false);
+
+			if (double.IsNaN(s.Width) && createdItem.View.DesiredSize.Width > 0)
+			{
+				s.Width = createdItem.View.DesiredSize.Width;
+			}
+			if (double.IsNaN(s.Height) && createdItem.View.DesiredSize.Height > 0)
+			{
+				s.Height = createdItem.View.DesiredSize.Width;
+			}
+
+			var newS = Metadata.GetDefaultSize(createdItem.ComponentType, true);
+
+			if (!(s.Width > 0))
+				s.Width = newS.Width;
+
+			if (!(s.Height > 0))
+				s.Height = newS.Height;
+
+			if (double.IsNaN(s.Width)) {
+				s.Width = GetWidth(createdItem.View);
+			}
+			if (double.IsNaN(s.Height)) {
+				s.Height = GetHeight(createdItem.View);
+			}
+
 			return s;
 		}
 		

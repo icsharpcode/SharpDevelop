@@ -21,6 +21,27 @@ namespace ICSharpCode.WpfDesign.AddIn
 			MyTypeFinder f = new MyTypeFinder();
 			f.file = file;
 			f.ImportFrom(CreateWpfTypeFinder());
+			
+			var pc = MyTypeFinder.GetProjectContent(file);
+			foreach (var referencedProjectContent in pc.ThreadSafeGetReferencedContents()) {
+				try{
+					string fileName = null;
+					if (referencedProjectContent is ParseProjectContent)
+					{
+						var prj = ((ParseProjectContent)referencedProjectContent).Project as AbstractProject;
+						if (prj != null)
+							fileName = prj.OutputAssemblyFullPath;
+					}
+					else if (referencedProjectContent is ReflectionProjectContent)
+					{
+						fileName = ((ReflectionProjectContent) referencedProjectContent).AssemblyLocation;
+					}
+					var assembly = Assembly.LoadFrom(fileName);
+					f.RegisterAssembly(assembly);
+				}
+				catch (Exception ex)
+				{}
+			}
 			return f;
 		}
 		

@@ -29,16 +29,32 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XmlElement ContainingElement{
 			get { return containingObject.XmlElement; }
 		}
+
+		private string GetNamespaceOfPrefix(string prefix)
+		{
+			var ns = ContainingElement.GetNamespaceOfPrefix(prefix);
+			if (!string.IsNullOrEmpty(ns))
+				return ns;
+			var obj = containingObject;
+			while (obj != null)
+			{
+				ns = obj.XmlElement.GetNamespaceOfPrefix(prefix);
+				if (!string.IsNullOrEmpty(ns))
+					return ns;
+				obj = obj.ParentObject;
+			}
+			return null;
+		}
 		
 		public Type Resolve(string typeName)
 		{
 			string typeNamespaceUri;
 			string typeLocalName;
 			if (typeName.Contains(":")) {
-				typeNamespaceUri = ContainingElement.GetNamespaceOfPrefix(typeName.Substring(0, typeName.IndexOf(':')));
+				typeNamespaceUri = GetNamespaceOfPrefix(typeName.Substring(0, typeName.IndexOf(':')));
 				typeLocalName = typeName.Substring(typeName.IndexOf(':') + 1);
 			} else {
-				typeNamespaceUri = ContainingElement.GetNamespaceOfPrefix("");
+				typeNamespaceUri = GetNamespaceOfPrefix("");
 				typeLocalName = typeName;
 			}
 			if (string.IsNullOrEmpty(typeNamespaceUri))

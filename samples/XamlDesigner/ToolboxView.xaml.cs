@@ -1,3 +1,4 @@
+using System.IO;
 using ICSharpCode.WpfDesign.Designer.OutlineView;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ICSharpCode.WpfDesign.Designer.Services;
+using Microsoft.Win32;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -71,6 +73,21 @@ namespace ICSharpCode.XamlDesigner
 			AssemblyNode node = uxTreeView.SelectedItem as AssemblyNode;
 			if (node != null) {
 				Toolbox.Instance.Remove(node);
+			}
+		}
+		
+		private void BrowseForAssemblies_OnClick(object sender, RoutedEventArgs e)
+		{
+			var dlg = new OpenFileDialog();
+			dlg.Filter = "Assemblies (*.dll)|*.dll";
+			dlg.Multiselect = true;
+			dlg.CheckFileExists = true;
+			if (dlg.ShowDialog().Value)
+			{
+				foreach (var fileName in dlg.FileNames)
+				{
+					Toolbox.Instance.AddAssembly(fileName);
+				}
 			}
 		}
 	}

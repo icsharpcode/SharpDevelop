@@ -14,6 +14,9 @@ using ICSharpCode.WpfDesign.Designer.Controls;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	[ExtensionFor(typeof(Panel))]
+	[ExtensionFor(typeof(Border))]
+	[ExtensionFor(typeof(ContentControl))]
+	[ExtensionFor(typeof(Viewbox))]
 	public class PanelMove : PermanentAdornerProvider
 	{
 		protected override void OnInitialized()
@@ -24,7 +27,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var adorner = new PanelMoveAdorner(ExtendedItem);
 			AdornerPanel.SetPlacement(adorner, AdornerPlacement.FillContent);
 			adornerPanel.Children.Add(adorner);
-			Adorners.Add(adornerPanel);			
+			Adorners.Add(adornerPanel);
 		}
 	}
 }

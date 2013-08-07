@@ -104,7 +104,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 		}
 
 		[Test]
-		[Ignore]
+		//[Ignore]
 		public void CheckGridChildrenCountWhenCopy()
 		{
 			InsertIntoGridByCopy();
@@ -113,7 +113,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 		}
 
 		[Test]
-		[Ignore]
+		//[Ignore]
 		public void CheckStackPanelChildrenCountWhenCopy()
 		{
 			InsertIntoGridByCopy();
@@ -122,25 +122,24 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 		}
 
 		[Test]
-		[Ignore]
+		//[Ignore]
 		public void CheckElementsInOutlineWhenCopy()
 		{
 			InsertIntoGridByCopy();
-			Assert.AreEqual(_gridButtonNode, _outline.Children[0]);
-			Assert.AreEqual(_stackPanelButtonNode, _outline.Children[1]);
-			Assert.AreEqual(_stackPanelNode, _outline.Children[2]);
-			Assert.AreEqual(_stackPanelButtonNode, _stackPanelButtonNode.Children[0]);
+			Assert.AreEqual(_gridButtonNode.DesignItem.Component.GetType(), _outline.Children[0].DesignItem.Component.GetType());
+			Assert.AreEqual(_stackPanelButtonNode.DesignItem.Component.GetType(), _outline.Children[1].DesignItem.Component.GetType());
+			Assert.AreEqual(_stackPanelNode.DesignItem.Component.GetType(), _outline.Children[2].DesignItem.Component.GetType());			
 		}
 
 		[Test]
-		[Ignore]
+		//[Ignore]
 		public void CheckElementsInDesignerWhenCopy()
 		{
 			InsertIntoGridByCopy();
 			Assert.AreEqual(_gridButton, _grid.ContentProperty.CollectionElements[0]);
-			Assert.AreEqual(_stackPanelButton, _grid.ContentProperty.CollectionElements[1]);
-			Assert.AreEqual(_stackPanel, _grid.ContentProperty.CollectionElements[2]);
-			Assert.AreEqual(_stackPanelButton, _stackPanel.ContentProperty.CollectionElements[0]);
+			Assert.AreEqual(_stackPanelButton.Component.GetType(), _grid.ContentProperty.CollectionElements[1].Component.GetType());
+			Assert.AreEqual(_stackPanel.Component.GetType(), _grid.ContentProperty.CollectionElements[2].Component.GetType());
+			Assert.AreEqual(_stackPanelButton.Component.GetType(), _stackPanel.ContentProperty.CollectionElements[0].Component.GetType());
 		}
 		#endregion
 	}
@@ -177,11 +176,11 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 		[Test]
 		public void CanInsertIntoButton()
 		{
-			/* Insert Image into the Grid's button. This has to be false since some of the
-			 * ContentControl are not allowed to add element's by moving elements
+			/* Insert Image into the Grid's button. This has now to be true because a button can now
+			 * add element's by moving elements
 			 * See DefaultPlacementBehavior.CanContentControlAdd() */
 
-			Assert.IsFalse(_gridButtonNode.CanInsert(new[] {_stackPanelImageNode}, null, false));
+			Assert.IsTrue(_gridButtonNode.CanInsert(new[] {_stackPanelImageNode}, null, false));
 		}
 
 		#region Insert element by Cut operation.

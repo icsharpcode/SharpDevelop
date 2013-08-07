@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Globalization;
 using System.Windows;
 using System.Collections;
+using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.Designer.Converters
 {
@@ -85,7 +86,7 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 		{
 			if (value == null || (int)value == 0) {
 				return Visibility.Collapsed;
-			}			
+			}
 			return Visibility.Visible;
 		}
 
@@ -145,17 +146,109 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 	}
 	
 	public class FormatDoubleConverter : IValueConverter
-    {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
-        public static readonly FormatDoubleConverter Instance=new FormatDoubleConverter();
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly FormatDoubleConverter Instance=new FormatDoubleConverter();
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return Math.Round((double)value);
-        }
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return Math.Round((double)value);
+		}
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			throw new NotImplementedException();
 		}
-    }
+	}
+	
+	public class BlackWhenTrue : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly BlackWhenTrue Instance = new BlackWhenTrue();
+
+		private Brush black = new SolidColorBrush(Colors.Black);
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return (bool)value ? black : null;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
+	
+	public class EnumBoolean : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly EnumBoolean Instance = new EnumBoolean();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			if (Enum.IsDefined(value.GetType(), value) == false)
+				return DependencyProperty.UnsetValue;
+
+			object parameterValue = Enum.Parse(value.GetType(), parameterString);
+
+			return parameterValue.Equals(value);
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			return Enum.Parse(targetType, parameterString);
+		}
+	}
+	
+	public class EnumVisibility : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly EnumVisibility Instance = new EnumVisibility();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			if (Enum.IsDefined(value.GetType(), value) == false)
+				return DependencyProperty.UnsetValue;
+
+			object parameterValue = Enum.Parse(value.GetType(), parameterString);
+
+			return parameterValue.Equals(value) ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			return Enum.Parse(targetType, parameterString);
+		}
+	}
+	
+	public class InvertedZoomConverter : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly InvertedZoomConverter Instance = new InvertedZoomConverter();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return 1.0 / ((double)value);
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return 1.0 / ((double)value);
+		}
+	}
 }

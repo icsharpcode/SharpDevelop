@@ -107,12 +107,30 @@
 							              Margin="{TemplateBinding Level, Converter={StaticResource LevelConverter}}"
 							              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" />
 							<Border x:Name="contentBorder"
-							        HorizontalAlignment="Left">
+							        HorizontalAlignment="Stretch">
 								<ContentPresenter x:Name="PART_Header"
 									ContentSource="Header" />
 							</Border>
 						</DockPanel>
 						<ItemsPresenter x:Name="itemsHost" />
+					<DockPanel.ContextMenu>
+					<ContextMenu>
+						<MenuItem Command="ApplicationCommands.Cut" />
+						<MenuItem Command="ApplicationCommands.Copy" />
+						<MenuItem Command="ApplicationCommands.Paste" />
+						<Separator />
+						<MenuItem Command="ApplicationCommands.Delete" />
+					</ContextMenu>
+					</DockPanel.ContextMenu>
+						<DockPanel.ToolTip>
+							<ToolTip Background="White">
+								<Rectangle Width="50" Height="50">
+									<Rectangle.Fill>
+										<VisualBrush Stretch="Uniform" Visual="{Binding DesignItem.View}" />
+									</Rectangle.Fill>
+								</Rectangle>
+							</ToolTip>
+						</DockPanel.ToolTip>
 					</DockPanel>
 					
 					<ControlTemplate.Triggers>

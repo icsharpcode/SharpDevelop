@@ -94,7 +94,8 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 			if (e.Property == BrushProperty) {
 				if (Brush != null) {
 					GradientStops = new BindingList<GradientStop>(Brush.GradientStops);
-					SelectedStop = GradientStops.FirstOrDefault();
+					if (SelectedStop == null)
+						SelectedStop = GradientStops.FirstOrDefault();
 				}
 				else {
 					GradientStops = null;

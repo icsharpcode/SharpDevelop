@@ -128,7 +128,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			}
 			
 			IPlacementBehavior b = result.ModelHit.GetBehavior<IPlacementBehavior>();
-			if (b != null && b.CanEnterContainer(operation)) {
+			if (b != null && b.CanEnterContainer(operation, false)) {
 				operation.ChangeContainer(result.ModelHit);
 				return true;
 			}

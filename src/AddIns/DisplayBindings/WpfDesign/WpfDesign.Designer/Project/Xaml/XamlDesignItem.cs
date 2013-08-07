@@ -147,7 +147,15 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public override DesignItem Clone()
 		{
-			throw new NotImplementedException();
+			DesignItem item = null;
+		    var xaml = XamlStaticTools.GetXaml(this.XamlObject);
+		    XamlDesignItem rootItem = Context.RootItem as XamlDesignItem;
+		    var obj = XamlParser.ParseSnippet(rootItem.XamlObject, xaml, ((XamlDesignContext) Context).ParserSettings);
+		    if (obj != null)
+		    {
+                item = ((XamlDesignContext)Context)._componentService.RegisterXamlComponentRecursive(obj);
+		    }
+		    return item;
 		}
 	}
 }

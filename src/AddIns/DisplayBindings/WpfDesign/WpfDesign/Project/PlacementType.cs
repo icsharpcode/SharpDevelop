@@ -35,6 +35,12 @@ namespace ICSharpCode.WpfDesign
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly PlacementType Delete = Register("Delete");
 		
+		/// <summary>
+        /// Inserting from Cliboard
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly PlacementType PasteItem = Register("PasteItem");
+
 		readonly string name;
 		
 		private PlacementType(string name)

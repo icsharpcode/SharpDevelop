@@ -15,20 +15,68 @@ using System.Windows.Media;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	[ExtensionFor(typeof(Panel))]
+	[ExtensionFor(typeof(Border))]
+	[ExtensionFor(typeof(ContentControl))]
+	[ExtensionFor(typeof(Viewbox))]
 	public class BorderForInvisibleControl : PermanentAdornerProvider
 	{
+		AdornerPanel adornerPanel;
+		
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
 
-			var adornerPanel = new AdornerPanel();
-			var border = new Border();
-			border.BorderThickness = new Thickness(1);
-			border.BorderBrush = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
-			border.IsHitTestVisible = false;
-			AdornerPanel.SetPlacement(border, AdornerPlacement.FillContent);
-			adornerPanel.Children.Add(border);
-			Adorners.Add(adornerPanel);
+			if (ExtendedItem.Component is Border)
+			{
+				ExtendedItem.PropertyChanged+= (s, e) => ExtendedItem_PropertyChanged();
+				
+				ExtendedItem_PropertyChanged();
+			}
+			else if (ExtendedItem.Component is Panel || ExtendedItem.Component is Viewbox || ExtendedItem.Component is ContentControl)
+			{
+				CreateAdorner();
+			}			
+		}
+
+		void ExtendedItem_PropertyChanged()
+		{
+			if (ExtendedItem.Component is Border)
+			{
+				var border = ExtendedItem.Component as Border;
+				if (border.ReadLocalValue(Border.BorderBrushProperty) == DependencyProperty.UnsetValue || border.ReadLocalValue(Border.BorderThicknessProperty) == DependencyProperty.UnsetValue)
+				{
+					CreateAdorner();
+				}
+				else
+				{
+					RemoveAdorner();
+				}
+			}			
+		}
+		
+		private void CreateAdorner()
+		{
+			if (adornerPanel == null)
+			{
+				adornerPanel = new AdornerPanel();
+				adornerPanel.Order = AdornerOrder.Background;
+				var border = new Border();
+				border.BorderThickness = new Thickness(1);
+				border.BorderBrush = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
+				border.IsHitTestVisible = false;
+				AdornerPanel.SetPlacement(border, AdornerPlacement.FillContent);
+				adornerPanel.Children.Add(border);
+				Adorners.Add(adornerPanel);
+			}
+		}
+		
+		private void RemoveAdorner()
+		{
+			if (adornerPanel != null)
+			{
+				Adorners.Remove(adornerPanel);
+				adornerPanel = null;
+			}
 		}
 	}
 }

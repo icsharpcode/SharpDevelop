@@ -57,7 +57,7 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Gets if entering this container is allowed for the specified operation.
 		/// </summary>
-		bool CanEnterContainer(PlacementOperation operation);
+		bool CanEnterContainer(PlacementOperation operation, bool shouldAlwaysEnter);
 		
 		/// <summary>
 		/// Let the placed children enter this container.

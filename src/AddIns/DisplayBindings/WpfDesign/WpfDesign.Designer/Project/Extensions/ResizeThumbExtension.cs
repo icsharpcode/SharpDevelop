@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-
+using System.Windows.Media;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Extensions;
@@ -26,8 +26,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
 		PlacementOperation operation;
-		ChangeGroup changeGroup;		
-				
+		ChangeGroup changeGroup;
+		
 		bool _isResizing;
 		
 		/// <summary>
@@ -78,41 +78,53 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// <param name="alignment"></param>
 		/// <returns></returns>
 		private RelativePlacement Place(ref ResizeThumb resizeThumb,PlacementAlignment alignment)
-        {
-            RelativePlacement placement = new RelativePlacement(alignment.Horizontal,alignment.Vertical);
-            
-            if (alignment.Horizontal == HorizontalAlignment.Center)
-            {
-                placement.WidthRelativeToContentWidth = 1;
-                placement.HeightOffset = 6;
-                resizeThumb.Opacity = 0;
-                return placement;
-            }
-            if (alignment.Vertical == VerticalAlignment.Center)
-            {
-                placement.HeightRelativeToContentHeight = 1;
-                placement.WidthOffset = 6;
-                resizeThumb.Opacity = 0;
-                return placement;
-            }
-            
-            placement.WidthOffset = 6;
-            placement.HeightOffset = 6;
-            return placement;
-        }
+		{
+			RelativePlacement placement = new RelativePlacement(alignment.Horizontal,alignment.Vertical);
+			
+			if (alignment.Horizontal == HorizontalAlignment.Center)
+			{
+				placement.WidthRelativeToContentWidth = 1;
+				placement.HeightOffset = 6;
+				resizeThumb.Opacity = 0;
+				return placement;
+			}
+			if (alignment.Vertical == VerticalAlignment.Center)
+			{
+				placement.HeightRelativeToContentHeight = 1;
+				placement.WidthOffset = 6;
+				resizeThumb.Opacity = 0;
+				return placement;
+			}
+			
+			placement.WidthOffset = 6;
+			placement.HeightOffset = 6;
+			return placement;
+		}
 
 		Size oldSize;
+		ZoomControl zoom;
 		
 		// TODO : Remove all hide/show extensions from here.
 		void drag_Started(DragListener drag)
 		{
+			var designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+			if (designPanel != null)
+			{
+				var p = VisualTreeHelper.GetParent(designPanel);
+				while (p != null && !(p is ZoomControl))
+				{
+					p = VisualTreeHelper.GetParent(p);
+				}
+				zoom = p as ZoomControl;
+			}
+			
 			/* Abort editing Text if it was editing, because it interferes with the undo stack. */
 			foreach(var extension in this.ExtendedItem.Extensions){
 				if(extension is InPlaceEditorExtension){
 					((InPlaceEditorExtension)extension).AbortEdit();
 				}
 			}
-				
+			
 			oldSize = new Size(ModelTools.GetWidth(ExtendedItem.View), ModelTools.GetHeight(ExtendedItem.View));
 			if (resizeBehavior != null)
 				operation = PlacementOperation.Start(extendedItemArray, PlacementType.Resize);
@@ -134,11 +146,36 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (alignment.Vertical == VerticalAlignment.Top) dy = -drag.Delta.Y;
 			if (alignment.Vertical == VerticalAlignment.Bottom) dy = drag.Delta.Y;
 			
+			var designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+			if (zoom != null)
+			{
+				dx = dx * (1 / zoom.CurrentZoom);
+				dy = dy * (1 / zoom.CurrentZoom);
+			}
+
 			var newWidth = Math.Max(0, oldSize.Width + dx);
 			var newHeight = Math.Max(0, oldSize.Height + dy);
 
-			ModelTools.Resize(ExtendedItem, newWidth, newHeight);
+			if (operation.CurrentContainerBehavior is GridPlacementSupport)
+			{
+				var hor = (HorizontalAlignment)this.ExtendedItem.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
+				var ver = (VerticalAlignment)this.ExtendedItem.Properties[FrameworkElement.VerticalAlignmentProperty].ValueOnInstance;
+				if (hor == HorizontalAlignment.Stretch)
+					this.ExtendedItem.Properties[FrameworkElement.WidthProperty].Reset();
+				else
+					this.ExtendedItem.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(newWidth);
 
+				if (ver == VerticalAlignment.Stretch)
+					this.ExtendedItem.Properties[FrameworkElement.HeightProperty].Reset();
+				else
+					this.ExtendedItem.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(newHeight);
+
+			}
+			else
+			{
+				ModelTools.Resize(ExtendedItem, newWidth, newHeight);
+			}
+			
 			if (operation != null) {
 				var info = operation.PlacedItems[0];
 				var result = info.OriginalBounds;
@@ -167,7 +204,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (drag.IsCanceled) changeGroup.Abort();
 				else changeGroup.Commit();
 				changeGroup = null;
-			}			
+			}
 			_isResizing=false;
 			HideSizeAndShowHandles();
 		}
@@ -213,43 +250,43 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 		
 		void ShowSizeAndHideHandles()
-    	{
-            SizeDisplayExtension sizeDisplay=null;
-            MarginHandleExtension marginDisplay=null;
-            foreach(var extension in ExtendedItem.Extensions) {
-                if (extension is SizeDisplayExtension)
-                    sizeDisplay = extension as SizeDisplayExtension;
-                if (extension is MarginHandleExtension)
-            		 marginDisplay = extension as MarginHandleExtension;
-            }
+		{
+			SizeDisplayExtension sizeDisplay=null;
+			MarginHandleExtension marginDisplay=null;
+			foreach(var extension in ExtendedItem.Extensions) {
+				if (extension is SizeDisplayExtension)
+					sizeDisplay = extension as SizeDisplayExtension;
+				if (extension is MarginHandleExtension)
+					marginDisplay = extension as MarginHandleExtension;
+			}
 
-            if(sizeDisplay!=null) {
-                sizeDisplay.HeightDisplay.Visibility = Visibility.Visible;
-                sizeDisplay.WidthDisplay.Visibility = Visibility.Visible;
-            }
-            
-            if(marginDisplay!=null)
-            	marginDisplay.HideHandles();
-        }
+			if(sizeDisplay!=null) {
+				sizeDisplay.HeightDisplay.Visibility = Visibility.Visible;
+				sizeDisplay.WidthDisplay.Visibility = Visibility.Visible;
+			}
+			
+			if(marginDisplay!=null)
+				marginDisplay.HideHandles();
+		}
 
-        void HideSizeAndShowHandles()
-        {
-            SizeDisplayExtension sizeDisplay = null;
-            MarginHandleExtension marginDisplay=null;
-            foreach (var extension in ExtendedItem.Extensions){
-                if (extension is SizeDisplayExtension)
-                    sizeDisplay = extension as SizeDisplayExtension;
-                if (extension is MarginHandleExtension)
-            		 marginDisplay = extension as MarginHandleExtension;
-            }
+		void HideSizeAndShowHandles()
+		{
+			SizeDisplayExtension sizeDisplay = null;
+			MarginHandleExtension marginDisplay=null;
+			foreach (var extension in ExtendedItem.Extensions){
+				if (extension is SizeDisplayExtension)
+					sizeDisplay = extension as SizeDisplayExtension;
+				if (extension is MarginHandleExtension)
+					marginDisplay = extension as MarginHandleExtension;
+			}
 
-            if (sizeDisplay != null) {
-                sizeDisplay.HeightDisplay.Visibility = Visibility.Hidden;
-                sizeDisplay.WidthDisplay.Visibility = Visibility.Hidden;
-            }
-            if (marginDisplay !=null ) {
-            	marginDisplay.ShowHandles();
-            }
-        }		
+			if (sizeDisplay != null) {
+				sizeDisplay.HeightDisplay.Visibility = Visibility.Hidden;
+				sizeDisplay.WidthDisplay.Visibility = Visibility.Hidden;
+			}
+			if (marginDisplay !=null ) {
+				marginDisplay.ShowHandles();
+			}
+		}
 	}
 }

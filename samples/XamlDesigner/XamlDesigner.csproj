@@ -129,6 +129,7 @@
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MainWindow_Commands.cs" />
+    <Compile Include="MyTypeFinder.cs" />
     <Compile Include="Shell.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

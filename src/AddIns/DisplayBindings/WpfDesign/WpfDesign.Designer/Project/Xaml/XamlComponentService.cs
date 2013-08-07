@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Windows.Markup;
+using System.Windows;
 
 using ICSharpCode.WpfDesign.XamlDom;
 
@@ -86,6 +87,28 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			_sites.Add(site.Component, site);
 			if (ComponentRegistered != null) {
 				ComponentRegistered(this, new DesignItemEventArgs(site));
+			}
+			
+			if (_context.RootItem != null && !string.IsNullOrEmpty(site.Name)) {
+				var nameScope = _context.RootItem.Component as INameScope;
+				nameScope = NameScope.GetNameScope((DependencyObject) _context.RootItem.Component);
+				var fnd = nameScope.FindName(site.Name);
+				
+				if (fnd != null) {
+					string newNm = site.Name + "_Copy";
+					fnd = nameScope.FindName(newNm);
+					if (fnd == null)
+						site.Name = newNm;
+					else {
+						int i = 1;
+						while (fnd != null) {
+							newNm = site.Name + "_Copy" + i;
+							fnd = nameScope.FindName(newNm);
+							i++;
+						}
+						site.Name = newNm;
+					}
+				}
 			}
 			return site;
 		}

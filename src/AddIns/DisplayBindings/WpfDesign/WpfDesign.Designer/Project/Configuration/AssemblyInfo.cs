@@ -50,3 +50,4 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer.Controls")]
 [assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer.PropertyGrid")]
 [assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors")]
+[assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer.ThumbnailView")]

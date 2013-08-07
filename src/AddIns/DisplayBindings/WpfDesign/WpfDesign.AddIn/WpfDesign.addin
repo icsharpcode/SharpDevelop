@@ -23,6 +23,14 @@
 		                title = "WPF designer"/>-->
 		<DisplayBinding id="WPFDesigner" type="Secondary" class="ICSharpCode.WpfDesign.AddIn.WpfSecondaryDisplayBinding" fileNamePattern="\.xaml$" />
 	</Path>
+  <Path name = "/SharpDevelop/Workbench/Pads">
+    <Pad id       = "ThumbnailViewPad"
+         category = "Main"
+         title    = "${res:ICSharpCode.WpfDesign.AddIn.ThumbnailViewPad}"
+         icon     = "PadIcons.Toolbar"
+         class    = "ICSharpCode.WpfDesign.AddIn.ThumbnailViewPad"
+         defaultPosition = "Right, Hidden" />
+  </Path>
 	<!--
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id    = "OutlineViewPad"
