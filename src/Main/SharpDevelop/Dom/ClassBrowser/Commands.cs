@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using ICSharpCode.SharpDevelop.Debugging;
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -72,6 +74,29 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
 				classBrowser.AssemblyList.Assemblies.Remove(assemblyModel);
 			}
+		}
+	}
+	
+	/// <summary>
+	/// RunAssemblyWithDebuggerCommand.
+	/// </summary>
+	class RunAssemblyWithDebuggerCommand : SimpleCommand
+	{
+		public override bool CanExecute(object parameter)
+		{
+			IAssemblyModel assemblyModel = parameter as IAssemblyModel;
+			return (assemblyModel != null) && assemblyModel.Context.IsValid;
+		}
+		
+		public override void Execute(object parameter)
+		{
+			IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
+			
+			// Start debugger with given assembly
+			DebuggerService.CurrentDebugger.Start(new ProcessStartInfo {
+			                                      	FileName = assemblyModel.Context.Location,
+			                                      	WorkingDirectory = Path.GetDirectoryName(assemblyModel.Context.Location)
+			                                      });
 		}
 	}
 }

@@ -989,6 +989,15 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/AssemblyContextMenu">
+		<Condition name="IsProcessRunning" isdebugging = "False" action = "Exclude">
+			<Condition name="DebuggerSupports" debuggersupports = "Start">
+				<MenuItem id = "RunAssemblyWithDebugger"
+				          label = "${res:XML.MainMenu.RunMenu.Run}"
+				          icon = "Icons.16x16.RunProgramIcon"
+				          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.RunAssemblyWithDebuggerCommand"/>
+				<MenuItem id = "AssemblyContextMenuSeparator" type = "Separator"/>
+			</Condition>
+		</Condition>
 		<MenuItem id = "RemoveAssembly"
 		          label = "Remove"
 		          icon = "Icons.16x16.DeleteIcon"
