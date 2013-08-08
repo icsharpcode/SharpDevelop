@@ -205,7 +205,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Writes the highlighted line to the RichTextWriter.
 		/// </summary>
-		public void WriteTo(RichTextWriter writer)
+		internal void WriteTo(RichTextWriter writer)
 		{
 			int startOffset = this.DocumentLine.Offset;
 			WriteTo(writer, startOffset, startOffset + this.DocumentLine.Length);
@@ -214,7 +214,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Writes a part of the highlighted line to the RichTextWriter.
 		/// </summary>
-		public void WriteTo(RichTextWriter writer, int startOffset, int endOffset)
+		internal void WriteTo(RichTextWriter writer, int startOffset, int endOffset)
 		{
 			if (writer == null)
 				throw new ArgumentNullException("writer");

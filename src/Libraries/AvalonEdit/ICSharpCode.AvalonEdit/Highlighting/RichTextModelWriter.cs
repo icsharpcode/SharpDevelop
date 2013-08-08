@@ -14,9 +14,9 @@ using ICSharpCode.AvalonEdit.Utils;
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
 	/// <summary>
-	/// A RichTextWriter that writes into a document and .
+	/// A RichTextWriter that writes into a document and RichTextModel.
 	/// </summary>
-	public class RichTextModelWriter : PlainRichTextWriter
+	class RichTextModelWriter : PlainRichTextWriter
 	{
 		readonly RichTextModel richTextModel;
 		readonly DocumentTextWriter documentTextWriter;

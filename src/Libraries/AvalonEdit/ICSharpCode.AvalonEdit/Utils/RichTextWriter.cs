@@ -12,7 +12,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// <summary>
 	/// A text writer that supports creating spans of highlighted text.
 	/// </summary>
-	public abstract class RichTextWriter : TextWriter
+	abstract class RichTextWriter : TextWriter
 	{
 		/// <summary>
 		/// Gets called by the RichTextWriter base class when a BeginSpan() method

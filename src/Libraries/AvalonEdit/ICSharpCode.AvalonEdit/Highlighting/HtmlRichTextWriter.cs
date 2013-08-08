@@ -15,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// <summary>
 	/// RichTextWriter implementation that produces HTML.
 	/// </summary>
-	public class HtmlRichTextWriter : RichTextWriter
+	class HtmlRichTextWriter : RichTextWriter
 	{
 		readonly TextWriter htmlWriter;
 		readonly HtmlOptions options;

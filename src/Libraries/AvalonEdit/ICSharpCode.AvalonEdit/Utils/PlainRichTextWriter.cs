@@ -11,7 +11,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// RichTextWriter implementation that writes plain text only
 	/// and ignores all formatted spans.
 	/// </summary>
-	public class PlainRichTextWriter : RichTextWriter
+	class PlainRichTextWriter : RichTextWriter
 	{
 		/// <summary>
 		/// The text writer that was passed to the PlainRichTextWriter constructor.
