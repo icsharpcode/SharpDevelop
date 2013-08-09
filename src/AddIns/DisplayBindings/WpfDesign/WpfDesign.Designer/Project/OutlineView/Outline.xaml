@@ -18,7 +18,7 @@
 											<ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="eye" Storyboard.TargetProperty="(UIElement.Visibility)">
 												<DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
 											</ObjectAnimationUsingKeyFrames>
-											<ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="circle" Storyboard.TargetProperty="(UIElement.Visibility)">
+											<ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="closed_eye" Storyboard.TargetProperty="(UIElement.Visibility)">
 												<DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}"/>
 											</ObjectAnimationUsingKeyFrames>
 										</Storyboard>
@@ -26,8 +26,8 @@
 									<VisualState x:Name="Unchecked"/>
 								</VisualStateGroup>
 							</VisualStateManager.VisualStateGroups>
-							<Image x:Name="eye" Stretch="Uniform" Visibility="Hidden" Source="pack://application:,,,/ICSharpCode.WpfDesign.Designer;component/Images/eye_watch.png" />
-							<Ellipse Width="6" Height="6" Stroke="Black" StrokeThickness="1" x:Name="circle" />
+							<Image x:Name="eye" Stretch="None" Visibility="Hidden" Source="pack://application:,,,/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.WpfOutline.Eye.png" />
+							<Image x:Name="closed_eye" Stretch="None" Source="pack://application:,,,/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.WpfOutline.EyeClose.png" />
 						</Grid>
 					</ControlTemplate>
 				</Setter.Value>
