@@ -239,8 +239,8 @@ namespace CSharpBinding
 		{
 			internal readonly string newCode;
 			
-			public RenameResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, string newCode, HighlightedInlineBuilder builder = null, HighlightingColor defaultTextColor = null)
-				: base(fileName, startLocation, endLocation, offset, length, builder, defaultTextColor)
+			public RenameResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, string newCode, RichText richText = null, HighlightingColor defaultTextColor = null)
+				: base(fileName, startLocation, endLocation, offset, length, richText, defaultTextColor)
 			{
 				this.newCode = newCode;
 			}

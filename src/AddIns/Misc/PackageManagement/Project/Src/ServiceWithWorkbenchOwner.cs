@@ -3,7 +3,7 @@
 
 using System;
 using System.Windows;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -14,7 +14,7 @@ namespace ICSharpCode.PackageManagement
 		public Window Owner {
 			get {
 				if (owner == null) {
-					owner = WorkbenchSingleton.MainWindow;
+					owner = SD.Workbench.MainWindow;
 				}
 				return owner;
 			}

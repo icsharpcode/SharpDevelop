@@ -3,7 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.CodeQuality.Gui
 {
@@ -11,7 +11,7 @@ namespace ICSharpCode.CodeQuality.Gui
 	{
 		public override void Run()
 		{
-			WorkbenchSingleton.Workbench.ShowView(new AnalyzeCodeQualityViewContent());
+			SD.Workbench.ShowView(new AnalyzeCodeQualityViewContent());
 		}
 	}
 }

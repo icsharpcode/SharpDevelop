@@ -66,17 +66,15 @@ namespace SearchAndReplace
 
 			textBlock.Inlines.Add("(" + location.Line + ", " + location.Column + ")\t");
 			
-			string displayText = result.DisplayText;
+			RichText displayText = result.DisplayText;
 			if (displayText != null) {
-				textBlock.Inlines.Add(displayText);
-			} else if (result.Builder != null) {
-				HighlightedInlineBuilder builder = result.Builder;
 				if (IsSelected) {
-					builder = builder.Clone();
-					builder.SetForeground(0, builder.Text.Length, null);
-					builder.SetBackground(0, builder.Text.Length, null);
+					RichTextModel model = displayText.ToRichTextModel();
+					model.SetForeground(0, displayText.Length, null);
+					model.SetBackground(0, displayText.Length, null);
+					displayText = new RichText(displayText.Text, model);
 				}
-				textBlock.Inlines.AddRange(builder.CreateRuns());
+				textBlock.Inlines.AddRange(displayText.CreateRuns());
 			}
 			
 			if (showFileName) {

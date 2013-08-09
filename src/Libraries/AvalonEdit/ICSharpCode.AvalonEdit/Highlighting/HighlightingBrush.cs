@@ -75,6 +75,19 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			info.AddValue("color", brush.Color.ToString(CultureInfo.InvariantCulture));
 		}
+		
+		public override bool Equals(object obj)
+		{
+			SimpleHighlightingBrush other = obj as SimpleHighlightingBrush;
+			if (other == null)
+				return false;
+			return this.brush.Color.Equals(other.brush.Color);
+		}
+		
+		public override int GetHashCode()
+		{
+			return brush.Color.GetHashCode();
+		}
 	}
 	
 	/// <summary>
@@ -112,6 +125,19 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue("propertyName", property.Name);
+		}
+		
+		public override bool Equals(object obj)
+		{
+			SystemColorHighlightingBrush other = obj as SystemColorHighlightingBrush;
+			if (other == null)
+				return false;
+			return object.Equals(this.property, other.property);
+		}
+		
+		public override int GetHashCode()
+		{
+			return property.GetHashCode();
 		}
 	}
 }

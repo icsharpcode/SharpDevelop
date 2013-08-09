@@ -14,7 +14,7 @@
 			<ConditionEvaluator name = "IsBreakpointActive" class="Debugger.AddIn.IsActiveBreakpointCondition" />
 		</Import>
 		<Import assembly="Debugger.Core.dll"/>
-	</Runtime>	
+	</Runtime>
 	
 	<Path name="/SharpDevelop/Services/DebuggerService/Debugger">
 		<Debugger id="DefaultDebugger"
@@ -158,8 +158,15 @@
 		<Class class="Debugger.AddIn.Visualizers.ObjectGraphVisualizerDescriptor" />
 		<Class class="Debugger.AddIn.Visualizers.GridVisualizerDescriptor" />
 	</Path>
-
+	
 	<Path name="/SharpDevelop/TreeNodeFactories">
 		<Class id="DebuggerTreeNodesFactory" class="ICSharpCode.SharpDevelop.Gui.Pads.DebuggerTreeNodesFactory" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Services/DebuggerService/ModuleContextMenu">
+		<MenuItem id = "AddModuleToWorkspace"
+		          label = "Add to workspace"
+		          icon = "Icons.16x16.AssemblyFromFile"
+		          class = "ICSharpCode.SharpDevelop.Gui.Pads.AddModuleToWorkspaceCommand"/>
 	</Path>
 </AddIn>

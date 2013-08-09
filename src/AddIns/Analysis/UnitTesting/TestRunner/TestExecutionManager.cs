@@ -115,9 +115,9 @@ namespace ICSharpCode.UnitTesting.Frameworks
 		
 		void ClearTasks()
 		{
-			taskService.BuildMessageViewCategory.ClearText();
+			taskService.BuildMessageViewCategory.Clear();
 			taskService.ClearExceptCommentTasks();
-			testService.UnitTestMessageView.ClearText();
+			testService.UnitTestMessageView.Clear();
 		}
 		
 		void ShowUnitTestsPad()
@@ -132,7 +132,7 @@ namespace ICSharpCode.UnitTesting.Frameworks
 		
 		void ShowOutputPad()
 		{
-			workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+			testService.UnitTestMessageView.Activate(true);
 		}
 		
 		void ResetTestResults()

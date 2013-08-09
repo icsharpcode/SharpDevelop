@@ -18,7 +18,7 @@ namespace PackageManagement.Tests.Helpers
 			SD.InitializeForUnitTests();
 			ISolution solution = MockRepository.GenerateStrictMock<ISolution>();
 			solution.Stub(s => s.MSBuildProjectCollection).Return(new Microsoft.Build.Evaluation.ProjectCollection());
-			solution.Stub(s => s.Projects).Return(new SimpleModelCollection<IProject>());
+			solution.Stub(s => s.Projects).Return(new NullSafeSimpleModelCollection<IProject>());
 			solution.Stub(s => s.ActiveConfiguration).Return(new ConfigurationAndPlatform("Debug", "Any CPU"));
 			//solution.Stub(s => s.FileName).Return(FileName.Create(@"d:\projects\Test\TestSolution.sln"));
 			return solution;

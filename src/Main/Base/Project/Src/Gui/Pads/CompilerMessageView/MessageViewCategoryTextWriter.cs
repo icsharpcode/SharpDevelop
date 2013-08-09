@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Text;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -12,9 +13,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public class MessageViewCategoryTextWriter : TextWriter
 	{
-		readonly MessageViewCategory target;
+		readonly IOutputCategory target;
 		
-		public MessageViewCategoryTextWriter(MessageViewCategory target)
+		public MessageViewCategoryTextWriter(IOutputCategory target)
 		{
 			this.target = target;
 		}

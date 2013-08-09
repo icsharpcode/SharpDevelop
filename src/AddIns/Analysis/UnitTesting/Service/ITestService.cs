@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -18,7 +19,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		ITestFramework GetTestFrameworkForProject(IProject project);
 		
-		MessageViewCategory UnitTestMessageView { get; }
+		IOutputCategory UnitTestMessageView { get; }
 		
 		/// <summary>
 		/// Gets the current test solution.

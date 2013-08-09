@@ -1,10 +1,11 @@
 ﻿<Window
 	x:Class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenFromGacDialog"
+	x:ClassModifier="internal"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	Title="Open From GAC"
-	Style="{DynamicResource DialogWindow}"
+	Style = "{x:Static core:GlobalStyles.DialogWindowStyle}"
 	WindowStartupLocation="CenterOwner"
 	ResizeMode="CanResizeWithGrip"
 	MinWidth="200"

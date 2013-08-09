@@ -252,6 +252,12 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				return false;
 			}
 		}
+		
+		public bool IsSelected
+		{
+			get;
+			set;
+		}
 
 		public virtual void AddPackage()
 		{

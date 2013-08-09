@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="Designer\IDesignerTypeResolutionService.cs" />
     <Compile Include="Designer\TypeResolutionService.cs" />
+    <Compile Include="Dom\ClassBrowser\AssemblyLoadErrorTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\AssemblyTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserTreeView.cs" />
     <Compile Include="Dom\ClassBrowser\IClassBrowser.cs" />
@@ -110,9 +111,11 @@
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
     <Compile Include="Dom\KeyedModelCollection.cs" />
+    <Compile Include="Dom\ModelCollectionChangedEvent.cs" />
     <Compile Include="Dom\ModelCollectionLinq.cs" />
     <Compile Include="Dom\ImmutableModelCollection.cs" />
     <Compile Include="Dom\ModelCollectionTreeNode.cs" />
+    <Compile Include="Dom\ModelFactoryExtensions.cs" />
     <Compile Include="Dom\SimpleModelCollection.cs" />
     <Compile Include="Dom\SynchronizedModelCollection.cs" />
     <Compile Include="Editor\AvalonEditTextEditorAdapter.cs" />
@@ -328,6 +331,7 @@
     <Compile Include="Workbench\File\FileService.cs" />
     <Compile Include="Workbench\File\IRecentOpen.cs" />
     <Compile Include="Workbench\ICustomizedCommands.cs" />
+    <Compile Include="Workbench\IOutputPad.cs" />
     <Compile Include="Workbench\IPadContent.cs" />
     <Compile Include="Workbench\IShutdownService.cs" />
     <Compile Include="Workbench\IViewContent.cs" />

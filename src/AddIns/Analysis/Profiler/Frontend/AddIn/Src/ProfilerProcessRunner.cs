@@ -11,6 +11,7 @@ using ICSharpCode.Profiler.Controller;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Profiler.AddIn
 {
@@ -39,7 +40,7 @@ namespace ICSharpCode.Profiler.AddIn
 			wasStarted = false;
 		}
 		
-		public Task<int> RunInOutputPadAsync(MessageViewCategory outputCategory, string program, params string[] arguments)
+		public Task<int> RunInOutputPadAsync(IOutputCategory outputCategory, string program, params string[] arguments)
 		{
 			throw new NotImplementedException();
 		}

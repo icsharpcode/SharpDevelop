@@ -45,6 +45,11 @@ namespace CSharpBinding.Refactoring
 			}
 			set {
 				isIncluded = value;
+				if (!value) {
+					// Remove other flags, too
+					AddCheckForNull = false;
+					AddRangeCheck = false;
+				}
 				OnPropertyChanged("IsIncluded");
 			}
 		}
@@ -90,6 +95,11 @@ namespace CSharpBinding.Refactoring
 			get { return addCheckForNull; }
 			set {
 				addCheckForNull = value;
+				if (value) {
+					// Assure that IsIncluded is set to true as well
+					IsIncluded = true;
+				}
+				OnPropertyChanged("AddCheckForNull");
 			}
 		}
 		
@@ -98,6 +108,11 @@ namespace CSharpBinding.Refactoring
 			get { return addRangeCheck; }
 			set {
 				addRangeCheck = value;
+				if (value) {
+					// Assure that IsIncluded is set to true as well
+					IsIncluded = true;
+				}
+				OnPropertyChanged("AddRangeCheck");
 			}
 		}
 		

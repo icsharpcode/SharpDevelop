@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public class SimpleModelCollection<T> : IMutableModelCollection<T>
 	{
-		readonly ModelCollectionChangedEvent<T> collectionChangedEvent;
+		readonly ModelCollectionChangedEvent<T> collectionChangedEvent = new ModelCollectionChangedEvent<T>();
 		readonly List<T> list;
 		List<T> addedItems;
 		List<T> removedItems;
@@ -24,13 +24,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public SimpleModelCollection()
 		{
 			this.list = new List<T>();
-			collectionChangedEvent = new ModelCollectionChangedEvent<T>();
 		}
 		
 		public SimpleModelCollection(IEnumerable<T> items)
 		{
 			this.list = new List<T>(items);
-			collectionChangedEvent = new ModelCollectionChangedEvent<T>();
+			// Note: intentionally not using ValidateItem(), as calling a virtual method
+			// from a constructor is problematic
 		}
 		
 		protected void CheckReentrancy()
@@ -39,6 +39,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				throw new InvalidOperationException("Cannot modify the collection from within the CollectionChanged event.");
 		}
 		
+		/// <summary>
+		/// Called before an item
+		/// </summary>
 		protected virtual void ValidateItem(T item)
 		{
 		}
@@ -182,15 +185,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (items == null)
 				throw new ArgumentNullException("items");
 			CheckReentrancy();
-			List<T> itemsList = items.ToList();
-			for (int i = 0; i < itemsList.Count; i++) {
-				ValidateItem(itemsList[i]);
+			try {
+				foreach (T item in items) {
+					// Add each item before validating the next,
+					// this is necessary because ValidateItem() might be checking
+					// for duplicates (e.g. KeyedModelCollection<,>)
+					ValidateItem(item);
+					OnAdd(item);
+					list.Add(item);
+				}
+			} finally {
+				// In case validation fails, we still need to raise the event
+				// for the items that were added successfully.
+				RaiseEventIfNotInBatch();
 			}
-			for (int i = 0; i < itemsList.Count; i++) {
-				OnAdd(itemsList[i]);
-			}
-			list.AddRange(itemsList);
-			RaiseEventIfNotInBatch();
 		}
 		
 		public bool Remove(T item)

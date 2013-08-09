@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -56,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				engine.results.Add(error);
 				if (engine.combinedBuildFeedbackSink != null) {
 					engine.combinedBuildFeedbackSink.ReportError(error);
-					engine.combinedBuildFeedbackSink.ReportMessage(error.ToString());
+					engine.combinedBuildFeedbackSink.ReportMessage(error.ToRichText());
 				}
 				
 				engine.results.Result = BuildResultCode.BuildFileError;
@@ -133,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			/// <summary>The list of messages that were not reported because another node held the
 			/// output lock</summary>
-			internal List<string> unreportedMessageList;
+			internal List<RichText> unreportedMessageList;
 			
 			public BuildNode(BuildEngine engine, IBuildable project)
 			{
@@ -166,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				engine.ReportError(this, error);
 			}
 			
-			public void ReportMessage(string message)
+			public void ReportMessage(RichText message)
 			{
 				engine.ReportMessage(this, message);
 			}
@@ -441,13 +442,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!error.IsWarning)
 				source.hasErrors = true;
 			results.Add(error);
-			ReportMessage(source, error.ToString());
+			ReportMessage(source, error.ToRichText());
 			if (combinedBuildFeedbackSink != null) {
 				combinedBuildFeedbackSink.ReportError(error);
 			}
 		}
 		
-		void ReportMessage(BuildNode source, string message)
+		void ReportMessage(BuildNode source, RichText message)
 		{
 			bool hasOutputLock;
 			lock (this) {
@@ -458,7 +459,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (!hasOutputLock) {
 					if (source.unreportedMessageList == null) {
 						nodesWaitingForOutputLock.Enqueue(source);
-						source.unreportedMessageList = new List<string>();
+						source.unreportedMessageList = new List<RichText>();
 					}
 					source.unreportedMessageList.Add(message);
 				}
@@ -470,7 +471,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void LogBuildFinished(BuildNode node)
 		{
-			List<string> messagesToReport = null;
+			List<RichText> messagesToReport = null;
 			bool newNodeWithOutputLockAlreadyFinishedBuilding = false;
 			lock (this) {
 				if (node == nodeWithOutputLock) {
@@ -499,10 +500,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void ReportMessageLine(string message)
 		{
-			ReportMessageInternal(StringParser.Parse(message));
+			ReportMessageInternal(new RichText(StringParser.Parse(message)));
 		}
 		
-		void ReportMessageInternal(string message)
+		void ReportMessageInternal(RichText message)
 		{
 			if (combinedBuildFeedbackSink != null)
 				combinedBuildFeedbackSink.ReportMessage(message);

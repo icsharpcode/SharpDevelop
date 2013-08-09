@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public AssemblyList()
 		{
 			Name = "<default>";
-			Assemblies = new SimpleModelCollection<IAssemblyModel>();
+			Assemblies = new NullSafeSimpleModelCollection<IAssemblyModel>();
 		}
 	}
 }
