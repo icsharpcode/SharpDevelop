@@ -619,6 +619,18 @@ namespace ICSharpCode.SharpDevelop
 			return newContent;
 		}
 		
+		public static bool AutoCompleteWithCamelHumpsMatch(this string entityName,string entityPartName)
+		{
+			string camelHumpsPrefix = new string(entityName.Where<char>( c => Char.IsUpper(c)).Select( c => c ).ToArray());
+			return entityName.AutoCompleteMatch(entityPartName) || camelHumpsPrefix.AutoCompleteMatch(entityPartName);
+		}
+		
+		public static bool AutoCompleteMatch(this string entityName,string entityPartName)
+		{
+			return (entityName.IndexOf(entityPartName, StringComparison.OrdinalIgnoreCase) >= 0);
+		}
+		
+		
 		#region Dom, AST, Editor, Document
 		public static Location GetStart(this DomRegion region)
 		{
