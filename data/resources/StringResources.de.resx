@@ -2496,7 +2496,7 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
     <value>Referenzpfade</value>
   </data>
   <data name="Dialog.ProjectOptions.ReferencePaths.AddPath" xml:space="preserve">
-    <value>Pfad hinzufügem</value>
+    <value>Pfad hinzufügen</value>
   </data>
   <data name="Dialog.ProjectOptions.RunPostBuildEvent.Always" xml:space="preserve">
     <value>Immer</value>
