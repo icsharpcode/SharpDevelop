@@ -12,12 +12,11 @@ using ICSharpCode.WpfDesign.Designer.ThumbnailView;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
-	
 	public class ThumbnailViewPad : AbstractPadContent
 	{
-        ContentPresenter contentControl = new ContentPresenter();
+		ContentPresenter contentControl = new ContentPresenter();
 
-	    ThumbnailView thumbnailView = new ThumbnailView();
+		ThumbnailView thumbnailView = new ThumbnailView();
 
 		TextBlock notAvailableTextBlock = new TextBlock {
 			Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.OutlinePad.NotAvailable}"),
@@ -33,16 +32,15 @@ namespace ICSharpCode.WpfDesign.AddIn
 		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
 		{
 			WpfViewContent wpfView = WorkbenchSingleton.Workbench.ActiveViewContent as WpfViewContent;
-		    if (wpfView != null)
-		    {
-		        thumbnailView.DesignSurface = wpfView.DesignSurface;
-		        contentControl.SetContent(thumbnailView);
-		    }
-		    else
-		    {
-                
-                contentControl.SetContent(notAvailableTextBlock);
-		    }		    
+			if (wpfView != null)
+			{
+				thumbnailView.DesignSurface = wpfView.DesignSurface;
+				contentControl.SetContent(thumbnailView);
+			}
+			else
+			{
+				contentControl.SetContent(notAvailableTextBlock);
+			}
 		}
 		
 		/// <summary>
@@ -52,6 +50,6 @@ namespace ICSharpCode.WpfDesign.AddIn
 			get {
 				return contentControl;
 			}
-		}			
-	}	
+		}
+	}
 }
