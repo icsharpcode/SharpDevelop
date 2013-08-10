@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using Debugger;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
@@ -66,7 +67,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (process == null)
 				throw new ArgumentNullException("process");
 			this.process = process;
-			this.modules = new SimpleModelCollection<Debugger.Module>(this.process.Modules);
+			this.modules = new NullSafeSimpleModelCollection<Debugger.Module>();
+			this.modules.AddRange(this.process.Modules);
 			this.process.ModuleLoaded += ModuleLoaded;
 			this.process.ModuleUnloaded += ModuleUnloaded;
 		}
@@ -137,7 +139,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void ShowContextMenu()
 		{
-			// Don't show context menu as for usual AssemblyTreeNodes.
+			var assemblyModel = this.Model as IAssemblyModel;
+			if (assemblyModel != null) {
+				var ctx = MenuService.ShowContextMenu(null, assemblyModel, "/SharpDevelop/Services/DebuggerService/ModuleContextMenu");
+			}
 		}
 		
 		static IAssemblyModel CreateAssemblyModel(Module module)
@@ -149,6 +154,32 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				((IUpdateableAssemblyModel)model).Update(EmptyList<IUnresolvedTypeDefinition>.Instance, module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList());
 			}
 			return model;
+		}
+	}
+	
+	/// <summary>
+	/// RunAssemblyWithDebuggerCommand.
+	/// </summary>
+	class AddModuleToWorkspaceCommand : SimpleCommand
+	{
+		public override bool CanExecute(object parameter)
+		{
+			IAssemblyModel assemblyModel = parameter as IAssemblyModel;
+			return (assemblyModel != null) && assemblyModel.Context.IsValid;
+		}
+		
+		public override void Execute(object parameter)
+		{
+			var classBrowser = SD.GetService<IClassBrowser>();
+			var modelFactory = SD.GetService<IModelFactory>();
+			if ((classBrowser != null) && (modelFactory != null)) {
+				IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
+				
+				// Create a new copy of this assembly model
+				IAssemblyModel newAssemblyModel = modelFactory.SafelyCreateAssemblyModelFromFile(assemblyModel.Context.Location);
+				if (newAssemblyModel != null)
+					classBrowser.AssemblyList.Assemblies.Add(newAssemblyModel);
+			}
 		}
 	}
 }

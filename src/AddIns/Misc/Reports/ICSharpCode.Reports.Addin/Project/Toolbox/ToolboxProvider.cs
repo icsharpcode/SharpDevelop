@@ -149,7 +149,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		public static SharpDevelopSideBar ReportingSideBar {
 			get {
-				Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
+				SD.MainThread.VerifyAccess();
 				if (reportingSideBar == null) {
 					reportingSideBar = new SharpDevelopSideBar();
 					reportingSideBar.Tabs.Add(standardSideTab);

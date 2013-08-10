@@ -29,8 +29,41 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// This class displays the errors and warnings which the compiler outputs and
 	/// allows the user to jump to the source of the warning / error
 	/// </summary>
-	public class CompilerMessageView : AbstractPadContent, IClipboardHandler
+	public class CompilerMessageView : AbstractPadContent, IClipboardHandler, IOutputPad
 	{
+		#region IOutputPad implementation
+
+		IOutputCategory IOutputPad.CreateCategory(string displayName)
+		{
+			var cat = new MessageViewCategory(displayName, displayName);
+			AddCategory(cat);
+			return cat;
+		}
+
+		void IOutputPad.RemoveCategory(IOutputCategory category)
+		{
+			throw new NotImplementedException();
+		}
+
+		IOutputCategory IOutputPad.CurrentCategory {
+			get {
+				return this.SelectedMessageViewCategory;
+			}
+			set {
+				int index = messageCategories.IndexOf(value as MessageViewCategory);
+				if (index >= 0)
+					SelectedCategoryIndex = index;
+			}
+		}
+		
+		IOutputCategory IOutputPad.BuildCategory {
+			get {
+				return TaskService.BuildMessageViewCategory;
+			}
+		}
+
+		#endregion
+
 		static CompilerMessageView instance;
 		
 		/// <summary>

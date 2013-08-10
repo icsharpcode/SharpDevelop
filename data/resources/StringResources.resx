@@ -3910,6 +3910,12 @@ has been changed externally. Do you want to reload it?</value>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ReverseSearchStatusBarMessage" xml:space="preserve">
     <value>Reverse Incremental Search:</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyInvalid" xml:space="preserve">
+    <value>{0} is not a valid .NET assembly.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyNotAccessible" xml:space="preserve">
+    <value>{0} is not accessible or doesn't exist anymore.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.ErrorLoadingCodeCompletionInformation" xml:space="preserve">
     <value>Error loading code-completion information for ${Assembly} from ${Filename}:</value>
   </data>

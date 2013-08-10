@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.UnitTesting.Frameworks;
 
 namespace ICSharpCode.UnitTesting
@@ -34,7 +35,7 @@ namespace ICSharpCode.UnitTesting
 		#region UnitTestMessageView
 		MessageViewCategory unitTestMessageView;
 		
-		public MessageViewCategory UnitTestMessageView {
+		public IOutputCategory UnitTestMessageView {
 			get {
 				if (unitTestMessageView == null) {
 					MessageViewCategory.Create(ref unitTestMessageView,

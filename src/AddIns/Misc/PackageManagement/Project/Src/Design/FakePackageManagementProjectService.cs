@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public readonly SimpleModelCollection<IModelCollection<IProject>> ProjectCollections = new SimpleModelCollection<IModelCollection<IProject>>();
+		public readonly IMutableModelCollection<IModelCollection<IProject>> ProjectCollections = new NullSafeSimpleModelCollection<IModelCollection<IProject>>();
 		IModelCollection<IProject> allProjects;
 		
 		public IModelCollection<IProject> AllProjects {

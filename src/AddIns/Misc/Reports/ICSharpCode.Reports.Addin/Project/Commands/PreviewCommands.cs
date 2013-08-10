@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Reports.Addin.Commands
@@ -66,7 +67,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 		public override void Run()
 		{
 			base.Run();
-			WorkbenchSingleton.StatusBar.SetMessage("Connect...");
+			SD.StatusBar.SetMessage("Connect...");
 			base.ReportViewer.RunReport(base.Model,(ReportParameters)null);
 		}
 	}
@@ -84,7 +85,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 			DataSetFromXsdCommand cmd = new DataSetFromXsdCommand();
 			cmd.Run();
 			System.Data.DataSet ds = cmd.DataSet;
-			WorkbenchSingleton.StatusBar.SetMessage("Connect...");
+			SD.StatusBar.SetMessage("Connect...");
 			base.ReportViewer.RunReport(base.Model,ds.Tables[0],null);
 		}
 		

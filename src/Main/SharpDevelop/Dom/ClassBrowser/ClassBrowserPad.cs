@@ -220,54 +220,15 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			SD.PropertyService.SetList<PersistedWorkspace>(PersistedWorkspaceSetting, persistedWorkspaces);
 		}
 		
-		public static IAssemblyModel CreateAssemblyModelFromFile(string fileName)
-		{
-			try {
-				var loader = new CecilLoader();
-				loader.IncludeInternalMembers = true;
-				loader.LazyLoad = true;
-				var assembly = loader.LoadAssemblyFile(fileName);
-				
-				IEntityModelContext context = new AssemblyEntityModelContext(assembly);
-				IAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
-				if (model is IUpdateableAssemblyModel) {
-					((IUpdateableAssemblyModel)model).Update(EmptyList<IUnresolvedTypeDefinition>.Instance, assembly.TopLevelTypeDefinitions.ToList());
-					((IUpdateableAssemblyModel) model).AssemblyName = assembly.AssemblyName;
-				}
-				return model;
-			} catch (BadImageFormatException) {
-				SD.MessageService.ShowWarningFormatted("{0} is not a valid .NET assembly.", Path.GetFileName(fileName));
-			} catch (FileNotFoundException) {
-				SD.MessageService.ShowWarningFormatted("{0} is not accessible or doesn't exist anymore.", fileName);
-			}
-			
-			return null;
-		}
-		
-		static IAssemblyModel CreateAssemblyModelOrThrowException(string fileName)
-		{
-			var loader = new CecilLoader();
-			loader.IncludeInternalMembers = true;
-			loader.LazyLoad = true;
-			var assembly = loader.LoadAssemblyFile(fileName);
-			
-			IEntityModelContext context = new AssemblyEntityModelContext(assembly);
-			IAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
-			if (model is IUpdateableAssemblyModel) {
-				((IUpdateableAssemblyModel)model).Update(EmptyList<IUnresolvedTypeDefinition>.Instance, assembly.TopLevelTypeDefinitions.ToList());
-				((IUpdateableAssemblyModel) model).AssemblyName = assembly.AssemblyName;
-			}
-			return model;
-		}
-		
 		static IAssemblyModel SafelyCreateAssemblyModelFromFile(string fileName)
 		{
+			var modelFactory = SD.GetRequiredService<IModelFactory>();
 			try {
-				return CreateAssemblyModelOrThrowException(fileName);
+				return modelFactory.CreateAssemblyModelFromFile(fileName);
 			} catch (Exception) {
 				// Special AssemblyModel for unresolved file references
 				IEntityModelContext unresolvedContext = new UnresolvedAssemblyEntityModelContext(Path.GetFileName(fileName), fileName);
-				IAssemblyModel unresolvedModel = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(unresolvedContext);
+				IAssemblyModel unresolvedModel = modelFactory.CreateAssemblyModel(unresolvedContext);
 				if (unresolvedModel is IUpdateableAssemblyModel) {
 					((IUpdateableAssemblyModel) unresolvedModel).AssemblyName = unresolvedContext.AssemblyName;
 				}

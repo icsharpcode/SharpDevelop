@@ -23,6 +23,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private bool _isReadingPackages;
 		private bool _isExpandedinView;
 		private bool _showPackageSources;
+		private string _lastSelectedId;
 		
 		private ObservableCollection<PackageRepository> _packageRepositories;
 		
@@ -289,9 +290,11 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		protected void UpdatePackageViewModels(IEnumerable<AddInPackageViewModelBase> newPackageViewModels)
 		{
+			StoreSelection();
 			ClearPackages();
 			NuGet.CollectionExtensions.AddRange(AddInPackages, newPackageViewModels);
 			UpdateInstallationState();
+			RestoreSelection();
 		}
 		
 		protected void ClearPackages()
@@ -544,6 +547,23 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			// Update the list of package sources
 			UpdatePackageSources();
+		}
+		
+		private void StoreSelection()
+		{
+			AddInPackageViewModelBase selectedModel = AddInPackages.FirstOrDefault(m => m.IsSelected);
+			if (selectedModel != null) {
+				_lastSelectedId = selectedModel.Id;
+			}
+		}
+		
+		private void RestoreSelection()
+		{
+			AddInPackageViewModelBase modelToSelect = AddInPackages.FirstOrDefault(m => m.Id == _lastSelectedId);
+			if (modelToSelect != null) {
+				modelToSelect.IsSelected = true;
+			}
+			_lastSelectedId = null;
 		}
 	}
 }

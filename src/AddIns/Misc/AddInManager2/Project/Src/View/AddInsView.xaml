@@ -119,6 +119,10 @@
 			</Style.Triggers>-->
 		</Style>
 		
+		<Style x:Key="packageListBoxItemContainerStyle" TargetType="{x:Type ListBoxItem}">
+			<Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
+		</Style>
+		
 		<DataTemplate x:Key="PackageListBoxItemTemplate">
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -491,7 +495,7 @@
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
 					
-<!--				<TextBlock
+					<!--				<TextBlock
 						Grid.Row="0"
 						Grid.Column="0"
 						VerticalAlignment="Center"
@@ -550,8 +554,10 @@
 						x:Name="allPackagesListBox"
 						Grid.Row="0"
 						SelectedIndex="0"
+						IsSynchronizedWithCurrentItem="true"
 						ItemTemplate="{StaticResource PackageListBoxItemTemplate}"
 						ItemsSource="{Binding Path=AddInPackages}"
+						ItemContainerStyle="{StaticResource packageListBoxItemContainerStyle}"
 						HorizontalContentAlignment="Stretch"
 						ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
 					<ProgressBar

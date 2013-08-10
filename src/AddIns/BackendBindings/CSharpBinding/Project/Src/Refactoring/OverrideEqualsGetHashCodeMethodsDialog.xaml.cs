@@ -320,7 +320,7 @@ namespace CSharpBinding.Refactoring
 				method.Body.Add(new VariableDeclarationStatement(
 					currentType.Clone(),
 					"other",
-					new CastExpression(currentType.Clone(), new IdentifierExpression("obj"))));
+					new IdentifierExpression("obj").CastAs(currentType.Clone())));
 				method.Body.Add(new IfElseStatement(
 					new BinaryOperatorExpression(new IdentifierExpression("other"), BinaryOperatorType.Equality, new PrimitiveExpression(null, "null")),
 					new ReturnStatement(new PrimitiveExpression(false, "false"))));

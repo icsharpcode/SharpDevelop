@@ -35,7 +35,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AstNode : AbstractAnnotatable, ICSharpCode.NRefactory.TypeSystem.IFreezable, PatternMatching.INode
+	public abstract class AstNode : AbstractAnnotatable, ICSharpCode.NRefactory.TypeSystem.IFreezable, PatternMatching.INode, ICloneable
 	{
 		// the Root role must be available when creating the null nodes, so we can't put it in the Roles class
 		internal static readonly Role<AstNode> RootRole = new Role<AstNode> ("Root");
@@ -611,6 +611,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			copy.CloneAnnotations();
 			
 			return copy;
+		}
+		
+		object ICloneable.Clone()
+		{
+			return Clone();
 		}
 		
 		public abstract void AcceptVisitor (IAstVisitor visitor);

@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		int length;
 		TextLocation startLocation;
 		TextLocation endLocation;
-		HighlightedInlineBuilder builder;
+		RichText displayText;
 		HighlightingColor defaultTextColor;
 		
 		public FileName FileName {
@@ -35,10 +35,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public TextLocation EndLocation {
 			get { return endLocation; }
-		}
-		
-		public HighlightedInlineBuilder Builder {
-			get { return builder; }
 		}
 		
 		public HighlightingColor DefaultTextColor {
@@ -62,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			return pattern;
 		}
 		
-		public SearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor)
+		public SearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, RichText displayText, HighlightingColor defaultTextColor)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -71,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			this.endLocation = endLocation;
 			this.offset = offset;
 			this.length = length;
-			this.builder = builder;
+			this.displayText = displayText;
 			this.defaultTextColor = defaultTextColor;
 		}
 		
@@ -90,9 +86,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		/// <summary>
 		/// Gets a special text to display, or null to display the line's content.
 		/// </summary>
-		public virtual string DisplayText {
+		public RichText DisplayText {
 			get {
-				return null;
+				return displayText;
 			}
 		}
 		
@@ -104,29 +100,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		}
 	}
 	
-	public class SimpleSearchResultMatch : SearchResultMatch
-	{
-		string displayText;
-		
-		public override string DisplayText {
-			get {
-				return displayText;
-			}
-		}
-		
-		public SimpleSearchResultMatch(FileName fileName, TextLocation position, int offset, string displayText)
-			: base(fileName, position, position, offset, 0, null, null)
-		{
-			this.displayText = displayText;
-		}
-	}
-	
 	public class AvalonEditSearchResultMatch : SearchResultMatch
 	{
 		ICSharpCode.AvalonEdit.Search.ISearchResult match;
 		
-		public AvalonEditSearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor, ICSharpCode.AvalonEdit.Search.ISearchResult match)
-			: base(fileName, startLocation, endLocation, offset, length, builder, defaultTextColor)
+		public AvalonEditSearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, RichText richText, HighlightingColor defaultTextColor, ICSharpCode.AvalonEdit.Search.ISearchResult match)
+			: base(fileName, startLocation, endLocation, offset, length, richText, defaultTextColor)
 		{
 			this.match = match;
 		}

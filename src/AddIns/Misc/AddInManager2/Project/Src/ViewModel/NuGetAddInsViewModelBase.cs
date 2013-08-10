@@ -49,7 +49,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			IsReadingPackages = true;
 			HasError = false;
-			ClearPackages();
+//			ClearPackages();
 			CancelReadPackagesTask();
 			CreateReadPackagesTask();
 			_task.Start();

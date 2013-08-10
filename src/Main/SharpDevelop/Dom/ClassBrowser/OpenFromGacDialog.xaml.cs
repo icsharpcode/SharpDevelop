@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	/// <summary>
 	/// Interaction logic for OpenFromGacDialog.xaml
 	/// </summary>
-	public partial class OpenFromGacDialog : Window
+	internal partial class OpenFromGacDialog : Window
 	{
 		ObservableCollection<GacEntry> gacEntries = new ObservableCollection<GacEntry>();
 		ObservableCollection<GacEntry> filteredEntries = new ObservableCollection<GacEntry>();

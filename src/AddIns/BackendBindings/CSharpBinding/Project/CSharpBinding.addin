@@ -317,6 +317,7 @@
 		<Class class="CSharpBinding.Refactoring.MoveTypeToFileContextAction" />
 		<Class class="CSharpBinding.Refactoring.RenameFileToMatchTypeNameContextAction" />
 		<Class class="CSharpBinding.Refactoring.ParamRangeCheckContextAction" />
+		<Class class="CSharpBinding.Refactoring.ConvertInterfaceToAbstractClassContextAction" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
