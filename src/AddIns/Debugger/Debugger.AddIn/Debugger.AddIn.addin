@@ -165,7 +165,7 @@
 	
 	<Path name = "/SharpDevelop/Services/DebuggerService/ModuleContextMenu">
 		<MenuItem id = "AddModuleToWorkspace"
-		          label = "Add to workspace"
+		          label = "${res:MainWindow.Windows.ClassBrowser.AddToWorkspace}"
 		          icon = "Icons.16x16.AssemblyFromFile"
 		          class = "ICSharpCode.SharpDevelop.Gui.Pads.AddModuleToWorkspaceCommand"/>
 	</Path>
