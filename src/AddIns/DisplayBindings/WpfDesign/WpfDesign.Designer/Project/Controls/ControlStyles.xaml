@@ -16,7 +16,30 @@
 	</Style>
 	<Style TargetType="{x:Type Controls:EnumButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
 		<Setter Property="Margin" Value="3 3 0 3" />
-		<Setter Property="MinWidth" Value="50" />
+		<Setter Property="Foreground" Value="#FF000000"/>
+		<Setter Property="Padding" Value="0"/>
+		<Setter Property="BorderThickness" Value="1"/>
+		<Setter Property="BorderBrush" Value="Black"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ToggleButton">
+					<Grid>
+						<Border x:Name="Background" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
+							<Grid Background="{TemplateBinding Background}">
+								<Border Opacity="0"  x:Name="BackgroundAnimation" Background="#FF448DCA" />
+							</Grid>
+						</Border>
+						<ContentPresenter
+							x:Name="contentPresenter"
+							Content="{TemplateBinding Content}"
+							ContentTemplate="{TemplateBinding ContentTemplate}"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+							Margin="{TemplateBinding Padding}"/>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
 		<Style.Triggers>
 			<Trigger Property="IsChecked" Value="True">
 				<Setter Property="Background" Value="SkyBlue" />
