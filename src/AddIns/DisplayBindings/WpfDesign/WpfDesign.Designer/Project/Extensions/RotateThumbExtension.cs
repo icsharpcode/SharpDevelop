@@ -141,6 +141,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		protected override void OnInitialized()
 		{
+			if (this.ExtendedItem.Component is WindowClone)
+				return;
 			base.OnInitialized();
 			extendedItemArray[0] = this.ExtendedItem;
 			this.ExtendedItem.PropertyChanged += OnPropertyChanged;

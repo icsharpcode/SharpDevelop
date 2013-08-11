@@ -11,8 +11,8 @@
 				<ControlTemplate TargetType="{x:Type Designer:DesignSurface}">
 					<Controls:ZoomControl Background="#888" x:Name="PART_Zoom" MinimumZoom="0.025" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
 						<Controls:ZoomControl.AdditionalControls>
-							<StackPanel Orientation="Horizontal">
-								<Controls:EnumButton DataContext="{Binding ElementName=PART_DesignContent}" Margin="0" MinWidth="16" Height="16" Width="16" IsChecked="{Binding ElementName=PART_DesignContent, Path=Content.UseRasterPlacement, Mode=TwoWay}" ToolTip="Use Raster Placement">
+							<StackPanel Orientation="Horizontal" Margin="0">
+								<Controls:EnumButton BorderThickness="0" DataContext="{Binding ElementName=PART_DesignContent}" Margin="0" Height="16" Width="16" IsChecked="{Binding ElementName=PART_DesignContent, Path=Content.UseRasterPlacement, Mode=TwoWay}" ToolTip="Use Raster Placement">
 									<Controls:EnumButton.ContextMenu>
 										<ContextMenu DataContext="{Binding PlacementTarget.DataContext,RelativeSource={RelativeSource Self}}">
 											<StackPanel Orientation="Horizontal">
@@ -23,7 +23,7 @@
 									</Controls:EnumButton.ContextMenu>
 									<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.GridSnap.png" Stretch="Uniform" />
 								</Controls:EnumButton>
-								<Controls:EnumButton Margin="0" MinWidth="16" Height="16" Width="16" IsChecked="{Binding ElementName=PART_DesignContent, Path=Content.UseSnaplinePlacement, Mode=TwoWay}" ToolTip="Use Snapline Placement">
+								<Controls:EnumButton BorderThickness="0" Margin="0" Height="16" Width="16" IsChecked="{Binding ElementName=PART_DesignContent, Path=Content.UseSnaplinePlacement, Mode=TwoWay}" ToolTip="Use Snapline Placement">
 									<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.GuideSnap.png" Stretch="Uniform" />
 								</Controls:EnumButton>
 							</StackPanel>
