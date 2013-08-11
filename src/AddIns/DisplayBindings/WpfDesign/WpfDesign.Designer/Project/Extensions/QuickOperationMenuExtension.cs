@@ -57,6 +57,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					_menu.AddSubMenuInTheHeader(new MenuItem() {Header = "Edit Items"});
 				}
 				
+				if(view is Grid) {
+					_menu.AddSubMenuInTheHeader(new MenuItem() {Header = "Edit Rows"});
+					_menu.AddSubMenuInTheHeader(new MenuItem() {Header = "Edit Columns"});
+				}
+				
 				if (view is StackPanel) {
 					var ch = new MenuItem() {Header = "Change Orientation"};
 					_menu.AddSubMenuInTheHeader(ch);
@@ -105,6 +110,22 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 						var itemsControl=this.ExtendedItem.View as ItemsControl;
 						if (itemsControl != null)
 							editor.LoadItemsCollection(this.ExtendedItem);
+						editor.Show();
+					}
+					
+					if((string)clickedOn.Header=="Edit Rows") {
+						var editor = new FlatCollectionEditor();
+						var gd=this.ExtendedItem.View as Grid;
+						if (gd != null)
+							editor.LoadItemsCollection(this.ExtendedItem.Properties["RowDefinitions"]);
+						editor.Show();
+					}
+					
+					if((string)clickedOn.Header=="Edit Columns") {
+						var editor = new FlatCollectionEditor();
+						var gd=this.ExtendedItem.View as Grid;
+						if (gd != null)
+							editor.LoadItemsCollection(this.ExtendedItem.Properties["ColumnDefinitions"]);
 						editor.Show();
 					}
 					

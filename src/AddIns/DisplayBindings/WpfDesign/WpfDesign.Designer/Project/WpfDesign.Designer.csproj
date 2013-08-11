@@ -81,6 +81,10 @@
     </Compile>
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
     <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
+    <Compile Include="PropertyGrid\Editors\FlatCollectionEditor.xaml.cs">
+      <DependentUpon>FlatCollectionEditor.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Translations.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
@@ -238,6 +242,7 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="PropertyGrid\Editors\FlatCollectionEditor.xaml" />
     <Page Include="ThumbnailView\ThumbnailView.xaml" />
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
