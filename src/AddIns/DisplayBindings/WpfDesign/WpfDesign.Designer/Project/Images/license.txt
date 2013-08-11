@@ -12,6 +12,8 @@ Copied from the Fugue Icon Library and left unmodified:
     - Icons.16x16.Properties.SortAlphabet.png
     - Icons.16x16.WpfOutline.Eye.png
     - Icons.16x16.WpfOutline.EyeClosed.png
+    - Icons.16x16.GuideSnap.png
+    - Icons.16x16.GridSnap.png
 
 Copied from the Fugue Icon Library and modified or mashed up with other Fugue
 Icons or parts taken from them:
