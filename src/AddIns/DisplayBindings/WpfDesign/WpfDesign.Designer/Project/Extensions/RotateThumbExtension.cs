@@ -135,12 +135,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				rtTransform.Properties["Angle"].SetValue(destAngle);
 				this.angle = destAngle * Math.PI / 180.0;
 			}
+			
+			if (operation != null) {
+				var info = operation.PlacedItems[0];
+				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
+				operation.CurrentContainerBehavior.SetPosition(info);
+			}
 		}
 
 		#endregion
 		
 		protected override void OnInitialized()
 		{
+			if (this.ExtendedItem.Component is WindowClone)
+				return;
 			base.OnInitialized();
 			extendedItemArray[0] = this.ExtendedItem;
 			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
