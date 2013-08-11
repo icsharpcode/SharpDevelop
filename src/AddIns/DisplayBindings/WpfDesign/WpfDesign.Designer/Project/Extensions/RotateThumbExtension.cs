@@ -135,12 +135,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				rtTransform.Properties["Angle"].SetValue(destAngle);
 				this.angle = destAngle * Math.PI / 180.0;
 			}
-			
-			if (operation != null) {
-				var info = operation.PlacedItems[0];
-				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
-				operation.CurrentContainerBehavior.SetPosition(info);
-			}
 		}
 
 		#endregion
