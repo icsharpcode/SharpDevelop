@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
 using System.Windows;
@@ -77,9 +78,9 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 
 		void refreshList()
 		{
-			ListBox.ItemsSource = null;
-			ListBox.ItemsSource = _itemProperty.CollectionElements;
-			ListBox.Items.Refresh();
+			var sel = ListBox.SelectedItem;
+			ListBox.ItemsSource = new ObservableCollection<DesignItem>(_itemProperty.CollectionElements);
+			ListBox.SelectedItem = sel;
 		}
 		
 		private void OnMoveItemUpClicked(object sender, RoutedEventArgs e)
