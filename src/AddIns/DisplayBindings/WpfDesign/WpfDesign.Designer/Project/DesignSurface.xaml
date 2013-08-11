@@ -21,10 +21,10 @@
 											</StackPanel>
 										</ContextMenu>
 									</Controls:EnumButton.ContextMenu>
-									<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Raster.png" Stretch="Uniform" />
+									<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.GridSnap.png" Stretch="Uniform" />
 								</Controls:EnumButton>
 								<Controls:EnumButton BorderThickness="0" Margin="0" Height="16" Width="16" IsChecked="{Binding ElementName=PART_DesignContent, Path=Content.UseSnaplinePlacement, Mode=TwoWay}" ToolTip="Use Snapline Placement">
-									<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Snapline.png" Stretch="Uniform" />
+									<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.GuideSnap.png" Stretch="Uniform" />
 								</Controls:EnumButton>
 							</StackPanel>
 						</Controls:ZoomControl.AdditionalControls>
