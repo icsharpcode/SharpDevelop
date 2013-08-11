@@ -26,6 +26,9 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 			TypeMappings.Add(typeof(ListView),typeof(ListViewItem));
 			TypeMappings.Add(typeof(ComboBox),typeof(ComboBoxItem));
 			TypeMappings.Add(typeof(TreeView),typeof(TreeViewItem));
+			TypeMappings.Add(typeof(TabControl),typeof(TabItem));
+			TypeMappings.Add(typeof(ColumnDefinitionCollection),typeof(ColumnDefinition));
+			TypeMappings.Add(typeof(RowDefinitionCollection),typeof(RowDefinition));
 		}
 		
 		private DesignItem _item;
