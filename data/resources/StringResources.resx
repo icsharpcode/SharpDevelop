@@ -360,6 +360,12 @@ They will stop working after removing this AddIn! Are you sure you want to conti
   <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
     <value>SharpDevelop AddIns|*.sdaddin;*.addin|All files|*.*</value>
   </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleText" xml:space="preserve">
+    <value>Click here to see the updates.</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleTitle" xml:space="preserve">
+    <value>Updates for SharpDevelop are available</value>
+  </data>
   <data name="AddInManager2.Views.Available" xml:space="preserve">
     <value>Available</value>
   </data>
@@ -3904,6 +3910,12 @@ has been changed externally. Do you want to reload it?</value>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ReverseSearchStatusBarMessage" xml:space="preserve">
     <value>Reverse Incremental Search:</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyInvalid" xml:space="preserve">
+    <value>{0} is not a valid .NET assembly.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyNotAccessible" xml:space="preserve">
+    <value>{0} is not accessible or doesn't exist anymore.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.ErrorLoadingCodeCompletionInformation" xml:space="preserve">
     <value>Error loading code-completion information for ${Assembly} from ${Filename}:</value>
   </data>
@@ -4878,6 +4890,9 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   </data>
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Visual Studio Extension</value>
+  </data>
+  <data name="ICSharpCode.WpfDesign.AddIn.ThumbnailViewPad" xml:space="preserve">
+    <value>WPF Designer Thumbnail View</value>
   </data>
   <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
     <value>Copy</value>
@@ -6241,6 +6256,12 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName" xml:space="preserve">
     <value>Copy resource name</value>
     <comment>Context menu item; copies the name of the currently selcted resource item to the clipboard</comment>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.EditComment" xml:space="preserve">
+    <value>Edit comment</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.EditCommentText" xml:space="preserve">
+    <value>Enter the new text for the resource comment:</value>
   </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.Rename" xml:space="preserve">
     <value>&amp;Rename</value>

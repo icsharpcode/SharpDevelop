@@ -358,6 +358,12 @@ Deze stoppen met werken na verwijderen van deze AddIn.</value>
   <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
     <value>SharpDevelop AddIns|*.sdaddin;*.addin|Alle bestanden|*.*</value>
   </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleText" xml:space="preserve">
+    <value>Hier klikken om de updates te zien.</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleTitle" xml:space="preserve">
+    <value>Er zijn updates voor SharpDevelop beschikbaar.</value>
+  </data>
   <data name="AddInManager2.Views.Available" xml:space="preserve">
     <value>Beschikbaar</value>
   </data>
@@ -4608,6 +4614,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ICSharpCode.WixBinding.WixNetFxExtensionTitle" xml:space="preserve">
     <value>.NET Raamwerk uitbreiding</value>
   </data>
+  <data name="ICSharpCode.WixBinding.WixNotInstalled" xml:space="preserve">
+    <value>WiX is niet geïnstalleerd. Download a.u.b. WiX van http://wixtoolset.org/</value>
+  </data>
   <data name="ICSharpCode.WixBinding.WixPackageFilesDiffControl.NoDiffFound" xml:space="preserve">
     <value>Geen verschil gevonden.</value>
   </data>
@@ -5886,6 +5895,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ResourceEditor.ResourceCodeGeneratorTool.CouldNotGenerateResourceProperty" xml:space="preserve">
     <value>Hulpbron code generator: er kon geen eigenschap gegenereerd worden voor hulpbron '{0}',</value>
   </data>
+  <data name="ResourceEditor.ResourceEdit.CommentColumn" xml:space="preserve">
+    <value>Commentaar</value>
+  </data>
   <data name="ResourceEditor.ResourceEdit.ContentColumn" xml:space="preserve">
     <value>Inhoud</value>
   </data>
@@ -5897,6 +5909,12 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName" xml:space="preserve">
     <value>Kopieer naam van hulpbron</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.EditComment" xml:space="preserve">
+    <value>Commentaar redigeren</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.EditCommentText" xml:space="preserve">
+    <value>Voer de nieuwe tekst voor het hulpbron commentaar in:</value>
   </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.Rename" xml:space="preserve">
     <value>&amp;Hernoemen</value>

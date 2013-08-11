@@ -191,21 +191,21 @@
 							<StackPanel Orientation="Horizontal">
 								<StackPanel Margin="3" HorizontalAlignment="Left" Orientation="Horizontal">
 									<RadioButton Style="{StaticResource SelectedImageButton}" GroupName="SortMode" IsChecked="{Binding GroupMode, Converter={x:Static Converters:EnumBoolean.Instance}, ConverterParameter=GroupByPopularCategorys}" Margin="3,0,0,0" Width="20" Height="20">
-										<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/group.png" Stretch="None" />
+										<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.Properties.Categorized.png" Stretch="None" />
 									</RadioButton>
 									<!--<RadioButton Style="{StaticResource SelectedImageButton}" GroupName="SortMode" IsChecked="{Binding GroupMode, Converter={x:Static Converters:EnumBoolean.Instance}, ConverterParameter=GroupByCategorys}" Margin="3,0,0,0" Width="20" Height="20">
 										<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/group2.png" Stretch="None" />
 									</RadioButton>
 									<RadioButton Style="{StaticResource SelectedImageButton}" GroupName="SortMode" IsChecked="{Binding GroupMode, Converter={x:Static Converters:EnumBoolean.Instance}, ConverterParameter=Ungrouped}" Margin="3,0,0,0" Width="20" Height="20">
-										<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/sort.png" Stretch="None" />
+										<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.Properties.SortAlphabet.png" Stretch="None" />
 									</RadioButton>-->
 								</StackPanel>
 								<StackPanel Margin="3" HorizontalAlignment="Left" Orientation="Horizontal" Visibility="{Binding ShowPropertiesEventsSelector, Converter={x:Static Converters:CollapsedWhenFalse.Instance}, ElementName=root}">
 									<RadioButton Style="{StaticResource SelectedImageButton}" GroupName="ShowType" IsChecked="{Binding CurrentTab, Converter={x:Static Converters:EnumBoolean.Instance}, ConverterParameter=Properties}" Margin="3,0,0,0" Width="20" Height="20">
-										<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/properties.png" Stretch="None" />
+										<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.Properties.Properties.png" Stretch="None" />
 									</RadioButton>
 									<RadioButton Style="{StaticResource SelectedImageButton}" GroupName="ShowType" IsChecked="{Binding CurrentTab, Converter={x:Static Converters:EnumBoolean.Instance}, ConverterParameter=Events}" Margin="3,0,0,0" Width="20" Height="20">
-										<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/events.png" Stretch="None" />
+										<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.Properties.Events.png" Stretch="None" />
 									</RadioButton>
 								</StackPanel>
 							</StackPanel>
