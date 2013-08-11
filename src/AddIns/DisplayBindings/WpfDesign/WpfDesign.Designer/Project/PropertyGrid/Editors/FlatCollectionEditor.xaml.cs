@@ -63,8 +63,6 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 		{
 			DesignItem newItem = _componentService.RegisterComponentForDesigner(Activator.CreateInstance(_type));
 			_itemProperty.CollectionElements.Add(newItem);
-			
-			refreshList();
 		}
 
 		private void OnRemoveItemClicked(object sender, RoutedEventArgs e)
@@ -72,15 +70,6 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 			var selItem = ListBox.SelectedItem as DesignItem;
 			if (selItem != null)
 				_itemProperty.CollectionElements.Remove(selItem);
-			
-			refreshList();
-		}
-
-		void refreshList()
-		{
-			var sel = ListBox.SelectedItem;
-			ListBox.ItemsSource = new ObservableCollection<DesignItem>(_itemProperty.CollectionElements);
-			ListBox.SelectedItem = sel;
 		}
 		
 		private void OnMoveItemUpClicked(object sender, RoutedEventArgs e)
