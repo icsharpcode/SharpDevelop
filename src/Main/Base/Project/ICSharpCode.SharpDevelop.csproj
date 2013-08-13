@@ -86,6 +86,7 @@
     <Compile Include="Designer\TypeResolutionService.cs" />
     <Compile Include="Dom\ClassBrowser\AssemblyLoadErrorTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\AssemblyTreeNode.cs" />
+    <Compile Include="Dom\ClassBrowser\BaseTypesTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserTreeView.cs" />
     <Compile Include="Dom\ClassBrowser\IClassBrowser.cs" />
     <Compile Include="Dom\ClassBrowser\MemberTreeNode.cs" />

@@ -19,6 +19,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	sealed class TypeDefinitionModel : ITypeDefinitionModel
 	{
+		public event EventHandler Updated;
+		
 		readonly IEntityModelContext context;
 		readonly FullTypeName fullTypeName;
 		List<IUnresolvedTypeDefinition> parts = new List<IUnresolvedTypeDefinition>();
@@ -310,6 +312,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (nestedTypes != null) {
 				nestedTypes.Update(oldPart != null ? oldPart.NestedTypes : null, newPart != null ? newPart.NestedTypes : null);
+			}
+			if (Updated != null) {
+				Updated(this, new EventArgs());
 			}
 		}
 		#endregion

@@ -13,6 +13,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public interface ITypeDefinitionModel : IEntityModel
 	{
+		event EventHandler Updated;
+		
 		FullTypeName FullTypeName { get; }
 		string Namespace { get; }
 		TypeKind TypeKind { get; }

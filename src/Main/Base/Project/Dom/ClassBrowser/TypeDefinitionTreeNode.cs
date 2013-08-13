@@ -54,6 +54,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
+		protected override void LoadChildren()
+		{
+			base.LoadChildren();
+			var baseTypesTreeNode = new BaseTypesTreeNode(definition);
+			Children.Insert(0, baseTypesTreeNode);
+		}
+		
 		public override void ActivateItem(System.Windows.RoutedEventArgs e)
 		{
 			var target = definition.Resolve();

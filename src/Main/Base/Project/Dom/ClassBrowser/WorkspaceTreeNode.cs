@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Text {
 			get {
-				return "Workspace " + AssemblyList.Name;
+				return String.Format(SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.Workspace"), AssemblyList.Name);
 			}
 		}
 		
