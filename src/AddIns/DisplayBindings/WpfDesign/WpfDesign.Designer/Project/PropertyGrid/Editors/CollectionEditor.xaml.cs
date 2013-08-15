@@ -27,8 +27,6 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 			TypeMappings.Add(typeof(ComboBox),typeof(ComboBoxItem));
 			TypeMappings.Add(typeof(TreeView),typeof(TreeViewItem));
 			TypeMappings.Add(typeof(TabControl),typeof(TabItem));
-			TypeMappings.Add(typeof(ColumnDefinitionCollection),typeof(ColumnDefinition));
-			TypeMappings.Add(typeof(RowDefinitionCollection),typeof(RowDefinition));
 		}
 		
 		private DesignItem _item;
@@ -37,6 +35,8 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 		public CollectionEditor()
 		{
 			InitializeComponent();
+			
+			this.Owner = Application.Current.MainWindow;
 		}
 		
 		public void LoadItemsCollection(DesignItem item)
