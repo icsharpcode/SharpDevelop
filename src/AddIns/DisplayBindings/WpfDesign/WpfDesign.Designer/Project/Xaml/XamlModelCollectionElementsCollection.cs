@@ -7,14 +7,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
+using System.Collections.Specialized;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
-	sealed class XamlModelCollectionElementsCollection : IList<DesignItem>
+	sealed class XamlModelCollectionElementsCollection : IList<DesignItem>, INotifyCollectionChanged
 	{
 		readonly XamlModelProperty modelProperty;
 		readonly XamlProperty property;
 		readonly XamlDesignContext context;
+		
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		
 		public XamlModelCollectionElementsCollection(XamlModelProperty modelProperty, XamlProperty property)
 		{
@@ -45,6 +48,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			while (this.Count > 0) {
 				RemoveAt(this.Count - 1);
 			}
+			
+			if (CollectionChanged != null)
+				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 		
 		public bool Contains(DesignItem item)
@@ -77,7 +83,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			int index = IndexOf(item);
 			if (index < 0)
 				return false;
+			
 			RemoveAt(index);
+			
 			return true;
 		}
 		
@@ -151,11 +159,17 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			Debug.Assert(property.CollectionElements[index] == item.XamlObject);
 			property.CollectionElements.RemoveAt(index);
+			
+			if (CollectionChanged != null)
+				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
 		}
 		
 		void InsertInternal(int index, XamlDesignItem item)
 		{
 			property.CollectionElements.Insert(index, item.XamlObject);
+			
+			if (CollectionChanged != null)
+				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
 		}
 		
 		sealed class InsertAction : ITransactionItem
