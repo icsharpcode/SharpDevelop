@@ -128,5 +128,19 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
+		
+		[Test]
+		public void AddPackage_PackageRepositoryIsOperationAwareAndPackageAddedSuccessfully_UpdateOperationStartedForPackage()
+		{
+			CreateViewModel();
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			FakePackage fakePackage = viewModel.FakePackage;
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			
+			viewModel.AddPackage();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, "MyPackage");
+		}
 	}
 }

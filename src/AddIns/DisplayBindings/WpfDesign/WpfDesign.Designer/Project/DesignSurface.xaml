@@ -1,14 +1,38 @@
-﻿<UserControl x:Class="ICSharpCode.WpfDesign.Designer.DesignSurface"
-             xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:Default="clr-namespace:ICSharpCode.WpfDesign.Designer"
-             xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
-             DataContext="{x:Null}"
-             Background="#888">
-	<Controls:ZoomControl x:Name="uxZoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
-		<Default:DesignPanel x:Name="_designPanel">
-			<!-- Reset some inherited properties to the WPF defaults to avoid values from SharpDevelop applying to designed forms. -->
-			<Border x:Name="_sceneContainer" AllowDrop="False" UseLayoutRounding="False" TextOptions.TextFormattingMode="Ideal" />
-		</Default:DesignPanel>
-	</Controls:ZoomControl>
-</UserControl>
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:Default="clr-namespace:ICSharpCode.WpfDesign.Designer"
+	xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
+	xmlns:Designer="clr-namespace:ICSharpCode.WpfDesign.Designer"
+	xmlns:Widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	<Style TargetType="{x:Type Designer:DesignSurface}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Designer:DesignSurface}">
+					<Controls:ZoomControl Background="#888" x:Name="PART_Zoom" MinimumZoom="0.025" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+						<Controls:ZoomControl.AdditionalControls>
+							<StackPanel Orientation="Horizontal" Margin="0">
+								<Controls:EnumButton BorderThickness="0" DataContext="{Binding ElementName=PART_DesignContent}" Margin="0" Height="16" Width="16" IsChecked="{Binding ElementName=PART_DesignContent, Path=Content.UseRasterPlacement, Mode=TwoWay}" ToolTip="Use Raster Placement">
+									<Controls:EnumButton.ContextMenu>
+										<ContextMenu DataContext="{Binding PlacementTarget.DataContext,RelativeSource={RelativeSource Self}}">
+											<StackPanel Orientation="Horizontal">
+												<TextBlock Text="RasterWidth:" />
+												<Widgets:NumericUpDown Width="40" Margin="5,0,0,0" Value="{Binding Path=Content.RasterWidth, Mode=TwoWay}"/>
+											</StackPanel>
+										</ContextMenu>
+									</Controls:EnumButton.ContextMenu>
+									<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.GridSnap.png" Stretch="Uniform" />
+								</Controls:EnumButton>
+								<Controls:EnumButton BorderThickness="0" Margin="0" Height="16" Width="16" IsChecked="{Binding ElementName=PART_DesignContent, Path=Content.UseSnaplinePlacement, Mode=TwoWay}" ToolTip="Use Snapline Placement">
+									<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.GuideSnap.png" Stretch="Uniform" />
+								</Controls:EnumButton>
+							</StackPanel>
+						</Controls:ZoomControl.AdditionalControls>
+						
+						<ContentControl x:Name="PART_DesignContent" />
+					</Controls:ZoomControl>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+</ResourceDictionary>

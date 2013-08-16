@@ -21,12 +21,11 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 	{
 		public PropertyGrid()
 		{
-			Categories = new ObservableCollection<Category>(new [] {
-				specialCategory, 
-				popularCategory, 				
-				otherCategory,
-				attachedCategory
-			});
+			Categories = new CategoriesCollection();
+			Categories.Add(specialCategory);
+			Categories.Add(popularCategory);
+			Categories.Add(otherCategory);
+			Categories.Add(attachedCategory);
 
 			Events = new PropertyNodeCollection();
 		}
@@ -38,9 +37,27 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 		Dictionary<MemberDescriptor, PropertyNode> nodeFromDescriptor = new Dictionary<MemberDescriptor, PropertyNode>();
 
-		public ObservableCollection<Category> Categories { get; private set; }
+		public CategoriesCollection Categories { get; private set; }
 		public PropertyNodeCollection Events { get; private set; }
 
+		private PropertyGridGroupMode _groupMode;
+		
+		public PropertyGridGroupMode GroupMode
+		{
+			get { return _groupMode; }
+			set
+			{
+				if (_groupMode != value)
+				{
+					_groupMode = value;
+
+					RaisePropertyChanged("GroupMode");
+
+					Reload();
+				}
+			}
+		}
+		
 		PropertyGridTab currentTab;
 
 		public PropertyGridTab CurrentTab {
@@ -109,7 +126,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 					try {
 						if (string.IsNullOrEmpty(value)) {
 							OldName = null;
-							SingleItem.Properties["Name"].Reset();
+							SingleItem.Name = null;
 						} else {
 							OldName = SingleItem.Name;
 							SingleItem.Name = value;
@@ -226,7 +243,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 		void AddNode(MemberDescriptor md)
 		{
-			var designProperties = SelectedItems.Select(item => item.Properties[md.Name]).ToArray();
+			var designProperties = SelectedItems.Select(item => item.Properties.GetProperty(md)).ToArray();
 			if (!Metadata.IsBrowsable(designProperties[0])) return;
 
 			PropertyNode node;
@@ -252,7 +269,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		Category PickCategory(PropertyNode node)
 		{
 			if (Metadata.IsPopularProperty(node.FirstProperty)) return popularCategory;
-			if (node.FirstProperty.Name.Contains(".")) return attachedCategory;
+			if (node.FirstProperty.IsAttachedDependencyProperty()) return attachedCategory;
 			var typeName = node.FirstProperty.DeclaringType.FullName;
 			if (typeName.StartsWith("System.Windows.") || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls."))
 				return otherCategory;
@@ -286,6 +303,21 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		//        return i1.CompareTo(i2);
 		//    }
 		//}
+	}
+	
+	public class CategoriesCollection : SortedObservableCollection<Category, string>
+	{
+		public CategoriesCollection()
+			: base(n => n.Name)
+		{
+		}
+	}
+
+	public enum PropertyGridGroupMode
+	{
+		GroupByPopularCategorys,
+		GroupByCategorys,
+		Ungrouped,
 	}
 	
 	public enum PropertyGridTab

@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (fx != null)
 				UpdateAppConfig(fx);
 			if (Project.OutputType != OutputType.Library) {
-				if (DotnetDetection.IsDotnet45Installed()) {
+				if (DotnetDetection.IsDotnet45Installed() && fx.IsBasedOn(TargetFramework.Net45)) {
 					Project.SetProperty(null, Project.ActiveConfiguration.Platform, "Prefer32Bit", "True", PropertyStorageLocations.PlatformSpecific, true);
 				} else {
 					Project.SetProperty(null, Project.ActiveConfiguration.Platform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, true);

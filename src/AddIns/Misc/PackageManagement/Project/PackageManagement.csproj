@@ -150,6 +150,7 @@
     </Compile>
     <Compile Include="Src\FileConflictViewModel.cs" />
     <Compile Include="Src\IClassKindUpdater.cs" />
+    <Compile Include="Src\IPackageRepositoryFactoryEvents.cs" />
     <Compile Include="Src\IPackageViewModelParent.cs" />
     <Compile Include="Src\IUpdatePackagesAction.cs" />
     <Compile Include="Src\IPackageExtensions.cs" />
@@ -226,8 +227,11 @@
     <Compile Include="Src\ManagePackagesUserPrompts.cs" />
     <Compile Include="Src\ManagePackagesViewTitle.cs" />
     <Compile Include="Src\MSBuildBasedProjectExtensions.cs" />
+    <Compile Include="Src\IPackageFromRepositoryExtensions.cs" />
     <Compile Include="Src\PackageLicenseViewModel.cs" />
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
+    <Compile Include="Src\IPackageRepositoryExtensions.cs" />
+    <Compile Include="Src\PackageRepositoryFactoryEventArgs.cs" />
     <Compile Include="Src\ParentPackagesOperationEventArgs.cs" />
     <Compile Include="Src\ProjectBuilder.cs" />
     <Compile Include="Src\ProjectRootElementExtensions.cs" />
@@ -244,9 +248,11 @@
     <Compile Include="Src\Scripting\RunAllProjectPackageScriptsAction.cs" />
     <Compile Include="Src\ServiceWithWorkbenchOwner.cs" />
     <Compile Include="Src\SharpDevelopCredentialProvider.cs" />
+    <Compile Include="Src\SharpDevelopHttpUserAgent.cs" />
     <Compile Include="Src\UpdatePackagesAction.cs" />
     <Compile Include="Src\UpdatePackagesActionFactory.cs" />
     <Compile Include="Src\UpdateSolutionPackagesAction.cs" />
+    <Compile Include="Src\UserAgentGeneratorForRepositoryRequests.cs" />
     <Compile Include="Src\OpenMSBuildProjects.cs" />
     <Compile Include="Src\PackageActionRunner.cs" />
     <Compile Include="Src\PackageActionsToRun.cs" />

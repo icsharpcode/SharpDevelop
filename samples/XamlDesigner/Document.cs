@@ -206,7 +206,14 @@ namespace ICSharpCode.XamlDesigner
 		{
 			OutlineRoot = null;
 			using (var xmlReader = XmlReader.Create(new StringReader(Text))) {
-				DesignSurface.LoadDesigner(xmlReader, null);
+				XamlLoadSettings settings = new XamlLoadSettings();
+				foreach (var assNode in Toolbox.Instance.AssemblyNodes)
+				{
+					settings.DesignerAssemblies.Add(assNode.Assembly);
+				}
+				settings.TypeFinder = MyTypeFinder.Instance;
+				
+				DesignSurface.LoadDesigner(xmlReader, settings);
 			}
 			if (DesignContext.RootItem != null) {
 				OutlineRoot = OutlineNode.Create(DesignContext.RootItem);

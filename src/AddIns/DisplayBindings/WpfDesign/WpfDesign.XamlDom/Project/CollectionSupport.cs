@@ -68,10 +68,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			} else if (collectionInstance is ResourceDictionary) {
 				object val = newElement.GetValueFor(null);
 				object key = newElement is XamlObject ? ((XamlObject)newElement).GetXamlAttribute("Key") : null;
-				if (key == null) {
-					if (val is Style)
-						key = ((Style)val).TargetType;
-				}
+				//if (key == null || key == "") {
+				//	if (val is Style)
+				//		key = ((Style)val).TargetType;
+				//}
+				if (key == null || key == "")
+					key = val;
 				((ResourceDictionary)collectionInstance).Add(key, val);
 			} else {
 				collectionType.InvokeMember(
@@ -92,6 +94,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				null, collectionInstance,
 				new object[] { index, newElement.GetValueFor(null) },
 				CultureInfo.InvariantCulture);
+		}
+		
+		/// <summary>
+		/// Adds a value at the specified index in the collection. A return value indicates whether the Insert succeeded.
+		/// </summary>
+		/// <returns>True if the Insert succeeded, false if the collection type does not support Insert.</returns>
+		internal static bool TryInsert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
+		{
+			try {
+				Insert(collectionType, collectionInstance, newElement, index);
+			} catch (MissingMethodException) {
+				return false;
+			}
+			
+			return true;
 		}
 		
 		static readonly Type[] RemoveAtParameters = { typeof(int) };

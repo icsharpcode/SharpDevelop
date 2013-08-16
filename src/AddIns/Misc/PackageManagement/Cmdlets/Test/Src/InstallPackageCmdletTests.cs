@@ -291,5 +291,20 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			fakeConsoleHost.AssertFileConflictResolverIsDisposed();
 		}
+		
+		[Test]
+		public void ProcessRecord_SourceRepositoryIsOperationAware_InstallOperationStartedForPackageAndDisposed()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakeConsoleHost.FakeProject.FakeSourceRepository = operationAwareRepository;
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			
+			RunCmdlet();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "Test");
+		}
 	}
 }

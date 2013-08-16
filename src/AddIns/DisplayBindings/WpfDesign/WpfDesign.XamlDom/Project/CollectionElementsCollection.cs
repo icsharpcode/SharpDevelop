@@ -51,7 +51,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			XamlPropertyInfo info = property.propertyInfo;
 			object collection = info.GetValue(property.ParentObject.Instance);
-			CollectionSupport.Insert(info.ReturnType, collection, item, index);
+			if (!CollectionSupport.TryInsert(info.ReturnType, collection, item, index)) {
+				CollectionSupport.AddToCollection(info.ReturnType, collection, item);
+			}
 			
 			item.ParentProperty = property;
 			property.InsertNodeInCollection(item.GetNodeForCollection(), index);

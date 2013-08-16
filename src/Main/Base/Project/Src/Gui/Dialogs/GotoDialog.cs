@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -312,7 +313,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						foreach (IUnresolvedTypeDefinition c in projectContent.GetAllTypeDefinitions()) {
 							string className = c.Name;
 							if (className.Length >= text.Length) {
-								if (className.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0) {
+								if (GotoUtils.AutoCompleteWithCamelHumpsMatch(className, text)) {
 									list.Add(c);
 								}
 							}
@@ -322,7 +323,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			return list;
 		}
-		
+
 		const int MatchType_NoMatch = -1;
 		const int MatchType_ContainsMatch_CaseInsensitive = 0;
 		const int MatchType_ContainsMatch = 1;
@@ -336,8 +337,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (itemText.Length < searchText.Length)
 				return MatchType_NoMatch;
 			int indexInsensitive = itemText.IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
-			if (indexInsensitive < 0)
+			if (indexInsensitive < 0) {
+				if (GotoUtils.AutoCompleteWithCamelHumpsMatch(itemText, searchText)) {
+					return MatchType_ContainsMatch_CaseInsensitive;
+				}
 				return MatchType_NoMatch;
+			}
 			// This is a case insensitive match
 			int indexSensitive = itemText.IndexOf(searchText, StringComparison.Ordinal);
 			if (itemText.Length == searchText.Length) {
@@ -438,6 +443,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} finally {
 				Close();
 			}
+		}
+	}
+	
+	public class GotoUtils
+	{
+		public static bool AutoCompleteWithCamelHumpsMatch(string entityName, string entityPartName)
+		{
+			string camelHumpsPrefix = new string(entityName.Where(Char.IsUpper).ToArray());
+			return AutoCompleteMatch(entityName, entityPartName) || AutoCompleteMatch(camelHumpsPrefix, entityPartName);
+		}
+		
+		public static bool AutoCompleteMatch(string entityName, string entityPartName)
+		{
+			return entityName.IndexOf(entityPartName, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 	}
 }

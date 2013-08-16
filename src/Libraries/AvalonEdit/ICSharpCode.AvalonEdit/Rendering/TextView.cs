@@ -1166,7 +1166,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					}
 				}
 			}
-			InvalidateCursor();
+			InvalidateCursorIfMouseWithinTextView();
 			
 			return finalSize;
 		}
@@ -1635,6 +1635,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 							Mouse.UpdateCursor();
 						}));
 			}
+		}
+		
+		internal void InvalidateCursorIfMouseWithinTextView()
+		{
+			// Don't unnecessarily call Mouse.UpdateCursor() if the mouse is outside the text view.
+			// Unnecessary updates may cause the mouse pointer to flicker
+			// (e.g. if it is over a window border, it blinks between Resize and Normal)
+			if (this.IsMouseOver)
+				InvalidateCursor();
 		}
 		
 		/// <inheritdoc/>

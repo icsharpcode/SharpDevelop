@@ -84,9 +84,17 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void TryUpdatingAllPackages()
 		{
-			var factory = new UpdatePackagesActionFactory(logger, packageManagementEvents);
-			IUpdatePackagesAction action = factory.CreateAction(selectedProjects, GetPackagesFromViewModels());
-			ActionRunner.Run(action);
+			List<IPackageFromRepository> packages = GetPackagesFromViewModels().ToList();
+			using (IDisposable operation = StartUpdateOperation(packages.First())) {
+				var factory = new UpdatePackagesActionFactory(logger, packageManagementEvents);
+				IUpdatePackagesAction action = factory.CreateAction(selectedProjects, packages);
+				ActionRunner.Run(action);
+			}
+		}
+		
+		IDisposable StartUpdateOperation(IPackageFromRepository package)
+		{
+			return package.Repository.StartUpdateOperation();
 		}
 		
 		IEnumerable<IPackageFromRepository> GetPackagesFromViewModels()
