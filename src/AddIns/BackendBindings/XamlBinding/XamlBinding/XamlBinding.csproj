@@ -91,7 +91,6 @@
     </Compile>
     <Compile Include="MarkupExtensionTokenKind.cs">
     </Compile>
-    <Compile Include="NodeWrapper.cs" />
     <Compile Include="Options\CodeCompletion.xaml.cs">
       <DependentUpon>CodeCompletion.xaml</DependentUpon>
       <SubType>Code</SubType>

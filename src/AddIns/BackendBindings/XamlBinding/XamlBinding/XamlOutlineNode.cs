@@ -11,7 +11,8 @@ using ICSharpCode.TreeView;
 
 namespace ICSharpCode.XamlBinding
 {
-	class XamlOutlineNode : SharpTreeNode {
+	class XamlOutlineNode : SharpTreeNode
+	{
 		string elementName, name;
 		
 		public string ElementName {
