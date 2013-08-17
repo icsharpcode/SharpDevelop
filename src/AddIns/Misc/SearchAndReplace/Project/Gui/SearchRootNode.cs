@@ -18,7 +18,7 @@ namespace SearchAndReplace
 		ObservableCollection<SearchResultNode> resultNodes;
 		ObservableCollection<SearchFileNode> fileNodes;
 		ObservableCollection<SearchProjectNode> projectNodes;
-		ObservableCollection<SearchFileNode> projectAndFileNodes;
+		ObservableCollection<SearchProjectNode> projectAndFileNodes;
 		
 		public string Title { get; private set; }
 		public bool WasCancelled { get; set; }
@@ -33,7 +33,11 @@ namespace SearchAndReplace
 			);
 			this.projectNodes = new ObservableCollection<SearchProjectNode>(
 				resultNodes.GroupBy(r => SD.ProjectService.FindProjectContainingFile(r.FileName))
-				.Select(g => new SearchProjectNode(g.Key, g.ToList()))
+				.Select(g => new SearchProjectNode(g.Key, g.OfType<SearchNode>().ToList()))
+			);
+			this.projectAndFileNodes = new ObservableCollection<SearchProjectNode>(
+				resultNodes.GroupBy(r => SD.ProjectService.FindProjectContainingFile(r.FileName))
+				.Select(g => new SearchProjectNode(g.Key, g.GroupBy(r => r.FileName).Select(g2 => new SearchFileNode(g2.Key, g2.ToList())).OfType<SearchNode>().ToList()))
 			);
 			this.IsExpanded = true;
 		}
@@ -45,10 +49,23 @@ namespace SearchAndReplace
 			this.fileNodes.Add(new SearchFileNode(searchedFile.FileName, results));
 			foreach (var g in results.GroupBy(r => SD.ProjectService.FindProjectContainingFile(r.FileName))) {
 				var p = projectNodes.FirstOrDefault(n => n.Project == g.Key);
+				var p2 = projectAndFileNodes.FirstOrDefault(n => n.Project == g.Key);
 				if (p == null) {
-					projectNodes.Add(new SearchProjectNode(g.Key, g.ToList()));
+					projectNodes.Add(new SearchProjectNode(g.Key, g.OfType<SearchNode>().ToList()));
 				} else {
 					p.Children = new List<SearchNode>(p.Children.Concat(g.AsEnumerable()));
+				}
+				if (p2 == null) {
+					projectAndFileNodes.Add(new SearchProjectNode(g.Key, g.GroupBy(r => r.FileName).Select(g2 => new SearchFileNode(g2.Key, g2.ToList())).OfType<SearchNode>().ToList()));
+				} else {
+					var f = p2.Children.OfType<SearchFileNode>().FirstOrDefault(n => n.FileName == searchedFile.FileName);
+					if (f == null) {
+						var list = new List<SearchNode>(p2.Children);
+						list.Add(new SearchFileNode(searchedFile.FileName, g.ToList()));
+						p2.Children = list;
+					} else {
+						f.Children = new List<SearchNode>(f.Children.Concat(g.AsEnumerable()));
+					}
 				}
 			}
 			InvalidateText();

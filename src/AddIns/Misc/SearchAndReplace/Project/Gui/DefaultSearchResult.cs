@@ -82,10 +82,15 @@ namespace SearchAndReplace
 				perProjectItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.PerProject"));
 				perProjectItem.Click += delegate { SetResultGrouping(SearchResultGroupingKind.PerProject); };
 				
+				MenuItem perProjectAndFileItem = new MenuItem();
+				perProjectAndFileItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.PerProjectAndFile"));
+				perProjectAndFileItem.Click += delegate { SetResultGrouping(SearchResultGroupingKind.PerProjectAndFile); };
+				
 				perFileDropDown.DropDownMenu = new ContextMenu();
 				perFileDropDown.DropDownMenu.Items.Add(flatItem);
 				perFileDropDown.DropDownMenu.Items.Add(perFileItem);
 				perFileDropDown.DropDownMenu.Items.Add(perProjectItem);
+				perFileDropDown.DropDownMenu.Items.Add(perProjectAndFileItem);
 				toolbarItems.Add(perFileDropDown);
 				toolbarItems.Add(new Separator());
 				

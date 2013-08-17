@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -16,7 +17,7 @@ namespace SearchAndReplace
 	{
 		public FileName FileName { get; private set; }
 		
-		public SearchFileNode(FileName fileName, System.Collections.Generic.List<SearchResultNode> resultNodes)
+		public SearchFileNode(FileName fileName, IList<SearchResultNode> resultNodes)
 		{
 			this.FileName = fileName;
 			this.Children = resultNodes;
@@ -43,7 +44,7 @@ namespace SearchAndReplace
 	{
 		public IProject Project { get; private set; }
 		
-		public SearchProjectNode(IProject project, System.Collections.Generic.List<SearchResultNode> resultNodes)
+		public SearchProjectNode(IProject project, IList<SearchNode> resultNodes)
 		{
 			this.Project = project;
 			this.Children = resultNodes;
