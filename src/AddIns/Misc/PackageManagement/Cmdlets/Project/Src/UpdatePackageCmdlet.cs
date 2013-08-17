@@ -189,7 +189,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		PackageReference CreatePackageReference()
 		{
-			return new PackageReference(Id, Version, null, null);
+			return new PackageReference(Id, Version, null, null, false, false);
 		}
 	}
 }

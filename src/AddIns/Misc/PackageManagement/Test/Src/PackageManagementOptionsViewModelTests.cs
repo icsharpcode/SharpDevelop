@@ -24,7 +24,7 @@ namespace PackageManagement.Tests
 		
 		void CreateRecentRepository()
 		{
-			fakeRecentRepository = new FakeRecentPackageRepository();			
+			fakeRecentRepository = new FakeRecentPackageRepository();
 		}
 		
 		void CreateMachineCache()
@@ -42,6 +42,11 @@ namespace PackageManagement.Tests
 		void EnablePackageRestoreInOptions()
 		{
 			fakeSettings.SetPackageRestoreSetting(true);
+		}
+		
+		void DisablePackageRestoreInOptions()
+		{
+			fakeSettings.SetPackageRestoreSetting(false);
 		}
 		
 		void CreateViewModelUsingCreatedMachineCache()
@@ -313,9 +318,21 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void IsPackageRestoreEnabled_NotSet_ReturnsTrue()
+		{
+			CreateOptions();
+			CreateViewModel(options);
+			
+			bool result = viewModel.IsPackageRestoreEnabled;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
 		public void IsPackageRestoreEnabled_FalseInOptions_ReturnsFalse()
 		{
 			CreateOptions();
+			DisablePackageRestoreInOptions();
 			CreateViewModel(options);
 			
 			bool result = viewModel.IsPackageRestoreEnabled;

@@ -702,7 +702,7 @@
             Description
             ------------------------------------------------------------------
             Updates every package in the project, MvcApplication1, to the latest "safe" version. For example,
-            For example, if version 1.0.0 of a package is installed, and versions 1.0.1, 1.0.2, and 1.1 are
+            if version 1.0.0 of a package is installed, and versions 1.0.1, 1.0.2, and 1.1 are
             available in the feed, the -Safe flag updates the package to 1.0.2.
           </maml:para>
           <maml:para></maml:para>
