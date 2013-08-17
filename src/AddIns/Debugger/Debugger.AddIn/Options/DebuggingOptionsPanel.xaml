@@ -22,7 +22,7 @@
 				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.PauseOnHandledExceptions}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
-		<GroupBox Margin="5" Header="{sd:Localize Gloabl.Advanced}">
+		<GroupBox Margin="5" Header="{sd:Localize Global.Advanced}">
 			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
 				<!--
 				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue}"
