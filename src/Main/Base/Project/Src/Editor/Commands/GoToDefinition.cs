@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			ambience.ConversionFlags = ConversionFlags.ShowDeclaringType | ConversionFlags.ShowTypeParameterList;
 			return new ContextActionViewModel {
 				Action = new GoToDomRegionAction(entity.Region),
-				Image = CompletionImage.GetImage(entity),
+				Image = IconService.GetImageSource(IconService.GetImageForFile(entity.Region.FileName)),
 				Comment = string.Format("(in {0})", Path.GetDirectoryName(entity.Region.FileName)),
 				ChildActions = null
 			};
