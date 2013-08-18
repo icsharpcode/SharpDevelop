@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -21,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
-		protected virtual void OnPropertyChanged(string propertyName)
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = "")
 		{
 			if (PropertyChanged != null) {
 				PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
@@ -35,10 +36,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			set {
 				if (assemblyList != value) {
 					assemblyList = value;
-					OnPropertyChanged("AssemblyList");
+					OnPropertyChanged();
 				}
 			}
 		}
+		
 		public WorkspaceModel()
 		{
 			this.specialNodes = new SimpleModelCollection<SharpTreeNode>();

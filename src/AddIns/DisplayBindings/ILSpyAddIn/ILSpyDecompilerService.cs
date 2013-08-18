@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
@@ -19,7 +21,7 @@ namespace ICSharpCode.ILSpyAddIn
 	/// <summary>
 	/// Description of DecompilerService.
 	/// </summary>
-	public class ILSpyDecompilerService
+	public static class ILSpyDecompilerService
 	{
 		public static ILSpyUnresolvedFile DecompileType(DecompiledTypeReference name)
 		{

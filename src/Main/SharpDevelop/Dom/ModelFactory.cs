@@ -8,7 +8,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	sealed class ModelFactory : IModelFactory
 	{
-		public IAssemblyModel CreateAssemblyModel(IEntityModelContext context)
+		public IUpdateableAssemblyModel CreateAssemblyModel(IEntityModelContext context)
 		{
 			return new AssemblyModel(context);
 		}

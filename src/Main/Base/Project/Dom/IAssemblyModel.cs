@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -47,6 +49,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets the <see cref="IEntityModelContext"/> of this assembly model.
 		/// </summary>
 		IEntityModelContext Context { get; }
+		
+		/// <summary>
+		/// Returns the assembly references.
+		/// </summary>
+		IReadOnlyList<DomAssemblyName> References { get; }
 	}
 	
 	/// <summary>
@@ -102,6 +109,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return null;
 			}
+		}
+		
+		public IReadOnlyList<DomAssemblyName> References {
+			get { return EmptyList<DomAssemblyName>.Instance; }
 		}
 	}
 }

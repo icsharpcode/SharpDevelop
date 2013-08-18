@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
@@ -41,5 +43,34 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// May return <c>null</c> if on-disk caching is disabled.
 		/// </summary>
 		string DomPersistencePath { get; }
+		
+		/// <summary>
+		/// Creates a compilation for the specified assembly.
+		/// </summary>
+		ICompilation CreateCompilationForAssembly(IAssemblyModel assembly);
+	}
+	
+	public interface IAssemblySearcher
+	{
+		FileName FindAssembly(DomAssemblyName fullName);
+	}
+	
+	public class DefaultAssemblySearcher : IAssemblySearcher
+	{
+		FileName mainAssemblyFileName;
+		DirectoryName baseDirectory;
+		
+		public DefaultAssemblySearcher(FileName mainAssemblyFileName)
+		{
+			if (mainAssemblyFileName == null)
+				throw new ArgumentNullException("mainAssemblyFileName");
+			this.mainAssemblyFileName = mainAssemblyFileName;
+			this.baseDirectory = mainAssemblyFileName.GetParentDirectory();
+		}
+		
+		public FileName FindAssembly(DomAssemblyName fullName)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

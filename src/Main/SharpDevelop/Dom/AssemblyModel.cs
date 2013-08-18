@@ -129,5 +129,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					d.Dispose();
 			}
 		}
+		
+		public IReadOnlyList<DomAssemblyName> References {
+			get { throw new NotImplementedException(); }
+		}
 	}	
 }

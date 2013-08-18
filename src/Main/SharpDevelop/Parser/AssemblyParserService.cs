@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,9 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop.Dom;
 using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Parser
@@ -305,5 +308,19 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		#endregion
+		
+		public ICompilation CreateCompilationForAssembly(IAssemblyModel assembly)
+		{
+			var mainAssembly = GetAssembly(new FileName(assembly.Context.Location));
+			var references = assembly.References
+				.Select(r => FindAssembly(r, assembly))
+				.Where(f => f != null);
+			return new SimpleCompilation(mainAssembly, references.Select(fn => GetAssembly(fn)));
+		}
+		
+		FileName FindAssembly(DomAssemblyName name, IAssemblyModel mainAssembly)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

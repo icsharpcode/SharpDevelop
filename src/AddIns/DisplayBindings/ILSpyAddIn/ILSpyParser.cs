@@ -13,6 +13,8 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -65,6 +67,11 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public ICompilation CreateCompilationForSingleFile(FileName fileName, IUnresolvedFile unresolvedFile)
 		{
+			DecompiledTypeReference reference = DecompiledTypeReference.FromFileName(fileName);
+			if (reference != null) {
+//				var model = SD.GetService<IClassBrowser>().FindAssemblyModel(reference.AssemblyFile);
+//				return SD.AssemblyParserService.CreateCompilationForAssembly(model);
+			}
 			return new CSharpProjectContent()
 				.AddAssemblyReferences(defaultReferences.Value)
 				.AddOrUpdateFiles(unresolvedFile)
