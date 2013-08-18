@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -249,7 +250,7 @@ namespace ICSharpCode.Core.Presentation
 		{
 			string old = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			string text = KeyCodeConversion.KeyToUnicode(kg.Key.ToKeys());
-			if (text != null) {
+			if (text != null && !text.Any(ch => char.IsWhiteSpace(ch))) {
 				if ((kg.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt)
 					text = "Alt+" + text;
 				if ((kg.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
