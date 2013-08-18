@@ -71,20 +71,36 @@ namespace SearchAndReplace
 				perFileDropDown.SetValueToExtension(DropDownButton.ToolTipProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip"));
 				
 				MenuItem flatItem = new MenuItem();
+				flatItem.IsCheckable = true;
 				flatItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.Flat"));
-				flatItem.Click += delegate { SetResultGrouping(); };
+				flatItem.Click += delegate {
+					SetResultGrouping();
+					SetCheckedItem(flatItem, perFileDropDown.DropDownMenu);
+				};
 				
 				MenuItem perFileItem = new MenuItem();
+				perFileItem.IsCheckable = true;
 				perFileItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.PerFile"));
-				perFileItem.Click += delegate { SetResultGrouping(SearchResultGroupingKind.PerFile); };
+				perFileItem.Click += delegate {
+					SetResultGrouping(SearchResultGroupingKind.PerFile);
+					SetCheckedItem(perFileItem, perFileDropDown.DropDownMenu);
+				};
 				
 				MenuItem perProjectItem = new MenuItem();
+				perProjectItem.IsCheckable = true;
 				perProjectItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.PerProject"));
-				perProjectItem.Click += delegate { SetResultGrouping(SearchResultGroupingKind.PerProject); };
+				perProjectItem.Click += delegate {
+					SetResultGrouping(SearchResultGroupingKind.PerProject);
+					SetCheckedItem(perProjectItem, perFileDropDown.DropDownMenu);
+				};
 				
 				MenuItem perProjectAndFileItem = new MenuItem();
+				perProjectAndFileItem.IsCheckable = true;
 				perProjectAndFileItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.PerProjectAndFile"));
-				perProjectAndFileItem.Click += delegate { SetResultGrouping(SearchResultGroupingKind.PerProjectAndFile); };
+				perProjectAndFileItem.Click += delegate {
+					SetResultGrouping(SearchResultGroupingKind.PerProjectAndFile);
+					SetCheckedItem(perProjectAndFileItem, perFileDropDown.DropDownMenu);
+				};
 				
 				perFileDropDown.DropDownMenu = new ContextMenu();
 				perFileDropDown.DropDownMenu.Items.Add(flatItem);
@@ -107,6 +123,14 @@ namespace SearchAndReplace
 				toolbarItems.Add(collapseAll);
 			}
 			return toolbarItems;
+		}
+		
+		static void SetCheckedItem(MenuItem newTarget, ContextMenu menu)
+		{
+			foreach (var item in menu.Items.OfType<MenuItem>()) {
+				item.IsChecked = false;
+			}
+			newTarget.IsChecked = true;
 		}
 		
 		static void ExpandCollapseAll(bool newIsExpanded)
