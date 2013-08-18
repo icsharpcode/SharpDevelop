@@ -45,7 +45,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <inheritdoc />
 		public void ShowContextActionsPopup(ContextActionsPopupViewModel viewModel)
 		{
-			new ContextActionsPopup { Actions = viewModel }.OpenAtCaretAndFocus();
+			new ContextActionsPopup { Actions = viewModel }.OpenAtCursorAndFocus();
 		}
 	}
 }

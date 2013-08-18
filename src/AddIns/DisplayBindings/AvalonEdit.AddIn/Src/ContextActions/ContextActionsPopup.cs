@@ -68,6 +68,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			this.Focus();
 		}
 		
+		public void OpenAtCursorAndFocus()
+		{
+			this.Placement = PlacementMode.MousePoint;
+			this.IsOpen = true;
+			this.Focus();
+		}
+		
 		public static void SetPosition(Popup popup, ITextEditor editor, int line, int column, bool openAtWordStart = false)
 		{
 			var editorUIService = editor == null ? null : editor.GetService(typeof(IEditorUIService)) as IEditorUIService;
