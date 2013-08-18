@@ -822,7 +822,7 @@ namespace ICSharpCode.NRefactory.Xml
 		#endregion
 		
 		#region Helper functions
-		static bool IsValidName(string name)
+		internal static bool IsValidName(string name)
 		{
 			try {
 				System.Xml.XmlConvert.VerifyName(name);
