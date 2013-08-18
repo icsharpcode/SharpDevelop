@@ -287,7 +287,7 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
     <value>View License Terms</value>
   </data>
   <data name="AddInManager2.DisableDependentWarning" xml:space="preserve">
-    <value>Following installed AddIns are dependent from "{0}":
+    <value>Following installed AddIns are depending on "{0}":
 
 {1}
 
@@ -351,7 +351,7 @@ If you do not agree to the license terms click "I Decline".</value>
     <value>Repositories</value>
   </data>
   <data name="AddInManager2.RemoveDependentWarning" xml:space="preserve">
-    <value>Following installed AddIns are dependent from "{0}":
+    <value>Following installed AddIns are depending on "{0}":
 
 {1}
 
@@ -2958,14 +2958,14 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Source</value>
   </data>
-  <data name="Gloabl.Advanced" xml:space="preserve">
-    <value>Advanced</value>
-  </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Abort</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Add</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Advanced</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Back</value>
@@ -6492,6 +6492,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="SharpDevelop.Refactoring.OverridesOf" xml:space="preserve">
     <value>Overrides of ${Name}</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.PartsOfClass" xml:space="preserve">
+    <value>Parts of ${Name}</value>
   </data>
   <data name="SharpDevelop.Refactoring.ReferencesTo" xml:space="preserve">
     <value>References to ${Name}</value>

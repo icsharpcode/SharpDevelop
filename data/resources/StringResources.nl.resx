@@ -2879,14 +2879,14 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Bron</value>
   </data>
-  <data name="Gloabl.Advanced" xml:space="preserve">
-    <value>Uitgebreid</value>
-  </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Afbreken</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Toevoegen</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Uitgebreid</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Terug</value>
