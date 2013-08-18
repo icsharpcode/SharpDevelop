@@ -184,7 +184,7 @@ namespace Debugger
 			foreach (Process process in this.Processes) {
 				foreach(Module module in process.Modules) {
 					breakpoint.SetBreakpoint(module);
-				}				
+				}
 			}
 		}
 		
@@ -251,7 +251,7 @@ namespace Debugger
 		{
 			// Detach all processes.
 			foreach(Process process in this.Processes) {
-				if (process == null || process.HasExited) 
+				if (process == null || process.HasExited)
 					continue;
 				process.Detach();
 			}
@@ -266,9 +266,9 @@ namespace Debugger
 					// this option overrides the others
 					return false;
 				}
-				if (systemStartOptions.Contains("/debug") || 
-				    systemStartOptions.Contains("/crashdebug") || 
-				    systemStartOptions.Contains("/debugport") || 
+				if (systemStartOptions.Contains("/debug") ||
+				    systemStartOptions.Contains("/crashdebug") ||
+				    systemStartOptions.Contains("/debugport") ||
 				    systemStartOptions.Contains("/baudrate")) {
 					return true;
 				} else {
@@ -287,7 +287,7 @@ namespace Debugger
 				if (!isPaused)
 					process.Break();
 
-				// We need to be paused for this				
+				// We need to be paused for this
 				foreach(Module module in process.Modules) {
 					module.LoadSymbolsFromDisk(this.Options.SymbolsSearchPaths);
 					module.ResetJustMyCode();
@@ -343,6 +343,18 @@ namespace Debugger
 		{
 			this.Process = module.Process;
 			this.Module = module;
+		}
+	}
+	
+	[Serializable]
+	public class AppDomainEventArgs: DebuggerEventArgs
+	{
+		public AppDomain AppDomain { get; private set; }
+		
+		public AppDomainEventArgs(AppDomain appDomain)
+		{
+			this.Process = appDomain.Process;
+			this.AppDomain = appDomain;
 		}
 	}
 	
