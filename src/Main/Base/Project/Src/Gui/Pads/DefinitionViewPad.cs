@@ -123,8 +123,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (pos.Equals(oldPosition)) return;
 			oldPosition = pos;
-			if (pos.FileName != currentFileName)
-				LoadFile(new FileName(pos.FileName));
+			var fileName = new FileName(pos.FileName);
+			if (fileName != currentFileName)
+				LoadFile(fileName);
 			ctl.TextArea.Caret.Location = pos.Begin;
 			Rect r = ctl.TextArea.Caret.CalculateCaretRectangle();
 			if (!r.IsEmpty) {
