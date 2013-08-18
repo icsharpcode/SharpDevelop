@@ -6,10 +6,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Editor.ContextActions;
 
 namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
@@ -44,9 +43,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			set { this.Child = value; }
 		}
 		
-		public ContextActionsViewModel Actions
+		public ContextActionsPopupViewModel Actions
 		{
-			get { return (ContextActionsViewModel)ActionsControl.DataContext; }
+			get { return (ContextActionsPopupViewModel)ActionsControl.DataContext; }
 			set {
 				ActionsControl.DataContext = value;
 			}

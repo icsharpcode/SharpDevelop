@@ -5,12 +5,12 @@ using System;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 
-namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
+namespace ICSharpCode.SharpDevelop.Editor.ContextActions
 {
 	/// <summary>
-	/// Description of ContextActionsViewModel.
+	/// ViewModel for a ContextActionsPopup.
 	/// </summary>
-	public class ContextActionsViewModel
+	public class ContextActionsPopupViewModel
 	{
 		public ImageSource Image { get; set; }
 		

@@ -131,6 +131,8 @@
     <Compile Include="Editor\Bookmarks\SDBookmark.cs" />
     <Compile Include="Editor\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Editor\CodeCompletion\SnippetCompletionData.cs" />
+    <Compile Include="Editor\ContextActions\ContextActionsPopupViewModel.cs" />
+    <Compile Include="Editor\ContextActions\ContextActionViewModel.cs" />
     <Compile Include="Editor\DocumentServiceAttribute.cs" />
     <Compile Include="Editor\DocumentUtilities.cs" />
     <Compile Include="Editor\IBracketSearcher.cs" />
@@ -833,6 +835,7 @@
   <ItemGroup>
     <Folder Include="Designer" />
     <Folder Include="Dom\ClassBrowser" />
+    <Folder Include="Editor\ContextActions" />
     <Folder Include="Src\Editor\Dialogs" />
     <Folder Include="Templates" />
     <Folder Include="Project\Configuration" />
