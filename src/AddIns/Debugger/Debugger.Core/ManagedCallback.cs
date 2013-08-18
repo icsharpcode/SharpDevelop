@@ -98,6 +98,7 @@ namespace Debugger
 				process.AsyncContinue(DebuggeeStateAction.Keep);
 			} else if (process.Evaluating) {
 				// Ignore events during property evaluation
+				pausedEventArgs = null;
 				process.AsyncContinue(DebuggeeStateAction.Keep);
 			} else if (pauseOnNextExit) {
 				// process.TraceMessage("Callback exit: Paused");
