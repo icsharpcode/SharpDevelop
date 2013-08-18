@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -23,6 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			this.definition.Updated += (sender, e) => UpdateBaseTypes();
 			this.text = SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.BaseTypes");
 			baseTypes = new SimpleModelCollection<ITypeDefinitionModel>();
+			UpdateBaseTypes();
 		}
 
 		protected override IModelCollection<object> ModelChildren {
@@ -31,10 +33,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
-		protected override void LoadChildren()
+		public bool HasBaseTypes()
 		{
-			UpdateBaseTypes();
-			base.LoadChildren();
+			return baseTypes.Count > 0;
 		}
 		
 		void UpdateBaseTypes()
