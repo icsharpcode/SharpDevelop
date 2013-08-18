@@ -243,7 +243,9 @@
     </Compile>
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\BooleanTypeConverter.cs" />
     <Compile Include="Src\Gui\Components\SideBar\TextEditorSideBar.cs" />
-    <Compile Include="Src\Gui\Components\StringListEditorDialog.xaml.cs" />
+    <Compile Include="Src\Gui\Components\StringListEditorDialog.xaml.cs">
+      <DependentUpon>StringListEditorDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Components\StringListEditorXaml.xaml.cs">
       <DependentUpon>StringListEditorXaml.xaml</DependentUpon>
       <SubType>Code</SubType>
