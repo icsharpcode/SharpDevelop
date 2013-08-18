@@ -12,12 +12,12 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	/// </summary>
 	public class WorkspaceModel : System.ComponentModel.INotifyPropertyChanged
 	{
-		IMutableModelCollection<SharpTreeNode> specialNodes;
-		public IMutableModelCollection<SharpTreeNode> SpecialNodes {
-			get { return specialNodes; }
+		IMutableModelCollection<IAssemblyList> assemblyLists;
+		public IMutableModelCollection<IAssemblyList> AssemblyLists {
+			get { return assemblyLists; }
 		}
 		
-		AssemblyList assemblyList;
+		IAssemblyList mainAssemblyList;
 
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
@@ -28,21 +28,21 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 
-		public AssemblyList AssemblyList {
+		public IAssemblyList MainAssemblyList {
 			get {
-				return assemblyList;
+				return mainAssemblyList;
 			}
 			set {
-				if (assemblyList != value) {
-					assemblyList = value;
+				if (mainAssemblyList != value) {
+					mainAssemblyList = value;
 					OnPropertyChanged("AssemblyList");
 				}
 			}
 		}
 		public WorkspaceModel()
 		{
-			this.specialNodes = new SimpleModelCollection<SharpTreeNode>();
-			this.AssemblyList = new AssemblyList();
+			this.assemblyLists = new SimpleModelCollection<IAssemblyList>();
+			this.MainAssemblyList = new AssemblyList();
 		}
 	}
 }

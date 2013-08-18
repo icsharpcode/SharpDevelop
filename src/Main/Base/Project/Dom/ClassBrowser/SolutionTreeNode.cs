@@ -12,11 +12,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		ISolution solution;
 		
-		public SolutionTreeNode(ISolution solution)
+		public SolutionTreeNode(ISolutionAssemblyList solutionAssemblyList)
 		{
-			if (solution == null)
-				throw new ArgumentNullException("solution");
-			this.solution = solution;
+			if (solutionAssemblyList == null)
+				throw new ArgumentNullException("solutionAssemblyList");
+			this.solution = solutionAssemblyList.Solution;
 		}
 		
 		protected override object GetModel()

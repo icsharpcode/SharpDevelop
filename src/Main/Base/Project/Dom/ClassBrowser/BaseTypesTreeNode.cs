@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				// Try to get model from ClassBrowser's assembly list
 				var classBrowser = SD.GetService<IClassBrowser>();
 				if (classBrowser != null) {
-					foreach (var assemblyModel in classBrowser.AssemblyList.Assemblies) {
+					foreach (var assemblyModel in classBrowser.MainAssemblyList.Assemblies) {
 						model = assemblyModel.TopLevelTypeDefinitions[definition.FullTypeName];
 						if (model != null) {
 							return model;

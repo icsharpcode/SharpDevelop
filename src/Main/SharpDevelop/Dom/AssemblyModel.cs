@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
@@ -53,6 +54,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IEntityModelContext Context {
 			get {
 				return context;
+			}
+		}
+		
+		public FileName Location {
+			get {
+				if (context != null) {
+					return new FileName(context.Location);
+				}
+				return null;
 			}
 		}
 		

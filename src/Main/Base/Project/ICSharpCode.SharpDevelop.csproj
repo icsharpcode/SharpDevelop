@@ -96,6 +96,7 @@
     <Compile Include="Dom\ClassBrowser\TypeDefinitionTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\WorkspaceModel.cs" />
     <Compile Include="Dom\ClassBrowser\WorkspaceTreeNode.cs" />
+    <Compile Include="Dom\IAssemblyList.cs" />
     <Compile Include="Dom\IAssemblyModel.cs" />
     <Compile Include="Dom\IEntityModelContext.cs" />
     <Compile Include="Dom\IEventModel.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Dom\IModelFactory.cs" />
     <Compile Include="Dom\INamespaceModel.cs" />
     <Compile Include="Dom\IPropertyModel.cs" />
+    <Compile Include="Dom\ISolutionAssemblyList.cs" />
     <Compile Include="Dom\ISymbolModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModelCollection.cs" />

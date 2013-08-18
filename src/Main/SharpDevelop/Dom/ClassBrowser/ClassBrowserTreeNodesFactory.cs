@@ -11,8 +11,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		public Type GetSupportedType(object model)
 		{
-			if (model is ISolution)
-				return typeof(ISolution);
+			if (model is ISolutionAssemblyList)
+				return typeof(ISolutionAssemblyList);
 			if (model is IProject)
 				return typeof(IProject);
 			if (model is INamespaceModel)
@@ -28,8 +28,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public SharpTreeNode CreateTreeNode(object model)
 		{
-			if (model is ISolution)
-				return new SolutionTreeNode((ISolution)model);
+			if (model is ISolutionAssemblyList)
+				return new SolutionTreeNode((ISolutionAssemblyList)model);
 			if (model is IProject)
 				return new ProjectTreeNode((IProject)model);
 			if (model is INamespaceModel)

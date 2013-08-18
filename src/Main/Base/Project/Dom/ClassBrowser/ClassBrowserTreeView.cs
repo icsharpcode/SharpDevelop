@@ -12,11 +12,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		#region IClassBrowser implementation
 
-		public ICollection<SharpTreeNode> SpecialNodes {
-			get { return ((WorkspaceTreeNode)Root).SpecialNodes; }
+		public ICollection<IAssemblyList> AssemblyLists {
+			get { return ((WorkspaceTreeNode)Root).AssemblyLists; }
 		}
 
-		public AssemblyList AssemblyList {
+		public IAssemblyList MainAssemblyList {
 			get { return ((WorkspaceTreeNode)Root).AssemblyList; }
 			set { ((WorkspaceTreeNode)Root).AssemblyList = value; }
 		}
@@ -27,11 +27,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			WorkspaceTreeNode root = new WorkspaceTreeNode();
 			ClassBrowserTreeView instance = this;
-			root.SpecialNodes.CollectionChanged += delegate {
-				instance.ShowRoot = root.Children.Count > 1;
+			root.AssemblyLists.CollectionChanged += delegate {
+				instance.ShowRoot = root.AssemblyLists.Count > 0;
 			};
 			root.PropertyChanged += delegate {
-				instance.ShowRoot = root.Children.Count > 1;
+				instance.ShowRoot = root.AssemblyLists.Count > 0;
 			};
 			this.Root = root;
 		}

@@ -21,17 +21,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public static void Attach(Debugger.Process process)
 		{
 			var classBrowser = SD.GetService<IClassBrowser>();
-			classBrowser.SpecialNodes.Add(new DebuggerProcessTreeNode(process));
+			classBrowser.AssemblyLists.Add(new DebuggerProcessAssemblyList(process));
 		}
 		
 		public static void Detach(Debugger.Process process)
 		{
 			var classBrowser = SD.GetService<IClassBrowser>();
-			var nodes = classBrowser.SpecialNodes
-				.Where(n => n.Model == process)
+			var nodes = classBrowser.AssemblyLists
+				.OfType<DebuggerProcessAssemblyList>()
+				.Where(n => n.Process == process)
 				.ToArray();
 			foreach (var node in nodes) {
-				classBrowser.SpecialNodes.Remove(node);
+				classBrowser.AssemblyLists.Remove(node);
 			}
 		}
 	}
@@ -40,49 +41,89 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	{
 		public Type GetSupportedType(object model)
 		{
-			if (model is Debugger.Process)
-				return typeof(Debugger.Process);
-			if (model is Debugger.Module)
-				return typeof(Debugger.Module);
+			if (model is DebuggerProcessAssemblyList)
+				return typeof(DebuggerProcessAssemblyList);
+			if (model is DebuggerModuleModel)
+				return typeof(DebuggerModuleModel);
 			return null;
 		}
 		
 		public ICSharpCode.TreeView.SharpTreeNode CreateTreeNode(object model)
 		{
-			if (model is Debugger.Process)
-				return new DebuggerProcessTreeNode((Debugger.Process)model);
-			if (model is Debugger.Module)
-				return new DebuggerModuleTreeNode((Debugger.Module)model);
+			if (model is DebuggerProcessAssemblyList)
+				return new DebuggerProcessTreeNode((DebuggerProcessAssemblyList)model);
+			if (model is DebuggerModuleModel)
+				return new DebuggerModuleTreeNode((DebuggerModuleModel)model);
 			return null;
 		}
 	}
 	
-	class DebuggerProcessTreeNode : ModelCollectionTreeNode
+	class DebuggerProcessAssemblyList : IAssemblyList
 	{
 		Debugger.Process process;
-		IMutableModelCollection<Debugger.Module> modules;
-		
-		public DebuggerProcessTreeNode(Debugger.Process process)
+		IMutableModelCollection<DebuggerModuleModel> moduleModels;
+
+		public DebuggerProcessAssemblyList(Debugger.Process process)
 		{
 			if (process == null)
 				throw new ArgumentNullException("process");
 			this.process = process;
-			this.modules = new NullSafeSimpleModelCollection<Debugger.Module>();
-			this.modules.AddRange(this.process.Modules);
+			this.moduleModels = new NullSafeSimpleModelCollection<DebuggerModuleModel>();
+			this.moduleModels.AddRange(this.process.Modules.Select(m => new DebuggerModuleModel(m)));
+			this.Assemblies = new NullSafeSimpleModelCollection<IAssemblyModel>();
+			this.Assemblies.AddRange(moduleModels.Select(mm => mm.AssemblyModel));
 			this.process.ModuleLoaded += ModuleLoaded;
 			this.process.ModuleUnloaded += ModuleUnloaded;
 		}
 		
 		void ModuleLoaded(object sender, ModuleEventArgs e)
 		{
-			modules.Add(e.Module);
+			DebuggerModuleModel model = new DebuggerModuleModel(e.Module);
+			moduleModels.Add(model);
+			Assemblies.Add(model.AssemblyModel);
 		}
 		
 		void ModuleUnloaded(object sender, ModuleEventArgs e)
 		{
-			modules.Remove(e.Module);
+			DebuggerModuleModel deletedModel = moduleModels.FirstOrDefault(mm => mm.Module == e.Module);
+			if (deletedModel != null) {
+				moduleModels.Remove(deletedModel);
+				Assemblies.Remove(deletedModel.AssemblyModel);
+			}
+		}
+
+		public string Name { get; set; }
+		
+		public IMutableModelCollection<IAssemblyModel> Assemblies { get; set; }
+		
+		public IMutableModelCollection<DebuggerModuleModel> ModuleModels
+		{
+			get {
+				return moduleModels;
+			}
 		}
 		
+		public Debugger.Process Process
+		{
+			get {
+				return process;
+			}
+		}
+	}
+	
+	class DebuggerProcessTreeNode : ModelCollectionTreeNode
+	{
+		Debugger.Process process;
+		DebuggerProcessAssemblyList assemblyList;
+		
+		public DebuggerProcessTreeNode(DebuggerProcessAssemblyList assemblyList)
+		{
+			if (assemblyList == null)
+				throw new ArgumentNullException("assemblyList");
+			this.assemblyList = assemblyList;
+			this.process = assemblyList.Process;
+		}
+
 		protected override object GetModel()
 		{
 			return process;
@@ -90,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override IModelCollection<object> ModelChildren {
 			get {
-				return modules;
+				return assemblyList.ModuleModels;
 			}
 		}
 		
@@ -113,16 +154,53 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 	}
 	
-	class DebuggerModuleTreeNode : AssemblyTreeNode
+	class DebuggerModuleModel
 	{
-		Debugger.Module module;
+		Module module;
+		IAssemblyModel assemblyModel;
 		
-		public DebuggerModuleTreeNode(Module module)
-			: base(CreateAssemblyModel(module))
+		public DebuggerModuleModel(Module module)
 		{
 			if (module == null)
 				throw new ArgumentNullException("module");
 			this.module = module;
+			this.assemblyModel = CreateAssemblyModel(module);
+		}
+		
+		public Module Module
+		{
+			get {
+				return module;
+			}
+		}
+		
+		public IAssemblyModel AssemblyModel
+		{
+			get {
+				return assemblyModel;
+			}
+		}
+		
+		static IAssemblyModel CreateAssemblyModel(Module module)
+		{
+			// references??
+			IEntityModelContext context = new AssemblyEntityModelContext(module.Assembly.UnresolvedAssembly);
+			IAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
+			if (model is IUpdateableAssemblyModel) {
+				((IUpdateableAssemblyModel)model).Update(EmptyList<IUnresolvedTypeDefinition>.Instance, module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList());
+			}
+			return model;
+		}
+	}
+	
+	class DebuggerModuleTreeNode : AssemblyTreeNode
+	{
+		Debugger.Module module;
+		
+		public DebuggerModuleTreeNode(DebuggerModuleModel model)
+			: base(model.AssemblyModel)
+		{
+			this.module = model.Module;
 		}
 		
 		public override object Icon {
@@ -144,21 +222,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				var ctx = MenuService.ShowContextMenu(null, assemblyModel, "/SharpDevelop/Services/DebuggerService/ModuleContextMenu");
 			}
 		}
-		
-		static IAssemblyModel CreateAssemblyModel(Module module)
-		{
-			// references??
-			IEntityModelContext context = new AssemblyEntityModelContext(module.Assembly.UnresolvedAssembly);
-			IAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
-			if (model is IUpdateableAssemblyModel) {
-				((IUpdateableAssemblyModel)model).Update(EmptyList<IUnresolvedTypeDefinition>.Instance, module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList());
-			}
-			return model;
-		}
 	}
 	
 	/// <summary>
-	/// RunAssemblyWithDebuggerCommand.
+	/// AddModuleToWorkspaceCommand.
 	/// </summary>
 	class AddModuleToWorkspaceCommand : SimpleCommand
 	{
@@ -178,7 +245,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				// Create a new copy of this assembly model
 				IAssemblyModel newAssemblyModel = modelFactory.SafelyCreateAssemblyModelFromFile(assemblyModel.Context.Location);
 				if (newAssemblyModel != null)
-					classBrowser.AssemblyList.Assemblies.Add(newAssemblyModel);
+					classBrowser.MainAssemblyList.Assemblies.Add(newAssemblyModel);
 			}
 		}
 	}
