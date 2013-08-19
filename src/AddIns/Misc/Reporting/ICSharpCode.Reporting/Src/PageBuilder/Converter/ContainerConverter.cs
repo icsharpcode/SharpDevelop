@@ -41,13 +41,13 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 
 		
 		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,
-		                                               IExportContainer exportContainer,
+		                                              
 		                                               Point position){
-Console.WriteLine("CreateConvertedList {0}",reportContainer.Name);
+//Console.WriteLine("CreateConvertedList {0}",reportContainer.Name);
 			var itemsList = new List<IExportColumn>();
 			foreach (var item in reportContainer.Items) {
 				var exportColumn = ExportColumnFactory.CreateItem(item);
-				exportColumn.Parent = exportContainer;
+//				exportColumn.Parent = exportContainer;
 				exportColumn.Location = new Point(item.Location.X,item.Location.Y + position.Y);
 				itemsList.Add(exportColumn);
 			}

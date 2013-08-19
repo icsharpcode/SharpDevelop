@@ -15,7 +15,6 @@ using System.Windows.Markup;
 
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter
@@ -25,18 +24,12 @@ namespace ICSharpCode.Reporting.Exporter
 	/// </summary>
 	public class WpfExporter:BaseExporter
 	{
-		
-
 		WpfVisitor visitor;
-		ReportSettings reportSettings;
 		FixedPage fixedPage;
 		
-		public WpfExporter(ReportSettings reportSettings,Collection<ExportPage> pages):base(pages)
+		public WpfExporter(Collection<ExportPage> pages):base(pages)
 		{
-			if (reportSettings == null)
-				throw new ArgumentNullException("reportSettings");
-			this.reportSettings = reportSettings;
-			visitor = new WpfVisitor(reportSettings);
+			visitor = new WpfVisitor();
 		}
 		
 

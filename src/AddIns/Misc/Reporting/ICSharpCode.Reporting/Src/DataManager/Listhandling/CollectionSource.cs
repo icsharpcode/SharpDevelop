@@ -141,6 +141,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			item.DBValue = String.Empty;
 			var p = listProperties.Find(item.ColumnName,true);
 			item.DBValue = p.GetValue(Current).ToString();
+			Console.WriteLine("Fill {0}",item.DBValue);
 			if (String.IsNullOrEmpty(item.DataType)) {
 				item.DataType = p.PropertyType.ToString();
 			}

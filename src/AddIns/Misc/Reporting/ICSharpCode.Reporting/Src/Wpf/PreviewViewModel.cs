@@ -9,14 +9,10 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Documents;
 using System.Windows.Markup;
 
-using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter;
-using ICSharpCode.Reporting.ExportRenderer;
-using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -39,7 +35,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 			
 			Document = CreateFixedDocument(reportSettings);
 			
-			var wpfExporter = new WpfExporter(reportSettings,pages);
+			var wpfExporter = new WpfExporter(pages);
 			wpfExporter.Run();
 			this.document = wpfExporter.Document;
 		}

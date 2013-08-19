@@ -9,8 +9,6 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reporting.Arrange;
-using ICSharpCode.Reporting.BaseClasses;
-using ICSharpCode.Reporting.Exporter;
 
 namespace ICSharpCode.Reporting.Interfaces.Export
 {

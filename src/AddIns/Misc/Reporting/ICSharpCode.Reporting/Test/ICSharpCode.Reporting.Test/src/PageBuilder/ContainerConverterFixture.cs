@@ -35,7 +35,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		{
 			var converter = new ContainerConverter(graphics,new Point(30,30));
 			var result = converter.Convert(container);
-			var list = converter.CreateConvertedList(container,result,new Point(30,30));
+			var list = converter.CreateConvertedList(container,new Point(30,30));
 			result.ExportedItems.AddRange(list);
 			Assert.That(result.ExportedItems.Count,Is.EqualTo(2));
 		}

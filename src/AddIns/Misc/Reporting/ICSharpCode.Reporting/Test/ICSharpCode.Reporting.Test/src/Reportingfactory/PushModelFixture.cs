@@ -50,14 +50,14 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		
 		
 		[Test]
-		public void LastPageContains_3_Sections()
+		public void LastPageContains_4_Sections()
 		{
 			reportCreator.BuildExportList();
 			var exporteditems = reportCreator.Pages[1].ExportedItems;
 			var sections = from s in exporteditems
 				where s.GetType() == typeof(ExportContainer)
 				select s;
-			Assert.That(sections.ToList().Count,Is.EqualTo(3));
+			Assert.That(sections.ToList().Count,Is.EqualTo(4));
 		}
 	
 		
@@ -70,7 +70,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 				select s;
 			var section = sections.ToList()[2] as ExportContainer;
 			var result = section.ExportedItems[0];
-			Assert.That(result,Is.AssignableFrom(typeof(ExportContainer)));
+			Assert.That(result,Is.AssignableFrom(typeof(ExportText)));
 		}
 		
 		

@@ -14,7 +14,6 @@ using System.Windows.Media;
 
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using Brush = System.Windows.Media.Brush;
 using FontFamily = System.Windows.Media.FontFamily;
@@ -29,15 +28,12 @@ namespace ICSharpCode.Reporting.ExportRenderer
 	class FixedDocumentCreator
 	{
 		BrushConverter brushConverter ;
-		ReportSettings reportSettings;
 		
-		public FixedDocumentCreator(ReportSettings reportSettings)
+		public FixedDocumentCreator()
 		{
-			if (reportSettings == null)
-				throw new ArgumentNullException("reportSettings");
-			this.reportSettings = reportSettings;
 			brushConverter = new BrushConverter();
 		}
+		
 		
 		public UIElement CreateFixedPage(ExportPage exportPage) {
 			var fixedPage = new FixedPage();
@@ -47,6 +43,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			return fixedPage;
 		}
 			
+		
 		public  UIElement CreateContainer(ExportContainer container)
 		{
 			var canvas = CreateCanvas(container);
@@ -62,6 +59,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			return canvas;
 			
 		}
+		
 		
 		public TextBlock CreateTextBlock(ExportText exportText)
 		{

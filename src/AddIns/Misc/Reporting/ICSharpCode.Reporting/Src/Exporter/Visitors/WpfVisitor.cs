@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 
 using ICSharpCode.Reporting.ExportRenderer;
-using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
@@ -22,14 +21,10 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	internal class WpfVisitor: AbstractVisitor
 	{
 		private readonly FixedDocumentCreator documentCreator;
-		private readonly  ReportSettings reportSettings;
 		
-		public WpfVisitor(ReportSettings reportSettings)
+		public WpfVisitor()
 		{
-			if (reportSettings == null)
-				throw new ArgumentNullException("reportSettings");
-			this.reportSettings = reportSettings;
-			documentCreator = new FixedDocumentCreator(reportSettings);
+			documentCreator = new FixedDocumentCreator();
 		}
 		
 		
