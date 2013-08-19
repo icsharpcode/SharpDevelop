@@ -6,12 +6,14 @@ using System.Linq;
 using System.Windows;
 
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.XamlBinding
 {
-	class XamlOutlineNode : SharpTreeNode {
+	class XamlOutlineNode : SharpTreeNode
+	{
 		string elementName, name;
 		
 		public string ElementName {
@@ -106,6 +108,10 @@ namespace ICSharpCode.XamlBinding
 		
 		public override object Text {
 			get { return (!string.IsNullOrEmpty(Name) ? ElementName + " (" + Name + ")" : ElementName); }
+		}
+		
+		public override object Icon {
+			get { return SD.ResourceService.GetImageSource("Icons.16x16.HtmlElements.Element"); }
 		}
 	}
 }

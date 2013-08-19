@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Windows.Media.Animation;
@@ -78,7 +79,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			if (designPanel != null && grayOut == null && optionService != null && optionService.GrayOutDesignSurfaceExceptParentContainerWhenDragging) {
 				grayOut = new GrayOutDesignerExceptActiveArea();
 				grayOut.designSurfaceRectangle = new RectangleGeometry(
-					new Rect(new Point(0, 0), designPanel.RenderSize));
+					new Rect(0, 0, ((Border)designPanel.Child).Child.RenderSize.Width, ((Border)designPanel.Child).Child.RenderSize.Height));
 				grayOut.designPanel = designPanel;
 				grayOut.adornerPanel = new AdornerPanel();
 				grayOut.adornerPanel.Order = AdornerOrder.BehindForeground;

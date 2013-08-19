@@ -224,15 +224,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 		
 		private void OnSelectFolder(object sender, System.EventArgs e)
 		{
-			using (FolderBrowserDialog fd = FileService.CreateFolderBrowserDialog("")) {
-				if (fd.ShowDialog() == DialogResult.OK) {
-					if (!String.IsNullOrEmpty(fd.SelectedPath)) {
-						if (!fd.SelectedPath.EndsWith(@"\",StringComparison.OrdinalIgnoreCase)){
-							this.txtPath.Text = fd.SelectedPath + @"\";
-						} else {
-							this.txtPath.Text = fd.SelectedPath;
-						}
-					}
+			string selectedPath = SD.FileService.BrowseForFolder("");
+			if (!String.IsNullOrEmpty(selectedPath)) {
+				if (!selectedPath.EndsWith(@"\",StringComparison.OrdinalIgnoreCase)){
+					this.txtPath.Text = selectedPath + @"\";
+				} else {
+					this.txtPath.Text = selectedPath;
 				}
 			}
 		}

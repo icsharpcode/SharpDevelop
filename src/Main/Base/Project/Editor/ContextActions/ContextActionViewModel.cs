@@ -6,13 +6,12 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Refactoring;
 
-namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
+namespace ICSharpCode.SharpDevelop.Editor.ContextActions
 {
 	/// <summary>
-	/// Description of ContextActionViewModel.
+	/// ViewModel for a <see cref="ContextAction"/>.
 	/// </summary>
 	public class ContextActionViewModel
 	{

@@ -9,19 +9,12 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
 	public interface IClassBrowser
 	{
-		ICollection<SharpTreeNode> SpecialNodes { get; }
-		AssemblyList AssemblyList { get; set; }
-	}
-	
-	public class AssemblyList
-	{
-		public string Name { get; set; }
-		public IMutableModelCollection<IAssemblyModel> Assemblies { get; set; }
+		IAssemblyList MainAssemblyList { get; set; }
+		ICollection<IAssemblyList> AssemblyLists { get; }
 		
-		public AssemblyList()
-		{
-			Name = "<default>";
-			Assemblies = new SimpleModelCollection<IAssemblyModel>();
-		}
+		/*
+		  	IAssemblyList MainAssemblyList { get; set; }
+			ICollection<IAssemblyList> AssemblyLists { get; }
+		 */
 	}
 }

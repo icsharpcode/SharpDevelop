@@ -8,6 +8,8 @@ using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.ContextActions;
+using ICSharpCode.AvalonEdit.AddIn.ContextActions;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -38,6 +40,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var positionInPixels = textView.PointToScreen(
 				textView.GetVisualPosition(new TextViewPosition(line, column), VisualYPosition.LineBottom) - textView.ScrollOffset);
 			return positionInPixels.TransformFromDevice(textView);
+		}
+		
+		/// <inheritdoc />
+		public void ShowContextActionsPopup(ContextActionsPopupViewModel viewModel)
+		{
+			new ContextActionsPopup { Actions = viewModel }.OpenAtCursorAndFocus();
 		}
 	}
 }

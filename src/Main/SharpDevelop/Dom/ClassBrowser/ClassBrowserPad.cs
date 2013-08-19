@@ -78,13 +78,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		#region IClassBrowser implementation
 
-		public ICollection<SharpTreeNode> SpecialNodes {
-			get { return treeView.SpecialNodes; }
+		public ICollection<IAssemblyList> AssemblyLists {
+			get { return treeView.AssemblyLists; }
 		}
 
-		public AssemblyList AssemblyList {
-			get { return treeView.AssemblyList; }
-			set { treeView.AssemblyList = value; }
+		public IAssemblyList MainAssemblyList {
+			get { return treeView.MainAssemblyList; }
+			set { treeView.MainAssemblyList = value; }
 		}
 		
 		#endregion
@@ -141,25 +141,29 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		void ProjectServiceCurrentSolutionChanged(object sender, EventArgs e)
 		{
-			foreach (var node in treeView.SpecialNodes.OfType<SolutionTreeNode>().ToArray())
-				treeView.SpecialNodes.Remove(node);
+			foreach (var node in treeView.AssemblyLists.OfType<ISolutionAssemblyList>().ToArray())
+				treeView.AssemblyLists.Remove(node);
 			if (projectService.CurrentSolution != null)
-				treeView.SpecialNodes.Add(new SolutionTreeNode(projectService.CurrentSolution));
+				treeView.AssemblyLists.Add(new SolutionAssemblyList(projectService.CurrentSolution));
 		}
 		
 		void AssemblyListCollectionChanged(IReadOnlyCollection<IAssemblyModel> removedItems, IReadOnlyCollection<IAssemblyModel> addedItems)
 		{
-			foreach (var assembly in addedItems) {
-				// Add this assembly to current workspace
-				if (activeWorkspace != null) {
-					activeWorkspace.AssemblyFiles.Add(assembly.Context.Location);
+			if (addedItems != null) {
+				foreach (var assembly in addedItems) {
+					// Add this assembly to current workspace
+					if (activeWorkspace != null) {
+						activeWorkspace.AssemblyFiles.Add(assembly.Context.Location);
+					}
 				}
 			}
 			
-			foreach (var assembly in removedItems) {
-				// Add this assembly to current workspace
-				if (activeWorkspace != null) {
-					activeWorkspace.AssemblyFiles.Remove(assembly.Context.Location);
+			if (removedItems != null) {
+				foreach (var assembly in removedItems) {
+					// Add this assembly to current workspace
+					if (activeWorkspace != null) {
+						activeWorkspace.AssemblyFiles.Remove(assembly.Context.Location);
+					}
 				}
 			}
 			
@@ -237,7 +241,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			IAssemblyModel assemblyModel = SafelyCreateAssemblyModelFromFile(assemblyFile);
 			if (assemblyModel != null) {
-				AssemblyList.Assemblies.Add(assemblyModel);
+				MainAssemblyList.Assemblies.Add(assemblyModel);
 			}
 		}
 		
@@ -259,9 +263,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		/// </summary>
 		void UpdateActiveWorkspace()
 		{
-			if ((AssemblyList != null) && (activeWorkspace != null)) {
+			if ((MainAssemblyList != null) && (activeWorkspace != null)) {
 				// Temporarily detach from event handler
-				AssemblyList.Assemblies.CollectionChanged -= AssemblyListCollectionChanged;
+				MainAssemblyList.Assemblies.CollectionChanged -= AssemblyListCollectionChanged;
 			}
 			
 			activeWorkspace = persistedWorkspaces.FirstOrDefault(w => w.IsActive);
@@ -272,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				defaultWorkspace.IsActive = true;
 			}
 			
-			AssemblyList.Assemblies.Clear();
+			MainAssemblyList.Assemblies.Clear();
 			if (activeWorkspace != null) {
 				foreach (string assemblyFile in activeWorkspace.AssemblyFiles) {
 					AppendAssemblyFileToList(assemblyFile);
@@ -280,8 +284,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 			
 			// Attach to event handler, again.
-			if (AssemblyList != null) {
-				AssemblyList.Assemblies.CollectionChanged += AssemblyListCollectionChanged;
+			if (MainAssemblyList != null) {
+				MainAssemblyList.Assemblies.CollectionChanged += AssemblyListCollectionChanged;
 			}
 		}
 	}

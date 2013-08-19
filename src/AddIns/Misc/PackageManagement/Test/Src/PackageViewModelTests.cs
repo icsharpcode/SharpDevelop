@@ -912,7 +912,7 @@ namespace PackageManagement.Tests
 			
 			string expectedMessage = String.Empty;
 			string actualMessage = fakeLogger.LastFormattedMessageLogged;
-						
+			
 			Assert.AreEqual(expectedMessage, actualMessage);
 		}
 		
@@ -1448,6 +1448,63 @@ namespace PackageManagement.Tests
 			bool result = viewModel.HasNoGalleryUrl;
 			
 			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void AddPackage_PackageRepositoryIsOperationAwareAndPackageAddedSuccessfully_InstallOperationStartedForPackage()
+		{
+			CreateViewModel();
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			
+			viewModel.AddPackage();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "MyPackage");
+		}
+		
+		[Test]
+		public void AddPackage_PackageRepositoryIsOperationAwareAndExceptionThrownWhenCreatingInstallPackageAction_InstallOperationStartedForPackageBeforeInstallPackageActionCreatedAndPackageOperationsRequested()
+		{
+			CreateViewModelWithExceptionThrowingProject();
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			Exception ex = new Exception("Test");
+			exceptionThrowingProject.ExceptionToThrowWhenCreateInstallPackageActionCalled = ex;
+		
+			viewModel.AddPackage();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "MyPackage");
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsAndFirstSelectedAndUserAcceptsSelectedProjectsAndSourceRepositoryIsOperationAware_InstallOperationStartedForPackage()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			fakePackageManagementEvents.ProjectsToSelect.Add("Project A");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			
+			viewModel.ManagePackage();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "MyPackage");
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsNeitherSelectedAndSourceRepositoryIsOperationAware_InstallOperationStarted()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakePackage.FakePackageRepository = operationAwareRepository;
+			fakePackage.Id = "MyPackage";
+			
+			viewModel.ManagePackage();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "MyPackage");
 		}
 	}
 }

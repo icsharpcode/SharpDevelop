@@ -56,14 +56,34 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Gets the target object (the DependencyObject instance on which a property should be set)
 		/// </summary>
 		public object TargetObject {
-			get { return XamlObject.ParentProperty.ParentObject.Instance; }
+			get {
+				var parentProperty = XamlObject.ParentProperty;
+
+				if (parentProperty == null) {
+					return null;
+				}
+
+				if (parentProperty.IsCollection) {
+					return parentProperty.ValueOnInstance;
+				}
+
+				return parentProperty.ParentObject.Instance;
+			}
 		}
 
 		/// <summary>
 		/// Gets the target dependency property.
 		/// </summary>
 		public object TargetProperty {
-			get { return XamlObject.ParentProperty.DependencyProperty; }
+			get {
+				var parentProperty = XamlObject.ParentProperty;
+
+				if (parentProperty == null) {
+					return null;
+				}
+
+				return parentProperty.DependencyProperty;
+			}
 		}
 
 		#endregion

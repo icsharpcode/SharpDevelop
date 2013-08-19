@@ -2732,14 +2732,14 @@ Ayrıca bir ayarı proje dosyası yerine kullanıcı dosyası(.user-file) içind
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Kaynak</value>
   </data>
-  <data name="Gloabl.Advanced" xml:space="preserve">
-    <value>Gelişmiş</value>
-  </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Başarısız</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>Ekle</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Gelişmiş</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Geri</value>

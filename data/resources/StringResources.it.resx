@@ -2791,14 +2791,14 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Sorgente</value>
   </data>
-  <data name="Gloabl.Advanced" xml:space="preserve">
-    <value>Avanzate</value>
-  </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Annulla</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Aggiungi</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Avanzate</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Indietro</value>

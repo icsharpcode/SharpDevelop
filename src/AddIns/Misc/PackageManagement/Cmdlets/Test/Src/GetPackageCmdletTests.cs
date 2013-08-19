@@ -50,6 +50,16 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.Updates = new SwitchParameter(true);
 		}
 		
+		void EnablePrereleaseParameter()
+		{
+			cmdlet.IncludePrerelease = new SwitchParameter(true);
+		}
+		
+		void EnableAllVersionsParameter()
+		{
+			cmdlet.AllVersions = new SwitchParameter(true);
+		}
+		
 		FakePackage AddPackageToSpecifiedProjectManagerLocalRepository(string id, string version)
 		{
 			FakePackage package = FakePackage.CreatePackageWithVersion(id, version);
@@ -57,14 +67,14 @@ namespace PackageManagement.Cmdlets.Tests
 			return package;
 		}
 		
-		FakePackage AddPackageToAggregateRepository(string version)
+		FakePackage AddPackageToSelectedRepositoryInConsoleHost(string id)
 		{
-			return AddPackageToAggregateRepository("Test", version);
+			return AddPackageToSelectedRepositoryInConsoleHost(id, "1.0");
 		}
 		
-		FakePackage AddPackageToAggregateRepository(string id, string version)
+		FakePackage AddPackageToSelectedRepositoryInConsoleHost(string id, string version)
 		{
-			return fakeRegisteredPackageRepositories.AddFakePackageWithVersionToAggregrateRepository(id, version);
+			return fakeRegisteredPackageRepositories.FakePackageRepository.AddFakePackageWithVersion(id, version);
 		}
 		
 		void SetFilterParameter(string filter)
@@ -77,11 +87,6 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.Source = source;
 		}
 		
-		void EnableRecentParameter()
-		{
-			cmdlet.Recent = new SwitchParameter(true);
-		}
-		
 		void SetSkipParameter(int skip)
 		{
 			cmdlet.Skip = skip;
@@ -92,9 +97,9 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.First = first;
 		}
 		
-		void AddPackageWithVersionToSolution(string version)
+		void AddPackageToSolution(string id, string version)
 		{
-			fakeSolution.AddPackageToSharedLocalRepository("Test", version);
+			fakeSolution.AddPackageToSharedLocalRepository(id, version);
 		}
 
 		[Test]
@@ -227,10 +232,10 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_UpdatedPackagesRequestedAndNoProjectName_ReturnsUpdatedPackagesForSolution()
 		{
 			CreateCmdlet();
-			AddPackageWithVersionToSolution("1.0.0.0");
-			FakePackage updatedPackage = AddPackageToAggregateRepository("1.1.0.0");
-			
+			AddPackageToSolution("Test", "1.0.0.0");
+			FakePackage updatedPackage = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.1.0.0");
 			EnableUpdatesParameter();
+			
 			RunCmdlet();
 			
 			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
@@ -242,7 +247,7 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_UpdatedPackagesRequestedAndProjectNameSpecified_AggregateRepositoryUsedWhenCreatingProject()
+		public void ProcessRecord_UpdatedPackagesRequestedAndProjectNameSpecified_ActiveRepositoryUsedWhenCreatingProject()
 		{
 			CreateCmdlet();
 			EnableUpdatesParameter();
@@ -250,9 +255,22 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			IPackageRepository actualRepository = fakeConsoleHost.PackageRepositoryPassedToGetProject;
-			FakePackageRepository expectedRepository = fakeRegisteredPackageRepositories.FakeAggregateRepository;
-			
+			FakePackageRepository expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
 			Assert.AreEqual(expectedRepository, actualRepository);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdatedPackagesRequestedWhenNoPackageSourceSpecified_PackageSourceTakenFromConsoleHost()
+		{
+			CreateCmdlet();
+			PackageSource source = AddPackageSourceToConsoleHost();
+			fakeConsoleHost.PackageSourceToReturnFromGetActivePackageSource = source;
+			EnableUpdatesParameter();
+			
+			RunCmdlet();
+			
+			PackageSource actualSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
+			Assert.AreEqual(source, actualSource);
 		}
 		
 		[Test]
@@ -301,9 +319,9 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			fakeSolution.AddPackageToSharedLocalRepository("A", "1.0.0.0");
-			AddPackageToAggregateRepository("A", "1.1.0.0");
+			AddPackageToSelectedRepositoryInConsoleHost("A", "1.1.0.0");
 			fakeSolution.AddPackageToSharedLocalRepository("B", "2.0.0.0");
-			FakePackage updatedPackage = AddPackageToAggregateRepository("B", "2.1.0.0");
+			FakePackage updatedPackage = AddPackageToSelectedRepositoryInConsoleHost("B", "2.1.0.0");
 			
 			EnableUpdatesParameter();
 			SetFilterParameter("B");
@@ -322,9 +340,9 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			AddPackageToSpecifiedProjectManagerLocalRepository("A", "1.0.0.0");
-			AddPackageToAggregateRepository("A", "1.1.0.0");
+			AddPackageToSelectedRepositoryInConsoleHost("A", "1.1.0.0");
 			AddPackageToSpecifiedProjectManagerLocalRepository("B", "2.0.0.0");
-			FakePackage updatedPackage = AddPackageToAggregateRepository("B", "2.1.0.0");
+			FakePackage updatedPackage = AddPackageToSelectedRepositoryInConsoleHost("B", "2.1.0.0");
 			
 			EnableUpdatesParameter();
 			SetFilterParameter("B");
@@ -387,44 +405,6 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_RecentPackagesRequested_RecentPackagesReturned()
-		{
-			CreateCmdlet();
-			
-			FakePackageRepository recentPackageRepository = fakeRegisteredPackageRepositories.FakeRecentPackageRepository;
-			recentPackageRepository.AddFakePackage("A");
-			
-			EnableRecentParameter();
-			RunCmdlet();
-			
-			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
-			List<FakePackage> expectedPackages = recentPackageRepository.FakePackages;
-			
-			Assert.AreEqual(expectedPackages, actualPackages);
-		}
-		
-		[Test]
-		public void ProcessRecord_RecentPackagesRequestedWithFilter_FilteredRecentPackagesReturned()
-		{
-			CreateCmdlet();
-			
-			FakePackageRepository recentPackageRepository = fakeRegisteredPackageRepositories.FakeRecentPackageRepository;
-			recentPackageRepository.AddFakePackage("A");
-			FakePackage packageB = recentPackageRepository.AddFakePackage("B");
-			
-			EnableRecentParameter();
-			SetFilterParameter("B");
-			RunCmdlet();
-			
-			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
-			var expectedPackages = new FakePackage[] {
-				packageB
-			};
-			
-			Assert.AreEqual(expectedPackages, actualPackages);
-		}
-		
-		[Test]
 		public void ProcessRecord_FilterParameterPassedContainingTwoSearchTermsSeparatedBySpaceCharacter_InstallPackagesAreFilteredByBothSearchTerms()
 		{
 			CreateCmdlet();
@@ -471,7 +451,7 @@ namespace PackageManagement.Cmdlets.Tests
 			FakePackageRepository repository = fakeRegisteredPackageRepositories.FakePackageRepository;
 			repository.AddFakePackage("A");
 			repository.AddFakePackage("B");
-			FakePackage packageC = repository.AddFakePackage("C");			
+			FakePackage packageC = repository.AddFakePackage("C");
 			
 			EnableListAvailableParameter();
 			SetSkipParameter(2);
@@ -565,6 +545,160 @@ namespace PackageManagement.Cmdlets.Tests
 			string projectName = fakeConsoleHost.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual("Test", projectName);
+		}
+		
+		[Test]
+		public void ProcessRecord_ListAvailableAndPrereleasePackagesWithFilter_ReturnsFilteredPrereleasePackages()
+		{
+			CreateCmdlet();
+			FakePackageRepository repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			FakePackage expectedPackage = repository.AddFakePackageWithVersion("B", "2.1.0-beta");
+			EnableListAvailableParameter();
+			EnablePrereleaseParameter();
+			SetFilterParameter("B");
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				expectedPackage
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_ListAvailableWithFilterAndOnlineRepositoryHasPrereleasePackages_ReturnsNoPrereleasePackages()
+		{
+			CreateCmdlet();
+			FakePackageRepository repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			FakePackage expectedPackage = repository.AddFakePackageWithVersion("B", "2.1.0");
+			FakePackage package = repository.AddFakePackageWithVersion("B", "2.1.0-beta");
+			EnableListAvailableParameter();
+			SetFilterParameter("B");
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				expectedPackage
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_ListAvailableAndPrereleasePackagesWithFilterWhenMultiplePackageVersions_ReturnsLatestPrereleasePackages()
+		{
+			CreateCmdlet();
+			FakePackageRepository repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			repository.AddFakePackageWithVersion("B", "2.0.1-beta");
+			FakePackage expectedPackage = repository.AddFakePackageWithVersion("B", "2.1.0-beta");
+			EnableListAvailableParameter();
+			EnablePrereleaseParameter();
+			SetFilterParameter("B");
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				expectedPackage
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_NoParametersPassedWhenMultipleVersionsOfPackageInstalledInSolution_ReturnsAllPackageVersions()
+		{
+			CreateCmdlet();
+			FakePackage expectedPackage1 = fakeSolution.AddPackageToSharedLocalRepository("One", "1.0");
+			FakePackage expectedPackage2 = fakeSolution.AddPackageToSharedLocalRepository("One", "1.1");
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				expectedPackage1,
+				expectedPackage2
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdatedPackagesIncludingPrereleasesRequestedAndNoProjectName_ReturnsUpdatedPrereleasePackagesForSolution()
+		{
+			CreateCmdlet();
+			AddPackageToSolution("Test", "1.0.0.0");
+			FakePackage updatedPackage = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.1.0-alpha");
+			EnableUpdatesParameter();
+			EnablePrereleaseParameter();
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				updatedPackage
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdatedPackagesOnlyRequestedAndNoProjectNameAndRepositoryHasPrereleases_ReturnsUpdatedPackagesButNoPrereleasesForSolution()
+		{
+			CreateCmdlet();
+			AddPackageToSolution("Test", "1.0.0.0");
+			AddPackageToSelectedRepositoryInConsoleHost("Test", "1.2.0-alpha");
+			FakePackage updatedPackage = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.1.0");
+			EnableUpdatesParameter();
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = new FakePackage[] {
+				updatedPackage
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_ListAvailablePackagesAndTwoVersionsOfSamePackageInOnlineRepository_OutputIsLatestPackageVersion()
+		{
+			CreateCmdlet();
+			AddPackageToSelectedRepositoryInConsoleHost("Test", "1.0");
+			FakePackage expectedPackage = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.1");
+			EnableListAvailableParameter();
+			var expectedPackages = new FakePackage[] {
+				expectedPackage,
+			};
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_ListAvailablePackagesAndAllVersionsAndTwoVersionsOfSamePackageInOnlineRepository_OutputIsAllPackageVersions()
+		{
+			CreateCmdlet();
+			FakePackage expectedPackage1 = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.0");
+			expectedPackage1.IsLatestVersion = false;
+			FakePackage expectedPackage2 = AddPackageToSelectedRepositoryInConsoleHost("Test", "1.1");
+			EnableListAvailableParameter();
+			EnableAllVersionsParameter();
+			var expectedPackages = new FakePackage[] {
+				expectedPackage1,
+				expectedPackage2
+			};
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
 		}
 	}
 }

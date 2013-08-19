@@ -49,13 +49,12 @@ namespace SearchAndReplace
 			SD.MainThread.VerifyAccess();
 			if (resultsTreeViewInstance == null)
 				resultsTreeViewInstance = new ResultsTreeView();
-			rootNode.GroupResultsByFile(ResultsTreeView.GroupResultsByFile);
+			rootNode.GroupResultsBy(ResultsTreeView.GroupingKind);
 			resultsTreeViewInstance.ItemsSource = new object[] { rootNode };
 			return resultsTreeViewInstance;
 		}
 		
 		static IList toolbarItems;
-		static MenuItem flatItem, perFileItem;
 		
 		public virtual IList GetToolbarItems()
 		{
@@ -71,17 +70,43 @@ namespace SearchAndReplace
 				perFileDropDown.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.FindIcon") };
 				perFileDropDown.SetValueToExtension(DropDownButton.ToolTipProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip"));
 				
-				flatItem = new MenuItem();
+				MenuItem flatItem = new MenuItem();
+				flatItem.IsCheckable = true;
 				flatItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.Flat"));
-				flatItem.Click += delegate { SetPerFile(false); };
+				flatItem.Click += delegate {
+					SetResultGrouping();
+					SetCheckedItem(flatItem, perFileDropDown.DropDownMenu);
+				};
 				
-				perFileItem = new MenuItem();
+				MenuItem perFileItem = new MenuItem();
+				perFileItem.IsCheckable = true;
 				perFileItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.PerFile"));
-				perFileItem.Click += delegate { SetPerFile(true); };
+				perFileItem.Click += delegate {
+					SetResultGrouping(SearchResultGroupingKind.PerFile);
+					SetCheckedItem(perFileItem, perFileDropDown.DropDownMenu);
+				};
+				
+				MenuItem perProjectItem = new MenuItem();
+				perProjectItem.IsCheckable = true;
+				perProjectItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.PerProject"));
+				perProjectItem.Click += delegate {
+					SetResultGrouping(SearchResultGroupingKind.PerProject);
+					SetCheckedItem(perProjectItem, perFileDropDown.DropDownMenu);
+				};
+				
+				MenuItem perProjectAndFileItem = new MenuItem();
+				perProjectAndFileItem.IsCheckable = true;
+				perProjectAndFileItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.PerProjectAndFile"));
+				perProjectAndFileItem.Click += delegate {
+					SetResultGrouping(SearchResultGroupingKind.PerProjectAndFile);
+					SetCheckedItem(perProjectAndFileItem, perFileDropDown.DropDownMenu);
+				};
 				
 				perFileDropDown.DropDownMenu = new ContextMenu();
 				perFileDropDown.DropDownMenu.Items.Add(flatItem);
 				perFileDropDown.DropDownMenu.Items.Add(perFileItem);
+				perFileDropDown.DropDownMenu.Items.Add(perProjectItem);
+				perFileDropDown.DropDownMenu.Items.Add(perProjectAndFileItem);
 				toolbarItems.Add(perFileDropDown);
 				toolbarItems.Add(new Separator());
 				
@@ -100,6 +125,14 @@ namespace SearchAndReplace
 			return toolbarItems;
 		}
 		
+		static void SetCheckedItem(MenuItem newTarget, ContextMenu menu)
+		{
+			foreach (var item in menu.Items.OfType<MenuItem>()) {
+				item.IsChecked = false;
+			}
+			newTarget.IsChecked = true;
+		}
+		
 		static void ExpandCollapseAll(bool newIsExpanded)
 		{
 			if (resultsTreeViewInstance != null) {
@@ -109,15 +142,23 @@ namespace SearchAndReplace
 			}
 		}
 		
-		static void SetPerFile(bool perFile)
+		static void SetResultGrouping(SearchResultGroupingKind grouping = SearchResultGroupingKind.Flat)
 		{
-			ResultsTreeView.GroupResultsByFile = perFile;
+			ResultsTreeView.GroupingKind = grouping;
 			if (resultsTreeViewInstance != null) {
 				foreach (SearchRootNode node in resultsTreeViewInstance.ItemsSource.OfType<SearchRootNode>()) {
-					node.GroupResultsByFile(perFile);
+					node.GroupResultsBy(grouping);
 				}
 			}
 		}
+	}
+	
+	public enum SearchResultGroupingKind
+	{
+		Flat,
+		PerFile,
+		PerProject,
+		PerProjectAndFile
 	}
 	
 	public class DefaultSearchResultFactory : ISearchResultFactory

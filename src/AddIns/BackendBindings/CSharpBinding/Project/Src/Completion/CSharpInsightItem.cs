@@ -53,10 +53,11 @@ namespace CSharpBinding.Completion
 			var stringBuilder = new StringBuilder();
 			var formatter = new ParameterHighlightingOutputFormatter(stringBuilder, highlightedParameterIndex);
 			ambience.ConvertEntity(Method, formatter, FormattingOptionsFactory.CreateSharpDevelop());
-			var inlineBuilder = new HighlightedInlineBuilder(stringBuilder.ToString());
+			string code = stringBuilder.ToString();
+			var inlineBuilder = new RichTextModel();
 			inlineBuilder.SetFontWeight(formatter.parameterStartOffset, formatter.parameterLength, FontWeights.Bold);
 			header.Inlines.Clear();
-			header.Inlines.AddRange(inlineBuilder.CreateRuns());
+			header.Inlines.AddRange(new RichText(code, inlineBuilder).CreateRuns());
 		}
 		
 		public object Content {

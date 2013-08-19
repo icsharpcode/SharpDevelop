@@ -167,7 +167,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		}
 		#endregion
 		
-		#region ToHtml
+		#region WriteTo / ToHtml
 		sealed class HtmlElement : IComparable<HtmlElement>
 		{
 			internal readonly int Offset;
@@ -203,21 +203,21 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		}
 		
 		/// <summary>
-		/// Produces HTML code for the line, with &lt;span class="colorName"&gt; tags.
+		/// Writes the highlighted line to the RichTextWriter.
 		/// </summary>
-		public string ToHtml(HtmlOptions options)
+		internal void WriteTo(RichTextWriter writer)
 		{
 			int startOffset = this.DocumentLine.Offset;
-			return ToHtml(startOffset, startOffset + this.DocumentLine.Length, options);
+			WriteTo(writer, startOffset, startOffset + this.DocumentLine.Length);
 		}
 		
 		/// <summary>
-		/// Produces HTML code for a section of the line, with &lt;span class="colorName"&gt; tags.
+		/// Writes a part of the highlighted line to the RichTextWriter.
 		/// </summary>
-		public string ToHtml(int startOffset, int endOffset, HtmlOptions options)
+		internal void WriteTo(RichTextWriter writer, int startOffset, int endOffset)
 		{
-			if (options == null)
-				throw new ArgumentNullException("options");
+			if (writer == null)
+				throw new ArgumentNullException("writer");
 			int documentLineStartOffset = this.DocumentLine.Offset;
 			int documentLineEndOffset = documentLineStartOffset + this.DocumentLine.Length;
 			if (startOffset < documentLineStartOffset || startOffset > documentLineEndOffset)
@@ -237,47 +237,85 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			elements.Sort();
 			
 			IDocument document = this.Document;
-			StringWriter w = new StringWriter(CultureInfo.InvariantCulture);
 			int textOffset = startOffset;
 			foreach (HtmlElement e in elements) {
 				int newOffset = Math.Min(e.Offset, endOffset);
 				if (newOffset > startOffset) {
-					HtmlClipboard.EscapeHtml(w, document.GetText(textOffset, newOffset - textOffset), options);
+					document.WriteTextTo(writer, textOffset, newOffset - textOffset);
 				}
 				textOffset = Math.Max(textOffset, newOffset);
-				if (options.ColorNeedsSpanForStyling(e.Color)) {
-					if (e.IsEnd) {
-						w.Write("</span>");
-					} else {
-						w.Write("<span");
-						options.WriteStyleAttributeForColor(w, e.Color);
-						w.Write('>');
-					}
-				}
+				if (e.IsEnd)
+					writer.EndSpan();
+				else
+					writer.BeginSpan(e.Color);
 			}
-			HtmlClipboard.EscapeHtml(w, document.GetText(textOffset, endOffset - textOffset), options);
-			return w.ToString();
+			document.WriteTextTo(writer, textOffset, endOffset - textOffset);
+		}
+		
+		/// <summary>
+		/// Produces HTML code for the line, with &lt;span class="colorName"&gt; tags.
+		/// </summary>
+		public string ToHtml(HtmlOptions options = null)
+		{
+			StringWriter stringWriter = new StringWriter(CultureInfo.InvariantCulture);
+			using (var htmlWriter = new HtmlRichTextWriter(stringWriter, options)) {
+				WriteTo(htmlWriter);
+			}
+			return stringWriter.ToString();
+		}
+		
+		/// <summary>
+		/// Produces HTML code for a section of the line, with &lt;span class="colorName"&gt; tags.
+		/// </summary>
+		public string ToHtml(int startOffset, int endOffset, HtmlOptions options = null)
+		{
+			StringWriter stringWriter = new StringWriter(CultureInfo.InvariantCulture);
+			using (var htmlWriter = new HtmlRichTextWriter(stringWriter, options)) {
+				WriteTo(htmlWriter, startOffset, endOffset);
+			}
+			return stringWriter.ToString();
 		}
 		
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return "[" + GetType().Name + " " + ToHtml(new HtmlOptions()) + "]";
+			return "[" + GetType().Name + " " + ToHtml() + "]";
 		}
 		#endregion
 		
 		/// <summary>
 		/// Creates a <see cref="HighlightedInlineBuilder"/> that stores the text and highlighting of this line.
 		/// </summary>
+		[Obsolete("Use ToRichText() instead")]
 		public HighlightedInlineBuilder ToInlineBuilder()
 		{
 			HighlightedInlineBuilder builder = new HighlightedInlineBuilder(Document.GetText(DocumentLine));
 			int startOffset = DocumentLine.Offset;
-			// copy only the foreground and background colors
 			foreach (HighlightedSection section in Sections) {
 				builder.SetHighlighting(section.Offset - startOffset, section.Length, section.Color);
 			}
 			return builder;
+		}
+		
+		/// <summary>
+		/// Creates a <see cref="RichTextModel"/> that stores the highlighting of this line.
+		/// </summary>
+		public RichTextModel ToRichTextModel()
+		{
+			var builder = new RichTextModel();
+			int startOffset = DocumentLine.Offset;
+			foreach (HighlightedSection section in Sections) {
+				builder.ApplyHighlighting(section.Offset - startOffset, section.Length, section.Color);
+			}
+			return builder;
+		}
+		
+		/// <summary>
+		/// Creates a <see cref="RichText"/> that stores the text and highlighting of this line.
+		/// </summary>
+		public RichText ToRichText()
+		{
+			return new RichText(Document.GetText(DocumentLine), ToRichTextModel());
 		}
 	}
 }

@@ -12,6 +12,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Commands;
+using ICSharpCode.SharpDevelop.Editor.ContextActions;
 
 namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
@@ -30,7 +31,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		static ContextActionsPopup MakePopupWithBaseClasses(ITypeDefinition @class)
 		{
 			var baseClassList = @class.GetAllBaseTypeDefinitions().Where(baseClass => baseClass != @class).ToList();
-			var popupViewModel = new ContextActionsViewModel();
+			var popupViewModel = new ContextActionsPopupViewModel();
 			popupViewModel.Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.BaseClassesOf}", new StringTagPair("Name", @class.Name)));
 			popupViewModel.Actions = BuildListViewModel(baseClassList);

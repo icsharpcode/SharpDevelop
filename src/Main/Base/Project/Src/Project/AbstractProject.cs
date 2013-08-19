@@ -196,7 +196,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region ProjectSections
-		SimpleModelCollection<SolutionSection> projectSections = new SimpleModelCollection<SolutionSection>();
+		SimpleModelCollection<SolutionSection> projectSections = new NullSafeSimpleModelCollection<SolutionSection>();
 		
 		[Browsable(false)]
 		public IMutableModelCollection<SolutionSection> ProjectSections {

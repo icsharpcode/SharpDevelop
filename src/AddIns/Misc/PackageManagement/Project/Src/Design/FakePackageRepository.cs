@@ -46,6 +46,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public FakePackage AddFakePackageWithVersion(string packageId, string version)
 		{
 			var package = FakePackage.CreatePackageWithVersion(packageId, version);
+			package.IsLatestVersion = package.IsReleaseVersion();
 			FakePackages.Add(package);
 			return package;
 		}

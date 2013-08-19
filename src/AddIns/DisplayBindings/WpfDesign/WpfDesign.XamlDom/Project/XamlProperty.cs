@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Windows;
@@ -24,6 +25,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		CollectionElementsCollection collectionElements;
 		bool isCollection;
+		bool isResources;
 		
 		static readonly IList<XamlPropertyValue> emptyCollectionElementsArray = new XamlPropertyValue[0];
 		
@@ -49,6 +51,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (propertyInfo.IsCollection) {
 				isCollection = true;
 				collectionElements = new CollectionElementsCollection(this);
+				
+				if (propertyInfo.Name.Equals(XamlConstants.ResourcesPropertyName, StringComparison.Ordinal) &&
+				    propertyInfo.ReturnType == typeof(ResourceDictionary)) {
+					isResources = true;
+				}
 			}
 		}
 		
@@ -114,6 +121,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public XamlPropertyValue PropertyValue {
 			get { return propertyValue; }
 			set { SetPropertyValue(value); }
+		}
+		
+		/// <summary>
+		/// Gets if the property represents the FrameworkElement.Resources property that holds a locally-defined resource dictionary. 
+		/// </summary>
+		public bool IsResources {
+			get { return isResources; }
 		}
 		
 		/// <summary>
@@ -255,6 +269,23 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 		
+		bool IsFirstChildResources(XamlObject obj)
+		{
+			return obj.XmlElement.FirstChild != null &&
+				obj.XmlElement.FirstChild.Name.EndsWith("." + XamlConstants.ResourcesPropertyName) &&
+				obj.Properties.Where((prop) => prop.IsResources).FirstOrDefault() != null;
+		}
+
+        XmlElement CreatePropertyElement()
+        {
+            string ns = parentObject.OwnerDocument.GetNamespaceFor(parentObject.ElementType);
+            return parentObject.OwnerDocument.XmlDocument.CreateElement(
+                parentObject.OwnerDocument.GetPrefixForNamespace(ns),
+                parentObject.ElementType.Name + "." + this.PropertyName,
+                ns
+                );
+        }
+		
 		internal void AddChildNodeToProperty(XmlNode newChildNode)
 		{
 			if (this.IsCollection) {
@@ -264,14 +295,22 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			if (_propertyElement == null) {
 				if (PropertyName == parentObject.ContentPropertyName) {
-					parentObject.XmlElement.InsertBefore(newChildNode, parentObject.XmlElement.FirstChild);
+					if (IsFirstChildResources(parentObject)) {
+						// Resources element should always be first
+						parentObject.XmlElement.InsertAfter(newChildNode, parentObject.XmlElement.FirstChild);
+					}
+					else
+						parentObject.XmlElement.InsertBefore(newChildNode, parentObject.XmlElement.FirstChild);
 					return;
 				}
-				_propertyElement = parentObject.OwnerDocument.XmlDocument.CreateElement(
-					this.PropertyTargetType.Name + "." + this.PropertyName,
-					parentObject.OwnerDocument.GetNamespaceFor(this.PropertyTargetType)
-				);
-				parentObject.XmlElement.InsertBefore(_propertyElement, parentObject.XmlElement.FirstChild);
+				_propertyElement = CreatePropertyElement();
+				
+				if (IsFirstChildResources(parentObject)) {
+					// Resources element should always be first
+					parentObject.XmlElement.InsertAfter(_propertyElement, parentObject.XmlElement.FirstChild);
+				}
+				else
+					parentObject.XmlElement.InsertBefore(_propertyElement, parentObject.XmlElement.FirstChild);
 			}
 			_propertyElement.AppendChild(newChildNode);
 		}
@@ -283,11 +322,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (collection == null) {
 				if (collectionElements.Count == 0 && this.PropertyName != this.ParentObject.ContentPropertyName) {
 					// we have to create the collection element
-					_propertyElement = parentObject.OwnerDocument.XmlDocument.CreateElement(
-						this.PropertyTargetType.Name + "." + this.PropertyName,
-						parentObject.OwnerDocument.GetNamespaceFor(this.PropertyTargetType)
-					);
-					parentObject.XmlElement.AppendChild(_propertyElement);
+                    _propertyElement = CreatePropertyElement();
+
+					if (this.IsResources) {
+						parentObject.XmlElement.PrependChild(_propertyElement);
+					} else {
+						parentObject.XmlElement.AppendChild(_propertyElement);
+					}
+
 					collection = _propertyElement;
 				} else {
 					// this is the default collection
@@ -308,38 +350,49 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		internal XmlAttribute SetAttribute(string value)
 		{
-			string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
 			string name;
-			if (IsAttached)
-				name = PropertyTargetType.Name + "." + PropertyName;
-			else
-				name = PropertyName;
-
 			var element = ParentObject.XmlElement;
-			if (string.IsNullOrEmpty(element.GetPrefixOfNamespace(ns))) {
-				element.SetAttribute(name, value);
-				return element.GetAttributeNode(name);
+
+			if (IsAttached)
+			{
+				if (PropertyTargetType == typeof (DesignTimeProperties) || PropertyTargetType == typeof (MarkupCompatibilityProperties))
+					name = PropertyName;
+				else
+					name = PropertyTargetType.Name + "." + PropertyName;
+
+				string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
+                string prefix = element.GetPrefixOfNamespace(ns);
+
+				if (String.IsNullOrEmpty(prefix)) {
+                    prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
+                }
+
+				if (!string.IsNullOrEmpty(prefix)) {
+					element.SetAttribute(name, ns, value);
+					return element.GetAttributeNode(name, ns);
+				}
 			} else {
-				element.SetAttribute(name, ns, value);
-				return element.GetAttributeNode(name, ns);
+				name = PropertyName;
 			}
+
+			element.SetAttribute(name, string.Empty, value);
+			return element.GetAttributeNode(name);
 		}
 
 		internal string GetNameForMarkupExtension()
 		{
-			string name;
-			if (IsAttached)
-				name = PropertyTargetType.Name + "." + PropertyName;
-			else
-				name = PropertyName;
-
-			var element = ParentObject.XmlElement;
-			string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
-			var prefix = element.GetPrefixOfNamespace(ns);
-			if (string.IsNullOrEmpty(prefix))
-				return name;
-			else
-				return prefix + ":" + name;
+			if (IsAttached) {
+				string name = PropertyTargetType.Name + "." + PropertyName;
+				
+				var element = ParentObject.XmlElement;
+				string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
+				var prefix = element.GetPrefixOfNamespace(ns);
+				if (string.IsNullOrEmpty(prefix))
+					return name;
+				else
+					return prefix + ":" + name;
+			} else
+				return PropertyName;
 		}
 		
 		/// <summary>
@@ -398,7 +451,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		void PossiblyNameChanged(XamlPropertyValue oldValue, XamlPropertyValue newValue)
 		{
-			if (PropertyName == "Name" && ReturnType == typeof(string)) {
+			if (ParentObject.RuntimeNameProperty != null && PropertyName == ParentObject.RuntimeNameProperty) {
+				
+				if (!String.IsNullOrEmpty(ParentObject.GetXamlAttribute("Name"))) {
+					throw new XamlLoadException("The property 'Name' is set more than once.");
+				}
 
 				string oldName = null;
 				string newName = null;
@@ -409,28 +466,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				var newTextValue = newValue as XamlTextValue;
 				if (newTextValue != null) newName = newTextValue.Text;
 
-				var obj = ParentObject;
-				while (obj != null) {
-					var nameScope = obj.Instance as INameScope;
-					if (nameScope == null) {
-						if (obj.Instance is DependencyObject)
-							nameScope = NameScope.GetNameScope((DependencyObject)obj.Instance);
-					}
-					if (nameScope != null) {
-						if (oldName != null) {
-							try {
-								nameScope.UnregisterName(oldName);
-							} catch (Exception x) {
-								Debug.WriteLine(x.Message);
-							}
-						}
-						if (newName != null) {
-							nameScope.RegisterName(newName, ParentObject.Instance);
-						}
-						break;
-					}
-					obj = obj.ParentObject;
-				}
+				NameScopeHelper.NameChanged(ParentObject, oldName, newName);
 			}
 		}
 

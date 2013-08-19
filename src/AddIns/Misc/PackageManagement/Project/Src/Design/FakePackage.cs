@@ -53,7 +53,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public string Id { get; set; }
 		public SemanticVersion Version { get; set; }
-		public string Title { get; set; }		
+		public string Title { get; set; }
 		public Uri IconUrl { get; set; }
 		public Uri LicenseUrl { get; set; }
 		public Uri ProjectUrl { get; set; }

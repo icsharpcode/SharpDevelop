@@ -2783,14 +2783,14 @@ También puede escoger almacenar el parámetro de configuración en el archivo .
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Fuente</value>
   </data>
-  <data name="Gloabl.Advanced" xml:space="preserve">
-    <value>Avanzado</value>
-  </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Abortar</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Agregar</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Avanzado</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Atrás</value>

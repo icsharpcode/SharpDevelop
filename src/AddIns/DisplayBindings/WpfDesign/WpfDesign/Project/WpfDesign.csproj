@@ -117,6 +117,7 @@
     <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services.cs" />
     <Compile Include="Tools.cs" />
+    <Compile Include="UIHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="PropertyGrid\Editors\ComboBoxEditor.xaml">

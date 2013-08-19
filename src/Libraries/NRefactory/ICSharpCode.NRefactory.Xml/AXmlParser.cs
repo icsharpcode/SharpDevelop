@@ -133,5 +133,15 @@ namespace ICSharpCode.NRefactory.Xml
 			var heuristic = new TagMatchingHeuristics(newTextSource);
 			return new AXmlDocument(null, 0, heuristic.CreateDocument(internalObjects, cancellationToken));
 		}
+		
+		/// <summary>
+		/// Checks whether the given name is a valid XML name.
+		/// </summary>
+		public static bool IsValidXmlName(string name)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+				throw new ArgumentException("The XML name cannot be null, empty or consist solely of white space", "name");
+			return TagReader.IsValidName(name);
+		}
 	}
 }

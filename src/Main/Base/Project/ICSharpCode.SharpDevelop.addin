@@ -165,11 +165,12 @@
 		     class    = "ICSharpCode.SharpDevelop.Gui.TaskListPad"
 		     defaultPosition = "Bottom" />
 		
-		<Pad id       = "CompilerMessageView"
+		<Pad id       = "OutputPad"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.OutputWindow}"
 		     icon     = "PadIcons.Output"
 		     class    = "ICSharpCode.SharpDevelop.Gui.CompilerMessageView"
+		     serviceInterface = "ICSharpCode.SharpDevelop.Workbench.IOutputPad"
 		     defaultPosition = "Bottom" />
 		
 		<Pad id       = "PropertyPad"
@@ -923,14 +924,14 @@
 		<ToolbarItem id      = "OpenAssembly"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.Assembly"
-		             tooltip = "Open assembly">
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.OpenAssemblyButton.ToolTip}">
 			<MenuItem id    = "OpenAssemblyFromFile"
 			          icon    = "Icons.16x16.AssemblyFromFile"
-			          label = "Open assembly from file"
+			          label = "${res:MainWindow.Windows.ClassBrowser.OpenAssemblyFromFile}"
 			          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenAssemblyFromFileCommand"/>
 			<MenuItem id    = "OpenAssemblyFromGAC"
 			          icon  = "Icons.16x16.AssemblyFromGAC"
-			          label = "Open assembly from GAC"
+			          label = "${res:MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC}"
 			          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenAssemblyFromGACCommand"/>
 		</ToolbarItem>
 		<!--<ToolbarItem id      = "SelectFilter"

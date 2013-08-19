@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Xml;
 
@@ -137,7 +138,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (attribute.NamespaceURI.Length > 0)
 				return attribute.NamespaceURI;
 			else
-				return attribute.OwnerElement.GetNamespaceOfPrefix("");
+			{
+				var ns = attribute.OwnerElement.GetNamespaceOfPrefix("");
+				if (string.IsNullOrEmpty(ns)) {
+					ns = XamlConstants.PresentationNamespace;
+				}
+				return ns;
+			}
 		}
 		
 		readonly static object[] emptyObjectArray = new object[0];
@@ -148,10 +155,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			if (errorSink != null) {
 				var lineInfo = node as IXmlLineInfo;
+				var msg = x.Message;
+				if (x.InnerException != null)
+					msg += " (" + x.InnerException.Message + ")";
 				if (lineInfo != null) {
-					errorSink.ReportError(x.Message, lineInfo.LineNumber, lineInfo.LinePosition);
+					errorSink.ReportError(msg, lineInfo.LineNumber, lineInfo.LinePosition);
 				} else {
-					errorSink.ReportError(x.Message, 0, 0);
+					errorSink.ReportError(msg, 0, 0);
 				}
 				if (currentXamlObject != null) {
 					currentXamlObject.HasErrors = true;
@@ -244,8 +254,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (attribute.Name == "xml:space") {
 					continue;
 				}
-				if (GetAttributeNamespace(attribute) == XamlConstants.XamlNamespace)
+				if (GetAttributeNamespace(attribute) == XamlConstants.XamlNamespace) {
+					if (attribute.LocalName == "Name") {
+						try {
+							NameScopeHelper.NameChanged(obj, null, attribute.Value);
+						} catch (Exception x) {
+							ReportException(x, attribute);
+						}
+					}
 					continue;
+				}
+					
 				ParseObjectAttribute(obj, attribute);
 			}
 			
@@ -265,7 +284,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		void ParseObjectContent(XamlObject obj, XmlElement element, XamlPropertyInfo defaultProperty, XamlTextValue initializeFromTextValueInsteadOfConstructor)
 		{
-			XamlPropertyValue setDefaultValueTo = null;
+			bool isDefaultValueSet = false;
 			object defaultPropertyValue = null;
 			XamlProperty defaultCollectionProperty = null;
 			
@@ -275,26 +294,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			
 			foreach (XmlNode childNode in GetNormalizedChildNodes(element)) {
-				
-				// I don't know why the official XamlReader runs the property getter
-				// here, but let's try to imitate it as good as possible
-				if (defaultProperty != null && !defaultProperty.IsCollection) {
-					for (; combinedNormalizedChildNodes > 0; combinedNormalizedChildNodes--) {
-						defaultProperty.GetValue(obj.Instance);
-					}
-				}
-				
 				XmlElement childElement = childNode as XmlElement;
 				if (childElement != null) {
 					if (childElement.NamespaceURI == XamlConstants.XamlNamespace)
 						continue;
 					
 					if (ObjectChildElementIsPropertyElement(childElement)) {
-						// I don't know why the official XamlReader runs the property getter
-						// here, but let's try to imitate it as good as possible
-						if (defaultProperty != null && !defaultProperty.IsCollection) {
-							defaultProperty.GetValue(obj.Instance);
-						}
 						ParseObjectChildElementAsPropertyElement(obj, childElement, defaultProperty, defaultPropertyValue);
 						continue;
 					}
@@ -307,28 +312,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						defaultCollectionProperty.ParserAddCollectionElement(null, childValue);
 						CollectionSupport.AddToCollection(defaultProperty.ReturnType, defaultPropertyValue, childValue);
 					} else {
-						if (setDefaultValueTo != null)
+						if (defaultProperty == null)
+							throw new XamlLoadException("This element does not have a default value, cannot assign to it");
+						
+						if (isDefaultValueSet)
 							throw new XamlLoadException("default property may have only one value assigned");
-						setDefaultValueTo = childValue;
+						
+						obj.AddProperty(new XamlProperty(obj, defaultProperty, childValue));
+						isDefaultValueSet = true;
 					}
 				}
 			}
-			
-			if (defaultProperty != null && !defaultProperty.IsCollection && !element.IsEmpty) {
-				// Runs even when defaultValueSet==false!
-				// Again, no idea why the official XamlReader does this.
-				defaultProperty.GetValue(obj.Instance);
-			}
-			if (setDefaultValueTo != null) {
-				if (defaultProperty == null) {
-					throw new XamlLoadException("This element does not have a default value, cannot assign to it");
-				}
-				obj.AddProperty(new XamlProperty(obj, defaultProperty, setDefaultValueTo));
-			}
 		}
-		
-		int combinedNormalizedChildNodes;
-		
+
 		IEnumerable<XmlNode> GetNormalizedChildNodes(XmlElement element)
 		{
 			XmlNode node = element.FirstChild;
@@ -346,8 +342,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					       && (node.NodeType == XmlNodeType.Text
 					           || node.NodeType == XmlNodeType.CDATA
 					           || node.NodeType == XmlNodeType.SignificantWhitespace)) {
-						combinedNormalizedChildNodes++;
-						
 						if (text != null) text.Value += node.Value;
 						else cData.Value += node.Value;
 						XmlNode nodeToDelete = node;
@@ -455,11 +449,29 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		static XamlPropertyInfo GetPropertyInfo(object elementInstance, Type elementType, XmlAttribute attribute, XamlTypeFinder typeFinder)
 		{
+			var ret = GetXamlSpecialProperty(attribute);
+			if (ret != null)
+				return ret;
 			if (attribute.LocalName.Contains(".")) {
 				return GetPropertyInfo(typeFinder, elementInstance, elementType, GetAttributeNamespace(attribute), attribute.LocalName);
 			} else {
 				return FindProperty(elementInstance, elementType, attribute.LocalName);
 			}
+		}
+		
+		internal static XamlPropertyInfo GetXamlSpecialProperty(XmlAttribute attribute)
+		{
+			if (attribute.LocalName == "Ignorable" && attribute.NamespaceURI == XamlConstants.MarkupCompatibilityNamespace) {
+				return FindAttachedProperty(typeof(MarkupCompatibilityProperties), attribute.LocalName);
+			} else if (attribute.LocalName == "DesignHeight" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
+				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+			} else if (attribute.LocalName == "DesignWidth" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
+				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+			} else if (attribute.LocalName == "IsHidden" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
+				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+			}
+
+			return null;
 		}
 		
 		internal static XamlPropertyInfo GetPropertyInfo(XamlTypeFinder typeFinder, object elementInstance, Type elementType, string xmlNamespace, string localName)
@@ -556,8 +568,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				XamlPropertyValue childValue = ParseValue(childNode);
 				if (childValue != null) {
 					if (propertyInfo.IsCollection) {
-						CollectionSupport.AddToCollection(propertyInfo.ReturnType, collectionInstance, childValue);
-						collectionProperty.ParserAddCollectionElement(element, childValue);
+						if (collectionInstance!=null) {
+							CollectionSupport.AddToCollection(propertyInfo.ReturnType, collectionInstance, childValue);
+							collectionProperty.ParserAddCollectionElement(element, childValue);
+						}
 					} else {
 						if (valueWasSet)
 							throw new XamlLoadException("non-collection property may have only one child element");
@@ -610,6 +624,25 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if(xmlnsAttribute!=null)
 					element.Attributes.Remove(xmlnsAttribute);
 
+				//Remove namespace Attributes defined in the Xaml Root from the Pasted Snippet!
+				List<XmlAttribute> removeAttributes = new List<XmlAttribute>();
+				foreach (XmlAttribute attrib in element.Attributes) {
+					if (attrib.Name.StartsWith("xmlns:")) {
+						var rootPrefix = root.OwnerDocument.GetPrefixForNamespace(attrib.Value);
+						if (rootPrefix == null) {
+							//todo: check if we can add to root, (maybe same ns exists)
+							root.OwnerDocument.XmlDocument.Attributes.Append((XmlAttribute)attrib.CloneNode(true));
+							removeAttributes.Add(attrib);
+						} else if (rootPrefix == attrib.Name.Substring(6)) {
+							removeAttributes.Add(attrib);
+						}
+					}
+				}
+				foreach (var removeAttribute in removeAttributes) {
+					element.Attributes.Remove(removeAttribute);
+				}
+				//end remove
+				
 				XamlParser parser = new XamlParser();
 				parser.settings = settings;
 				parser.document = root.OwnerDocument;

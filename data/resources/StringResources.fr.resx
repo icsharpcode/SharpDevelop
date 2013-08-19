@@ -2870,14 +2870,14 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Source</value>
   </data>
-  <data name="Gloabl.Advanced" xml:space="preserve">
-    <value>Avancé</value>
-  </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Stopper</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Ajouter</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Avancé</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Retour</value>

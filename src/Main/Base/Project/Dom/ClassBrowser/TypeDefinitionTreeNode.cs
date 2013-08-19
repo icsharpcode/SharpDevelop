@@ -22,6 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (definition == null)
 				throw new ArgumentNullException("definition");
 			this.definition = definition;
+			this.definition.Updated += (sender, e) => UpdateBaseTypesNode();
 		}
 		
 		protected override object GetModel()
@@ -52,6 +53,20 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			get {
 				return definition.NestedTypes.Concat<object>(definition.Members);
 			}
+		}
+		
+		protected override void LoadChildren()
+		{
+			base.LoadChildren();
+			UpdateBaseTypesNode();
+		}
+		
+		void UpdateBaseTypesNode()
+		{
+			this.Children.RemoveAll(n => n is BaseTypesTreeNode);
+			var baseTypesTreeNode = new BaseTypesTreeNode(definition);
+			if (baseTypesTreeNode.HasBaseTypes())
+				Children.Insert(0, baseTypesTreeNode);
 		}
 		
 		public override void ActivateItem(System.Windows.RoutedEventArgs e)

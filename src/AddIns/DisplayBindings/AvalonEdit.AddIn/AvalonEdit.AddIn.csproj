@@ -106,8 +106,6 @@
     <Compile Include="Src\ContextActions\ContextActionsPopup.cs" />
     <Compile Include="Src\ContextActions\ContextActionsRenderer.cs" />
     <Compile Include="Src\ContextActions\EditorActionsProvider.cs" />
-    <Compile Include="Src\ContextActions\ContextActionsViewModel.cs" />
-    <Compile Include="Src\ContextActions\ContextActionViewModel.cs" />
     <Compile Include="Src\ContextActions\FindBaseClasses.cs" />
     <Compile Include="Src\ContextActions\FindDerivedClassesOrOverrides.cs" />
     <Compile Include="Src\ContextActions\GoToEntityAction.cs" />

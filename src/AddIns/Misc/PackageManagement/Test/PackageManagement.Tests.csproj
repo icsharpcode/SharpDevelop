@@ -118,6 +118,7 @@
     <Compile Include="Src\Helpers\ExceptionThrowingPackageActionRunner.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingProcessPackageAction.cs" />
     <Compile Include="Src\Helpers\FakeCodeGenerator.cs" />
+    <Compile Include="Src\Helpers\FakeOperationAwarePackageRepository.cs" />
     <Compile Include="Src\Helpers\FieldHelper.cs" />
     <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="Src\UpdatedPackagesTests.cs" />
     <Compile Include="Src\UpdatePackagesActionTests.cs" />
     <Compile Include="Src\UpdateSolutionPackagesActionTests.cs" />
+    <Compile Include="Src\UserAgentGeneratorForRepositoryRequestsTests.cs" />
     <Compile Include="Src\VirtualMethodUpdaterTests.cs" />
     <Compile Include="Src\PackageActionRunnerTests.cs" />
     <Compile Include="Src\PackageActionsToRunTests.cs" />

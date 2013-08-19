@@ -461,11 +461,17 @@ namespace Debugger
 			AsyncContinue(DebuggeeStateAction.Clear);
 		}
 		
-		/// <param name="threadsToRun"> Null to keep current setting </param>
-		/// <param name="newThreadState"> What happens to created threads.  Null to keep current setting </param>
-		internal void AsyncContinue(DebuggeeStateAction action)
+		/// <param name="threadToRun"> Run this thread and freeze all other threads </param>
+		internal void AsyncContinue(DebuggeeStateAction action, Thread threadToRun = null)
 		{
 			AssertPaused();
+			
+			if (threadToRun != null) {
+				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, null);
+				threadToRun.CorThread.SetDebugState(CorDebugThreadState.THREAD_RUN);
+			} else {
+				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_RUN, null);
+			}
 			
 			NotifyResumed(action);
 			corProcess.Continue(0);

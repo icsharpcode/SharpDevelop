@@ -6,10 +6,40 @@
 	
 	<UserControl.Resources>
 		
+		<Style TargetType="ToggleButton" x:Key="eyeStyle">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ToggleButton">
+						<Grid Background="Transparent" IsHitTestVisible="True">
+							<VisualStateManager.VisualStateGroups>
+								<VisualStateGroup x:Name="CheckStates">
+									<VisualState x:Name="Checked">
+										<Storyboard>
+											<ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="eye" Storyboard.TargetProperty="(UIElement.Visibility)">
+												<DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+											</ObjectAnimationUsingKeyFrames>
+											<ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="closed_eye" Storyboard.TargetProperty="(UIElement.Visibility)">
+												<DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}"/>
+											</ObjectAnimationUsingKeyFrames>
+										</Storyboard>
+									</VisualState>
+									<VisualState x:Name="Unchecked"/>
+								</VisualStateGroup>
+							</VisualStateManager.VisualStateGroups>
+							<Image x:Name="eye" Stretch="None" Visibility="Hidden" Source="pack://application:,,,/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.WpfOutline.Eye.png" />
+							<Image x:Name="closed_eye" Stretch="None" Source="pack://application:,,,/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.WpfOutline.EyeClose.png" />
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		
 		<HierarchicalDataTemplate DataType="{x:Type Default:OutlineNode}"
 		                          ItemsSource="{Binding Children}">
-			<Default:IconItem Icon="../Images/Tag.png"
-			                  Text="{Binding Name}" />
+			<DockPanel>
+				<ToggleButton Style="{StaticResource eyeStyle}" DockPanel.Dock="Right" Width="20" Margin="0,0,5,0" IsChecked="{Binding IsDesignTimeVisible}" />
+				<Default:IconItem Icon="../Images/Tag.png" Text="{Binding Name}" />
+			</DockPanel>
 		</HierarchicalDataTemplate>
 	
 	</UserControl.Resources>

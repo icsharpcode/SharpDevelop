@@ -198,6 +198,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
+			#pragma warning disable 618
 			SearchPanel panel = new SearchPanel();
 			panel.AttachInternal(textArea);
 			panel.handler = new SearchInputHandler(textArea, panel);

@@ -49,7 +49,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public R SafeThreadFunction<R>(Func<R> method)
 		{
-			return WorkbenchSingleton.SafeThreadFunction<R>(method);
+			return SD.MainThread.InvokeIfRequired(method);
 		}
 	}
 }

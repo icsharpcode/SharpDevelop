@@ -99,9 +99,9 @@ namespace CSharpBinding.Refactoring
 							AstType interfaceTypeNode = refactoringContext.CreateShortType("System.ComponentModel", "INotifyPropertyChanged", 0);
 							var directBaseTypes = currentClass.DirectBaseTypes.Where(t => t.FullName != "System.Object");
 							if (currentClassDeclaration.BaseTypes.Count > 0) {
-								script.InsertText(insertion, ", " + interfaceTypeNode.GetText() + " ");
+								script.InsertText(insertion, ", " + interfaceTypeNode + " ");
 							} else {
-								script.InsertText(insertion, " : " + interfaceTypeNode.GetText() + " ");
+								script.InsertText(insertion, " : " + interfaceTypeNode + " ");
 							}
 						}
 

@@ -8,8 +8,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -18,10 +21,10 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	sealed class UIBuildFeedbackSink : IBuildFeedbackSink
 	{
-		MessageViewCategory messageView;
+		IOutputCategory messageView;
 		IStatusBarService statusBarService;
 		
-		public UIBuildFeedbackSink(MessageViewCategory messageView, IStatusBarService statusBarService)
+		public UIBuildFeedbackSink(IOutputCategory messageView, IStatusBarService statusBarService)
 		{
 			Debug.Assert(messageView != null);
 			Debug.Assert(statusBarService != null);
@@ -37,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			});
 		}
 		
-		public void ReportMessage(string message)
+		public void ReportMessage(RichText message)
 		{
 			messageView.AppendLine(message);
 		}

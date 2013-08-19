@@ -20,6 +20,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.WpfDesign.Designer;
@@ -37,10 +38,22 @@ namespace ICSharpCode.WpfDesign.AddIn
 	{
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
+			SharpDevelopTranslations.Init();
+			
 			BasicMetadata.Register();
+			
+			WpfToolbox.Instance.AddProjectDlls(file);
+
+			ProjectService.ProjectItemAdded += ProjectService_ProjectItemAdded;
 			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
+		}
+
+		void ProjectService_ProjectItemAdded(object sender, ProjectItemEventArgs e)
+		{
+			if (e.ProjectItem is ReferenceProjectItem)
+				WpfToolbox.Instance.AddProjectDlls(this.Files[0]);
 		}
 		
 		static WpfViewContent()
@@ -134,6 +147,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			}
 		}
 		
+		public static List<SDTask> DllLoadErrors = new List<SDTask>();
 		void UpdateTasks(XamlErrorService xamlErrorService)
 		{
 			Debug.Assert(xamlErrorService != null);
@@ -144,10 +158,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 			tasks.Clear();
 			
 			foreach (XamlError error in xamlErrorService.Errors) {
-				var task = new SDTask(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line - 1, TaskType.Error);
+				var task = new SDTask(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line, TaskType.Error);
 				tasks.Add(task);
 				TaskService.Add(task);
 			}
+			
+			TaskService.AddRange(DllLoadErrors);
 			
 			if (xamlErrorService.Errors.Count != 0) {
 				SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
@@ -226,6 +242,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public override void Dispose()
 		{
+			ProjectService.ProjectItemAdded -= ProjectService_ProjectItemAdded;
+
 			propertyContainer.Clear();
 			base.Dispose();
 		}

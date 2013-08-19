@@ -40,5 +40,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("5.0.0.0")]
 
 // [AssemblyFileVersion] is the version of the NuGet package,
-// should follow http://semver.org/ rules
+// Versions with breaking changes / new features should increment the 'minor' (2nd) number.
+// Bugfix releases should increment the 'build' (3rd) number.
 [assembly: AssemblyFileVersion("5.3.0")]

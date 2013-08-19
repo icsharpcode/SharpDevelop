@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				{
 					IAssemblyModel assemblyModel = modelFactory.SafelyCreateAssemblyModelFromFile(openFileDialog.FileName);
 					if (assemblyModel != null)
-						classBrowser.AssemblyList.Assemblies.Add(assemblyModel);
+						classBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
 				}
 			}
 		}
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					foreach (string assemblyFile in gacDialog.SelectedFileNames) {
 						IAssemblyModel assemblyModel = modelFactory.SafelyCreateAssemblyModelFromFile(assemblyFile);
 						if (assemblyModel != null)
-							classBrowser.AssemblyList.Assemblies.Add(assemblyModel);
+							classBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
 					}
 				}
 			}
@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			var classBrowser = SD.GetService<IClassBrowser>();
 			if (classBrowser != null) {
 				IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
-				classBrowser.AssemblyList.Assemblies.Remove(assemblyModel);
+				classBrowser.MainAssemblyList.Assemblies.Remove(assemblyModel);
 			}
 		}
 	}

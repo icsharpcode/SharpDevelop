@@ -24,11 +24,13 @@ namespace ICSharpCode.PackageManagement
 		static readonly IPackageRepositoryCache projectTemplatePackageRepositoryCache;
 		static readonly RegisteredProjectTemplatePackageSources projectTemplatePackageSources;
 		static readonly PackageRepositoryCache packageRepositoryCache;
+		static readonly UserAgentGeneratorForRepositoryRequests userAgentGenerator;
 		
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
 			packageRepositoryCache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
+			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests(packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
 			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
 			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(packageRepositoryCache, projectTemplatePackageSources);

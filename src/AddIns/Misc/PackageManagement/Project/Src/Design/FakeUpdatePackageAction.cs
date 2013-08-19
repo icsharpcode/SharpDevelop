@@ -10,6 +10,8 @@ namespace ICSharpCode.PackageManagement.Design
 	{
 		public bool IsExecuted;
 		
+		public FakePackageManagementProject FakeProject;
+		
 		public FakeUpdatePackageAction()
 			: this(new FakePackageManagementProject())
 		{
@@ -18,6 +20,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public FakeUpdatePackageAction(IPackageManagementProject project)
 			: base(project, null)
 		{
+			FakeProject = project as FakePackageManagementProject;
 		}
 		
 		protected override void ExecuteCore()

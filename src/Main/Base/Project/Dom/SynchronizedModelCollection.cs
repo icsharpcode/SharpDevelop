@@ -31,10 +31,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.syncRoot = syncRoot;
 		}
 		
-		// Event registration is thread-safe on the underlying collection
 		public event ModelCollectionChangedEventHandler<T> CollectionChanged {
-			add { underlyingCollection.CollectionChanged += value; }
-			remove { underlyingCollection.CollectionChanged -= value; }
+			add {
+				lock (syncRoot) {
+					underlyingCollection.CollectionChanged += value;
+				}
+			}
+			remove {
+				lock (syncRoot) {
+					underlyingCollection.CollectionChanged -= value;
+				}
+			}
 		}
 
 		#region IMutableModelCollection implementation

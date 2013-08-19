@@ -965,14 +965,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			TextView.InvalidateCursor();
+			TextView.InvalidateCursorIfMouseWithinTextView();
 		}
 		
 		/// <inheritdoc/>
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
 			base.OnKeyUp(e);
-			TextView.InvalidateCursor();
+			TextView.InvalidateCursorIfMouseWithinTextView();
 		}
 		#endregion
 		

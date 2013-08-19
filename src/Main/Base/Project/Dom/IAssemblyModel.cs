@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
@@ -49,6 +50,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets the <see cref="IEntityModelContext"/> of this assembly model.
 		/// </summary>
 		IEntityModelContext Context { get; }
+		
+		/// <summary>
+		/// Returns the location of the assembly represented by this model.
+		/// </summary>
+		FileName Location { get; }
 		
 		/// <summary>
 		/// Returns the assembly references.
@@ -106,6 +112,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public IEntityModelContext Context {
+			get {
+				return null;
+			}
+		}
+		
+		public FileName Location {
 			get {
 				return null;
 			}

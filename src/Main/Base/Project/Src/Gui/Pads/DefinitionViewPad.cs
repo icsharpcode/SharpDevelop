@@ -85,8 +85,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		async void UpdateTick(ParseInformationEventArgs e)
 		{
-			timer.IsEnabled = ctl.IsVisible;
-			if (!ctl.IsVisible) return;
+			bool isActive = ctl.IsVisible && !SD.ParserService.LoadSolutionProjectsThread.IsRunning;
+			timer.IsEnabled = isActive;
+			if (!isActive) return;
 			LoggingService.Debug("DefinitionViewPad.Update");
 			
 			ResolveResult res = await ResolveAtCaretAsync(e);
@@ -123,8 +124,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (pos.Equals(oldPosition)) return;
 			oldPosition = pos;
-			if (pos.FileName != currentFileName)
-				LoadFile(new FileName(pos.FileName));
+			var fileName = new FileName(pos.FileName);
+			if (fileName != currentFileName)
+				LoadFile(fileName);
 			ctl.TextArea.Caret.Location = pos.Begin;
 			Rect r = ctl.TextArea.Caret.CalculateCaretRectangle();
 			if (!r.IsEmpty) {

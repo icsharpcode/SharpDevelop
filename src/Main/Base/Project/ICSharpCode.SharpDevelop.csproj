@@ -86,6 +86,7 @@
     <Compile Include="Designer\TypeResolutionService.cs" />
     <Compile Include="Dom\ClassBrowser\AssemblyLoadErrorTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\AssemblyTreeNode.cs" />
+    <Compile Include="Dom\ClassBrowser\BaseTypesTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserTreeView.cs" />
     <Compile Include="Dom\ClassBrowser\IClassBrowser.cs" />
     <Compile Include="Dom\ClassBrowser\MemberTreeNode.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Dom\ClassBrowser\TypeDefinitionTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\WorkspaceModel.cs" />
     <Compile Include="Dom\ClassBrowser\WorkspaceTreeNode.cs" />
+    <Compile Include="Dom\IAssemblyList.cs" />
     <Compile Include="Dom\IAssemblyModel.cs" />
     <Compile Include="Dom\IEntityModelContext.cs" />
     <Compile Include="Dom\IEventModel.cs" />
@@ -104,6 +106,7 @@
     <Compile Include="Dom\IModelFactory.cs" />
     <Compile Include="Dom\INamespaceModel.cs" />
     <Compile Include="Dom\IPropertyModel.cs" />
+    <Compile Include="Dom\ISolutionAssemblyList.cs" />
     <Compile Include="Dom\ISymbolModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModelCollection.cs" />
@@ -111,6 +114,7 @@
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
     <Compile Include="Dom\KeyedModelCollection.cs" />
+    <Compile Include="Dom\ModelCollectionChangedEvent.cs" />
     <Compile Include="Dom\ModelCollectionLinq.cs" />
     <Compile Include="Dom\ImmutableModelCollection.cs" />
     <Compile Include="Dom\ModelCollectionTreeNode.cs" />
@@ -129,6 +133,8 @@
     <Compile Include="Editor\Bookmarks\SDBookmark.cs" />
     <Compile Include="Editor\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Editor\CodeCompletion\SnippetCompletionData.cs" />
+    <Compile Include="Editor\ContextActions\ContextActionsPopupViewModel.cs" />
+    <Compile Include="Editor\ContextActions\ContextActionViewModel.cs" />
     <Compile Include="Editor\DocumentServiceAttribute.cs" />
     <Compile Include="Editor\DocumentUtilities.cs" />
     <Compile Include="Editor\IBracketSearcher.cs" />
@@ -241,7 +247,9 @@
     </Compile>
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\BooleanTypeConverter.cs" />
     <Compile Include="Src\Gui\Components\SideBar\TextEditorSideBar.cs" />
-    <Compile Include="Src\Gui\Components\StringListEditorDialog.xaml.cs" />
+    <Compile Include="Src\Gui\Components\StringListEditorDialog.xaml.cs">
+      <DependentUpon>StringListEditorDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Components\StringListEditorXaml.xaml.cs">
       <DependentUpon>StringListEditorXaml.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -330,6 +338,7 @@
     <Compile Include="Workbench\File\FileService.cs" />
     <Compile Include="Workbench\File\IRecentOpen.cs" />
     <Compile Include="Workbench\ICustomizedCommands.cs" />
+    <Compile Include="Workbench\IOutputPad.cs" />
     <Compile Include="Workbench\IPadContent.cs" />
     <Compile Include="Workbench\IShutdownService.cs" />
     <Compile Include="Workbench\IViewContent.cs" />
@@ -828,6 +837,7 @@
   <ItemGroup>
     <Folder Include="Designer" />
     <Folder Include="Dom\ClassBrowser" />
+    <Folder Include="Editor\ContextActions" />
     <Folder Include="Src\Editor\Dialogs" />
     <Folder Include="Templates" />
     <Folder Include="Project\Configuration" />

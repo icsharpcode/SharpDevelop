@@ -31,9 +31,10 @@ namespace ICSharpCode.XamlBinding
 		public static XamlUnresolvedFile Create(FileName fileName, ITextSource fileContent, AXmlDocument document)
 		{
 			XamlUnresolvedFile file = new XamlUnresolvedFile(fileName);
+			ReadOnlyDocument textDocument = new ReadOnlyDocument(fileContent, fileName);
 			
-			file.errors.AddRange(document.SyntaxErrors.Select(err => new Error(ErrorType.Error, err.Description)));
-			var visitor = new XamlDocumentVisitor(file, fileContent);
+			file.errors.AddRange(document.SyntaxErrors.Select(err => new Error(ErrorType.Error, err.Description, textDocument.GetLocation(err.StartOffset))));
+			var visitor = new XamlDocumentVisitor(file, textDocument);
 			visitor.VisitDocument(document);
 			if (visitor.TypeDefinition != null)
 				file.topLevel = new[] { visitor.TypeDefinition };
@@ -130,10 +131,10 @@ namespace ICSharpCode.XamlBinding
 			AXmlDocument currentDocument;
 			ReadOnlyDocument textDocument;
 			
-			public XamlDocumentVisitor(IUnresolvedFile file, ITextSource fileContent)
+			public XamlDocumentVisitor(IUnresolvedFile file, ReadOnlyDocument textDocument)
 			{
 				this.file = file;
-				textDocument = new ReadOnlyDocument(fileContent, file.FileName);
+				this.textDocument = textDocument;
 			}
 			
 			public override void VisitDocument(AXmlDocument document)

@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -26,7 +24,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				if (!(x is SolutionTreeNode) && (y is SolutionTreeNode))
 					return 1;
 				
-				// Both nodes are solutions or not solutions, compare their Text property
+				// AssemblyTreeNodes (no derived node classes!) appear at the bottom of list
+				if ((x.GetType() == typeof(AssemblyTreeNode)) && (y.GetType() != typeof(AssemblyTreeNode)))
+					return 1;
+				if ((x.GetType() != typeof(AssemblyTreeNode)) && (y.GetType() == typeof(AssemblyTreeNode)))
+					return -1;
+				
+				// All other nodes are compared by their Text property
 				return stringComparer.Compare(x.Text.ToString(), y.Text.ToString());
 			}
 		}
@@ -34,19 +38,19 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		WorkspaceModel workspace;
 		protected static readonly IComparer<SharpTreeNode> ChildNodeComparer = new WorkspaceChildComparer();
 		
-		public IMutableModelCollection<SharpTreeNode> SpecialNodes {
-			get { return workspace.SpecialNodes; }
+		public IMutableModelCollection<IAssemblyList> AssemblyLists {
+			get { return workspace.AssemblyLists; }
 		}
 
-		public AssemblyList AssemblyList {
-			get { return workspace.AssemblyList; }
-			set { workspace.AssemblyList = value; }
+		public IAssemblyList AssemblyList {
+			get { return workspace.MainAssemblyList; }
+			set { workspace.MainAssemblyList = value; }
 		}
 		
 		public WorkspaceTreeNode()
 		{
 			this.workspace = new WorkspaceModel();
-			this.workspace.SpecialNodes.CollectionChanged += SpecialNodesModelCollectionChanged;
+			this.workspace.AssemblyLists.CollectionChanged += AssemblyListsCollectionChanged;
 		}
 		
 		protected override object GetModel()
@@ -55,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		}
 		
 		protected override IModelCollection<object> ModelChildren {
-			get { return workspace.AssemblyList.Assemblies; }
+			get { return workspace.MainAssemblyList.Assemblies; }
 		}
 		
 		protected override IComparer<SharpTreeNode> NodeComparer {
@@ -64,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Text {
 			get {
-				return "Workspace " + AssemblyList.Name;
+				return String.Format(SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.Workspace"), AssemblyList.Name);
 			}
 		}
 		
@@ -81,12 +85,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		protected override void InsertSpecialNodes()
 		{
-			foreach (var node in workspace.SpecialNodes) {
-				Children.OrderedInsert(node, ChildNodeComparer);
+			foreach (var assemblyList in workspace.AssemblyLists) {
+				var treeNode = SD.TreeNodeFactory.CreateTreeNode(assemblyList);
+				if (treeNode != null)
+					Children.OrderedInsert(treeNode, ChildNodeComparer);
 			}
 		}
 		
-		void SpecialNodesModelCollectionChanged(IReadOnlyCollection<SharpTreeNode> removedItems, IReadOnlyCollection<SharpTreeNode> addedItems)
+		void AssemblyListsCollectionChanged(IReadOnlyCollection<IAssemblyList> removedItems, IReadOnlyCollection<IAssemblyList> addedItems)
 		{
 			SynchronizeModelChildren();
 		}

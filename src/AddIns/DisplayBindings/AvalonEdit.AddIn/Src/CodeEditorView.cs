@@ -68,6 +68,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.MouseLeave += TextEditorMouseLeave;
 			this.Unloaded += OnUnloaded;
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
+			this.TextArea.TextView.MouseUp += TextViewMouseUp;
 			this.TextArea.Caret.PositionChanged += HighlightBrackets;
 			this.TextArea.TextView.VisualLinesChanged += CodeEditorView_VisualLinesChanged;
 			
@@ -400,10 +401,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#endregion
 		
 		#region Ctrl+Click Go To Definition
+		bool ctrlClickExecuted = false;
+		
 		void TextViewMouseDown(object sender, MouseButtonEventArgs e)
 		{
 			// close existing debugger popup immediately on text editor mouse down
 			TryCloseExistingPopup(false);
+			ctrlClickExecuted = false;
 			
 			if (options.CtrlClickGoToDefinition && e.ChangedButton == MouseButton.Left && Keyboard.Modifiers == ModifierKeys.Control) {
 				// Ctrl+Click Go to definition
@@ -415,7 +419,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				var goToDefinitionCommand = new GoToDefinition();
 				goToDefinitionCommand.Run(resolveResult);
 				e.Handled = true;
+				ctrlClickExecuted = true;
 			}
+		}
+		
+		void TextViewMouseUp(object sender, MouseButtonEventArgs e)
+		{
+			e.Handled = options.CtrlClickGoToDefinition && ctrlClickExecuted;
 		}
 		#endregion
 		
