@@ -118,7 +118,6 @@
     <Compile Include="Dom\ModelCollectionLinq.cs" />
     <Compile Include="Dom\ImmutableModelCollection.cs" />
     <Compile Include="Dom\ModelCollectionTreeNode.cs" />
-    <Compile Include="Dom\ModelFactoryExtensions.cs" />
     <Compile Include="Dom\SimpleModelCollection.cs" />
     <Compile Include="Dom\SynchronizedModelCollection.cs" />
     <Compile Include="Editor\AvalonEditTextEditorAdapter.cs" />

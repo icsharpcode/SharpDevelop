@@ -252,12 +252,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public override void Execute(object parameter)
 		{
 			var classBrowser = SD.GetService<IClassBrowser>();
-			var modelFactory = SD.GetService<IModelFactory>();
-			if ((classBrowser != null) && (modelFactory != null)) {
+			if (classBrowser != null) {
 				IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
 				
 				// Create a new copy of this assembly model
-				IAssemblyModel newAssemblyModel = modelFactory.SafelyCreateAssemblyModelFromFile(assemblyModel.Context.Location);
+				IAssemblyModel newAssemblyModel = SD.AssemblyParserService.GetAssemblyModelSafe(new ICSharpCode.Core.FileName(assemblyModel.Context.Location), true);
 				if (newAssemblyModel != null)
 					classBrowser.MainAssemblyList.Assemblies.Add(newAssemblyModel);
 			}

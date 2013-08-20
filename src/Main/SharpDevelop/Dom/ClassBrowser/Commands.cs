@@ -24,9 +24,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				openFileDialog.Filter = "Assembly files (*.exe, *.dll)|*.exe;*.dll";
 				openFileDialog.CheckFileExists = true;
 				openFileDialog.CheckPathExists = true;
-				if (openFileDialog.ShowDialog() ?? false)
-				{
-					IAssemblyModel assemblyModel = modelFactory.SafelyCreateAssemblyModelFromFile(openFileDialog.FileName);
+				if (openFileDialog.ShowDialog() ?? false) {
+					IAssemblyModel assemblyModel = SD.AssemblyParserService.GetAssemblyModelSafe(new ICSharpCode.Core.FileName(openFileDialog.FileName), true);
 					if (assemblyModel != null)
 						classBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
 				}
@@ -48,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				if (gacDialog.ShowDialog() ?? false)
 				{
 					foreach (string assemblyFile in gacDialog.SelectedFileNames) {
-						IAssemblyModel assemblyModel = modelFactory.SafelyCreateAssemblyModelFromFile(assemblyFile);
+						IAssemblyModel assemblyModel = SD.AssemblyParserService.GetAssemblyModelSafe(new ICSharpCode.Core.FileName(assemblyFile), true);
 						if (assemblyModel != null)
 							classBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
 					}

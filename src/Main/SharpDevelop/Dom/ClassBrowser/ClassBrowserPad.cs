@@ -230,7 +230,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			var modelFactory = SD.GetRequiredService<IModelFactory>();
 			try {
-				return SD.AssemblyParserService.GetAssemblyModel(new FileName(fileName), false, modelFactory);
+				return SD.AssemblyParserService.GetAssemblyModel(new FileName(fileName), true);
 			} catch (Exception) {
 				// Special AssemblyModel for unresolved file references
 				IEntityModelContext unresolvedContext = new UnresolvedAssemblyEntityModelContext(Path.GetFileName(fileName), fileName);

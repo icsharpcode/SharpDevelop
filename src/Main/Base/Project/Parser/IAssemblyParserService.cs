@@ -57,6 +57,18 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// Creates an IAssemblyModel for the given assembly file.
 		/// </summary>
 		IAssemblyModel GetAssemblyModel(FileName fileName, bool includeInternalMembers = false);
+		
+		/// <summary>
+		/// Creates an <see cref="ICSharpCode.SharpDevelop.Dom.IAssemblyModel"/> from a file name and catches
+		/// errors by showing messages to user.
+		/// </summary>
+		/// <param name="modelFactory">Model factory.</param>
+		/// <param name="fileName">Assembly file name.</param>
+		/// <returns>
+		/// Created <see cref="ICSharpCode.SharpDevelop.Dom.IAssemblyModel"/> or <b>null</b>,
+		/// if model couldn't be created.
+		/// </returns>
+		IAssemblyModel GetAssemblyModelSafe(FileName fileName, bool includeInternalMembers = false);
 	}
 	
 	public interface IAssemblySearcher

@@ -330,5 +330,18 @@ namespace ICSharpCode.SharpDevelop.Parser
 			
 			return model;
 		}
+		
+		public IAssemblyModel GetAssemblyModelSafe(FileName fileName, bool includeInternalMembers = false)
+		{
+			try {
+				return GetAssemblyModel(fileName, includeInternalMembers);
+			} catch (BadImageFormatException) {
+				SD.MessageService.ShowWarningFormatted("${res:ICSharpCode.SharpDevelop.Dom.AssemblyInvalid}", Path.GetFileName(fileName));
+			} catch (FileNotFoundException) {
+				SD.MessageService.ShowWarningFormatted("${res:ICSharpCode.SharpDevelop.Dom.AssemblyNotAccessible}", fileName);
+			}
+			
+			return null;
+		}
 	}
 }
