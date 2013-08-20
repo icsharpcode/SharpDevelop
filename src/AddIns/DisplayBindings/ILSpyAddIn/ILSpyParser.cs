@@ -69,8 +69,9 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			DecompiledTypeReference reference = DecompiledTypeReference.FromFileName(fileName);
 			if (reference != null) {
-//				var model = SD.GetService<IClassBrowser>().FindAssemblyModel(reference.AssemblyFile);
-//				return SD.AssemblyParserService.CreateCompilationForAssembly(model);
+				var model = SD.GetService<IClassBrowser>().FindAssemblyModel(reference.AssemblyFile);
+				if (model != null)
+					return SD.AssemblyParserService.CreateCompilationForAssembly(model, true);
 			}
 			return new CSharpProjectContent()
 				.AddAssemblyReferences(defaultReferences.Value)

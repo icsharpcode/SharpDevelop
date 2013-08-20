@@ -14,6 +14,7 @@ using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
+using ICSharpCode.SharpDevelop.Parser;
 using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
@@ -23,6 +24,38 @@ namespace ICSharpCode.ILSpyAddIn
 	/// </summary>
 	public static class ILSpyDecompilerService
 	{
+		class ILSpyAssemblyResolver : DefaultAssemblySearcher, IAssemblyResolver
+		{
+			public ILSpyAssemblyResolver(FileName fileName)
+				: base(fileName)
+			{
+			}
+			
+			public AssemblyDefinition Resolve(AssemblyNameReference name)
+			{
+				return Resolve(name, new ReaderParameters());
+			}
+			
+			public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
+			{
+				var file = FindAssembly(new DomAssemblyName(name.FullName));
+				if (file == null) return null;
+				return AssemblyDefinition.ReadAssembly(file, parameters);
+			}
+			
+			public AssemblyDefinition Resolve(string fullName)
+			{
+				return Resolve(fullName, new ReaderParameters());
+			}
+			
+			public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
+			{
+				var file = FindAssembly(new DomAssemblyName(fullName));
+				if (file == null) return null;
+				return AssemblyDefinition.ReadAssembly(file, parameters);
+			}
+		}
+		
 		public static ILSpyUnresolvedFile DecompileType(DecompiledTypeReference name)
 		{
 			if (name == null)
@@ -32,9 +65,9 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public static async Task<ILSpyUnresolvedFile> DecompileTypeAsync(DecompiledTypeReference name, CancellationToken cancellationToken)
 		{
-			return Task.Run(
+			return await Task.Run(
 				delegate() { return DoDecompile(name, cancellationToken); },
-				cancellationToken).Result;
+				cancellationToken);
 		}
 		
 		static AstBuilder CreateAstBuilder(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
@@ -42,7 +75,7 @@ namespace ICSharpCode.ILSpyAddIn
 			ReaderParameters readerParameters = new ReaderParameters();
 			// Use new assembly resolver instance so that the AssemblyDefinitions
 			// can be garbage-collected once the code is decompiled.
-			readerParameters.AssemblyResolver = new ILSpyAssemblyResolver(Path.GetDirectoryName(name.AssemblyFile));
+			readerParameters.AssemblyResolver = new ILSpyAssemblyResolver(name.AssemblyFile);
 			
 			ModuleDefinition module = ModuleDefinition.ReadModule(name.AssemblyFile, readerParameters);
 			TypeDefinition typeDefinition = module.GetType(name.Type.ReflectionName);

@@ -67,7 +67,6 @@
     </Compile>
     <Compile Include="DebuggerTextOutput.cs" />
     <Compile Include="ILSpyDecompilerService.cs" />
-    <Compile Include="ILSpyAssemblyResolver.cs" />
     <Compile Include="ILSpyFullParseInformation.cs" />
     <Compile Include="ILSpyParser.cs" />
     <Compile Include="ILSpySymbolSource.cs" />

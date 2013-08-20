@@ -34,9 +34,9 @@ namespace ICSharpCode.ILSpyAddIn
 			syntaxTree.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
 			var outputFormatter = TokenWriter.WrapInWriterThatSetsLocationsInAST(output);
 			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, FormattingOptionsFactory.CreateSharpDevelop()));
-			ILSpyUnresolvedFile file = new ILSpyUnresolvedFile(name, builder.SyntaxTree.Errors);
+			ILSpyUnresolvedFile file = new ILSpyUnresolvedFile(name, syntaxTree.Errors);
 			builder.SyntaxTree.FileName = name.ToFileName();
-			var ts = builder.SyntaxTree.ToTypeSystem();
+			var ts = syntaxTree.ToTypeSystem();
 			file.topLevel = ts.TopLevelTypeDefinitions;
 			file.MemberLocations = output.MemberLocations;
 			file.DebugSymbols = output.DebugSymbols;
@@ -67,10 +67,12 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			throw new NotImplementedException();
 		}
+		
 		public IUnresolvedTypeDefinition GetInnermostTypeDefinition(TextLocation location)
 		{
 			throw new NotImplementedException();
 		}
+		
 		public IUnresolvedMember GetMember(TextLocation location)
 		{
 			throw new NotImplementedException();
@@ -100,6 +102,7 @@ namespace ICSharpCode.ILSpyAddIn
 				throw new NotImplementedException();
 			}
 		}
+		
 		public IList<IUnresolvedAttribute> ModuleAttributes {
 			get {
 				throw new NotImplementedException();
