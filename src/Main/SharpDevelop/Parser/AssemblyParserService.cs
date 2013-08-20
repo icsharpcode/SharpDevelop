@@ -128,8 +128,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 			DateTime lastWriteTime = File.GetLastWriteTimeUtc(fileName);
 			string cacheFileName = GetCacheFileName(fileName);
 			LoadedAssembly pc = TryReadFromCache(cacheFileName, lastWriteTime);
-			if (pc != null)
-				return pc;
+			if (pc != null) {
+				if (!includeInternalMembers || includeInternalMembers == pc.HasInternalMembers)
+					return pc;
+			}
 			
 			//LoggingService.Debug("Loading " + fileName);
 			cancellationToken.ThrowIfCancellationRequested();
@@ -309,7 +311,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			var references = assembly.References
 				.Select(searcher.FindAssembly)
 				.Where(f => f != null);
-			return new SimpleCompilation(mainAssembly, references.Select(fn => GetAssembly(fn)));
+			return new SimpleCompilation(mainAssembly, references.Select(fn => GetAssembly(fn, includeInternalMembers)));
 		}
 		
 		public ICompilation CreateCompilationForAssembly(FileName assembly, bool includeInternalMembers = false)
