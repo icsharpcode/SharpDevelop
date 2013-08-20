@@ -12,6 +12,7 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.TreeView;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Workbench;
@@ -85,6 +86,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public IAssemblyList MainAssemblyList {
 			get { return treeView.MainAssemblyList; }
 			set { treeView.MainAssemblyList = value; }
+		}
+		
+		public IAssemblyModel FindAssemblyModel(FileName fileName)
+		{
+			return treeView.FindAssemblyModel(fileName);
 		}
 		
 		#endregion
@@ -224,14 +230,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			var modelFactory = SD.GetRequiredService<IModelFactory>();
 			try {
-				return modelFactory.CreateAssemblyModelFromFile(fileName);
+				return SD.AssemblyParserService.GetAssemblyModel(new FileName(fileName), false, modelFactory);
 			} catch (Exception) {
 				// Special AssemblyModel for unresolved file references
 				IEntityModelContext unresolvedContext = new UnresolvedAssemblyEntityModelContext(Path.GetFileName(fileName), fileName);
-				IAssemblyModel unresolvedModel = modelFactory.CreateAssemblyModel(unresolvedContext);
-				if (unresolvedModel is IUpdateableAssemblyModel) {
-					((IUpdateableAssemblyModel) unresolvedModel).AssemblyName = unresolvedContext.AssemblyName;
-				}
+				IUpdateableAssemblyModel unresolvedModel = modelFactory.CreateAssemblyModel(unresolvedContext);
+				unresolvedModel.AssemblyName = unresolvedContext.AssemblyName;
+				unresolvedModel.References = EmptyList<DomAssemblyName>.Instance;
 				
 				return unresolvedModel;
 			}

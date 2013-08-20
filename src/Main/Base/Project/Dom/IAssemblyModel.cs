@@ -85,6 +85,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets the assembly name (short name).
 		/// </summary>
 		new string AssemblyName { get; set; }
+		
+		/// <summary>
+		/// Returns the assembly references.
+		/// </summary>
+		new IReadOnlyList<DomAssemblyName> References { get; set; }
 	}
 	
 	public sealed class EmptyAssemblyModel : IAssemblyModel

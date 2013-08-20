@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using ICSharpCode.Core;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -39,6 +41,16 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					OnPropertyChanged();
 				}
 			}
+		}
+		
+		public IAssemblyModel FindAssemblyModel(FileName fileName)
+		{
+			foreach (var list in assemblyLists) {
+				var model = list.Assemblies.FirstOrDefault(m => m.Location == fileName);
+				if (model != null)
+					return model;
+			}
+			return mainAssemblyList.Assemblies.FirstOrDefault(m => m.Location == fileName);
 		}
 		
 		public WorkspaceModel()
