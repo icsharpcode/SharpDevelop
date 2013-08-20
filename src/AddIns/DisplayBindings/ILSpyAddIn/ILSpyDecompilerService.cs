@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,11 +21,27 @@ namespace ICSharpCode.ILSpyAddIn
 	/// </summary>
 	public static class ILSpyDecompilerService
 	{
+		static readonly Dictionary<FileName, AssemblyDefinition> assemblyCache = new Dictionary<FileName, AssemblyDefinition>();
+		
 		class ILSpyAssemblyResolver : DefaultAssemblySearcher, IAssemblyResolver
 		{
 			public ILSpyAssemblyResolver(FileName fileName)
 				: base(fileName)
 			{
+			}
+			
+			AssemblyDefinition Resolve(DomAssemblyName name, ReaderParameters parameters)
+			{
+				var file = FindAssembly(name);
+				if (file == null) return null;
+				AssemblyDefinition asm;
+				lock (assemblyCache) {
+					if (!assemblyCache.TryGetValue(file, out asm)) {
+						asm = AssemblyDefinition.ReadAssembly(file, parameters);
+						assemblyCache.Add(file, asm);
+					}
+				}
+				return asm;
 			}
 			
 			public AssemblyDefinition Resolve(AssemblyNameReference name)
@@ -34,9 +51,7 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
 			{
-				var file = FindAssembly(new DomAssemblyName(name.FullName));
-				if (file == null) return null;
-				return AssemblyDefinition.ReadAssembly(file, parameters);
+				return Resolve(new DomAssemblyName(name.FullName), parameters);
 			}
 			
 			public AssemblyDefinition Resolve(string fullName)
@@ -46,9 +61,7 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
 			{
-				var file = FindAssembly(new DomAssemblyName(fullName));
-				if (file == null) return null;
-				return AssemblyDefinition.ReadAssembly(file, parameters);
+				return Resolve(new DomAssemblyName(fullName), parameters);
 			}
 		}
 		
