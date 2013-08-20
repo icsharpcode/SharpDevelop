@@ -160,6 +160,7 @@
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor\ToolTipService.cs" />
+    <Compile Include="Parser\DefaultAssemblySearcher.cs" />
     <Compile Include="Parser\DomAssemblyName.cs" />
     <Compile Include="Parser\IAssemblyParserService.cs" />
     <Compile Include="Parser\IGlobalAssemblyCacheService.cs" />
@@ -877,6 +878,10 @@
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>

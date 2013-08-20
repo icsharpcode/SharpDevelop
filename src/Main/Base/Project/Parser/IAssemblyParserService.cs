@@ -2,11 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
+using Mono.Cecil;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 
@@ -21,12 +25,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <summary>
 		/// Loads the specified assembly file from disk.
 		/// </summary>
-		IUnresolvedAssembly GetAssembly(FileName fileName, CancellationToken cancellationToken = default(CancellationToken));
-		
-		/// <summary>
-		/// Loads the specified assembly file from disk.
-		/// </summary>
-		Task<IUnresolvedAssembly> GetAssemblyAsync(FileName fileName, CancellationToken cancellationToken = default(CancellationToken));
+		IUnresolvedAssembly GetAssembly(FileName fileName, bool includeInternalMembers = false, CancellationToken cancellationToken = default(CancellationToken));
 		
 		/// <summary>
 		/// <code>using (AssemblyParserService.AvoidRedundantChecks())</code>
@@ -47,30 +46,21 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <summary>
 		/// Creates a compilation for the specified assembly.
 		/// </summary>
-		ICompilation CreateCompilationForAssembly(IAssemblyModel assembly);
+		ICompilation CreateCompilationForAssembly(IAssemblyModel assembly, bool includeInternalMembers = false);
+		
+		/// <summary>
+		/// Creates a compilation for the specified assembly.
+		/// </summary>
+		ICompilation CreateCompilationForAssembly(FileName assembly, bool includeInternalMembers = false);
+		
+		/// <summary>
+		/// Creates an IAssemblyModel for the given assembly file.
+		/// </summary>
+		IAssemblyModel GetAssemblyModel(FileName fileName, bool includeInternalMembers = false);
 	}
 	
 	public interface IAssemblySearcher
 	{
 		FileName FindAssembly(DomAssemblyName fullName);
-	}
-	
-	public class DefaultAssemblySearcher : IAssemblySearcher
-	{
-		FileName mainAssemblyFileName;
-		DirectoryName baseDirectory;
-		
-		public DefaultAssemblySearcher(FileName mainAssemblyFileName)
-		{
-			if (mainAssemblyFileName == null)
-				throw new ArgumentNullException("mainAssemblyFileName");
-			this.mainAssemblyFileName = mainAssemblyFileName;
-			this.baseDirectory = mainAssemblyFileName.GetParentDirectory();
-		}
-		
-		public FileName FindAssembly(DomAssemblyName fullName)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }
