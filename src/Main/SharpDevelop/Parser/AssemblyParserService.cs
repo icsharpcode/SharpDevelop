@@ -142,10 +142,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 			cancellationToken.ThrowIfCancellationRequested();
 			var param = new ReaderParameters();
 			param.AssemblyResolver = new DummyAssemblyResolver();
-			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
+			ModuleDefinition module = ModuleDefinition.ReadModule(fileName, param);
 			
 			CecilLoader l = new CecilLoader();
-			string xmlDocFile = FindXmlDocumentation(fileName, asm.MainModule.Runtime);
+			string xmlDocFile = FindXmlDocumentation(fileName, module.Runtime);
 			if (xmlDocFile != null) {
 				try {
 					l.DocumentationProvider = new XmlDocumentationProvider(xmlDocFile);
@@ -158,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			l.CancellationToken = cancellationToken;
-			pc = l.LoadAssembly(asm);
+			pc = l.LoadModule(module);
 			SaveToCacheAsync(cacheFileName, lastWriteTime, pc).FireAndForget();
 			//SaveToCache(cacheFileName, lastWriteTime, pc);
 			return pc;
