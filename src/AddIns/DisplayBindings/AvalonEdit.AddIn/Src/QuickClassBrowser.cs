@@ -255,7 +255,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					foreach (var member in compoundClass.Members) {
 						if (member.IsSynthetic)
 							continue;
-						bool isInSamePart = string.Equals(member.UnresolvedMember.UnresolvedFile.FileName, selectedClass.UnresolvedFile.FileName, StringComparison.OrdinalIgnoreCase);
+						bool isInSamePart = string.Equals(member.Region.FileName, selectedClass.Region.FileName, StringComparison.OrdinalIgnoreCase);
 						memberItems.Add(new EntityItem(member, ambience) { IsInSamePart = isInSamePart });
 					}
 					memberItems.Sort();
