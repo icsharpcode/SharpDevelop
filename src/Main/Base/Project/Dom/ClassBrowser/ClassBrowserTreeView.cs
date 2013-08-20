@@ -24,6 +24,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			set { workspace.MainAssemblyList = value; }
 		}
 		
+		public IAssemblyList UnpinnedAssemblies {
+			get { return workspace.UnpinnedAssemblies; }
+			set { workspace.UnpinnedAssemblies = value; }
+		}
+		
 		public IAssemblyModel FindAssemblyModel(FileName fileName)
 		{
 			return workspace.FindAssemblyModel(fileName);

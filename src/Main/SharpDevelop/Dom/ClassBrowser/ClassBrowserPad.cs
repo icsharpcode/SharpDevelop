@@ -88,6 +88,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			set { treeView.MainAssemblyList = value; }
 		}
 		
+		public IAssemblyList UnpinnedAssemblies {
+			get { return treeView.UnpinnedAssemblies; }
+			set { treeView.UnpinnedAssemblies = value; }
+		}
+		
 		public IAssemblyModel FindAssemblyModel(FileName fileName)
 		{
 			return treeView.FindAssemblyModel(fileName);

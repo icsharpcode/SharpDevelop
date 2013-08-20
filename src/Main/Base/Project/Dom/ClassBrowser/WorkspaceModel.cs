@@ -21,6 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		}
 		
 		IAssemblyList mainAssemblyList;
+		IAssemblyList unpinnedAssemblies;
 
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
@@ -43,6 +44,18 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
+		public IAssemblyList UnpinnedAssemblies {
+			get {
+				return unpinnedAssemblies;
+			}
+			set {
+				if (unpinnedAssemblies != value) {
+					unpinnedAssemblies = value;
+					OnPropertyChanged();
+				}
+			}
+		}
+		
 		public IAssemblyModel FindAssemblyModel(FileName fileName)
 		{
 			foreach (var list in assemblyLists) {
@@ -50,13 +63,17 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				if (model != null)
 					return model;
 			}
-			return mainAssemblyList.Assemblies.FirstOrDefault(m => m.Location == fileName);
+			var modelInMainAssemblyList = mainAssemblyList.Assemblies.FirstOrDefault(m => m.Location == fileName);
+			if (modelInMainAssemblyList != null)
+				return modelInMainAssemblyList;
+			return unpinnedAssemblies.Assemblies.FirstOrDefault(m => m.Location == fileName);
 		}
 		
 		public WorkspaceModel()
 		{
 			this.assemblyLists = new SimpleModelCollection<IAssemblyList>();
 			this.MainAssemblyList = new AssemblyList();
+			this.UnpinnedAssemblies = new AssemblyList();
 		}
 	}
 }

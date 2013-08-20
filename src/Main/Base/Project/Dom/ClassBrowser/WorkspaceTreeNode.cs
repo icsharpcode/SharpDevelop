@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		}
 		
 		protected override IModelCollection<object> ModelChildren {
-			get { return workspace.MainAssemblyList.Assemblies; }
+			get { return workspace.MainAssemblyList.Assemblies.Concat(workspace.UnpinnedAssemblies.Assemblies); }
 		}
 		
 		protected override IComparer<SharpTreeNode> NodeComparer {
