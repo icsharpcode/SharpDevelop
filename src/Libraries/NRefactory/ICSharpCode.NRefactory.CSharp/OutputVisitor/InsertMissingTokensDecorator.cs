@@ -93,7 +93,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override void WriteIdentifier(Identifier identifier)
 		{
-			identifier.SetStartLocation(locationProvider.Location);
+			if (!identifier.IsNull)
+				identifier.SetStartLocation(locationProvider.Location);
 			currentList.Add(identifier);
 			base.WriteIdentifier(identifier);
 		}
