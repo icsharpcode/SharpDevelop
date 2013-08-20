@@ -12,18 +12,12 @@ using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.Ast;
-using ICSharpCode.Decompiler.Disassembler;
-using ICSharpCode.NRefactory.Documentation;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.ILSpyAddIn;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Workbench;
-using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {

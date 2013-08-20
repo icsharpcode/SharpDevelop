@@ -304,9 +304,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		public ICompilation CreateCompilationForAssembly(IAssemblyModel assembly, bool includeInternalMembers = false)
 		{
-			var fileName = new FileName(assembly.Location);
-			var mainAssembly = GetAssembly(fileName, includeInternalMembers);
-			var searcher = new DefaultAssemblySearcher(fileName);
+			var mainAssembly = GetAssembly(assembly.Location, includeInternalMembers);
+			var searcher = new DefaultAssemblySearcher(assembly.Location);
 			var references = assembly.References
 				.Select(searcher.FindAssembly)
 				.Where(f => f != null);
