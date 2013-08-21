@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -144,8 +145,7 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			if (typeName == null)
 				throw new ArgumentNullException("typeName");
-			typeName = typeName.Replace("_", "__");
-			foreach (var ch in Path.GetInvalidFileNameChars()) {
+			foreach (var ch in new[] { '_' }.Concat(Path.GetInvalidFileNameChars())) {
 				typeName = typeName.Replace(ch.ToString(), string.Format("_{0:X4}", (int)ch));
 			}
 			return typeName;
@@ -157,10 +157,9 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			if (typeName == null)
 				throw new ArgumentNullException("typeName");
-			foreach (var ch in Path.GetInvalidFileNameChars()) {
+			foreach (var ch in Path.GetInvalidFileNameChars().Concat(new[] { '_' })) {
 				typeName = unescapeRegex.Replace(typeName, m => ((char)int.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber)).ToString());
 			}
-			typeName = typeName.Replace("__", "_");
 			return typeName;
 		}
 		
