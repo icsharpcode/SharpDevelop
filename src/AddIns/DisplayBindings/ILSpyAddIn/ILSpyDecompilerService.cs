@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -122,7 +123,7 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public FileName ToFileName()
 		{
-			return FileName.Create("ilspy://" + AssemblyFile + "/" + Type.ReflectionName + ".cs");
+			return FileName.Create("ilspy://" + AssemblyFile + "/" + EscapeTypeName(Type.ReflectionName) + ".cs");
 		}
 		
 		static readonly Regex nameRegex = new Regex(@"^ilspy\://(.+)/(.+)\.cs$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -134,9 +135,33 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			string asm, typeName;
 			asm = match.Groups[1].Value;
-			typeName = match.Groups[2].Value;
+			typeName = UnescapeTypeName(match.Groups[2].Value);
 			
 			return new DecompiledTypeReference(new FileName(asm), new FullTypeName(typeName));
+		}
+		
+		public static string EscapeTypeName(string typeName)
+		{
+			if (typeName == null)
+				throw new ArgumentNullException("typeName");
+			typeName = typeName.Replace("_", "__");
+			foreach (var ch in Path.GetInvalidFileNameChars()) {
+				typeName = typeName.Replace(ch.ToString(), string.Format("_{0:X4}", (int)ch));
+			}
+			return typeName;
+		}
+		
+		static readonly Regex unescapeRegex = new Regex(@"_([0-9A-F]{4})", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		
+		public static string UnescapeTypeName(string typeName)
+		{
+			if (typeName == null)
+				throw new ArgumentNullException("typeName");
+			foreach (var ch in Path.GetInvalidFileNameChars()) {
+				typeName = unescapeRegex.Replace(typeName, m => ((char)int.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber)).ToString());
+			}
+			typeName = typeName.Replace("__", "_");
+			return typeName;
 		}
 		
 		#region Equals and GetHashCode implementation
