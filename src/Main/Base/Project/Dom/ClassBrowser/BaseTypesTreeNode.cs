@@ -3,7 +3,10 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
@@ -45,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (currentTypeDef != null) {
 				foreach (var baseType in currentTypeDef.DirectBaseTypes) {
 					ITypeDefinition baseTypeDef = baseType.GetDefinition();
-					if (baseTypeDef != null) {
+					if ((baseTypeDef != null) && (baseTypeDef.FullName != "System.Object")) {
 						ITypeDefinitionModel baseTypeModel = GetTypeDefinitionModel(baseTypeDef);
 						if (baseTypeModel != null)
 							baseTypes.Add(baseTypeModel);
@@ -56,21 +59,39 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		ITypeDefinitionModel GetTypeDefinitionModel(ITypeDefinition definition)
 		{
-			ITypeDefinitionModel model = definition.GetModel();
-			if (model == null) {
-				// Try to get model from ClassBrowser's assembly list
-				var classBrowser = SD.GetService<IClassBrowser>();
-				if (classBrowser != null) {
-					foreach (var assemblyModel in classBrowser.MainAssemblyList.Assemblies) {
-						model = assemblyModel.TopLevelTypeDefinitions[definition.FullTypeName];
-						if (model != null) {
-							return model;
+			ITypeDefinitionModel resolveTypeDefModel = definition.GetModel();
+			if (resolveTypeDefModel == null) {
+				var assemblyParserService = SD.GetService<IAssemblyParserService>();
+				if (assemblyParserService != null) {
+					var assemblyFileName = this.definition.Resolve().ParentAssembly.GetRuntimeAssemblyLocation();
+					if (assemblyFileName != null) {
+						try {
+							// Look in the type's AssemblyModel
+							var assemblyModel = assemblyParserService.GetAssemblyModel(assemblyFileName);
+							resolveTypeDefModel = assemblyModel.TopLevelTypeDefinitions[definition.FullTypeName];
+							if (resolveTypeDefModel != null) {
+								return resolveTypeDefModel;
+							}
+							
+							if (assemblyModel.References != null) {
+								foreach (var referencedAssemblyName in assemblyModel.References) {
+									DefaultAssemblySearcher searcher = new DefaultAssemblySearcher(assemblyModel.Location);
+									var resolvedFile = searcher.FindAssembly(referencedAssemblyName);
+									var referenceAssemblyModel = assemblyParserService.GetAssemblyModel(resolvedFile);
+									resolveTypeDefModel = referenceAssemblyModel.TopLevelTypeDefinitions[definition.FullTypeName];
+									if (resolveTypeDefModel != null) {
+										return resolveTypeDefModel;
+									}
+								}
+							}
+						} catch (Exception) {
+
 						}
 					}
 				}
 			}
 			
-			return model;
+			return resolveTypeDefModel;
 		}
 
 		protected override System.Collections.Generic.IComparer<ICSharpCode.TreeView.SharpTreeNode> NodeComparer {
