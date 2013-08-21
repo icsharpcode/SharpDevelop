@@ -28,10 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		}
 		
 		public override object Icon {
-			// TODO why do I have to resolve this?
-			get {
-				return ClassBrowserIconService.GetIcon(model.Resolve()).ImageSource;
-			}
+			get { return ClassBrowserIconService.GetIcon(model.UnresolvedMember).ImageSource; }
 		}
 		
 		object cachedText;

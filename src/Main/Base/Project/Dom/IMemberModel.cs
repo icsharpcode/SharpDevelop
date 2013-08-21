@@ -25,6 +25,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		new IMember Resolve(ICompilation compilation);
 		
 		/// <summary>
+		/// Gets the unresolved member.
+		/// </summary>
+		IUnresolvedMember UnresolvedMember { get; }
+		
+		/// <summary>
 		/// Gets if the member is virtual. Is true only if the "virtual" modifier was used, but non-virtual
 		/// members can be overridden, too; if they are abstract or overriding a method.
 		/// </summary>
