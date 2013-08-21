@@ -322,6 +322,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public IAssemblyModel GetAssemblyModel(FileName fileName, bool includeInternalMembers = false)
 		{
 			LoadedAssembly assembly = GetLoadedAssembly(fileName, includeInternalMembers);
+			// TODO context might need references as well
 			IEntityModelContext context = new AssemblyEntityModelContext(assembly.ProjectContent);
 			IUpdateableAssemblyModel model = SD.GetService<IModelFactory>().CreateAssemblyModel(context);
 			

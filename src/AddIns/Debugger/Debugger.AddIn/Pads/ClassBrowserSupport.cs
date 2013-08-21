@@ -7,6 +7,7 @@ using Debugger;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 using System.Linq;
@@ -197,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		static IAssemblyModel CreateAssemblyModel(Module module)
 		{
 			// references??
-			IEntityModelContext context = new AssemblyEntityModelContext(module.Assembly.UnresolvedAssembly);
+			IEntityModelContext context = new DebuggerProcessEntityModelContext(module.Process);
 			IUpdateableAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
 			var types = module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList();
 			model.AssemblyName = module.UnresolvedAssembly.AssemblyName;
@@ -235,6 +236,45 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (assemblyModel != null) {
 				var ctx = MenuService.ShowContextMenu(null, assemblyModel, "/SharpDevelop/Services/DebuggerService/ModuleContextMenu");
 			}
+		}
+	}
+	
+	class DebuggerProcessEntityModelContext : IEntityModelContext
+	{
+		Debugger.Process process;
+		
+		public DebuggerProcessEntityModelContext(Process process)
+		{
+			if (process == null)
+				throw new ArgumentNullException("process");
+			this.process = process;
+		}
+		
+		public ICompilation GetCompilation()
+		{
+			var mainModule = process.GetModule(Path.GetFileName(process.Filename));
+			return new SimpleCompilation(mainModule.UnresolvedAssembly, process.Modules.Where(m => m != mainModule).Select(m => m.UnresolvedAssembly));
+		}
+		
+		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)
+		{
+			return false;
+		}
+		
+		public ICSharpCode.SharpDevelop.Project.IProject Project {
+			get { return null; }
+		}
+		
+		public string AssemblyName {
+			get { return Path.GetFileNameWithoutExtension(process.Filename); }
+		}
+		
+		public string Location {
+			get { return process.Filename; }
+		}
+		
+		public bool IsValid {
+			get { return true; }
 		}
 	}
 	
