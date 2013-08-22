@@ -35,18 +35,18 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
 		
-		protected virtual void OnPackageReferenceRemoved(IPackage package)
+		protected virtual void OnPackageReferenceRemoving(IPackage package)
 		{
-			if (PackageReferenceRemoved != null) {
-				PackageReferenceRemoved(this, new PackageOperationEventArgs(package, null, String.Empty));
+			if (PackageReferenceRemoving != null) {
+				PackageReferenceRemoving(this, new PackageOperationEventArgs(package, null, String.Empty));
 			}
 		}
 		
 		#pragma warning disable 67
 		public event EventHandler<PackageOperationEventArgs> PackageReferenceAdding;
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
 		#pragma warning restore 67
 		
 		public IPackageRepository LocalRepository { get; set; }
@@ -87,9 +87,9 @@ namespace ICSharpCode.PackageManagement.Design
 			OnPackageReferenceAdded(package);
 		}
 		
-		public void FirePackageReferenceRemoved(IPackage package)
+		public void FirePackageReferenceRemoving(IPackage package)
 		{
-			OnPackageReferenceRemoved(package);
+			OnPackageReferenceRemoving(package);
 		}
 		
 		public void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)

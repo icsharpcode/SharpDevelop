@@ -39,14 +39,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			project.PackageInstalled += PackageInstalled;
 			project.PackageReferenceAdded += PackageReferenceAdded;
-			project.PackageReferenceRemoved += PackageReferenceRemoved;
+			project.PackageReferenceRemoving += PackageReferenceRemoving;
 		}
 		
 		void UnregisterEvents()
 		{
 			project.PackageInstalled -= PackageInstalled;
 			project.PackageReferenceAdded -= PackageReferenceAdded;
-			project.PackageReferenceRemoved -= PackageReferenceRemoved;
+			project.PackageReferenceRemoving -= PackageReferenceRemoving;
 		}
 		
 		void PackageInstalled(object sender, PackageOperationEventArgs e)
@@ -54,7 +54,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			RunInitScript(e);
 		}
 		
-		void PackageReferenceRemoved(object sender, PackageOperationEventArgs e)
+		void PackageReferenceRemoving(object sender, PackageOperationEventArgs e)
 		{
 			RunUninstallScript(e);
 		}
