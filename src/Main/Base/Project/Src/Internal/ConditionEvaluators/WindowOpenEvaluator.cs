@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			Type openWindowType = Type.GetType(openWindow, false);
 			if (openWindowType == null) {
-				SD.Log.WarnFormatted("WindowActiveCondition: cannot find Type {0}", openWindow);
+				SD.Log.WarnFormatted("WindowOpenCondition: cannot find Type {0}", openWindow);
 				return false;
 			}
 			

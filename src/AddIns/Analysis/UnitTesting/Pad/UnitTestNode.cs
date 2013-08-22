@@ -15,8 +15,6 @@ namespace ICSharpCode.UnitTesting
 {
 	public class UnitTestNode : ModelCollectionTreeNode
 	{
-		protected static readonly IComparer<SharpTreeNode> NodeTextComparer = KeyComparer.Create((SharpTreeNode n) => n.Text.ToString(), StringComparer.OrdinalIgnoreCase, StringComparer.OrdinalIgnoreCase);
-		
 		readonly ITest test;
 		
 		public UnitTestNode(ITest test)
