@@ -131,11 +131,14 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 
 		public void Fill(List<IPrintableObject> collection)
 		{
-			foreach (IDataItem item in collection)
+			foreach (IPrintableObject item in collection)
             {
-                FillInternal(item);
+				if (item is IDataItem) {
+					FillInternal(item as IDataItem);
+				} 
             }
 		}
+		
 		
 		void FillInternal (IDataItem item) {
 			item.DBValue = String.Empty;

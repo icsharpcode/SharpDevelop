@@ -64,25 +64,27 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		public TextBlock CreateTextBlock(ExportText exportText)
 		{
 			var textBlock = new TextBlock();
-			
-			textBlock.Text = exportText.Text;
+		
+//			textBlock.Text = exportText.Text;
+		textBlock.Width = exportText.DesiredSize.Width;
+		textBlock.Height = exportText.DesiredSize.Height;
 		
 			textBlock.Foreground = ConvertBrush(exportText.ForeColor);
 			SetFont(textBlock,exportText);
 			textBlock.Background = ConvertBrush(exportText.BackColor);
 			
 			textBlock.TextWrapping = TextWrapping.WrapWithOverflow;
-			
-//			string [] inlines = exportText.Text.Split(System.Environment.NewLine.ToCharArray());
+//			textBlock.TextWrapping = TextWrapping.NoWrap;
+			string [] inlines = exportText.Text.Split(System.Environment.NewLine.ToCharArray());
 			//string [] inlines = "jmb,.n,knn-.n.-n.n-.n.n.-";
-//			for (int i = 0; i < inlines.Length; i++) {
-//				if (inlines[i].Length > 0) {
-//					textBlock.Inlines.Add(new Run(inlines[i]));
-			////					textBlock.Inlines.Add(new LineBreak());
-//				}
-//			}
-//			var li = textBlock.Inlines.LastInline;
-//			textBlock.Inlines.Remove(li);
+			for (int i = 0; i < inlines.Length; i++) {
+				if (inlines[i].Length > 0) {
+					textBlock.Inlines.Add(new Run(inlines[i]));
+							textBlock.Inlines.Add(new LineBreak());
+				}
+			}
+			var li = textBlock.Inlines.LastInline;
+			textBlock.Inlines.Remove(li);
 //			SetDimension(textBlock,exportText.StyleDecorator);
 //		    textBlock.Background = ConvertBrush(exportText.StyleDecorator.BackColor);
 //		    SetContendAlignment(textBlock,exportText.StyleDecorator);

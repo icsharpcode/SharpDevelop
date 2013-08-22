@@ -35,9 +35,9 @@ namespace ICSharpCode.Reporting.Arrange
 				if (tbi != null) {
 					element.DesiredSize = MeasurementService.Measure(tbi,graphics);
 				}
+				Console.WriteLine("Measure -> {0} - {1}",element.Size,element.DesiredSize);
 			}
-			exportColumn.DesiredSize = exportColumn.Size;
-			return exportColumn.Size;
+			return exportColumn.DesiredSize;
 		}
 	}
 	
