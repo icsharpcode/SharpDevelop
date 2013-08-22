@@ -270,6 +270,9 @@ namespace Debugger
 		{
 			for (int i = 0; i < this.MethodInfo.Parameters.Count; i++) {
 				if (this.MethodInfo.Parameters[i].Name == name) {
+					LocalVariable capturedVar;
+					if (HasCapturedVariable(name, out capturedVar))
+						return capturedVar.GetValue(this);
 					return GetArgumentValue(i);
 				}
 			}
@@ -280,6 +283,10 @@ namespace Debugger
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgumentValue(int index)
 		{
+			var param = this.MethodInfo.Parameters[index];
+			LocalVariable capturedVariable;
+			if (HasCapturedVariable(param.Name, out capturedVariable))
+				return capturedVariable.GetValue(this);
 			return new Value(this.AppDomain, GetArgumentCorValue(index));
 		}
 		
@@ -310,6 +317,13 @@ namespace Debugger
 				}
 			}
 			return corValue;
+		}
+		
+		/// <summary> Gets whether a captured variable with the <paramref name="name"/> exists. </summary>
+		public bool HasCapturedVariable(string name, out LocalVariable variable)
+		{
+			variable = GetLocalVariables(this.IP).FirstOrDefault(v => v.IsCaptured && v.Name == name);
+			return variable != null;
 		}
 		
 		/// <summary> Get all local variables </summary>

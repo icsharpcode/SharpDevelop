@@ -255,13 +255,25 @@ namespace Debugger.AddIn.TreeModel
 		public static IEnumerable<TreeNode> GetLocalVariables()
 		{
 			var stackFrame = GetCurrentStackFrame();
+			var localVars = stackFrame.GetLocalVariables(stackFrame.IP).ToList();
 			foreach(var par in stackFrame.MethodInfo.Parameters.Select((p, i) => new { Param = p, Index = i})) {
 				var parCopy = par;
-				yield return new ValueNode(ClassBrowserIconService.Parameter, par.Param.Name, () => GetCurrentStackFrame().GetArgumentValue(par.Index));
+				// do not display parameters that have been copied to captured variables twice. (see SD-1912)
+				// display only the value of the captured instance (the value of the parameter still has the original value)
+				var localVar = localVars.FirstOrDefault(v => string.Equals(v.Name, parCopy.Param.Name, StringComparison.Ordinal));
+				if (localVar == null)
+					yield return new ValueNode(ClassBrowserIconService.Parameter, par.Param.Name,
+					                           () => stackFrame.GetArgumentValue(par.Index));
+				else {
+					yield return new ValueNode(ClassBrowserIconService.Parameter, localVar.Name,
+					                           () => localVar.GetValue(stackFrame));
+					localVars.Remove(localVar);
+				}
 			}
-			foreach(LocalVariable locVar in stackFrame.GetLocalVariables(stackFrame.IP)) {
+			foreach(LocalVariable locVar in localVars) {
 				var locVarCopy = locVar;
-				yield return new ValueNode(ClassBrowserIconService.LocalVariable, locVar.Name, () => locVarCopy.GetValue(GetCurrentStackFrame()));
+				yield return new ValueNode(ClassBrowserIconService.LocalVariable, locVar.Name,
+				                          () => locVarCopy.GetValue(stackFrame));
 			}
 		}
 		
