@@ -15,7 +15,7 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<PackageOperationEventArgs> PackageInstalled;
 		event EventHandler<PackageOperationEventArgs> PackageUninstalled;
 		event EventHandler<PackageOperationEventArgs> PackageReferenceAdded;
-		event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
+		event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
 		
 		string Name { get; }
 		ILogger Logger { get; set; }

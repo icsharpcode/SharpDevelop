@@ -80,9 +80,9 @@ namespace PackageManagement.Tests
 			project.Raise(p => p.PackageReferenceAdded += null, null, eventArgs);
 		}
 		
-		void FirePackageReferenceRemovedEvent(IPackageManagementProject project, PackageOperationEventArgs eventArgs)
+		void FirePackageReferenceRemovingEvent(IPackageManagementProject project, PackageOperationEventArgs eventArgs)
 		{
-			project.Raise(p => p.PackageReferenceRemoved += null, null, eventArgs);
+			project.Raise(p => p.PackageReferenceRemoving += null, null, eventArgs);
 		}
 		
 		IPackageScript CreatePackageScript()
@@ -292,7 +292,7 @@ namespace PackageManagement.Tests
 			string installPath = @"d:\projects\MyProject\packages\foo";
 			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs(package, installPath);
 			
-			FirePackageReferenceRemovedEvent(project, eventArgs);
+			FirePackageReferenceRemovingEvent(project, eventArgs);
 			
 			scriptFactory.AssertWasCalled(factory => factory.CreatePackageUninstallScript(package, installPath));
 		}
@@ -307,7 +307,7 @@ namespace PackageManagement.Tests
 			SetUninstallScriptToReturnFromScriptFactory(uninstallScript);
 			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			
-			FirePackageReferenceRemovedEvent(project2, eventArgs);
+			FirePackageReferenceRemovingEvent(project2, eventArgs);
 			
 			scriptRunner.AssertWasCalled(runner => runner.Run(uninstallScript));
 		}
@@ -322,7 +322,7 @@ namespace PackageManagement.Tests
 			SetUninstallScriptToReturnFromScriptFactory(uninstallScript);
 			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			
-			FirePackageReferenceRemovedEvent(project2, eventArgs);
+			FirePackageReferenceRemovingEvent(project2, eventArgs);
 			
 			Assert.AreEqual(project2, uninstallScript.Project);
 		}
@@ -337,7 +337,7 @@ namespace PackageManagement.Tests
 			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			
 			action.Dispose();
-			FirePackageReferenceRemovedEvent(project, eventArgs);
+			FirePackageReferenceRemovingEvent(project, eventArgs);
 			
 			scriptRunner.AssertWasNotCalled(runner => runner.Run(uninstallScript));
 		}
