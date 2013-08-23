@@ -26,16 +26,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
 		PlacementOperation operation;
-		ChangeGroup changeGroup;
-		
-		bool _isResizing;
-		
-		/// <summary>
-		/// Gets whether this extension is resizing any element.
-		/// </summary>
-		public bool IsResizing{
-			get { return _isResizing; }
-		}
 		
 		public RotateThumbExtension()
 		{
@@ -62,15 +52,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			return rotateThumb;
 		}
 		
-		Size oldSize;
-		
 		#region Rotate
 		
 		private Point centerPoint;
 		private UIElement parent;
 		private Vector startVector;
 		private RotateTransform rotateTransform;
-		private Point renderTransformOrigin;
 		private double initialAngle;
 		private DesignItem rtTransform;
 		private double angle;
