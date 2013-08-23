@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				foreach (var baseType in currentTypeDef.DirectBaseTypes) {
 					ITypeDefinition baseTypeDef = baseType.GetDefinition();
 					if ((baseTypeDef != null) && (baseTypeDef.FullName != "System.Object")) {
-						ITypeDefinitionModel baseTypeModel = GetTypeDefinitionModel(baseTypeDef);
+						ITypeDefinitionModel baseTypeModel = GetTypeDefinitionModel(currentTypeDef, baseTypeDef);
 						if (baseTypeModel != null)
 							baseTypes.Add(baseTypeModel);
 					}
@@ -57,36 +57,34 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
-		ITypeDefinitionModel GetTypeDefinitionModel(ITypeDefinition definition)
+		ITypeDefinitionModel GetTypeDefinitionModel(ITypeDefinition mainTypeDefinition, ITypeDefinition baseTypeDefinition)
 		{
-			ITypeDefinitionModel resolveTypeDefModel = definition.GetModel();
-			if (resolveTypeDefModel == null) {
-				var assemblyParserService = SD.GetService<IAssemblyParserService>();
-				if (assemblyParserService != null) {
-					var assemblyFileName = this.definition.Resolve().ParentAssembly.GetRuntimeAssemblyLocation();
-					if (assemblyFileName != null) {
-						try {
-							// Look in the type's AssemblyModel
-							var assemblyModel = assemblyParserService.GetAssemblyModel(assemblyFileName);
-							resolveTypeDefModel = assemblyModel.TopLevelTypeDefinitions[definition.FullTypeName];
-							if (resolveTypeDefModel != null) {
-								return resolveTypeDefModel;
-							}
-							
-							if (assemblyModel.References != null) {
-								foreach (var referencedAssemblyName in assemblyModel.References) {
-									DefaultAssemblySearcher searcher = new DefaultAssemblySearcher(assemblyModel.Location);
-									var resolvedFile = searcher.FindAssembly(referencedAssemblyName);
-									var referenceAssemblyModel = assemblyParserService.GetAssemblyModel(resolvedFile);
-									resolveTypeDefModel = referenceAssemblyModel.TopLevelTypeDefinitions[definition.FullTypeName];
-									if (resolveTypeDefModel != null) {
-										return resolveTypeDefModel;
-									}
+			ITypeDefinitionModel resolveTypeDefModel = null;
+			var assemblyParserService = SD.GetService<IAssemblyParserService>();
+			if (assemblyParserService != null) {
+				var assemblyFileName = mainTypeDefinition.ParentAssembly.GetRuntimeAssemblyLocation();
+				if (assemblyFileName != null) {
+					try {
+						// Look in the type's AssemblyModel
+						var assemblyModel = assemblyParserService.GetAssemblyModel(assemblyFileName);
+						resolveTypeDefModel = assemblyModel.TopLevelTypeDefinitions[baseTypeDefinition.FullTypeName];
+						if (resolveTypeDefModel != null) {
+							return resolveTypeDefModel;
+						}
+						
+						if (assemblyModel.References != null) {
+							foreach (var referencedAssemblyName in assemblyModel.References) {
+								DefaultAssemblySearcher searcher = new DefaultAssemblySearcher(assemblyModel.Location);
+								var resolvedFile = searcher.FindAssembly(referencedAssemblyName);
+								var referenceAssemblyModel = assemblyParserService.GetAssemblyModel(resolvedFile);
+								resolveTypeDefModel = referenceAssemblyModel.TopLevelTypeDefinitions[baseTypeDefinition.FullTypeName];
+								if (resolveTypeDefModel != null) {
+									return resolveTypeDefModel;
 								}
 							}
-						} catch (Exception) {
-
 						}
+					} catch (Exception) {
+						// TODO Can't load the type, what to do?
 					}
 				}
 			}
