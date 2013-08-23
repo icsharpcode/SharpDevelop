@@ -2,14 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Forms;
 
-using ICSharpCode.Core;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
@@ -22,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static TaskListPad instance;
 		Dictionary<string, bool> displayedTokens;
+		readonly ObservableCollection<SDTask> tasks;
 		IUnresolvedTypeDefinition oldClass;
 		int selectedScopeIndex = 0;
 		bool isInitialized = false;
@@ -30,10 +34,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get { return isInitialized; }
 		}
 		
-		ToolStrip toolStrip;
-		Panel contentPanel = new Panel();
+		ToolBar toolBar;
+		DockPanel contentPanel = new DockPanel();
 		
-		TaskView taskView = new TaskView() { DefaultContextMenuAddInTreeEntry = TaskListPad.DefaultContextMenuAddInTreeEntry };
+		ListView taskView = new ListView();
 		
 		public Dictionary<string, bool> DisplayedTokens {
 			get { return displayedTokens; }
@@ -61,18 +65,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			instance = this;
 			this.displayedTokens = new Dictionary<string, bool>();
+			this.tasks = new ObservableCollection<SDTask>();
 			
-			RedrawContent();
-			SD.ResourceService.LanguageChanged += delegate { RedrawContent(); };
-			
-			InitializeToolStrip();
+			InitializePadContent();
 
-			TaskService.Cleared += new EventHandler(TaskServiceCleared);
-			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
-			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
-			TaskService.InUpdateChanged += new EventHandler(TaskServiceInUpdateChanged);
+			TaskService.Cleared += TaskServiceCleared;
+			TaskService.Added   += TaskServiceAdded;
+			TaskService.Removed += TaskServiceRemoved;
+			TaskService.InUpdateChanged += TaskServiceInUpdateChanged;
 			
-			SD.Workbench.ActiveViewContentChanged += new EventHandler(WorkbenchActiveViewContentChanged);
+			SD.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
 			
 			if (SD.Workbench.ActiveViewContent != null) {
 				UpdateItems();
@@ -125,58 +127,58 @@ namespace ICSharpCode.SharpDevelop.Gui
 				UpdateItems();
 		}
 		
-		void InitializeToolStrip()
+		void InitializePadContent()
 		{
-			taskView.CreateControl();
-			
-			contentPanel.Controls.Add(taskView);
-			
 			IReadOnlyList<string> tokens = SD.ParserService.TaskListTokens;
 			
-			foreach (string token in tokens)
-			{
+			foreach (string token in tokens) {
 				if (!this.displayedTokens.ContainsKey(token)) {
 					this.displayedTokens.Add(token, true);
 				}
 			}
 			
-			toolStrip = SD.WinForms.ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/TaskList/Toolbar");
+			toolBar = ToolBarService.CreateToolBar(contentPanel, this, "/SharpDevelop/Pads/TaskList/Toolbar");
+			var items = (IList)toolBar.ItemsSource;
 			
 			foreach (string token in tokens) {
-				toolStrip.Items.Add(new ToolStripSeparator());
-				toolStrip.Items.Add(new TaskListTokensToolbarCheckBox(token));
+				items.Add(new Separator());
+				items.Add(new TaskListTokensToolbarCheckBox(token));
 			}
 			
-			toolStrip.Stretch   = true;
-			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			
-			contentPanel.Controls.Add(toolStrip);
+			contentPanel.Children.Add(toolBar);
+			toolBar.SetValue(DockPanel.DockProperty, Dock.Top);
+			contentPanel.Children.Add(taskView);
+			taskView.ItemsSource = tasks;
+			taskView.MouseDoubleClick += TaskViewMouseDoubleClick;
+			taskView.Style = (Style)new TaskViewResources()["TaskListView"];
+			taskView.ContextMenu = MenuService.CreateContextMenu(taskView, DefaultContextMenuAddInTreeEntry);
 		}
 		
-		void RedrawContent()
+		void TaskViewMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			taskView.RefreshColumnNames();
+			SDTask task = taskView.SelectedItem as SDTask;
+			var item = taskView.ItemContainerGenerator.ContainerFromItem(task) as ListViewItem;
+			UIElement element = e.MouseDevice.DirectlyOver as UIElement;
+			if (task != null && task.FileName != null && element != null && item != null
+			    && element.IsDescendantOf(item)) {
+				SD.FileService.JumpToFilePosition(task.FileName, task.Line, task.Column);
+			}
 		}
 		
 		public void UpdateItems()
 		{
-			this.taskView.BeginUpdate();
-			
-			this.taskView.ClearTasks();
+			tasks.Clear();
 			
 			foreach (SDTask t in TaskService.CommentTasks) {
-				this.AddItem(t);
+				AddItem(t);
 			}
-			
-			RedrawContent();
-			this.taskView.EndUpdate();
 		}
 		
 		void AddItem(SDTask item)
 		{
 			foreach (KeyValuePair<string, bool> pair in displayedTokens) {
-				if (item.Description.StartsWith(pair.Key) && pair.Value && IsInScope(item))
-					this.taskView.AddTask(item);
+				if (item.Description.StartsWith(pair.Key, StringComparison.Ordinal) && pair.Value && IsInScope(item))
+					tasks.Add(item);
 			}
 		}
 		
@@ -189,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				case 0:
 					// Solution
 					if (ProjectService.OpenSolution != null) {
-						foreach (AbstractProject proj in ProjectService.OpenSolution.Projects) {
+						foreach (IProject proj in ProjectService.OpenSolution.Projects) {
 							if (proj.FindFile(item.FileName) != null)
 								return true;
 						}
@@ -248,47 +250,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OnSolutionOpen(object sender, SolutionEventArgs e)
 		{
-			taskView.ClearTasks();
+			tasks.Clear();
 		}
 		
 		void OnSolutionClosed(object sender, EventArgs e)
 		{
-			taskView.ClearTasks();
+			tasks.Clear();
 		}
 		
 		void TaskServiceCleared(object sender, EventArgs e)
 		{
-			taskView.ClearTasks();
+			tasks.Clear();
 		}
 		
 		void TaskServiceAdded(object sender, TaskEventArgs e)
 		{
-			this.taskView.BeginUpdate();
-
 			if (e.Task.TaskType == TaskType.Comment) {
 				AddItem(e.Task);
 			}
-			
-			RedrawContent();
-			
-			this.taskView.EndUpdate();
 		}
 		
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
 		{
-			this.taskView.BeginUpdate();
-			
 			if (e.Task.TaskType == TaskType.Comment) {
-				foreach (ListViewItem item in this.taskView.Items) {
-					if (item.Tag == e.Task) {
-						this.taskView.Items.Remove(item);
-						break;
-					}
-				}
+				tasks.Remove(e.Task);
 			}
-			
-			RedrawContent();
-			this.taskView.EndUpdate();
 		}
 		
 		#region IClipboardHandler interface implementation
@@ -296,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get { return false; }
 		}
 		public bool EnableCopy {
-			get { return taskView.TaskIsSelected; }
+			get { return taskView.SelectedItem != null; }
 		}
 		public bool EnablePaste {
 			get { return false; }
@@ -314,7 +300,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Copy()
 		{
-			taskView.CopySelectionToClipboard();
+			TaskViewResources.CopySelectionToClipboard(taskView);
 		}
 		public void SelectAll()
 		{

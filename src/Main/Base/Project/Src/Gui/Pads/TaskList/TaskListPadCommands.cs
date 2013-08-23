@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows.Forms;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -31,24 +32,37 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	sealed class TaskListTokensToolbarCheckBox : ToolStripButton
+	sealed class TaskListTokensToolbarCheckBox : CheckBox, ICheckableMenuCommand
 	{
+		public event EventHandler IsCheckedChanged = delegate {};
+		
+		public event EventHandler CanExecuteChanged { add {} remove {} }
+
 		readonly string token;
 		
 		public TaskListTokensToolbarCheckBox(string token)
-			: base(token)
 		{
 			this.token = token;
-			this.CheckOnClick = true;
-			this.Checked = true;
+			this.Text = token;
 		}
 		
-		protected override void OnCheckedChanged(EventArgs e)
+		public bool IsChecked(object parameter)
 		{
-			base.OnCheckedChanged(e);
-			TaskListPad.Instance.DisplayedTokens[token] = this.Checked;
-			if (TaskListPad.Instance.IsInitialized)
-				TaskListPad.Instance.UpdateItems();
+			var pad = (TaskListPad)parameter;
+			return pad.DisplayedTokens[token];
+		}
+		
+		public bool CanExecute(object parameter)
+		{
+			return true;
+		}
+		
+		public void Execute(object parameter)
+		{
+			var pad = (TaskListPad)parameter;
+			pad.DisplayedTokens[token] = this.Checked;
+			if (pad.IsInitialized)
+				pad.UpdateItems();
 		}
 	}
 }

@@ -20,9 +20,8 @@ namespace MSHelpSystem.Commands
 	{
 		public override void Run()
 		{
-			ICSharpCode.SharpDevelop.Gui.TaskView view = (TaskView)Owner;
-
-			foreach (var t in view.SelectedTasks.ToArray()) {
+			var view = (System.Windows.Controls.ListView)Owner;
+			foreach (var t in view.SelectedItems.OfType<SDTask>().ToArray()) {
 				if (t.BuildError == null)
 					continue;
 

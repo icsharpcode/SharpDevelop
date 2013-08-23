@@ -24,8 +24,8 @@ namespace ICSharpCode.CodeAnalysis
 	{
 		public override void Run()
 		{
-			TaskView view = (TaskView)Owner;
-			foreach (SDTask t in view.SelectedTasks.ToList()) {
+			var view = (System.Windows.Controls.ListView)Owner;
+			foreach (var t in view.SelectedItems.OfType<SDTask>().ToArray()) {
 				FxCopTaskTag tag = t.Tag as FxCopTaskTag;
 				if (tag == null)
 					continue;
