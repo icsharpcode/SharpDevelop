@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			errorView.ItemsSource = errors;
 			errorView.MouseDoubleClick += ErrorViewMouseDoubleClick;
 			errorView.Style = (Style)new TaskViewResources()["TaskListView"];
-			errorView.ContextMenu = MenuService.CreateContextMenu(errorView, DefaultContextMenuAddInTreeEntry);
+			errorView.ContextMenu = MenuService.CreateContextMenu(this, DefaultContextMenuAddInTreeEntry);
 			
 			errors.CollectionChanged += delegate { MenuService.UpdateText(toolBar.Items); };
 			

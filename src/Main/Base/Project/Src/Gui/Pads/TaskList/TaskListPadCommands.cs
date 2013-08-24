@@ -10,7 +10,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class SelectScopeComboBox : ComboBox
 	{
-		static readonly string[] viewTypes = new string[] {"Solution", "Project", "All open documents", "Document", "Namespace", "Class/Module"};
+		// TODO Translate!
+		static readonly string[] viewTypes = new string[] {"Solution", "Project", "All open files", "File", "Namespace", "Class/Module"};
 		
 		public SelectScopeComboBox()
 		{

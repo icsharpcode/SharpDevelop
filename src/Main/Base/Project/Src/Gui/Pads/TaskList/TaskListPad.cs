@@ -200,10 +200,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 					// Project
 					return ProjectService.CurrentProject != null && ProjectService.CurrentProject.FindFile(item.FileName) != null;
 				case 2:
-					// All open documents
+					// All open files
 					return SD.Workbench.ViewContentCollection.Select(vc => vc.GetService<ITextEditor>()).Any(editor => editor != null && item.FileName == editor.FileName);
 				case 3:
-					// Document
+					// File
 					return SD.Workbench.ActiveViewContent != null && SD.Workbench.ActiveViewContent.PrimaryFileName == item.FileName;
 				case 4:
 					// Namespace
