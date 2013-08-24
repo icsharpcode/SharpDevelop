@@ -6,15 +6,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class ErrorListPad : AbstractPadContent, IClipboardHandler
+	public class ErrorListPad : AbstractPadContent
 	{
 		public const string DefaultContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/TaskContextMenu";
 		
@@ -104,6 +104,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			errorView.MouseDoubleClick += ErrorViewMouseDoubleClick;
 			errorView.Style = (Style)new TaskViewResources()["TaskListView"];
 			errorView.ContextMenu = MenuService.CreateContextMenu(this, DefaultContextMenuAddInTreeEntry);
+			
+			errorView.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, ExecuteCopy, CanExecuteCopy));
+			errorView.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
 			
 			errors.CollectionChanged += delegate { MenuService.UpdateText(toolBar.Items); };
 			
@@ -196,35 +199,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		#region IClipboardHandler interface implementation
-		public bool EnableCut {
-			get { return false; }
-		}
-		public bool EnableCopy {
-			get { return errorView.SelectedItem != null; }
-		}
-		public bool EnablePaste {
-			get { return false; }
-		}
-		public bool EnableDelete {
-			get { return false; }
-		}
-		public bool EnableSelectAll {
-			get { return true; }
+		void CanExecuteCopy(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = errorView.SelectedItem != null;
 		}
 		
-		public void Cut() {}
-		public void Paste() {}
-		public void Delete() {}
-		
-		public void Copy()
+		void ExecuteCopy(object sender, ExecutedRoutedEventArgs e)
 		{
 			TaskViewResources.CopySelectionToClipboard(errorView);
 		}
-		public void SelectAll()
+		
+		void CanExecuteSelectAll(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+		
+		void ExecuteSelectAll(object sender, ExecutedRoutedEventArgs e)
 		{
 			errorView.SelectAll();
 		}
-		#endregion
 	}
 }

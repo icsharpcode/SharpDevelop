@@ -9,16 +9,16 @@ using System.Linq;
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class TaskListPad : AbstractPadContent, IClipboardHandler
+	public class TaskListPad : AbstractPadContent
 	{
 		public const string DefaultContextMenuAddInTreeEntry = "/SharpDevelop/Pads/TaskList/TaskContextMenu";
 		
@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		readonly ObservableCollection<SDTask> tasks;
 		IUnresolvedTypeDefinition oldClass;
 		int selectedScopeIndex = 0;
-		bool isInitialized = false;
+		bool isInitialized;
 		
 		public bool IsInitialized {
 			get { return isInitialized; }
@@ -151,9 +151,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			taskView.MouseDoubleClick += TaskViewMouseDoubleClick;
 			taskView.Style = (Style)new TaskViewResources()["TaskListView"];
 			taskView.ContextMenu = MenuService.CreateContextMenu(taskView, DefaultContextMenuAddInTreeEntry);
+			
+			taskView.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, ExecuteCopy, CanExecuteCopy));
+			taskView.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
 		}
 		
-		void TaskViewMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		void TaskViewMouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			SDTask task = taskView.SelectedItem as SDTask;
 			var item = taskView.ItemContainerGenerator.ContainerFromItem(task) as ListViewItem;
@@ -276,36 +279,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		#region IClipboardHandler interface implementation
-		public bool EnableCut {
-			get { return false; }
-		}
-		public bool EnableCopy {
-			get { return taskView.SelectedItem != null; }
-		}
-		public bool EnablePaste {
-			get { return false; }
-		}
-		public bool EnableDelete {
-			get { return false; }
-		}
-		public bool EnableSelectAll {
-			get { return true; }
+		void CanExecuteCopy(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = taskView.SelectedItem != null;
 		}
 		
-		public void Cut() {}
-		public void Paste() {}
-		public void Delete() {}
-		
-		public void Copy()
+		void ExecuteCopy(object sender, ExecutedRoutedEventArgs e)
 		{
 			TaskViewResources.CopySelectionToClipboard(taskView);
 		}
-		public void SelectAll()
+		
+		void CanExecuteSelectAll(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+		
+		void ExecuteSelectAll(object sender, ExecutedRoutedEventArgs e)
 		{
 			taskView.SelectAll();
 		}
-		#endregion
 	}
 
 }
