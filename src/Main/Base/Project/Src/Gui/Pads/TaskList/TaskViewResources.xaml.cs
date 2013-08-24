@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ListViewSizeChanged(object sender, SizeChangedEventArgs e)
 		{
 			ListView target = sender as ListView;
-			if (target == null) return;
+			if (target == null || target.ActualWidth < 115.0) return;
 			GridView view = target.View as  GridView;
 			if (view == null) return;
 			view.Columns[0].Width = 35;
