@@ -2,9 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
@@ -12,7 +10,6 @@ using MSHelpSystem.Core;
 using MSHelpSystem.Controls;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace MSHelpSystem.Commands
 {

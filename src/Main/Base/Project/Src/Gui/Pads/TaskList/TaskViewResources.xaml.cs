@@ -6,13 +6,9 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	/// <summary>
-	/// Description of TaskViewResources.
-	/// </summary>
 	public partial class TaskViewResources : ResourceDictionary
 	{
 		public TaskViewResources()

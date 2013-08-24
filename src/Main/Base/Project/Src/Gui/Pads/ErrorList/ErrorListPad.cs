@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.Core;
@@ -27,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		ToolBar toolBar;
 		DockPanel contentPanel = new DockPanel();
 		ListView errorView = new ListView();
-		readonly ObservableCollection<SDTask> errors = new ObservableCollection<SDTask>();
+		readonly ObservableCollection<SDTask> errors;
 		
 		Properties properties;
 		
@@ -81,9 +82,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			instance = this;
 			properties = PropertyService.NestedProperties("ErrorListPad");
 			
-			TaskService.Cleared += new EventHandler(TaskServiceCleared);
-			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
-			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
+			TaskService.Cleared += TaskServiceCleared;
+			TaskService.Added   += TaskServiceAdded;
+			TaskService.Removed += TaskServiceRemoved;
 			TaskService.InUpdateChanged += delegate {
 				if (!TaskService.InUpdate)
 					InternalShowResults();
@@ -92,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SD.BuildService.BuildFinished += ProjectServiceEndBuild;
 			SD.ProjectService.SolutionOpened += OnSolutionOpen;
 			SD.ProjectService.SolutionClosed += OnSolutionClosed;
+			errors = new ObservableCollection<SDTask>(TaskService.Tasks.Where(t => t.TaskType != TaskType.Comment));
 			
 			toolBar = ToolBarService.CreateToolBar(contentPanel, this, "/SharpDevelop/Pads/ErrorList/Toolbar");
 			

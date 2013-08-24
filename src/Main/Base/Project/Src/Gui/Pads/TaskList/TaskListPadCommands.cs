@@ -2,51 +2,48 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class SelectScopeComboBox : ToolStripComboBox
+	public class SelectScopeComboBox : ComboBox
 	{
-		private static string[] viewTypes = new string[] {"Solution", "Project", "All open documents", "Document", "Namespace", "Class/Module"};
+		static readonly string[] viewTypes = new string[] {"Solution", "Project", "All open documents", "Document", "Namespace", "Class/Module"};
 		
 		public SelectScopeComboBox()
 		{
-			SetItems();
+			this.ItemsSource = viewTypes;
 			this.SelectedIndex = 0;
 		}
 		
-		protected override void OnSelectedIndexChanged(EventArgs e)
+		protected override void OnSelectionChanged(SelectionChangedEventArgs e)
 		{
-			base.OnSelectedIndexChanged(e);
+			base.OnSelectionChanged(e);
 			if (this.SelectedIndex != TaskListPad.Instance.SelectedScopeIndex) {
 				TaskListPad.Instance.SelectedScopeIndex = this.SelectedIndex;
 			}
-		}
-		
-		void SetItems()
-		{
-			this.Items.Clear();
-			this.Items.AddRange(viewTypes);
 		}
 	}
 	
 	sealed class TaskListTokensToolbarCheckBox : CheckBox, ICheckableMenuCommand
 	{
-		public event EventHandler IsCheckedChanged = delegate {};
-		
-		public event EventHandler CanExecuteChanged { add {} remove {} }
-
+		event EventHandler ICheckableMenuCommand.IsCheckedChanged { add {} remove {} }
+		event EventHandler System.Windows.Input.ICommand.CanExecuteChanged { add {} remove {} }
 		readonly string token;
 		
 		public TaskListTokensToolbarCheckBox(string token)
 		{
 			this.token = token;
-			this.Text = token;
+			this.Content = token;
+			this.Command = this;
+			this.CommandParameter = TaskListPad.Instance;
+			this.IsChecked = TaskListPad.Instance.DisplayedTokens[token];
+			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.CheckBoxStyleKey);
 		}
 		
-		public bool IsChecked(object parameter)
+		bool ICheckableMenuCommand.IsChecked(object parameter)
 		{
 			var pad = (TaskListPad)parameter;
 			return pad.DisplayedTokens[token];
@@ -60,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void Execute(object parameter)
 		{
 			var pad = (TaskListPad)parameter;
-			pad.DisplayedTokens[token] = this.Checked;
+			pad.DisplayedTokens[token] = IsChecked == true;
 			if (pad.IsInitialized)
 				pad.UpdateItems();
 		}

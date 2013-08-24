@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.Core.Presentation;
@@ -65,14 +64,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			instance = this;
 			this.displayedTokens = new Dictionary<string, bool>();
-			this.tasks = new ObservableCollection<SDTask>();
-			
-			InitializePadContent();
-
 			TaskService.Cleared += TaskServiceCleared;
 			TaskService.Added   += TaskServiceAdded;
 			TaskService.Removed += TaskServiceRemoved;
 			TaskService.InUpdateChanged += TaskServiceInUpdateChanged;
+			
+			this.tasks = new ObservableCollection<SDTask>(TaskService.CommentTasks);
+			
+			InitializePadContent();
 			
 			SD.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
 			
