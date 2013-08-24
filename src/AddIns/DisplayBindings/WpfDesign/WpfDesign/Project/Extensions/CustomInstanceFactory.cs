@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Extensions
 {
@@ -33,7 +35,11 @@ namespace ICSharpCode.WpfDesign.Extensions
 		/// </summary>
 		public virtual object CreateInstance(Type type, params object[] arguments)
 		{
-			return Activator.CreateInstance(type, arguments);
+			var instance = Activator.CreateInstance(type, arguments);
+			var uiElement = instance as UIElement;
+			if (uiElement != null)
+				DesignerProperties.SetIsInDesignMode(uiElement, true);
+			return instance;
 		}
 	}
 	

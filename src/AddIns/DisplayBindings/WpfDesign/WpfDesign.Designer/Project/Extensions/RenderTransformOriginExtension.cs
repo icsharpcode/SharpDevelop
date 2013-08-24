@@ -47,16 +47,24 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			adornerPanel.Children.Add(renderTransformOriginThumb);
 
 			renderTransformOriginThumb.DragDelta += new DragDeltaEventHandler(renderTransformOriginThumb_DragDelta);
+			renderTransformOriginThumb.DragCompleted += new DragCompletedEventHandler(renderTransformOriginThumb_DragCompleted);
 		}
 
+		void renderTransformOriginThumb_DragCompleted(object sender, DragCompletedEventArgs e)
+		{
+			this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(Math.Round(renderTransformOrigin.X, 4), Math.Round(renderTransformOrigin.Y, 4)));
+		}
+		
 		void renderTransformOriginThumb_DragDelta(object sender, DragDeltaEventArgs e)
 		{
 			var p = AdornerPanel.GetPlacement(renderTransformOriginThumb) as RelativePlacement;
 			var pointAbs = adornerPanel.RelativeToAbsolute(new Vector(p.XRelativeToContentWidth, p.YRelativeToContentHeight));
 			var pointAbsNew = pointAbs + new Vector(e.HorizontalChange, e.VerticalChange);
 			var pRel = adornerPanel.AbsoluteToRelative(pointAbsNew);
+			renderTransformOrigin = new Point(pRel.X, pRel.Y);
 			
-			this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(Math.Round(pRel.X, 4), Math.Round(pRel.Y, 4)));
+			this.ExtendedItem.View.SetValue(FrameworkElement.RenderTransformOriginProperty, renderTransformOrigin);
+			//this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(Math.Round(pRel.X, 4), Math.Round(pRel.Y, 4)));
 		}
 		
 		Point renderTransformOrigin = new Point(0.5, 0.5);
