@@ -13,6 +13,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
 	public class NamespaceTreeNode : ModelCollectionTreeNode
 	{
+		static readonly IComparer<SharpTreeNode> TypeNodeComparer =  new TypeDefinitionNodeComparer();
 		INamespaceModel model;
 		
 		public NamespaceTreeNode(INamespaceModel model)
@@ -29,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		protected override IComparer<SharpTreeNode> NodeComparer {
 			get {
-				return NodeTextComparer;
+				return TypeNodeComparer;
 			}
 		}
 		
@@ -48,6 +49,33 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public override object Text {
 			get {
 				return model.FullName;
+			}
+		}
+		
+		class TypeDefinitionNodeComparer : IComparer<SharpTreeNode>
+		{
+			public int Compare(SharpTreeNode x, SharpTreeNode y)
+			{
+				var a = x.Model as ITypeDefinitionModel;
+				var b = y.Model as ITypeDefinitionModel;
+				
+				if (a == null && b == null)
+					return NodeTextComparer.Compare(x, y);
+				if (a == null)
+					return -1;
+				if (b == null)
+					return 1;
+				
+				int typeNameComparison = StringComparer.OrdinalIgnoreCase.Compare(a.Name, b.Name);
+				if (typeNameComparison == 0) {
+					// Compare length of complete string (type parameters...)
+					if (x.Text.ToString().Length < y.Text.ToString().Length)
+						return -1;
+					if (x.Text.ToString().Length < y.Text.ToString().Length)
+						return 1;
+				}
+				
+				return typeNameComparison;
 			}
 		}
 	}

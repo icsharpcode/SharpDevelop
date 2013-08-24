@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Policy;
+using System.Text;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
@@ -39,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Text {
 			get {
-				return definition.Name;
+				return GenerateNodeText();
 			}
 		}
 		
@@ -82,6 +83,32 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if ((entityModel != null) && (entityModel.ParentProject != null)) {
 				var ctx = MenuService.ShowContextMenu(null, entityModel, "/SharpDevelop/EntityContextMenu");
 			}
+		}
+		
+		string GenerateNodeText()
+		{
+			var target = definition.Resolve();
+			if (target != null) {
+				return GetTypeName(target);
+			}
+			return definition.Name;
+		}
+		
+		string GetTypeName(IType type)
+		{
+			StringBuilder typeName = new StringBuilder(type.Name);
+			if (type.TypeParameterCount > 0) {
+				typeName.Append("<");
+				bool isFirst = true;
+				foreach (var typeParameter in type.TypeArguments) {
+					if (!isFirst)
+						typeName.Append(",");
+					typeName.Append(GetTypeName(typeParameter));
+					isFirst = false;
+				}
+				typeName.Append(">");
+			}
+			return typeName.ToString();
 		}
 		
 		class TypeDefinitionMemberNodeComparer : IComparer<SharpTreeNode>
