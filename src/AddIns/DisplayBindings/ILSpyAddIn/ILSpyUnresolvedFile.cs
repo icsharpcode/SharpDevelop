@@ -65,17 +65,36 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public IUnresolvedTypeDefinition GetTopLevelTypeDefinition(TextLocation location)
 		{
-			throw new NotImplementedException();
+			return FindEntity(topLevel, location);
 		}
 		
 		public IUnresolvedTypeDefinition GetInnermostTypeDefinition(TextLocation location)
 		{
-			throw new NotImplementedException();
+			IUnresolvedTypeDefinition parent = null;
+			IUnresolvedTypeDefinition type = GetTopLevelTypeDefinition(location);
+			while (type != null) {
+				parent = type;
+				type = FindEntity(parent.NestedTypes, location);
+			}
+			return parent;
 		}
 		
 		public IUnresolvedMember GetMember(TextLocation location)
 		{
-			throw new NotImplementedException();
+			IUnresolvedTypeDefinition type = GetInnermostTypeDefinition(location);
+			if (type == null)
+				return null;
+			return FindEntity(type.Members, location);
+		}
+		
+		static T FindEntity<T>(IList<T> list, TextLocation location) where T : class, IUnresolvedEntity
+		{
+			// This could be improved using a binary search
+			foreach (T entity in list) {
+				if (entity.Region.IsInside(location.Line, location.Column))
+					return entity;
+			}
+			return null;
 		}
 		
 		public string FileName {
@@ -92,9 +111,7 @@ namespace ICSharpCode.ILSpyAddIn
 		}
 		
 		public IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
-			get {
-				return topLevel;
-			}
+			get { return topLevel; }
 		}
 		
 		public IList<IUnresolvedAttribute> AssemblyAttributes {
