@@ -199,6 +199,7 @@
     <Compile Include="Src\Helpers\TestablePowerShellMissingConsoleHost.cs" />
     <Compile Include="Src\InstallProjectTemplatePackagesCommandTests.cs" />
     <Compile Include="Src\ManagePackagesUserPromptsTests.cs" />
+    <Compile Include="Src\NuGetPackageRestoreCommandLineTests.cs" />
     <Compile Include="Src\OpenMSBuildProjectsTests.cs" />
     <Compile Include="Src\PackageManagementServiceProviderTests.cs" />
     <Compile Include="Src\PackageViewModelOperationLoggerTests.cs" />

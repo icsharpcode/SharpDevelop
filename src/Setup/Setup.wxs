@@ -482,6 +482,7 @@
 				<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
 				<ComponentRef Id="NuGetConsoleTypesDll"/>
 				<ComponentRef Id="NuGetCoreDll"/>
+				<ComponentRef Id="NuGetExe"/>
 				<ComponentRef Id="NuGetNuspecSchema"/>
 				<ComponentRef Id="NuGetLicenseTxt"/>
 				<ComponentRef Id="PackageFormatPs1Xml"/>

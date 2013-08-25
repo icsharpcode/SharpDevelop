@@ -1681,6 +1681,9 @@
 									<Component Id="MicrosoftWebXmlTransformDll" Guid="0A82C51B-E2D1-4817-8704-2CB390B4E833" DiskId="1">
 										<File Id="Microsoft.Web.XmlTransform.dll" Name="Microsoft.Web.XmlTransform.dll" Source="..\..\AddIns\Misc\PackageManagement\Microsoft.Web.XmlTransform.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Web.XmlTransform.dll" AssemblyManifest="Microsoft.Web.XmlTransform.dll" />
 									</Component>
+									<Component Id="NuGetExe" Guid="47FD372D-7F53-4466-B648-F674C64ED98B" DiskId="1">
+										<File Id="NuGet.exe" Name="NuGet.exe" Source="..\..\AddIns\Misc\PackageManagement\NuGet.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.exe" AssemblyManifest="NuGet.exe" />
+									</Component>
 								</Directory>
 								<Directory Id="TextTemplating" Name="TextTemplating">
 									<Component Id="MonoTextTemplatingDll" Guid="07BFBED7-FC7B-4CF3-BD00-DCA8E8E7C17B" DiskId="1">

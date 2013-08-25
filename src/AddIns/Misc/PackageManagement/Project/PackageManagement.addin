@@ -23,7 +23,13 @@
 				label="Manage Packages..."
 				insertafter="AddWebReference"
 				insertbefore="ShowServiceInBrowser"
-				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>		
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
+			<MenuItem
+				id="RestorePackages"
+				label="Restore Packages"
+				insertafter="AddWebReference"
+				insertbefore="ShowServiceInBrowser"
+				class="ICSharpCode.PackageManagement.RestorePackagesCommand"/>
 		</Condition>
 	</Path>
 	
@@ -36,6 +42,12 @@
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
+			<MenuItem
+				id="RestorePackages"
+				label="Restore Packages"
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.RestorePackagesCommand"/>
 		</Condition>
 	</Path>
 	
@@ -47,7 +59,13 @@
 				label="Manage Packages..."
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
-				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>				
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
+			<MenuItem
+				id="RestorePackages"
+				label="Restore Packages"
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.RestorePackagesCommand"/>
 		</Condition>
 	</Path>
 	
@@ -60,6 +78,12 @@
 				insertafter="CombineAddMenu"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
+			<MenuItem
+				id="RestorePackagesForSolution"
+				label="Restore Packages"
+				insertafter="CombineAddMenu"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.RestorePackagesCommand"/>
 		</Condition>
 	</Path>
 

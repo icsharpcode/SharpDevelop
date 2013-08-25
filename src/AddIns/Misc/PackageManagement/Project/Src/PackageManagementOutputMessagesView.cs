@@ -41,12 +41,17 @@ namespace ICSharpCode.PackageManagement
 		void PackageOperationMessageLogged(object sender, PackageOperationMessageLoggedEventArgs e)
 		{
 			string formattedMessage = e.Message.ToString();
-			messageViewCategory.AppendLine(formattedMessage);			
+			AppendLine(formattedMessage);
 		}
 		
 		public void Clear()
 		{
 			messageViewCategory.Clear();
+		}
+		
+		public void AppendLine(string message)
+		{
+			messageViewCategory.AppendLine(message);
 		}
 	}
 }
