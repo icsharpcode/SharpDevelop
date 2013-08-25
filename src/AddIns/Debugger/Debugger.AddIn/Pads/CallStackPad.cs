@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using Debugger;
+using ICSharpCode.Core.Presentation;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
@@ -34,6 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			listView = new ListView();
 			listView.View = (GridView)res["callstackGridView"];
 			listView.MouseDoubleClick += listView_MouseDoubleClick;
+			listView.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "100%");
 			
 			listView.ContextMenu = CreateMenu();
 			
