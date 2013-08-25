@@ -5,7 +5,7 @@
 	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui">
 	<Style TargetType="{x:Type ListView}" x:Key="TaskListView">
 		<Setter Property="core:SortableGridViewColumn.SortMode" Value="Automatic" />
-		<EventSetter Event="SizeChanged" Handler="ListViewSizeChanged" />
+		<Setter Property="core:GridViewColumnAutoSize.AutoWidth" Value="35;50;70%;15%;15%" />
 		<Setter Property="View">
 			<Setter.Value>
 				<GridView AllowsColumnReorder="False">

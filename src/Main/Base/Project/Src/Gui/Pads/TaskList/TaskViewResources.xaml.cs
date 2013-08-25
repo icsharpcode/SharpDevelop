@@ -32,21 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				target.ToolTip = null;
 			}
 		}
-		
-		void ListViewSizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			ListView target = sender as ListView;
-			if (target == null || target.ActualWidth < 115.0) return;
-			GridView view = target.View as  GridView;
-			if (view == null) return;
-			view.Columns[0].Width = 35;
-			view.Columns[1].Width = 50;
-			double w = target.ActualWidth - view.Columns[0].Width - view.Columns[1].Width;
-			view.Columns[3].Width = w * 15 / 100;
-			view.Columns[4].Width = w * 15 / 100;
-			view.Columns[2].Width = w - view.Columns[3].Width - view.Columns[4].Width - 30;
-		}
-		
+
 		public static void CopySelectionToClipboard(ListView taskView)
 		{
 			StringBuilder b = new StringBuilder();
