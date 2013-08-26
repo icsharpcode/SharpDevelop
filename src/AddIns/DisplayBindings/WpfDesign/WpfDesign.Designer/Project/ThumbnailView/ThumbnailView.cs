@@ -114,38 +114,46 @@ namespace ICSharpCode.WpfDesign.Designer.ThumbnailView
 
 		private void InvalidateScale(out double scale, out double xOffset, out double yOffset)
 		{
-			var designedElement = this.DesignSurface.DesignContext.RootItem.Component as FrameworkElement;
+			scale = 1;
+			xOffset = 0;
+			yOffset = 0;
 			
-			var fac1 = designedElement.ActualWidth / zoomCanvas.ActualWidth;
-			var fac2 = designedElement.ActualHeight / zoomCanvas.ActualHeight;
-			
-			// zoom canvas size
-			double x = this.zoomCanvas.ActualWidth;
-			double y = this.zoomCanvas.ActualHeight;
-			
-			if (fac1 < fac2)
+			if (this.DesignSurface.DesignContext != null)
 			{
-				x = designedElement.ActualWidth / fac2;
-				xOffset = (zoomCanvas.ActualWidth - x) / 2;
-				yOffset = 0;
-			}
-			else
-			{
-				y =  designedElement.ActualHeight / fac1;
-				xOffset = 0;
-				yOffset = (zoomCanvas.ActualHeight - y) / 2;
-			}
-			
-			double w = designedElement.ActualWidth;
-			double h = designedElement.ActualHeight;
-			
-			double scaleX = x / w;
-			double scaleY = y / h;
+				var designedElement = this.DesignSurface.DesignContext.RootItem.Component as FrameworkElement;
+				
+				
+				var fac1 = designedElement.ActualWidth / zoomCanvas.ActualWidth;
+				var fac2 = designedElement.ActualHeight / zoomCanvas.ActualHeight;
+				
+				// zoom canvas size
+				double x = this.zoomCanvas.ActualWidth;
+				double y = this.zoomCanvas.ActualHeight;
+				
+				if (fac1 < fac2)
+				{
+					x = designedElement.ActualWidth / fac2;
+					xOffset = (zoomCanvas.ActualWidth - x) / 2;
+					yOffset = 0;
+				}
+				else
+				{
+					y =  designedElement.ActualHeight / fac1;
+					xOffset = 0;
+					yOffset = (zoomCanvas.ActualHeight - y) / 2;
+				}
+				
+				double w = designedElement.ActualWidth;
+				double h = designedElement.ActualHeight;
+				
+				double scaleX = x / w;
+				double scaleY = y / h;
 
-			scale = (scaleX < scaleY) ? scaleX : scaleY;
-			
-			xOffset += (x - scale * w) / 2;
-			yOffset += (y - scale * h) / 2;
+				scale = (scaleX < scaleY) ? scaleX : scaleY;
+				
+				xOffset += (x - scale * w) / 2;
+				yOffset += (y - scale * h) / 2;
+			}
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

@@ -21,6 +21,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	[ExtensionFor(typeof(ContentControl))]
 	[ExtensionFor(typeof(Border))]
 	[ExtensionFor(typeof(Viewbox))]
+	[ExtensionFor(typeof(ItemsControl))]
 	public class DefaultPlacementBehavior : BehaviorExtension, IPlacementBehavior
 	{
 		static List<Type> _contentControlsNotAllowedToAdd;
