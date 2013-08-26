@@ -198,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		static IAssemblyModel CreateAssemblyModel(Module module)
 		{
 			// references??
-			IEntityModelContext context = new DebuggerProcessEntityModelContext(module.Process);
+			IEntityModelContext context = new DebuggerProcessEntityModelContext(module.Process, module);
 			IUpdateableAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
 			var types = module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList();
 			model.AssemblyName = module.UnresolvedAssembly.AssemblyName;
@@ -242,17 +242,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	class DebuggerProcessEntityModelContext : IEntityModelContext
 	{
 		Debugger.Process process;
+		Debugger.Module currentModule;
 		
-		public DebuggerProcessEntityModelContext(Process process)
+		public DebuggerProcessEntityModelContext(Process process, Module currentModule)
 		{
 			if (process == null)
 				throw new ArgumentNullException("process");
+			if (currentModule == null)
+				throw new ArgumentNullException("currentModule");
 			this.process = process;
+			this.currentModule = currentModule;
 		}
 		
 		public ICompilation GetCompilation()
 		{
-			var mainModule = process.GetModule(Path.GetFileName(process.Filename));
+			var mainModule = currentModule;
 			return new SimpleCompilation(mainModule.UnresolvedAssembly, process.Modules.Where(m => m != mainModule).Select(m => m.UnresolvedAssembly));
 		}
 		
@@ -266,11 +270,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 		public string AssemblyName {
-			get { return Path.GetFileNameWithoutExtension(process.Filename); }
+			get { return currentModule.UnresolvedAssembly.AssemblyName; }
 		}
 		
 		public string Location {
-			get { return process.Filename; }
+			get { return currentModule.FullPath; }
 		}
 		
 		public bool IsValid {

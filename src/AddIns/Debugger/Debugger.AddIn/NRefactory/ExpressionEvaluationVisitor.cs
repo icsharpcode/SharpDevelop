@@ -331,16 +331,17 @@ namespace Debugger.AddIn
 			var val = Convert(result.Input);
 			if (result.Conversion.IsBoxingConversion)
 				return val;
-			else if (result.Conversion.IsIdentityConversion)
+			if (result.Conversion.IsIdentityConversion)
 				return val;
-			else if (result.Conversion.IsNumericConversion) {
+			if (result.Conversion.IsNumericConversion) {
 				var convVal = CSharpPrimitiveCast.Cast(ReflectionHelper.GetTypeCode(result.Type), val.PrimitiveValue, false);
 				return Eval.CreateValue(evalThread, convVal);
-			} else if (result.Conversion.IsUserDefined)
+			}
+			if (result.Conversion.IsUserDefined)
 				return InvokeMethod(null, result.Conversion.Method, val);
-			else if (result.Conversion.IsReferenceConversion && result.Conversion.IsImplicit)
+			if (result.Conversion.IsReferenceConversion && result.Conversion.IsImplicit)
 				return val;
-			throw new NotImplementedException();
+			throw new NotImplementedException(string.Format("conversion '{0}' not implemented!", result.Conversion));
 		}
 		
 		Value Visit(LocalResolveResult result)
