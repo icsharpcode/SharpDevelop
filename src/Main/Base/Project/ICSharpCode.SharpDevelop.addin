@@ -1561,7 +1561,7 @@
 			          type = "Item"
 			          command = "Delete"/>
 			<MenuItem id = "Separator2" type = "Separator"  />
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 				<MenuItem id = "Insert" label = "${res:XML.MainMenu.EditMenu.Insert}" type="Menu">
 					<MenuItem id = "PasteAsComment"
 					          label = "${res:XML.MainMenu.EditMenu.Paste.AsComment}"
@@ -1814,7 +1814,7 @@
 			<MenuItem id = "ToggleBreakpointSeparator" type = "Separator" />
 			<ComplexCondition action="Disable">
 				<And>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider"/>
+					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor"/>
 					<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 				</And>
 				<MenuItem id       = "Toggle Breakpoint"
@@ -1827,7 +1827,7 @@
 		
 		<MenuItem id = "Search" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
 			<MenuItem id = "SearchSeparator" type = "Separator" />
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 				<MenuItem id = "ToggleBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
 				          shortcut = "Control|M"
@@ -1889,7 +1889,7 @@
 			<Include id = "ToolList" path = "/SharpDevelop/Workbench/Tools" />
 			<MenuItem id = "Separator2" type = "Separator" />
 			
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor">
 				<MenuItem id = "ConvertCode" label = "${res:XML.MainMenu.ToolMenu.ConvertCodeTo}" type="Menu">
 					<Condition name="ActiveContentExtension" activeextension=".vb" action = "Disable">
 						<MenuItem id = "CSharp"
@@ -2063,7 +2063,7 @@
 	
 	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
 		<ToolbarItem id = "SearchSeparator" type = "Separator"/>
-		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 			<ToolbarItem id = "Comment"
 			             icon = "Icons.16x16.CommentRegion"
 			             tooltip = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
@@ -2155,7 +2155,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 			<ToolbarItem id = "ToggleBookmark"
 			             tooltip = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
 			             icon = "Bookmarks.ToggleMark"

@@ -10,6 +10,7 @@ using System.Windows.Input;
 
 using Debugger;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.SharpDevelop.Workbench;
 using Thread = Debugger.Thread;
@@ -33,9 +34,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			contextMenu.Opened += FillContextMenuStrip;
 			
 			listView = new ListView();
-			listView.View = (GridView)res["theadsGridView"];
+			listView.View = (GridView)res["threadsGridView"];
 			listView.ContextMenu = contextMenu;
 			listView.MouseDoubleClick += listView_MouseDoubleClick;
+			listView.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "70;100%;75;75");
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
 			RefreshPad();

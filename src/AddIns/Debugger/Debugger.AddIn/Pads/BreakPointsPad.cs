@@ -22,6 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			grid.Children.Add(toolbar);
 			
 			this.control.listView.View = (GridView)res["breakpointsGridView"];
+			this.control.listView.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "35;50%;50%");
 		}
 		
 		protected override bool ShowBookmarkInThisPad(SDBookmark mark)

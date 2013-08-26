@@ -2,9 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
@@ -12,7 +10,6 @@ using MSHelpSystem.Core;
 using MSHelpSystem.Controls;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace MSHelpSystem.Commands
 {
@@ -20,9 +17,8 @@ namespace MSHelpSystem.Commands
 	{
 		public override void Run()
 		{
-			ICSharpCode.SharpDevelop.Gui.TaskView view = (TaskView)Owner;
-
-			foreach (var t in view.SelectedTasks.ToArray()) {
+			var view = (System.Windows.Controls.ListView)Owner;
+			foreach (var t in view.SelectedItems.OfType<SDTask>().ToArray()) {
 				if (t.BuildError == null)
 					continue;
 

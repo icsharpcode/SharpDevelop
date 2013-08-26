@@ -46,6 +46,9 @@ namespace ICSharpCode.Core.Presentation
 			if (codon.Properties.Contains("tooltip")) {
 				this.ToolTip = StringParser.Parse(codon.Properties["tooltip"]);
 			}
+			if (codon.Properties.Contains("label")) {
+				this.Content = ToolBarService.CreateToolBarItemContent(codon);
+			}
 		}
 		
 		public void UpdateStatus()

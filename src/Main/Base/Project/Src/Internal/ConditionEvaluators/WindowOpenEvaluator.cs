@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop
 	/// "*" to test if any window is open.
 	/// </attribute>
 	/// <example title="Test if a text editor is opened">
-	/// &lt;Condition name="WindowOpen" openwindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider"&gt;
+	/// &lt;Condition name="WindowOpen" openwindow="ICSharpCode.SharpDevelop.Editor.ITextEditor"&gt;
 	/// </example>
 	/// <example title="Test if any window is open">
 	/// &lt;Condition name="WindowOpen" openwindow="*"&gt;
@@ -30,19 +30,28 @@ namespace ICSharpCode.SharpDevelop
 				return false;
 			}
 			
-			string openwindow = condition.Properties["openwindow"];
+			string openWindow = condition.Properties["openwindow"];
 			
-			if (openwindow == "*") {
+			Type openWindowType = Type.GetType(openWindow, false);
+			if (openWindowType == null) {
+				SD.Log.WarnFormatted("WindowOpenCondition: cannot find Type {0}", openWindow);
+				return false;
+			}
+			
+			if (SD.GetActiveViewContentService(openWindowType) != null)
+				return true;
+			
+			if (openWindow == "*") {
 				return SD.Workbench.ActiveWorkbenchWindow != null;
 			}
 			
 			foreach (IViewContent view in SD.Workbench.ViewContentCollection) {
 				Type currentType = view.GetType();
-				if (currentType.ToString() == openwindow) {
+				if (currentType.ToString() == openWindow) {
 					return true;
 				}
 				foreach (Type i in currentType.GetInterfaces()) {
-					if (i.ToString() == openwindow) {
+					if (i.ToString() == openWindow) {
 						return true;
 					}
 				}
