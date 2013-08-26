@@ -32,13 +32,13 @@
 				          insertbefore = "Refactoring"
 				          label = "${res:MainWindow.Windows.Debug.SetCurrentStatement}"
 				          icon = "Icons.16x16.Debug.StepInto"
-				          class = "ICSharpCode.SharpDevelop.Services.SetCurrentStatementCommand"/>
+				          class = "Debugger.AddIn.SetCurrentStatementCommand"/>
 			</Condition>
 			<MenuItem id = "DebuggerRunToCursor"
 			          insertbefore = "Refactoring"
 			          label = "${res:MainWindow.Windows.Debug.RunToCursor}"
 			          icon = "Icons.16x16.Debug.Continue"
-			          class = "ICSharpCode.SharpDevelop.Services.RunToCursorCommand"/>
+			          class = "Debugger.AddIn.RunToCursorCommand"/>
 			<MenuItem id = "DebuggerSeparator"
 			          insertbefore = "Refactoring"
 			          type = "Separator"/>
