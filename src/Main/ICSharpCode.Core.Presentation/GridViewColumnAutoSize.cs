@@ -9,6 +9,14 @@ using System.Windows.Controls;
 
 namespace ICSharpCode.Core.Presentation
 {
+	/// <summary>
+	/// This class adds the AutoWidth property to the WPF ListView.
+	/// It supports a semi-colon-separated list of values, for each defined cell.
+	/// Each value can either be a fixed size double, or a percentage.
+	/// The sizes of columns with a percentage will be calculated from the
+	/// remaining width (after assigning the fixed sizes).
+	/// Examples: 50%;25%;25% or 30;100%;50
+	/// </summary>
 	public class GridViewColumnAutoSize
 	{
 		public static readonly DependencyProperty AutoWidthProperty =

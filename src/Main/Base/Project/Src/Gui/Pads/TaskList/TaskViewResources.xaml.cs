@@ -27,7 +27,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			var args = new object[] { 0, 0, 0, 0, 0 };
 			GetLineDetails.Invoke(target, args);
 			if ((int)args[4] > 0) {
-				target.ToolTip = new ToolTip { Content = new TextBlock { Text = target.Text, TextWrapping = TextWrapping.Wrap }, PlacementTarget = target, Placement = PlacementMode.Relative };
+				target.ToolTip = new ToolTip {
+					Content = new TextBlock { Text = target.Text, TextWrapping = TextWrapping.Wrap },
+					PlacementTarget = target,
+					Placement = PlacementMode.Relative,
+					VerticalOffset = -2,
+					HorizontalOffset = -6
+				};
 			} else {
 				target.ToolTip = null;
 			}
