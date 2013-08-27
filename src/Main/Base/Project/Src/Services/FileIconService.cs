@@ -16,18 +16,6 @@ namespace ICSharpCode.SharpDevelop
 	{
 		static Dictionary<string, Bitmap> bitmapCache = new Dictionary<string, Bitmap>();
 		
-		static FileIconService()
-		{
-			ResourceService.ClearCaches += ResourceService_ClearCaches;
-		}
-		
-		static void ResourceService_ClearCaches(object sender, EventArgs e)
-		{
-			lock (bitmapCache) {
-				bitmapCache.Clear();
-			}
-		}
-		
 		/// <summary>
 		/// Returns a bitmap from the file system. Placeholders like ${SharpDevelopBinPath}
 		/// and AddinPath (e. g. ${AddInPath:ICSharpCode.FiletypeRegisterer}) are resolved 
