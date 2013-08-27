@@ -70,7 +70,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 
 		private DesignItem IntializePasteOperationsTest()
 		{
-			var grid = CreateGridContextWithDesignSurface("<Button Name=\"TestElement\"/><Grid><Button/></Grid><Window/><ListBox/>");
+			var grid = CreateGridContextWithDesignSurface("<Button Name=\"TestElement\"/><Grid><Button/></Grid><Window/><Image/>");
 			Assert.IsNotNull(grid);
 			var xamlConxtext = grid.Context as XamlDesignContext;
 			if (xamlConxtext != null) {
