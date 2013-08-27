@@ -38,6 +38,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					}
 					if (newName != null) {
 						nameScope.RegisterName(newName, namedObject.Instance);
+						
+						try{
+							var prp = namedObject.ElementType.GetProperty(namedObject.RuntimeNameProperty);
+							if (prp != null)
+								prp.SetValue(namedObject.Instance, newName, null);
+						} catch (Exception x) {
+							Debug.WriteLine(x.Message);
+						}
 					}
 					break;
 				}
