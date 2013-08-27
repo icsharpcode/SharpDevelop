@@ -61,20 +61,20 @@ namespace ICSharpCode.SharpDevelop
 		public static Bitmap GetBitmap(string name)
 		{
 			Bitmap bmp = null;
-		    try {
-	            bmp = FileIconService.GetBitmap(name);
-                if (bmp == null) {
-    	            bmp = WinFormsResourceService.GetBitmap(name);
-                }
-            } catch (ResourceNotFoundException ex) {
-                     LoggingService.Warn(ex);
-            } catch (FileNotFoundException ex) {
-                     LoggingService.Warn(ex);
-            }
-            if (bmp != null) {
-                return bmp;
-            }
-            return WinFormsResourceService.GetBitmap("Icons.16x16.MiscFiles");
+			try {
+				bmp = FileIconService.GetBitmap(name);
+				if (bmp == null) {
+					bmp = WinFormsResourceService.GetBitmap(name);
+				}
+			} catch (ResourceNotFoundException ex) {
+				LoggingService.Warn(ex);
+			} catch (FileNotFoundException ex) {
+				LoggingService.Warn(ex);
+			}
+			if (bmp != null) {
+				return bmp;
+			}
+			return WinFormsResourceService.GetBitmap("Icons.16x16.MiscFiles");
 		}
 		
 		public static Icon GetIcon(string name)

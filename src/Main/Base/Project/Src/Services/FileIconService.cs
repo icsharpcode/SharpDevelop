@@ -9,7 +9,7 @@ using System.Drawing;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// This Class contains a ResourceManager, which handles bitmap resources
+	/// This Class handles bitmap resources
 	/// for the application which were loaded from the filesystem.
 	/// </summary>
 	public static class FileIconService
@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Returns a bitmap from the file system. Paceholders like ${SharpDevelopBinPath}
+		/// Returns a bitmap from the file system. Placeholders like ${SharpDevelopBinPath}
 		/// and AddinPath (e. g. ${AddInPath:ICSharpCode.FiletypeRegisterer}) are resolved 
 		/// through the StringParser.
 		/// The bitmaps are reused, you must not dispose the Bitmap!
@@ -46,11 +46,12 @@ namespace ICSharpCode.SharpDevelop
 		public static Bitmap GetBitmap(string name)
 		{
 			Bitmap bmp = null;
-            if (name.ToUpper().StartsWith("FILE:")) {
+			if (name.ToUpper().StartsWith("FILE:")) {
 				lock (bitmapCache) {
 					if (bitmapCache.TryGetValue(name, out bmp))
 						return bmp;
-                    bmp = (Bitmap)Image.FromFile(StringParser.Parse(name.Substring(5,name.Length-5)));
+					string fileName = StringParser.Parse(name.Substring(5, name.Length - 5));
+					bmp = (Bitmap)Image.FromFile(fileName);
 					bitmapCache[name] = bmp;
 				}
 			}
