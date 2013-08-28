@@ -54,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			TestMime(LoadFile("ICSharpCode.SharpDevelop.Tests.mime_utf-16_be_test.txt"), "text/plain");
 			TestMime(LoadFile("ICSharpCode.SharpDevelop.Tests.mime_utf-16_le_test.txt"), "text/plain");
+			TestMime(LoadFile("ICSharpCode.SharpDevelop.Tests.mime_bug1.txt"), "text/plain");
 		}
 		
 		byte[] LoadFile(string resourceName)
