@@ -28,7 +28,7 @@ namespace Debugger.AddIn.Pads.Controls
 		
 		public static readonly DependencyProperty IsEditableProperty =
 			DependencyProperty.Register("IsEditable", typeof(bool), typeof(AutoCompleteTextBox),
-			                            new FrameworkPropertyMetadata(true, IsEditableChanged));	
+			                            new FrameworkPropertyMetadata(true, IsEditableChanged));
 		
 		public string Text {
 			get { return (string)GetValue(TextProperty); }
@@ -65,16 +65,21 @@ namespace Debugger.AddIn.Pads.Controls
 			this.editor.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
 			this.editor.TextArea.GotKeyboardFocus += delegate {
 				this.Background = Brushes.White;
+				this.Foreground = Brushes.Black;
 			};
 			this.editor.TextArea.LostKeyboardFocus += delegate {
 				this.Background = Brushes.Transparent;
+				this.ClearValue(ForegroundProperty);
 				this.Text = this.editor.Text;
-				this.editor.Select(0, 0);
+				this.editorAdapter.ClearSelection();
 			};
 			this.editor.TextArea.PreviewKeyDown += editor_TextArea_PreviewKeyDown;
 			this.editor.TextArea.TextEntered += editor_TextArea_TextEntered;
 			
 			this.Content = this.editor.TextArea;
+			
+			HorizontalContentAlignment = HorizontalAlignment.Stretch;
+			VerticalContentAlignment = VerticalAlignment.Stretch;
 		}
 		
 		void editor_TextArea_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -99,22 +104,22 @@ namespace Debugger.AddIn.Pads.Controls
 			string language = ProjectService.CurrentProject == null ? "C#" : ProjectService.CurrentProject.Language;
 			#warning reimplement this!
 //			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.GetLanguage(language));
-//			
+//
 //			var seg = frame.NextStatement;
-//			
+//
 //			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
 //			var info = ParserService.GetParseInformation(seg.Filename);
-//			
+//
 //			string text = ParserService.GetParseableFileContent(seg.Filename).Text;
-//			
+//
 //			int currentOffset = this.editor.CaretOffset;
-//			
+//
 //			var expr = expressionFinder.FindExpression(currentText, currentOffset);
-//			
+//
 //			expr.Region = new DomRegion(seg.StartLine, seg.StartColumn, seg.EndLine, seg.EndColumn);
-//			
+//
 //			var rr = resolver.Resolve(expr, info, text);
-//			
+//
 //			if (rr != null) {
 //				editorAdapter.ShowCompletionWindow(new DotCodeCompletionItemProvider().GenerateCompletionListForResolveResult(rr, expr.Context));
 //			}

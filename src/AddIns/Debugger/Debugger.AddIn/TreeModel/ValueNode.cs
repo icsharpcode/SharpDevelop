@@ -107,6 +107,14 @@ namespace Debugger.AddIn.TreeModel
 				// Do not keep permanent reference
 				Value val = this.getValue();
 				
+				if (val == null) {
+					Value = string.Empty;
+					Type  = string.Empty;
+					GetChildren = null;
+					VisualizerCommands = null;
+					return;
+				}
+				
 				// Note that the child collections are lazy-evaluated
 				if (val.IsNull) {
 					this.GetChildren = null;
@@ -187,12 +195,12 @@ namespace Debugger.AddIn.TreeModel
 				this.Type  = string.Empty;
 				this.GetChildren = null;
 				this.VisualizerCommands = null;
+			} finally {
+				if (error == null)
+					ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ValueNode";
+				else
+					ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ErrorNode";
 			}
-			
-			if (error == null)
-				ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ValueNode";
-			else
-				ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ErrorNode";
 		}
 		
 		/// <summary>
@@ -231,7 +239,7 @@ namespace Debugger.AddIn.TreeModel
 			foreach(LocalVariable locVar in localVars) {
 				var locVarCopy = locVar;
 				yield return new ValueNode(ClassBrowserIconService.LocalVariable, locVar.Name,
-				                          () => locVarCopy.GetValue(stackFrame));
+				                           () => locVarCopy.GetValue(stackFrame));
 			}
 		}
 		

@@ -76,7 +76,7 @@ namespace Debugger.AddIn.TreeModel
 				if (watch.ElapsedMilliseconds > 100) {
 					dispatcher.BeginInvoke(
 						DispatcherPriority.Background,
-						(Action)delegate { ProcessItems(process, dispatcher, index, items, work, debuggeeStateWhenEnqueued); }
+						(Action)delegate { ProcessItems(process, dispatcher, index + 1, items, work, debuggeeStateWhenEnqueued); }
 					);
 					break;
 				}
