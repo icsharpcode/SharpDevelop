@@ -8,6 +8,7 @@ using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests.Scripting
 {
@@ -18,13 +19,19 @@ namespace PackageManagement.Tests.Scripting
 		FakePackageManagementProject fakeProject;
 		FakePackageScriptFactory fakeScriptFactory;
 		FakePackageScriptRunner fakeScriptRunner;
-			
+		IGlobalMSBuildProjectCollection globalMSBuildProjectCollection;
+		
 		void CreateAction()
 		{
 			fakeProject = new FakePackageManagementProject();
 			fakeScriptFactory = new FakePackageScriptFactory();
 			fakeScriptRunner = new FakePackageScriptRunner();
-			action = new RunPackageScriptsAction(fakeProject, fakeScriptRunner, fakeScriptFactory);
+			globalMSBuildProjectCollection = MockRepository.GenerateStub<IGlobalMSBuildProjectCollection>();
+			action = new RunPackageScriptsAction(
+				fakeProject,
+				fakeScriptRunner,
+				fakeScriptFactory,
+				globalMSBuildProjectCollection);
 		}
 		
 		PackageOperationEventArgs CreatePackageOperationEventArgs()
@@ -167,11 +174,11 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Constructor_PackageReferenceIsRemoved_PackageUninstallScriptIsRun()
+		public void Constructor_PackageReferenceIsBeingRemoved_PackageUninstallScriptIsRun()
 		{
 			CreateAction();
 			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
-			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
+			fakeProject.FirePackageReferenceRemovingEvent(eventArgs);
 			
 			IPackageScript actualScript = fakeScriptRunner.FirstScriptRun;
 			FakePackageScript expectedScript = fakeScriptFactory.FirstPackageUninstallScriptCreated;
@@ -180,11 +187,11 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Constructor_PackageReferenceIsRemoved_PackageUninstallScriptIsCreated()
+		public void Constructor_PackageReferenceIsBeingRemoved_PackageUninstallScriptIsCreated()
 		{
 			CreateAction();
 			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs(@"d:\projects\myproject\packages\test");
-			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
+			fakeProject.FirePackageReferenceRemovingEvent(eventArgs);
 			
 			string path = fakeScriptFactory.FirstPackageInstallDirectoryPassed;
 			
@@ -192,13 +199,13 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Dispose_PackageReferenceIsRemoved_PackageUninstallScriptIsNotRun()
+		public void Dispose_PackageReferenceIsBeingRemoved_PackageUninstallScriptIsNotRun()
 		{
 			CreateAction();
 			action.Dispose();
 			
 			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
-			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
+			fakeProject.FirePackageReferenceRemovingEvent(eventArgs);
 			
 			int count = fakeScriptFactory.FakePackageUninstallScriptsCreated.Count;
 			
@@ -206,11 +213,11 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Constructor_PackageReferenceIsRemoved_UninstallScriptIsPassedProject()
+		public void Constructor_PackageReferenceIsBeingRemoved_UninstallScriptIsPassedProject()
 		{
 			CreateAction();
 			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
-			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
+			fakeProject.FirePackageReferenceRemovingEvent(eventArgs);
 			
 			IPackageManagementProject project = fakeScriptFactory.FirstPackageUninstallScriptCreated.Project;
 			
@@ -218,16 +225,34 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Constructor_PackageReferenceIsRemoved_UninstallScriptIsPassedPackageFromPackageOperationEventArgs()
+		public void Constructor_PackageReferenceIsBeingRemoved_UninstallScriptIsPassedPackageFromPackageOperationEventArgs()
 		{
 			CreateAction();
 			var expectedPackage = new FakePackage();
 			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs(expectedPackage);
-			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
+			fakeProject.FirePackageReferenceRemovingEvent(eventArgs);
 			
 			IPackage package = fakeScriptFactory.FirstPackageUninstallScriptCreated.Package;
 			
 			Assert.AreEqual(expectedPackage, package);
+		}
+		
+		[Test]
+		public void Dispose_OneProjectAddedToGlobalMSBuildProjectCollection_GlobalMSBuildProjectCollectionIsDisposed()
+		{
+			CreateAction();
+			
+			action.Dispose();
+			
+			globalMSBuildProjectCollection.AssertWasCalled(projectCollection => projectCollection.Dispose());
+		}
+		
+		[Test]
+		public void Constructor_NewInstance_OneProjectAddedToGlobalMSBuildProjectCollection()
+		{
+			CreateAction();
+			
+			globalMSBuildProjectCollection.AssertWasCalled(collection => collection.AddProject(fakeProject));
 		}
 	}
 }

@@ -1,4 +1,8 @@
-﻿<AddIn name="WPF Designer AddIn" author="Daniel Grunwald" copyright="prj:///doc/copyright.txt" description="WPF Designer" addInManagerHidden="preinstalled">
+﻿<AddIn name="WPF Designer AddIn"
+       author="Daniel Grunwald"
+       copyright="prj:///doc/copyright.txt"
+       description="WPF Designer"
+       addInManagerHidden="preinstalled">
 	<Manifest>
 		<Identity name="ICSharpCode.WpfDesigner" />
 		<Dependency addin="ICSharpCode.FormsDesigner" requirePreload="true" />
@@ -21,7 +25,18 @@
 		                insertbefore    = "Text"
 		                fileNamePattern = "\.(xaml)$"
 		                title = "WPF designer"/>-->
-		<DisplayBinding id="WPFDesigner" type="Secondary" class="ICSharpCode.WpfDesign.AddIn.WpfSecondaryDisplayBinding" fileNamePattern="\.xaml$" />
+		<DisplayBinding id="WPFDesigner"
+		                type="Secondary"
+		                class="ICSharpCode.WpfDesign.AddIn.WpfSecondaryDisplayBinding"
+		                fileNamePattern="\.xaml$" />
+	</Path>
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "ThumbnailViewPad"
+		     category = "Main"
+		     title    = "${res:ICSharpCode.WpfDesign.AddIn.ThumbnailViewPad}"
+		     icon     = "PadIcons.Toolbar"
+		     class    = "ICSharpCode.WpfDesign.AddIn.ThumbnailViewPad"
+		     defaultPosition = "Right, Hidden" />
 	</Path>
 	<!--
 	<Path name = "/SharpDevelop/Workbench/Pads">

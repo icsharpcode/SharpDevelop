@@ -9,30 +9,30 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class FakePackageActionRunner : IPackageActionRunner
 	{
-		public ProcessPackageAction ActionPassedToRun;
+		public IPackageAction ActionPassedToRun;
 		public bool IsRunCalled;
 		
-		public void Run(ProcessPackageAction action)
+		public virtual void Run(IPackageAction action)
 		{
 			IsRunCalled = true;
 			ActionPassedToRun = action;
 			ActionsPassedToRun.Add(action);
 		}
 		
-		public List<ProcessPackageAction> ActionsPassedToRun = 
-			new List<ProcessPackageAction>();
+		public List<IPackageAction> ActionsPassedToRun = 
+			new List<IPackageAction>();
 		
-		public void Run(IEnumerable<ProcessPackageAction> actions)
+		public void Run(IEnumerable<IPackageAction> actions)
 		{
 			IsRunCalled = true;
 			ActionsRunInOneCall = actions;
 		}
 		
-		public IEnumerable<ProcessPackageAction> ActionsRunInOneCall;
+		public IEnumerable<IPackageAction> ActionsRunInOneCall;
 		
-		public List<ProcessPackageAction> GetActionsRunInOneCallAsList()
+		public List<IPackageAction> GetActionsRunInOneCallAsList()
 		{
-			return new List<ProcessPackageAction>(ActionsRunInOneCall);
+			return new List<IPackageAction>(ActionsRunInOneCall);
 		}
 	}
 }

@@ -5,6 +5,11 @@ using System;
 using System.ComponentModel;
 using System.Windows.Markup;
 using System.Xml;
+using System.IO;
+using System.Linq;
+using System.Windows.Documents;
+using System.Windows.Media;
+using System.Collections.Generic;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -18,6 +23,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		IServiceProvider _serviceProvider;
 		
 		XamlTypeFinder _typeFinder;
+
+		int namespacePrefixCounter;
 		
 		internal XmlDocument XmlDocument {
 			get { return _xmlDoc; }
@@ -165,19 +172,90 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (forProperty != null && hasStringConverter) {
 				return new XamlTextValue(this, c.ConvertToInvariantString(ctx, instance));
 			}
+
+			string ns = GetNamespaceFor(elementType);
+			string prefix = GetPrefixForNamespace(ns);
 			
-			
-			XmlElement xml = _xmlDoc.CreateElement(elementType.Name, GetNamespaceFor(elementType));
-			
-			if (hasStringConverter) {
+			XmlElement xml = _xmlDoc.CreateElement(prefix, elementType.Name, ns);
+
+			if (hasStringConverter && XamlObject.GetContentPropertyName(elementType) != null) {
 				xml.InnerText = c.ConvertToInvariantString(instance);
+			} else if (instance is Brush) {  // TODO: this is a hacky fix, because Brush Editor doesn't
+										     // edit Design Items and so we have no XML, only the Brush 
+										     // object and we need to parse the Brush to XAML!
+				var s = new MemoryStream();
+				XamlWriter.Save(instance, s);
+				s.Seek(0, SeekOrigin.Begin);
+				XmlDocument doc = new XmlDocument();
+				doc.Load(s);
+				xml = (XmlElement)_xmlDoc.ImportNode(doc.DocumentElement, true);
+
+				var attLst = xml.Attributes.Cast<XmlAttribute>().ToList();
+				foreach (XmlAttribute att in attLst) {
+					if (att.Name.StartsWith(XamlConstants.Xmlns)) {
+						var rootAtt = doc.DocumentElement.GetAttributeNode(att.Name);
+						if (rootAtt != null && rootAtt.Value == att.Value) {
+							xml.Attributes.Remove(att);
+						}
+					}
+				}
 			}
+
 			return new XamlObject(this, xml, elementType, instance);
 		}
 		
 		internal string GetNamespaceFor(Type type)
 		{
+			if (type == typeof (DesignTimeProperties))
+				return XamlConstants.DesignTimeNamespace;
+			if (type == typeof (MarkupCompatibilityProperties))
+				return XamlConstants.MarkupCompatibilityNamespace;
+
 			return _typeFinder.GetXmlNamespaceFor(type.Assembly, type.Namespace);
+		}
+
+		internal string GetPrefixForNamespace(string @namespace)
+		{
+			if (@namespace == XamlConstants.PresentationNamespace)
+			{
+				return null;
+			}
+
+			string prefix = _xmlDoc.DocumentElement.GetPrefixOfNamespace(@namespace);
+
+			if (String.IsNullOrEmpty(prefix))
+			{
+				prefix = _typeFinder.GetPrefixForXmlNamespace(@namespace);
+
+				string existingNamespaceForPrefix = null;
+				if (!String.IsNullOrEmpty(prefix))
+				{
+					existingNamespaceForPrefix = _xmlDoc.DocumentElement.GetNamespaceOfPrefix(prefix);
+				}
+
+				if (String.IsNullOrEmpty(prefix) ||
+				    !String.IsNullOrEmpty(existingNamespaceForPrefix) &&
+				    existingNamespaceForPrefix != @namespace)
+				{
+					do
+					{
+						prefix = "Controls" + namespacePrefixCounter++;
+					} while (!String.IsNullOrEmpty(_xmlDoc.DocumentElement.GetNamespaceOfPrefix(prefix)));
+				}
+
+				string xmlnsPrefix = _xmlDoc.DocumentElement.GetPrefixOfNamespace(XamlConstants.XmlnsNamespace);
+				System.Diagnostics.Debug.Assert(!String.IsNullOrEmpty(xmlnsPrefix));
+
+				_xmlDoc.DocumentElement.SetAttribute(xmlnsPrefix + ":" + prefix, @namespace);
+				
+				if (@namespace == XamlConstants.DesignTimeNamespace)
+				{
+					var ignorableProp = new XamlProperty(this._rootElement,new XamlDependencyPropertyInfo(MarkupCompatibilityProperties.IgnorableProperty,true));
+					ignorableProp.SetAttribute(prefix);
+				}
+			}
+
+			return prefix;
 		}
 	}
 }

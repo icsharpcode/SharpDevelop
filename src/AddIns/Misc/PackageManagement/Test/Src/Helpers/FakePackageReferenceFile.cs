@@ -14,7 +14,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void AddFakePackageReference(string packageId, string version)
 		{
-			var packageReference = new PackageReference(packageId, new SemanticVersion(version), null, null);
+			var packageReference = new PackageReference(packageId, new SemanticVersion(version), null, null, false, false);
 			FakePackageReferences.Add(packageReference);
 		}
 		
@@ -27,7 +27,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void DeleteEntry(string id, SemanticVersion version)
 		{
-			var packageReference = new PackageReference(id, version, null, null);
+			var packageReference = new PackageReference(id, version, null, null, false, false);
 			EntriesDeleted.Add(packageReference);
 		}
 		

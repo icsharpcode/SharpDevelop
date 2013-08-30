@@ -129,6 +129,7 @@
     <Compile Include="Utils\MockTextMarker.cs" />
     <Compile Include="Utils\MockTextMarkerService.cs" />
     <Compile Include="Utils\ProjectHelper.cs" />
+    <Compile Include="Utils\Tests\CamelHumpsMatchTests.cs" />
     <Compile Include="Utils\Tests\MockAssemblyTests.cs" />
     <Compile Include="VBExpressionFinderTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
@@ -202,6 +203,9 @@
   <ItemGroup>
     <EmbeddedResource Include="mime_utf-16_be_test.txt" />
     <EmbeddedResource Include="mime_utf-16_le_test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="mime_bug1.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

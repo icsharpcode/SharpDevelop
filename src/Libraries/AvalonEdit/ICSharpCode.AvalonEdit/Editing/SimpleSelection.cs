@@ -84,11 +84,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (e == null)
 				throw new ArgumentNullException("e");
-			return Selection.Create(
-				textArea,
-				new TextViewPosition(textArea.Document.GetLocation(e.GetNewOffset(startOffset, AnchorMovementType.Default)), start.VisualColumn),
-				new TextViewPosition(textArea.Document.GetLocation(e.GetNewOffset(endOffset, AnchorMovementType.Default)), end.VisualColumn)
-			);
+			TextViewPosition newStart = start;
+			TextViewPosition newEnd = end;
+			// by changing the existing TextViewPosition, we preserve the VisualColumn (though it might become invalid)
+			// and the IsAtEndOfLine property.
+			newStart.Location = textArea.Document.GetLocation(e.GetNewOffset(startOffset, AnchorMovementType.Default));
+			newEnd.Location   = textArea.Document.GetLocation(e.GetNewOffset(endOffset, AnchorMovementType.Default));
+			return Selection.Create(textArea, newStart, newEnd);
 		}
 		
 		/// <inheritdoc/>

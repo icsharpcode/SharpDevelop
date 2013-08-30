@@ -31,6 +31,7 @@ namespace ICSharpCode.PythonBinding
 		string componentName = String.Empty;
 		PythonCodeDeserializer deserializer;
 		ClassDefinition classDefinition;
+		bool walkingInitializeComponentMethod;
 		
 		public PythonComponentWalker(IComponentCreator componentCreator)
 		{
@@ -42,13 +43,13 @@ namespace ICSharpCode.PythonBinding
 		/// Creates a control either a UserControl or Form from the python code.
 		/// </summary>
 		public IComponent CreateComponent(string pythonCode)
-		{			
+		{
 			PythonParser parser = new PythonParser();
 			PythonAst ast = parser.CreateAst(@"Control.py", new StringTextBuffer(pythonCode));
 			ast.Walk(this);
 			
 			// Did we find the InitializeComponent method?
-			if (!FoundInitializeComponentMethod) {
+			if (component == null) {
 				throw new PythonComponentWalkerException("Unable to find InitializeComponents method.");
 			}
 			return component;
@@ -88,14 +89,16 @@ namespace ICSharpCode.PythonBinding
 				if (reader != null) {
 					reader.Dispose();
 				}
+				walkingInitializeComponentMethod = true;
 				node.Body.Walk(this);
+				walkingInitializeComponentMethod = false;
 			}
 			return false;
 		}
 		
 		public override bool Walk(AssignmentStatement node)
-		{			
-			if (!FoundInitializeComponentMethod) {
+		{
+			if (!walkingInitializeComponentMethod) {
 				return false;
 			}
 			
@@ -120,7 +123,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(ConstantExpression node)
 		{
-			if (!FoundInitializeComponentMethod) {
+			if (!walkingInitializeComponentMethod) {
 				return false;
 			}
 			
@@ -129,8 +132,8 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		public override bool Walk(CallExpression node)
-		{			
-			if (!FoundInitializeComponentMethod) {
+		{
+			if (!walkingInitializeComponentMethod) {
 				return false;
 			}
 				
@@ -144,7 +147,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(NameExpression node)
 		{
-			if (!FoundInitializeComponentMethod) {
+			if (!walkingInitializeComponentMethod) {
 				return false;
 			}
 			
@@ -159,7 +162,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public override bool Walk(AugmentedAssignStatement node)
 		{
-			if (!FoundInitializeComponentMethod) {
+			if (!walkingInitializeComponentMethod) {
 				return false;
 			}
 			
@@ -176,7 +179,7 @@ namespace ICSharpCode.PythonBinding
 			PropertyDescriptor propertyDescriptor = componentCreator.GetEventProperty(eventDescriptor);
 			propertyDescriptor.SetValue(currentComponent, eventHandlerName);
 			return false;
-		}		
+		}
 		
 		/// <summary>
 		/// Walks the binary expression which is the right hand side of an assignment statement.
@@ -355,10 +358,6 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return null;
-		}
-		
-		bool FoundInitializeComponentMethod {
-			get { return component != null; }
 		}
 		
 		/// <summary>

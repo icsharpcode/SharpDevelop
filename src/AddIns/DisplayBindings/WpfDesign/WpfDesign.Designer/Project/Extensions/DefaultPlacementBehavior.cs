@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Input;
 using ICSharpCode.WpfDesign.Extensions;
 using System.Windows.Controls;
 using System.Windows;
@@ -18,6 +19,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	[ExtensionFor(typeof(Panel))]
 	[ExtensionFor(typeof(ContentControl))]
+	[ExtensionFor(typeof(Border))]
+	[ExtensionFor(typeof(Viewbox))]
+	[ExtensionFor(typeof(ItemsControl))]
 	public class DefaultPlacementBehavior : BehaviorExtension, IPlacementBehavior
 	{
 		static List<Type> _contentControlsNotAllowedToAdd;
@@ -30,7 +34,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			_contentControlsNotAllowedToAdd.Add(typeof (HeaderedContentControl));
 			_contentControlsNotAllowedToAdd.Add(typeof (Label));
 			_contentControlsNotAllowedToAdd.Add(typeof (ListBoxItem));
-			_contentControlsNotAllowedToAdd.Add(typeof (ButtonBase));
+			//_contentControlsNotAllowedToAdd.Add(typeof (ButtonBase));
 			_contentControlsNotAllowedToAdd.Add(typeof (StatusBarItem));
 			_contentControlsNotAllowedToAdd.Add(typeof (ToolTip));
 		}
@@ -61,6 +65,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void EndPlacement(PlacementOperation operation)
 		{
+			InfoTextEnterArea.Stop(ref infoTextEnterArea);			
 		}
 
 		public virtual Rect GetPosition(PlacementOperation operation, DesignItem item)
@@ -96,8 +101,41 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 
-		public virtual bool CanEnterContainer(PlacementOperation operation)
+		private static InfoTextEnterArea infoTextEnterArea;
+		
+		public virtual bool CanEnterContainer(PlacementOperation operation, bool shouldAlwaysEnter)
 		{
+			var canEnter = internalCanEnterContainer(operation);
+			
+			if (canEnter && !shouldAlwaysEnter && !Keyboard.IsKeyDown(Key.LeftAlt) && !Keyboard.IsKeyDown(Key.RightAlt))
+			{
+				var b = new Rect(0, 0, ((FrameworkElement)this.ExtendedItem.View).ActualWidth, ((FrameworkElement)this.ExtendedItem.View).ActualHeight);
+				InfoTextEnterArea.Start(ref infoTextEnterArea, this.Services, this.ExtendedItem.View, b, Translations.Instance.PressAltText);						
+				
+				return false;
+			}
+			
+			return canEnter;
+		}
+		
+		private bool internalCanEnterContainer(PlacementOperation operation)
+		{
+			InfoTextEnterArea.Stop(ref infoTextEnterArea);												
+			
+			if (ExtendedItem.Component is Expander)
+			{
+				if (!((Expander) ExtendedItem.Component).IsExpanded)
+				{
+					((Expander) ExtendedItem.Component).IsExpanded = true;
+				}
+			}
+
+			if (ExtendedItem.Component is UserControl && ExtendedItem.ComponentType != typeof(UserControl))
+				return false;
+			
+			if (ExtendedItem.Component is Decorator)
+				return ((Decorator)ExtendedItem.Component).Child == null;
+			
 			if (ExtendedItem.ContentProperty.IsCollection)
 				return CollectionSupport.CanCollectionAdd(ExtendedItem.ContentProperty.ReturnType,
 				                                          operation.PlacedItems.Select(p => p.Item.Component));

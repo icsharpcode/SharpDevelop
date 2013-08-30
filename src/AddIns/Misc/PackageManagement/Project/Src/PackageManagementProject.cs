@@ -64,9 +64,9 @@ namespace ICSharpCode.PackageManagement
 			remove { projectManager.PackageReferenceAdded -= value; }
 		}
 		
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved {
-			add { projectManager.PackageReferenceRemoved += value; }
-			remove { projectManager.PackageReferenceRemoved -= value; }
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving {
+			add { projectManager.PackageReferenceRemoving += value; }
+			remove { projectManager.PackageReferenceRemoving -= value; }
 		}
 		
 		public bool IsPackageInstalled(IPackage package)
@@ -130,6 +130,38 @@ namespace ICSharpCode.PackageManagement
 			return packageSorter
 				.GetPackagesByDependencyOrder(projectManager.LocalRepository)
 				.Reverse();
+		}
+		
+		public void UpdatePackages(UpdatePackagesAction updateAction)
+		{
+			packageManager.UpdatePackages(updateAction);
+		}
+		
+		public UpdatePackagesAction CreateUpdatePackagesAction()
+		{
+			return new UpdatePackagesAction(this, packageManagementEvents);
+		}
+		
+		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
+			IEnumerable<IPackage> packages,
+			IUpdatePackageSettings settings)
+		{
+			return packageManager.GetUpdatePackageOperations(packages, settings);
+		}
+		
+		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
+		{
+			packageManager.RunPackageOperations(operations);
+		}
+		
+		public bool HasOlderPackageInstalled(IPackage package)
+		{
+			return projectManager.HasOlderPackageInstalled(package);
+		}
+		
+		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
+		{
+			packageManager.UpdatePackageReference(package, settings);
 		}
 	}
 }

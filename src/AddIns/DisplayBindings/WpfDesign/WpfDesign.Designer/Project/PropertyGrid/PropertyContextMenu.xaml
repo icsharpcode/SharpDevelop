@@ -4,6 +4,7 @@
              >
     
     <MenuItem Header="Reset"
+              IsEnabled="{Binding IsSet}" 
               Click="Click_Reset" />    
     <MenuItem Header="Binding" 
               Click="Click_Binding" /><!-- 

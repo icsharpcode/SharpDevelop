@@ -50,10 +50,25 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		[Parameter, Alias("Prerelease")]
 		public SwitchParameter IncludePrerelease { get; set; }
-
+		
+		[Parameter]
+		public FileConflictAction FileConflictAction { get; set; }
+		
 		protected override void ProcessRecord()
 		{
 			ThrowErrorIfProjectNotOpen();
+			using (IConsoleHostFileConflictResolver resolver = CreateFileConflictResolver()) {
+				RunUpdate();
+			}
+		}
+		
+		IConsoleHostFileConflictResolver CreateFileConflictResolver()
+		{
+			return ConsoleHost.CreateFileConflictResolver(FileConflictAction);
+		}
+		
+		void RunUpdate()
+		{
 			if (HasPackageId()) {
 				if (HasProjectName()) {
 					UpdatePackageInSingleProject();
@@ -114,7 +129,14 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 			IPackageManagementProject project = GetProject();
 			UpdatePackageAction action = CreateUpdatePackageAction(project);
-			action.Execute();
+			using (IDisposable operation = StartUpdateOperation(action)) {
+				action.Execute();
+			}
+		}
+		
+		IDisposable StartUpdateOperation(UpdatePackageAction action)
+		{
+			return action.Project.SourceRepository.StartUpdateOperation(action.PackageId);
 		}
 		
 		IPackageManagementProject GetProject()
@@ -148,7 +170,9 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			updateActions.PackageScriptRunner = this;
 			
 			foreach (UpdatePackageAction action in updateActions.CreateActions()) {
-				action.Execute();
+				using (IDisposable operation = StartUpdateOperation(action)) {
+					action.Execute();
+				}
 			}
 		}
 		
@@ -165,7 +189,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		PackageReference CreatePackageReference()
 		{
-			return new PackageReference(Id, Version, null, null);
+			return new PackageReference(Id, Version, null, null, false, false);
 		}
 	}
 }

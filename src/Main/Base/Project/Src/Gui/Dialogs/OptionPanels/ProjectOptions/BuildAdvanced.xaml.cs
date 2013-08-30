@@ -1,10 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 24.09.2012
- * Time: 19:54
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -60,7 +56,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			this.TargetCPU = new List<KeyItemPair>();
 			supports32BitPreferred = false;
 			if (DotnetDetection.IsDotnet45Installed()) {
-				supports32BitPreferred = projectOptions.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2010;
+				var upgradableProject = projectOptions.Project as IUpgradableProject;
+				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.IsBasedOn(TargetFramework.Net45))
+					supports32BitPreferred = projectOptions.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2010;
 				// Show 32 vs. 64 options even for library projects;
 				// it's relevant for web applications.
 			}

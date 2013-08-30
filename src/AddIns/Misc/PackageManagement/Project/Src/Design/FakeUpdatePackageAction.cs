@@ -2,12 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement.Scripting;
 
 namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakeUpdatePackageAction : UpdatePackageAction
 	{
 		public bool IsExecuted;
+		
+		public FakePackageManagementProject FakeProject;
 		
 		public FakeUpdatePackageAction()
 			: this(new FakePackageManagementProject())
@@ -17,6 +20,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public FakeUpdatePackageAction(IPackageManagementProject project)
 			: base(project, null)
 		{
+			FakeProject = project as FakePackageManagementProject;
 		}
 		
 		protected override void ExecuteCore()
@@ -26,6 +30,17 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		protected override void BeforeExecute()
 		{
+		}
+		
+		protected override RunPackageScriptsAction CreateRunPackageScriptsAction(
+			IPackageScriptRunner scriptRunner,
+			IPackageManagementProject project)
+		{
+			return new RunPackageScriptsAction(
+				project,
+				scriptRunner,
+				new PackageScriptFactory(),
+				new NullGlobalMSBuildProjectCollection());
 		}
 	}
 }

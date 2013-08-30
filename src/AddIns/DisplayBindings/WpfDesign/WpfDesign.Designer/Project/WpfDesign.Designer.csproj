@@ -55,6 +55,9 @@
       <SpecificVersion>False</SpecificVersion>
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="ReachFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -76,8 +79,17 @@
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Controls\RenderTransformOriginThumb.cs" />
+    <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
+    <Compile Include="PropertyGrid\Editors\FlatCollectionEditor.xaml.cs">
+      <DependentUpon>FlatCollectionEditor.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Translations.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
+    <Compile Include="Controls\CanvasPositionHandle.cs" />
+    <Compile Include="Controls\ClearableTextBox.cs" />
     <Compile Include="Controls\ContainerDragHandle.cs" />
     <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\EnterTextBox.cs" />
@@ -85,6 +97,7 @@
       <DependentUpon>EnumBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\EnumButton.cs" />
+    <Compile Include="Controls\InfoTextEnterArea.cs" />
     <Compile Include="Controls\GrayOutDesignerExceptActiveArea.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -98,6 +111,7 @@
     <Compile Include="Controls\PageClone.cs" />
     <Compile Include="Controls\PanelMoveAdorner.cs" />
     <Compile Include="Controls\QuickOperationMenu.cs" />
+    <Compile Include="Controls\RotateThumb.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
@@ -109,15 +123,14 @@
     <Compile Include="Converters.cs" />
     <Compile Include="DesignCommand.cs" />
     <Compile Include="DesignPanel.cs" />
-    <Compile Include="DesignSurface.xaml.cs">
-      <DependentUpon>DesignSurface.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="DesignSurface.cs" />
     <Compile Include="DragDropExceptionHandler.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Extensions\CanvasPlacementSupport.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\BorderForInvisibleControl.cs" />
+    <Compile Include="Extensions\CanvasPositionExtension.cs" />
     <Compile Include="Extensions\Initializers.cs" />
     <Compile Include="Extensions\DefaultPlacementBehavior.cs">
       <SubType>Code</SubType>
@@ -127,6 +140,8 @@
     <Compile Include="Extensions\InPlaceEditorExtension.cs" />
     <Compile Include="Extensions\MarginHandleExtension.cs" />
     <Compile Include="Extensions\QuickOperationMenuExtension.cs" />
+    <Compile Include="Extensions\RasterPlacementBehavior.cs" />
+    <Compile Include="Extensions\RotateThumbExtension.cs" />
     <Compile Include="Extensions\SizeDisplayExtension.cs" />
     <Compile Include="Extensions\SnaplinePlacementBehavior.cs">
       <SubType>Code</SubType>
@@ -190,9 +205,7 @@
       <DependentUpon>PropertyContextMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="PropertyGrid\PropertyGrid.cs" />
-    <Compile Include="PropertyGrid\PropertyGridView.xaml.cs">
-      <DependentUpon>PropertyGridView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="PropertyGrid\PropertyGridView.cs" />
     <Compile Include="RootItemBehavior.cs" />
     <Compile Include="Services\ChooseClass.cs" />
     <Compile Include="Services\ChooseClassDialog.xaml.cs">
@@ -217,6 +230,7 @@
     <Compile Include="Services\WpfTopLevelWindowService.cs" />
     <Compile Include="Services\XamlErrorService.cs" />
     <Compile Include="SharedInstances.cs" />
+    <Compile Include="ThumbnailView\ThumbnailView.cs" />
     <Compile Include="Xaml\XamlEditOperations.cs" />
     <Compile Include="Xaml\XamlLoadSettings.cs" />
     <Compile Include="Xaml\XamlModelCollectionElementsCollection.cs" />
@@ -228,6 +242,8 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="PropertyGrid\Editors\FlatCollectionEditor.xaml" />
+    <Page Include="ThumbnailView\ThumbnailView.xaml" />
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
@@ -325,5 +341,24 @@
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="Configuration\CodeAnalysisDictionary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\rotate.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\group2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ThumbnailView" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons.16x16.Properties.Events.png" />
+    <Resource Include="Images\Icons.16x16.WpfOutline.Eye.png" />
+    <Resource Include="Images\Icons.16x16.WpfOutline.EyeClose.png" />
+    <Resource Include="Images\Icons.16x16.Properties.Categorized.png" />
+    <Resource Include="Images\Icons.16x16.Properties.Properties.png" />
+    <Resource Include="Images\Icons.16x16.Properties.SortAlphabet.png" />
+    <Resource Include="Images\Icons.16x16.GuideSnap.png" />
+    <Resource Include="Images\Icons.16x16.GridSnap.png" />
   </ItemGroup>
 </Project>

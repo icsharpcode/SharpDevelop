@@ -175,7 +175,7 @@ namespace ICSharpCode.FormsDesigner
 						LoggingService.Debug("Checking project reference: " + referenceItem.Include);
 						if (referenceItem.HintPath.Length > 0 && File.Exists(referenceItem.FileName)) {
 							LoggingService.Debug("Checking assembly reference");
-							AssemblyName assemblyName = AssemblyName.GetAssemblyName(referenceItem.FileName);
+							AssemblyName assemblyName = GetAssemblyName(referenceItem.FileName);
 							if (assemblyName != null && assemblyName.FullName == referenceName.FullName) {
 								isAlreadyInRefFolder = true;
 								break;
@@ -192,6 +192,16 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 			return isAlreadyInRefFolder;
+		}
+		
+		static AssemblyName GetAssemblyName(string fileName)
+		{
+			try {
+				return AssemblyName.GetAssemblyName(fileName);
+			} catch (Exception ex) {
+				LoggingService.Debug(ex.ToString());
+			}
+			return null;
 		}
 		
 		static void AddReferenceToProject(IProject project, AssemblyName referenceName)

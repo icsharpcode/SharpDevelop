@@ -70,7 +70,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 
 		private DesignItem IntializePasteOperationsTest()
 		{
-			var grid = CreateGridContextWithDesignSurface("<Button Name=\"TestElement\"/><Grid><Button/></Grid><Window/><ListBox/>");
+			var grid = CreateGridContextWithDesignSurface("<Button Name=\"TestElement\"/><Grid><Button/></Grid><Window/><Image/>");
 			Assert.IsNotNull(grid);
 			var xamlConxtext = grid.Context as XamlDesignContext;
 			if (xamlConxtext != null) {
@@ -81,10 +81,23 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			return grid;
 		}
 
+		private DesignItem IntializePasteOperationsCannotAddTest()
+		{
+			var grid = CreateGridContextWithDesignSurface("<Button Name=\"TestElement\"/><Grid><Image/></Grid><Window/><ListBox/>");
+			Assert.IsNotNull(grid);
+			var xamlConxtext = grid.Context as XamlDesignContext;
+			if (xamlConxtext != null) {
+				_name = grid.ContentProperty.CollectionElements[0].Name;
+				xamlConxtext.XamlEditAction.Cut(new[] {grid.ContentProperty.CollectionElements[0]});
+			} else
+				Assert.Fail();
+			return grid;
+		}
+		
 		[Test]
 		public void PasteWhenContentControlSelectedAndCannotAdd()
 		{
-			var grid = IntializePasteOperationsTest();
+			var grid = IntializePasteOperationsCannotAddTest();
 			var xamlContext = grid.Context as XamlDesignContext;
 			Assert.IsNotNull(xamlContext);
 
@@ -92,7 +105,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			var innerGrid = grid.ContentProperty.CollectionElements[0];
 			selection.SetSelectedComponents(innerGrid.ContentProperty.CollectionElements);
 			xamlContext.XamlEditAction.Paste();
-			Assert.AreEqual(_name, innerGrid.ContentProperty.CollectionElements[1].Name);
+			Assert.AreEqual(_name, innerGrid.ContentProperty.CollectionElements[1].Name);			
 			Assert.AreEqual(innerGrid.ContentProperty.CollectionElements[1], selection.PrimarySelection);
 		}
 

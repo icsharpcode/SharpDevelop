@@ -8,7 +8,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class PackageRepositoryCache : IPackageRepositoryCache
+	public class PackageRepositoryCache : IPackageRepositoryCache, IPackageRepositoryFactoryEvents
 	{
 		ISharpDevelopPackageRepositoryFactory factory;
 		RegisteredPackageSources registeredPackageSources;
@@ -37,6 +37,8 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
+		public event EventHandler<PackageRepositoryFactoryEventArgs> RepositoryCreated;
+		
 		public IPackageRepository CreateRepository(string packageSource)
 		{
 			IPackageRepository repository = GetExistingRepository(packageSource);
@@ -59,7 +61,17 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageRepository repository = factory.CreateRepository(packageSource);
 			repositories.TryAdd(packageSource, repository);
+			
+			OnPackageRepositoryCreated(repository);
+			
 			return repository;
+		}
+		
+		void OnPackageRepositoryCreated(IPackageRepository repository)
+		{
+			if (RepositoryCreated != null) {
+				RepositoryCreated(this, new PackageRepositoryFactoryEventArgs(repository));
+			}
 		}
 		
 		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem, IFileSystem configSettingsFileSystem)

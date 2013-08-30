@@ -19,7 +19,7 @@ using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	public class SnaplinePlacementBehavior : DefaultPlacementBehavior
+	public class SnaplinePlacementBehavior : RasterPlacementBehavior
 	{
 		AdornerPanel adornerPanel;
 		Canvas surface;
@@ -59,6 +59,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			base.BeforeSetPosition(operation);
 			if (surface == null) return;
 
+			DesignPanel designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+			if (designPanel == null || !designPanel.UseSnaplinePlacement)
+				return;
+			
 			surface.Children.Clear();
 			if (Keyboard.IsKeyDown(Key.LeftCtrl)) return;
 
@@ -167,6 +171,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var containerRect = new Rect(0, 0, ModelTools.GetWidth(ExtendedItem.View), ModelTools.GetHeight(ExtendedItem.View));
 			AddLines(containerRect, -Margin, false);
 
+			AddLines(containerRect, 0, false);
+			
 			foreach (var item in ExtendedItem.ContentProperty.CollectionElements
 			         .Except(operation.PlacedItems.Select(f => f.Item)))
 			{
@@ -191,11 +197,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (filter == null || filter.Value.Vertical == VerticalAlignment.Top)
 				h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top - 1, Start = r.Left, End = r.Right });
 			if (filter == null || filter.Value.Vertical == VerticalAlignment.Bottom)
-				h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Bottom, Start = r.Left, End = r.Right });
+				h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Bottom - 1, Start = r.Left, End = r.Right });
 			if (filter == null || filter.Value.Horizontal == HorizontalAlignment.Left)
 				v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left - 1, Start = r.Top, End = r.Bottom });
 			if (filter == null || filter.Value.Horizontal == HorizontalAlignment.Right)
-				v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Right, Start = r.Top, End = r.Bottom });
+				v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Right - 1, Start = r.Top, End = r.Bottom });
 		}
 
 		void AddBaseline(DesignItem item, Rect bounds, List<Snapline> list)

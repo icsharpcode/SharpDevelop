@@ -36,7 +36,7 @@ namespace PackageManagement.Tests.Helpers
 			FakeScriptingConsoleWithLinesToRead scriptingConsole,
 			FakePowerShellHostFactory powerShellHostFactory,
 			FakePackageManagementAddInPath addinPath)
-			: base(solution, registeredPackageRepositories, powerShellHostFactory, addinPath)
+			: base(solution, registeredPackageRepositories, null, powerShellHostFactory, addinPath)
 		{
 			this.FakeSolution = solution;
 			this.FakeScriptingConsole = scriptingConsole;

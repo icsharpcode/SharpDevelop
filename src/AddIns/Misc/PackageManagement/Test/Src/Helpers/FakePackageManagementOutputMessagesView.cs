@@ -16,5 +16,9 @@ namespace PackageManagement.Tests.Helpers
 		{
 			IsClearCalled = true;
 		}
+		
+		public void AppendLine(string message)
+		{
+		}
 	}
 }

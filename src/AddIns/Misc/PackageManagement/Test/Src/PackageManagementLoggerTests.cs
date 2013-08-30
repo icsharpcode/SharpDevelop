@@ -5,20 +5,37 @@ using System;
 using ICSharpCode.PackageManagement;
 using NuGet;
 using NUnit.Framework;
-using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
 	[TestFixture]
 	public class PackageManagementLoggerTests
 	{
-		FakePackageManagementEvents fakePackageManagementEvents;
+		IPackageManagementEvents fakePackageManagementEvents;
 		PackageManagementLogger logger;
 		
 		void CreateLogger()
 		{
-			fakePackageManagementEvents = new FakePackageManagementEvents();
+			fakePackageManagementEvents = MockRepository.GenerateStub<IPackageManagementEvents>();
 			logger = new PackageManagementLogger(fakePackageManagementEvents);
+		}
+		
+		void AssertOnPackageOperationMessageLoggedCalled(MessageLevel level, string message)
+		{
+			fakePackageManagementEvents.AssertWasCalled(
+				events => events.OnPackageOperationMessageLogged(level, message));
+		}
+		
+		void AssertOnPackageOperationMessageLoggedCalled(MessageLevel level, string message, object arg)
+		{
+			fakePackageManagementEvents.AssertWasCalled(
+				events => events.OnPackageOperationMessageLogged(level, message, arg));
+		}
+		
+		void AssertOnResolveFileConflictCalled(string message)
+		{
+			fakePackageManagementEvents.AssertWasCalled(events => events.OnResolveFileConflict(message));
 		}
 		
 		[Test]
@@ -28,7 +45,7 @@ namespace PackageManagement.Tests
 			
 			logger.Log(MessageLevel.Warning, "test");
 			
-			Assert.AreEqual(MessageLevel.Warning, fakePackageManagementEvents.MessageLevelPassedToOnPackageOperationMessageLogged);
+			AssertOnPackageOperationMessageLoggedCalled(MessageLevel.Warning, "test");
 		}
 		
 		[Test]
@@ -39,9 +56,30 @@ namespace PackageManagement.Tests
 			string format = "Test {0}";
 			logger.Log(MessageLevel.Info, format, "C");
 			
-			string message = fakePackageManagementEvents.FormattedStringPassedToOnPackageOperationMessageLogged;
+			AssertOnPackageOperationMessageLoggedCalled(MessageLevel.Info, format, "C");
+		}
+		
+		[Test]
+		public void ResolveFileConflict_MessagePassed_RaisesOnResolveFileConflictEvent()
+		{
+			CreateLogger();
 			
-			Assert.AreEqual("Test C", message);
+			logger.ResolveFileConflict("message");
+			
+			AssertOnResolveFileConflictCalled("message");
+		}
+		
+		[Test]
+		public void ResolveFileConflict_PackageManagementEventsResolveFileConflictReturnsIgnoreAll_ReturnsIgnoreAll()
+		{
+			CreateLogger();
+			fakePackageManagementEvents
+				.Stub(events => events.OnResolveFileConflict("message"))
+				.Return(FileConflictResolution.IgnoreAll);
+			
+			FileConflictResolution resolution = logger.ResolveFileConflict("message");
+			
+			Assert.AreEqual(FileConflictResolution.IgnoreAll, resolution);
 		}
 	}
 }

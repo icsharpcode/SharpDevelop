@@ -36,23 +36,22 @@ namespace ICSharpCode.Reports.Core.Exporter {
 				throw new ArgumentNullException("converter");
 			}
 			base.DrawItem(pdfWriter,converter);
-
 			base.Decorate();
 	
 			PdfContentByte contentByte = base.PdfWriter.DirectContent;
 			
-			iTextSharp.text.Font font = CreateFontFromFactory(this.StyleDecorator);
-			CalculatePdfFormat pdfFormat = new CalculatePdfFormat(this.StyleDecorator,font);
+			var font = CreateFontFromFactory(this.StyleDecorator);
 			
-			ColumnText columnText = new ColumnText(contentByte);
+			var columnText = new ColumnText(contentByte);
 
 			if (StyleDecorator.RightToLeft.ToString() == "Yes") {
 				columnText.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
 			}
 			
-			iTextSharp.text.Rectangle r = base.ConvertToPdfRectangle();
-			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Top - r.Height,pdfFormat.Leading,pdfFormat.Alignment);
-		
+			var pdfRectangle = base.ConvertToPdfRectangle();
+
+			columnText.SetSimpleColumn(pdfRectangle.Left, pdfRectangle.Top , pdfRectangle.Left + pdfRectangle.Width,pdfRectangle.Top - pdfRectangle.Height);
+			
 			string formatedText = this.Text;
 			
 			if (!String.IsNullOrEmpty(StyleDecorator.FormatString)) {
@@ -63,7 +62,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			Chunk chunk = new Chunk(formatedText,font);
 
 			columnText.AddText(chunk);
-			
+			columnText.Alignment = CalculatePdfFormat.PdfAlignment(this.StyleDecorator);
 			columnText.Go();
 		}
 		
@@ -127,65 +126,44 @@ namespace ICSharpCode.Reports.Core.Exporter {
 	
 	internal class CalculatePdfFormat {
 		
-		TextStyleDecorator textDecorator;
-		
-		public CalculatePdfFormat (TextStyleDecorator textDecorator,iTextSharp.text.Font font)
+		public static int PdfAlignment(TextStyleDecorator textDecorator)
 		{
-			if (textDecorator == null) {
-				throw new ArgumentNullException ("textDecorator");
-			}
-			if (font == null) {
-				throw new ArgumentNullException("font");
-			}
-			this.textDecorator = textDecorator;
-			this.Leading = font.Size;
-			this.CalculateFormat();
-		}
-		
-		
-		private void CalculateFormat()
-		{
-			
-			this.Alignment = PdfContentByte.ALIGN_LEFT;
+			int retVal = 0;
 			
 			switch (textDecorator.ContentAlignment) {
 					//Top
 				case ContentAlignment.TopLeft:
-					this.Alignment = PdfContentByte.ALIGN_LEFT;
+					retVal =  PdfContentByte.ALIGN_LEFT;
 					break;
 				case ContentAlignment.TopCenter:
-					this.Alignment = PdfContentByte.ALIGN_CENTER;
+					retVal =  PdfContentByte.ALIGN_CENTER;
 					break;
 				case ContentAlignment.TopRight:
-					this.Alignment = PdfContentByte.ALIGN_RIGHT;
+					retVal = PdfContentByte.ALIGN_RIGHT;
 					break;
 					// Middle
 				case ContentAlignment.MiddleLeft:
-					this.Alignment = PdfContentByte.ALIGN_LEFT;
+					retVal = PdfContentByte.ALIGN_LEFT;
 					break;
 				case ContentAlignment.MiddleCenter:
-					this.Alignment = PdfContentByte.ALIGN_CENTER;
+					retVal = PdfContentByte.ALIGN_CENTER;
 					break;
 				case ContentAlignment.MiddleRight:
-					this.Alignment = PdfContentByte.ALIGN_RIGHT;
+					retVal = PdfContentByte.ALIGN_RIGHT;
 					break;
 					//Bottom
 				case ContentAlignment.BottomLeft:
-					this.Alignment = PdfContentByte.ALIGN_LEFT;
+					retVal = PdfContentByte.ALIGN_LEFT;
 					break;
 				case ContentAlignment.BottomCenter:
-					this.Alignment = PdfContentByte.ALIGN_CENTER;
+					retVal = PdfContentByte.ALIGN_CENTER;
 					break;
 				case ContentAlignment.BottomRight:
-					this.Alignment = PdfContentByte.ALIGN_RIGHT;
+					retVal = PdfContentByte.ALIGN_RIGHT;
 					break;
 			}
+			return retVal;
 			
 		}
-		
-		public float Leading {get;private set;}
-		
-		public int Alignment {get;private set;}
-			
 	}
 }

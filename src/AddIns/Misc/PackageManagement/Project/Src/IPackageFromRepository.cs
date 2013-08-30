@@ -11,5 +11,6 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository Repository { get; }
 		bool HasDependencies { get; }
 		DateTime? LastUpdated { get; }
+		Uri GalleryUrl { get; }
 	}
 }

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using NUnit.Framework;
@@ -16,16 +17,19 @@ namespace PackageManagement.Tests.Scripting
 		FakePackageManagementSolution fakeSolution;
 		FakeRegisteredPackageRepositories fakeRegisteredRepositories;
 		FakePowerShellDetection fakePowerShellDetection;
+		PackageManagementEvents packageEvents;
 		
 		void CreateProvider()
 		{
 			fakeSolution = new FakePackageManagementSolution();
 			fakeRegisteredRepositories = new FakeRegisteredPackageRepositories();
 			fakePowerShellDetection = new FakePowerShellDetection();
+			packageEvents = new PackageManagementEvents();
 			provider = new PackageManagementConsoleHostProvider(
 				fakeSolution,
 				fakeRegisteredRepositories,
-				fakePowerShellDetection);
+				fakePowerShellDetection,
+				packageEvents);
 		}
 		
 		[Test]

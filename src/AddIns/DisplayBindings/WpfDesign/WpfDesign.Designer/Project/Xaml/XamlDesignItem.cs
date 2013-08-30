@@ -49,8 +49,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		}
 		
 		public override string Name {
-			get { return (string)this.Properties["Name"].ValueOnInstance; }
-			set { this.Properties["Name"].SetValue(value); }
+			get { return _xamlObject.Name; }
+			set { _xamlObject.Name = value; }
+		}
+		
+		public override string Key {
+			get { return XamlObject.GetXamlAttribute("Key"); }
+			set { XamlObject.SetXamlAttribute("Key", value); }
 		}
 		
 		#if EventHandlerDebugging
@@ -65,13 +70,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				#if EventHandlerDebugging
 				Debug.WriteLine("Add event handler to " + this.ComponentType.Name + " (handler count=" + (++totalEventHandlerCount) + ")");
 				#endif
-				this.Properties["Name"].ValueChanged += value;
+				_xamlObject.NameChanged += value;
 			}
 			remove {
 				#if EventHandlerDebugging
 				Debug.WriteLine("Remove event handler from " + this.ComponentType.Name + " (handler count=" + (--totalEventHandlerCount) + ")");
 				#endif
-				this.Properties["Name"].ValueChanged -= value;
+				_xamlObject.NameChanged -= value;
 			}
 		}
 		
@@ -142,7 +147,15 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public override DesignItem Clone()
 		{
-			throw new NotImplementedException();
+			DesignItem item = null;
+		    var xaml = XamlStaticTools.GetXaml(this.XamlObject);
+		    XamlDesignItem rootItem = Context.RootItem as XamlDesignItem;
+		    var obj = XamlParser.ParseSnippet(rootItem.XamlObject, xaml, ((XamlDesignContext) Context).ParserSettings);
+		    if (obj != null)
+		    {
+                item = ((XamlDesignContext)Context)._componentService.RegisterXamlComponentRecursive(obj);
+		    }
+		    return item;
 		}
 	}
 }

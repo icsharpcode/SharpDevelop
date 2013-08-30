@@ -53,7 +53,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public string Id { get; set; }
 		public SemanticVersion Version { get; set; }
-		public string Title { get; set; }		
+		public string Title { get; set; }
 		public Uri IconUrl { get; set; }
 		public Uri LicenseUrl { get; set; }
 		public Uri ProjectUrl { get; set; }
@@ -178,5 +178,22 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			return SupportedFrameworks;
 		}
+		
+		List<PackageReferenceSet> FakePackageAssemblyReferences = 
+			new List<PackageReferenceSet>();
+		
+		public ICollection<PackageReferenceSet> PackageAssemblyReferences {
+			get { return FakePackageAssemblyReferences; }
+		}
+		
+		public void AddPackageReferences(params string[] names)
+		{
+			var frameworkName = new FrameworkName(".NET Framework, Version=4.0");
+			var packageReferenceSet = new PackageReferenceSet(frameworkName, names);
+			FakePackageAssemblyReferences.Add(packageReferenceSet);
+		}
+		
+		public Version MinClientVersion { get; set; }
+		public Uri GalleryUrl { get; set; }
 	}
 }

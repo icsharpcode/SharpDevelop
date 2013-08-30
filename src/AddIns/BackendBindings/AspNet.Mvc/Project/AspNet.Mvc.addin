@@ -84,6 +84,11 @@
 			insertbefore="AllFiles"
 			name="VB Razor Files (*.vbhtml)"
 			extensions="*.vbhtml"/>
+		<FileFilter
+			id="WebForm.Aspx"
+			insertbefore="AllFiles"
+			name="Web Form Files (*.aspx)"
+			extensions="*.aspx"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/LanguageBindings">

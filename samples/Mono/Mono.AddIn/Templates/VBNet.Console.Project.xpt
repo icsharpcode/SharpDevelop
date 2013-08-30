@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <Template originator   = "Shinsaku Nakagawa"
           created      = "11/28/2002"
-          lastModified = "07/20/2005">
+          lastModified = "28/06/2013">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>Console Application</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Subcategory>Mono</Subcategory>
 		<Icon>VBNet.Project.DOSProject</Icon>
 		<Description>Console project for Mono.</Description>
@@ -21,7 +21,7 @@
 	<Project language = "VBNet">
 		<PropertyGroup>
 			<OutputType>Exe</OutputType>
-			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+			<MonoTargetFrameworkVersion>v4.0</MonoTargetFrameworkVersion>
 		</PropertyGroup>
 		
 		<ProjectItems>

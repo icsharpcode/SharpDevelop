@@ -9,5 +9,6 @@ namespace ICSharpCode.PackageManagement
 	public interface IPackageManagementOutputMessagesView
 	{
 		void Clear();
+		void AppendLine(string message);
 	}
 }

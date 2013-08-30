@@ -11,23 +11,27 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IPackageManagementProject project;
 		IPackageScriptFactory scriptFactory;
 		IPackageScriptRunner scriptRunner;
+		IGlobalMSBuildProjectCollection projectCollection;
 		
 		public RunPackageScriptsAction(
 			IPackageScriptRunner scriptRunner,
 			IPackageManagementProject project)
-			: this(project, scriptRunner, new PackageScriptFactory())
+			: this(project, scriptRunner, new PackageScriptFactory(), new GlobalMSBuildProjectCollection())
 		{
 		}
 		
 		public RunPackageScriptsAction(
 			IPackageManagementProject project,
 			IPackageScriptRunner scriptRunner,
-			IPackageScriptFactory scriptFactory)
+			IPackageScriptFactory scriptFactory,
+			IGlobalMSBuildProjectCollection projectCollection)
 		{
 			this.project = project;
 			this.scriptRunner = scriptRunner;
 			this.scriptFactory = scriptFactory;
+			this.projectCollection = projectCollection;
 			
+			projectCollection.AddProject(project);
 			RegisterEvents();
 		}
 		
@@ -35,14 +39,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			project.PackageInstalled += PackageInstalled;
 			project.PackageReferenceAdded += PackageReferenceAdded;
-			project.PackageReferenceRemoved += PackageReferenceRemoved;
+			project.PackageReferenceRemoving += PackageReferenceRemoving;
 		}
 		
 		void UnregisterEvents()
 		{
 			project.PackageInstalled -= PackageInstalled;
 			project.PackageReferenceAdded -= PackageReferenceAdded;
-			project.PackageReferenceRemoved -= PackageReferenceRemoved;
+			project.PackageReferenceRemoving -= PackageReferenceRemoving;
 		}
 		
 		void PackageInstalled(object sender, PackageOperationEventArgs e)
@@ -50,7 +54,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			RunInitScript(e);
 		}
 		
-		void PackageReferenceRemoved(object sender, PackageOperationEventArgs e)
+		void PackageReferenceRemoving(object sender, PackageOperationEventArgs e)
 		{
 			RunUninstallScript(e);
 		}
@@ -88,6 +92,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			IsDisposed = true;
 			UnregisterEvents();
+			projectCollection.Dispose();
 		}
 		
 		public bool IsDisposed { get; private set; }

@@ -11,6 +11,9 @@ using System.Collections.ObjectModel;
 using System.Collections;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.XamlDom;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
@@ -40,6 +43,12 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		{
 			DesignItem = designItem;
 			UpdateChildren();
+
+			var hidden = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).ValueOnInstance;
+			if (hidden != null && (bool) hidden == true) {
+				this._isDesignTimeVisible = false;
+				((FrameworkElement) this.DesignItem.Component).Visibility = Visibility.Hidden;
+			}
 
 			//TODO
 			DesignItem.NameChanged += new EventHandler(DesignItem_NameChanged);
@@ -78,6 +87,28 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 					                                       value ? SelectionTypes.Add : SelectionTypes.Remove);
 					RaisePropertyChanged("IsSelected");
 				}
+			}
+		}
+		
+		
+		bool _isDesignTimeVisible = true;
+
+		public bool IsDesignTimeVisible
+		{
+			get { 
+				return _isDesignTimeVisible; 
+			}
+			set {
+				_isDesignTimeVisible = value;
+				var ctl = DesignItem.Component as UIElement;
+				ctl.Visibility = _isDesignTimeVisible ? Visibility.Visible : Visibility.Hidden;
+
+				RaisePropertyChanged("IsDesignTimeVisible");
+
+				if (!value)
+					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).SetValue(true);
+				else
+					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).Reset();
 			}
 		}
 
@@ -147,7 +178,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 				return false;
 			var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
 			if (operation != null) {
-				bool canEnter = placementBehavior.CanEnterContainer(operation);
+				bool canEnter = placementBehavior.CanEnterContainer(operation, true);
 				operation.Abort();
 				return canEnter;
 			}

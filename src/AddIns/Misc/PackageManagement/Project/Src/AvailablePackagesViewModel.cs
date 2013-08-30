@@ -22,6 +22,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			IsSearchable = true;
 			ShowPackageSources = true;
+			ShowPrerelease = true;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
@@ -38,12 +39,10 @@ namespace ICSharpCode.PackageManagement
 			if (repository == null) {
 				throw new ApplicationException(errorMessage);
 			}
+			if (IncludePrerelease) {
+				return repository.GetPackages();
+			}
 			return repository.GetPackages().Where(package => package.IsLatestVersion);
-		}
-		
-		public IQueryable<IPackage> CallGetPackagesFromPackageSource()
-		{
-			return GetPackagesFromPackageSource();
 		}
 		
 		/// <summary>
@@ -56,6 +55,10 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
+			if (IncludePrerelease) {
+				return base.GetFilteredPackagesBeforePagingResults(allPackages)
+					.DistinctLast(PackageEqualityComparer.Id);
+			}
 			return base.GetFilteredPackagesBeforePagingResults(allPackages)
 				.Where(package => package.IsReleaseVersion())
 				.DistinctLast(PackageEqualityComparer.Id);

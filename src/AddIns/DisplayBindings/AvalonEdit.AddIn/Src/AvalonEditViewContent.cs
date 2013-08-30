@@ -41,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			if (file.FileName != null) {
 				string filetype = Path.GetExtension(file.FileName);
-				if (!ProjectService.GetFileFilters().Any(f => f.ContainsExtension(filetype)))
+				if (!IsKnownFileExtension(filetype))
 					filetype = ".?";
 				trackedFeature = AnalyticsMonitorService.TrackFeature(typeof(AvalonEditViewContent), "open" + filetype.ToLowerInvariant());
 			}
@@ -53,6 +53,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			codeEditor.Document.UndoStack.PropertyChanged += codeEditor_Document_UndoStack_PropertyChanged;
 			codeEditor.CaretPositionChanged += CaretChanged;
 			codeEditor.TextCopied += codeEditor_TextCopied;
+		}
+		
+		bool IsKnownFileExtension(string filetype)
+		{
+			return ProjectService.GetFileFilters().Any(f => f.ContainsExtension(filetype)) ||
+				IconService.HasImageForFile(filetype);
 		}
 		
 		void codeEditor_Document_UndoStack_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

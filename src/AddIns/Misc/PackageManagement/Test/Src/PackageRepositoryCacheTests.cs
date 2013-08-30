@@ -355,5 +355,30 @@ namespace PackageManagement.Tests
 			
 			Assert.IsNull(fakePackageRepositoryFactory.AggregateRepositoryPassedToCreateRecentPackageRepository);
 		}
+		
+		[Test]
+		public void CreateRepository_NewRepositoryCreated_RepositoryCreatedEventFired()
+		{
+			CreateCache();
+			PackageRepositoryFactoryEventArgs eventArgs = null;
+			cache.RepositoryCreated += (sender, e) => eventArgs = e;
+			
+			IPackageRepository repository = cache.CreateRepository(nuGetPackageSource.Source);
+			
+			Assert.AreEqual(fakePackageRepositoryFactory.FakePackageRepository, eventArgs.Repository);
+		}
+		
+		[Test]
+		public void CreateRepository_RepositoryCreatedTwice_RepositoryCreatedEventIsNotFiredOnSecondCallToCreateRepository()
+		{
+			CreateCache();
+			cache.CreateRepository(nuGetPackageSource.Source);
+			PackageRepositoryFactoryEventArgs eventArgs = null;
+			cache.RepositoryCreated += (sender, e) => eventArgs = e;
+			
+			cache.CreateRepository(nuGetPackageSource.Source);
+			
+			Assert.IsNull(eventArgs);
+		}
 	}
 }
