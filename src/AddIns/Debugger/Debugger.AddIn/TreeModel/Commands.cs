@@ -31,8 +31,19 @@ namespace Debugger.AddIn.TreeModel
 					b.AppendLine();
 				b.Append(node.FullText);
 			}
-				
+			
 			return b.ToString();
+		}
+	}
+	
+	public class ShowFullErrorCommand : SimpleCommand
+	{
+		public override void Execute(object parameter)
+		{
+			var grid = parameter as DataGrid;
+			if (grid == null) return;
+			var error = grid.SelectedItems.OfType<ValueNode>().Select(node => node.error).Single();
+			SD.MessageService.ShowException(error, null);
 		}
 	}
 }

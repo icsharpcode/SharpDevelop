@@ -83,7 +83,7 @@ namespace Debugger.AddIn.TreeModel
 		}
 		
 		string contextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/TreeNode";
-		public virtual string ContextMenuAddInTreeEntry {
+		public string ContextMenuAddInTreeEntry {
 			get { return contextMenuAddInTreeEntry; }
 			set {
 				if (this.contextMenuAddInTreeEntry != value) {

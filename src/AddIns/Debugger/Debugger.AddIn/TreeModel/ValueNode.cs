@@ -43,7 +43,7 @@ namespace Debugger.AddIn.TreeModel
 		long cachedValueDebuggeeState;
 		
 		string fullValue;
-		GetValueException error;
+		internal GetValueException error;
 		
 		public string FullText {
 			get { return this.Value; }
@@ -57,6 +57,7 @@ namespace Debugger.AddIn.TreeModel
 			
 			this.getValue = getValue;
 			this.setValue = setValue;
+			this.ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ValueNode";
 			
 			GetValueAndUpdateUI();
 		}
@@ -187,54 +188,11 @@ namespace Debugger.AddIn.TreeModel
 				this.GetChildren = null;
 				this.VisualizerCommands = null;
 			}
-		}
-		
-//		public ContextMenuStrip GetContextMenu()
-//		{
-//			if (this.Error != null) return GetErrorContextMenu();
-//
-//			ContextMenuStrip menu = new ContextMenuStrip();
-//
-//			ToolStripMenuItem copyItem;
-//			copyItem = new ToolStripMenuItem();
-//			copyItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CopyToClipboard");
-//			copyItem.Checked = false;
-//			copyItem.Click += delegate {
-//				ClipboardWrapper.SetText(fullText);
-//			};
-		
-//			ToolStripMenuItem hexView;
-//			hexView = new ToolStripMenuItem();
-//			hexView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
-//			hexView.Checked = DebuggingOptions.Instance.ShowValuesInHexadecimal;
-//			hexView.Click += delegate {
-//				// refresh all pads that use ValueNode for display
-//				DebuggingOptions.Instance.ShowValuesInHexadecimal = !DebuggingOptions.Instance.ShowValuesInHexadecimal;
-//				// always check if instance is null, might be null if pad is not opened
-//				if (LocalVarPad.Instance != null)
-//					LocalVarPad.Instance.RefreshPad();
-//				if (WatchPad.Instance != null)
-//					WatchPad.Instance.RefreshPad();
-//			};
-		
-//			menu.Items.AddRange(new ToolStripItem[] {
-//			                    	copyItem,
-//			                    	//hexView
-//			                    });
-//
-//			return menu;
-//		}
-		
-		ContextMenuStrip GetErrorContextMenu()
-		{
-			ContextMenuStrip menu = new ContextMenuStrip();
 			
-			ToolStripMenuItem showError = new ToolStripMenuItem();
-			showError.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.ShowFullError}");
-			showError.Click += delegate { MessageService.ShowException(error, null); };
-			menu.Items.Add(showError);
-			
-			return menu;
+			if (error == null)
+				ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ValueNode";
+			else
+				ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ErrorNode";
 		}
 		
 		/// <summary>

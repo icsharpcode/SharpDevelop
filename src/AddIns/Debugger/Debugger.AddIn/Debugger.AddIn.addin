@@ -173,6 +173,18 @@
 	<Path name="/AddIns/Debugger/Tooltips/ContextMenu/TreeNode">
 		<MenuItem id="Copy"
 		          label="${res:MainWindow.Windows.Debug.LocalVariables.CopyToClipboard}"
+		          icon="Icons.16x16.CopyIcon"
 		          class="Debugger.AddIn.TreeModel.CopyCommand" />
+	</Path>
+	
+	<Path name="/AddIns/Debugger/Tooltips/ContextMenu/ErrorNode">
+		<MenuItem id="ShowFullError"
+		          label="${res:MainWindow.Windows.Debug.LocalVariables.ShowFullError}"
+		          class="Debugger.AddIn.TreeModel.ShowFullErrorCommand" />
+		<Include path="/AddIns/Debugger/Tooltips/ContextMenu/TreeNode" />
+	</Path>
+	
+	<Path name="/AddIns/Debugger/Tooltips/ContextMenu/ValueNode">
+		<Include path="/AddIns/Debugger/Tooltips/ContextMenu/TreeNode" />
 	</Path>
 </AddIn>
