@@ -252,7 +252,7 @@ namespace Debugger.AddIn.TreeModel
 					ClassBrowserIconService.Class,
 					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}"),
 					baseType.Name,
-					baseType.FullName,
+					string.Empty,
 					baseType.FullName == "System.Object" ? (Func<IEnumerable<TreeNode>>) null : () => GetObjectChildren(baseType)
 				);
 			}
