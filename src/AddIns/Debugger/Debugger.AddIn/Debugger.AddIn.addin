@@ -169,4 +169,10 @@
 		          icon = "Icons.16x16.AssemblyFromFile"
 		          class = "ICSharpCode.SharpDevelop.Gui.Pads.AddModuleToWorkspaceCommand"/>
 	</Path>
+	
+	<Path name="/AddIns/Debugger/Tooltips/ContextMenu/TreeNode">
+		<MenuItem id="Copy"
+		          label="${res:MainWindow.Windows.Debug.LocalVariables.CopyToClipboard}"
+		          class="Debugger.AddIn.TreeModel.CopyCommand" />
+	</Path>
 </AddIn>

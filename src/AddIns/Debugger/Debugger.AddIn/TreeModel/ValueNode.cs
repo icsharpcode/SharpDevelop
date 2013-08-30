@@ -368,7 +368,7 @@ namespace Debugger.AddIn.TreeModel
 			int count = 0;
 			try {
 				Value list = getValue();
-				IType iListType = list.Type.GetAllBaseTypeDefinitions().Where(t => t.FullName == typeof(IList).FullName).FirstOrDefault();
+				IType iListType = list.Type.GetAllBaseTypeDefinitions().FirstOrDefault(t => t.FullName == typeof(IList).FullName);
 				itemProp = iListType.GetProperties(p => p.Name == "Item").Single();
 				// Do not get string representation since it can be printed in hex
 				count = (int)list.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperties(p => p.Name == "Count").Single()).PrimitiveValue;

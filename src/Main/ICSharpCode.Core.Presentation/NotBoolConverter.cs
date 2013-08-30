@@ -6,6 +6,7 @@
 using System;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Markup;
 
 #endregion
 
@@ -27,6 +28,22 @@ namespace ICSharpCode.Core.Presentation
 				return false;
 			else
 				return true;
+		}
+	}
+	
+	public class ContextMenuBuilder : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			if (value is string) {
+				return MenuService.CreateContextMenu(parameter, (string)value);
+			}
+			throw new NotSupportedException();
+		}
+		
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

@@ -4,9 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
-using System.Windows.Media;
 
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -84,6 +82,17 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
+		string contextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/TreeNode";
+		public virtual string ContextMenuAddInTreeEntry {
+			get { return contextMenuAddInTreeEntry; }
+			set {
+				if (this.contextMenuAddInTreeEntry != value) {
+					contextMenuAddInTreeEntry = value;
+					OnPropertyChanged("ContextMenuAddInTreeEntry");
+				}
+			}
+		}
+		
 		public Func<IEnumerable<TreeNode>> GetChildren { get; protected set; }
 		
 		public bool HasChildren {
@@ -92,9 +101,9 @@ namespace Debugger.AddIn.TreeModel
 		
 		public IEnumerable<IVisualizerCommand> VisualizerCommands { get; protected set; }
 		
-		public bool HasVisualizerCommands { 
+		public bool HasVisualizerCommands {
 			get {
-				 return (VisualizerCommands != null) && (VisualizerCommands.Count() > 0);
+				return (VisualizerCommands != null) && VisualizerCommands.Any();
 			}
 		}
 		

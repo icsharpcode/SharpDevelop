@@ -4,6 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:aero="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
 	xmlns:debugging="clr-namespace:Debugger.AddIn.Tooltips"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	AllowsTransparency="True"
 >
 	<Popup.Resources>
@@ -115,6 +116,8 @@
 				</Setter>
 			</Style>
 		
+			<core:ContextMenuBuilder x:Key="menuBuilder" />
+		
 		</ResourceDictionary>
 	</Popup.Resources>
 	<StackPanel Orientation="Horizontal">
@@ -126,7 +129,7 @@
 			MaxHeight="202"
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
-			Name="dataGrid"
+			x:Name="dataGrid"
 			AutoGenerateColumns="False"
 			CanUserAddRows="False"
 			HeadersVisibility="None"
@@ -257,21 +260,12 @@
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
 							<TextBox
+								x:Name="valueText"
 								Style="{StaticResource TextStyle}"
 								IsEnabled="{Binding CanSetValue}"
+								ContextMenu="{Binding ContextMenuAddInTreeEntry, Converter={StaticResource menuBuilder}, ConverterParameter={x:Reference dataGrid}}"
 								ContextMenuService.ShowOnDisabled="True"
-								Text="{Binding Value}"
-								>
-								<TextBox.ContextMenu>
-									<ContextMenu>
-<!--										<MenuItem Header="{core:Localize XML.MainMenu.EditMenu.Copy}" DataContext="{Binding}" Click="CopyMenuItemClick">
-											<MenuItem.Icon>
-												<Image Source="{core:GetBitmap Icons.16x16.CopyIcon}" />
-											</MenuItem.Icon>
-										</MenuItem>-->
-									</ContextMenu>
-								</TextBox.ContextMenu>
-							</TextBox>
+								Text="{Binding Value}" />
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
