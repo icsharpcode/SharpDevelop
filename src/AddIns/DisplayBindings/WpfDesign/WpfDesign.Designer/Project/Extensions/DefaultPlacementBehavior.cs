@@ -18,10 +18,9 @@ using System.Windows.Controls.Primitives;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	[ExtensionFor(typeof(Panel))]
-	[ExtensionFor(typeof(ContentControl))]
+	[ExtensionFor(typeof(Control))]
 	[ExtensionFor(typeof(Border))]
 	[ExtensionFor(typeof(Viewbox))]
-	[ExtensionFor(typeof(ItemsControl))]
 	public class DefaultPlacementBehavior : BehaviorExtension, IPlacementBehavior
 	{
 		static List<Type> _contentControlsNotAllowedToAdd;
