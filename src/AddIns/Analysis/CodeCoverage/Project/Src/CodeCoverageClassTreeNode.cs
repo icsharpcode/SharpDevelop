@@ -51,11 +51,13 @@ namespace ICSharpCode.CodeCoverage
 			// Add methods.
 			CodeCoveragePropertyCollection properties = new CodeCoveragePropertyCollection();
 			foreach (CodeCoverageMethod method in Methods) {
-				if (method.IsProperty) {
-					properties.Add(method);
-				} else {
-					CodeCoverageMethodTreeNode node = new CodeCoverageMethodTreeNode(method);
-					node.AddTo(this);
+				if ( !method.Name.Contains("<") && !method.Name.Contains("__") ) {
+					if (method.IsProperty) {
+						properties.Add(method);
+					} else {
+						CodeCoverageMethodTreeNode node = new CodeCoverageMethodTreeNode(method);
+						node.AddTo(this);
+					}
 				}
 			}
 			

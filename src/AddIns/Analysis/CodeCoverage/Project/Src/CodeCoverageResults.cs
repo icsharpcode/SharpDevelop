@@ -63,8 +63,9 @@ namespace ICSharpCode.CodeCoverage
 			var classNames =
 				assembly.Elements("Classes").Elements("Class").Where(
 					c =>
-					!c.Element("FullName").Value.Contains("__") && !c.Element("FullName").Value.Contains("<") &&
-					!c.Element("FullName").Value.Contains("/") && c.Attribute("skippedDueTo") == null).Select(
+					!c.Element("FullName").Value.Contains("__") && 
+					!c.Element("FullName").Value.Contains("<") &&
+					c.Attribute("skippedDueTo") == null).Select(
 						c => c.Element("FullName").Value).Distinct().OrderBy(name => name);
 			foreach (string className in classNames) {
 				AddModule(assembly, className);
@@ -95,7 +96,7 @@ namespace ICSharpCode.CodeCoverage
 				.Elements("Methods")
 				.Elements("Method");
 			foreach (XElement method in methods) {
-				AddMethod(module, className, method);
+				AddMethod(module, className.Replace('/','.'), method);
 			}
 			return module;
 		}
