@@ -239,6 +239,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 						double desiredXPos = textArea.Caret.DesiredXPos;
 						TextViewPosition endPos = CaretNavigationCommandHandler.GetNewCaretPosition(
 							textArea.TextView, startPos, caretMovement, enableVirtualSpace, ref desiredXPos);
+						// GetNewCaretPosition may return (0,0) as new position,
+						// thus we need to validate endPos before using it in the selection.
+						if (endPos.Line < 1 || endPos.Column < 1)
+							endPos = new TextViewPosition(Math.Max(endPos.Line, 1), Math.Max(endPos.Column, 1));
 						// Don't select the text to be deleted; just reuse the ReplaceSelectionWithText logic
 						var sel = new SimpleSelection(textArea, startPos, endPos);
 						sel.ReplaceSelectionWithText(string.Empty);
