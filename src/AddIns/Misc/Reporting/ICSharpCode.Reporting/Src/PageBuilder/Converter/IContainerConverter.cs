@@ -17,9 +17,9 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 {
 	internal interface IContainerConverter
 	{
-		IExportContainer Convert(IReportContainer reportContainer);
-		List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,IExportContainer exportContainer);
-		
-		List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,Point position);
+		IExportContainer ConvertToExportContainer(IReportContainer reportContainer);
+		List<IExportColumn> CreateConvertedList(List<IPrintableObject> items);
+		List<IExportColumn> CreateConvertedList(List<IPrintableObject> items,Point position);
+		void SetParent(IExportContainer parent, List<IExportColumn> convertedItems);
 	}
 }

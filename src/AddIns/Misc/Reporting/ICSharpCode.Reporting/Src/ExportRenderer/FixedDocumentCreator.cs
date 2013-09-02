@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -19,6 +20,7 @@ using Brush = System.Windows.Media.Brush;
 using FontFamily = System.Windows.Media.FontFamily;
 using Pen = System.Windows.Media.Pen;
 using Size = System.Windows.Size;
+using ICSharpCode.Reporting.BaseClasses;
 
 namespace ICSharpCode.Reporting.ExportRenderer
 {
@@ -37,9 +39,12 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		
 		public UIElement CreateFixedPage(ExportPage exportPage) {
 			var fixedPage = new FixedPage();
-			fixedPage.Width = exportPage.Size.Width;
-			fixedPage.Height = exportPage.Size.Height;
-			fixedPage.Background = ConvertBrush(System.Drawing.Color.Blue);
+			
+			fixedPage.Width = exportPage.Size.ToWpf().Width;
+			fixedPage.Height = exportPage.Size.ToWpf().Height;
+	
+//			fixedPage.Background = ConvertBrush(System.Drawing.Color.Blue);
+			fixedPage.Background = new SolidColorBrush(System.Drawing.Color.Blue.ToWpf());
 			return fixedPage;
 		}
 			
@@ -47,15 +52,13 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		public  UIElement CreateContainer(ExportContainer container)
 		{
 			var canvas = CreateCanvas(container);
-			
-			var size = new Size(container.DesiredSize.Width,container.DesiredSize.Height);
-			
+			var size = container.DesiredSize.ToWpf();
 			canvas.Measure(size);
 			
 			canvas.Arrange(new Rect(new Point(),size ));
 
 			canvas.UpdateLayout();
-			
+
 			return canvas;
 			
 		}
@@ -64,32 +67,60 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		public TextBlock CreateTextBlock(ExportText exportText)
 		{
 			var textBlock = new TextBlock();
-		
-//			textBlock.Text = exportText.Text;
-		textBlock.Width = exportText.DesiredSize.Width;
-		textBlock.Height = exportText.DesiredSize.Height;
-		
+
 			textBlock.Foreground = ConvertBrush(exportText.ForeColor);
+//			textBlock.Background = ConvertBrush(exportText.BackColor);
+			textBlock.Background = ConvertBrush(System.Drawing.Color.LightGray);
+		
 			SetFont(textBlock,exportText);
-			textBlock.Background = ConvertBrush(exportText.BackColor);
 			
 			textBlock.TextWrapping = TextWrapping.WrapWithOverflow;
-//			textBlock.TextWrapping = TextWrapping.NoWrap;
+			
 			string [] inlines = exportText.Text.Split(System.Environment.NewLine.ToCharArray());
-			//string [] inlines = "jmb,.n,knn-.n.-n.n-.n.n.-";
+	
 			for (int i = 0; i < inlines.Length; i++) {
 				if (inlines[i].Length > 0) {
 					textBlock.Inlines.Add(new Run(inlines[i]));
-							textBlock.Inlines.Add(new LineBreak());
+					textBlock.Inlines.Add(new LineBreak());
 				}
 			}
 			var li = textBlock.Inlines.LastInline;
 			textBlock.Inlines.Remove(li);
-//			SetDimension(textBlock,exportText.StyleDecorator);
+		
+			var s = MeasureTextInWpf(exportText);
+			textBlock.Width = s.Width;
+			textBlock.Height = s.Height;
+			
 //		    textBlock.Background = ConvertBrush(exportText.StyleDecorator.BackColor);
 //		    SetContendAlignment(textBlock,exportText.StyleDecorator);
 			
 			return textBlock;
+		}
+		
+		
+		Size MeasureTextInWpf(ExportText exportText)
+		{
+			
+			FormattedText ft = new FormattedText(exportText.Text,
+			                                     CultureInfo.CurrentCulture,
+			                                     System.Windows.FlowDirection.LeftToRight,
+			                                     new Typeface(exportText.Font.FontFamily.Name),
+			                                     exportText.Font.Size,
+//			                                     System.Windows.Media.Brushes.Black,
+			                                     new SolidColorBrush(exportText.ForeColor.ToWpf()),
+			                                     
+			                                     null,
+			                                     TextFormattingMode.Display);
+			
+			ft.MaxTextWidth = exportText.Size.Width * 96.0 / 72.0;
+			ft.MaxTextHeight = Double.MaxValue ;
+			
+			ft.SetFontSize(exportText.Font.Size  * 96.0 / 72.0);
+		
+			var ss = new Size {
+				Width = ft.WidthIncludingTrailingWhitespace,
+				Height = ft.Height};
+			return ss;
 		}
 		
 		
@@ -126,9 +157,11 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		void SetFont(TextBlock textBlock,IExportText exportText)
 		{
 			textBlock.FontFamily = new FontFamily(exportText.Font.FontFamily.Name);
-		
-			textBlock.FontSize = exportText.Font.Size * 96/72;
+
+//http://www.codeproject.com/Articles/441009/Drawing-Formatted-Text-in-a-Windows-Forms-Applicat
 			
+textBlock.FontSize = exportText.Font.Size * 96/72;
+
 			if (exportText.Font.Bold) {
 				textBlock.FontWeight = FontWeights.Bold;
 			}

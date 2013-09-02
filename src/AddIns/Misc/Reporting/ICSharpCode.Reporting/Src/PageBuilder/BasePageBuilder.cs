@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
@@ -58,7 +59,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		protected void BuildPageHeader()
 		{
 			var pageHeader = CreateSection(ReportModel.PageHeader,CurrentLocation);
-			DetailStart = new Point(ReportModel.ReportSettings.LeftMargin,pageHeader.Location.Y + pageHeader.Size.Height +1);
+			DetailStart = new Point(ReportModel.ReportSettings.LeftMargin,pageHeader.Location.Y + pageHeader.DesiredSize.Height +1);
 			AddSectionToPage(pageHeader);
 		}
 		
@@ -101,16 +102,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		protected bool PageFull(System.Collections.Generic.List<IExportColumn> columns)
+		protected bool PageFull(List<IExportColumn> columns)
 		{
 			var rectToPrint = new Rectangle(columns[0].Location,columns[0].Size);
 			var rr = new Rectangle(new Point(columns[0].Location.X + DetailsRectangle.Location.X,columns[0].Location.Y + DetailsRectangle.Location.Y),
 			                                columns[0].Size);
-			Console.WriteLine("------{0} - {1} - {2}",rectToPrint.ToString(),rr.ToString(),DetailEnds.Y);
-//			if (rectToPrint.Bottom > DetailEnds.Y) {
-//				Console.WriteLine("----------PageBreak---");
-//				return  true;
-//			}
 			if (!DetailsRectangle.Contains(rr)) {
 				return  true;
 			}
@@ -140,9 +136,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 		protected IExportContainer CreateSection(IReportContainer container,Point location)
 		{
 			var containerConverter = new ContainerConverter(Graphics, location);
-			var convertedContainer = containerConverter.Convert(container);
+			var convertedContainer = containerConverter.ConvertToExportContainer(container);
 			
-			var list = containerConverter.CreateConvertedList(container,convertedContainer);
+			var list = containerConverter.CreateConvertedList(container.Items);
+			
+			convertedContainer.ExportedItems.AddRange(list);
+			
+			containerConverter.SetParent(convertedContainer,list);
 			convertedContainer.ExportedItems.AddRange(list);
 			
 			convertedContainer.DesiredSize = MeasureElement(convertedContainer);
@@ -151,6 +151,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
+		
+	
 		protected void AddSectionToPage(IExportContainer header)
 		{
 			header.Parent = CurrentPage;

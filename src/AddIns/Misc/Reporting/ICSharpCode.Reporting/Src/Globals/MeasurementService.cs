@@ -27,11 +27,16 @@ namespace ICSharpCode.Reporting.Globals
 			if (!item.CanGrow) {
 				return item.Size;
 			}
+			
+			var sf = new StringFormat();
+			sf.FormatFlags = StringFormatFlags.MeasureTrailingSpaces;
 			if (!String.IsNullOrEmpty(item.Text)) {
 				SizeF size = graphics.MeasureString(item.Text.TrimEnd(),
 				                                    item.Font,
-				                                    item.Size.Width);
-				var i = (int)size.Height/item.Font.Height;
+				                                    item.Size.Width,sf);
+				
+//				var i = (int)size.Height/item.Font.Height;
+//				var x = i * item.Font.Height;
 				if (size.Height < item.Size.Height) {
 					return item.Size;
 				}

@@ -32,7 +32,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		}
 
 
-		public virtual IExportContainer Convert(IReportContainer reportContainer)
+		public virtual IExportContainer ConvertToExportContainer(IReportContainer reportContainer)
 		{
 			var exportContainer = (ExportContainer)reportContainer.CreateExportColumn();
 			exportContainer.Location = CurrentLocation;
@@ -40,32 +40,32 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		}
 
 		
-		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,
+		public List<IExportColumn> CreateConvertedList(List<IPrintableObject> items,
 		                                               Point position){
+			var list = CreateConvertedList(items);
+			foreach (var item in list) {
+				item.Location = new Point(item.Location.X,item.Location.Y + position.Y);
+			}
+			return list;
+		}
 
+		
+		public List<IExportColumn> CreateConvertedList(List<IPrintableObject> items){                                    
 			var itemsList = new List<IExportColumn>();
-			foreach (var item in reportContainer.Items) {
-				var exportColumn = ExportColumnFactory.CreateItem(item);
-//				exportColumn.Parent = exportContainer;
-				exportColumn.Location = new Point(item.Location.X,item.Location.Y + position.Y);
+			foreach (var element in items) {
+				var exportColumn = ExportColumnFactory.CreateItem(element);
 				itemsList.Add(exportColumn);
 			}
 			return itemsList;
 		}
 
 		
-		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer
-		                                        ,IExportContainer exportContainer){
-			Console.WriteLine("CreateConvertedList {0}",reportContainer.Name);
-			var itemsList = new List<IExportColumn>();
-			foreach (var element in reportContainer.Items) {
-				var exportColumn = ExportColumnFactory.CreateItem(element);
-				exportColumn.Parent = exportContainer;
-				itemsList.Add(exportColumn);
+		public void SetParent(IExportContainer parent, List<IExportColumn> convertedItems)
+		{
+			foreach (var item in convertedItems) {
+				item.Parent = parent;
 			}
-			return itemsList;
 		}
-
 		
 		internal IReportContainer Container { get; private set; }
 

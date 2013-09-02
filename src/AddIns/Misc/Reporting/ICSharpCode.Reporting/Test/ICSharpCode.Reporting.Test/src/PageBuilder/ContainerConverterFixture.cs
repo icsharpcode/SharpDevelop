@@ -25,7 +25,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		[Test]
 		public void ConverterReturnExportContainer() {
 			var converter = new ContainerConverter(graphics,new Point(30,30));
-			var result = converter.Convert(container);
+			var result = converter.ConvertToExportContainer(container);
 			Assert.That(result,Is.InstanceOf(typeof(IExportContainer)));
 		}
 		
@@ -34,8 +34,8 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		public void ConverterReturnExportContainerwithTwoItems()
 		{
 			var converter = new ContainerConverter(graphics,new Point(30,30));
-			var result = converter.Convert(container);
-			var list = converter.CreateConvertedList(container,new Point(30,30));
+			var result = converter.ConvertToExportContainer(container);
+			var list = converter.CreateConvertedList(container.Items,new Point(30,30));
 			result.ExportedItems.AddRange(list);
 			Assert.That(result.ExportedItems.Count,Is.EqualTo(2));
 		}
@@ -45,15 +45,18 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		public void LocationIsAdjusted() {
 			var location = new Point(30,30);
 			var converter = new ContainerConverter(graphics,location);
-			var result = converter.Convert(container);
+			var result = converter.ConvertToExportContainer(container);
 			Assert.That(result.Location,Is.EqualTo(location));
 		}
 		
 		[Test]
 		public void ParentInChildsIsSet () {
 			var converter = new ContainerConverter(graphics,container.Location);
-			var result = converter.Convert(container);
-			foreach (var element in result.ExportedItems) {
+			var convertedContainer = converter.ConvertToExportContainer(container);
+			var convertedList = converter.CreateConvertedList(container.Items);
+			converter.SetParent(convertedContainer,convertedList);
+			convertedContainer.ExportedItems.AddRange(convertedList);
+			foreach (var element in convertedContainer.ExportedItems) {
 				Assert.That(element.Parent,Is.Not.Null);
 			}
 		}

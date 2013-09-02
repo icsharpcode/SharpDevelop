@@ -65,8 +65,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 				detail.Parent = CurrentPage;	
 				do {
 					collectionSource.Fill(CurrentSection.Items);
-					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection,position);
-					SetParentToSection(detail,convertedItems);
+					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection.Items,position);
+					converter.SetParent(detail,convertedItems);
 					if (PageFull(convertedItems)) {
 						detail.ExportedItems.AddRange(convertedItems);
 						CurrentPage.ExportedItems.Insert(2,detail);
@@ -98,12 +98,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		void SetParentToSection(IExportContainer detail, List<IExportColumn> convertedItems)
-		{
-			foreach (var item in convertedItems) {
-				item.Parent = detail;
-			}
-		}
+		
 		
 		/*
 		void row_BuildDetail()

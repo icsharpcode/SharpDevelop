@@ -44,7 +44,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 		{
 			var document = new FixedDocument();
 			var s = document.DocumentPaginator.PageSize;
-			document.DocumentPaginator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width, reportSettings.PageSize.Height);
+			document.DocumentPaginator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width,
+			                                                              reportSettings.PageSize.Height);
 		return document;
 		}
 		

@@ -76,6 +76,7 @@
     <Compile Include="Src\Arrange\ArrangeStrategy.cs" />
     <Compile Include="Src\Arrange\MeasurementStrategy.cs" />
     <Compile Include="Src\BaseClasses\AbstractColumn.cs" />
+    <Compile Include="Src\BaseClasses\ExtensionMethods.cs" />
     <Compile Include="Src\BaseClasses\GroupColumn.cs" />
     <Compile Include="Src\BaseClasses\PageInfo.cs" />
     <Compile Include="Src\BaseClasses\SortColumn.cs" />

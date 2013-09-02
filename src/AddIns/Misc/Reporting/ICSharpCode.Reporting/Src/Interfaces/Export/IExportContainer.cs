@@ -8,7 +8,6 @@
  */
 using System;
 using System.Collections.Generic;
-using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Interfaces.Export
 {

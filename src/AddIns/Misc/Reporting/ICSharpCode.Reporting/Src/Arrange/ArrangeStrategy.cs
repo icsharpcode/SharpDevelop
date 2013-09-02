@@ -30,8 +30,32 @@ namespace ICSharpCode.Reporting.Arrange
 		{
 		}
 		
+		
+		public void Arrange(IExportColumn exportColumn){
+			if (exportColumn == null)
+				throw new ArgumentNullException("exportColumn");
+			var container = exportColumn as IExportContainer;
+			if ((container != null) && (container.ExportedItems.Count > 0)) {
+				var resizeable = from resize in container.ExportedItems
+					where ((resize.CanGrow))
+					select resize;
+				if (resizeable.Any()) {
+					
+					//minimun Location
+//					var minLocation  = (from p in container.ExportedItems orderby p.Location.Y select p).First();
+					var maxLocation  = (from p in container.ExportedItems orderby p.Location.Y select p).Last();
+					// maximum Size
+					var maxBottom  = (from p in container.ExportedItems orderby p.DisplayRectangle.Bottom select p).Last();
+					container.DesiredSize = new Size(container.Size.Width,maxLocation.Location.Y + maxBottom.DesiredSize.Height + 5);
 
-		public void Arrange(IExportColumn exportColumn)
+				} else {
+					container.DesiredSize = container.Size;
+				}
+			}
+		}
+		
+		
+		public void old_Arrange(IExportColumn exportColumn)
 		{
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
@@ -53,6 +77,8 @@ namespace ICSharpCode.Reporting.Arrange
 				}
 			}
 		}
+		
+		
 		
 		private Rectangle FindBiggestRectangle (IExportContainer container)
 		{

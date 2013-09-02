@@ -35,13 +35,13 @@ namespace ICSharpCode.Reporting.Arrange
 				if (tbi != null) {
 					element.DesiredSize = MeasurementService.Measure(tbi,graphics);
 				}
-				Console.WriteLine("Measure -> {0} - {1}",element.Size,element.DesiredSize);
 			}
 			return exportColumn.DesiredSize;
 		}
 	}
 	
-	internal class TextBasedMeasurementStrategy:IMeasurementStrategy
+	
+	class TextBasedMeasurementStrategy:IMeasurementStrategy
 	{
 		
 		public Size Measure(IExportColumn exportColumn, Graphics graphics)
