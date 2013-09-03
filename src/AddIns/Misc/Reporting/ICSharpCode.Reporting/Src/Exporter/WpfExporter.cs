@@ -61,7 +61,7 @@ namespace ICSharpCode.Reporting.Exporter
 			if (exportContainer != null) {
 				
 				if (exportContainer.Name =="ReportDetail") {
-					Console.WriteLine("Section {0}",item.Name);
+//					Console.WriteLine("Section {0}",item.Name);
 					exportContainer.BackColor = System.Drawing.Color.LightBlue;
 				}
 
@@ -72,12 +72,12 @@ namespace ICSharpCode.Reporting.Exporter
 				
 				if (parentCanvas == null) {
 					containerCanvas = CreateContainer(fixedPage,exportContainer);
-					Console.WriteLine("Section {0}  at {1} size {2}",item.Name,CanvasHelper.GetPosition(containerCanvas),containerCanvas.DesiredSize);
+//					Console.WriteLine("Section {0}  at {1} size {2}",item.Name,CanvasHelper.GetPosition(containerCanvas),containerCanvas.DesiredSize);
 					fixedPage.Children.Add(containerCanvas);
 					parentCanvas = containerCanvas;
 				} else {
 					containerCanvas = CreateContainer(parentCanvas,exportContainer);
-					Console.WriteLine("Row {0}  at {1}",item.Name,CanvasHelper.GetPosition(containerCanvas));
+//					Console.WriteLine("Row {0}  at {1}",item.Name,CanvasHelper.GetPosition(containerCanvas));
 					parentCanvas.Children.Add(containerCanvas);
 				}
 				
@@ -98,7 +98,7 @@ namespace ICSharpCode.Reporting.Exporter
 		}
 		
 		
-		bool IsContainer (IExportColumn column) {
+		static bool IsContainer (IExportColumn column) {
 			var container = column as IExportContainer;
 			if (container == null) {
 				return false;
@@ -108,8 +108,8 @@ namespace ICSharpCode.Reporting.Exporter
 		
 		Canvas CreateContainer(UIElement parent,IExportContainer exportContainer)
 		{
-			var containerAcceptor = exportContainer as IAcceptor;
-			containerAcceptor.Accept(visitor);
+			var acceptor = exportContainer as IAcceptor;
+			acceptor.Accept(visitor);
 			var canvas = (Canvas)visitor.UIElement;
 			return canvas;
 		}
@@ -117,12 +117,10 @@ namespace ICSharpCode.Reporting.Exporter
 		
 		UIElement CreateSingleEntry(UIElement parent, IExportColumn element)
 		{
-			var v = element as IAcceptor;
-			v.Accept(visitor);
-			var c = visitor.UIElement;
-
-//			Console.WriteLine("CreateSingleEntry after {0}",CanvasHelper.GetPosition(c));
-			return c;
+			var acceptor = element as IAcceptor;
+			acceptor.Accept(visitor);
+			var uiElement = visitor.UIElement;
+			return uiElement;
 		}
 		
 		

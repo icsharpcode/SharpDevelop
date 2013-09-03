@@ -15,6 +15,9 @@ namespace ICSharpCode.Reporting.Globals
 	/// </summary>
 	public  class GlobalEnums
 	{
+		private GlobalEnums() {
+		}
+		
 		public enum ReportSection {
 			ReportHeader,
 			ReportPageHeader,

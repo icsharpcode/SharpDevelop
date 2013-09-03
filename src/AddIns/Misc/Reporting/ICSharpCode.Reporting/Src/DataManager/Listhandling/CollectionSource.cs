@@ -390,10 +390,10 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 		}
 		
-		static string  WrongColumnName(string propertyName)
-		{
-			return String.Format(CultureInfo.InvariantCulture, "Error : <{0}> missing!", propertyName);
-		}
+//		static string  WrongColumnName(string propertyName)
+//		{
+//			return String.Format(CultureInfo.InvariantCulture, "Error : <{0}> missing!", propertyName);
+//		}
 		
 		#endregion
 		

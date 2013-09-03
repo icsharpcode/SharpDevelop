@@ -71,7 +71,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 						detail.ExportedItems.AddRange(convertedItems);
 						CurrentPage.ExportedItems.Insert(2,detail);
 						Pages.Add(CurrentPage);
-						MeasureAndArrangeContainer(converter,detail);
+						MeasureAndArrangeContainer(detail);
 
 						position = ResetPosition();
 						CurrentPage = CreateNewPage();
@@ -81,7 +81,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 						
 					} else {
 						detail.ExportedItems.AddRange(convertedItems);
-						MeasureAndArrangeContainer(converter,detail);
+						MeasureAndArrangeContainer(detail);
 						position = new Point(CurrentSection.Location.Y,position.Y + CurrentSection.Size.Height);
 					}
 				}
@@ -186,7 +186,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		void MeasureAndArrangeContainer(IContainerConverter converter,IExportContainer container)
+		void MeasureAndArrangeContainer(IExportContainer container)
 		{
 			container.DesiredSize = MeasureElement(container);
 			ArrangeContainer(container);

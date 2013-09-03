@@ -63,25 +63,5 @@ namespace ICSharpCode.Reporting.Exporter
 			}
 		}
 		
-		void aaShowDebug(string leading,IExportContainer container)
-		{
-			Console.WriteLine();
-			Console.WriteLine("DebugExport for {0}{1}",leading,container.Name);
-			foreach (var item in container.ExportedItems) {
-				var exportContainer = item as IExportContainer;
-				var acceptor = item as IAcceptor;
-				if (exportContainer != null) {
-					if (acceptor != null) {
-						acceptor.Accept(visitor);
-					}
-					ShowDebug(leading = leading + "--",exportContainer);
-				} else {
-					if (acceptor != null) {
-//						acceptor.Accept(visitor);
-					}
-				}
-			}
-		}
-		
 	}
 }

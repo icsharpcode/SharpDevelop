@@ -67,7 +67,6 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			}
 		}
 		
-		internal IReportContainer Container { get; private set; }
 
 		protected Point CurrentLocation { get;  set; }
 		

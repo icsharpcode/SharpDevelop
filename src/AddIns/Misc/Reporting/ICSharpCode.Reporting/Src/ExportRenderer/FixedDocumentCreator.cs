@@ -37,9 +37,8 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		public UIElement CreateFixedPage(ExportPage exportPage) {
+		public static UIElement CreateFixedPage(ExportPage exportPage) {
 			var fixedPage = new FixedPage();
-			
 			fixedPage.Width = exportPage.Size.ToWpf().Width;
 			fixedPage.Height = exportPage.Size.ToWpf().Height;
 	
@@ -67,7 +66,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		public TextBlock CreateTextBlock(ExportText exportText)
 		{
 			var textBlock = new TextBlock();
-
+			Console.WriteLine("createtextBlock for {0}",exportText.Text);
 			textBlock.Foreground = ConvertBrush(exportText.ForeColor);
 //			textBlock.Background = ConvertBrush(exportText.BackColor);
 			textBlock.Background = ConvertBrush(System.Drawing.Color.LightGray);
@@ -98,7 +97,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		Size MeasureTextInWpf(ExportText exportText)
+		static Size MeasureTextInWpf(ExportText exportText)
 		{
 			
 			FormattedText ft = new FormattedText(exportText.Text,
@@ -134,7 +133,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			return canvas;
 		}
 		
-		void SetPositionAndSize(FrameworkElement element,ExportColumn column) {
+		static void SetPositionAndSize(FrameworkElement element,ExportColumn column) {
 			if (column == null)
 				throw new ArgumentNullException("column");
 			SetPosition(element,column);

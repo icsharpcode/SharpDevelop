@@ -40,21 +40,14 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 			this.document = wpfExporter.Document;
 		}
 
-		FixedDocument CreateFixedDocument(ReportSettings reportSettings)
+		static FixedDocument CreateFixedDocument(ReportSettings reportSettings)
 		{
 			var document = new FixedDocument();
-			var s = document.DocumentPaginator.PageSize;
 			document.DocumentPaginator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width,
 			                                                              reportSettings.PageSize.Height);
 		return document;
 		}
 		
-		static void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)
-		{
-			var pageContent = new PageContent();
-			((IAddChild)pageContent).AddChild(page);
-			fixedDocument.Pages.Add(pageContent);
-		}
 		
 		public FixedDocument Document
 		{

@@ -30,7 +30,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportPage page)
 		{
-			UIElement = documentCreator.CreateFixedPage(page);
+			UIElement = FixedDocumentCreator.CreateFixedPage(page);
 		}
 	
 		

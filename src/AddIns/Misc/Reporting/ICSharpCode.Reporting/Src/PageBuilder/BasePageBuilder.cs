@@ -140,8 +140,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 			
 			var list = containerConverter.CreateConvertedList(container.Items);
 			
-			convertedContainer.ExportedItems.AddRange(list);
-			
 			containerConverter.SetParent(convertedContainer,list);
 			convertedContainer.ExportedItems.AddRange(list);
 			
@@ -151,8 +149,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		
-	
 		protected void AddSectionToPage(IExportContainer header)
 		{
 			header.Parent = CurrentPage;
@@ -166,7 +162,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		  
 		
-		protected void ArrangeContainer(IExportContainer exportContainer)
+		protected static void ArrangeContainer(IExportContainer exportContainer)
 		{
 			var exportArrange = exportContainer.GetArrangeStrategy();
 			exportArrange.Arrange(exportContainer);
