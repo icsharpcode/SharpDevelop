@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -13,7 +14,6 @@ using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.TreeView;
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			res.InitializeComponent();
 			
 			tree = new SharpTreeView();
-			tree.Root = new SharpTreeNode();
+			tree.Root = new WatchRootNode();
 			tree.ShowRoot = false;
 			tree.View = (GridView)res["variableGridView"];
 			tree.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "50%;25%;25%");
@@ -126,6 +126,34 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					expr => this.Items.Add(MakeNode(expr))
 				);
 			}
+		}
+	}
+	
+	class WatchRootNode : SharpTreeNode
+	{
+		public override bool CanDrop(DragEventArgs e, int index)
+		{
+			e.Effects = DragDropEffects.None;
+			if (e.Data.GetDataPresent(DataFormats.StringFormat)) {
+				e.Effects = DragDropEffects.Copy;
+				return true;
+			}
+			return false;
+		}
+		
+		public override void Drop(DragEventArgs e, int index)
+		{
+			if (e.Data == null) return;
+			if (!e.Data.GetDataPresent(DataFormats.StringFormat)) return;
+			
+			var watchValue = e.Data.GetData(DataFormats.StringFormat).ToString();
+			if (string.IsNullOrEmpty(watchValue)) return;
+			
+			var pad = SD.Workbench.GetPad(typeof(WatchPad)).PadContent as WatchPad;
+			if (pad == null) return;
+			
+			pad.AddWatch(watchValue);
+			WindowsDebugger.RefreshPads();
 		}
 	}
 }
