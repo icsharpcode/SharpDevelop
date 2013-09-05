@@ -23,9 +23,6 @@ namespace ICSharpCode.Reporting
 	/// </summary>
 	public class ReportingFactory
 	{
-		public ReportingFactory()
-		{
-		}
 		
 		
 		public IReportCreator ReportCreator (Stream stream,Type listType,IEnumerable list)

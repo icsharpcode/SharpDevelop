@@ -22,6 +22,13 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		private IReportContainer container;
 		private Graphics graphics;
 		
+		
+		[Test]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void ConverterThrowIfGraphicsEqualNull() {
+			var converter = new ContainerConverter(null,new Point(30,30));
+		}
+			
 		[Test]
 		public void ConverterReturnExportContainer() {
 			var converter = new ContainerConverter(graphics,new Point(30,30));
