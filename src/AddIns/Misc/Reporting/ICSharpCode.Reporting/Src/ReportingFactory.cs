@@ -8,12 +8,9 @@
  */
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
-using ICSharpCode.Reporting.Factories;
-using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder;
@@ -44,21 +41,12 @@ namespace ICSharpCode.Reporting
 		{
 			ReportModel = LoadReportModel (stream);
 			IReportCreator builder = null;
-			builder = ReportCreatorFactory.ExporterFactory(ReportModel);
+//			builder = ReportCreatorFactory.ExporterFactory(ReportModel);
+			builder = new FormPageBuilder(ReportModel);
 			return builder;
 		}
 		
-		
-		internal IReportCreator ReportCreator (ReportModel reportModel) {
-			if (reportModel == null)
-				throw new ArgumentNullException("reportModel");
-			IReportCreator builder = null;
-			ReportModel = reportModel;
-			builder = ReportCreatorFactory.ExporterFactory(reportModel);
-			return builder;
-		}
-		
-		
+
 		internal ReportModel LoadReportModel (Stream stream)
 		{
 			var doc = new XmlDocument();

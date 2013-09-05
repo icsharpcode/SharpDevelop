@@ -190,6 +190,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 		public virtual void BuildExportList()
 		{
 			this.Pages.Clear();
+			CurrentPage = CreateNewPage ();
+			WriteStandardSections();
+			CurrentLocation = DetailStart;
 		}
 		
 		protected IReportModel ReportModel {get; private set;}

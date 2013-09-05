@@ -8,9 +8,8 @@
  */
 using System;
 using System.Linq;
-
+using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.PageBuilder
 {
@@ -28,14 +27,14 @@ namespace ICSharpCode.Reporting.PageBuilder
 		public override void BuildExportList()
 		{
 			base.BuildExportList();
-			CurrentPage = CreateNewPage ();
-			WriteStandardSections();
-			BuilDetail();
+			BuildDetail();
 			base.AddPage(CurrentPage);
+			var er = new ExpressionRunner(Pages);
+			er.Run();
 		}
 		
 		
-		void BuilDetail()
+		void BuildDetail()
 		{
 			CurrentLocation = DetailStart;
 			var detail = CreateSection(ReportModel.DetailSection,CurrentLocation);

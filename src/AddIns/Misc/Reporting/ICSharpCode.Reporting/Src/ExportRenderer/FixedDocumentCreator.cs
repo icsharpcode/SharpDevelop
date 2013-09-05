@@ -66,7 +66,6 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		public TextBlock CreateTextBlock(ExportText exportText)
 		{
 			var textBlock = new TextBlock();
-			Console.WriteLine("createtextBlock for {0}",exportText.Text);
 			textBlock.Foreground = ConvertBrush(exportText.ForeColor);
 //			textBlock.Background = ConvertBrush(exportText.BackColor);
 			textBlock.Background = ConvertBrush(System.Drawing.Color.LightGray);

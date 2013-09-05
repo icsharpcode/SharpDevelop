@@ -10,69 +10,28 @@ using System;
 using System.IO;
 using System.Reflection;
 
-using ICSharpCode.Reporting.Globals;
+using ICSharpCode.Reporting.PageBuilder;
 using NUnit.Framework;
 using ICSharpCode.Reporting.Test;
 
-namespace ICSharpCode.Reporting.Test.Model
+namespace ICSharpCode.Reporting.Test.Reportingfactory
 {
 	[TestFixture]
-	public class LoadPlainModelFixture
+	public class FormSheetFixture
 	{
-		private Stream stream;
-		
-		[Test]
-		public void CanLoadFromResource()
-		{
-			Assert.IsNotNull(stream);
-		}
+		Stream stream;
 		
 		
 		[Test]
-		public void LoadPlainModel()
-		{
-			var rf = new ReportingFactory();
-			var model = rf.LoadReportModel(stream);
-			Assert.IsNotNull(model);
+		public void CanCreateReportCreatorFromFormSheet () {
+			var reportingFactory  = new ReportingFactory();
+			var rc = reportingFactory.ReportCreator(stream);
+			Assert.That(rc,Is.Not.Null);
+			Assert.That(rc,Is.TypeOf(typeof(FormPageBuilder)));
 		}
 		
-		
-		[Test]
-		public void ReportSettingsFromPlainModel()
-		{
-			var rf = new ReportingFactory();
-			var model = rf.LoadReportModel(stream);
-			Assert.That(model.ReportSettings,Is.Not.Null);
-		}
-		
-		
-		[Test]
-		public void ReportSettingsReportName()
-		{
-			var rf = new ReportingFactory();
-			var model = rf.LoadReportModel(stream);
-			Assert.That(model.ReportSettings.ReportName,Is.EqualTo(GlobalValues.DefaultReportName));
-		}
-		
-		
-		[Test]
-		public void ReportSettingsDataModelFormSheet()
-		{
-			var rf = new ReportingFactory();
-			var model = rf.LoadReportModel(stream);
-			Assert.That(model.ReportSettings.DataModel,Is.EqualTo(GlobalEnums.PushPullModel.FormSheet));
-		}
-		
-		[Test]
-		public void ReportSettingsPageSize()
-		{
-			var rf = new ReportingFactory();
-			var model = rf.LoadReportModel(stream);
-			Assert.That(model.ReportSettings.PageSize,Is.EqualTo(Globals.GlobalValues.DefaultPageSize));
-		}
-		
-		
-		
+
+	
 		[SetUp]
 		public void LoadFromStream()
 		{

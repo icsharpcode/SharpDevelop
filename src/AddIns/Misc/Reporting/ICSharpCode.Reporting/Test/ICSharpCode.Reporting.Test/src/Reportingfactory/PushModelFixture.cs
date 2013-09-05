@@ -28,6 +28,21 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		private IReportCreator reportCreator;
 		
 		[Test]
+		public void CanCreateReportCreatorFromList () {
+			var contributorList = new ContributorsList();
+			var list = contributorList.ContributorCollection;
+			
+			var asm = Assembly.GetExecutingAssembly();
+			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
+
+			var reportingFactory  = new ReportingFactory();
+			var rc = reportingFactory.ReportCreator(stream,typeof(Contributor),list);
+			Assert.That(rc,Is.Not.Null);
+				Assert.That(rc,Is.TypeOf(typeof(DataPageBuilder)));
+		}
+	
+		
+		[Test]
 		public void InitPushModelReport()
 		{
 			reportCreator.BuildExportList();

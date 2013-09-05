@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Linq;
 
 using ICSharpCode.Reporting.DataManager.Listhandling;
+using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.Converter;
@@ -35,12 +36,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 		public override void BuildExportList()
 		{
 			base.BuildExportList();
-			CurrentPage = CreateNewPage ();
-			WriteStandardSections();
-			CurrentLocation = DetailStart;
 			BuildDetail();
 //			row_BuildDetail();
 			base.AddPage(CurrentPage);
+			var er = new ExpressionRunner(Pages);
+			er.Run();
 		}
 		
 		
@@ -61,7 +61,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 				
 				detail = CreateContainerForSection(DetailStart);
 				detail.DesiredSize = new Size(detail.Size.Width,DetailEnds.Y - DetailStart.Y);
-//detail = CreateDetail(DetailStart);
+
 				detail.Parent = CurrentPage;	
 				do {
 					collectionSource.Fill(CurrentSection.Items);

@@ -106,6 +106,7 @@ namespace ICSharpCode.Reporting.Exporter
 			return true;
 		}
 		
+		
 		Canvas CreateContainer(UIElement parent,IExportContainer exportContainer)
 		{
 			var acceptor = exportContainer as IAcceptor;

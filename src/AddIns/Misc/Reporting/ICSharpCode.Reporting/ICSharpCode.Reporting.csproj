@@ -96,6 +96,7 @@
     <Compile Include="Src\Exporter\DebugExporter.cs" />
     <Compile Include="Src\Exporter\Visitors\CanvasExtension.cs" />
     <Compile Include="Src\Exporter\Visitors\CanvasHelper.cs" />
+    <Compile Include="Src\Exporter\Visitors\ExpressionVisitor.cs" />
     <Compile Include="Src\Exporter\WpfExporter.cs" />
     <Compile Include="Src\Exporter\Visitors\AbstractVisitor.cs" />
     <Compile Include="Src\Exporter\Visitors\IAcceptor.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Src\Exporter\Visitors\DebugVisitor.cs" />
     <Compile Include="Src\Exporter\Visitors\WpfVisitor.cs" />
     <Compile Include="Src\ExportRenderer\FixedDocumentCreator.cs" />
+    <Compile Include="Src\Expressions\ExpressionRunner.cs" />
     <Compile Include="Src\Factories\ExportColumnFactory.cs" />
     <Compile Include="Src\Factories\ReportCreatorFactory.cs" />
     <Compile Include="Src\Globals\CreateGraphics.cs" />
@@ -162,6 +164,7 @@
     <Folder Include="Src\DataSource" />
     <Folder Include="Src\DataManager" />
     <Folder Include="Src\DataManager\Listhandling" />
+    <Folder Include="Src\Expressions" />
     <Folder Include="Src\Wpf" />
     <Folder Include="Src\PageBuilder" />
     <Folder Include="Src\PageBuilder\Converter" />

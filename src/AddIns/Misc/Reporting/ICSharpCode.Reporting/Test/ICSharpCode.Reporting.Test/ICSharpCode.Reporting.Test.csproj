@@ -73,6 +73,7 @@
     <Compile Include="src\PageBuilder\PageLayoutFixture.cs" />
     <Compile Include="src\Properties\AssemblyInfo.cs" />
     <Compile Include="src\Reportingfactory\FormPageFixture.cs" />
+    <Compile Include="src\Reportingfactory\GeneralReportLoading.cs" />
     <Compile Include="src\Reportingfactory\PushModelFixture.cs" />
     <Compile Include="src\ReportItems\TextItemFixture.cs" />
     <Compile Include="src\TestHelper.cs" />
