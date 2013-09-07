@@ -64,9 +64,9 @@ namespace ICSharpCode.PackageManagement
 			remove { projectManager.PackageReferenceAdded -= value; }
 		}
 		
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved {
-			add { projectManager.PackageReferenceRemoved += value; }
-			remove { projectManager.PackageReferenceRemoved -= value; }
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving {
+			add { projectManager.PackageReferenceRemoving += value; }
+			remove { projectManager.PackageReferenceRemoving -= value; }
 		}
 		
 		public bool IsPackageInstalled(IPackage package)

@@ -9,108 +9,108 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// <summary>
 	/// Helper Class for the Design Time Properties used by VS and Blend
 	/// </summary>
-    public class DesignTimeProperties : FrameworkElement
-    {
-        #region IsHidden
-        
-        public static bool GetIsHidden(DependencyObject obj)
-        {
-            return (bool)obj.GetValue(IsHiddenProperty);
-        }
+	public class DesignTimeProperties : FrameworkElement
+	{
+		#region IsHidden
+		
+		public static bool GetIsHidden(DependencyObject obj)
+		{
+			return (bool)obj.GetValue(IsHiddenProperty);
+		}
 
-        public static void SetIsHidden(DependencyObject obj, bool value)
-        {
-            obj.SetValue(IsHiddenProperty, value);
-        }
-        
-        public static readonly DependencyProperty IsHiddenProperty =
-            DependencyProperty.RegisterAttached("IsHidden", typeof(bool), typeof(DesignTimeProperties));
+		public static void SetIsHidden(DependencyObject obj, bool value)
+		{
+			obj.SetValue(IsHiddenProperty, value);
+		}
+		
+		public static readonly DependencyProperty IsHiddenProperty =
+			DependencyProperty.RegisterAttached("IsHidden", typeof(bool), typeof(DesignTimeProperties));
 
-        #endregion
+		#endregion
 
-        #region IsLocked
+		#region IsLocked
 
-        public static bool GetIsLocked(DependencyObject obj)
-        {
-            return (bool)obj.GetValue(IsLockedProperty);
-        }
+		public static bool GetIsLocked(DependencyObject obj)
+		{
+			return (bool)obj.GetValue(IsLockedProperty);
+		}
 
-        public static void SetIsLocked(DependencyObject obj, bool value)
-        {
-            obj.SetValue(IsLockedProperty, value);
-        }
+		public static void SetIsLocked(DependencyObject obj, bool value)
+		{
+			obj.SetValue(IsLockedProperty, value);
+		}
 
-        public static readonly DependencyProperty IsLockedProperty =
-            DependencyProperty.RegisterAttached("IsLocked", typeof(bool), typeof(DesignTimeProperties));
+		public static readonly DependencyProperty IsLockedProperty =
+			DependencyProperty.RegisterAttached("IsLocked", typeof(bool), typeof(DesignTimeProperties));
 
-        #endregion
+		#endregion
 
-        #region DataContext
+		#region DataContext
 
-        public static object GetDataContext(DependencyObject obj)
-        {
-            return (object)obj.GetValue(DataContextProperty);
-        }
+		public static object GetDataContext(DependencyObject obj)
+		{
+			return (object)obj.GetValue(DataContextProperty);
+		}
 
-        public static void SetDataContext(DependencyObject obj, bool value)
-        {
-            obj.SetValue(DataContextProperty, value);
-        }
+		public static void SetDataContext(DependencyObject obj, bool value)
+		{
+			obj.SetValue(DataContextProperty, value);
+		}
 
-        public static readonly DependencyProperty DataContextProperty =
-            DependencyProperty.RegisterAttached("DataContext", typeof(object), typeof(DesignTimeProperties));
+		public static readonly DependencyProperty DataContextProperty =
+			DependencyProperty.RegisterAttached("DataContext", typeof(object), typeof(DesignTimeProperties));
 
-        #endregion
+		#endregion
 
-        #region DesignSource
+		#region DesignSource
 
-        public static object GetDesignSource(DependencyObject obj)
-        {
-            return (object)obj.GetValue(DesignSourceProperty);
-        }
+		public static object GetDesignSource(DependencyObject obj)
+		{
+			return (object)obj.GetValue(DesignSourceProperty);
+		}
 
-        public static void SetDesignSource(DependencyObject obj, bool value)
-        {
-            obj.SetValue(DesignSourceProperty, value);
-        }
+		public static void SetDesignSource(DependencyObject obj, bool value)
+		{
+			obj.SetValue(DesignSourceProperty, value);
+		}
 
-        public static readonly DependencyProperty DesignSourceProperty =
-            DependencyProperty.RegisterAttached("DesignSource", typeof(object), typeof(DesignTimeProperties));
+		public static readonly DependencyProperty DesignSourceProperty =
+			DependencyProperty.RegisterAttached("DesignSource", typeof(object), typeof(DesignTimeProperties));
 
-        #endregion
+		#endregion
 
-        #region DesignWidth
-        
-        public static double GetDesignWidth(DependencyObject obj)
-        {
-            return (double)obj.GetValue(DesignWidthProperty);
-        }
+		#region DesignWidth
+		
+		public static double GetDesignWidth(DependencyObject obj)
+		{
+			return (double)obj.GetValue(DesignWidthProperty);
+		}
 
-        public static void SetDesignWidth(DependencyObject obj, double value)
-        {
-            obj.SetValue(DesignWidthProperty, value);
-        }
+		public static void SetDesignWidth(DependencyObject obj, double value)
+		{
+			obj.SetValue(DesignWidthProperty, value);
+		}
 
-        public static readonly DependencyProperty DesignWidthProperty =
-            DependencyProperty.RegisterAttached("DesignWidth", typeof(double), typeof(DesignTimeProperties));
+		public static readonly DependencyProperty DesignWidthProperty =
+			DependencyProperty.RegisterAttached("DesignWidth", typeof(double), typeof(DesignTimeProperties));
 
-        #endregion
+		#endregion
 
-        #region DesignHeight
+		#region DesignHeight
 
-        public static double GetDesignHeight(DependencyObject obj)
-        {
-            return (double)obj.GetValue(DesignHeightProperty);
-        }
+		public static double GetDesignHeight(DependencyObject obj)
+		{
+			return (double)obj.GetValue(DesignHeightProperty);
+		}
 
-        public static void SetDesignHeight(DependencyObject obj, double value)
-        {
-            obj.SetValue(DesignHeightProperty, value);
-        }
+		public static void SetDesignHeight(DependencyObject obj, double value)
+		{
+			obj.SetValue(DesignHeightProperty, value);
+		}
 
-        public static readonly DependencyProperty DesignHeightProperty =
-            DependencyProperty.RegisterAttached("DesignHeight", typeof(double), typeof(DesignTimeProperties));
-        
-        #endregion
-    }
+		public static readonly DependencyProperty DesignHeightProperty =
+			DependencyProperty.RegisterAttached("DesignHeight", typeof(double), typeof(DesignTimeProperties));
+		
+		#endregion
+	}
 }

@@ -31,7 +31,7 @@ namespace PackageManagement.Tests
 		{
 			fakeSolution = new FakePackageManagementSolution();
 			fakeSourceRepository = new FakePackageRepository();
-			var packageReference = new PackageReference(packageId, version, null, null);
+			var packageReference = new PackageReference(packageId, version, null, null, false, false);
 			updatePackageInAllProjects = new UpdatePackageInAllProjects(packageReference, fakeSolution, fakeSourceRepository);
 		}
 		

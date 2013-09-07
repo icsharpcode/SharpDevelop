@@ -2,15 +2,20 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Workbench;
-using NuGet;
+using System.IO;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IPackageManagementOutputMessagesView
+	public static class NuGetExePath
 	{
-		void Clear();
-		void AppendLine(string message);
-		IOutputCategory OutputCategory { get; }
+		public static string GetPath()
+		{
+			return Path.Combine(GetDirectory(), "NuGet.exe");
+		}
+		
+		static string GetDirectory()
+		{
+			return Path.GetDirectoryName(typeof(NuGetExePath).Assembly.Location);
+		}
 	}
 }

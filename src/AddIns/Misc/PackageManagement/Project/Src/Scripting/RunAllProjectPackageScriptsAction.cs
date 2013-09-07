@@ -22,7 +22,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		List<EventHandler<PackageOperationEventArgs>> packageReferenceAddedHandlers =
 			new List<EventHandler<PackageOperationEventArgs>>();
 		
-		List<EventHandler<PackageOperationEventArgs>> packageReferenceRemovedHandlers =
+		List<EventHandler<PackageOperationEventArgs>> packageReferenceRemovingHandlers =
 			new List<EventHandler<PackageOperationEventArgs>>();
 		
 		public RunAllProjectPackageScriptsAction(
@@ -68,7 +68,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			foreach (IPackageManagementProject project in projects) {
 				RegisterPackageInstalledEvent(project);
 				RegisterPackageReferenceAddedEvent(project);
-				RegisterPackageReferenceRemovedEvent(project);
+				RegisterPackageReferenceRemovingEvent(project);
 			}
 		}
 		
@@ -88,12 +88,12 @@ namespace ICSharpCode.PackageManagement.Scripting
 			project.PackageReferenceAdded += referenceAddedHandler;
 		}
 		
-		void RegisterPackageReferenceRemovedEvent(IPackageManagementProject project)
+		void RegisterPackageReferenceRemovingEvent(IPackageManagementProject project)
 		{
-			EventHandler<PackageOperationEventArgs> referenceRemovedHandler =
-				(_, e) => PackageReferenceRemoved(project, e);
-			packageReferenceRemovedHandlers.Add(referenceRemovedHandler);
-			project.PackageReferenceRemoved += referenceRemovedHandler;
+			EventHandler<PackageOperationEventArgs> referenceRemovingHandler =
+				(_, e) => PackageReferenceRemoving(project, e);
+			packageReferenceRemovingHandlers.Add(referenceRemovingHandler);
+			project.PackageReferenceRemoving += referenceRemovingHandler;
 		}
 		
 		void UnregisterEvents()
@@ -101,7 +101,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			foreach (IPackageManagementProject project in projects) {
 				UnregisterPackageInstalledEvent(project);
 				UnregisterPackageReferenceAddedEvent(project);
-				UnregisterPackageReferenceRemovedEvent(project);
+				UnregisterPackageReferenceRemovingEvent(project);
 			}
 		}
 		
@@ -119,11 +119,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 			project.PackageReferenceAdded -= handler;
 		}
 		
-		void UnregisterPackageReferenceRemovedEvent(IPackageManagementProject project)
+		void UnregisterPackageReferenceRemovingEvent(IPackageManagementProject project)
 		{
-			EventHandler<PackageOperationEventArgs> handler = packageReferenceRemovedHandlers.First();
-			packageReferenceRemovedHandlers.Remove(handler);
-			project.PackageReferenceRemoved -= handler;
+			EventHandler<PackageOperationEventArgs> handler = packageReferenceRemovingHandlers.First();
+			packageReferenceRemovingHandlers.Remove(handler);
+			project.PackageReferenceRemoving -= handler;
 		}
 		
 		void PackageInstalled(IPackageManagementProject project, PackageOperationEventArgs e)
@@ -136,7 +136,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			RunInstallScript(project, e);
 		}
 		
-		void PackageReferenceRemoved(IPackageManagementProject project, PackageOperationEventArgs e)
+		void PackageReferenceRemoving(IPackageManagementProject project, PackageOperationEventArgs e)
 		{
 			RunUninstallScript(project, e);
 		}

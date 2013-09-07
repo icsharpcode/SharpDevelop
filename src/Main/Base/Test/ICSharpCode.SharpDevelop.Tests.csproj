@@ -204,5 +204,8 @@
   <ItemGroup>
     <Folder Include="ProcessRunner" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="mime_bug1.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

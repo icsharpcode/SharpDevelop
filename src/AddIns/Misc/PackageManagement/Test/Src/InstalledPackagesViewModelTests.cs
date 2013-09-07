@@ -100,7 +100,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void PackageViewModels_PackageReferenceIsRemoved_PackageViewModelsIsUpdated()
+		public void PackageViewModels_PackageReferenceIsBeingRemoved_PackageViewModelsIsUpdated()
 		{
 			CreateViewModel();
 			FakePackage package = AddPackageToProjectLocalRepository();
@@ -159,7 +159,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void PackageViewModels_PackageReferenceIsRemovedAfterViewModelIsDisposed_PackageViewModelsIsNotUpdated()
+		public void PackageViewModels_PackageReferenceIsBeingRemovedAfterViewModelIsDisposed_PackageViewModelsIsNotUpdated()
 		{
 			CreateViewModel();
 			FakePackage package = AddPackageToProjectLocalRepository();
