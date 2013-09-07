@@ -37,7 +37,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		{
 			base.BuildExportList();
 			BuildDetail();
-//			row_BuildDetail();
+			base.BuildReportFooter();
 			base.AddPage(CurrentPage);
 			var er = new ExpressionRunner(Pages);
 			er.Run();
@@ -60,9 +60,10 @@ namespace ICSharpCode.Reporting.PageBuilder
 				CurrentLocation = DetailStart;
 				
 				detail = CreateContainerForSection(DetailStart);
-				detail.DesiredSize = new Size(detail.Size.Width,DetailEnds.Y - DetailStart.Y);
+//				detail.DesiredSize = new Size(detail.Size.Width,DetailEnds.Y - DetailStart.Y);
 
-				detail.Parent = CurrentPage;	
+				detail.Parent = CurrentPage;
+				
 				do {
 					collectionSource.Fill(CurrentSection.Items);
 					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection.Items,position);
@@ -82,25 +83,24 @@ namespace ICSharpCode.Reporting.PageBuilder
 					} else {
 						detail.ExportedItems.AddRange(convertedItems);
 						MeasureAndArrangeContainer(detail);
-						position = new Point(CurrentSection.Location.Y,position.Y + CurrentSection.Size.Height);
+//						position = new Point(CurrentSection.Location.Y,position.Y + CurrentSection.Size.Height + 5);
+						position = new Point(CurrentSection.Location.X,position.Y + detail.DesiredSize.Height + 5);
 					}
 				}
 				
 				while (collectionSource.MoveNext());
 				InsertDetailAtPosition(detail);
-				base.BuildReportFooter();
 				
 			} else {
 				detail = CreateContainerForSection(DetailStart);
 				InsertDetailAtPosition(detail);
-				base.BuildReportFooter();
 			}
 		}
 		
 		
 		
-		
 		/*
+		
 		void row_BuildDetail()
 		{
 			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
@@ -142,8 +142,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 				base.BuildReportFooter();
 			}
 		}
-		
-	*/
+		*/
+	
 	/*
 		IExportContainer CreateAndArrangeContainer(ContainerConverter converter, Point position,IExportContainer parent)
 		{

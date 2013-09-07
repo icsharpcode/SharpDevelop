@@ -61,7 +61,7 @@ namespace ICSharpCode.Reporting.Exporter
 			if (exportContainer != null) {
 				
 				if (exportContainer.Name =="ReportDetail") {
-//					Console.WriteLine("Section {0}",item.Name);
+					Console.WriteLine("Section {0}",item.Name);
 					exportContainer.BackColor = System.Drawing.Color.LightBlue;
 				}
 

@@ -26,10 +26,6 @@ namespace ICSharpCode.Reporting.Arrange
 	
 	internal class ContainerArrangeStrategy:IArrangeStrategy
 	{
-		public ContainerArrangeStrategy()
-		{
-		}
-		
 		
 		public void Arrange(IExportColumn exportColumn){
 			if (exportColumn == null)
@@ -42,7 +38,6 @@ namespace ICSharpCode.Reporting.Arrange
 				if (resizeable.Any()) {
 					
 					//minimun Location
-//					var minLocation  = (from p in container.ExportedItems orderby p.Location.Y select p).First();
 					var maxLocation  = (from p in container.ExportedItems orderby p.Location.Y select p).Last();
 					// maximum Size
 					var maxBottom  = (from p in container.ExportedItems orderby p.DisplayRectangle.Bottom select p).Last();
@@ -54,7 +49,7 @@ namespace ICSharpCode.Reporting.Arrange
 			}
 		}
 		
-		
+		/*
 		public void old_Arrange(IExportColumn exportColumn)
 		{
 			if (exportColumn == null)
@@ -95,6 +90,7 @@ namespace ICSharpCode.Reporting.Arrange
 		}
 
 	    public Rectangle BiggestRectangle {get; private set;}
+	    */
 	}
 	
 }
