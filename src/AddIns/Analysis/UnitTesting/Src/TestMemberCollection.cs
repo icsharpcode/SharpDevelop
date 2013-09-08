@@ -99,10 +99,14 @@ namespace ICSharpCode.UnitTesting
 					break;
 				case TestResultType.Failure:
 					SetTestResult(TestResultType.Failure);
-					failedTestMembers.Add(member.Name, member);
+					if (!failedTestMembers.ContainsKey(member.Name)){
+						failedTestMembers.Add(member.Name, member);
+					}
 					break;
 				case TestResultType.Success:
-					passedTestMembers.Add(member.Name, member);
+					if (!passedTestMembers.ContainsKey(member.Name)){
+						passedTestMembers.Add(member.Name, member);
+					}
 					if (passedTestMembers.Count == Count) {
 						SetTestResult(TestResultType.Success);
 					} else if (passedTestMembers.Count + ignoredTestMembers.Count == Count) {
@@ -110,7 +114,9 @@ namespace ICSharpCode.UnitTesting
 					}
 					break;
 				case TestResultType.Ignored:
-					ignoredTestMembers.Add(member.Name, member);
+					if (!ignoredTestMembers.ContainsKey(member.Name)){
+						ignoredTestMembers.Add(member.Name, member);
+					}
 					if (ignoredTestMembers.Count == Count ||
 					    ignoredTestMembers.Count + passedTestMembers.Count == Count) {
 						SetTestResult(TestResultType.Ignored);
