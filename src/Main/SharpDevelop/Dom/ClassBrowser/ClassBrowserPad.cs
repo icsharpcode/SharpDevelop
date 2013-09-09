@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			ProjectServiceCurrentSolutionChanged(null, null);
 			
 			// Load workspaces from configuration
-			LoadWorkspaces();
+			treeView.Loaded += (sender, e) => LoadWorkspaces();
 		}
 		
 		public override void Dispose()

@@ -322,8 +322,19 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public IAssemblyModel GetAssemblyModel(FileName fileName, bool includeInternalMembers = false)
 		{
 			LoadedAssembly assembly = GetLoadedAssembly(fileName, includeInternalMembers);
-			// TODO context might need references as well
-			IEntityModelContext context = new AssemblyEntityModelContext(assembly.ProjectContent);
+			// Get references
+			DefaultAssemblySearcher assemblySearcher = new DefaultAssemblySearcher(fileName);
+			var referencedAssemblies = new List<IUnresolvedAssembly>();
+			foreach (var referencedAssemblyName in assembly.References) {
+				var assemblyFileName = assemblySearcher.FindAssembly(referencedAssemblyName);
+				if (assemblyFileName != null) {
+					var loadedRefAssembly = GetLoadedAssembly(assemblyFileName, includeInternalMembers);
+					if (loadedRefAssembly != null) {
+						referencedAssemblies.Add(loadedRefAssembly.ProjectContent);
+					}
+				}
+			}
+			IEntityModelContext context = new AssemblyEntityModelContext(assembly.ProjectContent, referencedAssemblies.ToArray());
 			IUpdateableAssemblyModel model = SD.GetService<IModelFactory>().CreateAssemblyModel(context);
 			
 			model.Update(EmptyList<IUnresolvedTypeDefinition>.Instance, assembly.ProjectContent.TopLevelTypeDefinitions.ToList());
