@@ -29,6 +29,7 @@ namespace ICSharpCode.Reporting.Exporter
 		
 		
 		public override void Run () {
+			Console.WriteLine(" DebugExporter with {0} Pages ",Pages.Count);
 			foreach (var page in Pages) {
 				ShowDebug("--",page);
 				Console.WriteLine("-----------PageBreak---------");
@@ -44,8 +45,9 @@ namespace ICSharpCode.Reporting.Exporter
 				var acceptor = item as IAcceptor;
 				if (exportContainer != null) {
 					if (exportContainer.ExportedItems.Count > 0) {
-						acceptor.Accept(visitor);
 						ShowDebug(leading = leading + "--",exportContainer);
+						acceptor.Accept(visitor);
+//						ShowDebug(leading = leading + "--",exportContainer);
 						leading = leading.Substring(0,leading.Length -2);
 					}
 				} else {

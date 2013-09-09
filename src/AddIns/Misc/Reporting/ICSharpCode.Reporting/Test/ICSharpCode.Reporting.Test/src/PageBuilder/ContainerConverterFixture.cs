@@ -42,7 +42,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		{
 			var converter = new ContainerConverter(graphics,new Point(30,30));
 			var result = converter.ConvertToExportContainer(container);
-			var list = converter.CreateConvertedList(container.Items,new Point(30,30));
+			var list = converter.CreateConvertedList(container.Items);
 			result.ExportedItems.AddRange(list);
 			Assert.That(result.ExportedItems.Count,Is.EqualTo(2));
 		}

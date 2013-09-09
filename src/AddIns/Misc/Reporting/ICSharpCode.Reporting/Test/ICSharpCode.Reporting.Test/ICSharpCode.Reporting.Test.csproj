@@ -67,7 +67,6 @@
     <Compile Include="src\Model\Report_TwoItemsFixture.cs" />
     <Compile Include="src\PageBuilder\BaseConvertFixture.cs" />
     <Compile Include="src\PageBuilder\ContainerConverterFixture.cs" />
-    <Compile Include="src\PageBuilder\DataPageBuilderFixture.cs" />
     <Compile Include="src\PageBuilder\FormBuilderFixture.cs" />
     <Compile Include="src\PageBuilder\PageFixture.cs" />
     <Compile Include="src\PageBuilder\PageLayoutFixture.cs" />

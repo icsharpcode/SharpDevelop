@@ -40,16 +40,6 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		}
 
 		
-		public List<IExportColumn> CreateConvertedList(List<IPrintableObject> items,
-		                                               Point position){
-			var list = CreateConvertedList(items);
-			foreach (var item in list) {
-				item.Location = new Point(item.Location.X,item.Location.Y + position.Y);
-			}
-			return list;
-		}
-
-		
 		public List<IExportColumn> CreateConvertedList(List<IPrintableObject> items){                                    
 			var itemsList = new List<IExportColumn>();
 			foreach (var element in items) {

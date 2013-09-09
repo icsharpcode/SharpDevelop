@@ -8,8 +8,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 
@@ -19,7 +17,6 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	{
 		IExportContainer ConvertToExportContainer(IReportContainer reportContainer);
 		List<IExportColumn> CreateConvertedList(List<IPrintableObject> items);
-		List<IExportColumn> CreateConvertedList(List<IPrintableObject> items,Point position);
 		void SetParent(IExportContainer parent, List<IExportColumn> convertedItems);
 	}
 }
