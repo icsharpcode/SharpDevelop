@@ -72,5 +72,30 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			button.Properties.GetProperty("Width").SetValue(10);
 			AssertCanvasDesignerOutput("<Button Width=\"10\" />", button.Context);
 		}
+		
+		[Test]
+		public void SetInstancePropertyElement()
+		{
+			DesignItem button = CreateCanvasContext("<Button />");
+			DesignItem canvas = button.Parent;
+			
+			canvas.Properties.GetProperty(Canvas.TagProperty).SetValue(new ExampleClass());
+			
+			DesignItem customControl = canvas.Services.Component.RegisterComponentForDesigner(new ICSharpCode.WpfDesign.Tests.Controls.CustomButton());
+			canvas.Properties["Children"].CollectionElements.Add(customControl);
+			customControl.Properties.GetProperty(ICSharpCode.WpfDesign.Tests.Controls.CustomButton.TagProperty).SetValue(new ExampleClass());
+			
+			AssertCanvasDesignerOutput("<Canvas.Tag>\n" +
+    	                             "  <t:ExampleClass />\n" +
+    	                             "</Canvas.Tag>\n" +
+    	                             "<Button />\n" +
+    	                             "<sdtcontrols:CustomButton>\n" +
+    	                             "  <sdtcontrols:CustomButton.Tag>\n" +
+    	                             "    <t:ExampleClass />\n" +
+    	                             "  </sdtcontrols:CustomButton.Tag>\n" +
+    	                             "</sdtcontrols:CustomButton>",
+    	                             canvas.Context,
+    	                            "xmlns:sdtcontrols=\"http://sharpdevelop.net/WpfDesign/Tests/Controls\"");
+		}
 	}
 }
