@@ -64,6 +64,7 @@
     <Compile Include="Designer\MockFocusNavigator.cs" />
     <Compile Include="Designer\ModelTestHelper.cs" />
     <Compile Include="Designer\ModelTests.cs" />
+    <Compile Include="Designer\NamespaceTests.cs" />
     <Compile Include="Designer\OutlineView\HierarchyTests.cs" />
     <Compile Include="Designer\OutlineView\InsertTests.cs" />
     <Compile Include="Designer\OutlineView\SelectionTests.cs" />
