@@ -436,8 +436,7 @@ namespace Debugger
 			foreach(var symbolSource in this.Debugger.SymbolSources) {
 				foreach(Module module in this.Modules) {
 					// Note the we might get multiple matches
-					SequencePoint seq = symbolSource.GetSequencePoint(module, fileName, line, column);
-					if (seq != null) {
+					foreach (SequencePoint seq in symbolSource.GetSequencePoints(module, fileName, line, column)) {
 						ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
 						ICorDebugFunctionBreakpoint corBreakpoint = corFunction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
 						corBreakpoint.Activate(1);
