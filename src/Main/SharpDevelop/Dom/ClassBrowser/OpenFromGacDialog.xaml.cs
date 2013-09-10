@@ -173,12 +173,23 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			okButton.IsEnabled = listView.SelectedItems.Count > 0;
 		}
 
+		void ListView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			// Double click in list = click on OK button
+			ConfirmCurrentSelection();
+		}
+
 		void OKButton_Click(object sender, RoutedEventArgs e)
+		{
+			ConfirmCurrentSelection();
+		}
+		
+		void ConfirmCurrentSelection()
 		{
 			this.DialogResult = true;
 			Close();
 		}
-
+		
 		public string[] SelectedFileNames {
 			get {
 				return listView.SelectedItems.OfType<GacEntry>().Select(e => e.FileName).ToArray();
