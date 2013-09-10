@@ -101,8 +101,19 @@ namespace ICSharpCode.Reporting.PageBuilder
 			BuildPageFooter();
 		}
 		
+		protected bool PageFull(IExportColumn column)
+		{
+			var rectToPrint = new Rectangle(column.Location,column.Size);
+			var rr = new Rectangle(new Point(column.Location.X + DetailsRectangle.Location.X,column.Location.Y + DetailsRectangle.Location.Y),
+			                                column.Size);
+			if (!DetailsRectangle.Contains(rr)) {
+				return  true;
+			}
+			return false;
+		}
 		
-		protected bool PageFull(List<IExportColumn> columns)
+		
+		protected bool old_PageFull(List<IExportColumn> columns)
 		{
 			var rectToPrint = new Rectangle(columns[0].Location,columns[0].Size);
 			var rr = new Rectangle(new Point(columns[0].Location.X + DetailsRectangle.Location.X,columns[0].Location.Y + DetailsRectangle.Location.Y),
@@ -115,22 +126,20 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		
 		protected bool PageFull(IExportContainer row) {
-			var rectToPrint = new Rectangle(new Point(row.Location.X,row.Location.Y + DetailsRectangle.Location.Y),
-			                                row.DesiredSize);
-			if (!DetailsRectangle.Contains(rectToPrint)) {
-				return  true;
+			if (row.DisplayRectangle.Bottom > DetailEnds.Y) {
+				return true;
 			}
 			return false;
 		}
 		
-		protected bool row_PageFull(IExportContainer row) {
-			var rectToPrint = new Rectangle(new Point(row.Location.X,row.Location.Y + DetailsRectangle.Location.Y),
-			                                row.DesiredSize);
-			if (!DetailsRectangle.Contains(rectToPrint)) {
-				return  true;
-			}
-			return false;
-		}
+//		protected bool row_PageFull(IExportContainer row) {
+//			var rectToPrint = new Rectangle(new Point(row.Location.X,row.Location.Y + DetailsRectangle.Location.Y),
+//			                                row.DesiredSize);
+//			if (!DetailsRectangle.Contains(rectToPrint)) {
+//				return  true;
+//			}
+//			return false;
+//		}
 		
 		
 		protected IExportContainer CreateSection(IReportContainer container,Point location)

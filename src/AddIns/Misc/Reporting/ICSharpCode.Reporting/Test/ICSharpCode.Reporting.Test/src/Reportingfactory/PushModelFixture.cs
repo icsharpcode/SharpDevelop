@@ -98,6 +98,13 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 	*/
 		
 		[Test]
+		public void ReportContains_2_Pages () {
+			reportCreator.BuildExportList();
+			Assert.That(reportCreator.Pages.Count,Is.EqualTo(2));
+		}
+		
+		
+		[Test]
 		public void DetailContainsOneDataItem() {
 			reportCreator.BuildExportList();
 			var exporteditems = reportCreator.Pages[0].ExportedItems;

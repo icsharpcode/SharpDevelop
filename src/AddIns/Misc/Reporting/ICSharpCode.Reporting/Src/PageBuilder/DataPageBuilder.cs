@@ -62,7 +62,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 					collectionSource.Fill(CurrentSection.Items);
 					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection.Items);
 					converter.SetParent(row,convertedItems);
-					if (PageFull(convertedItems)) {
+MeasureAndArrangeContainer(row);
+//					if (PageFull(convertedItems)) {
+					if (PageFull(row)) {	
 						row.ExportedItems.AddRange(convertedItems);
 						rows.Add(row);
 						InsertRange(rows);
@@ -78,7 +80,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 					} else {
 						row.ExportedItems.AddRange(convertedItems);
 						rows.Add(row);
-						MeasureAndArrangeContainer(row);
+//						MeasureAndArrangeContainer(row);
 						position = new Point(CurrentSection.Location.X,position.Y + row.DesiredSize.Height + 5);
 					}
 				}

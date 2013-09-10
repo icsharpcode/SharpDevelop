@@ -98,6 +98,8 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		
 		static Size MeasureTextInWpf(ExportText exportText)
 		{
+			if (exportText.CanGrow) {
+				
 			
 			FormattedText ft = new FormattedText(exportText.Text,
 			                                     CultureInfo.CurrentCulture,
@@ -119,6 +121,8 @@ namespace ICSharpCode.Reporting.ExportRenderer
 				Width = ft.WidthIncludingTrailingWhitespace,
 				Height = ft.Height};
 			return ss;
+			}
+			return new Size(exportText.Size.Width,exportText.Size.Height);
 		}
 		
 		
