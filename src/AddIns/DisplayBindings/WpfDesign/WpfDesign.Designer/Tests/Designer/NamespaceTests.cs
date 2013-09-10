@@ -1,7 +1,9 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Windows;
 using System.Windows.Controls;
+
 using NUnit.Framework;
 
 namespace ICSharpCode.WpfDesign.Tests.Designer
@@ -105,6 +107,18 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 	
 	public class CustomButton : Button
 	{
+		public static readonly DependencyProperty TestAttachedProperty = DependencyProperty.RegisterAttached("TestAttached", typeof(double), typeof(CustomButton),
+		                                                                                                     new FrameworkPropertyMetadata(Double.NaN));
+
+		public static double GetTestAttached(UIElement element)
+		{
+			return (double)element.GetValue(TestAttachedProperty);
+		}
+
+		public static void SetTestAttached(UIElement element, double value)
+		{
+			element.SetValue(TestAttachedProperty, value);
+		}
 	}
 	
 	public class CustomCheckBox : CheckBox
@@ -116,6 +130,18 @@ namespace ICSharpCode.WpfDesign.Tests.Controls
 {
 	public class CustomButton : Button
 	{
+		public static readonly DependencyProperty TestAttachedProperty = DependencyProperty.RegisterAttached("TestAttached", typeof(double), typeof(CustomButton),
+		                                                                                                     new FrameworkPropertyMetadata(Double.NaN));
+
+		public static double GetTestAttached(UIElement element)
+		{
+			return (double)element.GetValue(TestAttachedProperty);
+		}
+
+		public static void SetTestAttached(UIElement element, double value)
+		{
+			element.SetValue(TestAttachedProperty, value);
+		}
 	}
 	
 	public class CustomCheckBox : CheckBox
@@ -127,6 +153,18 @@ namespace ICSharpCode.WpfDesign.Tests.OtherControls
 {
 	public class CustomButton : Button
 	{
+		public static readonly DependencyProperty TestAttachedProperty = DependencyProperty.RegisterAttached("TestAttached", typeof(double), typeof(CustomButton),
+		                                                                                                     new FrameworkPropertyMetadata(Double.NaN));
+
+		public static double GetTestAttached(UIElement element)
+		{
+			return (double)element.GetValue(TestAttachedProperty);
+		}
+
+		public static void SetTestAttached(UIElement element, double value)
+		{
+			element.SetValue(TestAttachedProperty, value);
+		}
 	}
 	
 	public class CustomCheckBox : CheckBox

@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Markup;
 
@@ -46,6 +47,30 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			DesignItem button = CreateCanvasContext("<Button Width='100' Height='200'/>");
 			button.Properties.GetProperty("Content").SetValue("Hello World!");
 			AssertCanvasDesignerOutput("<Button Width=\"100\" Height=\"200\" Content=\"Hello World!\" />", button.Context);
+		}
+		
+		[Test]
+		public void SetAttachedProperties()
+		{
+			DesignItem button = CreateCanvasContext("<Button />");
+			
+			button.Properties.GetAttachedProperty(Grid.ColumnProperty).SetValue(0);
+			button.Properties.GetAttachedProperty(CustomButton.TestAttachedProperty).SetValue(0);
+			button.Properties.GetAttachedProperty(ICSharpCode.WpfDesign.Tests.Controls.CustomButton.TestAttachedProperty).SetValue(0);
+			button.Properties.GetAttachedProperty(ICSharpCode.WpfDesign.Tests.OtherControls.CustomButton.TestAttachedProperty).SetValue(0);
+			
+			AssertCanvasDesignerOutput("<Button Grid.Column=\"0\" t:CustomButton.TestAttached=\"0\" sdtcontrols:CustomButton.TestAttached=\"0\" Controls0:CustomButton.TestAttached=\"0\" />",
+			                           button.Context,
+			                           "xmlns:sdtcontrols=\"http://sharpdevelop.net/WpfDesign/Tests/Controls\"",
+			                           "xmlns:Controls0=\"clr-namespace:ICSharpCode.WpfDesign.Tests.OtherControls;assembly=ICSharpCode.WpfDesign.Tests\"");
+		}
+		
+		[Test]
+		public void SetInstanceProperty()
+		{
+			DesignItem button = CreateCanvasContext("<Button />");
+			button.Properties.GetProperty("Width").SetValue(10);
+			AssertCanvasDesignerOutput("<Button Width=\"10\" />", button.Context);
 		}
 	}
 }
