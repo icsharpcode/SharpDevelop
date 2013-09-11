@@ -103,7 +103,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			if (continueHitTest && testDesignSurface) {
 				RunHitTest(
-					this.Child, mousePosition, delegate { return HitTestFilterBehavior.Continue; },
+					this.Child, mousePosition, FilterHitTestInvisibleElements,
 					delegate(HitTestResult result) {
 						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
 							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);
