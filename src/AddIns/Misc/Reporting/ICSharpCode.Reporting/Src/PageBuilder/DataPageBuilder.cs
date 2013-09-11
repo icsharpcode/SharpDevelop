@@ -45,7 +45,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		void BuildDetail()
 		{
-			List<IExportContainer> rows = new List<IExportContainer>();
+			var rows = new List<IExportContainer>();
 			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
 
 			var position = DetailStart;
@@ -55,18 +55,16 @@ namespace ICSharpCode.Reporting.PageBuilder
 			if(collectionSource.Count > 0) {
 				collectionSource.Bind();
 				CurrentLocation = DetailStart;
-			
+				
 				do {
 					var row = CreateContainerForSection(position);
 					row.Parent = CurrentPage;
 					collectionSource.Fill(CurrentSection.Items);
 					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection.Items);
 					converter.SetParent(row,convertedItems);
-MeasureAndArrangeContainer(row);
-//					if (PageFull(convertedItems)) {
-					if (PageFull(row)) {	
-						row.ExportedItems.AddRange(convertedItems);
-						rows.Add(row);
+					MeasureAndArrangeContainer(row);
+
+					if (PageFull(row)) {
 						InsertRange(rows);
 						MeasureAndArrangeContainer(row);
 						rows.Clear();
@@ -77,20 +75,18 @@ MeasureAndArrangeContainer(row);
 						CurrentPage = CreateNewPage();
 						WriteStandardSections();
 						CurrentLocation = DetailStart;
-					} else {
-						row.ExportedItems.AddRange(convertedItems);
-						rows.Add(row);
-//						MeasureAndArrangeContainer(row);
-						position = new Point(CurrentSection.Location.X,position.Y + row.DesiredSize.Height + 5);
+						
+						position = DetailStart;
+						row.Location = position;
 					}
+
+					row.ExportedItems.AddRange(convertedItems);
+					rows.Add(row);
+					position = new Point(CurrentSection.Location.X,position.Y + row.DesiredSize.Height + 1);
 				}
 				
 				while (collectionSource.MoveNext());
 				InsertRange(rows);
-				
-			} else {
-//				detail = CreateContainerForSection(DetailStart);
-//				InsertDetailAtPosition(detail);
 			}
 		}
 		
