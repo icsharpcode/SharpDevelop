@@ -1005,6 +1005,14 @@
 		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.RemoveAssemblyCommand"/>
 	</Path>
 	
+	<Path name="/SharpDevelop/EntityContextMenu">
+		<MenuItem id="OpenInClassBrowser"
+		          icon="ILSpy"
+		          type="Item"
+		          label="Open in Class Browser"
+		          class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenInClassBrowserCommand"/>
+	</Path>
+	
 	<!-- end ClassBrowser -->
 	
 	<!-- toolbars -->

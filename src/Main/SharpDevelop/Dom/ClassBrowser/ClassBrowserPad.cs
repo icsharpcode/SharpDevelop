@@ -150,6 +150,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			get { return treeView; }
 		}
 		
+		public bool GoToEntity(IEntity entity)
+		{
+			// Activate the pad
+			this.BringToFront();
+			// Look for entity in tree
+			return treeView.GoToEntity(entity);
+		}
+		
 		void ProjectServiceCurrentSolutionChanged(object sender, EventArgs e)
 		{
 			foreach (var node in treeView.AssemblyLists.OfType<ISolutionAssemblyList>().ToArray())

@@ -5,7 +5,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Editor.Commands;
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -96,6 +98,21 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			                                      	FileName = assemblyModel.Context.Location,
 			                                      	WorkingDirectory = Path.GetDirectoryName(assemblyModel.Context.Location)
 			                                      });
+		}
+	}
+	
+	/// <summary>
+	/// OpenInClassBrowserCommand.
+	/// </summary>
+	class OpenInClassBrowserCommand : ResolveResultMenuCommand
+	{
+		public override void Run(ResolveResult symbol)
+		{
+			var classBrowser = SD.GetService<IClassBrowser>();
+			var entity = GetEntity(symbol);
+			if ((classBrowser != null) && (entity != null)) {
+				classBrowser.GoToEntity(entity);
+			}
 		}
 	}
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
@@ -13,5 +14,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		IAssemblyList UnpinnedAssemblies { get; set; }
 		ICollection<IAssemblyList> AssemblyLists { get; }
 		IAssemblyModel FindAssemblyModel(FileName fileName);
+		bool GoToEntity(IEntity entity);
 	}
 }

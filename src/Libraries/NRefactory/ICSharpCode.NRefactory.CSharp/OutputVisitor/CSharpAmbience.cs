@@ -182,7 +182,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			EntityDeclaration node = astBuilder.ConvertEntity(member);
-			TypeDeclaration typeDecl = (TypeDeclaration)astBuilder.ConvertEntity(member.DeclaringTypeDefinition);
+//			TypeDeclaration typeDecl = (TypeDeclaration)astBuilder.ConvertEntity(member.DeclaringTypeDefinition);
 			if ((ConversionFlags & ConversionFlags.ShowDeclaringType) == ConversionFlags.ShowDeclaringType) {
 				ConvertType(member.DeclaringType, writer, formattingPolicy);
 				writer.WriteToken(Roles.Dot, ".");

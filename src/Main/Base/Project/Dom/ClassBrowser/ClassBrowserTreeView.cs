@@ -2,10 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.TreeView;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
@@ -56,6 +59,116 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (treeNode != null) {
 				treeNode.ShowContextMenu();
 			}
+		}
+		
+		public bool GoToEntity(IEntity entity)
+		{
+			// Try to find assembly in workspace
+			var entityAssembly = entity.ParentAssembly;
+			if (entityAssembly != null) {
+				ITypeDefinition entityType = null;
+				if (entity is ITypeDefinition) {
+					entityType = (ITypeDefinition) entity;
+				} else {
+					entityType = entity.DeclaringTypeDefinition;
+				}
+				
+				SharpTreeNodeCollection namespaceChildren = null;
+				var root = this.Root as WorkspaceTreeNode;
+				
+				// Try to find assembly of passed entity among open projects in solution
+				var solutionTreeNode = this.Root.Children.OfType<SolutionTreeNode>().FirstOrDefault();
+				if (solutionTreeNode != null) {
+					// Ensure that we have children
+					solutionTreeNode.EnsureLazyChildren();
+					
+					var projectTreeNode = solutionTreeNode.Children.FirstOrDefault(
+						node => {
+							if (node is ProjectTreeNode) {
+								var treeNode = (ProjectTreeNode) node;
+								if (node.Model is IProject) {
+									var projectModel = (IProject) node.Model;
+									// TODO Use full name here!
+									return projectModel.AssemblyModel.AssemblyName == entityAssembly.AssemblyName;
+								}
+							}
+							
+							return false;
+						});
+					if (projectTreeNode != null) {
+						projectTreeNode.EnsureLazyChildren();
+						namespaceChildren = projectTreeNode.Children;
+					}
+				}
+				
+				if (namespaceChildren == null) {
+					// Try to find assembly of passed entity among additional assemblies
+					var assemblyTreeNode = this.Root.Children.FirstOrDefault(
+						node => {
+							if (node is AssemblyTreeNode) {
+								var asmTreeNode = (AssemblyTreeNode) node;
+								if (node.Model is IAssemblyModel) {
+									var asmModel = (IAssemblyModel) node.Model;
+									// TODO Use full name here!
+									return asmModel.AssemblyName == entityAssembly.AssemblyName;
+								}
+							}
+							
+							return false;
+						});
+					if (assemblyTreeNode != null) {
+						assemblyTreeNode.EnsureLazyChildren();
+						namespaceChildren = assemblyTreeNode.Children;
+					}
+				}
+				
+				// TODO Add assembly to workspace, if not available in ClassBrowser
+				
+				if (namespaceChildren != null) {
+					var nsTreeNode = namespaceChildren.FirstOrDefault(
+						node =>
+						(node is NamespaceTreeNode)
+						&& (((NamespaceTreeNode) node).Model is INamespaceModel)
+						&& (((INamespaceModel) ((NamespaceTreeNode) node).Model).FullName == entityType.Namespace)
+					) as ModelCollectionTreeNode;
+					
+					if (nsTreeNode != null) {
+						// Ensure that we have children
+						nsTreeNode.EnsureLazyChildren();
+						
+						// Search in namespace node recursively
+						var foundEntityNode = nsTreeNode.FindChildNodeRecursively(
+							node => {
+								var treeNode = node as ModelCollectionTreeNode;
+								if (treeNode != null) {
+									if ((entity is ITypeDefinition) && (treeNode.Model is ITypeDefinitionModel)) {
+										// Compare directly with type
+										var modelFullTypeName = ((ITypeDefinitionModel) treeNode.Model).FullTypeName;
+										return modelFullTypeName == entityType.FullTypeName;
+									}
+									if ((entity is IMember) && (treeNode.Model is IMemberModel)) {
+										// Compare parent types and member names
+										IMemberModel memberModel = (IMemberModel) treeNode.Model;
+										IMember member = (IMember) entity;
+										return (member.DeclaringType.FullName == entityType.FullName)
+											&& (member.Name == memberModel.Name)
+											&& (member.SymbolKind == memberModel.SymbolKind);
+									}
+								}
+								
+								return false;
+							});
+						
+						if (foundEntityNode != null) {
+							this.FocusNode(foundEntityNode);
+							this.SelectedItem = foundEntityNode;
+							return true;
+						}
+					}
+				}
+			}
+			
+			return false;
 		}
 	}
 	
