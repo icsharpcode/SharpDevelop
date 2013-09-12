@@ -6,6 +6,7 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:tv="http://icsharpcode.net/sharpdevelop/treeview"
 >
+	<core:ContextMenuBuilder x:Key="menuBuilder" />
 	
 	<Style x:Key="itemContainerStyle" TargetType="{x:Type ListViewItem}">
 		<Setter Property="Background" Value="Transparent" />
@@ -39,8 +40,15 @@
 				<GridViewColumn.CellTemplate>
 					<DataTemplate>
 						<StackPanel Orientation="Horizontal">
-							<tv:SharpTreeNodeView/>
-							<local:AutoCompleteTextBox Margin="-6 0 0 0"  MinWidth="100" Text="{Binding Node.Name}" IsEditable="{Binding Node.CanSetName}"/>
+							<tv:SharpTreeNodeView />
+							<local:AutoCompleteTextBox x:Name="name" Margin="-6 0 0 0"  MinWidth="100" Text="{Binding Node.Name}" IsEditable="{Binding Node.CanSetName}">
+								<local:AutoCompleteTextBox.ContextMenu>
+									<MultiBinding Converter="{StaticResource menuBuilder}">
+										<Binding Path="Node.ContextMenuAddInTreeEntry" />
+										<Binding Path="Node" />
+									</MultiBinding>
+								</local:AutoCompleteTextBox.ContextMenu>
+							</local:AutoCompleteTextBox>
 						</StackPanel>
 					</DataTemplate>
 				</GridViewColumn.CellTemplate>
@@ -48,14 +56,31 @@
 			<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.LocalVariables.ValueColumn}" Width="200">
 				<GridViewColumn.CellTemplate>
 					<DataTemplate>
-						<local:AutoCompleteTextBox MinWidth="100" Text="{Binding Node.Value}" IsEditable="{Binding Node.CanSetValue}"/>
+						<local:AutoCompleteTextBox
+							MinWidth="100"
+							Text="{Binding Node.Value}"
+							IsEditable="{Binding Node.CanSetValue}">
+							<local:AutoCompleteTextBox.ContextMenu>
+								<MultiBinding Converter="{StaticResource menuBuilder}">
+									<Binding Path="Node.ContextMenuAddInTreeEntry" />
+									<Binding Path="Node" />
+								</MultiBinding>
+							</local:AutoCompleteTextBox.ContextMenu>
+						</local:AutoCompleteTextBox>
 					</DataTemplate>
 				</GridViewColumn.CellTemplate>
 			</GridViewColumn>
 			<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.LocalVariables.TypeColumn}" Width="200">
 				<GridViewColumn.CellTemplate>
 					<DataTemplate>
-						<local:AutoCompleteTextBox MinWidth="100" Text="{Binding Node.Type}" IsEditable="False"/>
+						<local:AutoCompleteTextBox MinWidth="100" Text="{Binding Node.Type}" IsEditable="False">
+							<local:AutoCompleteTextBox.ContextMenu>
+								<MultiBinding Converter="{StaticResource menuBuilder}">
+									<Binding Path="Node.ContextMenuAddInTreeEntry" />
+									<Binding Path="Node" />
+								</MultiBinding>
+							</local:AutoCompleteTextBox.ContextMenu>
+						</local:AutoCompleteTextBox>
 					</DataTemplate>
 				</GridViewColumn.CellTemplate>
 			</GridViewColumn>

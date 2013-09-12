@@ -14,25 +14,9 @@ namespace Debugger.AddIn.TreeModel
 	{
 		public override void Execute(object parameter)
 		{
-			var grid = parameter as DataGrid;
-			if (grid == null) return;
-			var selection = FormatValue(grid.SelectedItems.OfType<ValueNode>());
-			SD.Clipboard.SetText(selection);
-		}
-		
-		string FormatValue(IEnumerable<ValueNode> nodes)
-		{
-			StringBuilder b = new StringBuilder();
-			bool first = true;
-			foreach (var node in nodes) {
-				if (first)
-					first = false;
-				else
-					b.AppendLine();
-				b.Append(node.FullText);
-			}
-			
-			return b.ToString();
+			var node = parameter as ValueNode;
+			if (node == null) return;
+			SD.Clipboard.SetText(node.FullText);
 		}
 	}
 	
@@ -40,10 +24,9 @@ namespace Debugger.AddIn.TreeModel
 	{
 		public override void Execute(object parameter)
 		{
-			var grid = parameter as DataGrid;
-			if (grid == null) return;
-			var error = grid.SelectedItems.OfType<ValueNode>().Select(node => node.error).Single();
-			SD.MessageService.ShowException(error, null);
+			var node = parameter as ValueNode;
+			if (node == null) return;
+			SD.MessageService.ShowException(node.error, null);
 		}
 	}
 }

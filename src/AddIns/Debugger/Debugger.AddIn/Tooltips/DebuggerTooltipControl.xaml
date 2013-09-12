@@ -273,9 +273,15 @@
 								x:Name="valueText"
 								Style="{StaticResource TextStyle}"
 								IsEnabled="{Binding CanSetValue}"
-								ContextMenu="{Binding ContextMenuAddInTreeEntry, Converter={StaticResource menuBuilder}, ConverterParameter={x:Reference dataGrid}}"
 								ContextMenuService.ShowOnDisabled="True"
-								Text="{Binding Value}" />
+								Text="{Binding Value}">
+								<TextBox.ContextMenu>
+									<MultiBinding Converter="{StaticResource menuBuilder}">
+										<Binding Path="ContextMenuAddInTreeEntry" />
+										<Binding />
+									</MultiBinding>
+								</TextBox.ContextMenu>
+							</TextBox>
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>

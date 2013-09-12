@@ -31,17 +31,17 @@ namespace ICSharpCode.Core.Presentation
 		}
 	}
 	
-	public class ContextMenuBuilder : IValueConverter
+	public class ContextMenuBuilder : IMultiValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (value is string) {
-				return MenuService.CreateContextMenu(parameter, (string)value);
+			if (values.Length == 2 && values[0] is string) {
+				return MenuService.CreateContextMenu(values[1], (string)values[0]);
 			}
 			throw new NotSupportedException();
 		}
-		
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
 		{
 			throw new NotSupportedException();
 		}
