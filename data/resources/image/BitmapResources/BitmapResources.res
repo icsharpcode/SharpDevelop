@@ -88,6 +88,11 @@ Icons.16x16.Debug.StepInto							= DebuggerIcons\Icons.16x16.Debug.StepInto.png
 Icons.16x16.Debug.StepOut							= DebuggerIcons\Icons.16x16.Debug.StepOut.png
 Icons.16x16.Debug.Assembly							= DebuggerIcons\Icons.16x16.Debug.Assembly.png
 
+# Watches
+Icons.16x16.WatchAdd                                = WatchIcons\WatchAdd.png
+Icons.16x16.WatchDelete                             = WatchIcons\WatchDelete.png
+Icons.16x16.WatchesDelete                           = WatchIcons\WatchesDelete.png
+
 # TestRunner
 Icons.16x16.TestRunner.Yellow						= BitmapResources-data\Icons.16x16.TestRunner.Yellow.png
 Icons.16x16.TestRunner.Red							= BitmapResources-data\Icons.16x16.TestRunner.Red.png
@@ -271,6 +276,7 @@ PadIcons.BreakPoints								= PadIcons\Breakpoints.png
 PadIcons.CallStack									= PadIcons\CallStack.png
 PadIcons.LoadedModules								= PadIcons\LoadedModules.png
 PadIcons.LocalVariables								= PadIcons\LocalVariables.png
+PadIcons.Watches                                    = PadIcons\WatchPad.png
 PadIcons.Threads									= PadIcons\Threads.png
 PadIcons.Exceptions									= PadIcons\Exceptions.png
 PadIcons.XPathQuery									= PadIcons\XPathQuery.png
