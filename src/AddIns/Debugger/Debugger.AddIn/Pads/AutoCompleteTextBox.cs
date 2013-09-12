@@ -85,8 +85,10 @@ namespace Debugger.AddIn.Pads.Controls
 		void editor_TextArea_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Return || e.Key == Key.Escape) {
-				if (e.Key == Key.Return)
+				if (e.Key == Key.Return) {
 					this.Text = this.editor.Text;
+					editor.SelectionStart = this.Text.Length;
+				}
 				
 				e.Handled = true;
 			}
@@ -123,6 +125,12 @@ namespace Debugger.AddIn.Pads.Controls
 //			if (rr != null) {
 //				editorAdapter.ShowCompletionWindow(new DotCodeCompletionItemProvider().GenerateCompletionListForResolveResult(rr, expr.Context));
 //			}
+		}
+		
+		public void FocusEditor()
+		{
+			editor.TextArea.Focus();
+			editor.SelectAll();
 		}
 	}
 }

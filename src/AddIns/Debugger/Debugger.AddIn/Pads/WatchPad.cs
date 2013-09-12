@@ -2,10 +2,12 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 using Debugger;
@@ -22,10 +24,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class WatchPad : AbstractPadContent
 	{
+		DockPanel panel;
+		ToolBar toolBar;
 		SharpTreeView tree;
 		
 		public override object Control {
-			get { return tree; }
+			get { return panel; }
 		}
 		
 		public SharpTreeView Tree {
@@ -41,18 +45,24 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			var res = new CommonResources();
 			res.InitializeComponent();
 			
+			panel = new DockPanel();
+			
+			toolBar = ToolBarService.CreateToolBar(toolBar, this, "/SharpDevelop/Pads/WatchPad/ToolBar");
+			toolBar.SetValue(DockPanel.DockProperty, Dock.Top);
+			panel.Children.Add(toolBar);
+			
 			tree = new SharpTreeView();
 			tree.Root = new WatchRootNode();
 			tree.ShowRoot = false;
 			tree.View = (GridView)res["variableGridView"];
 			tree.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "50%;25%;25%");
-			tree.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
+			//tree.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
 			tree.MouseDoubleClick += delegate(object sender, MouseButtonEventArgs e) {
 				if (this.tree.SelectedItem == null) {
-					AddWatchCommand cmd = new AddWatchCommand { Owner = this };
-					cmd.Run();
+					AddWatch(focus: true);
 				}
 			};
+			panel.Children.Add(tree);
 			
 //			ProjectService.SolutionLoaded  += delegate { LoadNodes(); };
 //			ProjectService.SolutionClosing += delegate { SaveNodes(); };
@@ -83,10 +93,22 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 //			}
 //		}
 		
-		public void AddWatch(string expression = null)
+		public void AddWatch(string expression = null, bool focus = false)
 		{
 			var node = MakeNode(expression);
 			this.Items.Add(node);
+			
+			if (focus) {
+				var view = tree.View as SharpGridView;
+				tree.Dispatcher.BeginInvoke(
+					DispatcherPriority.Input, (Action)delegate {
+						var container = tree.ItemContainerGenerator.ContainerFromItem(node) as SharpTreeViewItem;
+						if (container == null) return;
+						var textBox = container.NodeView.FindAncestor<StackPanel>().FindName("name") as AutoCompleteTextBox;
+						if (textBox == null) return;
+						textBox.FocusEditor();
+					});
+			}
 		}
 		
 		SharpTreeNodeAdapter MakeNode(string name)
@@ -155,5 +177,22 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			pad.AddWatch(watchValue);
 			WindowsDebugger.RefreshPads();
 		}
+	}
+	
+	static class WpfExtensions
+	{
+		public static T FindAncestor<T>(this DependencyObject d) where T : class
+		{
+			return AncestorsAndSelf(d).OfType<T>().FirstOrDefault();
+		}
+
+		public static IEnumerable<DependencyObject> AncestorsAndSelf(this DependencyObject d)
+		{
+			while (d != null) {
+				yield return d;
+				d = VisualTreeHelper.GetParent(d);
+			}
+		}
+
 	}
 }

@@ -20,7 +20,7 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				pad.AddWatch();
+				pad.AddWatch(focus: true);
 			}
 		}
 	}

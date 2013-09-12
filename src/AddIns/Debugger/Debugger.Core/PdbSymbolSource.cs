@@ -207,12 +207,10 @@ namespace Debugger
 			symDoc = symDoc ?? symDocs.FirstOrDefault(d => string.Equals(GetSourceCodePath(module.Process, d.GetURL()), filename, StringComparison.OrdinalIgnoreCase));
 			if (symDoc == null) yield break; // Document not found
 			
-			ISymUnmanagedMethod symMethod2;
 			ISymUnmanagedMethod[] symMethods;
 			try {
 				uint validLine = symDoc.FindClosestLine((uint)line);
 				symMethods = symReader.GetMethodsFromDocumentPosition(symDoc, validLine, (uint)column);
-				symMethod2 = symReader.GetMethodFromDocumentPosition(symDoc, (uint)validLine, (uint)column);
 			} catch {
 				yield break; //Not found
 			}
