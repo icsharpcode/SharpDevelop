@@ -6,6 +6,7 @@ using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.TreeView;
 using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -34,6 +35,12 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			get {
 				return baseTypes;
 			}
+		}
+		
+		public override SharpTreeNode FindChildNodeRecursively(Func<SharpTreeNode, bool> predicate)
+		{
+			// Don't search children of this node, because they are repeating type nodes from elsewhere
+			return null;
 		}
 		
 		public bool HasBaseTypes()

@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			LazyLoading = true;
 		}
 		
-		public SharpTreeNode FindChildNodeRecursively(Func<SharpTreeNode, bool> predicate)
+		public virtual SharpTreeNode FindChildNodeRecursively(Func<SharpTreeNode, bool> predicate)
 		{
 			if (predicate == null)
 				return null;
