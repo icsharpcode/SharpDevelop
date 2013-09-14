@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected void RefreshPad()
 		{
 			Process process = WindowsDebugger.CurrentProcess;
-			if (process != null) {
+			if (process != null && process.IsPaused) {
 				var expressions = this.Items.OfType<SharpTreeNodeAdapter>()
 					.Select(n => n.Node.Name)
 					.ToList();
