@@ -77,12 +77,12 @@
 		</Condition>
 		<MenuItem id="AddExpressionBreakpoint"
 		          insertafter="Toggle Breakpoint"
-		          label = "${res:XML.MainMenu.DebugMenu.AddExpressionBreakpoint}"
+		          label = "${res:MainWindow.Windows.Debug.AddExpressionBreakpoint}"
 		          shortcut="Shift|F7"
 		          class = "Debugger.AddIn.AddExpressionBreakpointCommand"/>
 		<MenuItem id="AddWatchExpression"
 		          insertafter="AddExpressionBreakpoint"
-		          label = "${res:XML.MainMenu.DebugMenu.AddWatchExpression}"
+		          label = "${res:MainWindow.Windows.Debug.AddWatchExpression}"
 		          shortcut="Ctrl|F7"
 		          class = "Debugger.AddIn.AddWatchExpressionCommand"/>
 	</Path>
