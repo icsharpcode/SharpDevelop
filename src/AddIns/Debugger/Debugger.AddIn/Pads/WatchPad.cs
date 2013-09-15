@@ -56,7 +56,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			tree.ShowRoot = false;
 			tree.View = (GridView)res["variableGridView"];
 			tree.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "50%;25%;25%");
-			//tree.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
 			tree.MouseDoubleClick += delegate(object sender, MouseButtonEventArgs e) {
 				if (this.tree.SelectedItem == null) {
 					AddWatch(focus: true);
@@ -124,6 +123,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				process.EnqueueForEach(
 					Dispatcher.CurrentDispatcher,
 					expressions,
+					expr => this.Items.Add(MakeNode(expr)),
 					expr => this.Items.Add(MakeNode(expr))
 				);
 			}
