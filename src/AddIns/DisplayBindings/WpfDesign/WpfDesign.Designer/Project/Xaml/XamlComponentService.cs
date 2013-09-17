@@ -90,24 +90,37 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 			
 			if (_context.RootItem != null && !string.IsNullOrEmpty(site.Name)) {
-				var nameScope = _context.RootItem.Component as INameScope;
-				nameScope = NameScope.GetNameScope((DependencyObject) _context.RootItem.Component);
-				var fnd = nameScope.FindName(site.Name);
-				
-				if (fnd != null) {
-					string newNm = site.Name + "_Copy";
-					fnd = nameScope.FindName(newNm);
-					if (fnd == null)
-						site.Name = newNm;
-					else {
-						int i = 1;
-						while (fnd != null) {
-							newNm = site.Name + "_Copy" + i;
-							fnd = nameScope.FindName(newNm);
-							i++;
+				var nameScope = NameScopeHelper.GetNameScopeFromObject(_context.RootItem.Component);
+
+				if (nameScope != null) {
+					// The object will be a part of the RootItem namescope, remove local namescope if set
+					NameScopeHelper.ClearNameScopeProperty(obj.Instance);
+					
+					string newName = site.Name;
+					if (nameScope.FindName(newName) != null) {
+						int copyIndex = newName.LastIndexOf("_Copy", StringComparison.Ordinal);
+						if (copyIndex < 0) {
+							newName += "_Copy";
 						}
-						site.Name = newNm;
+						else if (!newName.EndsWith("_Copy", StringComparison.Ordinal)) {
+							string copyEnd = newName.Substring(copyIndex + "_Copy".Length);
+							int copyEndValue;
+							if (Int32.TryParse(copyEnd, out copyEndValue))
+								newName = newName.Remove(copyIndex + "_Copy".Length);
+							else
+								newName += "_Copy";
+						}
+						
+						int i = 1;
+						string newNameTemplate = newName;
+						while (nameScope.FindName(newName) != null) {
+							newName = newNameTemplate + i++;
+						}
+						
+						site.Name = newName;
 					}
+
+					nameScope.RegisterName(newName, obj.Instance);
 				}
 			}
 			return site;
