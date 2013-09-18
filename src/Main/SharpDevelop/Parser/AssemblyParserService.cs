@@ -18,6 +18,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
+using ICSharpCode.SharpDevelop.Project;
 using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Parser

@@ -354,19 +354,24 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override IAssemblyModel AssemblyModel {
 			get {
 				SD.MainThread.VerifyAccess();
+				var pc = ProjectContent;
 				if (assemblyModel == null) {
 					assemblyModel = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(new ProjectEntityModelContext(this, ".cs"));
-					var pc = ProjectContent;
 					if (pc != null && assemblyModel is IUpdateableAssemblyModel) {
 						((IUpdateableAssemblyModel)assemblyModel).AssemblyName = AssemblyName;
-						((IUpdateableAssemblyModel)assemblyModel).References = pc.AssemblyReferences
-							.Select(ResolveReference).Where(r => r != null).ToList();
 						// Add the already loaded files into the model
 						foreach (var file in pc.Files) {
 							((IUpdateableAssemblyModel)assemblyModel).Update(null, file);
 						}
 					}
 				}
+				
+				// Update references on every access
+				if (pc != null && assemblyModel is IUpdateableAssemblyModel) {
+					((IUpdateableAssemblyModel)assemblyModel).References = pc.AssemblyReferences
+						.Select(ResolveReference).Where(r => r != null).ToList();
+				}
+				
 				return assemblyModel;
 			}
 		}
@@ -391,12 +396,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			// OnParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
 			// To ensure events are raised in the same order, we always invoke on the main thread.
 			SD.MainThread.InvokeAsyncAndForget(delegate {
-				if (assemblyModel is IUpdateableAssemblyModel) {
-					((IUpdateableAssemblyModel)assemblyModel).Update(args.OldUnresolvedFile, args.NewUnresolvedFile);
-					// TODO : update references as well?
-				}
-				ParseInformationUpdated(null, args);
-			});
+			                                   	if (assemblyModel is IUpdateableAssemblyModel) {
+			                                   		((IUpdateableAssemblyModel)assemblyModel).Update(args.OldUnresolvedFile, args.NewUnresolvedFile);
+			                                   	}
+			                                   	ParseInformationUpdated(null, args);
+			                                   });
 		}
 		
 		public override event EventHandler<ParseInformationEventArgs> ParseInformationUpdated = delegate {};
