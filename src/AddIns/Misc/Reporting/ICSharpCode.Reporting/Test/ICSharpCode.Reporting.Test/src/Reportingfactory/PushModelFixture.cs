@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 
@@ -93,7 +94,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		
 		
 		[Test]
-		public void LastElementInPageIsPageFooter() {
+		public void LastElementInEveryPageIsPageFooter() {
 			reportCreator.BuildExportList();
 			 
 			var firstPage = reportCreator.Pages[1].ExportedItems;
@@ -107,11 +108,24 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		
 		
 		[Test]
-		public void FirstElementOnScoundPageIsReportHeader() {
+		public void FirstElementOnSecondPageIsReportHeader() {
 			reportCreator.BuildExportList();
 			var exporteditems = reportCreator.Pages[1].ExportedItems;
 			var result = exporteditems[0];
 			Assert.That(result.Name,Is.EqualTo("ReportPageHeader"));
+		}
+		
+		
+		[Test]
+		public void RowsHasGapOfOne () {
+			reportCreator.BuildExportList();
+			var exporteditems = reportCreator.Pages[0].ExportedItems;
+			for (int i = 1; i < exporteditems.Count -1; i++) {
+				Console.WriteLine(" {0} - {1} - {2}",exporteditems[i-1].DisplayRectangle.Bottom,exporteditems[i].Location.Y,exporteditems[i].Name);
+//				Assert.That(exporteditems[i].Location.Y,Is.GreaterThan(exporteditems[i-1].DisplayRectangle.Bottom));
+				
+				Assert.That(exporteditems[i].Location.Y,Is.EqualTo(exporteditems[i-1].DisplayRectangle.Bottom +1));
+			}
 		}
 		
 		
