@@ -9,32 +9,33 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.TreeView;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
 	/// <summary>
-	/// Represents the "Base types" sub-node of type nodes in ClassBrowser tree.
+	/// Represents the "Derived types" sub-node of type nodes in ClassBrowser tree.
 	/// </summary>
-	public class BaseTypesTreeNode : ModelCollectionTreeNode
+	public class DerivedTypesTreeNode : ModelCollectionTreeNode
 	{
 		ITypeDefinitionModel definition;
 		string text;
-		SimpleModelCollection<ITypeDefinitionModel> baseTypes;
+		SimpleModelCollection<ITypeDefinitionModel> derivedTypes;
 		
-		public BaseTypesTreeNode(ITypeDefinitionModel definition)
+		public DerivedTypesTreeNode(ITypeDefinitionModel definition)
 		{
 			if (definition == null)
 				throw new ArgumentNullException("definition");
 			this.definition = definition;
-			this.definition.Updated += (sender, e) => UpdateBaseTypes();
-			this.text = SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.BaseTypes");
-			baseTypes = new SimpleModelCollection<ITypeDefinitionModel>();
-			UpdateBaseTypes();
+			this.definition.Updated += (sender, e) => UpdateDerivedTypes();
+			this.text = SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.DerivedTypes");
+			derivedTypes = new SimpleModelCollection<ITypeDefinitionModel>();
+			UpdateDerivedTypes();
 		}
 
 		protected override IModelCollection<object> ModelChildren {
 			get {
-				return baseTypes;
+				return derivedTypes;
 			}
 		}
 		
@@ -44,28 +45,34 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			return null;
 		}
 		
-		public bool HasBaseTypes()
+		public bool HasDerivedTypes()
 		{
-			return baseTypes.Count > 0;
+			return derivedTypes.Count > 0;
 		}
 		
-		void UpdateBaseTypes()
+		void UpdateDerivedTypes()
 		{
-			baseTypes.Clear();
+			derivedTypes.Clear();
 			ITypeDefinition currentTypeDef = definition.Resolve();
 			if (currentTypeDef != null) {
-				foreach (var baseType in currentTypeDef.DirectBaseTypes) {
-					ITypeDefinition baseTypeDef = baseType.GetDefinition();
-					if ((baseTypeDef != null) && (baseTypeDef.FullName != "System.Object")) {
-						ITypeDefinitionModel baseTypeModel = GetTypeDefinitionModel(currentTypeDef, baseTypeDef);
-						if (baseTypeModel != null)
-							baseTypes.Add(baseTypeModel);
-					}
+				foreach (var derivedType in FindReferenceService.FindDerivedTypes(currentTypeDef, true)) {
+					ITypeDefinitionModel derivedTypeModel = GetTypeDefinitionModel(currentTypeDef, derivedType);
+					if (derivedTypeModel != null)
+						derivedTypes.Add(derivedTypeModel);
 				}
+				
+//				foreach (var baseType in currentTypeDef.DirectBaseTypes) {
+//					ITypeDefinition baseTypeDef = baseType.GetDefinition();
+//					if ((baseTypeDef != null) && (baseTypeDef.FullName != "System.Object")) {
+//						ITypeDefinitionModel baseTypeModel = GetTypeDefinitionModel(currentTypeDef, baseTypeDef);
+//						if (baseTypeModel != null)
+//							derivedTypes.Add(baseTypeModel);
+//					}
+//				}
 			}
 		}
 		
-		ITypeDefinitionModel GetTypeDefinitionModel(ITypeDefinition mainTypeDefinition, ITypeDefinition baseTypeDefinition)
+		ITypeDefinitionModel GetTypeDefinitionModel(ITypeDefinition mainTypeDefinition, ITypeDefinition derivedTypeDefinition)
 		{
 			ITypeDefinitionModel resolveTypeDefModel = null;
 			var assemblyFileName = mainTypeDefinition.ParentAssembly.GetRuntimeAssemblyLocation();
@@ -82,8 +89,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					}
 				}
 				
-				var assemblyParserService = SD.GetService<IAssemblyParserService>();
 				if (assemblyModel == null) {
+					// Nothing in projects, load from assembly file
+					var assemblyParserService = SD.GetService<IAssemblyParserService>();
 					if (assemblyParserService != null) {
 						if (assemblyFileName != null) {
 							assemblyModel = assemblyParserService.GetAssemblyModel(assemblyFileName);
@@ -92,23 +100,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				}
 				
 				if (assemblyModel != null) {
-					// Nothing in projects, load from assembly file
-					resolveTypeDefModel = assemblyModel.TopLevelTypeDefinitions[baseTypeDefinition.FullTypeName];
+					// Look in found AssemblyModel
+					resolveTypeDefModel = assemblyModel.TopLevelTypeDefinitions[derivedTypeDefinition.FullTypeName];
 					if (resolveTypeDefModel != null) {
 						return resolveTypeDefModel;
-					}
-					
-					// Look at referenced assemblies
-					if ((assemblyModel.References != null) && (assemblyParserService != null)) {
-						foreach (var referencedAssemblyName in assemblyModel.References) {
-							DefaultAssemblySearcher searcher = new DefaultAssemblySearcher(assemblyModel.Location);
-							var resolvedFile = searcher.FindAssembly(referencedAssemblyName);
-							var referenceAssemblyModel = assemblyParserService.GetAssemblyModel(resolvedFile);
-							resolveTypeDefModel = referenceAssemblyModel.TopLevelTypeDefinitions[baseTypeDefinition.FullTypeName];
-							if (resolveTypeDefModel != null) {
-								return resolveTypeDefModel;
-							}
-						}
 					}
 				}
 			} catch (Exception) {

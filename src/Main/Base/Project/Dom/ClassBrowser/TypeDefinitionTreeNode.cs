@@ -59,6 +59,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		protected override void LoadChildren()
 		{
 			base.LoadChildren();
+			// Since following both methods set their entries to the top, "Base types" must come last to get them on top
+			UpdateDerivedTypesNode();
 			UpdateBaseTypesNode();
 		}
 		
@@ -68,6 +70,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			var baseTypesTreeNode = new BaseTypesTreeNode(definition);
 			if (baseTypesTreeNode.HasBaseTypes())
 				Children.Insert(0, baseTypesTreeNode);
+		}
+		
+		void UpdateDerivedTypesNode()
+		{
+			this.Children.RemoveAll(n => n is DerivedTypesTreeNode);
+			var derivedTypesTreeNode = new DerivedTypesTreeNode(definition);
+			if (derivedTypesTreeNode.HasDerivedTypes())
+				Children.Insert(0, derivedTypesTreeNode);
 		}
 		
 		public override void ActivateItem(System.Windows.RoutedEventArgs e)
