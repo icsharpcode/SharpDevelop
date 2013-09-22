@@ -23,7 +23,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (definition == null)
 				throw new ArgumentNullException("definition");
 			this.definition = definition;
-			this.definition.Updated += (sender, e) => UpdateBaseTypesNode();
+			this.definition.Updated += (sender, e) => {
+				UpdateBaseTypesNode();
+				UpdateDerivedTypesNode();
+			};
 		}
 		
 		protected override object GetModel()
@@ -56,9 +59,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
-		protected override void LoadChildren()
+		protected override bool IsSpecialNode()
 		{
-			base.LoadChildren();
+			return true;
+		}
+		
+		protected override void InsertSpecialNodes()
+		{
 			// Since following both methods set their entries to the top, "Base types" must come last to get them on top
 			UpdateDerivedTypesNode();
 			UpdateBaseTypesNode();
