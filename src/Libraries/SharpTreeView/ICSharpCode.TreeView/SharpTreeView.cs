@@ -152,10 +152,11 @@ namespace ICSharpCode.TreeView
 					var list = SelectedItems.Cast<SharpTreeNode>().Except(selectedOldItems).ToList();
 					SetSelectedItems(list);
 					if (SelectedItem == null && this.IsKeyboardFocusWithin) {
-						// if we removed all selected nodes, then move the focus to the node 
+						// if we removed all selected nodes, then move the focus to the node
 						// preceding the first of the old selected nodes
 						SelectedIndex = Math.Max(0, e.OldStartingIndex - 1);
-						FocusNode((SharpTreeNode)SelectedItem);
+						if (SelectedIndex >= 0)
+							FocusNode((SharpTreeNode)SelectedItem);
 					}
 				}
 			}
