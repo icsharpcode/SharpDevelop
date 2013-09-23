@@ -8,6 +8,7 @@
  */
 using System;
 using System.Linq;
+using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Interfaces;
 
@@ -29,6 +30,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.BuildExportList();
 			BuildDetail();
 			base.AddPage(CurrentPage);
+			var d = new DebugExporter(Pages);
+			d.Run();
 			var er = new ExpressionRunner(Pages);
 			er.Run();
 		}

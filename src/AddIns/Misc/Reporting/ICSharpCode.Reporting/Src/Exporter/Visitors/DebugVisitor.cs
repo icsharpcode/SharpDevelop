@@ -7,7 +7,6 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
@@ -18,12 +17,18 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 //	http://www.remondo.net/strategy-pattern-example-csharp/
 	
 	
-	public class DebugVisitor : AbstractVisitor
+	class DebugVisitor : AbstractVisitor
 	{
+		
+		
 		public override void Visit(ExportPage page)
 		{
 			Console.WriteLine("<Page> {0} - {1}  Items {2}",
 			                 page.Name,page.Location,page.BackColor);
+			foreach (var element in page.ExportedItems) {
+				var ac = element as IAcceptor;
+				ac.Accept(this);
+			}
 		}
 		
 		
@@ -33,22 +38,21 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
-		
 		public override void Visit(ExportContainer exportColumn)
 		{
 			Console.WriteLine();
-//			Console.WriteLine("<ExportContainer> {0} - {1}  Items {2}",
-//			                  exportColumn.Name,exportColumn.Location,exportColumn.BackColor);
-				Console.WriteLine("{0} - {1}  Items {2}",
+			Console.WriteLine("\t{0} - {1}  Items {2}",
 			                  exportColumn.Name,exportColumn.Location,exportColumn.BackColor);
+			foreach (var element in exportColumn.ExportedItems) {
+				var ac = element as IAcceptor;
+				ac.Accept(this);
+			}
 		}
+		
 		
 		public override void Visit(ExportText exportColumn)
 		{
-			Console.WriteLine("<ExportText> {0} - {1}", exportColumn.Text,exportColumn.Location);
+			Console.WriteLine("\t\t<ExportText> {0} - {1}", exportColumn.Text,exportColumn.Location);
 		}
-		
-		
 	}
-
 }

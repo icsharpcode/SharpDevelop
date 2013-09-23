@@ -27,13 +27,109 @@ namespace ICSharpCode.Reporting.Expressions
 		
 		public override void Run()
 		{
+			Console.WriteLine();
 			Console.WriteLine("Start ExpressionVisitor");
 			foreach (var page in Pages) {
-				InternalRun(page);
+				var acceptor = page as IAcceptor;
+				acceptor.Accept(visitor);
+//				RunInternal(page);
 			}
 			Console.WriteLine("Finish ExpressionVisitor");
+			Console.WriteLine();
 		}
 		
+//		"Visitor"
+//		http://irony.codeplex.com/discussions/213938
+//		
+//		http://irony.codeplex.com/discussions/35310
+		
+		/*
+		void RunInternal(IExportContainer container)
+		{
+//			Console.WriteLine();
+//			Console.WriteLine("{0}{1}",leading,container.Name);
+			foreach (var item in container.ExportedItems) {
+				var exportContainer = item as IExportContainer;
+				var acceptor = item as IAcceptor;
+				if (exportContainer != null) {
+					if (exportContainer.ExportedItems.Count > 0) {
+//						acceptor.Accept(visitor);
+						bRunInternal(exportContainer.ExportedItems);
+						acceptor.Accept(visitor);
+//						ShowDebug(leading = leading + "--",exportContainer);
+						
+					}
+				}
+//				acceptor.Accept(visitor);
+			}
+		}
+		*/
+		/*
+		
+		void bRunInternal(List<IExportColumn> list)
+		{
+//			Console.WriteLine();
+//			Console.WriteLine("{0}{1}",leading,container.Name);
+			foreach (var item in list) {
+				var exportContainer = item as IExportContainer;
+				var acceptor = item as IAcceptor;
+				if (exportContainer != null) {
+					if (exportContainer.ExportedItems.Count > 0) {
+						acceptor.Accept(visitor);
+						RunInternal(exportContainer);
+						
+//						ShowDebug(leading = leading + "--",exportContainer);
+						
+					}
+				}
+				acceptor.Accept(visitor);
+			}
+		}
+		*/
+		/*
+		void bRunInternal(IExportContainer container)
+		{
+//			Console.WriteLine();
+//			Console.WriteLine("{0}{1}",leading,container.Name);
+			foreach (var item in container.ExportedItems) {
+				var exportContainer = item as IExportContainer;
+				var acceptor = item as IAcceptor;
+				if (exportContainer != null) {
+					if (exportContainer.ExportedItems.Count > 0) {
+						acceptor.Accept(visitor);
+						RunInternal(exportContainer);
+						
+//						ShowDebug(leading = leading + "--",exportContainer);
+						
+					}
+				}
+				acceptor.Accept(visitor);
+			}
+		}
+		*/
+		
+		/*
+		//Items first, then container
+		void aRunInternal(IExportContainer container)
+		{
+//			Console.WriteLine();
+//			Console.WriteLine("{0}{1}",leading,container.Name);
+			foreach (var item in container.ExportedItems) {
+				var exportContainer = item as IExportContainer;
+				var acceptor = item as IAcceptor;
+				if (exportContainer != null) {
+					if (exportContainer.ExportedItems.Count > 0) {
+						RunInternal(exportContainer);
+						acceptor.Accept(visitor);
+//						ShowDebug(leading = leading + "--",exportContainer);
+						
+					}
+				}
+				acceptor.Accept(visitor);
+			}
+		}
+		*/
+		/*
 		void InternalRun(ExportPage page)
 		{
 			page.Accept(visitor);
@@ -43,5 +139,6 @@ namespace ICSharpCode.Reporting.Expressions
 				acceptor.Accept(visitor);
 			}
 		}
+		*/
 	}
 }

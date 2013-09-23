@@ -8,9 +8,7 @@
  */
 using System;
 using System.Collections.ObjectModel;
-
 using ICSharpCode.Reporting.Exporter.Visitors;
-using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter
@@ -18,7 +16,7 @@ namespace ICSharpCode.Reporting.Exporter
 	/// <summary>
 	/// Description of DebugExporter.
 	/// </summary>
-	public class DebugExporter:BaseExporter
+	class DebugExporter:BaseExporter
 	{
 		private DebugVisitor visitor;
 		
@@ -29,13 +27,22 @@ namespace ICSharpCode.Reporting.Exporter
 		
 		
 		public override void Run () {
-			Console.WriteLine(" DebugExporter with {0} Pages ",Pages.Count);
+			Console.WriteLine();
+			Console.WriteLine("Start DebugExporter with {0} Pages ",Pages.Count);
 			foreach (var page in Pages) {
-				ShowDebug("--",page);
+				IAcceptor ac = page as IAcceptor;
+				if (ac != null) {
+					visitor.Visit(page);
+				}
+//				RunInternal("--",page);
 				Console.WriteLine("-----------PageBreak---------");
 			}
+			Console.WriteLine("Finish DebugVisitor");
+			Console.WriteLine();
 		}
-		void ShowDebug(string header,IExportContainer container)
+		
+		/*
+		void RunInternal(string header,IExportContainer container)
 		{
 			var leading = header;
 			Console.WriteLine();
@@ -45,7 +52,7 @@ namespace ICSharpCode.Reporting.Exporter
 				var acceptor = item as IAcceptor;
 				if (exportContainer != null) {
 					if (exportContainer.ExportedItems.Count > 0) {
-						ShowDebug(leading = leading + "--",exportContainer);
+						RunInternal(leading = leading + "--",exportContainer);
 						acceptor.Accept(visitor);
 //						ShowDebug(leading = leading + "--",exportContainer);
 						leading = leading.Substring(0,leading.Length -2);
@@ -64,6 +71,6 @@ namespace ICSharpCode.Reporting.Exporter
 				leading = leading.Substring(0, leading.Length - 2);
 			}
 		}
-		
+		*/
 	}
 }

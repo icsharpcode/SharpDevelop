@@ -13,7 +13,6 @@ using System.Reflection;
 
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using NUnit.Framework;
 
