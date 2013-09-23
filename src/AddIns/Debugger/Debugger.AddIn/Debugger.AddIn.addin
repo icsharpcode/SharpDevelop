@@ -75,11 +75,11 @@
 			          label = "${res:MainWindow.Windows.Debug.DebugExecutable}"
 			          class = "Debugger.AddIn.DebugExecutableMenuCommand"/>
 		</Condition>
-		<MenuItem id="AddExpressionBreakpoint"
+<!--		<MenuItem id="AddExpressionBreakpoint"
 		          insertafter="Toggle Breakpoint"
 		          label = "${res:MainWindow.Windows.Debug.AddExpressionBreakpoint}"
 		          shortcut="Shift|F7"
-		          class = "Debugger.AddIn.AddExpressionBreakpointCommand"/>
+		          class = "Debugger.AddIn.AddExpressionBreakpointCommand"/>-->
 		<MenuItem id="AddWatchExpression"
 		          insertafter="AddExpressionBreakpoint"
 		          label = "${res:MainWindow.Windows.Debug.AddWatchExpression}"
