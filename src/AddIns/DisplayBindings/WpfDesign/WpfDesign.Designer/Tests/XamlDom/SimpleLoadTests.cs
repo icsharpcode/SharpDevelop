@@ -191,6 +191,24 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 		
 		[Test]
+		public void ContainerExplicitList()
+		{
+			TestLoading(@"
+<ExampleClassContainer
+  xmlns=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+   <ExampleClassContainer.OtherList>
+      <ExampleClassList>
+         <ExampleClass OtherProp=""a""> </ExampleClass>
+         <ExampleClass OtherProp=""b"" />
+         <ExampleClass OtherProp=""c"" />
+      </ExampleClassList>
+   </ExampleClassContainer.OtherList>
+</ExampleClassContainer>
+			");
+		}
+		
+		[Test]
 		public void ExampleServiceTest()
 		{
 			TestLoading(@"
