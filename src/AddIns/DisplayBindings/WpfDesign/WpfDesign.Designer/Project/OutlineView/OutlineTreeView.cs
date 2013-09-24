@@ -33,5 +33,12 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			foreach (var item in items)
 				_customOutlineNodes.Add(item.DataContext as OutlineNode);
 		}
+		
+		public override bool ShouldItemBeVisible(DragTreeViewItem dragTreeViewitem)
+		{
+			var node = dragTreeViewitem.DataContext as OutlineNode;
+			
+			return string.IsNullOrEmpty(Filter) || node.Name.ToLower().Contains(Filter.ToLower());
+		}
 	}
 }

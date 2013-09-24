@@ -20,10 +20,12 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
 	public class DragTreeViewItem : TreeViewItem
 	{
+		ContentPresenter part_header;
+		
 		static DragTreeViewItem()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(DragTreeViewItem),
-				new FrameworkPropertyMetadata(typeof(DragTreeViewItem)));
+			                                         new FrameworkPropertyMetadata(typeof(DragTreeViewItem)));
 		}
 
 		public DragTreeViewItem()
@@ -37,15 +39,34 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			ParentTree = this.GetVisualAncestors().OfType<DragTreeView>().FirstOrDefault();
 			if (ParentTree != null) {
 				ParentTree.ItemAttached(this);
+				ParentTree.FilterChanged += ParentTree_FilterChanged;
 			}
+		}
+
+		void ParentTree_FilterChanged(string obj)
+		{
+			var v = ParentTree.ShouldItemBeVisible(this);
+			if (v)
+				part_header.Visibility = Visibility.Visible;
+			else
+				part_header.Visibility = Visibility.Collapsed;
 		}
 
 		void DragTreeViewItem_Unloaded(object sender, RoutedEventArgs e)
 		{
 			if (ParentTree != null) {
 				ParentTree.ItemDetached(this);
+				ParentTree.FilterChanged -= ParentTree_FilterChanged;
 			}
 			ParentTree = null;
+		}
+		
+		
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+			
+			part_header = GetTemplateChild("PART_Header") as ContentPresenter;
 		}
 
 		public new static readonly DependencyProperty IsSelectedProperty =

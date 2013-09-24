@@ -2,18 +2,20 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.ComponentModel;
-using ICSharpCode.WpfDesign;
-using System.Collections.ObjectModel;
-using System.Collections;
-using ICSharpCode.WpfDesign.Designer;
-using ICSharpCode.WpfDesign.XamlDom;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
+using ICSharpCode.WpfDesign;
+using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.Designer.Xaml;
+using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
@@ -50,6 +52,11 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 				((FrameworkElement) this.DesignItem.Component).Visibility = Visibility.Hidden;
 			}
 
+			var locked = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
+			if (locked != null && (bool) locked == true) {
+				this._isDesignTimeLocked = true;				
+			}
+			
 			//TODO
 			DesignItem.NameChanged += new EventHandler(DesignItem_NameChanged);
 			DesignItem.PropertyChanged += new PropertyChangedEventHandler(DesignItem_PropertyChanged);
@@ -87,9 +94,8 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 					                                       value ? SelectionTypes.Add : SelectionTypes.Remove);
 					RaisePropertyChanged("IsSelected");
 				}
-			}
+			}			
 		}
-		
 		
 		bool _isDesignTimeVisible = true;
 
@@ -112,6 +118,26 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			}
 		}
 
+		bool _isDesignTimeLocked = false;
+		
+		public bool IsDesignTimeLocked
+		{
+			get { 
+				return _isDesignTimeLocked; 
+			}
+			set {
+				_isDesignTimeLocked = value;
+				((XamlDesignItem)DesignItem).IsDesignTimeLocked = _isDesignTimeLocked;
+				
+				RaisePropertyChanged("IsDesignTimeLocked");
+
+//				if (value)
+//					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).SetValue(true);
+//				else
+//					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).Reset();
+			}
+		}
+		
 		ObservableCollection<OutlineNode> children = new ObservableCollection<OutlineNode>();
 
 		public ObservableCollection<OutlineNode> Children  {
