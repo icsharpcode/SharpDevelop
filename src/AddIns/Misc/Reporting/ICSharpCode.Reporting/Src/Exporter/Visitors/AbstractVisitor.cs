@@ -19,6 +19,5 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		public abstract void Visit(ExportPage page);
 		public abstract void Visit(ExportContainer exportColumn);
 		public abstract void Visit(ExportText exportColumn);
-		public abstract void Visit(ExportColumn exportColumn);
 	}
 }

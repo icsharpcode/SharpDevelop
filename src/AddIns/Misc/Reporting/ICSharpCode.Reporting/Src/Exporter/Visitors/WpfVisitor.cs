@@ -18,7 +18,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	/// <summary>
 	/// Description of WpfVisitor.
 	/// </summary>
-	internal class WpfVisitor: AbstractVisitor
+	class WpfVisitor: AbstractVisitor
 	{
 		private readonly FixedDocumentCreator documentCreator;
 		
@@ -50,12 +50,6 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
-		public override void Visit(ExportColumn exportColumn)
-		{
-//			Console.WriteLine("Wpf-Visit ExportColumn {0} - {1} - {2}", exportColumn.Name,exportColumn.Location,exportColumn.Size,);
-		}
-		
 		public UIElement UIElement {get; private set;}
-		
 	}
 }

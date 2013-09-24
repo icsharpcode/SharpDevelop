@@ -23,43 +23,37 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			evaluator = new ExpressionEvaluator(grammar);
 		}
 		
-		public override void Visit(ICSharpCode.Reporting.PageBuilder.ExportColumns.ExportColumn exportColumn)
-		{
-			Console.WriteLine("Visit Page ");
-			
-		}
 		
 		public override void Visit(ICSharpCode.Reporting.PageBuilder.ExportColumns.ExportText exportColumn)
 		{
-			Console.WriteLine("\t\t<ExportText> {0} - {1}", exportColumn.Text,exportColumn.Location);
 			var result = evaluator.Evaluate("2 + 3");
-			Console.WriteLine("ExpressionVisitor <{0}> - {1}",exportColumn.Name,result);
+			Console.WriteLine("\t\tExpressionVisitor <{0}> - {1}",exportColumn.Name,result);
 			
 		}
 		
 		public override void Visit(ICSharpCode.Reporting.PageBuilder.ExportColumns.ExportContainer exportColumn)
 		{
-			Console.WriteLine("\t{0} - {1}  Items {2}",
-			                  exportColumn.Name,exportColumn.Location,exportColumn.BackColor);
+			var result = evaluator.Evaluate("2 * 10");
+			Console.WriteLine("\tExpressionVisitor <{0}> - {1}",exportColumn.Name,result);
+//			Console.WriteLine("\t{0} - {1}  Items {2}",
+//			                  exportColumn.Name,exportColumn.Location,exportColumn.BackColor);
 			foreach (var element in exportColumn.ExportedItems) {
 				var ac = element as IAcceptor;
 				ac.Accept(this);
 			}
-			var result = evaluator.Evaluate("2 * 10");
-			Console.WriteLine("ExpressionVisitor <{0}> - {1}",exportColumn.Name,result);
-			
-			
 		}
 		
 		public override void Visit(ICSharpCode.Reporting.PageBuilder.ExportColumns.ExportPage page)
 		{
+			var result = evaluator.Evaluate("5 * 10");
+			Console.WriteLine("ExpressionVisitor page <{0}> {1}",page.PageInfo.PageNumber,result);
 			foreach (var element in page.ExportedItems) {
 				var ac = element as IAcceptor;
 				ac.Accept(this);
 			}
-			var result = evaluator.Evaluate("5 * 10");
+			
 //			Console.WriteLine("ExpressionVisitor <{0} - {1}>",exportColumn.Name,result);
-			Console.WriteLine("ExpressionVisitor page <{0}> {1}",page.PageInfo.PageNumber,result);
+			
 		}
 	}
 }

@@ -35,12 +35,12 @@ namespace ICSharpCode.Reporting.Exporter
 
 		public override void Run () {
 			Document = new FixedDocument();
-			
 			foreach (var page in Pages) {
 				InternalRun(page);
 				AddPageToDocument(Document,fixedPage);
 			}
 		}
+		
 		
 		void InternalRun(ExportPage page)
 		{

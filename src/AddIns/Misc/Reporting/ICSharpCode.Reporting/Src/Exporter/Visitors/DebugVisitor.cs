@@ -19,22 +19,15 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	
 	class DebugVisitor : AbstractVisitor
 	{
-		
-		
 		public override void Visit(ExportPage page)
 		{
+			Console.WriteLine();
 			Console.WriteLine("<Page> {0} - {1}  Items {2}",
 			                 page.Name,page.Location,page.BackColor);
 			foreach (var element in page.ExportedItems) {
-				var ac = element as IAcceptor;
-				ac.Accept(this);
+				var acceptor = element as IAcceptor;
+				acceptor.Accept(this);
 			}
-		}
-		
-		
-		public override void Visit(ExportColumn exportColumn)
-		{
-			Console.WriteLine("Visit ExportColumn {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
 		}
 		
 		
@@ -44,8 +37,8 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			Console.WriteLine("\t{0} - {1}  Items {2}",
 			                  exportColumn.Name,exportColumn.Location,exportColumn.BackColor);
 			foreach (var element in exportColumn.ExportedItems) {
-				var ac = element as IAcceptor;
-				ac.Accept(this);
+				var acceptor = element as IAcceptor;
+				acceptor.Accept(this);
 			}
 		}
 		
