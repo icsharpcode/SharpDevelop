@@ -29,15 +29,14 @@ namespace ICSharpCode.Reporting.ExportRenderer
 	/// </summary>
 	class FixedDocumentCreator
 	{
-		BrushConverter brushConverter ;
+		private readonly BrushConverter brushConverter ;
 		
 		public FixedDocumentCreator()
 		{
 			brushConverter = new BrushConverter();
 		}
 		
-		
-		public static UIElement CreateFixedPage(ExportPage exportPage) {
+		public static FixedPage CreateFixedPage(ExportPage exportPage) {
 			var fixedPage = new FixedPage();
 			fixedPage.Width = exportPage.Size.ToWpf().Width;
 			fixedPage.Height = exportPage.Size.ToWpf().Height;
@@ -46,25 +45,19 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			fixedPage.Background = new SolidColorBrush(System.Drawing.Color.Blue.ToWpf());
 			return fixedPage;
 		}
-			
 		
-		public  UIElement CreateContainer(ExportContainer container)
-		{
+
+		public  Canvas CreateContainer(ExportContainer container)	{
 			var canvas = CreateCanvas(container);
 			var size = container.DesiredSize.ToWpf();
 			canvas.Measure(size);
-			
 			canvas.Arrange(new Rect(new Point(),size ));
-
 			canvas.UpdateLayout();
-
 			return canvas;
-			
 		}
 		
 		
-		public TextBlock CreateTextBlock(ExportText exportText)
-		{
+		public TextBlock CreateTextBlock(ExportText exportText){
 			var textBlock = new TextBlock();
 			textBlock.Foreground = ConvertBrush(exportText.ForeColor);
 //			textBlock.Background = ConvertBrush(exportText.BackColor);
@@ -96,8 +89,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		static Size MeasureTextInWpf(ExportText exportText)
-		{
+		static Size MeasureTextInWpf(ExportText exportText){
 			if (exportText.CanGrow) {
 				
 			
@@ -126,8 +118,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		Canvas CreateCanvas(ExportContainer container)
-		{
+		Canvas CreateCanvas(ExportContainer container){
 			var canvas = new Canvas();
 			SetPositionAndSize(canvas,container);
 
@@ -136,6 +127,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			return canvas;
 		}
 		
+		
 		static void SetPositionAndSize(FrameworkElement element,ExportColumn column) {
 			if (column == null)
 				throw new ArgumentNullException("column");
@@ -143,8 +135,8 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			SetDimension(element,column);	
 		}
 		
-		static void SetDimension (FrameworkElement element,IExportColumn exportColumn)
-		{
+		
+		static void SetDimension (FrameworkElement element,IExportColumn exportColumn){
 			element.Width = exportColumn.DesiredSize.Width;
 			element.Height = exportColumn.DesiredSize.Height;
 		}
@@ -156,13 +148,12 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		void SetFont(TextBlock textBlock,IExportText exportText)
-		{
+		void SetFont(TextBlock textBlock,IExportText exportText){
 			textBlock.FontFamily = new FontFamily(exportText.Font.FontFamily.Name);
 
-//http://www.codeproject.com/Articles/441009/Drawing-Formatted-Text-in-a-Windows-Forms-Applicat
+			//http://www.codeproject.com/Articles/441009/Drawing-Formatted-Text-in-a-Windows-Forms-Applicat
 			
-textBlock.FontSize = exportText.Font.Size * 96/72;
+			textBlock.FontSize = exportText.Font.Size * 96/72;
 
 			if (exportText.Font.Bold) {
 				textBlock.FontWeight = FontWeights.Bold;
@@ -180,8 +171,7 @@ textBlock.FontSize = exportText.Font.Size * 96/72;
 		}
 		
 		
-		void CreateStrikeout (TextBlock textBlock,IExportText exportColumn )
-		{
+		void CreateStrikeout (TextBlock textBlock,IExportText exportColumn ){
 			if (textBlock == null)
 				throw new ArgumentNullException("textBlock");
 			if (exportColumn == null)
@@ -196,8 +186,7 @@ textBlock.FontSize = exportText.Font.Size * 96/72;
 		}
 		
 		
-		void CreateUnderline(TextBlock textBlock,IExportText exportColumn)
-		{
+		void CreateUnderline(TextBlock textBlock,IExportText exportColumn){
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
 			if (textBlock == null)
@@ -210,8 +199,7 @@ textBlock.FontSize = exportText.Font.Size * 96/72;
 		}
 		
 		
-		Pen CreateWpfPen(IReportObject exportColumn)
-		{
+		Pen CreateWpfPen(IReportObject exportColumn){
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
 			var myPen = new Pen();
@@ -221,8 +209,7 @@ textBlock.FontSize = exportText.Font.Size * 96/72;
 		}
 		
 		
-		Brush ConvertBrush(System.Drawing.Color color)
-		{
+		Brush ConvertBrush(System.Drawing.Color color){
 			if (brushConverter.IsValid(color.Name)){
 				return brushConverter.ConvertFromString(color.Name) as SolidColorBrush;
 			} else{

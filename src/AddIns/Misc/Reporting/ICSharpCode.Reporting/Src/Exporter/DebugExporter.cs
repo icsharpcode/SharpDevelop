@@ -34,7 +34,6 @@ namespace ICSharpCode.Reporting.Exporter
 				if (ac != null) {
 					visitor.Visit(page);
 				}
-//				RunInternal("--",page);
 				Console.WriteLine("-----------PageBreak---------");
 			}
 			Console.WriteLine("Finish DebugVisitor");

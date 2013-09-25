@@ -23,15 +23,18 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			evaluator = new ExpressionEvaluator(grammar);
 		}
 		
-		
-		public override void Visit(ICSharpCode.Reporting.PageBuilder.ExportColumns.ExportText exportColumn)
+		public override void Visit(ExportPage page)
 		{
-			var result = evaluator.Evaluate("2 + 3");
-			Console.WriteLine("\t\tExpressionVisitor <{0}> - {1}",exportColumn.Name,result);
-			
+			var result = evaluator.Evaluate("5 * 10");
+			Console.WriteLine("ExpressionVisitor page <{0}> {1}",page.PageInfo.PageNumber,result);
+			foreach (var element in page.ExportedItems) {
+				var ac = element as IAcceptor;
+				ac.Accept(this);
+			}
 		}
+	
 		
-		public override void Visit(ICSharpCode.Reporting.PageBuilder.ExportColumns.ExportContainer exportColumn)
+		public override void Visit(ExportContainer exportColumn)
 		{
 			var result = evaluator.Evaluate("2 * 10");
 			Console.WriteLine("\tExpressionVisitor <{0}> - {1}",exportColumn.Name,result);
@@ -43,17 +46,11 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			}
 		}
 		
-		public override void Visit(ICSharpCode.Reporting.PageBuilder.ExportColumns.ExportPage page)
+		
+		public override void Visit(ExportText exportColumn)
 		{
-			var result = evaluator.Evaluate("5 * 10");
-			Console.WriteLine("ExpressionVisitor page <{0}> {1}",page.PageInfo.PageNumber,result);
-			foreach (var element in page.ExportedItems) {
-				var ac = element as IAcceptor;
-				ac.Accept(this);
-			}
-			
-//			Console.WriteLine("ExpressionVisitor <{0} - {1}>",exportColumn.Name,result);
-			
+			var result = evaluator.Evaluate("2 + 3");
+			Console.WriteLine("\t\tExpressionVisitor <{0}> - {1}",exportColumn.Name,result);
 		}
 	}
 }

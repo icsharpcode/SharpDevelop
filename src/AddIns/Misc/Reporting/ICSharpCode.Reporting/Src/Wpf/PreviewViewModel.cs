@@ -35,6 +35,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 			
 			Document = CreateFixedDocument(reportSettings);
 			
+//			var wpfExporter = new old_WpfExporter(pages);
 			var wpfExporter = new WpfExporter(pages);
 			wpfExporter.Run();
 			this.document = wpfExporter.Document;
