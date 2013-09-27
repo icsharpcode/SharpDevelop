@@ -72,7 +72,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 				ev(ctl.Filter);
 		}
 		
-		public event Action<string> FilterChanged;		
+		public event Action<string> FilterChanged;	
 		
 		public virtual bool ShouldItemBeVisible(DragTreeViewItem dragTreeViewitem)
 		{
@@ -283,7 +283,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			OnSelectionChanged();
 		}
 
-		void SelectOnly(DragTreeViewItem item)
+		protected virtual void SelectOnly(DragTreeViewItem item)
 		{
 			ClearSelection();
 			Select(item);
