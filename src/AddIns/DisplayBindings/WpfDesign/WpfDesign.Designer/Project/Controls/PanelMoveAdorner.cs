@@ -47,10 +47,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		{
 			base.OnApplyTemplate();
 
+			var bnd = new Binding("IsVisible") {Source = item.Component};
+			bnd.Converter = CollapsedWhenFalse.Instance;
+			BindingOperations.SetBinding(this, UIElement.VisibilityProperty, bnd);
+
 			var surface = this.TryFindParent<DesignSurface>();
 			if (surface != null && surface.ZoomControl != null)
 			{
-				var bnd = new Binding("CurrentZoom") {Source = surface.ZoomControl};
+				bnd = new Binding("CurrentZoom") {Source = surface.ZoomControl};
 				bnd.Converter = InvertedZoomConverter.Instance;
 
 				BindingOperations.SetBinding(scaleTransform, ScaleTransform.ScaleXProperty, bnd);
