@@ -49,11 +49,18 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		}
 
 		public new static readonly DependencyProperty IsSelectedProperty =
-			Selector.IsSelectedProperty.AddOwner(typeof(DragTreeViewItem));
+			Selector.IsSelectedProperty.AddOwner(typeof(DragTreeViewItem), new FrameworkPropertyMetadata(OnIsSelectedChanged));
 
 		public new bool IsSelected {
 			get { return (bool)GetValue(IsSelectedProperty); }
 			set { SetValue(IsSelectedProperty, value); }
+		}
+		
+		public static void OnIsSelectedChanged(DependencyObject s, DependencyPropertyChangedEventArgs e)
+		{
+			var el = s as FrameworkElement;
+			if (el != null)
+				el.BringIntoView();
 		}
 
 		public static readonly DependencyProperty IsDragHoverProperty =
