@@ -10,7 +10,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// <summary>
 	/// Static methods to help with <see cref="System.Windows.Markup.INameScope"/> operations on Xaml elements.
 	/// </summary>
-	internal static class NameScopeHelper
+	public static class NameScopeHelper
 	{
 		/// <summary>
 		/// Finds the XAML namescope for the specified object and uses it to unregister the old name and then register the new name.
@@ -18,16 +18,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <param name="namedObject">The object where the name was changed.</param>
 		/// <param name="oldName">The old name.</param>
 		/// <param name="newName">The new name.</param>
-		public static void NameChanged(XamlObject namedObject, string oldName, string newName)
+		internal static void NameChanged(XamlObject namedObject, string oldName, string newName)
 		{
 			var obj = namedObject;
 			while (obj != null) {
-				var nameScope = obj.Instance as INameScope;
-				if (nameScope == null) {
-					var depObj = obj.Instance as DependencyObject;
-					if (depObj != null)
-						nameScope = NameScope.GetNameScope(depObj);
-				}
+				var nameScope = GetNameScopeFromObject(obj.Instance);
 				if (nameScope != null) {
 					if (oldName != null) {
 						try {
@@ -51,6 +46,34 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 				obj = obj.ParentObject;
 			}
+		}
+		
+		/// <summary>
+		/// Gets the XAML namescope for the specified object.
+		/// </summary>
+		/// <param name="obj">The object to get the XAML namescope for.</param>
+		/// <returns>A XAML namescope, as an <see cref="INameScope"/> instance.</returns>
+		public static INameScope GetNameScopeFromObject(object obj)
+		{
+			var nameScope = obj as INameScope;
+			if (nameScope == null) {
+				var depObj = obj as DependencyObject;
+				if (depObj != null)
+					nameScope = NameScope.GetNameScope(depObj);
+			}
+			
+			return nameScope;
+		}
+		
+		/// <summary>
+		/// Clears the <see cref="NameScope.NameScopeProperty"/> if the object is a <see cref="DependencyObject"/>.
+		/// </summary>
+		/// <param name="obj">The object to clear the <see cref="NameScope.NameScopeProperty"/> on.</param>
+		public static void ClearNameScopeProperty(object obj)
+		{
+			var depObj = obj as DependencyObject;
+			if (depObj != null)
+				depObj.ClearValue(NameScope.NameScopeProperty);
 		}
 	}
 }
