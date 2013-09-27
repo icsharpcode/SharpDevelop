@@ -2,17 +2,19 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Text;
-using System.IO;
-using System.Xml;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using NUnit.Framework;
+using System.Windows.Media;
+using System.Xml;
+
 using ICSharpCode.WpfDesign.Designer;
-using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.Designer.Services;
+using ICSharpCode.WpfDesign.Designer.Xaml;
+using NUnit.Framework;
 
 namespace ICSharpCode.WpfDesign.Tests.Designer
 {
@@ -367,6 +369,34 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		public void AddBindingWithStaticResourceWhereResourceOnSameElementAlt()
 		{
 			AddBindingWithStaticResourceWhereResourceOnSameElement(true);
+		}
+		
+		[Test]
+		public void AddBrushAsResource()
+		{
+			DesignItem checkBox = CreateCanvasContext("<CheckBox/>");
+			DesignItem canvas = checkBox.Parent;
+			
+			DesignItemProperty canvasResources = canvas.Properties.GetProperty("Resources");
+			
+			DesignItem brush = canvas.Services.Component.RegisterComponentForDesigner(new SolidColorBrush());
+			brush.Key = "testBrush";
+			brush.Properties[SolidColorBrush.ColorProperty].SetValue(Colors.Fuchsia);
+			
+			Assert.IsTrue(canvasResources.IsCollection);
+			canvasResources.CollectionElements.Add(brush);
+			
+			checkBox.Properties[CheckBox.ForegroundProperty].SetValue(new StaticResourceExtension());
+			DesignItemProperty prop = checkBox.Properties[CheckBox.ForegroundProperty];
+			prop.Value.Properties["ResourceKey"].SetValue("testBrush");
+			
+			string expectedXaml = "<Canvas.Resources>\n" +
+								  "  <SolidColorBrush x:Key=\"testBrush\" Color=\"#FFFF00FF\" />\n" +
+								  "</Canvas.Resources>\n" +
+								  "<CheckBox Foreground=\"{StaticResource ResourceKey=testBrush}\" />";
+			
+			AssertCanvasDesignerOutput(expectedXaml, checkBox.Context);
+			AssertLog("");
 		}
 	}
 	
