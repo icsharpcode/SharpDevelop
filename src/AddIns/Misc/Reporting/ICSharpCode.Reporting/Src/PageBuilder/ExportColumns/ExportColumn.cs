@@ -42,10 +42,8 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 			
 		public bool CanGrow {get;set;}
 		
-		
 		public Rectangle DisplayRectangle {
 			get {
-//				return new Rectangle(Location,Size);
 				return new Rectangle(Location,DesiredSize);
 			}
 		}

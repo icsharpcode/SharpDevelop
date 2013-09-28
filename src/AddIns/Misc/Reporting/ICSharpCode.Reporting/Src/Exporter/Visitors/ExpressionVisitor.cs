@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.ObjectModel;
+using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using Irony.Interpreter.Evaluator;
 
@@ -19,6 +20,11 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		public ExpressionVisitor(Collection<ExportPage> pages)
 		{
 			this.pages = pages;
+			grammar = new ExpressionEvaluatorGrammar();
+			evaluator = new ExpressionEvaluator(grammar);
+		}
+		
+		internal ExpressionVisitor() {
 			grammar = new ExpressionEvaluatorGrammar();
 			evaluator = new ExpressionEvaluator(grammar);
 		}
@@ -49,8 +55,16 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportText exportColumn)
 		{
-			var result = evaluator.Evaluate("2 + 3");
-			Console.WriteLine("\t\tExpressionVisitor <{0}> - {1}",exportColumn.Name,result);
+			if (exportColumn.Text.StartsWith("=")) {
+				try {
+					var str = ExpressionHelper.ExtractExpressionPart(exportColumn.Text);
+				var result = evaluator.Evaluate(str);
+				exportColumn.Text = result.ToString();
+				} catch (Exception) {
+					
+					throw;
+				}
+			}
 		}
 	}
 }

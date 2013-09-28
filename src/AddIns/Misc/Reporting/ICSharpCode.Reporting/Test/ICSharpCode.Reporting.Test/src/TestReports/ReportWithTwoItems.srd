@@ -118,7 +118,7 @@
                     <CanShrink>False</CanShrink>
                     <DataType>System.String</DataType>
                     <RTL>No</RTL>
-                    <Text>=Globals!PageNumber</Text>
+                    <Text>Globals!PageNumber</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>Black</ForeColor>

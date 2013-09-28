@@ -107,11 +107,13 @@
     <Compile Include="Src\Exporter\Visitors\DebugVisitor.cs" />
     <Compile Include="Src\Exporter\Visitors\WpfVisitor.cs" />
     <Compile Include="Src\ExportRenderer\FixedDocumentCreator.cs" />
+    <Compile Include="Src\Expressions\ExpressionHelper.cs" />
     <Compile Include="Src\Expressions\ExpressionRunner.cs" />
     <Compile Include="Src\Factories\ExportColumnFactory.cs" />
     <Compile Include="Src\Factories\ReportCreatorFactory.cs" />
     <Compile Include="Src\Globals\CreateGraphics.cs" />
     <Compile Include="Src\Globals\MeasurementService.cs" />
+    <Compile Include="Src\Globals\StringHelper.cs" />
     <Compile Include="Src\Interfaces\Data\IDataViewHandling.cs" />
     <Compile Include="Src\Interfaces\Export\IExportColumn.cs" />
     <Compile Include="Src\Interfaces\Export\IExportContainer.cs" />

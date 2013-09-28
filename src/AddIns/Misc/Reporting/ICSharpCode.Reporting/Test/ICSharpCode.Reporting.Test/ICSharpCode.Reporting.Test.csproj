@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="src\DataSource\ContributorsList.cs" />
     <Compile Include="src\DataSource\CollectionHandlingFixture.cs" />
+    <Compile Include="src\Expressions\IntegrationTests.cs" />
     <Compile Include="src\Expressions\IronyGeneral.cs" />
     <Compile Include="src\MeasureArrange\ContainerArrangeStrategyFixture.cs" />
     <Compile Include="src\Model\ReportModelFixture.cs" />
