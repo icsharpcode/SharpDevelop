@@ -27,13 +27,12 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			var writer = new StringWriter();
 			var target = new TextWriterTokenWriter(writer) { IndentationString = "\t" };
-			var output = new DebugInfoTokenWriterDecorator(target, target);
+			var output = new DebugInfoTokenWriterDecorator(TokenWriter.WrapInWriterThatSetsLocationsInAST(target));
 			builder.RunTransformations();
 			var syntaxTree = builder.SyntaxTree;
 			
 			syntaxTree.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
-			var outputFormatter = TokenWriter.WrapInWriterThatSetsLocationsInAST(output);
-			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, FormattingOptionsFactory.CreateSharpDevelop()));
+			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(output, FormattingOptionsFactory.CreateSharpDevelop()));
 			ILSpyUnresolvedFile file = new ILSpyUnresolvedFile(name, syntaxTree.Errors);
 			builder.SyntaxTree.FileName = name.ToFileName();
 			var ts = syntaxTree.ToTypeSystem();
