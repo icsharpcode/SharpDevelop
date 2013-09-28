@@ -83,8 +83,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			DebuggerModuleModel model = new DebuggerModuleModel(e.Module);
 			moduleModels.Add(model);
 			Assemblies.Add(model.AssemblyModel);
-			foreach (var module in moduleModels)
-				module.UpdateReferences();
 		}
 		
 		void ModuleUnloaded(object sender, ModuleEventArgs e)
@@ -93,8 +91,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (deletedModel != null) {
 				moduleModels.Remove(deletedModel);
 				Assemblies.Remove(deletedModel.AssemblyModel);
-				foreach (var module in moduleModels)
-					module.UpdateReferences();
 			}
 		}
 
@@ -187,14 +183,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public void UpdateReferences()
-		{
-			var model = assemblyModel as IUpdateableAssemblyModel;
-			if (model == null) return;
-			// this could be totally wrong ...
-			model.References = module.AppDomain.Compilation.Assemblies.Where(a => a.FullAssemblyName != module.UnresolvedAssembly.FullAssemblyName).Select(a => new DomAssemblyName(a.FullAssemblyName)).ToList();
-		}
-		
 		static IAssemblyModel CreateAssemblyModel(Module module)
 		{
 			// references??
@@ -203,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			var types = module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList();
 			model.AssemblyName = module.UnresolvedAssembly.AssemblyName;
 			model.Update(EmptyList<IUnresolvedTypeDefinition>.Instance, types);
-			
+			model.References = module.GetReferences().Select(r => new DomAssemblyName(r)).ToArray();
 			return model;
 		}
 	}

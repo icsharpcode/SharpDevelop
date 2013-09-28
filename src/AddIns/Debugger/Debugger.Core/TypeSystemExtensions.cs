@@ -176,6 +176,14 @@ namespace Debugger
 			return GetInfo(assembly).Module;
 		}
 		
+		public static IEnumerable<string> GetReferences(this Module module)
+		{
+			ModuleMetadataInfo info;
+			if (!weakTable.TryGetValue(module.UnresolvedAssembly, out info))
+				throw new ArgumentException("The assembly was not from the debugger type system");
+			return info.CecilModule.AssemblyReferences.Select(r => r.FullName);
+		}
+		
 		public static uint GetMetadataToken(this ITypeDefinition typeDefinition)
 		{
 			var info = GetInfo(typeDefinition.ParentAssembly);
