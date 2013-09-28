@@ -401,7 +401,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else if (versionNumber == SolutionVersionVS2010) {
 					sw.WriteLine("# Visual Studio 2010");
 				} else if (versionNumber == SolutionVersionVS11) {
-					sw.WriteLine("# Visual Studio 11");
+					sw.WriteLine("# Visual Studio 2012");
 				}
 				sw.WriteLine("# SharpDevelop " + RevisionClass.Major + "." + RevisionClass.Minor);
 				sw.Write(projectSection.ToString());

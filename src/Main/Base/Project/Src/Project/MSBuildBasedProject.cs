@@ -16,6 +16,8 @@ using System.Xml.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project.Converter;
+using ICSharpCode.SharpDevelop.Project.PortableLibrary;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Exceptions;
@@ -110,7 +112,13 @@ namespace ICSharpCode.SharpDevelop.Project
 					} else if (projectFile.ToolsVersion == "3.0" || projectFile.ToolsVersion == "3.5") {
 						return Solution.SolutionVersionVS2008;
 					} else {
-						return Solution.SolutionVersionVS2010;
+						var upgradableProject = this as IUpgradableProject;
+						if (upgradableProject != null
+							&& (upgradableProject.CurrentTargetFramework == TargetFramework.Net40
+								|| upgradableProject.CurrentTargetFramework == TargetFramework.Net40Client
+								|| upgradableProject.CurrentTargetFramework is PortableTargetFramework))
+							return Solution.SolutionVersionVS2010;
+						return Solution.SolutionVersionVS11;
 					}
 				}
 			}
