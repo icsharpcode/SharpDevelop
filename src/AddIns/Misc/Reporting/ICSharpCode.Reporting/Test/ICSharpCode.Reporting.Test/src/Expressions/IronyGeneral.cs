@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using ICSharpCode.Reporting.Expressions.Irony;
 using Irony.Interpreter.Evaluator;
 using NUnit.Framework;
 
@@ -63,7 +64,7 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		
 		[SetUp]
 		public void Initialize() {
-			grammar = new ExpressionEvaluatorGrammar();
+			grammar = new ReportingLanguageGrammer();
 			evaluator = new ExpressionEvaluator(grammar);
 		}
 	}
