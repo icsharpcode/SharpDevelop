@@ -49,6 +49,7 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		
 		#endregion
 		
+		
 		#region System.Math
 		
 		[Test]

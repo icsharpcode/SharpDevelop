@@ -17,31 +17,29 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		[Test]
 		public void ExpressionMustStartWithEqualChar()
 		{
-			var result = collection[0];
+			collection[0].Text = "myText";
+			var result = collection[0].Text;
 			expressionVisitor.Visit(collection[0]);
-			Assert.That(result.Text,Is.EqualTo(collection[0].Text));
+			Assert.That(result,Is.EqualTo(collection[0].Text));
 		}
 		
 		
 		[Test]
 		public void SimpleMath() {
-			expressionVisitor.Visit(collection[1]);
-			
-			Assert.That(collection[1].Text,Is.EqualTo("8"));		
-			var res = Convert.ToInt32(collection[1].Text);
+			collection[0].Text = "=3 + 6";
+			expressionVisitor.Visit(collection[0]);
+			Assert.That(collection[0].Text,Is.EqualTo("9"));		
+			var res = Convert.ToInt32(collection[0].Text);
 			Assert.That(res is int);
 		}
 		
 		
 		[Test]
 		public void SimpleStringHandling () {
-		var script = "='Sharpdevelop' + ' is great'";		
-			collection.Add(new ExportText()
-			               {
-			               	Text = script
-			               });
-			expressionVisitor.Visit(collection[2]);
-			Assert.That(collection[2].Text,Is.EqualTo("Sharpdevelop is great"));	
+			var script = "='Sharpdevelop' + ' is great'";
+			collection[0].Text = script;
+			expressionVisitor.Visit(collection[0]);
+			Assert.That(collection[0].Text,Is.EqualTo("Sharpdevelop is great"));
 		}
 		
 		#region System.Environment
@@ -67,10 +65,10 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		public void CanRunSystemMath () {
 			//Using methods imported from System.Math class
 			var script = @"=abs(-1.0) + Log10(100.0) + sqrt(9) + floor(4.5) + sin(PI/2)";
-			collection[1].Text = script;
-			expressionVisitor.Visit(collection[1]);
-			var res = Convert.ToDouble(collection[1].Text);
-			Assert.That(collection[1].Text,Is.EqualTo("11"));		
+			collection[0].Text = script;
+			expressionVisitor.Visit(collection[0]);
+			var res = Convert.ToDouble(collection[0].Text);
+			Assert.That(collection[0].Text,Is.EqualTo("11"));		
 		}
 		
 		#endregion
@@ -82,12 +80,6 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			       {
 			       	 Text = "myExporttextColumn"
 			       });
-			collection.Add(new ExportText()
-			       {
-			       	Text ="= 3 + 5"
-			
-			       });
-		
 		}
 			
 		[TestFixtureSetUp]
