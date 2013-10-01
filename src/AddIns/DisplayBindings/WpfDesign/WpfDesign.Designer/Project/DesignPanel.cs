@@ -50,14 +50,15 @@ namespace ICSharpCode.WpfDesign.Designer
 				if (!(element.IsHitTestVisible && element.Visibility == Visibility.Visible)) {
 					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
 				}
+				
+				var designItem = Context.Services.Component.GetDesignItem(element) as XamlDesignItem;
+			
+				if (designItem != null && designItem.IsDesignTimeLocked) {
+					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
 			}
 			
-			var designItem = Context.Services.Component.GetDesignItem(element) as XamlDesignItem;
-			
-			if (designItem != null && designItem.IsDesignTimeLocked) {
-				return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
 			}
-			
+						
 			return HitTestFilterBehavior.Continue;
 		}
 		
