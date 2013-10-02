@@ -13,6 +13,8 @@ using System.Drawing;
 using System.Linq;
 
 using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.Exporter;
+using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -203,6 +205,21 @@ namespace ICSharpCode.Reporting.PageBuilder
 			WriteStandardSections();
 			CurrentLocation = DetailStart;
 		}
+		
+		
+		protected void RunExpressions()
+		{
+			var er = new ExpressionRunner(Pages);
+			er.Run();
+		}
+
+		
+		protected void RunDebugVisitor()
+		{
+			var d = new DebugExporter(Pages);
+			d.Run();
+		}
+		
 		
 		protected IReportModel ReportModel {get; private set;}
 		
