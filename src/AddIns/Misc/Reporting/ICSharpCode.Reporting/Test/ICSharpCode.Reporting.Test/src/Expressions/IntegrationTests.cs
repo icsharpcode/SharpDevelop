@@ -25,6 +25,12 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		
 		
 		[Test]
+		public void ReportSyntaxError() {
+			collection[0].Text = "= myText";
+			expressionVisitor.Visit(collection[0]);
+		}
+		
+		[Test]
 		public void SimpleMath() {
 			collection[0].Text = "=3 + 6";
 			expressionVisitor.Visit(collection[0]);
@@ -71,6 +77,13 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			Assert.That(collection[0].Text,Is.EqualTo("11"));		
 		}
 		
+		[Test]
+		public void aa () {
+			var script = "=Globals!UserName";
+			collection[0].Text = script;
+			expressionVisitor.Visit(collection[0]);
+			Assert.That(collection[0].Text,Is.EqualTo("11"));	
+		}
 		#endregion
 		
 		[SetUp]

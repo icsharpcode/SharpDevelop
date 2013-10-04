@@ -39,7 +39,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			BuildDetail();
 			base.BuildReportFooter();
 			base.AddPage(CurrentPage);
-//			RunExpressions();
+			RunExpressions();
 		}
 		
 		void BuildDetail()

@@ -21,13 +21,14 @@ namespace ICSharpCode.Reporting.Expressions.Irony
 			base.Init();
 			//add built-in methods, special form IIF, import Math and Environment methods
 //			BuiltIns.AddMethod(BuiltInPrintMethod, "print");
-//			BuiltIns.AddMethod(BuiltInFormatMethod, "format");
+			BuiltIns.AddMethod(BuiltInFormatMethod, "format");
+			
 			BuiltIns.AddSpecialForm(SpecialFormsLibrary.Iif, "iif", 3, 3);
 			BuiltIns.ImportStaticMembers(typeof(System.Math));
 			BuiltIns.ImportStaticMembers(typeof(Environment));
 		}
 		
-		/*
+		
 		private object BuiltInPrintMethod(ScriptThread thread, object[] args) {
 			string text = string.Empty;
 			switch(args.Length) {
@@ -56,6 +57,6 @@ namespace ICSharpCode.Reporting.Expressions.Irony
 			return text;
 			
 		}
-		*/
+		
 	}
 }

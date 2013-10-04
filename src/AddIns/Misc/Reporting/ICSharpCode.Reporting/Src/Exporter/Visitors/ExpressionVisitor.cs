@@ -60,9 +60,9 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 					var str = ExpressionHelper.ExtractExpressionPart(exportColumn.Text);
 				var result = evaluator.Evaluate(str);
 				exportColumn.Text = result.ToString();
-				} catch (Exception) {
-					
-					throw;
+				} catch (Exception e) {
+					var s = String.Format("SharpReport.Exprssions -> {0}",e.Message);
+					Console.WriteLine(s);
 				}
 			}
 		}
