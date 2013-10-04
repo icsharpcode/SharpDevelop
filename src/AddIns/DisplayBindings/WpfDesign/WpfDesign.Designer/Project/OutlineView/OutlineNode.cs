@@ -54,7 +54,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 
 			var locked = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
 			if (locked != null && (bool) locked == true) {
-				this._isDesignTimeLocked = true;				
+				this._isDesignTimeLocked = true;
 			}
 			
 			//TODO
@@ -94,15 +94,15 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 					                                       value ? SelectionTypes.Add : SelectionTypes.Remove);
 					RaisePropertyChanged("IsSelected");
 				}
-			}			
+			}
 		}
 		
 		bool _isDesignTimeVisible = true;
 
 		public bool IsDesignTimeVisible
 		{
-			get { 
-				return _isDesignTimeVisible; 
+			get {
+				return _isDesignTimeVisible;
 			}
 			set {
 				_isDesignTimeVisible = value;
@@ -122,8 +122,8 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		
 		public bool IsDesignTimeLocked
 		{
-			get { 
-				return _isDesignTimeLocked; 
+			get {
+				return _isDesignTimeLocked;
 			}
 			set {
 				_isDesignTimeLocked = value;
@@ -193,6 +193,21 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 				if (ModelTools.CanSelectComponent(item)) {
 					var node = OutlineNode.Create(item);
 					Children.Add(node);
+				}
+				else
+				{
+					var content = item.ContentProperty;
+					if (content != null)
+					{
+						if (content.IsCollection) {
+							UpdateChildrenCore(content.CollectionElements);
+						}
+						else {
+							if (content.Value != null) {
+								UpdateChildrenCore(new[] { content.Value });
+							}
+						}
+					}
 				}
 			}
 		}
