@@ -314,7 +314,7 @@ namespace CSharpBinding
 					editor.Caret.Offset = currentMovedOffset;
 				}
 			} catch (Exception ex) {
-				SD.MessageService.ShowWarning(ex.ToString());
+				// SD.MessageService.ShowWarning(ex.ToString());
 				return;
 			}
 		}
