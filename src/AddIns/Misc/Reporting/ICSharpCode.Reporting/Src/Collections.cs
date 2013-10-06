@@ -57,4 +57,35 @@ namespace ICSharpCode.Reporting
 			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	}
+	
+	
+	public class ParameterCollection: Collection<BasicParameter>{
+		
+		public ParameterCollection()
+		{			
+		}
+		
+		
+		public BasicParameter Find (string parameterName)
+		{
+			if (String.IsNullOrEmpty(parameterName)) {
+				throw new ArgumentNullException("parameterName");
+			}
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true,CultureInfo.InvariantCulture));
+		}
+		
+		
+		public static CultureInfo Culture
+		{
+			get { return System.Globalization.CultureInfo.CurrentCulture; }
+		}
+		
+		
+		public void AddRange (IEnumerable<BasicParameter> items)
+		{
+			foreach (BasicParameter item in items){
+				this.Add(item);
+			}
+		}
+	}
 }

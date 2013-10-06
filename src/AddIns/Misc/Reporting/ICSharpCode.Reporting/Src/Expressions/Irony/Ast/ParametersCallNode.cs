@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using ICSharpCode.Reporting.BaseClasses;
 using Irony;
 using Irony.Ast;
 using Irony.Interpreter;
@@ -26,12 +27,16 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			parameterNode = AddChild("Args", nodes[2]);
 		}
 		
+		
 		protected override object DoEvaluate(ScriptThread thread)
 		{
+			BasicParameter result = null;
 			 thread.CurrentNode = this;  //standard prolog
-			 
-			 var s = thread.App.Globals["param1"];
-			return base.DoEvaluate(thread);
+			 var dictionary = (ParameterCollection)thread.App.Globals["parameters"];
+			 if (dictionary != null) {
+			 		result = dictionary.Find(parameterNode.AsString);
+			 }
+			 return result.ParameterValue;
 		}
 	}
 }

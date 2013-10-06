@@ -68,6 +68,7 @@
     <Compile Include="src\DataSource\CollectionHandlingFixture.cs" />
     <Compile Include="src\Expressions\IntegrationTests.cs" />
     <Compile Include="src\Expressions\IronyGeneral.cs" />
+    <Compile Include="src\Expressions\ParametersHandlingFixture.cs" />
     <Compile Include="src\MeasureArrange\ContainerArrangeStrategyFixture.cs" />
     <Compile Include="src\Model\ReportModelFixture.cs" />
     <Compile Include="src\Model\ReportSettingsFixture.cs" />

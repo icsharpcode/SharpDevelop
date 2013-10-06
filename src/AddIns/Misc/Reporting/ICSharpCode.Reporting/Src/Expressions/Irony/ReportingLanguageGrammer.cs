@@ -53,9 +53,10 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       var ArgList = new NonTerminal("ArgList", typeof(ExpressionListNode));
       var FunctionCall = new NonTerminal("FunctionCall", typeof(FunctionCallNode));
       
+      // SharpReporting
       var ParametersSection = new NonTerminal("ParametersCall",typeof(ParametersCallNode));
       
-     
+      // end of SharpReporting
       
       var MemberAccess = new NonTerminal("MemberAccess", typeof(MemberAccessNode));
       
@@ -73,7 +74,8 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       var Program = new NonTerminal("Program", typeof(StatementListNode));
 
       // 3. BNF rules
-      Expr.Rule = Term | UnExpr | BinExpr | PrefixIncDec | PostfixIncDec | TernaryIfExpr | ParametersSection;
+      Expr.Rule = Term | UnExpr | BinExpr | PrefixIncDec | PostfixIncDec | TernaryIfExpr | 
+      	ParametersSection;
       
       Term.Rule = number | ParExpr | stringLit | FunctionCall | identifier | MemberAccess | IndexedAccess;
       
@@ -93,11 +95,12 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       ArgList.Rule = MakeStarRule(ArgList, comma, Expr);
       FunctionCall.Rule = Expr + PreferShiftHere() + "(" + ArgList + ")";
       
-      var s = 
-     // ParametersSection.Rule = "Parameters" + "!" + identifier;
-      	ParametersSection.Rule = ToTerm("Parameters") + "!" + identifier;
-      FunctionCall.NodeCaptionTemplate = "call #{0}(...)";
+     // SharpReporting
+     
+     ParametersSection.Rule = ToTerm("Parameters") + "!" + identifier;
       
+      // end of SharpReporting
+      FunctionCall.NodeCaptionTemplate = "call #{0}(...)";
       
       ObjectRef.Rule = identifier | MemberAccess | IndexedAccess;
       IndexedAccess.Rule = Expr + PreferShiftHere() + "[" + Expr + "]";
