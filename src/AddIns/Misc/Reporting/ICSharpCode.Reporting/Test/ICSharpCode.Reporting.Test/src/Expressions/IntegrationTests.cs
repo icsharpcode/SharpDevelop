@@ -78,6 +78,7 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		}
 		
 		[Test]
+		[Ignore]
 		public void aa () {
 			var script = "=Globals!UserName";
 			collection[0].Text = script;

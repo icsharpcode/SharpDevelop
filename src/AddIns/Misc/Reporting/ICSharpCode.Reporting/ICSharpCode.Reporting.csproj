@@ -112,6 +112,8 @@
     <Compile Include="Src\ExportRenderer\FixedDocumentCreator.cs" />
     <Compile Include="Src\Expressions\ExpressionHelper.cs" />
     <Compile Include="Src\Expressions\ExpressionRunner.cs" />
+    <Compile Include="Src\Expressions\Irony\Ast\ParametersCallNode.cs" />
+    <Compile Include="Src\Expressions\Irony\ExpressionEvaluator.cs" />
     <Compile Include="Src\Expressions\Irony\ReportingLanguageGrammer.cs" />
     <Compile Include="Src\Expressions\Irony\ReportingLanguageRuntime.cs" />
     <Compile Include="Src\Factories\ExportColumnFactory.cs" />
@@ -147,6 +149,8 @@
     <Compile Include="Src\PageBuilder\ExportColumns\ExportText.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportPage.cs" />
     <Compile Include="Src\PageBuilder\FormPageBuilder.cs" />
+    <Compile Include="Src\Pdf\PdfExporter.cs" />
+    <Compile Include="Src\Pdf\PdfVisitor.cs" />
     <Compile Include="Src\ReportingFactory.cs" />
     <Compile Include="Src\Wpf\PreviewViewModel.cs" />
     <Compile Include="Src\Wpf\WpfReportViewer\WpfReportViewer.xaml.cs">
@@ -160,6 +164,7 @@
     <Folder Include="Src\DataSource\Comparer" />
     <Folder Include="Src\Exporter\Visitors" />
     <Folder Include="Src\Expressions\Irony" />
+    <Folder Include="Src\Expressions\Irony\Ast" />
     <Folder Include="Src\Interfaces" />
     <Folder Include="Src\Globals" />
     <Folder Include="Src" />
@@ -176,6 +181,7 @@
     <Folder Include="Src\DataManager" />
     <Folder Include="Src\DataManager\Listhandling" />
     <Folder Include="Src\Expressions" />
+    <Folder Include="Src\Pdf" />
     <Folder Include="Src\Wpf" />
     <Folder Include="Src\PageBuilder" />
     <Folder Include="Src\PageBuilder\Converter" />

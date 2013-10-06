@@ -10,8 +10,9 @@ namespace ICSharpCode.Reporting.Test.Expressions
 	[TestFixture]
 	public class IronyBasics
 	{
-		ExpressionEvaluatorGrammar grammar;
-		ExpressionEvaluator evaluator;
+		
+		ReportingLanguageGrammer grammar;
+		ReportingExpressionEvaluator evaluator;
 		
 		#region Calculation
 		
@@ -66,7 +67,7 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		[SetUp]
 		public void Initialize() {
 			grammar = new ReportingLanguageGrammer();
-			evaluator = new ExpressionEvaluator(grammar);
+			evaluator = new ReportingExpressionEvaluator(grammar);
 		}
 	}
 }
