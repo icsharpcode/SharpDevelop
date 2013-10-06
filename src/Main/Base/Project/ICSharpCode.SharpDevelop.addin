@@ -33,6 +33,7 @@
 			<ConditionEvaluator name="IsTextSelected" class="ICSharpCode.SharpDevelop.Editor.TextSelectedCondition"/>
 			<ConditionEvaluator name="ViewInBrowser" class="ICSharpCode.SharpDevelop.ViewInBrowserConditionEvaluator"/>
 			<ConditionEvaluator name="ProjectBehaviorSupported" class="ICSharpCode.SharpDevelop.Project.ProjectBehaviorSupportedConditionEvaluator"/>
+			<ConditionEvaluator name="IsAssemblyUnpinned" class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.IsAssemblyUnpinnedConditionEvaluator"/>
 			
 			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
 			<Doozer name="CustomProperty" class="ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer"/>
@@ -999,6 +1000,12 @@
 				<MenuItem id = "AssemblyContextMenuSeparator" type = "Separator"/>
 			</Condition>
 		</Condition>
+		<Condition name="IsAssemblyUnpinned" action="Exclude">
+			<MenuItem id = "PermanentlyAddToWorkspace"
+			          label = "${res:MainWindow.Windows.ClassBrowser.AddToWorkspace}"
+			          icon = "Icons.16x16.AssemblyFromFile"
+			          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.PermanentlyAddModuleToWorkspaceCommand"/>
+		</Condition>
 		<MenuItem id = "RemoveAssembly"
 		          label = "Remove"
 		          icon = "Icons.16x16.DeleteIcon"
@@ -1009,7 +1016,7 @@
 		<MenuItem id="OpenInClassBrowser"
 		          icon="ILSpy"
 		          type="Item"
-		          label="Open in Class Browser"
+		          label="${res:MainWindow.Windows.ClassBrowser.OpenInClassBrowser}"
 		          class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenInClassBrowserCommand"/>
 	</Path>
 	

@@ -171,7 +171,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			return false;
 		}
 	}
-	
+
 	public interface IClassBrowserTreeView : IClassBrowser
 	{
 		

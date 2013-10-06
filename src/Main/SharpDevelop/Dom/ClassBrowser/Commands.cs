@@ -51,9 +51,38 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					foreach (string assemblyFile in gacDialog.SelectedFileNames) {
 						IAssemblyModel assemblyModel = SD.AssemblyParserService.GetAssemblyModelSafe(new ICSharpCode.Core.FileName(assemblyFile), true);
 						if (assemblyModel != null)
-							classBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
+//							classBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
+							classBrowser.UnpinnedAssemblies.Assemblies.Add(assemblyModel);
 					}
 				}
+			}
+		}
+	}
+	
+	/// <summary>
+	/// PermanentlyAddModuleToWorkspaceCommand.
+	/// </summary>
+	class PermanentlyAddModuleToWorkspaceCommand : SimpleCommand
+	{
+		public override bool CanExecute(object parameter)
+		{
+			IAssemblyModel assemblyModel = parameter as IAssemblyModel;
+			return (assemblyModel != null) && assemblyModel.Context.IsValid;
+		}
+		
+		public override void Execute(object parameter)
+		{
+			var classBrowser = SD.GetService<IClassBrowser>();
+			if (classBrowser != null) {
+				IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
+				
+				// Try to remove AssemblyModel from list of UnpinnedAssemblies
+				classBrowser.UnpinnedAssemblies.Assemblies.Remove(assemblyModel);
+				
+				// Create a new copy of this assembly model
+				IAssemblyModel newAssemblyModel = SD.AssemblyParserService.GetAssemblyModelSafe(new ICSharpCode.Core.FileName(assemblyModel.Context.Location), true);
+				if (newAssemblyModel != null)
+					classBrowser.MainAssemblyList.Assemblies.Add(newAssemblyModel);
 			}
 		}
 	}
