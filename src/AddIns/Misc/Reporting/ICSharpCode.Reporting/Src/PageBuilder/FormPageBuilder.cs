@@ -32,7 +32,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.AddPage(CurrentPage);
 			
 			RunDebugVisitor();
-			RunExpressions();
+			RunExpressions(ReportModel.ReportSettings);
 		}
 
 		

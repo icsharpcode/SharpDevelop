@@ -18,6 +18,7 @@ using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.Converter;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -207,9 +208,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		protected void RunExpressions()
+		protected void RunExpressions(ReportSettings reportsettings)
 		{
-			var er = new ExpressionRunner(Pages);
+			var er = new ExpressionRunner(Pages,reportsettings);
 			er.Run();
 		}
 

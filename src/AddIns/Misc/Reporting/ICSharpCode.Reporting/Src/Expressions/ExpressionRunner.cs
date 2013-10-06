@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
+using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Expressions
@@ -19,11 +20,11 @@ namespace ICSharpCode.Reporting.Expressions
 //		
 		private readonly ExpressionVisitor visitor;
 		
-		 public ExpressionRunner(Collection<ExportPage> pages):base(pages)
+		public ExpressionRunner(Collection<ExportPage> pages,ReportSettings reportSettings):base(pages)
 		{
-			visitor = new ExpressionVisitor (Pages);
-			
+			visitor = new ExpressionVisitor (Pages,reportSettings);
 		}
+		
 		
 		public override void Run()
 		{

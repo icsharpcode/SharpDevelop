@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.ObjectModel;
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter.Visitors;
+using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using NUnit.Framework;
 
@@ -76,16 +78,52 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			var res = Convert.ToDouble(collection[0].Text);
 			Assert.That(collection[0].Text,Is.EqualTo("11"));		
 		}
+		#endregion
+		
+		
+		#region Parameters
 		
 		[Test]
-		[Ignore]
-		public void aa () {
-			var script = "=Globals!UserName";
+		public void CanConcatParameter () {
+			
+			var parameters = new ParameterCollection();
+			parameters.Add(new BasicParameter() {
+			               	ParameterName = "param1",
+			               	ParameterValue = "SharpDevelop"
+			               }
+			              );
+			
+			parameters.Add(new BasicParameter() {
+			               	ParameterName = "param2",
+			               	ParameterValue = " is "
+			               }
+			              );
+			parameters.Add(new BasicParameter() {
+			               	ParameterName = "param3",
+			               	ParameterValue = "great"
+			               }
+			              );
+			
+			var reportSettings = CreateReportSettings(parameters);
+			var visitor = new ExpressionVisitor(reportSettings);
+			
+			var script = "=Parameters!param1 + Parameters!param2 + Parameters!param3";
 			collection[0].Text = script;
-			expressionVisitor.Visit(collection[0]);
-			Assert.That(collection[0].Text,Is.EqualTo("11"));	
+			visitor.Visit(collection[0]);
+			Assert.That (collection[0].Text,Is.EqualTo("SharpDevelop is great"));
 		}
+		
+		
 		#endregion
+		
+		
+		ReportSettings CreateReportSettings(ParameterCollection parameters)
+		{
+			var reportSettings = new ReportSettings();
+			reportSettings.ParameterCollection.AddRange(parameters);		
+			return reportSettings;
+		}
+		
 		
 		[SetUp]
 		public void CreateExportlist() {
@@ -98,7 +136,7 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			
 		[TestFixtureSetUp]
 		public void Setup() {
-			expressionVisitor = new ExpressionVisitor();
+			expressionVisitor = new ExpressionVisitor(new ReportSettings());
 		}
 		 
 	}

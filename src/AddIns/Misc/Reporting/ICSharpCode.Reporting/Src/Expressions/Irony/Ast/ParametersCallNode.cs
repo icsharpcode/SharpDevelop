@@ -7,6 +7,7 @@ using Irony.Ast;
 using Irony.Interpreter;
 using Irony.Interpreter.Ast;
 using Irony.Parsing;
+using ICSharpCode.Reporting.Items;
 
 namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 {
@@ -32,10 +33,9 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 		{
 			BasicParameter result = null;
 			 thread.CurrentNode = this;  //standard prolog
-			 var dictionary = (ParameterCollection)thread.App.Globals["parameters"];
-			 if (dictionary != null) {
-			 		result = dictionary.Find(parameterNode.AsString);
-			 }
+			 var parametersCollection = thread.GetParametersCollection();
+			 		result = parametersCollection.Find(parameterNode.AsString);
+
 			 return result.ParameterValue;
 		}
 	}

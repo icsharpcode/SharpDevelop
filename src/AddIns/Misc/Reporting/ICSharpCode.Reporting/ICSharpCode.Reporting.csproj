@@ -113,6 +113,7 @@
     <Compile Include="Src\ExportRenderer\FixedDocumentCreator.cs" />
     <Compile Include="Src\Expressions\ExpressionHelper.cs" />
     <Compile Include="Src\Expressions\ExpressionRunner.cs" />
+    <Compile Include="Src\Expressions\Irony\Ast\AstExtensions.cs" />
     <Compile Include="Src\Expressions\Irony\Ast\ParametersCallNode.cs" />
     <Compile Include="Src\Expressions\Irony\ExpressionEvaluator.cs" />
     <Compile Include="Src\Expressions\Irony\ReportingLanguageGrammer.cs" />

@@ -3,6 +3,7 @@
 using System;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Expressions.Irony;
+using ICSharpCode.Reporting.Items;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reporting.Test.Expressions
@@ -23,7 +24,8 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			               	ParameterValue = resultValue
 			               }
 			              );
-			evaluator.App.Globals.Add("parameters",parameters);
+//			evaluator.App.Globals.Add("parameters",parameters);
+			AddToGlobals(parameters);
 			var script = "Parameters!param1";
 			var result = evaluator.Evaluate(script);
 			Assert.That (result,Is.EqualTo(resultValue));
@@ -50,11 +52,16 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			               	ParameterValue = "Value for parameter2"
 			               }
 			              );
-			evaluator.App.Globals.Add("parameters",parameters);
+			
+			
+			AddToGlobals(parameters);
+			
 			var script = "Parameters!param2";
 			var result = evaluator.Evaluate(script);
 			Assert.That (result,Is.EqualTo(resultValue));
 		}
+
+		
 		
 		
 		[Test]
@@ -76,10 +83,18 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			               	ParameterValue = "great"
 			               }
 			              );
-			evaluator.App.Globals.Add("parameters",parameters);
+			AddToGlobals(parameters);
 			var script = "Parameters!param1 + Parameters!param2 + Parameters!param3";
 			var result = evaluator.Evaluate(script);
 			Assert.That (result,Is.EqualTo("SharpDevelop is great"));
+		}
+		
+		
+		void AddToGlobals(ParameterCollection parameters)
+		{
+			var reportSettings = new ReportSettings();
+			reportSettings.ParameterCollection.AddRange(parameters);
+			evaluator.App.Globals.Add("ReportSettings", reportSettings);
 		}
 		
 		
@@ -88,7 +103,7 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			grammar = new ReportingLanguageGrammer();
 			evaluator = new ReportingExpressionEvaluator(grammar);
 		}
-			
+		
 		
 		[TestFixtureSetUp]
 		public void Init()

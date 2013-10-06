@@ -3,6 +3,8 @@
 using System;
 using System.Collections.ObjectModel;
 using ICSharpCode.Reporting.Expressions;
+using ICSharpCode.Reporting.Expressions.Irony;
+using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using Irony.Interpreter.Evaluator;
 
@@ -14,19 +16,18 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	class ExpressionVisitor: AbstractVisitor
 	{
 		private readonly Collection<ExportPage> pages;
-		private readonly ExpressionEvaluatorGrammar grammar;
-		private readonly ExpressionEvaluator evaluator;
-		
-		public ExpressionVisitor(Collection<ExportPage> pages)
+		private readonly ReportingLanguageGrammer grammar;
+		private readonly ReportingExpressionEvaluator evaluator;
+	
+		public ExpressionVisitor(Collection<ExportPage> pages,ReportSettings reportSettings):this(reportSettings)
 		{
 			this.pages = pages;
-			grammar = new ExpressionEvaluatorGrammar();
-			evaluator = new ExpressionEvaluator(grammar);
 		}
 		
-		internal ExpressionVisitor() {
-			grammar = new ExpressionEvaluatorGrammar();
-			evaluator = new ExpressionEvaluator(grammar);
+		internal ExpressionVisitor(ReportSettings reportSettings) {
+			grammar = new ReportingLanguageGrammer();
+			evaluator = new ReportingExpressionEvaluator(grammar);
+			evaluator.App.Globals.Add("ReportSettings", reportSettings);
 		}
 		
 		public override void Visit(ExportPage page)
@@ -44,8 +45,6 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		{
 			var result = evaluator.Evaluate("2 * 10");
 			Console.WriteLine("\tExpressionVisitor <{0}> - {1}",exportColumn.Name,result);
-//			Console.WriteLine("\t{0} - {1}  Items {2}",
-//			                  exportColumn.Name,exportColumn.Location,exportColumn.BackColor);
 			foreach (var element in exportColumn.ExportedItems) {
 				var ac = element as IAcceptor;
 				ac.Accept(this);
