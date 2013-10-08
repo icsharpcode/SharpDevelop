@@ -6,7 +6,6 @@ using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Expressions.Irony;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
-using Irony.Interpreter.Evaluator;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
 {
@@ -18,7 +17,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		private readonly Collection<ExportPage> pages;
 		private readonly ReportingLanguageGrammer grammar;
 		private readonly ReportingExpressionEvaluator evaluator;
-	
+		
 		public ExpressionVisitor(Collection<ExportPage> pages,ReportSettings reportSettings):this(reportSettings)
 		{
 			this.pages = pages;
@@ -30,6 +29,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			evaluator.App.Globals.Add("ReportSettings", reportSettings);
 		}
 		
+		
 		public override void Visit(ExportPage page)
 		{
 			var result = evaluator.Evaluate("5 * 10");
@@ -39,12 +39,10 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 				ac.Accept(this);
 			}
 		}
-	
+		
 		
 		public override void Visit(ExportContainer exportColumn)
 		{
-			var result = evaluator.Evaluate("2 * 10");
-			Console.WriteLine("\tExpressionVisitor <{0}> - {1}",exportColumn.Name,result);
 			foreach (var element in exportColumn.ExportedItems) {
 				var ac = element as IAcceptor;
 				ac.Accept(this);
@@ -54,16 +52,23 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportText exportColumn)
 		{
-			if (exportColumn.Text.StartsWith("=")) {
+			if (ExpressionHelper.CanEvaluate(exportColumn.Text)) {
 				try {
-					var str = ExpressionHelper.ExtractExpressionPart(exportColumn.Text);
-				var result = evaluator.Evaluate(str);
-				exportColumn.Text = result.ToString();
+					object result = Evaluate(exportColumn);
+					exportColumn.Text = result.ToString();
 				} catch (Exception e) {
 					var s = String.Format("SharpReport.Exprssions -> {0}",e.Message);
 					Console.WriteLine(s);
 				}
 			}
+		}
+
+		
+		object Evaluate(ExportText exportColumn)
+		{
+			var str = ExpressionHelper.ExtractExpressionPart(exportColumn.Text);
+			var result = evaluator.Evaluate(str);
+			return result;
 		}
 	}
 }

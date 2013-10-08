@@ -23,9 +23,6 @@ namespace ICSharpCode.Reporting.Expressions.Irony
       get { return App.Globals; }
     }
 
-    //Default constructor, creates default evaluator 
-    public ReportingExpressionEvaluator() : this(new ExpressionEvaluatorGrammar()) {
-    }
 
     //Default constructor, creates default evaluator 
     public ReportingExpressionEvaluator(InterpretedLanguageGrammar grammar) {

@@ -32,14 +32,6 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			expressionVisitor.Visit(collection[0]);
 		}
 		
-		[Test]
-		public void SimpleMath() {
-			collection[0].Text = "=3 + 6";
-			expressionVisitor.Visit(collection[0]);
-			Assert.That(collection[0].Text,Is.EqualTo("9"));		
-			var res = Convert.ToInt32(collection[0].Text);
-			Assert.That(res is int);
-		}
 		
 		
 		[Test]
@@ -66,6 +58,22 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		
 		#endregion
 		
+		
+		#region Convert inside Container
+		[Test]
+		public void SimpleStringHandlingInContainer () {
+			var script = "='Sharpdevelop' + ' is great'";
+			
+			collection[0].Text = script;
+			var exportContainer = new ExportContainer();
+			exportContainer.ExportedItems.Add(collection[0]);
+			expressionVisitor.Visit(exportContainer);
+			
+			var resultColumn = (ExportText)exportContainer.ExportedItems[0];
+			Assert.That(resultColumn.Text,Is.EqualTo("Sharpdevelop is great"));
+		}
+		
+		#endregion
 		
 		#region System.Math
 		

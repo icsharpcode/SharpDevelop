@@ -11,14 +11,20 @@ namespace ICSharpCode.Reporting.Expressions
 	/// </summary>
 	class ExpressionHelper
 	{
-		public ExpressionHelper()
-		{
-		}
 		
 		public static string ExtractExpressionPart (string src)
 		{
 			char v = Convert.ToChar("=",CultureInfo.CurrentCulture );
 			return StringHelper.RightOf(src,v).Trim();
+		}
+		
+		
+		public static bool CanEvaluate (string expression)
+		{
+			if ((!String.IsNullOrEmpty(expression)) && (expression.StartsWith("=",StringComparison.InvariantCultureIgnoreCase))) {
+				return true;
+			}
+			return false;
 		}
 	}
 }
