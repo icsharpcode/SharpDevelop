@@ -202,6 +202,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			IUpdateableAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
 			var types = module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList();
 			model.AssemblyName = module.UnresolvedAssembly.AssemblyName;
+			model.FullAssemblyName = module.UnresolvedAssembly.FullAssemblyName;
 			model.Update(EmptyList<IUnresolvedTypeDefinition>.Instance, types);
 			
 			return model;
@@ -267,6 +268,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public string AssemblyName {
 			get { return Path.GetFileNameWithoutExtension(process.Filename); }
+		}
+		
+		public string FullAssemblyName {
+			get { return AssemblyName; }
 		}
 		
 		public string Location {

@@ -51,8 +51,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					foreach (string assemblyFile in gacDialog.SelectedFileNames) {
 						IAssemblyModel assemblyModel = SD.AssemblyParserService.GetAssemblyModelSafe(new ICSharpCode.Core.FileName(assemblyFile), true);
 						if (assemblyModel != null)
-//							classBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
-							classBrowser.UnpinnedAssemblies.Assemblies.Add(assemblyModel);
+							classBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
 					}
 				}
 			}

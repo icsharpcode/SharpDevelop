@@ -340,6 +340,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			
 			model.Update(EmptyList<IUnresolvedTypeDefinition>.Instance, assembly.ProjectContent.TopLevelTypeDefinitions.ToList());
 			model.AssemblyName = assembly.ProjectContent.AssemblyName;
+			model.FullAssemblyName = assembly.ProjectContent.FullAssemblyName;
 			model.References = assembly.References.ToList();
 			
 			return model;

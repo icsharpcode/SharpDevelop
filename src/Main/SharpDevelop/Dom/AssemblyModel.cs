@@ -34,6 +34,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public string AssemblyName { get; set; }
+		public string FullAssemblyName { get; set; }
 		
 		public ITypeDefinitionModelCollection TopLevelTypeDefinitions {
 			get {

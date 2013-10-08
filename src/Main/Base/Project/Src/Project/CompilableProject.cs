@@ -359,6 +359,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					assemblyModel = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(new ProjectEntityModelContext(this, ".cs"));
 					if (pc != null && assemblyModel is IUpdateableAssemblyModel) {
 						((IUpdateableAssemblyModel)assemblyModel).AssemblyName = AssemblyName;
+						((IUpdateableAssemblyModel)assemblyModel).FullAssemblyName = ProjectContent.FullAssemblyName;
 						// Add the already loaded files into the model
 						foreach (var file in pc.Files) {
 							((IUpdateableAssemblyModel)assemblyModel).Update(null, file);

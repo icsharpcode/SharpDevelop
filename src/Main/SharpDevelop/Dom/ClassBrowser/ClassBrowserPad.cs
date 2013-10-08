@@ -34,11 +34,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	class UnresolvedAssemblyEntityModelContext : IEntityModelContext
 	{
 		string assemblyName;
+		string fullAssemblyName;
 		string location;
 		
-		public UnresolvedAssemblyEntityModelContext(string assemblyName, string location)
+		public UnresolvedAssemblyEntityModelContext(string assemblyName, string fullAssemblyName, string location)
 		{
 			this.assemblyName = assemblyName;
+			this.fullAssemblyName = fullAssemblyName;
 			this.location = location;
 		}
 		
@@ -61,6 +63,12 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public string AssemblyName {
 			get {
 				return assemblyName;
+			}
+		}
+		
+		public string FullAssemblyName {
+			get {
+				return fullAssemblyName;
 			}
 		}
 		
@@ -246,9 +254,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				return SD.AssemblyParserService.GetAssemblyModel(new FileName(fileName), true);
 			} catch (Exception) {
 				// Special AssemblyModel for unresolved file references
-				IEntityModelContext unresolvedContext = new UnresolvedAssemblyEntityModelContext(Path.GetFileName(fileName), fileName);
+				string fakedAssemblyName = Path.GetFileName(fileName);
+				IEntityModelContext unresolvedContext = new UnresolvedAssemblyEntityModelContext(fakedAssemblyName, fakedAssemblyName, fileName);
 				IUpdateableAssemblyModel unresolvedModel = modelFactory.CreateAssemblyModel(unresolvedContext);
 				unresolvedModel.AssemblyName = unresolvedContext.AssemblyName;
+				unresolvedModel.FullAssemblyName = unresolvedContext.FullAssemblyName;
 				unresolvedModel.References = EmptyList<DomAssemblyName>.Instance;
 				
 				return unresolvedModel;

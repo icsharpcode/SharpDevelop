@@ -88,8 +88,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 								var treeNode = (ProjectTreeNode) node;
 								if (node.Model is IProject) {
 									var projectModel = (IProject) node.Model;
-									// TODO Use full name here!
-									return projectModel.AssemblyModel.AssemblyName == entityAssembly.AssemblyName;
+									return projectModel.AssemblyModel.FullAssemblyName == entityAssembly.FullAssemblyName;
 								}
 							}
 							
@@ -109,8 +108,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 								var asmTreeNode = (AssemblyTreeNode) node;
 								if (node.Model is IAssemblyModel) {
 									var asmModel = (IAssemblyModel) node.Model;
-									// TODO Use full name here!
-									return asmModel.AssemblyName == entityAssembly.AssemblyName;
+									return asmModel.FullAssemblyName == entityAssembly.FullAssemblyName;
 								}
 							}
 							

@@ -41,6 +41,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string AssemblyName { get; }
 		
 		/// <summary>
+		/// Gets the full assembly name (including public key token etc.)
+		/// </summary>
+		string FullAssemblyName { get; }
+		
+		/// <summary>
 		/// Full path and file name of the assembly. Output assembly for projects.
 		/// </summary>
 		string Location { get; }
@@ -66,6 +71,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string AssemblyName {
 			get { return project.AssemblyName; }
+		}
+		
+		public string FullAssemblyName {
+			get {
+				if (project.ProjectContent == null) {
+					return project.ProjectContent.FullAssemblyName;
+				}
+				
+				// TODO Better fallback for the case we can't get a FullAssemblyName?
+				return project.AssemblyName;
+			}
 		}
 		
 		public string Location {
@@ -109,6 +125,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string AssemblyName {
 			get { return mainAssembly.AssemblyName; }
+		}
+		
+		public string FullAssemblyName {
+			get { return mainAssembly.FullAssemblyName; }
 		}
 		
 		public string Location {

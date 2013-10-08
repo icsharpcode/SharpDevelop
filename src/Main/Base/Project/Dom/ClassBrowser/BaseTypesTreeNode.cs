@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.TreeView;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;

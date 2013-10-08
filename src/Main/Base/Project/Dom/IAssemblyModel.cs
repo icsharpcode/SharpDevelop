@@ -22,6 +22,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string AssemblyName { get; }
 		
 		/// <summary>
+		/// Gets the full assembly name (including public key token etc.)
+		/// </summary>
+		string FullAssemblyName { get; }
+		
+		/// <summary>
 		/// Gets a collection of all top-level type definitions.
 		/// Top-level means it does not contain nested classes (but classes from nested namespaces!).
 		/// </summary>
@@ -87,6 +92,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		new string AssemblyName { get; set; }
 		
 		/// <summary>
+		/// Gets the full assembly name (including public key token etc.)
+		/// </summary>
+		new string FullAssemblyName { get; set; }
+		
+		/// <summary>
 		/// Returns the assembly references.
 		/// </summary>
 		new IReadOnlyList<DomAssemblyName> References { get; set; }
@@ -101,6 +111,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public string AssemblyName {
+			get { return string.Empty; }
+		}
+		
+		public string FullAssemblyName {
 			get { return string.Empty; }
 		}
 
