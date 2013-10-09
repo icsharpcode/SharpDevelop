@@ -198,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		static IAssemblyModel CreateAssemblyModel(Module module)
 		{
 			// references??
-			IEntityModelContext context = new DebuggerProcessEntityModelContext(module.Process);
+			IEntityModelContext context = new DebuggerProcessEntityModelContext(module);
 			IUpdateableAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
 			var types = module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList();
 			model.AssemblyName = module.UnresolvedAssembly.AssemblyName;
@@ -242,19 +242,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	
 	class DebuggerProcessEntityModelContext : IEntityModelContext
 	{
-		Debugger.Process process;
+		Debugger.Module module;
 		
-		public DebuggerProcessEntityModelContext(Process process)
+		public DebuggerProcessEntityModelContext(Module module)
 		{
-			if (process == null)
-				throw new ArgumentNullException("process");
-			this.process = process;
+			if (module == null)
+				throw new ArgumentNullException("module");
+			this.module = module;
 		}
 		
 		public ICompilation GetCompilation()
 		{
-			var mainModule = process.GetModule(Path.GetFileName(process.Filename));
-			return new SimpleCompilation(mainModule.UnresolvedAssembly, process.Modules.Where(m => m != mainModule).Select(m => m.UnresolvedAssembly));
+			return new SimpleCompilation(module.UnresolvedAssembly, module.Process.Modules.Where(m => m != module).Select(m => m.UnresolvedAssembly));
 		}
 		
 		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)
@@ -267,15 +266,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 		public string AssemblyName {
-			get { return Path.GetFileNameWithoutExtension(process.Filename); }
+			get { return module.Assembly.AssemblyName; }
 		}
 		
 		public string FullAssemblyName {
-			get { return AssemblyName; }
+			get { return module.Assembly.FullAssemblyName; }
 		}
 		
 		public string Location {
-			get { return process.Filename; }
+			get { return module.FullPath; }
 		}
 		
 		public bool IsValid {
