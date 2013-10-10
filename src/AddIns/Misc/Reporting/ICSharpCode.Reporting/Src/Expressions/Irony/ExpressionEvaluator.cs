@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using Irony.Interpreter;
-using Irony.Interpreter.Evaluator;
 using Irony.Parsing;
 
 namespace ICSharpCode.Reporting.Expressions.Irony

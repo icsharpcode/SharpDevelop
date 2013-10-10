@@ -124,7 +124,26 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		
 		#endregion
 		
+		#region Fields
 		
+		[Test]
+		public void fields() {
+			var script = "=Fields!myfield";
+			collection[0].Text = script;
+			collection.Add(new ExportText() 
+			               {
+			               	Text = "hi from Field",
+			               	Name = "myfield"
+			               });
+			               
+			var visitor = new ExpressionVisitor(new ReportSettings());
+			var exportContainer = new ExportContainer();
+			exportContainer.ExportedItems.Add(collection[0]);
+			exportContainer.ExportedItems.Add(collection[1]);
+			visitor.Visit(exportContainer);	
+			Assert.That (collection[0].Text,Is.EqualTo("hi from Field"));
+		}
+		#endregion
 		ReportSettings CreateReportSettings(ParameterCollection parameters)
 		{
 			var reportSettings = new ReportSettings();

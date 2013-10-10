@@ -1,36 +1,35 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using Irony.Ast;
 using Irony.Interpreter;
 using Irony.Interpreter.Ast;
 using Irony.Parsing;
-using ICSharpCode.Reporting.BaseClasses;
 
 namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 {
 	/// <summary>
-	/// Description of ParametersCallNode.
+	/// Description of FieldsNode.
 	/// </summary>
-	public class ParametersCallNode: AstNode
+	public class FieldsNode: AstNode
 	{
-		AstNode parameterNode;
+		AstNode fieldNode;
 		
-		public override void Init(AstContext context, ParseTreeNode treeNode)
+		public override void Init(AstContext context,ParseTreeNode treeNode)
 		{
 			base.Init(context, treeNode);
 			var nodes = treeNode.GetMappedChildNodes();
-			parameterNode = AddChild("Args", nodes[2]);
+			fieldNode = AddChild("Args", nodes[2]);
 		}
-		
 		
 		protected override object DoEvaluate(ScriptThread thread)
 		{
-			BasicParameter result = null;
 			thread.CurrentNode = this;  //standard prolog
-			var parametersCollection = thread.GetParametersCollection();
-			result = parametersCollection.Find(parameterNode.AsString);
-			return result.ParameterValue;
+			var c = thread.GetCurrentContainer();
+			var cc = (ExportText)c.ExportedItems.Where(x => x.Name == fieldNode.AsString).FirstOrDefault();
+			return	cc.Text;
 		}
 	}
 }

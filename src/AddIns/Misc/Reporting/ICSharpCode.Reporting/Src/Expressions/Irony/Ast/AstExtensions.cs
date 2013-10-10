@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using Irony.Interpreter;
 
 namespace ICSharpCode.Reporting.Expressions.Irony.Ast
@@ -11,9 +12,33 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 	/// </summary>
 	public static class AstExtensions
 	{
+		#region Parameters
+		
 		public static ParameterCollection GetParametersCollection (this ScriptThread thread){
 			var rs =  (ReportSettings)thread.App.Globals["ReportSettings"];
 			return rs.ParameterCollection;
 		}
+		
+		public static void  AddReportSettings (this ReportingExpressionEvaluator app,ReportSettings reportSettings) {
+			if (reportSettings == null)
+				throw new ArgumentNullException("reportSettings");
+			app.Globals.Add("ReportSettings",reportSettings);
+		}
+		
+		#endregion
+		
+		#region current Container
+		
+		public static void AddCurrentContainer (this ReportingExpressionEvaluator app,ExportContainer container){
+			if (container == null)
+				throw new ArgumentNullException("container");
+			app.Globals.Add("CurrentContainer",container);
+			
+		}
+		
+		public static ExportContainer GetCurrentContainer (this ScriptThread thread){
+			return (ExportContainer)thread.App.Globals["CurrentContainer"];
+		}
+		#endregion
 	}
 }

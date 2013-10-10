@@ -3,6 +3,7 @@
 using System;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Expressions.Irony;
+using ICSharpCode.Reporting.Expressions.Irony.Ast;
 using ICSharpCode.Reporting.Items;
 using NUnit.Framework;
 
@@ -24,7 +25,6 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			               	ParameterValue = resultValue
 			               }
 			              );
-//			evaluator.App.Globals.Add("parameters",parameters);
 			AddToGlobals(parameters);
 			var script = "Parameters!param1";
 			var result = evaluator.Evaluate(script);
@@ -62,8 +62,6 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		}
 
 		
-		
-		
 		[Test]
 		public void CanConcatParameter () {
 			var parameters = new ParameterCollection();
@@ -94,7 +92,8 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		{
 			var reportSettings = new ReportSettings();
 			reportSettings.ParameterCollection.AddRange(parameters);
-			evaluator.App.Globals.Add("ReportSettings", reportSettings);
+//			evaluator.App.Globals.Add("ReportSettings", reportSettings);
+			evaluator.AddReportSettings(reportSettings);
 		}
 		
 		

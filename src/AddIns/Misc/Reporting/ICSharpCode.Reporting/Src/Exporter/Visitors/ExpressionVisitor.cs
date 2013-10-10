@@ -6,6 +6,7 @@ using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Expressions.Irony;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
+using ICSharpCode.Reporting.Expressions.Irony.Ast;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
 {
@@ -14,19 +15,20 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	/// </summary>
 	class ExpressionVisitor: AbstractVisitor
 	{
-		private readonly Collection<ExportPage> pages;
-		private readonly ReportingLanguageGrammer grammar;
-		private readonly ReportingExpressionEvaluator evaluator;
+		readonly Collection<ExportPage> pages;
+		readonly ReportingLanguageGrammer grammar;
+		readonly ReportingExpressionEvaluator evaluator;
 		
 		public ExpressionVisitor(Collection<ExportPage> pages,ReportSettings reportSettings):this(reportSettings)
 		{
 			this.pages = pages;
 		}
 		
+		
 		internal ExpressionVisitor(ReportSettings reportSettings) {
 			grammar = new ReportingLanguageGrammer();
 			evaluator = new ReportingExpressionEvaluator(grammar);
-			evaluator.App.Globals.Add("ReportSettings", reportSettings);
+			evaluator.AddReportSettings(reportSettings);
 		}
 		
 		
@@ -41,9 +43,10 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
-		public override void Visit(ExportContainer exportColumn)
+		public override void Visit(ExportContainer exportContainer)
 		{
-			foreach (var element in exportColumn.ExportedItems) {
+			evaluator.AddCurrentContainer(exportContainer);
+			foreach (var element in exportContainer.ExportedItems) {
 				var ac = element as IAcceptor;
 				ac.Accept(this);
 			}
