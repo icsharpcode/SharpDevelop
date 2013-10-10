@@ -340,6 +340,9 @@
 									<File Id="AddInWritingHelp.url" Name="AddIn Writing Help.url" Source="..\..\doc\technotes\AddIn Writing Help.url" KeyPath="yes" />
 								</Component>
 							</Directory>
+							<Component Id="DependenciesHtml" Guid="898AC4F4-9331-4C3C-A170-ECB09B890EDD" DiskId="1">
+								<File Id="Dependencies.html" Name="Dependencies.html" Source="..\..\doc\Dependencies.html" KeyPath="yes" />
+							</Component>
 						</Directory>
 						<Directory Id="DataFolder" Name="data">
 							<Directory Id="ConversionStyleSheetsFolder" Name="ConversionStyleSheets">
