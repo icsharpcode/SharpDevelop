@@ -24,12 +24,13 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			fieldNode = AddChild("Args", nodes[2]);
 		}
 		
+		
 		protected override object DoEvaluate(ScriptThread thread)
 		{
 			thread.CurrentNode = this;  //standard prolog
-			var c = thread.GetCurrentContainer();
-			var cc = (ExportText)c.ExportedItems.Where(x => x.Name == fieldNode.AsString).FirstOrDefault();
-			return	cc.Text;
+			var container = thread.GetCurrentContainer();
+			var column = (ExportText)container.ExportedItems.Where(x => x.Name == fieldNode.AsString).FirstOrDefault();
+			return	column.Text;
 		}
 	}
 }

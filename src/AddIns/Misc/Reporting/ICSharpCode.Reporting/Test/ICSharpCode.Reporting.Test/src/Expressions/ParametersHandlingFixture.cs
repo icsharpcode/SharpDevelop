@@ -92,7 +92,6 @@ namespace ICSharpCode.Reporting.Test.Expressions
 		{
 			var reportSettings = new ReportSettings();
 			reportSettings.ParameterCollection.AddRange(parameters);
-//			evaluator.App.Globals.Add("ReportSettings", reportSettings);
 			evaluator.AddReportSettings(reportSettings);
 		}
 		
