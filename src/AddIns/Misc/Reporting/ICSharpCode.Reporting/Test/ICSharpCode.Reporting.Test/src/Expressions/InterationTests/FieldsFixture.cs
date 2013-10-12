@@ -40,6 +40,25 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 		}
 		
 		
+		[Test]
+		public void FieldNotExist() {
+			var script = "=Fields!myfieldNotExist";
+			collection[0].Text = script;
+			collection.Add(new ExportText() 
+			               {
+			               	Text = "Sharpdevelop",
+			               	Name = "myfield1"
+			               });
+			var visitor = new ExpressionVisitor(new ReportSettings());
+			var exportContainer = new ExportContainer();
+			exportContainer.ExportedItems.Add(collection[0]);
+			exportContainer.ExportedItems.Add(collection[1]);
+			visitor.Visit(exportContainer);	
+			Assert.That (collection[0].Text.StartsWith("Missing"));
+			Assert.That (collection[0].Text.Contains("myfieldNotExist"));
+		}
+		
+		
 		[SetUp]
 		public void CreateExportlist() {
 		collection = new Collection<ExportText>();

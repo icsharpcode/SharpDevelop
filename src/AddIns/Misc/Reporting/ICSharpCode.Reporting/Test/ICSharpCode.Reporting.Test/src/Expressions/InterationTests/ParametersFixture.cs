@@ -48,6 +48,25 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 		}
 		
 		
+		[Test]
+		public void ParameterNotExist() {
+			var parameters = new ParameterCollection();
+			parameters.Add(new BasicParameter() {
+			               	ParameterName = "param1",
+			               	ParameterValue = "SharpDevelop"
+			               }
+			              );
+			var reportSettings = CreateReportSettings(parameters);
+			var visitor = new ExpressionVisitor(reportSettings);
+			
+			var script = "=Parameters!paramNotExist";
+			collection[0].Text = script;
+			visitor.Visit(collection[0]);
+			Assert.That (collection[0].Text.StartsWith("Missing"));
+			Assert.That (collection[0].Text.Contains("paramNotExist"));
+		}
+		
+		
 		ReportSettings CreateReportSettings(ParameterCollection parameters)
 		{
 			var reportSettings = new ReportSettings();

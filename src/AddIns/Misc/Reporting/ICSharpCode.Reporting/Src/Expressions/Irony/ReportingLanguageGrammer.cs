@@ -15,6 +15,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony
 	/// </summary>
 	public class ReportingLanguageGrammer:InterpretedLanguageGrammar
 	{
+		private const string exclamationMark = "!";
 		public ReportingLanguageGrammer() :base(caseSensitive : false) {
 			
       this.GrammarComments = 
@@ -56,6 +57,7 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       // SharpReporting
       var ParametersSection = new NonTerminal("ParametersCall",typeof(ParametersCallNode));
       var FieldsSection  = new NonTerminal("FieldsCall",typeof(FieldsNode));
+      var GlobalSection = new NonTerminal("GlobalSection",typeof(GlobalsNode));
       
       // end of SharpReporting
       
@@ -77,6 +79,7 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       // 3. BNF rules
       Expr.Rule = Term | UnExpr | BinExpr | PrefixIncDec | PostfixIncDec | TernaryIfExpr  
       			| ParametersSection
+//      	| GlobalSection
       			| FieldsSection;
       Term.Rule = number | ParExpr | stringLit | FunctionCall | identifier | MemberAccess | IndexedAccess;
       
@@ -96,11 +99,18 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       ArgList.Rule = MakeStarRule(ArgList, comma, Expr);
       FunctionCall.Rule = Expr + PreferShiftHere() + "(" + ArgList + ")";
       
-     // SharpReporting
+      // SharpReporting
+      
+      ParametersSection.Rule = ToTerm("Parameters") + exclamationMark + identifier;
+      FieldsSection.Rule  = ToTerm("Fields") + exclamationMark + identifier;
      
-     ParametersSection.Rule = ToTerm("Parameters") + "!" + identifier;
-     FieldsSection.Rule  = ToTerm("Fields") + "!" + identifier;
-     
+      /*
+      GlobalSection.Rule = GlobalSection + exclamationMark + Symbol("PageNumber")
+      	| GlobalSection + exclamationMark + Symbol("TotalPages")
+      	| GlobalSection + exclamationMark + Symbol("ExecutionTime")
+      	| GlobalSection + exclamationMark + Symbol("ReportFolder")
+      	| GlobalSection + exclamationMark + Symbol("ReportName");
+      */
       // end of SharpReporting
       FunctionCall.NodeCaptionTemplate = "call #{0}(...)";
       

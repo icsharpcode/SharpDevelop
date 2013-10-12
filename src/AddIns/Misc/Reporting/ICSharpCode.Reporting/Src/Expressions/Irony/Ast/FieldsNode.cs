@@ -30,6 +30,9 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			thread.CurrentNode = this;  //standard prolog
 			var container = thread.GetCurrentContainer();
 			var column = (ExportText)container.ExportedItems.Where(x => x.Name == fieldNode.AsString).FirstOrDefault();
+			if (column == null) {
+				return ExpressionHelper.ComposeAstNodeError("Fields",fieldNode);
+			}
 			return	column.Text;
 		}
 	}

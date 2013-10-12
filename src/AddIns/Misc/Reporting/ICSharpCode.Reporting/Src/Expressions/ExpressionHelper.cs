@@ -3,6 +3,7 @@
 using System;
 using System.Globalization;
 using ICSharpCode.Reporting.Globals;
+using Irony.Interpreter.Ast;
 
 namespace ICSharpCode.Reporting.Expressions
 {
@@ -25,6 +26,10 @@ namespace ICSharpCode.Reporting.Expressions
 				return true;
 			}
 			return false;
+		}
+		
+		public static string ComposeAstNodeError (string branch,AstNode node) {
+			return String.Format ("Missing {0} <{1}>",branch,node.AsString);
 		}
 	}
 }

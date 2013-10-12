@@ -30,6 +30,9 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			thread.CurrentNode = this;  //standard prolog
 			var parametersCollection = thread.GetParametersCollection();
 			result = parametersCollection.Find(parameterNode.AsString);
+			if (result == null)
+//				return  String.Format("Missing Parameter <{0}>",parameterNode.AsString);
+				return ExpressionHelper.ComposeAstNodeError("Parameters",parameterNode);
 			return result.ParameterValue;
 		}
 	}
