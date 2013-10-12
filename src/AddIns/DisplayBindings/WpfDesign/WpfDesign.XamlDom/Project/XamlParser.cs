@@ -469,6 +469,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
 			} else if (attribute.LocalName == "IsHidden" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
 				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+			} else if (attribute.LocalName == "IsLocked" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
+				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
 			}
 
 			return null;
