@@ -34,8 +34,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportPage page)
 		{
-			var result = evaluator.Evaluate("5 * 10");
-			Console.WriteLine("ExpressionVisitor page <{0}> {1}",page.PageInfo.PageNumber,result);
+			evaluator.AddPageInfo(page.PageInfo);
 			foreach (var element in page.ExportedItems) {
 				var ac = element as IAcceptor;
 				ac.Accept(this);
@@ -62,6 +61,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 				} catch (Exception e) {
 					var s = String.Format("SharpReport.Exprssions -> {0}",e.Message);
 					Console.WriteLine(s);
+					throw e;
 				}
 			}
 		}

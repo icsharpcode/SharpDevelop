@@ -57,7 +57,7 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       // SharpReporting
       var ParametersSection = new NonTerminal("ParametersCall",typeof(ParametersCallNode));
       var FieldsSection  = new NonTerminal("FieldsCall",typeof(FieldsNode));
-      var GlobalSection = new NonTerminal("GlobalSection",typeof(GlobalsNode));
+//      var GlobalSection = new NonTerminal("GlobalCall",typeof(GlobalsNode));
       
       // end of SharpReporting
       
@@ -79,8 +79,9 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       // 3. BNF rules
       Expr.Rule = Term | UnExpr | BinExpr | PrefixIncDec | PostfixIncDec | TernaryIfExpr  
       			| ParametersSection
-//      	| GlobalSection
+//      			| GlobalSection
       			| FieldsSection;
+      
       Term.Rule = number | ParExpr | stringLit | FunctionCall | identifier | MemberAccess | IndexedAccess;
       
       ParExpr.Rule = "(" + Expr + ")";
@@ -103,7 +104,10 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       
       ParametersSection.Rule = ToTerm("Parameters") + exclamationMark + identifier;
       FieldsSection.Rule  = ToTerm("Fields") + exclamationMark + identifier;
-     
+      
+//      GlobalSection.Rule = ToTerm("Globals") + exclamationMark + "PageNumber";
+
+//		GlobalSection.Rule = ToTerm("Globals") + exclamationMark + ToTerm("PageNumber");
       /*
       GlobalSection.Rule = GlobalSection + exclamationMark + Symbol("PageNumber")
       	| GlobalSection + exclamationMark + Symbol("TotalPages")

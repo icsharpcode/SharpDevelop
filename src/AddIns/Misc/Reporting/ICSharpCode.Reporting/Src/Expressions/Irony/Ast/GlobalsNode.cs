@@ -20,11 +20,17 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 		public override void Init(AstContext context, ParseTreeNode treeNode)
 		{
 			base.Init(context, treeNode);
+			var nodes = treeNode.GetMappedChildNodes();
+			globalNode = AddChild("Args", nodes[2]);
 		}
 		
-		public override void DoSetValue(ScriptThread thread, object value)
+		protected override object DoEvaluate(ScriptThread thread)
 		{
-			base.DoSetValue(thread, value);
+			thread.CurrentNode = this;  //standard prolog
+			var pi = thread.GetPageInfo();
+			
+			return null;
 		}
+		
 	}
 }

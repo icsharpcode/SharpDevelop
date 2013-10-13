@@ -67,6 +67,7 @@
     <Compile Include="src\DataSource\ContributorsList.cs" />
     <Compile Include="src\DataSource\CollectionHandlingFixture.cs" />
     <Compile Include="src\Expressions\InterationTests\FieldsFixture.cs" />
+    <Compile Include="src\Expressions\InterationTests\GlobalsFixture.cs" />
     <Compile Include="src\Expressions\InterationTests\StandardTests.cs" />
     <Compile Include="src\Expressions\InterationTests\ParametersFixture.cs" />
     <Compile Include="src\Expressions\IronyGeneral.cs" />

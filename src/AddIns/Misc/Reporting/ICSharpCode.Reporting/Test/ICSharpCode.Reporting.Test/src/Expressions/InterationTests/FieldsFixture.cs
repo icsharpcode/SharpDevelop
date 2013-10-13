@@ -72,7 +72,5 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 		public void Setup() {
 			expressionVisitor = new ExpressionVisitor(new ReportSettings());
 		}
-		
-		
 	}
 }
