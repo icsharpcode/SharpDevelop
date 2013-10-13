@@ -59,9 +59,9 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 					object result = Evaluate(exportColumn);
 					exportColumn.Text = result.ToString();
 				} catch (Exception e) {
-					var s = String.Format("SharpReport.Exprssions -> {0}",e.Message);
+					var s = String.Format("SharpReport.Exprssions -> {0} for {1}",e.Message,exportColumn.Text);
 					Console.WriteLine(s);
-					throw e;
+//					throw e;
 				}
 			}
 		}

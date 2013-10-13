@@ -116,5 +116,8 @@
   <ItemGroup>
     <EmbeddedResource Include="src\TestReports\FromList.srd" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\TestReports\TestForGlobals.srd" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

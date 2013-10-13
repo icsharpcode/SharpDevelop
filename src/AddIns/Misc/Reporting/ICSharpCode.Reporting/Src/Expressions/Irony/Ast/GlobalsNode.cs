@@ -23,14 +23,36 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			var nodes = treeNode.GetMappedChildNodes();
 			globalNode = AddChild("Args", nodes[2]);
 		}
-		
+		/*
+		"=Globals!PageNumber",
+			"=Globals!TotalPages",
+			"=Globals!ExecutionTime",
+			"=Globals!ReportFolder",
+			"=Globals!ReportName"};
+			*/
+			
 		protected override object DoEvaluate(ScriptThread thread)
 		{
 			thread.CurrentNode = this;  //standard prolog
 			var pi = thread.GetPageInfo();
 			
-			return null;
+			var test = globalNode.AsString.ToLower();
+			if ( test == "pagenumber") {
+				Console.WriteLine("pagenumberr");
+				return pi.PageNumber;
+			} else if (test == "pages") {
+				return pi.TotalPages;
+			} else if (test == "reportname") {
+				return pi.ReportName;
+			} else if (test == "reportfolder") {
+				return pi.ReportFolder;
+			} else if (test == "reportfilename") {
+				return pi.ReportFileName;
+			} 
+			
+			else {
+				return String.Format("Syntaxerror in Globals <{0}>",globalNode.AsString);
+			}
 		}
-		
 	}
 }

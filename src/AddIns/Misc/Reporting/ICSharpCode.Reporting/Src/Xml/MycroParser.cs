@@ -48,7 +48,7 @@ namespace ICSharpCode.Reporting.Xml
 				// instantiate the class
 				string ns=node.Prefix;
 				string cname=node.LocalName;
-				Console.WriteLine ("ProcessNode(XmlNode node, object parent)  {0}",cname);
+//				Console.WriteLine ("ProcessNode(XmlNode node, object parent)  {0}",cname);
 				Type t=GetTypeByName(ns, cname);
 				if (t == null) {
 					Console.WriteLine("\t Not found {0}",t.FullName);
@@ -208,7 +208,7 @@ namespace ICSharpCode.Reporting.Xml
 
 	    static void SetPropertyToString(object obj, PropertyInfo pi, string value)
 		{
-			Console.WriteLine("MP - SetPropertyToString {0} - {1}",pi.Name,value.ToString());
+//			Console.WriteLine("MP - SetPropertyToString {0} - {1}",pi.Name,value.ToString());
 			// it's string, so use a type converter.
 			TypeConverter tc=TypeDescriptor.GetConverter(pi.PropertyType);
 			try

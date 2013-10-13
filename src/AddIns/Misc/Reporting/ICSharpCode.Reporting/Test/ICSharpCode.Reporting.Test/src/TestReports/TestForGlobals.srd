@@ -37,8 +37,24 @@
             <PageBreakAfter>False</PageBreakAfter>
             <Items>
                 <BaseTextItem>
-                    <Location>313, 5</Location>
-                    <Size>100, 20</Size>
+                    <Location>247, 17</Location>
+                    <Size>179, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Segoe UI, 9pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>= 'ReportFileName : ' + Globals!reportfilename</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>ControlText</ForeColor>
+                    <Name>BaseTextItem2147483644</Name>
+                </BaseTextItem>
+                <BaseTextItem>
+                    <Location>16, 17</Location>
+                    <Size>130, 20</Size>
                     <BackColor>White</BackColor>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <StringTrimming>None</StringTrimming>
@@ -47,7 +63,7 @@
                     <CanShrink>False</CanShrink>
                     <DataType>System.String</DataType>
                     <RTL>No</RTL>
-                    <Text>Report1</Text>
+                    <Text>= 'ReportFolder :' + Globals!ReportFolder</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>Black</ForeColor>
@@ -67,19 +83,19 @@
             <PageBreakAfter>False</PageBreakAfter>
             <Items>
                 <BaseTextItem>
-                    <Location>26, 22</Location>
+                    <Location>16, 4</Location>
                     <Size>100, 20</Size>
                     <BackColor>White</BackColor>
-                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
-                    <CanGrow>True</CanGrow>
+                    <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>TestText for Item in PageHeader</Text>
+                    <Text>='Pages ' + Globals!Pages</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
-                    <ForeColor>Black</ForeColor>
+                    <ForeColor>ControlText</ForeColor>
                     <Name>BaseTextItem2147483646</Name>
                 </BaseTextItem>
             </Items>
@@ -94,7 +110,24 @@
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
             <PageBreakAfter>False</PageBreakAfter>
-            <Items />
+            <Items>
+                <BaseTextItem>
+                    <Location>16, 4</Location>
+                    <Size>100, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Segoe UI, 9pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>= 'ReportName : ' + Globals!ReportName</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>ControlText</ForeColor>
+                    <Name>BaseTextItem2147483645</Name>
+                </BaseTextItem>
+            </Items>
             <FrameColor>Black</FrameColor>
             <Name>ReportDetail</Name>
         </BaseSection>
@@ -107,6 +140,22 @@
             <DrawBorder>False</DrawBorder>
             <PageBreakAfter>False</PageBreakAfter>
             <Items>
+                <BaseTextItem>
+                    <Location>16, 4</Location>
+                    <Size>100, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Segoe UI, 9pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>=Globals!SyntaxError</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>ControlText</ForeColor>
+                    <Name>BaseTextItem2147483646</Name>
+                </BaseTextItem>
                 <BaseTextItem>
                     <Location>622, 5</Location>
                     <Size>100, 20</Size>

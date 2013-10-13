@@ -22,7 +22,7 @@ namespace ICSharpCode.Reporting.Test
 		private const string plainReportName = "PlainModel.srd";
 		private const string withTwoItems = "ReportWithTwoItems.srd";
 		private const string fromList = "FromList.srd";
-		
+		private const string globalsTestReport = "TestForGlobals.srd";
 		
 		public static string PlainReportFileName{
 			get{return nameSpace + plainReportName;}
@@ -39,6 +39,9 @@ namespace ICSharpCode.Reporting.Test
 		}
 		
 		
+		public static string TestForGlobals {
+			get {return nameSpace + globalsTestReport;}
+		}
 		public static void ShowDebug(IExportContainer exportContainer)
 		{
 			var visitor = new DebugVisitor();

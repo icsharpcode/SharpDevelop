@@ -207,6 +207,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentLocation = DetailStart;
 		}
 		
+		protected void UpdatePageInfo() {
+			foreach (var page in Pages) {
+				page.PageInfo.TotalPages = Pages.Count;
+			}
+		}
 		
 		protected void RunExpressions(ReportSettings reportsettings)
 		{

@@ -30,9 +30,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.BuildExportList();
 			BuildDetail();
 			base.AddPage(CurrentPage);
-			
-			RunDebugVisitor();
-//			RunExpressions(ReportModel.ReportSettings);
+			UpdatePageInfo();
+//			RunDebugVisitor();
+			RunExpressions(ReportModel.ReportSettings);
 		}
 
 		

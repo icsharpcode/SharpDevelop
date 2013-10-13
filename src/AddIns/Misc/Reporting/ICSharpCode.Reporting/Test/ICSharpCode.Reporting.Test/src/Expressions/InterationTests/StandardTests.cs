@@ -27,7 +27,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests {
 		
 		
 		[Test]
-		[Ignore]
+		
 		public void ReportSyntaxError() {
 			collection[0].Text = "= myText";
 			expressionVisitor.Visit(collection[0]);
