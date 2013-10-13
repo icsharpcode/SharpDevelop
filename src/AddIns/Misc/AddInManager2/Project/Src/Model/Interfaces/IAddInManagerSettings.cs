@@ -6,7 +6,7 @@ using System;
 namespace ICSharpCode.AddInManager2.Model
 {
 	/// <summary>
-	/// Description of ISettings.
+	/// Interface for all settings of AddInManager.
 	/// </summary>
 	public interface IAddInManagerSettings
 	{
@@ -23,6 +23,12 @@ namespace ICSharpCode.AddInManager2.Model
 		}
 		
 		bool ShowPrereleases
+		{
+			get;
+			set;
+		}
+		
+		bool AutoSearchForUpdates
 		{
 			get;
 			set;

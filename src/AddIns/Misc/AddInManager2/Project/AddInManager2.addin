@@ -25,6 +25,10 @@
 			label="${res:AddInManager2.OptionPanel.Tree.AddIns}"
 			insertafter="ToolsOptions">
 			<OptionPanel
+				id="AddInGeneralOptions"
+				label="${res:AddInManager2.OptionPanel.Tree.General}"
+				class="ICSharpCode.AddInManager2.View.PackageOptionsView"/>
+			<OptionPanel
 				id="AddInRepositories"
 				label="${res:AddInManager2.OptionPanel.Tree.Repositories}"
 				class="ICSharpCode.AddInManager2.View.PackageRepositoriesView"/>
