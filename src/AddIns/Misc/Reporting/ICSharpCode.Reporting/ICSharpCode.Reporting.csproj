@@ -50,9 +50,6 @@
     <Reference Include="Irony.Interpreter">
       <HintPath>..\Libraries\Irony.Interpreter.dll</HintPath>
     </Reference>
-    <Reference Include="PdfSharp-WPF">
-      <HintPath>..\Libraries\PdfSharp-WPF.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
