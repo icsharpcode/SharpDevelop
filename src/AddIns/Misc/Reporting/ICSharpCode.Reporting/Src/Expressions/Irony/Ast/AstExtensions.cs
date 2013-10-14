@@ -19,7 +19,11 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			if (pageInfo == null)
 				throw new ArgumentNullException("pageInfo");
 			
-			app.Globals.Add("PageInfo",pageInfo);
+			if (!app.Globals.ContainsKey("PageInfo")) {
+				app.Globals.Add("PageInfo",pageInfo);
+			} else {
+				app.Globals["PageInfo"] = pageInfo;
+			}
 		}
 		
 		
@@ -50,8 +54,11 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 		public static void AddCurrentContainer (this ReportingExpressionEvaluator app,ExportContainer container){
 			if (container == null)
 				throw new ArgumentNullException("container");
-			app.Globals.Add("CurrentContainer",container);
-			
+			if (!app.Globals.ContainsKey("CurrentContainer")) {
+				app.Globals.Add("CurrentContainer",container);
+			} else {
+				app.Globals["CurrentContainer"] = container;
+			}
 		}
 		
 		public static ExportContainer GetCurrentContainer (this ScriptThread thread){
