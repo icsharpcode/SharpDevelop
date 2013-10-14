@@ -16,7 +16,7 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 			get;
 			set;
 		}
-		
+
 		public bool ShowPreinstalledAddIns
 		{
 			get;
@@ -24,6 +24,12 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 		}
 		
 		public bool ShowPrereleases
+		{
+			get;
+			set;
+		}
+		
+		public bool AutoSearchForUpdates
 		{
 			get;
 			set;
