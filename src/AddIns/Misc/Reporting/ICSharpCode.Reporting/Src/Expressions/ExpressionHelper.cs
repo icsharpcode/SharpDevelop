@@ -28,6 +28,7 @@ namespace ICSharpCode.Reporting.Expressions
 			return false;
 		}
 		
+		
 		public static string ComposeAstNodeError (string branch,AstNode node) {
 			return String.Format ("Missing {0} <{1}>",branch,node.AsString);
 		}

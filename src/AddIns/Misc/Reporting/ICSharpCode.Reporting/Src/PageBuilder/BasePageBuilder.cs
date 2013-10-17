@@ -14,6 +14,7 @@ using System.Linq;
 
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter;
+using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
@@ -38,6 +39,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			ReportModel = reportModel;
 			Pages = new Collection<ExportPage>();
 			Graphics = CreateGraphics.FromSize(reportModel.ReportSettings.PageSize);
+			ExpressionVisitor = new ExpressionVisitor(ReportModel.ReportSettings);
 		}
 		
 		
@@ -207,6 +209,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentLocation = DetailStart;
 		}
 		
+		
 		protected void UpdatePageInfo() {
 			foreach (var page in Pages) {
 				page.PageInfo.TotalPages = Pages.Count;
@@ -233,9 +236,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 
 	    protected ExportPage CurrentPage {get; set;}
 		
+	    protected Graphics Graphics {get;private set;}
+	    
 	    internal Point DetailStart {get;private set;}
 	    
 	    internal Point DetailEnds {get; private set;}
+	    
+	    internal ExpressionVisitor ExpressionVisitor {get; private set;}
 	    
 	    internal Rectangle DetailsRectangle {
 	    	get {
@@ -244,8 +251,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 	    	}
 	    }
 	    
-	    protected Graphics Graphics {get;private set;}
 	    
 		public Collection<ExportPage> Pages {get; private set;}
+		
 	}
 }

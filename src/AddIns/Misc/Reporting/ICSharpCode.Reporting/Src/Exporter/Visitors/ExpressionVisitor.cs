@@ -4,9 +4,9 @@ using System;
 using System.Collections.ObjectModel;
 using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Expressions.Irony;
+using ICSharpCode.Reporting.Expressions.Irony.Ast;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
-using ICSharpCode.Reporting.Expressions.Irony.Ast;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
 {
@@ -61,7 +61,6 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 				} catch (Exception e) {
 					var s = String.Format("SharpReport.Exprssions -> {0} for {1}",e.Message,exportColumn.Text);
 					Console.WriteLine(s);
-//					throw e;
 				}
 			}
 		}

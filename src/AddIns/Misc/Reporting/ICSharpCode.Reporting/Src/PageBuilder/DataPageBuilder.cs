@@ -13,7 +13,6 @@ using System.Drawing;
 using System.Linq;
 
 using ICSharpCode.Reporting.DataManager.Listhandling;
-using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.Converter;
@@ -26,6 +25,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// </summary>
 	public class DataPageBuilder:BasePageBuilder
 	{
+		
 		public DataPageBuilder(IReportModel reportModel, Type elementType,IEnumerable list):base(reportModel)
 		{
 			List = list;
@@ -49,25 +49,29 @@ namespace ICSharpCode.Reporting.PageBuilder
 			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
 
 			var position = DetailStart;
-			var collectionSource = new CollectionSource(List,ElementType,ReportModel.ReportSettings);
-			CurrentSection = ReportModel.DetailSection;
 			
+			CurrentSection = ReportModel.DetailSection;
+			var collectionSource = new CollectionSource(List,ElementType,ReportModel.ReportSettings);
 			if(collectionSource.Count > 0) {
 				collectionSource.Bind();
 				CurrentLocation = DetailStart;
 				
 				do {
-					var row = CreateContainerForSection(position);
-					row.Parent = CurrentPage;
+					var row = CreateContainerForSection(CurrentPage,position);
+
 					collectionSource.Fill(CurrentSection.Items);
 					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection.Items);
+					
 					converter.SetParent(row,convertedItems);
+					
 					MeasureAndArrangeContainer(row);
 
 					if (PageFull(row)) {
 						InsertRange(rows);
 						MeasureAndArrangeContainer(row);
 						rows.Clear();
+						ExpressionVisitor.Visit(CurrentPage);
+						CurrentPage.PageInfo.PageNumber = Pages.Count + 1;
 						Pages.Add(CurrentPage);
 						MeasureAndArrangeContainer(row);
 
@@ -81,6 +85,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 					}
 
 					row.ExportedItems.AddRange(convertedItems);
+					ExpressionVisitor.Visit(row as ExportContainer);
 					rows.Add(row);
 					position = new Point(CurrentSection.Location.X,position.Y + row.DesiredSize.Height + 1);
 				}
@@ -297,10 +302,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 
 		
-		IExportContainer CreateContainerForSection(Point location )
+		ExportContainer CreateContainerForSection(ExportPage parent,Point location )
 		{
 			var detail = (ExportContainer)CurrentSection.CreateExportColumn();
 			detail.Location = location;
+			detail.Parent = parent;
 			return detail;
 		}
 		

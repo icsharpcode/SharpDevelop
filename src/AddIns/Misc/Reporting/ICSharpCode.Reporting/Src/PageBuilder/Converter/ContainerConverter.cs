@@ -20,7 +20,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	/// <summary>
 	/// Description of SectionConverter.
 	/// </summary>
-	internal class ContainerConverter : IContainerConverter
+	class ContainerConverter : IContainerConverter
 	{
 		public ContainerConverter(Graphics graphics, Point currentLocation)
 		{
