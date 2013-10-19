@@ -231,48 +231,53 @@ namespace ICSharpCode.Svn.Commands
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
 					SvnMessageView.HandleNotifications(client);
 					
-					Status status = client.SingleStatus(fullName);
-					switch (status.TextStatus) {
-						case StatusKind.None:
-						case StatusKind.Unversioned:
-						case StatusKind.Ignored:
-							break;
-						default:
-							// must be done using the subversion client, even if
-							// AutomaticallyDeleteFiles is off, because we don't want to corrupt the
-							// working copy
-							e.OperationAlreadyDone = true;
-							try {
-								client.Delete(new string[] { fullName }, false);
-							} catch (SvnClientException ex) {
-								LoggingService.Warn("SVN Error" + ex);
-								LoggingService.Warn(ex);
-								
-								if (ex.IsKnownError(KnownError.CannotDeleteFileWithLocalModifications)
-								    || ex.IsKnownError(KnownError.CannotDeleteFileNotUnderVersionControl))
-								{
-									if (MessageService.ShowCustomDialog("${res:AddIns.Subversion.DeleteDirectory}",
-									                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n",
-									                                                       new StringTagPair("File", fullName)) +
-									                                    ex.Message, 0, 1,
-									                                    "${res:AddIns.Subversion.ForceDelete}", "${res:Global.CancelButtonText}")
-									    == 0)
+					try {
+						Status status = client.SingleStatus(fullName);
+						switch (status.TextStatus) {
+							case StatusKind.None:
+							case StatusKind.Unversioned:
+							case StatusKind.Ignored:
+								break;
+							default:
+								// must be done using the subversion client, even if
+								// AutomaticallyDeleteFiles is off, because we don't want to corrupt the
+								// working copy
+								e.OperationAlreadyDone = true;
+								try {
+									client.Delete(new string[] { fullName }, false);
+								} catch (SvnClientException ex) {
+									LoggingService.Warn("SVN Error" + ex);
+									LoggingService.Warn(ex);
+									
+									if (ex.IsKnownError(KnownError.CannotDeleteFileWithLocalModifications)
+									    || ex.IsKnownError(KnownError.CannotDeleteFileNotUnderVersionControl))
 									{
-										try {
-											client.Delete(new string[] { fullName }, true);
-										} catch (SvnClientException ex2) {
+										if (MessageService.ShowCustomDialog("${res:AddIns.Subversion.DeleteDirectory}",
+										                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n",
+										                                                       new StringTagPair("File", fullName)) +
+										                                    ex.Message, 0, 1,
+										                                    "${res:AddIns.Subversion.ForceDelete}", "${res:Global.CancelButtonText}")
+										    == 0)
+										{
+											try {
+												client.Delete(new string[] { fullName }, true);
+											} catch (SvnClientException ex2) {
+												e.Cancel = true;
+												MessageService.ShowError(ex2.Message);
+											}
+										} else {
 											e.Cancel = true;
-											MessageService.ShowError(ex2.Message);
 										}
 									} else {
 										e.Cancel = true;
+										MessageService.ShowError(ex.Message);
 									}
-								} else {
-									e.Cancel = true;
-									MessageService.ShowError(ex.Message);
 								}
-							}
-							break;
+								break;
+						}
+					} catch (SvnClientException ex3) {
+						e.Cancel = true;
+						MessageService.ShowError(ex3.Message);
 					}
 				}
 				return;
