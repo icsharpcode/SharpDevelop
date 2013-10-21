@@ -42,15 +42,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 			ExpressionVisitor = new ExpressionVisitor(ReportModel.ReportSettings);
 		}
 		
+		#region create Report Sections
 		
-		protected ExportPage InitNewPage(){
-			var pi = CreatePageInfo();
-			return new ExportPage(pi,ReportModel.ReportSettings.PageSize);
-		}
-		
-		#region create Sections
-		
-		protected void BuildReportHeader()
+		void BuildReportHeader()
 		{
 			if (Pages.Count == 0) {
 				var header = CreateSection(ReportModel.ReportHeader,CurrentLocation);
@@ -61,7 +55,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		protected void BuildPageHeader()
+		void BuildPageHeader()
 		{
 			var pageHeader = CreateSection(ReportModel.PageHeader,CurrentLocation);
 			DetailStart = new Point(ReportModel.ReportSettings.LeftMargin,pageHeader.Location.Y + pageHeader.DesiredSize.Height +1);
@@ -69,7 +63,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		protected void BuildPageFooter()
+		void BuildPageFooter()
 		{
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
@@ -77,6 +71,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 			var pageFooter = CreateSection(ReportModel.PageFooter,CurrentLocation);	
 			DetailEnds = new Point(pageFooter.Location.X + pageFooter.Size.Width,pageFooter.Location.Y -1);
 			AddSectionToPage(pageFooter);
+		}
+		
+		
+		void AddSectionToPage(IExportContainer header)
+		{
+			header.Parent = CurrentPage;
+			CurrentPage.ExportedItems.Add(header);
 		}
 		
 		
@@ -90,43 +91,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 			AddSectionToPage(reportFooter);
 		}
 		
-		#endregion
-		
-		protected virtual ExportPage CreateNewPage()
-		{
-			var page = InitNewPage();
-			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.TopMargin);
-			return page;
-		}
-		
 		
 		protected void  WriteStandardSections() {
 			this.BuildReportHeader();
 			BuildPageHeader();
 			BuildPageFooter();
-		}
-		
-		protected bool PageFull(IExportColumn column)
-		{
-			var rectToPrint = new Rectangle(column.Location,column.Size);
-			var rr = new Rectangle(new Point(column.Location.X + DetailsRectangle.Location.X,column.Location.Y + DetailsRectangle.Location.Y),
-			                                column.Size);
-			if (!DetailsRectangle.Contains(rr)) {
-				return  true;
-			}
-			return false;
-		}
-		
-		
-		protected bool old_PageFull(List<IExportColumn> columns)
-		{
-			var rectToPrint = new Rectangle(columns[0].Location,columns[0].Size);
-			var rr = new Rectangle(new Point(columns[0].Location.X + DetailsRectangle.Location.X,columns[0].Location.Y + DetailsRectangle.Location.Y),
-			                                columns[0].Size);
-			if (!DetailsRectangle.Contains(rr)) {
-				return  true;
-			}
-			return false;
 		}
 		
 		
@@ -137,16 +106,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 			return false;
 		}
 		
-//		protected bool row_PageFull(IExportContainer row) {
-//			var rectToPrint = new Rectangle(new Point(row.Location.X,row.Location.Y + DetailsRectangle.Location.Y),
-//			                                row.DesiredSize);
-//			if (!DetailsRectangle.Contains(rectToPrint)) {
-//				return  true;
-//			}
-//			return false;
-//		}
+		#endregion
 		
-		
+
 		protected IExportContainer CreateSection(IReportContainer container,Point location)
 		{
 			var containerConverter = new ContainerConverter(Graphics, location);
@@ -162,13 +124,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			return convertedContainer;
 		}
 		
-		
-		protected void AddSectionToPage(IExportContainer header)
-		{
-			header.Parent = CurrentPage;
-			CurrentPage.ExportedItems.Add(header);
-		}
-		
+		#region Arrange and Measure
 		
 		protected Size MeasureElement (IExportColumn element) {
 			var measureStrategy = element.MeasurementStrategy();
@@ -182,6 +138,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 			exportArrange.Arrange(exportContainer);
 		}
 
+		#endregion
+		
+		#region Pagehandling
 		
 		IPageInfo CreatePageInfo()
 		{
@@ -192,7 +151,19 @@ namespace ICSharpCode.Reporting.PageBuilder
 			return pi;
 		}
 		
-
+		ExportPage InitNewPage(){
+			var pi = CreatePageInfo();
+			return new ExportPage(pi,ReportModel.ReportSettings.PageSize);
+		}
+		
+		
+		protected virtual ExportPage CreateNewPage()
+		{
+			var page = InitNewPage();
+			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.TopMargin);
+			return page;
+		}
+		
 		protected virtual  void AddPage(ExportPage page) {
 			if (Pages.Count == 0) {
 				page.IsFirstPage = true;
@@ -203,7 +174,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		public virtual void BuildExportList()
 		{
-			this.Pages.Clear();
+			Pages.Clear();
 			CurrentPage = CreateNewPage ();
 			WriteStandardSections();
 			CurrentLocation = DetailStart;
@@ -215,6 +186,10 @@ namespace ICSharpCode.Reporting.PageBuilder
 				page.PageInfo.TotalPages = Pages.Count;
 			}
 		}
+		
+		#endregion
+		
+		#region Visitors
 		
 		protected void RunExpressions(ReportSettings reportsettings)
 		{
@@ -229,6 +204,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			d.Run();
 		}
 		
+		#endregion
 		
 		protected IReportModel ReportModel {get; private set;}
 		
