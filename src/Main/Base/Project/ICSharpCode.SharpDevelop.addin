@@ -33,6 +33,7 @@
 			<ConditionEvaluator name="IsTextSelected" class="ICSharpCode.SharpDevelop.Editor.TextSelectedCondition"/>
 			<ConditionEvaluator name="ViewInBrowser" class="ICSharpCode.SharpDevelop.ViewInBrowserConditionEvaluator"/>
 			<ConditionEvaluator name="ProjectBehaviorSupported" class="ICSharpCode.SharpDevelop.Project.ProjectBehaviorSupportedConditionEvaluator"/>
+			<ConditionEvaluator name="SymbolTypeAtCaret" class="ICSharpCode.SharpDevelop.Internal.ConditionEvaluators.SymbolTypeAtCaretConditionEvaluator"/>
 			
 			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
 			<Doozer name="CustomProperty" class="ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer"/>
@@ -2046,6 +2047,9 @@
 		
 		<MenuItem id = "Separator2" type = "Separator" />
 		-->
+		<Condition name="SymbolTypeAtCaret" type="local,member" action="Exclude">
+			<MenuItem id = "Separator2" type = "Separator" />
+		</Condition>
 		<MenuItem id = "Comment"
 		          icon  = "Icons.16x16.CommentRegion"
 		          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"

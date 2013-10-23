@@ -272,6 +272,7 @@
     <Compile Include="Src\Gui\Pads\TaskList\TaskViewResources.xaml.cs">
       <DependentUpon>TaskViewResources.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Src\Internal\ConditionEvaluators\SymbolTypeAtCaretConditionEvaluator.cs" />
     <Compile Include="Src\Internal\Templates\StringParserPropertyContainer.cs" />
     <Compile Include="Src\Project\MSBuildConfigurationOrPlatformNameCollection.cs" />
     <Compile Include="Templates\FileTemplate.cs" />
