@@ -33,7 +33,6 @@ namespace MSHelpSystem.Core
 				return false;
 			}
 			string helpCatalogUrl = string.Format(@"ms-xhelp://?method=page&id=-1&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam);
-			LoggingService.Debug(string.Format("Help 3.0: {0}", helpCatalogUrl));
 			DisplayLocalHelp(helpCatalogUrl);
 			return true;
 		}
@@ -54,7 +53,6 @@ namespace MSHelpSystem.Core
 				return false;
 			}
 			string helpPageUrl = string.Format(@"ms-xhelp://?method=page&id={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, pageId);
-			LoggingService.Debug(string.Format("Help 3.0: {0}", helpPageUrl));
 			DisplayLocalHelp(helpPageUrl);
 			return true;
 		}
@@ -72,7 +70,6 @@ namespace MSHelpSystem.Core
 				return false;
 			}
 			string helpContextualUrl = string.Format(@"ms-xhelp://?method=f1&query={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, contextual);
-			LoggingService.Debug(string.Format("Help 3.0: {0}", helpContextualUrl));
 			DisplayLocalHelp(helpContextualUrl);
 			return true;
 		}
@@ -90,7 +87,6 @@ namespace MSHelpSystem.Core
 				return false;
 			}
 			string helpSearchUrl = string.Format(@"ms-xhelp://?method=search&query={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, searchWords.Replace(" ", "+"));
-			LoggingService.Debug(string.Format("Help 3.0: {0}", helpSearchUrl));
 			DisplayLocalHelp(helpSearchUrl);
 			return true;
 		}
@@ -111,7 +107,6 @@ namespace MSHelpSystem.Core
 				return false;
 			}
 			string helpKeywordsUrl = string.Format(@"ms-xhelp://?method=keywords&query={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, keywords.Replace(" ", "+"));
-			LoggingService.Debug(string.Format("Help 3.0: {0}", helpKeywordsUrl));
 			DisplayLocalHelp(helpKeywordsUrl);
 			return true;
 		}
@@ -133,7 +128,9 @@ namespace MSHelpSystem.Core
 				Thread.Sleep(0x3e8);
 			}
 			string helpUrl = string.Format(@"{0}{1}{2}",
-			                               arguments, ProjectLanguages.GetCurrentLanguageAsHttpParam(), (embedded)?"&embedded=true":string.Empty);
+			                               arguments,
+			                               ProjectLanguages.CurrentLanguageAsHttpParam,
+			                               (embedded)?"&embedded=true":string.Empty);
 
 			if (Help3Service.Config.ExternalHelp) {
 				DisplayHelpWithShellExecute(helpUrl);
@@ -141,7 +138,7 @@ namespace MSHelpSystem.Core
 			}
 			BrowserPane browser = ActiveHelp3Browser();
 			if (browser != null) {
-				LoggingService.Info(string.Format("Help 3.0: Navigating to {0}", helpUrl));
+				LoggingService.Info(string.Format("HelpViewer: DisplayLocalHelp calls \"{0}\"", helpUrl));
 				browser.Navigate(Help3Environment.GetHttpFromMsXHelp(helpUrl));
 				browser.WorkbenchWindow.SelectWindow();
 			}
@@ -161,7 +158,7 @@ namespace MSHelpSystem.Core
 				p.WaitForInputIdle();
 			}
 			catch (Exception ex) {
-				LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+				LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 			}
 		}
 
@@ -178,7 +175,7 @@ namespace MSHelpSystem.Core
 			}
 			BrowserPane browser = ActiveHelp3Browser();
 			if (browser != null) {
-				LoggingService.Info(string.Format("Help 3.0: Navigating to {0}", msdnUrl));
+				LoggingService.Info(string.Format("HelpViewer: DisplayHelpOnMSDN calls \"{0}\"", msdnUrl));
 				browser.Navigate(msdnUrl);
 				browser.WorkbenchWindow.SelectWindow();
 			}
@@ -192,7 +189,7 @@ namespace MSHelpSystem.Core
 			string msdnUrl = string.Format(@"http://social.msdn.microsoft.com/Search/{0}/?query={1}&ac=3", CultureInfo.CurrentUICulture.ToString(), searchWords.Replace(" ", "+"));
 			BrowserPane browser = ActiveHelp3Browser();
 			if (browser != null) {
-				LoggingService.Info(string.Format("Help 3.0: Navigating to {0}", msdnUrl));
+				LoggingService.Info(string.Format("HelpViewer: DisplaySearchOnMSDN calls \"{0}\"", msdnUrl));
 				browser.Navigate(msdnUrl);
 				browser.WorkbenchWindow.SelectWindow();
 			}

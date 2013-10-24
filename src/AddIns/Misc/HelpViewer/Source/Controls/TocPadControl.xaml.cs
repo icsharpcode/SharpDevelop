@@ -35,7 +35,7 @@ namespace MSHelpSystem.Controls
 		{
 			string topicId = (string)tocTreeView.SelectedValue;
 			if (!string.IsNullOrEmpty(topicId)) {
-				LoggingService.Debug(string.Format("Help 3.0: [TOC] Calling page with Id \"{0}\"", topicId));
+				LoggingService.Debug(string.Format("HelpViewer: TocItemChanged to ID \"{0}\"", topicId));
 				DisplayHelp.Page(topicId);
 			}
 		}

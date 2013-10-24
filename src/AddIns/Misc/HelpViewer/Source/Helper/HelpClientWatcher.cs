@@ -97,7 +97,7 @@ namespace MSHelpSystem.Helper
 				}
 			}
 			catch (Exception ex) {
-				LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+				LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 			}
 			return "offline";
 		}
@@ -105,7 +105,7 @@ namespace MSHelpSystem.Helper
 		static void SetHelpMode()
 		{
 			clientFileChanged.EnableRaisingEvents = false;
-			LoggingService.Info(string.Format("Help 3.0: Trying to set Help mode to \"{0}\"", helpMode));
+			LoggingService.Info(string.Format("HelpViewer: Trying to set help mode to \"{0}\"", helpMode));
 
 			Configuration config = null;
 			try {
@@ -136,7 +136,7 @@ namespace MSHelpSystem.Helper
 				}
 			}
 			catch (Exception ex) {
-				LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+				LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 			}
 			clientFileChanged.EnableRaisingEvents = true;
 		}
