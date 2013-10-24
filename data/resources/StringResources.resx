@@ -287,7 +287,7 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
     <value>View License Terms</value>
   </data>
   <data name="AddInManager2.DisableDependentWarning" xml:space="preserve">
-    <value>Following installed AddIns are dependent from "{0}":
+    <value>Following installed AddIns are depending on "{0}":
 
 {1}
 
@@ -329,6 +329,9 @@ If you do not agree to the license terms click "I Decline".</value>
   <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
     <value>Add</value>
   </data>
+  <data name="AddInManager2.OptionPanel.AutoCheckForUpdates" xml:space="preserve">
+    <value>Automatically check for updates</value>
+  </data>
   <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
     <value>Move Down</value>
   </data>
@@ -347,11 +350,14 @@ If you do not agree to the license terms click "I Decline".</value>
   <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
     <value>AddIns</value>
   </data>
+  <data name="AddInManager2.OptionPanel.Tree.General" xml:space="preserve">
+    <value>General</value>
+  </data>
   <data name="AddInManager2.OptionPanel.Tree.Repositories" xml:space="preserve">
     <value>Repositories</value>
   </data>
   <data name="AddInManager2.RemoveDependentWarning" xml:space="preserve">
-    <value>Following installed AddIns are dependent from "{0}":
+    <value>Following installed AddIns are depending on "{0}":
 
 {1}
 
@@ -420,11 +426,14 @@ They will stop working after removing this AddIn! Are you sure you want to conti
     <value>Help Library</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
-    <value>Help Mode</value>
+    <value>Set Help Preference</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
     <value>Cannot launch Help Library Manager, because there is no help catalog installed/selected. Please check your help settings (see Tools &gt; Options &gt; Tools &gt; Microsoft Help Viewer).</value>
     <comment>Error message when there is no help catalog active</comment>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotAvailableDownloadWinSDK" xml:space="preserve">
+    <value>The Help Library Manager was not found. In order to use SharpDevelop's help feature please download and install Microsoft's Windows SDK 7.1.</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>Help Library Manager was not found. Please check if it was installed correctly.</value>
@@ -454,7 +463,7 @@ They will stop working after removing this AddIn! Are you sure you want to conti
     <value>Show Help</value>
   </data>
   <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
-    <value>Use external help</value>
+    <value>Use external help viewer</value>
   </data>
   <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
     <value>I want to use local help</value>
@@ -2079,6 +2088,12 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
     <value>Debugging</value>
     <comment>The root node in the options dialog</comment>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.AskForArguments" xml:space="preserve">
+    <value>Ask for arguments and working directory on executable launch.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
+    <value>Break at first line of execution.</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
     <value>Enable decompiler</value>
   </data>
@@ -2126,6 +2141,9 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption" xml:space="preserve">
     <value>Symbol and source code paths:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.WithoutSource" xml:space="preserve">
+    <value>Without Source Debugging</value>
   </data>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel" xml:space="preserve">
     <value>&amp;Header</value>
@@ -2958,14 +2976,14 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Source</value>
   </data>
-  <data name="Gloabl.Advanced" xml:space="preserve">
-    <value>Advanced</value>
-  </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Abort</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Add</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Advanced</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Back</value>
@@ -5225,6 +5243,9 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Bookmarks</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.AddToWorkspace" xml:space="preserve">
+    <value>Add to workspace</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.BackButton.ToolTip" xml:space="preserve">
     <value>Back</value>
   </data>
@@ -5264,8 +5285,23 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.ClassBrowser.NoResultsFound" xml:space="preserve">
     <value>No search results found.</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyButton.ToolTip" xml:space="preserve">
+    <value>Open assembly</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromFile" xml:space="preserve">
+    <value>Open assembly from file...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC" xml:space="preserve">
+    <value>Open assembly from GAC...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenInClassBrowser" xml:space="preserve">
+    <value>Open in Class Browser</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.SearchButton.ToolTip" xml:space="preserve">
     <value>Class View Search</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.Workspace" xml:space="preserve">
+    <value>Workspace {0}</value>
   </data>
   <data name="MainWindow.Windows.ClassScoutLabel" xml:space="preserve">
     <value>Classes</value>
@@ -5377,6 +5413,9 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   </data>
   <data name="MainWindow.Windows.Debug.Console" xml:space="preserve">
     <value>Console</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.DebugExecutable" xml:space="preserve">
+    <value>Debug executable</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Break" xml:space="preserve">
     <value>Break</value>
@@ -5763,6 +5802,9 @@ Shows the full callstack of the error.</comment>
     <value>in</value>
     <comment>used like this: occurrences IN files</comment>
   </data>
+  <data name="MainWindow.Windows.SearchResultPanel.NoProject" xml:space="preserve">
+    <value>&lt;no project&gt;</value>
+  </data>
   <data name="MainWindow.Windows.SearchResultPanel.OccurrencesCount" xml:space="preserve">
     <value>${Count} occurrences</value>
   </data>
@@ -5777,6 +5819,12 @@ Shows the full callstack of the error.</comment>
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.PerFile" xml:space="preserve">
     <value>Per file</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProject" xml:space="preserve">
+    <value>Per project</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProjectAndFile" xml:space="preserve">
+    <value>Per project and file</value>
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip" xml:space="preserve">
     <value>Select search list mode</value>
@@ -6468,6 +6516,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="SharpDevelop.Refactoring.OverridesOf" xml:space="preserve">
     <value>Overrides of ${Name}</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.PartsOfClass" xml:space="preserve">
+    <value>Parts of ${Name}</value>
   </data>
   <data name="SharpDevelop.Refactoring.ReferencesTo" xml:space="preserve">
     <value>References to ${Name}</value>

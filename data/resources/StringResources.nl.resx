@@ -290,7 +290,7 @@
 
 {1}
 
-Ze stoppen met werken als deze AddIn uitgeschakeld wordt. Wilt u doorgaan?</value>
+Ze stoppen met werken nadat deze AddIn wordt uitgeschakeld. Weet u zeker dat u wilt doorgaan?</value>
   </data>
   <data name="AddInManager2.InstallDependentMessage" xml:space="preserve">
     <value>Package "{0}" heeft tenminste één toegevoegde package nodig:
@@ -353,7 +353,7 @@ Als u het niet eens bent met de licentie voorwaarden, klik dan de "Ik weiger" kn
 
 {1}
 
-Deze stoppen met werken na verwijderen van deze AddIn.</value>
+Deze stoppen met werken nadat deze AddIn wordt  verwijderd. Weet u zeker dat u wilt doorgaan?</value>
   </data>
   <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
     <value>SharpDevelop AddIns|*.sdaddin;*.addin|Alle bestanden|*.*</value>
@@ -2020,6 +2020,12 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Foutopsporing</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.AskForArguments" xml:space="preserve">
+    <value>Vraag naar argumenten en werkmap bij starten uitvoerend bestand.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
+    <value>Breek op de eerste uitvoeringsregel.</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
     <value>Decompiler inschakelen</value>
   </data>
@@ -2067,6 +2073,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption" xml:space="preserve">
     <value>Symbool- en broncodepaden:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.WithoutSource" xml:space="preserve">
+    <value>Zonder broncode fout-opsporing.</value>
   </data>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel" xml:space="preserve">
     <value>&amp;Koptekst</value>
@@ -2879,14 +2888,14 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Bron</value>
   </data>
-  <data name="Gloabl.Advanced" xml:space="preserve">
-    <value>Uitgebreid</value>
-  </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Afbreken</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Toevoegen</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Uitgebreid</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Terug</value>
@@ -3739,6 +3748,12 @@ Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ReverseSearchStatusBarMessage" xml:space="preserve">
     <value>Omgekeerd aanvullend zoeken:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyInvalid" xml:space="preserve">
+    <value>{0} is ongeldig als .NET assembly</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyNotAccessible" xml:space="preserve">
+    <value>{0} is niet toegankelijk of bestaat niet meer.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.ErrorLoadingCodeCompletionInformation" xml:space="preserve">
     <value>Fout bij laden van code-completering informatie voor ${Assembly} van ${Filename}:</value>
@@ -4638,6 +4653,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Visual Studio extensie</value>
   </data>
+  <data name="ICSharpCode.WpfDesign.AddIn.ThumbnailViewPad" xml:space="preserve">
+    <value>WPF ontwerper thumbnail overzicht</value>
+  </data>
   <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
     <value>Kopieëren</value>
   </data>
@@ -4938,6 +4956,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Bladwijzers</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.AddToWorkspace" xml:space="preserve">
+    <value>Toevoegen aan werkruimte</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.BackButton.ToolTip" xml:space="preserve">
     <value>Vorige</value>
   </data>
@@ -4977,8 +4998,23 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.ClassBrowser.NoResultsFound" xml:space="preserve">
     <value>Géén zoekresultaten gevonden.</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyButton.ToolTip" xml:space="preserve">
+    <value>Open assembly...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromFile" xml:space="preserve">
+    <value>Open assembly vanuit bestand...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC" xml:space="preserve">
+    <value>Assembly openen vanuit GAK...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenInClassBrowser" xml:space="preserve">
+    <value>Open in de klasse  bladeraar</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.SearchButton.ToolTip" xml:space="preserve">
     <value>Zoeken in Klassen Overzicht</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.Workspace" xml:space="preserve">
+    <value>Werkruimte {0}</value>
   </data>
   <data name="MainWindow.Windows.ClassScoutLabel" xml:space="preserve">
     <value>Klassen Overzicht</value>
@@ -5087,6 +5123,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.Console" xml:space="preserve">
     <value>Console</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.DebugExecutable" xml:space="preserve">
+    <value>Fout-opsporen in uitvoerend bestand</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Break" xml:space="preserve">
     <value>Onderbreken</value>
@@ -5445,6 +5484,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.SearchResultPanel.In" xml:space="preserve">
     <value>in</value>
   </data>
+  <data name="MainWindow.Windows.SearchResultPanel.NoProject" xml:space="preserve">
+    <value>&lt;geen project&gt;</value>
+  </data>
   <data name="MainWindow.Windows.SearchResultPanel.OccurrencesCount" xml:space="preserve">
     <value>${Count} resultaten</value>
   </data>
@@ -5459,6 +5501,12 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.PerFile" xml:space="preserve">
     <value>Per bestand</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProject" xml:space="preserve">
+    <value>Per project</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProjectAndFile" xml:space="preserve">
+    <value>Per project en bestand</value>
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip" xml:space="preserve">
     <value>Selecteer de zoeklijst modus</value>
@@ -6116,6 +6164,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="SharpDevelop.Refactoring.OverridesOf" xml:space="preserve">
     <value>Overschrijvingen van $(Name)</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.PartsOfClass" xml:space="preserve">
+    <value>Delen van ${Name}</value>
   </data>
   <data name="SharpDevelop.Refactoring.ReferencesTo" xml:space="preserve">
     <value>Referenties met ${Name}</value>
