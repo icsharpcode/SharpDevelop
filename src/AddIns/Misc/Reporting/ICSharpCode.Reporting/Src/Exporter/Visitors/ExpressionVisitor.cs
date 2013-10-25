@@ -19,6 +19,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		readonly ReportingLanguageGrammer grammar;
 		readonly ReportingExpressionEvaluator evaluator;
 		
+		
 		public ExpressionVisitor(Collection<ExportPage> pages,ReportSettings reportSettings):this(reportSettings)
 		{
 			this.pages = pages;
@@ -59,7 +60,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 					object result = Evaluate(exportColumn);
 					exportColumn.Text = result.ToString();
 				} catch (Exception e) {
-					var s = String.Format("SharpReport.Exprssions -> {0} for {1}",e.Message,exportColumn.Text);
+					var s = String.Format("SharpReport.Expressions -> {0} for {1}",e.Message,exportColumn.Text);
 					Console.WriteLine(s);
 				}
 			}
@@ -72,5 +73,10 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			var result = evaluator.Evaluate(str);
 			return result;
 		}
+		
+		public ReportingExpressionEvaluator Evaluator {
+			get { return evaluator; }
+		}
+		
 	}
 }

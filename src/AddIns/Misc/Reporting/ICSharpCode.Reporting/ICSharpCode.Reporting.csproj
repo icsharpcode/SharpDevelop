@@ -95,7 +95,11 @@
     <Compile Include="Src\DataSource\DataCollection.cs" />
     <Compile Include="Src\DataSource\ExtendedPropertyDescriptor.cs" />
     <Compile Include="Src\DataSource\ExtendedTypeDescriptor.cs" />
+    <Compile Include="Src\DataSource\FieldMemberAccessor.cs" />
+    <Compile Include="Src\DataSource\PropertyMemberAccessore.cs" />
+    <Compile Include="Src\DataSource\PropertyPath.cs" />
     <Compile Include="Src\DataSource\PropertyTypeHash.cs" />
+    <Compile Include="Src\DataSource\ReflectionExtension.cs" />
     <Compile Include="Src\Exporter\BaseExporter.cs" />
     <Compile Include="Src\Exporter\DebugExporter.cs" />
     <Compile Include="Src\Exporter\Visitors\CanvasExtension.cs" />
@@ -115,8 +119,10 @@
     <Compile Include="Src\Expressions\Irony\Ast\GlobalsNode.cs" />
     <Compile Include="Src\Expressions\Irony\Ast\ParametersCallNode.cs" />
     <Compile Include="Src\Expressions\Irony\ExpressionEvaluator.cs" />
+    <Compile Include="Src\Expressions\Irony\Imports\ImportAggregates.cs" />
     <Compile Include="Src\Expressions\Irony\ReportingLanguageGrammer.cs" />
     <Compile Include="Src\Expressions\Irony\ReportingLanguageRuntime.cs" />
+    <Compile Include="Src\Expressions\TypeNormalizer.cs" />
     <Compile Include="Src\Factories\ExportColumnFactory.cs" />
     <Compile Include="Src\Factories\ReportCreatorFactory.cs" />
     <Compile Include="Src\Globals\CreateGraphics.cs" />
@@ -166,6 +172,7 @@
     <Folder Include="Src\Exporter\Visitors" />
     <Folder Include="Src\Expressions\Irony" />
     <Folder Include="Src\Expressions\Irony\Ast" />
+    <Folder Include="Src\Expressions\Irony\Imports" />
     <Folder Include="Src\Interfaces" />
     <Folder Include="Src\Globals" />
     <Folder Include="Src" />

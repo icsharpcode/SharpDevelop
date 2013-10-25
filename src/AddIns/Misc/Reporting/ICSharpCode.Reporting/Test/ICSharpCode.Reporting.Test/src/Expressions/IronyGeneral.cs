@@ -62,6 +62,7 @@ namespace ICSharpCode.Reporting.Test.Expressions
 			Assert.AreEqual(11.0, (double) result, 0.001, "Unexpected computation result");
 		}
 		
+			
 		#endregion
 		
 		[SetUp]

@@ -66,12 +66,13 @@
   <ItemGroup>
     <Compile Include="src\DataSource\ContributorsList.cs" />
     <Compile Include="src\DataSource\CollectionHandlingFixture.cs" />
-    <Compile Include="src\Expressions\InterationTests\FieldsFixture.cs" />
-    <Compile Include="src\Expressions\InterationTests\GlobalsFixture.cs" />
-    <Compile Include="src\Expressions\InterationTests\StandardTests.cs" />
-    <Compile Include="src\Expressions\InterationTests\ParametersFixture.cs" />
+    <Compile Include="src\Expressions\Aggregates\AggregateFuctionHelper.cs" />
+    <Compile Include="src\Expressions\Aggregates\SumAggregate.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\FieldsFixture.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\GlobalsFixture.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\StandardTests.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\ParametersFixture.cs" />
     <Compile Include="src\Expressions\IronyGeneral.cs" />
-    <Compile Include="src\Expressions\ParametersHandlingFixture.cs" />
     <Compile Include="src\MeasureArrange\ContainerArrangeStrategyFixture.cs" />
     <Compile Include="src\Model\ReportModelFixture.cs" />
     <Compile Include="src\Model\ReportSettingsFixture.cs" />
@@ -91,7 +92,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src" />
-    <Folder Include="src\Expressions\InterationTests" />
+    <Folder Include="src\Expressions\IntegrationTests" />
+    <Folder Include="src\Expressions\Aggregates" />
     <Folder Include="src\Model" />
     <Folder Include="src\DataSource" />
     <Folder Include="src\MeasureArrange" />

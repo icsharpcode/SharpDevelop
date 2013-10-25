@@ -48,7 +48,7 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       // 2. Non-terminals
       var Term = new NonTerminal("Term");
       var BinExpr = new NonTerminal("BinExpr", typeof(BinaryOperationNode));
-      var ParExpr = new NonTerminal("ParExpr");
+      var ParExpr = new NonTerminal("ParExsumpr");
       var UnExpr = new NonTerminal("UnExpr", typeof(UnaryOperationNode));
       var TernaryIfExpr = new NonTerminal("TernaryIf", typeof(IfNode));
       var ArgList = new NonTerminal("ArgList", typeof(ExpressionListNode));
@@ -105,18 +105,10 @@ bool operations &,&&, |, ||; ternary '?:' operator." ;
       ParametersSection.Rule = ToTerm("Parameters") + exclamationMark + identifier;
       FieldsSection.Rule  = ToTerm("Fields") + exclamationMark + identifier;
       
-     GlobalSection.Rule = ToTerm("Globals") + exclamationMark + identifier;
+      GlobalSection.Rule = ToTerm("Globals") + exclamationMark + identifier;
 
-//	GlobalSection.Rule = ToTerm("Globals") + exclamationMark + ToTerm("PageNumber");
-    
-	/*
-      GlobalSection.Rule = GlobalSection + exclamationMark + Symbol("PageNumber")
-      	| GlobalSection + exclamationMark + Symbol("TotalPages")
-      	| GlobalSection + exclamationMark + Symbol("ExecutionTime")
-      	| GlobalSection + exclamationMark + Symbol("ReportFolder")
-      	| GlobalSection + exclamationMark + Symbol("ReportName");
-      */
       // end of SharpReporting
+      
       FunctionCall.NodeCaptionTemplate = "call #{0}(...)";
       
       ObjectRef.Rule = identifier | MemberAccess | IndexedAccess;

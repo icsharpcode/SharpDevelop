@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Linq;
+using ICSharpCode.Reporting.Expressions.Irony.Imports;
 using Irony.Interpreter;
 using Irony.Parsing;
 
@@ -21,14 +22,15 @@ namespace ICSharpCode.Reporting.Expressions.Irony
 			base.Init();
 			//add built-in methods, special form IIF, import Math and Environment methods
 //			BuiltIns.AddMethod(BuiltInPrintMethod, "print");
-			BuiltIns.AddMethod(BuiltInFormatMethod, "format");
+//			BuiltIns.AddMethod(BuiltInFormatMethod, "format");
 			
 			BuiltIns.AddSpecialForm(SpecialFormsLibrary.Iif, "iif", 3, 3);
 			BuiltIns.ImportStaticMembers(typeof(System.Math));
 			BuiltIns.ImportStaticMembers(typeof(Environment));
+			BuiltIns.AddSpecialForm(ImportAggregates.Sum,"sum",1,1);
 		}
 		
-		
+		/*
 		private object BuiltInPrintMethod(ScriptThread thread, object[] args) {
 			string text = string.Empty;
 			switch(args.Length) {
@@ -44,7 +46,9 @@ namespace ICSharpCode.Reporting.Expressions.Irony
 			thread.App.WriteLine(text);
 			return null;
 		}
+		*/
 		
+		/*
 		private object BuiltInFormatMethod(ScriptThread thread, object[] args) {
 			if (args == null || args.Length == 0) return null;
 			var template = args[0] as string;
@@ -57,6 +61,6 @@ namespace ICSharpCode.Reporting.Expressions.Irony
 			return text;
 			
 		}
-		
+		*/
 	}
 }
