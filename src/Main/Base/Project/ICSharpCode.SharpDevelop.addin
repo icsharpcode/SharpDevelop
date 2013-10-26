@@ -2026,6 +2026,26 @@
 	</Path>-->
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
+		<Condition name="SymbolTypeAtCaret" type="member,type,local" action="Exclude">
+			<MenuItem id = "GotoDefinition"
+			          label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
+			          shortcut = "Control|Return"
+			          icon="Icons.16x16.SelectionArrow"
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.GoToDefinition"/>
+			
+			<MenuItem id = "FindReferences"
+			          label = "${res:SharpDevelop.Refactoring.FindReferences}"
+			          shortcut = "F12"
+			          icon="Icons.16x16.SelectionArrow"
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
+			
+			<MenuItem id = "Rename"
+			          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
+			          shortcut="Ctrl+R"
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.RenameSymbolCommand"/>
+			
+			<MenuItem id = "Separator2" type = "Separator" />
+		</Condition>
 		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
 		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
 		<Include id = "Paste" item = "/SharpDevelop/Workbench/MainMenu/Edit/Paste"/>
@@ -2047,9 +2067,6 @@
 		
 		<MenuItem id = "Separator2" type = "Separator" />
 		-->
-		<Condition name="SymbolTypeAtCaret" type="local,member" action="Exclude">
-			<MenuItem id = "Separator2" type = "Separator" />
-		</Condition>
 		<MenuItem id = "Comment"
 		          icon  = "Icons.16x16.CommentRegion"
 		          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
