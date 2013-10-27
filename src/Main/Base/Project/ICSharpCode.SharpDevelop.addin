@@ -2026,31 +2026,34 @@
 	</Path>-->
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/MemberContextMenu">
-		<Include id = "Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
+		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
+		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/TypeContextMenu">
-		<Include id = "Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
+		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
+		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/LocalContextMenu">
-		<Include id = "Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
+		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
+		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
 		<Condition name="SymbolTypeAtCaret" type="member" action="Exclude">
-			<Include id = "MemberContextMenu" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu/MemberContextMenu" />
-			<Include id = "EntityContextMenu" path="/SharpDevelop/EntityContextMenu" />
-			<MenuItem id = "Separator1" type = "Separator" />
+			<Include id="MemberContextMenu" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu/MemberContextMenu" />
+			<Include id="EntityContextMenu" path="/SharpDevelop/EntityContextMenu" />
+			<MenuItem id="Separator1" type="Separator" />
 		</Condition>
 		<Condition name="SymbolTypeAtCaret" type="type" action="Exclude">
-			<Include id = "TypeContextMenu" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu/TypeContextMenu" />
-			<Include id = "EntityContextMenu" path="/SharpDevelop/EntityContextMenu" />
-			<MenuItem id = "Separator1" type = "Separator" />
+			<Include id="TypeContextMenu" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu/TypeContextMenu" />
+			<Include id="EntityContextMenu" path="/SharpDevelop/EntityContextMenu" />
+			<MenuItem id="Separator1" type="Separator" />
 		</Condition>
 		<Condition name="SymbolTypeAtCaret" type="local" action="Exclude">
-			<Include id = "LocalContextMenu" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu/LocalContextMenu" />
-			<MenuItem id = "Separator1" type = "Separator" />
+			<Include id="LocalContextMenu" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu/LocalContextMenu" />
+			<MenuItem id="Separator1" type="Separator" />
 		</Condition>
 		
 		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
