@@ -45,6 +45,12 @@ namespace MSHelpSystem.Commands
 	{
 		public override void Run()
 		{
+			if (!Help3Environment.IsHelp3ProtocolRegistered) {
+				using (HelpLibraryManagerNotFoundForm form = new HelpLibraryManagerNotFoundForm()) {
+					form.ShowDialog(WorkbenchSingleton.MainWin32Window);
+				}
+				return;
+			}
 			if (Help3Service.Config.ExternalHelp) DisplayHelp.Catalog();
 			else {
 				PadDescriptor toc = WorkbenchSingleton.Workbench.GetPad(typeof(Help3TocPad));
@@ -57,6 +63,12 @@ namespace MSHelpSystem.Commands
 	{
 		public override void Run()
 		{
+			if (!Help3Environment.IsHelp3ProtocolRegistered) {
+				using (HelpLibraryManagerNotFoundForm form = new HelpLibraryManagerNotFoundForm()) {
+					form.ShowDialog(WorkbenchSingleton.MainWin32Window);
+				}
+				return;
+			}
 			PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(Help3SearchPad));
 			if (search != null) search.BringPadToFront();
 		}

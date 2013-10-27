@@ -23,6 +23,7 @@ namespace MSHelpSystem.Helper
 			Dictionary<string, string> result = new Dictionary<string, string>();
 			result.Add("C++", "C%2B%2B");
 			result.Add("C#", "CSharp");
+			result.Add("F#", "FSharp");
 			result.Add("VBNet", "VB");
 			return result;
 		}
