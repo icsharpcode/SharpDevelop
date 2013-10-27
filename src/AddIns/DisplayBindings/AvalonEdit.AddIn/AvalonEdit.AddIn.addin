@@ -157,6 +157,11 @@
 		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindBaseClasses"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/TypeContextMenu">
+		<Include id="FindDerivedOrOverridesClasses" item="/SharpDevelop/Workbench/MainMenu/Search/FindDerivedOrOverridesClasses" />
+		<Include id="FindBaseClasses" item="/SharpDevelop/Workbench/MainMenu/Search/FindBaseClasses" />
+	</Path>
+	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
 		<OptionPanel id = "CodeTemplates"
 		             label = "${res:Dialog.Options.CodeTemplatesText}"
