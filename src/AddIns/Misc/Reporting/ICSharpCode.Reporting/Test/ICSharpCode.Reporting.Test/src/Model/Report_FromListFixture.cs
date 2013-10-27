@@ -32,7 +32,7 @@ namespace ICSharpCode.Reporting.Test.Model
 		[Test]
 		public void DetailContainsOneDataItem() {
 			var section = model.DetailSection;
-			Assert.That(section.Items.Count,Is.EqualTo(1));
+			Assert.That(section.Items.Count,Is.EqualTo(2));
 		}
 		
 		

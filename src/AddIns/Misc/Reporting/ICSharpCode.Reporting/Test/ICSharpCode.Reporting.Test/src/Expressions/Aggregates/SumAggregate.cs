@@ -15,19 +15,18 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 	{
 		
 		Collection<ExportText> collection;
-		ExpressionVisitor expressionVisitor;
 		AggregateCollection agc;
 		AggregateFuctionHelper helper;
-		CollectionSource cs;
+		CollectionSource dataSource;
+		
 		
 		[Test]
 		public void CanSum_Int_WholeCollection()
 		{
 			var reportSettings = new ReportSettings();
-			var visitor = new ExpressionVisitor(reportSettings);
+			var visitor = new ExpressionVisitor(reportSettings,dataSource);
 			var script = "= sum('intValue')";
 			collection[0].Text = script;
-			visitor.Evaluator.Globals.Add("Current",cs);
 			visitor.Visit(collection[0]);
 			Assert.That (collection[0].Text,Is.EqualTo("406"));
 			Assert.That(Convert.ToInt32(collection[0].Text),Is.TypeOf(typeof(int)));
@@ -38,10 +37,9 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 		public void CanSum_Double_WholeCollection()
 		{
 			var reportSettings = new ReportSettings();
-			var visitor = new ExpressionVisitor(reportSettings);
+			var visitor = new ExpressionVisitor(reportSettings,dataSource);
 			var script = "= sum('doubleValue')";
 			collection[0].Text = script;
-			visitor.Evaluator.Globals.Add("Current",cs);
 			visitor.Visit(collection[0]);
 			Assert.That (collection[0].Text,Is.EqualTo("408,25"));
 			Assert.That(Convert.ToDouble(collection[0].Text),Is.TypeOf(typeof(double)));
@@ -59,14 +57,9 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 			
 			helper = new AggregateFuctionHelper();
 			agc = helper.AggregateCollection;
-			cs = new CollectionSource(agc,typeof(Aggregate),new ReportSettings());
-			cs.Bind();
+			dataSource = new CollectionSource(agc,typeof(Aggregate),new ReportSettings());
+			dataSource.Bind();
 		}
 		
-		
-		[TestFixtureSetUp]
-		public void Setup() {
-			expressionVisitor = new ExpressionVisitor(new ReportSettings());
-		}
 	}
 }

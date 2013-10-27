@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Linq;
 
 using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Expressions;
@@ -39,7 +40,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			ReportModel = reportModel;
 			Pages = new Collection<ExportPage>();
 			Graphics = CreateGraphics.FromSize(reportModel.ReportSettings.PageSize);
-			ExpressionVisitor = new ExpressionVisitor(ReportModel.ReportSettings);
+			ExpressionVisitor = new ExpressionVisitor(ReportModel.ReportSettings,null);
 		}
 		
 		#region create Report Sections
@@ -191,9 +192,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		#region Visitors
 		
-		protected void RunExpressions(ReportSettings reportsettings)
+		protected void RunExpressions(ReportSettings reportsettings,CollectionSource dataSource)
 		{
-			var er = new ExpressionRunner(Pages,reportsettings);
+			var er = new ExpressionRunner(Pages,reportsettings,dataSource);
 			er.Run();
 		}
 

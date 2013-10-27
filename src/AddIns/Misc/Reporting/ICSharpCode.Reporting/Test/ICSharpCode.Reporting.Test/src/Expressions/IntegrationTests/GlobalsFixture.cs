@@ -13,12 +13,11 @@ using NUnit.Framework;
 namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 {
 	[TestFixture]
-
+	[Ignore]
 	public class GlobalsFixture
 	{
 		IReportCreator reportCreator;
 		Collection<ExportText> collection;
-		ExpressionVisitor expressionVisitor;
 		
 		[Test]
 		public void CanReadPageNumber()
@@ -108,10 +107,10 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 		}
 		
 		
-		[TestFixtureSetUp]
-		public void Setup() {
-			
-			expressionVisitor = new ExpressionVisitor(new ReportSettings());
-		}
+//		[TestFixtureSetUp]
+//		public void Setup() {
+//			
+//			expressionVisitor = new ExpressionVisitor(new ReportSettings());
+//		}
 	}
 }

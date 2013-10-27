@@ -79,6 +79,24 @@
             <PageBreakAfter>False</PageBreakAfter>
             <Items>
                 <BaseDataItem>
+                    <Location>384, 13</Location>
+                    <Size>100, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Segoe UI, 9pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <DataType>System.Int</DataType>
+                    <RTL>No</RTL>
+                    <Text>BaseDataItem2</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>ControlText</ForeColor>
+                    <ColumnName>RandomInt</ColumnName>
+                    <Name>BaseDataItem2</Name>
+                </BaseDataItem>
+                <BaseDataItem>
                     <Location>29, 14</Location>
                     <Size>100, 20</Size>
                     <BackColor>White</BackColor>
@@ -138,7 +156,24 @@
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
             <PageBreakAfter>False</PageBreakAfter>
-            <Items />
+            <Items>
+                <BaseTextItem>
+                    <Location>298, 4</Location>
+                    <Size>100, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Segoe UI, 9pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>= sum('RandomInt')</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>ControlText</ForeColor>
+                    <Name>BaseTextItem2147483646</Name>
+                </BaseTextItem>
+            </Items>
             <FrameColor>Black</FrameColor>
             <Name>ReportFooter</Name>
         </BaseSection>

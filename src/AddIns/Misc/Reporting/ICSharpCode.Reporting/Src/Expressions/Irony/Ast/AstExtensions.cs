@@ -1,10 +1,11 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using Irony.Interpreter;
+using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
+using Irony.Interpreter;
 
 namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 {
@@ -63,6 +64,25 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 		public static ExportContainer GetCurrentContainer (this ScriptThread thread){
 			return (ExportContainer)thread.App.Globals["CurrentContainer"];
 		}
+		
+		#endregion
+		
+		#region DataSource
+		
+		public static void AddDataSource (this ReportingExpressionEvaluator app,CollectionSource dataSource){
+			if (dataSource == null)
+				throw new ArgumentNullException("dataSource");
+			if (!app.Globals.ContainsKey("DataSource")) {
+			    	app.Globals.Add("DataSource",dataSource);
+			    } else {
+			    	app.Globals["DataSource"] = dataSource;
+			    }
+		}
+		
+		
+//		public static CollectionSource GetDataSource (this ScriptThread thread){
+//			return (CollectionSource)thread.App.Globals["DataSource"];
+//		}
 		#endregion
 	}
 }

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.ObjectModel;
+using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Expressions.Irony;
 using ICSharpCode.Reporting.Expressions.Irony.Ast;
@@ -20,16 +21,22 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		readonly ReportingExpressionEvaluator evaluator;
 		
 		
-		public ExpressionVisitor(Collection<ExportPage> pages,ReportSettings reportSettings):this(reportSettings)
+		public ExpressionVisitor(Collection<ExportPage> pages,
+		                         ReportSettings reportSettings,
+		                        CollectionSource dataSource):this(reportSettings,dataSource)
 		{
 			this.pages = pages;
 		}
 		
 		
-		internal ExpressionVisitor(ReportSettings reportSettings) {
+		internal ExpressionVisitor(ReportSettings reportSettings,CollectionSource dataSource) {
 			grammar = new ReportingLanguageGrammer();
 			evaluator = new ReportingExpressionEvaluator(grammar);
 			evaluator.AddReportSettings(reportSettings);
+			if (dataSource != null) {
+				evaluator.AddDataSource(dataSource);
+			}
+			
 		}
 		
 		

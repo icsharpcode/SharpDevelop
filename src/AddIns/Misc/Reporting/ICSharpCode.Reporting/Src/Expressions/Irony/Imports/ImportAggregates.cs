@@ -18,14 +18,20 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 	/// <summary>
 	/// Description of ImportAggregates.
 	/// </summary>
+	public static class ImportExtensions
+	{
+		public static CollectionSource GetDataSource (this ScriptThread thread){
+			return (CollectionSource)thread.App.Globals["DataSource"];
+		}
+	}
+	
 	public static class ImportAggregates
 	{
 		public static object Sum(ScriptThread thread, AstNode[] childNodes) {
 			double sum =  0;
 			var fieldName = childNodes[0].Evaluate(thread).ToString();
 			
-			var dataSource = (CollectionSource)thread.App.Globals["Current"];
-			
+			var dataSource = thread.GetDataSource();
 			var curpos = dataSource.CurrentPosition;
 			
 			dataSource.CurrentPosition = 0;

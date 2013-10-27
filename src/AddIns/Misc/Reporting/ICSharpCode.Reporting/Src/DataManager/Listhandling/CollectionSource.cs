@@ -28,7 +28,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 	/// <summary>
 	/// Description of CollectionHandling.
 	/// </summary>
-	internal class CollectionSource:IDataViewHandling
+	public class CollectionSource:IDataViewHandling
 	{
 
 		private PropertyDescriptorCollection listProperties;

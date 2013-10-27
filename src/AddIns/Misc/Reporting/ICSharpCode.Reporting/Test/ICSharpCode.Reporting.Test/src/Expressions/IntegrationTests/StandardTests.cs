@@ -87,7 +87,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests {
 		
 		[TestFixtureSetUp]
 		public void Setup() {
-			expressionVisitor = new ExpressionVisitor(new ReportSettings());
+			expressionVisitor = new ExpressionVisitor(new ReportSettings(),null);
 		}
 		 
 	}

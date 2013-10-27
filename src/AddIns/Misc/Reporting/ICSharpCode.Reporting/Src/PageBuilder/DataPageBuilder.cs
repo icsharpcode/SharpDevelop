@@ -41,7 +41,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.BuildReportFooter();
 			base.AddPage(CurrentPage);
 			UpdatePageInfo();
-			RunExpressions(ReportModel.ReportSettings);
+			RunExpressions(ReportModel.ReportSettings,DataSource);
 		}
 		
 		

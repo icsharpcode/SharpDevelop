@@ -13,9 +13,8 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 	public class FieldsFixture
 	{
 		Collection<ExportText> collection;
-		ExpressionVisitor expressionVisitor;
-		
-		
+		ExpressionVisitor visitor;
+	
 		[Test]
 		public void FieldsInContainer() {
 			var script = "=Fields!myfield1 + Fields!myfield2";
@@ -30,11 +29,12 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			               	Text = " is great",
 			               	Name = "myfield2"
 			               });               
-			var visitor = new ExpressionVisitor(new ReportSettings());
+
 			var exportContainer = new ExportContainer();
 			exportContainer.ExportedItems.Add(collection[0]);
 			exportContainer.ExportedItems.Add(collection[1]);
 			exportContainer.ExportedItems.Add(collection[2]);
+			
 			visitor.Visit(exportContainer);	
 			Assert.That (collection[0].Text,Is.EqualTo("Sharpdevelop is great"));
 		}
@@ -49,10 +49,11 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			               	Text = "Sharpdevelop",
 			               	Name = "myfield1"
 			               });
-			var visitor = new ExpressionVisitor(new ReportSettings());
+
 			var exportContainer = new ExportContainer();
 			exportContainer.ExportedItems.Add(collection[0]);
 			exportContainer.ExportedItems.Add(collection[1]);
+			
 			visitor.Visit(exportContainer);	
 			Assert.That (collection[0].Text.StartsWith("Missing"));
 			Assert.That (collection[0].Text.Contains("myfieldNotExist"));
@@ -61,16 +62,13 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 		
 		[SetUp]
 		public void CreateExportlist() {
-		collection = new Collection<ExportText>();
+			collection = new Collection<ExportText>();
 			collection.Add(new ExportText()
-			       {
-			       	 Text = "myExporttextColumn"
-			       });
+			               {
+			               	Text = "myExporttextColumn"
+			               });
+			visitor = new ExpressionVisitor (new ReportSettings(),null);
 		}
 		
-		[TestFixtureSetUp]
-		public void Setup() {
-			expressionVisitor = new ExpressionVisitor(new ReportSettings());
-		}
 	}
 }

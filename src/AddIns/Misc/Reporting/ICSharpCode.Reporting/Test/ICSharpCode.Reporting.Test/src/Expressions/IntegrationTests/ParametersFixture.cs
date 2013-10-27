@@ -14,7 +14,6 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 	public class ParametersFixture
 	{
 		Collection<ExportText> collection;
-		ExpressionVisitor expressionVisitor;
 		
 		
 		[Test]
@@ -39,7 +38,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			              );
 			
 			var reportSettings = CreateReportSettings(parameters);
-			var visitor = new ExpressionVisitor(reportSettings);
+			var visitor = new ExpressionVisitor(reportSettings,null);
 			
 			var script = "=Parameters!param1 + Parameters!param2 + Parameters!param3";
 			collection[0].Text = script;
@@ -57,7 +56,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			               }
 			              );
 			var reportSettings = CreateReportSettings(parameters);
-			var visitor = new ExpressionVisitor(reportSettings);
+			var visitor = new ExpressionVisitor(reportSettings,null);
 			
 			var script = "=Parameters!paramNotExist";
 			collection[0].Text = script;
@@ -84,9 +83,5 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			       });
 		}
 			
-		[TestFixtureSetUp]
-		public void Setup() {
-			expressionVisitor = new ExpressionVisitor(new ReportSettings());
-		}
 	}
 }
