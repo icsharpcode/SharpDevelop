@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Linq;
 
 using ICSharpCode.Reporting.DataManager.Listhandling;
+using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.Converter;
@@ -42,6 +43,12 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.AddPage(CurrentPage);
 			UpdatePageInfo();
 			RunExpressions(ReportModel.ReportSettings,DataSource);
+			var formatVisitor = new FormatVisitor(Pages);
+//			formatVisitor.Run();
+			
+			foreach (var element in Pages) {
+				formatVisitor.Visit(element);
+			}
 		}
 		
 		
@@ -71,7 +78,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 						InsertExportRows(exportRows);
 						MeasureAndArrangeContainer(row);
 						exportRows.Clear();
-						ExpressionVisitor.Visit(CurrentPage);
+//						ExpressionVisitor.Visit(CurrentPage);
 						CurrentPage.PageInfo.PageNumber = Pages.Count + 1;
 						Pages.Add(CurrentPage);
 
@@ -85,7 +92,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 					}
 
 					row.ExportedItems.AddRange(convertedItems);
-					ExpressionVisitor.Visit(row as ExportContainer);
+//					ExpressionVisitor.Visit(row as ExportContainer);
 					exportRows.Add(row);
 					position = new Point(CurrentSection.Location.X,position.Y + row.DesiredSize.Height + 1);
 				}

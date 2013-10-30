@@ -35,7 +35,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 			var curpos = dataSource.CurrentPosition;
 			
 			dataSource.CurrentPosition = 0;
-		
+			
 			if (FieldExist(dataSource.Current,fieldName)) {
 				do {
 					var current = dataSource.Current;

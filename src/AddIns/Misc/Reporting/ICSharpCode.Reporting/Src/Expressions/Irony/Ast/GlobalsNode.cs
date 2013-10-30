@@ -23,13 +23,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			var nodes = treeNode.GetMappedChildNodes();
 			globalNode = AddChild("Args", nodes[2]);
 		}
-		/*
-		"=Globals!PageNumber",
-			"=Globals!TotalPages",
-			"=Globals!ExecutionTime",
-			"=Globals!ReportFolder",
-			"=Globals!ReportName"};
-			*/
+		
 			
 		protected override object DoEvaluate(ScriptThread thread)
 		{
@@ -38,7 +32,6 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			
 			var test = globalNode.AsString.ToLower();
 			if ( test == "pagenumber") {
-				Console.WriteLine("pagenumberr");
 				return pi.PageNumber;
 			} else if (test == "pages") {
 				return pi.TotalPages;

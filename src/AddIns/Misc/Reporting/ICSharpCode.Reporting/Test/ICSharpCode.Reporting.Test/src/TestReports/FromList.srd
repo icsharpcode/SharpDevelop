@@ -83,6 +83,7 @@
                     <Size>100, 20</Size>
                     <BackColor>White</BackColor>
                     <Font>Segoe UI, 9pt</Font>
+                    <FormatString>#,##0.00</FormatString>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
                     <CanGrow>False</CanGrow>

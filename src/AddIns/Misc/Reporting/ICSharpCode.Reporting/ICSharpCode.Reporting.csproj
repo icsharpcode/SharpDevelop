@@ -60,6 +60,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Presentation">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -105,6 +106,7 @@
     <Compile Include="Src\Exporter\Visitors\CanvasExtension.cs" />
     <Compile Include="Src\Exporter\Visitors\CanvasHelper.cs" />
     <Compile Include="Src\Exporter\Visitors\ExpressionVisitor.cs" />
+    <Compile Include="Src\Exporter\Visitors\FormatVisitor.cs" />
     <Compile Include="Src\Exporter\WpfExporter.cs" />
     <Compile Include="Src\Exporter\Visitors\AbstractVisitor.cs" />
     <Compile Include="Src\Exporter\Visitors\IAcceptor.cs" />
@@ -127,7 +129,9 @@
     <Compile Include="Src\Factories\ReportCreatorFactory.cs" />
     <Compile Include="Src\Globals\CreateGraphics.cs" />
     <Compile Include="Src\Globals\MeasurementService.cs" />
+    <Compile Include="Src\Globals\StandardFormatter.cs" />
     <Compile Include="Src\Globals\StringHelper.cs" />
+    <Compile Include="Src\Globals\TypeHelper.cs" />
     <Compile Include="Src\Interfaces\Data\IDataViewHandling.cs" />
     <Compile Include="Src\Interfaces\Export\IExportColumn.cs" />
     <Compile Include="Src\Interfaces\Export\IExportContainer.cs" />

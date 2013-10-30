@@ -22,6 +22,7 @@ namespace ICSharpCode.Reporting.Items
 	{
 		Font Font {get;set;}
 		string Text {get;set;}
+		string FormatString {get;set;}
 	}
 	
 	public class BaseTextItem:PrintableItem,ITextItem
@@ -36,6 +37,8 @@ namespace ICSharpCode.Reporting.Items
 		
 		public string Text {get;set;}
 		
+		public string FormatString {get;set;}
+		
 		public override  IExportColumn CreateExportColumn()
 		{
 			var ex = new ExportText();
@@ -47,6 +50,8 @@ namespace ICSharpCode.Reporting.Items
 			ex.Size = Size;
 			ex.Font = Font;
 			ex.Text = Text;
+			ex.FormatString = FormatString;
+			
 			ex.CanGrow = CanGrow;
 			return ex;
 		}	
