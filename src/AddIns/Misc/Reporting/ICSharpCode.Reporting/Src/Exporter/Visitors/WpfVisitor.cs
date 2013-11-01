@@ -52,8 +52,11 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportText exportColumn)
 		{
-			Console.WriteLine("\t\tExpressionVisitor <{0}>",exportColumn.Name);
-			var textBlock = documentCreator.CreateTextBlock(exportColumn);
+			Console.WriteLine("\t\tExpressionVisitor <{0}>",exportColumn.GetType());
+			if (exportColumn.ContentAlignment != System.Drawing.ContentAlignment.TopLeft) {
+				Console.WriteLine("heureka {0}",exportColumn.ContentAlignment);
+			}
+			var textBlock = documentCreator.CreateTextBlock((ExportText)exportColumn);
 			CanvasHelper.SetPosition(textBlock,new Point(exportColumn.Location.X,exportColumn.Location.Y));
 			currentCanvas.Children.Add(textBlock);
 		}

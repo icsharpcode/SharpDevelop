@@ -7,12 +7,14 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
@@ -20,7 +22,6 @@ using Brush = System.Windows.Media.Brush;
 using FontFamily = System.Windows.Media.FontFamily;
 using Pen = System.Windows.Media.Pen;
 using Size = System.Windows.Size;
-using ICSharpCode.Reporting.BaseClasses;
 
 namespace ICSharpCode.Reporting.ExportRenderer
 {
@@ -77,14 +78,17 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			}
 			var li = textBlock.Inlines.LastInline;
 			textBlock.Inlines.Remove(li);
-		
-			var s = MeasureTextInWpf(exportText);
-			textBlock.Width = s.Width;
-			textBlock.Height = s.Height;
+		SetContentAlignment(textBlock,exportText);
+			var wpfSize = MeasureTextInWpf(exportText);
+			textBlock.Width = wpfSize.Width;
+			textBlock.Height = wpfSize.Height;
 			
 //		    textBlock.Background = ConvertBrush(exportText.StyleDecorator.BackColor);
 //		    SetContendAlignment(textBlock,exportText.StyleDecorator);
-			
+			if (exportText.ContentAlignment != System.Drawing.ContentAlignment.TopLeft) {
+				Console.WriteLine("----Aliogn --------{0}",exportText.ContentAlignment.ToString());
+			}
+//			SetContentAlignment(textBlock,exportText);
 			return textBlock;
 		}
 		
@@ -171,6 +175,99 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
+		void SetContentAlignment(TextBlock textBlock,ExportText exportText)
+		{
+	//	http://social.msdn.microsoft.com/Forums/vstudio/en-US/e480abb9-a86c-4f78-8955-dddb866bcfef/vertical-text-alignment-in-textblock?forum=wpf	
+	//Vertical alignment not working
+	
+			Console.WriteLine("align {0}",exportText.ContentAlignment);
+			switch (exportText.ContentAlignment) {
+				case System.Drawing.ContentAlignment.TopLeft:
+					textBlock.VerticalAlignment = VerticalAlignment.Top;
+					textBlock.TextAlignment = TextAlignment.Left;
+					break;
+				case System.Drawing.ContentAlignment.TopCenter:
+					textBlock.VerticalAlignment = VerticalAlignment.Top;
+					textBlock.TextAlignment = TextAlignment.Center;
+					break;
+				case System.Drawing.ContentAlignment.TopRight:
+					textBlock.VerticalAlignment = VerticalAlignment.Top;
+					textBlock.TextAlignment = TextAlignment.Right;
+					break;
+					// Middle
+				case System.Drawing.ContentAlignment.MiddleLeft:
+					textBlock.VerticalAlignment = VerticalAlignment.Center;
+					textBlock.TextAlignment = TextAlignment.Left;
+					break;
+				case System.Drawing.ContentAlignment.MiddleCenter:
+					textBlock.VerticalAlignment = VerticalAlignment.Center;
+					textBlock.TextAlignment = TextAlignment.Center;
+					break;
+				case System.Drawing.ContentAlignment.MiddleRight:
+					textBlock.VerticalAlignment = VerticalAlignment.Center;
+					textBlock.TextAlignment = TextAlignment.Right;
+					break;
+					//Bottom
+				case System.Drawing.ContentAlignment.BottomLeft:
+					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+					textBlock.TextAlignment = TextAlignment.Left;
+					break;
+				case System.Drawing.ContentAlignment.BottomCenter:
+					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+					textBlock.TextAlignment = TextAlignment.Center;
+					break;
+				case System.Drawing.ContentAlignment.BottomRight:
+					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+					textBlock.TextAlignment = TextAlignment.Right;
+					break;
+			}
+		}
+		/*
+		private void SetContendAlignment(TextBlock textBlock,TextStyleDecorator decorator)
+		{
+			switch (decorator.ContentAlignment)
+			{
+				case ContentAlignment.TopLeft:
+					textBlock.VerticalAlignment = VerticalAlignment.Top;
+					textBlock.TextAlignment = TextAlignment.Left;
+					break;
+				case ContentAlignment.TopCenter:
+					textBlock.VerticalAlignment = VerticalAlignment.Top;
+					textBlock.TextAlignment = TextAlignment.Center;
+					break;
+				case ContentAlignment.TopRight:
+					textBlock.VerticalAlignment = VerticalAlignment.Top;
+					textBlock.TextAlignment = TextAlignment.Right;
+					break;
+					// Middle
+				case ContentAlignment.MiddleLeft:
+					textBlock.VerticalAlignment = VerticalAlignment.Center;
+					textBlock.TextAlignment = TextAlignment.Left;
+					break;
+				case ContentAlignment.MiddleCenter:
+					textBlock.VerticalAlignment = VerticalAlignment.Center;
+					textBlock.TextAlignment = TextAlignment.Center;
+					break;
+				case ContentAlignment.MiddleRight:
+					textBlock.VerticalAlignment = VerticalAlignment.Center;
+					textBlock.TextAlignment = TextAlignment.Right;
+					break;
+					//Bottom
+				case ContentAlignment.BottomLeft:
+					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+					textBlock.TextAlignment = TextAlignment.Left;
+					break;
+				case ContentAlignment.BottomCenter:
+					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+					textBlock.TextAlignment = TextAlignment.Center;
+					break;
+				case ContentAlignment.BottomRight:
+					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+					textBlock.TextAlignment = TextAlignment.Right;
+					break;
+			}
+		}
+		*/
 		void CreateStrikeout (TextBlock textBlock,IExportText exportColumn ){
 			if (textBlock == null)
 				throw new ArgumentNullException("textBlock");

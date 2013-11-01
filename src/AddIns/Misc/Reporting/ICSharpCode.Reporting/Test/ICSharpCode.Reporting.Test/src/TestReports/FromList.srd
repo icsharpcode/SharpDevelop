@@ -85,7 +85,7 @@
                     <Font>Segoe UI, 9pt</Font>
                     <FormatString>#,##0.00</FormatString>
                     <StringTrimming>None</StringTrimming>
-                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <ContentAlignment>MiddleRight</ContentAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <DataType>System.Decimal</DataType>

@@ -22,6 +22,7 @@ namespace ICSharpCode.Reporting.Items
 	{
 		Font Font {get;set;}
 		string Text {get;set;}
+		ContentAlignment ContentAlignment {get;set;}
 		string FormatString {get;set;}
 		string DataType {get;set;}
 		
@@ -40,6 +41,8 @@ namespace ICSharpCode.Reporting.Items
 		public string Text {get;set;}
 		
 		public string FormatString {get;set;}
+		
+		public ContentAlignment ContentAlignment {get;set;}
 		
 		string dataType;
 		
@@ -69,6 +72,7 @@ namespace ICSharpCode.Reporting.Items
 			ex.Font = Font;
 			ex.Text = Text;
 			ex.FormatString = FormatString;
+			ex.ContentAlignment = ContentAlignment;
 			ex.DataType = DataType;
 			ex.CanGrow = CanGrow;
 			return ex;

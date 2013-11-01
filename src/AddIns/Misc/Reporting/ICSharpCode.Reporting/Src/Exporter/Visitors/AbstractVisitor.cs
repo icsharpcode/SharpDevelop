@@ -39,6 +39,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public virtual void Visit (ExportContainer exportContainer) {
 			foreach (var element in exportContainer.ExportedItems) {
+				Console.WriteLine(((ExportText)element).ContentAlignment.ToString());
 				var ac = element as IAcceptor;
 				ac.Accept(this);
 			}
