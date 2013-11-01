@@ -22,7 +22,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	/// 
 	class WpfVisitor: AbstractVisitor {
 		
-		private readonly FixedDocumentCreator documentCreator;
+		readonly FixedDocumentCreator documentCreator;
 		FixedPage fixedPage;
 		Canvas currentCanvas;
 		
@@ -36,22 +36,16 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			Console.WriteLine("WpfVisitor page <{0}>",page.PageInfo.PageNumber);
 			fixedPage = FixedDocumentCreator.CreateFixedPage(page);
 			FixedPage = fixedPage;
-			foreach (var element in page.ExportedItems) {
-				var ac = element as IAcceptor;
-				ac.Accept(this);
-			}
+			base.Visit(page);
 		}
 		
-		public override void Visit(ExportContainer exportColumn)
+		public override void Visit(ExportContainer exportContainer)
 		{
 			
-			Console.WriteLine("\tWpfVisitor <{0}>",exportColumn.Name);
-			currentCanvas = documentCreator.CreateContainer(exportColumn);
-			CanvasHelper.SetPosition(currentCanvas,new Point(exportColumn.Location.X,exportColumn.Location.Y));
-			foreach (var element in exportColumn.ExportedItems) {
-				var ac = element as IAcceptor;
-				ac.Accept(this);
-			}
+			Console.WriteLine("\tWpfVisitor <{0}>",exportContainer.Name);
+			currentCanvas = documentCreator.CreateContainer(exportContainer);
+			CanvasHelper.SetPosition(currentCanvas,new Point(exportContainer.Location.X,exportContainer.Location.Y));
+			base.Visit(exportContainer);
 			fixedPage.Children.Add(currentCanvas);
 		}
 		

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Globalization;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Globals
 {
@@ -10,8 +11,14 @@ namespace ICSharpCode.Reporting.Globals
 	/// </summary>
 	class StandardFormatter
 	{
-		
+		public static void FormatOutput (IExportText textColumn) {
+			if (!String.IsNullOrEmpty(textColumn.FormatString)) {
+				TypeCode typeCode = TypeHelper.TypeCodeFromString(textColumn.DataType);
+				textColumn.Text = FormatItem(textColumn.Text,textColumn.FormatString,typeCode);
+			}
+		}
 	
+		/*
 		public static string FormatOutput(string valueToFormat,string format,
 		                                     string dataType, string nullValue )
 		{
@@ -26,10 +33,12 @@ namespace ICSharpCode.Reporting.Globals
 			TypeCode typeCode = TypeHelper.TypeCodeFromString(dataType);
 			return FormatItem(valueToFormat,format,typeCode,nullValue);                                    
 		}
+		*/
 		
-		
+//		private static string FormatItem (string valueToFormat,string format,
+//		                         TypeCode typeCode,string nullValue)
 		private static string FormatItem (string valueToFormat,string format,
-		                         TypeCode typeCode,string nullValue)
+		                         TypeCode typeCode)	
 		{
 			string retValue = String.Empty;
 			

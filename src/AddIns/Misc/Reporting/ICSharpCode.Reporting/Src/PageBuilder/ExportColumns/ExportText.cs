@@ -23,6 +23,7 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	{
 		 Font Font {get;set;}
 		 string Text {get;set;}
+		 string DataType {get;set;}
 		 string FormatString {get;set;}
 	}
 	
@@ -46,6 +47,8 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		public string FormatString {get;set;}
 		
 			
+		public string DataType {get;set;}
+		
 		public override ICSharpCode.Reporting.Arrange.IMeasurementStrategy MeasurementStrategy()
 		{
 			return new TextBasedMeasurementStrategy();

@@ -16,20 +16,12 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	/// </summary>
 	class ExpressionVisitor: AbstractVisitor
 	{
-		readonly Collection<ExportPage> pages;
 		readonly ReportingLanguageGrammer grammar;
 		readonly ReportingExpressionEvaluator evaluator;
 		
 		
-		public ExpressionVisitor(Collection<ExportPage> pages,
-		                         ReportSettings reportSettings,
-		                        CollectionSource dataSource):this(reportSettings,dataSource)
-		{
-			this.pages = pages;
-		}
 		
-		
-		internal ExpressionVisitor(ReportSettings reportSettings,CollectionSource dataSource) {
+		public ExpressionVisitor(ReportSettings reportSettings,CollectionSource dataSource) {
 			grammar = new ReportingLanguageGrammer();
 			evaluator = new ReportingExpressionEvaluator(grammar);
 			evaluator.AddReportSettings(reportSettings);
@@ -43,20 +35,14 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		public override void Visit(ExportPage page)
 		{
 			evaluator.AddPageInfo(page.PageInfo);
-			foreach (var element in page.ExportedItems) {
-				var ac = element as IAcceptor;
-				ac.Accept(this);
-			}
+			base.Visit(page);
 		}
 		
 		
 		public override void Visit(ExportContainer exportContainer)
 		{
 			evaluator.AddCurrentContainer(exportContainer);
-			foreach (var element in exportContainer.ExportedItems) {
-				var ac = element as IAcceptor;
-				ac.Accept(this);
-			}
+			base.Visit(exportContainer);
 		}
 		
 		

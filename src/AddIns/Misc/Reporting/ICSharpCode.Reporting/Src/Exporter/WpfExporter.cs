@@ -21,7 +21,7 @@ namespace ICSharpCode.Reporting.Exporter{
 	/// 
 	class WpfExporter:BaseExporter {
 		
-		private readonly WpfVisitor visitor;
+		readonly WpfVisitor visitor;
 		
 		public WpfExporter(Collection<ExportPage> pages):base(pages){
 			visitor = new WpfVisitor();

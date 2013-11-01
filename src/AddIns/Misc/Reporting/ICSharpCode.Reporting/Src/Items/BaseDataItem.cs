@@ -34,7 +34,7 @@ namespace ICSharpCode.Reporting.Items
 			
 		public virtual string ColumnName {get;set;}
 		
-		public string DataType {get;set;}
+//		public string DataType {get;set;}
 		
 	}
 }

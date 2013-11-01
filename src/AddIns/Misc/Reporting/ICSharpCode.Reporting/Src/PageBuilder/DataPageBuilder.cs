@@ -43,12 +43,10 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.AddPage(CurrentPage);
 			UpdatePageInfo();
 			RunExpressions(ReportModel.ReportSettings,DataSource);
-			var formatVisitor = new FormatVisitor(Pages);
-//			formatVisitor.Run();
 			
-			foreach (var element in Pages) {
-				formatVisitor.Visit(element);
-			}
+			var formatVisitor = new FormatVisitor();
+			formatVisitor.Run(Pages);
+
 		}
 		
 		

@@ -19,27 +19,22 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	
 	class DebugVisitor : AbstractVisitor
 	{
+		
 		public override void Visit(ExportPage page)
 		{
 			Console.WriteLine();
 			Console.WriteLine("<Page> {0} - {1}  Items {2}",
 			                 page.Name,page.Location,page.BackColor);
-			foreach (var element in page.ExportedItems) {
-				var acceptor = element as IAcceptor;
-				acceptor.Accept(this);
-			}
+			base.Visit(page);
 		}
 		
 		
-		public override void Visit(ExportContainer exportColumn)
+		public override void Visit(ExportContainer exportContainer)
 		{
 			Console.WriteLine();
 			Console.WriteLine("\t{0} - {1}  Items {2}",
-			                  exportColumn.Name,exportColumn.Location,exportColumn.BackColor);
-			foreach (var element in exportColumn.ExportedItems) {
-				var acceptor = element as IAcceptor;
-				acceptor.Accept(this);
-			}
+			                  exportContainer.Name,exportContainer.Location,exportContainer.BackColor);
+			base.Visit(exportContainer);
 		}
 		
 		

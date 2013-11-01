@@ -9,7 +9,7 @@ namespace ICSharpCode.Reporting.Pdf
 	/// <summary>
 	/// Description of PdfVisitor.
 	/// </summary>
-	public class PdfVisitor: AbstractVisitor
+	class PdfVisitor: AbstractVisitor
 	{
 		public PdfVisitor()
 		{
@@ -18,10 +18,7 @@ namespace ICSharpCode.Reporting.Pdf
 		public override void Visit(ExportPage page)
 		{
 			Console.WriteLine("Pdf_Visitor page <{0}>",page.PageInfo.PageNumber);
-			foreach (var element in page.ExportedItems) {
-				var ac = element as IAcceptor;
-				ac.Accept(this);
-			}
+			base.Visit(page);
 		}
 		
 		public override void Visit(ExportContainer exportColumn)

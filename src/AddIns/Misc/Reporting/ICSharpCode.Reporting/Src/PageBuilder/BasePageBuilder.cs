@@ -194,15 +194,15 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		protected void RunExpressions(ReportSettings reportsettings,CollectionSource dataSource)
 		{
-			var er = new ExpressionRunner(Pages,reportsettings,dataSource);
-			er.Run();
+			var expressionRunner = new ExpressionRunner(Pages,reportsettings,dataSource);
+			expressionRunner.Run();
 		}
 
 		
 		protected void RunDebugVisitor()
 		{
-			var d = new DebugExporter(Pages);
-			d.Run();
+			var debugExporter = new DebugExporter(Pages);
+			debugExporter.Run();
 		}
 		
 		#endregion

@@ -88,7 +88,7 @@
                     <ContentAlignment>TopLeft</ContentAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
-                    <DataType>System.Int</DataType>
+                    <DataType>System.Decimal</DataType>
                     <RTL>No</RTL>
                     <Text>BaseDataItem2</Text>
                     <DrawBorder>False</DrawBorder>

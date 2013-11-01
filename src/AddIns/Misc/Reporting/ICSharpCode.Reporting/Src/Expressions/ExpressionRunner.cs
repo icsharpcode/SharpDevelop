@@ -13,31 +13,33 @@ namespace ICSharpCode.Reporting.Expressions
 	/// <summary>
 	/// Description of ExpressionRunner.
 	/// </summary>
-	class ExpressionRunner:BaseExporter
+	class ExpressionRunner
 	{
 		 
 //	http://www.killswtch.net/2013/08/01/time-arithmetic-with-irony/
 //	http://blog.miraclespain.com/archive/2009/Oct-07.html	
 //		
-		private readonly ExpressionVisitor visitor;
-		private readonly CollectionSource dataSource;
+		readonly Collection<ExportPage> pages;
+		readonly ReportSettings reportSettings;
+		readonly CollectionSource dataSource;
 		
-		public ExpressionRunner(Collection<ExportPage> pages,ReportSettings reportSettings,CollectionSource dataSource):base(pages)
+		public ExpressionRunner(Collection<ExportPage> pages,ReportSettings reportSettings,CollectionSource dataSource)
 		{
+			this.pages = pages;
 			this.dataSource = dataSource;
-			visitor = new ExpressionVisitor (Pages,reportSettings,dataSource);
-			visitor.Evaluator.Globals.Add("DataSource",dataSource);
+			this.reportSettings = reportSettings;
 		}
 		
 		
-		public override void Run()
+		public  void Run()
 		{
 			Console.WriteLine();
 			Console.WriteLine("Start ExpressionVisitor");
-			foreach (var page in Pages) {
-				var acceptor = page as IAcceptor;
-				acceptor.Accept(visitor);
-			}
+			
+			var visitor = new ExpressionVisitor (reportSettings,dataSource);
+			visitor.Evaluator.Globals.Add("DataSource",dataSource);
+			visitor.Run(pages);
+			
 			Console.WriteLine("Finish ExpressionVisitor");
 			Console.WriteLine();
 		}

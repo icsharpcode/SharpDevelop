@@ -58,10 +58,11 @@ namespace ICSharpCode.Reporting.Globals
 		}
 		
 		public static TypeCode TypeCodeFromString (string type) {
-			if (String.IsNullOrEmpty(type)) {
-				throw new ArgumentNullException("type");
-			}
-			return Type.GetTypeCode( Type.GetType(type));
+			if (type == null)
+				type = "System.String";
+			var x = Type.GetTypeCode( Type.GetType(type));
+		
+			return x;
 		}
 	}
 }
