@@ -206,6 +206,7 @@
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
+    <Compile Include="Src\Editor\Commands\DeclaringTypeSubMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\FindReferencesCommand.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
     <Compile Include="Src\Editor\Commands\SymbolUnderCaretMenuCommand.cs" />
