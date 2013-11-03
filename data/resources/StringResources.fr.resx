@@ -287,7 +287,7 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
     <value>Voir le contrat de license</value>
   </data>
   <data name="AddInManager2.DisableDependentWarning" xml:space="preserve">
-    <value>Les Add-Ins installés suivant sont dépendant de "{0}"
+    <value>Les Add-Ins installés suivant sont dépendant de "{0}":
 
 {1}
 
@@ -351,7 +351,7 @@ Si vous ne le souhaitez pas, veuillez cliquer "Je décline".</value>
     <value>Dépots</value>
   </data>
   <data name="AddInManager2.RemoveDependentWarning" xml:space="preserve">
-    <value>Les Add-Ins installés suivant sont dépendant de "{0}"
+    <value>Les Add-Ins installés suivant sont dépendants de "{0}":
 
 {1}
 
@@ -359,6 +359,12 @@ Ils ne fonctionneront plus si vous désinstallez cet Add-In! Souhaitez-vous cont
   </data>
   <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
     <value>SharpDevelop Add-Ins|*.sdaddin;*.addin|Tous les fichiers|*.*</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleText" xml:space="preserve">
+    <value>Cliquer pour voir les mises à jour.</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleTitle" xml:space="preserve">
+    <value>Des mises à jour sont disponibles</value>
   </data>
   <data name="AddInManager2.Views.Available" xml:space="preserve">
     <value>Disponible</value>
@@ -2009,6 +2015,12 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Déboguage en cours</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.AskForArguments" xml:space="preserve">
+    <value>Demander des arguments et le répertoire de travail lors du lancement.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
+    <value>Arrêt sur la première ligne.</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
     <value>Activer la décompilation</value>
   </data>
@@ -2056,6 +2068,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption" xml:space="preserve">
     <value>Chemins des symboles et du code source:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.WithoutSource" xml:space="preserve">
+    <value>Sans débogguage du source</value>
   </data>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel" xml:space="preserve">
     <value>&amp;En-tête</value>
@@ -2870,14 +2885,14 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Source</value>
   </data>
-  <data name="Gloabl.Advanced" xml:space="preserve">
-    <value>Avancé</value>
-  </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Stopper</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Ajouter</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Avancé</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Retour</value>
@@ -3731,6 +3746,12 @@ Toutes les modifications seront perdues.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ReverseSearchStatusBarMessage" xml:space="preserve">
     <value>Recherche incrémentale inversée:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyInvalid" xml:space="preserve">
+    <value>{0} n'est pas un assembly .NET valide.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyNotAccessible" xml:space="preserve">
+    <value>{0} n'est pas accessible ou n'existe plus.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.ErrorLoadingCodeCompletionInformation" xml:space="preserve">
     <value>Impossible de charger les informations Intellisense pour ${Assembly} depuis ${Filename}:</value>
@@ -4631,6 +4652,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Extension Visual Studio</value>
   </data>
+  <data name="ICSharpCode.WpfDesign.AddIn.ThumbnailViewPad" xml:space="preserve">
+    <value>Vignettes du Concepteur WPF</value>
+  </data>
   <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
     <value>Copier</value>
   </data>
@@ -4931,6 +4955,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Marque-pages</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.AddToWorkspace" xml:space="preserve">
+    <value>Ajouter au bureau</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.BackButton.ToolTip" xml:space="preserve">
     <value>Précédent</value>
   </data>
@@ -4970,8 +4997,20 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.ClassBrowser.NoResultsFound" xml:space="preserve">
     <value>Pas de résultats à la recherche.</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyButton.ToolTip" xml:space="preserve">
+    <value>Ouvrir l'assembly</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromFile" xml:space="preserve">
+    <value>Ouvrir l'assembly depuis un fichier...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC" xml:space="preserve">
+    <value>Ouvrir l'assembly depuis le GAC...</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.SearchButton.ToolTip" xml:space="preserve">
     <value>Rechercher une classe</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.Workspace" xml:space="preserve">
+    <value>Bureau {0}</value>
   </data>
   <data name="MainWindow.Windows.ClassScoutLabel" xml:space="preserve">
     <value>Classes</value>
@@ -5080,6 +5119,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.Debug.Console" xml:space="preserve">
     <value>Console</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.DebugExecutable" xml:space="preserve">
+    <value>Débogguer l'executable</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Break" xml:space="preserve">
     <value>Break</value>
@@ -5438,6 +5480,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.SearchResultPanel.In" xml:space="preserve">
     <value>dans</value>
   </data>
+  <data name="MainWindow.Windows.SearchResultPanel.NoProject" xml:space="preserve">
+    <value>&lt;pas de projet&gt;</value>
+  </data>
   <data name="MainWindow.Windows.SearchResultPanel.OccurrencesCount" xml:space="preserve">
     <value>${Count} occurrences</value>
   </data>
@@ -5452,6 +5497,12 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.PerFile" xml:space="preserve">
     <value>Par fichier</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProject" xml:space="preserve">
+    <value>Par projet</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProjectAndFile" xml:space="preserve">
+    <value>Par projet et fichier</value>
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip" xml:space="preserve">
     <value>Sélectionnez le mode de recherche des listes</value>
@@ -6109,6 +6160,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="SharpDevelop.Refactoring.OverridesOf" xml:space="preserve">
     <value>Surdéfinitions de ${Name}</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.PartsOfClass" xml:space="preserve">
+    <value>Elements de ${Name}</value>
   </data>
   <data name="SharpDevelop.Refactoring.ReferencesTo" xml:space="preserve">
     <value>Réferences à ${Name}</value>

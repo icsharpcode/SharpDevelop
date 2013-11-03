@@ -238,11 +238,26 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddInManager2.AddInsView.Search" xml:space="preserve">
     <value>Cerca:</value>
   </data>
+  <data name="AddInManager2.AddInsView.ShowPreinstalledAddIns" xml:space="preserve">
+    <value>Visualizza AddIns preinstallati</value>
+  </data>
+  <data name="AddInManager2.AddInsView.ShowPrereleaseAddIns" xml:space="preserve">
+    <value>Visualizza prereleases</value>
+  </data>
+  <data name="AddInManager2.CannotRemoveAddInManager" xml:space="preserve">
+    <value>Non puoi disinstallare il gestore AddIn perché ti serve per reinstallare gli AddIns!</value>
+  </data>
+  <data name="AddInManager2.DefaultRepository" xml:space="preserve">
+    <value>Lista SharpDevelop AddIn</value>
+  </data>
   <data name="AddInManager2.Details.CreatedBy" xml:space="preserve">
     <value>Creato da:</value>
   </data>
   <data name="AddInManager2.Details.Dependencies" xml:space="preserve">
     <value>Dipendenze:</value>
+  </data>
+  <data name="AddInManager2.Details.DownloadCount" xml:space="preserve">
+    <value>Downloads:</value>
   </data>
   <data name="AddInManager2.Details.FileName" xml:space="preserve">
     <value>Nome file:</value>
@@ -250,11 +265,20 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddInManager2.Details.InstalledVersion" xml:space="preserve">
     <value>Versione installata:</value>
   </data>
+  <data name="AddInManager2.Details.LastUpdated" xml:space="preserve">
+    <value>Ultimo aggiornamento:</value>
+  </data>
   <data name="AddInManager2.Details.MoreInformation" xml:space="preserve">
     <value>Più informazioni</value>
   </data>
   <data name="AddInManager2.Details.NewVersion" xml:space="preserve">
     <value>Nuova versione:</value>
+  </data>
+  <data name="AddInManager2.Details.Rating" xml:space="preserve">
+    <value>Punteggio:</value>
+  </data>
+  <data name="AddInManager2.Details.ReportAbuse" xml:space="preserve">
+    <value>Segnala abuso</value>
   </data>
   <data name="AddInManager2.Details.Version" xml:space="preserve">
     <value>Versione:</value>
@@ -262,14 +286,43 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddInManager2.Details.ViewLicenseTerms" xml:space="preserve">
     <value>Mostra i Termini di Licenza</value>
   </data>
+  <data name="AddInManager2.DisableDependentWarning" xml:space="preserve">
+    <value>I seguenti AddIns dipendono da "{0}":
+
+{1}
+
+Smetteranno di funzionare dopo aver disabilitato questo AddIn! Sei sicuro di voler continuare?</value>
+  </data>
+  <data name="AddInManager2.InstallDependentMessage" xml:space="preserve">
+    <value>"{0}" richiede almeno un pacchetto aggiuntivo:
+
+{1}
+
+L'applicazione tenterà di scaricarlo e installarlo. Sei sicuro di voler continuare?</value>
+  </data>
+  <data name="AddInManager2.InvalidPackage" xml:space="preserve">
+    <value>Il pacchetto selezionato non contiene un AddIn per SharpDevelop valido.</value>
+  </data>
   <data name="AddInManager2.LicenseAcceptance.AcceptButton" xml:space="preserve">
     <value>&amp;Accetto</value>
   </data>
   <data name="AddInManager2.LicenseAcceptance.DeclineButton" xml:space="preserve">
     <value>&amp;Rifiuto</value>
   </data>
+  <data name="AddInManager2.LicenseAcceptance.Introduction.Packages" xml:space="preserve">
+    <value>I seguenti pacchetti richiedono un clic per accettare la licenza:</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Title" xml:space="preserve">
+    <value>Condizioni di Licenza</value>
+  </data>
   <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
     <value>Aggiungi</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
+    <value>Sposta Giù</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.MoveUp" xml:space="preserve">
+    <value>Sposta Su</value>
   </data>
   <data name="AddInManager2.OptionPanel.Name" xml:space="preserve">
     <value>Nome:</value>
@@ -280,8 +333,27 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddInManager2.OptionPanel.Source" xml:space="preserve">
     <value>Sorgente:</value>
   </data>
+  <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
+    <value>AddIns</value>
+  </data>
   <data name="AddInManager2.OptionPanel.Tree.Repositories" xml:space="preserve">
     <value>Repositories</value>
+  </data>
+  <data name="AddInManager2.RemoveDependentWarning" xml:space="preserve">
+    <value>I seguenti AddIns dipendono da "{0}":
+
+{1}
+
+Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler continuare?</value>
+  </data>
+  <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
+    <value>SharpDevelop AddIns|*.sdaddin;*.addin|All files|*.*</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleText" xml:space="preserve">
+    <value>Clicca qui per visualizzare gli aggiornamenti.</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleTitle" xml:space="preserve">
+    <value>Sono disponibili aggiornamenti per SharpDevelop</value>
   </data>
   <data name="AddInManager2.Views.Available" xml:space="preserve">
     <value>Disponibile</value>
@@ -1929,6 +2001,12 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Debugging</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.AskForArguments" xml:space="preserve">
+    <value>Chiedi parametri e cartella di lavoro quando inizia l'esecuzione.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
+    <value>Ferma alla prima linea in esecuzione.</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
     <value>Attiva decompilatore</value>
   </data>
@@ -1976,6 +2054,9 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption" xml:space="preserve">
     <value>Percorsi simboli e codice sorgente:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.WithoutSource" xml:space="preserve">
+    <value>Debug Senza Sorgenti</value>
   </data>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel" xml:space="preserve">
     <value>&amp;Intestazione</value>
@@ -2791,14 +2872,14 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Sorgente</value>
   </data>
-  <data name="Gloabl.Advanced" xml:space="preserve">
-    <value>Avanzate</value>
-  </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Annulla</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Aggiungi</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Avanzate</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Indietro</value>
@@ -3657,6 +3738,12 @@ ${File}
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ReverseSearchStatusBarMessage" xml:space="preserve">
     <value>Ricerca Incrementale Inversa:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyInvalid" xml:space="preserve">
+    <value>{0} non è un assembly .NET valido.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyNotAccessible" xml:space="preserve">
+    <value>{0} non è accessibile o non esiste più.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.ErrorLoadingCodeCompletionInformation" xml:space="preserve">
     <value>Errore nel caricamento delle informazioni di completamento codice per ${Assembly} da ${Filename}:</value>
@@ -4533,6 +4620,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ICSharpCode.WixBinding.WixNetFxExtensionTitle" xml:space="preserve">
     <value>Estensione .NET Framework</value>
   </data>
+  <data name="ICSharpCode.WixBinding.WixNotInstalled" xml:space="preserve">
+    <value>WiX non è installato. Per favore scarica WiX da http://wixtoolset.org/</value>
+  </data>
   <data name="ICSharpCode.WixBinding.WixPackageFilesDiffControl.NoDiffFound" xml:space="preserve">
     <value>Nessuna differenza trovata.</value>
   </data>
@@ -4553,6 +4643,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Estensione Visual Studio</value>
+  </data>
+  <data name="ICSharpCode.WpfDesign.AddIn.ThumbnailViewPad" xml:space="preserve">
+    <value>Anteprima WPF Designer</value>
   </data>
   <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
     <value>Copia</value>
@@ -4854,6 +4947,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Segnalibri</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.AddToWorkspace" xml:space="preserve">
+    <value>Aggiungi allo spazio di lavoro</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.BackButton.ToolTip" xml:space="preserve">
     <value>Indietro</value>
   </data>
@@ -4893,8 +4989,20 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.ClassBrowser.NoResultsFound" xml:space="preserve">
     <value>Nessun risultato trovato.</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyButton.ToolTip" xml:space="preserve">
+    <value>Apri assembly</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromFile" xml:space="preserve">
+    <value>Apri assembly da file...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC" xml:space="preserve">
+    <value>Apri assembly dalla GAC...</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.SearchButton.ToolTip" xml:space="preserve">
     <value>Ricerca nel visualizzatore di classi</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.Workspace" xml:space="preserve">
+    <value>Spazio di lavoro {0}</value>
   </data>
   <data name="MainWindow.Windows.ClassScoutLabel" xml:space="preserve">
     <value>Classi</value>
@@ -5003,6 +5111,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.Console" xml:space="preserve">
     <value>Console</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.DebugExecutable" xml:space="preserve">
+    <value>Debug eseguibile</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Break" xml:space="preserve">
     <value>Interrompi</value>
@@ -5361,6 +5472,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.SearchResultPanel.In" xml:space="preserve">
     <value>in</value>
   </data>
+  <data name="MainWindow.Windows.SearchResultPanel.NoProject" xml:space="preserve">
+    <value>&lt;nessun progetto&gt;</value>
+  </data>
   <data name="MainWindow.Windows.SearchResultPanel.OccurrencesCount" xml:space="preserve">
     <value>${Count} occorrenze</value>
   </data>
@@ -5375,6 +5489,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.PerFile" xml:space="preserve">
     <value>Per file</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProject" xml:space="preserve">
+    <value>Per progetto</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProjectAndFile" xml:space="preserve">
+    <value>Per progetto e file</value>
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip" xml:space="preserve">
     <value>Seleziona la modalità di ricerca in lista</value>
@@ -5811,6 +5931,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ResourceEditor.ResourceCodeGeneratorTool.CouldNotGenerateResourceProperty" xml:space="preserve">
     <value>Generatore del codice risorsa: nessuna proprietà  può essere generata per la risorsa '{0}'.</value>
   </data>
+  <data name="ResourceEditor.ResourceEdit.CommentColumn" xml:space="preserve">
+    <value>Note</value>
+  </data>
   <data name="ResourceEditor.ResourceEdit.ContentColumn" xml:space="preserve">
     <value>Contenuto</value>
   </data>
@@ -5826,6 +5949,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ResourceEditor.ResourceEdit.ContextMenu.EditComment" xml:space="preserve">
     <value>Modifica descrizione</value>
   </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.EditCommentText" xml:space="preserve">
+    <value>Inserisci il nuovo testo per le note della risorsa:</value>
+  </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.Rename" xml:space="preserve">
     <value>&amp;Rinomina</value>
   </data>
@@ -5840,6 +5966,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="SharpDevelop.FileFilter.AllFiles" xml:space="preserve">
     <value>Tutti i file (*.*)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.AllKnownFiles" xml:space="preserve">
+    <value>Estensioni file conosciute</value>
   </data>
   <data name="SharpDevelop.FileFilter.AssemblyFiles" xml:space="preserve">
     <value>File di Assembly (*.exe;*.dll)</value>
@@ -6023,6 +6152,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="SharpDevelop.Refactoring.OverridesOf" xml:space="preserve">
     <value>Overrides di ${Name}</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.PartsOfClass" xml:space="preserve">
+    <value>Parti di ${Name}</value>
   </data>
   <data name="SharpDevelop.Refactoring.ReferencesTo" xml:space="preserve">
     <value>Riferimenti a ${Name}</value>
