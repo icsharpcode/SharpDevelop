@@ -3,7 +3,7 @@
 
 $packageName = 'sharpdevelop'
 $installerType = 'msi' 
-$url = 'http://downloads.sourceforge.net/sharpdevelop/SharpDevelop_4.3.1.9430_Setup.msi?download'
+$url = 'http://downloads.sourceforge.net/sharpdevelop/SharpDevelop_4.3.3.9663_Setup.msi?download'
 $silentArgs = '/q'
 $validExitCodes = @(0)
 
