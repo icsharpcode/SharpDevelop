@@ -112,9 +112,32 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
 			var collectionSource = new CollectionSource	(list,typeof(Contributor),rs);
 			collectionSource.Bind();
+			
 		}
 		
 		
+		[Test]
+		public void GroupbyOneColumnAndFill () {
+			
+			var ric = new System.Collections.Generic.List<IPrintableObject>(){
+				new BaseDataItem(){
+					ColumnName = "Lastname"
+						
+				},
+				new BaseDataItem(){
+					ColumnName = "Firstname"
+				}
+			};
+			var rs = new ReportSettings();
+			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
+			var collectionSource = new CollectionSource	(list,typeof(Contributor),rs);
+			collectionSource.Bind();
+			do {
+				collectionSource.Fill_Test(ric);
+			}while (collectionSource.MoveNext_Test_List());
+		}
+		
+		/*
 		[Test]
 		public void bla () {
 			var s = list.OrderBy(a => a.Lastname);
@@ -126,6 +149,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 				}
 			}
 		}
+		*/
 		#endregion
 		
 		#region Sort

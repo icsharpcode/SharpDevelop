@@ -66,6 +66,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 					var row = CreateContainerForSection(CurrentPage,position);
 
 					DataSource.Fill(CurrentSection.Items);
+					
 					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection.Items);
 					
 					converter.SetParent(row,convertedItems);
