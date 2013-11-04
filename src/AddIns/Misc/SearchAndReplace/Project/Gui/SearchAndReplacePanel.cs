@@ -19,8 +19,9 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace SearchAndReplace
 {
-	[Obsolete("TODO: rewrite me without XML forms")]
-	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
+	// TODO: remove XmlForms
+	#pragma warning disable 618
+	class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
 		SearchAndReplaceMode searchAndReplaceMode;
 		

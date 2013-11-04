@@ -16,7 +16,6 @@ namespace SearchAndReplace
 		Replace
 	}
 	
-	[Obsolete("TODO: rewrite me without XML forms")]
 	public class SearchAndReplaceDialog : Form
 	{
 		public static string SearchPattern  = String.Empty;
