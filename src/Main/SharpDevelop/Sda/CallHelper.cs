@@ -50,17 +50,28 @@ namespace ICSharpCode.SharpDevelop.Sda
 				this.useSharpDevelopErrorHandler = true;
 				ExceptionBox.RegisterExceptionBoxForUnhandledExceptions();
 			}
-			startup.ConfigDirectory = properties.ConfigDirectory;
-			startup.DataDirectory = properties.DataDirectory;
+			string configDirectory = properties.ConfigDirectory;
+			string dataDirectory = properties.DataDirectory;
+			string propertiesName;
 			if (properties.PropertiesName != null) {
-				startup.PropertiesName = properties.PropertiesName;
+				propertiesName = properties.PropertiesName;
+			} else {
+				propertiesName = properties.ApplicationName + "Properties";
 			}
 			
 			if (properties.ApplicationRootPath != null) {
 				FileUtility.ApplicationRootPath = properties.ApplicationRootPath;
 			}
 			
-			startup.StartCoreServices();
+			if (configDirectory == null)
+				configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				                               properties.ApplicationName);
+			var propertyService = new PropertyService(
+				DirectoryName.Create(configDirectory),
+				DirectoryName.Create(dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data")),
+				propertiesName);
+			
+			startup.StartCoreServices(propertyService);
 			Assembly exe = Assembly.Load(properties.ResourceAssemblyName);
 			SD.ResourceService.RegisterNeutralStrings(new ResourceManager("ICSharpCode.SharpDevelop.Resources.StringResources", exe));
 			SD.ResourceService.RegisterNeutralImages(new ResourceManager("ICSharpCode.SharpDevelop.Resources.BitmapResources", exe));
@@ -80,11 +91,11 @@ namespace ICSharpCode.SharpDevelop.Sda
 			}
 			
 			if (properties.AllowAddInConfigurationAndExternalAddIns) {
-				startup.ConfigureExternalAddIns(Path.Combine(PropertyService.ConfigDirectory, "AddIns.xml"));
+				startup.ConfigureExternalAddIns(Path.Combine(configDirectory, "AddIns.xml"));
 			}
 			if (properties.AllowUserAddIns) {
-				startup.ConfigureUserAddIns(Path.Combine(PropertyService.ConfigDirectory, "AddInInstallTemp"),
-				                            Path.Combine(PropertyService.ConfigDirectory, "AddIns"));
+				startup.ConfigureUserAddIns(Path.Combine(configDirectory, "AddInInstallTemp"),
+					Path.Combine(configDirectory, "AddIns"));
 			}
 			
 			LoggingService.Info("Loading AddInTree...");

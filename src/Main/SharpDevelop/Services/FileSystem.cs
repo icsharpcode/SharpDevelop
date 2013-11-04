@@ -69,10 +69,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public IEnumerable<FileName> GetFiles(DirectoryName directory, string searchPattern, SearchOption searchOption)
+		public IEnumerable<FileName> GetFiles(DirectoryName directory, string searchPattern, DirectorySearchOptions searchOptions)
 		{
 			try {
-				return Directory.EnumerateFiles(directory, searchPattern, searchOption).Select(FileName.Create);
+				bool searchSubdirectories = (searchOptions & DirectorySearchOptions.IncludeSubdirectories) != 0;
+				bool ignoreHidden = (searchOptions & DirectorySearchOptions.IncludeHidden) == 0;
+				return FileUtility.LazySearchDirectory(directory, searchPattern, searchSubdirectories, ignoreHidden);
 			} catch (UnauthorizedAccessException ex) {
 				throw new IOException(ex.Message, ex);
 			}

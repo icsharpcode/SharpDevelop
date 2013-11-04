@@ -43,7 +43,36 @@ namespace ICSharpCode.SharpDevelop
 		/// <inheritdoc cref="System.IO.File.OpenText"/>
 		TextReader OpenText(FileName fileName);
 		
-		IEnumerable<FileName> GetFiles(DirectoryName directory, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly);
+		/// <summary>
+		/// Retrieves the list of files in the specified directory.
+		/// </summary>
+		/// <param name="directory">The directory to search in.</param>
+		/// <param name="searchPattern">The search pattern used to filter the result list.
+		/// For example: "*.exe".
+		/// This method does not use 8.3 patterns; so "*.htm" will not match ".html".</param>
+		/// <param name="searchOptions">
+		/// Options that influence the search.
+		/// </param>
+		/// <returns>An enumerable that iterates through the directory contents</returns>
+		/// <exception cref="IOExcption">The directory does not exist / access is denied.</exception>
+		IEnumerable<FileName> GetFiles(DirectoryName directory, string searchPattern = "*", DirectorySearchOptions searchOptions = DirectorySearchOptions.None);
+	}
+	
+	[Flags]
+	public enum DirectorySearchOptions
+	{
+		/// <summary>
+		/// Search top directory only; skip hidden files.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Include hidden files/subdirectories.
+		/// </summary>
+		IncludeHidden = 1,
+		/// <summary>
+		/// Perform a recurive search into subdirectories.
+		/// </summary>
+		IncludeSubdirectories = 2
 	}
 	
 	public static class FileSystemExtensions
@@ -98,7 +127,7 @@ namespace ICSharpCode.SharpDevelop
 			throw new FileNotFoundException();
 		}
 		
-		IEnumerable<FileName> IReadOnlyFileSystem.GetFiles(DirectoryName directory, string searchPattern, SearchOption searchOption)
+		IEnumerable<FileName> IReadOnlyFileSystem.GetFiles(DirectoryName directory, string searchPattern, DirectorySearchOptions searchOptions)
 		{
 			return Enumerable.Empty<FileName>();
 		}
