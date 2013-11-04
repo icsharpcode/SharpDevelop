@@ -231,6 +231,7 @@
     <Compile Include="Services\XamlErrorService.cs" />
     <Compile Include="SharedInstances.cs" />
     <Compile Include="ThumbnailView\ThumbnailView.cs" />
+    <Compile Include="UIHelpers.cs" />
     <Compile Include="Xaml\XamlEditOperations.cs" />
     <Compile Include="Xaml\XamlLoadSettings.cs" />
     <Compile Include="Xaml\XamlModelCollectionElementsCollection.cs" />
