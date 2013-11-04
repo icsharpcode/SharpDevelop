@@ -2028,8 +2028,6 @@
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/MemberContextMenu">
 		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
 		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
-		<MenuItem id="DeclaringTypeContextMenu" type="Builder" class="ICSharpCode.SharpDevelop.Editor.Commands.DeclaringTypeSubMenuBuilder" />
-		<MenuItem id = "Separator1" type = "Separator" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/TypeContextMenu">
@@ -2057,6 +2055,8 @@
 			<Include id="LocalContextMenu" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu/LocalContextMenu" />
 			<MenuItem id="Separator1" type="Separator" />
 		</Condition>
+		
+		<MenuItem id="DeclaringTypeContextMenu" type="Builder" class="ICSharpCode.SharpDevelop.Editor.Commands.DeclaringTypeSubMenuBuilder" />
 		
 		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
 		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>

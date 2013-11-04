@@ -8,31 +8,44 @@ using System.Windows.Controls;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
 	/// <summary>
-	/// Description of DeclaringTypeSubMenuBuilder.
+	/// Builds context menu items with commands related to the declaring type of a member.
 	/// </summary>
 	public class DeclaringTypeSubMenuBuilder : IMenuItemBuilder
 	{
-		public DeclaringTypeSubMenuBuilder()
-		{
-		}
-
-		public System.Collections.Generic.IEnumerable<object> BuildItems(Codon codon, object parameter)
+		public IEnumerable<object> BuildItems(Codon codon, object parameter)
 		{
 			MemberResolveResult resolveResult = GetResolveResult() as MemberResolveResult;
 			if (resolveResult == null) {
 				return null;
 			}
 			
-			var items = new List<MenuItem>();
-			items.Add(new MenuItem() {
-			          	Header = "TEST"
-			          });
+			IMember member = resolveResult.Member;
+			IType declaringType = member.DeclaringTypeDefinition;
+			if (declaringType == null) {
+				return null;
+			}
 			
-//			var items = MenuService.CreateMenuItems((UIElement) SD.Workbench, SD.Workbench, "");
+			var items = new List<object>();
+			var declaringTypeItem = new MenuItem() {
+				Header = "Declaring type: " + declaringType.Name,
+				Icon = ClassBrowserIconService.GetIcon(declaringType).ImageSource
+			};
+			
+			var subItems = MenuService.CreateMenuItems(
+				null, new TypeResolveResult(declaringType), "/SharpDevelop/ViewContent/TextEditor/ContextMenu/TypeContextMenu");
+			if (subItems != null) {
+				foreach (var item in subItems) {
+					declaringTypeItem.Items.Add(item);
+				}
+			}
+			
+			items.Add(declaringTypeItem);
+			items.Add(new Separator());
 			
 			return items;
 		}
