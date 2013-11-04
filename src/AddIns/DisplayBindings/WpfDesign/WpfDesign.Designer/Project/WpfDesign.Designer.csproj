@@ -361,4 +361,7 @@
     <Resource Include="Images\Icons.16x16.GuideSnap.png" />
     <Resource Include="Images\Icons.16x16.GridSnap.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\lock.png" />
+  </ItemGroup>
 </Project>

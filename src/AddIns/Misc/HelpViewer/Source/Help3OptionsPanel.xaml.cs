@@ -49,22 +49,22 @@ namespace MSHelpSystem
 
 		void Help3OfflineModeClicked(object sender, RoutedEventArgs e)
 		{
-			LoggingService.Info("Help 3.0: Setting help mode to \"offline\"");
 			Help3Service.Config.OfflineMode = true;
 			help3Catalogs.IsEnabled = (help3Catalogs.Items.Count > 1 && Help3Service.Config.OfflineMode);
+			LoggingService.Info("HelpViewer: Help mode set to \"offline\"");
 		}
 
 		void Help3OnlineModeClicked(object sender, RoutedEventArgs e)
 		{
-			LoggingService.Info("Help 3.0: Setting help mode to \"online\"");
 			Help3Service.Config.OfflineMode = false;
 			help3Catalogs.IsEnabled = false;
+			LoggingService.Info("HelpViewer: Help mode set to \"online\"");
 		}
 
 		void Help3UseExternalHelpClicked(object sender, RoutedEventArgs e)
 		{
 			Help3Service.Config.ExternalHelp = (bool)externalHelp.IsChecked;
-			LoggingService.Info(string.Format("Help 3.0: {0} external help", (Help3Service.Config.ExternalHelp)?"Enabling":"Disabling"));
+			LoggingService.Info(string.Format("HelpViewer: External help viewer {0}", (Help3Service.Config.ExternalHelp)?"enabled":"disabled"));
 		}
 
 		public override bool SaveOptions()

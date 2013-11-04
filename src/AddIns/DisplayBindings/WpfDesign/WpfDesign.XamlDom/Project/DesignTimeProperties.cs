@@ -112,5 +112,22 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			DependencyProperty.RegisterAttached("DesignHeight", typeof(double), typeof(DesignTimeProperties));
 		
 		#endregion
+		
+		#region LayoutRounding
+
+		public static bool GetLayoutRounding(DependencyObject obj)
+		{
+			return (bool)obj.GetValue(DesignHeightProperty);
+		}
+
+		public static void SetLayoutRounding(DependencyObject obj, bool value)
+		{
+			obj.SetValue(DesignHeightProperty, value);
+		}
+
+		public static readonly DependencyProperty DesignLayoutRounding =
+			DependencyProperty.RegisterAttached("LayoutRounding", typeof(bool), typeof(DesignTimeProperties));
+		
+		#endregion
 	}
 }

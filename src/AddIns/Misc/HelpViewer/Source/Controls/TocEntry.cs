@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -35,14 +36,14 @@ namespace MSHelpSystem.Controls
 			client.DownloadStringCompleted += (_, e) =>
 			{
 				try {
-					LoggingService.Debug(string.Format("Help 3.0: title \"{0}\"", Title));
+					LoggingService.Debug(string.Format("HelpViewer: TocEntry \"{0}\" found", Title));
 					var children = XElement.Parse(e.Result);
 					Children     = children.Elements("topic")
-						.Select(link => new TocEntry(link.Attribute("id").Value) { Title = link.Element("title").Value })
+						.Select(link => new TocEntry(link.Attribute("id").Value) { Title = WebUtility.HtmlDecode(link.Element("title").Value) })
 						.ToArray();
 				} catch (TargetInvocationException ex) {
 					// Exception when fetching e.Result:
-					LoggingService.Warn(ex);
+					LoggingService.Error(ex.ToString());
 					this.children = defaultChild;
 				}
 				client.Dispose();
@@ -58,8 +59,7 @@ namespace MSHelpSystem.Controls
 
 		public IEnumerable Children
 		{
-			get
-			{
+			get {
 				if (Help3Service.ActiveCatalog != null) {
 					if (children == null && !client.IsBusy && HelpLibraryAgent.PortIsReady) {
 						client.DownloadStringAsync(new Uri(Help3Environment.GetHttpFromMsXHelp(string.Format(url, Help3Service.ActiveCatalog.AsMsXHelpParam, id))));
@@ -67,8 +67,7 @@ namespace MSHelpSystem.Controls
 				}
 				return children ?? defaultChild;
 			}
-			private set
-			{
+			private set {
 				children = value;
 				RaisePropertyChanged("Children");
 			}
@@ -81,5 +80,5 @@ namespace MSHelpSystem.Controls
 			System.ComponentModel.PropertyChangedEventHandler handler = PropertyChanged;
 			if (handler != null) handler(this, new System.ComponentModel.PropertyChangedEventArgs(name));
 		}
-  }
+  	}
 }

@@ -426,11 +426,14 @@ They will stop working after removing this AddIn! Are you sure you want to conti
     <value>Help Library</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
-    <value>Help Mode</value>
+    <value>Set Help Preference</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
     <value>Cannot launch Help Library Manager, because there is no help catalog installed/selected. Please check your help settings (see Tools &gt; Options &gt; Tools &gt; Microsoft Help Viewer).</value>
     <comment>Error message when there is no help catalog active</comment>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotAvailableDownloadWinSDK" xml:space="preserve">
+    <value>The Help Library Manager was not found. In order to use SharpDevelop's help feature please download and install Microsoft's Windows SDK 7.1.</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>Help Library Manager was not found. Please check if it was installed correctly.</value>
@@ -460,7 +463,7 @@ They will stop working after removing this AddIn! Are you sure you want to conti
     <value>Show Help</value>
   </data>
   <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
-    <value>Use external help</value>
+    <value>Use external help viewer</value>
   </data>
   <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
     <value>I want to use local help</value>

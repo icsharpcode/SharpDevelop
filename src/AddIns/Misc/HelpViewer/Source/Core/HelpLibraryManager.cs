@@ -18,21 +18,19 @@ namespace MSHelpSystem.Core
 
 		public static bool IsRunning
 		{
-			get
-			{
+			get {
 				Process[] managers = Process.GetProcessesByName("HelpLibManager");
-				LoggingService.Debug(string.Format("Help 3.0: {0} {1} of HelpLibraryManager.exe found", managers.Length, (managers.Length == 1)?"process":"processes"));
+				LoggingService.Debug(string.Format("HelpViewer: {0} HelpLibraryManager {1} found", managers.Length, (managers.Length == 1)?"process":"processes"));
 				return managers.Length > 0;				
 			}
 		}
 
 		public static string Manager
 		{
-			get
-			{
+			get {
 				if (string.IsNullOrEmpty(Help3Environment.AppRoot)) return string.Empty;
 				string manager = Path.Combine(Help3Environment.AppRoot, "HelpLibManager.exe");
-				LoggingService.Debug(string.Format("Help 3.0: Help library manager is \"{0}\"", manager));
+				LoggingService.Debug(string.Format("HelpViewer: HelpLibraryManager is \"{0}\"", manager));
 				return (File.Exists(manager)) ? manager : string.Empty;
 			}
 		}
@@ -61,7 +59,7 @@ namespace MSHelpSystem.Core
 			string brandingSwitch = (!string.IsNullOrEmpty(brandingPackage)) ? string.Format("/brandingPackage \"{0}\"", brandingPackage):"";
 			string arguments = string.Format("/product {0} /version {1} /locale {2} /content \"{3}\" {4}", productCode, productVersion, locale, Help3Environment.BuildLocalStoreFolder, brandingSwitch);
 
-			LoggingService.Debug(string.Format("Help 3.0: Initializing local store with \"{0}\"", arguments));
+			LoggingService.Debug(string.Format("HelpViewer: Initializing local store with \"{0}\"", arguments));
 			HelpLibManagerProcessRunner(arguments);
 		}
 
@@ -88,7 +86,7 @@ namespace MSHelpSystem.Core
 			string brandingSwitch = (!string.IsNullOrEmpty(brandingPackage)) ? string.Format("/brandingPackage \"{0}\"", brandingPackage):"";
 			string arguments = string.Format("/product {0} /version {1} /locale {2} /sourceMedia \"{3}\" {4} {5}", productCode, productVersion, locale, sourceMedia, initLS, brandingSwitch);
 
-			LoggingService.Debug(string.Format("Help 3.0: Installing local help documents with \"{0}\"", arguments));
+			LoggingService.Debug(string.Format("HelpViewer: Installing local help documents with \"{0}\"", arguments));
 			HelpLibManagerProcessRunner(arguments);
 		}
 
@@ -114,7 +112,7 @@ namespace MSHelpSystem.Core
 			string brandingSwitch = (!string.IsNullOrEmpty(brandingPackage)) ? string.Format("/brandingPackage \"{0}\"", brandingPackage):"";
 			string arguments = string.Format("/product {0} /version {1} /locale {2} /sourceWeb \"{3}\" {4} {5}", productCode, productVersion, locale, sourceWeb, initLS, brandingSwitch);
 
-			LoggingService.Debug(string.Format("Help 3.0: Installing help documents from web with \"{0}\"", arguments));
+			LoggingService.Debug(string.Format("HelpViewer: Installing help documents from web with \"{0}\"", arguments));
 			HelpLibManagerProcessRunner(arguments);
 		}
 
@@ -136,7 +134,7 @@ namespace MSHelpSystem.Core
 
 			string arguments = string.Format("/product {0} /version {1} /locale {2} /vendor \"{3}\" /productName \"{4}\" /mediaBookList {5} /uninstall", productCode, productVersion, locale, vendor, productName, mediaBookList);
 
-			LoggingService.Debug(string.Format("Help 3.0: Uninstalling help documents with \"{0}\"", arguments));
+			LoggingService.Debug(string.Format("HelpViewer: Uninstalling help documents with \"{0}\"", arguments));
 			HelpLibManagerProcessRunner(arguments);
 		}
 		                                         
@@ -166,13 +164,17 @@ namespace MSHelpSystem.Core
 				return p.ExitCode;
 			}
 			catch (Exception ex) {
-				LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+				LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 			}
 			return -1;
 		}
 
-
 		public static bool Start()
+		{
+			return Start(false);
+		}
+
+		public static bool Start(bool runPrivileged)
 		{
 			if (IsRunning) return true;
 			if (string.IsNullOrEmpty(Manager)) {
@@ -186,16 +188,16 @@ namespace MSHelpSystem.Core
 			psi.WorkingDirectory = Help3Environment.AppRoot;
 			psi.Arguments = Help3Service.ActiveCatalog.AsCmdLineParam;
 			psi.UseShellExecute = true;
-			psi.Verb = "runas";
+			if (runPrivileged) psi.Verb = "runas";
 			psi.WindowStyle = ProcessWindowStyle.Normal;
 			try {
 				Process p = Process.Start(psi);
 				p.WaitForInputIdle();
-				LoggingService.Info("Help 3.0: Help library manager started");
+				LoggingService.Info("HelpViewer: HelpLibraryManager started");
 				return IsRunning;
 			}
 			catch (Exception ex) {
-				LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+				LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 			}
 			return false;
 		}
@@ -214,10 +216,10 @@ namespace MSHelpSystem.Core
 					manager.Kill();
 					if (waitForExit) manager.WaitForExit();
 				}
-				LoggingService.Debug(string.Format("Help 3.0: {0} {1} of HelpLibraryManager.exe stopped", managers.Length, (managers.Length == 1)?"process":"processes"));
+				LoggingService.Debug(string.Format("HelpViewer: {0} HelpLibraryManager {1} stopped", managers.Length, (managers.Length == 1)?"process":"processes"));
 			}
 			catch (Exception ex) {
-				LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+				LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 			}			
 			return true;
 		}
