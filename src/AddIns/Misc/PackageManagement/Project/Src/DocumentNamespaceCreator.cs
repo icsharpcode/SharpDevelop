@@ -20,7 +20,7 @@ namespace ICSharpCode.PackageManagement
 				IViewContent view = FileService.OpenFile(compilationUnit.FileName);
 				var textEditor = view as ITextEditorProvider;
 				IDocument document = textEditor.TextEditor.Document;
-				NamespaceRefactoringService.AddUsingDeclaration(compilationUnit, document, newNamespace, false);
+				NamespaceRefactoringService.AddUsingDeclaration(compilationUnit, document, compilationUnit.UsingScope, newNamespace, false);
 			}
 		}
 	}

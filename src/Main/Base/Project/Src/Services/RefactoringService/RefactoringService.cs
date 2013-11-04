@@ -648,7 +648,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			foreach (IClass c in searchResults) {
 				string newNamespace = c.Namespace;
-				yield return new AddUsingAction(callingClass.CompilationUnit, editor, newNamespace);
+				yield return new AddUsingAction(callingClass.CompilationUnit, editor, newNamespace, callingClass.UsingScope);
 			}
 		}
 		
@@ -666,8 +666,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			public ICompilationUnit CompilationUnit { get; private set; }
 			public ITextEditor Editor { get; private set; }
 			public string NewNamespace { get; private set; }
+			public IUsingScope UsingScope { get; private set; }
 			
-			public AddUsingAction(ICompilationUnit compilationUnit, ITextEditor editor, string newNamespace)
+			public AddUsingAction(ICompilationUnit compilationUnit, ITextEditor editor, string newNamespace, IUsingScope usingScope)
 			{
 				if (compilationUnit == null)
 					throw new ArgumentNullException("compilationUnit");
@@ -675,14 +676,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					throw new ArgumentNullException("editor");
 				if (newNamespace == null)
 					throw new ArgumentNullException("newNamespace");
+				if (usingScope == null)
+					throw new ArgumentNullException("usingScope");
 				this.CompilationUnit = compilationUnit;
 				this.Editor = editor;
 				this.NewNamespace = newNamespace;
+				this.UsingScope = usingScope;
 			}
 			
 			public void Execute()
 			{
-				NamespaceRefactoringService.AddUsingDeclaration(CompilationUnit, Editor.Document, NewNamespace, true);
+				NamespaceRefactoringService.AddUsingDeclaration(CompilationUnit, Editor.Document, UsingScope, NewNamespace, true);
 				ParserService.BeginParse(Editor.FileName, Editor.Document);
 			}
 			
