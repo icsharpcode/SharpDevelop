@@ -6,6 +6,7 @@ using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.WixBinding
 {
+	[Obsolete("TODO: rewrite me in WPF")]
 	public class PreprocessorVariablesPanel : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()

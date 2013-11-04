@@ -19,6 +19,8 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace Plugins.RegExpTk {
+	// TODO: rewrite without XMLForms
+	#pragma warning disable 618
 
 	public class RegExpTkDialog : BaseSharpDevelopForm
 	{

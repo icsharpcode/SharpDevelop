@@ -19,6 +19,7 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace SearchAndReplace
 {
+	[Obsolete("TODO: rewrite me without XML forms")]
 	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
 		SearchAndReplaceMode searchAndReplaceMode;

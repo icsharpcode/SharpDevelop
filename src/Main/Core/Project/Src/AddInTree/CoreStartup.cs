@@ -18,7 +18,7 @@ namespace ICSharpCode.Core
 	/// for you, provided you use it like this:
 	/// 1. Create a new CoreStartup instance
 	/// 2. (Optional) Set the values of the properties.
-	/// 3. Call <see cref="StartCoreServices()"/>.
+	/// 3. Call <see cref="StartCoreServices"/>.
 	/// 4. Add "preinstalled" AddIns using <see cref="AddAddInsFromDirectory"/>
 	///    and <see cref="AddAddInFile"/>.
 	/// 5. (Optional) Call <see cref="ConfigureExternalAddIns"/> to support
