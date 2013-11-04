@@ -58,7 +58,6 @@ namespace Plugins.RegExpTk {
 		}
 		
 		
-		private ErrorProvider compileErrorProvider;
 		private ContextMenuStrip quickInsertMenu          = new ContextMenuStrip();
 		private ContextMenuStrip matchListViewContextMenu = new ContextMenuStrip();
 		
