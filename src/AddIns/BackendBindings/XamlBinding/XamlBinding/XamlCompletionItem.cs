@@ -194,8 +194,6 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		string headerText;
-		bool descriptionCreated;
-		string description;
 		
 		public object Header {
 			get {
@@ -210,17 +208,7 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		public object Content {
-			get {
-//				if (!descriptionCreated) {
-//					string entityDoc = ctor.Documentation;
-//					if (!string.IsNullOrEmpty(entityDoc)) {
-//						description = CodeCompletionItem.ConvertDocumentation(entityDoc);
-//					}
-//					descriptionCreated = true;
-//				}
-//				return description;
-				return null;
-			}
+			get { return ctor.Documentation; }
 		}
 	}
 	
@@ -228,8 +216,6 @@ namespace ICSharpCode.XamlBinding
 	{
 		string insightText;
 		string headerText;
-		string description;
-		bool descriptionCreated;
 		IMember member;
 		
 		public MemberInsightItem(IMember member, string insightText)
@@ -249,17 +235,7 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		public object Content {
-			get {
-//				if (!descriptionCreated) {
-//					string entityDoc = member.Documentation;
-//					if (!string.IsNullOrEmpty(entityDoc)) {
-//						description = CompletionItem.ConvertDocumentation(entityDoc);
-//					}
-//					descriptionCreated = true;
-//				}
-//				return description;
-				return null;
-			}
+			get { return member.Documentation; }
 		}
 	}
 }
