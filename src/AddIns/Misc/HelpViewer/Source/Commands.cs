@@ -2,13 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using MSHelpSystem.Controls;
 using MSHelpSystem.Core;
 
@@ -46,7 +43,7 @@ namespace MSHelpSystem.Commands
 		{
 			if (!Help3Environment.IsHelp3ProtocolRegistered) {
 				using (HelpLibraryManagerNotFoundForm form = new HelpLibraryManagerNotFoundForm()) {
-					form.ShowDialog(WorkbenchSingleton.MainWin32Window);
+					form.ShowDialog(SD.WinForms.MainWin32Window);
 				}
 				return;
 			}
@@ -64,7 +61,7 @@ namespace MSHelpSystem.Commands
 		{
 			if (!Help3Environment.IsHelp3ProtocolRegistered) {
 				using (HelpLibraryManagerNotFoundForm form = new HelpLibraryManagerNotFoundForm()) {
-					form.ShowDialog(WorkbenchSingleton.MainWin32Window);
+					form.ShowDialog(SD.WinForms.MainWin32Window);
 				}
 				return;
 			}
@@ -79,7 +76,7 @@ namespace MSHelpSystem.Commands
 		{
 			if (string.IsNullOrEmpty(HelpLibraryManager.Manager)) {
 				using (HelpLibraryManagerNotFoundForm form = new HelpLibraryManagerNotFoundForm()) {
-					form.ShowDialog(WorkbenchSingleton.MainWin32Window);
+					form.ShowDialog(SD.WinForms.MainWin32Window);
 				}
 				return;
 			}
