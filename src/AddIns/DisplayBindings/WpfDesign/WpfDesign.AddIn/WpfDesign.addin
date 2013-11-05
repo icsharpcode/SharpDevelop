@@ -5,7 +5,6 @@
        addInManagerHidden="preinstalled">
 	<Manifest>
 		<Identity name="ICSharpCode.WpfDesigner" />
-		<Dependency addin="ICSharpCode.FormsDesigner" requirePreload="true" />
 	</Manifest>
 	<Runtime>
 		<Import assembly="ICSharpCode.WpfDesign.AddIn.dll">

@@ -17,12 +17,15 @@ namespace ICSharpCode.Core.WinForms
 		static Dictionary<string, Icon> iconCache = new Dictionary<string, Icon>();
 		static Dictionary<string, Bitmap> bitmapCache = new Dictionary<string, Bitmap>();
 		
+		static readonly IResourceService resourceService;
+		
 		static WinFormsResourceService()
 		{
-			ResourceService.ClearCaches += ResourceService_ClearCaches;
+			resourceService = ServiceSingleton.GetRequiredService<IResourceService>();
+			resourceService.LanguageChanged += OnLanguageChanged;
 		}
 		
-		static void ResourceService_ClearCaches(object sender, EventArgs e)
+		static void OnLanguageChanged(object sender, EventArgs e)
 		{
 			lock (iconCache) {
 				iconCache.Clear();
@@ -162,7 +165,7 @@ namespace ICSharpCode.Core.WinForms
 				if (iconCache.TryGetValue(name, out ico))
 					return ico;
 				
-				object iconobj = ResourceService.GetImageResource(name);
+				object iconobj = resourceService.GetImageResource(name);
 				if (iconobj == null) {
 					return null;
 				}
@@ -218,7 +221,7 @@ namespace ICSharpCode.Core.WinForms
 				Bitmap bmp;
 				if (bitmapCache.TryGetValue(name, out bmp))
 					return bmp;
-				bmp = (Bitmap)ResourceService.GetImageResource(name);
+				bmp = (Bitmap)resourceService.GetImageResource(name);
 				if (bmp == null) {
 					throw new ResourceNotFoundException(name);
 				}

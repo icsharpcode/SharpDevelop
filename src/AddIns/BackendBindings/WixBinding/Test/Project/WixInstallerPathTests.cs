@@ -1,11 +1,11 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Project
@@ -16,12 +16,18 @@ namespace WixBinding.Tests.Project
 	[TestFixture]
 	public class WixInstallerPathTestFixture
 	{
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			SD.InitializeForUnitTests();
+		}
+		
 		[Test]
 		public void InstallerFullPath()
 		{
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			
-			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\Test.msi", project.GetInstallerFullPath());
+			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\Test.msi", project.GetInstallerFullPath().ToString());
 		}
 		
 		[Test]
@@ -30,7 +36,7 @@ namespace WixBinding.Tests.Project
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			project.SetProperty("OutputName", "ChangedName");
 			
-			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\ChangedName.msi", project.GetInstallerFullPath());
+			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\ChangedName.msi", project.GetInstallerFullPath().ToString());
 		}
 	}
 }

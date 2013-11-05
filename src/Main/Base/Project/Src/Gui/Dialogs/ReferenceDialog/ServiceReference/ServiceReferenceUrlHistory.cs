@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void ReadSavedServiceReferenceUrls()
 		{
-			Urls.AddRange(PropertyService.Get(ServiceReferencePropertyName, new string[0]));
+			Urls.AddRange(PropertyService.GetList<string>(ServiceReferencePropertyName));
 		}
 		
 		public List<string> Urls { get; private set; }
@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				Urls.RemoveAt(Urls.Count - 1);
 			}
 			Urls.Insert(0, url);
-			PropertyService.Set(ServiceReferencePropertyName, Urls.ToArray());
+			PropertyService.SetList(ServiceReferencePropertyName, Urls);
 		}
 		
 		bool Contains(string url)

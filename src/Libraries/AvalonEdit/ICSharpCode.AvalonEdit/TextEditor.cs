@@ -331,7 +331,8 @@ namespace ICSharpCode.AvalonEdit
 			}
 			if (newValue != null) {
 				colorizer = CreateColorizer(newValue);
-				this.TextArea.TextView.LineTransformers.Insert(0, colorizer);
+				if (colorizer != null)
+					this.TextArea.TextView.LineTransformers.Insert(0, colorizer);
 			}
 		}
 		
@@ -344,7 +345,7 @@ namespace ICSharpCode.AvalonEdit
 		{
 			if (highlightingDefinition == null)
 				throw new ArgumentNullException("highlightingDefinition");
-			return new HighlightingColorizer(highlightingDefinition.MainRuleSet);
+			return new HighlightingColorizer(highlightingDefinition);
 		}
 		#endregion
 		
@@ -946,10 +947,23 @@ namespace ICSharpCode.AvalonEdit
 		}
 		
 		/// <summary>
+		/// Encoding dependency property.
+		/// </summary>
+		public static readonly DependencyProperty EncodingProperty =
+			DependencyProperty.Register("Encoding", typeof(Encoding), typeof(TextEditor));
+		
+		/// <summary>
 		/// Gets/sets the encoding used when the file is saved.
 		/// </summary>
+		/// <remarks>
+		/// The <see cref="Load(Stream)"/> method autodetects the encoding of the file and sets this property accordingly.
+		/// The <see cref="Save(Stream)"/> method uses the encoding specified in this property.
+		/// </remarks>
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public Encoding Encoding { get; set; }
+		public Encoding Encoding {
+			get { return (Encoding)GetValue(EncodingProperty); }
+			set { SetValue(EncodingProperty, value); }
+		}
 		
 		/// <summary>
 		/// Saves the text to the stream.
@@ -961,8 +975,11 @@ namespace ICSharpCode.AvalonEdit
 		{
 			if (stream == null)
 				throw new ArgumentNullException("stream");
-			StreamWriter writer = new StreamWriter(stream, this.Encoding ?? Encoding.UTF8);
-			writer.Write(this.Text);
+			var encoding = this.Encoding;
+			var document = this.Document;
+			StreamWriter writer = encoding != null ? new StreamWriter(stream, encoding) : new StreamWriter(stream);
+			if (document != null)
+				document.WriteTextTo(writer);
 			writer.Flush();
 			// do not close the stream
 			this.IsModified = false;

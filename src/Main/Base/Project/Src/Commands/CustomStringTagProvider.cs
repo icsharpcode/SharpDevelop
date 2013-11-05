@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		string GetCurrentItemPath()
 		{
-			return WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName;
+			return SD.Workbench.ActiveViewContent.PrimaryFileName;
 		}
 		
 		string GetCurrentTargetPath()
@@ -84,23 +84,23 @@ namespace ICSharpCode.SharpDevelop.Commands
 					
 				case "CURLINE":
 					{
-						IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
+						IPositionable positionable = SD.GetActiveViewContentService<IPositionable>();
 						if (positionable != null)
 							return positionable.Line.ToString();
 						return string.Empty;
 					}
 				case "CURCOL":
 					{
-						IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
+						IPositionable positionable = SD.GetActiveViewContentService<IPositionable>();
 						if (positionable != null)
 							return positionable.Column.ToString();
 						return string.Empty;
 					}
 				case "CURTEXT":
 					{
-						var tecp = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-						if (tecp != null) {
-							return tecp.TextEditor.SelectedText;
+						ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+						if (editor != null) {
+							return editor.SelectedText;
 						}
 						return string.Empty;
 					}

@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		void AddUrlToHistory(Uri discoveryUri)
 		{
 			urlHistory.AddUrl(discoveryUri);
-			RaisePropertyChanged("MruServices");
+			OnPropertyChanged("MruServices");
 		}
 		
 		/// <summary>
@@ -171,7 +171,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return title; }
 			set {
 				title = value;
-				base.RaisePropertyChanged(() => Title);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -185,7 +185,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return selectedService; }
 			set {
 				selectedService = value;
-				base.RaisePropertyChanged(() => SelectedService);
+				OnPropertyChanged();
 			}
 		}
 	
@@ -193,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return items; }
 			set {
 				items = value;
-				base.RaisePropertyChanged(() => ServiceItems);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -202,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			set {
 				myItem = value;
 				UpdateListView();
-				base.RaisePropertyChanged(() => ServiceItem);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -210,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return serviceDescriptionMessage; }
 			set {
 				serviceDescriptionMessage = value;
-				base.RaisePropertyChanged(() => ServiceDescriptionMessage);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -218,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return defaultNameSpace; }
 			set {
 				defaultNameSpace = value;
-				base.RaisePropertyChanged(() => DefaultNameSpace);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -226,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return twoValues; }
 			set {
 				twoValues = value;
-				base.RaisePropertyChanged(() => TwoValues);
+				OnPropertyChanged();
 			}
 		}
 		

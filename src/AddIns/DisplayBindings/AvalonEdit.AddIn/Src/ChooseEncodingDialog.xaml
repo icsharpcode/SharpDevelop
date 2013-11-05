@@ -13,13 +13,8 @@
 			Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox.FileEncodingLabel}" />
 		<ComboBox
 			Name="encodingComboBox"
-			Margin="16,0,8,8">
-			<ComboBox.ItemTemplate>
-				<DataTemplate>
-					<TextBlock Text="{Binding DisplayName}"/>
-				</DataTemplate>
-			</ComboBox.ItemTemplate>
-		</ComboBox>
+			DisplayMemberPath="DisplayName"
+			Margin="16,0,8,8" />
 		<widgets:UniformGridWithSpacing
 			Columns="2"
 			Margin="4,4,10,10"

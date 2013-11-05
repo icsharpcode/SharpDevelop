@@ -17,7 +17,7 @@ namespace ICSharpCode.Core.Presentation
 	{
 		protected readonly Codon codon;
 		protected readonly object caller;
-		protected readonly IEnumerable<ICondition> conditions;
+		protected readonly IReadOnlyCollection<ICondition> conditions;
 		
 		/// <summary>
 		/// If true, UpdateStatus() sets the enabled flag.
@@ -25,7 +25,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		internal bool SetEnabled;
 		
-		public CoreMenuItem(Codon codon, object caller, IEnumerable<ICondition> conditions)
+		public CoreMenuItem(Codon codon, object caller, IReadOnlyCollection<ICondition> conditions)
 		{
 			this.codon = codon;
 			this.caller = caller;
@@ -33,7 +33,8 @@ namespace ICSharpCode.Core.Presentation
 			
 			if (codon.Properties.Contains("icon")) {
 				try {
-					var image = PresentationResourceService.GetImage(codon.Properties["icon"]);
+					var image = new Image();
+					image.Source = PresentationResourceService.GetBitmapSource(codon.Properties["icon"]);
 					image.Height = 16;
 					this.Icon = image;
 				} catch (ResourceNotFoundException) {}

@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -55,7 +56,7 @@ namespace XmlEditor.Tests.Folding
 			MockDocument expectedSnapshot = new MockDocument();
 			fakeTextEditor.MockDocument.SetSnapshot(expectedSnapshot);
 			
-			ITextBuffer snapshot = xmlFoldingManager.CreateTextEditorSnapshot();
+			ITextSource snapshot = xmlFoldingManager.CreateTextEditorSnapshot();
 			
 			Assert.AreEqual(expectedSnapshot, snapshot);
 		}
@@ -81,7 +82,7 @@ namespace XmlEditor.Tests.Folding
 			MockDocument expectedSnapshot = new MockDocument();
 			fakeTextEditor.MockDocument.SetSnapshot(expectedSnapshot);
 			
-			ITextBuffer snapshot = xmlFoldingManager.CreateTextEditorSnapshot();
+			ITextSource snapshot = xmlFoldingManager.CreateTextEditorSnapshot();
 			
 			IList<FoldingRegion> folds = xmlFoldingManager.GetFolds(snapshot);
 			
@@ -92,26 +93,6 @@ namespace XmlEditor.Tests.Folding
 		{
 			DomRegion region = new DomRegion(1, 2);
 			return new FoldingRegion("a", region);
-		}
-		
-		[Test]
-		public void UpdateFolds_FakeFoldingManagerUsed_FoldsPassedToFakeFoldingManager()
-		{
-			CreateXmlFoldingManager();
-			List<NewFolding> folds = NewFoldingHelper.CreateFoldListWithOneFold();
-			xmlFoldingManager.UpdateFolds(folds);
-			
-			NewFoldingHelper.AssertAreEqual(folds, fakeFoldingManager.NewFoldsPassedToUpdateFoldings);
-		}
-		
-		[Test]
-		public void UpdateFolds_FakeFoldingManagerUsed_FirstErrorOffsetPassedToFakeFoldingManagerIsMinusOne()
-		{
-			CreateXmlFoldingManager();
-			List<NewFolding> folds = NewFoldingHelper.CreateFoldListWithOneFold();
-			xmlFoldingManager.UpdateFolds(folds);
-			
-			Assert.AreEqual(-1, fakeFoldingManager.FirstErrorOffset);
 		}
 		
 		[Test]

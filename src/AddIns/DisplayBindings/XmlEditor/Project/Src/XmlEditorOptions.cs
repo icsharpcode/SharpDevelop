@@ -2,10 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using ICSharpCode.Core;
 using System.Globalization;
+using System.IO;
+
+using ICSharpCode.Core;
 
 namespace ICSharpCode.XmlEditor
 {

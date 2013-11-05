@@ -3,20 +3,23 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeAttribute : CodeElement, global::EnvDTE.CodeAttribute
 	{
-		IAttribute attribute;
-		static readonly string AttributeEndName = "Attribute";
+		protected readonly IAttribute attribute;
+		const string AttributeEndName = "Attribute";
 		
 		public CodeAttribute()
 		{
 		}
 		
-		public CodeAttribute(IAttribute attribute)
+		public CodeAttribute(CodeModelContext context, IAttribute attribute)
+			: base(context)
 		{
 			this.attribute = attribute;
 		}
@@ -26,12 +29,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public override string Name {
-			get { return GetShortName(); }
-		}
-		
-		string GetShortName()
-		{
-			return GetShortName(attribute.AttributeType.Name);
+			get { return GetShortName(attribute.AttributeType.Name); }
 		}
 		
 		string GetShortName(string name)
@@ -43,7 +41,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual string FullName {
-			get { return attribute.AttributeType.FullyQualifiedName; }
+			get { return attribute.AttributeType.FullName; }
 		}
 		
 		public virtual string Value {
@@ -64,7 +62,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				.ToArray();
 		}
 		
-		string GetArgumentValue(object argument)
+		string GetArgumentValue(ResolveResult argument)
 		{
 			return new CodeAttributeArgument(String.Empty, argument).Value;
 		}

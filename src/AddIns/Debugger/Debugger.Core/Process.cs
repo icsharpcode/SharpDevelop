@@ -3,39 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.Linq;
 
+using ICSharpCode.NRefactory.TypeSystem;
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.CorSym;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
 
 namespace Debugger
 {
 	internal enum DebuggeeStateAction { Keep, Clear }
-	
-	/// <summary>
-	/// Debug Mode Flags.
-	/// </summary>
-	public enum DebugModeFlag
-	{
-		/// <summary>
-		/// Run in the same mode as without debugger.
-		/// </summary>
-		Default,
-		/// <summary>
-		/// Run in forced optimized mode.
-		/// </summary>
-		Optimized,
-		/// <summary>
-		/// Run in debug mode (easy inspection) but slower.
-		/// </summary>
-		Debug,
-		/// <summary>
-		/// Run in ENC mode (ENC possible) but even slower than debug
-		/// </summary>
-		Enc
-	}
 	
 	public class Process: DebuggerObject
 	{
@@ -44,13 +20,21 @@ namespace Debugger
 		ICorDebugProcess corProcess;
 		ManagedCallback callbackInterface;
 		
-		EvalCollection activeEvals;
-		ModuleCollection modules;
-		ThreadCollection threads;
-		AppDomainCollection appDomains;
+		List<ICorDebugFunctionBreakpoint> tempBreakpoints = new List<ICorDebugFunctionBreakpoint>();
+		
+		internal List<Eval> activeEvals = new List<Eval>();
+		internal List<Module> modules = new List<Module>();
+		internal List<Thread> threads = new List<Thread>();
+		internal List<AppDomain> appDomains = new List<AppDomain>();
 		
 		string workingDirectory;
 		
+		public event EventHandler<MessageEventArgs> LogMessage;
+		public event EventHandler<ModuleEventArgs> ModuleLoaded;
+		public event EventHandler<ModuleEventArgs> ModuleUnloaded;
+		public event EventHandler<DebuggerPausedEventArgs> Paused;
+		public event EventHandler<DebuggerEventArgs> Resumed;
+		public event EventHandler<DebuggerEventArgs> Exited;
 		
 		public NDebugger Debugger {
 			get { return debugger; }
@@ -72,53 +56,21 @@ namespace Debugger
 			get { return callbackInterface; }
 		}
 		
-		public EvalCollection ActiveEvals {
-			get { return activeEvals; }
-		}
-		
 		internal bool Evaluating {
 			get { return activeEvals.Count > 0; }
 		}
 		
-		public ModuleCollection Modules {
-			get { return modules; }
+		public IEnumerable<Module> Modules {
+			get { return this.modules; }
 		}
 		
-		public ThreadCollection Threads {
-			get { return threads; }
+		public IEnumerable<Thread> Threads {
+			get { return this.threads; }
 		}
 		
-		public Thread SelectedThread {
-			get { return this.Threads.Selected; }
-			set { this.Threads.Selected = value; }
-		}
+		internal bool BreakInMain { get; set; }
 		
-		public StackFrame SelectedStackFrame {
-			get {
-				if (SelectedThread == null) {
-					return null;
-				} else {
-					return SelectedThread.SelectedStackFrame;
-				}
-			}
-		}
-		
-		public SourcecodeSegment NextStatement {
-			get {
-				if (SelectedStackFrame == null || IsRunning) {
-					return null;
-				} else {
-					return SelectedStackFrame.NextStatement;
-				}
-			}
-		}
-		
-		public bool BreakAtBeginning {
-			get;
-			set;
-		}
-		
-		public AppDomainCollection AppDomains {
+		public IEnumerable<AppDomain> AppDomains {
 			get { return appDomains; }
 		}
 		
@@ -132,21 +84,16 @@ namespace Debugger
 			get { return workingDirectory; }
 		}
 		
-		public static DebugModeFlag DebugMode { get; set; }
+		public string Filename { get; private set; }
 		
-		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string workingDirectory)
+		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string filename, string workingDirectory)
 		{
 			this.debugger = debugger;
 			this.corProcess = corProcess;
 			this.workingDirectory = workingDirectory;
+			this.Filename = System.IO.Path.GetFullPath(filename); // normalize path
 			
 			this.callbackInterface = new ManagedCallback(this);
-			
-			activeEvals = new EvalCollection(debugger);
-			modules = new ModuleCollection(debugger);
-			modules.Added += OnModulesAdded;
-			threads = new ThreadCollection(debugger);
-			appDomains = new AppDomainCollection(debugger);
 		}
 		
 		static unsafe public Process CreateProcess(NDebugger debugger, string filename, string workingDirectory, string arguments)
@@ -159,7 +106,7 @@ namespace Debugger
 			
 			ICorDebugProcess outProcess;
 			
-			if (workingDirectory == null || workingDirectory == "") {
+			if (string.IsNullOrEmpty(workingDirectory)) {
 				workingDirectory = System.IO.Path.GetDirectoryName(filename);
 			}
 			
@@ -168,35 +115,32 @@ namespace Debugger
 			secAttr.lpSecurityDescriptor = IntPtr.Zero;
 			secAttr.nLength = (uint)sizeof(_SECURITY_ATTRIBUTES);
 			
-			fixed (uint* pprocessStartupInfo = processStartupInfo)
-				fixed (uint* pprocessInfo = processInfo)
-				outProcess =
-				debugger.CorDebug.CreateProcess(
-					filename,   // lpApplicationName
-					// If we do not prepend " ", the first argument migh just get lost
-					" " + arguments,                       // lpCommandLine
-					ref secAttr,                       // lpProcessAttributes
-					ref secAttr,                      // lpThreadAttributes
-					1,//TRUE                    // bInheritHandles
-					0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
-					IntPtr.Zero,                       // lpEnvironment
-					workingDirectory,                       // lpCurrentDirectory
-					(uint)pprocessStartupInfo,        // lpStartupInfo
-					(uint)pprocessInfo,               // lpProcessInformation,
-					CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
-				);
+			fixed (uint* pprocessStartupInfo = processStartupInfo) {
+				fixed (uint* pprocessInfo = processInfo) {
+					outProcess = debugger.CorDebug.CreateProcess(
+						filename,   // lpApplicationName
+						// If we do not prepend " ", the first argument migh just get lost
+						" " + arguments,                       // lpCommandLine
+						ref secAttr,                       // lpProcessAttributes
+						ref secAttr,                      // lpThreadAttributes
+						1,//TRUE                    // bInheritHandles
+						0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
+						IntPtr.Zero,                       // lpEnvironment
+						workingDirectory,                       // lpCurrentDirectory
+						(uint)pprocessStartupInfo,        // lpStartupInfo
+						(uint)pprocessInfo,               // lpProcessInformation,
+						CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
+					);
+				}
+			}
 			
-			return new Process(debugger, outProcess, workingDirectory);
+			return new Process(debugger, outProcess, filename, workingDirectory);
 		}
 		
-		/// <summary> Fired when System.Diagnostics.Trace.WriteLine() is called in debuged process </summary>
-		public event EventHandler<MessageEventArgs> LogMessage;
-		
-		protected internal virtual void OnLogMessage(MessageEventArgs arg)
+		internal void OnLogMessage(MessageEventArgs arg)
 		{
-			TraceMessage ("Debugger event: OnLogMessage");
-			if (LogMessage != null) {
-				LogMessage(this, arg);
+			if (this.LogMessage != null) {
+				this.LogMessage(this, arg);
 			}
 		}
 		
@@ -204,8 +148,66 @@ namespace Debugger
 		{
 			if (args.Length > 0)
 				message = string.Format(message, args);
-			System.Diagnostics.Debug.WriteLine("Debugger:" + message);
-			debugger.OnDebuggerTraceMessage(new MessageEventArgs(this, message));
+			this.Debugger.TraceMessage(message);
+		}
+		
+		internal AppDomain GetAppDomain(ICorDebugAppDomain corAppDomain)
+		{
+			foreach(AppDomain a in this.AppDomains) {
+				if (a.CorAppDomain.Equals(corAppDomain)) {
+					return a;
+				}
+			}
+			throw new DebuggerException("AppDomain not found");
+		}
+		
+		internal Eval GetActiveEval(ICorDebugEval corEval)
+		{
+			foreach(Eval eval in this.activeEvals) {
+				if (eval.CorEval == corEval) {
+					return eval;
+				}
+			}
+			throw new DebuggerException("Eval not found for given ICorDebugEval");
+		}
+		
+		public Module GetModule(string filename)
+		{
+			foreach(Module module in this.Modules) {
+				if (module.Name == filename) {
+					return module;
+				}
+			}
+			throw new DebuggerException("Module \"" + filename + "\" is not in collection");
+		}
+
+		internal Module GetModule(ICorDebugModule corModule)
+		{
+			foreach(Module module in this.Modules) {
+				if (module.CorModule == corModule) {
+					return module;
+				}
+			}
+			throw new DebuggerException("Module is not in collection");
+		}
+		
+		internal Thread GetThread(ICorDebugThread corThread)
+		{
+			foreach(Thread thread in this.Threads) {
+				if (thread.CorThread == corThread) {
+					return thread;
+				}
+			}
+			// Sometimes, the thread is not reported for some unkown reason
+			TraceMessage("Thread not found in collection");
+			Thread newThread = new Thread(this, corThread);
+			this.threads.Add(newThread);
+			return newThread;
+		}
+		
+		public ISymbolSource GetSymbolSource(IMethod method)
+		{
+			return this.Debugger.SymbolSources.FirstOrDefault(s => s.Handles(method)) ?? this.Debugger.SymbolSources.First();
 		}
 		
 		/// <summary> Read the specified amount of memory at the given memory address </summary>
@@ -233,52 +235,27 @@ namespace Debugger
 			return written;
 		}
 		
-		internal Thread GetThread(ICorDebugThread corThread)
-		{
-			foreach(Thread thread in this.Threads) {
-				if (thread.CorThread == corThread) {
-					return thread;
-				}
-			}
-			Thread t = new Thread(this, corThread);
-			this.Threads.Add(t);
-			return t;
-		}
-		
-		#region Exceptions
-		
-		public event EventHandler<ExceptionEventArgs> ExceptionThrown;
-		
-		protected internal virtual void OnExceptionThrown(ExceptionEventArgs e)
-		{
-			TraceMessage ("Debugger event: OnExceptionThrown()");
-			if (ExceptionThrown != null) {
-				ExceptionThrown(this, e);
-			}
-		}
-		
-		#endregion
-		
 		// State control for the process
 		
 		internal bool TerminateCommandIssued = false;
-		internal Queue<Breakpoint> BreakpointHitEventQueue = new Queue<Breakpoint>();
-		internal Dictionary<INode, TypedValue> ExpressionsCache = new Dictionary<INode, TypedValue>();
 		
 		#region Events
 		
-		public event EventHandler<ProcessEventArgs> Paused;
-		public event EventHandler<ProcessEventArgs> Resumed;
-		
-		// HACK: public
-		public virtual void OnPaused()
+		internal void OnPaused(DebuggerPausedEventArgs e)
 		{
 			AssertPaused();
+			DisableAllSteppers();
+			
+			foreach (var corBreakpoint in tempBreakpoints) {
+				corBreakpoint.Activate(0);
+			}
+			tempBreakpoints.Clear();
+			
 			// No real purpose - just additional check
 			if (callbackInterface.IsInCallback) throw new DebuggerException("Can not raise event within callback.");
 			TraceMessage ("Debugger event: OnPaused()");
 			if (Paused != null) {
-				foreach(Delegate d in Paused.GetInvocationList()) {
+				foreach(EventHandler<DebuggerPausedEventArgs> d in Paused.GetInvocationList()) {
 					if (IsRunning) {
 						TraceMessage ("Skipping OnPaused delegate because process has resumed");
 						break;
@@ -287,19 +264,19 @@ namespace Debugger
 						TraceMessage ("Skipping OnPaused delegate because process has exited");
 						break;
 					}
-					d.DynamicInvoke(this, new ProcessEventArgs(this));
+					d(this, e);
 				}
 			}
 		}
 		
-		protected virtual void OnResumed()
+		void OnResumed()
 		{
 			AssertRunning();
 			if (callbackInterface.IsInCallback)
 				throw new DebuggerException("Can not raise event within callback.");
 			TraceMessage ("Debugger event: OnResumed()");
 			if (Resumed != null) {
-				Resumed(this, new ProcessEventArgs(this));
+				Resumed(this, new DebuggerEventArgs() { Process = this });
 			}
 		}
 		
@@ -307,30 +284,32 @@ namespace Debugger
 		
 		#region PauseSession & DebugeeState
 		
-		PauseSession pauseSession;
-		DebuggeeState debuggeeState;
+		long pauseSession;
+		long nextPauseSession = 1;
+		long debuggeeState;
+		long nextDebuggeeState = 1;
 		
 		/// <summary>
 		/// Indentification of the current debugger session. This value changes whenever debugger is continued
 		/// </summary>
-		public PauseSession PauseSession {
+		public long PauseSession {
 			get { return pauseSession; }
 		}
 		
 		/// <summary>
 		/// Indentification of the state of the debugee. This value changes whenever the state of the debugee significatntly changes
 		/// </summary>
-		public DebuggeeState DebuggeeState {
+		public long DebuggeeState {
 			get { return debuggeeState; }
 		}
 		
 		/// <summary> Puts the process into a paused state </summary>
-		internal void NotifyPaused(PausedReason pauseReason)
+		internal void NotifyPaused()
 		{
 			AssertRunning();
-			pauseSession = new PauseSession(this, pauseReason);
-			if (debuggeeState == null) {
-				debuggeeState = new DebuggeeState(this);
+			pauseSession = nextPauseSession++;
+			if (debuggeeState == 0) {
+				debuggeeState = nextDebuggeeState++;
 			}
 		}
 		
@@ -338,42 +317,11 @@ namespace Debugger
 		internal void NotifyResumed(DebuggeeStateAction action)
 		{
 			AssertPaused();
-			pauseSession = null;
+			pauseSession = 0;
 			if (action == DebuggeeStateAction.Clear) {
-				if (debuggeeState == null) throw new DebuggerException("Debugee state already cleared");
-				debuggeeState = null;
-				this.ExpressionsCache.Clear();
+				if (debuggeeState == 0) throw new DebuggerException("Debugee state already cleared");
+				debuggeeState = 0;
 			}
-		}
-		
-		/// <summary> Sets up the eviroment and raises user events </summary>
-		internal void RaisePausedEvents()
-		{
-			AssertPaused();
-			DisableAllSteppers();
-			CheckSelectedStackFrames();
-			SelectMostRecentStackFrameWithLoadedSymbols();
-			
-			// if CurrentException is set an exception has occurred.
-			if (SelectedThread.CurrentException != null) {
-				ExceptionEventArgs args = new ExceptionEventArgs(this, this.SelectedThread.CurrentException, this.SelectedThread.CurrentExceptionType, this.SelectedThread.CurrentExceptionIsUnhandled);
-				OnExceptionThrown(args);
-				// clear exception, it is being processed by the debugger.
-				this.SelectedThread.CurrentException = null;
-				// The event could have resumed or killed the process
-				if (this.IsRunning || this.TerminateCommandIssued || this.HasExited) return;
-			}
-			
-			while(BreakpointHitEventQueue.Count > 0) {
-				Breakpoint breakpoint = BreakpointHitEventQueue.Dequeue();
-				breakpoint.NotifyHit();
-				// The event could have resumed or killed the process
-				if (this.IsRunning || this.TerminateCommandIssued || this.HasExited) return;
-			}
-			
-			OnPaused();
-			// The event could have resumed the process
-			if (this.IsRunning || this.TerminateCommandIssued || this.HasExited) return;
 		}
 		
 		#endregion
@@ -393,7 +341,7 @@ namespace Debugger
 		}
 		
 		public bool IsRunning {
-			get { return pauseSession == null; }
+			get { return pauseSession == 0; }
 		}
 		
 		public uint Id {
@@ -406,26 +354,29 @@ namespace Debugger
 		
 		bool hasExited = false;
 		
-		public event EventHandler Exited;
-		
 		public bool HasExited {
 			get {
 				return hasExited;
 			}
 		}
 		
-		internal void NotifyHasExited()
+		internal void OnExited()
 		{
 			if(!hasExited) {
 				hasExited = true;
 				if (Exited != null) {
-					Exited(this, new ProcessEventArgs(this));
+					Exited(this, new DebuggerEventArgs() { Process = this });
 				}
 				// Expire pause seesion first
 				if (IsPaused) {
 					NotifyResumed(DebuggeeStateAction.Clear);
 				}
-				debugger.Processes.Remove(this);
+				debugger.processes.Remove(this);
+				
+				if (debugger.processes.Count == 0) {
+					// Exit callback and then terminate the debugger
+					this.Debugger.MTA2STA.AsyncCall( delegate { this.Debugger.TerminateDebugger(); } );
+				}
 			}
 		}
 		
@@ -435,15 +386,20 @@ namespace Debugger
 			
 			corProcess.Stop(uint.MaxValue); // Infinite; ignored anyway
 			
-			NotifyPaused(PausedReason.ForcedBreak);
-			RaisePausedEvents();
+			NotifyPaused();
+			OnPaused(new DebuggerPausedEventArgs(this) { Break = true });
 		}
 		
 		public void Detach()
 		{
 			if (IsRunning) {
 				corProcess.Stop(uint.MaxValue);
-				NotifyPaused(PausedReason.ForcedBreak);
+				NotifyPaused();
+			}
+			
+			// Deactivate breakpoints
+			foreach (Breakpoint b in this.Debugger.Breakpoints) {
+				b.IsEnabled = false;
 			}
 			
 			// This is necessary for detach
@@ -457,8 +413,7 @@ namespace Debugger
 			corProcess.Detach();
 			
 			// modules
-			foreach(Module m in this.Modules)
-			{
+			foreach(Module m in this.Modules) {
 				m.Dispose();
 			}
 			
@@ -467,7 +422,7 @@ namespace Debugger
 			// threads
 			this.threads.Clear();
 			
-			NotifyHasExited();
+			OnExited();
 		}
 		
 		public void Continue()
@@ -476,14 +431,22 @@ namespace Debugger
 			WaitForPause();
 		}
 		
-		internal Thread[] UnsuspendedThreads {
-			get {
-				List<Thread> unsuspendedThreads = new List<Thread>(this.Threads.Count);
-				foreach(Thread t in this.Threads) {
-					if (!t.Suspended)
-						unsuspendedThreads.Add(t);
+		public void RunTo(string fileName, int line, int column)
+		{
+			foreach(var symbolSource in this.Debugger.SymbolSources) {
+				foreach(Module module in this.Modules) {
+					// Note the we might get multiple matches
+					foreach (SequencePoint seq in symbolSource.GetSequencePoints(module, fileName, line, column)) {
+						ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
+						ICorDebugFunctionBreakpoint corBreakpoint = corFunction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
+						corBreakpoint.Activate(1);
+						this.tempBreakpoints.Add(corBreakpoint);
+						
+						if (this.IsPaused) {
+							AsyncContinue();
+						}
+					}
 				}
-				return unsuspendedThreads.ToArray();
 			}
 		}
 		
@@ -492,48 +455,24 @@ namespace Debugger
 		/// </summary>
 		public void AsyncContinue()
 		{
-			AsyncContinue(DebuggeeStateAction.Clear, this.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
+			AsyncContinue(DebuggeeStateAction.Clear);
 		}
 		
-		internal CorDebugThreadState NewThreadState = CorDebugThreadState.THREAD_RUN;
-		
-		/// <param name="threadsToRun"> Null to keep current setting </param>
-		/// <param name="newThreadState"> What happens to created threads.  Null to keep current setting </param>
-		internal void AsyncContinue(DebuggeeStateAction action, Thread[] threadsToRun, CorDebugThreadState? newThreadState)
+		/// <param name="threadToRun"> Run this thread and freeze all other threads </param>
+		internal void AsyncContinue(DebuggeeStateAction action, Thread threadToRun = null)
 		{
 			AssertPaused();
 			
-			if (threadsToRun != null) {
-//				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, null);
-//				Note: There is unreported thread, stopping it prevents the debugee from exiting
-//				      It is not corProcess.GetHelperThreadID
-//				ICorDebugThread[] ts = new ICorDebugThread[corProcess.EnumerateThreads().GetCount()];
-//				corProcess.EnumerateThreads().Next((uint)ts.Length, ts);
-				foreach(Thread t in this.Threads) {
-					CorDebugThreadState state = Array.IndexOf(threadsToRun, t) == -1 ? CorDebugThreadState.THREAD_SUSPEND : CorDebugThreadState.THREAD_RUN;
-					try {
-						t.CorThread.SetDebugState(state);
-					} catch (COMException e) {
-						// The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)
-						// It can happen for example when thread has not started yet
-						if ((uint)e.ErrorCode == 0x8013132D) {
-							// TraceMessage("Can not suspend thread - The state of the thread is invalid.  Thread ID = " + t.CorThread.GetID());
-						} else {
-							throw;
-						}
-					}
-				}
-			}
-			
-			if (newThreadState != null) {
-				this.NewThreadState = newThreadState.Value;
+			if (threadToRun != null) {
+				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, null);
+				threadToRun.CorThread.SetDebugState(CorDebugThreadState.THREAD_RUN);
+			} else {
+				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_RUN, null);
 			}
 			
 			NotifyResumed(action);
 			corProcess.Continue(0);
-			if (this.Options.Verbose) {
-				this.TraceMessage("Continue");
-			}
+			// this.TraceMessage("Continue");
 			
 			if (action == DebuggeeStateAction.Clear) {
 				OnResumed();
@@ -567,63 +506,6 @@ namespace Debugger
 			
 			// Do not mark the process as exited
 			// This is done once ExitProcess callback is received
-		}
-		
-		/// <summary>
-		/// Clears the internal Expression cache used too speed up Expression evaluation.
-		/// Use this if your code evaluates expressions in a way which would cause
-		/// the cache to grow too large. The cache holds PermanentReferences so it
-		/// shouldn't grow larger than a few hundred items.
-		/// </summary>
-		public void ClearExpressionCache()
-		{
-			if (this.ExpressionsCache != null ){
-				this.ExpressionsCache.Clear();
-			}
-		}
-		
-		void SelectSomeThread()
-		{
-			if (this.SelectedThread != null && !this.SelectedThread.IsInValidState) {
-				this.SelectedThread = null;
-			}
-			if (this.SelectedThread == null) {
-				foreach(Thread thread in this.Threads) {
-					if (thread.IsInValidState) {
-						this.SelectedThread = thread;
-						break;
-					}
-				}
-			}
-		}
-		
-		internal void CheckSelectedStackFrames()
-		{
-			foreach(Thread thread in this.Threads) {
-				if (thread.IsInValidState) {
-					if (thread.SelectedStackFrame != null && thread.SelectedStackFrame.IsInvalid) {
-						thread.SelectedStackFrame = null;
-					}
-				} else {
-					thread.SelectedStackFrame = null;
-				}
-			}
-		}
-		
-		internal void SelectMostRecentStackFrameWithLoadedSymbols()
-		{
-			SelectSomeThread();
-			if (this.SelectedThread != null) {
-				this.SelectedThread.SelectedStackFrame = null;
-				foreach (StackFrame stackFrame in this.SelectedThread.Callstack) {
-					if (stackFrame.HasSymbols) {
-						if (this.Options.StepOverDebuggerAttributes && stackFrame.MethodInfo.IsNonUserCode)
-							continue;
-						this.SelectedThread.SelectedStackFrame = stackFrame;
-						break;
-					}
-				}
-			}
 		}
 		
 		internal Stepper GetStepper(ICorDebugStepper corStepper)
@@ -684,71 +566,47 @@ namespace Debugger
 			}
 		}
 		
-		#region Break at begining
+		#region Break at beginning
 		
-		private void OnModulesAdded(object sender, CollectionItemEventArgs<Module> e)
+		int lastAssignedModuleOrderOfLoading = 0;
+		
+		internal void OnModuleLoaded(Module module)
 		{
-			if (BreakAtBeginning) {
-				if (e.Item.SymReader == null) return; // No symbols
-				
+			module.OrderOfLoading = lastAssignedModuleOrderOfLoading++;
+			module.AppDomain.InvalidateCompilation();
+			
+			if (BreakInMain) {
 				try {
 					// create a BP at entry point
-					uint entryPoint = e.Item.SymReader.GetUserEntryPoint();
-					if (entryPoint == 0) return; // no EP
-					var mainFunction = e.Item.CorModule.GetFunctionFromToken(entryPoint);
-					var corBreakpoint = mainFunction.CreateBreakpoint();
-					corBreakpoint.Activate(1);
-					
-					// create a SD BP
-					var breakpoint = new Breakpoint(this.debugger, corBreakpoint);
-					this.debugger.Breakpoints.Add(breakpoint);
-					breakpoint.Hit += delegate {
-						if (breakpoint != null)
-							breakpoint.Remove();
-						breakpoint = null;
-					};
+					uint entryPoint = module.GetEntryPoint();
+					if (entryPoint != 0) { // no EP
+						var corBreakpoint = module.CorModule
+							.GetFunctionFromToken(entryPoint)
+							.CreateBreakpoint();
+						corBreakpoint.Activate(1);
+						tempBreakpoints.Add(corBreakpoint);
+						
+						BreakInMain = false;
+					}
 				} catch {
 					// the app does not have an entry point - COM exception
 				}
-				BreakAtBeginning = false;
 			}
 			
-			if (ModulesAdded != null)
-				ModulesAdded(this, new ModuleEventArgs(e.Item));
+			if (this.ModuleLoaded != null) {
+				this.ModuleLoaded(this, new ModuleEventArgs(module));
+			}
+		}
+		
+		internal void OnModuleUnloaded(Module module)
+		{
+			module.Dispose();
+			
+			if (this.ModuleUnloaded != null) {
+				this.ModuleUnloaded(this, new ModuleEventArgs(module));
+			}
 		}
 		
 		#endregion
-		
-		public event EventHandler<ModuleEventArgs> ModulesAdded;
-		
-		public StackFrame GetCurrentExecutingFrame()
-		{
-			if (IsRunning || SelectedThread == null)
-				return null;
-			
-			if (IsSelectedFrameForced()) {
-				return SelectedStackFrame; // selected from callstack or threads pads
-			}
-			
-			if (SelectedStackFrame != null) {
-				if (SelectedThread.MostRecentStackFrame != null) {
-					if (SelectedStackFrame.HasSymbols && SelectedThread.MostRecentStackFrame.HasSymbols)
-						return SelectedStackFrame;
-					else
-						return SelectedThread.MostRecentStackFrame;
-				} else {
-					return SelectedThread.MostRecentStackFrame;
-				}
-			} else {
-				return SelectedThread.MostRecentStackFrame;
-			}
-		}
-		
-		public bool IsSelectedFrameForced()
-		{
-			return pauseSession.PausedReason == PausedReason.CurrentFunctionChanged ||
-				pauseSession.PausedReason == PausedReason.CurrentThreadChanged ||
-				pauseSession.PausedReason == PausedReason.EvalComplete;
-		}
 	}
 }

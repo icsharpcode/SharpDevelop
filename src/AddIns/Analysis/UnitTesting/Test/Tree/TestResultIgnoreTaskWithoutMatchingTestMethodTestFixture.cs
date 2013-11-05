@@ -3,7 +3,6 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -13,7 +12,7 @@ namespace UnitTesting.Tests.Tree
 	[TestFixture]
 	public class TestResultIgnoreTaskWithoutMatchingTestMethodTestFixture
 	{
-		Task task;
+		SDTask task;
 		
 		[SetUp]
 		public void Init()

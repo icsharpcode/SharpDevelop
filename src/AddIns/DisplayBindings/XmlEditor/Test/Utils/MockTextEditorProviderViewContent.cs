@@ -2,26 +2,24 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace XmlEditor.Tests.Utils
 {
-	public class MockTextEditorProviderViewContent : MockViewContent, ITextEditorProvider
+	public class MockTextEditorProviderViewContent : MockViewContent
 	{
 		MockTextEditor textEditor = new MockTextEditor();
-		
-		public ITextEditor TextEditor {
-			get { return textEditor; }
-		}
 		
 		public MockTextEditor MockTextEditor {
 			get { return textEditor; }
 		}
 		
-		public IDocument GetDocumentForFile(OpenedFile file)
+		public override object GetService(Type serviceType)
 		{
-			throw new NotImplementedException();
+			return textEditor.GetService(serviceType);
 		}
 	}
 }

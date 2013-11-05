@@ -70,21 +70,21 @@ namespace FSharpBinding
 					lock (outputQueue) {
 						outputQueue.Enqueue(e.Data);
 					}
-					WorkbenchSingleton.SafeThreadAsyncCall(ReadAll);
+					SD.MainThread.InvokeAsyncAndForget(ReadAll);
 				};
 				fsiProcess.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
 					lock (outputQueue) {
 						outputQueue.Enqueue(e.Data);
 					}
-					WorkbenchSingleton.SafeThreadAsyncCall(ReadAll);
+					SD.MainThread.InvokeAsyncAndForget(ReadAll);
 				};
 				fsiProcess.Exited += delegate(object sender, EventArgs e) {
 					lock (outputQueue) {
 						outputQueue.Enqueue("fsi.exe died");
 						outputQueue.Enqueue("restarting ...");
 					}
-					WorkbenchSingleton.SafeThreadAsyncCall(ReadAll);
-					WorkbenchSingleton.SafeThreadAsyncCall(StartFSharp);
+					SD.MainThread.InvokeAsyncAndForget(ReadAll);
+					SD.MainThread.InvokeAsyncAndForget(StartFSharp);
 				};
 				StartFSharp();
 			}
@@ -153,18 +153,17 @@ namespace FSharpBinding
 	{
 		public override void Run()
 		{
-			PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(FSharpInteractive));
+			PadDescriptor pad = SD.Workbench.GetPad(typeof(FSharpInteractive));
 			pad.BringPadToFront();
 			FSharpInteractive fsharpInteractive = (FSharpInteractive)pad.PadContent;
 			if (fsharpInteractive.foundCompiler) {
-				ITextEditorProvider editorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-				if (editorProvider != null) {
-					var textEditor = editorProvider.TextEditor;
+				ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
+				if (textEditor != null) {
 					if (textEditor.SelectionLength > 0) {
 						fsharpInteractive.fsiProcess.StandardInput.WriteLine(textEditor.SelectedText);
 					} else {
-						var line = textEditor.Document.GetLine(textEditor.Caret.Line);
-						fsharpInteractive.fsiProcess.StandardInput.WriteLine(line.Text);
+						var line = textEditor.Document.GetLineByNumber(textEditor.Caret.Line);
+						fsharpInteractive.fsiProcess.StandardInput.WriteLine(textEditor.Document.GetText(line));
 					}
 					fsharpInteractive.fsiProcess.StandardInput.WriteLine(";;");
 				}

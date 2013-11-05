@@ -8,12 +8,12 @@
 		<Name>Empty MVC 4 Application</Name>
 		<Category>VB</Category>
 		<Subcategory>ASP.NET MVC 4</Subcategory>
-		<Icon>VBNet.Project.WebProject</Icon>
+		<Icon>VB.Project.WebProject</Icon>
 		<Description>Empty ASP.NET MVC 4 Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 
-	<Project language="VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="Microsoft.VisualBasic" />
 			<Reference Include="System" />

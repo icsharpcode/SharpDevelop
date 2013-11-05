@@ -3,6 +3,7 @@
 
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
@@ -24,6 +25,7 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetupFixture()
 		{
+			SD.InitializeForUnitTests();
 			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 		}
 		
@@ -31,7 +33,7 @@ namespace WixBinding.Tests.Gui
 		[ExpectedException(typeof(FormsDesignerLoadException), ExpectedMessage = "Unable to find dialog with an id of 'MissingDialog'.")]
 		public void LoadMissingDialog()
 		{
-			WixDialogDesignerLoader loader = new WixDialogDesignerLoader(this, new WixDialogDesignerGenerator());
+			WixDialogDesignerLoader loader = new WixDialogDesignerLoader(this);
 			MockDesignerLoaderHost loaderHost = new MockDesignerLoaderHost();
 			loader.BeginLoad(loaderHost);
 		}
@@ -53,6 +55,12 @@ namespace WixBinding.Tests.Gui
 			get { return WixBindingTestsHelper.CreateEmptyWixProject(); }
 		}
 		
+		ICSharpCode.SharpDevelop.Editor.ITextEditor IWixDialogDesigner.PrimaryViewContentTextEditor {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+
 		string GetWixXml()
 		{
 			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +

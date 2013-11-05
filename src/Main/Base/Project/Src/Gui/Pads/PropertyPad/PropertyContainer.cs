@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.ComponentModel.Design;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -14,6 +15,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// One view/pad content instance has to always return the same property container instance
 	/// and has to change only the properties on that PropertyContainer.
 	/// </summary>
+	[ViewContentService]
 	public interface IHasPropertyContainer
 	{
 		PropertyContainer PropertyContainer { get; }
@@ -39,8 +41,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		internal PropertyContainer(bool createPadOnConstruction)
 		{
-			if (createPadOnConstruction && WorkbenchSingleton.Workbench != null) {
-				PadDescriptor desc = WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad));
+			if (createPadOnConstruction) {
+				PadDescriptor desc = SD.Workbench.GetPad(typeof(PropertyPad));
 				if (desc != null) desc.CreatePad();
 			}
 		}

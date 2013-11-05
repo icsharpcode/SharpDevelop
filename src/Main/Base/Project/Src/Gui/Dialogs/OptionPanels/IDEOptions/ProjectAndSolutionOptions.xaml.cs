@@ -17,13 +17,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			InitializeComponent();
 			
-			FillComboBoxWithEnumValues(typeof(Project.BuildOnExecuteSetting), onExecuteComboBox);
+			FillComboBoxWithEnumValues(typeof(Project.BuildDetection), onExecuteComboBox);
 			FillComboBoxWithEnumValues(typeof(Project.BuildOutputVerbosity), verbosityComboBox);
 		}
-	
+		
 		void FillComboBoxWithEnumValues(Type type, ComboBox comboBox)
 		{
-			foreach (Project.BuildOnExecuteSetting element in Enum.GetValues(type)) {
+			foreach (Project.BuildDetection element in Enum.GetValues(type)) {
 				object[] attr = type.GetField(Enum.GetName(type, element)).GetCustomAttributes(typeof(DescriptionAttribute), false);
 				string description;
 				if (attr.Length > 0) {
@@ -37,18 +37,18 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void defaultProjectLocationButtonClick(object sender, RoutedEventArgs e)
 		{
-			using (var fdiag = FileService.CreateFolderBrowserDialog("${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SelectDefaultProjectLocationDialog.Title}", defaultProjectLocationTextBox.Text)) {
-				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-					defaultProjectLocationTextBox.Text = fdiag.SelectedPath;
-				}
-			}
+			string path = SD.FileService.BrowseForFolder(
+				"${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SelectDefaultProjectLocationDialog.Title}",
+				defaultProjectLocationTextBox.Text);
+			if (path != null)
+				defaultProjectLocationTextBox.Text = path;
 		}
 		
 		public override void LoadOptions()
 		{
 			base.LoadOptions();
 			parallelBuildCount.Value = Project.BuildOptions.DefaultParallelProjectCount;
-			onExecuteComboBox.SelectedIndex = (int)Project.BuildModifiedProjectsOnlyService.Setting;
+			onExecuteComboBox.SelectedIndex = (int)Project.BuildOptions.BuildOnExecute;
 			verbosityComboBox.SelectedIndex = (int)Project.BuildOptions.DefaultBuildOutputVerbosity;
 		}
 		
@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			}
 			Project.BuildOptions.DefaultParallelProjectCount = (int)parallelBuildCount.Value;
-			Project.BuildModifiedProjectsOnlyService.Setting = (Project.BuildOnExecuteSetting)onExecuteComboBox.SelectedIndex;
+			Project.BuildOptions.BuildOnExecute = (Project.BuildDetection)onExecuteComboBox.SelectedIndex;
 			Project.BuildOptions.DefaultBuildOutputVerbosity = (Project.BuildOutputVerbosity)verbosityComboBox.SelectedIndex;
 			return base.SaveOptions();
 		}

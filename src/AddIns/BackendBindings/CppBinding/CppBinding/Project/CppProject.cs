@@ -5,10 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Exceptions;
@@ -39,7 +38,7 @@ namespace ICSharpCode.CppBinding.Project
 
 		public override IAmbience GetAmbience()
 		{
-			return new CppAmbience();
+			return new CSharpAmbience();
 		}
 
 		public override string Language
@@ -47,12 +46,12 @@ namespace ICSharpCode.CppBinding.Project
 			get { return CppProjectBinding.LanguageName; }
 		}
 
-		public override LanguageProperties LanguageProperties
-		{
-			get { return CppProjectBinding.LanguageProperties; }
-		}
+//		public override LanguageProperties LanguageProperties
+//		{
+//			get { return LanguageProperties.; }
+//		}
 
-		public override string OutputAssemblyFullPath
+		public override FileName OutputAssemblyFullPath
 		{
 			/// <summary>
 			/// For vcxprojs the output assembly location is stored in OutDir property.
@@ -62,19 +61,18 @@ namespace ICSharpCode.CppBinding.Project
 			{
 				string outputPath = GetEvaluatedProperty("OutDir") ?? "";
 				if (!Path.IsPathRooted(outputPath))
-					return FileUtility.NormalizePath(Path.Combine(ParentSolution.Directory, outputPath,
-					                                              AssemblyName + GetExtension(OutputType)));
+					return FileName.Create(Path.Combine(ParentSolution.Directory, outputPath,
+					                                    AssemblyName + GetExtension(OutputType)));
 				else
 				{
 					// this will be valid if there is an explicit OutDir property in vcxproj file.
-					if ((GetUnevalatedProperty("OutDir") ?? "").StartsWith("$(SolutionDir)"))
-					{
+					if ((GetUnevalatedProperty("OutDir") ?? "").StartsWith("$(SolutionDir)", StringComparison.OrdinalIgnoreCase)) {
 						// in #D every project is compiled by msbuild separately, this mean that SolutionDir will
 						// be equal to ProjectDir, so it has to be replaced with actual solution directory
 						string evaluatedSolutionDir = GetEvaluatedProperty("SolutionDir") ?? "";
 						outputPath = Path.Combine(ParentSolution.Directory, outputPath.Substring(evaluatedSolutionDir.Length));
 					}
-					return FileUtility.NormalizePath(Path.Combine(outputPath, AssemblyName + GetExtension(OutputType)));
+					return FileName.Create(Path.Combine(outputPath, AssemblyName + GetExtension(OutputType)));
 				}
 			}
 		}
@@ -108,7 +106,7 @@ namespace ICSharpCode.CppBinding.Project
 		/// </summary>
 		/// <param name="fileName">name of the file for which the check is being performed.
 		/// If this is null, then only project default include location will be returned.</param>
-		public IList<string> GetIncludeDirectories(string fileName)
+		public IList<string> GetIncludeDirectories(FileName fileName)
 		{
 			IList<string> result = GetEvaluatedProperty("IncludePath")
 				.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -135,7 +133,7 @@ namespace ICSharpCode.CppBinding.Project
 		/// </summary>
 		/// <param name="fileName">name of the file</param>
 		/// <returns>a list of symbols defined in project file, or an empty list if file doesn't exist in project</returns>
-		public IList<string> GetProjectDefines(string fileName)
+		public IList<string> GetProjectDefines(FileName fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -150,7 +148,7 @@ namespace ICSharpCode.CppBinding.Project
 			return result;
 		}
 		
-		public IList<string> GetProjectUndefines(string fileName)
+		public IList<string> GetProjectUndefines(FileName fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -173,11 +171,11 @@ namespace ICSharpCode.CppBinding.Project
 			ProjectRootElement file = MSBuildProjectFile;
 			ProjectItemGroupElement configItemGroup = file.AddItemGroup();
 			configItemGroup.Label = "ProjectConfigurations";
-			foreach (string target in new string[] { "Debug|Win32", "Release|Win32" })
+			foreach (var target in new [] { new ConfigurationAndPlatform("Debug", "Win32"), new ConfigurationAndPlatform("Release", "Win32") })
 			{
-				ProjectItemElement prjConfiguration = configItemGroup.AddItem("ProjectConfiguration", target);
-				prjConfiguration.AddMetadata("Configuration", GetConfigurationNameFromKey(target));
-				prjConfiguration.AddMetadata("Platform", GetPlatformNameFromKey(target));
+				ProjectItemElement prjConfiguration = configItemGroup.AddItem("ProjectConfiguration", target.ToString());
+				prjConfiguration.AddMetadata("Configuration", target.Configuration);
+				prjConfiguration.AddMetadata("Platform", target.Platform);
 			}
 		}
 		

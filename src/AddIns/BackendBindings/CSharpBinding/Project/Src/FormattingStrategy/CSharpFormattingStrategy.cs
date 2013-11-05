@@ -6,10 +6,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Indentation.CSharp;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace CSharpBinding.FormattingStrategy
 {
@@ -174,54 +178,33 @@ namespace CSharpBinding.FormattingStrategy
 		/// <summary>
 		/// Gets the next member after the specified caret position.
 		/// </summary>
-		object GetMemberAfter(ITextEditor editor, int caretLine)
+		IUnresolvedEntity GetMemberAfter(ITextEditor editor, int caretLine)
 		{
-			string fileName = editor.FileName;
-			object nextElement = null;
-			if (fileName != null && fileName.Length > 0 ) {
-				ParseInformation parseInfo = ParserService.ParseFile(fileName, editor.Document.CreateSnapshot());
-				if (parseInfo != null) {
-					ICompilationUnit currentCompilationUnit = parseInfo.CompilationUnit;
-					if (currentCompilationUnit != null) {
-						IClass currentClass = currentCompilationUnit.GetInnermostClass(caretLine, 0);
-						int nextElementLine = int.MaxValue;
-						if (currentClass == null) {
-							foreach (IClass c in currentCompilationUnit.Classes) {
-								if (c.Region.BeginLine < nextElementLine && c.Region.BeginLine > caretLine) {
-									nextElementLine = c.Region.BeginLine;
-									nextElement = c;
-								}
+			FileName fileName = editor.FileName;
+			IUnresolvedEntity nextElement = null;
+			if (fileName != null) {
+				IUnresolvedFile unresolvedFile = SD.ParserService.ParseFile(fileName, editor.Document);
+				if (unresolvedFile != null) {
+					var currentClass = unresolvedFile.GetInnermostTypeDefinition(caretLine, 0);
+					int nextElementLine = int.MaxValue;
+					if (currentClass == null) {
+						foreach (var c in unresolvedFile.TopLevelTypeDefinitions) {
+							if (c.Region.BeginLine < nextElementLine && c.Region.BeginLine > caretLine) {
+								nextElementLine = c.Region.BeginLine;
+								nextElement = c;
 							}
-						} else {
-							foreach (IClass c in currentClass.InnerClasses) {
-								if (c.Region.BeginLine < nextElementLine && c.Region.BeginLine > caretLine) {
-									nextElementLine = c.Region.BeginLine;
-									nextElement = c;
-								}
+						}
+					} else {
+						foreach (var c in currentClass.NestedTypes) {
+							if (c.Region.BeginLine < nextElementLine && c.Region.BeginLine > caretLine) {
+								nextElementLine = c.Region.BeginLine;
+								nextElement = c;
 							}
-							foreach (IMember m in currentClass.Methods) {
-								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
-									nextElementLine = m.Region.BeginLine;
-									nextElement = m;
-								}
-							}
-							foreach (IMember m in currentClass.Properties) {
-								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
-									nextElementLine = m.Region.BeginLine;
-									nextElement = m;
-								}
-							}
-							foreach (IMember m in currentClass.Fields) {
-								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
-									nextElementLine = m.Region.BeginLine;
-									nextElement = m;
-								}
-							}
-							foreach (IMember m in currentClass.Events) {
-								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
-									nextElementLine = m.Region.BeginLine;
-									nextElement = m;
-								}
+						}
+						foreach (var m in currentClass.Members) {
+							if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
+								nextElementLine = m.Region.BeginLine;
+								nextElement = m;
 							}
 						}
 					}
@@ -237,11 +220,11 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			int regions = 0;
 			int endregions = 0;
-			for (int i = 1; i <= document.TotalNumberOfLines; i++) {
-				string text = document.GetLine(i).Text.Trim();
-				if (text.StartsWith("#region")) {
+			for (int i = 1; i <= document.LineCount; i++) {
+				string text = document.GetText(document.GetLineByNumber(i)).Trim();
+				if (text.StartsWith("#region", StringComparison.Ordinal)) {
 					++regions;
-				} else if (text.StartsWith("#endregion")) {
+				} else if (text.StartsWith("#endregion", StringComparison.Ordinal)) {
 					++endregions;
 				}
 			}
@@ -257,18 +240,18 @@ namespace CSharpBinding.FormattingStrategy
 		
 		void FormatLineInternal(ITextEditor textArea, int lineNr, int cursorOffset, char ch)
 		{
-			IDocumentLine curLine   = textArea.Document.GetLine(lineNr);
-			IDocumentLine lineAbove = lineNr > 1 ? textArea.Document.GetLine(lineNr - 1) : null;
-			string terminator = DocumentUtilitites.GetLineTerminator(textArea.Document, lineNr);
+			IDocumentLine curLine   = textArea.Document.GetLineByNumber(lineNr);
+			IDocumentLine lineAbove = lineNr > 1 ? textArea.Document.GetLineByNumber(lineNr - 1) : null;
+			string terminator = DocumentUtilities.GetLineTerminator(textArea.Document, lineNr);
 			
 			string curLineText;
 			//// local string for curLine segment
 			if (ch == '/') {
-				curLineText = curLine.Text;
-				string lineAboveText = lineAbove == null ? "" : lineAbove.Text;
+				curLineText = textArea.Document.GetText(curLine);
+				string lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
 				if (curLineText != null && curLineText.EndsWith("///") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("///"))) {
-					string indentation = DocumentUtilitites.GetWhitespaceAfter(textArea.Document, curLine.Offset);
-					object member = GetMemberAfter(textArea, lineNr);
+					string indentation = DocumentUtilities.GetWhitespaceAfter(textArea.Document, curLine.Offset);
+					IUnresolvedEntity member = GetMemberAfter(textArea, lineNr);
 					if (member != null) {
 						StringBuilder sb = new StringBuilder();
 						sb.Append(" <summary>");
@@ -279,21 +262,22 @@ namespace CSharpBinding.FormattingStrategy
 						sb.Append(indentation);
 						sb.Append("/// </summary>");
 						
-						if (member is IMethod) {
-							IMethod method = (IMethod)member;
-							if (method.Parameters != null && method.Parameters.Count > 0) {
-								for (int i = 0; i < method.Parameters.Count; ++i) {
-									sb.Append(terminator);
-									sb.Append(indentation);
-									sb.Append("/// <param name=\"");
-									sb.Append(method.Parameters[i].Name);
-									sb.Append("\"></param>");
-								}
-							}
-							if (method.ReturnType != null && !method.IsConstructor && method.ReturnType.FullyQualifiedName != "System.Void") {
+						if (member is IUnresolvedMethod) {
+							IUnresolvedMethod method = (IUnresolvedMethod)member;
+							for (int i = 0; i < method.Parameters.Count; ++i) {
 								sb.Append(terminator);
 								sb.Append(indentation);
-								sb.Append("/// <returns></returns>");
+								sb.Append("/// <param name=\"");
+								sb.Append(method.Parameters[i].Name);
+								sb.Append("\"></param>");
+							}
+							if (!method.IsConstructor) {
+								KnownTypeReference returnType = method.ReturnType as KnownTypeReference;
+								if (returnType == null || returnType.KnownTypeCode != KnownTypeCode.Void) {
+									sb.Append(terminator);
+									sb.Append(indentation);
+									sb.Append("/// <returns></returns>");
+								}
 							}
 						}
 						textArea.Document.Insert(cursorOffset, sb.ToString());
@@ -312,7 +296,7 @@ namespace CSharpBinding.FormattingStrategy
 			switch (ch) {
 				case '>':
 					if (IsInsideDocumentationComment(textArea, curLine, cursorOffset)) {
-						curLineText = curLine.Text;
+						curLineText = textArea.Document.GetText(curLine);
 						int column = cursorOffset - curLine.Offset;
 						int index = Math.Min(column - 1, curLineText.Length - 1);
 						
@@ -347,24 +331,24 @@ namespace CSharpBinding.FormattingStrategy
 					//}
 					break;
 				case '\n':
-					string lineAboveText = lineAbove == null ? "" : lineAbove.Text;
+					string lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
 					//// curLine might have some text which should be added to indentation
-					curLineText = curLine.Text;
+					curLineText = textArea.Document.GetText(curLine);
 					
-					if (lineAbove != null && lineAbove.Text.Trim().StartsWith("#region")
+					if (lineAboveText != null && lineAboveText.Trim().StartsWith("#region")
 					    && NeedEndregion(textArea.Document))
 					{
 						textArea.Document.Insert(cursorOffset, "#endregion");
 						return;
 					}
 					
-					ISyntaxHighlighter highlighter = textArea.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
+					IHighlighter highlighter = textArea.GetService(typeof(IHighlighter)) as IHighlighter;
 					bool isInMultilineComment = false;
 					bool isInMultilineString = false;
 					if (highlighter != null && lineAbove != null) {
-						var spanStack = highlighter.GetSpanColorNamesFromLineStart(lineNr);
-						isInMultilineComment = spanStack.Contains(SyntaxHighligherKnownSpanNames.Comment);
-						isInMultilineString = spanStack.Contains(SyntaxHighligherKnownSpanNames.String);
+						var spanStack = highlighter.GetColorStack(lineNr).Select(c => c.Name).ToArray();
+						isInMultilineComment = spanStack.Contains(HighlighterKnownSpanNames.Comment);
+						isInMultilineString = spanStack.Contains(HighlighterKnownSpanNames.String);
 					}
 					bool isInNormalCode = !(isInMultilineComment || isInMultilineString);
 					
@@ -382,8 +366,8 @@ namespace CSharpBinding.FormattingStrategy
 					}
 					
 					if (lineAbove != null && isInNormalCode) {
-						IDocumentLine nextLine  = lineNr + 1 <= textArea.Document.TotalNumberOfLines ? textArea.Document.GetLine(lineNr + 1) : null;
-						string nextLineText = (nextLine != null) ? nextLine.Text : "";
+						IDocumentLine nextLine  = lineNr + 1 <= textArea.Document.LineCount ? textArea.Document.GetLineByNumber(lineNr + 1) : null;
+						string nextLineText = (nextLine != null) ? textArea.Document.GetText(nextLine) : "";
 						
 						int indexAbove = lineAboveText.IndexOf("///");
 						int indexNext  = nextLineText.IndexOf("///");
@@ -399,12 +383,12 @@ namespace CSharpBinding.FormattingStrategy
 						}
 					}
 					if (textArea.Options.AutoInsertBlockEnd && lineAbove != null && isInNormalCode) {
-						string oldLineText = lineAbove.Text;
+						string oldLineText = textArea.Document.GetText(lineAbove);
 						if (oldLineText.EndsWith("{")) {
 							if (NeedCurlyBracket(textArea.Document.Text)) {
 								int insertionPoint = curLine.Offset + curLine.Length;
 								textArea.Document.Insert(insertionPoint, terminator + "}");
-								IndentLine(textArea, textArea.Document.GetLine(lineNr + 1));
+								IndentLine(textArea, textArea.Document.GetLineByNumber(lineNr + 1));
 								textArea.Caret.Offset = insertionPoint;
 							}
 						}

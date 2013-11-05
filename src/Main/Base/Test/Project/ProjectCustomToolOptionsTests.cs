@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace ICSharpCode.SharpDevelop.Tests.Project
+namespace ICSharpCode.SharpDevelop.Project
 {
 	[TestFixture]
 	public class ProjectCustomToolOptionsTests
@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 		{
 			projectSpecificProperties = new Properties();
 			project = MockRepository.GenerateStub<IProject>();
-			project.Stub(p => p.ProjectSpecificProperties).Return(projectSpecificProperties);
+			project.Stub(p => p.Preferences).Return(projectSpecificProperties);
 		}
 		
 		void CreateProjectWithExistingCustomToolProperties(string fileNames)
@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 			properties = new Properties();
 			properties.Set("runOnBuild", runOnBuild);
 			properties.Set("fileNames", fileNames);
-			projectSpecificProperties.Set("customTool", properties);
+			projectSpecificProperties.SetNestedProperties("customTool", properties);
 		}
 		
 		void CreateProjectCustomToolsOptions()

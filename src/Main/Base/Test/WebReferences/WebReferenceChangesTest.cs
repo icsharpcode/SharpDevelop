@@ -1,7 +1,8 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using SD = ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using System;
@@ -14,16 +15,16 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// Tests the WebReferenceChanges class.
 	/// </summary>
 	[TestFixture]
-	public class WebReferenceChangesTest
+	public class WebReferenceChangesTest : SDTestFixtureBase
 	{
-		SD.WebReferenceChanges changes;
+		WebReferenceChanges changes;
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			// Set up the project.
 			MSBuildBasedProject project = WebReferenceTestHelper.CreateTestProject("C#");
-			project.FileName = "c:\\projects\\test\\foo.csproj";
+			project.FileName = FileName.Create("c:\\projects\\test\\foo.csproj");
 			
 			// Web references item.
 			WebReferencesProjectItem webReferencesItem = new WebReferencesProjectItem(project);
@@ -75,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			WebReferenceTestHelper.InitializeProjectBindings();
 			
-			SD.WebReference webReference = new SD.WebReference(project, "http://localhost/new.asmx", "localhost", "ProxyNamespace", protocol);
+			var webReference = new Gui.WebReference(project, "http://localhost/new.asmx", "localhost", "ProxyNamespace", protocol);
 			changes = webReference.GetChanges(project);
 		}
 				

@@ -52,7 +52,9 @@ namespace PackageManagement.Tests.Scripting
 		
 		void AddImportToSharpDevelopProject(string project)
 		{
-			sharpDevelopProject.MSBuildProjectFile.AddImport(project);
+			lock (sharpDevelopProject.SyncRoot) {
+				sharpDevelopProject.MSBuildProjectFile.AddImport(project);
+			}
 		}
 		
 		void AddImportToMSBuildProject(string project)
@@ -67,7 +69,9 @@ namespace PackageManagement.Tests.Scripting
 			
 			Merge();
 			
-			Assert.AreEqual(0, sharpDevelopProject.MSBuildProjectFile.Imports.Count);
+			lock (sharpDevelopProject.SyncRoot) {
+				Assert.AreEqual(0, sharpDevelopProject.MSBuildProjectFile.Imports.Count);
+			}
 		}
 		
 		[Test]
@@ -120,9 +124,11 @@ namespace PackageManagement.Tests.Scripting
 			
 			Merge();
 			
-			ProjectImportElement import = sharpDevelopProject.MSBuildProjectFile.Imports.FirstOrDefault();
-			Assert.AreEqual("MyImport.targets", import.Project);
-			Assert.AreEqual(1, sharpDevelopProject.MSBuildProjectFile.Imports.Count);
+			lock (sharpDevelopProject.SyncRoot) {
+				ProjectImportElement import = sharpDevelopProject.MSBuildProjectFile.Imports.FirstOrDefault();
+				Assert.AreEqual("MyImport.targets", import.Project);
+				Assert.AreEqual(1, sharpDevelopProject.MSBuildProjectFile.Imports.Count);
+			}
 		}
 		
 		[Test]
@@ -132,9 +138,11 @@ namespace PackageManagement.Tests.Scripting
 			
 			Merge();
 			
-			ProjectImportElement import = sharpDevelopProject.MSBuildProjectFile.Imports.FirstOrDefault();
-			Assert.AreEqual("MyImport.targets", import.Project);
-			Assert.AreEqual(1, sharpDevelopProject.MSBuildProjectFile.Imports.Count);
+			lock (sharpDevelopProject.SyncRoot) {
+				ProjectImportElement import = sharpDevelopProject.MSBuildProjectFile.Imports.FirstOrDefault();
+				Assert.AreEqual("MyImport.targets", import.Project);
+				Assert.AreEqual(1, sharpDevelopProject.MSBuildProjectFile.Imports.Count);
+			}
 		}
 		
 		[Test]
@@ -167,9 +175,11 @@ namespace PackageManagement.Tests.Scripting
 			
 			Merge();
 			
-			ProjectImportElement import = sharpDevelopProject.MSBuildProjectFile.Imports.LastOrDefault();
-			Assert.AreEqual("Different.targets", import.Project);
-			Assert.AreEqual(2, sharpDevelopProject.MSBuildProjectFile.Imports.Count);
+			lock (sharpDevelopProject.SyncRoot) {
+				ProjectImportElement import = sharpDevelopProject.MSBuildProjectFile.Imports.LastOrDefault();
+				Assert.AreEqual("Different.targets", import.Project);
+				Assert.AreEqual(2, sharpDevelopProject.MSBuildProjectFile.Imports.Count);
+			}
 		}
 	}
 }

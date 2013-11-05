@@ -2,13 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace TextTemplating.Tests.Helpers
 {
 	public class TestableFileProjectItem : FileProjectItem
 	{
-		string fileName;
+		FileName fileName;
 		
 		public TestableProject TestableProject;
 		
@@ -21,10 +22,10 @@ namespace TextTemplating.Tests.Helpers
 			: base(project, ItemType.None)
 		{
 			this.TestableProject = project;
-			this.fileName = fileName;
+			this.fileName = FileName.Create(fileName);
 		}
 		
-		public override string FileName {
+		public override FileName FileName {
 			get { return fileName; }
 			set { fileName = value; }
 		}

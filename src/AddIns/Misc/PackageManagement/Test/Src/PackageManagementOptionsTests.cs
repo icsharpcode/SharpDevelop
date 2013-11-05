@@ -58,11 +58,7 @@ namespace PackageManagement.Tests
 		
 		void SaveOptions()
 		{
-			StringBuilder xml = new StringBuilder();
-			StringWriter stringWriter = new StringWriter(xml);
-			using (XmlTextWriter writer = new XmlTextWriter(stringWriter)) {
-				properties.WriteProperties(writer);
-			}
+			properties.Save();
 		}
 		
 		RecentPackageInfo AddRecentPackageToOptions(string id, string version)

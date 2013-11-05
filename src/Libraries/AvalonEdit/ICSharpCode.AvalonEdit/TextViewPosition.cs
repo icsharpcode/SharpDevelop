@@ -3,7 +3,7 @@
 
 using System;
 using System.Globalization;
-using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.AvalonEdit
 {
@@ -112,15 +112,6 @@ namespace ICSharpCode.AvalonEdit
 			return string.Format(CultureInfo.InvariantCulture,
 			                     "[TextViewPosition Line={0} Column={1} VisualColumn={2} IsAtEndOfLine={3}]",
 			                     this.line, this.column, this.visualColumn, this.isAtEndOfLine);
-		}
-		
-		/// <summary>
-		/// Implicit conversion to <see cref="TextLocation"/>.
-		/// </summary>
-		[Obsolete("Use the Location property instead of the implicit conversion to TextLocation")]
-		public static implicit operator TextLocation(TextViewPosition position)
-		{
-			return new TextLocation(position.Line, position.Column);
 		}
 		
 		#region Equals and GetHashCode implementation

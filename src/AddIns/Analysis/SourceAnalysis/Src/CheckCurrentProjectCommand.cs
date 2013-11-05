@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
 
@@ -10,13 +11,13 @@ namespace ICSharpCode.SourceAnalysis
 {
 	public class CheckCurrentProjectCommand : BuildProject
 	{
-		public override void StartBuild()
+		public override async void StartBuild()
 		{
-			BuildOptions options = new BuildOptions(BuildTarget.Rebuild, CallbackMethod);
+			var options = new BuildOptions(BuildTarget.Rebuild);
 			options.TargetForDependencies = BuildTarget.Build;
 			options.ProjectAdditionalProperties["RunSourceAnalysis"] = "true";
 			options.ProjectAdditionalProperties["StyleCopFile"] = StyleCopWrapper.FindStyleCopPath() ?? string.Empty;
-			BuildEngine.BuildInGui(this.ProjectToBuild, options);
+			CallbackMethod(await SD.BuildService.BuildAsync(this.ProjectToBuild, options));
 		}
 	}
 }

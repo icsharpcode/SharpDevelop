@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
@@ -61,7 +63,7 @@ namespace PackageManagement.Tests
 		TestableProject AddProjectToOpenProjects(string projectName)
 		{
 			TestableProject project = ProjectHelper.CreateTestProject(projectName);
-			fakeProjectService.FakeOpenProjects.Add(project);
+			fakeProjectService.AddProject(project);
 			return project;
 		}
 		
@@ -306,7 +308,7 @@ namespace PackageManagement.Tests
 			AddProjectToOpenProjects("B");
 			
 			IEnumerable<IProject> projects = solution.GetMSBuildProjects();
-			List<IProject> expectedProjects = fakeProjectService.FakeOpenProjects;
+			IEnumerable<IProject> expectedProjects = fakeProjectService.AllProjects;
 			
 			CollectionAssert.AreEqual(expectedProjects, projects);
 		}
@@ -326,7 +328,7 @@ namespace PackageManagement.Tests
 		public void IsOpen_SolutionIsOpen_ReturnsTrue()
 		{
 			CreateSolution();
-			fakeProjectService.OpenSolution = new Solution(new MockProjectChangeWatcher());
+			fakeProjectService.OpenSolution = MockRepository.GenerateStrictMock<ISolution>();
 			
 			bool open = solution.IsOpen;
 			
@@ -349,7 +351,7 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution();
 			TestableProject project = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project);
+			fakeProjectService.AddProject(project);
 			
 			bool hasMultipleProjects = solution.HasMultipleProjects();
 			
@@ -361,9 +363,9 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution();
 			TestableProject project1 = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project1);
+			fakeProjectService.AddProject(project1);
 			TestableProject project2 = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project2);
+			fakeProjectService.AddProject(project2);
 			
 			bool hasMultipleProjects = solution.HasMultipleProjects();
 			
@@ -374,12 +376,12 @@ namespace PackageManagement.Tests
 		public void FileName_SolutionHasFileName_ReturnsSolutionFileName()
 		{
 			CreateSolution();
-			var solution = new Solution(new MockProjectChangeWatcher());
+			var solution = MockRepository.GenerateStrictMock<ISolution>();
 			string expectedFileName = @"d:\projects\myproject\Project.sln";
-			solution.FileName = expectedFileName;
+			solution.Stub(s => s.FileName).Return(FileName.Create(expectedFileName));
 			fakeProjectService.OpenSolution = solution;
 			
-			string fileName = solution.FileName;
+			string fileName = this.solution.FileName;
 			
 			Assert.AreEqual(expectedFileName, fileName);
 		}
@@ -415,8 +417,8 @@ namespace PackageManagement.Tests
 			
 			solution.IsPackageInstalled(package);
 			
-			Solution expectedSolution = fakeProjectService.OpenSolution;
-			Solution solutionUsedToCreateSolutionPackageRepository = 
+			ISolution expectedSolution = fakeProjectService.OpenSolution;
+			ISolution solutionUsedToCreateSolutionPackageRepository = 
 				fakeSolutionPackageRepositoryFactory.SolutionPassedToCreateSolutionPackageRepository;
 			
 			Assert.AreEqual(expectedSolution, solutionUsedToCreateSolutionPackageRepository);

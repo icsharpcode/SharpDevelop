@@ -31,6 +31,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		ArrayList         wizardPanels = new ArrayList();
 		int               activePanelNumber  = 0;
 		
+		ReportStructure reportStructure;
+		
 		EventHandler enableNextChangedHandler;
 		EventHandler enableCancelChangedHandler;
 		EventHandler nextWizardPanelIDChangedHandler;
@@ -184,14 +186,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 		}
 		
-		public WizardDialog(string title, object customizer, string treePath)
+		public WizardDialog(string title, ReportStructure reportStructure, string treePath)
 		{
-			
+			this.reportStructure = reportStructure;
 			AddInTreeNode node = AddInTree.GetTreeNode(treePath);
 			this.Text = title;
 			
 			if (node != null) {
-				AddNodes(customizer, node.BuildChildItems<IDialogPanelDescriptor>(this));
+				AddNodes(this.reportStructure, node.BuildChildItems<IDialogPanelDescriptor>(this));
 			}
 			InitializeComponents();
 			

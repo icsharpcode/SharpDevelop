@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace Debugger.AddIn.Visualizers
 	/// </summary>
 	public interface IVisualizerDescriptor
 	{
-		bool IsVisualizerAvailable(DebugType type);
-		IVisualizerCommand CreateVisualizerCommand(Expression expression);
+		bool IsVisualizerAvailable(IType type);
+		IVisualizerCommand CreateVisualizerCommand(string valueName, Func<Value> getValue);
 	}
 }

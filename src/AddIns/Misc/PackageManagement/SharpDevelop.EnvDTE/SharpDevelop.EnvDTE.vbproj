@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
-    <ProjectGuid>{6FB1260D-68A2-41A0-BB09-F5F710842E99}</ProjectGuid>
+    <ProjectGuid>{1B753D7F-7C77-4D5E-B928-02982690879C}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
@@ -121,11 +121,7 @@
     <Compile Include="Src\vsEPReplaceTextOptions.vb" />
     <Compile Include="Src\Window.vb" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configuration" />
-    <Folder Include="Src" />
-    <Folder Include="Src\VisualStudio" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Compile Include="Src\Constants.vb" />
   </ItemGroup>

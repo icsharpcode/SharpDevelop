@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		{
 			if (line == null)
 				throw new ArgumentNullException("line");
-			formattingStrategy.IndentLine(editor, editor.Document.GetLine(line.LineNumber));
+			formattingStrategy.IndentLine(editor, editor.Document.GetLineByNumber(line.LineNumber));
 		}
 		
 		public virtual void IndentLines(TextDocument document, int beginLine, int endLine)

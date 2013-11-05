@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
@@ -9,7 +10,6 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			versionInfoTextBox.Text = GetVersionInformationString();
 			versionInfoTextBox.ScrollBars = ScrollBars.Both;
 			versionInfoTextBox.TabIndex = 9;
-			versionInfoTextBox.Font = WinFormsResourceService.LoadFont("Courier New", 8);
+			versionInfoTextBox.Font = SD.WinForms.LoadFont("Courier New", 8);
 			versionInfoTextBox.KeyDown += new KeyEventHandler(versionInfoTextBox_KeyDown);
 			versionInfoTextBox.RightToLeft = RightToLeft.No;
 			Controls.Add(versionInfoTextBox);
@@ -80,6 +80,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			#if DEBUG
 			if (e.KeyData == (Keys.Control | Keys.Shift | Keys.E)) {
 				throw new ClownFishException();
+			} else if (e.KeyData == (Keys.Control | Keys.Shift | Keys.A)) {
+				Trace.Fail("Trace failure");
 			} else if (e.KeyData == (Keys.Control | Keys.Shift | Keys.G)) {
 				GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
 				GC.WaitForPendingFinalizers();
@@ -200,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				versionInfo.Append(Environment.NewLine);
 			}
 			
-			ClipboardWrapper.SetText(versionInfo.ToString());
+			SD.Clipboard.SetText(versionInfo.ToString());
 		}
 		
 		// THIS METHOD IS MAINTAINED BY THE FORM DESIGNER

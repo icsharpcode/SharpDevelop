@@ -10,6 +10,7 @@ using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -22,7 +23,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private OpenedFile file;
 		private ReportModel reportModel;
 		private IReportGenerator reportGenerator;
-		private Properties customizer = new Properties();
+//		private Properties customizer = new Properties();
 		private ReportStructure reportStructure;
 		private bool canceled;
 		
@@ -36,15 +37,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		public override void Run()
 		{
 			reportStructure = new ReportStructure();
-			customizer.Set("Generator", reportStructure);
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			
 			if (GlobalValues.IsValidPrinter() == true) {
 				
-				using (WizardDialog wizard = new WizardDialog("Report Wizard", customizer, WizardPath)) {
+				using (WizardDialog wizard = new WizardDialog("Report Wizard", reportStructure, WizardPath)) {
 					if (wizard.ShowDialog() == DialogResult.OK) {
 						reportModel = reportStructure.CreateAndFillReportModel ();
-						CreateReportFromModel(reportModel);
+						CreateReportFromModel(reportModel,reportStructure);
 					}
 					else{
 						this.canceled = true;
@@ -56,9 +54,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		private void CreateReportFromModel (ReportModel model)
+		private void CreateReportFromModel (ReportModel model,ReportStructure reportStructure)
 		{
-			reportGenerator = GeneratorFactory.Create (model,customizer);
+			reportGenerator = GeneratorFactory.Create (model,reportStructure);
 			file.MakeDirty();
 			reportGenerator.GenerateReport();
 		}

@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -11,23 +13,21 @@ namespace ICSharpCode.PackageManagement
 	public interface IPackageManagementProjectService
 	{
 		IProject CurrentProject { get; }
-		Solution OpenSolution { get; }
+		ISolution OpenSolution { get; }
 		IProjectBuilder ProjectBuilder { get; }
 		
-		event ProjectEventHandler ProjectAdded;
-		event SolutionFolderEventHandler SolutionFolderRemoved;
-		event EventHandler SolutionClosed;
-		event EventHandler<SolutionEventArgs> SolutionLoaded;
+		event EventHandler<SolutionEventArgs> SolutionClosed;
+		event EventHandler<SolutionEventArgs> SolutionOpened;
 		
 		void RefreshProjectBrowser();
 		void AddProjectItem(IProject project, ProjectItem item);
 		void RemoveProjectItem(IProject project, ProjectItem item);
 		void Save(IProject project);
-		void Save(Solution solution);
+		void Save(ISolution solution);
 		
-		IEnumerable<IProject> GetOpenProjects();
+		IModelCollection<IProject> AllProjects { get; }
 		
-		IProjectContent GetProjectContent(IProject project);
+		//IProjectContent GetProjectContent(IProject project);
 		
 		IProjectBrowserUpdater CreateProjectBrowserUpdater();
 		

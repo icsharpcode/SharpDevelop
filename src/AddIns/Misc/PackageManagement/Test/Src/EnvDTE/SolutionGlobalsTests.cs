@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -36,12 +37,12 @@ namespace PackageManagement.Tests.EnvDTE
 			solutionHelper.AddExtensibilityGlobalsSection();
 		}
 		
-		SD.SolutionItem GetExtensibilityGlobalsSolutionItem(string name)
+		string GetExtensibilityGlobalsSolutionItem(string name)
 		{
 			return solutionHelper.GetExtensibilityGlobalsSolutionItem(name);
 		}
 		
-		SD.ProjectSection GetExtensibilityGlobalsSection()
+		SD.SolutionSection GetExtensibilityGlobalsSection()
 		{
 			return solutionHelper.GetExtensibilityGlobalsSection();
 		}
@@ -141,8 +142,8 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			globals.set_VariableValue("test", "new-value");
 			
-			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
-			Assert.AreEqual("new-value", item.Location);
+			string item = GetExtensibilityGlobalsSolutionItem("test");
+			Assert.AreEqual("new-value", item);
 		}
 		
 		[Test]
@@ -165,7 +166,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			globals.set_VariableValue("test", "new-value");
 			
-			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
+			string item = GetExtensibilityGlobalsSolutionItem("test");
 			Assert.IsNull(item);
 		}
 		
@@ -176,7 +177,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			globals.set_VariableValue("test", "new-value");
 			
-			SD.ProjectSection section = GetExtensibilityGlobalsSection();
+			SD.SolutionSection section = GetExtensibilityGlobalsSection();
 			Assert.IsNull(section);
 		}
 		
@@ -243,8 +244,8 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			globals.set_VariablePersists("test", true);
 			
-			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
-			Assert.AreEqual("new-value", item.Location);
+			string item = GetExtensibilityGlobalsSolutionItem("test");
+			Assert.AreEqual("new-value", item);
 		}
 		
 		[Test]
@@ -268,8 +269,8 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			globals.set_VariablePersists("test", true);
 			
-			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
-			Assert.AreEqual("new-value", item.Location);
+			string item = GetExtensibilityGlobalsSolutionItem("test");
+			Assert.AreEqual("new-value", item);
 		}
 		
 		[Test]
@@ -280,7 +281,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			globals.set_VariablePersists("test", true);
 			
-			SD.ProjectSection section = GetExtensibilityGlobalsSection();
+			SD.SolutionSection section = GetExtensibilityGlobalsSection();
 			Assert.AreEqual("postSolution", section.SectionType);
 		}
 		
@@ -306,7 +307,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			globals.set_VariablePersists("test", false);
 			
-			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
+			string item = GetExtensibilityGlobalsSolutionItem("test");
 			Assert.IsNull(item);
 		}
 		
@@ -319,7 +320,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			globals.set_VariablePersists("TEST", false);
 			
-			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
+			string item = GetExtensibilityGlobalsSolutionItem("test");
 			Assert.IsNull(item);
 		}
 		
@@ -332,8 +333,8 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			globals.set_VariableValue("test", "two");
 			
-			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
-			Assert.AreEqual("two", item.Location);
+			string item = GetExtensibilityGlobalsSolutionItem("test");
+			Assert.AreEqual("two", item);
 		}
 		
 		[Test]
@@ -373,8 +374,8 @@ namespace PackageManagement.Tests.EnvDTE
 			globals.set_VariablePersists("test", true);
 			globals.set_VariablePersists("test", true);
 			
-			SD.ProjectSection section = GetExtensibilityGlobalsSection();
-			int count = section.Items.Count;
+			SD.SolutionSection section = GetExtensibilityGlobalsSection();
+			int count = section.Keys.Count();
 			Assert.AreEqual(1, count);
 		}
 		

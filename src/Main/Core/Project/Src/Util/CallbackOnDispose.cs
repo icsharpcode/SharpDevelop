@@ -10,7 +10,7 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Invokes a callback when this class is disposed.
 	/// </summary>
-	public sealed class CallbackOnDispose : IDisposable
+	sealed class CallbackOnDispose : IDisposable
 	{
 		Action callback;
 		

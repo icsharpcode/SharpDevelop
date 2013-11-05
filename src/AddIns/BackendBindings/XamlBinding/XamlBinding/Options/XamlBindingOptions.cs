@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Media;
 
@@ -16,7 +15,7 @@ namespace ICSharpCode.XamlBinding
 
 		static XamlBindingOptions()
 		{
-			properties = PropertyService.Get("XamlBinding.Options", new Properties());
+			properties = PropertyService.NestedProperties("XamlBinding.Options");
 		}
 
 		static Properties Properties {

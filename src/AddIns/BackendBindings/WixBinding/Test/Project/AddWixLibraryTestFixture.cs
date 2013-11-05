@@ -1,11 +1,12 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using System;
+using System.Linq;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Project
@@ -22,6 +23,7 @@ namespace WixBinding.Tests.Project
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			SD.InitializeForUnitTests();
 			string fileName1 = @"C:\Projects\Test\wixlibs\test.wixlib";
 			string fileName2 = @"C:\Projects\Test\mainlibs\main.wixlib";
 			project = WixBindingTestsHelper.CreateEmptyWixProject();
@@ -44,13 +46,13 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void FirstWixLibraryItemInclude()
 		{
-			Assert.AreEqual(@"wixlibs\test.wixlib", project.Items[0].Include);
+			Assert.AreEqual(@"wixlibs\test.wixlib", project.Items.First().Include);
 		}
 		
 		[Test]
 		public void SecondWixLibraryItemInclude()
 		{
-			Assert.AreEqual(@"mainlibs\main.wixlib", project.Items[1].Include);
+			Assert.AreEqual(@"mainlibs\main.wixlib", project.Items.Skip(1).First().Include);
 		}
 	}
 }

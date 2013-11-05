@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Forms;
 using System.Xml;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
@@ -33,6 +34,7 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
+			SD.InitializeForUnitTests();
 			treeViewContainer = new DerivedXmlTreeViewContainerControl();
 			string xml = "<!-- Root comment --><root><!-- Child comment --><child></child></root>";
 			treeViewContainer.LoadXml(xml);
@@ -62,6 +64,7 @@ namespace XmlEditor.Tests.Tree
 			if (treeViewContainer != null) {
 				treeViewContainer.Dispose();
 			}
+			SD.TearDownForUnitTests();
 		}
 		
 		/// <summary>

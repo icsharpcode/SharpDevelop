@@ -4,15 +4,17 @@
 using System;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.CodeCoverage;
 using ICSharpCode.CodeCoverage.Tests.Utils;
+using ICSharpCode.SharpDevelop;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
 
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	[TestFixture]
-	public class OpenCoverSettingsFactoryTests
+	public class OpenCoverSettingsFactoryTests : SDTestFixtureBase
 	{
 		OpenCoverSettingsFactory factory;
 		OpenCoverSettings openCoverSettings;
@@ -28,7 +30,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		}
 		
 		[Test]
-		public void CreateOpenCoverSettingsWhenFileDoesNotExistCreatesSettingsWithNoPartCoverIncludes()
+		public void CreateOpenCoverSettingsWhenFileDoesNotExistCreatesSettingsWithNoOpenCoverIncludes()
 		{
 			fileSystem.FileExistsReturnValue = false;
 			CreateOpenCoverSettingsFromFactory();

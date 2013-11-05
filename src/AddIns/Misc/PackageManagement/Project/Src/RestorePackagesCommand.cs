@@ -4,8 +4,8 @@
 using System;
 using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -54,25 +54,9 @@ namespace ICSharpCode.PackageManagement
 			var commandLine = new NuGetPackageRestoreCommandLine(solution);
 			commandLine.Command = NuGetExePath.GetPath();
 			
-			outputMessagesView.AppendLine(commandLine.ToString());
-			
-			ProcessRunner runner = CreateProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(solution.FileName);
-			runner.Start(commandLine.Command, commandLine.Arguments);
-		}
-		
-		ProcessRunner CreateProcessRunner()
-		{
 			var runner = new ProcessRunner();
-			runner.LogStandardOutputAndError = false;
-			runner.OutputLineReceived += (sender, e) => outputMessagesView.AppendLine(e.Line);
-			runner.ErrorLineReceived  += (sender, e) => outputMessagesView.AppendLine(e.Line);
-			runner.ProcessExited += (sender, e) => {
-				if (runner.ExitCode != 0) {
-					outputMessagesView.AppendLine("Exit code " + runner.ExitCode);
-				}
-			};
-			return runner;
+			runner.WorkingDirectory = Path.GetDirectoryName(solution.FileName);
+			runner.RunInOutputPadAsync(outputMessagesView.OutputCategory, commandLine.Command, commandLine.Arguments);
 		}
 	}
 }

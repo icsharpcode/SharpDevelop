@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -14,18 +16,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
-		public CodeAttributeArgument(string name, object value)
+		public CodeAttributeArgument(string name, string value)
+		{
+			this.name = name;
+			this.value = value;
+		}
+		
+		public CodeAttributeArgument(string name, ResolveResult value)
 		{
 			this.name = name;
 			this.value = GetValue(value);
 		}
 		
-		string GetValue(object value)
+		string GetValue(ResolveResult value)
 		{
-			if (value is string) {
-				return String.Format("\"{0}\"", value);
-			}
-			return value.ToString();
+			var astBuilder = new TypeSystemAstBuilder();
+			var ast = astBuilder.ConvertConstantValue(value);
+			return ast.ToString();
 		}
 		
 		public override string Name {

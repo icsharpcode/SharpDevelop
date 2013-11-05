@@ -3,7 +3,9 @@
 
 using System;
 using System.Xml;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -14,7 +16,7 @@ namespace XmlEditor.Tests.Tree
 	/// Tests pasting in the XmlTreeViewContainerControl.
 	/// </summary>
 	[TestFixture]
-	public class PasteInTreeControlTestFixture
+	public class PasteInTreeControlTestFixture : SDTestFixtureBase
 	{
 		XmlDocument doc;
 		DerivedXmlTreeViewContainerControl treeViewContainerControl; 

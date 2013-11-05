@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			using (CommonAboutDialog ad = new CommonAboutDialog()) {
-				ad.ShowDialog(WorkbenchSingleton.MainWin32Window);
+				ad.ShowDialog(SD.WinForms.MainWin32Window);
 			}
 		}
 	}

@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
@@ -19,14 +21,15 @@ namespace PackageManagement.Tests
 	{
 		SolutionPackageRepository repository;
 		TestablePackageManagementOptions options;
-		Solution solution;
+		ISolution solution;
 		FakePackageRepositoryFactory fakeRepositoryFactory;
 		FakeSharedPackageRepository fakeSharedRepository;
 		
 		void CreateSolution(string fileName)
 		{
-			solution = new Solution(new MockProjectChangeWatcher());
-			solution.FileName = fileName;
+			solution = MockRepository.GenerateStrictMock<ISolution>();
+			solution.Stub(s => s.FileName).Return(FileName.Create(fileName));
+			solution.Stub(s => s.Directory).Return(DirectoryName.Create(System.IO.Path.GetDirectoryName(fileName)));
 		}
 		
 		void CreateFakeRepositoryFactory()
@@ -40,13 +43,13 @@ namespace PackageManagement.Tests
 			options = new TestablePackageManagementOptions();
 		}
 		
-		void CreateRepository(Solution solution, TestablePackageManagementOptions options)
+		void CreateRepository(ISolution solution, TestablePackageManagementOptions options)
 		{
 			CreateFakeRepositoryFactory();
 			repository = new SolutionPackageRepository(solution, fakeRepositoryFactory, options);
 		}
 		
-		void CreateRepository(Solution solution)
+		void CreateRepository(ISolution solution)
 		{
 			CreateOptions();
 			CreateRepository(solution, options);
@@ -54,8 +57,7 @@ namespace PackageManagement.Tests
 		
 		void CreateRepository()
 		{
-			solution = new Solution(new MockProjectChangeWatcher());
-			solution.FileName = @"d:\projects\test\myproject\myproject.sln";
+			CreateSolution(@"d:\projects\test\myproject\myproject.sln");
 			CreateRepository(solution);
 		}
 		

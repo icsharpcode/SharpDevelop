@@ -2,10 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
+using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -18,9 +18,8 @@ namespace MSHelpSystem.Commands
 	{
 		public override void Run()
 		{
-			ICSharpCode.SharpDevelop.Gui.TaskView view = (TaskView)Owner;
-
-			foreach (Task t in new List<Task>(view.SelectedTasks)) {
+			var view = (System.Windows.Controls.ListView)Owner;
+			foreach (var t in view.SelectedItems.OfType<SDTask>().ToArray()) {
 				if (t.BuildError == null)
 					continue;
 
@@ -53,7 +52,7 @@ namespace MSHelpSystem.Commands
 			}
 			if (Help3Service.Config.ExternalHelp) DisplayHelp.Catalog();
 			else {
-				PadDescriptor toc = WorkbenchSingleton.Workbench.GetPad(typeof(Help3TocPad));
+				PadDescriptor toc = SD.Workbench.GetPad(typeof(Help3TocPad));
 				if (toc != null) toc.BringPadToFront();
 			}
 		}
@@ -69,7 +68,7 @@ namespace MSHelpSystem.Commands
 				}
 				return;
 			}
-			PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(Help3SearchPad));
+			PadDescriptor search = SD.Workbench.GetPad(typeof(Help3SearchPad));
 			if (search != null) search.BringPadToFront();
 		}
 	}

@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
-
+/*
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -194,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("entity");
 			if (entity is LocalResolveResult) {
 				return RunFindReferences(entity.CallingClass, (entity as LocalResolveResult).Field,
-				                         entity.CallingClass.CompilationUnit.FileName, progressMonitor);
+				                         entity.CallingClass.SyntaxTree.FileName, progressMonitor);
 			} else if (entity is TypeResolveResult) {
 				TypeResolveResult trr = (TypeResolveResult)entity;
 				if (trr.ResolvedClass != null) {
@@ -217,7 +217,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// This method can be used in three modes:
 		/// 1. Find references to classes (parentClass = targetClass, member = null, fileName = null)
 		/// 2. Find references to members (parentClass = parent, member = member, fileName = null)
-		/// 3. Find references to local variables (parentClass = parent, member = local var as field, fileName = parent.CompilationUnit.FileName)
+		/// 3. Find references to local variables (parentClass = parent, member = local var as field, fileName = parent.SyntaxTree.FileName)
 		/// </summary>
 		static List<Reference> RunFindReferences(IClass ownerClass, IMember member,
 		                                         string fileName,
@@ -389,12 +389,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			CompoundClass cc = c as CompoundClass;
 			if (cc != null) {
 				foreach (IClass part in cc.Parts) {
-					string fileName = part.CompilationUnit.FileName;
+					string fileName = part.SyntaxTree.FileName;
 					if (fileName != null)
 						list.Add(fileName);
 				}
 			} else {
-				string fileName = c.CompilationUnit.FileName;
+				string fileName = c.SyntaxTree.FileName;
 				if (fileName != null)
 					list.Add(fileName);
 			}
@@ -639,7 +639,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (callingClass == null)
 				yield break;
 			IProjectContent pc = callingClass.ProjectContent;
-			if (!pc.Language.RefactoringProvider.IsEnabledForFile(callingClass.CompilationUnit.FileName))
+			if (!pc.Language.RefactoringProvider.IsEnabledForFile(callingClass.SyntaxTree.FileName))
 				yield break;
 			List<IClass> searchResults = new List<IClass>();
 			SearchAllClassesWithName(searchResults, pc, unknownClassName, pc.Language);
@@ -648,7 +648,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			foreach (IClass c in searchResults) {
 				string newNamespace = c.Namespace;
-				yield return new AddUsingAction(callingClass.CompilationUnit, editor, newNamespace);
+				yield return new AddUsingAction(callingClass.SyntaxTree, editor, newNamespace);
 			}
 		}
 		
@@ -663,11 +663,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public class AddUsingAction : IContextAction
 		{
-			public ICompilationUnit CompilationUnit { get; private set; }
+			public ISyntaxTree SyntaxTree { get; private set; }
 			public ITextEditor Editor { get; private set; }
 			public string NewNamespace { get; private set; }
 			
-			public AddUsingAction(ICompilationUnit compilationUnit, ITextEditor editor, string newNamespace)
+			public AddUsingAction(ISyntaxTree compilationUnit, ITextEditor editor, string newNamespace)
 			{
 				if (compilationUnit == null)
 					throw new ArgumentNullException("compilationUnit");
@@ -675,14 +675,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					throw new ArgumentNullException("editor");
 				if (newNamespace == null)
 					throw new ArgumentNullException("newNamespace");
-				this.CompilationUnit = compilationUnit;
+				this.SyntaxTree = compilationUnit;
 				this.Editor = editor;
 				this.NewNamespace = newNamespace;
 			}
 			
 			public void Execute()
 			{
-				NamespaceRefactoringService.AddUsingDeclaration(CompilationUnit, Editor.Document, NewNamespace, true);
+				NamespaceRefactoringService.AddUsingDeclaration(SyntaxTree, Editor.Document, NewNamespace, true);
 				ParserService.BeginParse(Editor.FileName, Editor.Document);
 			}
 			
@@ -698,3 +698,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#endregion
 	}
 }
+*/

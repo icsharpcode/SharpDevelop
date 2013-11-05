@@ -4,11 +4,10 @@
 #region Usings
 
 using System;
-using System.Windows.Interop;
 using ICSharpCode.Core;
 using ICSharpCode.Data.Addin.Pad;
 using ICSharpCode.Data.Core.UI.Windows;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 #endregion
 
@@ -19,7 +18,7 @@ namespace ICSharpCode.Data.Addin.Commands
         public override void Run()
         {
             ConnectionWizardWindow connectionWizardWindow = new ConnectionWizardWindow();
-            connectionWizardWindow.Owner = WorkbenchSingleton.MainWindow;
+            connectionWizardWindow.Owner = SD.Workbench.MainWindow;
 
             connectionWizardWindow.AddAction = new Action(delegate()
             {

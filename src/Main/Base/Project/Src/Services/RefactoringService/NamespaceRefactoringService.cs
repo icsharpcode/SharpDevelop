@@ -1,6 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-
+/*
 using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			ParseInformation info = ParserService.ParseFile(fileName, document);
 			if (info == null) return;
-			ICompilationUnit cu = info.CompilationUnit;
+			ISyntaxTree cu = info.SyntaxTree;
 			
 			List<IUsing> newUsings = new List<IUsing>(cu.UsingScope.Usings);
 			if (sort) {
@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		public static void AddUsingDeclaration(ICompilationUnit cu, IDocument document, string newNamespace, bool sortExistingUsings)
+		public static void AddUsingDeclaration(ISyntaxTree cu, IDocument document, string newNamespace, bool sortExistingUsings)
 		{
 			if (cu == null)
 				throw new ArgumentNullException("cu");
@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			ParseInformation info = ParserService.ParseFile(cu.FileName, document);
 			if (info != null)
-				cu = info.CompilationUnit;
+				cu = info.SyntaxTree;
 			
 			IUsing newUsingDecl = new DefaultUsing(cu.ProjectContent);
 			newUsingDecl.Usings.Add(newNamespace);
@@ -128,3 +128,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
+*/

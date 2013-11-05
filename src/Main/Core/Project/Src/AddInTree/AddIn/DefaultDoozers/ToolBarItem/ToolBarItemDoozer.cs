@@ -54,7 +54,7 @@ namespace ICSharpCode.Core
 		
 		public object BuildItem(BuildItemArgs args)
 		{
-			return new ToolbarItemDescriptor(args.Caller, args.Codon, args.BuildSubItems<object>(), args.Conditions);
+			return new ToolbarItemDescriptor(args.Parameter, args.Codon, args.BuildSubItems<object>(), args.Conditions);
 		}
 	}
 	
@@ -64,14 +64,14 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public sealed class ToolbarItemDescriptor
 	{
-		public readonly object Caller;
+		public readonly object Parameter;
 		public readonly Codon Codon;
 		public readonly IList SubItems;
-		public readonly IEnumerable<ICondition> Conditions;
+		public readonly IReadOnlyCollection<ICondition> Conditions;
 		
-		public ToolbarItemDescriptor(object caller, Codon codon, IList subItems, IEnumerable<ICondition> conditions)
+		public ToolbarItemDescriptor(object parameter, Codon codon, IList subItems, IReadOnlyCollection<ICondition> conditions)
 		{
-			this.Caller = caller;
+			this.Parameter = parameter;
 			this.Codon = codon;
 			this.SubItems = subItems;
 			this.Conditions = conditions;

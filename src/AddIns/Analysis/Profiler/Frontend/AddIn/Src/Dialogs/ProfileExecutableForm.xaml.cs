@@ -11,7 +11,6 @@ using ICSharpCode.Core;
 using ICSharpCode.Profiler.Controller;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
 namespace ICSharpCode.Profiler.AddIn.Dialogs
@@ -28,7 +27,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 		
 		void btnCancelClick(object sender, RoutedEventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 		
 		void btnStartClick(object sender, RoutedEventArgs e)
@@ -58,13 +57,13 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 
 					if (runner != null) {
 						runner.RunFinished += delegate {
-							WorkbenchSingleton.SafeThreadCall(() => FileService.OpenFile(outputPath));
+							SD.MainThread.InvokeIfRequired(() => FileService.OpenFile(outputPath));
 						};
 						
 						runner.Run();
 					}
 					
-					this.Close();
+					Close();
 				} catch (ProfilerException ex) {
 					MessageService.ShowError(ex.Message);
 				}

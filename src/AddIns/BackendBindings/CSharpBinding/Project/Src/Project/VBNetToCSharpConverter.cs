@@ -1,6 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-
+/*
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,7 +64,7 @@ namespace CSharpBinding
 			                       v => v.Replace(ProjectTypeGuids.VBNet, ProjectTypeGuids.CSharp, StringComparison.OrdinalIgnoreCase));
 		}
 		
-		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials, FileProjectItem sourceItem)
+		protected override void ConvertAst(SyntaxTree compilationUnit, List<ISpecial> specials, FileProjectItem sourceItem)
 		{
 			PreprocessingDirective.VBToCSharp(specials);
 			CompilableProject project = (CompilableProject)sourceItem.Project;
@@ -82,7 +82,7 @@ namespace CSharpBinding
 			compilationUnit.AcceptVisitor(visitor, null);
 		}
 		
-		void RemoveWindowsFormsSpecificCode(CompilationUnit compilationUnit, List<ISpecial> specials, bool keepCode)
+		void RemoveWindowsFormsSpecificCode(SyntaxTree compilationUnit, List<ISpecial> specials, bool keepCode)
 		{
 			for (int i = 0; i < specials.Count; i++) {
 				PreprocessingDirective ppd = specials[i] as PreprocessingDirective;
@@ -104,7 +104,7 @@ namespace CSharpBinding
 										} else {
 											// remove ifdef including the code
 											compilationUnit.AcceptVisitor(new RemoveMembersInRangeVisitor(
-												DomRegion.FromLocation(specials[i].StartPosition, specials[j].EndPosition)), null);
+												new DomRegion(specials[i].StartPosition, specials[j].EndPosition)), null);
 											specials.RemoveRange(i, j - i + 1);
 										}
 										i--;
@@ -119,3 +119,4 @@ namespace CSharpBinding
 		}
 	}
 }
+*/

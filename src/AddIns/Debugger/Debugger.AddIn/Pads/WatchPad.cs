@@ -3,214 +3,175 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
-using System.Windows.Data;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
-using System.Xml.Serialization;
+
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Project;
-using Exception = System.Exception;
+using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.SharpDevelop.Workbench;
+using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class WatchPad : DebuggerPad
+	public class WatchPad : AbstractPadContent
 	{
-		WatchList watchList;
-		Process debuggedProcess;
-
-		static WatchPad instance;
+		DockPanel panel;
+		ToolBar toolBar;
+		SharpTreeView tree;
 		
-		/// <remarks>Always check if Instance is null, might be null if pad is not opened!</remarks>
-		public static WatchPad Instance {
-			get { return instance; }
+		public override object Control {
+			get { return panel; }
 		}
 		
-		public WatchList WatchList {
-			get {
-				return watchList;
-			}
+		public SharpTreeView Tree {
+			get { return tree; }
+		}
+		
+		public SharpTreeNodeCollection Items {
+			get { return tree.Root.Children; }
 		}
 		
 		public WatchPad()
 		{
-			instance = this;
-		}
-		
-		public Process Process {
-			get { return debuggedProcess; }
-		}
-		
-		protected override void InitializeComponents()
-		{
-			watchList = new WatchList(WatchListType.Watch);
-			watchList.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
+			var res = new CommonResources();
+			res.InitializeComponent();
 			
-			watchList.MouseDoubleClick += WatchListDoubleClick;
-			watchList.WatchItems.CollectionChanged += OnWatchItemsCollectionChanged;
+			panel = new DockPanel();
 			
-			panel.Children.Add(watchList);
-			panel.KeyDown += PanelKeyDown;
+			toolBar = ToolBarService.CreateToolBar(toolBar, this, "/SharpDevelop/Pads/WatchPad/ToolBar");
+			toolBar.SetValue(DockPanel.DockProperty, Dock.Top);
+			panel.Children.Add(toolBar);
 			
-			// wire events that influence the items
-			LoadSavedNodes();
-			ProjectService.SolutionClosed += delegate { watchList.WatchItems.Clear(); };
-			ProjectService.ProjectAdded += delegate { LoadSavedNodes(); };
-			ProjectService.SolutionLoaded += delegate { LoadSavedNodes(); };
-		}
-
-		#region Saved nodes
-		
-		void LoadSavedNodes()
-		{
-			var props = GetSavedVariablesProperties();
-			if (props == null)
-				return;
-			
-			foreach (var element in props.Elements) {
-				watchList.WatchItems.Add(new TextNode(null, element, (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), props[element])).ToSharpTreeNode());
-			}
-		}
-
-		void OnWatchItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems.Count > 0) {
-				// add to saved data
-				var data = e.NewItems.OfType<TextNode>().FirstOrDefault();
-				if (data != null) {
-					var props = GetSavedVariablesProperties();
-					if (props == null) return;
-					props.Set(data.FullName, data.Language.ToString());
+			tree = new SharpTreeView();
+			tree.Root = new WatchRootNode();
+			tree.ShowRoot = false;
+			tree.View = (GridView)res["variableGridView"];
+			tree.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "50%;25%;25%");
+			//tree.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
+			tree.MouseDoubleClick += delegate(object sender, MouseButtonEventArgs e) {
+				if (this.tree.SelectedItem == null) {
+					AddWatch(focus: true);
 				}
-			}
+			};
+			panel.Children.Add(tree);
 			
-			if (e.Action == NotifyCollectionChangedAction.Remove) {
-				// remove from saved data
-				var data = e.OldItems.OfType<TextNode>().FirstOrDefault();
-				if (data != null) {
-					var props = GetSavedVariablesProperties();
-					if (props == null) return;
-					props.Remove(data.FullName);
-				}
-			}
-		}
-		
-		Properties GetSavedVariablesProperties()
-		{
-			if (ProjectService.CurrentProject == null)
-				return null;
-			if (ProjectService.CurrentProject.ProjectSpecificProperties == null)
-				return null;
+//			ProjectService.SolutionLoaded  += delegate { LoadNodes(); };
+//			SD.ProjectService.CurrentSolution.PreferencesSaving += delegate { SaveNodes(); };
+//			LoadNodes();
 			
-			var props = ProjectService.CurrentProject.ProjectSpecificProperties.Get("watchVars") as Properties;
-			if (props == null) {
-				ProjectService.CurrentProject.ProjectSpecificProperties.Set("watchVars", new Properties());
-			}
-			
-			return ProjectService.CurrentProject.ProjectSpecificProperties.Get("watchVars") as Properties;
+			WindowsDebugger.RefreshingPads += RefreshPad;
+			RefreshPad();
 		}
 
-		#endregion
-		
-		void PanelKeyDown(object sender, KeyEventArgs e)
+		public void AddWatch(string expression = null, bool focus = false)
 		{
-			if (e.Key == Key.Insert) {
-				AddNewWatch();
-				e.Handled = true;
-			}
-		}
-		
-		void WatchListDoubleClick(object sender, MouseEventArgs e)
-		{
-			if (watchList.SelectedNode == null)
-			{
-				AddNewWatch();
-			}
-		}
-		
-		void AddNewWatch()
-		{
-			AddWatchCommand command = new AddWatchCommand { Owner = this };
-			command.Run();
-		}
-		
-		void ResetPad(object sender, EventArgs e)
-		{
-			string language = "CSharp";
+			var node = MakeNode(expression);
+			this.Items.Add(node);
 			
-			if (ProjectService.CurrentProject != null)
-				language = ProjectService.CurrentProject.Language;
-			
-			// rebuild list
-			var nodes = new List<TreeNodeWrapper>();
-			foreach (var nod in watchList.WatchItems.OfType<TreeNodeWrapper>())
-				nodes.Add(new TextNode(null, nod.Node.Name,
-				                       language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp)
-				          .ToSharpTreeNode());
-			
-			watchList.WatchItems.Clear();
-			foreach (var nod in nodes)
-				watchList.WatchItems.Add(nod);
-		}
-		
-		protected override void SelectProcess(Process process)
-		{
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused -= debuggedProcess_Paused;
-				debuggedProcess.Exited -= ResetPad;
+			if (focus) {
+				var view = tree.View as SharpGridView;
+				tree.Dispatcher.BeginInvoke(
+					DispatcherPriority.Input, (Action)delegate {
+						var container = tree.ItemContainerGenerator.ContainerFromItem(node) as SharpTreeViewItem;
+						if (container == null) return;
+						var textBox = container.NodeView.FindAncestor<StackPanel>().FindName("name") as AutoCompleteTextBox;
+						if (textBox == null) return;
+						textBox.FocusEditor();
+					});
 			}
-			debuggedProcess = process;
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused += debuggedProcess_Paused;
-				debuggedProcess.Exited += ResetPad;
-			}
-			InvalidatePad();
 		}
 		
-		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
+		SharpTreeNodeAdapter MakeNode(string name)
 		{
-			InvalidatePad();
-		}
-		
-		TreeNodeWrapper UpdateNode(TreeNodeWrapper node)
-		{
+			LoggingService.Info("Evaluating watch: " + name);
+			TreeNode node = null;
 			try {
-				LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Node.Name) ? "is null or empty!" : node.Node.Name));
-				var nodExpression = debugger.GetExpression(node.Node.Name);
-				//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-				ExpressionNode valNode = new ExpressionNode(null, null, node.Node.Name, nodExpression);
-				return valNode.ToSharpTreeNode();
-			} catch (GetValueException) {
-				string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), node.Node.Name);
-				ErrorInfoNode infoNode = new ErrorInfoNode(node.Node.Name, error);
-				return infoNode.ToSharpTreeNode();
+				node = new ValueNode(null, name,
+				                     () => {
+				                     	if (string.IsNullOrWhiteSpace(name))
+				                     		return null;
+				                     	return WindowsDebugger.Evaluate(name);
+				                     });
+			} catch (GetValueException e) {
+				node = new TreeNode(null, name, e.Message, string.Empty, null);
 			}
+			node.CanDelete = true;
+			node.CanSetName = true;
+			node.PropertyChanged += (s, e) => {
+				if (e.PropertyName == "Name")
+					WindowsDebugger.RefreshPads();
+			};
+			return node.ToSharpTreeNode();
 		}
 		
-		protected override void RefreshPad()
+		protected void RefreshPad()
 		{
-			if (debuggedProcess == null || debuggedProcess.IsRunning)
-				return;
-			
-			using(new PrintTimes("Watch Pad refresh")) {
-				var nodes = watchList.WatchItems.OfType<TreeNodeWrapper>().ToArray();
-				watchList.WatchItems.Clear();
-				
-				debuggedProcess.EnqueueForEach(
+			Process process = WindowsDebugger.CurrentProcess;
+			if (process != null && process.IsPaused) {
+				var expressions = this.Items.OfType<SharpTreeNodeAdapter>()
+					.Select(n => n.Node.Name)
+					.ToList();
+				this.Items.Clear();
+				process.EnqueueForEach(
 					Dispatcher.CurrentDispatcher,
-					nodes,
-					n => watchList.WatchItems.Add(UpdateNode(n))
+					expressions,
+					expr => this.Items.Add(MakeNode(expr))
 				);
 			}
 		}
+	}
+	
+	class WatchRootNode : SharpTreeNode
+	{
+		public override bool CanDrop(DragEventArgs e, int index)
+		{
+			e.Effects = DragDropEffects.None;
+			if (e.Data.GetDataPresent(DataFormats.StringFormat)) {
+				e.Effects = DragDropEffects.Copy;
+				return true;
+			}
+			return false;
+		}
+		
+		public override void Drop(DragEventArgs e, int index)
+		{
+			if (e.Data == null) return;
+			if (!e.Data.GetDataPresent(DataFormats.StringFormat)) return;
+			
+			var watchValue = e.Data.GetData(DataFormats.StringFormat).ToString();
+			if (string.IsNullOrEmpty(watchValue)) return;
+			
+			var pad = SD.Workbench.GetPad(typeof(WatchPad)).PadContent as WatchPad;
+			if (pad == null) return;
+			
+			pad.AddWatch(watchValue);
+			WindowsDebugger.RefreshPads();
+		}
+	}
+	
+	static class WpfExtensions
+	{
+		public static T FindAncestor<T>(this DependencyObject d) where T : class
+		{
+			return AncestorsAndSelf(d).OfType<T>().FirstOrDefault();
+		}
+
+		public static IEnumerable<DependencyObject> AncestorsAndSelf(this DependencyObject d)
+		{
+			while (d != null) {
+				yield return d;
+				d = VisualTreeHelper.GetParent(d);
+			}
+		}
+
 	}
 }

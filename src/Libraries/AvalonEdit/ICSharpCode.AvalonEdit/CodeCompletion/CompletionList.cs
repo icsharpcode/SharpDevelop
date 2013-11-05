@@ -324,7 +324,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			//		5 = match start
 			//		4 = match CamelCase when length of query is 1 or 2 characters
 			// 		3 = match substring case sensitive
-			//		2 = match sustring
+			//		2 = match substring
 			//		1 = match CamelCase
 			//		-1 = no match
 			if (query == itemText)

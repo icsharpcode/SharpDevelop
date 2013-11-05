@@ -3,22 +3,50 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop
 {
-	public static class LanguageBindingService
+	public interface ILanguageService
+	{
+		ILanguageBinding GetLanguageByFileName(FileName fileName);
+		ILanguageBinding GetLanguageByExtension(string extension);
+		ILanguageBinding GetLanguageByName(string name);
+	}
+	
+	class SDLanguageService : ILanguageService
 	{
 		const string languageBindingPath = "/SharpDevelop/Workbench/LanguageBindings";
+		readonly List<LanguageBindingDescriptor> bindings;
 		
-		/// <summary>
-		/// Creates the binding for the specified text editor. This method never returns null.
-		/// </summary>
-		public static ILanguageBinding CreateBinding(ITextEditor editor)
+		public SDLanguageService()
 		{
-			var bindings = AddInTree.BuildItems<ILanguageBinding>(languageBindingPath, editor, false);
-			return new AggregatedLanguageBinding(bindings);
+			bindings = AddInTree.BuildItems<LanguageBindingDescriptor>(languageBindingPath, null, false);
+		}
+		
+		public ILanguageBinding GetLanguageByFileName(FileName fileName)
+		{
+			return GetLanguageByExtension(Path.GetExtension(fileName));
+		}
+		
+		public ILanguageBinding GetLanguageByExtension(string extension)
+		{
+			foreach (var language in bindings) {
+				if (language.CanAttach(extension))
+					return language.Binding;
+			}
+			return DefaultLanguageBinding.DefaultInstance;
+		}
+		
+		public ILanguageBinding GetLanguageByName(string name)
+		{
+			foreach (var language in bindings) {
+				if (language.Name == name)
+					return language.Binding;
+			}
+			return DefaultLanguageBinding.DefaultInstance;
 		}
 	}
 }

@@ -13,7 +13,6 @@ using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project.Converter;
-using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -67,11 +66,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			return new UnknownProjectItem(Project, item);
 		}
 		
-		public override void ProjectCreationComplete()
-		{
-			
-		}
-		
 		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
 			return Enumerable.Empty<CompilerVersion>();
@@ -82,46 +76,44 @@ namespace ICSharpCode.SharpDevelop.Project
 			throw new NotSupportedException();
 		}
 		
-		
-		/// <summary>
-		/// Saves project preferences (currently opened files, bookmarks etc.) to the
-		/// a property container.
-		/// </summary>
-		public override Properties CreateMemento()
+		public override void SavePreferences(Properties preferences)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			// breakpoints and files
-			Properties properties = new Properties();
-			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(Project).ToArray());
+			preferences.SetList("bookmarks", SD.BookmarkManager.GetProjectBookmarks(Project));
 			List<string> files = new List<string>();
-			foreach (string fileName in FileService.GetOpenFiles()) {
+			foreach (var fileName in FileService.GetOpenFiles()) {
 				if (fileName != null && Project.IsFileInProject(fileName)) {
 					files.Add(fileName);
 				}
 			}
-			properties.Set("files", files.ToArray());
-			
-			// other project data
-			properties.Set("projectSavedData", Project.ProjectSpecificProperties ?? new Properties());
-			
-			return properties;
+			preferences.SetList("openFiles", files);
 		}
 		
-		public override void SetMemento(Properties memento)
+		public override void ProjectLoaded()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
-			foreach (ICSharpCode.SharpDevelop.Bookmarks.SDBookmark mark in memento.Get("bookmarks", new ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[0])) {
-				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(mark);
+			var memento = Project.Preferences;
+			foreach (var mark in memento.GetList<ICSharpCode.SharpDevelop.Editor.Bookmarks.SDBookmark>("bookmarks")) {
+				SD.BookmarkManager.AddMark(mark);
 			}
-			foreach (string fileName in memento.Get("files", new string[0])) {
-				AbstractProject.filesToOpenAfterSolutionLoad.Add(fileName);
+			List<string> filesToOpen = new List<string>();
+			foreach (string fileName in memento.GetList<string>("openFiles")) {
+				if (File.Exists(fileName)) {
+					filesToOpen.Add(fileName);
+				}
 			}
-			
-			// other project data
-			Project.ProjectSpecificProperties = memento.Get("projectSavedData", new Properties());
-			base.SetMemento(memento);
+			System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
+				System.Windows.Threading.DispatcherPriority.Loaded,
+				new Action(
+					delegate {
+						NavigationService.SuspendLogging();
+						foreach (string file in filesToOpen)
+							FileService.OpenFile(file);
+						NavigationService.ResumeLogging();
+					}));
 		}
 	}
 }

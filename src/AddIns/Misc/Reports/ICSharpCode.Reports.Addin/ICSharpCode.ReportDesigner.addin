@@ -184,7 +184,7 @@
 	</Path>
 	<!-- Start SharpDevelop Reports from MainMenu -->
 	
-	<Path name = "/Workspace/Tools">
+	<Path name = "/SharpDevelop/Workbench/Tools">
 		<MenuItem id       = "ReportGeneratorPad"
 		          label = "${res:SharpReport.ReportGenerator}"
 		          
@@ -211,6 +211,6 @@
 
 	<!-- Tell SharpDevelop to look for the file template (EmptyReport.xft) in the AddIn directory -->
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
-		<Directory id = "ICSharpCode.Reports" path = "." />
+		<TemplateFile id = "ICSharpCode.Reports" path = "." />
 	</Path>
 </AddIn>

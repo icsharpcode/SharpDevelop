@@ -2,9 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.CSharp;
 
 namespace TextTemplating.Tests.Helpers
 {
@@ -33,8 +34,11 @@ namespace TextTemplating.Tests.Helpers
 			set { rootNamespace = value; }
 		}
 		
-		public override LanguageProperties LanguageProperties {
-			get { return LanguageProperties.CSharp; }
+		public CodeDomProvider CodeDomProviderToReturn = new CSharpCodeProvider();
+		
+		public override CodeDomProvider CreateCodeDomProvider()
+		{
+			return CodeDomProviderToReturn;
 		}
 	}
 }

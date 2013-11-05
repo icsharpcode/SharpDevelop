@@ -6,7 +6,7 @@
 		<Name>${res:Templates.Project.WebService.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>ASP.NET</Subcategory>
-		<Icon>VBNet.Project.WebService</Icon>
+		<Icon>VB.Project.WebService</Icon>
 		<Description>${res:Templates.Project.WebService.Description}</Description>
 	</TemplateConfiguration>
 
@@ -16,7 +16,7 @@
 		<Open filename = "Soap.vb" />
 	</Actions>
 
-	<Project language = "VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

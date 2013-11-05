@@ -6,8 +6,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace ICSharpCode.XamlBinding.Tests
 {
@@ -834,8 +843,12 @@ namespace ICSharpCode.XamlBinding.Tests
 			             });
 		}
 		
-		[Test]
-		public void InCommentPressTest()
+		static readonly object[] KeyTestData = {
+			'<', '.', ':', '/', 'a'
+		};
+		
+		[Test, TestCaseSourceAttribute("KeyTestData")]
+		public void InCommentPressTest(char key)
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
 	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
@@ -846,15 +859,11 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestKeyPress(fileHeader, fileFooter, '<', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, '.', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, ':', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, '/', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, 'a', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, key, CodeCompletionKeyPressResult.None, list => {});
 		}
 		
-		[Test]
-		public void InCDataPressTest()
+		[Test, TestCaseSourceAttribute("KeyTestData")]
+		public void InCDataPressTest(char key)
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
 	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
@@ -865,15 +874,11 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestKeyPress(fileHeader, fileFooter, '<', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, '.', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, ':', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, '/', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, 'a', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, key, CodeCompletionKeyPressResult.None, list => {});
 		}
 		
-		[Test]
-		public void InPlainTextPressTest()
+		[Test, TestCaseSourceAttribute("KeyTestData")]
+		public void InPlainTextPressTest(char key)
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
 	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
@@ -884,11 +889,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestKeyPress(fileHeader, fileFooter, '.', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, ':', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, '/', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, 'a', CodeCompletionKeyPressResult.None, list => {});
-			TestKeyPress(fileHeader, fileFooter, '<', CodeCompletionKeyPressResult.Completed, list => {});
+			TestKeyPress(fileHeader, fileFooter, key, key == '<' ? CodeCompletionKeyPressResult.Completed : CodeCompletionKeyPressResult.None, list => {});
 		}
 		#endregion
 	}

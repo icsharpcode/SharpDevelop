@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Workbench;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -52,6 +53,10 @@ namespace ICSharpCode.PackageManagement
 		public void AppendLine(string message)
 		{
 			messageViewCategory.AppendLine(message);
+		}
+		
+		public IOutputCategory OutputCategory {
+			get { return messageViewCategory.OutputCategory; }
 		}
 	}
 }

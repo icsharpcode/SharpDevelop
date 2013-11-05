@@ -28,7 +28,11 @@ namespace ICSharpCode.WixBinding
 			InitializeComponent();
 			diffControl.ContextMenuStrip = MenuService.CreateContextMenu(this, "/AddIns/WixBinding/WixPackageFilesDiffControl/ContextMenu");
 		}
-				
+		
+		public TreeNode SelectedNode {
+			get { return packageFilesTreeView.SelectedNode; }
+		}
+		
 		/// <summary>
 		/// Raised when the files are changed and require saving.
 		/// </summary>
@@ -242,11 +246,10 @@ namespace ICSharpCode.WixBinding
 			TreeNode selectedNode = packageFilesTreeView.SelectedNode;
 			
 			// Allow the user to select a directory.
-			using (FolderBrowserDialog dialog = FileService.CreateFolderBrowserDialog("${res:ICSharpCode.WixBinding.PackageFilesView.AddDirectoryDialog.Title}")) {
-				if (dialog.ShowDialog() == DialogResult.OK) {
-					packageFilesTreeView.SelectedNode = selectedNode;
-					editor.AddDirectory(dialog.SelectedPath);
-				}
+			string directory = SD.FileService.BrowseForFolder("${res:ICSharpCode.WixBinding.PackageFilesView.AddDirectoryDialog.Title}");
+			if (directory != null) {
+				packageFilesTreeView.SelectedNode = selectedNode;
+				editor.AddDirectory(directory);
 			}
 		}
 		

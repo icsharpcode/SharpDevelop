@@ -105,18 +105,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		private void BrowseButtonClick (object sender, EventArgs e)
 		{
-			using (System.Windows.Forms.FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog("${res:Dialog.ProjectOptions.SelectFolderTitle}"))
-			{
-				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-				{
-					string path = fdiag.SelectedPath;
-					if (!path.EndsWith("\\") && !path.EndsWith("/"))
-						path += "\\";
-					editTextBox.Text = path;
-					
-					if (AutoAddAfterBrowse) {
-						AddButton_Click(null, null);
-					}
+			string path = SD.FileService.BrowseForFolder("${res:Dialog.ProjectOptions.SelectFolderTitle}");
+			if (!String.IsNullOrEmpty(path)) {
+				if (!path.EndsWith("\\") && !path.EndsWith("/"))
+					path += "\\";
+				editTextBox.Text = path;
+				
+				if (AutoAddAfterBrowse) {
+					AddButton_Click(null, null);
 				}
 			}
 		}

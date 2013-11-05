@@ -7,10 +7,13 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Controls;
+
 using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Data.Core.UI.UserControls;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 #endregion
 
@@ -62,8 +65,8 @@ namespace ICSharpCode.Data.Addin.Pad
 		/// </summary>	
 		public DatabasesTreeViewPad() : base()
 		{
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
-			WorkbenchSingleton.Workbench.ViewClosed += ActiveViewClosed;
+			SD.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
+			SD.Workbench.ViewClosed += ActiveViewClosed;
 
             _control = new DatabasesTreeViewUserControl();
 			_databasesTreeView = new DatabasesTreeView();
@@ -97,7 +100,7 @@ namespace ICSharpCode.Data.Addin.Pad
 		/// </summary>
 		public override void Dispose()
 		{
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
+			SD.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
 		}
 
         #endregion

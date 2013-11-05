@@ -2,10 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using Dom = ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
+using Rhino.Mocks;
+using Dom = ICSharpCode.SharpDevelop.Dom;
 
 namespace AspNet.Mvc.Tests.Helpers
 {
@@ -26,15 +27,9 @@ namespace AspNet.Mvc.Tests.Helpers
 		
 		public static TestableProject CreateProject(string fileName, string projectName)
 		{
-			var createInfo = new ProjectCreateInformation();
-			createInfo.Solution = new Solution(null);
+			var createInfo = new ProjectCreateInformation(FakeSolution.Create(), new FileName(fileName));
 			createInfo.ProjectName = projectName;
-			createInfo.OutputProjectFileName = fileName;
 			return new TestableProject(createInfo);
-		}
-		
-		public override LanguageProperties LanguageProperties {
-			get { return Dom.LanguageProperties.CSharp; }
 		}
 		
 		public override string Language {
@@ -53,20 +48,20 @@ namespace AspNet.Mvc.Tests.Helpers
 			IsSaved = true;
 		}
 		
-		public override bool ReadOnly {
+		public override bool IsReadOnly {
 			get { return false; }
 		}
 		
 		public FileProjectItem AddFileToProject(string fileName)
 		{
 			var projectItem = new FileProjectItem(this, ItemType.Compile);
-			projectItem.FileName = fileName;
+			projectItem.FileName = FileName.Create(fileName);
 			ProjectService.AddProjectItem(this, projectItem);
 			return projectItem;
 		}
 		
-		public override string OutputAssemblyFullPath {
-			get { return outputAssemblyFullPath; }
+		public override FileName OutputAssemblyFullPath {
+			get { return FileName.Create(outputAssemblyFullPath); }
 		}
 		
 		public void SetOutputAssemblyFullPath(string path)

@@ -5,18 +5,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
 	public static class MenuService
 	{
+		public static Action<System.Windows.Input.ICommand, object> ExecuteCommand;
+		
 		public static void AddItemsToMenu(ToolStripItemCollection collection, object owner, string addInTreePath)
 		{
 			AddItemsToMenu(collection, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
 		}
 		
-		static void AddItemsToMenu(ToolStripItemCollection collection, List<MenuItemDescriptor> descriptors)
+		static void AddItemsToMenu(ToolStripItemCollection collection, IEnumerable<MenuItemDescriptor> descriptors)
 		{
 			foreach (MenuItemDescriptor descriptor in descriptors) {
 				object item = CreateMenuItemFromDescriptor(descriptor);
@@ -25,8 +28,8 @@ namespace ICSharpCode.Core.WinForms
 					if (item is IStatusUpdate)
 						((IStatusUpdate)item).UpdateStatus();
 				} else {
-					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					collection.AddRange(submenuBuilder.BuildSubmenu(descriptor.Codon, descriptor.Caller));
+					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
+					collection.AddRange(submenuBuilder.BuildItems(descriptor.Codon, descriptor.Parameter).Cast<ToolStripItem>().ToArray());
 				}
 			}
 		}
@@ -39,14 +42,14 @@ namespace ICSharpCode.Core.WinForms
 			
 			switch (type) {
 				case "Separator":
-					return new MenuSeparator(codon, descriptor.Caller, descriptor.Conditions);
+					return new MenuSeparator(codon, descriptor.Parameter, descriptor.Conditions);
 				case "CheckBox":
-					return new MenuCheckBox(codon, descriptor.Caller, descriptor.Conditions);
+					return new MenuCheckBox(codon, descriptor.Parameter, descriptor.Conditions);
 				case "Item":
 				case "Command":
-					return new MenuCommand(codon, descriptor.Caller, createCommand, descriptor.Conditions);
+					return new MenuCommand(codon, descriptor.Parameter, createCommand, descriptor.Conditions);
 				case "Menu":
-					return new Menu(codon, descriptor.Caller, ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
+					return new Menu(codon, descriptor.Parameter, ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:
@@ -71,7 +74,7 @@ namespace ICSharpCode.Core.WinForms
 				return null;
 			}
 			try {
-				List<MenuItemDescriptor> descriptors = AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, true);
+				var descriptors = AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, true);
 				ContextMenuStrip contextMenu = new ContextMenuStrip();
 				contextMenu.Items.Add(new ToolStripMenuItem("dummy"));
 				contextMenu.Opening += delegate {

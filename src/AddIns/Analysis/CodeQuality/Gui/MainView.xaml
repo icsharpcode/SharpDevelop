@@ -40,7 +40,7 @@
 				Visibility="Hidden">
 				<Grid>
 					<rep:WpfReportViewer
-						x:Name="viewer"></rep:WpfReportViewer>
+						x:Name="viewer" />
 				</Grid>
 			</TabItem>
 		</TabControl>

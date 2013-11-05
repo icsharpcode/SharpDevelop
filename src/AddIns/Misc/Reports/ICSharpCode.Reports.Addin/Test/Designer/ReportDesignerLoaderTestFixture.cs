@@ -7,6 +7,7 @@ using NUnit.Framework;
 namespace ICSharpCode.Reports.Addin.Test.Designer
 {
 	[TestFixture]
+	
 	public class ReportDesignerLoaderTestFixture
 	{
 		IDesignerGenerator generator;
@@ -26,14 +27,20 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			Assert.IsInstanceOf<ReportDesignerView>(this.generator.ViewContent);
 		}
 		
-		
+		[Test]
+		[Ignore]
+		public void FixMoreTests()
+		{
+			Assert.IsNotNull(this.generator.ViewContent);
+			Assert.IsInstanceOf<ReportDesignerView>(this.generator.ViewContent);
+		}
 		[TestFixtureSetUp]
 		public void Init()
 		{
 			generator = new MockDesignerGenerator();
 			view = new ReportDesignerView(null, new MockOpenedFile("Test.srd"));
 			generator.Attach(view);
-			/*
+		/*	
 			view.DesignerCodeFileContent = GetFormCode();
 			loader = new DerivedPythonDesignerLoader(generator);
 	

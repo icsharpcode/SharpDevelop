@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -29,5 +29,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// Gets the highlighting color associated with the highlighted section.
 		/// </summary>
 		public HighlightingColor Color { get; set; }
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return string.Format("[HighlightedSection ({0}-{1})={2}]", Offset, Offset + Length, Color);
+		}
 	}
 }

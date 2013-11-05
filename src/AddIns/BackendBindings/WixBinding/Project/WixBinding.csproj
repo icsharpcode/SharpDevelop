@@ -5,13 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.40607</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{e1b288a2-08ee-4318-8bbb-8ab72c69e33e}</ProjectGuid>
+    <ProjectGuid>{E1B288A2-08EE-4318-8BBB-8AB72C69E33E}</ProjectGuid>
     <RootNamespace>ICSharpCode.WixBinding</RootNamespace>
     <AssemblyName>WixBinding</AssemblyName>
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -20,10 +20,12 @@
     <BaseAddress>131596288</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <OutputType>Library</OutputType>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,6 +40,12 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\..\..\..\..\AddIns\BackendBindings\WixBinding\</OutputPath>
     <DebugType>None</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <Prefer32Bit>False</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
@@ -100,7 +108,9 @@
     <Compile Include="Src\Commands\AddWixLibraryToProject.cs" />
     <Compile Include="Src\WixDocument.cs" />
     <Compile Include="Src\WixNamespaceManager.cs" />
-    <Compile Include="Src\Gui\SetupDialogListView.cs" />
+    <Compile Include="Src\Gui\SetupDialogListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\Gui\SetupDialogListPad.cs" />
     <Compile Include="Src\Commands\OpenDialogCommand.cs" />
     <Compile Include="Src\Commands\ViewDialogXmlCommand.cs" />
@@ -120,7 +130,9 @@
     <Compile Include="Src\IWixDialogDesigner.cs" />
     <Compile Include="Src\WixPropertyParser.cs" />
     <Compile Include="Src\Gui\SetupDialogControlsSideTab.cs" />
-    <Compile Include="Src\Gui\RadioButtonGroupBox.cs" />
+    <Compile Include="Src\Gui\RadioButtonGroupBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\WixDialogException.cs" />
     <Compile Include="Src\WixDocumentLineSegment.cs" />
     <Compile Include="Src\IWixPackageFilesView.cs" />
@@ -203,6 +215,11 @@
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -213,17 +230,9 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Configuration" />
-    <Folder Include="Resources" />
-    <Folder Include="Src\Commands" />
     <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
       <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
       <Name>AvalonEdit.AddIn</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
-      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
-      <Name>FormsDesigner</Name>
       <Private>False</Private>
     </ProjectReference>
     <Content Include="Templates\EmptyWixFile.xft">
@@ -232,26 +241,20 @@
     <Content Include="Templates\EmptyWixDialog.xft">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <Content Include="Templates\EmptyWixProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="SetupDialogControlLibrary.sdcl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <Folder Include="Src\PropertyGrid" />
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{9E951B9F-6AC2-4537-9D0B-0AE7C026D5A1}</Project>
+      <Name>FormsDesigner</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

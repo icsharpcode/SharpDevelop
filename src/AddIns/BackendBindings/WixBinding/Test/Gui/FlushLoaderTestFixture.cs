@@ -84,6 +84,12 @@ namespace WixBinding.Tests.Gui
 			get { return WixBindingTestsHelper.CreateEmptyWixProject(); }
 		}
 		
+		ICSharpCode.SharpDevelop.Editor.ITextEditor IWixDialogDesigner.PrimaryViewContentTextEditor {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+
 		string GetWixXml()
 		{
 			return 

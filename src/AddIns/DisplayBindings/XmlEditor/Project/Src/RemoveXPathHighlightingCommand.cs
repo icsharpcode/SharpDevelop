@@ -3,8 +3,10 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -18,7 +20,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public RemoveXPathHighlightingCommand()
-			: this(WorkbenchSingleton.Workbench)
+			: this(SD.Workbench)
 		{
 		}
 		
@@ -30,10 +32,9 @@ namespace ICSharpCode.XmlEditor
 		public void RemoveXPathNodeTextMarkers()
 		{
 			foreach (IViewContent view in workbench.ViewContentCollection) {
-				ITextEditorProvider textEditorProvider = view as ITextEditorProvider;
-				if (textEditorProvider != null) {
-					XPathNodeTextMarker marker = new XPathNodeTextMarker(textEditorProvider.TextEditor.Document);
-					marker.RemoveMarkers();
+				ITextEditor textEditor = view.GetService<ITextEditor>();
+				if (textEditor != null) {
+					XPathNodeTextMarker.RemoveMarkers(textEditor);
 				}
 			}
 		}

@@ -9,7 +9,8 @@ using System.IO;
 using System.Reflection;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Designer;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -41,7 +42,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			// ToArray to prevent an exception if the collection changes.
 			foreach (Assembly asm in TypeResolutionService.DesignerAssemblies.ToArray()) {
 				if (excludeGlobalTypes) {
-					if (GacInterop.IsWithinGac(asm.Location)) {
+					if (SD.GlobalAssemblyCache.IsGacAssembly(asm.Location)) {
 						continue;
 					}
 				}

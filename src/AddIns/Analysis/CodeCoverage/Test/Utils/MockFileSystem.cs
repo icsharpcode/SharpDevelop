@@ -4,6 +4,8 @@
 using System;
 using System.IO;
 using ICSharpCode.CodeCoverage;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.CodeCoverage.Tests.Utils
 {
@@ -18,32 +20,52 @@ namespace ICSharpCode.CodeCoverage.Tests.Utils
 		public TextReader CreateTextReaderReturnValue;
 		public string CreateTextReaderPathParameter;
 		
-		public bool FileExists(string path)
+		public bool FileExists(FileName path)
 		{
 			FileExistsPathParameter = path;
 			return FileExistsReturnValue;
 		}
 		
-		public void DeleteFile(string path)
+		public void Delete(FileName path)
 		{
 			DeleteFilePathParameter = path;
 		}
 		
-		public bool DirectoryExists(string path)
+		public bool DirectoryExists(DirectoryName path)
 		{
 			DirectoryExistsPathParameter = path;
 			return DirectoryExistsReturnValue;
 		}
 		
-		public void CreateDirectory(string path)
+		public void CreateDirectory(DirectoryName path)
 		{
 			CreateDirectoryPathParameter = path;
 		}
 		
-		public TextReader CreateTextReader(string path)
+		public TextReader OpenText(FileName path)
 		{
 			CreateTextReaderPathParameter = path;
 			return CreateTextReaderReturnValue;
+		}
+		
+		void IFileSystem.CopyFile(FileName source, FileName destination, bool overwrite)
+		{
+			throw new NotImplementedException();
+		}
+		
+		Stream IFileSystem.OpenWrite(FileName fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		Stream IReadOnlyFileSystem.OpenRead(FileName fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		System.Collections.Generic.IEnumerable<FileName> IReadOnlyFileSystem.GetFiles(DirectoryName directory, string searchPattern, DirectorySearchOptions searchOptions)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -4,12 +4,14 @@
 using System;
 using System.Windows.Controls;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
 	/// Implement this interface to make your view content display tools in the tool box.
 	/// </summary>
+	[ViewContentService]
 	public interface IToolsHost
 	{
 		/// <summary>
@@ -33,17 +35,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public ToolsPad()
 		{
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
+			SD.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
 		
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
-			IToolsHost th = WorkbenchSingleton.Workbench.ActiveViewContent as IToolsHost;
+			IToolsHost th = SD.GetActiveViewContentService<IToolsHost>();
 			if (th != null && th.ToolsContent != null) {
-				contentControl.SetContent(th.ToolsContent, th);
+				SD.WinForms.SetContent(contentControl, th.ToolsContent, SD.Workbench.ActiveViewContent);
 			} else {
-				contentControl.SetContent(StringParser.Parse("${res:SharpDevelop.SideBar.NoToolsAvailableForCurrentDocument}"));
+				SD.WinForms.SetContent(contentControl, StringParser.Parse("${res:SharpDevelop.SideBar.NoToolsAvailableForCurrentDocument}"));
 			}
 		}
 	}

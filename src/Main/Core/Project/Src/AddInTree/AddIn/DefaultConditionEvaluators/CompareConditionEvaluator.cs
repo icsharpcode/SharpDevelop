@@ -27,7 +27,7 @@ namespace ICSharpCode.Core
 	/// </example>
 	public class CompareConditionEvaluator : IConditionEvaluator
 	{
-		public bool IsValid(object caller, Condition condition)
+		public bool IsValid(object parameter, Condition condition)
 		{
 			string comparisonTypeText = condition.Properties["comparisonType"];
 			StringComparison comparisonType;

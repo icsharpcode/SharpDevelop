@@ -3,67 +3,53 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
-using UnitTesting.Tests.Utils;
 
 namespace UnitTesting.Tests.Project
 {
 	/// <summary>
-	/// Tests that a class with base type nested inside test fixture is recognized, e.g.
-	/// 
-	/// public abstract class BaseClass {
-	/// 	[Test]
-	/// 	public void BaseFoo() {
-	/// 	}
-	/// }
-	/// 
-	/// [TestFixture]
-	/// public class A
-	/// {	
-	/// 	public class InnerATest
-	/// 	{
-	/// 		[Test]
-	/// 		public void FooBar()
-	/// 		{
-	/// 		}
-	/// 
-	/// 		public class InnerTestLevel2 : BaseClass {
-	/// 		}
-	/// 	}
-	/// }
+	/// Tests that a class with base type nested inside test fixture is recognized
 	/// </summary>
 	[TestFixture]
-	public class DoubleNestedTestClassWithBaseType : InnerClassTestFixtureBase
+	public class DoubleNestedTestClassWithBaseType : NUnitTestProjectFixtureBase
 	{
-		MockClass classNestedInInnerClass;
-		MockClass baseClass;
-		MockMethod testMethodInBaseClass;
-		
-		[SetUp]
-		public void SetUp() {
-			base.InitBase();
-			
-			baseClass = new MockClass(projectContent, "MyTests.BaseClass");
-			testMethodInBaseClass = new MockMethod(baseClass, "BaseFoo");
-			testMethodInBaseClass.Attributes.Add(new MockAttribute("Test"));
-			baseClass.Methods.Add(testMethodInBaseClass);
+		public override void SetUp()
+		{
+			base.SetUp();
+			AddCodeFileInNamespace("test.cs", @"
+public abstract class BaseClass {
+	[Test]
+	public void BaseFoo() {
+	}
+}
 
-			//Add TestFixture attribute to outer class
-			outerClass.Attributes.Add(new MockAttribute("TestFixture"));
+public class A
+{
+	public class InnerATest
+	{
+		[Test]
+		public void FooBar()
+		{
+		}
 
-			//Add inner class nested in test class
-			classNestedInInnerClass = new MockClass(projectContent, "MyTests.A.InnerATest.InnerTestLevel2", "MyTests.A+InnerATest+InnerTestLevel2", innerClass);
-			innerClass.InnerClasses.Add(classNestedInInnerClass);
-			classNestedInInnerClass.AddBaseClass(baseClass);
-			
-			testProject = new TestProject(null, projectContent, testFrameworks);
+		[TestFixture]
+		public class InnerTestLevel2 : BaseClass {
+		}
+	}
+}");
 		}
 		
 		[Test]
-		public void DoubleNestedClassShouldHaveTestMemberImportedFromBaseClass() {
-			var nestedClass = testProject.TestClasses.Single(c => c.Class == classNestedInInnerClass);
-			Assert.AreEqual("BaseClass.BaseFoo", nestedClass.TestMembers.Single().Name);
+		public void DoubleNestedClassShouldHaveTestMemberImportedFromBaseClass() 
+		{
+			var compilation = SD.ParserService.GetCompilation(project);
+			var nestedClass = compilation.MainAssembly.GetTypeDefinition(new FullTypeName("RootNamespace.A+InnerATest+InnerTestLevel2"));
+			var nestedTestClass = testProject.GetTestsForEntity(nestedClass).Single();
+			var testMethod = (NUnitTestMethod)nestedTestClass.NestedTests.Single();
+			Assert.AreEqual("BaseClass.BaseFoo", testMethod.MethodNameWithDeclaringTypeForInheritedTests);
 		}
 	}
 }

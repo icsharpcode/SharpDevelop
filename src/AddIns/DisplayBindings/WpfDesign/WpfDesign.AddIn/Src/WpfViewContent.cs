@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -18,8 +19,10 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid;
@@ -61,7 +64,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		}
 		
 		DesignSurface designer;
-		List<Task> tasks = new List<Task>();
+		List<SDTask> tasks = new List<SDTask>();
 		
 		public DesignSurface DesignSurface {
 			get { return designer; }
@@ -97,7 +100,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 					delegate(XamlDesignContext context) {
 						context.Services.AddService(typeof(IUriContext), new FileUriContext(this.PrimaryFile));
 						context.Services.AddService(typeof(IPropertyDescriptionService), new PropertyDescriptionService(this.PrimaryFile));
-						context.Services.AddService(typeof(IEventHandlerService), new CSharpEventHandlerService(this));
+						context.Services.AddService(typeof(IEventHandlerService), new SharpDevelopEventHandlerService(this));
 						context.Services.AddService(typeof(ITopLevelWindowService), new WpfAndWinFormsTopLevelWindowService());
 						context.Services.AddService(typeof(ChooseClassServiceBase), new IdeChooseClassService());
 					});
@@ -129,9 +132,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 			if (wasChangedInDesigner && designer.DesignContext != null) {
 				XmlWriterSettings settings = new XmlWriterSettings();
 				settings.Indent = true;
-				settings.IndentChars = EditorControlService.GlobalOptions.IndentationString;
+				settings.IndentChars = SD.EditorControlService.GlobalOptions.IndentationString;
 				settings.NewLineOnAttributes = true;
-				using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
+				using (XmlWriter xmlWriter = XmlWriter.Create(stream, settings)) {
 					designer.SaveDesigner(xmlWriter);
 				}
 			} else {
@@ -144,18 +147,18 @@ namespace ICSharpCode.WpfDesign.AddIn
 			}
 		}
 		
-		public static List<Task> DllLoadErrors = new List<Task>();
+		public static List<SDTask> DllLoadErrors = new List<SDTask>();
 		void UpdateTasks(XamlErrorService xamlErrorService)
 		{
 			Debug.Assert(xamlErrorService != null);
-			foreach (Task task in tasks) {
+			foreach (SDTask task in tasks) {
 				TaskService.Remove(task);
 			}
 			
 			tasks.Clear();
 			
 			foreach (XamlError error in xamlErrorService.Errors) {
-				var task = new Task(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line, TaskType.Error);
+				var task = new SDTask(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line, TaskType.Error);
 				tasks.Add(task);
 				TaskService.Add(task);
 			}
@@ -163,7 +166,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			TaskService.AddRange(DllLoadErrors);
 			
 			if (xamlErrorService.Errors.Count != 0) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}
 		
@@ -195,19 +198,20 @@ namespace ICSharpCode.WpfDesign.AddIn
 				if (!propertyGridView.PropertyGrid.IsNameCorrect) return;
 				
 				// get the XAML file
-				OpenedFile fileName = this.Files.FirstOrDefault(f => f.FileName.ToString().EndsWith(".xaml"));
+				OpenedFile fileName = this.Files.FirstOrDefault(f => f.FileName.ToString().EndsWith(".xaml", StringComparison.OrdinalIgnoreCase));
 				if (fileName == null) return;
 				
 				// parse the XAML file
-				ParseInformation info = ParserService.ParseFile(fileName.FileName.ToString());
-				if (info == null || info.CompilationUnit == null) return;
-				if (info.CompilationUnit.Classes.Count != 1) return;
+				ParseInformation info = SD.ParserService.Parse(fileName.FileName);
+				if (info == null) return;
 				
 				// rename the member
+				#warning reimplement rename!
+				/*
 				IMember member = info.CompilationUnit.Classes [0].AllMembers.FirstOrDefault(m => m.Name == propertyGridView.PropertyGrid.OldName);
 				if (member != null) {
 					FindReferencesAndRenameHelper.RenameMember(member, propertyGridView.PropertyGrid.Name);
-				}
+				}*/
 			}
 		}
 		

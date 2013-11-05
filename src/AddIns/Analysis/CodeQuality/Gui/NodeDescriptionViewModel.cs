@@ -33,8 +33,8 @@ namespace ICSharpCode.CodeQuality.Gui
 			set {
 				node = value;
 //				Console.WriteLine("{0} - {1}",node.Uses.Count().ToString(),node.UsedBy.Count().ToString());
-				base.RaisePropertyChanged(()=>Node);
-				base.RaisePropertyChanged(()=>ClassType);
+				base.OnPropertyChanged();
+				base.OnPropertyChanged("ClassType");
 			}
 		}
 		
@@ -52,7 +52,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			get { return infoText; }
 			set {
 				infoText = value;
-				base.RaisePropertyChanged(()=>InfoText);
+				base.OnPropertyChanged();
 			}
 		}
 		

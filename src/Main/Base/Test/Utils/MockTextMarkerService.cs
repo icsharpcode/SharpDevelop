@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-
+using System.Linq;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
@@ -17,10 +19,11 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 	{
 		public static IDocument CreateDocumentWithMockService()
 		{
-			ServiceContainer container = new ServiceContainer();
+			var document = new TextDocument();
+			var container = (IServiceContainer)document.ServiceProvider.GetService(typeof(IServiceContainer));
 			container.AddService(typeof(ITextMarkerService), new MockTextMarkerService());
 			
-			return new AvalonEditDocumentAdapter(new ICSharpCode.AvalonEdit.Document.TextDocument(), container);
+			return document;
 		}
 		
 		List<ITextMarker> markers;
@@ -54,6 +57,11 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 				if (predicate(m))
 					m.Delete();
 			}
+		}
+		
+		public IEnumerable<ITextMarker> GetMarkersAtOffset(int offset)
+		{
+			return markers.Where(m => m.StartOffset <= offset && offset <= m.EndOffset);
 		}
 	}
 }

@@ -9,14 +9,13 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	/// <summary>
+	/*	/// <summary>
 	/// In the code editor, highlights all references to the expression under the caret (for better code readability).
 	/// </summary>
 	public class CaretReferencesRenderer
@@ -148,7 +147,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				delegate {
 					LoggingService.Debug("Aborting FindReferencesInCurrentFile due to timeout");
 					cancellationTokenSource.Cancel();
-				}, null, findReferencesTimeoutMs, Timeout.Infinite)) 
+				}, null, findReferencesTimeoutMs, Timeout.Infinite))
 			{
 				var progressMonitor = new DummyProgressMonitor();
 				progressMonitor.CancellationToken = cancellationTokenSource.Token;
@@ -165,12 +164,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		bool SameResolveResult(ResolveResult resolveResult, ResolveResult resolveResult2)
 		{
-			/*if (resolveResult == null && resolveResult2 == null)
-				return true;
-			if (resolveResult == null && resolveResult2 != null)
-				return false;
-			if (resolveResult != null && resolveResult2 == null)
-				return false;*/
+			//if (resolveResult == null && resolveResult2 == null)
+			//	return true;
+			//if (resolveResult == null && resolveResult2 != null)
+			//	return false;
+			//if (resolveResult != null && resolveResult2 == null)
+			//	return false;
 			// TODO determine if 2 ResolveResults refer to the same symbol
 			return false;
 		}
@@ -184,4 +183,5 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			timer.Start();
 		}
 	}
+	 */
 }

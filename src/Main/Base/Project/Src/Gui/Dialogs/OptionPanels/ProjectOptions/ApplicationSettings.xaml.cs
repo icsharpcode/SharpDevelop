@@ -10,9 +10,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -37,8 +36,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			base.Initialize();
 			startupObjectComboBox.Items.Clear();
-			foreach (IClass c in GetPossibleStartupObjects(base.Project)) {
-				startupObjectComboBox.Items.Add(c.FullyQualifiedName);
+			foreach (var c in GetPossibleStartupObjects(base.Project)) {
+				startupObjectComboBox.Items.Add(c.FullName);
 			}
 			
 			FillManifestCombo();
@@ -161,13 +160,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		#endregion
 		
 		
-		public static IList<IClass> GetPossibleStartupObjects(IProject project)
+		public static IList<IUnresolvedTypeDefinition> GetPossibleStartupObjects(IProject project)
 		{
-			List<IClass> results = new List<IClass>();
-			IProjectContent pc = ParserService.GetProjectContent(project);
+			List<IUnresolvedTypeDefinition> results = new List<IUnresolvedTypeDefinition>();
+			IProjectContent pc = project.ProjectContent;
 			if (pc != null) {
-				foreach(IClass c in pc.Classes) {
-					foreach (IMethod m in c.Methods) {
+				foreach (var c in pc.TopLevelTypeDefinitions) {
+					foreach (var m in c.Methods) {
 						if (m.IsStatic && m.Name == "Main") {
 							results.Add(c);
 						}
@@ -181,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		void project_MinimumSolutionVersionChanged(object sender, EventArgs e)
 		{
 			// embedding manifests requires the project to target MSBuild 3.5 or higher
-			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
+			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2008;
 		}
 		
 		
@@ -231,7 +230,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 							src.StreamSource = memoryStream;
 							src.EndInit();
 							Image = src;
-						
+							
 						} catch (OutOfMemoryException) {
 							Image = null;
 							MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}",
@@ -280,7 +279,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			// Because this event is raised while the combobox is still switching to the "<create>" or "<browse>" value,
 			// we cannot set comboBox.Text within this event handler.
 			// To avoid this problem, we invoke the operation after the combobox has finished switching to the new value.
-			WorkbenchSingleton.SafeThreadAsyncCall(
+			Dispatcher.BeginInvoke(new Action(
 				delegate {
 					if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 2) {
 						CreateManifest();
@@ -290,7 +289,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						// we need to store re-load the changed property value.
 						applicationManifestComboBox.Text = this.ApplicationManifest.Value;
 					}
-				});
+				}));
 		}
 		
 		void CreateManifest()
@@ -298,19 +297,19 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			string manifestFile = Path.Combine(base.BaseDirectory, "app.manifest");
 			if (!File.Exists(manifestFile)) {
 				string defaultManifest;
-				using (Stream stream = typeof(ApplicationSettings).Assembly.GetManifestResourceStream("Resources.DefaultManifest.manifest")) {
+				using (Stream stream = typeof(ApplicationSettings).Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.DefaultManifest.manifest")) {
 					if (stream == null)
 						throw new ResourceNotFoundException("DefaultManifest.manifest");
 					using (StreamReader r = new StreamReader(stream)) {
 						defaultManifest = r.ReadToEnd();
 					}
 				}
-				defaultManifest = defaultManifest.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
+				defaultManifest = defaultManifest.Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString);
 				File.WriteAllText(manifestFile, defaultManifest, System.Text.Encoding.UTF8);
 				FileService.FireFileCreated(manifestFile, false);
 			}
 			
-			if (!base.Project.IsFileInProject(manifestFile)) {
+			if (!base.Project.IsFileInProject(FileName.Create(manifestFile))) {
 				FileProjectItem newItem = new FileProjectItem(base.Project, ItemType.None);
 				newItem.Include = "app.manifest";
 				ProjectService.AddProjectItem(base.Project, newItem);

@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class AddMvcViewToProjectViewModelTests
+	public class AddMvcViewToProjectViewModelTests : MvcTestsBase
 	{
 		AddMvcViewToProjectViewModel viewModel;
 		FakeMvcViewFileGenerator fakeViewGenerator;

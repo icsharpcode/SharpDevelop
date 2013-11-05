@@ -21,7 +21,7 @@ namespace ICSharpCode.XmlEditor
 			get {
 				if (editor == null) {
 					instance = FileService.NewFile("xslOutput.xml", "");
-					editor = (instance as ITextEditorProvider).TextEditor;
+					editor = instance.GetService<ITextEditor>();
 					instance.Disposed += new EventHandler(InstanceDisposed);
 				}
 				
@@ -33,7 +33,7 @@ namespace ICSharpCode.XmlEditor
 			get {
 				if (instance == null) {
 					instance = FileService.NewFile("xslOutput.xml", "");
-					editor = (instance as ITextEditorProvider).TextEditor;
+					editor = instance.GetService<ITextEditor>();
 					instance.Disposed += new EventHandler(InstanceDisposed);
 				} else {
 					instance.WorkbenchWindow.SelectWindow();

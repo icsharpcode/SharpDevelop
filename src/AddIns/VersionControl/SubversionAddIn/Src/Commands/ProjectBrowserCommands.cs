@@ -10,6 +10,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Svn.Commands
 {
@@ -29,7 +30,7 @@ namespace ICSharpCode.Svn.Commands
 				}
 				if (nodeFileName != null) {
 					List<OpenedFile> unsavedFiles = new List<OpenedFile>();
-					foreach (OpenedFile file in FileService.OpenedFiles) {
+					foreach (OpenedFile file in SD.FileService.OpenedFiles) {
 						if (file.IsDirty && !file.IsUntitled) {
 							if (string.IsNullOrEmpty(file.FileName)) continue;
 							if (FileUtility.IsUrl(file.FileName)) continue;
@@ -118,9 +119,9 @@ namespace ICSharpCode.Svn.Commands
 		protected sealed class ProjectWatcher
 		{
 			List<ProjectEntry> list = new List<ProjectEntry>();
-			Solution solution;
+			ISolution solution;
 			
-			internal ProjectWatcher(Solution solution)
+			internal ProjectWatcher(ISolution solution)
 			{
 				this.solution = solution;
 				if (AddInOptions.AutomaticallyReloadProject && solution != null)
@@ -134,7 +135,7 @@ namespace ICSharpCode.Svn.Commands
 			
 			public void Callback()
 			{
-				WorkbenchSingleton.SafeThreadAsyncCall(CallbackInvoked);
+				SD.MainThread.InvokeAsyncAndForget(CallbackInvoked);
 			}
 			
 			void CallbackInvoked()
@@ -154,7 +155,7 @@ namespace ICSharpCode.Svn.Commands
 						"${res:ICSharpCode.SharpDevelop.Project.ReloadSolution}", "${res:ICSharpCode.SharpDevelop.Project.KeepOldSolution}")
 					    == 0)
 					{
-						ProjectService.LoadSolution(solution.FileName);
+						SD.ProjectService.OpenSolution(solution.FileName);
 					}
 				}
 			}

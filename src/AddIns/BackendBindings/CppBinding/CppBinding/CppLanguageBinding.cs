@@ -9,8 +9,9 @@ namespace ICSharpCode.CppBinding
 {
 	public class CppLanguageBinding : DefaultLanguageBinding
 	{
-		public override IFormattingStrategy FormattingStrategy {
-			get { return new CppFormattingStrategy(); }
+		public CppLanguageBinding()
+		{
+			this.container.AddService(typeof(IFormattingStrategy), new CppFormattingStrategy());
 		}
 	}
 }

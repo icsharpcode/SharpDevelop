@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
@@ -14,15 +15,15 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// correct project items from a project.
 	/// </summary>
 	[TestFixture]
-	public class ProjectWebReferenceItemsTests
+	public class ProjectWebReferenceItemsTests : SDTestFixtureBase
 	{
 		List<ProjectItem> projectItems;
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			MSBuildBasedProject project = WebReferenceTestHelper.CreateTestProject("C#");
-			project.FileName = "c:\\projects\\test\\foo.csproj";
+			project.FileName = FileName.Create("c:\\projects\\test\\foo.csproj");
 			
 			// Web references item.
 			WebReferencesProjectItem webReferencesItem = new WebReferencesProjectItem(project);

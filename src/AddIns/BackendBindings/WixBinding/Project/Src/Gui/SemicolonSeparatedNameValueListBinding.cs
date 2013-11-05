@@ -11,6 +11,7 @@ namespace ICSharpCode.WixBinding
 	/// list of name/value pairs separated by a semicolon. 
 	/// (e.g. "DATADIR=C:\projects\data; SRCDIR=C:\projects\src")
 	/// </summary>
+	[Obsolete("XML Forms are obsolete")]
 	public class SemicolonSeparatedNameValueListBinding : ConfigurationGuiBinding
 	{
 		NameValueListEditor editor;

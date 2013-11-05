@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -12,68 +12,61 @@ using UnitTesting.Tests.Utils;
 namespace UnitTesting.Tests.Project
 {
 	/// <summary>
-	/// Tests that the TestProject can handle a test class that 
+	/// Tests that the TestProject can handle a test class that
 	/// has two test methods with the same name.
 	/// </summary>
 	[TestFixture]
-	public class DuplicateMethodNameTestFixture
+	public class DuplicateMethodNameTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestClass testClass;
-		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
+		NUnitTestClass testClass;
+		NUnitTestMethod baseMethod;
+		NUnitTestMethod derivedMethod;
 		
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
-			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
-			
-			// Add a test class.
-			MockProjectContent projectContent = new MockProjectContent();
-			projectContent.Language = LanguageProperties.None;
-			MockClass c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
-			c.Attributes.Add(new MockAttribute("TestFixture"));
-			projectContent.Classes.Add(c);
-			
-			// Add first method.
-			var method = new MockMethod(c, "MyTest");
-			method.Attributes.Add(new MockAttribute("Test"));
-			c.Methods.Add(method);
-			
-			// Add duplicate method.
-			c.Methods.Add(method);
-			
-			// Add a base class that has duplicate methods.
-			MockClass baseClass = new MockClass(projectContent, "RootNamespace.MyTestFixtureBase");
-			baseClass.Attributes.Add(new MockAttribute("TestFixture"));
-			projectContent.Classes.Add(baseClass);
-			c.AddBaseClass(baseClass);
-			var baseClassMethod = new MockMethod(baseClass, "MyTest");
-			baseClassMethod.Attributes.Add(new MockAttribute("Test"));
-			baseClass.Methods.Add(baseClassMethod);
-			baseClass.Methods.Add(baseClassMethod);
-			
-			// Create test class.
-			testClass = new TestClass(c, testFrameworks);
+			base.SetUp();
+			AddCodeFileInNamespace("base.cs", @"
+abstract class MyTestFixtureBase {
+	[Test] public void MyTest() {}
+	[Test] public void MyTest() {}
+}");
+			AddCodeFileInNamespace("derived.cs", @"
+class MyTestFixture : MyTestFixtureBase {
+	[Test] public void MyTest() {}
+	[Test] public void MyTest() {}
+}");
+			testClass = testProject.NestedTests.Cast<NUnitTestClass>().Single(c => c.ClassName == "MyTestFixture");
+			baseMethod = testClass.FindTestMethod("MyTestFixtureBase.MyTest");
+			derivedMethod = testClass.FindTestMethod("MyTest");
 		}
 		
-		/// <summary>
-		/// Two test methods.
-		/// </summary>
 		[Test]
 		public void TwoTestMethods()
 		{
-			Assert.AreEqual(2, testClass.TestMembers.Count);
+			Assert.AreEqual(2, testClass.NestedTests.Count);
 		}
 		
 		[Test]
-		public void TestMethodName()
+		public void TestMethodNames()
 		{
-			Assert.AreEqual("MyTest", testClass.TestMembers[0].Name);
+			Assert.AreEqual("MyTestFixtureBase.MyTest", baseMethod.MethodNameWithDeclaringTypeForInheritedTests);
+			Assert.AreEqual("MyTest", derivedMethod.MethodNameWithDeclaringTypeForInheritedTests);
 		}
 		
 		[Test]
-		public void BaseClassTestMethodName()
+		public void UpdateTestResultMethodInDerivedClass()
 		{
-			Assert.AreEqual("MyTestFixtureBase.MyTest", testClass.TestMembers[1].Name);
+			testProject.UpdateTestResult(new TestResult("RootNamespace.MyTestFixture.MyTest") { ResultType = TestResultType.Failure });
+			Assert.AreEqual(TestResultType.None, baseMethod.Result);
+			Assert.AreEqual(TestResultType.Failure, derivedMethod.Result);
+		}
+		
+		[Test]
+		public void UpdateTestResultMethodInBaseClass()
+		{
+			testProject.UpdateTestResult(new TestResult("RootNamespace.MyTestFixture.MyTestFixtureBase.MyTest") { ResultType = TestResultType.Failure });
+			Assert.AreEqual(TestResultType.Failure, baseMethod.Result);
+			Assert.AreEqual(TestResultType.None, derivedMethod.Result);
 		}
 	}
 }

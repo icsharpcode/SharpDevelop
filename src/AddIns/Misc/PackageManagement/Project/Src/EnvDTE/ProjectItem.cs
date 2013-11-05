@@ -6,8 +6,8 @@ using System.ComponentModel;
 using System.IO;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
 
@@ -39,15 +39,20 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return new FileProjectItems(this);
 		}
 		
-		internal ProjectItem(MSBuildBasedProject project, IClass c)
-			: this(new Project(project), project.FindFile(c.CompilationUnit.FileName))
+		internal static ProjectItem FindByEntity(IProject project, IEntityModel entity)
 		{
+			throw new NotImplementedException();
 		}
 		
-		internal ProjectItem(IProjectContent projectContent, IClass c)
-			: this((MSBuildBasedProject)projectContent.Project, c)
-		{
-		}
+//		internal ProjectItem(MSBuildBasedProject project, IClass c)
+//			: this(new Project(project), project.FindFile(c.CompilationUnit.FileName))
+//		{
+//		}
+//		
+//		internal ProjectItem(IProjectContent projectContent, IClass c)
+//			: this((MSBuildBasedProject)projectContent.Project, c)
+//		{
+//		}
 		
 		string GetKindFromFileProjectItemType()
 		{
@@ -94,7 +99,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			} else if (name == CustomToolPropertyName) {
 				return projectItem.CustomTool;
 			} else if (name == FullPathPropertyName) {
-				return projectItem.FileName;
+				return projectItem.FileName.ToString();
 			}
 			return String.Empty;
 		}
@@ -149,10 +154,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public global::EnvDTE.FileCodeModel2 FileCodeModel {
 			get {
-				if (!IsDirectory) {
-					return new FileCodeModel2(containingProject, projectItem);
-				}
-				return null;
+//				if (!IsDirectory) {
+//					return new FileCodeModel2(containingProject, projectItem);
+//				}
+//				return null;
+				throw new NotImplementedException();
 			}
 		}
 		

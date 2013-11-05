@@ -9,6 +9,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
+	/*
 	public class EventBindingService : System.ComponentModel.Design.EventBindingService
 	{
 		readonly FormsDesignerViewContent formDesigner;
@@ -84,4 +85,5 @@ namespace ICSharpCode.FormsDesigner.Services
 		}
 
 	}
+	*/
 }

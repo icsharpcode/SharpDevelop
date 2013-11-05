@@ -5,21 +5,22 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CodeCoverage
 {
 	public class SolutionCodeCoverageResults
 	{
-		Solution solution;
+		ISolution solution;
 		IFileSystem fileSystem;
 		
-		public SolutionCodeCoverageResults(Solution solution)
-			: this(solution, new FileSystem())
+		public SolutionCodeCoverageResults(ISolution solution)
+			: this(solution, SD.FileSystem)
 		{
 		}
 		
-		public SolutionCodeCoverageResults(Solution solution, IFileSystem fileSystem)
+		public SolutionCodeCoverageResults(ISolution solution, IFileSystem fileSystem)
 		{
 			this.solution = solution;
 			this.fileSystem = fileSystem;
@@ -39,7 +40,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			var fileName = new ProjectCodeCoverageResultsFileName(project);
 			if (fileSystem.FileExists(fileName.FileName)) {
-				TextReader reader = fileSystem.CreateTextReader(fileName.FileName);
+				TextReader reader = fileSystem.OpenText(fileName.FileName);
 				return new CodeCoverageResults(reader);
 			}
 			return null;

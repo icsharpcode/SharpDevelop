@@ -11,6 +11,7 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.WixBinding
 {
@@ -22,28 +23,20 @@ namespace ICSharpCode.WixBinding
 		IWixDialogDesignerGenerator generator;
 		IFileLoader fileLoader;
 		IWixDialogDesigner designer;
-				
-		public WixDialogDesignerLoader(IWixDialogDesigner designer, IWixDialogDesignerGenerator generator)
-			: this(designer, generator, new DefaultFileLoader())
-		{
-		}
 		
 		/// <summary>
 		/// Creates a new WixDialogDesignerLoader that will load the specified
 		/// dialog id from the Wix xml.
 		/// </summary>
-		public WixDialogDesignerLoader(IWixDialogDesigner designer, IWixDialogDesignerGenerator generator, IFileLoader fileLoader)
+		public WixDialogDesignerLoader(IWixDialogDesigner designer, IWixDialogDesignerGenerator generator = null, IFileLoader fileLoader = null)
 		{
-			this.designer = designer;
-			this.generator = generator;
-			this.fileLoader = fileLoader;
-			
 			if (designer == null) {
 				throw new ArgumentNullException("designer");
 			}
-			if (generator == null) {
-				throw new ArgumentNullException("generator");
-			}
+			
+			this.designer = designer;
+			this.generator = generator ?? new WixDialogDesignerGenerator(designer);
+			this.fileLoader = fileLoader ?? new DefaultFileLoader();
 		}
 		
 		public IWixDialogDesigner Designer {

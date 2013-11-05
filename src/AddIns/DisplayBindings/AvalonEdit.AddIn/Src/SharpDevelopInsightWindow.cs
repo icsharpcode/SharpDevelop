@@ -10,7 +10,7 @@ using System.ComponentModel;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -148,7 +148,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void document_Changed(object sender, DocumentChangeEventArgs e)
 		{
 			if (DocumentChanged != null)
-				DocumentChanged(this, new TextChangeEventArgs(e.Offset, e.RemovedText, e.InsertedText));
+				DocumentChanged(this, e);
 		}
 		
 		public event EventHandler<TextChangeEventArgs> DocumentChanged;

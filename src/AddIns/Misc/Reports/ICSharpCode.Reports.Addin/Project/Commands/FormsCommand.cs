@@ -10,6 +10,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.Commands
 {
@@ -31,7 +32,8 @@ namespace ICSharpCode.Reports.Addin.Commands
 		
 		protected static ReportDesignerView ReportDesigner {
 			get {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+//				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+				IWorkbenchWindow window =SD.Workbench.ActiveWorkbenchWindow;
 				if (window == null) {
 					return null;
 				}
@@ -65,7 +67,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 		
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IWorkbenchWindow window = SD.Workbench.ActiveWorkbenchWindow;
 			if (window == null) {
 				return;
 			}
@@ -87,7 +89,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 
 		public override void Run()
 		{
-			PadDescriptor padContent = WorkbenchSingleton.Workbench.GetPad(typeof(ICSharpCode.SharpDevelop.Gui.PropertyPad));
+			PadDescriptor padContent = SD.Workbench.GetPad(typeof(ICSharpCode.SharpDevelop.Gui.PropertyPad));
 			if (padContent != null) {
 				padContent.BringPadToFront();
 			}
@@ -110,8 +112,8 @@ namespace ICSharpCode.Reports.Addin.Commands
 		}
 		
 	}
-	
-	public class DesignerVerbSubmenuBuilder : ISubmenuBuilder
+	/*
+	public class DesignerVerbSubmenuBuilder : IMenuItemBuilder
 	{
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
@@ -154,7 +156,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 			}
 		}
 	}
-	
+	*/
 	
 	#region Align Commands
 	/*

@@ -4,7 +4,6 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -42,8 +41,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			projectBrowserControl.Dock = DockStyle.Fill;
 			Controls.Add(projectBrowserControl);
 			
-			if (AddInTree.ExistsTreeNode("/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard")) {
-				toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard");
+			if (SD.AddInTree.GetTreeNode("/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard", false) != null) {
+				toolStrip = SD.WinForms.ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard");
 				toolStrip.ShowItemToolTips  = true;
 				toolStrip.Dock = DockStyle.Top;
 				toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
@@ -65,14 +64,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (toolStrip == null) return;
 			toolStrip.Items.Clear();
 			toolStrip.Items.AddRange(standardItems);
-			ToolbarService.UpdateToolbar(toolStrip);
+			SD.WinForms.ToolbarService.UpdateToolbar(toolStrip);
 			if (node != null && node.ToolbarAddinTreePath != null) {
 				toolStrip.Items.Add(new ToolStripSeparator());
-				toolStrip.Items.AddRange(ToolbarService.CreateToolStripItems(node.ToolbarAddinTreePath, node, false));
+				toolStrip.Items.AddRange(SD.WinForms.ToolbarService.CreateToolStripItems(node.ToolbarAddinTreePath, node, false));
 			}
 		}
 		
-		public void ViewSolution(Solution solution)
+		public void ViewSolution(ISolution solution)
 		{
 			UpdateToolStrip(null);
 			projectBrowserControl.ViewSolution(solution);

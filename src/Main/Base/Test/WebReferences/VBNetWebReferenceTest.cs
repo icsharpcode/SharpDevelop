@@ -18,9 +18,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// a vb project.
 	/// </summary>
 	[TestFixture]
-	public class VBNetWebReferenceTest
+	public class VBNetWebReferenceTest : SDTestFixtureBase
 	{
-		SD.WebReference webReference;
+		Gui.WebReference webReference;
 		DiscoveryClientProtocol protocol;
 		FileProjectItem proxyFileProjectItem;
 		MSBuildBasedProject project;
@@ -29,9 +29,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		string proxyNamespace = "WebReferenceNamespace";
 		string updateFromUrl = "http://localhost/test.asmx";
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			project = WebReferenceTestHelper.CreateTestProject("VBNet");
 
 			protocol = new DiscoveryClientProtocol();
@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			WebReferenceTestHelper.InitializeProjectBindings();
 			
-			webReference = new SD.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
+			webReference = new Gui.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
 			
 			proxyFileProjectItem = WebReferenceTestHelper.GetFileProjectItem(webReference.Items, "Web References\\localhost\\Reference.vb", ItemType.Compile);
 		}

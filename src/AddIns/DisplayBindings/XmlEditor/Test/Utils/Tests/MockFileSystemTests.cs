@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
+using ICSharpCode.Core;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
 
@@ -29,21 +31,21 @@ namespace XmlEditor.Tests.Utils.Tests
 		[Test]
 		public void GetFilesReturnsFilesSpecifiedInAddDirectoryFilesMethodCall()
 		{
-			Assert.AreEqual(tempDirectoryFiles, fileSystem.GetFilesInDirectory(@"c:\temp", String.Empty));
+			Assert.AreEqual(tempDirectoryFiles, fileSystem.GetFiles(DirectoryName.Create(@"c:\temp"), String.Empty).Select(f => f.ToString()));
 		}
 		
 		[Test]
 		public void GetFilesReturnsEmptyArrayForUnknownDirectory()
 		{
-			Assert.AreEqual(new string[0], fileSystem.GetFilesInDirectory(@"c:\unknown-dir", String.Empty));
+			Assert.AreEqual(new string[0], fileSystem.GetFiles(DirectoryName.Create(@"c:\unknown-dir"), String.Empty));
 		}
 		
 		[Test]
 		public void SearchedFoldersRecordedWhenCallingGetFilesMethod()
 		{
 			string[] expectedSearchedFolders = new string[] { @"c:\temp", @"c:\projects" };
-			fileSystem.GetFilesInDirectory(@"c:\temp", String.Empty);
-			fileSystem.GetFilesInDirectory(@"c:\projects", String.Empty);
+			fileSystem.GetFiles(DirectoryName.Create(@"c:\temp"), String.Empty);
+			fileSystem.GetFiles(DirectoryName.Create(@"c:\projects"), String.Empty);
 			
 			Assert.AreEqual(expectedSearchedFolders, fileSystem.SearchedFolders);
 		}
@@ -52,8 +54,8 @@ namespace XmlEditor.Tests.Utils.Tests
 		public void SearchPatternsRecordedWhenCallingGetFilesMethod()
 		{
 			string[] expectedSearchPatterns = new string[] { "*.*", @"*.xml" };
-			fileSystem.GetFilesInDirectory(@"c:\temp", "*.*");
-			fileSystem.GetFilesInDirectory(@"c:\projects", "*.xml");
+			fileSystem.GetFiles(DirectoryName.Create(@"c:\temp"), "*.*");
+			fileSystem.GetFiles(DirectoryName.Create(@"c:\projects"), "*.xml");
 			
 			Assert.AreEqual(expectedSearchPatterns, fileSystem.SearchedForFileExtensions);
 		}
@@ -61,15 +63,15 @@ namespace XmlEditor.Tests.Utils.Tests
 		[Test]
 		public void UnknownDirectoryDoesNotExist()
 		{
-			Assert.IsFalse(fileSystem.DirectoryExists(@"c:\unknown-dir"));
+			Assert.IsFalse(fileSystem.DirectoryExists(DirectoryName.Create(@"c:\unknown-dir")));
 		}
 		
 		[Test]
 		public void FoldersRecordedWhenDirectoryExistsMethodCalled()
 		{
 			string[] expectedFolders = new string[] { @"c:\temp", @"c:\projects" };
-			fileSystem.DirectoryExists(@"c:\temp");
-			fileSystem.DirectoryExists(@"c:\projects");
+			fileSystem.DirectoryExists(DirectoryName.Create(@"c:\temp"));
+			fileSystem.DirectoryExists(DirectoryName.Create(@"c:\projects"));
 			
 			Assert.AreEqual(expectedFolders, fileSystem.FoldersCheckedThatTheyExist);
 		}
@@ -77,7 +79,7 @@ namespace XmlEditor.Tests.Utils.Tests
 		[Test]
 		public void TempFolderExists()
 		{
-			Assert.IsTrue(fileSystem.DirectoryExists(@"c:\temp"));
+			Assert.IsTrue(fileSystem.DirectoryExists(DirectoryName.Create(@"c:\temp")));
 		}
 		
 		[Test]
@@ -85,11 +87,11 @@ namespace XmlEditor.Tests.Utils.Tests
 		{
 			string firstFileSource = @"c:\temp\a.xsd";
 			string firstFileDestination = @"c:\projects\a.xsd";
-			fileSystem.CopyFile(firstFileSource, firstFileDestination);
+			fileSystem.CopyFile(FileName.Create(firstFileSource), FileName.Create(firstFileDestination));
 			
 			string secondFileSource = @"c:\temp\b.xsd";
 			string secondFileDestination = @"c:\projects\b.xsd";
-			fileSystem.CopyFile(secondFileSource, secondFileDestination);
+			fileSystem.CopyFile(FileName.Create(secondFileSource), FileName.Create(secondFileDestination));
 			
 			NameValueCollection expectedNameValuePairs = new NameValueCollection();
 			expectedNameValuePairs.Add(firstFileSource, firstFileDestination);
@@ -104,7 +106,7 @@ namespace XmlEditor.Tests.Utils.Tests
 			ApplicationException ex = new ApplicationException("message");
 			fileSystem.ExceptionToThrowWhenCopyFileCalled = ex;
 			
-			Assert.Throws<ApplicationException>(delegate {	fileSystem.CopyFile(@"c:\temp\a.xsd", @"c:\temp\b.xsd"); });
+			Assert.Throws<ApplicationException>(delegate {	fileSystem.CopyFile(FileName.Create(@"c:\temp\a.xsd"), FileName.Create(@"c:\temp\b.xsd")); });
 		}		
 	}
 }

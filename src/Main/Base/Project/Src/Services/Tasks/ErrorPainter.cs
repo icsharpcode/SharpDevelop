@@ -24,10 +24,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			instances.Add(this);
 			this.textEditor = textEditor;
-			this.markerService = this.textEditor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
-			
-			if (this.markerService == null)
-				throw new InvalidOperationException("this ITextEditor has no text marker service!");
+			this.markerService = this.textEditor.GetRequiredService<ITextMarkerService>();
 			
 			TaskService.Added   += OnAdded;
 			TaskService.Removed += OnRemoved;
@@ -68,7 +65,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IEnumerable<ErrorPainter> Instances {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return instances;
 			}
 		}
@@ -138,7 +135,7 @@ namespace ICSharpCode.SharpDevelop
 
 				ClearErrors();
 				if (newEnabled) {
-					foreach (Task task in TaskService.Tasks) {
+					foreach (SDTask task in TaskService.Tasks) {
 						AddTask(task);
 					}
 				}
@@ -166,10 +163,10 @@ namespace ICSharpCode.SharpDevelop
 		/// <returns>Returns true when there were markers deleted, false when there were no error markers.</returns>
 		void ClearErrors()
 		{
-			markerService.RemoveAll(marker => marker.Tag is Task);
+			markerService.RemoveAll(marker => marker.Tag is SDTask);
 		}
 		
-		bool CheckTask(Task task)
+		bool CheckTask(SDTask task)
 		{
 			if (textEditor.FileName == null)
 				return false;
@@ -180,17 +177,17 @@ namespace ICSharpCode.SharpDevelop
 			return FileUtility.IsEqualFileName(task.FileName, textEditor.FileName);
 		}
 		
-		void AddTask(Task task)
+		void AddTask(SDTask task)
 		{
 			if (!isEnabled)
 				return;
 			if (!CheckTask(task))
 				return;
 			
-			if (task.Line >= 1 && task.Line <= textEditor.Document.TotalNumberOfLines) {
+			if (task.Line >= 1 && task.Line <= textEditor.Document.LineCount) {
 				LoggingService.Debug(task.ToString());
-				int offset = textEditor.Document.PositionToOffset(task.Line, task.Column);
-				int endOffset = TextUtilities.GetNextCaretPosition(DocumentUtilitites.GetTextSource(textEditor.Document), offset, System.Windows.Documents.LogicalDirection.Forward, CaretPositioningMode.WordBorderOrSymbol);
+				int offset = textEditor.Document.GetOffset(task.Line, task.Column);
+				int endOffset = TextUtilities.GetNextCaretPosition(textEditor.Document, offset, System.Windows.Documents.LogicalDirection.Forward, CaretPositioningMode.WordBorderOrSymbol);
 				if (endOffset < 0) endOffset = textEditor.Document.TextLength;
 				int length = endOffset - offset;
 				
@@ -217,7 +214,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 				
 				marker.MarkerColor = markerColor;
-				marker.MarkerType = TextMarkerType.SquigglyUnderline;
+				marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline | TextMarkerTypes.LineInScrollBar;
 				
 				marker.ToolTip = task.Description;
 				
@@ -235,7 +232,7 @@ namespace ICSharpCode.SharpDevelop
 			ClearErrors();
 			if (!isEnabled)
 				return;
-			foreach (Task task in TaskService.Tasks) {
+			foreach (SDTask task in TaskService.Tasks) {
 				AddTask(task);
 			}
 		}

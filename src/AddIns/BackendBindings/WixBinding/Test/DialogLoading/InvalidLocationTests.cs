@@ -1,14 +1,16 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Core;
-using ICSharpCode.WixBinding;
-using NUnit.Framework;
 using System;
 using System.Drawing;
 using System.Resources;
 using System.Windows.Forms;
 using System.Xml;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.WixBinding;
+using NUnit.Framework;
 using WixBinding;
 using WixBinding.Tests.Utils;
 
@@ -24,6 +26,7 @@ namespace WixBinding.Tests.DialogLoading
 		[TestFixtureSetUp]
 		public void SetupFixture()
 		{
+			SD.InitializeForUnitTests();
 			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 		}
 		

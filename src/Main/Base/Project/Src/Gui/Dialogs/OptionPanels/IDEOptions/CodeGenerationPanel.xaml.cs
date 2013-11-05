@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public override void LoadOptions()
 		{
-			Properties p = (Properties)PropertyService.Get(codeGenerationProperty, new Properties());
+			Properties p = PropertyService.NestedProperties(codeGenerationProperty);
 			
 			startBlockOnTheSameLineCheckBox.IsChecked = p.Get("StartBlockOnSameLine", true);
 			elseOnClosingCheckbox.IsChecked = p.Get("ElseOnClosing", true);
@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public override bool SaveOptions()
 		{
-			Properties p = (Properties)PropertyService.Get(codeGenerationProperty, new Properties());
+			Properties p = PropertyService.NestedProperties(codeGenerationProperty);
 			p.Set("StartBlockOnSameLine",       startBlockOnTheSameLineCheckBox.IsChecked);
 			p.Set("ElseOnClosing",              elseOnClosingCheckbox.IsChecked);
 			p.Set("BlankLinesBetweenMembers",   blankLinesBetweenMemberCheckBox.IsChecked);
@@ -44,7 +44,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			p.Set("GenerateDocumentComments",   generateDocCommentsCheckBox.IsChecked);
 			p.Set("GenerateAdditionalComments", generateAdditonalCommentsCheckBox.IsChecked);
 			
-			PropertyService.Set(codeGenerationProperty, p);
 			return true;
 		}
 	}

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {
@@ -451,7 +452,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 				if (unchecked((uint)index >= (uint)this.Length)) {
 					throw new ArgumentOutOfRangeException("index", index, "0 <= index < " + this.Length.ToString(CultureInfo.InvariantCulture));
 				}
-				RopeCacheEntry entry = FindNodeUsingCache(index).UnsafePeek();
+				RopeCacheEntry entry = FindNodeUsingCache(index).PeekOrDefault();
 				return entry.node.contents[index - entry.nodeStartIndex];
 			}
 			set {
@@ -511,10 +512,10 @@ namespace ICSharpCode.AvalonEdit.Utils
 			if (stack == null) {
 				stack = ImmutableStack<RopeCacheEntry>.Empty.Push(new RopeCacheEntry(root, 0));
 			}
-			while (!stack.UnsafePeek().IsInside(index))
+			while (!stack.PeekOrDefault().IsInside(index))
 				stack = stack.Pop();
 			while (true) {
-				RopeCacheEntry entry = stack.UnsafePeek();
+				RopeCacheEntry entry = stack.PeekOrDefault();
 				// check if we've reached a leaf or function node
 				if (entry.node.height == 0) {
 					if (entry.node.contents == null) {
@@ -622,12 +623,62 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// </remarks>
 		public int IndexOf(T item)
 		{
+			return IndexOf(item, 0, this.Length);
+		}
+		
+		/// <summary>
+		/// Gets the index of the first occurrence the specified item.
+		/// </summary>
+		/// <param name="item">Item to search for.</param>
+		/// <param name="startIndex">Start index of the search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <returns>The first index where the item was found; or -1 if no occurrence was found.</returns>
+		/// <remarks>
+		/// This method counts as a read access and may be called concurrently to other read accesses.
+		/// </remarks>
+		public int IndexOf(T item, int startIndex, int count)
+		{
+			VerifyRange(startIndex, count);
+			
+			while (count > 0) {
+				var entry = FindNodeUsingCache(startIndex).PeekOrDefault();
+				T[] contents = entry.node.contents;
+				int startWithinNode = startIndex - entry.nodeStartIndex;
+				int nodeLength = Math.Min(entry.node.length, startWithinNode + count);
+				int r = Array.IndexOf(contents, item, startWithinNode, nodeLength - startWithinNode);
+				if (r >= 0)
+					return entry.nodeStartIndex + r;
+				count -= nodeLength - startWithinNode;
+				startIndex = entry.nodeStartIndex + nodeLength;
+			}
+			return -1;
+		}
+		
+		/// <summary>
+		/// Gets the index of the last occurrence of the specified item in this rope.
+		/// </summary>
+		public int LastIndexOf(T item)
+		{
+			return LastIndexOf(item, 0, this.Length);
+		}
+		
+		/// <summary>
+		/// Gets the index of the last occurrence of the specified item in this rope.
+		/// </summary>
+		/// <param name="item">The search item</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <returns>The last index where the item was found; or -1 if no occurrence was found.</returns>
+		/// <remarks>The search proceeds backwards from (startIndex+count) to startIndex.
+		/// This is different than the meaning of the parameters on Array.LastIndexOf!</remarks>
+		public int LastIndexOf(T item, int startIndex, int count)
+		{
+			VerifyRange(startIndex, count);
+			
 			var comparer = EqualityComparer<T>.Default;
-			int index = 0;
-			foreach (T element in this) {
-				if (comparer.Equals(item, element))
-					return index;
-				index++;
+			for (int i = startIndex + count - 1; i >= startIndex; i--) {
+				if (comparer.Equals(this[i], item))
+					return i;
 			}
 			return -1;
 		}
@@ -735,7 +786,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		public T[] ToArray()
 		{
 			T[] arr = new T[this.Length];
-			CopyTo(arr, 0);
+			this.root.CopyTo(0, arr, 0, arr.Length);
 			return arr;
 		}
 		

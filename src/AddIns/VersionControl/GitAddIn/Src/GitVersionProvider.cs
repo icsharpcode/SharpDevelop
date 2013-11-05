@@ -7,74 +7,17 @@ using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
 
+using System.Threading.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Util;
 using Microsoft.Win32.SafeHandles;
 
 namespace ICSharpCode.GitAddIn
 {
 	public class GitVersionProvider : IDocumentVersionProvider
 	{
-		#region PInvoke
-		[DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool CreateProcess(
-			string lpApplicationName,
-			string lpCommandLine,
-			IntPtr lpProcessAttributes,
-			IntPtr lpThreadAttributes,
-			[MarshalAs(UnmanagedType.Bool)] bool bInheritHandles,
-			uint dwCreationFlags,
-			IntPtr lpEnvironment,
-			string lpCurrentDirectory,
-			[In] ref StartupInfo lpStartupInfo,
-			out PROCESS_INFORMATION lpProcessInformation
-		);
-		
-		[DllImport("kernel32.dll", SetLastError = true)]
-		static extern IntPtr GetStdHandle(int nStdHandle);
-		
-		const uint STARTF_USESTDHANDLES = 0x00000100;
-		
-		const int STD_INPUT_HANDLE  = -10;
-		const int STD_OUTPUT_HANDLE = -11;
-		const int STD_ERROR_HANDLE  = -12;
-		
-		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-		struct StartupInfo
-		{
-			public uint cb;
-			public string lpReserved;
-			public string lpDesktop;
-			public string lpTitle;
-			public uint dwX;
-			public uint dwY;
-			public uint dwXSize;
-			public uint dwYSize;
-			public uint dwXCountChars;
-			public uint dwYCountChars;
-			public uint dwFillAttribute;
-			public uint dwFlags;
-			public short wShowWindow;
-			public short cbReserved2;
-			public IntPtr lpReserved2;
-			public IntPtr hStdInput;
-			public SafePipeHandle hStdOutput;
-			public IntPtr hStdError;
-		}
-		
-		[StructLayout(LayoutKind.Sequential)]
-		struct PROCESS_INFORMATION
-		{
-			public IntPtr hProcess;
-			public IntPtr hThread;
-			public int dwProcessId;
-			public int dwThreadId;
-		}
-		#endregion
-		
-		public Stream OpenBaseVersion(string fileName)
+		public async Task<Stream> OpenBaseVersionAsync(FileName fileName)
 		{
 			if (!Git.IsInWorkingCopy(fileName))
 				return null;
@@ -83,67 +26,46 @@ namespace ICSharpCode.GitAddIn
 			if (git == null)
 				return null;
 			
-			return OpenOutput(git, fileName, GetBlobHash(git, fileName));
+			return OpenOutput(git, fileName, await GetBlobHashAsync(git, fileName).ConfigureAwait(false));
 		}
 		
-		internal static string GetBlobHash(string gitExe, string fileName)
+		internal static async Task<string> GetBlobHashAsync(string gitExe, FileName fileName)
 		{
 			if (!File.Exists(fileName))
 				return null;
 			
 			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = Path.GetDirectoryName(fileName);
-			runner.Start(gitExe, "ls-tree HEAD " + Path.GetFileName(fileName));
-			
-			string blobHash = null;
-			runner.OutputLineReceived += delegate(object sender, LineReceivedEventArgs e) {
-				string[] parts = e.Line.Split(new[] { " ", "\t" }, StringSplitOptions.RemoveEmptyEntries);
-				if (parts.Length >= 3) {
-					if (parts[2].Length == 40)
-						blobHash = parts[2];
+			runner.WorkingDirectory = fileName.GetParentDirectory();
+			runner.RedirectStandardOutput = true;
+			runner.Start(gitExe, "ls-tree", "HEAD", fileName.GetFileName());
+			using (var reader = runner.OpenStandardOutputReader()) {
+				string firstLine = await reader.ReadLineAsync().ConfigureAwait(false);
+				if (firstLine != null) {
+					string[] parts = firstLine.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+					if (parts.Length >= 3) {
+						if (parts[2].Length == 40)
+							return parts[2];
+					}
 				}
-			};
-			
-			runner.WaitForExit();
-			return blobHash;
+			}
+			return null;
 		}
 		
-		Stream OpenOutput(string gitExe, string fileName, string blobHash)
+		Stream OpenOutput(string gitExe, FileName fileName, string blobHash)
 		{
-			if (!File.Exists(fileName))
-				return null;
 			if (blobHash == null)
 				return null;
-			
-			AnonymousPipeServerStream pipe = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable);
-			
-			StartupInfo startupInfo = new GitVersionProvider.StartupInfo();
-			startupInfo.dwFlags = STARTF_USESTDHANDLES;
-			startupInfo.hStdOutput = pipe.ClientSafePipeHandle;
-			startupInfo.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-			startupInfo.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-			startupInfo.cb = 16;
-			
-			PROCESS_INFORMATION procInfo;
-			
-			string commandLine = "\"" + gitExe + "\" cat-file blob " + blobHash;
-			string workingDir = Path.GetDirectoryName(fileName);
-			Debug.WriteLine(workingDir + "> " + commandLine);
-			const uint CREATE_NO_WINDOW = 0x08000000;
-			if (!CreateProcess(null, commandLine,
-			                   IntPtr.Zero, IntPtr.Zero, true, CREATE_NO_WINDOW, IntPtr.Zero, workingDir, ref startupInfo,
-			                   out procInfo)) {
-				pipe.DisposeLocalCopyOfClientHandle();
-				pipe.Close();
+			if (!File.Exists(fileName))
 				return null;
-			}
 			
-			pipe.DisposeLocalCopyOfClientHandle();
-			
-			return pipe;
+			ProcessRunner runner = new ProcessRunner();
+			runner.WorkingDirectory = fileName.GetParentDirectory();
+			runner.RedirectStandardOutput = true;
+			runner.Start(gitExe, "cat-file", "blob", blobHash);
+			return runner.StandardOutput;
 		}
 		
-		public IDisposable WatchBaseVersionChanges(string fileName, EventHandler callback)
+		public IDisposable WatchBaseVersionChanges(FileName fileName, EventHandler callback)
 		{
 			if (!File.Exists(fileName))
 				return null;
@@ -154,17 +76,18 @@ namespace ICSharpCode.GitAddIn
 			if (git == null)
 				return null;
 			
-			return new BaseVersionChangeWatcher(fileName, GetBlobHash(git, fileName), callback);
+			return new BaseVersionChangeWatcher(fileName, GetBlobHashAsync(git, fileName).Result, callback);
 		}
 	}
 	
 	class BaseVersionChangeWatcher : IDisposable
 	{
 		EventHandler callback;
-		string fileName, hash;
+		FileName fileName;
+		string hash;
 		RepoChangeWatcher watcher;
 		
-		public BaseVersionChangeWatcher(string fileName, string hash, EventHandler callback)
+		public BaseVersionChangeWatcher(FileName fileName, string hash, EventHandler callback)
 		{
 			string root = Git.FindWorkingCopyRoot(fileName);
 			if (root == null)
@@ -179,7 +102,7 @@ namespace ICSharpCode.GitAddIn
 		
 		void HandleChanges()
 		{
-			string newHash = GitVersionProvider.GetBlobHash(Git.FindGit(), fileName);
+			string newHash = GitVersionProvider.GetBlobHashAsync(Git.FindGit(), fileName).Result;
 			if (newHash != hash) {
 				LoggingService.Info(fileName + " was changed!");
 				callback(this, EventArgs.Empty);

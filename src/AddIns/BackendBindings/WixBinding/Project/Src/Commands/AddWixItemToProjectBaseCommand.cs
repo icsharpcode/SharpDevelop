@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -35,7 +36,7 @@ namespace ICSharpCode.WixBinding
 			
 			// Display file dialog.
 			using (OpenFileDialog fileDialog = CreateOpenFileDialog(FileFilter)) {
-				if (DialogResult.OK == fileDialog.ShowDialog(WorkbenchSingleton.MainWin32Window)) {
+				if (DialogResult.OK == fileDialog.ShowDialog(SD.WinForms.MainWin32Window)) {
 					// Add files to project.
 					WixProject project = ((WixProject)folderNode.Project);
 					AddFiles(project, fileDialog.FileNames);

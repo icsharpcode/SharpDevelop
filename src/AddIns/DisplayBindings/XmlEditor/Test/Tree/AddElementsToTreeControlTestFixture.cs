@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
@@ -12,14 +13,14 @@ using XmlEditor.Tests.Utils;
 namespace XmlEditor.Tests.Tree
 {
 	[TestFixture]
-	public class AddElementsToTreeControlTestFixture
+	public class AddElementsToTreeControlTestFixture : SDTestFixtureBase
 	{
 		XmlDocument doc;
 		XmlElementTreeNode rootNode;
 		
-		[SetUp]
-		public void SetUpFixture()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			using (DerivedXmlTreeViewContainerControl treeViewContainer = new DerivedXmlTreeViewContainerControl()) {
 				treeViewContainer.LoadXml("<root/>");
 				

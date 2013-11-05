@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using System.Xml;
-
+using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -42,7 +42,7 @@ namespace XmlEditor.Tests.Editor
 				"</xs:schema>";
 			
 			XmlSchemaCompletion schema = new XmlSchemaCompletion(new StringReader(xml));
-			schema.FileName = @"c:\projects\schemas\test.xsd";
+			schema.FileName = FileName.Create(@"c:\projects\schemas\test.xsd");
 			return schema;
 		}
 		
@@ -56,7 +56,7 @@ namespace XmlEditor.Tests.Editor
 		public void SchemaFileNameChangedToNewLocationInUserDefinedSchemaFolder()
 		{
 			string expectedFileName = Path.Combine(userDefinedSchemaFolder, "test.xsd");
-			Assert.AreEqual(expectedFileName, schema.FileName);
+			Assert.AreEqual(expectedFileName, schema.FileName.ToString());
 		}
 		
 		[Test]
@@ -67,14 +67,7 @@ namespace XmlEditor.Tests.Editor
 		}
 		
 		[Test]
-		public void UserDefinedSchemaFolderCheckedForExistenceBeforeCopyingFile()
-		{
-			string[] foldersChecked = new string[] { userDefinedSchemaFolder };
-			Assert.AreEqual(foldersChecked, fileSystem.FoldersCheckedThatTheyExist);
-		}
-		
-		[Test]
-		public void UserDefinedSchemaFolderCreatedSinceFolderDoesNotExist()
+		public void UserDefinedSchemaFolderCreated()
 		{
 			Assert.AreEqual(userDefinedSchemaFolder, fileSystem.CreatedFolders[0]);
 		}

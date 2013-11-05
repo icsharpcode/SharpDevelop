@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -40,11 +42,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			
 			CreateProperties();
 			Object = new ProjectObject(this);
-			ProjectItems = new ProjectItems(this, this, fileService);
+			ProjectItems = new ProjectItems(this, this);
 		}
 		
 		public Project()
 		{
+		}
+		
+		internal IPackageManagementFileService FileService {
+			get { return fileService; }
 		}
 		
 		void CreateProperties()
@@ -93,7 +99,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetProjectType()
 		{
-			return new ProjectType(this).Type;
+			return ProjectType.GetProjectType(MSBuildProject);
 		}
 		
 		public virtual string Kind {
@@ -169,7 +175,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal ProjectItem AddFileProjectItemWithDependentUsingFullPath(string path, string dependentUpon)
 		{
 			FileProjectItem fileProjectItem = CreateFileProjectItemUsingFullPath(path);
-			fileProjectItem.FileName = path;
+			fileProjectItem.FileName = ICSharpCode.Core.FileName.Create(path);
 			fileProjectItem.DependentUpon = dependentUpon;
 			AddProjectItemToMSBuildProject(fileProjectItem);
 			return new ProjectItem(this, fileProjectItem);
@@ -221,7 +227,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual global::EnvDTE.CodeModel CodeModel {
-			get { return new CodeModel(projectService.GetProjectContent(MSBuildProject) ); }
+			get { throw new NotImplementedException(); }
+			//get { return new CodeModel(projectService.GetProjectContent(MSBuildProject) ); }
 		}
 		
 		public virtual global::EnvDTE.ConfigurationManager ConfigurationManager {
@@ -270,7 +277,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		FileProjectItem CreateMSBuildProjectItemForDirectory(string directory)
 		{
 			return new FileProjectItem(MSBuildProject, ItemType.Folder) {
-				FileName = directory
+				FileName = ICSharpCode.Core.FileName.Create(directory)
 			};
 		}
 		
@@ -284,7 +291,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return projectService.CreateProjectBrowserUpdater();
 		}
 		
-		internal ICompilationUnit GetCompilationUnit(string fileName)
+		internal ICompilation GetCompilationUnit(string fileName)
 		{
 			return fileService.GetCompilationUnit(fileName);
 		}
@@ -296,7 +303,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal ProjectItem FindProjectItem(string fileName)
 		{
-			SD.FileProjectItem item = MSBuildProject.FindFile(fileName);
+			SD.FileProjectItem item = MSBuildProject.FindFile(new FileName(fileName));
 			if (item != null) {
 				return new ProjectItem(this, item);
 			}

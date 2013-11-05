@@ -1,122 +1,95 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.AvalonEdit.Xml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Xml;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
-	// Fetch a copy of all relevant values of the AXmlDocument so that XamlContext can be used
-	// without having to acquire the reader lock.
-	public class ElementWrapper {
-		public ElementWrapper(AXmlElement element)
+	public class XamlNamespace
+	{
+		public string XmlNamespace { get; private set; }
+		
+		public IList<ITypeDefinition> GetContents(ICompilation compilation)
 		{
-			this.LocalName  = element.LocalName;
-			this.Prefix     = element.Prefix;
-			this.Namespace  = element.Namespace;
-			this.Offset     = element.StartOffset;
-			this.Attributes = element.Attributes.Select(attr => new AttributeWrapper(attr)).ToList();
+			List<INamespace> namespaces = ResolveNamespaces(compilation).ToList();
+			var contents = new List<ITypeDefinition>();
+			foreach (var ns in namespaces) {
+				contents.AddRange(ns.Types);
+			}
+			return contents;
 		}
 		
-		public string LocalName { get; private set; }
-		public string Namespace { get; private set; }
-		public string Prefix { get; private set; }
-		public List<AttributeWrapper> Attributes { get; private set; }
-		public int Offset { get; set; }
+		public XamlNamespace(string xmlNamespace)
+		{
+			this.XmlNamespace = xmlNamespace;
+		}
 		
-		public string Name {
-			get {
-				if (string.IsNullOrEmpty(Prefix))
-					return LocalName;
-				
-				return Prefix + ":" + LocalName;
+		IEnumerable<INamespace> ResolveNamespaces(ICompilation compilation)
+		{
+			IType xmlnsDefinition = compilation.FindType(typeof(System.Windows.Markup.XmlnsDefinitionAttribute));
+			if (XmlNamespace.StartsWith("clr-namespace:", StringComparison.Ordinal)) {
+				string name = XmlNamespace.Substring("clr-namespace:".Length);
+				IAssembly asm = compilation.MainAssembly;
+				int asmIndex = name.IndexOf(";assembly=", StringComparison.Ordinal);
+				if (asmIndex >= 0) {
+					string asmName = name.Substring(asmIndex + ";assembly=".Length);
+					asm = compilation.ReferencedAssemblies.FirstOrDefault(a => a.AssemblyName == asmName) ?? compilation.MainAssembly;
+					name = name.Substring(0, asmIndex);
+				}
+				string[] parts = name.Split('.');
+				var @namespace = FindNamespace(asm, parts);
+				if (@namespace != null) yield return @namespace;
+			} else {
+				foreach (IAssembly asm in compilation.Assemblies) {
+					foreach (IAttribute attr in asm.AssemblyAttributes) {
+						if (xmlnsDefinition.Equals(attr.AttributeType) && attr.PositionalArguments.Count == 2) {
+							string xmlns = attr.PositionalArguments[0].ConstantValue as string;
+							if (xmlns != XmlNamespace) continue;
+							string ns = attr.PositionalArguments[1].ConstantValue as string;
+							if (ns == null) continue;
+							var @namespace = FindNamespace(asm, ns.Split('.'));
+							if (@namespace != null) yield return @namespace;
+						}
+					}
+				}
 			}
 		}
 		
-		public QualifiedNameWithLocation ToQualifiedName()
+		static INamespace FindNamespace(IAssembly asm, string[] parts)
 		{
-			return new QualifiedNameWithLocation(LocalName, Namespace, Prefix, Offset);
-		}
-		
-		public string GetAttributeValue(string localName)
-		{
-			return GetAttributeValue("", localName);
-		}
-		
-		public string GetAttributeValue(string xmlns, string localName)
-		{
-			foreach (var attribute in Attributes) {
-				if (xmlns == attribute.Namespace && attribute.LocalName == localName)
-					return attribute.Value;
+			INamespace ns = asm.RootNamespace;
+			for (int i = 0; i < parts.Length; i++) {
+				INamespace tmp = ns.ChildNamespaces.FirstOrDefault(n => n.Name == parts[i]);
+				if (tmp == null)
+					return null;
+				ns = tmp;
 			}
-			
-			return null;
+			return ns;
 		}
 	}
 	
-	public class AttributeWrapper {
-		public string LocalName { get; set; }
-		public string Namespace { get; set; }
-		public string Prefix { get; set; }
-		public string Value { get; set; }
-		public int Offset { get; set; }
-		
-		public AttributeWrapper(AXmlAttribute attribute)
-		{
-			this.LocalName = attribute.LocalName;
-			this.Namespace = attribute.Namespace;
-			this.Prefix    = attribute.Prefix;
-			this.Value     = attribute.Value;
-			this.Offset    = attribute.StartOffset;
-		}
-		
-		public string Name {
-			get {
-				if (string.IsNullOrEmpty(Prefix))
-					return LocalName;
-				
-				return Prefix + ":" + LocalName;
-			}
-		}
-		
-		public QualifiedNameWithLocation ToQualifiedName()
-		{
-			return new QualifiedNameWithLocation(LocalName, Namespace, Prefix, Offset);
-		}
-	}
-	
-	public class XamlContext : ExpressionContext {
-		public ElementWrapper ActiveElement { get; set; }
-		public ElementWrapper ParentElement { get; set; }
-		public List<ElementWrapper> Ancestors { get; set; }
-		new public AttributeWrapper Attribute { get; set; }
+	public class XamlContext
+	{
+		public AXmlElement ActiveElement { get; set; }
+		public AXmlElement ParentElement { get; set; }
+		public ReadOnlyCollection<AXmlElement> Ancestors { get; set; }
+		public AXmlAttribute Attribute { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public string RawAttributeValue { get; set; }
 		public int ValueStartOffset { get; set; }
 		public XamlContextDescription Description { get; set; }
-		public Dictionary<string, string> XmlnsDefinitions { get; set; }
-		public ParseInformation ParseInformation { get; set; }
+		public Dictionary<string, XamlNamespace> XmlnsDefinitions { get; set; }
+		public XamlFullParseInformation ParseInformation { get; set; }
 		public bool InRoot { get; set; }
 		public ReadOnlyCollection<string> IgnoredXmlns { get; set; }
 		public string XamlNamespacePrefix { get; set; }
-		
-		public IProjectContent ProjectContent {
-			get { 
-				if (ParseInformation != null)
-					return ParseInformation.CompilationUnit.ProjectContent;
-				else
-					return null;
-			}
-		}
 		
 		public XamlContext() {}
 		
@@ -129,14 +102,10 @@ namespace ICSharpCode.XamlBinding
 			get { return Description == XamlContextDescription.InComment ||
 					Description == XamlContextDescription.InCData; }
 		}
-		
-		public override bool ShowEntry(ICompletionEntry o)
-		{
-			return true;
-		}
 	}
 	
-	public class XamlCompletionContext : XamlContext {
+	public class XamlCompletionContext : XamlContext
+	{
 		public XamlCompletionContext() { }
 		
 		public XamlCompletionContext(XamlContext context)
@@ -161,7 +130,8 @@ namespace ICSharpCode.XamlBinding
 		public ITextEditor Editor { get; set; }
 	}
 	
-	public enum XamlContextDescription {
+	public enum XamlContextDescription
+	{
 		/// <summary>
 		/// Outside any tag
 		/// </summary>

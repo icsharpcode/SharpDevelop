@@ -16,14 +16,6 @@ namespace PackageManagement.Tests.VisualStudio
 	[TestFixture]
 	public class PackageTests
 	{
-		[TestFixtureSetUp]
-		public void InitFixture()
-		{
-			if (!PropertyService.Initialized) {
-				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
-			}
-		}
-		
 		[Test]
 		public void GetGlobalService_GetExtensionManagerService_ReturnsExtensionManager()
 		{

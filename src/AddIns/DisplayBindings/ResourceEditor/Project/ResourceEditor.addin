@@ -50,6 +50,9 @@
 			<MenuItem id="CopyResourceName"
 			          label="${res:ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName}"
 			          class="ResourceEditor.CopyResourceNameCommand" />
+			<MenuItem id="EditResourceComment"
+			          label="${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}"
+			          class="ResourceEditor.EditCommentCommand" />
 		</Condition>
 		
 		<Include id = "Delete" item = "/SharpDevelop/Workbench/MainMenu/Edit/Delete"/>

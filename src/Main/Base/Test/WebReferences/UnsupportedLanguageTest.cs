@@ -18,9 +18,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// is used with the web reference
 	/// </summary>
 	[TestFixture]
-	public class UnsupportedLanguageTest
+	public class UnsupportedLanguageTest : SDTestFixtureBase
 	{
-		SD.WebReference webReference;
+		Gui.WebReference webReference;
 		DiscoveryClientProtocol protocol;
 		FileProjectItem proxyFileProjectItem;
 		MSBuildBasedProject project;
@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			WebReferenceTestHelper.InitializeProjectBindings();
 			
-			webReference = new SD.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
+			webReference = new Gui.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
 			
 			proxyFileProjectItem = WebReferenceTestHelper.GetFileProjectItem(webReference.Items, "Web References\\localhost\\Reference.vb", ItemType.Compile);
 		}

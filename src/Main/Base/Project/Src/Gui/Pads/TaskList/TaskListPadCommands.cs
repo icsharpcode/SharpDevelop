@@ -2,90 +2,65 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	/// <summary>
-	/// Description of SelectScopeCommand
-	/// </summary>
-	public class SelectScopeCommand : AbstractComboBoxCommand
+	public class SelectScopeComboBox : ComboBox
 	{
-		private ComboBox comboBox;
-		private static string[] viewTypes = new string[] {"Solution", "Project", "All open documents", "Document", "Namespace", "Class/Module"};
+		// TODO Translate!
+		static readonly string[] viewTypes = new string[] {"Solution", "Project", "All open files", "File", "Namespace", "Class/Module"};
 		
-		protected override void OnOwnerChanged(EventArgs e)
+		public SelectScopeComboBox()
 		{
-			base.OnOwnerChanged(e);
-			ToolBarComboBox toolbarItem = (ToolBarComboBox)base.ComboBox;
-			comboBox = toolbarItem.ComboBox;
-			SetItems();
-			comboBox.SelectedIndex = 0;
-			comboBox.SelectedIndexChanged += new EventHandler(ComboBoxSelectedIndexChanged);
+			this.ItemsSource = viewTypes;
+			this.SelectedIndex = 0;
 		}
 		
-		void ComboBoxSelectedIndexChanged(object sender, EventArgs e)
+		protected override void OnSelectionChanged(SelectionChangedEventArgs e)
 		{
-			if (comboBox.SelectedIndex != TaskListPad.Instance.SelectedScopeIndex) {
-				TaskListPad.Instance.SelectedScopeIndex = comboBox.SelectedIndex;
+			base.OnSelectionChanged(e);
+			if (this.SelectedIndex != TaskListPad.Instance.SelectedScopeIndex) {
+				TaskListPad.Instance.SelectedScopeIndex = this.SelectedIndex;
 			}
-		}
-		
-		void SetItems()
-		{
-			comboBox.Items.Clear();
-			comboBox.Items.AddRange(viewTypes);
-		}
-		
-		public override void Run()
-		{
 		}
 	}
 	
-	public class ShowTaskListTokenButton : AbstractCheckableMenuCommand
+	sealed class TaskListTokensToolbarCheckBox : CheckBox, ICheckableMenuCommand
 	{
-		string token = "";
+		event EventHandler ICheckableMenuCommand.IsCheckedChanged { add {} remove {} }
+		event EventHandler System.Windows.Input.ICommand.CanExecuteChanged { add {} remove {} }
+		readonly string token;
 		
-		public ShowTaskListTokenButton(string token)
+		public TaskListTokensToolbarCheckBox(string token)
 		{
 			this.token = token;
-			ToolBarCheckBox cb = new ToolBarCheckBox(token);
-			
-			cb.CheckedChanged += new EventHandler(cb_CheckedChanged);
-			cb.CheckOnClick = true;
-			cb.Checked = true;
-			
-			this.Owner = cb;
-		}
-
-		void cb_CheckedChanged(object sender, EventArgs e)
-		{
-			this.IsChecked = ((ToolBarCheckBox)sender).Checked;
+			this.Content = token;
+			this.Command = this;
+			this.CommandParameter = TaskListPad.Instance;
+			this.IsChecked = TaskListPad.Instance.DisplayedTokens[token];
+			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.CheckBoxStyleKey);
 		}
 		
-		public override bool IsChecked {
-			get { return TaskListPad.Instance.DisplayedTokens[token]; }
-			set { TaskListPad.Instance.DisplayedTokens[token] = value;
-				if (TaskListPad.Instance.IsInitialized)
-					TaskListPad.Instance.UpdateItems();
-			}
-		}
-	}
-	
-	public class TaskListTokensBuilder
-	{
-		public static ShowTaskListTokenButton[] BuildItems(string[] tokens)
+		bool ICheckableMenuCommand.IsChecked(object parameter)
 		{
-			ShowTaskListTokenButton[] buttons = new ShowTaskListTokenButton[tokens.Length];
-			
-			for (int i = 0; i < buttons.Length; i++)
-			{
-				buttons[i] = new ShowTaskListTokenButton(tokens[i]);
-			}
-			
-			return buttons;
+			var pad = (TaskListPad)parameter;
+			return pad.DisplayedTokens[token];
+		}
+		
+		public bool CanExecute(object parameter)
+		{
+			return true;
+		}
+		
+		public void Execute(object parameter)
+		{
+			var pad = (TaskListPad)parameter;
+			pad.DisplayedTokens[token] = IsChecked == true;
+			if (pad.IsInitialized)
+				pad.UpdateItems();
 		}
 	}
 }

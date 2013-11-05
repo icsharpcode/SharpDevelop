@@ -3,8 +3,8 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.Profiler.AddIn.Dialogs;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {
@@ -19,7 +19,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 		public override void Run()
 		{
 			ProfileExecutableForm form = new ProfileExecutableForm();
-			form.Owner = WorkbenchSingleton.MainWindow;
+			form.Owner = SD.Workbench.MainWindow;
 			form.ShowDialog();
 		}
 	}

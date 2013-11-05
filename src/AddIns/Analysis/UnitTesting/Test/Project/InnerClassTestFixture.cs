@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -28,48 +28,54 @@ namespace UnitTesting.Tests.Project
 	/// In this case the FooBar test is identified via: "A+InnerATest.FooBar".
 	/// </summary>
 	[TestFixture]
-	public class InnerClassTestFixture : InnerClassTestFixtureBase
+	public class InnerClassTestFixture : NUnitTestProjectFixtureBase
 	{
-		[SetUp]
-		public void Init()
+		NUnitTestClass outerClass;
+		NUnitTestClass innerClass;
+		
+		public override void SetUp()
 		{
-			base.InitBase();
+			base.SetUp();
+			AddCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	public class A
+	{
+		public class InnerATest
+		{
+			[Test]
+			public void FooBar()
+			{
+			}
+		}
+	}
+}");
+			outerClass = testProject.GetTestClass(new FullTypeName("MyTests.A"));
+			innerClass = testProject.GetTestClass(new FullTypeName("MyTests.A+InnerATest"));
 		}
 		
 		[Test]
 		public void OneTestClassFound()
 		{
-			Assert.AreEqual(1, testProject.TestClasses.Count);
+			Assert.AreEqual(1, testProject.NestedTests.Count);
 		}
 		
 		[Test]
 		public void TestClassQualifiedName()
 		{
-			Assert.AreEqual("MyTests.A+InnerATest", testClass.QualifiedName);
+			Assert.AreEqual("MyTests.A+InnerATest", innerClass.ReflectionName);
 		}
 		
 		[Test]
 		public void TestClassName()
 		{
-			Assert.AreEqual("A+InnerATest", testClass.Name);
-		}
-		
-		[Test]
-		public void NoTestClassesForNamespaceMyTestsA()
-		{
-			Assert.AreEqual(0, testProject.GetTestClasses("MyTests.A").Length);
-		}
-		
-		[Test]
-		public void OneTestClassForNamespaceMyTests()
-		{
-			Assert.AreEqual(1, testProject.GetTestClasses("MyTests").Length);
+			Assert.AreEqual("InnerATest", innerClass.ClassName);
 		}
 		
 		[Test]
 		public void NamespaceForInnerClassIsDeclaringTypesNamespace()
 		{
-			Assert.AreEqual("MyTests", testClass.Namespace);
-		}		
+			Assert.AreEqual("MyTests", innerClass.FullTypeName.TopLevelTypeName.Namespace);
+		}
 	}
 }

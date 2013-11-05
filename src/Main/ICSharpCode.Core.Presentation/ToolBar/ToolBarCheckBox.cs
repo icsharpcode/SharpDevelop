@@ -18,20 +18,18 @@ namespace ICSharpCode.Core.Presentation
 		BindingExpressionBase isCheckedBinding;
 		readonly IEnumerable<ICondition> conditions;
 		
-		public ToolBarCheckBox(Codon codon, object caller, IEnumerable<ICondition> conditions)
+		public ToolBarCheckBox(Codon codon, object caller, IReadOnlyCollection<ICondition> conditions)
 		{
 			ToolTipService.SetShowOnDisabled(this, true);
 			
 			this.codon = codon;
 			this.caller = caller;
 			this.conditions = conditions;
-			this.Command = CommandWrapper.GetCommand(codon, caller, true, conditions);
-			CommandWrapper wrapper = this.Command as CommandWrapper;
-			if (wrapper != null) {
-				ICheckableMenuCommand cmd = wrapper.GetAddInCommand() as ICheckableMenuCommand;
-				if (cmd != null) {
-					isCheckedBinding = SetBinding(IsCheckedProperty, new Binding("IsChecked") { Source = cmd, Mode = BindingMode.OneWay });
-				}
+			this.Command = CommandWrapper.CreateCommand(codon, conditions);
+			this.CommandParameter = caller;
+			ICheckableMenuCommand cmd = CommandWrapper.Unwrap(this.Command) as ICheckableMenuCommand;
+			if (cmd != null) {
+				isCheckedBinding = SetBinding(IsCheckedProperty, new Binding("IsChecked") { Source = cmd, Mode = BindingMode.OneWay });
 			}
 
 			this.Content = ToolBarService.CreateToolBarItemContent(codon);
@@ -47,6 +45,9 @@ namespace ICSharpCode.Core.Presentation
 		{
 			if (codon.Properties.Contains("tooltip")) {
 				this.ToolTip = StringParser.Parse(codon.Properties["tooltip"]);
+			}
+			if (codon.Properties.Contains("label")) {
+				this.Content = ToolBarService.CreateToolBarItemContent(codon);
 			}
 		}
 		

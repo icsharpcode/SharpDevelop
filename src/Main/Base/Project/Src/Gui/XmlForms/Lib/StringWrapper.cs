@@ -10,6 +10,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 	/// through the 'Text' property. This class was written for setting the
 	/// items in a combobox inside a xml definition.
 	/// </summary>
+	[Obsolete("XML Forms are obsolete")]
 	public class StringWrapper 
 	{
 		string text;

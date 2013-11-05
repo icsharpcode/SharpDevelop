@@ -8,21 +8,23 @@ using System.Collections.Generic;
 namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
-	/// IList&lt;T&gt; with data vitualization - the indexer is lazy, uses IListValuesProvider to obtain values when needed.
+	/// IList&lt;T&gt; with data vitualization - the indexer is lazy, uses lamda function to obtain values when needed.
 	/// </summary>
 	public class VirtualizingCollection<T> : IList<T>, IList
 	{
-		private IListValuesProvider<T> valueProvider;
-		private Dictionary<int, T> itemCache = new Dictionary<int, T>();
+		int count;
+		Func<int, T> getItem;
+		Dictionary<int, T> itemCache = new Dictionary<int, T>();
 
-		public VirtualizingCollection(IListValuesProvider<T> valueProvider)
+		public VirtualizingCollection(int count, Func<int, T> getItem)
 		{
-			this.valueProvider = valueProvider;
+			this.count = count;
+			this.getItem  = getItem;
 		}
 
 		public int Count
 		{
-			get { return this.valueProvider.GetCount(); }
+			get { return count; }
 		}
 
 		public T this[int index]
@@ -32,7 +34,7 @@ namespace Debugger.AddIn.Visualizers
 				T cachedItem;
 				if (!itemCache.TryGetValue(index, out cachedItem))
 				{
-					cachedItem = this.valueProvider.GetItemAt(index);
+					cachedItem = getItem(index);
 					this.itemCache[index] = cachedItem;
 				}
 				return cachedItem;

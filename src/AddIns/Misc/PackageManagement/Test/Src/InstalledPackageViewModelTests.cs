@@ -90,7 +90,7 @@ namespace PackageManagement.Tests
 		}
 		
 		void AddTwoProjectsSelected(string projectName1, string projectName2)
-		{			
+		{
 			AddProjectToSolution();
 			AddProjectToSolution();
 			fakeSolution.FakeMSBuildProjects[0].Name = projectName1;

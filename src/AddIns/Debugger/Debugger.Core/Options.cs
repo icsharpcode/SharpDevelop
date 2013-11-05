@@ -1,46 +1,21 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using System.Collections.Generic;
 
 using System;
 
 namespace Debugger
 {
-	[Serializable]
 	public class Options
 	{
-		public Options()
-		{
-			EnableJustMyCode = true;
-			StepOverNoSymbols = true;
-			StepOverDebuggerAttributes = true;
-			StepOverAllProperties = false;
-			StepOverSingleLineProperties = false;
-			StepOverFieldAccessProperties = true;
-			Verbose = false;
-			SymbolsSearchPaths = new string[0];
-			SuspendOtherThreads = true;
-			PauseOnHandledExceptions = false;
-		}
-		
-		public bool EnableJustMyCode { get; set; }
-		public bool StepOverNoSymbols { get; set; }
-		public bool StepOverDebuggerAttributes { get; set; }
-		public bool StepOverAllProperties { get; set; }
-		public bool StepOverSingleLineProperties { get; set; }
-		public bool StepOverFieldAccessProperties { get; set; }
-		public bool Verbose { get; set; }
-		public string[] SymbolsSearchPaths { get; set; }
-		public bool SuspendOtherThreads { get; set; }
-		public bool PauseOnHandledExceptions { get; set; }
-		bool decompileCodeWithoutSymbols;
-		
-		public bool DecompileCodeWithoutSymbols {
-			get { return decompileCodeWithoutSymbols; }
-			set {
-				decompileCodeWithoutSymbols = value;
-				EnableJustMyCode = !decompileCodeWithoutSymbols;
-				StepOverNoSymbols = !decompileCodeWithoutSymbols;
-			}
-		}
+		public virtual bool EnableJustMyCode { get; set; }
+		public virtual bool EnableEditAndContinue { get; set; }
+		public virtual bool SuppressJITOptimization { get; set; }
+		public virtual bool SuppressNGENOptimization { get; set; }
+		public virtual bool StepOverDebuggerAttributes { get; set; }
+		public virtual bool StepOverAllProperties { get; set; }
+		public virtual bool StepOverFieldAccessProperties { get; set; }
+		public virtual IEnumerable<string> SymbolsSearchPaths { get; set; }
+		public virtual bool PauseOnHandledExceptions { get; set; }
 	}
 }

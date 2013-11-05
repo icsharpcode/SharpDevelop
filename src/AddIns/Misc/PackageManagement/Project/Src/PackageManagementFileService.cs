@@ -3,6 +3,8 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
@@ -13,88 +15,62 @@ namespace ICSharpCode.PackageManagement
 	{
 		public void RemoveFile(string path)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<string> action = RemoveFile;
-				WorkbenchSingleton.SafeThreadCall<string>(action, path);
-			} else {
-				FileService.RemoveFile(path, false);
-			}
+			InvokeIfRequired(() => FileService.RemoveFile(path, false));
+		}
+		
+		void InvokeIfRequired(Action action)
+		{
+			SD.MainThread.InvokeIfRequired(action);
+		}
+		
+		T InvokeIfRequired<T>(Func<T> callback)
+		{
+			return SD.MainThread.InvokeIfRequired(callback);
 		}
 		
 		public void RemoveDirectory(string path)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<string> action = RemoveDirectory;
-				WorkbenchSingleton.SafeThreadCall<string>(action, path);
-			} else {
-				FileService.RemoveFile(path, true);
-			}
+			InvokeIfRequired(() => FileService.RemoveFile(path, true));
 		}
 		
 		public void OpenFile(string fileName)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<string> action = OpenFile;
-				WorkbenchSingleton.SafeThreadAsyncCall<string>(action, fileName);
-			} else {
-				FileService.OpenFile(fileName);
-			}
+			InvokeIfRequired(() => FileService.OpenFile(fileName));
 		}
 		
 		public IViewContent GetOpenFile(string fileName)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				return WorkbenchSingleton.SafeThreadFunction(() => GetOpenFile(fileName));
-			} else {
-				return FileService.GetOpenFile(fileName);
-			}
+			return InvokeIfRequired(() => FileService.GetOpenFile(fileName));
 		}
 		
 		public void CopyFile(string oldFileName, string newFileName)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<string, string> action = CopyFile;
-				WorkbenchSingleton.SafeThreadAsyncCall<string, string>(action, oldFileName, newFileName);
-			} else {
-				FileService.CopyFile(oldFileName, newFileName, isDirectory: false, overwrite: false);
-			}
+			InvokeIfRequired(() => FileService.CopyFile(oldFileName, newFileName, isDirectory: false, overwrite: false));
 		}
 		
 		public bool FileExists(string fileName)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				return WorkbenchSingleton.SafeThreadFunction(() => FileExists(fileName));
-			} else {
-				return File.Exists(fileName);
-			}
+			return InvokeIfRequired(() => File.Exists(fileName));
 		}
 		
 		public string[] GetFiles(string path)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				return WorkbenchSingleton.SafeThreadFunction(() => GetFiles(path));
-			} else {
-				return Directory.GetFiles(path);
-			}
+			return InvokeIfRequired(() => Directory.GetFiles(path));
 		}
 		
 		public string[] GetDirectories(string path)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				return WorkbenchSingleton.SafeThreadFunction(() => GetDirectories(path));
-			} else {
-				return Directory.GetDirectories(path);
-			}
+			return InvokeIfRequired(() => Directory.GetDirectories(path));
 		}
 		
 		public void ParseFile(string fileName)
 		{
-			ParserService.ParseFile(fileName);
+			SD.ParserService.ParseFile(new FileName(fileName));
 		}
 		
-		public ICompilationUnit GetCompilationUnit(string fileName)
+		public ICompilation GetCompilationUnit(string fileName)
 		{
-			return ParserService.GetExistingParseInformation(fileName).CompilationUnit;
+			return SD.ParserService.GetCompilationForFile(new FileName(fileName));
 		}
 	}
 }

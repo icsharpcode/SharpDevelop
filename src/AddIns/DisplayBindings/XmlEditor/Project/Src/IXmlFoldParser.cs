@@ -4,14 +4,14 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
 {
 	public interface IXmlFoldParser
 	{
-		IList<FoldingRegion> GetFolds(ITextBuffer textBuffer);
+		IList<FoldingRegion> GetFolds(ITextSource textSource);
 	}
 }

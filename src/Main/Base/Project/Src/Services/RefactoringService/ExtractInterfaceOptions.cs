@@ -4,17 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	/// <summary>
-	/// Description of ExtractInterfaceDetails.
-	/// </summary>
 	public class ExtractInterfaceOptions
 	{
-		IClass c;
-		public ExtractInterfaceOptions(IClass c)
+		ITypeDefinition c;
+		public ExtractInterfaceOptions(ITypeDefinition c)
 		{
 			if (null == c) {
 				throw new InvalidOperationException("ExtractInterfaceOptions requires a valid IClass");
@@ -28,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		
 		
-		public IClass ClassEntity {
+		public ITypeDefinition ClassEntity {
 			get {
 				return this.c;
 			}
@@ -53,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			get {
 				return String.Format("{0}{1}",
 				                     this.NewInterfaceName,
-				                     Path.GetExtension(ClassEntity.CompilationUnit.FileName));
+				                     Path.GetExtension(ClassEntity.Region.FileName));
 			}
 		}
 	}

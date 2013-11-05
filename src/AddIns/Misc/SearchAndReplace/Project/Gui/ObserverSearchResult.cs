@@ -9,6 +9,7 @@ using System.Windows.Controls;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -28,10 +29,10 @@ namespace SearchAndReplace
 		
 		public override object GetControl()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (resultsTreeViewInstance == null)
 				resultsTreeViewInstance = new ResultsTreeView();
-			rootNode.GroupResultsByFile(ResultsTreeView.GroupResultsByFile);
+			rootNode.GroupResultsBy(ResultsTreeView.GroupingKind);
 			resultsTreeViewInstance.ItemsSource = new object[] { rootNode };
 			return resultsTreeViewInstance;
 		}
@@ -49,7 +50,7 @@ namespace SearchAndReplace
 			
 			return items;
 		}
-	
+		
 		void StopButtonClick(object sender, RoutedEventArgs e)
 		{
 			try {
@@ -68,13 +69,15 @@ namespace SearchAndReplace
 		
 		void IObserver<SearchedFile>.OnError(Exception error)
 		{
+			if (error == null)
+				throw new ArgumentNullException("error");
 			// flatten AggregateException and
 			// filter OperationCanceledException
 			try {
 				if (error is AggregateException)
 					((AggregateException)error).Flatten().Handle(ex => ex is OperationCanceledException);
 				else if (!(error is OperationCanceledException))
-					throw error;
+					MessageService.ShowException(error);
 			} catch (Exception ex) {
 				MessageService.ShowException(ex);
 			}

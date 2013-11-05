@@ -15,6 +15,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
+using ICSharpCode.SharpDevelop.Workbench;
 using WPF = System.Windows.Controls;
 
 namespace ICSharpCode.WpfDesign.AddIn
@@ -28,7 +29,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public static WpfToolbox Instance {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (instance == null) {
 					instance = new WpfToolbox();
 				}
@@ -60,29 +61,15 @@ namespace ICSharpCode.WpfDesign.AddIn
 			return !t.IsAbstract && !t.IsGenericTypeDefinition && t.IsSubclassOf(typeof(FrameworkElement));
 		}
 
-
-		private static HashSet<string> addedAssemblys = new HashSet<string>();
+		static HashSet<string> addedAssemblys = new HashSet<string>();
 		public void AddProjectDlls(OpenedFile file)
 		{
-			var pc = MyTypeFinder.GetProjectContent(file);
-			foreach (var referencedProjectContent in pc.ThreadSafeGetReferencedContents())
-			{
-				string f = null;
-				if (referencedProjectContent is ParseProjectContent)
-				{
-					var prj = ((ParseProjectContent)referencedProjectContent).Project as AbstractProject;
-					if (prj != null)
-						f = prj.OutputAssemblyFullPath;
-				}
-				else if (referencedProjectContent is ReflectionProjectContent)
-				{
-					f = ((ReflectionProjectContent) referencedProjectContent).AssemblyLocation;
-				}
+			var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+			foreach (var reference in compilation.ReferencedAssemblies) {
+				string f = reference.GetReferenceAssemblyLocation();
 				
-				if (f != null && !addedAssemblys.Contains(f))
-				{
-					try
-					{
+				if (f != null && !addedAssemblys.Contains(f)) {
+					try {
 						var assembly = Assembly.LoadFrom(f);
 
 						SideTab sideTab = new SideTab(sideBar, assembly.FullName.Split(new[] {','})[0]);
@@ -104,11 +91,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 							sideBar.Tabs.Add(sideTab);
 
 						addedAssemblys.Add(f);
-					}
-					catch (Exception ex)
-					{
-						WpfViewContent.DllLoadErrors.Add(
-							new Task(new BuildError(f, ex.Message)));
+					} catch (Exception ex) {
+						WpfViewContent.DllLoadErrors.Add(new SDTask(new BuildError(f, ex.Message)));
 					}
 				}
 			}

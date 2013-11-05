@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Tests.Utils;
@@ -36,7 +37,7 @@ namespace XmlEditor.Tests.XPath
 			markers = new List<ITextMarker>(service.TextMarkers);
 			
 			// Remove markers.
-			xpathNodeMarker.RemoveMarkers();
+			XPathNodeTextMarker.RemoveMarkers(doc);
 			markersAfterRemove = new List<ITextMarker>(service.TextMarkers);
 			
 			xpathNodeTextMarker = markers[0];

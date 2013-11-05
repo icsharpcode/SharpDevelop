@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.XmlEditor
@@ -689,7 +690,7 @@ namespace ICSharpCode.XmlEditor
 			return (ch == '\"') || (ch == '\'');
 		}
 		
-		public static string GetXmlIdentifierBeforeIndex(ITextBuffer document, int index)
+		public static string GetXmlIdentifierBeforeIndex(ITextSource document, int index)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");

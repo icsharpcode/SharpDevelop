@@ -112,6 +112,10 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static AddInTreeImpl AddInTree {
+			get { return (AddInTreeImpl)ServiceSingleton.GetRequiredService<IAddInTree>(); }
+		}
+		
 		/// <summary>
 		/// Installs the AddIns from AddInInstallTemp to the UserAddInPath.
 		/// In case of installation errors, a error message is displayed to the user
@@ -184,9 +188,10 @@ namespace ICSharpCode.Core
 					Directory.Delete(targetDir, true);
 				} catch (Exception ex) {
 					disabled.Add(addInName);
-					MessageService.ShowError("Error removing " + addInName + ":\n" +
+					var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
+					messageService.ShowError("Error removing " + addInName + ":\n" +
 					                         ex.Message + "\nThe AddIn will be " +
-					                         "removed on the next start of " + MessageService.ProductName +
+					                         "removed on the next start of " + messageService.ProductName +
 					                         " and is disabled for now.");
 					return false;
 				}
@@ -260,7 +265,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		/// <param name="addIns">
 		/// The list of AddIns to add. (use <see cref="AddIn"/> instances
-		/// created by <see cref="AddIn.Load(TextReader,string,XmlNameTable)"/>).
+		/// created by <see cref="AddIn.Load(IAddInTree,TextReader,string,XmlNameTable)"/>).
 		/// </param>
 		public static void AddExternalAddIns(IList<AddIn> addIns)
 		{
@@ -284,7 +289,7 @@ namespace ICSharpCode.Core
 		/// AddIns.
 		/// </summary>
 		/// The list of AddIns to remove.
-		/// (use external AddIns from the <see cref="AddInTree.AddIns"/> collection).
+		/// (use external AddIns from the <see cref="IAddInTree.AddIns"/> collection).
 		public static void RemoveExternalAddIns(IList<AddIn> addIns)
 		{
 			List<string> addInFiles = new List<string>();

@@ -45,6 +45,7 @@
 		
 		<CallTarget Targets="build"/>
 		<CallTarget Targets="createsetup"/>
+		<CallTarget Targets="createxcopydeployablezip"/>
 		
 		<CallTarget Targets="buildunittests"/>
 		<CallTarget Targets="rununittests"/>
@@ -52,6 +53,7 @@
 		<CallTarget Targets="clean2"/>
 		<CallTarget Targets="zipsource"/>
 		<CallTarget Targets="addnote" Condition=" '$(IsOfficialBuildServer)' == 'True' "/>
+
 	</Target>
 	
 	<Target Name="build">
@@ -131,6 +133,16 @@
 		<RemoveDir
 		      Directories="$(SharpDevelopSrc)\setup\bin" />
 
+	</Target>
+	
+	<Target Name="createxcopydeployablezip">
+		<MSBuild Projects="$(SharpDevelopSrc)\Tools\Tools.build"
+		         Targets="PrepareXcopyZip"
+		         Properties="Configuration=Release"/>
+				 
+		<Move SourceFiles="$(SharpDevelopSrc)\Tools\ZipFromMsi\bin\Debug\SharpDevelopStandalone.zip"
+		      DestinationFiles="$(ArtefactsOutputDir)\$(ArtefactPrefix)$(BuildNumber).Xcopyable.zip"/>		 
+				 
 	</Target>
 	
 	<Target Name="zipsource">

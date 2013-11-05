@@ -1,7 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using SharpSvn.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,10 +8,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Svn.Gui;
 using SharpSvn;
+using SharpSvn.UI;
 
 namespace ICSharpCode.Svn
 {
@@ -135,7 +137,7 @@ namespace ICSharpCode.Svn
 			CheckNotDisposed();
 			if (!allowInteractiveAuthorization) {
 				allowInteractiveAuthorization = true;
-				SvnUI.Bind(client, WorkbenchSingleton.MainWin32Window);
+				SvnUI.Bind(client, SD.WinForms.MainWin32Window);
 			}
 		}
 		

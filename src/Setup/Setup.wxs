@@ -16,7 +16,7 @@
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
-		UpgradeCode="98D66C2A-31EE-4264-92D5-54BD8211461C"
+		UpgradeCode="F094DA91-D43E-4451-A1CB-645FE9C7A843"
 		Version="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)">
 		
 		<!-- When a new major SharpDevelop version should be allowed to be installed in parallel to old versions,
@@ -28,11 +28,11 @@
 			Compressed="yes"/>
 		
 		<!-- Upgrade information -->
-		<Upgrade Id="98D66C2A-31EE-4264-92D5-54BD8211461C">
+		<Upgrade Id="F094DA91-D43E-4451-A1CB-645FE9C7A843">
 			<!-- The UpgradeCode must be changed to allow two versions of SharpDevelop to be installed side-by-side -->
 			
 			<!-- Checks for older versions -->
-			<UpgradeVersion Minimum="4.4.0"
+			<UpgradeVersion Minimum="5.0.0"
 				IncludeMinimum="yes"
 				Maximum="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)"
 				IncludeMaximum="no" 
@@ -130,7 +130,7 @@
 		
 		<!-- Puts SharpDevelop icon in Control Panel's Add/Remove Programs -->
 		<Property Id="ARPPRODUCTICON">SharpDevelopIcon.exe</Property>
-		<Icon Id="SharpDevelopIcon.exe" SourceFile="..\Main\StartUp\Project\Resources\SharpDevelop.ico"/>
+		<Icon Id="SharpDevelopIcon.exe" SourceFile="..\Main\SharpDevelop\Resources\SharpDevelop.ico"/>
 		
 		<!--
 			Source media for the installation. 
@@ -182,10 +182,10 @@
 				<ComponentRef Id="ICSharpCodeCoreDll"/>
 				<ComponentRef Id="ICSharpCodeCoreWinFormsDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryCSharpDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryXmlDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDll"/>
-				<ComponentRef Id="ICSharpCodeSharpDevelopDomDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopWidgets"/>
-				<ComponentRef Id="ICSharpCodeSharpDevelopSdaFiles"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditDll"/>
 				<ComponentRef Id="ICSharpCodeTreeViewDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker35Exe"/>
@@ -200,7 +200,6 @@
 				<ComponentRef Id="MonoCecilDll"/>
 				<ComponentRef Id="AvalonDockDll"/>
 				<ComponentRef Id="ICSharpCodeCorePresentationDll"/>
-				<ComponentRef Id="SharpDevelopTechNoteFiles"/>
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
 				
@@ -288,31 +287,8 @@
 				<ComponentRef Id="VBProjectTemplates"/>
 				<ComponentRef Id="ExampleProjectTemplate"/>
 				<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
-				<ComponentRef Id="BooBindingAddin"/>
-				<ComponentRef Id="BooBindingDll"/>
-				<ComponentRef Id="BoocExe"/>
-				<ComponentRef Id="BoocExeConfig"/>
-				<ComponentRef Id="BoocRsp"/>
-				<ComponentRef Id="BooEmptyClassTemplate"/>
-				<ComponentRef Id="BooEmptyFileTemplate"/>
-				<ComponentRef Id="BooFormsProjectTemplate"/>
-				<ComponentRef Id="BooFormTemplate"/>
-				<ComponentRef Id="BooLangCodeDomDll"/>
-				<ComponentRef Id="BooLangCompilerDll"/>
-				<ComponentRef Id="BooLangDll"/>
-				<ComponentRef Id="BooLangExtensionsDll"/>
-				<ComponentRef Id="BooLangPatternMatchingDll"/>
-				<ComponentRef Id="BooLangInterpreterDll"/>
-				<ComponentRef Id="BooLangParserDll"/>
-				<ComponentRef Id="BooLangUsefulDll"/>
-				<ComponentRef Id="BooLibraryProjectTemplate"/>
-				<ComponentRef Id="BooMicrosoftBuildTargets"/>
-				<ComponentRef Id="BooMicrosoftBuildTasksDll"/>
-				<ComponentRef Id="NRefactoryToBooConverterDll"/>
-				<ComponentRef Id="BooConsoleProjectTemplate"/>
-				<ComponentRef Id="DefaultAssemblyInfoBooTemplate"/>
 				<ComponentRef Id="CSharpBindingFiles"/>
-				<ComponentRef Id="VBNetBindingFiles"/>
+				<ComponentRef Id="VBBindingFiles"/>
 				<ComponentRef Id="WixBindingFiles"/>
 				<ComponentRef Id="WixUIMondoProjectTemplate"/>
 				<ComponentRef Id="WixUIMinimalProjectTemplate"/>
@@ -322,10 +298,10 @@
 				<ComponentRef Id="IconEditorFiles"/>
 				<ComponentRef Id="ResourceEditorFiles"/>
 				<ComponentRef Id="SettingsEditorFiles"/>
-				<ComponentRef Id="ClassDiagramResources"/>
+				<!--<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>
-				<ComponentRef Id="DiagramsDll"/>
+				<ComponentRef Id="DiagramsDll"/>-->
 				
 				<ComponentRef Id="ICSharpCodeXamlBindingDll"/>
 				<ComponentRef Id="XamlBindingAddin"/>
@@ -334,8 +310,10 @@
 				<ComponentRef Id="WorkflowDesignerDll"/>-->
 				
 				<ComponentRef Id="XmlEditorFiles"/>
-				<ComponentRef Id="AddInManagerFiles"/>
-				<ComponentRef Id="AddInManagerSharpZipLibDll"/>
+				<ComponentRef Id="AddInManager2Addin"/>
+				<ComponentRef Id="ICSharpCodeAddInManager2Dll"/>
+				<ComponentRef Id="AddInManager2ICSharpCodeSharpZipLibDll"/>
+				<ComponentRef Id="AddInManager2NuGetCoreDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
 				<ComponentRef Id="CodeQualityFiles"/>
@@ -344,9 +322,8 @@
 				<ComponentRef Id="FiletypeIcons"/>
 				<ComponentRef Id="FiletypeRegistererFiles"/>
 				<ComponentRef Id="HtmlHelp2Files"/>
-				<ComponentRef Id="PInvokeAddInFiles"/>
 				<ComponentRef Id="RegExToolkitFiles"/>
-				<ComponentRef Id="ResourceToolkitFiles"/>
+				<!--<ComponentRef Id="ResourceToolkitFiles"/>-->
 				<ComponentRef Id="SearchAndReplaceFiles"/>
 				<ComponentRef Id="ILSpyAddInFiles"/>
 
@@ -360,10 +337,10 @@
 				<ComponentRef Id="WPFAssemblyInfoTemplate"/>
 				<ComponentRef Id="AddInWritingHelp"/>
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
-				<ComponentRef Id="AddInWritingHelpWebsiteShortcut"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
 				
 				<ComponentRef Id="ICSharpCodeScriptingDll"/>
+				<!--
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>
 				<ComponentRef Id="PythonEmptyClassTemplate"/>
 				<ComponentRef Id="PythonEmptyFormTemplate"/>
@@ -420,20 +397,14 @@
 				<ComponentRef Id="RubyBindingSdTestResultRb"/>
 				<ComponentRef Id="RubyBindingSdTestResultWriterRb"/>
 				<ComponentRef Id="RubyBindingSdTestRunnerRb"/>
+				-->
 				
 				<ComponentRef Id="FSharpBindingDll"/>
-				<ComponentRef Id="FSharpBindingAddin"/>
-				<ComponentRef Id="FSharp2ConsoleProjectTemplate"/>
-				<ComponentRef Id="FSharp3ConsoleProjectTemplate"/>
-				<ComponentRef Id="FSharp2LibraryProjectTemplate"/>
-				<ComponentRef Id="FSharp3LibraryProjectTemplate"/>
-				<ComponentRef Id="FSharpEmptyClassTemplate"/>
+				<ComponentRef Id="FSharpBindingAddin"/>	
 				
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
 				<ComponentRef Id="SourceAnalysisAddin"/>
 				<ComponentRef Id="SourceAnalysisDll"/>
-				<ComponentRef Id="SharpRefactoringAddin"/>
-				<ComponentRef Id="SharpRefactoringDll"/>
 			
 				<ComponentRef Id="HexEditorAddin"/>
 				<ComponentRef Id="HexEditorDll"/>
@@ -452,7 +423,6 @@
 				
 				<ComponentRef Id="CppBindingAddin"/>
 				<ComponentRef Id="CppBindingDll"/>
-				<ComponentRef Id="CppBindingTemplates"/>
 				
 				<ComponentRef Id="ICSharpCodeWpfDesignAddInDll"/>
 				<ComponentRef Id="ICSharpCodeWpfDesignDesignerDll"/>
@@ -467,7 +437,6 @@
 				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreDll"/>
 				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreUIDll"/>
 				<ComponentRef Id="ICSharpCodeDataSQLServerDll"/>
-				<ComponentRef Id="CSharpEDMXXft"/>
 				
 				<ComponentRef Id="UDCSystemDataSQLiteDll"/>
 				<ComponentRef Id="UsageDataCollectorAddin"/>
@@ -493,7 +462,7 @@
 				<ComponentRef Id="PackageManagementDll"/>
 				<ComponentRef Id="SharpDevelopEnvDteDll"/>
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
-				<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>
+				<!--<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>-->
 				<ComponentRef Id="MicrosoftWebXmlTransformDll"/>
 				<ComponentRef Id="JQuery172NuGetPackage"/>
 				<ComponentRef Id="Modernizr253NuGetPackage"/>
@@ -558,9 +527,9 @@
 				<ComponentRef Id="VBMvc3RazorProjectTemplate"/>
 				<ComponentRef Id="VBMvc4RazorProjectTemplate"/>
 
-				<ComponentRef Id="JavaScriptBindingDll"/>
+				<!--<ComponentRef Id="JavaScriptBindingDll"/>
 				<ComponentRef Id="JavaScriptBindingAddin"/>
-				<ComponentRef Id="Antlr3RuntimeDll"/>
+				<ComponentRef Id="Antlr3RuntimeDll"/>-->
 			
 				<ComponentRef Id="OpenCoverConsoleExe"/>
 				<ComponentRef Id="OpenCoverConsoleExeConfig"/>
@@ -578,7 +547,7 @@
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
 			         AllowAdvertise="no"
-				     InstallDefault="local"
+			         InstallDefault="local"
 			         Title="File Associations"
 			         Description="Registers file associations with SharpDevelop.">
 				<!-- 

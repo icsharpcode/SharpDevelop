@@ -88,6 +88,11 @@ namespace ICSharpCode.SharpDevelop.Widgets
 				}
 				base.WndProc(ref m);
 			}
+			
+			protected override void OnThreadException(Exception e)
+			{
+				System.Windows.Forms.Application.OnThreadException(e);
+			}
 		}
 		
 		HostNativeWindow hostNativeWindow;

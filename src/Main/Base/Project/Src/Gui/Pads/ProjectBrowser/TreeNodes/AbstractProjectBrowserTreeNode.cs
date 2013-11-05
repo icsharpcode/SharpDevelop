@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Returns the solution in which this node belongs to. This assumes that
 		/// any node is child of a solution.
 		/// </summary>
-		public virtual Solution Solution {
+		public virtual ISolution Solution {
 			get {
 				AbstractProjectBrowserTreeNode parent = Parent as AbstractProjectBrowserTreeNode;
 				if (parent != null) {
@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void ShowProperties()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad)).BringPadToFront();
+			SD.Workbench.GetPad(typeof(PropertyPad)).BringPadToFront();
 		}
 		
 		public static bool IsSomewhereBelow(string path, ProjectItem item)

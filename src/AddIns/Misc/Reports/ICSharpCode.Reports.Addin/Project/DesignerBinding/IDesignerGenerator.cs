@@ -2,11 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.ComponentModel;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
+
 namespace ICSharpCode.Reports.Addin
 {
 	/// <summary>

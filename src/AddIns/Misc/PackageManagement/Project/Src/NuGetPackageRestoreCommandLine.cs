@@ -2,33 +2,30 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class NuGetPackageRestoreCommandLine
 	{
+		List<string> arguments = new List<string>();
+		
 		public NuGetPackageRestoreCommandLine(IPackageManagementSolution solution)
 		{
 			GenerateCommandLine(solution);
 		}
 		
 		public string Command { get; set; }
-		public string Arguments { get; private set; }
+		
+		public string[] Arguments {
+			get { return arguments.ToArray(); }
+		}
 		
 		void GenerateCommandLine(IPackageManagementSolution solution)
 		{
-			Arguments = String.Format("restore \"{0}\"", solution.FileName);
-		}
-		
-		public override string ToString()
-		{
-			return String.Format("{0} {1}", GetQuotedCommand(), Arguments);
-		}
-		
-		string GetQuotedCommand()
-		{
-			return String.Format("\"{0}\"", Command);
+			arguments.Add("restore");
+			arguments.Add(solution.FileName);
 		}
 	}
 }

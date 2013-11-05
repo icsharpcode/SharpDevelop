@@ -5,6 +5,8 @@ using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -17,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static ProjectBrowserPad Instance {
 			get {
 				if (instance == null) {
-					PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad));
+					PadDescriptor pad = SD.Workbench.GetPad(typeof(ProjectBrowserPad));
 					if (pad != null) {
 						pad.CreatePad();
 					} else {
@@ -74,11 +76,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectBrowserPad()
 		{
 			instance = this;
-			ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
-			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
-			ProjectService.SolutionPreferencesSaving += ProjectServiceSolutionPreferencesSaving;
+			SD.ProjectService.SolutionOpened += ProjectServiceSolutionLoaded;
+			SD.ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			
-			WorkbenchSingleton.Workbench.ActiveContentChanged += ActiveContentChanged;
+			SD.Workbench.ActiveContentChanged += ActiveContentChanged;
 			if (ProjectService.OpenSolution != null) {
 				this.LoadSolution(ProjectService.OpenSolution);
 			}
@@ -90,9 +91,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectBrowserControl.TreeView.StartLabelEdit(node);
 		}
 		
-		void ProjectServiceSolutionPreferencesSaving(object sender, SolutionEventArgs e)
+		void SolutionPreferencesSaving(object sender, EventArgs e)
 		{
-			projectBrowserPanel.StoreViewState(e.Solution.Preferences.Properties);
+			projectBrowserPanel.StoreViewState(((ISolution)sender).Preferences);
 		}
 		
 		void ProjectServiceSolutionLoaded(object sender, SolutionEventArgs e)
@@ -100,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.LoadSolution(e.Solution);
 		}
 		
-		void LoadSolution(Solution solution)
+		void LoadSolution(ISolution solution)
 		{
 			if (!ProjectBrowserControl.TreeView.IsHandleCreated) {
 				LoggingService.Debug("ProjectBrowser: Attempt to load solution " + solution.ToString() + " before handle of ProjectBrowserControl.TreeView created");
@@ -114,21 +115,22 @@ namespace ICSharpCode.SharpDevelop.Project
 				LoggingService.Debug("ProjectBrowser: Loading solution " + solution.ToString() + " into project tree view");
 				this.solutionToLoadWhenHandleIsCreated = null;
 				projectBrowserPanel.ViewSolution(solution);
-				projectBrowserPanel.ReadViewState(solution.Preferences.Properties);
+				projectBrowserPanel.ReadViewState(solution.Preferences);
+				solution.PreferencesSaving += SolutionPreferencesSaving;
 			}
 		}
 		
 		bool treeViewHandleCreatedAttached;
-		Solution solutionToLoadWhenHandleIsCreated;
+		ISolution solutionToLoadWhenHandleIsCreated;
 		
 		void ProjectBrowserTreeViewHandleCreated(object sender, EventArgs e)
 		{
-			TreeView treeView = (TreeView)sender;
+			System.Windows.Forms.TreeView treeView = (System.Windows.Forms.TreeView)sender;
 			this.treeViewHandleCreatedAttached = false;
 			treeView.HandleCreated -= this.ProjectBrowserTreeViewHandleCreated;
 			if (this.solutionToLoadWhenHandleIsCreated != null) {
 				LoggingService.Debug("ProjectBrowser: Tree view handle created, will load " + this.solutionToLoadWhenHandleIsCreated.ToString() + ".");
-				treeView.BeginInvoke(new Action<Solution>(this.LoadSolution), this.solutionToLoadWhenHandleIsCreated);
+				treeView.BeginInvoke(new Action<ISolution>(this.LoadSolution), this.solutionToLoadWhenHandleIsCreated);
 				this.solutionToLoadWhenHandleIsCreated = null;
 			} else {
 				LoggingService.Debug("ProjectBrowser: Tree view handle created, no solution to load.");
@@ -149,18 +151,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			// do the potentially expensive selection of the item in the tree view only once after the last change
 			if (!activeContentChangedEnqueued) {
 				activeContentChangedEnqueued = true;
-				WorkbenchSingleton.SafeThreadAsyncCall(ActiveContentChangedInvoked);
+				SD.MainThread.InvokeAsyncAndForget(ActiveContentChangedInvoked);
 			}
 		}
 		
 		void ActiveContentChangedInvoked()
 		{
 			activeContentChangedEnqueued = false;
-			if (WorkbenchSingleton.Workbench.ActiveContent == this) {
+			if (SD.Workbench.ActiveContent == this) {
 				projectBrowserPanel.ProjectBrowserControl.PadActivated();
 			} else {
 				// we don't use ActiveViewContent here as this is the ActiveContent change event handler
-				IViewContent content = WorkbenchSingleton.Workbench.ActiveContent as IViewContent;
+				IViewContent content = SD.Workbench.ActiveContent as IViewContent;
 				if (content == null)
 					return;
 				string fileName = content.PrimaryFileName;
@@ -260,17 +262,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void RefreshViewAsync()
 		{
-			WorkbenchSingleton.AssertMainThread();
-			if (refreshViewEnqueued || WorkbenchSingleton.Workbench == null)
+			SD.MainThread.VerifyAccess();
+			if (refreshViewEnqueued || instance == null)
 				return;
 			refreshViewEnqueued = true;
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					refreshViewEnqueued = false;
-					if (instance != null) {
-						instance.ProjectBrowserControl.RefreshView();
-					}
-				});
+			SD.MainThread.InvokeAsyncAndForget(delegate {
+				refreshViewEnqueued = false;
+				instance.ProjectBrowserControl.RefreshView();
+			});
 		}
 	}
 }

@@ -3,12 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -20,6 +20,8 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -27,8 +29,41 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// This class displays the errors and warnings which the compiler outputs and
 	/// allows the user to jump to the source of the warning / error
 	/// </summary>
-	public class CompilerMessageView : AbstractPadContent, IClipboardHandler
+	public class CompilerMessageView : AbstractPadContent, IClipboardHandler, IOutputPad
 	{
+		#region IOutputPad implementation
+
+		IOutputCategory IOutputPad.CreateCategory(string displayName)
+		{
+			var cat = new MessageViewCategory(displayName, displayName);
+			AddCategory(cat);
+			return cat;
+		}
+
+		void IOutputPad.RemoveCategory(IOutputCategory category)
+		{
+			throw new NotImplementedException();
+		}
+
+		IOutputCategory IOutputPad.CurrentCategory {
+			get {
+				return this.SelectedMessageViewCategory;
+			}
+			set {
+				int index = messageCategories.IndexOf(value as MessageViewCategory);
+				if (index >= 0)
+					SelectedCategoryIndex = index;
+			}
+		}
+		
+		IOutputCategory IOutputPad.BuildCategory {
+			get {
+				return TaskService.BuildMessageViewCategory;
+			}
+		}
+
+		#endregion
+
 		static CompilerMessageView instance;
 		
 		/// <summary>
@@ -38,14 +73,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static CompilerMessageView Instance {
 			get {
 				if (instance == null)
-					WorkbenchSingleton.SafeThreadCall(InitializeInstance);
+					SD.MainThread.InvokeIfRequired(InitializeInstance);
 				return instance;
 			}
 		}
 		
 		static void InitializeInstance()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).CreatePad();
+			SD.Workbench.GetPad(typeof(CompilerMessageView)).CreatePad();
 		}
 		
 		#region MessageViewLinkElementGenerator
@@ -138,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return selectedCategory;
 			}
 			set {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (selectedCategory != value) {
 					selectedCategory = value;
 					DisplayActiveCategory();
@@ -149,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void DisplayActiveCategory()
 		{
-			WorkbenchSingleton.DebugAssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (selectedCategory < 0) {
 				textEditor.Text = "";
 			} else {
@@ -204,12 +239,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			textEditor.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
 			
-			properties = (Properties)PropertyService.Get(OutputWindowOptionsPanel.OutputWindowsProperty, new Properties());
+			properties = PropertyService.NestedProperties(OutputWindowOptionsPanel.OutputWindowsProperty);
 			
-			var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", Core.WinForms.WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
+			SetTextEditorFont();
 			
-			textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
-			textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
 			
 			MessageViewLinkElementGenerator.RegisterGenerators(textEditor.TextArea.TextView);
@@ -223,22 +256,39 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			SetWordWrap();
 			DisplayActiveCategory();
-			ProjectService.SolutionLoaded += SolutionLoaded;
+			SD.ProjectService.CurrentSolutionChanged += OnSolutionLoaded;
 			
 			SearchPanel.Install(textEditor);
 		}
 
-		void SolutionLoaded(object sender, SolutionEventArgs e)
+		void OnSolutionLoaded(object sender, EventArgs e)
 		{
 			foreach (MessageViewCategory category in messageCategories) {
 				category.ClearText();
 			}
 		}
 		
-		void SetWordWrap()
+		
+		private bool IsFontChanged (string propName)
+		{
+			if ((propName == OutputWindowOptionsPanel.FontSizeName) || (propName == OutputWindowOptionsPanel.FontFamilyName)) {
+				return true;
+			}
+			return false;
+		}
+		
+		private void SetWordWrap()
 		{
 			bool wordWrap = this.WordWrap;
 			textEditor.WordWrap = wordWrap;
+		}
+		
+		
+		private void SetTextEditorFont()
+		{
+			var fontDescription =  OutputWindowOptionsPanel.DefaultFontDescription();
+			textEditor.FontFamily = new FontFamily(fontDescription.Item1);
+			textEditor.FontSize = fontDescription.Item2;
 		}
 		
 		#region Category handling
@@ -247,8 +297,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public void AddCategory(MessageViewCategory category)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadAsyncCall((Action<MessageViewCategory>)AddCategory, category);
+			if (SD.MainThread.InvokeRequired) {
+				SD.MainThread.InvokeAsyncAndForget(() => AddCategory(category));
 				return;
 			}
 			messageCategories.Add(category);
@@ -290,11 +340,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			bool waitForMainThread;
 			lock (appendLock) {
 				appendCalls.Add(appendCall);
-				if (appendCalls.Count == 1)
-					WorkbenchSingleton.SafeThreadAsyncCall(ProcessAppendText);
+				if (appendCalls.Count == 1) {
+					SD.MainThread.InvokeAsyncAndForget(ProcessAppendText);
+				}
 				waitForMainThread = appendCalls.Count > 2000;
 			}
-			if (waitForMainThread && WorkbenchSingleton.InvokeRequired) {
+			if (waitForMainThread && SD.MainThread.InvokeRequired) {
 				int sleepLength = 20;
 				do {
 					Thread.Sleep(sleepLength);
@@ -396,17 +447,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.Key == "WordWrap") {
+			if (e.PropertyName == OutputWindowOptionsPanel.WordWrapName) {
 				SetWordWrap();
 				ToolBarService.UpdateStatus(toolStrip.Items);
 			}
-			if (e.Key == "DefaultFont") {
-				var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", Core.WinForms.WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
-				
-				textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
-				textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
+			if (IsFontChanged(e.PropertyName)) {
+				SetTextEditorFont();
 			}
 		}
+		
 		
 		protected virtual void OnMessageCategoryAdded(EventArgs e)
 		{
@@ -426,6 +475,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public event EventHandler SelectedCategoryIndexChanged;
 		
 		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
+		
 		public bool EnableCut {
 			get {
 				return false;

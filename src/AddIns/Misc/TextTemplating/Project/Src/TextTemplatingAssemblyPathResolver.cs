@@ -3,6 +3,9 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.TextTemplating
@@ -10,23 +13,23 @@ namespace ICSharpCode.TextTemplating
 	public class TextTemplatingAssemblyPathResolver : ITextTemplatingAssemblyPathResolver
 	{
 		IProject project;
-		IAssemblyParserService assemblyParserService;
+		IGlobalAssemblyCacheService gac;
 		ITextTemplatingPathResolver pathResolver;
 		
 		public TextTemplatingAssemblyPathResolver(
 			IProject project,
-			IAssemblyParserService assemblyParserService,
+			IGlobalAssemblyCacheService gac,
 			ITextTemplatingPathResolver pathResolver)
 		{
 			this.project = project;
-			this.assemblyParserService = assemblyParserService;
+			this.gac = gac;
 			this.pathResolver = pathResolver;
 		}
 		
 		public TextTemplatingAssemblyPathResolver(IProject project)
 			: this(
 				project,
-				new TextTemplatingAssemblyParserService(),
+				SD.GlobalAssemblyCache,
 				new TextTemplatingPathResolver())
 		{
 		}
@@ -65,22 +68,15 @@ namespace ICSharpCode.TextTemplating
 		
 		string ResolveAssemblyFromGac(string assemblyReference)
 		{
-			IReflectionProjectContent projectContent = GetProjectContent(assemblyReference);
-			if (projectContent != null) {
-				return projectContent.AssemblyLocation;
+			var assemblyName = new DomAssemblyName(assemblyReference);
+			DomAssemblyName foundAssemblyName = gac.FindBestMatchingAssemblyName(assemblyName);
+			if (foundAssemblyName != null) {
+				FileName fileName = gac.FindAssemblyInNetGac(foundAssemblyName);
+				if (fileName != null) {
+					return fileName.ToString();
+				}
 			}
 			return null;
-		}
-		
-		IReflectionProjectContent GetProjectContent(string assemblyReference)
-		{
-			var reference = new ReferenceProjectItem(project, assemblyReference);
-			return GetProjectContent(reference);
-		}
-		
-		IReflectionProjectContent GetProjectContent(ReferenceProjectItem refProjectItem)
-		{
-			return assemblyParserService.GetReflectionProjectContentForReference(refProjectItem);
 		}
 	}
 }

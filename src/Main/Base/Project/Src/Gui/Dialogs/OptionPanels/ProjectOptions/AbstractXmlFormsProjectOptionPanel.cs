@@ -10,6 +10,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Base class for project option panels that are using the <see cref="ConfigurationGuiHelper"/>.
 	/// </summary>
+	[Obsolete("XML Forms are obsolete")]
 	public abstract class AbstractXmlFormsProjectOptionPanel : XmlFormsOptionPanel, ICanBeDirty
 	{
 		protected ConfigurationGuiHelper helper;

@@ -9,9 +9,12 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -132,7 +135,7 @@ namespace ICSharpCode.XmlEditor
 		
 		protected override void LoadFromPrimary()
 		{
-			IFileDocumentProvider provider = this.PrimaryViewContent as IFileDocumentProvider;
+			IFileDocumentProvider provider = this.PrimaryViewContent.GetRequiredService<IFileDocumentProvider>();
 			IDocument document = provider.GetDocumentForFile(this.PrimaryFile);
 			treeViewContainer.LoadXml(document.Text);
 			XmlView view = XmlView.ForFile(this.PrimaryFile);

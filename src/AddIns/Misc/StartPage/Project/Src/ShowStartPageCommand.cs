@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -15,7 +16,7 @@ namespace ICSharpCode.StartPage
 		{
 			ProjectService.SolutionLoaded += delegate {
 				// close all start pages when loading a solution
-				foreach (IViewContent v in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray()) {
+				foreach (IViewContent v in SD.Workbench.ViewContentCollection.ToArray()) {
 					if (v is StartPageViewContent) {
 						v.WorkbenchWindow.CloseWindow(true);
 					}
@@ -25,13 +26,13 @@ namespace ICSharpCode.StartPage
 		
 		public override void Run()
 		{
-			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (IViewContent view in SD.Workbench.ViewContentCollection) {
 				if (view is StartPageViewContent) {
 					view.WorkbenchWindow.SelectWindow();
 					return;
 				}
 			}
-			WorkbenchSingleton.Workbench.ShowView(new StartPageViewContent());
+			SD.Workbench.ShowView(new StartPageViewContent());
 		}
 	}
 }

@@ -21,13 +21,17 @@ namespace ICSharpCode.Core.Presentation
 		readonly string inputGestureText;
 		readonly IEnumerable<ICondition> conditions;
 		
-		public ToolBarButton(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand, IEnumerable<ICondition> conditions)
+		public ToolBarButton(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand, IReadOnlyCollection<ICondition> conditions)
 		{
 			ToolTipService.SetShowOnDisabled(this, true);
 			
 			this.codon = codon;
 			this.caller = caller;
-			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand, conditions);
+			if (createCommand)
+				this.Command = CommandWrapper.CreateCommand(codon, conditions);
+			else
+				this.Command = CommandWrapper.CreateLazyCommand(codon, conditions);
+			this.CommandParameter = caller;
 			this.Content = ToolBarService.CreateToolBarItemContent(codon);
 			this.conditions = conditions;
 
@@ -38,7 +42,7 @@ namespace ICSharpCode.Core.Presentation
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
 				MenuCommand.AddGestureToInputBindingOwner(inputBindingOwner, kg, this.Command, GetFeatureName());
-				this.inputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+				this.inputGestureText = MenuService.GetDisplayStringForShortcut(kg);
 			}
 			UpdateText();
 			
@@ -59,7 +63,7 @@ namespace ICSharpCode.Core.Presentation
 		{
 			string feature = GetFeatureName();
 			if (!string.IsNullOrEmpty(feature)) {
-				AnalyticsMonitorService.TrackFeature(feature, "Toolbar");
+				ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(feature, "Toolbar");
 			}
 			base.OnClick();
 		}

@@ -33,11 +33,11 @@ namespace Microsoft.VisualStudio.Shell.Flavor
 		
 		string GetProjectTypeGuidsBasedOnProjectFileExtension()
 		{
-			var projectType = new ProjectType(project);
-			if (projectType.Type == ProjectType.CSharp) {
-				return ProjectTypeGuids.CSharp;
-			} else if (projectType.Type == ProjectType.VBNet) {
-				return ProjectTypeGuids.VBNet;
+			var projectType = ProjectType.GetProjectType(project);
+			if (projectType == ProjectType.CSharp) {
+				return ProjectTypeGuids.CSharp.ToString();
+			} else if (projectType == ProjectType.VBNet) {
+				return ProjectTypeGuids.VBNet.ToString();
 			}
 			return String.Empty;
 		}

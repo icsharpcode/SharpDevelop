@@ -3,17 +3,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Input;
 
+
+using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Refactoring;
-using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace CSharpBinding
 {
@@ -101,8 +103,8 @@ namespace CSharpBinding
 
 		class Selection
 		{
-			public Location Start { get; set; }
-			public Location End { get; set; }
+			public TextLocation Start { get; set; }
+			public TextLocation End { get; set; }
 		}
 		
 		void CodeManipulationSelectionChanged(object sender, EventArgs e)
@@ -135,46 +137,207 @@ namespace CSharpBinding
 		// move selection - find outermost node in selection, swap selection with closest child of its parent to the selection
 		void MoveStatement(ITextEditor editor, MoveStatementDirection direction)
 		{
-			IList<ISpecial> commentsBlankLines;
+			IList<AstNode> commentsBlankLines;
 			var parsedCU = ParseDocument(editor, out commentsBlankLines);
 			if (parsedCU == null)	return;
 			
 			// Find the Statement or Definition containing caret -> Extend selection to Statement or Definition
 			
-			INode currentStatement;
+			AstNode currentStatement;
 			Selection statementSelection = ExtendSelection(editor, parsedCU, commentsBlankLines, out currentStatement, new Type[] {
 			                                               	typeof(Statement),
-			                                               	typeof(MemberNode),
-			                                               	typeof(FieldDeclaration),
-			                                               	typeof(ConstructorDeclaration),
-			                                               	typeof(DestructorDeclaration) });
+			                                               	typeof(EntityDeclaration) });
 			if (currentStatement == null)
 				return;
 			statementSelection = TryExtendSelectionToComments(editor.Document, statementSelection, commentsBlankLines);
 			// Take its sibling
 			if (currentStatement.Parent == null)
 				return;
-			var siblings = currentStatement.Parent.Children;
-			int currentStatementPos = siblings.IndexOf(currentStatement);
-			int swapIndex = currentStatementPos + (direction == MoveStatementDirection.Down ? 1 : -1);
-			if (swapIndex < 0 || swapIndex >= siblings.Count)
+			var siblings = currentStatement.Parent.Children.Where(c => (c.Role.GetType() == currentStatement.Role.GetType())).ToList();
+			int currentStatementStartPos = siblings.IndexOf(currentStatement);
+			int currentStatementEndPos = currentStatementStartPos;
+			
+			AstNode swapStartSibling = null;
+			AstNode swapEndSibling = null;
+			
+			// Expand selection to full line, if there is more than one statement in it
+			AstNode currentSelectionStartNode = currentStatement;
+			while ((currentSelectionStartNode.PrevSibling != null)
+			       && !(currentSelectionStartNode.PrevSibling is NewLineNode)
+			       && (currentSelectionStartNode.Parent == currentSelectionStartNode.PrevSibling.Parent)) {
+				currentSelectionStartNode = currentSelectionStartNode.PrevSibling;
+				if (currentSelectionStartNode.EndLocation.Line >= statementSelection.Start.Line) {
+					statementSelection.Start = currentSelectionStartNode.StartLocation;
+					if (!(currentSelectionStartNode is Comment))
+						currentStatementStartPos--;
+				} else {
+					// This node won't belong to current selection, so go back to next element
+					currentSelectionStartNode = currentSelectionStartNode.NextSibling;
+					break;
+				}
+			}
+			AstNode currentSelectionEndNode = currentStatement;
+			while ((currentSelectionEndNode.NextSibling != null)
+			       && !(currentSelectionEndNode.NextSibling is NewLineNode)
+			       && (currentSelectionEndNode.Parent == currentSelectionEndNode.NextSibling.Parent)) {
+				currentSelectionEndNode = currentSelectionEndNode.NextSibling;
+				if (currentSelectionEndNode.StartLocation.Line <= statementSelection.End.Line) {
+					statementSelection.End = currentSelectionEndNode.EndLocation;
+					if (!(currentSelectionEndNode is Comment))
+						currentStatementEndPos++;
+				} else {
+					// This node won't belong to current selection, so go back to next element
+					currentSelectionEndNode = currentSelectionEndNode.NextSibling;
+					break;
+				}
+			}
+			
+			int swapIndex = 0;
+			if (direction == MoveStatementDirection.Down) {
+				swapIndex = currentStatementEndPos + 1;
+			} else {
+				swapIndex = currentStatementStartPos - 1;
+			}
+			Func<AstNode, bool> isAllowedGrandParentNode =
+				(n => (n is IfElseStatement) || (n is ForStatement) || (n is ForeachStatement) || (n is WhileStatement) || (n is DoWhileStatement));
+			if (swapIndex < 0) {
+				// This is the 1st statement in block, so swap it with beginning of the block to get it outside of it
+				var parentNode = currentStatement.Parent as BlockStatement;
+				if (parentNode != null) {
+					var grandParentNode = parentNode.Parent;
+					if ((grandParentNode != null) && isAllowedGrandParentNode(grandParentNode)) {
+						// Swap with head of grandparent statement
+						swapStartSibling = grandParentNode;
+						swapEndSibling = ((BlockStatement) parentNode).LBraceToken;
+					}
+				}
+			} else if (swapIndex >= siblings.Count) {
+				// This is the last statement in block, so swap it with block end to get the statement outside of it
+				var parentNode = currentStatement.Parent as BlockStatement;
+				if (parentNode != null) {
+					var grandParentNode = parentNode.Parent;
+					if ((grandParentNode != null) && isAllowedGrandParentNode(grandParentNode)) {
+						// Swap with rest of grandparent control statement
+						swapStartSibling = ((BlockStatement) parentNode).RBraceToken;
+						swapEndSibling = grandParentNode;
+					}
+				}
+			} else {
+				// In the middle of current block
+				swapStartSibling = siblings[swapIndex];
+				swapEndSibling = swapStartSibling;
+				
+				// Special handling for swap nodes containing blocks: Move current statement into it
+				if (swapStartSibling is IfElseStatement) {
+					var ifElseStatement = swapStartSibling as IfElseStatement;
+					if (direction == MoveStatementDirection.Up) {
+						BlockStatement swappedIfElseBlock = ifElseStatement.FalseStatement as BlockStatement;
+						if (swappedIfElseBlock == null)
+							swappedIfElseBlock = ifElseStatement.TrueStatement as BlockStatement;
+						if (swappedIfElseBlock != null) {
+							swapStartSibling = swappedIfElseBlock.RBraceToken;
+						}
+					} else {
+						BlockStatement swappedIfElseBlock = ifElseStatement.TrueStatement as BlockStatement;
+						if (swappedIfElseBlock == null)
+							swappedIfElseBlock = ifElseStatement.TrueStatement as BlockStatement;
+						if (swappedIfElseBlock != null) {
+							swapEndSibling = swappedIfElseBlock.LBraceToken;
+						}
+					}
+				} else {
+					BlockStatement innerBlockStatement = GetInnerBlockOfControlNode(swapStartSibling);
+					if (innerBlockStatement != null) {
+						if (direction == MoveStatementDirection.Up) {
+							swapStartSibling = innerBlockStatement.RBraceToken;
+						} else {
+							swapEndSibling = innerBlockStatement.LBraceToken;
+						}
+					}
+				}
+			}
+
+			if ((swapStartSibling == null) || (swapEndSibling == null))
 				return;
-			INode swapSibling = siblings[swapIndex];
+			
+			Selection swapSiblingSelection = ExtendSelectionToComments(editor.Document, swapStartSibling.StartLocation, swapEndSibling.EndLocation, commentsBlankLines);
+			if (swapSiblingSelection == null)
+				swapSiblingSelection = new Selection() { Start = swapStartSibling.StartLocation, End = swapEndSibling.EndLocation };
+			
+			// Expand swapSiblingSelection, too, if there are > 1 statements in line
+			if (direction == MoveStatementDirection.Up) {
+				AstNode tempNode = swapStartSibling;
+				while ((tempNode.PrevSibling != null) && !(tempNode.PrevSibling is NewLineNode)) {
+					tempNode = tempNode.PrevSibling;
+					if (tempNode.EndLocation.Line >= swapSiblingSelection.Start.Line) {
+						swapSiblingSelection.Start = tempNode.StartLocation;
+					} else {
+						break;
+					}
+				}
+			} else {
+				AstNode tempNode = swapEndSibling;
+				while ((tempNode.NextSibling != null) && !(tempNode.NextSibling is NewLineNode)) {
+					tempNode = tempNode.NextSibling;
+					if (tempNode.StartLocation.Line <= swapSiblingSelection.End.Line) {
+						swapSiblingSelection.End = tempNode.EndLocation;
+					} else {
+						break;
+					}
+				}
+			}
+			
+			// Preserve the indentation of moved statement
+			if (statementSelection.Start.Column > swapSiblingSelection.Start.Column) {
+				statementSelection = new Selection {
+					Start = new TextLocation(statementSelection.Start.Line, swapSiblingSelection.Start.Column),
+					End = statementSelection.End
+				};
+			} else if (statementSelection.Start.Column < swapSiblingSelection.Start.Column) {
+				swapSiblingSelection = new Selection {
+					Start = new TextLocation(swapSiblingSelection.Start.Line, statementSelection.Start.Column),
+					End = swapSiblingSelection.End
+				};
+			}
+			
 			// Swap them
 			string currentNodeText = editor.Document.GetText(statementSelection.Start, statementSelection.End);
-			SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSibling.StartLocation, swapSibling.EndLocation);
-			// Move caret to the start of moved statement
-			Location upperLocation = new Location[] {statementSelection.Start, swapSibling.StartLocation}.Min();
-			if (direction == MoveStatementDirection.Up)
-				editor.Caret.Position = upperLocation;
-			else {
-				// look where current statement ended up because it is hard to calculate it correctly
-				int currentMovedOffset = editor.Document.Text.IndexOf(currentNodeText, editor.Document.PositionToOffset(upperLocation));
-				editor.Caret.Offset = currentMovedOffset;
+			try {
+				SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSiblingSelection.Start, swapSiblingSelection.End);
+				// Move caret to the start of moved statement
+				TextLocation upperLocation = new TextLocation[] {statementSelection.Start, swapSiblingSelection.Start}.Min();
+				if (direction == MoveStatementDirection.Up)
+					editor.Caret.Location = upperLocation;
+				else {
+					// look where current statement ended up because it is hard to calculate it correctly
+					int currentMovedOffset = editor.Document.Text.IndexOf(currentNodeText, editor.Document.GetOffset(upperLocation));
+					editor.Caret.Offset = currentMovedOffset;
+				}
+			} catch (Exception ex) {
+				// SD.MessageService.ShowWarning(ex.ToString());
+				return;
 			}
 		}
 		
-		Selection TryExtendSelectionToComments(IDocument document, Selection selection, IList<ISpecial> commentsBlankLines)
+		BlockStatement GetInnerBlockOfControlNode(AstNode node)
+		{
+			if (node is ForStatement) {
+				return ((ForStatement) node).EmbeddedStatement as BlockStatement;
+			}
+			if (node is ForeachStatement) {
+				return ((ForeachStatement) node).EmbeddedStatement as BlockStatement;
+			}
+			if (node is WhileStatement) {
+				return ((WhileStatement) node).EmbeddedStatement as BlockStatement;
+			}
+			if (node is DoWhileStatement) {
+				return ((DoWhileStatement) node).EmbeddedStatement as BlockStatement;
+			}
+			
+			return null;
+		}
+		
+		Selection TryExtendSelectionToComments(IDocument document, Selection selection, IList<AstNode> commentsBlankLines)
 		{
 			var extendedToComments = ExtendSelectionToComments(document, selection, commentsBlankLines);
 			if (extendedToComments != null)
@@ -184,13 +347,13 @@ namespace CSharpBinding
 		
 		public void ExtendSelection()
 		{
-			INode selectedNode = null;
-			IList<ISpecial> commentsBlankLines;
+			AstNode selectedNode = null;
+			IList<AstNode> commentsBlankLines;
 			var parsedCU = ParseDocument(editor, out commentsBlankLines);
 			if (parsedCU == null)	return;
 			
 			ISegment oldSelection = new TextSegment { StartOffset = editor.SelectionStart, Length = editor.SelectionLength };
-			Selection extendedSelection = ExtendSelection(editor, parsedCU, commentsBlankLines, out selectedNode, new Type[] { typeof(INode) });	// any node type
+			Selection extendedSelection = ExtendSelection(editor, parsedCU, commentsBlankLines, out selectedNode, new Type[] { typeof(AstNode) });	// any node type
 			
 			SelectText(extendedSelection, editor);
 			
@@ -212,14 +375,14 @@ namespace CSharpBinding
 		}
 		
 		// could work to extend selection to set of adjacent statements separated by blank lines
-		Selection ExtendSelection(ITextEditor editor, CompilationUnit parsedCU, IList<ISpecial> commentsBlankLines, out INode selectedResultNode, Type[] interestingNodeTypes)
+		Selection ExtendSelection(ITextEditor editor, SyntaxTree parsedCU, IList<AstNode> commentsBlankLines, out AstNode selectedResultNode, Type[] interestingNodeTypes)
 		{
 			selectedResultNode = null;
 			
-			var selectionStart = editor.Document.OffsetToPosition(editor.SelectionStart);
-			var selectionEnd = editor.Document.OffsetToPosition(editor.SelectionStart + editor.SelectionLength);
+			var selectionStart = editor.Document.GetLocation(editor.SelectionStart);
+			var selectionEnd = editor.Document.GetLocation(editor.SelectionStart + editor.SelectionLength);
 			
-			Ast.INode currentNode = parsedCU.Children.Select(n => EditorContext.FindInnermostNodeContainingSelection(n, selectionStart, selectionEnd)).FirstOrDefault(n => n != null);
+			AstNode currentNode = parsedCU.GetNodeContaining(selectionStart, selectionEnd);
 			if (currentNode == null) return null;
 			if (!IsNodeTypeInteresting(currentNode, interestingNodeTypes)) {
 				// ignore uninteresting nodes in the AST
@@ -259,7 +422,7 @@ namespace CSharpBinding
 					
 					// if the extended selection would contain blank lines, extend the selection only to the blank lines/comments on both sides (use siblings)
 					//   if the selection contains blank lines or comments on both sides, dont do this
-					var blankLines = commentsBlankLines.Where(s => s is BlankLine).Cast<BlankLine>().ToList();
+					// var blankLines = commentsBlankLines.Where(s => s is BlankLine).Cast<BlankLine>().ToList();
 					//if (SelectionContainsBlankLines(extendedSelectionStart, extendedLocationEnd, blankLines)) {
 					if (false) { // blank line separators - implement later
 						
@@ -277,7 +440,7 @@ namespace CSharpBinding
 			return new Selection { Start = selectionStart, End = selectionEnd };
 		}
 		
-		Selection ExtendSelectionToComments(IDocument document, Selection selection, IList<ISpecial> commentsBlankLines)
+		Selection ExtendSelectionToComments(IDocument document, Selection selection, IList<AstNode> commentsBlankLines)
 		{
 			if (selection == null)
 				throw new ArgumentNullException("selection");
@@ -287,7 +450,7 @@ namespace CSharpBinding
 		/// <summary>
 		/// If there is a comment block immediately before selection, or behind selection on the same line, add it to selection.
 		/// </summary>
-		Selection ExtendSelectionToComments(IDocument document, Location selectionStart, Location selectionEnd, IList<ISpecial> commentsBlankLines)
+		Selection ExtendSelectionToComments(IDocument document, TextLocation selectionStart, TextLocation selectionEnd, IList<AstNode> commentsBlankLines)
 		{
 			var comments = commentsBlankLines.Where(s => s is Comment).Cast<Comment>();
 			// add "var i = 5; // comments" comments
@@ -303,38 +466,37 @@ namespace CSharpBinding
 		/// <summary>
 		/// If there is a comment block behind selection on the same line ("var i = 5; // comment"), add it to selection.
 		/// </summary>
-		Selection ExtendSelectionToEndOfLineComments(IDocument document, Location selectionStart, Location selectionEnd, IEnumerable<Comment> commentsBlankLines)
+		Selection ExtendSelectionToEndOfLineComments(IDocument document, TextLocation selectionStart, TextLocation selectionEnd, IEnumerable<AstNode> commentsBlankLines)
 		{
-			var lineComment = commentsBlankLines.FirstOrDefault(c => c.StartPosition.Line == selectionEnd.Line && c.StartPosition >= selectionEnd);
+			var lineComment = commentsBlankLines.FirstOrDefault(c => c.StartLocation.Line == selectionEnd.Line && c.StartLocation >= selectionEnd);
 			if (lineComment == null) {
 				return null;
 			}
-			bool isWholeLineSelected = IsWhitespaceBetween(document, new Location(1, selectionStart.Line), selectionStart);
-			if (!isWholeLineSelected) {
-				// whole line must be selected before we add the comment
-				return null;
-			}
-			// fix the end of comment set to next line incorrectly by the parser
-			int fixEndPos = document.PositionToOffset(lineComment.EndPosition) - 1;
-			return new Selection { Start = selectionStart, End = document.OffsetToPosition(fixEndPos) };
+//			bool isWholeLineSelected = IsWhitespaceBetween(document, new TextLocation(selectionStart.Line, 1), selectionStart);
+//			if (!isWholeLineSelected) {
+//				// whole line must be selected before we add the comment
+//				return null;
+//			}
+			int endPos = document.GetOffset(lineComment.EndLocation);
+			return new Selection { Start = selectionStart, End = document.GetLocation(endPos) };
 		}
 		
 		/// <summary>
 		/// If there is a comment block immediately before selection, add it to selection.
 		/// </summary>
-		Selection ExtendSelectionToSeparateComments(IDocument document, Location selectionStart, Location selectionEnd, IEnumerable<Comment> commentsBlankLines)
+		Selection ExtendSelectionToSeparateComments(IDocument document, TextLocation selectionStart, TextLocation selectionEnd, IEnumerable<AstNode> commentsBlankLines)
 		{
-			var comments = commentsBlankLines.Where(c => c.CommentStartsLine).ToList();
-			int commentIndex = comments.FindIndex(c => c.EndPosition <= selectionStart && IsWhitespaceBetween(document, c.EndPosition, selectionStart));
+			var comments = commentsBlankLines.Where(c => (c is Comment) && ((Comment) c).StartsLine).ToList();
+			int commentIndex = comments.FindIndex(c => c.EndLocation <= selectionStart && IsWhitespaceBetween(document, c.EndLocation, selectionStart));
 			if (commentIndex < 0) {
 				return null;
 			}
 			var extendedSelection = new Selection { Start = selectionStart, End = selectionEnd };
 			// start at the selection and keep adding comments upwards as long as they are separated only by whitespace
-			while (commentIndex >= 0 && IsWhitespaceBetween(document, comments[commentIndex].EndPosition, extendedSelection.Start)) {
+			while (commentIndex >= 0 && IsWhitespaceBetween(document, comments[commentIndex].EndLocation, extendedSelection.Start)) {
 				var comment = comments[commentIndex];
 				// Include the "//, /*, ///" since they are not included by the parser
-				extendedSelection.Start = ExtendLeft(comment.StartPosition, document, "///", "/*", "//") ;
+				extendedSelection.Start = ExtendLeft(comment.StartLocation, document, "///", "/*", "//") ;
 				commentIndex--;
 			}
 			return extendedSelection;
@@ -343,7 +505,7 @@ namespace CSharpBinding
 		/// <summary>
 		/// Searches for parent of interesting type. Skips uninteresting parents.
 		/// </summary>
-		INode GetInterestingParent(INode node, Type[] interestingNodeTypes)
+		AstNode GetInterestingParent(AstNode node, Type[] interestingNodeTypes)
 		{
 			var parent = node.Parent;
 			while(parent != null) {
@@ -360,15 +522,15 @@ namespace CSharpBinding
 			return interestingNodeTypes.Any(interestingType => interestingType.IsAssignableFrom(nodeType) || (nodeType == interestingType));
 		}
 		
-		bool SelectionContainsBlankLines(Location selectionStart, Location selectionEnd, List<BlankLine> blankLines)
+		bool SelectionContainsBlankLines(TextLocation selectionStart, TextLocation selectionEnd, List<AstNode> blankLines)
 		{
-			return blankLines.Exists(b => b.StartPosition >= selectionStart && b.EndPosition <= selectionEnd);
+			return blankLines.Exists(b => b.StartLocation >= selectionStart && b.EndLocation <= selectionEnd);
 		}
 		
-		bool IsWhitespaceBetween(IDocument document, Location startPos, Location endPos)
+		bool IsWhitespaceBetween(IDocument document, TextLocation startPos, TextLocation endPos)
 		{
-			int startOffset = document.PositionToOffset(startPos);
-			int endOffset = document.PositionToOffset(endPos);
+			int startOffset = document.GetOffset(startPos);
+			int endOffset = document.GetOffset(endPos);
 			if (startOffset > endOffset) {
 				throw new ArgumentException("Invalid range for (startPos, endPos)");
 			}
@@ -379,14 +541,14 @@ namespace CSharpBinding
 		/// If the text at startPos is preceded by any of the prefixes, moves the start backwards to include one prefix
 		/// (the rightmost one).
 		/// </summary>
-		Location ExtendLeft(Location startPos, IDocument document, params String[] prefixes)
+		TextLocation ExtendLeft(TextLocation startPos, IDocument document, params String[] prefixes)
 		{
-			int startOffset = document.PositionToOffset(startPos);
+			int startOffset = document.GetOffset(startPos);
 			foreach (string prefix in prefixes) {
 				if (startOffset < prefix.Length) continue;
 				string realPrefix = document.GetText(startOffset - prefix.Length, prefix.Length);
 				if (realPrefix == prefix) {
-					return document.OffsetToPosition(startOffset - prefix.Length);
+					return document.GetLocation(startOffset - prefix.Length);
 				}
 			}
 			// no prefixes -> do not extend
@@ -394,42 +556,34 @@ namespace CSharpBinding
 		}
 		
 		// could depend just on IDocument
-		CompilationUnit ParseDocument(ITextEditor editor, out IList<ISpecial> parsedSpecials)
+		SyntaxTree ParseDocument(ITextEditor editor, out IList<AstNode> parsedSpecials)
 		{
 			parsedSpecials = null;
-			var editorLang = EditorContext.GetEditorLanguage(editor);
-			if (editorLang == null) return null;
-			var parser = ParserFactory.CreateParser(editorLang.Value, editor.Document.CreateReader());
+			CompilerSettings compilerSettings = new CompilerSettings();
+			var parser = new CSharpParser();
 			if (parser == null) return null;
-			parser.ParseMethodBodies = true;
-			parser.Lexer.SkipAllComments = false;
-			parser.Parse();
-			var parsedCU = parser.CompilationUnit;
-			if (parsedCU == null) return null;
-			foreach (var node in parsedCU.Children) {
-				// fix StartLocation / EndLocation
-				node.AcceptVisitor(new ICSharpCode.NRefactory.Visitors.SetRegionInclusionVisitor(), null);
-			}
-			parsedSpecials = parser.Lexer.SpecialTracker.CurrentSpecials;
-			return parsedCU;
+			var syntaxTree = parser.Parse(editor.Document.CreateReader());
+			if (syntaxTree == null) return null;
+			parsedSpecials = new List<AstNode>(syntaxTree.Descendants.OfType<Comment>());
+			return syntaxTree;
 		}
 		
 		/// <summary>
 		/// Swaps 2 ranges of text in a document.
 		/// </summary>
-		void SwapText(IDocument document, Location start1, Location end1, Location start2, Location end2)
+		void SwapText(IDocument document, TextLocation start1, TextLocation end1, TextLocation start2, TextLocation end2)
 		{
 			if (start1 > start2) {
-				Location sw;
+				TextLocation sw;
 				sw = start1; start1 = start2; start2 = sw;
 				sw = end1; end1 = end2; end2 = sw;
 			}
 			if (end1 >= start2)
 				throw new InvalidOperationException("Cannot swap overlaping segments");
-			int offset1 = document.PositionToOffset(start1);
-			int len1 = document.PositionToOffset(end1) - offset1;
-			int offset2 = document.PositionToOffset(start2);
-			int len2 = document.PositionToOffset(end2) - offset2;
+			int offset1 = document.GetOffset(start1);
+			int len1 = document.GetOffset(end1) - offset1;
+			int offset2 = document.GetOffset(start2);
+			int len2 = document.GetOffset(end2) - offset2;
 			
 			string text1 = document.GetText(offset1, len1);
 			string text2 = document.GetText(offset2, len2);
@@ -446,8 +600,8 @@ namespace CSharpBinding
 				return;
 			int startOffset, endOffset;
 			try {
-				startOffset = editor.Document.PositionToOffset(selection.Start);
-				endOffset = editor.Document.PositionToOffset(selection.End);
+				startOffset = editor.Document.GetOffset(selection.Start);
+				endOffset = editor.Document.GetOffset(selection.End);
 			} catch (ArgumentOutOfRangeException) {
 				return;
 			}

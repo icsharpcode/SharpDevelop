@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-
 using ICSharpCode.Core;
 using NuGet;
 
@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement
 
 		RegisteredPackageSourceSettings registeredPackageSourceSettings;
 		Properties properties;
-		List<RecentPackageInfo> recentPackages;
+		ObservableCollection<RecentPackageInfo> recentPackages;
 		PackageRestoreConsent packageRestoreConsent;
 		
 		public PackageManagementOptions(Properties properties, ISettings settings)
@@ -33,7 +33,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public PackageManagementOptions()
-			: this(PropertyService.Get("PackageManagementSettings", new Properties()))
+			: this(PropertyService.NestedProperties("PackageManagementSettings"))
 		{
 		}
 		
@@ -67,8 +67,16 @@ namespace ICSharpCode.PackageManagement
 		
 		void ReadRecentPackages()
 		{
-			var defaultRecentPackages = new List<RecentPackageInfo>();
-			recentPackages = properties.Get<List<RecentPackageInfo>>(RecentPackagesPropertyName, defaultRecentPackages);
+			IReadOnlyList<RecentPackageInfo> savedRecentPackages = properties.GetList<RecentPackageInfo>(RecentPackagesPropertyName);
+			
+			recentPackages = new ObservableCollection<RecentPackageInfo>();
+			recentPackages.AddRange(savedRecentPackages);
+			recentPackages.CollectionChanged += RecentPackagesCollectionChanged;
+		}
+
+		void RecentPackagesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			properties.SetList(RecentPackagesPropertyName, recentPackages);
 		}
 	}
 }

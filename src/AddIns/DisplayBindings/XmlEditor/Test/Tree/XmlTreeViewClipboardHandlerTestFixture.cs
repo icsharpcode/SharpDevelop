@@ -1,13 +1,16 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Tests.Utils;
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Tests.Utils;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using Rhino.Mocks;
 using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Tree
@@ -32,6 +35,8 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
+			SD.InitializeForUnitTests();
+			
 			MockOpenedFile openedFile = new MockOpenedFile("test.xml");
 			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
 			xmlView = new MockXmlViewContent(openedFile);
@@ -60,6 +65,7 @@ namespace XmlEditor.Tests.Tree
 			if (xmlView != null) {
 				xmlView.Dispose();
 			}
+			SD.TearDownForUnitTests();
 		}
 		
 		[Test]

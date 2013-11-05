@@ -1,0 +1,34 @@
+﻿<gui:OptionPanel x:Class="ICSharpCode.AvalonEdit.AddIn.ContextActions.ContextActionOptions"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop">
+	<DockPanel>
+		<!-- TODO: Translate -->
+		<CheckBox Name="featureEnabledCheckBox" DockPanel.Dock="Top"
+		          IsEnabled="False"
+		          IsChecked="True" Content="Enable context actions" />
+		<sd:RestrictDesiredSize Margin="0, 4, 0, 0">
+			<ListBox Name="listBox" SelectionMode="Multiple"
+			         IsEnabled="{Binding IsChecked, ElementName=featureEnabledCheckBox}"
+			         ItemContainerStyle="{x:Static sd:GlobalStyles.ListBoxItemFocusHighlightStyle}">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<!-- The checkbox is toggling the actual IsSelected property on the container (ListBoxItem), so it'll update ListBox.SelectedItems -->
+						<CheckBox Content="{Binding DisplayName}"
+						          IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}},Path=IsSelected}" />
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+				<ListBox.GroupStyle>
+					<GroupStyle>
+						<GroupStyle.HeaderTemplate>
+							<DataTemplate DataType="Group">
+								<TextBlock FontWeight="Bold" Text="{Binding Name}" />
+							</DataTemplate>
+						</GroupStyle.HeaderTemplate>
+					</GroupStyle>
+				</ListBox.GroupStyle>
+			</ListBox>
+		</sd:RestrictDesiredSize>
+	</DockPanel>
+</gui:OptionPanel>

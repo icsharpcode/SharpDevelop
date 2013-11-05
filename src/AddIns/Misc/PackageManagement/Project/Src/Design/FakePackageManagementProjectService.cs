@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -14,56 +16,44 @@ namespace ICSharpCode.PackageManagement.Design
 		public bool IsRefreshProjectBrowserCalled;
 		
 		public IProject CurrentProject { get; set; }
-		public Solution OpenSolution { get; set; }
+		public ISolution OpenSolution { get; set; }
 		
-		public event ProjectEventHandler ProjectAdded;
-		public event SolutionFolderEventHandler SolutionFolderRemoved;
-		public event EventHandler SolutionClosed;
-		public event EventHandler<SolutionEventArgs> SolutionLoaded;
+		public event EventHandler<SolutionEventArgs> SolutionClosed;
+		public event EventHandler<SolutionEventArgs> SolutionOpened;
 		
 		public void RefreshProjectBrowser()
 		{
 			IsRefreshProjectBrowserCalled = true;
-		}		
-		
-		public void FireProjectAddedEvent(IProject project)
-		{
-			if (ProjectAdded != null) {
-				ProjectAdded(this, new ProjectEventArgs(project));
-			}
 		}
 		
-		public void FireSolutionClosedEvent()
+		public void FireSolutionClosedEvent(ISolution solution)
 		{
 			if (SolutionClosed != null) {
-				SolutionClosed(this, new EventArgs());
+				SolutionClosed(this, new SolutionEventArgs(solution));
 			}
 		}
 		
-		public void FireSolutionLoadedEvent(Solution solution)
+		public void FireSolutionOpenedEvent(ISolution solution)
 		{
-			if (SolutionLoaded != null) {
-				SolutionLoaded(this, new SolutionEventArgs(solution));
+			if (SolutionOpened != null) {
+				SolutionOpened(this, new SolutionEventArgs(solution));
 			}
 		}
 		
-		public void FireSolutionFolderRemoved(ISolutionFolder solutionFolder)
-		{
-			if (SolutionFolderRemoved != null) {
-				SolutionFolderRemoved(this, new SolutionFolderEventArgs(solutionFolder));
+		public readonly IMutableModelCollection<IModelCollection<IProject>> ProjectCollections = new NullSafeSimpleModelCollection<IModelCollection<IProject>>();
+		IModelCollection<IProject> allProjects;
+		
+		public IModelCollection<IProject> AllProjects {
+			get { 
+				if (allProjects == null)
+					allProjects = ProjectCollections.SelectMany(c => c);
+				return allProjects; 
 			}
 		}
 		
-		public List<IProject> FakeOpenProjects = new List<IProject>();
-		
-		public void AddFakeProject(IProject project)
+		public void AddProject(IProject project)
 		{
-			FakeOpenProjects.Add(project);
-		}
-		
-		public IEnumerable<IProject> GetOpenProjects()
-		{
-			return FakeOpenProjects;
+			ProjectCollections.Add(new ImmutableModelCollection<IProject>(new[] { project }));
 		}
 		
 		public void AddProjectItem(IProject project, ProjectItem item)
@@ -81,17 +71,17 @@ namespace ICSharpCode.PackageManagement.Design
 			project.Save();
 		}
 		
-		public Solution SavedSolution;
+		public ISolution SavedSolution;
 		
-		public void Save(Solution solution)
+		public void Save(ISolution solution)
 		{
 			SavedSolution = solution;
 		}
 		
-		public IProjectContent GetProjectContent(IProject project)
-		{
-			return new DefaultProjectContent();
-		}
+//		public IProjectContent GetProjectContent(IProject project)
+//		{
+//			return new DefaultProjectContent();
+//		}
 		
 		public IProjectBrowserUpdater ProjectBrowserUpdater;
 		

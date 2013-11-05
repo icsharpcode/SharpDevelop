@@ -194,7 +194,7 @@ namespace ICSharpCode.AvalonEdit
 		// The fields should be accessed only by their property - the fields might not be used
 		// if someone overrides the property.
 		
-		int _indentationSize = 4;
+		int indentationSize = 4;
 		
 		/// <summary>
 		/// Gets/Sets the width of one indentation unit.
@@ -202,7 +202,7 @@ namespace ICSharpCode.AvalonEdit
 		/// <remarks>The default value is 4.</remarks>
 		[DefaultValue(4)]
 		public virtual int IndentationSize {
-			get { return _indentationSize; }
+			get { return indentationSize; }
 			set {
 				if (value < 1)
 					throw new ArgumentOutOfRangeException("value", value, "value must be positive");
@@ -210,15 +210,15 @@ namespace ICSharpCode.AvalonEdit
 				// (it only crashed in the hundred thousands for me; but might crash earlier with larger fonts)
 				if (value > 1000)
 					throw new ArgumentOutOfRangeException("value", value, "indentation size is too large");
-				if (_indentationSize != value) {
-					_indentationSize = value;
+				if (indentationSize != value) {
+					indentationSize = value;
 					OnPropertyChanged("IndentationSize");
 					OnPropertyChanged("IndentationString");
 				}
 			}
 		}
 		
-		bool _convertTabsToSpaces;
+		bool convertTabsToSpaces;
 		
 		/// <summary>
 		/// Gets/Sets whether to use spaces for indentation instead of tabs.
@@ -226,10 +226,10 @@ namespace ICSharpCode.AvalonEdit
 		/// <remarks>The default value is <c>false</c>.</remarks>
 		[DefaultValue(false)]
 		public virtual bool ConvertTabsToSpaces {
-			get { return _convertTabsToSpaces; }
+			get { return convertTabsToSpaces; }
 			set {
-				if (_convertTabsToSpaces != value) {
-					_convertTabsToSpaces = value;
+				if (convertTabsToSpaces != value) {
+					convertTabsToSpaces = value;
 					OnPropertyChanged("ConvertTabsToSpaces");
 					OnPropertyChanged("IndentationString");
 				}

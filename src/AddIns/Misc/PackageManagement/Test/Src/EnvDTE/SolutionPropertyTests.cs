@@ -14,12 +14,12 @@ namespace PackageManagement.Tests.EnvDTE
 	{
 		Properties properties;
 		Solution solution;
-		SD.Solution msbuildSolution;
+		SD.ISolution msbuildSolution;
 		SolutionHelper solutionHelper;
 		
-		void CreateProperties()
+		void CreateProperties(string fileName)
 		{
-			solutionHelper = new SolutionHelper();
+			solutionHelper = new SolutionHelper(fileName);
 			solution = solutionHelper.Solution;
 			msbuildSolution = solutionHelper.MSBuildSolution;
 			properties = (Properties)solution.Properties;
@@ -34,8 +34,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void Value_GetPathProperty_ReturnsSolutionFileName()
 		{
-			CreateProperties();
-			msbuildSolution.FileName = @"d:\projects\MyProject\MySolution.sln";
+			CreateProperties(@"d:\projects\MyProject\MySolution.sln");
 			
 			global::EnvDTE.Property property = properties.Item("Path");
 			object path = property.Value;
@@ -46,8 +45,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void GetEnumerator_GetPathProperty_ReturnsSolutionFileName()
 		{
-			CreateProperties();
-			msbuildSolution.FileName = @"d:\projects\MyProject\MySolution.sln";
+			CreateProperties(@"d:\projects\MyProject\MySolution.sln");
 			
 			global::EnvDTE.Property property = PropertiesHelper.FindProperty(properties, "Path");
 			object path = property.Value;
@@ -58,8 +56,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void GetEnumerator_GetStartupProjectPropertyWhenSolutionHasOneStartableProject_ReturnsStartupProjectName()
 		{
-			CreateProperties();
-			msbuildSolution.FileName = @"d:\projects\MyProject\MySolution.sln";
+			CreateProperties(@"d:\projects\MyProject\MySolution.sln");
 			AddStartupProject("MyProject", @"d:\projects\MyProject\MyProject.csproj");
 			
 			global::EnvDTE.Property property = PropertiesHelper.FindProperty(properties, "StartupProject");
@@ -71,8 +68,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void GetEnumerator_GetStartupProjectPropertyWhenSolutionHasNoProjects_ReturnsPropertyWithEmptyStringAsValue()
 		{
-			CreateProperties();
-			msbuildSolution.FileName = @"d:\projects\MyProject\MySolution.sln";
+			CreateProperties(@"d:\projects\MyProject\MySolution.sln");
 			
 			global::EnvDTE.Property property = PropertiesHelper.FindProperty(properties, "StartupProject");
 			object projectName = property.Value;

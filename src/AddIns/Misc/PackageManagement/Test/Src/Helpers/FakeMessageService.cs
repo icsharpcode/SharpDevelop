@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.Core.Services;
+using ICSharpCode.Core;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -45,13 +45,45 @@ namespace PackageManagement.Tests.Helpers
 		{
 		}
 		
-		public void InformSaveError(string fileName, string message, string dialogName, Exception exceptionGot)
+		public void InformSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot)
 		{
 		}
 		
-		public ChooseSaveErrorResult ChooseSaveError(string fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled)
+		public ChooseSaveErrorResult ChooseSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled)
 		{
 			return ChooseSaveErrorResult.Ignore;
+		}
+		
+		public string DefaultMessageBoxTitle {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string ProductName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public void ShowHandledException(Exception ex, string message)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void ShowErrorFormatted(string formatstring, params object[] formatitems)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void ShowWarningFormatted(string formatstring, params object[] formatitems)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void ShowMessageFormatted(string formatstring, string caption, params object[] formatitems)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Svn
@@ -98,7 +99,7 @@ namespace ICSharpCode.Svn
 				// if exceptions aren't caught here, they force SD to exit
 				if (ex is SvnClientException || ex is System.Runtime.InteropServices.SEHException) {
 					LoggingService.Warn(ex);
-					WorkbenchSingleton.SafeThreadAsyncCall(infoPanel.ShowError, ex);
+					SD.MainThread.InvokeAsyncAndForget(() => infoPanel.ShowError(ex));
 				} else {
 					MessageService.ShowException(ex);
 				}
@@ -108,7 +109,7 @@ namespace ICSharpCode.Svn
 		void ReceiveLogMessage(LogMessage logMessage)
 		{
 			if (infoPanel != null) {
-				WorkbenchSingleton.SafeThreadAsyncCall(infoPanel.AddLogMessage, logMessage);
+				SD.MainThread.InvokeAsyncAndForget(() => infoPanel.AddLogMessage(logMessage));
 			}
 //			if (diffPanel != null) {
 //				WorkbenchSingleton.SafeThreadAsyncCall(diffPanel.AddLogMessage, logMessage);

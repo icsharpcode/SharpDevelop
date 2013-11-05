@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 
 using ICSharpCode.CodeCoverage.Tests.Utils;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -15,15 +17,15 @@ using UnitTesting.Tests.Utils;
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	[TestFixture]
-	public class SolutionCodeCoverageResultsTests
+	public class SolutionCodeCoverageResultsTests : SDTestFixtureBase
 	{
 		SolutionCodeCoverageResults solutionCodeCoverageResults;
-		Solution solution;
+		ISolution solution;
 		IFileSystem fakeFileSystem;
 		
 		void CreateSolutionCodeCoverageResults()
 		{
-			solution = new Solution(new MockProjectChangeWatcher());
+			solution = MockSolution.Create();
 			fakeFileSystem = MockRepository.GenerateStub<IFileSystem>();
 			solutionCodeCoverageResults = new SolutionCodeCoverageResults(solution, fakeFileSystem);
 		}
@@ -36,21 +38,21 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		void AddProject(string fileName)
 		{
 			var project = new MockCSharpProject(solution, Path.GetFileNameWithoutExtension(fileName));
-			project.FileName = fileName;
-			solution.Folders.Add(project);
+			project.FileName = new FileName(fileName);
+			((ICollection<IProject>)solution.Projects).Add(project);
 		}
 		
 		void AddCodeCoverageFile(string fileName)
 		{
 			string coverageXml = "<CodeCoverage></CodeCoverage>";
-			AddCodeCoverageFile(fileName, coverageXml);
+			AddCodeCoverageFile(FileName.Create(fileName), coverageXml);
 		}
 		
-		void AddCodeCoverageFile(string fileName, string coverageXml)
+		void AddCodeCoverageFile(FileName fileName, string coverageXml)
 		{
 			var stringReader = new StringReader(coverageXml);
 			fakeFileSystem.Stub(fs => fs.FileExists(fileName)).Return(true);
-			fakeFileSystem.Stub(fs => fs.CreateTextReader(fileName)).Return(stringReader);
+			fakeFileSystem.Stub(fs => fs.OpenText(fileName)).Return(stringReader);
 		}
 		
 		[Test]

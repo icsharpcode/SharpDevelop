@@ -1,0 +1,149 @@
+﻿<ResourceDictionary
+	x:Class="CommonResources"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:Debugger.AddIn.Pads.Controls"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:tv="http://icsharpcode.net/sharpdevelop/treeview"
+>
+	<core:ContextMenuBuilder x:Key="menuBuilder" />
+	
+	<Style x:Key="itemContainerStyle" TargetType="{x:Type ListViewItem}">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ListViewItem}">
+					<Border Name="Bd"
+					        Background="{TemplateBinding Background}"
+					        BorderBrush="{TemplateBinding BorderBrush}"
+					        BorderThickness="{TemplateBinding BorderThickness}"
+					        Padding="{TemplateBinding Padding}"
+					        SnapsToDevicePixels="true">
+						<GridViewRowPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsEnabled" Value="false">
+							<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	<!-- Local Variables Pad and Watch Pad -->
+	<tv:SharpGridView x:Key="variableGridView" AllowsColumnReorder="False">
+		<GridView.Columns>
+			<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.LocalVariables.NameColumn}" Width="200">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<StackPanel Orientation="Horizontal">
+							<tv:SharpTreeNodeView />
+							<local:AutoCompleteTextBox x:Name="name" Margin="-6 0 0 0"  MinWidth="100" Text="{Binding Node.Name}" IsEditable="{Binding Node.CanSetName}">
+								<local:AutoCompleteTextBox.ContextMenu>
+									<MultiBinding Converter="{StaticResource menuBuilder}">
+										<Binding Path="Node.ContextMenuAddInTreeEntry" />
+										<Binding Path="Node" />
+									</MultiBinding>
+								</local:AutoCompleteTextBox.ContextMenu>
+							</local:AutoCompleteTextBox>
+						</StackPanel>
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+			<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.LocalVariables.ValueColumn}" Width="200">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<local:AutoCompleteTextBox
+							MinWidth="100"
+							Text="{Binding Node.Value}"
+							IsEditable="{Binding Node.CanSetValue}">
+							<local:AutoCompleteTextBox.ContextMenu>
+								<MultiBinding Converter="{StaticResource menuBuilder}">
+									<Binding Path="Node.ContextMenuAddInTreeEntry" />
+									<Binding Path="Node" />
+								</MultiBinding>
+							</local:AutoCompleteTextBox.ContextMenu>
+						</local:AutoCompleteTextBox>
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+			<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.LocalVariables.TypeColumn}" Width="200">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<local:AutoCompleteTextBox MinWidth="100" Text="{Binding Node.Type}" IsEditable="False">
+							<local:AutoCompleteTextBox.ContextMenu>
+								<MultiBinding Converter="{StaticResource menuBuilder}">
+									<Binding Path="Node.ContextMenuAddInTreeEntry" />
+									<Binding Path="Node" />
+								</MultiBinding>
+							</local:AutoCompleteTextBox.ContextMenu>
+						</local:AutoCompleteTextBox>
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+		</GridView.Columns>
+	</tv:SharpGridView>
+	
+	<!-- Callstack -->
+	<GridView x:Key="callstackGridView" AllowsColumnReorder="False">
+		<GridViewColumn Header="{core:Localize Global.Name}" Width="400">
+			<GridViewColumn.CellTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="{Binding ImageSource}" Margin="1, 1, 5, 1" />
+						<TextBlock Text="{Binding Name}" Foreground="{Binding FontColor}" />
+					</StackPanel>
+				</DataTemplate>
+			</GridViewColumn.CellTemplate>
+		</GridViewColumn>
+	</GridView>
+	
+	<!-- Breakpoints Pad -->
+	<GridView x:Key="breakpointsGridView" AllowsColumnReorder="False">
+		<GridViewColumn Header="">
+			<GridViewColumn.CellTemplate>
+				<DataTemplate>
+					<CheckBox IsChecked="{Binding Path=IsEnabled, Mode=TwoWay}" />
+				</DataTemplate>
+			</GridViewColumn.CellTemplate>
+		</GridViewColumn>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.BookmarkPad.LocationText}">
+			<GridViewColumn.CellTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="{Binding ImageSource}" Margin="1, 1, 5, 1" />
+						<TextBlock Text="{Binding FileNameAndLineNumber}" />
+					</StackPanel>
+				</DataTemplate>
+			</GridViewColumn.CellTemplate>
+		</GridViewColumn>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader}">
+			<GridViewColumn.CellTemplate>
+				<DataTemplate>
+					<local:AutoCompleteTextBox Text="{Binding Condition}" MinWidth="100" />
+				</DataTemplate>
+			</GridViewColumn.CellTemplate>
+		</GridViewColumn>
+	</GridView>
+	
+	<!-- Loaded Modules -->
+	<GridView x:Key="loadedModulesGridView" AllowsColumnReorder="False">
+		<GridViewColumn Header="{core:Localize Global.Name}" Width="250" DisplayMemberBinding="{Binding Name}"/>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Modules.AddressColumn}" Width="100" DisplayMemberBinding="{Binding Address}"/>
+		<GridViewColumn Header="{core:Localize Global.Path}" Width="250" DisplayMemberBinding="{Binding Path}"/>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Modules.OrderColumn}" Width="80" DisplayMemberBinding="{Binding Order}"/>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Modules.SymbolsColumn}" Width="130" DisplayMemberBinding="{Binding Symbols}"/>
+	</GridView>
+	
+	<!-- Threads -->
+	<GridView x:Key="threadsGridView" AllowsColumnReorder="False">
+		<GridViewColumn Header="{core:Localize Global.ID}" Width="100" DisplayMemberBinding="{Binding ID}"/>
+		<GridViewColumn Header="{core:Localize Global.Name}" Width="300" DisplayMemberBinding="{Binding Name}"/>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Threads.Priority}" Width="120" DisplayMemberBinding="{Binding Priority}"/>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Threads.Frozen}" Width="80" DisplayMemberBinding="{Binding Frozen}"/>
+	</GridView>
+
+</ResourceDictionary>

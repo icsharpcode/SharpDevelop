@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
 using Mono.Cecil;
@@ -13,7 +14,7 @@ namespace ICSharpCode.ILSpyAddIn
 	{
 		readonly ITextOutput output;
 		
-		public readonly List<MemberMapping> DebuggerMemberMappings = new List<MemberMapping>();
+		public readonly Dictionary<string, MethodDebugSymbols> DebugSymbols = new Dictionary<string, MethodDebugSymbols>();
 		public readonly Dictionary<string, ICSharpCode.NRefactory.TextLocation> MemberLocations = new Dictionary<string, ICSharpCode.NRefactory.TextLocation>();
 		
 		public DebuggerTextOutput(ITextOutput output)
@@ -63,10 +64,12 @@ namespace ICSharpCode.ILSpyAddIn
 			output.WriteReference(text, reference, isLocal);
 		}
 		
-		public void AddDebuggerMemberMapping(MemberMapping memberMapping)
+		public void AddDebugSymbols(MethodDebugSymbols methodDebugSymbols)
 		{
-			DebuggerMemberMappings.Add(memberMapping);
-			output.AddDebuggerMemberMapping(memberMapping);
+			var id = XmlDocKeyProvider.GetKey(methodDebugSymbols.CecilMethod);
+			methodDebugSymbols.SequencePoints = methodDebugSymbols.SequencePoints.OrderBy(s => s.ILOffset).ToList();
+			this.DebugSymbols.Add(id, methodDebugSymbols);
+			output.AddDebugSymbols(methodDebugSymbols);
 		}
 		
 		public void MarkFoldStart(string collapsedText, bool defaultCollapsed)

@@ -2,12 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using Rhino.Mocks;
 using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Editor
@@ -18,8 +19,8 @@ namespace XmlEditor.Tests.Editor
 		XmlFormattingStrategy formattingStrategy;
 		MockTextEditor textEditor;
 		MockTextEditorOptions options;
-		MockDocumentLine docLine;
-		AvalonEditDocumentAdapter document;
+		IDocumentLine docLine;
+		IDocument document;
 		TextDocument textDocument;
 		
 		[SetUp]
@@ -32,7 +33,7 @@ namespace XmlEditor.Tests.Editor
 			textEditor.Options = options;
 			
 			textDocument = new TextDocument();
-			document = new AvalonEditDocumentAdapter(textDocument, null);
+			document = textDocument;
 			textEditor.SetDocument(document);
 			
 			document.Text = 
@@ -41,8 +42,8 @@ namespace XmlEditor.Tests.Editor
 				"</child>\r\n" +
 				"</root>\r\n";
 			
-			docLine = new MockDocumentLine();
-			docLine.LineNumber = 3;
+			docLine = MockRepository.GenerateStub<IDocumentLine>();
+			docLine.Stub(l => l.LineNumber).Return(3);
 			formattingStrategy.IndentLine(textEditor, docLine);
 		}
 		

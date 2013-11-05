@@ -5,30 +5,42 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public class ProjectReferenceProjectItem : ReferenceProjectItem
+	public class ProjectReferenceProjectItem : ReferenceProjectItem, IAssemblyReference
 	{
-		IProject referencedProject;
-		
 		[Browsable(false)]
 		public IProject ReferencedProject {
 			get {
-				if (referencedProject == null)
-					referencedProject = ProjectService.GetProject(this.FileName);
-				return referencedProject;
+				// must be thread-safe because it's used by LoadSolutionProjectsThread,
+				// and by IAssemblyReference.Resolve()
+				IProject parentProject = this.Project;
+				if (parentProject == null)
+					return null;
+				var fileName = this.FileName;
+				foreach (var project in parentProject.ParentSolution.Projects) {
+					if (project.FileName == fileName)
+						return project;
+				}
+				return null;
 			}
 		}
 		
 		[ReadOnly(true)]
-		public string ProjectGuid {
+		public Guid ProjectGuid {
 			get {
-				return GetEvaluatedMetadata("Project");
+				Guid guid;
+				if (Guid.TryParse(GetEvaluatedMetadata("Project"), out guid))
+					return guid;
+				else
+					return Guid.Empty;
 			}
 			set {
-				SetEvaluatedMetadata("Project", value);
+				SetEvaluatedMetadata("Project", value.ToString("B").ToUpperInvariant());
 			}
 		}
 		
@@ -95,8 +107,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.Include = FileUtility.GetRelativePath(project.Directory, referenceTo.FileName);
 			ProjectGuid = referenceTo.IdGuid;
 			ProjectName = referenceTo.Name;
-			this.referencedProject = referenceTo;
 			this.DefaultCopyLocalValue = true;
+		}
+		
+		IAssembly IAssemblyReference.Resolve(ITypeResolveContext context)
+		{
+			IProject p = this.ReferencedProject;
+			if (p == null)
+				return null;
+			var snapshot = context.Compilation.SolutionSnapshot as ISolutionSnapshotWithProjectMapping;
+			IProjectContent pc = (snapshot != null) ? snapshot.GetProjectContent(p) : p.ProjectContent;
+			return (pc != null) ? pc.Resolve(context) : null;
 		}
 	}
 }

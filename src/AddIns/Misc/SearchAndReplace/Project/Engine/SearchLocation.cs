@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ICSharpCode.AvalonEdit.Document;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -46,35 +48,40 @@ namespace SearchAndReplace
 		{
 			List<FileName> files = new List<FileName>();
 			
+			ITextEditor editor;
 			switch (Target) {
 				case SearchTarget.CurrentDocument:
 				case SearchTarget.CurrentSelection:
-					ITextEditorProvider vc = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-					if (vc != null)
-						files.Add(vc.TextEditor.FileName);
+					editor = SD.GetActiveViewContentService<ITextEditor>();
+					if (editor != null)
+						files.Add(editor.FileName);
 					break;
 				case SearchTarget.AllOpenFiles:
-					foreach (ITextEditorProvider editor in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<ITextEditorProvider>())
-						files.Add(editor.TextEditor.FileName);
+					foreach (var vc in SD.Workbench.ViewContentCollection) {
+						editor = vc.GetService<ITextEditor>();
+						if (editor != null)
+							files.Add(editor.FileName);
+					}
 					break;
 				case SearchTarget.WholeProject:
 					if (ProjectService.CurrentProject == null)
 						break;
 					foreach (FileProjectItem item in ProjectService.CurrentProject.Items.OfType<FileProjectItem>())
-						files.Add(new FileName(item.FileName));
+						files.Add(item.FileName);
 					break;
 				case SearchTarget.WholeSolution:
 					if (ProjectService.OpenSolution == null)
 						break;
-					foreach (var item in ProjectService.OpenSolution.SolutionFolderContainers.Select(f => f.SolutionItems).SelectMany(si => si.Items))
-						files.Add(new FileName(Path.Combine(ProjectService.OpenSolution.Directory, item.Location)));
+					foreach (var item in ProjectService.OpenSolution.AllItems.OfType<ISolutionFileItem>())
+						files.Add(item.FileName);
 					foreach (var item in ProjectService.OpenSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>())
-						files.Add(new FileName(item.FileName));
+						files.Add(item.FileName);
 					break;
 				case SearchTarget.Directory:
 					if (!Directory.Exists(BaseDirectory))
 						break;
-					return FileUtility.LazySearchDirectory(BaseDirectory, Filter, SearchSubdirs);
+					var options = SearchSubdirs ? DirectorySearchOptions.IncludeSubdirectories : DirectorySearchOptions.None;
+					return SD.FileSystem.GetFiles(DirectoryName.Create(BaseDirectory), Filter, options);
 				default:
 					throw new Exception("Invalid value for FileListType");
 			}

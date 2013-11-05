@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement
@@ -22,7 +23,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			string parentFileName = GetParentFileName(fileName);
 			if (parentFileName != null) {
-				return project.FindFile(parentFileName);
+				return project.FindFile(FileName.Create(parentFileName));
 			}
 			return null;
 		}

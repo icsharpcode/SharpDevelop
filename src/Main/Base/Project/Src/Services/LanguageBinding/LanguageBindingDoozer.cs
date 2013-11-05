@@ -31,25 +31,64 @@ namespace ICSharpCode.SharpDevelop
 		
 		public object BuildItem(BuildItemArgs args)
 		{
-			ITextEditor editor = (ITextEditor)args.Caller;
-			string[] extensions = args.Codon["extensions"].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-			if (CanAttach(extensions, editor.FileName)) {
-				return args.AddIn.CreateObject(args.Codon["class"]);
-			} else {
-				return null;
+			return new LanguageBindingDescriptor(args.Codon);
+		}
+	}
+	
+	class LanguageBindingDescriptor
+	{
+		ILanguageBinding binding = null;
+		Codon codon;
+		
+		public ILanguageBinding Binding {
+			get {
+				if (binding == null) {
+					binding = (ILanguageBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
+				}
+				return binding;
 			}
 		}
 		
-		static bool CanAttach(string[] extensions, string fileName)
+		public Codon Codon {
+			get {
+				return codon;
+			}
+		}
+		
+		public LanguageBindingDescriptor(Codon codon)
+		{
+			this.codon = codon;
+		}
+		
+		string[] extensions;
+		
+		public string[] Extensions {
+			get {
+				if (extensions == null) {
+					if (codon.Properties["extensions"].Length == 0)
+						extensions = new string[0];
+					else
+						extensions = codon.Properties["extensions"].ToLowerInvariant().Split(';');
+				}
+				return extensions;
+			}
+		}
+		
+		public string Name {
+			get {
+				return codon.Properties["id"];
+			}
+		}
+		
+		public bool CanAttach(string extension)
 		{
 			// always attach when no extensions were given
-			if (extensions.Length == 0)
+			if (Extensions.Length == 0)
 				return true;
-			if (string.IsNullOrEmpty(fileName))
+			if (string.IsNullOrEmpty(extension))
 				return false;
-			string fileExtension = Path.GetExtension(fileName);
-			foreach (string ext in extensions) {
-				if (string.Equals(ext, fileExtension, StringComparison.OrdinalIgnoreCase))
+			foreach (string ext in Extensions) {
+				if (string.Equals(ext, extension, StringComparison.OrdinalIgnoreCase))
 					return true;
 			}
 			return false;

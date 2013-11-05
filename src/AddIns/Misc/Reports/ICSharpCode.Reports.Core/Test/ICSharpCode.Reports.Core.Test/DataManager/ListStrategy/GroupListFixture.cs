@@ -149,7 +149,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 						var itemDummy = (BaseDataItem)searchCol[0];
 						var itemLast = (BaseDataItem)searchCol[1];
 						var itemGroup = (BaseDataItem)searchCol[2];
-//						Console.WriteLine ("\t{0} - {1} - {2}",itemDummy.DBValue,itemLast.DBValue,itemGroup.DBValue);
+						Console.WriteLine ("\t{0} - {1} - {2}",itemDummy.DBValue,itemLast.DBValue,itemGroup.DBValue);
 						Assert.That(itemDummy.DBValue,Is.Not.Empty);
 						Assert.That(itemLast.DBValue,Is.Not.Empty);
 						Assert.That(itemGroup.DBValue,Is.Not.Empty);

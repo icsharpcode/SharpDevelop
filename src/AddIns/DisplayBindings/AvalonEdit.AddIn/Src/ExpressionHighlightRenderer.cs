@@ -13,6 +13,7 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
+	/*
 	/// <summary>
 	/// Highlights expressions (references to expression under current caret).
 	/// </summary>
@@ -77,4 +78,5 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 	}
+	*/
 }

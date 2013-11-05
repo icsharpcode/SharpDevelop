@@ -68,7 +68,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		public void ShowHelp()
 		{
-			HelpProvider.ShowHelp(f1Keyword);
+//			HelpProvider.ShowHelp(f1Keyword);
 		}
 		
 		public void ShowHelpFromUrl(string helpUrl)

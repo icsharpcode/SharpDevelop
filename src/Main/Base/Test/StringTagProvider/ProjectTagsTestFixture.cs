@@ -3,9 +3,11 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 {
@@ -13,59 +15,26 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 	/// Tests the SharpDevelopStringTagProvider when there is an active project.
 	/// </summary>
 	[TestFixture]
-	public class ProjectTagsTestFixture
+	public class ProjectTagsTestFixture : SDTestFixtureBase
 	{
 		SharpDevelopStringTagProvider tagProvider;
-		MockProjectForTagProvider project;
+		IProject project;
 		
-		[SetUp]
-		public void Init()
+		public override void FixtureSetUp()
 		{
-			project = new MockProjectForTagProvider();
-			project.FileName = @"C:\Projects\MyProject\MyProject.csproj";
-			project.Directory = @"C:\Projects\MyProject";
-			project.OutputAssemblyFullPath = @"C:\Projects\MyProject\bin\Debug\MyProject.exe";
-			project.Name = "MyProject";
+			base.FixtureSetUp();
+			project = MockRepository.GenerateStrictMock<IProject>();
+			project.Stub(p => p.FileName).Return(FileName.Create(@"C:\Projects\MyProject\MyProject.csproj"));
+			project.Stub(p => p.Directory).Return(DirectoryName.Create(@"C:\Projects\MyProject"));
+			project.Stub(p => p.OutputAssemblyFullPath).Return(FileName.Create(@"C:\Projects\MyProject\bin\Debug\MyProject.exe"));
+			project.Stub(p => p.Name).Return("MyProject");
 			
-			ProjectService.CurrentProject = project;
+			var projectService = MockRepository.GenerateStrictMock<IProjectService>();
+			projectService.Stub(p => p.CurrentProject).Return(project);
+			SD.Services.AddService(typeof(IProjectService), projectService);
+			
 			tagProvider = new SharpDevelopStringTagProvider();
 		}
-		
-		/// <summary>
-		/// Sanity check the mock project implementation.
-		/// </summary>
-		[Test]
-		public void MockProjectFileName()
-		{
-			Assert.AreEqual(@"C:\Projects\MyProject\MyProject.csproj", project.FileName);
-		}
-
-		/// <summary>
-		/// Sanity check the mock project implementation.
-		/// </summary>
-		[Test]
-		public void MockProjectDirectory()
-		{
-			Assert.AreEqual(@"C:\Projects\MyProject", project.Directory);
-		}
-
-		/// <summary>
-		/// Sanity check the mock project implementation.
-		/// </summary>
-		[Test]
-		public void MockProjectOutputAssemblyFullPath()
-		{
-			Assert.AreEqual(@"C:\Projects\MyProject\bin\Debug\MyProject.exe", project.OutputAssemblyFullPath);
-		}
-		
-		/// <summary>
-		/// Sanity check the mock project implementation.
-		/// </summary>
-		[Test]
-		public void MockProjectName()
-		{
-			Assert.AreEqual("MyProject", project.Name);
-		}		
 		
 		[Test]
 		public void ConvertCurrentProjectName()
@@ -76,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 		[Test]
 		public void ConvertTargetPath()
 		{
-			Assert.AreEqual(project.OutputAssemblyFullPath, tagProvider.ProvideString("TargetPath"));
+			Assert.AreEqual(project.OutputAssemblyFullPath.ToString(), tagProvider.ProvideString("TargetPath"));
 		}		
 
 		[Test]
@@ -100,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 		[Test]
 		public void ConvertProjectDir()
 		{
-			Assert.AreEqual(project.Directory, tagProvider.ProvideString("ProjectDir"));
+			Assert.AreEqual(project.Directory.ToString(), tagProvider.ProvideString("ProjectDir"));
 		}		
 		
 		[Test]

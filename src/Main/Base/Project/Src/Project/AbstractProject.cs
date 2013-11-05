@@ -7,38 +7,48 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
 	/// Default implementation of the IProject interface.
 	/// </summary>
-	public abstract class AbstractProject : AbstractSolutionFolder, IProject
+	public abstract class AbstractProject : LocalizedObject, IProject
 	{
 		// Member documentation: see IProject members.
 		
-		#region static methods - DO NOT BELONG HERE; PLEASE MOVE
-		public static string GetConfigurationNameFromKey(string key)
-		{
-			int pos = key.IndexOf('|');
-			if (pos < 0)
-				return key;
-			else
-				return key.Substring(0, pos);
-		}
+		readonly ISolution parentSolution;
+		readonly ConfigurationMapping configurationMapping;
 		
-		public static string GetPlatformNameFromKey(string key)
+		protected AbstractProject(ProjectInformation information)
 		{
-			return key.Substring(key.IndexOf('|') + 1);
+			if (information == null)
+				throw new ArgumentNullException("information");
+			this.parentSolution = information.Solution;
+			this.activeConfiguration = information.ActiveProjectConfiguration;
+			this.configurationMapping = information.ConfigurationMapping ?? new ConfigurationMapping();
+			this.Name = information.ProjectName;
+			this.FileName = information.FileName;
+			this.idGuid = (information.IdGuid != Guid.Empty ? information.IdGuid : Guid.NewGuid());
+			this.TypeGuid = information.TypeGuid;
+			if (information.ProjectSections != null)
+				this.projectSections.AddRange(information.ProjectSections);
 		}
-		#endregion
 		
 		#region IDisposable implementation
 		bool isDisposed;
@@ -52,37 +62,69 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void Dispose()
 		{
-			WorkbenchSingleton.AssertMainThread();
-			if (watcher != null)
-				watcher.Dispose();
-			isDisposed = true;
-			if (Disposed != null) {
+			SD.MainThread.VerifyAccess();
+			lock (SyncRoot) {
+				if (isDisposed)
+					return;
+				isDisposed = true;
+				if (watcher != null)
+					watcher.Dispose();
+			}
+			if (Disposed != null)
 				Disposed(this, EventArgs.Empty);
+		}
+		#endregion
+		
+		#region Preferences
+		Properties preferences;
+		
+		public Properties Preferences {
+			get {
+				lock (syncRoot) {
+					if (preferences == null) {
+						preferences = new Properties(); // in case of errors, use empty properties container
+						FileName preferencesFile = GetPreferenceFileName(fileName);
+						if (FileUtility.IsValidPath(preferencesFile) && File.Exists(preferencesFile)) {
+							try {
+								preferences = Properties.Load(preferencesFile);
+							} catch (IOException) {
+							} catch (UnauthorizedAccessException) {
+							} catch (XmlException) {
+								// ignore errors about inaccessible or malformed files
+							}
+						}
+					}
+					return preferences;
+				}
+			}
+		}
+		
+		static FileName GetPreferenceFileName(string projectFileName)
+		{
+			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
+			return FileName.Create(Path.Combine(directory,
+			                                    Path.GetFileName(projectFileName)
+			                                    + "." + projectFileName.ToUpperInvariant().GetStableHashCode().ToString("x")
+			                                    + ".xml"));
+		}
+		
+		public void SavePreferences()
+		{
+			var p = this.Preferences;
+			GetOrCreateBehavior().SavePreferences(p);
+			try {
+				FileName preferencesFile = GetPreferenceFileName(fileName);
+				System.IO.Directory.CreateDirectory(preferencesFile.GetParentDirectory());
+				p.Save(preferencesFile);
+			} catch (IOException) {
+			} catch (UnauthorizedAccessException) {
 			}
 		}
 		#endregion
 		
-		#region IMementoCapable implementation
-		internal static List<string> filesToOpenAfterSolutionLoad = new List<string>();
-		
-		/// <summary>
-		/// Saves project preferences (currently opened files, bookmarks etc.) to the
-		/// a property container.
-		/// </summary>
-		public virtual Properties CreateMemento()
-		{
-			return GetOrCreateBehavior().CreateMemento();
-		}
-		
-		public virtual void SetMemento(Properties memento)
-		{
-			GetOrCreateBehavior().SetMemento(memento);
-		}
-		#endregion
-		
 		#region Filename / Directory
-		volatile string fileName;
-		string cachedDirectoryName;
+		volatile FileName fileName;
+		volatile DirectoryName directoryName;
 		protected IProjectChangeWatcher watcher;
 		
 		/// <summary>
@@ -92,31 +134,32 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Only the getter is thread-safe.
 		/// </summary>
 		[ReadOnly(true)]
-		public string FileName {
+		public FileName FileName {
 			get {
-				return fileName ?? "";
+				return fileName;
 			}
 			set {
 				if (value == null)
 					throw new ArgumentNullException();
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
 				
-				if (WorkbenchSingleton.Workbench == null)
-					watcher = new MockProjectChangeWatcher();
-				
-				if (watcher == null) {
-					watcher = new ProjectChangeWatcher(value);
-					watcher.Enable();
-				} else {
-					watcher.Disable();
-					watcher.Rename(value);
-					watcher.Enable();
-				}
-				
-				lock (SyncRoot) { // locking still required for Directory
+				lock (SyncRoot) {
+					if (watcher == null) {
+						if (SD.Services.GetService(typeof(IWorkbench)) == null) {
+							watcher = new MockProjectChangeWatcher();
+						} else {
+							watcher = new ProjectChangeWatcher(value);
+							watcher.Enable();
+						}
+					} else {
+						watcher.Disable();
+						watcher.Rename(value);
+						watcher.Enable();
+					}
+					
 					fileName = value;
-					cachedDirectoryName = null;
+					directoryName = value.GetParentDirectory();
 				}
 			}
 		}
@@ -125,7 +168,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// True if the file that contains the project is readonly.
 		/// </summary>
 		[ReadOnly(true)]
-		public virtual bool ReadOnly {
+		public virtual bool IsReadOnly {
 			get {
 				try {
 					FileAttributes attributes = File.GetAttributes(FileName);
@@ -147,58 +190,34 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This member is thread-safe.
 		/// </summary>
 		[Browsable(false)]
-		public string Directory {
-			get {
-				lock (SyncRoot) {
-					if (cachedDirectoryName == null) {
-						try {
-							cachedDirectoryName = Path.GetDirectoryName(this.FileName);
-						} catch (Exception) {
-							cachedDirectoryName = "";
-						}
-					}
-					return cachedDirectoryName;
-				}
-			}
+		public DirectoryName Directory {
+			get { return directoryName; }
 		}
 		#endregion
 		
 		#region ProjectSections
-		List<ProjectSection> projectSections = new List<ProjectSection>();
+		SimpleModelCollection<SolutionSection> projectSections = new NullSafeSimpleModelCollection<SolutionSection>();
 		
 		[Browsable(false)]
-		public List<ProjectSection> ProjectSections {
+		public IMutableModelCollection<SolutionSection> ProjectSections {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return projectSections;
 			}
 		}
 		#endregion
 		
-		#region Language Properties / GetAmbience
-		[Browsable(false)]
-		public virtual ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
-			get {
-				return ICSharpCode.SharpDevelop.Dom.LanguageProperties.None;
-			}
-		}
-		
-		public virtual ICSharpCode.SharpDevelop.Dom.IAmbience GetAmbience()
-		{
-			return null;
-		}
-		#endregion
-		
 		#region Configuration / Platform management
-		string activeConfiguration = "Debug";
-		string activePlatform = "AnyCPU";
+		ConfigurationAndPlatform activeConfiguration = new ConfigurationAndPlatform("Debug", "AnyCPU");
 		
 		[ReadOnly(true)]
 		[LocalizedProperty("${res:Dialog.Options.CombineOptions.Configurations.ConfigurationColumnHeader}")]
-		public string ActiveConfiguration {
+		public ConfigurationAndPlatform ActiveConfiguration {
 			get { return activeConfiguration; }
 			set {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
+				if (value.Configuration == null || value.Platform == null)
+					throw new ArgumentNullException();
 				
 				if (activeConfiguration != value) {
 					activeConfiguration = value;
@@ -217,42 +236,48 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[ReadOnly(true)]
-		[LocalizedProperty("${res:Dialog.ProjectOptions.Platform}")]
-		public string ActivePlatform {
-			get { return activePlatform; }
-			set {
-				WorkbenchSingleton.AssertMainThread();
-				
-				if (activePlatform != value) {
-					activePlatform = value;
-					
-					OnActivePlatformChanged(EventArgs.Empty);
-				}
-			}
-		}
-		
-		public event EventHandler ActivePlatformChanged;
-		
-		protected virtual void OnActivePlatformChanged(EventArgs e)
+		sealed class ReadOnlyConfigurationOrPlatformNameCollection : ImmutableModelCollection<string>, IConfigurationOrPlatformNameCollection
 		{
-			if (ActivePlatformChanged != null) {
-				ActivePlatformChanged(this, e);
+			public ReadOnlyConfigurationOrPlatformNameCollection(IEnumerable<string> items)
+				: base(items)
+			{
+			}
+			
+			public string ValidateName(string name)
+			{
+				return Contains(name) ? name : null;
+			}
+			
+			public void Add(string newName, string copyFrom)
+			{
+				throw new NotSupportedException();
+			}
+			
+			public void Remove(string name)
+			{
+				throw new NotSupportedException();
+			}
+			
+			public void Rename(string oldName, string newName)
+			{
+				throw new NotSupportedException();
 			}
 		}
 		
-		[Browsable(false)]
-		public virtual ICollection<string> ConfigurationNames {
+		public virtual IConfigurationOrPlatformNameCollection ConfigurationNames {
 			get {
-				return new string[] { "Debug", "Release" };
+				return new ReadOnlyConfigurationOrPlatformNameCollection(new[] { "Debug", "Release" });
 			}
 		}
 		
-		[Browsable(false)]
-		public virtual ICollection<string> PlatformNames {
+		public virtual IConfigurationOrPlatformNameCollection PlatformNames {
 			get {
-				return new string[] { "AnyCPU" };
+				return new ReadOnlyConfigurationOrPlatformNameCollection(new[] { "AnyCPU" });
 			}
+		}
+		
+		public ConfigurationMapping ConfigurationMapping {
+			get { return configurationMapping; }
 		}
 		#endregion
 		
@@ -271,21 +296,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
 		[Browsable(false)]
-		public virtual ICollection<ItemType> AvailableFileItemTypes {
+		public virtual IReadOnlyCollection<ItemType> AvailableFileItemTypes {
 			get {
 				return ItemType.DefaultFileItems;
 			}
 		}
 		
-		/// <summary>
-		/// Gets the list of items in the project. This member is thread-safe.
-		/// The returned collection is guaranteed not to change - adding new items or removing existing items
-		/// will create a new collection.
-		/// </summary>
 		[Browsable(false)]
-		public virtual ReadOnlyCollection<ProjectItem> Items {
+		public virtual IMutableModelCollection<ProjectItem> Items {
 			get {
-				return new ReadOnlyCollection<ProjectItem>(new ProjectItem[0]);
+				return new ImmutableModelCollectionImplementsMutableInterface<ProjectItem>(Enumerable.Empty<ProjectItem>());
 			}
 		}
 		
@@ -320,12 +340,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
+		public virtual ILanguageBinding LanguageBinding {
+			get {
+				return DefaultLanguageBinding.DefaultInstance;
+			}
+		}
+		
 		/// <summary>
 		/// Gets the full path of the output assembly.
 		/// Returns null when the project does not output any assembly.
 		/// </summary>
 		[Browsable(false)]
-		public virtual string OutputAssemblyFullPath {
+		public virtual FileName OutputAssemblyFullPath {
 			get {
 				return null;
 			}
@@ -379,7 +406,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
-		public bool IsFileInProject(string fileName)
+		public bool IsFileInProject(FileName fileName)
 		{
 			return FindFile(fileName) != null;
 		}
@@ -398,7 +425,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
-		public FileProjectItem FindFile(string fileName)
+		public FileProjectItem FindFile(FileName fileName)
 		{
 			lock (SyncRoot) {
 				if (findFileCache == null) {
@@ -410,20 +437,26 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 				}
-				fileName = FileUtility.NormalizePath(fileName);
 				FileProjectItem outputItem;
 				findFileCache.TryGetValue(fileName, out outputItem);
 				return outputItem;
 			}
 		}
 		
-		ParseProjectContent IProject.CreateProjectContent()
-		{
-			return this.CreateProjectContent();
+		public virtual IProjectContent ProjectContent {
+			get {
+				return null;
+			}
 		}
-		protected virtual ParseProjectContent CreateProjectContent()
+		
+		public virtual event EventHandler<ParseInformationEventArgs> ParseInformationUpdated {
+			add {}
+			remove {}
+		}
+		
+		public virtual void OnParseInformationUpdated(ParseInformationEventArgs args)
 		{
-			return null;
+			throw new NotSupportedException();
 		}
 		
 		/// <summary>
@@ -467,12 +500,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public virtual int MinimumSolutionVersion {
-			get { return Solution.SolutionVersionVS2005; }
-		}
-		
-		public virtual void ResolveAssemblyReferences()
-		{
+		public virtual SolutionFormatVersion MinimumSolutionVersion {
+			get { return SolutionFormatVersion.VS2005; }
 		}
 		
 		/// <summary>
@@ -481,7 +510,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public virtual IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
 		{
-			ResolveAssemblyReferences();
 			List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
 			bool mscorlib = false;
 			foreach (ProjectItem item in this.Items) {
@@ -495,28 +523,31 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			if (!mscorlib) {
-				referenceItems.Add(new ReferenceProjectItem(this, "mscorlib") { FileName = typeof(object).Module.FullyQualifiedName });
+				referenceItems.Add(new ReferenceProjectItem(this, "mscorlib") { FileName = FileName.Create(typeof(object).Module.FullyQualifiedName) });
 			}
 			return referenceItems;
 		}
 		
-		public virtual void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public virtual Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
 			feedbackSink.ReportError(new BuildError { ErrorText = "Building project " + Name + " is not supported.", IsWarning = true });
 			// we don't know how to build anything, report that we're done.
-			feedbackSink.Done(true);
+			return Task.FromResult(true);
 		}
 		
-		public virtual ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
+		public virtual IEnumerable<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
 		{
 			lock (SyncRoot) {
 				List<IBuildable> result = new List<IBuildable>();
-				foreach (ProjectSection section in this.ProjectSections) {
-					if (section.Name == "ProjectDependencies") {
-						foreach (SolutionItem item in section.Items) {
-							foreach (IProject p in ParentSolution.Projects) {
-								if (p.IdGuid == item.Name) {
-									result.Add(p);
+				foreach (SolutionSection section in this.ProjectSections) {
+					if (section.SectionName == "ProjectDependencies") {
+						foreach (var entry in section) {
+							Guid guid;
+							if (Guid.TryParse(entry.Key, out guid)) {
+								foreach (IProject p in ParentSolution.Projects) {
+									if (p.IdGuid == guid) {
+										result.Add(p);
+									}
 								}
 							}
 						}
@@ -530,22 +561,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (options == null)
 				throw new ArgumentNullException("options");
+			string solutionConfiguration = options.SolutionConfiguration ?? ParentSolution.ActiveConfiguration.Configuration;
+			string solutionPlatform = options.SolutionPlatform ?? ParentSolution.ActiveConfiguration.Platform;
+			
 			// start of default implementation
-			var configMatchings = this.ParentSolution.GetActiveConfigurationsAndPlatformsForProjects(options.SolutionConfiguration, options.SolutionPlatform);
+			var projectConfig = this.ConfigurationMapping.GetProjectConfiguration(new ConfigurationAndPlatform(solutionConfiguration, solutionPlatform));
+			
 			ProjectBuildOptions projectOptions = new ProjectBuildOptions(isRootBuildable ? options.ProjectTarget : options.TargetForDependencies);
 			projectOptions.BuildOutputVerbosity = options.BuildOutputVerbosity;
-			// find the project configuration
-			foreach (var matching in configMatchings) {
-				if (matching.Project == this) {
-					projectOptions.Configuration = matching.Configuration;
-					projectOptions.Platform = matching.Platform;
-				}
-			}
-			// fall back to solution config if we don't find any entries for the project
-			if (string.IsNullOrEmpty(projectOptions.Configuration))
-				projectOptions.Configuration = options.SolutionConfiguration;
-			if (string.IsNullOrEmpty(projectOptions.Platform))
-				projectOptions.Platform = options.SolutionPlatform;
+			projectOptions.Configuration = projectConfig.Configuration;
+			projectOptions.Platform = projectConfig.Platform;
 			
 			// copy global properties to project options
 			foreach (var pair in options.GlobalAdditionalProperties)
@@ -564,6 +589,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			GetOrCreateBehavior().ProjectCreationComplete();
 		}
 		
+		public virtual void ProjectLoaded()
+		{
+			GetOrCreateBehavior().ProjectLoaded();
+		}
+		
 		public virtual XElement LoadProjectExtensions(string name)
 		{
 			return new XElement(name);
@@ -578,17 +608,53 @@ namespace ICSharpCode.SharpDevelop.Project
 			return false;
 		}
 		
-		Properties projectSpecificProperties;
-		
-		[Browsable(false)]
-		public Properties ProjectSpecificProperties {
-			get {
-				if (projectSpecificProperties == null) {
-					projectSpecificProperties = new Properties();
-				}
-				return projectSpecificProperties;
+		public virtual string GetDefaultNamespace(string fileName)
+		{
+			string relPath = FileUtility.GetRelativePath(this.Directory, Path.GetDirectoryName(fileName));
+			string[] subdirs = relPath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+			StringBuilder standardNameSpace = new StringBuilder(this.RootNamespace);
+			foreach(string subdir in subdirs) {
+				if (subdir == "." || subdir == ".." || subdir.Length == 0)
+					continue;
+				if (subdir.Equals("src", StringComparison.OrdinalIgnoreCase))
+					continue;
+				if (subdir.Equals("source", StringComparison.OrdinalIgnoreCase))
+					continue;
+				if (standardNameSpace.Length > 0)
+					standardNameSpace.Append('.');
+				standardNameSpace.Append(NewFileDialog.GenerateValidClassOrNamespaceName(subdir, true));
 			}
-			internal set { projectSpecificProperties = value; }
+			return standardNameSpace.ToString();
+		}
+		
+		public virtual System.CodeDom.Compiler.CodeDomProvider CreateCodeDomProvider()
+		{
+			return null;
+		}
+		
+		public virtual void GenerateCodeFromCodeDom(System.CodeDom.CodeCompileUnit compileUnit, TextWriter writer)
+		{
+			var provider = this.CreateCodeDomProvider();
+			if (provider != null) {
+				var options = new System.CodeDom.Compiler.CodeGeneratorOptions();
+				options.BlankLinesBetweenMembers = AmbienceService.CodeGenerationProperties.Get("BlankLinesBetweenMembers", true);
+				options.BracingStyle             = AmbienceService.CodeGenerationProperties.Get("StartBlockOnSameLine", true) ? "Block" : "C";
+				options.ElseOnClosing            = AmbienceService.CodeGenerationProperties.Get("ElseOnClosing", true);
+				options.IndentString = SD.EditorControlService.GlobalOptions.IndentationString;
+				provider.GenerateCodeFromCompileUnit(compileUnit, writer, options);
+			} else {
+				writer.WriteLine("No CodeDom provider was found for this language.");
+			}
+		}
+		
+		public virtual IAmbience GetAmbience()
+		{
+			return new DefaultAmbience();
+		}
+		
+		public virtual Refactoring.ISymbolSearch PrepareSymbolSearch(ISymbol entity)
+		{
+			return GetOrCreateBehavior().PrepareSymbolSearch(entity);
 		}
 		
 		protected virtual ProjectBehavior CreateDefaultBehavior()
@@ -616,12 +682,46 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual bool HasProjectType(Guid projectTypeGuid)
 		{
-			Guid myGuid;
-			if (Guid.TryParse(this.TypeGuid, out myGuid)) {
-				return myGuid == projectTypeGuid;
-			} else {
-				return false;
+			return projectTypeGuid == this.TypeGuid;
+		}
+		
+		[Browsable(false)]
+		public virtual IAssemblyModel AssemblyModel {
+			get {
+				return EmptyAssemblyModel.Instance;
 			}
+		}
+		
+		[Browsable(false)]
+		public Guid TypeGuid { get; private set; }
+		
+		Guid idGuid;
+		
+		[Browsable(false)]
+		public virtual Guid IdGuid {
+			get {
+				return idGuid;
+			}
+			set {
+				idGuid = value;
+			}
+		}
+		
+		[Browsable(false)]
+		public string Name { get; set; }
+		
+		[Browsable(false)]
+		public ISolutionFolder ParentFolder { get; set; }
+		
+		[Browsable(false)]
+		public ISolution ParentSolution {
+			get { return parentSolution; }
+		}
+		
+		readonly object syncRoot = new object();
+		
+		public object SyncRoot {
+			get { return syncRoot; }
 		}
 	}
 }

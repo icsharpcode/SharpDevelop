@@ -2,28 +2,22 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.FormsDesigner
 {
 	public interface IDesignerLoaderProvider
 	{
-		DesignerLoader CreateLoader(IDesignerGenerator generator);
-	}
-	
-	public class NRefactoryDesignerLoaderProvider : IDesignerLoaderProvider
-	{
-		readonly SupportedLanguage language;
+		DesignerLoader CreateLoader(FormsDesignerViewContent viewContent);
 		
-		public NRefactoryDesignerLoaderProvider(SupportedLanguage language)
-		{
-			this.language = language;
-		}
-		
-		public DesignerLoader CreateLoader(IDesignerGenerator generator)
-		{
-			return new NRefactoryDesignerLoader(language, generator);
-		}
+		/// <summary>
+		/// Gets the source files involved when designing.
+		/// </summary>
+		/// <param name="viewContent"></param>
+		/// <param name="designerCodeFile">The file that contains the InitializeComponents() implementation</param>
+		IReadOnlyList<OpenedFile> GetSourceFiles(FormsDesignerViewContent viewContent, out OpenedFile designerCodeFile);
 	}
 }

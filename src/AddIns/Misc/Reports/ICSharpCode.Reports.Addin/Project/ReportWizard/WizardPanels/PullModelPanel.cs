@@ -3,6 +3,7 @@
 
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Reflection;
 using System.Windows.Forms;
@@ -12,7 +13,6 @@ using ICSharpCode.Core;
 using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Data.Core.UI.UserControls;
 using ICSharpCode.SharpDevelop;
-
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -29,7 +29,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private bool firstDrag;
 		private string connectionString;
 		private ReportStructure reportStructure;
-		private Properties customizer;		
 		private IDatabaseObjectBase currentNode;
         private ElementHost databasesTreeHost;
         private DatabasesTreeView databasesTree;
@@ -76,13 +75,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)
 		{
-			if (customizer == null) {
-				customizer = (Properties)base.CustomizationObject;
-				reportStructure = (ReportStructure)customizer.Get("Generator");
-			}
 			
+			this.reportStructure = (ReportStructure)base.CustomizationObject;
+
 			if (message == DialogMessage.Next) {
-				customizer.Set("SqlString", this.txtSqlString.Text.Trim());
 				reportStructure.SqlString = this.txtSqlString.Text.Trim();
 				reportStructure.ConnectionString = connectionString;
 				base.EnableFinish = true;
@@ -211,53 +207,52 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 
 
-        private void databasesTree_SelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
-        {
-        	if (e.NewValue is IDatabaseObjectBase)
-            {
-                IDatabase parentDatabase = e.NewValue as IDatabase;
+		private void databasesTree_SelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
+		{
+			if (e.NewValue is IDatabaseObjectBase)
+			{
+				IDatabase parentDatabase = e.NewValue as IDatabase;
 
-                if (parentDatabase == null)
-                {
-                    IDatabaseObjectBase currentDatabaseObject = e.NewValue as IDatabaseObjectBase;
+				if (parentDatabase == null)
+				{
+					IDatabaseObjectBase currentDatabaseObject = e.NewValue as IDatabaseObjectBase;
 
-                    while (parentDatabase == null)
-                    {
-                        if (currentDatabaseObject.Parent == null)
-                            break;
-                        else if (currentDatabaseObject.Parent is IDatabase)
-                        {
-                            parentDatabase = currentDatabaseObject.Parent as IDatabase;
-                            break;
-                        }
-                        else
-                            currentDatabaseObject = currentDatabaseObject.Parent;                        
-                    }
-                }
+					while (parentDatabase == null)
+					{
+						if (currentDatabaseObject.Parent == null)
+							break;
+						else if (currentDatabaseObject.Parent is IDatabase)
+						{
+							parentDatabase = currentDatabaseObject.Parent as IDatabase;
+							break;
+						}
+						else
+							currentDatabaseObject = currentDatabaseObject.Parent;
+					}
+				}
 
+				if (parentDatabase != null)
+					this.currentNode = parentDatabase;
 
-                if (parentDatabase != null)
-                    this.currentNode = parentDatabase;
+				if (this.currentNode is IDatabase)
+				{
+					if (parentDatabase != null)
+					{
+						this.connectionString =  parentDatabase.ConnectionString;
+						this.txtSqlString.Enabled = true;
 
-                if (this.currentNode is IDatabase)
-                {
-                	if (parentDatabase != null)
-                	{
-                		this.connectionString = "Provider=" + parentDatabase.Datasource.DatabaseDriver.ODBCProviderName + ";" + parentDatabase.ConnectionString;
-                		this.txtSqlString.Enabled = true;
-
-                		if (this.firstDrag)
-                			this.txtSqlString.Text = string.Empty;
-                		
-                		firstDrag = false;
-                	}
-                }
-                else
-                {
-                    this.EnableNext = false;
-                }
-            }
-        }
+						if (this.firstDrag)
+							this.txtSqlString.Text = string.Empty;
+						
+						firstDrag = false;
+					}
+				}
+				else
+				{
+					this.EnableNext = false;
+				}
+			}
+		}
 		
 		// check witch type of node we dragg
 		private static NodeType CheckCurrentNode (IDatabaseObjectBase node) {

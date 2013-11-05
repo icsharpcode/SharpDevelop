@@ -18,49 +18,49 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// if the project already contains a web reference folder.
 	/// </summary>
 	[TestFixture]
-	public class ProjectHasExistingWebRefFolderTest
+	public class ProjectHasExistingWebRefFolderTest : SDTestFixtureBase
 	{
-		SD.WebReference webReference;
+		Gui.WebReference webReference;
 		DiscoveryClientProtocol protocol;
 		ProjectItem webReferencesProjectItem;
 		MSBuildBasedProject project;
-		
+
 		string name = "localhost";
 		string proxyNamespace = "WebReferenceNamespace";
 		string updateFromUrl = "http://localhost/test.asmx";
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			project = WebReferenceTestHelper.CreateTestProject("C#");
 			WebReferencesProjectItem item = new WebReferencesProjectItem(project);
 			item.Include = "Web References\\";
 			ProjectService.AddProjectItem(project, item);
-			
+
 			protocol = new DiscoveryClientProtocol();
 			DiscoveryDocumentReference discoveryRef = new DiscoveryDocumentReference();
 			discoveryRef.Url = updateFromUrl;
 			protocol.References.Add(discoveryRef);
-			
+
 			ContractReference contractRef = new ContractReference();
 			contractRef.Url = "http://localhost/test.asmx?wsdl";
 			contractRef.ClientProtocol = new DiscoveryClientProtocol();
 			ServiceDescription desc = new ServiceDescription();
 			contractRef.ClientProtocol.Documents.Add(contractRef.Url, desc);
 			protocol.References.Add(contractRef);
-			
+
 			WebReferenceTestHelper.InitializeProjectBindings();
-			
-			webReference = new SD.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
+
+			webReference = new Gui.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
 			webReferencesProjectItem = WebReferenceTestHelper.GetProjectItem(webReference.Items, "Web References\\", ItemType.WebReferences);
 		}
-		
+
 		[Test]
 		public void ProjectItemContainsWebReferencesFolder()
 		{
-			Assert.IsTrue(SD.WebReference.ProjectContainsWebReferencesFolder(project));
+			Assert.IsTrue(Gui.WebReference.ProjectContainsWebReferencesFolder(project));
 		}
-		
+
 		[Test]
 		public void WebReferencesProjectItemDoesNotExist()
 		{

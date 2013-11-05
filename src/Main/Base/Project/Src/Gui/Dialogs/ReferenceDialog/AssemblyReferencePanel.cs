@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				fdiag.Multiselect     = true;
 				fdiag.CheckFileExists = true;
 				
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					foreach (string file in fdiag.FileNames) {
 						ReferenceProjectItem assemblyReference = new ReferenceProjectItem(selectDialog.ConfigureProject);
 						assemblyReference.Include = Path.GetFileNameWithoutExtension(file);

@@ -69,8 +69,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected void ReFilterProperties()
 		{
 			globalizedProps = null;
-			if (WorkbenchSingleton.Workbench != null) {
-				WorkbenchSingleton.SafeThreadAsyncCall(delegate { PropertyPad.RefreshItem(this); });
+			if (SD.Workbench != null) {
+				SD.MainThread.InvokeAsyncAndForget(delegate {
+					PropertyPad.RefreshItem(this);
+				});
 			}
 		}
 		
@@ -122,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return this;
 		}
 		
-		public virtual void InformSetValue(PropertyDescriptor propertyDescriptor, object component, object value)
+		protected internal virtual void InformSetValue(PropertyDescriptor propertyDescriptor, object value)
 		{
 			
 		}

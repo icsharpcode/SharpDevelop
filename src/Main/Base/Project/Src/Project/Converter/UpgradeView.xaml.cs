@@ -16,10 +16,10 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	/// </summary>
 	internal partial class UpgradeView : UserControl
 	{
-		readonly Solution solution;
+		readonly ISolution solution;
 		readonly List<Entry> entries;
 		
-		public UpgradeView(Solution solution)
+		public UpgradeView(ISolution solution)
 		{
 			if (solution == null)
 				throw new ArgumentNullException("solution");
@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			set { upgradeDescription.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
 		}
 		
-		public Solution Solution {
+		public ISolution Solution {
 			get { return solution; }
 		}
 		
@@ -215,7 +215,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		void convertButton_Click(object sender, RoutedEventArgs e)
 		{
-			Core.AnalyticsMonitorService.TrackFeature(GetType(), "convertButton_Click");
+			SD.AnalyticsMonitor.TrackFeature(GetType(), "convertButton_Click");
 			
 			CompilerVersion selectedCompiler = newVersionComboBox.SelectedValue as CompilerVersion;
 			TargetFramework selectedFramework = newFrameworkComboBox.SelectedValue as TargetFramework;

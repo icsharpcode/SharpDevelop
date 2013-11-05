@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement
@@ -18,7 +19,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public MSBuildBasedProject FindProject(string name)
 		{
-			foreach (IProject project in projectService.GetOpenProjects()) {
+			foreach (IProject project in projectService.AllProjects) {
 				if (IsProjectNameMatch(project, name)) {
 					return project as MSBuildBasedProject;
 				}
@@ -29,7 +30,7 @@ namespace ICSharpCode.PackageManagement
 		bool IsProjectNameMatch(IProject project, string name)
 		{
 			return IsMatchIgnoringCase(project.Name, name) ||
-				(project.FileName == name);
+				(project.FileName == new FileName(name));
 		}
 		
 		bool IsMatchIgnoringCase(string a, string b)

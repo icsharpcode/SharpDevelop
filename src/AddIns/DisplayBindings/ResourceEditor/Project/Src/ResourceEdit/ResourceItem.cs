@@ -3,48 +3,39 @@
 
 using System;
 using System.Drawing;
+using System.Resources;
 using System.Windows.Forms;
 
 namespace ResourceEditor
 {
 	public class ResourceItem
 	{
-		string name;
-		object resourceValue;
-		
 		public ResourceItem(string name, object resourceValue)
 		{
-			this.name = name;
-			this.resourceValue = resourceValue;
+			this.Name = name;
+			this.ResourceValue = resourceValue;
 		}
 		
-		public string Name
+		public ResourceItem(string name, object resourceValue, string comment)
 		{
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+			this.Name = name;
+			this.ResourceValue = resourceValue;
+			this.Comment = comment;
 		}
 		
-		public object ResourceValue
-		{
-			get {
-				return resourceValue;
-			}
-			set {
-				resourceValue = value;
-			}
-		}
+		public string Name { get; set; }
+		
+		public object ResourceValue { get; set; }
+		
+		public string Comment { get; set; }
 		
 		public int ImageIndex
 		{
 			get {
-				if (this.resourceValue == null) {
+				if (this.ResourceValue == null) {
 					return -1;
 				}
-				switch(this.resourceValue.GetType().ToString()) {
+				switch(this.ResourceValue.GetType().ToString()) {
 					case "System.String":
 						return 0;
 					case "System.Drawing.Bitmap":
@@ -97,6 +88,14 @@ namespace ResourceEditor
 					break;
 			}
 			return tmp;
+		}
+		
+		public ResXDataNode ToResXDataNode(Func<Type, string> typeNameConverter = null)
+		{
+			var node = new ResXDataNode(Name, ResourceValue, typeNameConverter) {
+				Comment = Comment
+			};
+			return node;
 		}
 	}
 }

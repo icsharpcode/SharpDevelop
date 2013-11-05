@@ -3,7 +3,8 @@
 
 using System;
 using System.Diagnostics;
-using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -72,8 +73,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			attachedProcess.Exited -= new EventHandler(AttachedProcessExited);
 			attachedProcess.Dispose();
 			attachedProcess = null;
-			WorkbenchSingleton.SafeThreadAsyncCall(new Action<EventArgs>(OnDebugStopped),
-			                                       EventArgs.Empty);
+			SD.MainThread.InvokeAsyncAndForget(() => new Action<EventArgs>(OnDebugStopped)(EventArgs.Empty));
 		}
 		
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
@@ -120,29 +120,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			throw new NotSupportedException();
 		}
 		
-		/// <summary>
-		/// Gets the current value of the variable as string that can be displayed in tooltips.
-		/// </summary>
-		public string GetValueAsString(string variable)
+		public void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
-			return null;
 		}
 		
-		/// <summary>
-		/// Gets the tooltip control that shows the value of given variable.
-		/// Return null if no tooltip is available.
-		/// </summary>
-		public object GetTooltipControl(Location logicalPosition, string variable)
-		{
-			return null;
-		}
-		
-		public bool CanSetInstructionPointer(string filename, int line, int column)
-		{
-			return false;
-		}
-		
-		public bool SetInstructionPointer(string filename, int line, int column)
+		public bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
 		{
 			return false;
 		}

@@ -15,10 +15,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	/// </summary>
 	public class FileCodeModelCodeNamespace : CodeNamespace
 	{
-		FileCodeModelCodeNamespaceMembers members = new FileCodeModelCodeNamespaceMembers();
-		
-		public FileCodeModelCodeNamespace(IProjectContent projectContent, string namespaceName)
-			: base(projectContent, namespaceName)
+		public FileCodeModelCodeNamespace(CodeModelContext context, string namespaceName)
+			: base(context, namespaceName)
 		{
 		}
 		
@@ -26,13 +24,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return base.FullName; }
 		}
 		
+		public override global::EnvDTE.vsCMInfoLocation InfoLocation {
+			get { return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject; }
+		}
+		
+		CodeElementsList<CodeElement> members = new CodeElementsList<CodeElement>();
+		
 		public override global::EnvDTE.CodeElements Members {
 			get { return members; }
 		}
 		
-		public void AddClass(IProjectContent projectContent, IClass c)
+		internal void AddMember(CodeElement member)
 		{
-			members.AddClass(projectContent, c);
+			members.Add(member);
 		}
 	}
 }

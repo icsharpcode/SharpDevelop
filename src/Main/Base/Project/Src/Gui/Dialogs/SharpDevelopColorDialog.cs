@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -22,46 +22,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			LoadCustomColors();
 		}
 		
-		/// <summary>
-		/// Converts a string of colors separated by the '|' character
-		/// into an array of colors.
-		/// </summary>
-		public static int[] CustomColorsFromString(string s)
-		{
-			if (String.IsNullOrEmpty(s)) {
-				return null;
-			}
-			
-			string[] items = s.Split('|');
-			List<int> colors = new List<int>();
-			foreach (string item in items) {
-				int color;
-				if (Int32.TryParse(item, out color)) {
-					colors.Add(color);
-				}
-			}
-			return colors.ToArray();
-		}
-		
-		/// <summary>
-		/// Converts an integer array of colors into a string.
-		/// </summary>
-		public static string CustomColorsToString(int[] colors)
-		{
-			if (colors == null) {
-				return String.Empty;
-			} 
-			
-			StringBuilder s = new StringBuilder();
-			for (int i = 0; i < colors.Length; ++i) {
-				if (i != 0) {
-					s.Append('|');
-				}
-				s.Append(colors[i]);
-			}
-			return s.ToString();
-		}
-		
 		protected override bool RunDialog(IntPtr hwndOwner)
 		{
 			bool result = base.RunDialog(hwndOwner);
@@ -71,12 +31,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void LoadCustomColors()
 		{
-			CustomColors = CustomColorsFromString(PropertyService.Get(CustomColorsPropertyName));
+			CustomColors = PropertyService.GetList<int>(CustomColorsPropertyName).ToArray();
 		}
 		
 		void SaveCustomColors()
 		{
-			PropertyService.Set(CustomColorsPropertyName, CustomColorsToString(CustomColors));
+			PropertyService.SetList(CustomColorsPropertyName, CustomColors);
 		}
 		
 		public bool? ShowWpfDialog()

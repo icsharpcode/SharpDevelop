@@ -17,7 +17,8 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
@@ -51,7 +52,9 @@
     <Compile Include="IconPanel.Designer.cs">
       <DependentUpon>IconPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="IconPanel.cs" />
+    <Compile Include="IconPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PickFormatDialog.cs" />
     <Compile Include="PickFormatDialog.Designer.cs">
       <DependentUpon>PickFormatDialog.cs</DependentUpon>
@@ -60,7 +63,9 @@
     <Compile Include="EditorPanel.Designer.cs">
       <DependentUpon>EditorPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorPanel.cs" />
+    <Compile Include="EditorPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <None Include="IconEditor.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

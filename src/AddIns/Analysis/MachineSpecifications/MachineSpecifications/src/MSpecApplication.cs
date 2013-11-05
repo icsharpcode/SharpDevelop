@@ -4,43 +4,42 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.UnitTesting;
 using System.IO;
+using System.Linq;
+using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
-using System.Text;
+using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.MachineSpecifications
 {
-	/// <summary>
-	/// Description of MSpecApplication.
-	/// </summary>
 	public class MSpecApplication
 	{
-		public MSpecApplication(SelectedTests tests) {
+		public MSpecApplication(IEnumerable<ITest> tests)
+		{
 			InitializeFrom(tests);
 		}
 		
-		public ProcessStartInfo GetProcessStartInfo() {
-			var result = new ProcessStartInfo();
-			result.FileName = ExecutableFileName;
-			result.Arguments = GetArguments();
-			result.WorkingDirectory = WorkingDirectory;
-
-			return result;
+		public ProcessStartInfo GetProcessStartInfo()
+		{
+			return new ProcessStartInfo {
+				FileName = ExecutableFileName,
+				Arguments = GetArguments()
+			};
 		}
-
 	
-		public string Results {get;set;}
+		public string Results { get;set; }
 		
-		void InitializeFrom(SelectedTests tests) {
+		void InitializeFrom(IEnumerable<ITest> tests)
+		{
 			this.tests = tests;
-			project = tests.Project;
+			ITest test = tests.FirstOrDefault();
+			if (test != null)
+				project = test.ParentProject.Project;
 		}
 		
-		SelectedTests tests;
+		IEnumerable<ITest> tests;
 		IProject project;
 
 		string GetArguments()
@@ -51,9 +50,8 @@ namespace ICSharpCode.MachineSpecifications
 			builder.Append(FileUtility.GetAbsolutePath(Environment.CurrentDirectory, Results));
 			builder.Append("\" ");
 
-			var filterFileName = CreateFilterFile();
-			if (filterFileName != null)
-			{
+			string filterFileName = CreateFilterFile();
+			if (filterFileName != null) {
 				builder.Append("-f \"");
 				builder.Append(FileUtility.GetAbsolutePath(Environment.CurrentDirectory, filterFileName));
 				builder.Append("\" ");
@@ -61,7 +59,7 @@ namespace ICSharpCode.MachineSpecifications
 
 			builder.Append("\"");
 			builder.Append(project.OutputAssemblyFullPath);
-			builder.Append("\"");            
+			builder.Append("\"");
 
 			return builder.ToString();
 		}
@@ -69,25 +67,25 @@ namespace ICSharpCode.MachineSpecifications
 		string CreateFilterFile()
 		{
 			var classFilterBuilder = new ClassFilterBuilder();
-			var projectContent = ParserService.GetProjectContent(project);
-			var filter = classFilterBuilder.BuildFilterFor(tests, @using: projectContent);
+			IList<string> filter = classFilterBuilder.BuildFilterFor(tests);
 			
 			string path = null;
 			if (filter.Count > 0) {
 				path = Path.GetTempFileName();
 				using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
-				using (var writer = new StreamWriter(stream))
-					foreach (var testClassName in filter) {
-							writer.WriteLine(testClassName);
+				using (var writer = new StreamWriter(stream)) {
+					foreach (string testClassName in filter) {
+						writer.WriteLine(testClassName);
 					}
+				}
 			}
 			return path;
 		}
 
 		string ExecutableFileName {
 			get {
-				var assemblyDirectory = Path.GetDirectoryName(new Uri(typeof(MSpecApplication).Assembly.CodeBase).LocalPath);
-				var runnerDirectory = Path.Combine(assemblyDirectory, @"Tools\Machine.Specifications");
+				string assemblyDirectory = Path.GetDirectoryName(new Uri(typeof(MSpecApplication).Assembly.CodeBase).LocalPath);
+				string runnerDirectory = Path.Combine(assemblyDirectory, @"Tools\Machine.Specifications");
 
 				string executableName = "mspec";
 				if (TargetPlatformIs32Bit(project))
@@ -100,32 +98,28 @@ namespace ICSharpCode.MachineSpecifications
 			}
 		}
 
-		private bool UsesClr4(IProject project)
+		bool UsesClr4(IProject project)
 		{
 			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
-			if (msbuildProject != null)
-			{
+			if (msbuildProject != null) {
 				string targetFrameworkVersion = msbuildProject.GetEvaluatedProperty("TargetFrameworkVersion");
 				return String.Equals(targetFrameworkVersion, "v4.0", StringComparison.OrdinalIgnoreCase);
 			}
 			return false;
 		}
 
-		private bool TargetPlatformIs32Bit(IProject project)
+		bool TargetPlatformIs32Bit(IProject project)
 		{
 			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
-			if (msbuildProject != null)
-			{
+			if (msbuildProject != null) {
 				string platformTarget = msbuildProject.GetEvaluatedProperty("PlatformTarget");
 				return String.Compare(platformTarget, "x86", true) == 0;
 			}
 			return false;
 		}
 
-		string WorkingDirectory
-		{
-			get
-			{
+		string WorkingDirectory {
+			get {
 				return Path.GetDirectoryName(project.OutputAssemblyFullPath);
 			}
 		}

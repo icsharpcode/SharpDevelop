@@ -2,14 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.IO;
+
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.AstBuilder;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Project;
+using Microsoft.CSharp;
 
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
@@ -17,30 +18,19 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		public override void Run()
 		{
-			string clipboardText = ClipboardWrapper.GetText();
+			ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
+			if (textEditor == null)
+				return;
+			
+			string clipboardText = SD.Clipboard.GetText();
 			if (string.IsNullOrEmpty(clipboardText))
 				return;
-			
-			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (viewContent == null || !(viewContent is ITextEditorProvider)) {
-				return;
-			}
-			
-			ITextEditor textEditor = ((ITextEditorProvider)viewContent).TextEditor;
-			if (textEditor == null) {
-				return;
-			}
 			
 			using (textEditor.Document.OpenUndoGroup())
 				Run(textEditor, clipboardText);
 		}
 		
 		protected abstract void Run(ITextEditor editor, string clipboardText);
-		
-		protected string GetIndentation(IDocument document, int line)
-		{
-			return DocumentUtilitites.GetWhitespaceAfter(document, document.GetLine(line).Offset);
-		}
 	}
 	
 	/// <summary>
@@ -57,11 +47,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void Run(ITextEditor editor, string clipboardText)
 		{
-			string indentation = GetIndentation(editor.Document, editor.Caret.Line);
+			string indentation = DocumentUtilities.GetIndentation(editor.Document, editor.Caret.Line);
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			int maxLineLength = editor.Options.VerticalRulerColumn - VisualIndentationLength(editor, indentation);
 			StringWriter insertedText = new StringWriter();
-			insertedText.NewLine = DocumentUtilitites.GetLineTerminator(editor.Document, editor.Caret.Line);
+			insertedText.NewLine = DocumentUtilities.GetLineTerminator(editor.Document, editor.Caret.Line);
 			using (StringReader reader = new StringReader(clipboardText)) {
 				string line;
 				while ((line = reader.ReadLine()) != null) {
@@ -69,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				}
 			}
 			IDocument document = editor.Document;
-			int insertionPos = document.GetLine(editor.Caret.Line).Offset + indentation.Length;
+			int insertionPos = document.GetLineByNumber(editor.Caret.Line).Offset + indentation.Length;
 			document.Insert(insertionPos, insertedText.ToString());
 		}
 		
@@ -127,29 +117,44 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void Run(ITextEditor editor, string clipboardText)
 		{
-			CodeGenerator codeGenerator = ParserService.CurrentProjectContent.Language.CodeGenerator;
-			if (codeGenerator == null)
-				codeGenerator = LanguageProperties.CSharp.CodeGenerator;
-			Expression expression = null;
+			// TODO: reimplement as C#-specific refactoring with NR5;
+			// because CodeDom introduces redundant parentheses
+			CodeDomProvider codeDomProvider = null;
+			IProject project = ProjectService.CurrentProject;
+			if (project != null)
+				codeDomProvider = project.CreateCodeDomProvider();
+			if (codeDomProvider == null)
+				codeDomProvider = new CSharpCodeProvider();
+			
+			CodeExpression expression = null;
 			using (StringReader reader = new StringReader(clipboardText)) {
 				string line;
 				while ((line = reader.ReadLine()) != null) {
-					Expression newExpr = new PrimitiveExpression(line);
+					CodeExpression newExpr = new CodePrimitiveExpression(line);
 					if (expression == null) {
 						expression = newExpr;
 					} else {
-						expression = expression
-							.Operator(BinaryOperatorType.Concat,
-							          ExpressionBuilder.Identifier("Environment").Member("NewLine"))
-							.Operator(BinaryOperatorType.Concat,
-							          newExpr);
+						expression = new CodeBinaryOperatorExpression(
+							expression,
+							CodeBinaryOperatorType.Add,
+							new CodePropertyReferenceExpression(
+								new CodeTypeReferenceExpression("Environment"),
+								"NewLine"
+							));
+						expression = new CodeBinaryOperatorExpression(
+							expression, CodeBinaryOperatorType.Add, newExpr);
+						
 					}
 				}
 			}
 			if (expression == null)
 				return;
-			string indentation = GetIndentation(editor.Document, editor.Caret.Line);
-			editor.Document.Insert(editor.Caret.Offset, codeGenerator.GenerateCode(expression, indentation).Trim());
+			string indentation = DocumentUtilities.GetIndentation(editor.Document, editor.Caret.Line);
+			CodeGeneratorOptions options = new CodeGeneratorOptions();
+			options.IndentString = editor.Options.IndentationString;
+			StringWriter writer = new StringWriter();
+			codeDomProvider.GenerateCodeFromExpression(expression, writer, options);
+			editor.Document.Insert(editor.Caret.Offset, writer.ToString().Trim());
 		}
 	}
 }

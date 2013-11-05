@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.AvalonEdit.AddIn</RootNamespace>
     <AssemblyName>ICSharpCode.AvalonEdit.AddIn</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>C:\Users\Daniel\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <OutputPath>..\..\..\..\AddIns\DisplayBindings\AvalonEdit\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -16,9 +16,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1014;-Microsoft.Design#CA2210</CodeAnalysisRules>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,6 +47,9 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="PresentationFramework.Aero">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="ReachFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -59,6 +59,9 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Printing">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Windows.Forms" />
@@ -75,10 +78,48 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\AvalonEditSyntaxHighlighterAdapter.cs" />
-    <Compile Include="Src\DocumentSequence.cs" />
+    <Compile Include="Src\ChangeMarkerMargin\ChangeMarkerMargin.cs" />
+    <Compile Include="Src\ChangeMarkerMargin\DefaultChangeWatcher.cs" />
+    <Compile Include="Src\ChangeMarkerMargin\DiffControl.xaml.cs">
+      <DependentUpon>DiffControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\ChangeMarkerMargin\DocumentSequence.cs" />
+    <Compile Include="Src\ChangeMarkerMargin\IChangeWatcher.cs" />
+    <Compile Include="Src\ChangeMarkerMargin\LineChangeInfo.cs" />
+    <Compile Include="Src\ContextActions\ContextActionOptionPanelDoozer.cs" />
+    <Compile Include="Src\ContextActions\ContextActionOptions.xaml.cs">
+      <DependentUpon>ContextActionOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\ContextActions\ContextActionsBulbControl.xaml.cs">
+      <DependentUpon>ContextActionsBulbControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\ContextActions\ContextActionsBulbPopup.cs" />
+    <Compile Include="Src\ContextActions\ContextActionsBulbViewModel.cs" />
+    <Compile Include="Src\ContextActions\ContextActionsControl.xaml.cs">
+      <DependentUpon>ContextActionsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\ContextActions\ContextActionsHeaderedControl.xaml.cs">
+      <DependentUpon>ContextActionsHeaderedControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\ContextActions\ContextActionsPopup.cs" />
+    <Compile Include="Src\ContextActions\ContextActionsRenderer.cs" />
+    <Compile Include="Src\ContextActions\EditorActionsProvider.cs" />
+    <Compile Include="Src\ContextActions\FindBaseClasses.cs" />
+    <Compile Include="Src\ContextActions\FindDerivedClassesOrOverrides.cs" />
+    <Compile Include="Src\ContextActions\GoToEntityAction.cs" />
+    <Compile Include="Src\EnhancedScrollBar.cs" />
+    <Compile Include="Src\HiddenDefinitionRenderer.cs" />
+    <Compile Include="Src\SyntaxHighlighting\CustomizingHighlighter.cs" />
+    <Compile Include="Src\SyntaxHighlighting\FixedHighlighter.cs" />
+    <Compile Include="Src\SyntaxHighlighting\MultiHighlighter.cs" />
     <Compile Include="Src\Snippets\CodeSnippetComparer.cs" />
+    <Compile Include="Src\SyntaxHighlighting\SyntaxModeDoozer.cs" />
+    <Compile Include="Src\TextMarkerToolTipProvider.cs" />
     <Compile Include="Src\Utils.cs" />
+    <Compile Include="Src\XmlDoc\DocumentationUIBuilder.cs" />
+    <Compile Include="Src\XmlDoc\XmlDocTooltipProvider.cs" />
     <None Include="AvalonEdit.AddIn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -92,7 +133,6 @@
     <Compile Include="Src\AvalonEditViewContent.cs" />
     <Compile Include="Src\BracketHighlightRenderer.cs" />
     <Compile Include="Src\CaretReferencesRenderer.cs" />
-    <Compile Include="Src\ChangeMarkerMargin.cs" />
     <Compile Include="Src\ChooseEncodingDialog.xaml.cs">
       <DependentUpon>ChooseEncodingDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -101,20 +141,8 @@
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CodeEditorView.cs" />
-    <Compile Include="Src\ContextActionsRenderer.cs" />
-    <Compile Include="Src\DefaultChangeWatcher.cs" />
-    <Compile Include="Src\DiffControl.xaml.cs">
-      <DependentUpon>DiffControl.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
     <Compile Include="Src\CaretHighlightAdorner.cs" />
-    <Compile Include="Src\HiddenDefinition\HiddenDefinitionControl.xaml.cs">
-      <DependentUpon>HiddenDefinitionControl.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Src\HiddenDefinition\HiddenDefinitionRenderer.cs" />
-    <Compile Include="Src\LineChangeInfo.cs" />
     <Compile Include="Src\NewLineConsistencyCheck.cs" />
     <Compile Include="Src\SearchPanelLocalization.cs" />
     <Compile Include="Src\SharpDevelopTextEditor.cs" />
@@ -127,7 +155,6 @@
     <Compile Include="Src\Commands\SortSelectionCommand.cs" />
     <Compile Include="Src\Commands\SurroundWithCommand.cs" />
     <Compile Include="Src\CustomCommands.cs" />
-    <Compile Include="Src\CustomizableHighlightingColorizer.cs" />
     <Compile Include="Src\CustomizedHighlightingColor.cs" />
     <Compile Include="Src\DocumentPrinter.cs" />
     <Compile Include="Src\InlineUIElementGenerator.cs" />
@@ -174,14 +201,19 @@
     <Compile Include="Src\SharpDevelopInsightWindow.cs">
     </Compile>
     <Compile Include="Src\StringToVisibilityConverter.cs" />
-    <Compile Include="Src\SyntaxModeDoozer.cs" />
     <Compile Include="Src\TextMarkerService.cs" />
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
+    <Resource Include="Src\ContextActions\bulb.png" />
+    <None Include="Src\ContextActions\license.txt" />
+    <Resource Include="Src\ContextActions\pencil.png" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\DiffControl.xaml" />
-    <Page Include="Src\HiddenDefinition\HiddenDefinitionControl.xaml" />
+    <Page Include="Src\ChangeMarkerMargin\DiffControl.xaml" />
+    <Page Include="Src\ContextActions\ContextActionOptions.xaml" />
+    <Page Include="Src\ContextActions\ContextActionsBulbControl.xaml" />
+    <Page Include="Src\ContextActions\ContextActionsControl.xaml" />
+    <Page Include="Src\ContextActions\ContextActionsHeaderedControl.xaml" />
     <Page Include="Src\SharpDevelopCompletionWindow.xaml">
       <DependentUpon>SharpDevelopCompletionWindow.cs</DependentUpon>
     </Page>
@@ -191,14 +223,14 @@
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\Mono.Cecil\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
+      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
+      <Name>ICSharpCode.NRefactory.Xml</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -221,11 +253,6 @@
       <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <Page Include="Src\ChooseEncodingDialog.xaml" />
     <Page Include="Src\Commands\SortOptionsDialog.xaml" />
     <Page Include="Src\Options\BehaviorOptions.xaml" />
@@ -245,6 +272,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Src\HiddenDefinition" />
+    <Folder Include="Src\ContextActions" />
+    <Folder Include="Src\ChangeMarkerMargin" />
+    <Folder Include="Src\SyntaxHighlighting" />
+    <Folder Include="Src\XmlDoc" />
   </ItemGroup>
 </Project>

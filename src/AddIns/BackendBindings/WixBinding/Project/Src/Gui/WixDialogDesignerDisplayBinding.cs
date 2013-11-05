@@ -4,7 +4,7 @@
 using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.WixBinding
 {
@@ -37,8 +37,7 @@ namespace ICSharpCode.WixBinding
 		
 		bool IsViewTextEditorProvider(IViewContent view)
 		{
-			ITextEditorProvider textEditorProvider = view as ITextEditorProvider;
-			return textEditorProvider != null;
+			return view.GetService<ITextEditor>() != null;
 		}
 	}
 }

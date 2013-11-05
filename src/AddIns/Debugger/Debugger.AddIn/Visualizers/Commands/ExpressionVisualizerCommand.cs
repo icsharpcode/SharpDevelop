@@ -16,11 +16,15 @@ namespace Debugger.AddIn.Visualizers
 	// should we make visualizer command available for Expression, or any TreeNode?
 	public abstract class ExpressionVisualizerCommand : IVisualizerCommand
 	{
-		public Expression Expression { get; private set; }
+		public string ValueName { get; private set; }
+		public Func<Value> GetValue { get; private set; }
 		
-		public ExpressionVisualizerCommand(Expression expression)
+		public ExpressionVisualizerCommand(string valueName, Func<Value> getValue)
 		{
-			this.Expression = expression;
+			if (getValue == null)
+				throw new ArgumentNullException("getValue");
+			this.ValueName = valueName;
+			this.GetValue = getValue;
 		}
 		
 		public abstract void Execute();

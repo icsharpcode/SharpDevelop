@@ -3,7 +3,7 @@
 
 using System;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -67,7 +67,7 @@ namespace WixBinding.Tests.Gui
 		{
 			int column = 1;
 			int line = 3;
-			Location expectedLocation = new Location(column, line);
+			var expectedLocation = new TextLocation(column, line);
 			Assert.AreEqual(expectedLocation, textEditor.LocationJumpedTo);
 		}
 		

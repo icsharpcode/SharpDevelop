@@ -4,14 +4,19 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Linq;
 using System.Xml.XPath;
-
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Tests.Utils;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using Rhino.Mocks;
 using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.XPath
@@ -19,7 +24,7 @@ namespace XmlEditor.Tests.XPath
 	[TestFixture]
 	public class RemoveXPathHighlightingCommandTestFixture
 	{
-		MockWorkbench workbench;
+		IWorkbench workbench;
 		ITextMarkerService markerService;
 		RemoveXPathHighlightingCommand command;
 		MockViewContent nonTextEditorProviderView;
@@ -28,19 +33,18 @@ namespace XmlEditor.Tests.XPath
 		[SetUp]
 		public void Init()
 		{
-			ServiceContainer container = new ServiceContainer();
-			markerService = new MockTextMarkerService();
-			container.AddService(typeof(ITextMarkerService), markerService);
+			IDocument doc = MockTextMarkerService.CreateDocumentWithMockService();
+			markerService = doc.GetRequiredService<ITextMarkerService>();
 			
 			// Add xpath marker to document.
-			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(new ICSharpCode.AvalonEdit.Document.TextDocument(), container);
 			doc.Text = "<Test/>";
 			XPathNodeTextMarker xpathNodeMarker = new XPathNodeTextMarker(doc);
 			XPathNodeMatch nodeMatch = new XPathNodeMatch("Test", "<Test/>", 0, 1, XPathNodeType.Element);
 			xpathNodeMarker.AddMarker(nodeMatch);
 			
 			// Add non text editor provider view to workbench.
-			workbench = new MockWorkbench();
+			workbench = MockRepository.GenerateStrictMock<IWorkbench>();
+			workbench.Stub(w => w.ViewContentCollection).Return(new List<IViewContent>());
 			
 			nonTextEditorProviderView = new MockViewContent();
 			workbench.ViewContentCollection.Add(nonTextEditorProviderView);
@@ -57,24 +61,13 @@ namespace XmlEditor.Tests.XPath
 		public void CommandRunRemovesAllXPathNodeTextMarkersRemovedFromAllTextEditorWindows()
 		{
 			command.Run();
-			Assert.AreEqual(0, GetAllXPathTextMarkers().Count);
-		}
-		
-		List<ITextMarker> GetAllXPathTextMarkers()
-		{
-			return new List<ITextMarker>(markerService.TextMarkers);
+			Assert.AreEqual(0, markerService.TextMarkers.Count());
 		}
 		
 		[Test]
 		public void WorkbenchTextEditorsHaveAtLeastOneTextMarker()
 		{
-			Assert.IsTrue(GetAllXPathTextMarkers().Count > 0);
-		}
-		
-		[Test]
-		public void MockViewContentDoesNotImplementITextEditorProviderInterface()
-		{
-			Assert.IsNull(nonTextEditorProviderView as ITextEditorProvider);
+			Assert.IsTrue(markerService.TextMarkers.Count() > 0);
 		}
 	}
 }

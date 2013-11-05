@@ -15,11 +15,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetProjectKind(Project project)
 		{
-			string type = new ProjectType(project).Type;
+			string type = ProjectType.GetProjectType(project);
 			if (type == ProjectType.CSharp) {
-				return SD.ProjectTypeGuids.CSharp;
-			} else if (type == ProjectType.VBNet) {
-				return SD.ProjectTypeGuids.VBNet;
+				return SD.ProjectTypeGuids.CSharp.ToString();
+			} else if (type == ProjectType.VBNet.ToString()) {
+				return SD.ProjectTypeGuids.VBNet.ToString();
 			}
 			return String.Empty;
 		}

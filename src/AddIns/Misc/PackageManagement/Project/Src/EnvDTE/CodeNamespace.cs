@@ -2,46 +2,53 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeNamespace : CodeElement, global::EnvDTE.CodeNamespace
 	{
-		NamespaceName namespaceName;
-		IProjectContent projectContent;
+		readonly string fullName;
+		INamespaceModel model;
 		
-		public CodeNamespace(IProjectContent projectContent, string qualifiedName)
-			: this(projectContent, new NamespaceName(qualifiedName))
+		public CodeNamespace(CodeModelContext context, INamespaceModel model)
+			: base(context, model)
 		{
+			this.model = model;
 		}
 		
-		public CodeNamespace(IProjectContent projectContent, NamespaceName namespaceName)
+		public CodeNamespace(CodeModelContext context, string fullName)
+			: base(context)
 		{
-			this.projectContent = projectContent;
-			this.namespaceName = namespaceName;
-			this.InfoLocation = global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
-			this.Language = projectContent.GetCodeModelLanguage();
+			this.fullName = fullName;
 		}
 		
 		public override global::EnvDTE.vsCMElement Kind {
 			get { return global::EnvDTE.vsCMElement.vsCMElementNamespace; }
 		}
 		
-		internal NamespaceName NamespaceName {
-			get { return namespaceName; }
+		public override global::EnvDTE.vsCMInfoLocation InfoLocation {
+			get { return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal; }
 		}
 		
 		public string FullName {
-			get { return namespaceName.QualifiedName; }
+			get { return fullName; }
 		}
 		
-		public override string Name {
-			get { return namespaceName.LastPart; }
-		}
+		CodeElementsList<CodeElement> members;
 		
 		public virtual global::EnvDTE.CodeElements Members {
-			get { return new CodeElementsInNamespace(projectContent, namespaceName); }
+			get {
+				if (members == null) {
+					if (model == null)
+						throw new NotSupportedException();
+					IModelCollection<CodeElement> namespaceMembers = model.ChildNamespaces.Select(ns => new CodeNamespace(context, ns));
+					IModelCollection<CodeElement> typeMembers = model.Types.Select(td => CodeType.Create(context, td));
+					members = namespaceMembers.Concat(typeMembers).AsCodeElements();
+				}
+				return members;
+			}
 		}
 	}
 }

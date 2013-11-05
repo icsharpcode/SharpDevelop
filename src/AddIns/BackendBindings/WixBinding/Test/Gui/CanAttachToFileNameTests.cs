@@ -1,10 +1,11 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Gui
@@ -100,16 +101,6 @@ namespace WixBinding.Tests.Gui
 		public void ReattachIsFalse()
 		{
 			Assert.IsFalse(binding.ReattachWhenParserServiceIsReady);
-		}
-		
-		[Test]
-		public void CreatesWixDialogDesigner()
-		{
-			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			IViewContent[] views = binding.CreateSecondaryViewContent(view);
-			Assert.AreEqual(1, views.Length);
-			Assert.IsTrue(views[0] is WixDialogDesigner);
-			views[0].Dispose();
 		}
 	}
 }

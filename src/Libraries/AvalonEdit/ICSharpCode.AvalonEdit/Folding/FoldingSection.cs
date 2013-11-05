@@ -4,7 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
-using System.Windows.Threading;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;

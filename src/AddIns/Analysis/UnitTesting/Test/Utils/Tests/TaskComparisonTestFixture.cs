@@ -13,8 +13,8 @@ namespace UnitTesting.Tests.Utils.Tests
 	public class TaskComparisonTestFixture
 	{
 		TaskComparison taskComparison;
-		Task lhs;
-		Task rhs;
+		SDTask lhs;
+		SDTask rhs;
 		int column = 20;
 		int line = 5;
 		string myTestFileName = @"c:\projects\tests\mytest.cs";
@@ -24,8 +24,8 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void Init()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			lhs = new Task(fileName, description, column, line, TaskType.Error);
-			rhs = new Task(fileName, description, column, line, TaskType.Error);
+			lhs = new SDTask(fileName, description, column, line, TaskType.Error);
+			rhs = new SDTask(fileName, description, column, line, TaskType.Error);
 		}
 		
 		[Test]
@@ -44,7 +44,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsMatchReturnsFalseWhenTaskTypesAreDifferent()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			lhs = new Task(fileName, description, column, line, TaskType.Warning);
+			lhs = new SDTask(fileName, description, column, line, TaskType.Warning);
 			CreateTaskComparison();
 			Assert.IsFalse(taskComparison.IsMatch);
 		}
@@ -66,7 +66,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsMatchReturnsFalseWhenFileNamesAreDifferent()
 		{
 			FileName fileName = new FileName(@"temp.cs");
-			lhs = new Task(fileName, rhs.Description, rhs.Column, rhs.Line, rhs.TaskType);
+			lhs = new SDTask(fileName, rhs.Description, rhs.Column, rhs.Line, rhs.TaskType);
 			CreateTaskComparison();
 			Assert.IsFalse(taskComparison.IsMatch);
 		}
@@ -142,7 +142,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsMatchReturnsFalseWhenDescriptionsAreDifferent()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			rhs = new Task(fileName, "different", column, line, TaskType.Error);
+			rhs = new SDTask(fileName, "different", column, line, TaskType.Error);
 			CreateTaskComparison();
 			Assert.IsFalse(taskComparison.IsMatch);
 		}
@@ -164,7 +164,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsMatchReturnsFalseWhenColumnsAreDifferent()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			rhs = new Task(fileName, description, 500, line, TaskType.Error);
+			rhs = new SDTask(fileName, description, 500, line, TaskType.Error);
 			CreateTaskComparison();
 			Assert.IsFalse(taskComparison.IsMatch);
 		}
@@ -186,7 +186,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsMatchReturnsFalseWhenLinesAreDifferent()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			rhs = new Task(fileName, description, column, 66, TaskType.Error);
+			rhs = new SDTask(fileName, description, column, 66, TaskType.Error);
 			CreateTaskComparison();
 			Assert.IsFalse(taskComparison.IsMatch);
 		}

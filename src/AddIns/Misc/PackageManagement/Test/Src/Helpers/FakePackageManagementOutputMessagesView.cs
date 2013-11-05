@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop.Workbench;
 using NuGet;
 
 namespace PackageManagement.Tests.Helpers
@@ -20,5 +21,7 @@ namespace PackageManagement.Tests.Helpers
 		public void AppendLine(string message)
 		{
 		}
+		
+		public IOutputCategory OutputCategory { get; set; }
 	}
 }

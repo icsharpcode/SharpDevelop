@@ -3,8 +3,8 @@
 
 using System;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 using System.Windows.Data;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -14,8 +14,17 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 	[Serializable]
 	public class CodeEditorOptions : TextEditorOptions, ITextEditorOptions
 	{
+		static readonly Lazy<CodeEditorOptions> instance = new Lazy<CodeEditorOptions>(
+			() => PropertyService.Get("CodeEditorOptions", new CodeEditorOptions()));
+		
 		public static CodeEditorOptions Instance {
-			get { return PropertyService.Get("CodeEditorOptions", new CodeEditorOptions()); }
+			get { return instance.Value; }
+		}
+		
+		protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged(e);
+			PropertyService.Set("CodeEditorOptions", this);
 		}
 		
 		// always support scrolling below the end of the document - it's better when folding is enabled

@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -108,7 +108,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the new offset where the specified offset moves after this document change.
 		/// </summary>
-		public int GetNewOffset(int offset, AnchorMovementType movementType)
+		public int GetNewOffset(int offset, AnchorMovementType movementType = AnchorMovementType.Default)
 		{
 			IList<OffsetChangeMapEntry> items = this.Items;
 			int count = items.Count;
@@ -255,7 +255,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the new offset where the specified offset moves after this document change.
 		/// </summary>
-		public int GetNewOffset(int oldOffset, AnchorMovementType movementType)
+		public int GetNewOffset(int oldOffset, AnchorMovementType movementType = AnchorMovementType.Default)
 		{
 			int insertionLength = this.InsertionLength;
 			int removalLength = this.RemovalLength;

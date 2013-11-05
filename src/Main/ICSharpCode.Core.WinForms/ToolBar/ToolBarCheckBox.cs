@@ -55,7 +55,6 @@ namespace ICSharpCode.Core.WinForms
 			if (menuCommand == null) {
 				MessageService.ShowError("Can't create toolbar checkbox : " + codon.Id);
 			}
-			menuCommand.Owner = this;
 			
 			if (codon.Properties.Contains("label")){
 				Text = StringParser.Parse(codon.Properties["label"]);
@@ -71,8 +70,8 @@ namespace ICSharpCode.Core.WinForms
 		{
 			base.OnClick(e);
 			if (menuCommand != null) {
-				menuCommand.Run();
-				Checked = menuCommand.IsChecked;
+				menuCommand.Execute(caller);
+				Checked = menuCommand.IsChecked(caller);
 			}
 		}
 		
@@ -94,7 +93,7 @@ namespace ICSharpCode.Core.WinForms
 				if (isVisible != Visible)
 					Visible = isVisible;
 				if (menuCommand != null) {
-					bool isChecked = menuCommand.IsChecked;
+					bool isChecked = menuCommand.IsChecked(caller);
 					if (isChecked != Checked)
 						Checked = isChecked;
 				}

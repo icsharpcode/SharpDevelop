@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows.Input;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.Scripting.Tests.Utils
@@ -112,6 +113,12 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public object GetService(Type serviceType)
 		{
 			return null;
+		}
+		
+		public System.Collections.Generic.IList<ICSharpCode.SharpDevelop.Refactoring.IContextActionProvider> ContextActionProviders {
+			get {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

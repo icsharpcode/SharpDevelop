@@ -40,25 +40,29 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public void Merge()
 		{
 			int msbuildProjectImportCount = msbuildProject.Xml.Imports.Count;
-			int sharpDevelopProjectImportCount = sharpDevelopProject.MSBuildProjectFile.Imports.Count;
-			if (msbuildProjectImportCount > sharpDevelopProjectImportCount) {
-				AddNewImports();
-			} else if (msbuildProjectImportCount < sharpDevelopProjectImportCount) {
-				RemoveMissingImports();
+			lock (sharpDevelopProject.SyncRoot) {
+				int sharpDevelopProjectImportCount = sharpDevelopProject.MSBuildProjectFile.Imports.Count;
+				if (msbuildProjectImportCount > sharpDevelopProjectImportCount) {
+					AddNewImports();
+				} else if (msbuildProjectImportCount < sharpDevelopProjectImportCount) {
+					RemoveMissingImports();
+				}
 			}
 		}
 		
 		void RemoveMissingImports()
 		{
 			var importsToRemove = new List<ProjectImportElement>();
-			foreach (ProjectImportElement import in sharpDevelopProject.MSBuildProjectFile.Imports) {
-				if (msbuildProject.Xml.FindImport(import.Project) == null) {
-					importsToRemove.Add(import);
+			lock (sharpDevelopProject.SyncRoot) {
+				foreach (ProjectImportElement import in sharpDevelopProject.MSBuildProjectFile.Imports) {
+					if (msbuildProject.Xml.FindImport(import.Project) == null) {
+						importsToRemove.Add(import);
+					}
 				}
-			}
 			
-			foreach (ProjectImportElement importToRemove in importsToRemove) {
-				sharpDevelopProject.MSBuildProjectFile.RemoveChild(importToRemove);
+				foreach (ProjectImportElement importToRemove in importsToRemove) {
+					sharpDevelopProject.MSBuildProjectFile.RemoveChild(importToRemove);
+				}
 			}
 			
 			result.AddProjectImportsRemoved(importsToRemove);

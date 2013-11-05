@@ -4,15 +4,17 @@
 using System;
 using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Tests.Utils;
+using ICSharpCode.SharpDevelop.WinForms;
 using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests.Highlighting
 {
 	[TestFixture]
-	public class AddCodeCoverageMarkersTestFixture
+	public class AddCodeCoverageMarkersTestFixture : SDTestFixtureBase
 	{
 		ITextMarker markerOne;
 		ITextMarker markerTwo;
@@ -23,10 +25,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Highlighting
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			try {
-				string configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NCoverAddIn.Tests");
-				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
-			} catch (Exception) {}
+			base.FixtureSetUp();
 			
 			document = MockTextMarkerService.CreateDocumentWithMockService();
 			string code = "\t\t{\r\n" +

@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -19,6 +20,7 @@ namespace WixBinding.Tests.Gui
 		[SetUp]
 		public void Init()
 		{
+			SD.InitializeForUnitTests();
 			workbench = new MockWorkbench();
 			window = new WixDocumentWindow(workbench);
 			

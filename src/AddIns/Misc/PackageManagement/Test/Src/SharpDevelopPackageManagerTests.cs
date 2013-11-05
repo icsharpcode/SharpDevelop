@@ -10,8 +10,8 @@ using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
-using PackageManagement.Tests.Helpers;
 using Rhino.Mocks;
+using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
 {
@@ -71,6 +71,7 @@ namespace PackageManagement.Tests
 		void CreateTestProject()
 		{
 			testProject = ProjectHelper.CreateTestProject();
+			testProject.ParentSolution.Stub(s => s.Directory).Return(DirectoryName.Create(@"c:\projects\Test\MyProject"));
 		}
 		
 		void CreateTestableProjectManager()

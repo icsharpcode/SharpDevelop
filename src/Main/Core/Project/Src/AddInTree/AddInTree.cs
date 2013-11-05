@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Resources;
 
 namespace ICSharpCode.Core
@@ -15,13 +16,31 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static class AddInTree
 	{
-		static List<AddIn>   addIns   = new List<AddIn>();
-		static AddInTreeNode rootNode = new AddInTreeNode();
+		public static List<T> BuildItems<T>(string path, object parameter, bool throwOnNotFound = true)
+		{
+			var addInTree = ServiceSingleton.GetRequiredService<IAddInTree>();
+			return addInTree.BuildItems<T>(path, parameter, throwOnNotFound).ToList();
+		}
 		
-		static ConcurrentDictionary<string, IDoozer> doozers = new ConcurrentDictionary<string, IDoozer>();
-		static ConcurrentDictionary<string, IConditionEvaluator> conditionEvaluators = new ConcurrentDictionary<string, IConditionEvaluator>();
+		public static AddInTreeNode GetTreeNode(string path, bool throwOnNotFound = true)
+		{
+			var addInTree = ServiceSingleton.GetRequiredService<IAddInTree>();
+			return addInTree.GetTreeNode(path, throwOnNotFound);
+		}
+	}
+	
+	/// <summary>
+	/// Class containing the AddInTree. Contains methods for accessing tree nodes and building items.
+	/// </summary>
+	public class AddInTreeImpl : IAddInTree
+	{
+		List<AddIn>   addIns   = new List<AddIn>();
+		AddInTreeNode rootNode = new AddInTreeNode();
 		
-		static AddInTree()
+		ConcurrentDictionary<string, IDoozer> doozers = new ConcurrentDictionary<string, IDoozer>();
+		ConcurrentDictionary<string, IConditionEvaluator> conditionEvaluators = new ConcurrentDictionary<string, IConditionEvaluator>();
+		
+		public AddInTreeImpl(ApplicationStateInfoService applicationStateService)
 		{
 			doozers.TryAdd("Class", new ClassDoozer());
 			doozers.TryAdd("FileFilter", new FileFilterDoozer());
@@ -30,14 +49,16 @@ namespace ICSharpCode.Core
 			doozers.TryAdd("MenuItem", new MenuItemDoozer());
 			doozers.TryAdd("ToolbarItem", new ToolbarItemDoozer());
 			doozers.TryAdd("Include", new IncludeDoozer());
+			doozers.TryAdd("Service", new ServiceDoozer());
 			
 			conditionEvaluators.TryAdd("Compare", new CompareConditionEvaluator());
 			conditionEvaluators.TryAdd("Ownerstate", new OwnerStateConditionEvaluator());
 			
-			ApplicationStateInfoService.RegisterStateGetter("Installed 3rd party AddIns", GetInstalledThirdPartyAddInsListAsString);
+			if (applicationStateService != null)
+				applicationStateService.RegisterStateGetter("Installed 3rd party AddIns", GetInstalledThirdPartyAddInsListAsString);
 		}
 		
-		static object GetInstalledThirdPartyAddInsListAsString()
+		string GetInstalledThirdPartyAddInsListAsString()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			foreach (AddIn addIn in AddIns) {
@@ -68,16 +89,16 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Gets the list of loaded AddIns.
 		/// </summary>
-		public static IList<AddIn> AddIns {
+		public IReadOnlyList<AddIn> AddIns {
 			get {
-				return addIns.AsReadOnly();
+				return addIns;
 			}
 		}
 		
 		/// <summary>
 		/// Gets a dictionary of registered doozers.
 		/// </summary>
-		public static ConcurrentDictionary<string, IDoozer> Doozers {
+		public ConcurrentDictionary<string, IDoozer> Doozers {
 			get {
 				return doozers;
 			}
@@ -86,28 +107,10 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Gets a dictionary of registered condition evaluators.
 		/// </summary>
-		public static ConcurrentDictionary<string, IConditionEvaluator> ConditionEvaluators {
+		public ConcurrentDictionary<string, IConditionEvaluator> ConditionEvaluators {
 			get {
 				return conditionEvaluators;
 			}
-		}
-		
-		/// <summary>
-		/// Checks whether the specified path exists in the AddIn tree.
-		/// </summary>
-		public static bool ExistsTreeNode(string path)
-		{
-			return GetTreeNode(path, false) != null;
-		}
-		
-		/// <summary>
-		/// Gets the <see cref="AddInTreeNode"/> representing the specified path.
-		/// This method throws a <see cref="TreePathNotFoundException"/> when the
-		/// path does not exist.
-		/// </summary>
-		public static AddInTreeNode GetTreeNode(string path)
-		{
-			return GetTreeNode(path, true);
 		}
 		
 		/// <summary>
@@ -119,7 +122,7 @@ namespace ICSharpCode.Core
 		/// <see cref="TreePathNotFoundException"/> when the path does not exist.
 		/// If set to <c>false</c>, <c>null</c> is returned for non-existing paths.
 		/// </param>
-		public static AddInTreeNode GetTreeNode(string path, bool throwOnNotFound)
+		public AddInTreeNode GetTreeNode(string path, bool throwOnNotFound = true)
 		{
 			if (path == null || path.Length == 0) {
 				return rootNode;
@@ -141,52 +144,41 @@ namespace ICSharpCode.Core
 		/// Builds a single item in the addin tree.
 		/// </summary>
 		/// <param name="path">A path to the item in the addin tree.</param>
-		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="parameter">A parameter that gets passed into the doozer and condition evaluators.</param>
 		/// <exception cref="TreePathNotFoundException">The path does not
 		/// exist or does not point to an item.</exception>
-		public static object BuildItem(string path, object caller)
+		public object BuildItem(string path, object parameter)
 		{
-			return BuildItem(path, caller, null);
+			return BuildItem(path, parameter, null);
 		}
 		
-		public static object BuildItem(string path, object caller, IEnumerable<ICondition> additionalConditions)
+		public object BuildItem(string path, object parameter, IEnumerable<ICondition> additionalConditions)
 		{
 			int pos = path.LastIndexOf('/');
 			string parent = path.Substring(0, pos);
 			string child = path.Substring(pos + 1);
 			AddInTreeNode node = GetTreeNode(parent);
-			return node.BuildChildItem(child, caller, additionalConditions);
-		}
-		
-		/// <summary>
-		/// Builds the items in the path. Ensures that all items have the type T.
-		/// Throws a <see cref="TreePathNotFoundException"/> if the path is not found.
-		/// </summary>
-		/// <param name="path">A path in the addin tree.</param>
-		/// <param name="caller">The owner used to create the objects.</param>
-		public static List<T> BuildItems<T>(string path, object caller)
-		{
-			return BuildItems<T>(path, caller, true);
+			return node.BuildChildItem(child, parameter, additionalConditions);
 		}
 		
 		/// <summary>
 		/// Builds the items in the path. Ensures that all items have the type T.
 		/// </summary>
 		/// <param name="path">A path in the addin tree.</param>
-		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="parameter">The owner used to create the objects.</param>
 		/// <param name="throwOnNotFound">If true, throws a <see cref="TreePathNotFoundException"/>
 		/// if the path is not found. If false, an empty ArrayList is returned when the
 		/// path is not found.</param>
-		public static List<T> BuildItems<T>(string path, object caller, bool throwOnNotFound)
+		public IReadOnlyList<T> BuildItems<T>(string path, object parameter, bool throwOnNotFound = true)
 		{
 			AddInTreeNode node = GetTreeNode(path, throwOnNotFound);
 			if (node == null)
 				return new List<T>();
 			else
-				return node.BuildChildItems<T>(caller);
+				return node.BuildChildItems<T>(parameter);
 		}
 		
-		static AddInTreeNode CreatePath(AddInTreeNode localRoot, string path)
+		AddInTreeNode CreatePath(AddInTreeNode localRoot, string path)
 		{
 			if (path == null || path.Length == 0) {
 				return localRoot;
@@ -205,7 +197,7 @@ namespace ICSharpCode.Core
 			return curPath;
 		}
 		
-		static void AddExtensionPath(ExtensionPath path)
+		void AddExtensionPath(ExtensionPath path)
 		{
 			AddInTreeNode treePath = CreatePath(rootNode, path.Name);
 			foreach (IEnumerable<Codon> innerCodons in path.GroupedCodons)
@@ -218,7 +210,7 @@ namespace ICSharpCode.Core
 		/// paths are added to the AddInTree and its resources are added to the
 		/// <see cref="ResourceService"/>.
 		/// </summary>
-		public static void InsertAddIn(AddIn addIn)
+		public void InsertAddIn(AddIn addIn)
 		{
 			if (addIn.Enabled) {
 				foreach (ExtensionPath path in addIn.Paths.Values) {
@@ -227,13 +219,13 @@ namespace ICSharpCode.Core
 				
 				foreach (Runtime runtime in addIn.Runtimes) {
 					if (runtime.IsActive) {
-						foreach (LazyLoadDoozer doozer in runtime.DefinedDoozers) {
-							if (!doozers.TryAdd(doozer.Name, doozer))
-								throw new AddInLoadException("Duplicate doozer: " + doozer.Name);
+						foreach (var pair in runtime.DefinedDoozers) {
+							if (!doozers.TryAdd(pair.Key, pair.Value))
+								throw new AddInLoadException("Duplicate doozer: " + pair.Key);
 						}
-						foreach (LazyConditionEvaluator condition in runtime.DefinedConditionEvaluators) {
-							if (!conditionEvaluators.TryAdd(condition.Name, condition))
-								throw new AddInLoadException("Duplicate condition evaluator: " + condition.Name);
+						foreach (var pair in runtime.DefinedConditionEvaluators) {
+							if (!conditionEvaluators.TryAdd(pair.Key, pair.Value))
+								throw new AddInLoadException("Duplicate condition evaluator: " + pair.Key);
 						}
 					}
 				}
@@ -243,14 +235,14 @@ namespace ICSharpCode.Core
 				{
 					string path = Path.Combine(addInRoot, bitmapResource);
 					ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
-					ResourceService.RegisterNeutralImages(resourceManager);
+					ServiceSingleton.GetRequiredService<IResourceService>().RegisterNeutralImages(resourceManager);
 				}
 				
 				foreach(string stringResource in addIn.StringResources)
 				{
 					string path = Path.Combine(addInRoot, stringResource);
 					ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
-					ResourceService.RegisterNeutralStrings(resourceManager);
+					ServiceSingleton.GetRequiredService<IResourceService>().RegisterNeutralStrings(resourceManager);
 				}
 			}
 			addIns.Add(addIn);
@@ -262,7 +254,7 @@ namespace ICSharpCode.Core
 		/// a restart of the application to be removed.
 		/// </summary>
 		/// <exception cref="ArgumentException">Occurs when trying to remove an enabled AddIn.</exception>
-		public static void RemoveAddIn(AddIn addIn)
+		public void RemoveAddIn(AddIn addIn)
 		{
 			if (addIn.Enabled) {
 				throw new ArgumentException("Cannot remove enabled AddIns at runtime.");
@@ -270,44 +262,8 @@ namespace ICSharpCode.Core
 			addIns.Remove(addIn);
 		}
 		
-		// As long as the show form takes 10 times of loading the xml representation I'm not implementing
-		// binary serialization.
-//		static Dictionary<string, ushort> nameLookupTable = new Dictionary<string, ushort>();
-//		static Dictionary<AddIn, ushort> addInLookupTable = new Dictionary<AddIn, ushort>();
-//
-//		public static ushort GetAddInOffset(AddIn addIn)
-//		{
-//			return addInLookupTable[addIn];
-//		}
-//
-//		public static ushort GetNameOffset(string name)
-//		{
-//			if (!nameLookupTable.ContainsKey(name)) {
-//				nameLookupTable[name] = (ushort)nameLookupTable.Count;
-//			}
-//			return nameLookupTable[name];
-//		}
-//
-//		public static void BinarySerialize(string fileName)
-//		{
-//			for (int i = 0; i < addIns.Count; ++i) {
-//				addInLookupTable[addIns] = (ushort)i;
-//			}
-//			using (BinaryWriter writer = new BinaryWriter(File.OpenWrite(fileName))) {
-//				rootNode.BinarySerialize(writer);
-//				writer.Write((ushort)addIns.Count);
-//				for (int i = 0; i < addIns.Count; ++i) {
-//					addIns[i].BinarySerialize(writer);
-//				}
-//				writer.Write((ushort)nameLookupTable.Count);
-//				foreach (string name in nameLookupTable.Keys) {
-//					writer.Write(name);
-//				}
-//			}
-//		}
-		
 		// used by Load(): disables an addin and removes it from the dictionaries.
-		static void DisableAddin(AddIn addIn, Dictionary<string, Version> dict, Dictionary<string, AddIn> addInDict)
+		void DisableAddin(AddIn addIn, Dictionary<string, Version> dict, Dictionary<string, AddIn> addInDict)
 		{
 			addIn.Enabled = false;
 			addIn.Action = AddInAction.DependencyError;
@@ -327,7 +283,7 @@ namespace ICSharpCode.Core
 		/// <param name="disabledAddIns">
 		/// The list of disabled AddIn identity names.
 		/// </param>
-		public static void Load(List<string> addInFiles, List<string> disabledAddIns)
+		public void Load(List<string> addInFiles, List<string> disabledAddIns)
 		{
 			List<AddIn> list = new List<AddIn>();
 			Dictionary<string, Version> dict = new Dictionary<string, Version>();
@@ -336,7 +292,7 @@ namespace ICSharpCode.Core
 			foreach (string fileName in addInFiles) {
 				AddIn addIn;
 				try {
-					addIn = AddIn.Load(fileName, nameTable);
+					addIn = AddIn.Load(this, fileName, nameTable);
 				} catch (AddInLoadException ex) {
 					LoggingService.Error(ex);
 					if (ex.InnerException != null) {
@@ -346,7 +302,7 @@ namespace ICSharpCode.Core
 						MessageService.ShowError("Error loading AddIn " + fileName + ":\n"
 						                         + ex.Message);
 					}
-					addIn = new AddIn();
+					addIn = new AddIn(this);
 					addIn.addInFileName = fileName;
 					addIn.CustomErrorMessage = ex.Message;
 				}

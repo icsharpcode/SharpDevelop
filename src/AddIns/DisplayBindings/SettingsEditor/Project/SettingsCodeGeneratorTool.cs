@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Xml;
 
 using ICSharpCode.EasyCodeDom;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -128,7 +129,7 @@ namespace ICSharpCode.SettingsEditor
 			End If
 		End Sub
 		#End If
-		#End Region".Replace("\t", EditorControlService.GlobalOptions.IndentationString)
+		#End Region".Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString)
 			));
 			
 			defaultProperty.GetStatements.Insert(0, new CodeSnippetStatement(
@@ -141,7 +142,7 @@ namespace ICSharpCode.SettingsEditor
 						End If
 					End SyncLock
 				End If
-				#End If".Replace("\t", EditorControlService.GlobalOptions.IndentationString)
+				#End If".Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString)
 			));
 		}
 		

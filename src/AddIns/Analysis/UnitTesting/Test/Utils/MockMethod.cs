@@ -2,61 +2,57 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using Rhino.Mocks;
 
 namespace UnitTesting.Tests.Utils
 {
-	public class MockMethod : DefaultMethod
+	public class MockClass
 	{
-		public MockMethod()
-			: this(String.Empty)
+		public static ITypeDefinition CreateMockClassWithoutAnyAttributes()
 		{
+			var project = MockRepository.GenerateStub<IProject>();
+			var assembly = MockMethod.CreateMockAssemblyForProject(project);
+			var typeDefinition = MockRepository.GenerateStrictMock<ITypeDefinition>();
+			typeDefinition.Stub(td => td.ParentAssembly).Return(assembly);
+			typeDefinition.Stub(td => td.Name).Return("TestFixture");
+			typeDefinition.Stub(td => td.Namespace).Return("MyTests");
+			typeDefinition.Stub(td => td.ReflectionName).Return("MyTests.TestFixture");
+			return typeDefinition;
 		}
-		
-		public MockMethod(string name)
-			: this(null, name)
+	}
+	
+	public class MockMethod
+	{
+		public static IAssembly CreateMockAssemblyForProject(IProject project)
 		{
-		}
-		
-		public MockMethod(IClass declaringType)
-			: this(declaringType, String.Empty)
-		{
-		}
-		
-		public MockMethod(IClass declaringType, string name)
-			: base(declaringType, name)
-		{
-		}
-		
-		public static MockMethod CreateMockMethodWithoutAnyAttributes()
-		{
-			return CreateMockMethodWithAttributes(new MockAttribute[0]);
-		}
-		
-		public static MockMethod CreateMockMethodWithAttributes(IList<MockAttribute> attributes)
-		{
-			MockClass mockClass = MockClass.CreateMockClassWithoutAnyAttributes();
-			MockMethod mockMethod = new MockMethod(mockClass);
+			var assembly = MockRepository.GenerateStrictMock<IAssembly>();
+			var compilation = MockRepository.GenerateStrictMock<ICompilation>();
+			var solutionSnapshot = MockRepository.GenerateStrictMock<ISolutionSnapshotWithProjectMapping>();
 			
-			foreach (MockAttribute attribute in attributes) {
-				mockMethod.Attributes.Add(attribute);
-			}
-			
-			return mockMethod;
+			assembly.Stub(a => a.Compilation).Return(compilation);
+			compilation.Stub(c => c.SolutionSnapshot).Return(solutionSnapshot);
+			solutionSnapshot.Stub(s => s.GetProject(assembly)).Return(project);
+			return assembly;
 		}
 		
-		public static MockMethod CreateMockMethodWithAttribute(MockAttribute attribute)
+		public static IMethod CreateResolvedMethod(string name = "MyMethod")
 		{
-			List<MockAttribute> attributes = new List<MockAttribute>();
-			attributes.Add(attribute);
-			
-			return CreateMockMethodWithAttributes(attributes);
+			var project = MockRepository.GenerateStub<IProject>();
+			var assembly = CreateMockAssemblyForProject(project);
+			var method = MockRepository.GenerateStrictMock<IMethod>();
+			method.Stub(m => m.ParentAssembly).Return(assembly);
+			method.Stub(m => m.Name).Return(name);
+			method.Stub(m => m.ReflectionName).Return("MyTests.TestFixture." + name);
+			return method;
 		}
 		
-		public MockClass MockDeclaringType {
-			get { return DeclaringType as MockClass; }
+		public static IUnresolvedMethod CreateUnresolvedMethod(string name = "MyMethod")
+		{
+			return new DefaultUnresolvedMethod { Name = name };
 		}
 	}
 }

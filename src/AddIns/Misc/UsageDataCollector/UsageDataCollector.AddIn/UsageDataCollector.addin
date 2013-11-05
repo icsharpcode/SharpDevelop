@@ -19,7 +19,7 @@
 		</Condition>
 	</Path>
 	
-	<Path name = "/Workspace/Autostart">
+	<Path name = "/SharpDevelop/Autostart">
 		<Condition name = "Compare" string = "${property:ICSharpCode.UsageDataCollector.Enabled}" equals = "True">
 			<Class id    = "UsageDataCollector"
 			       class = "ICSharpCode.UsageDataCollector.AutoStartCommand"/>

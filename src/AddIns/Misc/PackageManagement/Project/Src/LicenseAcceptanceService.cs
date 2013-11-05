@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using NuGet;
 
@@ -12,6 +12,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public class LicenseAcceptanceService : ServiceWithWorkbenchOwner, ILicenseAcceptanceService
 	{
+		
 		public bool AcceptLicenses(IEnumerable<IPackage> packages)
 		{
 			LicenseAcceptanceView view = CreateLicenseAcceptanceView(packages);

@@ -3,8 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -13,47 +14,27 @@ using UnitTesting.Tests.Utils;
 namespace UnitTesting.Tests.Project
 {
 	[TestFixture]
-	public class TestClassWithOneMethodTestFixture
+	public class TestClassWithOneMethodTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestProject testProject;
-		TestClass testClass;
-		TestMember testMethod;
+		NUnitTestClass testClass;
+		NUnitTestMethod testMethod;
 		bool resultChangedCalled;
-		MockProjectContent projectContent;
-		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
+			base.SetUp();
 			resultChangedCalled = false;
-			IProject project = new MockCSharpProject();
-			project.Name = "TestProject";
-			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
-			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
-			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
-			
-			projectContent = new MockProjectContent();
-			projectContent.Language = LanguageProperties.None;
-			
-			MockClass mockClass = new MockClass(projectContent, "RootNamespace.Tests.MyTestFixture");
-			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
-			projectContent.Classes.Add(mockClass);
-			
-			// Add a method to the test class
-			MockMethod mockMethod = new MockMethod(mockClass, "TestMethod");
-			mockMethod.Attributes.Add(new MockAttribute("Test"));
-			mockClass.Methods.Add(mockMethod);
-			
-			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
-			testProject = new TestProject(project, projectContent, testFrameworks);
-			testClass = testProject.TestClasses[0];
-			testMethod = testClass.TestMembers[0];
-		}
-		
+			AddCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace RootNamespace.Tests {
+	[TestFixture]
+	class MyTestFixture {
 		[Test]
-		public void OneMethod()
-		{
-			Assert.AreEqual(1, testClass.TestMembers.Count);
+		public void TestMethod() { }
+	}
+}");
+			testClass = (NUnitTestClass)testProject.NestedTests.Single().NestedTests.Single();
+			testMethod = (NUnitTestMethod)testClass.NestedTests.Single();
 		}
 		
 		[Test]
@@ -151,9 +132,10 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void FindTestMethod()
 		{
-			Assert.AreSame(testMethod, testClass.TestMembers["TestMethod"]);
+			Assert.AreSame(testMethod, testClass.NestedTests.Single(m => m.DisplayName == "TestMethod"));
 		}
 		
+		/*
 		[Test]
 		public void AddNewClassNodeWhenTestClassPassed()
 		{
@@ -169,42 +151,27 @@ namespace UnitTesting.Tests.Project
 			TestMemberTreeNode node = new TestMemberTreeNode(testProject, testMethod);
 			Assert.AreEqual(TestTreeViewImageListIndex.TestPassed, (TestTreeViewImageListIndex)node.ImageIndex);
 		}
+		*/
 		
 		/// <summary>
 		/// Tests that a method is removed from the TestClass
-		/// based on the parse info. Also checks that the test methods are
-		/// checked based on the CompoundClass via IClass.GetCompoundClass. 
+		/// based on the parse info.
 		/// </summary>
 		[Test]
 		public void MethodRemovedInParserInfo()
 		{
-			// Create old compilation unit.
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			oldUnit.Classes.Add(testClass.Class);
+			UpdateCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace RootNamespace.Tests {
+	[TestFixture]
+	class MyTestFixture {
+		public void TestMethod() { }
+	}
+}");
 			
-			// Create new compilation unit.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			newUnit.Classes.Add(testClass.Class);
-			
-			// Add a new method to a new compound class.
-			MockClass compoundClass = new MockClass(projectContent, "RootNamespace.MyTestFixture");
-			compoundClass.Attributes.Add(new MockAttribute("TestFixture"));
-			MockClass mockClass = (MockClass)testClass.Class;
-			mockClass.SetCompoundClass(compoundClass);
-			
-			// Monitor test methods removed.
-			List<TestMember> methodsRemoved = new List<TestMember>();
-			testClass.TestMembers.TestMemberRemoved += delegate(Object source, TestMemberEventArgs e)
-				{ methodsRemoved.Add(e.TestMember); };
-
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
-			
-			Assert.IsFalse(testClass.TestMembers.Contains("TestMethod"));
-			Assert.AreEqual(1, methodsRemoved.Count);
-			Assert.AreSame(testMethod.Member, methodsRemoved[0].Member);
+			Assert.AreEqual(0, testClass.NestedTests.Count);
 		}
-				
+		
 		void ResultChanged(object source, EventArgs e)
 		{
 			resultChangedCalled = true;

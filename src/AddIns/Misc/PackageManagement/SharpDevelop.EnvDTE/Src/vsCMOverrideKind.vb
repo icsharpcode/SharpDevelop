@@ -2,6 +2,7 @@
 ' This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 Namespace EnvDTE
+	<Flags>	
 	Public Enum vsCMOverrideKind
 		vsCMOverrideKindNone     = 0
 		vsCMOverrideKindAbstract = 1

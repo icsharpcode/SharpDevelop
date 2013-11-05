@@ -1,18 +1,20 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
+using System.Collections.Generic;
 using NUnit.Framework;
 using System;
+using Rhino.Mocks;
 using UnitTesting.Tests.Utils;
 
 namespace UnitTesting.Tests.Project
 {
 	/// <summary>
 	/// The Unit Tests window was not updating the tree when a test was run if the test
-	/// was in an abstract base class that did not use the [TestFixture] attribute. 
+	/// was in an abstract base class that did not use the [TestFixture] attribute.
 	/// 
 	/// This is the case with the CecilLayerTests class:
 	/// 
@@ -22,7 +24,7 @@ namespace UnitTesting.Tests.Project
 	/// 
 	/// public abstract class ReflectionOrCecilLayerTests
 	/// {
-	///		
+	///
 	///     [Test]
 	///     public void InheritanceTest()
 	///     { ... }
@@ -33,76 +35,77 @@ namespace UnitTesting.Tests.Project
 	/// base class name prefixed to it to be consistent with NUnit GUI.
 	/// </summary>
 	[TestFixture]
-	public class AbstractBaseClassWithTestMethodsTestFixture
+	public class AbstractBaseClassWithTestMethodsTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestClass testClass;
-		MockClass c;
+		NUnitTestClass cecilLayer;
+		List<string> testMembers;
 		
-		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
-			MockProjectContent projectContent = new MockProjectContent();
-			
-			// Create the base test class.
-			MockClass baseClass = new MockClass(projectContent, "ICSharpCode.SharpDevelop.Tests.ReflectionOrCecilLayerTests");
-			MockMethod baseMethod = new MockMethod(baseClass, "InheritanceTests");
-			baseMethod.Attributes.Add(new MockAttribute("Test"));
-			baseClass.Methods.Add(baseMethod);
-			
-			// Add a second method that does not have a Test attribute.
-			baseMethod = new MockMethod(baseClass, "NonTestMethod");
-			baseClass.Methods.Add(baseMethod);
-			
-			// Create the derived test class.
-			c = new MockClass(projectContent, "ICSharpCode.SharpDevelop.Tests.CecilLayerTests");
-			c.SetDotNetName(c.FullyQualifiedName);
-			c.Attributes.Add(new MockAttribute("TestFixture"));
-			projectContent.Classes.Add(c);
-
-			// Set derived class's base class.
-			c.AddBaseClass(baseClass);
-			
-			// Create TestClass.
-			MockTestFrameworksWithNUnitFrameworkSupport testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
-			testClass = new TestClass(c, testFrameworks);
+			base.SetUp();
+			AddCodeFileInNamespace("derived.cs", @"
+[TestFixture]
+public class CecilLayerTests : ReflectionOrCecilLayerTests
+{ }");
+			AddCodeFileInNamespace("base.cs", @"
+public abstract class ReflectionOrCecilLayerTests {
+	[Test]
+	public void InheritanceTests() {}
+	
+	public void NonTestMethod() {}
+}
+");
+			testProject.EnsureNestedTestsInitialized();
+			cecilLayer = testProject.NestedTests.Cast<NUnitTestClass>().Single(c => c.ClassName == "CecilLayerTests");
+			testMembers = cecilLayer.NestedTests.Cast<NUnitTestMethod>().Select(m => m.MethodNameWithDeclaringTypeForInheritedTests).ToList();
 		}
 
 		[Test]
 		public void BaseMethodExists()
 		{
-			Assert.IsTrue(testClass.TestMembers.Contains("ReflectionOrCecilLayerTests.InheritanceTests"));
+			Assert.IsTrue(testMembers.Contains("ReflectionOrCecilLayerTests.InheritanceTests"));
 		}
 
 		[Test]
 		public void NonTestBaseMethodDoesNotExist()
 		{
-			Assert.IsFalse(testClass.TestMembers.Contains("ReflectionOrCecilLayerTests.NonTestMethod"));
+			Assert.IsFalse(testMembers.Contains("ReflectionOrCecilLayerTests.NonTestMethod"));
+			Assert.AreEqual(1, cecilLayer.NestedTests.Count);
 		}
 		
-		/// <summary>
-		/// The TestMethod.Method property should return an IMethod 
-		/// that returns the derived class from the DeclaringType property
-		/// and not the base class. This ensures that the correct
-		/// test is run when selected in the unit test tree.
-		/// </summary>
 		[Test]
-		public void BaseMethodDeclaringTypeIsDerivedClass()
+		public void BaseMethodFixtureReflectionNameIsDerivedClass()
 		{
-			TestMember method = testClass.TestMembers["ReflectionOrCecilLayerTests.InheritanceTests"];
-			Assert.AreEqual(c, method.Member.DeclaringType);
+			var method = (NUnitTestMethod)cecilLayer.NestedTests.Single();
+			Assert.AreEqual("RootNamespace.CecilLayerTests", method.FixtureReflectionName);
 		}
 
 		[Test]
 		public void UpdateTestResult()
 		{
-			TestClassCollection testClasses = new TestClassCollection();
-			testClasses.Add(testClass);
-
-			TestResult testResult = new TestResult("ICSharpCode.SharpDevelop.Tests.CecilLayerTests.InheritanceTests");
+			TestResult testResult = new TestResult("RootNamespace.CecilLayerTests.ReflectionOrCecilLayerTests.InheritanceTests");
 			testResult.ResultType = TestResultType.Failure;
-			testClasses.UpdateTestResult(testResult);
+			testProject.UpdateTestResult(testResult);
 			
-			Assert.AreEqual(TestResultType.Failure, testClass.Result);
-		}		
+			Assert.AreEqual(TestResultType.Failure, cecilLayer.NestedTests.Single().Result);
+			Assert.AreEqual(TestResultType.Failure, cecilLayer.Result);
+		}
+		
+		[Test]
+		public void AddTestMethodToBaseClass()
+		{
+			Assert.AreEqual(1, cecilLayer.NestedTests.Count);
+			
+			UpdateCodeFileInNamespace("base.cs", @"
+public abstract class ReflectionOrCecilLayerTests {
+	[Test]
+	public void InheritanceTests() {}
+	
+	[Test]
+	public void NewTestMethod() {}
+}
+");
+			Assert.AreEqual(2, cecilLayer.NestedTests.Count);
+		}
 	}
 }

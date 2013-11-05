@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -13,31 +14,31 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	/// </summary>
 	public class UpgradeViewContent : AbstractViewContent
 	{
-		public static void ShowIfRequired(Solution solution)
+		public static void ShowIfRequired(ISolution solution)
 		{
 			var projects = solution.Projects.OfType<IUpgradableProject>().ToList();
 			if (projects.Count > 0 && projects.All(u => u.UpgradeDesired)) {
-				Core.AnalyticsMonitorService.TrackFeature(typeof(UpgradeView), "opened automatically");
+				SD.AnalyticsMonitor.TrackFeature(typeof(UpgradeView), "opened automatically");
 				Show(solution).upgradeView.UpgradeViewOpenedAutomatically = true;
 			}
 		}
 		
-		public static UpgradeViewContent Show(Solution solution)
+		public static UpgradeViewContent Show(ISolution solution)
 		{
-			foreach (UpgradeViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<UpgradeViewContent>()) {
+			foreach (UpgradeViewContent vc in SD.Workbench.ViewContentCollection.OfType<UpgradeViewContent>()) {
 				if (vc.Solution == solution) {
 					vc.WorkbenchWindow.SelectWindow();
 					return vc;
 				}
 			}
 			var newVC = new UpgradeViewContent(solution);
-			WorkbenchSingleton.Workbench.ShowView(newVC);
+			SD.Workbench.ShowView(newVC);
 			return newVC;
 		}
 		
 		UpgradeView upgradeView;
 		
-		public UpgradeViewContent(Solution solution)
+		public UpgradeViewContent(ISolution solution)
 		{
 			if (solution == null)
 				throw new ArgumentNullException("solution");
@@ -45,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			upgradeView = new UpgradeView(solution);
 		}
 		
-		public Solution Solution {
+		public ISolution Solution {
 			get { return upgradeView.Solution; }
 		}
 		

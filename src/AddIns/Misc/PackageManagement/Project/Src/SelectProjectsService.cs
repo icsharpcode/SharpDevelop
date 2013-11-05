@@ -4,12 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class SelectProjectsService : ServiceWithWorkbenchOwner, ISelectProjectsService
 	{
+		
 		public bool SelectProjects(IEnumerable<IPackageManagementSelectedProject> projects)
 		{
 			SelectProjectsView view = CreateSelectProjectsView(projects);

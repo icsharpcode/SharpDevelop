@@ -2,9 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public bool IsValid(object caller, Condition condition)
 		{
-			if (WorkbenchSingleton.Workbench == null) {
+			if (SD.Workbench == null) {
 				return false;
 			}
 			
@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop
 			nowindowState = condition.Properties.Get("noopenwindowstate", WindowState.None);
 			
 			
-			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (IViewContent view in SD.Workbench.ViewContentCollection) {
 				if (IsStateOk(view)) {
 					return true;
 				}

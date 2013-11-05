@@ -2,17 +2,20 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
+using System.Threading.Tasks;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.CSharp;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
+using ICSharpCode.SharpDevelop.Refactoring;
+using Microsoft.CSharp;
 
 namespace CSharpBinding
 {
@@ -30,20 +33,31 @@ namespace CSharpBinding
 			get { return CSharpProjectBinding.LanguageName; }
 		}
 		
-		public override LanguageProperties LanguageProperties {
-			get { return LanguageProperties.CSharp; }
+		public Version LanguageVersion {
+			get {
+				string toolsVersion;
+				lock (SyncRoot) toolsVersion = this.ToolsVersion;
+				Version version = new Version(toolsVersion);
+				if (version == new Version(4, 0) && DotnetDetection.IsDotnet45Installed())
+					return new Version(5, 0);
+				return version;
+			}
 		}
 		
 		void Init()
 		{
 			reparseReferencesSensitiveProperties.Add("TargetFrameworkVersion");
 			reparseCodeSensitiveProperties.Add("DefineConstants");
+			reparseCodeSensitiveProperties.Add("AllowUnsafeBlocks");
+			reparseCodeSensitiveProperties.Add("CheckForOverflowUnderflow");
 		}
 		
 		public CSharpProject(ProjectLoadInformation loadInformation)
 			: base(loadInformation)
 		{
 			Init();
+			if (loadInformation.InitializeTypeSystem)
+				InitializeProjectContent(new CSharpProjectContent());
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildToolsPath)\Microsoft.CSharp.targets";
@@ -64,24 +78,79 @@ namespace CSharpBinding
 			            PropertyStorageLocations.ConfigurationSpecific, false);
 			SetProperty("Release", null, "DefineConstants", "TRACE",
 			            PropertyStorageLocations.ConfigurationSpecific, false);
+			
+			if (info.InitializeTypeSystem)
+				InitializeProjectContent(new CSharpProjectContent());
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
-			if (this.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
-				MSBuildEngine.StartBuild(this,
-				                         options,
-				                         feedbackSink,
-				                         MSBuildEngine.AdditionalTargetFiles.Concat(
-				                         	new [] { Path.Combine(MSBuildEngine.SharpDevelopBinPath, "SharpDevelop.CheckMSBuild35Features.targets") }));
+			if (this.MinimumSolutionVersion == SolutionFormatVersion.VS2005) {
+				return SD.MSBuildEngine.BuildAsync(
+					this, options, feedbackSink, progressMonitor.CancellationToken,
+					new [] { Path.Combine(FileUtility.ApplicationRootPath, @"bin\SharpDevelop.CheckMSBuild35Features.targets") });
 			} else {
-				base.StartBuild(options, feedbackSink);
+				return base.BuildAsync(options, feedbackSink, progressMonitor);
 			}
+		}
+		
+		volatile CompilerSettings compilerSettings;
+		
+		public CompilerSettings CompilerSettings {
+			get {
+				if (compilerSettings == null)
+					CreateCompilerSettings();
+				return compilerSettings;
+			}
+		}
+		
+		protected override object CreateCompilerSettings()
+		{
+			// This method gets called when the project content is first created;
+			// or when any of the ReparseSensitiveProperties has changed.
+			CompilerSettings settings = new CompilerSettings();
+			settings.AllowUnsafeBlocks = GetBoolProperty("AllowUnsafeBlocks") ?? false;
+			settings.CheckForOverflow = GetBoolProperty("CheckForOverflowUnderflow") ?? false;
+			
+			string symbols = GetEvaluatedProperty("DefineConstants");
+			if (symbols != null) {
+				foreach (string symbol in symbols.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)) {
+					settings.ConditionalSymbols.Add(symbol.Trim());
+				}
+			}
+			settings.Freeze();
+			compilerSettings = settings;
+			return settings;
+		}
+		
+		bool? GetBoolProperty(string propertyName)
+		{
+			string val = GetEvaluatedProperty(propertyName);
+			if ("true".Equals(val, StringComparison.OrdinalIgnoreCase))
+				return true;
+			if ("false".Equals(val, StringComparison.OrdinalIgnoreCase))
+				return false;
+			return null;
 		}
 		
 		protected override ProjectBehavior CreateDefaultBehavior()
 		{
 			return new CSharpProjectBehavior(this, base.CreateDefaultBehavior());
+		}
+		
+		public override CodeDomProvider CreateCodeDomProvider()
+		{
+			return new CSharpCodeProvider();
+		}
+		
+		ILanguageBinding language;
+		
+		public override ILanguageBinding LanguageBinding {
+			get {
+				if (language == null)
+					language = SD.LanguageService.GetLanguageByName("CSharp");
+				return language;
+			}
 		}
 	}
 	
@@ -108,12 +177,12 @@ namespace CSharpBinding
 		public override CompilerVersion CurrentCompilerVersion {
 			get {
 				switch (Project.MinimumSolutionVersion) {
-					case Solution.SolutionVersionVS2005:
+					case SolutionFormatVersion.VS2005:
 						return msbuild20;
-					case Solution.SolutionVersionVS2008:
+					case SolutionFormatVersion.VS2008:
 						return msbuild35;
-					case Solution.SolutionVersionVS2010:
-					case Solution.SolutionVersionVS11:
+					case SolutionFormatVersion.VS2010:
+					case SolutionFormatVersion.VS2012:
 						return msbuild40;
 					default:
 						throw new NotSupportedException();
@@ -130,6 +199,11 @@ namespace CSharpBinding
 			}
 			versions.Add(msbuild40);
 			return versions;
+		}
+		
+		public override ISymbolSearch PrepareSymbolSearch(ISymbol entity)
+		{
+			return CompositeSymbolSearch.Create(new CSharpSymbolSearch(Project, entity), base.PrepareSymbolSearch(entity));
 		}
 	}
 }

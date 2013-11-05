@@ -8,10 +8,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -39,36 +41,31 @@ namespace ICSharpCode.StartPage
 			set { SetValue(HeaderProperty, value); }
 		}
 		
-		
-		void BuildRecentProjectList()
+		async void BuildRecentProjectList()
 		{
 			// When building the project list we access the .sln files (to see if they still exist).
 			// Because those might be stored on a slow network drive, we do this on a background thread so that
 			// SharpDevelop startup doesn't have to wait.
-			ThreadPool.QueueUserWorkItem(AsyncBuildRecentProjectList, FileService.RecentOpen.RecentProject.ToArray());
-		}
-		
-		void AsyncBuildRecentProjectList(object state)
-		{
+			var projectPaths = SD.FileService.RecentOpen.RecentProjects.ToArray();
 			List<RecentOpenItem> items = new List<RecentOpenItem>();
-			foreach (string path in (string[])state) {
-				Core.LoggingService.Debug("RecentProjectsControl: Looking up path '" + path + "'");
-				FileInfo file = new FileInfo(path);
-				if (file.Exists) {
-					items.Add(
-						new RecentOpenItem {
-							Name = Path.GetFileNameWithoutExtension(path),
-							LastModification = file.LastWriteTime.ToShortDateString(),
-							Path = path
-						});
-				}
-			}
+			await Task.Run(
+				delegate {
+					foreach (FileName path in projectPaths) {
+						Core.LoggingService.Debug("RecentProjectsControl: Looking up path '" + path + "'");
+						FileInfo file = new FileInfo(path);
+						if (file.Exists) {
+							items.Add(
+								new RecentOpenItem {
+									Name = Path.GetFileNameWithoutExtension(path),
+									LastModification = file.LastWriteTime.ToShortDateString(),
+									Path = path
+								});
+						}
+					}
+				});
 			if (items.Count > 0) {
-				WorkbenchSingleton.SafeThreadAsyncCall(new Action(
-					delegate {
-						lastProjectsListView.ItemsSource = items;
-						lastProjectsListView.Visibility = Visibility.Visible;
-					}));
+				lastProjectsListView.ItemsSource = items;
+				lastProjectsListView.Visibility = Visibility.Visible;
 			}
 		}
 		
@@ -90,7 +87,7 @@ namespace ICSharpCode.StartPage
 		{
 			RecentOpenItem item = (RecentOpenItem)lastProjectsListView.SelectedItem;
 			if (item != null) {
-				ProjectService.LoadSolutionOrProject(item.Path);
+				SD.ProjectService.OpenSolutionOrProject(FileName.Create(item.Path));
 			}
 		}
 		
@@ -104,7 +101,7 @@ namespace ICSharpCode.StartPage
 		void listViewHyperlinkClick(object sender, RoutedEventArgs e)
 		{
 			RecentOpenItem item = (RecentOpenItem)((Hyperlink)sender).Tag;
-			ProjectService.LoadSolutionOrProject(item.Path);
+			SD.ProjectService.OpenSolutionOrProject(FileName.Create(item.Path));
 		}
 		
 		void openSolutionClick(object sender, RoutedEventArgs e)

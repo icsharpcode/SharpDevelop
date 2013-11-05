@@ -16,12 +16,15 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public abstract class AbstractConsolePad : AbstractPadContent, IEditable, IPositionable, ITextEditorProvider, IToolsHost
+	public abstract class AbstractConsolePad : AbstractPadContent, IEditable, IPositionable, IToolsHost
 	{
 		const string toolBarTreePath = "/SharpDevelop/Pads/CommonConsole/ToolBar";
 		
@@ -89,9 +92,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Creates a snapshot of the editor content.
 		/// This method is thread-safe.
 		/// </summary>
-		public ITextBuffer CreateSnapshot()
+		public ITextSource CreateSnapshot()
 		{
-			return new StringTextBuffer(GetText());
+			return this.TextEditor.Document.CreateSnapshot();
 		}
 		
 		string IEditable.Text {
@@ -100,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public virtual ICSharpCode.SharpDevelop.Editor.IDocument GetDocumentForFile(OpenedFile file)
+		public virtual IDocument GetDocumentForFile(OpenedFile file)
 		{
 			return null;
 		}
@@ -156,31 +159,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 						console.CommandText = "";
 					else
 						console.CommandText = this.history[this.historyPointer];
+					console.editor.ScrollToEnd();
+					return true;
+				case Key.Return:
+					if (Keyboard.Modifiers == ModifierKeys.Shift)
+						return false;
+					int caretOffset = this.console.TextEditor.Caret.Offset;
+					string commandText = console.CommandText;
+					cleared = false;
+					if (AcceptCommand(commandText)) {
+						IDocument document = console.TextEditor.Document;
+						if (!cleared) {
+							if (document.GetCharAt(document.TextLength - 1) != '\n')
+								document.Insert(document.TextLength, Environment.NewLine);
+							AppendPrompt();
+							console.TextEditor.Select(document.TextLength, 0);
+						} else {
+							console.CommandText = "";
+						}
+						cleared = false;
+						this.history.Add(commandText);
+						this.historyPointer = this.history.Count;
 						console.editor.ScrollToEnd();
 						return true;
-					case Key.Return:
-						if (Keyboard.Modifiers == ModifierKeys.Shift)
-							return false;
-						int caretOffset = this.console.TextEditor.Caret.Offset;
-						string commandText = console.CommandText;
-						cleared = false;
-						if (AcceptCommand(commandText)) {
-							IDocument document = console.TextEditor.Document;
-							if (!cleared) {
-								if (document.GetCharAt(document.TextLength - 1) != '\n')
-									document.Insert(document.TextLength, Environment.NewLine);
-								AppendPrompt();
-								console.TextEditor.Select(document.TextLength, 0);
-							} else {
-								console.CommandText = "";
-							}
-							cleared = false;
-							this.history.Add(commandText);
-							this.historyPointer = this.history.Count;
-							console.editor.ScrollToEnd();
-							return true;
-						}
-						return false;
+					}
+					return false;
 				default:
 					return false;
 			}
@@ -277,7 +280,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			object tmp;
 			
-			this.editorAdapter = EditorControlService.CreateEditor(out tmp);
+			this.editorAdapter = SD.EditorControlService.CreateEditor(out tmp);
 			
 			this.editor = (AvalonEdit.TextEditor)tmp;
 			this.editor.SetValue(Grid.ColumnProperty, 0);
@@ -440,23 +443,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	class ToggleConsoleWordWrapCommand : AbstractCheckableMenuCommand
+	class ToggleConsoleWordWrapCommand : ICheckableMenuCommand
 	{
-		AbstractConsolePad pad;
+		public event EventHandler IsCheckedChanged = delegate {};
 		
-		public override object Owner {
-			get { return base.Owner; }
-			set {
-				if (!(value is AbstractConsolePad))
-					throw new Exception("Owner has to be a AbstractConsolePad");
-				pad = value as AbstractConsolePad;
-				base.Owner = value;
-			}
+		public event EventHandler CanExecuteChanged { add {} remove {} }
+		
+		public bool IsChecked(object parameter)
+		{
+			var pad = (AbstractConsolePad)parameter;
+			return pad.WordWrap;
 		}
 		
-		public override bool IsChecked {
-			get { return pad.WordWrap; }
-			set { pad.WordWrap = value; }
+		public bool CanExecute(object parameter)
+		{
+			return true;
+		}
+		
+		public void Execute(object parameter)
+		{
+			var pad = (AbstractConsolePad)parameter;
+			pad.WordWrap = !pad.WordWrap;
+			IsCheckedChanged(this, EventArgs.Empty);
 		}
 	}
 }

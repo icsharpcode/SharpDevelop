@@ -7,7 +7,7 @@ using System.Windows.Controls;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.WpfDesign.Designer.ThumbnailView;
 
 namespace ICSharpCode.WpfDesign.AddIn
@@ -25,21 +25,19 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public ThumbnailViewPad()
 		{
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
+			SD.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
 			WorkbenchActiveViewContentChanged(null, null);
 		}
 
 		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
 		{
-			WpfViewContent wpfView = WorkbenchSingleton.Workbench.ActiveViewContent as WpfViewContent;
+			WpfViewContent wpfView = SD.Workbench.ActiveViewContent as WpfViewContent;
 			if (wpfView != null)
 			{
 				thumbnailView.DesignSurface = wpfView.DesignSurface;
-				contentControl.SetContent(thumbnailView);
-			}
-			else
-			{
-				contentControl.SetContent(notAvailableTextBlock);
+				SD.WinForms.SetContent(contentControl, thumbnailView);
+			} else {
+				SD.WinForms.SetContent(contentControl, notAvailableTextBlock);
 			}
 		}
 		

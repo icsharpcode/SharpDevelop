@@ -8,10 +8,11 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	using TreeView = System.Windows.Forms.TreeView;
+	
 	/// <summary>
 	/// Description of ExtTreeView.
 	/// </summary>
@@ -320,7 +321,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.OnBeforeSelect(e);
 			ExtTreeNode node = e.Node as ExtTreeNode;
 			if (node != null) {
-				node.ContextMenuStrip = MenuService.CreateContextMenu(e.Node, node.ContextmenuAddinTreePath);
+				node.ContextMenuStrip = SD.WinForms.MenuService.CreateContextMenu(e.Node, node.ContextmenuAddinTreePath);
 			}
 		}
 		
@@ -415,10 +416,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 				// OnDragDrop raises without OnDragOver for the node.
 				// So we have to call HandleDragOver to ensure that we don't call DoDragDrop for
 				// invalid operations.
-				HandleDragOver(e, node);
-				if (e.Effect != DragDropEffects.None) {
-					node.DoDragDrop(e.Data, e.Effect);
-					SortParentNodes(node);
+				try {
+					HandleDragOver(e, node);
+					if (e.Effect != DragDropEffects.None) {
+						node.DoDragDrop(e.Data, e.Effect);
+						SortParentNodes(node);
+					}
+				} catch (Exception ex) {
+					// WinForms silently discards exceptions in the drag'n'drop events; so we need to catch+report any errors
+					SD.MessageService.ShowException(ex);
 				}
 			}
 		}

@@ -37,7 +37,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		IEnumerable<SD.IProject> GetOpenMSBuildProjects()
 		{
-			return projectService.GetOpenProjects();
+			return projectService.AllProjects;
 		}
 		
 		/// <summary>

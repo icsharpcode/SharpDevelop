@@ -9,17 +9,13 @@ using System.IO;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
-
+/*
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
 	/// <summary>
@@ -112,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 //			IClass c = (IClass)item.Tag;
 //			IClass baseClass = c.BaseClass;
 //			if (baseClass != null) {
-//				string fileName = baseClass.CompilationUnit.FileName;
+//				string fileName = baseClass.SyntaxTree.FileName;
 //				if (fileName != null) {
 //					FileService.JumpToFilePosition(fileName, baseClass.Region.BeginLine, baseClass.Region.BeginColumn);
 //				}
@@ -156,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			if (!string.IsNullOrEmpty(fileName)) {
 				// get the part with the requested file name
 				foreach (IClass part in parts) {
-					if (FileUtility.IsEqualFileName(fileName, part.CompilationUnit.FileName))
+					if (FileUtility.IsEqualFileName(fileName, part.SyntaxTree.FileName))
 						return part;
 				}
 			}
@@ -165,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			// This should prefer non-designer files over designer files.
 			IClass preferredClass = parts[0];
 			for (int i = 1; i < parts.Count; i++) {
-				if (IsShorterFileName(parts[i].CompilationUnit.FileName, preferredClass.CompilationUnit.FileName))
+				if (IsShorterFileName(parts[i].SyntaxTree.FileName, preferredClass.SyntaxTree.FileName))
 					preferredClass = parts[i];
 			}
 			return preferredClass;
@@ -182,3 +178,4 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		}
 	}
 }
+*/

@@ -8,8 +8,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeDelegate : CodeType, global::EnvDTE.CodeDelegate
 	{
-		public CodeDelegate(IProjectContent projectContent, IClass c)
-			: base(projectContent, c)
+		public CodeDelegate(CodeModelContext context, ITypeDefinitionModel typeModel)
+			: base(context, typeModel)
 		{
 		}
 		

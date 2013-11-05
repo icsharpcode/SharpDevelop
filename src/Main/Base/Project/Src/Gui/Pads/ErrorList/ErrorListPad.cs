@@ -2,14 +2,19 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Windows.Forms;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class ErrorListPad : AbstractPadContent, IClipboardHandler
+	public class ErrorListPad : AbstractPadContent
 	{
 		public const string DefaultContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/TaskContextMenu";
 		
@@ -20,9 +25,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		ToolStrip toolStrip;
-		Panel contentPanel = new Panel();
-		TaskView taskView = new TaskView() { DefaultContextMenuAddInTreeEntry = ErrorListPad.DefaultContextMenuAddInTreeEntry };
+		ToolBar toolBar;
+		DockPanel contentPanel = new DockPanel();
+		ListView errorView = new ListView();
+		readonly ObservableCollection<SDTask> errors;
 		
 		Properties properties;
 		
@@ -74,67 +80,70 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ErrorListPad()
 		{
 			instance = this;
-			properties = PropertyService.Get("ErrorListPad", new Properties());
+			properties = PropertyService.NestedProperties("ErrorListPad");
 			
-			RedrawContent();
-			ResourceService.LanguageChanged += delegate { RedrawContent(); };
-			
-			TaskService.Cleared += new EventHandler(TaskServiceCleared);
-			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
-			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
+			TaskService.Cleared += TaskServiceCleared;
+			TaskService.Added   += TaskServiceAdded;
+			TaskService.Removed += TaskServiceRemoved;
 			TaskService.InUpdateChanged += delegate {
 				if (!TaskService.InUpdate)
 					InternalShowResults();
 			};
 			
-			ProjectService.BuildFinished  += ProjectServiceEndBuild;
-			ProjectService.SolutionLoaded += OnSolutionOpen;
-			ProjectService.SolutionClosed += OnSolutionClosed;
+			SD.BuildService.BuildFinished += ProjectServiceEndBuild;
+			SD.ProjectService.SolutionOpened += OnSolutionOpen;
+			SD.ProjectService.SolutionClosed += OnSolutionClosed;
+			errors = new ObservableCollection<SDTask>(TaskService.Tasks.Where(t => t.TaskType != TaskType.Comment));
 			
-			taskView.CreateControl();
-			contentPanel.Controls.Add(taskView);
+			toolBar = ToolBarService.CreateToolBar(contentPanel, this, "/SharpDevelop/Pads/ErrorList/Toolbar");
 			
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ErrorList/Toolbar");
-			toolStrip.Stretch   = true;
-			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			contentPanel.Children.Add(toolBar);
+			toolBar.SetValue(DockPanel.DockProperty, Dock.Top);
+			contentPanel.Children.Add(errorView);
+			errorView.ItemsSource = errors;
+			errorView.MouseDoubleClick += ErrorViewMouseDoubleClick;
+			errorView.Style = (Style)new TaskViewResources()["TaskListView"];
+			errorView.ContextMenu = MenuService.CreateContextMenu(this, DefaultContextMenuAddInTreeEntry);
 			
-			contentPanel.Controls.Add(toolStrip);
+			errorView.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, ExecuteCopy, CanExecuteCopy));
+			errorView.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
+			
+			errors.CollectionChanged += delegate { MenuService.UpdateText(toolBar.Items); };
 			
 			InternalShowResults();
 		}
 		
-		void RedrawContent()
+		void ErrorViewMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			taskView.RefreshColumnNames();
+			SDTask task = errorView.SelectedItem as SDTask;
+			var item = errorView.ItemContainerGenerator.ContainerFromItem(task) as ListViewItem;
+			UIElement element = e.MouseDevice.DirectlyOver as UIElement;
+			if (task != null && task.FileName != null && element != null && item != null
+			    && element.IsDescendantOf(item)) {
+				SD.FileService.JumpToFilePosition(task.FileName, task.Line, task.Column);
+			}
 		}
 		
 		void OnSolutionOpen(object sender, SolutionEventArgs e)
 		{
-			taskView.ClearTasks();
-			UpdateToolstripStatus();
+			errors.Clear();
 		}
 		
 		void OnSolutionClosed(object sender, EventArgs e)
 		{
-			try {
-				taskView.ClearTasks();
-				UpdateToolstripStatus();
-			} catch (Exception ex) {
-				MessageService.ShowException(ex);
-			}
+			errors.Clear();
 		}
 		
 		void ProjectServiceEndBuild(object sender, EventArgs e)
 		{
 			if (TaskService.TaskCount > 0 && ShowAfterBuild) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
-			UpdateToolstripStatus();
 		}
 		
 		public BuildResults BuildResults = null;
 		
-		void AddTask(Task task)
+		void AddTask(SDTask task)
 		{
 			switch (task.TaskType) {
 				case TaskType.Warning:
@@ -156,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return;
 			}
 			
-			taskView.AddTask(task);
+			errors.Add(task);
 		}
 		
 		
@@ -164,8 +173,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (TaskService.InUpdate)
 				return;
-			taskView.ClearTasks();
-			UpdateToolstripStatus();
+			errors.Clear();
 		}
 		
 		void TaskServiceAdded(object sender, TaskEventArgs e)
@@ -173,70 +181,42 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (TaskService.InUpdate)
 				return;
 			AddTask(e.Task);
-			UpdateToolstripStatus();
 		}
 		
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
 		{
 			if (TaskService.InUpdate)
 				return;
-			taskView.RemoveTask(e.Task);
-			UpdateToolstripStatus();
-		}
-		
-		void UpdateToolstripStatus()
-		{
-			ToolbarService.UpdateToolbar(toolStrip);
-			ToolbarService.UpdateToolbarText(toolStrip);
+			errors.Remove(e.Task);
 		}
 		
 		void InternalShowResults()
 		{
-			// listView.CreateControl is called in the constructor now.
-			if (!taskView.IsHandleCreated) {
-				return;
-			}
+			errors.Clear();
 			
-			taskView.BeginUpdate();
-			taskView.ClearTasks();
-			
-			foreach (Task task in TaskService.Tasks) {
+			foreach (SDTask task in TaskService.Tasks) {
 				AddTask(task);
 			}
-			
-			taskView.EndUpdate();
-			UpdateToolstripStatus();
 		}
 		
-		#region IClipboardHandler interface implementation
-		public bool EnableCut {
-			get { return false; }
-		}
-		public bool EnableCopy {
-			get { return taskView.TaskIsSelected; }
-		}
-		public bool EnablePaste {
-			get { return false; }
-		}
-		public bool EnableDelete {
-			get { return false; }
-		}
-		public bool EnableSelectAll {
-			get { return true; }
-		}
-		
-		public void Cut() {}
-		public void Paste() {}
-		public void Delete() {}
-		
-		public void Copy()
+		void CanExecuteCopy(object sender, CanExecuteRoutedEventArgs e)
 		{
-			taskView.CopySelectionToClipboard();
+			e.CanExecute = errorView.SelectedItem != null;
 		}
-		public void SelectAll()
+		
+		void ExecuteCopy(object sender, ExecutedRoutedEventArgs e)
 		{
-			taskView.SelectAll();
+			TaskViewResources.CopySelectionToClipboard(errorView);
 		}
-		#endregion
+		
+		void CanExecuteSelectAll(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+		
+		void ExecuteSelectAll(object sender, ExecutedRoutedEventArgs e)
+		{
+			errorView.SelectAll();
+		}
 	}
 }

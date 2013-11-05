@@ -33,6 +33,6 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Returns true, when the condition is valid otherwise false.
 		/// </summary>
-		bool IsValid(object owner);
+		bool IsValid(object parameter);
 	}
 }

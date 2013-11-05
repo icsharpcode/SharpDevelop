@@ -2,9 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -14,10 +12,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -30,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (Instance == null) {
 				Instance = new GotoDialog();
-				Instance.Owner = WorkbenchSingleton.MainWindow;
+				Instance.Owner = SD.Workbench.MainWindow;
 				Instance.Show();
 			} else {
 				Instance.Activate();
@@ -41,23 +39,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			InitializeComponent();
 			FormLocationHelper.ApplyWindow(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
-			ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThread.Finished += ParserService_LoadSolutionProjectsThreadEnded;
 			textBox.Focus();
 		}
 		
 		protected override void OnClosed(EventArgs e)
 		{
 			Instance = null;
-			ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThread.Finished -= ParserService_LoadSolutionProjectsThreadEnded;
 			base.OnClosed(e);
 		}
 		
 		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
 			// refresh the list box contents when parsing has completed
-			Dispatcher.BeginInvoke(
-				System.Windows.Threading.DispatcherPriority.Background,
-				new Action(delegate { textBoxTextChanged(null, null); }));
+			textBoxTextChanged(null, null);
 		}
 		
 		class GotoEntry : IComparable<GotoEntry>
@@ -112,6 +108,61 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else if (e.Key == Key.PageDown) {
 				e.Handled = true;
 				ChangeIndex((int)Math.Round(+listBox.ActualHeight / 20));
+			} else if (e.Key == Key.Tab) {
+				e.Handled = true;
+				CompleteSelectedEntry();
+			}
+		}
+		
+		private void CompleteSelectedEntry()
+		{
+			if (listBox.SelectedItem == null) {
+				return;
+			}
+			
+			string completed = null;
+			bool partlyComplete = false;
+			
+			object tag = ((GotoEntry) listBox.SelectedItem).Tag;
+			if (tag is IUnresolvedEntity) {
+				IUnresolvedEntity c = tag as IUnresolvedEntity;
+				completed = c.Name;
+				partlyComplete = (tag is IUnresolvedMember);
+			} else if (tag is IEntity) {
+				IEntity m = tag as IEntity;
+				completed = m.Name;
+				partlyComplete = (tag is IMember);
+			} else if (tag is FileLineReference) {
+				FileLineReference flref = tag as FileLineReference;
+				// Only complete if we are not matching with a concrete number
+				if (flref.Line == 0) {
+					completed = Path.GetFileName(flref.FileName);
+				} else {
+					return;
+				}
+			} else {
+				// Unsupported list item, do nothing
+				return;
+			}
+			
+			if (completed != null) {
+				string currentText = textBox.Text;
+				int dotPos = currentText.IndexOf('.');
+				string needle = currentText;
+				string member = null;
+				if (dotPos > 0) {
+					needle = currentText.Substring(0, dotPos).Trim();
+					member = currentText.Substring(dotPos + 1).Trim();
+				}
+				
+				// Replace the text, set caret to end, so user can continue typing
+				if (partlyComplete && (member != null)) {
+					// Only replace the part after the dot
+					textBox.Text = needle + "." + completed;
+				} else {
+					textBox.Text = completed;
+				}
+				textBox.CaretIndex = textBox.Text.Length;
 			}
 		}
 		
@@ -138,6 +189,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (text.Length == 1 && !char.IsDigit(text, 0)) {
 				return;
 			}
+			
+			int dotPos = text.IndexOf('.');
+			string needle = text;
+			string member = null;
+			if (dotPos > 0) {
+				needle = text.Substring(0, dotPos).Trim();
+				member = text.Substring(dotPos + 1).Trim();
+			}
+			
 			int commaPos = text.IndexOf(',');
 			if (commaPos < 0) {
 				// use "File, ##" or "File: ##" syntax for line numbers
@@ -159,8 +219,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				AddSourceFiles(file, lineNr);
 			} else {
 				AddSourceFiles(text, 0);
-				foreach (IClass c in SearchClasses(text)) {
-					AddItem(c, GetMatchType(text, c.Name), false);
+				foreach (IUnresolvedTypeDefinition c in SearchClasses(needle)) {
+					if (!String.IsNullOrEmpty(member)) {
+						AddAllMembersMatchingText(c, member, false);
+					} else {
+						AddItem(c, GetMatchType(needle, c.Name), false);
+					}
 				}
 				AddAllMembersMatchingText(text);
 			}
@@ -175,33 +239,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ITextEditor editor = GetEditor();
 			if (editor != null) {
-				ParseInformation parseInfo = ParserService.GetExistingParseInformation(editor.FileName);
+				IUnresolvedFile parseInfo = SD.ParserService.GetExistingUnresolvedFile(editor.FileName);
 				if (parseInfo != null) {
-					foreach (IClass c in parseInfo.CompilationUnit.Classes) {
+					foreach (IUnresolvedTypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
 						AddAllMembersMatchingText(c, text, true);
 					}
 				}
 			}
 		}
 
-		void AddAllMembersMatchingText(IClass c, string text, bool inCurrentFile)
+		void AddAllMembersMatchingText(IUnresolvedTypeDefinition c, string text, bool inCurrentFile)
 		{
-			foreach (IClass innerClass in c.InnerClasses) {
+			foreach (IUnresolvedTypeDefinition innerClass in c.NestedTypes) {
 				AddAllMembersMatchingText(innerClass, text, inCurrentFile);
 			}
-			foreach (IMethod m in c.Methods) {
-				if (!m.IsConstructor) {
+			foreach (IUnresolvedMember m in c.Members) {
+				if (m.SymbolKind != SymbolKind.Constructor) {
 					AddItemIfMatchText(text, m, ClassBrowserIconService.GetIcon(m), inCurrentFile);
 				}
-			}
-			foreach (IField f in c.Fields) {
-				AddItemIfMatchText(text, f, ClassBrowserIconService.GetIcon(f), inCurrentFile);
-			}
-			foreach (IProperty p in c.Properties) {
-				AddItemIfMatchText(text, p, ClassBrowserIconService.GetIcon(p), inCurrentFile);
-			}
-			foreach (IEvent evt in c.Events) {
-				AddItemIfMatchText(text, evt, ClassBrowserIconService.GetIcon(evt), inCurrentFile);
 			}
 		}
 		
@@ -242,50 +297,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (int.TryParse(text, out num)) {
 				ITextEditor editor = GetEditor();
 				if (editor != null) {
-					num = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, num));
+					num = Math.Min(editor.Document.LineCount, Math.Max(1, num));
 					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrow, num, int.MaxValue, false);
 				}
 			}
 		}
 		
-		ArrayList SearchClasses(string text)
+		List<IUnresolvedTypeDefinition> SearchClasses(string text)
 		{
-			int dotPos = text.IndexOf('.');
-			string needle = text;
-			string member = "";
-			if (dotPos > 0) {
-				needle = text.Substring(0, dotPos).Trim();
-				member = text.Substring(dotPos + 1).Trim();
-			}
-			ArrayList list = new ArrayList();
+			List<IUnresolvedTypeDefinition> list = new List<IUnresolvedTypeDefinition>();
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
-					IProjectContent projectContent = ParserService.GetProjectContent(project);
+					IProjectContent projectContent = project.ProjectContent;
 					if (projectContent != null) {
-						AddClasses(needle, member, list, projectContent.Classes);
+						foreach (IUnresolvedTypeDefinition c in projectContent.GetAllTypeDefinitions()) {
+							string className = c.Name;
+							if (className.Length >= text.Length) {
+								if (GotoUtils.AutoCompleteWithCamelHumpsMatch(className, text)) {
+									list.Add(c);
+								}
+							}
+						}
 					}
 				}
 			}
 			return list;
 		}
-		
-		void AddClasses(string classPart, string memberPart, ArrayList list, IEnumerable<IClass> classes)
-		{
-			foreach (IClass c in classes) {
-				string className = c.Name;
-				if (className.Length >= classPart.Length) {
-					if (className.AutoCompleteWithCamelHumpsMatch(classPart)){
-						if (memberPart.Length > 0) {
-							AddAllMembersMatchingText(c, memberPart, false);
-						} else {
-							list.Add(c);
-						}
-					}
-				}
-				AddClasses(classPart, memberPart, list, c.InnerClasses);
-			}
-		}		
-		
+
 		const int MatchType_NoMatch = -1;
 		const int MatchType_ContainsMatch_CaseInsensitive = 0;
 		const int MatchType_ContainsMatch = 1;
@@ -299,13 +337,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (itemText.Length < searchText.Length)
 				return MatchType_NoMatch;
 			int indexInsensitive = itemText.IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
-			if (indexInsensitive < 0)
-			{
-				if (itemText.AutoCompleteWithCamelHumpsMatch(searchText)) {
+			if (indexInsensitive < 0) {
+				if (GotoUtils.AutoCompleteWithCamelHumpsMatch(itemText, searchText)) {
 					return MatchType_ContainsMatch_CaseInsensitive;
 				}
 				return MatchType_NoMatch;
-			}				
+			}
 			// This is a case insensitive match
 			int indexSensitive = itemText.IndexOf(searchText, StringComparison.Ordinal);
 			if (itemText.Length == searchText.Length) {
@@ -337,12 +374,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			newItems.Add(item);
 		}
 		
-		void AddItem(IClass c, int matchType, bool inCurrentFile)
+		void AddItem(IUnresolvedTypeDefinition c, int matchType, bool inCurrentFile)
 		{
 			AddItem(c, ClassBrowserIconService.GetIcon(c), matchType, inCurrentFile);
 		}
 		
-		void AddItemIfMatchText(string text, IMember member, IImage image, bool inCurrentFile)
+		void AddItemIfMatchText(string text, IUnresolvedMember member, IImage image, bool inCurrentFile)
 		{
 			string name = member.Name;
 			int matchType = GetMatchType(text, name);
@@ -351,9 +388,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void AddItem(IEntity e, IImage image, int matchType, bool inCurrentFile)
+		void AddItem(IUnresolvedEntity e, IImage image, int matchType, bool inCurrentFile)
 		{
-			AddItem(e.Name + " (" + e.FullyQualifiedName + ")", image, e, matchType, inCurrentFile);
+			AddItem(e.Name + " (" + e.FullName + ")", image, e, matchType, inCurrentFile);
 		}
 		
 		void cancelButtonClick(object sender, RoutedEventArgs e)
@@ -361,20 +398,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Close();
 		}
 		
-		void GotoRegion(DomRegion region, string fileName)
+		void GotoRegion(DomRegion region)
 		{
-			if (fileName != null && !region.IsEmpty) {
-				FileService.JumpToFilePosition(fileName, region.BeginLine, region.BeginColumn);
+			if (!region.IsEmpty && !string.IsNullOrEmpty(region.FileName)) {
+				FileService.JumpToFilePosition(region.FileName, region.BeginLine, region.BeginColumn);
 			}
 		}
 		
 		ITextEditor GetEditor()
 		{
-			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (viewContent is ITextEditorProvider) {
-				return ((ITextEditorProvider)viewContent).TextEditor;
-			}
-			return null;
+			return SD.GetActiveViewContentService<ITextEditor>();
 		}
 		
 		void okButtonClick(object sender, RoutedEventArgs e)
@@ -386,17 +419,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (tag is int) {
 					ITextEditor editor = GetEditor();
 					if (editor != null) {
-						int i = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, (int)tag));
+						int i = Math.Min(editor.Document.LineCount, Math.Max(1, (int)tag));
 						editor.JumpTo(i, int.MaxValue);
 					}
-				} else if (tag is IClass) {
-					IClass c = tag as IClass;
-					CodeCompletionDataUsageCache.IncrementUsage(c.DotNetName);
-					GotoRegion(c.Region, c.CompilationUnit.FileName);
-				} else if (tag is IMember) {
-					IMember m = tag as IMember;
-					CodeCompletionDataUsageCache.IncrementUsage(m.DotNetName);
-					GotoRegion(m.Region, m.DeclaringType.CompilationUnit.FileName);
+				} else if (tag is IUnresolvedEntity) {
+					IUnresolvedEntity c = tag as IUnresolvedEntity;
+					CodeCompletionDataUsageCache.IncrementUsage(c.ReflectionName);
+					GotoRegion(c.Region);
+				} else if (tag is IEntity) {
+					IEntity m = tag as IEntity;
+					CodeCompletionDataUsageCache.IncrementUsage(m.ReflectionName);
+					GotoRegion(m.Region);
 				} else if (tag is FileLineReference) {
 					FileLineReference flref = (FileLineReference)tag;
 					if (flref.Line <= 0) {
@@ -410,6 +443,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} finally {
 				Close();
 			}
+		}
+	}
+	
+	public class GotoUtils
+	{
+		public static bool AutoCompleteWithCamelHumpsMatch(string entityName, string entityPartName)
+		{
+			string camelHumpsPrefix = new string(entityName.Where(Char.IsUpper).ToArray());
+			return AutoCompleteMatch(entityName, entityPartName) || AutoCompleteMatch(camelHumpsPrefix, entityPartName);
+		}
+		
+		public static bool AutoCompleteMatch(string entityName, string entityPartName)
+		{
+			return entityName.IndexOf(entityPartName, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 	}
 }

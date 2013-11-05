@@ -10,11 +10,9 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
-using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using Mono.Cecil;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -166,7 +164,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			dragDropBookmark = bm;
 			dragDropStartPoint = dragDropCurrentPoint = e.GetPosition(this).Y;
 			if (TextView != null) {
-				TextArea area = TextView.Services.GetService(typeof(TextArea)) as TextArea;
+				TextArea area = TextView.GetService(typeof(TextArea)) as TextArea;
 				if (area != null)
 					area.PreviewKeyDown += TextArea_PreviewKeyDown;
 			}
@@ -178,7 +176,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				dragDropBookmark = null;
 				dragStarted = false;
 				if (TextView != null) {
-					TextArea area = TextView.Services.GetService(typeof(TextArea)) as TextArea;
+					TextArea area = TextView.GetService(typeof(TextArea)) as TextArea;
 					if (area != null)
 						area.PreviewKeyDown -= TextArea_PreviewKeyDown;
 				}
@@ -238,20 +236,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				if (e.ChangedButton == MouseButton.Left && TextView != null) {
 					// no bookmark on the line: create a new breakpoint
-					ITextEditor textEditor = TextView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+					ITextEditor textEditor = TextView.GetService(typeof(ITextEditor)) as ITextEditor;
 					if (textEditor != null) {
-						DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(BreakpointBookmark));
+						DebuggerService.ToggleBreakpointAt(textEditor, line);
 						return;
-					}
-					
-					// create breakpoint for the other posible active contents
-					var viewContent = WorkbenchSingleton.Workbench.ActiveContent as AbstractViewContentWithoutFile;
-					if (viewContent != null) {
-						textEditor = viewContent.Services.GetService(typeof(ITextEditor)) as ITextEditor;
-						if (textEditor != null) {
-							DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(DecompiledBreakpointBookmark));
-							return;
-						}
 					}
 				}
 			}

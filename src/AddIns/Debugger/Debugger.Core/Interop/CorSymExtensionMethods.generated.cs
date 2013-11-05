@@ -67,9 +67,14 @@ namespace Debugger.Interop.CorSym
 			return returnValue;
 		}
 		
-		public static void GetMethodsFromDocumentPosition(this CorSymReader_SxSClass instance, ISymUnmanagedDocument document, uint line, uint column, uint cMethod, out uint pcMethod, IntPtr pRetVal)
+		public static ISymUnmanagedMethod[] GetMethodsFromDocumentPosition(this CorSymReader_SxSClass instance, ISymUnmanagedDocument document, uint line, uint column)
 		{
-			instance.__GetMethodsFromDocumentPosition(document, line, column, cMethod, out pcMethod, pRetVal);
+			uint count;
+			instance.__GetMethodsFromDocumentPosition(document, line, column, 0, out count, new ISymUnmanagedMethod[0]);
+			var methods = new ISymUnmanagedMethod[count];
+			instance.__GetMethodsFromDocumentPosition(document, line, column, count, out count, methods);
+			ProcessOutParameter(methods);
+			return methods;
 		}
 		
 		public static int GetMethodVersion(this CorSymReader_SxSClass instance, ISymUnmanagedMethod pMethod)
@@ -485,9 +490,14 @@ namespace Debugger.Interop.CorSym
 			instance.__GetSymbolStoreFileName(cchName, out pcchName, szName);
 		}
 		
-		public static void GetMethodsFromDocumentPosition(this ISymUnmanagedReader instance, ISymUnmanagedDocument document, uint line, uint column, uint cMethod, out uint pcMethod, IntPtr pRetVal)
+		public static ISymUnmanagedMethod[] GetMethodsFromDocumentPosition(this ISymUnmanagedReader instance, ISymUnmanagedDocument document, uint line, uint column)
 		{
-			instance.__GetMethodsFromDocumentPosition(document, line, column, cMethod, out pcMethod, pRetVal);
+			uint count;
+			instance.__GetMethodsFromDocumentPosition(document, line, column, 0, out count, new ISymUnmanagedMethod[0]);
+			var methods = new ISymUnmanagedMethod[count];
+			instance.__GetMethodsFromDocumentPosition(document, line, column, count, out count, methods);
+			ProcessOutParameter(methods);
+			return methods;
 		}
 		
 		public static void GetDocumentVersion(this ISymUnmanagedReader instance, ISymUnmanagedDocument pDoc, out int version, out int pbCurrent)

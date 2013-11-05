@@ -44,14 +44,14 @@ namespace XmlEditor.Tests.Tree
 		[Test]
 		public void ViewStateSaved()
 		{
-			string savedViewState = (string)savedProperties.Get("XmlTreeViewControl.ViewState");
+			string savedViewState = savedProperties.Get("XmlTreeViewControl.ViewState", string.Empty);
 			Assert.AreEqual(expectedSavedViewState, savedViewState);
 		}
 		
 		[Test]
 		public void ViewStateLoaded()
 		{
-			Assert.AreEqual(String.Empty, restoredProperties.Get("XmlTreeViewControl.ViewState"));
+			Assert.AreEqual(String.Empty, restoredProperties.Get("XmlTreeViewControl.ViewState", string.Empty));
 		}
 	}
 }

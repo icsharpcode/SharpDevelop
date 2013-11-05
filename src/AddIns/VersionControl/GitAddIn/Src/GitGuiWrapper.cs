@@ -4,7 +4,9 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
@@ -45,7 +47,7 @@ namespace ICSharpCode.GitAddIn
 			string path = GetPathFromRegistry("ProcPath");
 			if (path == null) {
 				using (var dlg = new ToolNotFoundDialog(StringParser.Parse("${res:AddIns.Git.TortoiseGitRequired}"), "http://code.google.com/p/tortoisegit/")) {
-					dlg.ShowDialog(WorkbenchSingleton.MainWin32Window);
+					dlg.ShowDialog(SD.WinForms.MainWin32Window);
 				}
 			} else {
 				try {
@@ -71,7 +73,9 @@ namespace ICSharpCode.GitAddIn
 					p.EnableRaisingEvents = true;
 					p.Exited += delegate {
 						p.Dispose();
-						if (callback != null) { ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(callback); }
+						if (callback != null) {
+							SD.MainThread.InvokeAsyncAndForget(callback);
+						}
 					};
 //					p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
 //						SvnClient.Instance.SvnCategory.AppendText(e.Data);

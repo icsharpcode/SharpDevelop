@@ -3,7 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 namespace ResourceEditor
 {
@@ -11,7 +11,7 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)WorkbenchSingleton.Workbench.ActiveViewContent).ResourceEditor;
+			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
 			
 			if(editor.ResourceList.SelectedItems.Count != 0) {
 				editor.ResourceList.SelectedItems[0].BeginEdit();

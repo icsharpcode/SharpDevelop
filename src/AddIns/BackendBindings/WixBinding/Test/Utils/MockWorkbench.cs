@@ -2,13 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace WixBinding.Tests.Utils
 {
@@ -26,20 +28,10 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public ISynchronizeInvoke SynchronizingObject {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
 		public Window MainWindow {
 			get {
 				throw new NotImplementedException();
 			}
-		}
-		
-		public IStatusBarService StatusBar {
-			get { throw new NotImplementedException(); }
 		}
 		
 		public string Title {
@@ -81,16 +73,7 @@ namespace WixBinding.Tests.Utils
 		
 		public IViewContent ActiveViewContent { get; set; }
 		
-		public object ActiveContent { get; set; }
-		
-		public IWorkbenchLayout WorkbenchLayout {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
+		public IServiceProvider ActiveContent { get; set; }
 		
 		public bool IsActiveWindow {
 			get {
@@ -113,19 +96,14 @@ namespace WixBinding.Tests.Utils
 			viewContents.Add(content);
 		}
 		
-		public void ShowPad(PadDescriptor content)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UnloadPad(PadDescriptor content)
+		public void ActivatePad(PadDescriptor content)
 		{
 			throw new NotImplementedException();
 		}
 		
 		public PadDescriptor GetPad(Type type)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		public void CloseAllViews()
@@ -170,7 +148,7 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public event ViewContentEventHandler ViewOpened;
+		public event EventHandler<ViewContentEventArgs> ViewOpened;
 		
 		protected virtual void OnViewOpened(ViewContentEventArgs e)
 		{
@@ -179,7 +157,7 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public event ViewContentEventHandler ViewClosed;
+		public event EventHandler<ViewContentEventArgs> ViewClosed;
 		
 		protected virtual void OnViewClosed(ViewContentEventArgs e)
 		{
@@ -197,9 +175,18 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public bool CloseAllSolutionViews()
+		public bool CloseAllSolutionViews(bool force)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public string CurrentLayoutConfiguration {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		ProjectItem projectItem;
 		
 		public DirectoryProjectItems(ProjectItem projectItem)
-			: base((Project)projectItem.ContainingProject, projectItem, new PackageManagementFileService())
+			: base((Project)projectItem.ContainingProject, projectItem)
 		{
 			this.projectItem = projectItem;
 		}

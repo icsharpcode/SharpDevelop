@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -14,8 +15,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			ITextEditor editor = provider.TextEditor;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			FoldingManager foldingManager = editor.GetService(typeof(FoldingManager)) as FoldingManager;
 			
 			if (foldingManager != null) {
@@ -36,8 +36,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			ITextEditor editor = provider.TextEditor;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			FoldingManager foldingManager = editor.GetService(typeof(FoldingManager)) as FoldingManager;
 			
 			if (foldingManager != null) {
@@ -59,13 +58,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			ITextEditor editor = provider.TextEditor;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			FoldingManager foldingManager = editor.GetService(typeof(FoldingManager)) as FoldingManager;
 			
 			if (foldingManager != null) {
 				foreach (FoldingSection fm in foldingManager.AllFoldings) {
-					fm.IsFolded = ParserFoldingStrategy.IsDefinition(fm);
+					var newFolding = fm.Tag as NewFolding;
+					if (newFolding != null)
+						fm.IsFolded = newFolding.IsDefinition;
 				}
 			}
 		}

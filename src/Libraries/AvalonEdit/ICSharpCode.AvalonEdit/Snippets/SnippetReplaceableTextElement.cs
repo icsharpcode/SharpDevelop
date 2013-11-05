@@ -6,10 +6,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
-using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Snippets
 {
@@ -110,7 +109,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		{
 			ISegment s = this.Segment;
 			if (s != null) {
-				bool newIsCaretInside = s.Contains(context.TextArea.Caret.Offset);
+				bool newIsCaretInside = s.Contains(context.TextArea.Caret.Offset, 0);
 				if (newIsCaretInside != isCaretInside) {
 					isCaretInside = newIsCaretInside;
 					context.TextArea.TextView.InvalidateLayer(foreground.Layer);

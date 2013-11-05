@@ -18,28 +18,17 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			while (node != null && !(node is ISolutionFolderNode))
 				node = node.Parent;
 			ISolutionFolderNode solutionFolderNode = node as ISolutionFolderNode;
-			if (node != null) {
-				using (NewProjectDialog npdlg = new NewProjectDialog(false)) {
-					npdlg.SolutionFolderNode = solutionFolderNode;
-					npdlg.InitialProjectLocationDirectory = GetInitialDirectorySuggestion(solutionFolderNode);
-					
-					// show the dialog to request project type and name
-					if (npdlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-						if (npdlg.NewProjectLocation.Length == 0) {
-							MessageService.ShowError("No project has been created, there is nothing to add.");
-							return;
-						}
-					}
-				}
+			if (solutionFolderNode != null) {
+				SD.UIService.ShowNewProjectDialog(solutionFolderNode.Folder);
 			}
 		}
 		
-		internal static string GetInitialDirectorySuggestion(ISolutionFolderNode solutionFolderNode)
+		internal static string GetInitialDirectorySuggestion(ISolutionFolder solutionFolder)
 		{
 			// Detect the correct folder to place the new project in:
 			int projectCount = 0;
 			string initialDirectory = null;
-			foreach (ISolutionFolder folderEntry in solutionFolderNode.Container.Folders) {
+			foreach (ISolutionItem folderEntry in solutionFolder.Items) {
 				IProject project = folderEntry as IProject;
 				if (project != null) {
 					if (projectCount == 0)
@@ -56,33 +45,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					return initialDirectory;
 				}
 			} else {
-				return solutionFolderNode.Solution.Directory;
+				return solutionFolder.ParentSolution.Directory;
 			}
 		}
 	}
 	
 	public class AddExistingProjectToSolution : AbstractMenuCommand
 	{
-		public static void AddProject(ISolutionFolderNode solutionFolderNode, string fileName)
-		{
-			if (solutionFolderNode == null)
-				throw new ArgumentNullException("solutionFolderNode");
-			ProjectLoadInformation loadInfo = new ProjectLoadInformation(solutionFolderNode.Solution, fileName, Path.GetFileNameWithoutExtension(fileName));
-			AddProject(solutionFolderNode, ProjectBindingService.LoadProject(loadInfo));
-		}
-		
-		public static void AddProject(ISolutionFolderNode solutionFolderNode, IProject newProject)
-		{
-			if (solutionFolderNode == null)
-				throw new ArgumentNullException("solutionFolderNode");
-			if (newProject != null) {
-				newProject.Location = FileUtility.GetRelativePath(solutionFolderNode.Solution.Directory, newProject.FileName);
-				ProjectService.AddProject(solutionFolderNode, newProject);
-				NodeBuilders.AddProjectNode((TreeNode)solutionFolderNode, newProject).EnsureVisible();
-				solutionFolderNode.Solution.ApplySolutionConfigurationAndPlatformToProjects();
-			}
-		}
-		
 		public override void Run()
 		{
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
@@ -93,10 +62,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					fdiag.Filter = ProjectService.GetAllProjectsFilter(this, false);
 					fdiag.Multiselect     = true;
 					fdiag.CheckFileExists = true;
-					fdiag.InitialDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolderNode);
-					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					fdiag.InitialDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolderNode.Folder);
+					if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 						foreach (string fileName in fdiag.FileNames) {
-							AddProject(solutionFolderNode, fileName);
+							solutionFolderNode.Folder.AddExistingProject(FileName.Create(fileName));
 						}
 						ProjectService.SaveSolution();
 					}
@@ -117,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					fdiag.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 					fdiag.Multiselect     = true;
 					fdiag.CheckFileExists = true;
-					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 						foreach (string fileName in fdiag.FileNames) {
 							solutionFolderNode.AddItem(fileName);
 						}
@@ -135,11 +104,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
 			ISolutionFolderNode solutionFolderNode = node as ISolutionFolderNode;
 			if (node != null) {
-				SolutionFolder newSolutionFolder = solutionFolderNode.Solution.CreateFolder(ResourceService.GetString("ProjectComponent.NewFolderString"));
-				solutionFolderNode.Container.AddFolder(newSolutionFolder);
+				ISolutionFolder newSolutionFolder = solutionFolderNode.Folder.CreateFolder(ResourceService.GetString("ProjectComponent.NewFolderString"));
 				solutionFolderNode.Solution.Save();
 				
-				SolutionFolderNode newSolutionFolderNode = new SolutionFolderNode(solutionFolderNode.Solution, newSolutionFolder);
+				SolutionFolderNode newSolutionFolderNode = new SolutionFolderNode(newSolutionFolder);
 				newSolutionFolderNode.InsertSorted(node);
 				ProjectBrowserPad.Instance.StartLabelEdit(newSolutionFolderNode);
 			}

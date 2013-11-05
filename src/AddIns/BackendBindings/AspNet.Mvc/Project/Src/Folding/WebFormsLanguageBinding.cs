@@ -6,16 +6,16 @@ using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public class WebFormsLanguageBinding : HtmlLanguageBinding
+	public class WebFormsTextEditorExtension : HtmlTextEditorExtension
 	{
-		public WebFormsLanguageBinding()
+		public WebFormsTextEditorExtension()
 			: base(
 				new TextEditorWithParseInformationFoldingFactory(),
 				new WebFormsFoldGeneratorFactory())
 		{
 		}
 		
-		public WebFormsLanguageBinding(
+		public WebFormsTextEditorExtension(
 			ITextEditorWithParseInformationFoldingFactory textEditorFactory,
 			IFoldGeneratorFactory foldGeneratorFactory)
 			: base(textEditorFactory, foldGeneratorFactory)

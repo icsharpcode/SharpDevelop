@@ -52,9 +52,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void TestFiles()
 		{
-			TestMime(LoadFile("ICSharpCode.SharpDevelop.Tests.mime_utf-16_be_test.txt"), "text/plain");
-			TestMime(LoadFile("ICSharpCode.SharpDevelop.Tests.mime_utf-16_le_test.txt"), "text/plain");
-			TestMime(LoadFile("ICSharpCode.SharpDevelop.Tests.mime_bug1.txt"), "text/plain");
+			TestMime(LoadFile("ICSharpCode.SharpDevelop.mime_utf-16_be_test.txt"), "text/plain");
+			TestMime(LoadFile("ICSharpCode.SharpDevelop.mime_utf-16_le_test.txt"), "text/plain");
+			TestMime(LoadFile("ICSharpCode.SharpDevelop.mime_bug1.txt"), "text/plain");
 		}
 		
 		byte[] LoadFile(string resourceName)

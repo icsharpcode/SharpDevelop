@@ -123,6 +123,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 		}
 		
 	}
+
 	
 	internal class CalculatePdfFormat {
 		

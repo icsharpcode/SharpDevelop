@@ -59,7 +59,7 @@ namespace ICSharpCode.Profiler.Interprocess
 		public static readonly int SynchronizationOverheadSize = sizeof(UnmanagedCircularBufferHeader);
 		
 		#region Construction
-		private UnmanagedCircularBuffer(IntPtr bufferPointer, int bufferLength)
+		UnmanagedCircularBuffer(IntPtr bufferPointer, int bufferLength)
 		{
 			// we need space for the header and at least 2 bytes of data (because the buffer can never be completely filled)
 			if (bufferLength < sizeof(UnmanagedCircularBufferHeader) + 2)
@@ -281,7 +281,7 @@ namespace ICSharpCode.Profiler.Interprocess
 				// wait until there's data
 				while (startOffset == endOffset) {
 					lock (circularBuffer.closeLock) {
-						if (this.circularBuffer.isClosed) {
+						if (circularBuffer.isClosed) {
 							Monitor.Pulse(circularBuffer.closeLock);
 							return 0;
 						}

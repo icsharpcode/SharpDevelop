@@ -7,12 +7,13 @@ using System.IO;
 using System.Linq;
 using System.Resources;
 using System.Text;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
 	public static class ResXConverter
 	{
-		public static string ConvertTypeName(Type type, string fileName, CompilableProject project = null)
+		public static string ConvertTypeName(Type type, FileName fileName, CompilableProject project = null)
 		{
 			Version version;
 			if (project == null)
@@ -28,11 +29,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		static readonly Version DotNet40 = new Version(4, 0);
 		static readonly Version DotNet20 = new Version(2, 0);
 		
-		static Version GetTargetFrameworkVersionFrom(string fileName)
+		static Version GetTargetFrameworkVersionFrom(FileName fileName)
 		{
-			if (ProjectService.OpenSolution == null)
-				return DotNet40;
-			var project = ProjectService.OpenSolution.FindProjectContainingFile(fileName) as CompilableProject;
+			var project = SD.ProjectService.FindProjectContainingFile(fileName) as CompilableProject;
 			if (project == null)
 				return DotNet40;
 			return ScanVersion(project.TargetFrameworkVersion);

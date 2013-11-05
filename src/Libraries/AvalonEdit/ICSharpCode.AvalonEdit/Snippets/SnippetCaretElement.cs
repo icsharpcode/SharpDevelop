@@ -5,6 +5,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Snippets
 {

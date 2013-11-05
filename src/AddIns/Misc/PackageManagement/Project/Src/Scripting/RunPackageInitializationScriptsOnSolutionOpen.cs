@@ -25,24 +25,24 @@ namespace ICSharpCode.PackageManagement.Scripting
 			PackageInitializationScriptsConsole scriptsConsole,
 			IPackageInitializationScriptsFactory scriptsFactory)
 		{
-			projectService.SolutionLoaded += SolutionLoaded;
+			projectService.SolutionOpened += SolutionOpened;
 			this.scriptsConsole = scriptsConsole;
 			this.scriptsFactory = scriptsFactory;
 		}
 		
-		void SolutionLoaded(object sender, SolutionEventArgs e)
+		void SolutionOpened(object sender, SolutionEventArgs e)
 		{
 			RunPackageInitializationScripts(e.Solution);
 		}
 		
-		void RunPackageInitializationScripts(Solution solution)
+		void RunPackageInitializationScripts(ISolution solution)
 		{
 			if (SolutionHasPackageInitializationScripts(solution)) {
 				RunInitializePackagesCmdlet();
 			}
 		}
 		
-		bool SolutionHasPackageInitializationScripts(Solution solution)
+		bool SolutionHasPackageInitializationScripts(ISolution solution)
 		{
 			IPackageInitializationScripts scripts = CreatePackageInitializationScripts(solution);
 			return scripts.Any();
@@ -54,7 +54,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			scriptsConsole.ExecuteCommand(command);
 		}
 		
-		IPackageInitializationScripts CreatePackageInitializationScripts(Solution solution)
+		IPackageInitializationScripts CreatePackageInitializationScripts(ISolution solution)
 		{
 			return scriptsFactory.CreatePackageInitializationScripts(solution);
 		}

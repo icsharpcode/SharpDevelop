@@ -5,8 +5,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
@@ -45,7 +46,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			set {
 				if (value == null)
 					throw new ArgumentNullException();
-				CheckBeforeMutation();
+				FreezableHelper.ThrowIfFrozen(this);
 				if (extensions != value) {
 					extensions = value;
 					OnPropertyChanged("Extensions");

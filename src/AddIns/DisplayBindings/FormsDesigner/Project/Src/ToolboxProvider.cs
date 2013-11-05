@@ -6,12 +6,11 @@ using System.Collections.Generic;
 using System.Drawing.Design;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
@@ -49,7 +48,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		static void CreateToolboxService()
 		{
-			Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
+			SD.MainThread.VerifyAccess();
 			if (toolboxService == null) {
 				sideBar = new SharpDevelopSideBar();
 				LoadToolbox();
@@ -133,6 +132,8 @@ namespace ICSharpCode.FormsDesigner
 					if (selectedItem != null && selectedItem.TypeName != null) {
 						LoggingService.Debug("Checking for reference to CustomComponent: " + selectedItem.TypeName);
 						// Check current project has the custom component first.
+						#warning reimplement automatic add reference
+						/*
 						IProjectContent currentProjectContent = ParserService.CurrentProjectContent;
 						if (currentProjectContent != null) {
 							if (currentProjectContent.GetClass(selectedItem.TypeName, 0) == null) {
@@ -144,6 +145,7 @@ namespace ICSharpCode.FormsDesigner
 								}
 							}
 						}
+						 */
 					}
 				} else {
 					if (selectedItem != null && selectedItem.AssemblyName != null) {
@@ -234,12 +236,9 @@ namespace ICSharpCode.FormsDesigner
 			
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				if (project != currentProject) {
-					IProjectContent projectContent = ParserService.GetProjectContent(project);
-					if (projectContent != null) {
-						if (projectContent.GetClass(type, 0) != null) {
-							LoggingService.Debug("Found project containing type: " + project.FileName);
-							return project;
-						}
+					if (project.ProjectContent.TopLevelTypeDefinitions.Any(t => t.FullName == type)) {
+						LoggingService.Debug("Found project containing type: " + project.FileName);
+						return project;
 					}
 				}
 			}

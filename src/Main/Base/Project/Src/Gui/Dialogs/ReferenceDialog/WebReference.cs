@@ -263,10 +263,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void GenerateWebProxy()
 		{
-			GenerateWebProxy(proxyNamespace, GetFullProxyFileName(), GetServiceDescriptionCollection(protocol), GetXmlSchemas(protocol));
+			GenerateWebProxy(proxyNamespace, GetFullProxyFileName(), GetServiceDescriptionCollection(protocol), GetXmlSchemas(protocol), project);
 		}
 		
-		static void GenerateWebProxy(string proxyNamespace, string fileName, ServiceDescriptionCollection serviceDescriptions, XmlSchemas schemas)
+		static void GenerateWebProxy(string proxyNamespace, string fileName, ServiceDescriptionCollection serviceDescriptions, XmlSchemas schemas, IProject project)
 		{
 			ServiceDescriptionImporter importer = new ServiceDescriptionImporter();
 			
@@ -283,19 +283,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			codeUnit.Namespaces.Add(codeNamespace);
 			ServiceDescriptionImportWarnings warnings = importer.Import(codeNamespace, codeUnit);
 			
-			CodeDomProvider provider = null;
-			
-			IParser parser = ParserService.CreateParser(fileName);
-			if (parser != null) {
-				provider = parser.Language.CodeDomProvider;
-			}
-			
-			if (provider != null) {
-				StreamWriter sw = new StreamWriter(fileName);
-				CodeGeneratorOptions options = new CodeGeneratorOptions();
-				options.BracingStyle = "C";
-				provider.GenerateCodeFromCompileUnit(codeUnit, sw, options);
-				sw.Close();
+			using (StreamWriter sw = new StreamWriter(fileName)) {
+				project.GenerateCodeFromCodeDom(codeUnit, sw);
 			}
 		}
 		

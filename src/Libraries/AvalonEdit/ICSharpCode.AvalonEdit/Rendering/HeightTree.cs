@@ -84,6 +84,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		#endregion
 		
 		#region RebuildDocument
+		void ILineTracker.ChangeComplete(DocumentChangeEventArgs e)
+		{
+		}
+		
 		void ILineTracker.SetLineLength(DocumentLine ls, int newTotalLength)
 		{
 		}

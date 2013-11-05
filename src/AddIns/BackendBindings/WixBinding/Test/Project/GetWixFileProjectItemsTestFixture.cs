@@ -1,10 +1,11 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Project
@@ -23,6 +24,7 @@ namespace WixBinding.Tests.Project
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			SD.InitializeForUnitTests();
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			
 			FileProjectItem item = new FileProjectItem(p, ItemType.None);

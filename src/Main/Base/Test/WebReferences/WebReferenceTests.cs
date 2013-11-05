@@ -1,8 +1,8 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using SD = ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using System;
@@ -13,11 +13,13 @@ using System.Web.Services.Discovery;
 
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 {
+	using SD = ICSharpCode.SharpDevelop.Gui;
+	
 	/// <summary>
 	/// Tests the generated project items for a web reference.
 	/// </summary>
 	[TestFixture]
-	public class WebReferenceTests
+	public class WebReferenceTests : SDTestFixtureBase
 	{
 		SD.WebReference webReference;
 		DiscoveryClientProtocol protocol;
@@ -38,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		public void SetUpFixture()
 		{
 			project = WebReferenceTestHelper.CreateTestProject("C#");
-			project.FileName = "C:\\projects\\test\\foo.csproj";
+			project.FileName = FileName.Create("C:\\projects\\test\\foo.csproj");
 
 			protocol = new DiscoveryClientProtocol();
 			DiscoveryDocumentReference discoveryRef = new DiscoveryDocumentReference();

@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.AvalonEdit.AddIn;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
@@ -48,13 +50,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		CustomizedHighlightingColor FindPlainTextHighlightingColor()
 		{
-			return Colors.Find(c => c.Name == CustomizableHighlightingColorizer.DefaultTextAndBackground);
+			return Colors.Find(c => c.Name == CustomizingHighlighter.DefaultTextAndBackground);
 		}
 		
 		CustomizedHighlightingColor AddPlainTextHighlightingColorToCustomColors()
 		{
 			var color = new CustomizedHighlightingColor() {
-				Name = CustomizableHighlightingColorizer.DefaultTextAndBackground
+				Name = CustomizingHighlighter.DefaultTextAndBackground
 			};
 			Colors.Add(color);
 			return color;
@@ -63,7 +65,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		List<CustomizedHighlightingColor> Colors {
 			get {
 				if (colors == null) {
-					colors = highlightingRules.LoadColors();
+					colors = new List<CustomizedHighlightingColor>(highlightingRules.LoadColors());
 				}
 				return colors;
 			}

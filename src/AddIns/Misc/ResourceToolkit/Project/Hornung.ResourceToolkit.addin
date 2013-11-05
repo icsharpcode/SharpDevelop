@@ -17,7 +17,7 @@
 	
 	<!-- Code completion -->
 	
-	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding
 			id = "CSharpResources"
 			extensions = ".cs"
@@ -44,7 +44,7 @@
 	
 	<!-- Tools menu -->
 	
-	<Path name="/Workspace/Tools">
+	<Path name="/SharpDevelop/Workbench/Tools">
 		<MenuItem id="ResourceToolkit" label="${res:Hornung.ResourceToolkit.ToolsMenuLabel}" type="Menu">
 			
 			<MenuItem id="FindMissingResourceKeys" label="${res:Hornung.ResourceToolkit.FindMissingResourceKeys}" type="Menu">
@@ -108,7 +108,7 @@
 	
 	<!-- Tooltips -->
 	
-	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ToolTips">
+	<Path name="/SharpDevelop/ViewContent/TextEditor/ToolTips">
 		<Class id="ResourceToolTips" class="Hornung.ResourceToolkit.ToolTips.ResourceToolTipProvider" insertafter="DefaultDebuggerToolTips"/>
 	</Path>
 	

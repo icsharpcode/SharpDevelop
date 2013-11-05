@@ -2,10 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.Cmdlets;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Cmdlets.Tests.Helpers
 {
@@ -15,7 +17,7 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 		public FakePackageManagementConsoleHost FakePackageManagementConsoleHost;
 		public FakePackageManagementProjectService FakeProjectService;
 		public FakePackageInitializationScriptsFactory FakeScriptsFactory;
-		public Solution Solution;
+		public ISolution Solution;
 		
 		public TestableInvokeInitializePackagesCmdlet()
 			: this(
@@ -38,8 +40,8 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 			this.FakePackageManagementConsoleHost = consoleHost;
 			this.FakeCmdletTerminatingError = cmdletTerminatingError;
 			
-			Solution = new Solution(new MockProjectChangeWatcher());
-			Solution.FileName = @"d:\projects\MyProject\MyProject.sln";
+			Solution = MockRepository.GenerateStub<ISolution>();
+			Solution.Stub(s => s.FileName).Return(new FileName(@"d:\projects\MyProject\MyProject.sln"));
 			projectService.OpenSolution = Solution;
 		}
 		

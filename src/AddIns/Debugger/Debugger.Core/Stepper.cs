@@ -8,6 +8,14 @@ namespace Debugger
 {
 	enum StepperOperation {StepIn, StepOver, StepOut};
 	
+	/// <remarks>
+	/// - During evaluation some chains may be temporarly removed
+	/// - When two events are invoked and JMC is active, step out skips the second function
+	/// - Step out and step over works properly for exceptions
+	/// - Evaluation kills stepper overs on active frame
+	/// - StepRange callbacks go first (probably in order), StepOut callback are called after that
+	/// - StepRange is much slower then StepOut
+	/// </remarks>
 	class Stepper
 	{
 		StackFrame stackFrame;
@@ -118,7 +126,7 @@ namespace Debugger
 	}
 	
 	[Serializable]
-	class StepperEventArgs: ProcessEventArgs
+	class StepperEventArgs: EventArgs
 	{
 		Stepper stepper;
 		CorDebugStepReason reason;
@@ -131,7 +139,7 @@ namespace Debugger
 			get { return reason; }
 		}
 		
-		public StepperEventArgs(Stepper stepper, CorDebugStepReason reason): base(stepper.Process)
+		public StepperEventArgs(Stepper stepper, CorDebugStepReason reason)
 		{
 			this.stepper = stepper;
 			this.reason = reason;

@@ -6,8 +6,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement.EnvDTE;
+using ICSharpCode.SharpDevelop.Workbench;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace PackageManagement.Tests.EnvDTE
@@ -28,6 +30,9 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildFileProjectItem = new SD.FileProjectItem(msbuildProject, SD.ItemType.Compile);
 			projectItem = new ProjectItem(project, msbuildFileProjectItem);
 			properties = (Properties)projectItem.Properties;
+			
+			IWorkbench workbench = MockRepository.GenerateStub<IWorkbench>();
+			ICSharpCode.SharpDevelop.SD.Services.AddService(typeof(IWorkbench), workbench);
 		}
 		
 		void AssertContainsProperty(string propertyName, IEnumerable items)
@@ -134,7 +139,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Value_GetFullPath_ReturnsProjectItemFullFileName()
 		{
 			CreateProjectItemProperties();
-			msbuildFileProjectItem.FileName = @"d:\projects\test.cs";
+			msbuildFileProjectItem.FileName = ICSharpCode.Core.FileName.Create(@"d:\projects\test.cs");
 			
 			string path = properties.Item("FullPath").Value as string;
 			

@@ -8,6 +8,8 @@ using System.Security.Permissions;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -15,32 +17,86 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// A highlighting color is a set of font properties and foreground and background color.
 	/// </summary>
 	[Serializable]
-	public class HighlightingColor : ISerializable
+	public class HighlightingColor : ISerializable, IFreezable, ICloneable, IEquatable<HighlightingColor>
 	{
+		internal static readonly HighlightingColor Empty = FreezableHelper.FreezeAndReturn(new HighlightingColor());
+		
+		string name;
+		FontWeight? fontWeight;
+		FontStyle? fontStyle;
+		HighlightingBrush foreground;
+		HighlightingBrush background;
+		bool frozen;
+		
 		/// <summary>
 		/// Gets/Sets the name of the color.
 		/// </summary>
-		public string Name { get; set; }
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				name = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/sets the font weight. Null if the highlighting color does not change the font weight.
 		/// </summary>
-		public FontWeight? FontWeight { get; set; }
+		public FontWeight? FontWeight {
+			get {
+				return fontWeight;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				fontWeight = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/sets the font style. Null if the highlighting color does not change the font style.
 		/// </summary>
-		public FontStyle? FontStyle { get; set; }
+		public FontStyle? FontStyle {
+			get {
+				return fontStyle;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				fontStyle = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/sets the foreground color applied by the highlighting.
 		/// </summary>
-		public HighlightingBrush Foreground { get; set; }
+		public HighlightingBrush Foreground {
+			get {
+				return foreground;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				foreground = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/sets the background color applied by the highlighting.
 		/// </summary>
-		public HighlightingBrush Background { get; set; }
+		public HighlightingBrush Background {
+			get {
+				return background;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				background = value;
+			}
+		}
 		
 		/// <summary>
 		/// Creates a new HighlightingColor instance.
@@ -117,7 +173,92 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return "[" + GetType() + " " + (string.IsNullOrEmpty(this.Name) ? ToCss() : this.Name) + "]";
+			return "[" + GetType().Name + " " + (string.IsNullOrEmpty(this.Name) ? ToCss() : this.Name) + "]";
+		}
+		
+		/// <summary>
+		/// Prevent further changes to this highlighting color.
+		/// </summary>
+		public virtual void Freeze()
+		{
+			frozen = true;
+		}
+		
+		/// <summary>
+		/// Gets whether this HighlightingColor instance is frozen.
+		/// </summary>
+		public bool IsFrozen {
+			get { return frozen; }
+		}
+		
+		/// <summary>
+		/// Clones this highlighting color.
+		/// If this color is frozen, the clone will be unfrozen.
+		/// </summary>
+		public virtual HighlightingColor Clone()
+		{
+			HighlightingColor c = (HighlightingColor)MemberwiseClone();
+			c.frozen = false;
+			return c;
+		}
+		
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
+		
+		/// <inheritdoc/>
+		public override sealed bool Equals(object obj)
+		{
+			return Equals(obj as HighlightingColor);
+		}
+		
+		/// <inheritdoc/>
+		public virtual bool Equals(HighlightingColor other)
+		{
+			if (other == null)
+				return false;
+			return this.name == other.name && this.fontWeight == other.fontWeight && this.fontStyle == other.fontStyle && object.Equals(this.foreground, other.foreground) && object.Equals(this.background, other.background);
+		}
+		
+		/// <inheritdoc/>
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (name != null)
+					hashCode += 1000000007 * name.GetHashCode();
+				hashCode += 1000000009 * fontWeight.GetHashCode();
+				hashCode += 1000000021 * fontStyle.GetHashCode();
+				if (foreground != null)
+					hashCode += 1000000033 * foreground.GetHashCode();
+				if (background != null)
+					hashCode += 1000000087 * background.GetHashCode();
+			}
+			return hashCode;
+		}
+		
+		/// <summary>
+		/// Overwrites the properties in this HighlightingColor with those from the given color;
+		/// but maintains the current values where the properties of the given color return <c>null</c>.
+		/// </summary>
+		public void MergeWith(HighlightingColor color)
+		{
+			FreezableHelper.ThrowIfFrozen(this);
+			if (color.fontWeight != null)
+				this.fontWeight = color.fontWeight;
+			if (color.fontStyle != null)
+				this.fontStyle = color.fontStyle;
+			if (color.foreground != null)
+				this.foreground = color.foreground;
+			if (color.background != null)
+				this.background = color.background;
+		}
+		
+		internal bool IsEmptyForMerge {
+			get {
+				return fontWeight == null && fontStyle == null && foreground == null && background == null;
+			}
 		}
 	}
 }

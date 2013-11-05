@@ -3,7 +3,7 @@
 
 using System;
 using System.Xml;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -14,7 +14,7 @@ namespace XmlEditor.Tests.Tree
 	/// Tests the XmlTreeViewContainerControl.OwnerState property.
 	/// </summary>
 	[TestFixture]
-	public class OwnerStatusTestFixture
+	public class OwnerStatusTestFixture : SDTestFixtureBase
 	{
 		DerivedXmlTreeViewContainerControl treeViewContainer;
 		XmlTreeViewControl treeView;

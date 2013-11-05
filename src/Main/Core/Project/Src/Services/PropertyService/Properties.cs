@@ -5,11 +5,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
-using System.IO;
-using System.Text;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Threading;
+using System.Xaml;
 using System.Xml;
-using System.Xml.Serialization;
+using System.Xml.Linq;
 
 namespace ICSharpCode.Core
 {
@@ -19,6 +21,9 @@ namespace ICSharpCode.Core
 	/// and set from a object from the same class.
 	/// This is used to save and restore the state of GUI objects.
 	/// </summary>
+	/// <remarks>
+	/// This interface is used as a [ViewContentService]
+	/// </remarks>
 	public interface IMementoCapable
 	{
 		/// <summary>
@@ -33,121 +38,477 @@ namespace ICSharpCode.Core
 	}
 	
 	/// <summary>
-	/// Description of PropertyGroup.
+	/// A container for settings - key/value pairs where keys are strings, and values are arbitrary objects.
+	/// Instances of this class are thread-safe.
 	/// </summary>
-	public class Properties
+	public sealed class Properties : INotifyPropertyChanged, ICloneable
 	{
-		public static readonly Version CurrentVersion = new Version(1, 0, 0, 0);
+		/// <summary>
+		/// Gets the version number of the XML file format.
+		/// </summary>
+		public static readonly Version FileVersion = new Version(2, 0, 0);
 		
-		/// <summary> Needed for support of late deserialization </summary>
-		class SerializedValue {
-			string content;
-			
-			public string Content {
-				get { return content; }
-			}
-			
-			public T Deserialize<T>()
-			{
-				XmlSerializer serializer = new XmlSerializer(typeof(T));
-				return (T)serializer.Deserialize(new StringReader(content));
-			}
-			
-			public SerializedValue(string content)
-			{
-				this.content = content;
+		// Properties instances form a tree due to the nested properties containers.
+		// All nodes in such a tree share the same syncRoot in order to simplify synchronization.
+		// When an existing node is added to a tree, its syncRoot needs to change.
+		object syncRoot;
+		Properties parent;
+		// Objects in the dictionary are one of:
+		// - string: value stored using TypeConverter
+		// - XElement: serialized object
+		// - object[]: a stored list (array elements are null, string or XElement)
+		// - Properties: nested properties container
+		Dictionary<string, object> dict = new Dictionary<string, object>();
+		
+		#region Constructor
+		public Properties()
+		{
+			this.syncRoot = new object();
+		}
+		
+		private Properties(Properties parent)
+		{
+			this.parent = parent;
+			this.syncRoot = parent.syncRoot;
+		}
+		#endregion
+		
+		#region PropertyChanged
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		void OnPropertyChanged(string key)
+		{
+			var handler = Volatile.Read(ref PropertyChanged);
+			if (handler != null)
+				handler(this, new PropertyChangedEventArgs(key));
+		}
+		#endregion
+		
+		#region IsDirty
+		bool isDirty;
+		/// <summary>
+		/// Gets/Sets whether this properties container is dirty.
+		/// IsDirty automatically gets set to <c>true</c> when a property in this container (or a nested container)
+		/// changes.
+		/// </summary>
+		public bool IsDirty {
+			get { return isDirty; }
+			set {
+				lock (syncRoot) {
+					if (value)
+						MakeDirty();
+					else
+						CleanDirty();
+				}
 			}
 		}
 		
-		Dictionary<string, object> properties = new Dictionary<string, object>();
+		void MakeDirty()
+		{
+			// called within syncroot
+			if (!isDirty) {
+				isDirty = true;
+				if (parent != null)
+					parent.MakeDirty();
+			}
+		}
 		
-		public string this[string property] {
+		void CleanDirty()
+		{
+			if (isDirty) {
+				isDirty = false;
+				foreach (var properties in dict.Values.OfType<Properties>()) {
+					properties.CleanDirty();
+				}
+			}
+		}
+		#endregion
+		
+		#region Keys/Contains
+		/// <summary>
+		/// Gets the keys that are in use by this properties container.
+		/// </summary>
+		public IReadOnlyList<string> Keys {
 			get {
-				return Convert.ToString(Get(property), CultureInfo.InvariantCulture);
+				lock (syncRoot) {
+					return dict.Keys.ToArray();
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether this properties instance contains any entry (value, list, or nested container)
+		/// with the specified key.
+		/// </summary>
+		public bool Contains(string key)
+		{
+			lock (syncRoot) {
+				return dict.ContainsKey(key);
+			}
+		}
+		#endregion
+		
+		#region Get and Set
+		/// <summary>
+		/// Retrieves a string value from this Properties-container.
+		/// Using this indexer is equivalent to calling <c>Get(key, string.Empty)</c>.
+		/// </summary>
+		public string this[string key] {
+			get {
+				lock (syncRoot) {
+					object val;
+					dict.TryGetValue(key, out val);
+					return val as string ?? string.Empty;
+				}
 			}
 			set {
-				Set(property, value);
-			}
-		}
-
-		public string[] Elements
-		{
-			get {
-				lock (properties) {
-					List<string> ret = new List<string>();
-					foreach (KeyValuePair<string, object> property in properties)
-						ret.Add(property.Key);
-					return ret.ToArray();
-				}
+				Set(key, value);
 			}
 		}
 		
-		public object Get(string property)
+		/// <summary>
+		/// Retrieves a single element from this Properties-container.
+		/// </summary>
+		/// <param name="key">Key of the item to retrieve</param>
+		/// <param name="defaultValue">Default value to be returned if the key is not present.</param>
+		public T Get<T>(string key, T defaultValue)
 		{
-			lock (properties) {
+			lock (syncRoot) {
 				object val;
-				properties.TryGetValue(property, out val);
-				return val;
-			}
-		}
-		
-		public void Set<T>(string property, T value)
-		{
-			if (property == null)
-				throw new ArgumentNullException("property");
-			if (value == null)
-				throw new ArgumentNullException("value");
-			T oldValue = default(T);
-			lock (properties) {
-				if (!properties.ContainsKey(property)) {
-					properties.Add(property, value);
+				if (dict.TryGetValue(key, out val)) {
+					try {
+						return (T)Deserialize(val, typeof(T));
+					} catch (SerializationException ex) {
+						LoggingService.Warn(ex);
+						return defaultValue;
+					}
 				} else {
-					oldValue = Get<T>(property, value);
-					properties[property] = value;
+					return defaultValue;
 				}
 			}
-			OnPropertyChanged(new PropertyChangedEventArgs(this, property, oldValue, value));
 		}
 		
-		public bool Contains(string property)
+		/// <summary>
+		/// Sets a single element in this Properties-container.
+		/// The element will be serialized using a TypeConverter if possible, or XAML serializer otherwise.
+		/// </summary>
+		/// <remarks>Setting a key to <c>null</c> has the same effect as calling <see cref="Remove"/>.</remarks>
+		public void Set<T>(string key, T value)
 		{
-			lock (properties) {
-				return properties.ContainsKey(property);
+			object serializedValue = Serialize(value, typeof(T), key);
+			SetSerializedValue(key, serializedValue);
+		}
+		
+		void SetSerializedValue(string key, object serializedValue)
+		{
+			if (serializedValue == null) {
+				Remove(key);
+				return;
+			}
+			lock (syncRoot) {
+				object oldValue;
+				if (dict.TryGetValue(key, out oldValue)) {
+					if (object.Equals(serializedValue, oldValue))
+						return;
+					HandleOldValue(oldValue);
+				}
+				dict[key] = serializedValue;
+			}
+			OnPropertyChanged(key);
+		}
+		#endregion
+		
+		#region GetList/SetList
+		/// <summary>
+		/// Retrieves the list of items stored with the specified key.
+		/// If no entry with the specified key exists, this method returns an empty list.
+		/// </summary>
+		/// <remarks>
+		/// This method returns a copy of the list used internally; you need to call
+		/// <see cref="SetList"/> if you want to store the changed list.
+		/// </remarks>
+		public IReadOnlyList<T> GetList<T>(string key)
+		{
+			lock (syncRoot) {
+				object val;
+				if (dict.TryGetValue(key, out val)) {
+					object[] serializedArray = val as object[];
+					if (serializedArray != null) {
+						try {
+							T[] array = new T[serializedArray.Length];
+							for (int i = 0; i < array.Length; i++) {
+								array[i] = (T)Deserialize(serializedArray[i], typeof(T));
+							}
+							return array;
+						} catch (XamlObjectWriterException ex) {
+							LoggingService.Warn(ex);
+						} catch (NotSupportedException ex) {
+							LoggingService.Warn(ex);
+						}
+					} else {
+						LoggingService.Warn("Properties.GetList(" + key + ") - this entry is not a list");
+					}
+				}
+				return new T[0];
 			}
 		}
-
-		public int Count {
+		
+		/// <summary>
+		/// Sets a list of elements in this Properties-container.
+		/// The elements will be serialized using a TypeConverter if possible, or XAML serializer otherwise.
+		/// </summary>
+		/// <remarks>Passing <c>null</c> or an empty list as value has the same effect as calling <see cref="Remove"/>.</remarks>
+		public void SetList<T>(string key, IEnumerable<T> value)
+		{
+			if (value == null) {
+				Remove(key);
+				return;
+			}
+			T[] array = value.ToArray();
+			if (array.Length == 0) {
+				Remove(key);
+				return;
+			}
+			object[] serializedArray = new object[array.Length];
+			for (int i = 0; i < array.Length; i++) {
+				serializedArray[i] = Serialize(array[i], typeof(T), null);
+			}
+			SetSerializedValue(key, serializedArray);
+		}
+		
+		[Obsolete("Use the GetList method instead", true)]
+		public T[] Get<T>(string key, T[] defaultValue)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		[Obsolete("Use the SetList method instead", true)]
+		public void Set<T>(string key, T[] value)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		[Obsolete("Use the GetList method instead", true)]
+		public List<T> Get<T>(string key, List<T> defaultValue)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		[Obsolete("Use the SetList method instead", true)]
+		public void Set<T>(string key, List<T> value)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		[Obsolete("Use the GetList method instead", true)]
+		public ArrayList Get<T>(string key, ArrayList defaultValue)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		[Obsolete("Use the SetList method instead", true)]
+		public void Set<T>(string key, ArrayList value)
+		{
+			throw new InvalidOperationException();
+		}
+		#endregion
+		
+		#region Serialization
+		object Serialize(object value, Type sourceType, string key)
+		{
+			if (value == null)
+				return null;
+			TypeConverter c = TypeDescriptor.GetConverter(sourceType);
+			if (c != null && c.CanConvertTo(typeof(string)) && c.CanConvertFrom(typeof(string))) {
+				return c.ConvertToInvariantString(value);
+			}
+			
+			var element = new XElement("SerializedObject");
+			if (key != null) {
+				element.Add(new XAttribute("key", key));
+			}
+			using (var xmlWriter = element.CreateWriter()) {
+				XamlServices.Save(xmlWriter, value);
+			}
+			return element;
+		}
+		
+		object Deserialize(object serializedVal, Type targetType)
+		{
+			if (serializedVal == null)
+				return null;
+			XElement element = serializedVal as XElement;
+			if (element != null) {
+				using (var xmlReader = element.Elements().Single().CreateReader()) {
+					return XamlServices.Load(xmlReader);
+				}
+			} else {
+				string text = serializedVal as string;
+				if (text == null)
+					throw new InvalidOperationException("Cannot read a properties container as a single value");
+				TypeConverter c = TypeDescriptor.GetConverter(targetType);
+				return c.ConvertFromInvariantString(text);
+			}
+		}
+		#endregion
+		
+		#region Remove
+		/// <summary>
+		/// Removes the entry (value, list, or nested container) with the specified key.
+		/// </summary>
+		public bool Remove(string key)
+		{
+			bool removed = false;
+			lock (syncRoot) {
+				object oldValue;
+				if (dict.TryGetValue(key, out oldValue)) {
+					removed = true;
+					HandleOldValue(oldValue);
+					MakeDirty();
+					dict.Remove(key);
+				}
+			}
+			if (removed)
+				OnPropertyChanged(key);
+			return removed;
+		}
+		#endregion
+		
+		#region Nested Properties
+		/// <summary>
+		/// Gets the parent property container.
+		/// </summary>
+		public Properties Parent {
 			get {
-				lock (properties) {
-					return properties.Count;
+				lock (syncRoot) {
+					return parent;
 				}
 			}
 		}
 		
-		public bool Remove(string property)
+		[Obsolete("Use the NestedProperties method instead", true)]
+		public Properties Get(string key, Properties defaultValue)
 		{
-			lock (properties) {
-				return properties.Remove(property);
-			}
+			throw new InvalidOperationException();
 		}
 		
-		public override string ToString()
+		[Obsolete("Use the SetNestedProperties method instead", true)]
+		public void Set(string key, Properties value)
 		{
-			lock (properties) {
-				StringBuilder sb = new StringBuilder();
-				sb.Append("[Properties:{");
-				foreach (KeyValuePair<string, object> entry in properties) {
-					sb.Append(entry.Key);
-					sb.Append("=");
-					sb.Append(entry.Value);
-					sb.Append(",");
+			throw new InvalidOperationException();
+		}
+		
+		/// <summary>
+		/// Retrieves a nested property container; creating a new one on demand.
+		/// Multiple calls to this method will return the same instance (unless the entry at this key
+		/// is overwritten by one of the Set-methods).
+		/// Changes performed on the nested container will be persisted together with the parent container.
+		/// </summary>
+		public Properties NestedProperties(string key)
+		{
+			bool isNewContainer = false;
+			Properties result;
+			lock (syncRoot) {
+				object oldValue;
+				dict.TryGetValue(key, out oldValue);
+				result = oldValue as Properties;
+				if (result == null) {
+					result = new Properties(this);
+					dict[key] = result;
+					result.MakeDirty();
 				}
-				sb.Append("}]");
-				return sb.ToString();
+			}
+			if (isNewContainer)
+				OnPropertyChanged(key);
+			return result;
+		}
+		
+		void HandleOldValue(object oldValue)
+		{
+			Properties p = oldValue as Properties;
+			if (p != null) {
+				Debug.Assert(p.parent == this);
+				p.parent = null;
 			}
 		}
 		
-		public static Properties ReadFromAttributes(XmlReader reader)
+		/// <summary>
+		/// Attaches the specified properties container as nested properties.
+		/// 
+		/// This method is intended to be used in conjunction with the <see cref="IMementoCapable"/> pattern
+		/// where a new unattached properties container is created and then later attached to a parent container.
+		/// </summary>
+		public void SetNestedProperties(string key, Properties properties)
+		{
+			if (properties == null) {
+				Remove(key);
+				return;
+			}
+			lock (syncRoot) {
+				for (Properties ancestor = this; ancestor != null; ancestor = ancestor.parent) {
+					if (ancestor == properties)
+						throw new InvalidOperationException("Cannot add a properties container to itself.");
+				}
+				
+				object oldValue;
+				if (dict.TryGetValue(key, out oldValue)) {
+					if (oldValue == properties)
+						return;
+					HandleOldValue(oldValue);
+				}
+				lock (properties.syncRoot) {
+					if (properties.parent != null)
+						throw new InvalidOperationException("Cannot attach nested properties that already have a parent.");
+					MakeDirty();
+					properties.SetSyncRoot(syncRoot);
+					properties.parent = this;
+					dict[key] = properties;
+				}
+			}
+			OnPropertyChanged(key);
+		}
+		
+		void SetSyncRoot(object newSyncRoot)
+		{
+			this.syncRoot = newSyncRoot;
+			foreach (var properties in dict.Values.OfType<Properties>()) {
+				properties.SetSyncRoot(newSyncRoot);
+			}
+		}
+		#endregion
+		
+		#region Clone
+		/// <summary>
+		/// Creates a deep clone of this Properties container.
+		/// </summary>
+		public Properties Clone()
+		{
+			lock (syncRoot) {
+				return CloneWithParent(null);
+			}
+		}
+		
+		Properties CloneWithParent(Properties parent)
+		{
+			Properties copy = parent != null ? new Properties(parent) : new Properties();
+			foreach (var pair in dict) {
+				Properties child = pair.Value as Properties;
+				if (child != null)
+					copy.dict.Add(pair.Key, child.CloneWithParent(copy));
+				else
+					copy.dict.Add(pair.Key, pair.Value);
+			}
+			return copy;
+		}
+		
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
+		#endregion
+		
+		#region ReadFromAttributes
+		internal static Properties ReadFromAttributes(XmlReader reader)
 		{
 			Properties properties = new Properties();
 			if (reader.HasAttributes) {
@@ -163,231 +524,109 @@ namespace ICSharpCode.Core
 			}
 			return properties;
 		}
+		#endregion
 		
-		internal void ReadProperties(XmlReader reader, string endElement)
+		#region Load/Save
+		public static Properties Load(FileName fileName)
 		{
-			if (reader.IsEmptyElement) {
-				return;
-			}
-			while (reader.Read()) {
-				switch (reader.NodeType) {
-					case XmlNodeType.EndElement:
-						if (reader.LocalName == endElement) {
-							return;
-						}
+			return Load(XDocument.Load(fileName).Root);
+		}
+		
+		public static Properties Load(XElement element)
+		{
+			Properties properties = new Properties();
+			properties.LoadContents(element.Elements());
+			return properties;
+		}
+		
+		void LoadContents(IEnumerable<XElement> elements)
+		{
+			foreach (var element in elements) {
+				string key = (string)element.Attribute("key");
+				if (key == null)
+					continue;
+				switch (element.Name.LocalName) {
+					case "Property":
+						dict[key] = element.Value;
 						break;
-					case XmlNodeType.Element:
-						string propertyName = reader.LocalName;
-						if (propertyName == "Properties") {
-							propertyName = reader.GetAttribute(0);
-							Properties p = new Properties();
-							p.ReadProperties(reader, "Properties");
-							properties[propertyName] = p;
-						} else if (propertyName == "Array") {
-							propertyName = reader.GetAttribute(0);
-							properties[propertyName] = ReadArray(reader);
-						} else if (propertyName == "SerializedValue") {
-							propertyName = reader.GetAttribute(0);
-							properties[propertyName] = new SerializedValue(reader.ReadInnerXml());
+					case "Array":
+						dict[key] = LoadArray(element.Elements());
+						break;
+					case "SerializedObject":
+						dict[key] = new XElement(element);
+						break;
+					case "Properties":
+						Properties child = new Properties(this);
+						child.LoadContents(element.Elements());
+						dict[key] = child;
+						break;
+				}
+			}
+		}
+		
+		static object[] LoadArray(IEnumerable<XElement> elements)
+		{
+			List<object> result = new List<object>();
+			foreach (var element in elements) {
+				switch (element.Name.LocalName) {
+					case "Null":
+						result.Add(null);
+						break;
+					case "Element":
+						result.Add(element.Value);
+						break;
+					case "SerializedObject":
+						result.Add(new XElement(element));
+						break;
+				}
+			}
+			return result.ToArray();
+		}
+		
+		public void Save(FileName fileName)
+		{
+			new XDocument(Save()).Save(fileName);
+		}
+		
+		public XElement Save()
+		{
+			lock (syncRoot) {
+				return new XElement("Properties", SaveContents());
+			}
+		}
+		
+		IReadOnlyList<XElement> SaveContents()
+		{
+			List<XElement> result = new List<XElement>();
+			foreach (var pair in dict) {
+				XAttribute key = new XAttribute("key", pair.Key);
+				Properties child = pair.Value as Properties;
+				if (child != null) {
+					var contents = child.SaveContents();
+					if (contents.Count > 0)
+						result.Add(new XElement("Properties", key, contents));
+				} else if (pair.Value is object[]) {
+					object[] array = (object[])pair.Value;
+					XElement[] elements = new XElement[array.Length];
+					for (int i = 0; i < array.Length; i++) {
+						XElement obj = array[i] as XElement;
+						if (obj != null) {
+							elements[i] = new XElement(obj);
+						} else if (array[i] == null) {
+							elements[i] = new XElement("Null");
 						} else {
-							properties[propertyName] = reader.HasAttributes ? reader.GetAttribute(0) : null;
+							elements[i] = new XElement("Element", (string)array[i]);
 						}
-						break;
-				}
-			}
-		}
-		
-		ArrayList ReadArray(XmlReader reader)
-		{
-			if (reader.IsEmptyElement)
-				return new ArrayList(0);
-			ArrayList l = new ArrayList();
-			while (reader.Read()) {
-				switch (reader.NodeType) {
-					case XmlNodeType.EndElement:
-						if (reader.LocalName == "Array") {
-							return l;
-						}
-						break;
-					case XmlNodeType.Element:
-						l.Add(reader.HasAttributes ? reader.GetAttribute(0) : null);
-						break;
-				}
-			}
-			return l;
-		}
-		
-		public void WriteProperties(XmlWriter writer)
-		{
-			lock (properties) {
-				List<KeyValuePair<string, object>> sortedProperties = new List<KeyValuePair<string, object>>(properties);
-				sortedProperties.Sort((a, b) => StringComparer.OrdinalIgnoreCase.Compare(a.Key, b.Key));
-				foreach (KeyValuePair<string, object> entry in sortedProperties) {
-					object val = entry.Value;
-					if (val is Properties) {
-						writer.WriteStartElement("Properties");
-						writer.WriteAttributeString("name", entry.Key);
-						((Properties)val).WriteProperties(writer);
-						writer.WriteEndElement();
-					} else if (val is Array || val is ArrayList) {
-						writer.WriteStartElement("Array");
-						writer.WriteAttributeString("name", entry.Key);
-						foreach (object o in (IEnumerable)val) {
-							writer.WriteStartElement("Element");
-							WriteValue(writer, o);
-							writer.WriteEndElement();
-						}
-						writer.WriteEndElement();
-					} else if (TypeDescriptor.GetConverter(val).CanConvertFrom(typeof(string))) {
-						writer.WriteStartElement(entry.Key);
-						WriteValue(writer, val);
-						writer.WriteEndElement();
-					} else if (val is SerializedValue) {
-						writer.WriteStartElement("SerializedValue");
-						writer.WriteAttributeString("name", entry.Key);
-						writer.WriteRaw(((SerializedValue)val).Content);
-						writer.WriteEndElement();
-					} else {
-						writer.WriteStartElement("SerializedValue");
-						writer.WriteAttributeString("name", entry.Key);
-						XmlSerializer serializer = new XmlSerializer(val.GetType());
-						serializer.Serialize(writer, val, null);
-						writer.WriteEndElement();
 					}
-				}
-			}
-		}
-		
-		void WriteValue(XmlWriter writer, object val)
-		{
-			if (val != null) {
-				if (val is string) {
-					writer.WriteAttributeString("value", val.ToString());
+					result.Add(new XElement("Array", key, elements));
+				} else if (pair.Value is XElement) {
+					result.Add(new XElement((XElement)pair.Value));
 				} else {
-					TypeConverter c = TypeDescriptor.GetConverter(val.GetType());
-					writer.WriteAttributeString("value", c.ConvertToInvariantString(val));
+					result.Add(new XElement("Property", key, (string)pair.Value));
 				}
 			}
+			return result;
 		}
-		
-		public void Save(string fileName)
-		{
-			XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8);
-			writer.Formatting = Formatting.Indented;
-			Save(writer);
-		}
-		
-		public void Save(XmlWriter writer)
-		{	
-			using (writer) {
-				writer.WriteStartElement("Properties");
-				WriteProperties(writer);
-				writer.WriteEndElement();
-			}
-		}
-		
-//		public void BinarySerialize(BinaryWriter writer)
-//		{
-//			writer.Write((byte)properties.Count);
-//			foreach (KeyValuePair<string, object> entry in properties) {
-//				writer.Write(AddInTree.GetNameOffset(entry.Key));
-//				writer.Write(AddInTree.GetNameOffset(entry.Value.ToString()));
-//			}
-//		}
-		
-		public static Properties Load(string fileName)
-		{
-			if (!File.Exists(fileName)) {
-				return null;
-			}
-			XmlTextReader reader = new XmlTextReader(fileName);
-			return Load(reader);
-		}
-		
-		public static Properties Load(XmlReader reader)
-		{
-			using (reader) {
-				while (reader.Read()){
-					if (reader.IsStartElement()) {
-						switch (reader.LocalName) {
-							case "Properties":
-								Properties properties = new Properties();
-								properties.ReadProperties(reader, "Properties");
-								return properties;
-						}
-					}
-				}
-			}
-			return null;
-		}
-		
-		public T Get<T>(string property, T defaultValue)
-		{
-			lock (properties) {
-				object o;
-				if (!properties.TryGetValue(property, out o)) {
-					properties.Add(property, defaultValue);
-					return defaultValue;
-				}
-				
-				if (o is string && typeof(T) != typeof(string)) {
-					TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
-					try {
-						o = c.ConvertFromInvariantString(o.ToString());
-					} catch (Exception ex) {
-						MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
-						o = defaultValue;
-					}
-					properties[property] = o; // store for future look up
-				} else if (o is ArrayList && typeof(T).IsArray) {
-					ArrayList list = (ArrayList)o;
-					Type elementType = typeof(T).GetElementType();
-					Array arr = System.Array.CreateInstance(elementType, list.Count);
-					TypeConverter c = TypeDescriptor.GetConverter(elementType);
-					try {
-						for (int i = 0; i < arr.Length; ++i) {
-							if (list[i] != null) {
-								arr.SetValue(c.ConvertFromInvariantString(list[i].ToString()), i);
-							}
-						}
-						o = arr;
-					} catch (Exception ex) {
-						MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
-						o = defaultValue;
-					}
-					properties[property] = o; // store for future look up
-				} else if (!(o is string) && typeof(T) == typeof(string)) {
-					TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
-					if (c.CanConvertTo(typeof(string))) {
-						o = c.ConvertToInvariantString(o);
-					} else {
-						o = o.ToString();
-					}
-				} else if (o is SerializedValue) {
-					try {
-						o = ((SerializedValue)o).Deserialize<T>();
-					} catch (Exception ex) {
-						MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
-						o = defaultValue;
-					}
-					properties[property] = o; // store for future look up
-				}
-				try {
-					return (T)o;
-				} catch (NullReferenceException) {
-					// can happen when configuration is invalid -> o is null and a value type is expected
-					return defaultValue;
-				}
-			}
-		}
-		
-		protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
-		{
-			if (PropertyChanged != null) {
-				PropertyChanged(this, e);
-			}
-		}
-		
-		public event PropertyChangedEventHandler PropertyChanged;
+		#endregion
 	}
 }

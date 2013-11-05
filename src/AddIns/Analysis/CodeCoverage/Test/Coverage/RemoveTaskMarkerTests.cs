@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.CodeCoverage;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Tests.Utils;
@@ -34,7 +36,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void CodeCoverageHighlighterRemoveMarkersDoesNotThrowInvalidCastExceptionWhenOneMarkerTagIsTask()
 		{
 			ITextMarker textMarker = markerService.Create(0, 2);
-			textMarker.Tag = new Task(null, String.Empty, 1, 1, TaskType.Error);
+			textMarker.Tag = new SDTask(null, String.Empty, 1, 1, TaskType.Error);
 			
 			CodeCoverageHighlighter highlighter = new CodeCoverageHighlighter();
 			Assert.DoesNotThrow(delegate { highlighter.RemoveMarkers(document); });

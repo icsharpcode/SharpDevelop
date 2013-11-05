@@ -25,20 +25,13 @@ namespace PackageManagement.Tests
 		{
 			CreateCommandLineWithSolution(@"d:\projects\MySolution\MySolution.sln");
 			
-			string arguments = commandLine.Arguments;
+			string[] arguments = commandLine.Arguments;
 			
-			Assert.AreEqual("restore \"d:\\projects\\MySolution\\MySolution.sln\"", arguments);
-		}
-		
-		[Test]
-		public void ToString_RestoreSolution_FullCommandLineReturned()
-		{
-			CreateCommandLineWithSolution(@"d:\projects\MySolution\MySolution.sln");
-			commandLine.Command = @"d:\sharpdevelop\NuGet.exe";
-			
-			string fullCommandLine = commandLine.ToString();
-			
-			Assert.AreEqual("\"d:\\sharpdevelop\\NuGet.exe\" restore \"d:\\projects\\MySolution\\MySolution.sln\"", fullCommandLine);
+			string[] expectedArguments = new string[] {
+				"restore",
+				@"d:\projects\MySolution\MySolution.sln"
+			};
+			CollectionAssert.AreEqual(expectedArguments, arguments);
 		}
 	}
 }

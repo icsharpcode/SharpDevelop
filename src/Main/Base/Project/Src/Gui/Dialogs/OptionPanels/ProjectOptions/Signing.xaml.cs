@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	public partial class Signing : ProjectOptionPanel
 	{
 		private const string KeyFileExtensions = "*.snk;*.pfx;*.key";
-	
+		
 		public Signing()
 		{
 			InitializeComponent();
@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		#region overrides
 		
-	
+		
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
@@ -126,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			// Because this event is raised while the combobox is still switching to the "<create>" or "<browse>" value,
 			// we cannot set comboBox.Text within this event handler.
 			// To avoid this problem, we invoke the operation after the combobox has finished switching to the new value.
-			WorkbenchSingleton.SafeThreadAsyncCall(
+			Dispatcher.BeginInvoke(new Action(
 				delegate {
 					if (this.keyFileComboBox.SelectedIndex == keyFile.Count - 1) {
 						keyFileComboBox.Text = String.Empty;
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						keyFileComboBox.Text = String.Empty;
 						CreateKeyFile();
 					}
-				});
+				}));
 		}
 		
 		private void CreateKeyFile()

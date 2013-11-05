@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using ICSharpCode.SharpDevelop.Designer;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
@@ -108,8 +109,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 			} else {
 				assembly = Assembly.Load(AssemblyName);
 			}
-			if (!ICSharpCode.FormsDesigner.Services.TypeResolutionService.DesignerAssemblies.Contains(assembly))
-				ICSharpCode.FormsDesigner.Services.TypeResolutionService.DesignerAssemblies.Add(assembly);
+			if (!TypeResolutionService.DesignerAssemblies.Contains(assembly))
+				TypeResolutionService.DesignerAssemblies.Add(assembly);
 			return assembly;
 		}
 		

@@ -4,6 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 
 namespace XmlEditor.Tests.Utils
@@ -17,8 +21,8 @@ namespace XmlEditor.Tests.Utils
 		List<string> createdFolders = new List<string>();
 		List<string> deletedFiles = new List<string>();
 		List<string> filesCheckedThatTheyExist = new List<string>();
-		Dictionary<string, bool> existingFiles = new Dictionary<string, bool>();
-		Dictionary<string, string[]> directoryFiles = new Dictionary<string, string[]>();
+		Dictionary<FileName, bool> existingFiles = new Dictionary<FileName, bool>();
+		MultiDictionary<DirectoryName, FileName> directoryFiles = new MultiDictionary<DirectoryName, FileName>();
 		NameValueCollection copiedFileLocations = new NameValueCollection();
 		Exception exceptionToThrowWhenCopyFileCalled;
 
@@ -28,19 +32,16 @@ namespace XmlEditor.Tests.Utils
 		
 		public void AddDirectoryFiles(string folder, string[] files)
 		{
-			directoryFiles.Add(folder, files);
+			foreach (var file in files)
+				directoryFiles.Add(DirectoryName.Create(folder), FileName.Create(file));
 		}
 		
-		public string[] GetFilesInDirectory(string folder, string extension)
+		public IEnumerable<FileName> GetFiles(DirectoryName folder, string extension, DirectorySearchOptions searchOptions = DirectorySearchOptions.None)
 		{
 			searchedFolders.Add(folder);
 			searchedForFileExtensions.Add(extension);
 			
-			string[] files;
-			if (directoryFiles.TryGetValue(folder, out files)) {
-				return files;
-			}
-			return new string[0];
+			return directoryFiles[folder];
 		}
 		
 		public string[] SearchedFolders {
@@ -63,8 +64,10 @@ namespace XmlEditor.Tests.Utils
 			foldersThatExist.Add(folder);
 		}
 		
-		public bool DirectoryExists(string folder)
+		public bool DirectoryExists(DirectoryName folder)
 		{
+			if (folder == null)
+				return false;
 			foldersCheckedThatTheyExist.Add(folder);
 			return foldersThatExist.Contains(folder);
 		}
@@ -77,7 +80,7 @@ namespace XmlEditor.Tests.Utils
 			get { return copiedFileLocations; }
 		}
 		
-		public void CopyFile(string source, string destination)
+		public void CopyFile(FileName source, FileName destination, bool overwrite = false)
 		{
 			copiedFileLocations.Add(source, destination);
 			
@@ -95,7 +98,7 @@ namespace XmlEditor.Tests.Utils
 			get { return createdFolders; }
 		}
 		
-		public void CreateDirectory(string folder)
+		public void CreateDirectory(DirectoryName folder)
 		{
 			createdFolders.Add(folder);
 		}
@@ -104,7 +107,7 @@ namespace XmlEditor.Tests.Utils
 			get { return deletedFiles.ToArray(); }
 		}
 		
-		public void DeleteFile(string fileName)
+		public void Delete(FileName fileName)
 		{
 			deletedFiles.Add(fileName);
 		}
@@ -113,8 +116,10 @@ namespace XmlEditor.Tests.Utils
 			get { return filesCheckedThatTheyExist.ToArray(); }
 		}
 		
-		public bool FileExists(string fileName)
+		public bool FileExists(FileName fileName)
 		{
+			if (fileName == null)
+				return false;
 			filesCheckedThatTheyExist.Add(fileName);
 			bool fileExists;
 			if (existingFiles.TryGetValue(fileName, out fileExists)) {
@@ -125,7 +130,22 @@ namespace XmlEditor.Tests.Utils
 		
 		public void AddExistingFile(string fileName, bool exists)
 		{
-			existingFiles.Add(fileName, exists);
+			existingFiles.Add(FileName.Create(fileName), exists);
 		}		
+		
+		Stream IFileSystem.OpenWrite(FileName fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		Stream IReadOnlyFileSystem.OpenRead(FileName fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		TextReader IReadOnlyFileSystem.OpenText(FileName fileName)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

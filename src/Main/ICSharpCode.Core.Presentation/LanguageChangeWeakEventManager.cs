@@ -39,14 +39,16 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		readonly IResourceService resourceService = ServiceSingleton.GetRequiredService<IResourceService>();
+		
 		protected override void StartListening(object source)
 		{
-			ResourceService.LanguageChanged += DeliverEvent;
+			resourceService.LanguageChanged += DeliverEvent;
 		}
 		
 		protected override void StopListening(object source)
 		{
-			ResourceService.LanguageChanged -= DeliverEvent;
+			resourceService.LanguageChanged -= DeliverEvent;
 		}
 	}
 }

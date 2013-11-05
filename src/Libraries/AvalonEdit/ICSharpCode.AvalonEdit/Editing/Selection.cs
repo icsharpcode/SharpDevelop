@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -114,7 +116,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			return (!string.IsNullOrEmpty(newText) || !(IsInVirtualSpace(start) && IsInVirtualSpace(end)))
 				&& newText != "\r\n"
-				&& newText != "\n" 
+				&& newText != "\n"
 				&& newText != "\r";
 		}
 		
@@ -238,9 +240,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (this.IsEmpty)
 				return false;
-			if (this.SurroundingSegment.Contains(offset)) {
+			if (this.SurroundingSegment.Contains(offset, 0)) {
 				foreach (ISegment s in this.Segments) {
-					if (s.Contains(offset)) {
+					if (s.Contains(offset, 0)) {
 						return true;
 					}
 				}

@@ -52,7 +52,7 @@ namespace ICSharpCode.Reports.Addin
 				}
 				//Trace.Assert(t != null, "Type "+cname+" could not be determined.");
 //				Debug.WriteLine("Looking for " + cname + " and got " + t.FullName);
-				
+				Console.WriteLine("ReportDefinitionParser - Looking for " + cname + " and got " + t.FullName);
 				try
 				{
 					ret=Activator.CreateInstance(t);
@@ -223,6 +223,7 @@ namespace ICSharpCode.Reports.Addin
 				if (tc.CanConvertFrom(typeof(string)))
 				{
 					object val=tc.ConvertFromInvariantString(value);
+			Console.WriteLine("\tRDP -> SetPropertyToString {0} - {1}",pi.Name,value.ToString());		
 					pi.SetValue(obj, val, null);
 				} else if (pi.PropertyType == typeof(Type)) {
 					pi.SetValue(obj, Type.GetType(value), null);

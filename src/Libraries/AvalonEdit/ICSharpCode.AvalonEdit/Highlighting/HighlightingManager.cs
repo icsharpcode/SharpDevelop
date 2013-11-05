@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml;
 
-using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -20,7 +20,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// </remarks>
 	public class HighlightingManager : IHighlightingDefinitionReferenceResolver
 	{
-		sealed class DelayLoadedHighlightingDefinition : IHighlightingDefinition2
+		sealed class DelayLoadedHighlightingDefinition : IHighlightingDefinition
 		{
 			readonly object lockObj = new object();
 			readonly string name;
@@ -107,10 +107,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			
 			public IDictionary<string, string> Properties {
 				get {
-					var def = GetDefinition() as IHighlightingDefinition2;
-					if (def != null)
-						return def.Properties;
-					return null;
+					return GetDefinition().Properties;
 				}
 			}
 		}
@@ -142,18 +139,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			get {
 				lock (lockObj) {
 					return Array.AsReadOnly(allHighlightings.ToArray());
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Gets the names of the registered highlightings.
-		/// </summary>
-		[ObsoleteAttribute("Use the HighlightingDefinitions property instead.")]
-		public IEnumerable<string> HighlightingNames {
-			get {
-				lock (lockObj) {
-					return new List<string>(highlightingsByName.Keys);
 				}
 			}
 		}

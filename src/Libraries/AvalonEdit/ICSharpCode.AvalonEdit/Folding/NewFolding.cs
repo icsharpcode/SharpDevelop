@@ -2,15 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Threading;
-
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Folding
 {
@@ -38,6 +30,12 @@ namespace ICSharpCode.AvalonEdit.Folding
 		/// Gets/Sets whether the folding is closed by default.
 		/// </summary>
 		public bool DefaultClosed { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets whether the folding is considered to be a definition.
+		/// This has an effect on the 'Show Definitions only' command.
+		/// </summary>
+		public bool IsDefinition { get; set; }
 		
 		/// <summary>
 		/// Creates a new NewFolding instance.

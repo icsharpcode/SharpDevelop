@@ -3,10 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -56,10 +55,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 						if (segmentsToDelete[i].Offset == SurroundingSegment.Offset && segmentsToDelete[i].Length == SurroundingSegment.Length) {
 							newText = AddSpacesIfRequired(newText, start, end);
 						}
-						int vc = textArea.Caret.VisualColumn;
-						textArea.Caret.Offset = segmentsToDelete[i].EndOffset;
-						if (string.IsNullOrEmpty(newText))
-							textArea.Caret.VisualColumn = vc;
+						if (string.IsNullOrEmpty(newText)) {
+							// place caret at the beginning of the selection
+							if (start.CompareTo(end) <= 0)
+								textArea.Caret.Position = start;
+							else
+								textArea.Caret.Position = end;
+						} else {
+							// place caret so that it ends up behind the new text
+							textArea.Caret.Offset = segmentsToDelete[i].EndOffset;
+						}
 						textArea.Document.Replace(segmentsToDelete[i], newText);
 					} else {
 						textArea.Document.Remove(segmentsToDelete[i]);
@@ -84,18 +89,24 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (e == null)
 				throw new ArgumentNullException("e");
-			TextViewPosition newStart = start;
-			TextViewPosition newEnd = end;
-			// by changing the existing TextViewPosition, we preserve the VisualColumn (though it might become invalid)
-			// and the IsAtEndOfLine property.
-			newStart.Location = textArea.Document.GetLocation(e.GetNewOffset(startOffset, AnchorMovementType.Default));
-			newEnd.Location   = textArea.Document.GetLocation(e.GetNewOffset(endOffset, AnchorMovementType.Default));
-			return Selection.Create(textArea, newStart, newEnd);
+			int newStartOffset, newEndOffset;
+			if (startOffset <= endOffset) {
+				newStartOffset = e.GetNewOffset(startOffset, AnchorMovementType.Default);
+				newEndOffset = Math.Max(newStartOffset, e.GetNewOffset(endOffset, AnchorMovementType.BeforeInsertion));
+			} else {
+				newEndOffset = e.GetNewOffset(endOffset, AnchorMovementType.Default);
+				newStartOffset = Math.Max(newEndOffset, e.GetNewOffset(startOffset, AnchorMovementType.BeforeInsertion));
+			}
+			return Selection.Create(
+				textArea,
+				new TextViewPosition(textArea.Document.GetLocation(newStartOffset), start.VisualColumn),
+				new TextViewPosition(textArea.Document.GetLocation(newEndOffset), end.VisualColumn)
+			);
 		}
 		
 		/// <inheritdoc/>
 		public override bool IsEmpty {
-			get { return startOffset == endOffset; }
+			get { return startOffset == endOffset && start.VisualColumn == end.VisualColumn; }
 		}
 		
 		/// <inheritdoc/>

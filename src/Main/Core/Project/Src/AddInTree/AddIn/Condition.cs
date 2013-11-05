@@ -49,10 +49,11 @@ namespace ICSharpCode.Core
 			action = properties.Get("action", ConditionFailedAction.Exclude);
 		}
 		
-		public bool IsValid(object owner)
+		public bool IsValid(object parameter)
 		{
 			try {
-				return AddInTree.ConditionEvaluators[name].IsValid(owner, this);
+				var addInTree = ServiceSingleton.GetRequiredService<IAddInTree>();
+				return addInTree.ConditionEvaluators[name].IsValid(parameter, this);
 			} catch (KeyNotFoundException) {
 				throw new CoreException("Condition evaluator " + name + " not found!");
 			}
@@ -133,11 +134,11 @@ namespace ICSharpCode.Core
 			return conditions.ToArray();
 		}
 		
-		public static ConditionFailedAction GetFailedAction(IEnumerable<ICondition> conditionList, object caller)
+		public static ConditionFailedAction GetFailedAction(IEnumerable<ICondition> conditionList, object parameter)
 		{
 			ConditionFailedAction action = ConditionFailedAction.Nothing;
 			foreach (ICondition condition in conditionList) {
-				if (!condition.IsValid(caller)) {
+				if (!condition.IsValid(parameter)) {
 					if (condition.Action == ConditionFailedAction.Disable) {
 						action = ConditionFailedAction.Disable;
 					} else {

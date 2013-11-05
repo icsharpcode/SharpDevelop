@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		
-	public bool BrowseForDirectory {
+		public bool BrowseForDirectory {
 			get {return stringListEditor.BrowseForDirectory;}
 			set {stringListEditor.BrowseForDirectory = value;}
 		}
@@ -45,12 +45,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void LoadList(IEnumerable<string> list) {
 			stringListEditor.LoadList(list);
-		}		
+		}
 		
 		void Button_Click(object sender, RoutedEventArgs e)
 		{
 			DialogResult = true;
 		}
-			
+		
+		
+		public  string AddButtonText
+		{
+			get {return stringListEditor.Content.ToString();}
+			set {stringListEditor.addButton.Content = value;}
+		}
+		
 	}
 }

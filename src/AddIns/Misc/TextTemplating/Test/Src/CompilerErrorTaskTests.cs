@@ -7,12 +7,25 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.TextTemplating;
 using NUnit.Framework;
+using TextTemplating.Tests.Helpers;
 
 namespace TextTemplating.Tests
 {
 	[TestFixture]
 	public class CompilerErrorTaskTests
 	{
+		[SetUp]
+		public void Init()
+		{
+			SD.InitializeForUnitTests();
+		}
+		
+		[TearDown]
+		public void TearDown()
+		{
+			SD.TearDownForUnitTests();
+		}
+		
 		[Test]
 		public void FileName_CompilerErrorFileNameIsTestTxt_ReturnsTestTxt()
 		{

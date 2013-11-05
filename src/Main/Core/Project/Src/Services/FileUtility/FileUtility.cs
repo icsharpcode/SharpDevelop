@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using ICSharpCode.Core.Services;
 using Microsoft.Win32;
 
 namespace ICSharpCode.Core
@@ -26,14 +25,14 @@ namespace ICSharpCode.Core
 	
 	public delegate void FileOperationDelegate();
 	
-	public delegate void NamedFileOperationDelegate(string fileName);
+	public delegate void NamedFileOperationDelegate(FileName fileName);
 	
 	/// <summary>
 	/// A utility class related to file utilities.
 	/// </summary>
 	public static partial class FileUtility
 	{
-		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, Path.VolumeSeparatorChar };
+		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
 		static string applicationRootPath = AppDomain.CurrentDomain.BaseDirectory;
 		const string fileNameRegEx = @"^([a-zA-Z]:)?[^:]+$";
 		
@@ -184,20 +183,6 @@ namespace ICSharpCode.Core
 		}
 		#endregion
 		
-		[Obsolete("Use System.IO.Path.Combine instead")]
-		public static string Combine(params string[] paths)
-		{
-			if (paths == null || paths.Length == 0) {
-				return String.Empty;
-			}
-			
-			string result = paths[0];
-			for (int i = 1; i < paths.Length; i++) {
-				result = Path.Combine(result, paths[i]);
-			}
-			return result;
-		}
-		
 		public static bool IsUrl(string path)
 		{
 			if (path == null)
@@ -291,30 +276,29 @@ namespace ICSharpCode.Core
 			baseDirectoryPath = NormalizePath(baseDirectoryPath);
 			absPath           = NormalizePath(absPath);
 			
-			string[] bPath = baseDirectoryPath.Split(separators);
-			string[] aPath = absPath.Split(separators);
+			string[] bPath = baseDirectoryPath != "." ? baseDirectoryPath.Split(separators) : new string[0];
+			string[] aPath = absPath != "." ? absPath.Split(separators) : new string[0];
 			int indx = 0;
 			for(; indx < Math.Min(bPath.Length, aPath.Length); ++indx){
 				if(!bPath[indx].Equals(aPath[indx], StringComparison.OrdinalIgnoreCase))
 					break;
 			}
 			
-			if (indx == 0) {
+			if (indx == 0 && (Path.IsPathRooted(baseDirectoryPath) || Path.IsPathRooted(absPath))) {
 				return absPath;
 			}
 			
+			if(indx == bPath.Length && indx == aPath.Length) {
+				return ".";
+			}
 			StringBuilder erg = new StringBuilder();
-			
-			if(indx == bPath.Length) {
-//				erg.Append('.');
-//				erg.Append(Path.DirectorySeparatorChar);
-			} else {
-				for (int i = indx; i < bPath.Length; ++i) {
-					erg.Append("..");
-					erg.Append(Path.DirectorySeparatorChar);
-				}
+			for (int i = indx; i < bPath.Length; ++i) {
+				erg.Append("..");
+				erg.Append(Path.DirectorySeparatorChar);
 			}
 			erg.Append(String.Join(Path.DirectorySeparatorChar.ToString(), aPath, indx, aPath.Length-indx));
+			if (erg[erg.Length - 1] == Path.DirectorySeparatorChar)
+				erg.Length -= 1;
 			return erg.ToString();
 		}
 		
@@ -353,16 +337,19 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		[Obsolete("Use SD.FileSystem.GetFiles() instead")]
 		public static List<string> SearchDirectory(string directory, string filemask, bool searchSubdirectories, bool ignoreHidden)
 		{
 			return SearchDirectoryInternal(directory, filemask, searchSubdirectories, ignoreHidden).Select(file => file.ToString()).ToList();
 		}
 		
+		[Obsolete("Use SD.FileSystem.GetFiles() instead")]
 		public static List<string> SearchDirectory(string directory, string filemask, bool searchSubdirectories)
 		{
 			return SearchDirectory(directory, filemask, searchSubdirectories, true);
 		}
 		
+		[Obsolete("Use SD.FileSystem.GetFiles() instead")]
 		public static List<string> SearchDirectory(string directory, string filemask)
 		{
 			return SearchDirectory(directory, filemask, true, true);
@@ -383,10 +370,9 @@ namespace ICSharpCode.Core
 		{
 			// If Directory.GetFiles() searches the 8.3 name as well as the full name so if the filemask is
 			// "*.xpt" it will return "Template.xpt~"
-			bool isExtMatch = Regex.IsMatch(filemask, @"^\*\..{3}$");
+			bool isExtMatch = filemask != null && Regex.IsMatch(filemask, @"^\*\.[\w\d_]{3}$");
 			string ext = null;
-			if (isExtMatch) ext = filemask.Remove(0,1);
-			string[] empty = new string[0];
+			if (isExtMatch) ext = filemask.Substring(1);
 			IEnumerable<string> dir = new[] { directory };
 			
 			if (searchSubdirectories)
@@ -394,11 +380,11 @@ namespace ICSharpCode.Core
 					d => {
 						try {
 							if (ignoreHidden)
-								return Directory.EnumerateDirectories(d).Where(child => IsNotHidden(child));
+								return Directory.EnumerateDirectories(d).Where(IsNotHidden);
 							else
 								return Directory.EnumerateDirectories(d);
 						} catch (UnauthorizedAccessException) {
-							return empty;
+							return new string[0];
 						}
 					});
 			foreach (string d in dir) {
@@ -409,6 +395,8 @@ namespace ICSharpCode.Core
 					continue;
 				}
 				foreach (string f in files) {
+					if (ext != null && !f.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+						continue; // file extension didn't match
 					if (!ignoreHidden || IsNotHidden(f))
 						yield return new FileName(f);
 				}
@@ -479,18 +467,9 @@ namespace ICSharpCode.Core
 			
 			char ch = nameWithoutExtension.Length == 4 ? nameWithoutExtension[3] : '\0';
 			
-			return !((nameWithoutExtension.StartsWith("COM") ||
-			          nameWithoutExtension.StartsWith("LPT")) &&
+			return !((nameWithoutExtension.StartsWith("COM", StringComparison.Ordinal) ||
+			          nameWithoutExtension.StartsWith("LPT", StringComparison.Ordinal)) &&
 			         Char.IsDigit(ch));
-		}
-		
-		/// <summary>
-		/// Checks that a single directory name (not the full path) is valid.
-		/// </summary>
-		[ObsoleteAttribute("Use IsValidDirectoryEntryName instead")]
-		public static bool IsValidDirectoryName(string name)
-		{
-			return IsValidDirectoryEntryName(name);
 		}
 		
 		/// <summary>
@@ -513,7 +492,8 @@ namespace ICSharpCode.Core
 		public static bool TestFileExists(string filename)
 		{
 			if (!File.Exists(filename)) {
-				MessageService.ShowWarning(StringParser.Parse("${res:Fileutility.CantFindFileError}", new StringTagPair("FILE", filename)));
+				var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
+				messageService.ShowWarning(StringParser.Parse("${res:Fileutility.CantFindFileError}", new StringTagPair("FILE", filename)));
 				return false;
 			}
 			return true;
@@ -583,8 +563,8 @@ namespace ICSharpCode.Core
 
 		public static bool MatchesPattern(string filename, string pattern)
 		{
-			filename = filename.ToUpper();
-			pattern = pattern.ToUpper();
+			filename = filename.ToUpperInvariant();
+			pattern = pattern.ToUpperInvariant();
 			string[] patterns = pattern.Split(';');
 			foreach (string p in patterns) {
 				if (Match(filename, p)) {
@@ -595,7 +575,7 @@ namespace ICSharpCode.Core
 		}
 
 		// Observe SAVE functions
-		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, string fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, FileName fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			System.Diagnostics.Debug.Assert(IsValidPath(fileName));
 			try {
@@ -609,14 +589,15 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static FileOperationResult ObservedSaveHandleException(Exception e, FileOperationDelegate saveFile, string fileName, string message, FileErrorPolicy policy)
+		static FileOperationResult ObservedSaveHandleException(Exception e, FileOperationDelegate saveFile, FileName fileName, string message, FileErrorPolicy policy)
 		{
+			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
-					ServiceManager.Instance.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
+					messageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
 					break;
 				case FileErrorPolicy.ProvideAlternative:
-					ChooseSaveErrorResult r = ServiceManager.Instance.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, false);
+					ChooseSaveErrorResult r = messageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, false);
 					if (r.IsRetry) {
 						return ObservedSave(saveFile, fileName, message, policy);
 					} else if (r.IsIgnore) {
@@ -627,7 +608,7 @@ namespace ICSharpCode.Core
 			return FileOperationResult.Failed;
 		}
 		
-		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, string fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, FileName fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			return ObservedSave(saveFile,
 			                    fileName,
@@ -635,14 +616,11 @@ namespace ICSharpCode.Core
 			                    policy);
 		}
 		
-		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, FileName fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			System.Diagnostics.Debug.Assert(IsValidPath(fileName));
 			try {
-				string directory = Path.GetDirectoryName(fileName);
-				if (!Directory.Exists(directory)) {
-					Directory.CreateDirectory(directory);
-				}
+				Directory.CreateDirectory(fileName.GetParentDirectory());
 				saveFileAs(fileName);
 				RaiseFileSaved(new FileNameEventArgs(fileName));
 				return FileOperationResult.OK;
@@ -653,14 +631,15 @@ namespace ICSharpCode.Core
 			}
 		}
 
-		static FileOperationResult ObservedSaveHandleError(Exception e, NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy)
+		static FileOperationResult ObservedSaveHandleError(Exception e, NamedFileOperationDelegate saveFileAs, FileName fileName, string message, FileErrorPolicy policy)
 		{
+			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
-					ServiceManager.Instance.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
+					messageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
 					break;
 				case FileErrorPolicy.ProvideAlternative:
-					ChooseSaveErrorResult r = ServiceManager.Instance.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, true);
+					ChooseSaveErrorResult r = messageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, true);
 					if (r.IsRetry) {
 						return ObservedSave(saveFileAs, fileName, message, policy);
 					} else if (r.IsIgnore) {
@@ -673,7 +652,7 @@ namespace ICSharpCode.Core
 			return FileOperationResult.Failed;
 		}
 		
-		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, string fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, FileName fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			return ObservedSave(saveFileAs,
 			                    fileName,
@@ -682,7 +661,7 @@ namespace ICSharpCode.Core
 		}
 		
 		// Observe LOAD functions
-		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, string fileName, string message, FileErrorPolicy policy)
+		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, FileName fileName, string message, FileErrorPolicy policy)
 		{
 			try {
 				loadFile();
@@ -692,17 +671,20 @@ namespace ICSharpCode.Core
 				return ObservedLoadHandleException(e, loadFile, fileName, message, policy);
 			}  catch (UnauthorizedAccessException e) {
 				return ObservedLoadHandleException(e, loadFile, fileName, message, policy);
+			} catch (FormatException e) {
+				return ObservedLoadHandleException(e, loadFile, fileName, message, policy);
 			}
 		}
 
-		static FileOperationResult ObservedLoadHandleException(Exception e, FileOperationDelegate loadFile, string fileName, string message, FileErrorPolicy policy)
+		static FileOperationResult ObservedLoadHandleException(Exception e, FileOperationDelegate loadFile, FileName fileName, string message, FileErrorPolicy policy)
 		{
+			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
-					ServiceManager.Instance.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e);
+					messageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e);
 					break;
 				case FileErrorPolicy.ProvideAlternative:
-					ChooseSaveErrorResult r = ServiceManager.Instance.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e, false);
+					ChooseSaveErrorResult r = messageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e, false);
 					if (r.IsRetry)
 						return ObservedLoad(loadFile, fileName, message, policy);
 					else if (r.IsIgnore)
@@ -712,7 +694,7 @@ namespace ICSharpCode.Core
 			return FileOperationResult.Failed;
 		}
 		
-		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, string fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, FileName fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			return ObservedLoad(loadFile,
 			                    fileName,
@@ -720,12 +702,12 @@ namespace ICSharpCode.Core
 			                    policy);
 		}
 		
-		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, FileName fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			return ObservedLoad(new FileOperationDelegate(delegate { saveFileAs(fileName); }), fileName, message, policy);
 		}
 		
-		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, string fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, FileName fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			return ObservedLoad(saveFileAs,
 			                    fileName,

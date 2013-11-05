@@ -11,7 +11,7 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public static class CodeCompletionOptions
 	{
-		static Properties properties = PropertyService.Get("CodeCompletionOptions", new Properties());
+		static Properties properties = PropertyService.NestedProperties("CodeCompletionOptions");
 		
 		public static Properties Properties {
 			get {

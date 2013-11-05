@@ -17,7 +17,7 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
@@ -36,129 +36,104 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="nunit.util">
-      <HintPath>..\..\..\Tools\NUnit\lib\nunit.util.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="nunit.core">
-      <HintPath>..\..\..\Tools\NUnit\lib\nunit.core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\IFileSystem.cs" />
-    <Compile Include="Src\InnerClassEnumerator.cs" />
-    <Compile Include="Src\IUnitTestMessageService.cs" />
-    <Compile Include="Src\MultipleProjectBuildable.cs" />
-    <Compile Include="Src\TestMemberEventArgs.cs" />
-    <Compile Include="Src\TestProcessRunnerBaseContext.cs" />
-    <Compile Include="Src\UnitTestAddInTree.cs" />
-    <Compile Include="Src\UnitTestBuildOptions.cs" />
-    <Compile Include="Src\UnitTestBuildProjectFactory.cs" />
-    <Compile Include="Src\UnitTestDebuggerService.cs" />
-    <Compile Include="Src\UnitTestFileService.cs" />
-    <Compile Include="Src\UnitTestMessageService.cs" />
-    <Compile Include="Src\UnitTestProcessRunner.cs" />
-    <Compile Include="Src\UnitTestSaveAllFilesCommand.cs" />
-    <Compile Include="Src\UnitTestTaskService.cs" />
-    <Compile Include="Src\UnitTestWorkbench.cs" />
+    <Compile Include="Commands\PadCommands.cs" />
+    <Compile Include="Commands\RunningTestsCondition.cs" />
+    <Compile Include="Commands\TestableCondition.cs" />
+    <Compile Include="Commands\UnitTestCommands.cs" />
+    <Compile Include="Pad\UnitTestNodeFactory.cs" />
+    <Compile Include="Service\ITestService.cs" />
+    <Compile Include="Model\ITest.cs" />
+    <Compile Include="Model\ITestFramework.cs" />
+    <Compile Include="Model\ITestProject.cs" />
+    <Compile Include="Model\ITestSolution.cs" />
+    <Compile Include="Model\TestBase.cs" />
+    <Compile Include="Interfaces\IBuildOptions.cs" />
+    <Compile Include="Interfaces\IUnitTestDebuggerService.cs" />
+    <Compile Include="Interfaces\IUnitTestSaveAllFilesCommand.cs" />
+    <Compile Include="Interfaces\IUnitTestTaskService.cs" />
+    <Compile Include="Interfaces\UnitTestBuildOptions.cs" />
+    <Compile Include="Model\TestCollection.cs" />
+    <Compile Include="Model\TestNamespace.cs" />
+    <Compile Include="Model\TestProjectBase.cs" />
+    <Compile Include="Model\TestResult.cs" />
+    <Compile Include="Model\TestResultTypeChangedEventArgs.cs" />
+    <Compile Include="NUnit\NUnitTestClass.cs" />
+    <Compile Include="NUnit\NUnitTestDebugger.cs" />
+    <Compile Include="NUnit\NUnitTestMethod.cs" />
+    <Compile Include="NUnit\NUnitTestProject.cs" />
+    <Compile Include="NUnit\NUnitTestRunner.cs" />
+    <Compile Include="Pad\ITestTreeView.cs" />
+    <Compile Include="Pad\TestTreeView.cs" />
+    <Compile Include="Pad\UnitTestNode.cs" />
+    <Compile Include="Pad\UnitTestsPad.cs" />
+    <Compile Include="Interfaces\UnitTestDebuggerService.cs" />
+    <Compile Include="Interfaces\UnitTestSaveAllFilesCommand.cs" />
+    <Compile Include="Interfaces\UnitTestTaskService.cs" />
+    <Compile Include="Model\TestSolution.cs" />
+    <Compile Include="Service\TestFrameworkDescriptor.cs" />
+    <Compile Include="Service\TestFrameworkDoozer.cs" />
+    <Compile Include="Service\SDTestService.cs" />
+    <Compile Include="TestRunner\ITestRunner.cs" />
+    <Compile Include="TestRunner\TestDebuggerBase.cs" />
+    <Compile Include="TestRunner\TestExecutionManager.cs" />
+    <Compile Include="TestRunner\TestExecutionOptions.cs" />
+    <Compile Include="TestRunner\TestFinishedEventArgs.cs" />
+    <Compile Include="TestRunner\TestResultsReader.cs" />
+    <Compile Include="TestRunner\TestProcessRunnerBase.cs" />
+    <Compile Include="TestRunner\TestProcessRunnerBaseContext.cs" />
+    <Compile Include="TestRunner\TestResultTask.cs" />
+    <Compile Include="TestRunner\TestRunnerBase.cs" />
+    <Compile Include="NUnit\NUnitConsoleApplication.cs" />
+    <Compile Include="NUnit\NUnitTestFramework.cs" />
+    <Compile Include="NUnit\NUnitTestResult.cs" />
+    <Compile Include="Options\UnitTestingOptions.cs" />
+    <Compile Include="Options\UnitTestingOptionsPanel.xaml.cs">
+      <DependentUpon>UnitTestingOptionsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Images.cs" />
     <None Include="PostBuildEvent.proj" />
-    <EmbeddedResource Include="Resources\UnitTestingOptionsPanel.xfrm" />
     <None Include="UnitTesting.addin">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <Compile Include="Src\AllTestsTreeNode.cs" />
-    <Compile Include="Src\BaseTestMember.cs" />
-    <Compile Include="Src\EmptyUnitTestsPad.cs" />
-    <Compile Include="Src\IAddInTree.cs" />
-    <Compile Include="Src\IBuildOptions.cs" />
-    <Compile Include="Src\IBuildProjectFactory.cs" />
-    <Compile Include="Src\IRegisteredTestFrameworks.cs" />
-    <Compile Include="Src\IRunTestCommandContext.cs" />
-    <Compile Include="Src\ITestFrameworkFactory.cs" />
-    <Compile Include="Src\ITestResultsMonitor.cs" />
-    <Compile Include="Src\ITestRunner.cs" />
-    <Compile Include="Src\IUnitTestDebuggerService.cs" />
-    <Compile Include="Src\IUnitTestFileService.cs" />
-    <Compile Include="Src\IUnitTestProcessRunner.cs" />
-    <Compile Include="Src\IUnitTestSaveAllFilesCommand.cs" />
-    <Compile Include="Src\IUnitTestsPad.cs" />
-    <Compile Include="Src\IUnitTestTaskService.cs" />
-    <Compile Include="Src\IUnitTestWorkbench.cs" />
-    <Compile Include="Src\MessageReceivedEventArgs.cs" />
-    <Compile Include="Src\NUnitTestDebugger.cs" />
-    <Compile Include="Src\NUnitTestFramework.cs" />
-    <Compile Include="Src\NUnitTestResult.cs" />
-    <Compile Include="Src\NUnitTestRunner.cs" />
-    <Compile Include="Src\RegisteredTestFrameworks.cs" />
-    <Compile Include="Src\RemovedClasses.cs" />
-    <Compile Include="Src\RunAllTestsInPadCommand.cs" />
-    <Compile Include="Src\RunProjectTestsInPadCommand.cs" />
-    <Compile Include="Src\RunTestCommandContext.cs" />
-    <Compile Include="Src\RunTestInPadCommand.cs" />
-    <Compile Include="Src\RunTestWithDebuggerCommand.cs" />
-    <Compile Include="Src\SelectedTests.cs" />
-    <Compile Include="Src\TestDebuggerBase.cs" />
-    <Compile Include="Src\TestFramework.cs" />
-    <Compile Include="Src\TestFrameworkDescriptor.cs" />
-    <Compile Include="Src\TestFrameworkDoozer.cs" />
-    <Compile Include="Src\TestFrameworkFactory.cs" />
-    <Compile Include="Src\TestProcessRunnerBase.cs" />
-    <Compile Include="Src\TestResultTask.cs" />
-    <Compile Include="Src\TestRunnerBase.cs" />
-    <Compile Include="Src\TestService.cs" />
-    <Compile Include="Src\UnitTestCommands.cs" />
-    <Compile Include="Src\TestableCondition.cs" />
-    <Compile Include="Src\RunningTestsCondition.cs" />
-    <Compile Include="Src\TestTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\NUnitConsoleApplication.cs" />
-    <Compile Include="Src\AbstractRunTestCommand.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\TestProject.cs" />
-    <Compile Include="Src\ITestTreeView.cs" />
-    <Compile Include="Src\TestClass.cs" />
-    <Compile Include="Src\TestMember.cs" />
-    <Compile Include="Src\TestAttributeName.cs" />
-    <Compile Include="Src\TestTreeNode.cs" />
-    <Compile Include="Src\TestTreeViewImageList.cs" />
-    <Compile Include="Src\TestProjectTreeNode.cs" />
-    <Compile Include="Src\TestNamespaceTreeNode.cs" />
-    <Compile Include="Src\TestClassTreeNode.cs" />
-    <Compile Include="Src\TestMemberTreeNode.cs" />
-    <Compile Include="Src\UnitTestingOptions.cs" />
-    <Compile Include="Src\UnitTestingOptionsPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\UnitTestsPad.cs" />
-    <EmbeddedResource Include="Resources\Red.png" />
-    <EmbeddedResource Include="Resources\Green.png" />
-    <EmbeddedResource Include="Resources\Yellow.png" />
-    <EmbeddedResource Include="Resources\Grey.png" />
-    <Compile Include="Src\TestResultsReader.cs" />
-    <Compile Include="Src\TestResult.cs" />
-    <Compile Include="Src\TestResultsMonitor.cs" />
-    <Compile Include="Src\TestFinishedEventArgs.cs" />
-    <Compile Include="Src\TestClassCollection.cs" />
-    <Compile Include="Src\TestMemberCollection.cs" />
-    <Compile Include="Src\TestClassEventArgs.cs" />
+    <Resource Include="Resources\Red.png" />
+    <Resource Include="Resources\Green.png" />
+    <Resource Include="Resources\Yellow.png" />
+    <Resource Include="Resources\Grey.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -171,16 +146,29 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
-      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
-      <Name>ICSharpCode.Core.WinForms</Name>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Commands" />
+    <Folder Include="Service" />
+    <Folder Include="Pad" />
+    <Folder Include="Interfaces" />
+    <Folder Include="Model" />
+    <Folder Include="Options" />
+    <Folder Include="NUnit" />
+    <Folder Include="TestRunner" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Options\UnitTestingOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PostBuildEvent.proj" />

@@ -15,7 +15,7 @@ namespace HexEditor.Util
 	/// </summary>
 	public class Settings
 	{
-		static Properties properties = PropertyService.Get("HexEditorOptions", new Properties());
+		static Properties properties = PropertyService.NestedProperties("HexEditorOptions");
 		
 		public static Properties Properties {
 			get {

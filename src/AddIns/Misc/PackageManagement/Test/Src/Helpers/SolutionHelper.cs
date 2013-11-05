@@ -3,42 +3,59 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Evaluation;
 using NUnit.Framework;
+using Rhino.Mocks;
 using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace PackageManagement.Tests.Helpers
 {
 	public class SolutionHelper
 	{
-		public SolutionHelper()
+		public SolutionHelper(string fileName = @"d:\projects\MyProject\MyProject.sln")
 		{
-			OpenSolution();
+			ICSharpCode.SharpDevelop.SD.InitializeForUnitTests();
+			OpenSolution(fileName);
 		}
 		
 		public Solution Solution;
 		public FakePackageManagementProjectService FakeProjectService;
-		public SD.Solution MSBuildSolution;
+		public SD.ISolution MSBuildSolution;
 		
-		void OpenSolution()
+		void OpenSolution(string fileName)
 		{
 			FakeProjectService = new FakePackageManagementProjectService();
-			MSBuildSolution = CreateSharpDevelopSolution();
+			MSBuildSolution = CreateSharpDevelopSolution(fileName);
 			FakeProjectService.OpenSolution = MSBuildSolution;
 			Solution = new Solution(FakeProjectService);
 		}
 		
-		SD.Solution CreateSharpDevelopSolution()
+		SD.ISolution CreateSharpDevelopSolution(string fileName = @"d:\projects\MyProject\MyProject.sln")
 		{
-			return new SD.Solution(new SD.MockProjectChangeWatcher()) {
-				FileName = @"d:\projects\MyProject\MyProject.sln"
-			};
+			var solution = MockRepository.GenerateStub<ISolution>();
+			var solutionFileName = new FileName(fileName);
+			solution.Stub(s => s.FileName).Return(solutionFileName);
+			solution.Stub(s => s.Directory).Return(solutionFileName.GetParentDirectory());
+			
+			var sections = new SimpleModelCollection<SolutionSection>(new SolutionSection[0]);
+			solution.Stub(s => s.GlobalSections).Return(sections);
+			
+			solution.Stub(s => s.MSBuildProjectCollection).Return(new ProjectCollection());
+			
+			var projects = new SimpleModelCollection<IProject>();
+			solution.Stub(s =>s.Projects).Return(projects);
+			
+			return solution;
 		}
 		
-		public SD.Solution OpenDifferentSolution()
+		public SD.ISolution OpenDifferentSolution()
 		{
-			SD.Solution solution = CreateSharpDevelopSolution();
+			SD.ISolution solution = CreateSharpDevelopSolution();
 			FakeProjectService.OpenSolution = solution;
 			return solution;
 		}
@@ -56,30 +73,31 @@ namespace PackageManagement.Tests.Helpers
 		public TestableProject AddProjectToSolutionWithFileName(string projectName, string fileName)
 		{
 			TestableProject project = ProjectHelper.CreateTestProject(MSBuildSolution, projectName, fileName);
-			FakeProjectService.AddFakeProject(project);
+			FakeProjectService.AddProject(project);
 			return project;
 		}
 		
 		public void AddExtensibilityGlobalsSection()
 		{
-			var section = new SD.ProjectSection("ExtensibilityGlobals", "postSolution");
-			MSBuildSolution.Sections.Add(section);
+			var section = new SD.SolutionSection("ExtensibilityGlobals", "postSolution");
+			MSBuildSolution.GlobalSections.Add(section);
 		}
 		
 		public void AddVariableToExtensibilityGlobals(string name, string value)
 		{
-			var solutionItem = new SD.SolutionItem(name, value);
-			GetExtensibilityGlobalsSection().Items.Add(solutionItem);
+			SolutionSection section = GetExtensibilityGlobalsSection();
+			section.Add(name, value);
 		}
 		
-		public SD.SolutionItem GetExtensibilityGlobalsSolutionItem(string name)
+		public string GetExtensibilityGlobalsSolutionItem(string name)
 		{
-			return GetExtensibilityGlobalsSection().Items.SingleOrDefault(item => item.Name == name);
+			SolutionSection section = GetExtensibilityGlobalsSection();
+			return section[name];
 		}
 		
-		public SD.ProjectSection GetExtensibilityGlobalsSection()
+		public SD.SolutionSection GetExtensibilityGlobalsSection()
 		{
-			return MSBuildSolution.Sections.SingleOrDefault(section => section.Name == "ExtensibilityGlobals");
+			return MSBuildSolution.GlobalSections.SingleOrDefault(section => section.SectionName == "ExtensibilityGlobals");
 		}
 		
 		public void AssertSolutionIsSaved()
@@ -95,7 +113,7 @@ namespace PackageManagement.Tests.Helpers
 		public SD.FileProjectItem AddFileToFirstProjectInSolution(string include)
 		{
 			TestableProject project = FakeProjectService
-				.FakeOpenProjects
+				.AllProjects
 				.Select(p => p as TestableProject)
 				.First();
 			return project.AddFile(include);
@@ -104,7 +122,7 @@ namespace PackageManagement.Tests.Helpers
 		public SD.FileProjectItem AddFileToSecondProjectInSolution(string include)
 		{
 			TestableProject project = FakeProjectService
-				.FakeOpenProjects
+				.AllProjects
 				.Select(p => p as TestableProject)
 				.Skip(1)
 				.First();
@@ -113,12 +131,12 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void SetStartupProject(SD.IProject project)
 		{
-			MSBuildSolution.Preferences.StartupProject = project;
+			MSBuildSolution.StartupProject = project;
 		}
 		
 		public void SetActiveConfiguration(string name)
 		{
-			MSBuildSolution.Preferences.ActiveConfiguration = name;
+			MSBuildSolution.ActiveConfiguration = new ConfigurationAndPlatform(name, "x86");
 		}
 	}
 }

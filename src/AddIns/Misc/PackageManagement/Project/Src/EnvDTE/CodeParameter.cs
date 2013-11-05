@@ -2,36 +2,41 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeParameter : CodeElement, global::EnvDTE.CodeParameter
 	{
-		IProjectContent projectContent;
+		protected readonly IParameter parameter;
 		
-		public CodeParameter(IProjectContent projectContent, IParameter parameter)
+		public CodeParameter(CodeModelContext context, IParameter parameter)
+			: base(context)
 		{
-			this.projectContent = projectContent;
-			this.Parameter = parameter;
+			this.parameter = parameter;
 		}
-		
-		protected IParameter Parameter { get; private set; }
 		
 		public override global::EnvDTE.vsCMElement Kind {
 			get { return global::EnvDTE.vsCMElement.vsCMElementParameter; }
 		}
 		
 		public override string Name {
-			get { return Parameter.Name; }
+			get { return parameter.Name; }
 		}
 		
 		public virtual global::EnvDTE.CodeTypeRef2 Type {
-			get { return new CodeTypeRef2(projectContent, this, Parameter.ReturnType); }
+			get { return new CodeTypeRef2(context, this, parameter.Type); }
 		}
 		
 		public virtual global::EnvDTE.CodeElements Attributes {
-			get { return new CodeAttributes(Parameter); }
+			get {
+				var list = new CodeElementsList<CodeAttribute2>();
+				foreach (var attr in parameter.Attributes) {
+					list.Add(new CodeAttribute2(context, attr));
+				}
+				return list;
+			}
 		}
 	}
 }

@@ -4,11 +4,13 @@
 using System;
 using System.Diagnostics;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
-	public interface IDebugger : IDisposable
+	public interface IDebugger : IDisposable, ITextAreaToolTipProvider
 	{
 		/// <summary>
 		/// Returns true if debuger is attached to a process
@@ -75,29 +77,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		void Attach(Process process);
 		
 		void Detach();
-			
-		/// <summary>
-		/// Gets the current value of the variable as string that can be displayed in tooltips.
-		/// </summary>
-		string GetValueAsString(string variable);
-		
-		/// <summary>
-		/// Gets the tooltip control that shows the value of given variable.
-		/// Return null if no tooltip is available.
-		/// </summary>
-		object GetTooltipControl(Location logicalPosition, string variable);
-		
-		/// <summary>
-		/// Queries the debugger whether it is possible to set the instruction pointer to a given position.
-		/// </summary>
-		/// <returns>True if possible. False otherwise</returns>
-		bool CanSetInstructionPointer(string filename, int line, int column);
 		
 		/// <summary>
 		/// Set the instruction pointer to a given position.
 		/// </summary>
 		/// <returns>True if successful. False otherwise</returns>
-		bool SetInstructionPointer(string filename, int line, int column);
+		bool SetInstructionPointer(string filename, int line, int column, bool dryRun);
 		
 		/// <summary>
 		/// Ocurrs when the debugger is starting.

@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop
 	/// <attribute name="defaultPosition" use="optional">
 	/// Default position of the pad, as a ICSharpCode.SharpDevelop.DefaultPadPositions enum value (e.g. "Bottom, Hidden").
 	/// </attribute>
-	/// <usage>Only in /Workspace/Parser</usage>
+	/// <usage>Only in /SharpDevelop/Parser</usage>
 	/// <returns>
 	/// An PadDescriptor object that wraps the IPadContent object.
 	/// </returns>

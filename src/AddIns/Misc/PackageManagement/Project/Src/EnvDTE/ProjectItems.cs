@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using ICSharpCode.SharpDevelop.Project;
+
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class ProjectItems : MarshalByRefObject, IEnumerable, global::EnvDTE.ProjectItems
@@ -14,7 +16,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		IPackageManagementFileService fileService;
 		object parent;
 		
-		public ProjectItems(Project project, object parent, IPackageManagementFileService fileService)
+		public ProjectItems(Project project, object parent)
+			: this(project, parent, project.FileService)
+		{
+		}
+		
+		ProjectItems(Project project, object parent, IPackageManagementFileService fileService)
 		{
 			this.Project = project;
 			this.fileService = fileService;
@@ -100,7 +107,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected virtual IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems()
 		{
-			return new ProjectItemsInsideProject(Project);
+			return new ProjectItemsInsideProject(Project, fileService);
 		}
 		
 		internal virtual ProjectItem Item(string name)

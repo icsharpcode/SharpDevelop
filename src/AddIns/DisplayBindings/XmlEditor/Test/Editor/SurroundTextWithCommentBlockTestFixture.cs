@@ -3,6 +3,7 @@
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
@@ -16,7 +17,7 @@ namespace XmlEditor.Tests.Editor
 		XmlFormattingStrategy formattingStrategy;
 		MockTextEditor textEditor;
 		MockTextEditorOptions options;
-		AvalonEditDocumentAdapter document;
+		IDocument document;
 		TextDocument textDocument;
 		
 		[SetUp]
@@ -29,7 +30,7 @@ namespace XmlEditor.Tests.Editor
 			textEditor.Options = options;
 			
 			textDocument = new TextDocument();
-			document = new AvalonEditDocumentAdapter(textDocument, null);
+			document = textDocument;
 			textEditor.SetDocument(document);
 			
 			textDocument.Text = 

@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (DotnetDetection.IsDotnet45Installed()) {
 				var upgradableProject = projectOptions.Project as IUpgradableProject;
 				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.IsBasedOn(TargetFramework.Net45))
-					supports32BitPreferred = projectOptions.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2010;
+					supports32BitPreferred = projectOptions.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2010;
 				// Show 32 vs. 64 options even for library projects;
 				// it's relevant for web applications.
 			}

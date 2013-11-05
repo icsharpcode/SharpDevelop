@@ -38,13 +38,9 @@ namespace SearchAndReplace
 			e.Handled = true;
 		}
 		
-		public static bool GroupResultsByFile {
-			get {
-				return PropertyService.Get("SearchAndReplace.GroupResultsByFile", false);
-			}
-			set {
-				PropertyService.Set("SearchAndReplace.GroupResultsByFile", value);
-			}
+		public static SearchResultGroupingKind GroupingKind {
+			get { return PropertyService.Get("SearchAndReplace.GroupResults", SearchResultGroupingKind.Flat); }
+			set { PropertyService.Set("SearchAndReplace.GroupResults", value); }
 		}
 	}
 }

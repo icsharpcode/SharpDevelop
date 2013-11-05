@@ -1,6 +1,8 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using System;
 using System.Collections.Generic;
@@ -15,19 +17,18 @@ namespace Debugger.AddIn.Visualizers
 {
 	public class GridVisualizerDescriptor : IVisualizerDescriptor
 	{
-		public bool IsVisualizerAvailable(DebugType type)
+		public bool IsVisualizerAvailable(IType type)
 		{
-			if (type.IsAtomic()) {
-				return false;
-			}
-			DebugType collectionType, itemType;
+			if (type.IsAtomic()) return false;
+			ParameterizedType collectionType;
+			IType itemType;
 			// Visualizer available for IEnumerable<T> (that is, also IList<T>)
 			return type.ResolveIEnumerableImplementation(out collectionType, out itemType);
 		}
 		
-		public IVisualizerCommand CreateVisualizerCommand(Expression expression)
+		public IVisualizerCommand CreateVisualizerCommand(string valueName, Func<Value> getValue)
 		{
-			return new GridVisualizerCommand(expression);
+			return new GridVisualizerCommand(valueName, getValue);
 		}
 	}
 	
@@ -36,8 +37,8 @@ namespace Debugger.AddIn.Visualizers
 	/// </summary>
 	public class GridVisualizerCommand : ExpressionVisualizerCommand
 	{
-		public GridVisualizerCommand(Expression expression)
-			:base(expression)
+		public GridVisualizerCommand(string valueName, Func<Value> getValue)
+			: base(valueName, getValue)
 		{
 		}
 		
@@ -48,10 +49,8 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Expression == null)
-				return;
-			var gridVisualizerWindow = GridVisualizerWindow.EnsureShown();
-			gridVisualizerWindow.ShownExpression = this.Expression;
+			GridVisualizerWindow window = new GridVisualizerWindow(this.ValueName, this.GetValue);
+			window.ShowDialog();
 		}
 	}
 }

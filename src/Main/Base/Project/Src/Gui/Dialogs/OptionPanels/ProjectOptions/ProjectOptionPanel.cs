@@ -120,17 +120,17 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ApplyTemplate();
 			project = (MSBuildBasedProject)owner;
 			if (configurationComboBox != null) {
-				List<string> configurations = project.ConfigurationNames.Union(new[] { project.ActiveConfiguration }).ToList();
+				List<string> configurations = project.ConfigurationNames.Union(new[] { project.ActiveConfiguration.Configuration }).ToList();
 				configurations.Sort();
 				configurationComboBox.ItemsSource = configurations;
-				configurationComboBox.SelectedItem = project.ActiveConfiguration;
+				configurationComboBox.SelectedItem = project.ActiveConfiguration.Configuration;
 				configurationComboBox.SelectionChanged += comboBox_SelectionChanged;
 			}
 			if (platformComboBox != null) {
-				List<string> platforms = project.PlatformNames.Union(new[] { project.ActivePlatform }).ToList();
+				List<string> platforms = project.PlatformNames.Union(new[] { project.ActiveConfiguration.Platform }).ToList();
 				platforms.Sort();
 				platformComboBox.ItemsSource = platforms;
-				platformComboBox.SelectedItem = project.ActivePlatform;
+				platformComboBox.SelectedItem = project.ActiveConfiguration.Platform;
 				platformComboBox.SelectionChanged += comboBox_SelectionChanged;
 			}
 			Initialize();
@@ -170,12 +170,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (configurationComboBox != null)
 				activeConfiguration = (string)configurationComboBox.SelectedItem;
 			else
-				activeConfiguration = project.ActiveConfiguration;
+				activeConfiguration = project.ActiveConfiguration.Configuration;
 			
 			if (platformComboBox != null)
 				activePlatform = (string)platformComboBox.SelectedItem;
 			else
-				activePlatform = project.ActivePlatform;
+				activePlatform = project.ActiveConfiguration.Platform;
 			
 			isLoaded = true;
 			Load(project, activeConfiguration, activePlatform);
@@ -399,9 +399,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		/// </summary>
 		public void BrowseForFolder(ProjectProperty<string> property, string description)
 		{
-			string newValue = BrowseForFolder(description, BaseDirectory, property.TextBoxEditMode);
-			if (newValue != null)
-				property.Value = newValue;
+			string path = BrowseForFolder(description, BaseDirectory, property.TextBoxEditMode);
+			if (!String.IsNullOrEmpty(path)) {
+				property.Value = path;
+			}	
 		}
 		
 		/// <summary>
@@ -411,26 +412,24 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		/// <param name="startLocation">Start location, relative to the <see cref="BaseDirectory"/></param>
 		/// <param name="textBoxEditMode">The TextBoxEditMode used for the text box containing the file name</param>
 		/// <returns>Returns the location of the folder; or null if the dialog was cancelled.</returns>
-		protected string BrowseForFolder(string description, string startLocation, TextBoxEditMode textBoxEditMode)
+		private string BrowseForFolder(string description, string startLocation, TextBoxEditMode textBoxEditMode)
 		{
 			string startAt = GetInitialDirectory(startLocation, textBoxEditMode, false);
-			using (var fdiag = FileService.CreateFolderBrowserDialog(description, startAt))
-			{
-				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-					string path = fdiag.SelectedPath;
-					if (!String.IsNullOrEmpty(startLocation)) {
-						path = FileUtility.GetRelativePath(startLocation, path);
-					}
-					if (!path.EndsWith("\\", StringComparison.Ordinal) && !path.EndsWith("/", StringComparison.Ordinal))
-						path += "\\";
-					if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
-						return path;
-					} else {
-						return MSBuildInternals.Escape(path);
-					}
+			string path = SD.FileService.BrowseForFolder(description,startAt);
+			if (String.IsNullOrEmpty(path)) {
+				return null;
+			} else {
+				if (!String.IsNullOrEmpty(startLocation)) {
+					path = FileUtility.GetRelativePath(startLocation, path);
+				}
+				if (!path.EndsWith("\\", StringComparison.Ordinal) && !path.EndsWith("/", StringComparison.Ordinal))
+					path += "\\";
+				if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
+					return path;
+				} else {
+					return MSBuildInternals.Escape(path);
 				}
 			}
-			return null;
 		}
 		
 		/// <summary>

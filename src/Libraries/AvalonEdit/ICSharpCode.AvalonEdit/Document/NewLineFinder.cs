@@ -2,9 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -118,9 +117,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the newline sequence used in the document at the specified line.
 		/// </summary>
-		public static string GetNewLineFromDocument(TextDocument document, int lineNumber)
+		public static string GetNewLineFromDocument(IDocument document, int lineNumber)
 		{
-			DocumentLine line = document.GetLineByNumber(lineNumber);
+			IDocumentLine line = document.GetLineByNumber(lineNumber);
 			if (line.DelimiterLength == 0) {
 				// at the end of the document, there's no line delimiter, so use the delimiter
 				// from the previous line

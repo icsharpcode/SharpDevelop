@@ -13,44 +13,34 @@ namespace ICSharpCode.Core.Presentation
 {
 	sealed class MenuCheckBox : CoreMenuItem
 	{
-		BindingExpressionBase isCheckedBinding;
+		ICheckableMenuCommand cmd;
+		// We need to keep the reference to the event handler around
+		// because the IsCheckedChanged event may be a weak event
+		EventHandler isCheckedChangedHandler;
 		
-		public MenuCheckBox(UIElement inputBindingOwner, Codon codon, object caller, IEnumerable<ICondition> conditions)
+		public MenuCheckBox(UIElement inputBindingOwner, Codon codon, object caller, IReadOnlyCollection<ICondition> conditions)
 			: base(codon, caller, conditions)
 		{
-			this.Command = CommandWrapper.GetCommand(codon, caller, true, conditions);
-			CommandWrapper wrapper = this.Command as CommandWrapper;
-			if (wrapper != null) {
-				ICheckableMenuCommand cmd = wrapper.GetAddInCommand() as ICheckableMenuCommand;
-				if (cmd != null) {
-					isCheckedBinding = SetBinding(IsCheckedProperty, new Binding("IsChecked") { Source = cmd, Mode = BindingMode.OneWay });
-				}
+			this.Command = CommandWrapper.CreateCommand(codon, conditions);
+			this.CommandParameter = caller;
+			
+			cmd = CommandWrapper.Unwrap(this.Command) as ICheckableMenuCommand;
+			if (cmd != null) {
+				isCheckedChangedHandler = cmd_IsCheckedChanged;
+				cmd.IsCheckedChanged += isCheckedChangedHandler;
+				this.IsChecked = cmd.IsChecked(caller);
 			}
 			
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
 				MenuCommand.AddGestureToInputBindingOwner(inputBindingOwner, kg, this.Command, null);
-				this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+				this.InputGestureText = MenuService.GetDisplayStringForShortcut(kg);
 			}
 		}
-		
-		public override void UpdateStatus()
+
+		void cmd_IsCheckedChanged(object sender, EventArgs e)
 		{
-			base.UpdateStatus();
-			if (isCheckedBinding != null)
-				isCheckedBinding.UpdateTarget();
-		}
-		
-		protected override void OnClick()
-		{
-			base.OnClick();
-			Dispatcher.BeginInvoke(
-				DispatcherPriority.DataBind,
-				new Action(
-					delegate {
-						if (isCheckedBinding != null)
-							isCheckedBinding.UpdateTarget();
-					}));
+			this.IsChecked = cmd.IsChecked(caller);
 		}
 	}
 }

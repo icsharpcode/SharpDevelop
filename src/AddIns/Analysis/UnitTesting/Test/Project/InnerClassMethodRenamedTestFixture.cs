@@ -3,7 +3,7 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -14,62 +14,63 @@ namespace UnitTesting.Tests.Project
 	/// Tests what happens when a test method is renamed inside an inner class.
 	/// </summary>
 	[TestFixture]
-	public class InnerClassMethodRemovedTestFixture : InnerClassTestFixtureBase
+	public class InnerClassMethodRemovedTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestClass innerTestClass;
+		NUnitTestClass innerTestClass;
 		
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
-			base.InitBase();
+			base.SetUp();
+			
+			AddCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	class A {
+		class InnerATest {
+			[Test]
+			public void FooBar() {}
+		}
+	}
+}
+");
 
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			oldUnit.Classes.Add(outerClass);
+			// The members should be changed on the existing TestClass instance,
+			// so grab the reference in before updating.
+			innerTestClass = testProject.GetTestClass(new FullTypeName("MyTests.A+InnerATest"));
 			
-			// Create new compilation unit with inner class that has its method renamed.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newOuterClass = new MockClass(projectContent, "MyTests.A");
-			projectContent.Classes.Add(newOuterClass);
-			newUnit.Classes.Add(newOuterClass);
+			UpdateCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	class A {
+		class InnerATest {
+			[Test]
+			public void FooBarRenamed() {}
 			
-			// Create the inner test class.
-			MockClass newInnerClass = new MockClass(projectContent, "MyTests.A.InnerATest", outerClass);
-			newInnerClass.SetDotNetName("MyTests.A+InnerATest");
-			newInnerClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newOuterClass.InnerClasses.Add(newInnerClass);
-			
-			MockMethod method = new MockMethod(newInnerClass, "FooBarRenamed");
-			method.Attributes.Add(new MockAttribute("Test"));
-			newInnerClass.Methods.Add(method);
-			outerClass.InnerClasses.Add(newInnerClass);
-			
-			MockClass innerClassInInnerClass = new MockClass(projectContent, "MyTests.A.InnerATest.InnerInnerTest", innerClass);
-			innerClassInInnerClass.SetDotNetName("MyTests.A+InnerATest+InnerInnerTest");
-			innerClassInInnerClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newInnerClass.InnerClasses.Add(innerClassInInnerClass);
-		
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
-			
-			innerTestClass = testProject.TestClasses["MyTests.A+InnerATest"];
+			[TestFixture]
+			class InnerInnerTest {}
+		}
+	}
+}
+");
 		}
 		
 		[Test]
 		public void NewTestMethodExists()
 		{
-			TestMember method = innerTestClass.TestMembers[0];
-			Assert.AreEqual("FooBarRenamed", method.Name);
+			Assert.Contains("FooBarRenamed", GetTestMethodNames(innerTestClass));
 		}
 		
 		[Test]
 		public void OldTestMethodRemoved()
 		{
-			Assert.AreEqual(1, innerTestClass.TestMembers.Count);
+			Assert.IsFalse(GetTestMethodNames(innerTestClass).Contains("FooBar"));
 		}
 		
 		[Test]
-		public void NewTestClassExists() {
-			CollectionAssert.Contains(testProject.TestClasses.Select(x => x.QualifiedName).ToList(), "MyTests.A+InnerATest+InnerInnerTest");
+		public void NewTestClassExists()
+		{
+			CollectionAssert.Contains(innerTestClass.NestedTests.OfType<NUnitTestClass>().Select(x => x.ReflectionName),
+			                          "MyTests.A+InnerATest+InnerInnerTest");
 		}
 	}
 }

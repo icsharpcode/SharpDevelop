@@ -3,6 +3,7 @@
 
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
@@ -21,6 +22,7 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetupFixture()
 		{
+			SD.InitializeForUnitTests();
 			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 		}
 		
@@ -28,19 +30,8 @@ namespace WixBinding.Tests.Gui
 		[ExpectedException(typeof(FormsDesignerLoadException), ExpectedMessage = "No setup dialog selected in Wix document. Please move the cursor inside a dialog element or use the Setup Dialogs window to open a dialog.")]
 		public void NoDialogIdSpecified()
 		{
-			WixDialogDesignerLoader loader = new WixDialogDesignerLoader(this, new WixDialogDesignerGenerator());
+			WixDialogDesignerLoader loader = new WixDialogDesignerLoader(this);
 			loader.BeginLoad(new MockDesignerLoaderHost());
-		}
-		
-		[Test]
-		public void NoGeneratorSpecified()
-		{
-			try {
-				WixDialogDesignerLoader loader = new WixDialogDesignerLoader(this, null);
-				Assert.Fail("Expected an argument exception before this line.");
-			} catch (ArgumentException ex) {
-				Assert.AreEqual("generator", ex.ParamName);
-			}
 		}
 		
 		string IWixDialogDesigner.DialogId {
@@ -54,6 +45,12 @@ namespace WixBinding.Tests.Gui
 			return String.Empty;
 		}
 		
+		ICSharpCode.SharpDevelop.Editor.ITextEditor IWixDialogDesigner.PrimaryViewContentTextEditor {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+
 		public string DocumentFileName {
 			get {
 				return String.Empty;

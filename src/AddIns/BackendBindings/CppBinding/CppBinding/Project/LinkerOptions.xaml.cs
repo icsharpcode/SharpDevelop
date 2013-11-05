@@ -52,7 +52,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		protected override void Initialize()
 		{
-			var msDefGroup = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration, base.Project.ActivePlatform);
+			var msDefGroup = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration);
 			                                                                  
 			this.additionalLibsTextBox.Text = GetElementMetaData(msDefGroup,"AdditionalDependencies");
 			
@@ -75,8 +75,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project,
-			                                                                  project.ActiveConfiguration, project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project, project.ActiveConfiguration);
 			
 			SetElementMetaData(group,"AdditionalDependencies",this.additionalLibsTextBox.Text);
 			SetElementMetaData(group,"AddModuleNamesToAssembly",this.addModuleTextBox.Text);

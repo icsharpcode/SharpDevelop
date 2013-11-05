@@ -2,42 +2,46 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class TextPoint : MarshalByRefObject, global::EnvDTE.TextPoint
 	{
-		internal TextPoint(FilePosition filePosition, IDocumentLoader documentLoader)
+		protected readonly string fileName;
+		protected readonly TextLocation location;
+		protected readonly IDocumentLoader documentLoader;
+		
+		internal TextPoint(string fileName, TextLocation location, IDocumentLoader documentLoader)
 		{
-			this.FilePosition = filePosition;
-			this.DocumentLoader = documentLoader;
+			this.fileName = fileName;
+			this.location = location;
+			this.documentLoader = documentLoader;
 		}
 		
-		protected IDocumentLoader DocumentLoader { get; private set; }
-		protected FilePosition FilePosition { get; private set; }
-		
 		public int LineCharOffset {
-			get { return FilePosition.Column; }
+			get { return location.Column; }
 		}
 		
 		public int Line {
-			get { return FilePosition.Line; }
+			get { return location.Line; }
 		}
 		
 		public global::EnvDTE.EditPoint CreateEditPoint()
 		{
-			return new EditPoint(FilePosition, DocumentLoader);
+			return new EditPoint(fileName, location, documentLoader);
 		}
 		
-		internal static TextPoint CreateStartPoint(FilePosition position, IDocumentLoader documentLoader)
+		internal static TextPoint CreateStartPoint(CodeModelContext context, DomRegion region)
 		{
-			return new TextPoint(position, documentLoader);
+			return new TextPoint(region.FileName, region.Begin, context.DocumentLoader);
 		}
 		
-		internal static TextPoint CreateEndPoint(FilePosition position, IDocumentLoader documentLoader)
+		internal static TextPoint CreateEndPoint(CodeModelContext context, DomRegion region)
 		{
-			return new TextPoint(position, documentLoader);
+			return new TextPoint(region.FileName, region.End, context.DocumentLoader);
 		}
 	}
 }

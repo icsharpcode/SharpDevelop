@@ -15,27 +15,36 @@ namespace ICSharpCode.CodeCoverage
 	public class OpenCoverApplication
 	{
 		string fileName = String.Empty;
-		NUnitConsoleApplication nunitConsoleApp;
+		ProcessStartInfo targetProcessStartInfo;
 		OpenCoverSettings settings;
 		StringBuilder arguments;
+		IProject project;
 		
-		public OpenCoverApplication(string fileName, NUnitConsoleApplication nunitConsoleApp, OpenCoverSettings settings)
+		public OpenCoverApplication(
+			string fileName,
+			ProcessStartInfo targetProcessStartInfo,
+			OpenCoverSettings settings,
+			IProject project)
 		{
 			this.fileName = fileName;
-			this.nunitConsoleApp = nunitConsoleApp;
+			this.targetProcessStartInfo = targetProcessStartInfo;
 			this.settings = settings;
+			this.project = project;
 			
 			if (String.IsNullOrEmpty(fileName)) {
-				GetPartCoverApplicationFileName();
+				GetOpenCoverApplicationFileName();
 			}
 		}
 		
-		public OpenCoverApplication(NUnitConsoleApplication nunitConsoleApp, OpenCoverSettings settings)
-			: this(null, nunitConsoleApp, settings)
+		public OpenCoverApplication(
+			ProcessStartInfo targetProcessStartInfo,
+			OpenCoverSettings settings,
+			IProject project)
+			: this(null, targetProcessStartInfo, settings, project)
 		{
 		}
 		
-		void GetPartCoverApplicationFileName()
+		void GetOpenCoverApplicationFileName()
 		{
 			fileName = Path.Combine(FileUtility.ApplicationRootPath, @"bin\Tools\OpenCover\OpenCover.Console.exe");
 			fileName = Path.GetFullPath(fileName);
@@ -51,26 +60,27 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public string Target {
-			get { return nunitConsoleApp.FileName; }
+			get { return targetProcessStartInfo.FileName; }
 		}
 		
 		public string GetTargetArguments()
 		{
-			return nunitConsoleApp.GetArguments();
+			return targetProcessStartInfo.Arguments;
 		}
 		
 		public string GetTargetWorkingDirectory()
 		{
-			return Path.GetDirectoryName(nunitConsoleApp.Assemblies[0]);
+			return Path.GetDirectoryName(project.OutputAssemblyFullPath);
 		}
 		
 		public string CodeCoverageResultsFileName {
-			get { return new ProjectCodeCoverageResultsFileName(nunitConsoleApp.Project).FileName; }
+			get { return new ProjectCodeCoverageResultsFileName(project).FileName; }
 		}
 		
 		public ProcessStartInfo GetProcessStartInfo()
 		{
 			ProcessStartInfo processStartInfo = new ProcessStartInfo();
+			processStartInfo.EnvironmentVariables.Add("COMPLUS_ProfAPI_ProfilerCompatibilitySetting", "EnableV2Profiler");
 			processStartInfo.FileName = FileName;
 			processStartInfo.Arguments = GetArguments();
 			return processStartInfo;

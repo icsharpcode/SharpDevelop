@@ -11,12 +11,9 @@ namespace ICSharpCode.PackageManagement
 {
 	public static class MSBuildBasedProjectExtensions
 	{
-		public static readonly Guid WebApplication = Guid.Parse(ProjectTypeGuids.WebApplication);
-		public static readonly Guid WebSite = Guid.Parse(ProjectTypeGuids.WebSite);
-		
 		public static bool IsWebProject(this MSBuildBasedProject project)
 		{
-			return project.HasProjectType(WebApplication) || project.HasProjectType(WebSite);
+			return project.HasProjectType(ProjectTypeGuids.WebApplication) || project.HasProjectType(ProjectTypeGuids.WebSite);
 		}
 		
 		public static void AddImportIfMissing(

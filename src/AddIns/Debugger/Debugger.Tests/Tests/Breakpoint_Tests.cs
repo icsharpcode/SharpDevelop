@@ -28,10 +28,12 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Breakpoint_Tests()
 		{
-			Breakpoint breakpoint1 = debugger.Breakpoints.Add(@"Breakpoint_Tests.cs", 14);
-			Breakpoint breakpoint2 = debugger.Breakpoints.Add(@"Breakpoint_Tests.cs", 15);
-			
 			StartTest();
+			
+			string filename = CurrentStackFrame.NextStatement.Filename;
+			
+			Breakpoint breakpoint1 = debugger.AddBreakpoint(filename, 14);
+			Breakpoint breakpoint2 = debugger.AddBreakpoint(filename, 15);
 			
 			Assert.IsTrue(breakpoint1.IsSet);
 			Assert.IsTrue(breakpoint2.IsSet);
@@ -57,49 +59,41 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="Breakpoint_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Breakpoint_Tests.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Breakpoint_Tests.cs:12,4-12,40</DebuggingPaused>
+    <Paused>Breakpoint_Tests.cs:12,4-12,40</Paused>
     <Breakpoint1>
       <Breakpoint
-        Enabled="True"
-        FileName="Breakpoint_Tests.cs"
+        IsEnabled="True"
         IsSet="True"
-        Line="14"
-        OriginalLocation="Breakpoint_Tests.cs:14,4-14,49" />
+        Line="14" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
-        Enabled="True"
-        FileName="Breakpoint_Tests.cs"
+        IsEnabled="True"
         IsSet="True"
-        Line="15"
-        OriginalLocation="Breakpoint_Tests.cs:16,4-16,49" />
+        Line="15" />
     </Breakpoint2>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Main 1\r\n</LogMessage>
-    <DebuggingPaused>Breakpoint Breakpoint_Tests.cs:14,4-14,49</DebuggingPaused>
+    <Paused>Breakpoint_Tests.cs:14,4-14,49</Paused>
     <LogMessage>Main 2\r\n</LogMessage>
-    <DebuggingPaused>Breakpoint Breakpoint_Tests.cs:16,4-16,49</DebuggingPaused>
+    <Paused>Breakpoint_Tests.cs:16,4-16,49</Paused>
     <LogMessage>Main 3\r\n</LogMessage>
-    <DebuggingPaused>Break Breakpoint_Tests.cs:17,4-17,40</DebuggingPaused>
-    <ProcessExited />
+    <Paused>Breakpoint_Tests.cs:17,4-17,40</Paused>
+    <Exited />
     <Breakpoint1>
       <Breakpoint
-        Enabled="True"
-        FileName="Breakpoint_Tests.cs"
-        Line="14"
-        OriginalLocation="Breakpoint_Tests.cs:14,4-14,49" />
+        IsEnabled="True"
+        Line="14" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
-        Enabled="True"
-        FileName="Breakpoint_Tests.cs"
-        Line="15"
-        OriginalLocation="Breakpoint_Tests.cs:16,4-16,49" />
+        IsEnabled="True"
+        Line="15" />
     </Breakpoint2>
   </Test>
 </DebuggerTests>

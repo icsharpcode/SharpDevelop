@@ -22,13 +22,13 @@
 				id="ManagePackages"
 				label="Manage Packages..."
 				insertafter="AddWebReference"
-				insertbefore="ShowServiceInBrowser"
+				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 			<MenuItem
 				id="RestorePackages"
 				label="Restore Packages"
 				insertafter="AddWebReference"
-				insertbefore="ShowServiceInBrowser"
+				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.RestorePackagesCommand"/>
 		</Condition>
 	</Path>

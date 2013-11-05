@@ -1,14 +1,14 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.SharpDevelop.Dom;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Editor;
+
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -42,55 +42,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public event EventHandler RedrawRequested;
 		
-		[Obsolete("Please provide a TextDocument; this is necessary so that the bookmarks can move when lines are inserted/removed")]
-		public void UpdateClassMemberBookmarks(ParseInformation parseInfo)
-		{
-			UpdateClassMemberBookmarks(parseInfo, null);
-		}
-		
-		public void UpdateClassMemberBookmarks(ParseInformation parseInfo, TextDocument document)
+		public void UpdateClassMemberBookmarks(IUnresolvedFile parseInfo, IDocument document)
 		{
 			for (int i = bookmarks.Count - 1; i >= 0; i--) {
-				if (IsClassMemberBookmark(bookmarks[i]))
+				if (bookmarks[i] is EntityBookmark)
 					bookmarks.RemoveAt(i);
 			}
 			if (parseInfo == null)
 				return;
-			foreach (IClass c in parseInfo.CompilationUnit.Classes) {
-				AddClassMemberBookmarks(c, document);
+			foreach (var c in parseInfo.TopLevelTypeDefinitions) {
+				AddEntityBookmarks(c, document);
 			}
 		}
 		
-		void AddClassMemberBookmarks(IClass c, TextDocument document)
+		void AddEntityBookmarks(IUnresolvedTypeDefinition c, IDocument document)
 		{
 			if (c.IsSynthetic) return;
 			if (!c.Region.IsEmpty) {
-				bookmarks.Add(new ClassBookmark(c, document));
+				bookmarks.Add(new EntityBookmark(c, document));
 			}
-			foreach (IClass innerClass in c.InnerClasses) {
-				AddClassMemberBookmarks(innerClass, document);
+			foreach (var innerClass in c.NestedTypes) {
+				AddEntityBookmarks(innerClass, document);
 			}
-			foreach (IMethod m in c.Methods) {
+			foreach (var m in c.Members) {
 				if (m.Region.IsEmpty || m.IsSynthetic) continue;
-				bookmarks.Add(new ClassMemberBookmark(m, document));
+				bookmarks.Add(new EntityBookmark(m, document));
 			}
-			foreach (IProperty p in c.Properties) {
-				if (p.Region.IsEmpty || p.IsSynthetic) continue;
-				bookmarks.Add(new ClassMemberBookmark(p, document));
-			}
-			foreach (IField f in c.Fields) {
-				if (f.Region.IsEmpty || f.IsSynthetic) continue;
-				bookmarks.Add(new ClassMemberBookmark(f, document));
-			}
-			foreach (IEvent e in c.Events) {
-				if (e.Region.IsEmpty || e.IsSynthetic) continue;
-				bookmarks.Add(new ClassMemberBookmark(e, document));
-			}
-		}
-		
-		static bool IsClassMemberBookmark(IBookmark b)
-		{
-			return b is ClassMemberBookmark || b is ClassBookmark;
 		}
 	}
 }

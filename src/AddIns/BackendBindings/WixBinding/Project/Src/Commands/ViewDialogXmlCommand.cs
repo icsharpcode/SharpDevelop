@@ -32,11 +32,11 @@ namespace ICSharpCode.WixBinding
 		static void ViewDialogXml(string fileName, string dialogId)
 		{
 			// Find dialog xml in text.
-			Location location = GetDialogElementLocation(fileName, dialogId);
+			TextLocation location = GetDialogElementLocation(fileName, dialogId);
 			
 			// Jump to text.
 			if (!location.IsEmpty) {
-				FileService.JumpToFilePosition(fileName, location.Y, location.X);
+				FileService.JumpToFilePosition(fileName, location.Line, location.Column);
 			} else {
 				MessageService.ShowErrorFormatted(StringParser.Parse("${res:ICSharpCode.WixBinding.ViewDialogXml.DialogIdNotFoundMessage}"), new string[] {dialogId, Path.GetFileName(fileName)});
 			}
@@ -45,7 +45,7 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Gets the dialog element location given the filename and the dialog id.
 		/// </summary>
-		static Location GetDialogElementLocation(string fileName, string id)
+		static TextLocation GetDialogElementLocation(string fileName, string id)
 		{
 			try {
 				WorkbenchTextFileReader workbenchTextFileReader = new WorkbenchTextFileReader();
@@ -56,7 +56,7 @@ namespace ICSharpCode.WixBinding
 			} catch (XmlException ex) {
 				WixBindingService.ShowErrorInErrorList(fileName, ex);
 			}
-			return Location.Empty;
+			return TextLocation.Empty;
 		}
 	}
 }

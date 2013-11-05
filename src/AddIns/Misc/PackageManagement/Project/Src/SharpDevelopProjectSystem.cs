@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -230,7 +232,7 @@ namespace ICSharpCode.PackageManagement
 		public bool FileExistsInProject(string path)
 		{
 			string fullPath = GetFullPath(path);
-			return project.IsFileInProject(fullPath);
+			return project.IsFileInProject(FileName.Create(fullPath));
 		}
 		
 		void AddFileProjectItemToProject(string path)
@@ -244,7 +246,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			ItemType itemType = project.GetDefaultItemType(path);
 			var fileItem = new FileProjectItem(project, itemType);
-			fileItem.FileName = path;
+			fileItem.FileName = FileName.Create(path);
 			fileItem.CustomTool = projectService.GetDefaultCustomToolForFileName(fileItem);
 			return fileItem;
 		}

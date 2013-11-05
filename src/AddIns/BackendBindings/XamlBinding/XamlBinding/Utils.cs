@@ -1,17 +1,10 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Xml;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.XmlEditor;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -30,7 +23,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public static string GetNamespacePrefix(string namespaceUri, XamlContext context)
 		{
-			var item = context.XmlnsDefinitions.FirstOrDefault(i => i.Value == namespaceUri);
+			var item = context.XmlnsDefinitions.FirstOrDefault(i => i.Value.XmlNamespace == namespaceUri);
 
 			if (item.Key != null)
 				return item.Key;
@@ -69,12 +62,12 @@ namespace ICSharpCode.XamlBinding
 			return offset + col;
 		}
 		
-		public static Location GetLocationInfoFromOffset(string text, int offset)
+		public static TextLocation GetLocationInfoFromOffset(string text, int offset)
 		{
 			string[] lines = text.Substring(0, MinMax(offset, 0, text.Length)).Split('\n');
 			string line = lines.LastOrDefault() ?? string.Empty;
 			
-			return new Location(line.Length + 1, lines.Length);
+			return new TextLocation(lines.Length, line.Length + 1);
 		}
 		
 		/// <summary>
@@ -128,6 +121,26 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return tmp;
+		}
+		
+		public static string LookForTargetTypeValue(XamlContext context, out bool isExplicit, params string[] elementName) {
+			var ancestors = context.Ancestors;
+			
+			isExplicit = false;
+			
+			for (int i = 0; i < ancestors.Count; i++) {
+				if (ancestors[i].LocalName == "Style" && XamlConst.WpfXamlNamespaces.Contains(ancestors[i].Namespace)) {
+					isExplicit = true;
+					return ancestors[i].GetAttributeValue("TargetType") ?? string.Empty;
+				}
+				
+				if (ancestors[i].Name.EndsWithAny(elementName.Select(s => "." + s + "s"), StringComparison.Ordinal)
+				    && !ancestors[i].Name.StartsWith("Style.", StringComparison.Ordinal)) {
+					return ancestors[i].Name.Remove(ancestors[i].Name.IndexOf('.'));
+				}
+			}
+			
+			return null;
 		}
 	}
 }

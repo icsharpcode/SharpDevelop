@@ -2,11 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Collections.Generic;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Commands
 {
@@ -15,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		public override void Run()
 		{
 			SortOptionsDialog dlg = new SortOptionsDialog();
-			dlg.Owner = WorkbenchSingleton.MainWindow;
+			dlg.Owner = SD.Workbench.MainWindow;
 			if (dlg.ShowDialog() == true) {
 				StringComparer comparer = SortOptions.CaseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase;
 				if (SortOptions.IgnoreTrailingWhitespaces)
@@ -23,15 +26,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 				if (SortOptions.SortDirection == SortDirection.Descending)
 					comparer = new DescendingStringComparer(comparer);
 				
-				ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-				if (provider != null) {
-					ITextEditor editor = provider.TextEditor;
+				ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+				if (editor != null) {
 					if (editor.SelectionLength > 0) {
-						int start = editor.Document.GetLineForOffset(editor.SelectionStart).LineNumber;
-						int end = editor.Document.GetLineForOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
+						int start = editor.Document.GetLineByOffset(editor.SelectionStart).LineNumber;
+						int end = editor.Document.GetLineByOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
 						SortLines(editor.Document, start, end, comparer, SortOptions.RemoveDuplicates);
 					} else {
-						SortLines(editor.Document, 1, editor.Document.TotalNumberOfLines, comparer, SortOptions.RemoveDuplicates);
+						SortLines(editor.Document, 1, editor.Document.LineCount, comparer, SortOptions.RemoveDuplicates);
 					}
 				}
 			}
@@ -41,7 +43,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		{
 			List<string> lines = new List<string>();
 			for (int i = startLine; i <= endLine; ++i) {
-				IDocumentLine line = document.GetLine(i);
+				IDocumentLine line = document.GetLineByNumber(i);
 				lines.Add(document.GetText(line.Offset, line.Length));
 			}
 			
@@ -53,13 +55,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 			
 			using (document.OpenUndoGroup()) {
 				for (int i = 0; i < lines.Count; ++i) {
-					IDocumentLine line = document.GetLine(startLine + i);
+					IDocumentLine line = document.GetLineByNumber(startLine + i);
 					document.Replace(line.Offset, line.Length, lines[i]);
 				}
 				
 				// remove removed duplicate lines
 				for (int i = startLine + lines.Count; i <= endLine; ++i) {
-					IDocumentLine line = document.GetLine(startLine + lines.Count);
+					IDocumentLine line = document.GetLineByNumber(startLine + lines.Count);
 					document.Remove(line.Offset, line.TotalLength);
 				}
 			}

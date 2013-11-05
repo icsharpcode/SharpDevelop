@@ -18,9 +18,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// Non-standard web references folder name.
 	/// </summary>
 	[TestFixture]
-	public class RenamedWebReferencesFolderTest
+	public class RenamedWebReferencesFolderTest : SDTestFixtureBase
 	{
-		SD.WebReference webReference;
+		Gui.WebReference webReference;
 		DiscoveryClientProtocol protocol;
 		MSBuildBasedProject project;
 		WebReferenceUrl webReferenceUrl;
@@ -29,11 +29,11 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		string proxyNamespace = "WebReferenceNamespace";
 		string updateFromUrl = "http://localhost/test.asmx";
 		
-		[TestFixtureSetUp]
-		public void SetupFixture()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			project = WebReferenceTestHelper.CreateTestProject("C#");
-			project.FileName = "C:\\Projects\\Web.csproj";
+			project.FileName = FileName.Create("C:\\Projects\\Web.csproj");
 			WebReferencesProjectItem item = new WebReferencesProjectItem(project);
 			item.Include = "Foo\\";
 			ProjectService.AddProjectItem(project, item);
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			WebReferenceTestHelper.InitializeProjectBindings();
 			
-			webReference = new SD.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
+			webReference = new Gui.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
 			webReferenceUrl = (WebReferenceUrl)WebReferenceTestHelper.GetProjectItem(webReference.Items, ItemType.WebReferenceUrl);
 		}
 		

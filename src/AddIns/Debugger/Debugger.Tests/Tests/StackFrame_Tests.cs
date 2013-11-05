@@ -54,10 +54,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="StackFrame_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break StackFrame_Tests.cs:13,5-13,41</DebuggingPaused>
+    <Paused>StackFrame_Tests.cs:13,5-13,41</Paused>
     <Loop1>
       <Item>
         <LocalVariable
@@ -72,7 +72,7 @@ namespace Debugger.Tests {
           Value="10" />
       </Item>
     </Loop1>
-    <DebuggingPaused>Break StackFrame_Tests.cs:16,5-16,41</DebuggingPaused>
+    <Paused>StackFrame_Tests.cs:16,5-16,41</Paused>
     <Loop2>
       <Item>
         <LocalVariable
@@ -87,7 +87,7 @@ namespace Debugger.Tests {
           Value="20" />
       </Item>
     </Loop2>
-    <DebuggingPaused>Break StackFrame_Tests.cs:19,4-19,40</DebuggingPaused>
+    <Paused>StackFrame_Tests.cs:19,4-19,40</Paused>
     <None>
       <Item>
         <LocalVariable
@@ -96,7 +96,7 @@ namespace Debugger.Tests {
           Value="0" />
       </Item>
     </None>
-    <DebuggingPaused>Break StackFrame_Tests.cs:23,4-23,40</DebuggingPaused>
+    <Paused>StackFrame_Tests.cs:23,4-23,40</Paused>
     <NewVarDefined>
       <Item>
         <LocalVariable
@@ -105,7 +105,7 @@ namespace Debugger.Tests {
           Value="30" />
       </Item>
     </NewVarDefined>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

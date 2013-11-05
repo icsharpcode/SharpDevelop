@@ -3,10 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -21,8 +22,8 @@ namespace ICSharpCode.PackageManagement
 			: this(
 				PackageManagementServices.ProjectTemplatePackageRepositoryCache,
 				PackageManagementServices.ProjectService,
-				ServiceManager.Instance.MessageService,
-				ServiceManager.Instance.LoggingService)
+				SD.MessageService,
+				SD.Log)
 		{
 		}
 		
@@ -64,9 +65,8 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<MSBuildBasedProject> GetCreatedProjects()
 		{
-			var createInfo = Owner as ProjectCreateInformation;
-			var newCreatedProjects = new NewProjectsCreated(createInfo, projectService);
-			return newCreatedProjects.GetProjects();
+			var createInfo = Owner as ProjectTemplateResult;
+			return createInfo != null ? createInfo.NewProjects.OfType<MSBuildBasedProject>() : Enumerable.Empty<MSBuildBasedProject>();
 		}
 		
 		IPackageReferencesForProject CreatePackageReferencesForProject(MSBuildBasedProject project)

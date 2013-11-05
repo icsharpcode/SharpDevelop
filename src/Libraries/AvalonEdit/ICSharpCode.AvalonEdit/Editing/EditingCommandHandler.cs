@@ -8,14 +8,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -47,12 +46,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		static EditingCommandHandler()
 		{
-			CommandBindings.Add(new CommandBinding(ApplicationCommands.Delete, OnDelete(ApplicationCommands.NotACommand), CanDelete));
-			AddBinding(EditingCommands.Delete, ModifierKeys.None, Key.Delete, OnDelete(EditingCommands.SelectRightByCharacter));
-			AddBinding(EditingCommands.DeleteNextWord, ModifierKeys.Control, Key.Delete, OnDelete(EditingCommands.SelectRightByWord));
-			AddBinding(EditingCommands.Backspace, ModifierKeys.None, Key.Back, OnDelete(EditingCommands.SelectLeftByCharacter));
+			CommandBindings.Add(new CommandBinding(ApplicationCommands.Delete, OnDelete(CaretMovementType.None), CanDelete));
+			AddBinding(EditingCommands.Delete, ModifierKeys.None, Key.Delete, OnDelete(CaretMovementType.CharRight));
+			AddBinding(EditingCommands.DeleteNextWord, ModifierKeys.Control, Key.Delete, OnDelete(CaretMovementType.WordRight));
+			AddBinding(EditingCommands.Backspace, ModifierKeys.None, Key.Back, OnDelete(CaretMovementType.Backspace));
 			InputBindings.Add(TextAreaDefaultInputHandler.CreateFrozenKeyBinding(EditingCommands.Backspace, ModifierKeys.Shift, Key.Back)); // make Shift-Backspace do the same as plain backspace
-			AddBinding(EditingCommands.DeletePreviousWord, ModifierKeys.Control, Key.Back, OnDelete(EditingCommands.SelectLeftByWord));
+			AddBinding(EditingCommands.DeletePreviousWord, ModifierKeys.Control, Key.Back, OnDelete(CaretMovementType.WordLeft));
 			AddBinding(EditingCommands.EnterParagraphBreak, ModifierKeys.None, Key.Enter, OnEnter);
 			AddBinding(EditingCommands.EnterLineBreak, ModifierKeys.Shift, Key.Enter, OnEnter);
 			AddBinding(EditingCommands.TabForward, ModifierKeys.None, Key.Tab, OnTab);
@@ -226,34 +225,28 @@ namespace ICSharpCode.AvalonEdit.Editing
 		#endregion
 		
 		#region Delete
-		static ExecutedRoutedEventHandler OnDelete(RoutedUICommand selectingCommand)
+		static ExecutedRoutedEventHandler OnDelete(CaretMovementType caretMovement)
 		{
 			return (target, args) => {
 				TextArea textArea = GetTextArea(target);
 				if (textArea != null && textArea.Document != null) {
-					// call BeginUpdate before running the 'selectingCommand'
-					// so that undoing the delete does not select the deleted character
-					using (textArea.Document.RunUpdate()) {
-						if (textArea.Selection.IsEmpty) {
-							TextViewPosition oldCaretPosition = textArea.Caret.Position;
-							if (textArea.Caret.IsInVirtualSpace && selectingCommand == EditingCommands.SelectRightByCharacter)
-								EditingCommands.SelectRightByWord.Execute(args.Parameter, textArea);
-							else
-								selectingCommand.Execute(args.Parameter, textArea);
-							bool hasSomethingDeletable = false;
-							foreach (ISegment s in textArea.Selection.Segments) {
-								if (textArea.GetDeletableSegments(s).Length > 0) {
-									hasSomethingDeletable = true;
-									break;
-								}
-							}
-							if (!hasSomethingDeletable) {
-								// If nothing in the selection is deletable; then reset caret+selection
-								// to the previous value. This prevents the caret from moving through read-only sections.
-								textArea.Caret.Position = oldCaretPosition;
-								textArea.ClearSelection();
-							}
-						}
+					if (textArea.Selection.IsEmpty) {
+						TextViewPosition startPos = textArea.Caret.Position;
+						bool enableVirtualSpace = textArea.Options.EnableVirtualSpace;
+						// When pressing delete; don't move the caret further into virtual space - instead delete the newline
+						if (caretMovement == CaretMovementType.CharRight)
+							enableVirtualSpace = false;
+						double desiredXPos = textArea.Caret.DesiredXPos;
+						TextViewPosition endPos = CaretNavigationCommandHandler.GetNewCaretPosition(
+							textArea.TextView, startPos, caretMovement, enableVirtualSpace, ref desiredXPos);
+						// GetNewCaretPosition may return (0,0) as new position,
+						// thus we need to validate endPos before using it in the selection.
+						if (endPos.Line < 1 || endPos.Column < 1)
+							endPos = new TextViewPosition(Math.Max(endPos.Line, 1), Math.Max(endPos.Column, 1));
+						// Don't select the text to be deleted; just reuse the ReplaceSelectionWithText logic
+						var sel = new SimpleSelection(textArea, startPos, endPos);
+						sel.ReplaceSelectionWithText(string.Empty);
+					} else {
 						textArea.RemoveSelectedText();
 					}
 					textArea.Caret.BringCaretToView();
@@ -426,8 +419,18 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-				textArea.Selection = Selection.Create(textArea, currentLine.Offset, currentLine.Offset + currentLine.TotalLength);
+				int firstLineIndex, lastLineIndex;
+				if (textArea.Selection.Length == 0) {
+					// There is no selection, simply delete current line
+					firstLineIndex = lastLineIndex = textArea.Caret.Line;
+				} else {
+					// There is a selection, remove all lines affected by it (use Min/Max to be independent from selection direction)
+					firstLineIndex = Math.Min(textArea.Selection.StartPosition.Line, textArea.Selection.EndPosition.Line);
+					lastLineIndex = Math.Max(textArea.Selection.StartPosition.Line, textArea.Selection.EndPosition.Line);
+				}
+				DocumentLine startLine = textArea.Document.GetLineByNumber(firstLineIndex);
+				DocumentLine endLine = textArea.Document.GetLineByNumber(lastLineIndex);
+				textArea.Selection = Selection.Create(textArea, startLine.Offset, endLine.Offset + endLine.TotalLength);
 				textArea.RemoveSelectedText();
 				args.Handled = true;
 			}

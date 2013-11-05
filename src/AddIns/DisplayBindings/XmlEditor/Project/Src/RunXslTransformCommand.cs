@@ -57,7 +57,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		static XmlView GetAssociatedXmlView(string stylesheetFileName)
 		{
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (IViewContent content in SD.Workbench.ViewContentCollection) {
 				XmlView view = XmlView.ForViewContent(content);
 				if (view != null && !string.IsNullOrEmpty(view.StylesheetFileName)) {
 					if (FileUtility.IsEqualFileName(view.StylesheetFileName, stylesheetFileName)) {
@@ -70,15 +70,7 @@ namespace ICSharpCode.XmlEditor
 		
 		static string GetStylesheetContent(string fileName)
 		{
-			// File already open?
-			ITextEditorProvider view = FileService.GetOpenFile(fileName) as ITextEditorProvider;
-			if (view != null) {
-				return view.TextEditor.Document.Text;
-			}
-			
-			// Read in file contents.
-			StreamReader reader = new StreamReader(fileName, true);
-			return reader.ReadToEnd();
+			return SD.FileService.GetFileContent(fileName).Text;
 		}
 	}
 }

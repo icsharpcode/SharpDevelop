@@ -8,7 +8,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public static class ServiceReferenceOptions
 	{
-		static Properties properties = PropertyService.Get("ServiceReferenceOptions", new Properties());
+		static Properties properties = PropertyService.NestedProperties("ServiceReferenceOptions");
 		
 		public static bool HasSvcUtilPath {
 			get { return !String.IsNullOrEmpty(SvcUtilPath); }

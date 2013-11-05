@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.AvalonEdit</RootNamespace>
     <AssemblyName>ICSharpCode.AvalonEdit</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -23,7 +23,8 @@
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <DocumentationFile>..\..\..\..\bin\ICSharpCode.AvalonEdit.xml</DocumentationFile>
     <NoWarn>1607</NoWarn>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -93,17 +94,18 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CodeCompletion\ICompletionData.cs" />
+    <Compile Include="CodeCompletion\Images\CompletionImage.cs" />
     <Compile Include="CodeCompletion\InsightWindow.cs" />
     <Compile Include="CodeCompletion\IOverloadProvider.cs" />
     <Compile Include="CodeCompletion\OverloadInsightWindow.cs" />
     <Compile Include="CodeCompletion\OverloadViewer.cs" />
-    <Compile Include="Document\ChangeTrackingCheckpoint.cs" />
     <Compile Include="Document\DocumentChangeOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
+    <Compile Include="Document\DocumentTextWriter.cs" />
     <Compile Include="Document\ILineTracker.cs" />
-    <Compile Include="Document\ISegment.cs" />
-    <Compile Include="Document\ITextSource.cs" />
+    <Compile Include="Document\SimpleSegment.cs" />
+    <Compile Include="Document\RopeTextSource.cs" />
     <Compile Include="Document\IUndoableOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
@@ -123,7 +125,6 @@
     <Compile Include="Document\TextAnchorTree.cs">
       <DependentUpon>TextAnchor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Document\TextLocation.cs" />
     <Compile Include="Document\TextSegment.cs" />
     <Compile Include="Document\TextUtilities.cs" />
     <Compile Include="Document\UndoOperationGroup.cs">
@@ -150,7 +151,6 @@
     <Compile Include="Editing\ImeNativeWrapper.cs" />
     <Compile Include="Editing\SelectionSegment.cs" />
     <Compile Include="Editing\ImeSupport.cs" />
-    <Compile Include="Folding\AbstractFoldingStrategy.cs" />
     <Compile Include="Folding\FoldingElementGenerator.cs" />
     <Compile Include="Folding\FoldingManager.cs" />
     <Compile Include="Folding\FoldingMargin.cs" />
@@ -194,8 +194,11 @@
     <Compile Include="Highlighting\HighlightingColorizer.cs" />
     <Compile Include="Highlighting\HighlightingDefinitionInvalidException.cs" />
     <Compile Include="Highlighting\HighlightingDefinitionTypeConverter.cs" />
+    <Compile Include="Highlighting\HighlightingEngine.cs" />
     <Compile Include="Highlighting\HighlightingManager.cs" />
     <Compile Include="Highlighting\HtmlClipboard.cs" />
+    <Compile Include="Highlighting\HtmlOptions.cs" />
+    <Compile Include="Highlighting\HtmlRichTextWriter.cs" />
     <Compile Include="Highlighting\IHighlighter.cs" />
     <Compile Include="Highlighting\IHighlightingDefinition.cs" />
     <Compile Include="Highlighting\HighlightingRule.cs" />
@@ -204,6 +207,10 @@
     <Compile Include="Highlighting\HighlightingSpan.cs" />
     <Compile Include="Highlighting\IHighlightingDefinitionReferenceResolver.cs">
     </Compile>
+    <Compile Include="Highlighting\RichText.cs" />
+    <Compile Include="Highlighting\RichTextColorizer.cs" />
+    <Compile Include="Highlighting\RichTextModel.cs" />
+    <Compile Include="Highlighting\RichTextModelWriter.cs" />
     <Compile Include="Highlighting\Xshd\HighlightingLoader.cs" />
     <Compile Include="Highlighting\Xshd\IXshdVisitor.cs" />
     <Compile Include="Highlighting\Xshd\SaveXshdVisitor.cs" />
@@ -344,22 +351,19 @@
     </Compile>
     <Compile Include="TextViewPosition.cs" />
     <Compile Include="Utils\Boxes.cs" />
-    <Compile Include="Utils\BusyManager.cs">
-      <DependentUpon>ObserveAddRemoveCollection.cs</DependentUpon>
-    </Compile>
     <Compile Include="Utils\CharRope.cs" />
     <Compile Include="Utils\CompressingTreeList.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Utils\DelayedEvents.cs" />
-    <Compile Include="Utils\CallbackOnDispose.cs" />
     <Compile Include="Utils\Deque.cs" />
     <Compile Include="Utils\Empty.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\FileReader.cs" />
-    <Compile Include="Utils\ImmutableStack.cs" />
     <Compile Include="Utils\NullSafeCollection.cs" />
     <Compile Include="Utils\ObserveAddRemoveCollection.cs" />
+    <Compile Include="Utils\PlainRichTextWriter.cs" />
     <Compile Include="Utils\PropertyChangedWeakEventManager.cs" />
+    <Compile Include="Utils\RichTextWriter.cs" />
     <Compile Include="Utils\Rope.cs" />
     <Compile Include="Utils\RopeNode.cs" />
     <Compile Include="Utils\RopeTextReader.cs" />
@@ -370,41 +374,6 @@
     <Compile Include="Utils\ThrowUtil.cs" />
     <Compile Include="Utils\Win32.cs" />
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
-    <Compile Include="Xml\AbstractAXmlVisitor.cs" />
-    <Compile Include="Xml\AXmlAttribute.cs" />
-    <Compile Include="Xml\AXmlAttributeCollection.cs" />
-    <Compile Include="Xml\AXmlContainer.cs" />
-    <Compile Include="Xml\AXmlDocument.cs" />
-    <Compile Include="Xml\AXmlElement.cs" />
-    <Compile Include="Xml\AXmlObject.cs" />
-    <Compile Include="Xml\AXmlObjectCollection.cs" />
-    <Compile Include="Xml\AXmlObjectEventArgs.cs" />
-    <Compile Include="Xml\AXmlParser.cs" />
-    <Compile Include="Xml\AXmlTag.cs" />
-    <Compile Include="Xml\AXmlText.cs" />
-    <Compile Include="Xml\CanonicalPrintAXmlVisitor.cs" />
-    <Compile Include="Xml\InternalException.cs" />
-    <Compile Include="Xml\TrackedSegmentCollection.cs">
-      <DependentUpon>AXmlParser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Xml\ExtensionMethods.cs" />
-    <Compile Include="Xml\FilteredCollection.cs" />
-    <Compile Include="Xml\IAXmlVisitor.cs" />
-    <Compile Include="Xml\MergedCollection.cs" />
-    <Compile Include="Xml\PrettyPrintAXmlVisitor.cs" />
-    <Compile Include="Xml\SyntaxError.cs" />
-    <Compile Include="Xml\TagMatchingHeuristics.cs">
-      <DependentUpon>AXmlParser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Xml\TagReader.cs">
-      <DependentUpon>AXmlParser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Xml\TextType.cs">
-      <DependentUpon>AXmlText.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Xml\TokenReader.cs">
-      <DependentUpon>AXmlParser.cs</DependentUpon>
-    </Compile>
     <Resource Include="themes\RightArrow.cur" />
     <EmbeddedResource Include="Highlighting\Resources\ASPX.xshd" />
     <EmbeddedResource Include="Highlighting\Resources\Boo.xshd" />
@@ -439,11 +408,49 @@
     <EmbeddedResource Include="Highlighting\Resources\CSS-Mode.xshd" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Search" />
+    <ProjectReference Include="..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Search\next.png" />
     <Resource Include="Search\prev.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CodeCompletion\Images" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CodeCompletion\Images\Class.png" />
+    <Resource Include="CodeCompletion\Images\Constructor.png" />
+    <Resource Include="CodeCompletion\Images\Delegate.png" />
+    <Resource Include="CodeCompletion\Images\Enum.png" />
+    <Resource Include="CodeCompletion\Images\EnumValue.png" />
+    <Resource Include="CodeCompletion\Images\Event.png" />
+    <Resource Include="CodeCompletion\Images\ExtensionMethod.png" />
+    <Resource Include="CodeCompletion\Images\Field.png" />
+    <Resource Include="CodeCompletion\Images\FieldReadOnly.png" />
+    <Resource Include="CodeCompletion\Images\Indexer.png" />
+    <Resource Include="CodeCompletion\Images\Interface.png" />
+    <Resource Include="CodeCompletion\Images\Literal.png" />
+    <Resource Include="CodeCompletion\Images\Method.png" />
+    <Resource Include="CodeCompletion\Images\NameSpace.png" />
+    <Resource Include="CodeCompletion\Images\Operator.png" />
+    <Resource Include="CodeCompletion\Images\OverlayInternal.png" />
+    <Resource Include="CodeCompletion\Images\OverlayPrivate.png" />
+    <Resource Include="CodeCompletion\Images\OverlayProtected.png" />
+    <Resource Include="CodeCompletion\Images\OverlayProtectedInternal.png" />
+    <Resource Include="CodeCompletion\Images\OverlayStatic.png" />
+    <Resource Include="CodeCompletion\Images\PInvokeMethod.png" />
+    <Resource Include="CodeCompletion\Images\Property.png" />
+    <Resource Include="CodeCompletion\Images\StaticClass.png" />
+    <Resource Include="CodeCompletion\Images\Struct.png" />
+    <Resource Include="CodeCompletion\Images\VirtualMethod.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Highlighting\Resources\PowerShell.xshd" />

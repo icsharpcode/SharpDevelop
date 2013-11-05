@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core
 {
@@ -16,7 +18,7 @@ namespace ICSharpCode.Core
 	/// for you, provided you use it like this:
 	/// 1. Create a new CoreStartup instance
 	/// 2. (Optional) Set the values of the properties.
-	/// 3. Call <see cref="StartCoreServices()"/>.
+	/// 3. Call <see cref="StartCoreServices"/>.
 	/// 4. Add "preinstalled" AddIns using <see cref="AddAddInsFromDirectory"/>
 	///    and <see cref="AddAddInFile"/>.
 	/// 5. (Optional) Call <see cref="ConfigureExternalAddIns"/> to support
@@ -30,57 +32,8 @@ namespace ICSharpCode.Core
 		List<string> addInFiles = new List<string>();
 		List<string> disabledAddIns = new List<string>();
 		bool externalAddInsConfigured;
-		string propertiesName;
-		string configDirectory;
-		string dataDirectory;
+		AddInTreeImpl addInTree;
 		string applicationName;
-		
-		/// <summary>
-		/// Sets the name used for the properties (only name, without path or extension).
-		/// Must be set before StartCoreServices() is called.
-		/// </summary>
-		public string PropertiesName {
-			get {
-				return propertiesName;
-			}
-			set {
-				if (value == null || value.Length == 0)
-					throw new ArgumentNullException("value");
-				propertiesName = value;
-			}
-		}
-		
-		/// <summary>
-		/// Sets the directory name used for the property service.
-		/// Must be set before StartCoreServices() is called.
-		/// Use null to use the default path "%ApplicationData%\%ApplicationName%",
-		/// where %ApplicationData% is the system setting for
-		/// "c:\documents and settings\username\application data"
-		/// and %ApplicationName% is the application name you used in the
-		/// CoreStartup constructor call.
-		/// </summary>
-		public string ConfigDirectory {
-			get {
-				return configDirectory;
-			}
-			set {
-				configDirectory = value;
-			}
-		}
-		
-		/// <summary>
-		/// Sets the data directory used to load resources.
-		/// Must be set before StartCoreServices() is called.
-		/// Use null to use the default path "ApplicationRootPath\data".
-		/// </summary>
-		public string DataDirectory {
-			get {
-				return dataDirectory;
-			}
-			set {
-				dataDirectory = value;
-			}
-		}
 		
 		/// <summary>
 		/// Creates a new CoreStartup instance.
@@ -95,9 +48,6 @@ namespace ICSharpCode.Core
 			if (applicationName == null)
 				throw new ArgumentNullException("applicationName");
 			this.applicationName = applicationName;
-			propertiesName = applicationName + "Properties";
-			MessageService.DefaultMessageBoxTitle = applicationName;
-			MessageService.ProductName = applicationName;
 		}
 		
 		/// <summary>
@@ -170,20 +120,25 @@ namespace ICSharpCode.Core
 		/// Initializes the AddIn system.
 		/// This loads the AddIns that were added to the list,
 		/// then it executes the <see cref="ICommand">commands</see>
-		/// in <c>/Workspace/Autostart</c>.
+		/// in <c>/SharpDevelop/Autostart</c>.
 		/// </summary>
 		public void RunInitialization()
 		{
-			AddInTree.Load(addInFiles, disabledAddIns);
+			addInTree.Load(addInFiles, disabledAddIns);
+			
+			// perform service registration
+			var container = (IServiceContainer)ServiceSingleton.ServiceProvider.GetService(typeof(IServiceContainer));
+			if (container != null)
+				addInTree.BuildItems<object>("/SharpDevelop/Services", container, false);
 			
 			// run workspace autostart commands
 			LoggingService.Info("Running autostart commands...");
-			foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/Autostart", null, false)) {
+			foreach (ICommand command in addInTree.BuildItems<ICommand>("/SharpDevelop/Autostart", null, false)) {
 				try {
-					command.Run();
+					command.Execute(null);
 				} catch (Exception ex) {
 					// allow startup to continue if some commands fail
-					MessageService.ShowException(ex);
+					ServiceSingleton.GetRequiredService<IMessageService>().ShowException(ex);
 				}
 			}
 		}
@@ -192,16 +147,17 @@ namespace ICSharpCode.Core
 		/// Starts the core services.
 		/// This initializes the PropertyService and ResourceService.
 		/// </summary>
-		public void StartCoreServices()
+		public void StartCoreServices(IPropertyService propertyService)
 		{
-			if (configDirectory == null)
-				configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				                               applicationName);
-			PropertyService.InitializeService(configDirectory,
-			                                  dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data"),
-			                                  propertiesName);
-			PropertyService.Load();
-			ResourceService.InitializeService(Path.Combine(PropertyService.DataDirectory, "resources"));
+			var container = ServiceSingleton.GetRequiredService<IServiceContainer>();
+			var applicationStateInfoService = new ApplicationStateInfoService();
+			addInTree = new AddInTreeImpl(applicationStateInfoService);
+			
+			container.AddService(typeof(IPropertyService), propertyService);
+			container.AddService(typeof(IResourceService), new ResourceServiceImpl(
+				Path.Combine(propertyService.DataDirectory, "resources"), propertyService));
+			container.AddService(typeof(IAddInTree), addInTree);
+			container.AddService(typeof(ApplicationStateInfoService), applicationStateInfoService);
 			StringParser.RegisterStringTagProvider(new AppNameProvider { appName = applicationName });
 		}
 		

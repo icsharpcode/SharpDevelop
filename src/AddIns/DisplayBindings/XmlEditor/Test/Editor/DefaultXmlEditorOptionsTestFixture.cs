@@ -2,11 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using Rhino.Mocks;
 using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Editor
@@ -33,15 +36,17 @@ namespace XmlEditor.Tests.Editor
 		
 		DefaultXmlSchemaFileAssociations CreateDefaultXmlSchemaFileExtensions()
 		{
-			string addinXml = "<AddIn name     = 'Xml Editor'\r\n" +
-       								"author      = ''\r\n" +
-       								"copyright   = 'prj:///doc/copyright.txt'\r\n" +
-       								"description = ''\r\n" +
-       								"addInManagerHidden = 'preinstalled'>\r\n" +
-								"</AddIn>";
+			string addinXml =
+				"<AddIn name     = 'Xml Editor'\r\n" +
+				"       author      = ''\r\n" +
+				"       copyright   = 'prj:///doc/copyright.txt'\r\n" +
+				"       description = ''\r\n" +
+				"       addInManagerHidden = 'preinstalled'>\r\n" +
+				"</AddIn>";
 
 			using (StringReader reader = new StringReader(addinXml)) {
-				AddIn addin = AddIn.Load(reader);
+				var addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+				AddIn addin = AddIn.Load(addInTree, reader);
 				
 				AddInTreeNode addinTreeNode = new AddInTreeNode();
 
@@ -104,7 +109,7 @@ namespace XmlEditor.Tests.Editor
 		{
 			options.PropertyChanged += OptionsPropertyChanged;
 			properties.Set(XmlEditorOptions.ShowAttributesWhenFoldedPropertyName, true);
-			Assert.AreEqual(XmlEditorOptions.ShowAttributesWhenFoldedPropertyName, propertyChangedEventArgs.Key);
+			Assert.AreEqual(XmlEditorOptions.ShowAttributesWhenFoldedPropertyName, propertyChangedEventArgs.PropertyName);
 		}
 		
 		void OptionsPropertyChanged(object source, PropertyChangedEventArgs e)

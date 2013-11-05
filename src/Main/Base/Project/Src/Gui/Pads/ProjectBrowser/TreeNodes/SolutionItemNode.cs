@@ -4,37 +4,36 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
 	public class SolutionItemNode : CustomFolderNode
 	{
-		Solution     solution;
-		SolutionItem item;
+		ISolution     solution;
+		ISolutionFileItem item;
 		
-		public SolutionItem SolutionItem {
+		public ISolutionFileItem SolutionItem {
 			get {
 				return item;
 			}
 		}
 		
-		public string FileName {
+		public FileName FileName {
 			get {
-				return Path.Combine(solution.Directory, item.Location);
+				return item.FileName;
 			}
 		}
 		
-		public SolutionItemNode(Solution solution, SolutionItem item)
+		public SolutionItemNode(ISolutionFileItem item)
 		{
 			sortOrder = 2;
 			canLabelEdit = true;
 			
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionItemNode";
 			
-			this.solution = solution;
+			this.solution = item.ParentSolution;
 			this.item = item;
 			this.Text = Path.GetFileName(FileName);
 			SetIcon(IconService.GetImageForFile(FileName));
@@ -72,9 +71,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			ISolutionFolderNode folderNode = Parent as ISolutionFolderNode;
-			folderNode.Container.SolutionItems.Items.Remove(item);
+			var parentFolder = ((ISolutionFolderNode)Parent).Folder;
+			parentFolder.Items.Remove(item);
 			base.Remove();
+			parentFolder.ParentSolution.Save();
 		}
 		
 		public override bool EnablePaste {
@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Copy()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
 		}
 		
 		public override bool EnableCut {
@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
 		}
 		#endregion
 		

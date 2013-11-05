@@ -12,6 +12,7 @@ using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -38,7 +39,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			set {
 				// Disable virtualization if we use automatic width - this prevents the window from resizing
 				// when the user scrolls.
-				VirtualizingStackPanel.SetIsVirtualizing(this.CompletionList.ListBox, !double.IsNaN(value));
+				VirtualizingPanel.SetIsVirtualizing(this.CompletionList.ListBox, !double.IsNaN(value));
 				this.Width = value;
 				if (double.IsNaN(value)) {
 					// enable size-to-width:
@@ -87,6 +88,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.CompletionList.SelectedItem = adapter;
 			}
 			this.StartOffset -= itemList.PreselectionLength;
+			this.EndOffset += itemList.PostselectionLength;
 		}
 		
 		public static readonly DependencyProperty EmptyTextProperty =

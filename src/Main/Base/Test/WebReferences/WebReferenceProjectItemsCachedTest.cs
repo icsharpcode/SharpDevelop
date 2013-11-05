@@ -1,8 +1,8 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using SD = ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using System;
@@ -19,9 +19,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// missing after the items have been added to the project.
 	/// </summary>
 	[TestFixture]
-	public class WebReferenceProjectItemsCachedTest
+	public class WebReferenceProjectItemsCachedTest : SDTestFixtureBase
 	{
-		SD.WebReference webReference;
+		Gui.WebReference webReference;
 		DiscoveryClientProtocol protocol;
 		WebReferencesProjectItem webReferencesProjectItem;
 		MSBuildBasedProject project;
@@ -30,11 +30,11 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		string proxyNamespace = "WebReferenceNamespace";
 		string updateFromUrl = "http://localhost/test.asmx";
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			project = WebReferenceTestHelper.CreateTestProject("C#");
-			project.FileName = "C:\\projects\\test\\foo.csproj";
+			project.FileName = FileName.Create("C:\\projects\\test\\foo.csproj");
 
 			protocol = new DiscoveryClientProtocol();
 			DiscoveryDocumentReference discoveryRef = new DiscoveryDocumentReference();
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			WebReferenceTestHelper.InitializeProjectBindings();
 			
-			webReference = new SD.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
+			webReference = new Gui.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
 			
 			foreach (ProjectItem item in webReference.Items) {
 				ProjectService.AddProjectItem(project, item);

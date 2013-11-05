@@ -8,23 +8,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeVariable : CodeElement, global::EnvDTE.CodeVariable
 	{
-		IField field;
-		IDocumentLoader documentLoader;
+		readonly IFieldModel field;
 		
 		public CodeVariable()
 		{
 		}
 		
-		public CodeVariable(IField field)
-			: this(field, new DocumentLoader())
-		{
-		}
-		
-		public CodeVariable(IField field, IDocumentLoader documentLoader)
-			: base(field)
+		public CodeVariable(CodeModelContext context, IFieldModel field)
+			: base(context, field)
 		{
 			this.field = field;
-			this.documentLoader = documentLoader;
 		}
 		
 		public override global::EnvDTE.vsCMElement Kind {
@@ -32,18 +25,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public global::EnvDTE.vsCMAccess Access {
-			get { return GetAccess(); }
-			set { }
-		}
-		
-		public override global::EnvDTE.TextPoint GetStartPoint()
-		{
-			return new TextPoint(field.GetStartPosition(), documentLoader);
-		}
-		
-		public override global::EnvDTE.TextPoint GetEndPoint()
-		{
-			return new TextPoint(field.GetEndPosition(), documentLoader);
+			get { return field.Accessibility.ToAccess(); }
+			set {
+				var f = field.Resolve();
+				if (f != null) {
+					context.CodeGenerator.ChangeAccessibility(f, value.ToAccessibility());
+				}
+			}
 		}
 	}
 }

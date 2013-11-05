@@ -4,7 +4,9 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -19,8 +21,8 @@ namespace ICSharpCode.XmlEditor
 		public XPathQueryPad()
 		{
 			xpathQueryControl = new XPathQueryControl();
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
-			Properties properties = PropertyService.Get(XPathQueryControlProperties, new Properties());
+			SD.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
+			Properties properties = PropertyService.NestedProperties(XPathQueryControlProperties);
 			xpathQueryControl.SetMemento(properties);
 			instance = this;
 		}
@@ -40,9 +42,9 @@ namespace ICSharpCode.XmlEditor
 		{
 			if (!disposed) {
 				disposed = true;
-				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
+				SD.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
 				Properties properties = xpathQueryControl.CreateMemento();
-				PropertyService.Set(XPathQueryControlProperties, properties);
+				PropertyService.SetNestedProperties(XPathQueryControlProperties, properties);
 				xpathQueryControl.Dispose();
 			}
 		}

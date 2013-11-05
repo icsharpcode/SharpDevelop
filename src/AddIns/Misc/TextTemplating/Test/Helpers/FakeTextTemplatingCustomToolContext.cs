@@ -21,9 +21,9 @@ namespace TextTemplating.Tests.Helpers
 		public string NamePassedToSetLogicalCallContextData;
 		public object DataPassedToSetLogicalCallContextData;
 		
-		public List<Task> TasksAdded = new List<Task>();
+		public List<SDTask> TasksAdded = new List<SDTask>();
 		
-		public Task FirstTaskAdded {
+		public SDTask FirstTaskAdded {
 			get { return TasksAdded[0]; }
 		}
 		
@@ -45,7 +45,7 @@ namespace TextTemplating.Tests.Helpers
 			IsClearTasksExceptCommentTasksCalled = true;
 		}
 		
-		public void AddTask(Task task)
+		public void AddTask(SDTask task)
 		{
 			TasksAdded.Add(task);
 		}

@@ -1,0 +1,104 @@
+<AddIn name        = "VB Binding"
+       author      = "Siegfried Pammer"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Backend binding for VB"
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.VBBinding"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "ICSharpCode.VBBinding.dll"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "VB"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.VBNetFiles}"
+		            extensions = "*.vb"
+		            mimeType = "text/plain"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id         = "VBProject"
+		            insertbefore="AllFiles"
+		            name       = "${res:SharpDevelop.FileFilter.VBNetPrjFiles} (*.vbproj)"
+		            class      = "ICSharpCode.SharpDevelop.Project.LoadProject"
+		            extensions = "*.vbproj"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
+		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
+		<String id="vbc" text = "vbc"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/MSBuildEngine/LoggerFilters">
+		<TaskBoundLoggerFilter
+			id = "VbcEncodingFixingLogger"
+			taskname = "vbc"
+			class = "ICSharpCode.VBBinding.VbcEncodingFixingLogger"/>
+	</Path>
+
+<!--	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+		<OptionPanel id = "VBSpecificOptions"
+			             label = "${res:Dialog.Options.IDEOptions.TextEditor.VB.PanelName}"
+			             class = "ICSharpCode.VBBinding.OptionPanels.TextEditorOptions"/>
+	</Path>-->
+	
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/VB">
+		<OptionPanel id    = "Application"
+		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
+		
+		<OptionPanel id    = "ReferencePaths"
+		             label = "${res:Dialog.ProjectOptions.ReferencePaths}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>
+		
+		<OptionPanel id    = "Signing"
+		             label = "${res:Dialog.ProjectOptions.Signing}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>
+		
+		<OptionPanel id    = "BuildEvents"
+		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
+		
+		<OptionPanel id    = "BuildOptions"
+		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
+		             class = "ICSharpCode.VBBinding.OptionPanels.BuildOptions"/>
+		
+		<OptionPanel id    = "DebugOptions"
+		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
+		
+	<!--	<OptionPanel id    = "ProjectImports"
+		             label = "${res:Dialog.ProjectOptions.ProjectImports}"
+		             class = "ICSharpCode.VBBinding.OptionPanels.ProjectImports"/> -->
+		
+		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
+	</Path>
+	
+	<Path name = "/Workspace/Icons">
+		<!-- C# -->
+		<Icon id         = "VBPrj"
+		      language   = "VB"
+		      resource   = "VB.ProjectIcon"/>
+
+		<Icon id         = "VBFile"
+		      extensions = ".vb"
+		      resource   = "VB.FileIcon"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id                   = "VB"
+		                guid                 = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+		                supportedextensions  = ".vb"
+		                projectfileextension = ".vbproj"
+		                class                = "ICSharpCode.VBBinding.VBProjectBinding" />
+	</Path>
+	
+	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">
+		<String id = "Microsoft.VisualBasic" text = "Microsoft.VisualBasic"/>
+	</Path>
+</AddIn>

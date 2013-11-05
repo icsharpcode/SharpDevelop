@@ -20,7 +20,7 @@ namespace PackageManagement.Tests.Scripting
 		
 		void CreateScript()
 		{
-			fakeScriptFileName = new FakePackageScriptFileName();			
+			fakeScriptFileName = new FakePackageScriptFileName();
 			fakeSession = new FakePackageScriptSession();
 			fakePackage = new FakePackage();
 			script = new PackageInitializeScript(fakePackage, fakeScriptFileName);

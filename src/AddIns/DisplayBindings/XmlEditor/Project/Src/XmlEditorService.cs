@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -37,7 +38,7 @@ namespace ICSharpCode.XmlEditor
 		
 		static void CreateXmlEditorProperties()
 		{
-			xmlEditorProperties = PropertyService.Get(XmlEditorOptions.OptionsProperty, new Properties());
+			xmlEditorProperties = PropertyService.NestedProperties(XmlEditorOptions.OptionsProperty);
 		}
 		
 		public static bool ShowAttributesWhenFolded {
@@ -81,9 +82,8 @@ namespace ICSharpCode.XmlEditor
 		{
 			string[] readOnlySchemaFolders = GetReadOnlySchemaFolders();
 			string userDefinedSchemaFolder = GetUserDefinedSchemaFolder();
-			FileSystem fileSystem = new FileSystem();
 				
-			registeredXmlSchemas = new RegisteredXmlSchemas(readOnlySchemaFolders, userDefinedSchemaFolder, fileSystem);
+			registeredXmlSchemas = new RegisteredXmlSchemas(readOnlySchemaFolders, userDefinedSchemaFolder, SD.FileSystem);
 		}
 		
 		static string[] GetReadOnlySchemaFolders()

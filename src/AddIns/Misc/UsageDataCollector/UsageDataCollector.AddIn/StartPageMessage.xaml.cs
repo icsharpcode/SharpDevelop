@@ -38,6 +38,7 @@ namespace ICSharpCode.UsageDataCollector
 			mainPanel.IsCollapsed = true;
 			acceptedMessage.IsCollapsed = !accepted;
 			declinedMessage.IsCollapsed = accepted;
+			Core.PropertyService.Save();
 		}
 		
 		public static readonly DependencyProperty HeaderProperty = HeaderedContentControl.HeaderProperty.AddOwner(typeof(StartPageMessage));

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -36,6 +37,9 @@ namespace ICSharpCode.SharpDevelop
 		AddIn addIn;
 		Type padType;
 		
+		string serviceInterfaceName;
+		Type serviceInterface;
+		
 		IPadContent padContent;
 		bool        padContentCreated;
 		
@@ -52,6 +56,7 @@ namespace ICSharpCode.SharpDevelop
 			icon = codon.Properties["icon"];
 			title = codon.Properties["title"];
 			@class = codon.Properties["class"];
+			serviceInterfaceName = codon.Properties["serviceInterface"];
 			if (!string.IsNullOrEmpty(codon.Properties["defaultPosition"])) {
 				DefaultPosition = (DefaultPadPositions)Enum.Parse(typeof(DefaultPadPositions), codon.Properties["defaultPosition"]);
 			}
@@ -74,6 +79,7 @@ namespace ICSharpCode.SharpDevelop
 			this.icon = icon;
 			this.category = "none";
 			this.shortcut = "";
+			this.serviceInterface = null;
 		}
 		
 		/// <summary>
@@ -134,6 +140,18 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// Gets the type of the service interface.
+		/// </summary>
+		public Type ServiceInterface {
+			get {
+				if (serviceInterface == null && addIn != null && !string.IsNullOrEmpty(serviceInterfaceName)) {
+					serviceInterface = addIn.FindType(serviceInterfaceName);
+				}
+				return serviceInterface;
+			}
+		}
+		
+		/// <summary>
 		/// Gets/sets the default position of the pad.
 		/// </summary>
 		public DefaultPadPositions DefaultPosition { get; set; }
@@ -155,8 +173,9 @@ namespace ICSharpCode.SharpDevelop
 		
 		public void CreatePad()
 		{
-			if (WorkbenchSingleton.InvokeRequired)
+			if (SD.MainThread.InvokeRequired) {
 				throw new InvalidOperationException("This action could trigger pad creation and is only valid on the main thread!");
+			}
 			if (!padContentCreated) {
 				padContentCreated = true;
 				try {
@@ -176,7 +195,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			CreatePad();
 			if (padContent == null) return;
-			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this);
+			SD.Workbench.ActivatePad(this);
 		}
 		
 		public override string ToString()

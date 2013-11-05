@@ -10,7 +10,7 @@ namespace ICSharpCode.Core
 	/// This doozer lazy-loads another doozer when it has to build an item.
 	/// It is used internally to wrap doozers specified in addins.
 	/// </summary>
-	public class LazyLoadDoozer : IDoozer
+	sealed class LazyLoadDoozer : IDoozer
 	{
 		AddIn addIn;
 		string name;
@@ -22,18 +22,11 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public string ClassName {
-			get {
-				return className;
-			}
-		}
-		
 		public LazyLoadDoozer(AddIn addIn, Properties properties)
 		{
 			this.addIn      = addIn;
 			this.name       = properties["name"];
 			this.className  = properties["class"];
-			
 		}
 		
 		/// <summary>
@@ -46,7 +39,7 @@ namespace ICSharpCode.Core
 				if (doozer == null) {
 					return false;
 				}
-				AddInTree.Doozers[name] = doozer;
+				addIn.AddInTree.Doozers[name] = doozer;
 				return doozer.HandleConditions;
 			}
 		}
@@ -57,7 +50,7 @@ namespace ICSharpCode.Core
 			if (doozer == null) {
 				return null;
 			}
-			AddInTree.Doozers[name] = doozer;
+			addIn.AddInTree.Doozers[name] = doozer;
 			return doozer.BuildItem(args);
 		}
 		

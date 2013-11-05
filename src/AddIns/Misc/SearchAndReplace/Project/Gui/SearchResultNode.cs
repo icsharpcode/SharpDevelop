@@ -7,9 +7,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
@@ -56,27 +56,25 @@ namespace SearchAndReplace
 			LoggingService.Debug("Creating text for search result (" + location.Line + ", " + location.Column + ") ");
 			
 			TextBlock textBlock = new TextBlock();
+			textBlock.FontFamily = new FontFamily(SD.EditorControlService.GlobalOptions.FontFamily);
 			if (result.DefaultTextColor != null && !IsSelected) {
 				if (result.DefaultTextColor.Background != null)
 					textBlock.Background = result.DefaultTextColor.Background.GetBrush(null);
 				if (result.DefaultTextColor.Foreground != null)
 					textBlock.Foreground = result.DefaultTextColor.Foreground.GetBrush(null);
 			}
-			textBlock.FontFamily = new FontFamily(EditorControlService.GlobalOptions.FontFamily);
 
 			textBlock.Inlines.Add("(" + location.Line + ", " + location.Column + ")\t");
 			
-			string displayText = result.DisplayText;
+			RichText displayText = result.DisplayText;
 			if (displayText != null) {
-				textBlock.Inlines.Add(displayText);
-			} else if (result.Builder != null) {
-				HighlightedInlineBuilder builder = result.Builder;
 				if (IsSelected) {
-					builder = builder.Clone();
-					builder.SetForeground(0, builder.Text.Length, null);
-					builder.SetBackground(0, builder.Text.Length, null);
+					RichTextModel model = displayText.ToRichTextModel();
+					model.SetForeground(0, displayText.Length, null);
+					model.SetBackground(0, displayText.Length, null);
+					displayText = new RichText(displayText.Text, model);
 				}
-				textBlock.Inlines.AddRange(builder.CreateRuns());
+				textBlock.Inlines.AddRange(displayText.CreateRuns());
 			}
 			
 			if (showFileName) {

@@ -5,8 +5,6 @@ using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Reflection;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
@@ -29,6 +27,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
+			return false;
+			/*
 			if (WorkbenchSingleton.Workbench == null) {
 				return false;
 			}
@@ -55,10 +55,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			} catch (Exception ex) {
 				LoggingService.Warn(ex.ToString());
 				return false;
-			}
+			}*/
 		}
 	}
-	
+	/*
 	public abstract class AbstractRefactoringCommand : AbstractMenuCommand
 	{
 		public override void Run()
@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (member == null) {
 				ShowUnknownSymbolError();
-			} else if (member.DeclaringType.CompilationUnit.FileName == null) {
+			} else if (member.DeclaringType.SyntaxTree.FileName == null) {
 				ShowNoUserCodeError();
 			} else {
 				IMethod method = member as IMethod;
@@ -150,11 +150,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (c == null) {
 				ShowUnknownSymbolError();
-			} else if (c.CompilationUnit.FileName == null) {
+			} else if (c.SyntaxTree.FileName == null) {
 				ShowNoUserCodeError();
 			} else {
 				FindReferencesAndRenameHelper.RenameClass(c);
 			}
 		}
-	}
+	}*/
 }

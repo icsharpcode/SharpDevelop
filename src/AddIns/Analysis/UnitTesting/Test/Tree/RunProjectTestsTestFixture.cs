@@ -4,7 +4,6 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
@@ -43,9 +42,9 @@ namespace UnitTesting.Tests.Tree
 					methodNames);
 			
 			TestClass testClass = testProject.TestClasses[0];
-			firstTestMethod = testClass.TestMembers[0];
-			secondTestMethod = testClass.TestMembers[1];
-			thirdTestMethod = testClass.TestMembers[2];
+			firstTestMethod = testClass.Members[0];
+			secondTestMethod = testClass.Members[1];
+			thirdTestMethod = testClass.Members[2];
 			
 			context.MockUnitTestsPad.AddTestProject(testProject);
 			

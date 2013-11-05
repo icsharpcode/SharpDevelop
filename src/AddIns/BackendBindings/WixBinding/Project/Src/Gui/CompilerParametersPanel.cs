@@ -9,6 +9,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<System.String, System
 
 namespace ICSharpCode.WixBinding
 {
+	[Obsolete("TODO: rewrite me in WPF")]
 	public class CompilerParametersPanel : AbstractXmlFormsProjectOptionPanel
 	{	
 		public override void LoadPanelContents()

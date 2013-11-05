@@ -18,18 +18,12 @@ namespace PackageManagement.Tests.EnvDTE
 		SolutionBuild solutionBuild;
 		FakeProjectBuilder projectBuilder;
 		
-		void CreateSolutionBuild()
+		void CreateSolutionBuild(string solutionFileName = @"d:\projects\MyProject\MySolution.sln")
 		{
-			solutionHelper = new SolutionHelper();
+			solutionHelper = new SolutionHelper(solutionFileName);
 			solution = solutionHelper.Solution;
 			projectBuilder = solutionHelper.FakeProjectService.FakeProjectBuilder;
 			solutionBuild = (SolutionBuild)solution.SolutionBuild;
-		}
-		
-		void CreateSolutionBuild(string solutionFileName)
-		{
-			CreateSolutionBuild();
-			solutionHelper.MSBuildSolution.FileName = solutionFileName;
 		}
 		
 		void AddStartupProject(string projectFileName)

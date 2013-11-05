@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop
 			var subItems = args.BuildSubItems<IOptionPanelDescriptor>();
 			if (subItems.Count == 0) {
 				if (args.Codon.Properties.Contains("class")) {
-					return new DefaultOptionPanelDescriptor(id, StringParser.Parse(label), args.AddIn, args.Caller, args.Codon["class"]);
+					return new DefaultOptionPanelDescriptor(id, StringParser.Parse(label), args.AddIn, args.Parameter, args.Codon["class"]);
 				} else {
 					return new DefaultOptionPanelDescriptor(id, StringParser.Parse(label));
 				}

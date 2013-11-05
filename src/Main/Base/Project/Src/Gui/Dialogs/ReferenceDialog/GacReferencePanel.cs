@@ -8,13 +8,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-
 using ICSharpCode.Build.Tasks;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
-using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -56,8 +53,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		ColumnSorter sorter;
 		BackgroundWorker worker;
 		List<ListViewItem> resultList = new List<ListViewItem>();
-		Dictionary<string, AssemblyDefinition> assembliesCache = new Dictionary<string, AssemblyDefinition>();
-		DefaultAssemblyResolver resolver = new DefaultAssemblyResolver();
 		
 		public GacReferencePanel(ISelectReferenceDialog selectDialog)
 		{
@@ -138,38 +133,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void SearchItems(string text)
 		{
 			var searchList = listView.Items.OfType<ListViewItem>().ToList();
-			searchList.RemoveWhere(item => item.Text.IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0);
+			searchList.RemoveAll(item => item.Text.IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0);
 			resultList = searchList;
 		}
 
-		/// <summary>
-		/// Clear all resources used.
-		/// </summary>
-		new void Dispose()
+		protected override void Dispose(bool disposing)
 		{
-			// cancel the worker
-			if (worker != null && worker.IsBusy && !worker.CancellationPending)
-				worker.CancelAsync();
-			worker = null;
-			
-			// clear all cached data
-			if (assembliesCache.Count > 0)
-				assembliesCache.Clear();
-			assembliesCache = null;
-			
-			if (resultList.Count > 0)
-				resultList.Clear();
-			resultList = null;
-			
-			selectDialog = null;
-			resolver = null;
-			
-			if (fullItemList.Length > 0)
-				Array.Clear(fullItemList, 0, fullItemList.Length);
-			fullItemList = null;
-			
-			// force a collection to reclam memory
-			GC.Collect();
+			if (disposing) {
+				// cancel the worker
+				if (worker != null && worker.IsBusy && !worker.CancellationPending)
+					worker.CancelAsync();
+				worker = null;
+				
+				// clear all cached data
+				resultList = null;
+				selectDialog = null;
+				fullItemList = null;
+			}
+			base.Dispose(disposing);
 		}
 		
 		void columnClick(object sender, ColumnClickEventArgs e)
@@ -279,27 +260,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			List<ListViewItem> itemsToResolveVersion = new List<ListViewItem>();
 			List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
-			WorkbenchSingleton.SafeThreadCall(
+			SD.MainThread.InvokeIfRequired(
 				delegate {
-					foreach (ListViewItem item in shortItemList) {
-						if (item.SubItems[1].Text.Contains("/")) {
-							itemsToResolveVersion.Add(item);
-							referenceItems.Add(new ReferenceProjectItem(project, item.Text));
-						}
+				foreach (ListViewItem item in shortItemList) {
+					if (item.SubItems [1].Text.Contains("/")) {
+						itemsToResolveVersion.Add(item);
+						referenceItems.Add(new ReferenceProjectItem(project, item.Text));
 					}
-				});
+				}
+			});
 			
-			MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
+			SD.MSBuildEngine.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
 			
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					if (IsDisposed) return;
-					for (int i = 0; i < itemsToResolveVersion.Count; i++) {
-						if (referenceItems[i].Version != null) {
-							itemsToResolveVersion[i].SubItems[1].Text = referenceItems[i].Version.ToString();
-						}
+			SD.MainThread.InvokeAsyncAndForget(delegate {
+				if (IsDisposed) {
+					return;
+				}
+				for (int i = 0; i < itemsToResolveVersion.Count; i++) {
+					if (referenceItems [i].Version != null) {
+						itemsToResolveVersion [i].SubItems [1].Text = referenceItems [i].Version.ToString();
 					}
-				});
+				}
+			});
 		}
 		
 		#if DEBUG
@@ -326,14 +308,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			using (StreamWriter w = new StreamWriter("c:\\temp\\references.txt")) {
 				List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
-				WorkbenchSingleton.SafeThreadCall(
+				SD.MainThread.InvokeIfRequired(
 					delegate {
 						foreach (ListViewItem item in fullItemList) {
 							referenceItems.Add(new ReferenceProjectItem(project, item.Tag.ToString()));
 						}
 					});
 				
-				MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
+				SD.MSBuildEngine.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
 				foreach (ReferenceProjectItem rpi in referenceItems) {
 					if (string.IsNullOrEmpty(rpi.Redist)) continue;
 					if (!redistNameToRequiredFramework.ContainsKey(rpi.Redist)) {
@@ -352,16 +334,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected virtual IList<DomAssemblyName> GetCacheContent()
 		{
-			List<DomAssemblyName> list = GacInterop.GetAssemblyList();
-			list.RemoveAll(name => name.ShortName.EndsWith(".resources", StringComparison.OrdinalIgnoreCase));
-			return list;
-		}
-		
-		protected override void Dispose(bool disposing)
-		{
-			Dispose();
-			
-			base.Dispose(disposing);
+			return SD.GlobalAssemblyCache.Assemblies
+				.Where(name => !name.ShortName.EndsWith(".resources", StringComparison.OrdinalIgnoreCase))
+				.ToList();
 		}
 	}
 }

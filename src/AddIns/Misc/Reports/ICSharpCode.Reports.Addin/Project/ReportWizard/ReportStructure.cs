@@ -25,11 +25,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private ReportItemCollection reportItemCollection;
 		private AvailableFieldsCollection availableFieldsCollection;
 		
-		private ParameterCollection queryParameters;
-		
 		
 		public ReportStructure()
 		{
+			SqlQueryParameters = new SqlParameterCollection();
 		}
 		
 		public ReportModel CreateAndFillReportModel ()
@@ -66,7 +65,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (!String.IsNullOrEmpty(this.Grouping))
 			{
 				string s = "=[" + this.Grouping + "]";
-				//GroupColumn g = new GroupColumn(this.Grouping,1,System.ComponentModel.ListSortDirection.Ascending);
 				GroupColumn g = new GroupColumn(s,1,System.ComponentModel.ListSortDirection.Ascending);
 				settings.GroupColumnsCollection.Add(g);
 			}
@@ -103,15 +101,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 		public IDatabaseObjectBase IDatabaseObjectBase {get;set;}
 		
-		public ParameterCollection SqlQueryParameters {
-			get {
-				if (this.queryParameters == null) {
-					this.queryParameters = new ParameterCollection();
-				}
-				return queryParameters;
-			}
-		}
-		
+
+		public SqlParameterCollection SqlQueryParameters {get;set;}
 		
 		#endregion
 		
@@ -138,11 +129,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		#endregion
 		
+		public GlobalEnums.ReportLayout ReportLayout {get;set;}
+		
 		#region Grouping
 		
 		public string Grouping {get;set;}
 		
 		#endregion
+		
 		
 		#region IDisposable
 		public void Dispose(){
@@ -164,9 +158,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					this.availableFieldsCollection.Clear();
 					this.availableFieldsCollection = null;
 				}
-				if (this.queryParameters != null) {
-					this.queryParameters.Clear();
-					this.queryParameters = null;
+				if (this.SqlQueryParameters != null) {
+					this.SqlQueryParameters.Clear();
+					this.SqlQueryParameters = null;
 					
 				}
 			}

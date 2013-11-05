@@ -5,21 +5,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor.Search;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace SearchAndReplace
 {
@@ -45,14 +44,14 @@ namespace SearchAndReplace
 		
 		class SearchableFileContentFinder
 		{
-			FileName[] viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction(() => FileService.OpenedFiles.Select(f => f.FileName).ToArray());
+			FileName[] viewContentFileNamesCollection = SD.MainThread.InvokeIfRequired(() => SD.FileService.OpenedFiles.Select(f => f.FileName).ToArray());
 			
-			static ITextBuffer ReadFile(FileName fileName)
+			static ITextSource ReadFile(FileName fileName)
 			{
-				OpenedFile openedFile = FileService.GetOpenedFile(fileName);
-				if (openedFile == null)
+				OpenedFile openedFile = SD.FileService.GetOpenedFile(fileName);
+				if (openedFile == null || openedFile.CurrentView == null)
 					return null;
-				IFileDocumentProvider provider = FileService.GetOpenFile(fileName) as IFileDocumentProvider;
+				var provider = openedFile.CurrentView.GetService<IFileDocumentProvider>();
 				if (provider == null)
 					return null;
 				IDocument doc = provider.GetDocumentForFile(openedFile);
@@ -61,20 +60,20 @@ namespace SearchAndReplace
 				return doc.CreateSnapshot();
 			}
 			
-			public ITextBuffer Create(FileName fileName)
+			public ITextSource Create(FileName fileName)
 			{
 				try {
 					foreach (FileName name in viewContentFileNamesCollection) {
 						if (FileUtility.IsEqualFileName(name, fileName)) {
-							ITextBuffer buffer = WorkbenchSingleton.SafeThreadFunction(ReadFile, fileName);
+							ITextSource buffer = SD.MainThread.InvokeIfRequired(() => ReadFile(fileName));
 							if (buffer != null)
 								return buffer;
 						}
 					}
 					using (Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
-						if (MimeTypeDetection.FindMimeType(stream).StartsWith("text/")) {
+						if (MimeTypeDetection.FindMimeType(stream).StartsWith("text/", StringComparison.Ordinal)) {
 							stream.Position = 0;
-							return new StringTextBuffer(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default));
+							return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, SD.FileService.DefaultFileEncoding));
 						}
 					}
 					return null;
@@ -110,7 +109,7 @@ namespace SearchAndReplace
 			public IDisposable Subscribe(IObserver<SearchedFile> observer)
 			{
 				LoggingService.Debug("Parallel FindAll starting");
-				var task = new System.Threading.Tasks.Task(
+				var task = Task.Factory.StartNew(
 					delegate {
 						var list = fileList.ToList();
 						ThrowIfCancellationRequested();
@@ -125,7 +124,6 @@ namespace SearchAndReplace
 							observer.OnCompleted();
 						this.Dispose();
 					});
-				task.Start();
 				return this;
 			}
 			
@@ -152,7 +150,7 @@ namespace SearchAndReplace
 					}
 					if (exceptions.Count > 0) break;
 					FileName file = files[i];
-					queue.Enqueue(System.Threading.Tasks.Task.Factory.StartNew(() => SearchFile(file)));
+					queue.Enqueue(Task.Factory.StartNew(() => SearchFile(file)));
 				}
 				while (queue.Count > 0) {
 					HandleResult(queue.Dequeue(), observer, exceptions, files);
@@ -189,15 +187,13 @@ namespace SearchAndReplace
 			
 			SearchedFile SearchFile(FileName fileName)
 			{
-				ITextBuffer buffer = fileFinder.Create(fileName);
-				if (buffer == null)
+				ITextSource source = fileFinder.Create(fileName);
+				if (source == null)
 					return null;
 				
 				ThrowIfCancellationRequested();
-				
-				var source = DocumentUtilitites.GetTextSource(buffer);
-				TextDocument document = null;
-				ISyntaxHighlighter highlighter = null;
+				ReadOnlyDocument document = null;
+				IHighlighter highlighter = null;
 				int offset = 0;
 				int length = source.TextLength;
 				if (Target == SearchTarget.CurrentSelection && Selection != null) {
@@ -208,14 +204,17 @@ namespace SearchAndReplace
 				foreach (var result in strategy.FindAll(source, offset, length)) {
 					ThrowIfCancellationRequested();
 					if (document == null) {
-						document = new TextDocument(source);
-						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
-						highlighter = EditorControlService.Instance.CreateHighlighter(new AvalonEditDocumentAdapter(document, null), fileName);
+						document = new ReadOnlyDocument(source, fileName);
+						highlighter = SD.EditorControlService.CreateHighlighter(document);
+						highlighter.BeginHighlighting();
 					}
-					var start = document.GetLocation(result.Offset).ToLocation();
-					var end = document.GetLocation(result.Offset + result.Length).ToLocation();
+					var start = document.GetLocation(result.Offset);
+					var end = document.GetLocation(result.Offset + result.Length);
 					var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
-					results.Add(new AvalonEditSearchResultMatch(fileName, start, end, result.Offset, result.Length, builder, highlighter, result));
+					results.Add(new AvalonEditSearchResultMatch(fileName, start, end, result.Offset, result.Length, builder, highlighter.DefaultTextColor, result));
+				}
+				if (highlighter != null) {
+					highlighter.Dispose();
 				}
 				if (results.Count > 0)
 					return new SearchedFile(fileName, results);
@@ -287,7 +286,7 @@ namespace SearchAndReplace
 					index = (index + 1) % files.Length;
 					
 					FileName file = files[index];
-					ITextBuffer buffer = finder.Create(file);
+					ITextSource buffer = finder.Create(file);
 					
 					if (buffer == null)
 						continue;
@@ -301,7 +300,7 @@ namespace SearchAndReplace
 					}
 					
 					// try to find a result
-					result = Find(file, DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(buffer), searchOffset, length);
+					result = Find(file, new ReadOnlyDocument(buffer, file), searchOffset, length);
 					
 					i++;
 				}
@@ -311,10 +310,10 @@ namespace SearchAndReplace
 
 			SearchResultMatch Find(FileName file, IDocument document, int searchOffset, int length)
 			{
-				var result = strategy.FindNext(DocumentUtilitites.GetTextSource(document), searchOffset, length);
+				var result = strategy.FindNext(document, searchOffset, length);
 				if (result != null) {
-					var start = document.OffsetToPosition(result.Offset);
-					var end = document.OffsetToPosition(result.EndOffset);
+					var start = document.GetLocation(result.Offset);
+					var end = document.GetLocation(result.EndOffset);
 					return new AvalonEditSearchResultMatch(file, start, end, result.Offset, result.Length, null, null, result);
 				}
 				return null;
@@ -325,7 +324,7 @@ namespace SearchAndReplace
 				var editor = GetActiveTextEditor();
 				if (editor == null)
 					return -1;
-				return files.FindIndex(file => editor.FileName.Equals(file));
+				return Array.IndexOf(files, editor.FileName);
 			}
 			
 			public static SearchRegion CreateSearchRegion(FileName[] files, ISearchStrategy strategy, SearchLocation location)
@@ -404,15 +403,15 @@ namespace SearchAndReplace
 			ITextEditor textArea = OpenTextArea(result.FileName, switchToOpenedView);
 			if (textArea != null) {
 				if (switchToOpenedView)
-					textArea.Caret.Position = result.StartLocation;
+					textArea.Caret.Location = result.StartLocation;
 
-				foreach (var bookmark in BookmarkManager.GetBookmarks(result.FileName)) {
+				foreach (var bookmark in SD.BookmarkManager.GetBookmarks(result.FileName)) {
 					if (bookmark.CanToggle && bookmark.LineNumber == result.StartLocation.Line) {
 						// bookmark or breakpoint already exists at that line
 						return;
 					}
 				}
-				BookmarkManager.AddMark(new Bookmark(result.FileName, result.StartLocation));
+				SD.BookmarkManager.AddMark(new Bookmark { FileName = result.FileName, Location = result.StartLocation});
 			}
 		}
 		#endregion
@@ -420,27 +419,22 @@ namespace SearchAndReplace
 		#region TextEditor helpers
 		static ITextEditor OpenTextArea(string fileName, bool switchToOpenedView = true)
 		{
-			ITextEditorProvider textEditorProvider;
+			IViewContent viewContent;
 			if (fileName != null) {
-				textEditorProvider = FileService.OpenFile(fileName, switchToOpenedView) as ITextEditorProvider;
+				viewContent = FileService.OpenFile(fileName, switchToOpenedView);
 			} else {
-				textEditorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+				viewContent = SD.Workbench.ActiveViewContent;
 			}
 
-			if (textEditorProvider != null) {
-				return textEditorProvider.TextEditor;
+			if (viewContent != null) {
+				return viewContent.GetService<ITextEditor>();
 			}
 			return null;
 		}
 		
 		public static ITextEditor GetActiveTextEditor()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			if (provider != null) {
-				return provider.TextEditor;
-			} else {
-				return null;
-			}
+			return SD.GetActiveViewContentService<ITextEditor>();
 		}
 		
 		public static ISegment GetActiveSelection(bool useAnchors)
@@ -496,8 +490,8 @@ namespace SearchAndReplace
 			}
 			var editor = OpenTextArea(result.FileName, true);
 			if (editor != null) {
-				var start = editor.Document.PositionToOffset(result.StartLocation.Line, result.StartLocation.Column);
-				var end = editor.Document.PositionToOffset(result.EndLocation.Line, result.EndLocation.Column);
+				var start = editor.Document.GetOffset(result.StartLocation.Line, result.StartLocation.Column);
+				var end = editor.Document.GetOffset(result.EndLocation.Line, result.EndLocation.Column);
 				editor.Caret.Offset = start;
 				editor.Select(start, end - start);
 			}

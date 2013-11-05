@@ -18,7 +18,7 @@ namespace ICSharpCode.PackageManagement
 		
 		PadDescriptor GetConsolePad()
 		{
-			return WorkbenchSingleton.Workbench.GetPad(typeof(PackageManagementConsolePad));
+			return SD.Workbench.GetPad(typeof(PackageManagementConsolePad));
 		}
 		
 		void EnsurePackageManagementConsoleViewModelIsCreated(PadDescriptor pad)
@@ -34,22 +34,22 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool InvokeRequired {
-			get { return WorkbenchSingleton.InvokeRequired; }
+			get { return SD.MainThread.InvokeRequired; }
 		}
 		
 		public void SafeThreadAsyncCall<A>(Action<A> method, A arg1)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall<A>(method, arg1);
+			SD.MainThread.InvokeAsyncAndForget(() => method(arg1));
 		}
 		
 		public void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall<A, B>(method, arg1, arg2);
+			SD.MainThread.InvokeAsyncAndForget(() => method(arg1, arg2));
 		}
 		
 		public R SafeThreadFunction<R>(Func<R> method)
 		{
-			return WorkbenchSingleton.SafeThreadFunction<R>(method);
+			return SD.MainThread.InvokeIfRequired(method);
 		}
 	}
 }

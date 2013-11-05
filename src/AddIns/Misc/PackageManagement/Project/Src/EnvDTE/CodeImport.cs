@@ -9,29 +9,22 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeImport : CodeElement, global::EnvDTE.CodeImport
 	{
-		IUsing import;
+		string namespaceName;
 		
 		public CodeImport()
 		{
 		}
 		
-		public CodeImport(IUsing import)
+		public CodeImport(string namespaceName)
 		{
-			this.import = import;
-			this.Namespace = GetNamespace();
+			this.namespaceName = namespaceName;
 		}
 		
-		string GetNamespace()
-		{
-			if (import.Usings.Any()) {
-				return import.Usings.First();
-			} else if (import.HasAliases) {
-				return import.Aliases.Values.First().FullyQualifiedName;
+		public string Namespace {
+			get {
+				return namespaceName;
 			}
-			return String.Empty;
 		}
-		
-		public string Namespace { get; private set; }
 		
 		public override global::EnvDTE.vsCMElement Kind {
 			get { return global::EnvDTE.vsCMElement.vsCMElementImportStmt; }

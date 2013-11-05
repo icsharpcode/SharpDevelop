@@ -131,7 +131,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Value_GetFullPathProperty_ReturnsProjectDirectory()
 		{
 			CreateProperties();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.FileName = new ICSharpCode.Core.FileName(@"d:\projects\MyProject\MyProject.csproj");
 			
 			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FullPath");
 			string fullPath = fullPathProperty.Value as string;
@@ -144,7 +144,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Value_GetFullPathPropertyWithUpperCaseCharacters_ReturnsProjectDirectory()
 		{
 			CreateProperties();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.FileName = new ICSharpCode.Core.FileName(@"d:\projects\MyProject\MyProject.csproj");
 			
 			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FULLPATH");
 			string fullPath = fullPathProperty.Value as string;

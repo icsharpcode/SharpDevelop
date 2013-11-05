@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using SD = ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -18,9 +19,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// a reference to System.Web.Services if one already exists in the project.
 	/// </summary>
 	[TestFixture]
-	public class WebServicesReferenceExistsTest
+	public class WebServicesReferenceExistsTest : SDTestFixtureBase
 	{
-		SD.WebReference webReference;
+		Gui.WebReference webReference;
 		DiscoveryClientProtocol protocol;
 		ReferenceProjectItem webServicesReferenceProjectItem;
 		MSBuildBasedProject project;
@@ -29,11 +30,11 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		string proxyNamespace = "WebReferenceNamespace";
 		string updateFromUrl = "http://localhost/test.asmx";
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			project = WebReferenceTestHelper.CreateTestProject("C#");
-			project.FileName = "C:\\projects\\test\\foo.csproj";
+			project.FileName = FileName.Create("C:\\projects\\test\\foo.csproj");
 			
 			ReferenceProjectItem referenceItem = new ReferenceProjectItem(project, "System.Web.Services");
 			ProjectService.AddProjectItem(project, referenceItem);
@@ -52,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			WebReferenceTestHelper.InitializeProjectBindings();
 			
-			webReference = new SD.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
+			webReference = new Gui.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
 			webServicesReferenceProjectItem = (ReferenceProjectItem)WebReferenceTestHelper.GetProjectItem(webReference.Items, ItemType.Reference);
 		}
 		
@@ -69,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			ReferenceProjectItem referenceItem = new ReferenceProjectItem(project, "System.Windows.Forms");
 			ProjectService.AddProjectItem(project, referenceItem);
 			
-			Assert.IsFalse(SD.WebReference.ProjectContainsWebServicesReference(project));
+			Assert.IsFalse(Gui.WebReference.ProjectContainsWebServicesReference(project));
 		}
 		
 		[Test]
@@ -79,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			ReferenceProjectItem referenceItem = new ReferenceProjectItem(project, "system.web.services");
 			ProjectService.AddProjectItem(project, referenceItem);
 			
-			Assert.IsTrue(SD.WebReference.ProjectContainsWebServicesReference(project));
+			Assert.IsTrue(Gui.WebReference.ProjectContainsWebServicesReference(project));
 		}
 		
 		[Test]
@@ -89,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			ReferenceProjectItem referenceItem = new ReferenceProjectItem(project, "System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
 			ProjectService.AddProjectItem(project, referenceItem);
 			
-			Assert.IsTrue(SD.WebReference.ProjectContainsWebServicesReference(project));
+			Assert.IsTrue(Gui.WebReference.ProjectContainsWebServicesReference(project));
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 		public const string KeepLocalizationModelPropertyName = "FormsDesigner.DesignerOptions.KeepLocalizationModel";
 		
 		const CodeDomLocalizationModel DefaultLocalizationModelDefaultValue = CodeDomLocalizationModel.PropertyReflection;
-		const bool KeepLocalizationModelDefaultValue = false;
+		const bool KeepLocalizationModelDefaultValue = true;
 		
 		public LocalizationModelOptionsPanel()
 		{
@@ -43,11 +43,9 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 		
 		static T GetPropertySafe<T>(string name, T defaultValue)
 		{
-			if (PropertyService.Initialized) {
-				return PropertyService.Get<T>(name, defaultValue);
-			} else {
-				return defaultValue;
-			}
+			// This wrapper is no longer necessary in SD5;
+			// if the actual property service isn't available (in unit tests), a dummy property service is used
+			return PropertyService.Get<T>(name, defaultValue);
 		}
 		
 		public override bool SaveOptions()

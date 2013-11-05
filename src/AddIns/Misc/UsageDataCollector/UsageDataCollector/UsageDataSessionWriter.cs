@@ -44,6 +44,7 @@ namespace ICSharpCode.UsageDataCollector
 			SQLiteConnectionStringBuilder conn = new SQLiteConnectionStringBuilder();
 			conn.DataSource = databaseFileName;
 			
+			Directory.CreateDirectory(Path.GetDirectoryName(databaseFileName));
 			connection = new SQLiteConnection(conn.ConnectionString);
 			connection.Open();
 			try {

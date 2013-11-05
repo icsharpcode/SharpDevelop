@@ -7,14 +7,13 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Reflection;
 using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using Microsoft.CSharp;
 
@@ -35,34 +34,13 @@ namespace ICSharpCode.WixBinding
 		void MergeFormChanges(string dialogId, XmlElement dialogElement);
 	}
 	
-	public class WixDialogDesignerGenerator : IDesignerGenerator, IWixDialogDesignerGenerator
+	public class WixDialogDesignerGenerator : IWixDialogDesignerGenerator
 	{
-		FormsDesignerViewContent view;
-		ITextEditor textEditor;
+		readonly IWixDialogDesigner view;
 		
-		public CodeDomProvider CodeDomProvider {
-			get { return new CSharpCodeProvider(); }
-		}
-		
-		public FormsDesignerViewContent ViewContent {
-			get { return view; }
-		}
-		
-		public IEnumerable<OpenedFile> GetSourceFiles(out OpenedFile designerCodeFile)
-		{
-			designerCodeFile = view.PrimaryFile;
-			return new [] {designerCodeFile};
-		}
-		
-		public void Attach(FormsDesignerViewContent view)
+		public WixDialogDesignerGenerator(IWixDialogDesigner view)
 		{
 			this.view = view;
-			textEditor = ((ITextEditorProvider)view.PrimaryViewContent).TextEditor;
-		}
-		
-		public void Detach()
-		{
-			view = null;
 		}
 		
 		/// <summary>
@@ -75,6 +53,7 @@ namespace ICSharpCode.WixBinding
 				ThrowDialogElementCouldNotBeFoundError(dialogId);
 			}
 			
+			var textEditor = view.PrimaryViewContentTextEditor;
 			WixTextWriter writer = new WixTextWriter(textEditor.Options);
 			WixDialogElement wixDialogElement = (WixDialogElement)dialogElement;
 			string newDialogXml = wixDialogElement.GetXml(writer);
@@ -85,8 +64,7 @@ namespace ICSharpCode.WixBinding
 		
 		DomRegion GetTextEditorRegionForDialogElement(string dialogId)
 		{
-			IDocument document = view.DesignerCodeFileDocument;
-			WixDocumentReader wixReader = new WixDocumentReader(document.Text);
+			WixDocumentReader wixReader = new WixDocumentReader(view.GetDocumentXml());
 			return wixReader.GetElementRegion("Dialog", dialogId);
 		}
 		
@@ -95,31 +73,6 @@ namespace ICSharpCode.WixBinding
 			string messageFormat = StringParser.Parse("${res:ICSharpCode.WixBinding.DialogDesignerGenerator.DialogIdNotFoundMessage}");
 			string message = String.Format(messageFormat, dialogId);
 			throw new FormsDesignerLoadException(message);
-		}
-		
-		public void MergeFormChanges(CodeCompileUnit unit)
-		{
-		}
-		
-		public void NotifyComponentRenamed(object component, string newName, string oldName)
-		{
-		}
-		
-		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
-		{
-			file = null;
-			position = 0;
-			return false;
-		}
-		
-		public ICollection GetCompatibleMethods(EventDescriptor edesc)
-		{
-			return new ArrayList();
-		}
-		
-		public ICollection GetCompatibleMethods(EventInfo edesc)
-		{
-			return new ArrayList();
 		}
 	}
 }

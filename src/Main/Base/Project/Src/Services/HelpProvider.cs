@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop
 			return AddInTree.BuildItems<HelpProvider>("/SharpDevelop/Services/HelpProvider", null, false);
 		}
 		
-		public static void ShowHelp(IClass c)
+		public static void ShowHelp(IEntity c)
 		{
 			if (c == null)
 				throw new ArgumentNullException("c");
@@ -26,29 +26,9 @@ namespace ICSharpCode.SharpDevelop
 			new HelpProvider().TryShowHelp(c);
 		}
 		
-		public virtual bool TryShowHelp(IClass c)
+		public virtual bool TryShowHelp(IEntity c)
 		{
-			return TryShowHelp(c.FullyQualifiedName);
-		}
-		
-		public static void ShowHelp(IMember m)
-		{
-			if (m == null)
-				throw new ArgumentNullException("m");
-			foreach (HelpProvider p in GetProviders()) {
-				if (p.TryShowHelp(m))
-					return;
-			}
-			new HelpProvider().TryShowHelp(m);
-		}
-		
-		public virtual bool TryShowHelp(IMember m)
-		{
-			IMethod method = m as IMethod;
-			if (method != null && method.IsConstructor)
-				return TryShowHelp(m.DeclaringType.FullyQualifiedName + "." + m.DeclaringType.Name);
-			else
-				return TryShowHelp(m.FullyQualifiedName);
+			return TryShowHelp(c.FullName);
 		}
 		
 		public static void ShowHelp(string fullTypeName)

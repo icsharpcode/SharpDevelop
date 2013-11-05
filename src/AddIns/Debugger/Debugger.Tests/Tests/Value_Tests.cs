@@ -40,13 +40,13 @@ namespace Debugger.Tests {
 			
 			DumpLocalVariables();
 			
-			Value array = process.SelectedStackFrame.GetLocalVariableValue("array").GetPermanentReference();
-			ObjectDump("array.Length", array.GetMemberValue("Length"));
+			Value array = this.CurrentStackFrame.GetLocalVariableValue("array").GetPermanentReference(this.EvalThread);
+			ObjectDump("array.Length", array.GetPropertyValue(this.EvalThread, "Length"));
 			ObjectDump("array", array);
 			
-			Value lbArray = process.SelectedStackFrame.GetLocalVariableValue("lbArray").GetPermanentReference();
+			Value lbArray = this.CurrentStackFrame.GetLocalVariableValue("lbArray").GetPermanentReference(this.EvalThread);
 			ObjectDump("lbArray", lbArray);
-			ObjectDump("lbArray-10-20", lbArray.GetArrayElement(new int[] {10, 20}));
+			ObjectDump("lbArray-10-20", lbArray.GetArrayElement(new uint[] {10, 20}));
 			
 			EndTest();
 		}
@@ -59,10 +59,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="Value_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Value_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Value_Tests.cs:27,4-27,40</DebuggingPaused>
+    <Paused>Value_Tests.cs:27,4-27,40</Paused>
     <LocalVariables>
       <Item>
         <LocalVariable
@@ -108,20 +108,20 @@ namespace Debugger.Tests {
     </array.Length>
     <array>
       <Value
+        ArrayBaseIndicies="{0, 0}"
         ArrayDimensions="{2, 2}"
         ArrayLength="4"
         ArrayRank="2"
-        GetArrayElements="{0, 1, 2, 3}"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="System.Int32[,]" />
     </array>
     <lbArray>
       <Value
-        ArrayDimensions="{10..11, 20..21}"
+        ArrayBaseIndicies="{10, 20}"
+        ArrayDimensions="{2, 2}"
         ArrayLength="4"
         ArrayRank="2"
-        GetArrayElements="{a, b, c, d}"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="System.Char[,]" />
@@ -131,7 +131,7 @@ namespace Debugger.Tests {
         PrimitiveValue="a"
         Type="System.Char" />
     </lbArray-10-20>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

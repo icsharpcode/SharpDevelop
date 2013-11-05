@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Core.WinForms</RootNamespace>
     <AssemblyName>ICSharpCode.Core.WinForms</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <OutputPath>..\..\..\bin\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -18,7 +18,8 @@
     <AssemblyOriginatorKeyFile>..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,39 +44,58 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Menu\IStatusUpdate.cs" />
-    <Compile Include="Menu\ISubmenuBuilder.cs" />
     <Compile Include="Menu\Menu.cs" />
-    <Compile Include="Menu\MenuCheckBox.cs" />
+    <Compile Include="Menu\MenuCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Menu\MenuCommand.cs" />
     <Compile Include="Menu\MenuSeparator.cs" />
     <Compile Include="Menu\MenuService.cs" />
-    <Compile Include="MessageService\CustomDialog.cs" />
+    <Compile Include="MessageService\CustomDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MessageService\IDialogMessageService.cs" />
     <Compile Include="MessageService\InputBox.cs" />
     <Compile Include="MessageService\SaveErrorChooseDialog.cs" />
-    <Compile Include="MessageService\SaveErrorInformDialog.cs" />
+    <Compile Include="MessageService\SaveErrorInformDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MessageService\WinFormsMessageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ToolBar\ToolBarCheckBox.cs" />
-    <Compile Include="ToolBar\ToolBarComboBox.cs" />
+    <Compile Include="ToolBar\ToolBarCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ToolBar\ToolBarCommand.cs" />
-    <Compile Include="ToolBar\ToolBarDropDownButton.cs" />
+    <Compile Include="ToolBar\ToolBarDropDownButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ToolBar\ToolBarLabel.cs" />
-    <Compile Include="ToolBar\ToolBarSeparator.cs" />
+    <Compile Include="ToolBar\ToolBarSeparator.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ToolBar\ToolBarService.cs" />
-    <Compile Include="ToolBar\ToolBarSplitButton.cs" />
-    <Compile Include="ToolBar\ToolBarTextBox.cs" />
-    <Compile Include="Util\ClipboardWrapper.cs" />
+    <Compile Include="ToolBar\ToolBarSplitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Util\NativeMethods.cs" />
     <Compile Include="Util\RightToLeftConverter.cs" />
     <Compile Include="WinFormsResourceService.cs" />
@@ -86,9 +106,5 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Menu" />
-    <Folder Include="MessageService" />
-    <Folder Include="ToolBar" />
-    <Folder Include="Util" />
   </ItemGroup>
 </Project>

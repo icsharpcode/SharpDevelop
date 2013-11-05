@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.NRefactory;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -46,10 +47,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 			IDocument document = editor.Document;
 			int lineNumber = line.LineNumber;
 			if (lineNumber > 1) {
-				IDocumentLine previousLine = document.GetLine(lineNumber - 1);
-				string indentation = DocumentUtilitites.GetWhitespaceAfter(document, previousLine.Offset);
+				IDocumentLine previousLine = document.GetLineByNumber(lineNumber - 1);
+				string indentation = DocumentUtilities.GetWhitespaceAfter(document, previousLine.Offset);
 				// copy indentation to line
-				string newIndentation = DocumentUtilitites.GetWhitespaceAfter(document, line.Offset);
+				string newIndentation = DocumentUtilities.GetWhitespaceAfter(document, line.Offset);
 				document.Replace(line.Offset, newIndentation.Length, indentation);
 			}
 		}
@@ -58,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		{
 			using (editor.Document.OpenUndoGroup()) {
 				for (int i = begin; i <= end; i++) {
-					IndentLine(editor, editor.Document.GetLine(i));
+					IndentLine(editor, editor.Document.GetLineByNumber(i));
 				}
 			}
 		}
@@ -72,9 +73,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// </summary>
 		protected void SurroundSelectionWithSingleLineComment(ITextEditor editor, string comment)
 		{
-			using (editor.Document.OpenUndoGroup()) {
-				Location startPosition = editor.Document.OffsetToPosition(editor.SelectionStart);
-				Location endPosition = editor.Document.OffsetToPosition(editor.SelectionStart + editor.SelectionLength);
+			IDocument document = editor.Document;
+			using (document.OpenUndoGroup()) {
+				TextLocation startPosition = document.GetLocation(editor.SelectionStart);
+				TextLocation endPosition = document.GetLocation(editor.SelectionStart + editor.SelectionLength);
 				
 				// endLine is one above endPosition if no characters are selected on the last line (e.g. line selection from the margin)
 				int endLine = (endPosition.Column == 1 && endPosition.Line > startPosition.Line) ? endPosition.Line - 1 : endPosition.Line;
@@ -83,16 +85,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 				bool removeComment = true;
 				
 				for (int i = startPosition.Line; i <= endLine; i++) {
-					lines.Add(editor.Document.GetLine(i));
-					if (!lines[i - startPosition.Line].Text.Trim().StartsWith(comment, StringComparison.Ordinal))
+					lines.Add(editor.Document.GetLineByNumber(i));
+					if (!document.GetText(lines[i - startPosition.Line]).Trim().StartsWith(comment, StringComparison.Ordinal))
 						removeComment = false;
 				}
 				
 				foreach (IDocumentLine line in lines) {
 					if (removeComment) {
-						editor.Document.Remove(line.Offset + line.Text.IndexOf(comment, StringComparison.Ordinal), comment.Length);
+						document.Remove(line.Offset + document.GetText(line).IndexOf(comment, StringComparison.Ordinal), comment.Length);
 					} else {
-						editor.Document.Insert(line.Offset, comment, AnchorMovementType.BeforeInsertion);
+						document.Insert(line.Offset, comment, AnchorMovementType.BeforeInsertion);
 					}
 				}
 			}
@@ -108,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 				int endOffset = editor.SelectionStart + editor.SelectionLength;
 				
 				if (editor.SelectionLength == 0) {
-					IDocumentLine line = editor.Document.GetLineForOffset(editor.SelectionStart);
+					IDocumentLine line = editor.Document.GetLineByOffset(editor.SelectionStart);
 					startOffset = line.Offset;
 					endOffset = line.Offset + line.Length;
 				}

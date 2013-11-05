@@ -3,6 +3,8 @@
 
 using System;
 using ICSharpCode.Reports.Addin;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.Test.Designer
 {
@@ -29,7 +31,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		
 		public void Attach(ReportDesignerView viewContent)
 		{
-		this.view = viewContent;
+			this.view = viewContent;
 		}
 		
 		public void Detach()
@@ -37,7 +39,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			throw new NotImplementedException();
 		}
 		
-		public System.Collections.Generic.IEnumerable<ICSharpCode.SharpDevelop.OpenedFile> GetSourceFiles(out ICSharpCode.SharpDevelop.OpenedFile designerCodeFile)
+		public System.Collections.Generic.IEnumerable<OpenedFile> GetSourceFiles(out OpenedFile designerCodeFile)
 		{
 			throw new NotImplementedException();
 		}

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding
@@ -31,12 +31,39 @@ namespace CSharpBinding
 				if (index > -1)
 					otherOffset = SearchBracketBackward(document, offset - 2, openingBrackets[index], closingBrackets[index]);
 				
-				if (otherOffset > -1)
-					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1,
-					                               Math.Max(offset - 1, otherOffset), 1);
+				if (otherOffset > -1) {
+					var result = new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1,
+					                                     Math.Max(offset - 1, otherOffset), 1);
+					SearchDefinition(document, result);
+					return result;
+				}
 			}
 			
 			return null;
+		}
+		
+		void SearchDefinition(IDocument document, BracketSearchResult result)
+		{
+			if (document.GetCharAt(result.OpeningBracketOffset) != '{')
+				return;
+			// get line
+			var documentLine = document.GetLineByOffset(result.OpeningBracketOffset);
+			while (documentLine != null && IsBracketOnly(document, documentLine))
+				documentLine = documentLine.PreviousLine;
+			if (documentLine != null) {
+				result.DefinitionHeaderOffset = documentLine.Offset;
+				result.DefinitionHeaderLength = documentLine.Length;
+			}
+		}
+		
+		bool IsBracketOnly(IDocument document, IDocumentLine documentLine)
+		{
+			string lineText = document.GetText(documentLine).Trim();
+			return lineText == "{" || string.IsNullOrEmpty(lineText)
+				|| lineText.StartsWith("//", StringComparison.Ordinal)
+				|| lineText.StartsWith("/*", StringComparison.Ordinal)
+				|| lineText.StartsWith("*", StringComparison.Ordinal)
+				|| lineText.StartsWith("'", StringComparison.Ordinal);
 		}
 		
 		#region SearchBracket helper functions

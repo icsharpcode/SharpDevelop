@@ -1,25 +1,27 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Search;
-using ICSharpCode.SharpDevelop.Editor;
-using System;
 using System.Windows.Forms;
+
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace SearchAndReplace
 {
-	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
+	// TODO: remove XmlForms
+	#pragma warning disable 618
+	class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
 		SearchAndReplaceMode searchAndReplaceMode;
 		
@@ -73,11 +75,10 @@ namespace SearchAndReplace
 		void LookInBrowseButtonClicked(object sender, EventArgs e)
 		{
 			ComboBox lookinComboBox = Get<ComboBox>("lookIn");
-			using (FolderBrowserDialog dlg = FileService.CreateFolderBrowserDialog("${res:Dialog.NewProject.SearchReplace.LookIn.SelectDirectory}", lookinComboBox.Text)) {
-				if (dlg.ShowDialog() == DialogResult.OK) {
-					lookinComboBox.SelectedIndex = customDirectoryIndex;
-					lookinComboBox.Text = dlg.SelectedPath;
-				}
+			string path = SD.FileService.BrowseForFolder("${res:Dialog.NewProject.SearchReplace.LookIn.SelectDirectory}", lookinComboBox.Text);
+			if (path != null) {
+				lookinComboBox.SelectedIndex = customDirectoryIndex;
+				lookinComboBox.Text = path;
 			}
 		}
 		
@@ -109,7 +110,7 @@ namespace SearchAndReplace
 				return;
 			}
 			// No using block for the monitor; it is disposed when the asynchronous search finishes
-			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			var monitor = SD.StatusBar.CreateProgressMonitor();
 			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 			var results = SearchManager.FindAllParallel(strategy, location, monitor);
 			SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
@@ -127,7 +128,7 @@ namespace SearchAndReplace
 				return;
 			}
 			// No using block for the monitor; it is disposed when the asynchronous search finishes
-			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			var monitor = SD.StatusBar.CreateProgressMonitor();
 			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 			var results = SearchManager.FindAllParallel(strategy, location, monitor);
 			SearchManager.MarkAll(results);

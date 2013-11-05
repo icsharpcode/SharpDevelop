@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -12,7 +13,6 @@ namespace ICSharpCode.Scripting
 	{
 		IViewContent view;
 		IEditable editable;
-		ITextEditorProvider textEditorProvider;
 		ITextEditor textEditor;
 		ITextEditorOptions textEditorOptions;
 		
@@ -29,9 +29,8 @@ namespace ICSharpCode.Scripting
 		void Init(IViewContent view)
 		{
 			this.view = view;
-			editable = view as IEditable;
-			textEditorProvider = view as ITextEditorProvider;
-			textEditor = textEditorProvider.TextEditor;
+			editable = view.GetService<IEditable>();
+			textEditor = view.GetService<ITextEditor>();
 			textEditorOptions = textEditor.Options;
 		}
 		

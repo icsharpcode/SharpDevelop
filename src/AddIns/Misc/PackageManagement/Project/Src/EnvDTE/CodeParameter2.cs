@@ -2,14 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeParameter2 : CodeParameter, global::EnvDTE.CodeParameter2
 	{
-		public CodeParameter2(IProjectContent projectContent, IParameter parameter)
-			: base(projectContent, parameter)
+		public CodeParameter2(CodeModelContext context, IParameter parameter)
+			: base(context, parameter)
 		{
 		}
 		
@@ -19,18 +20,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		global::EnvDTE.vsCMParameterKind GetParameterKind()
 		{
-			if (Parameter.IsOptional) {
-				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindOptional;
-			} else if (Parameter.IsOut) {
-				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindOut;
-			} else if (Parameter.IsRef) {
-				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindRef;
-			} else if (Parameter.IsParams) {
-				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindParamArray;
-			} else if (Parameter.IsIn()) {
-				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindIn;
+			global::EnvDTE.vsCMParameterKind kind = 0;
+			if (parameter.IsOptional) {
+				kind |= global::EnvDTE.vsCMParameterKind.vsCMParameterKindOptional;
 			}
-			return global::EnvDTE.vsCMParameterKind.vsCMParameterKindNone;
+			if (parameter.IsOut) {
+				kind |= global::EnvDTE.vsCMParameterKind.vsCMParameterKindOut;
+			} 
+			if (parameter.IsRef) {
+				kind |= global::EnvDTE.vsCMParameterKind.vsCMParameterKindRef;
+			} 
+			if (parameter.IsParams) {
+				kind |= global::EnvDTE.vsCMParameterKind.vsCMParameterKindParamArray;
+			} 
+			if (!(parameter.IsOut || parameter.IsRef)) {
+				kind |= global::EnvDTE.vsCMParameterKind.vsCMParameterKindIn;
+			}
+			return kind;
 		}
 	}
 }

@@ -2,9 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using Debugger.Interop.CorDebug;
 using Debugger.MetaData;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace Debugger
 {
@@ -14,7 +17,27 @@ namespace Debugger
 		
 		ICorDebugAppDomain corAppDomain;
 		
-		internal Dictionary<ICorDebugType, DebugType> DebugTypeCache = new Dictionary<ICorDebugType, DebugType>();
+		ICompilation compilation;
+		
+		internal void InvalidateCompilation()
+		{
+			compilation = null;
+		}
+		
+		public ICompilation Compilation {
+			get {
+				if (compilation == null) {
+					List<IUnresolvedAssembly> assemblies = new List<IUnresolvedAssembly>();
+					foreach (var module in process.Modules) {
+						if (module.AppDomain == this) {
+							assemblies.Add(module.UnresolvedAssembly);
+						}
+					}
+					compilation = TypeSystemExtensions.CreateCompilation(this, assemblies);
+				}
+				return compilation;
+			}
+		}
 		
 		public Process Process {
 			get { return process; }
@@ -42,8 +65,8 @@ namespace Debugger
 			}
 		}
 		
-		internal DebugType ObjectType {
-			get { return DebugType.CreateFromType(this.Mscorlib, typeof(object)); }
+		internal IType ObjectType {
+			get { return this.Compilation.FindType(KnownTypeCode.Object); }
 		}
 		
 		internal ICorDebugAppDomain CorAppDomain {

@@ -2,116 +2,49 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XamlBinding
 {
-	class XamlCodeCompletionItem : CodeCompletionItem
-	{
-		public XamlCodeCompletionItem(IEntity entity, string prefix)
-			: base(entity)
-		{
-			if (string.IsNullOrEmpty(prefix))
-				this.Text = entity.Name;
-			else
-				this.Text = prefix + ":" + entity.Name;
-			this.Content = this.Text;
-		}
-		
-		public XamlCodeCompletionItem(IEntity entity)
-			: base(entity)
-		{
-			this.Text = entity.Name;
-			this.Content = this.Text;
-		}
-		
-		public XamlCodeCompletionItem(string text, IEntity entity)
-			: base(entity)
-		{
-			this.Text = text;
-			this.Content = this.Text;
-		}
-		
-		public XamlCodeCompletionItem(IEntity entity, string prefix, string className)
-			: base(entity)
-		{
-			if (string.IsNullOrEmpty(prefix))
-				this.Text = className + "." + entity.Name;
-			else
-				this.Text = prefix + ":" + className + "." + entity.Name;
-			this.Content = this.Text;
-		}
-		
-		public override string ToString()
-		{
-			return "[" + this.Text + "]";
-		}
-	}
-	
-	class XamlLazyValueCompletionItem : XamlCodeCompletionItem
-	{
-		bool addType;
-		
-		public XamlLazyValueCompletionItem(IEntity entity, string text, bool addType)
-			: base(entity)
-		{
-			this.addType = addType;
-			this.Text = text;
-			this.Content = this.Text;
-		}
-		
-		public override void Complete(CompletionContext context)
-		{
-			if (addType) {
-				MarkAsUsed();
-				string newText = Entity.DeclaringType.Name + "." + Text;
-				context.Editor.Document.Replace(context.StartOffset, context.Length, newText);
-				context.EndOffset = context.StartOffset + newText.Length;
-			} else
-				base.Complete(context);
-		}
-	}
-	
+	/// <summary>
+	/// Description of XamlCompletionItem.
+	/// </summary>
 	class XamlCompletionItem : DefaultCompletionItem
 	{
-		string prefix, @namespace, name;
+		public XamlCompletionItem(string text)
+			: base(text)
+		{
+			this.entity = null;
+			this.Image = ClassBrowserIconService.Namespace;
+		}
 		
-		public XamlCompletionItem(string prefix, string @namespace, string name)
-			: base(prefix + ":" + name)
+		public XamlCompletionItem(IEntity entity)
+			: base(entity.Name)
 		{
-			this.prefix = prefix;
-			this.@namespace = @namespace;
-			this.name = name;
-			this.Image = ClassBrowserIconService.Namespace;
+			this.entity = entity;
+			this.Image = ClassBrowserIconService.GetIcon(entity);
+		}
+		
+		public XamlCompletionItem(string text, IEntity entity)
+			: base(text)
+		{
+			this.entity = entity;
+			this.Image = ClassBrowserIconService.GetIcon(entity);
+		}
+		
+		IEntity entity;
+		public IEntity Entity {
+			get {
+				return entity;
+			}
 		}
 	}
-	
-	class SpecialCompletionItem : DefaultCompletionItem
-	{
-		public SpecialCompletionItem(string name)
-			: base(name)
-		{
-			this.Image = ClassBrowserIconService.Namespace;
-		}
-	}
-	
-	class SpecialValueCompletionItem : DefaultCompletionItem
-	{
-		public SpecialValueCompletionItem(string name)
-			: base(name)
-		{
-			this.Image = ClassBrowserIconService.Const;
-		}
-	}
-	
+
 	class XmlnsCompletionItem : DefaultCompletionItem
 	{
 		string @namespace, assembly;
@@ -158,6 +91,27 @@ namespace ICSharpCode.XamlBinding
 				editor.Document.Replace(context.StartOffset, context.Length, newText);
 				context.EndOffset = context.StartOffset + newText.Length;
 			}
+		}
+	}
+	
+	class XamlLazyValueCompletionItem : XamlCompletionItem
+	{
+		bool addType;
+		
+		public XamlLazyValueCompletionItem(IEntity entity, string text, bool addType)
+			: base(text, entity)
+		{
+			this.addType = addType;
+		}
+		
+		public override void Complete(CompletionContext context)
+		{
+			if (addType) {
+				string newText = Entity + "." + Text;
+				context.Editor.Document.Replace(context.StartOffset, context.Length, newText);
+				context.EndOffset = context.StartOffset + newText.Length;
+			} else
+				base.Complete(context);
 		}
 	}
 	
@@ -248,7 +202,7 @@ namespace ICSharpCode.XamlBinding
 				if (headerText == null) {
 					IAmbience ambience = AmbienceService.GetCurrentAmbience();
 					ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-					headerText = ambience.Convert(ctor);
+					headerText = ambience.ConvertEntity(ctor);
 					headerText = headerText.Insert(headerText.LastIndexOf(')'), (ctor.Parameters.Count > 0 ? ", " : "") + "Named Parameters ...");
 				}
 				return headerText;
@@ -257,14 +211,15 @@ namespace ICSharpCode.XamlBinding
 		
 		public object Content {
 			get {
-				if (!descriptionCreated) {
-					string entityDoc = ctor.Documentation;
-					if (!string.IsNullOrEmpty(entityDoc)) {
-						description = CodeCompletionItem.ConvertDocumentation(entityDoc);
-					}
-					descriptionCreated = true;
-				}
-				return description;
+//				if (!descriptionCreated) {
+//					string entityDoc = ctor.Documentation;
+//					if (!string.IsNullOrEmpty(entityDoc)) {
+//						description = CodeCompletionItem.ConvertDocumentation(entityDoc);
+//					}
+//					descriptionCreated = true;
+//				}
+//				return description;
+				return null;
 			}
 		}
 	}
@@ -286,7 +241,7 @@ namespace ICSharpCode.XamlBinding
 		public object Header {
 			get {
 				if (headerText == null) {
-					headerText = this.member.Name + "=\"" + insightText + "\"";
+					headerText = member.Name + "=\"" + insightText + "\"";
 				}
 				
 				return headerText;
@@ -295,14 +250,15 @@ namespace ICSharpCode.XamlBinding
 		
 		public object Content {
 			get {
-				if (!descriptionCreated) {
-					string entityDoc = member.Documentation;
-					if (!string.IsNullOrEmpty(entityDoc)) {
-						description = CodeCompletionItem.ConvertDocumentation(entityDoc);
-					}
-					descriptionCreated = true;
-				}
-				return description;
+//				if (!descriptionCreated) {
+//					string entityDoc = member.Documentation;
+//					if (!string.IsNullOrEmpty(entityDoc)) {
+//						description = CompletionItem.ConvertDocumentation(entityDoc);
+//					}
+//					descriptionCreated = true;
+//				}
+//				return description;
+				return null;
 			}
 		}
 	}

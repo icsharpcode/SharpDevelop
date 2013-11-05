@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -24,6 +23,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 		
 		internal readonly List<TextView> textViews = new List<TextView>();
 		readonly TextSegmentCollection<FoldingSection> foldings;
+		bool isFirstUpdate = true;
 		
 		#region Constructor
 		/// <summary>
@@ -37,15 +37,6 @@ namespace ICSharpCode.AvalonEdit.Folding
 			this.foldings = new TextSegmentCollection<FoldingSection>();
 			document.VerifyAccess();
 			TextDocumentWeakEventManager.Changed.AddListener(document, this);
-		}
-		
-		/// <summary>
-		/// Creates a new FoldingManager instance.
-		/// </summary>
-		[Obsolete("Use the (TextDocument) constructor instead.")]
-		public FoldingManager(TextView textView, TextDocument document)
-			: this(document)
-		{
 		}
 		#endregion
 		
@@ -271,7 +262,10 @@ namespace ICSharpCode.AvalonEdit.Folding
 					// no matching current folding; create a new one:
 					section = this.CreateFolding(newFolding.StartOffset, newFolding.EndOffset);
 					// auto-close #regions only when opening the document
-					section.IsFolded = newFolding.DefaultClosed;
+					if (isFirstUpdate) {
+						section.IsFolded = newFolding.DefaultClosed;
+						isFirstUpdate = false;
+					}
 					section.Tag = newFolding;
 				}
 				section.Title = newFolding.Name;

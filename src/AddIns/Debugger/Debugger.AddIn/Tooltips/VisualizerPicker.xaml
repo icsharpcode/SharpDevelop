@@ -51,7 +51,7 @@
 							<Setter TargetName="FaceBorder" Property="Background" Value="White"/>
 							<Setter TargetName="FaceBorder" Property="BorderBrush" Value="#FFE0EDFF"/>
 							<!-- #FFE0EDFF border -->
-							<!--   #FFD9D9E9 fill  -->
+							<!-- #FFD9D9E9 fill -->
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>

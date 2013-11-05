@@ -12,11 +12,13 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
+	#pragma warning disable 618
 	public class AddComponentsDialog : BaseSharpDevelopForm
 	{
 		ArrayList selectedComponents;
@@ -46,7 +48,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void PrintGACCache()
 		{
-			foreach (DomAssemblyName asm in GacInterop.GetAssemblyList()) {
+			foreach (DomAssemblyName asm in SD.GlobalAssemblyCache.Assemblies) {
 				ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version.ToString()});
 				item.Tag = asm.FullName;
 				((ListView)ControlDictionary["gacListView"]).Items.Add(item);
@@ -217,7 +219,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				fdiag.Multiselect     = true;
 				fdiag.CheckFileExists = true;
 				
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					ControlDictionary["fileNameTextBox"].Text = string.Join(";", fdiag.FileNames);
 				}
 			}

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
@@ -23,7 +24,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public IEnumerable<IOptionPanelDescriptor> ChildOptionPanelDescriptors {
 			get {
-				return optionPanelDescriptors;
+				return optionPanelDescriptors ?? Enumerable.Empty<IOptionPanelDescriptor>();
 			}
 		}
 		

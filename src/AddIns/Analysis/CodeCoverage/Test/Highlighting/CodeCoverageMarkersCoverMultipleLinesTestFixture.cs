@@ -1,12 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using ICSharpCode.CodeCoverage;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Tests.Utils;
 using NUnit.Framework;
@@ -23,8 +24,8 @@ namespace ICSharpCode.CodeCoverage.Tests.Highlighting
 		public void SetUpFixture()
 		{
 			try {
-				string configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NCoverAddIn.Tests");
-				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
+				//string configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NCoverAddIn.Tests");
+				//PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
 			} catch (Exception) {}
 			
 			document = MockTextMarkerService.CreateDocumentWithMockService();
@@ -90,22 +91,22 @@ namespace ICSharpCode.CodeCoverage.Tests.Highlighting
 		[Test]
 		public void FirstMarkerPosition()
 		{
-			Assert.AreEqual(new Location(3, 1), document.OffsetToPosition(markers[0].StartOffset));
-			Assert.AreEqual(new Location(4, 1), document.OffsetToPosition(markers[0].EndOffset));
+			Assert.AreEqual(new TextLocation(1, 3), document.GetLocation(markers[0].StartOffset));
+			Assert.AreEqual(new TextLocation(1, 4), document.GetLocation(markers[0].EndOffset));
 		}
 		
 		[Test]
 		public void SecondMarkerPosition()
 		{
-			Assert.AreEqual(new Location(4, 2), document.OffsetToPosition(markers[1].StartOffset));
-			Assert.AreEqual(new Location(20, 9), document.OffsetToPosition(markers[1].EndOffset));
+			Assert.AreEqual(new TextLocation(2, 4), document.GetLocation(markers[1].StartOffset));
+			Assert.AreEqual(new TextLocation(9, 20), document.GetLocation(markers[1].EndOffset));
 		}
 		
 		[Test]
 		public void ThirdMarkerPosition()
 		{
-			Assert.AreEqual(new Location(3, 10), document.OffsetToPosition(markers[2].StartOffset));
-			Assert.AreEqual(new Location(4, 10), document.OffsetToPosition(markers[2].EndOffset));
+			Assert.AreEqual(new TextLocation(10, 3), document.GetLocation(markers[2].StartOffset));
+			Assert.AreEqual(new TextLocation(10, 4), document.GetLocation(markers[2].EndOffset));
 		}
 	}
 }

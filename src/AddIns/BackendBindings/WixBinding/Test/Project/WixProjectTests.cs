@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -15,6 +17,7 @@ namespace WixBinding.Tests.Project
 		
 		void CreateProject()
 		{
+			SD.InitializeForUnitTests();
 			project = WixBindingTestsHelper.CreateEmptyWixProject();
 		}
 		
@@ -22,7 +25,7 @@ namespace WixBinding.Tests.Project
 		public void OutputAssemblyFullPath_ProjectOutputTypeIsPackage_FileExtensionIsMsi()
 		{
 			CreateProject();
-			project.FileName = @"d:\projects\MySetup\MySetup.wixproj";
+			project.FileName = new FileName(@"d:\projects\MySetup\MySetup.wixproj");
 			project.AssemblyName = "MySetup";
 			project.SetProperty("OutputPath", @"bin\debug");
 			project.SetProperty("OutputType", "Package");

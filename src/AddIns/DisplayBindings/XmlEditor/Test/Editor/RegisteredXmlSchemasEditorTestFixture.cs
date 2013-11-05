@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows.Controls;
 using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -13,7 +14,7 @@ using XmlEditor.Tests.Utils;
 namespace XmlEditor.Tests.Editor
 {
 	[TestFixture]
-	public class RegisteredXmlSchemasEditorTestFixture
+	public class RegisteredXmlSchemasEditorTestFixture : SDTestFixtureBase
 	{
 		RegisteredXmlSchemasEditor schemasEditor;
 		MockXmlSchemaCompletionDataFactory factory;

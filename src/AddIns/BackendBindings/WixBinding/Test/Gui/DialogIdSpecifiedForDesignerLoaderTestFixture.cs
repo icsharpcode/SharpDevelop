@@ -27,7 +27,7 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			WixDialogDesignerLoader loader = new WixDialogDesignerLoader(this, new WixDialogDesignerGenerator());
+			WixDialogDesignerLoader loader = new WixDialogDesignerLoader(this);
 			loaderHost = new MockDesignerLoaderHost();
 			loader.BeginLoad(loaderHost);
 			IComponent rootComponent = loaderHost.RootComponent;
@@ -98,6 +98,12 @@ namespace WixBinding.Tests.Gui
 			}
 		}
 		
+		ICSharpCode.SharpDevelop.Editor.ITextEditor IWixDialogDesigner.PrimaryViewContentTextEditor {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+
 		string GetWixXml()
 		{
 			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +

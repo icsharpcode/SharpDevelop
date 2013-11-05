@@ -4,7 +4,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
@@ -32,7 +31,7 @@ namespace SearchAndReplace
 		{
 			if (Instance == null) {
 				Instance = new SearchAndReplaceDialog(searchAndReplaceMode);
-				Instance.Show(WorkbenchSingleton.MainWin32Window);
+				Instance.Show(SD.WinForms.MainWin32Window);
 			} else {
 				if (searchAndReplaceMode == SearchAndReplaceMode.Search) {
 					Instance.searchButton.PerformClick();
@@ -99,8 +98,10 @@ namespace SearchAndReplace
 				Close();
 			} else if (searchKeyboardShortcut == e.KeyData && !searchButton.Checked) {
 				EnableSearchMode(true);
+				e.Handled = true;
 			} else if (replaceKeyboardShortcut == e.KeyData && !replaceButton.Checked) {
 				EnableSearchMode(false);
+				e.Handled = true;
 			}
 		}
 		
@@ -146,7 +147,7 @@ namespace SearchAndReplace
 			if (node != null) {
 				foreach (Codon codon in node.Codons) {
 					if (codon.Id == id) {
-						return MenuCommand.ParseShortcut(codon.Properties["shortcut"]);
+						return (Keys)new KeysConverter().ConvertFromInvariantString(codon.Properties["shortcut"].Replace('|', '+'));
 					}
 				}
 			}

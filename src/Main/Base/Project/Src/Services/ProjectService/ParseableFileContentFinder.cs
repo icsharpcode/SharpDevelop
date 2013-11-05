@@ -4,9 +4,10 @@
 using System;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -16,19 +17,27 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class ParseableFileContentFinder
 	{
-		FileName[] viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction(() => FileService.OpenedFiles.Select(f => f.FileName).ToArray());
+		FileName[] viewContentFileNamesCollection = SD.MainThread.InvokeIfRequired(() => SD.FileService.OpenedFiles.Select(f => f.FileName).ToArray());
+		
+		public ITextSource CreateForOpenFile(FileName fileName)
+		{
+			foreach (FileName name in viewContentFileNamesCollection) {
+				if (FileUtility.IsEqualFileName(name, fileName))
+					return SD.FileService.GetFileContentForOpenFile(fileName);
+			}
+			return null;
+		}
 		
 		/// <summary>
 		/// Retrieves the file contents for the specified project items.
 		/// </summary>
-		public ITextBuffer Create(FileName fileName)
+		public ITextSource Create(FileName fileName)
 		{
-			foreach (FileName name in viewContentFileNamesCollection) {
-				if (FileUtility.IsEqualFileName(name, fileName))
-					return WorkbenchSingleton.SafeThreadFunction(ParserService.GetParseableFileContent, fileName.ToString());
-			}
+			ITextSource textSource = CreateForOpenFile(fileName);
+			if (textSource != null)
+				return textSource;
 			try {
-				return new StringTextBuffer(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, ParserService.DefaultFileEncoding));
+				return SD.FileService.GetFileContentFromDisk(fileName);
 			} catch (IOException) {
 				return null;
 			} catch (UnauthorizedAccessException) {

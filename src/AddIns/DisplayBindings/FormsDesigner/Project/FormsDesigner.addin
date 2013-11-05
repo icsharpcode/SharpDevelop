@@ -13,13 +13,6 @@
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
-	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id    = "FormsDesigner"
-		                type  = "Secondary"
-		                class = "ICSharpCode.FormsDesigner.FormsDesignerSecondaryDisplayBinding"
-		                fileNamePattern = "\.(cs|vb)$"/>
-	</Path>
-	
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/SelectionMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"

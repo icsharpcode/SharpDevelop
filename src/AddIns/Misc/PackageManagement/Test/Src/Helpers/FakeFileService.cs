@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -41,7 +43,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		void RemoveFirstProjectItem()
 		{
-			ProjectItem item = project.Items[0];
+			ProjectItem item = project.Items.First();
 			ProjectService.RemoveProjectItem(project, item);
 		}
 		
@@ -117,13 +119,14 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public string FileNamePassedToGetCompilationUnit;
-		public ICompilationUnit CompilationUnitToReturnFromGetCompilationUnit =
-			new DefaultCompilationUnit(new DefaultProjectContent());
+		//public ICompilation CompilationUnitToReturnFromGetCompilationUnit =
+		//	new DefaultCompilationUnit(new DefaultProjectContent());
 		
-		public ICompilationUnit GetCompilationUnit(string fileName)
+		public ICompilation GetCompilationUnit(string fileName)
 		{
 			FileNamePassedToGetCompilationUnit = fileName;
-			return CompilationUnitToReturnFromGetCompilationUnit;
+		//	return CompilationUnitToReturnFromGetCompilationUnit;
+			return null;
 		}
 		
 		Dictionary<string, IViewContent> openViews = new Dictionary<string, IViewContent>();

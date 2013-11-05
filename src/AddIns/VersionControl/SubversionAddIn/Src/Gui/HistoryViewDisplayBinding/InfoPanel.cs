@@ -9,6 +9,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Svn
@@ -157,7 +158,7 @@ namespace ICSharpCode.Svn
 				}
 				loadChangedPathsItem = null;
 				isLoadingChangedPaths = false;
-				WorkbenchSingleton.SafeThreadAsyncCall<object, EventArgs>(this.RevisionListViewSelectionChanged, null, EventArgs.Empty);
+				SD.MainThread.InvokeAsyncAndForget(() => this.RevisionListViewSelectionChanged(null, EventArgs.Empty));
 			} catch (Exception ex) {
 				MessageService.ShowException(ex);
 			}
@@ -170,7 +171,7 @@ namespace ICSharpCode.Svn
 		
 		void ReceiveAllChangedPaths(LogMessage logMessage)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(this.ReceiveAllChangedPathsInvoked, logMessage);
+			SD.MainThread.InvokeAsyncAndForget(() => this.ReceiveAllChangedPathsInvoked(logMessage));
 		}
 		
 		void ReceiveAllChangedPathsInvoked(LogMessage logMessage)

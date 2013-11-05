@@ -3,10 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
+using System.Windows.Threading;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Commands;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -23,15 +24,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		FileSystemWatcher watcher;
 		string fileName;
 		bool enabled = true;
+		DateTime lastWriteTime;
 
 		public ProjectChangeWatcher(string fileName)
 		{
 			this.fileName = fileName;
 			
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			activeWatchers.Add(this);
+			UpdateLastWriteTime();
 			
-			WorkbenchSingleton.MainWindow.Activated += MainFormActivated;
+			SD.Workbench.MainWindow.Activated += MainFormActivated;
 		}
 		
 		public void Enable()
@@ -50,10 +53,30 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			fileName = newFileName;
 		}
+		
+		void UpdateLastWriteTime()
+		{
+			// Save current last write time attribute
+			FileInfo fileInfo = new FileInfo(fileName);
+			if (fileInfo.Exists) {
+				lastWriteTime = fileInfo.LastWriteTimeUtc;
+			}
+		}
+		
+		bool LastWriteTimeHasChanged()
+		{
+			// Save current last write time attribute
+			FileInfo fileInfo = new FileInfo(fileName);
+			if (fileInfo.Exists) {
+				return lastWriteTime != fileInfo.LastWriteTimeUtc;
+			}
+
+			return true; // File might have been renamed/deleted?
+		}
 
 		void SetWatcher()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 
 			if (watcher != null) {
 				watcher.EnableRaisingEvents = false;
@@ -72,8 +95,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				if (watcher == null) {
 					watcher = new FileSystemWatcher();
-					if (WorkbenchSingleton.Workbench != null)
-						watcher.SynchronizingObject = WorkbenchSingleton.Workbench.SynchronizingObject;
+					watcher.SynchronizingObject = SD.MainThread.SynchronizingObject;
 					watcher.Changed += OnFileChangedEvent;
 					watcher.Created += OnFileChangedEvent;
 					watcher.Renamed += OnFileChangedEvent;
@@ -105,14 +127,21 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 		{
-			LoggingService.Debug("Project file " + e.Name + " was changed externally: {1}" + e.ChangeType);
+			// Ignore this event, if LastWriteTime has changed to same value as before (= no real change in file)
+			if ((e.ChangeType == WatcherChangeTypes.Changed) && !LastWriteTimeHasChanged()) {
+				LoggingService.DebugFormatted("Attributes of project file {0} have been set externally ({1}), but no relevant changes detected.", e.Name, e.ChangeType);
+				return;
+			}
+			
+			LoggingService.DebugFormatted("Project file {0} was changed externally: {1}", e.Name, e.ChangeType);
+			UpdateLastWriteTime();
 			if (!wasChangedExternally) {
 				wasChangedExternally = true;
-				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
+				if (SD.Workbench.IsActiveWindow) {
 					// delay reloading message a bit, prevents showing two messages
 					// when the file changes twice in quick succession; and prevents
 					// trying to reload the file while it is still being written
-					WorkbenchSingleton.CallLater(TimeSpan.FromSeconds(0.5), delegate { MainFormActivated(this, EventArgs.Empty); });
+					SD.MainThread.CallLater(TimeSpan.FromSeconds(0.5), delegate { MainFormActivated(); });
 				}
 			}
 		}
@@ -120,6 +149,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		static bool showingMessageBox;
 		
 		static void MainFormActivated(object sender, EventArgs e)
+		{
+			// delay the event so that we don't interrupt the user if he's trying to close SharpDevelop
+			SD.MainThread.InvokeAsyncAndForget(MainFormActivated, DispatcherPriority.Background);
+		}
+		
+		static void MainFormActivated()
 		{
 			if (wasChangedExternally && !showingMessageBox) {
 
@@ -136,7 +171,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					showingMessageBox = false;
 					wasChangedExternally = false;
 					if (result == 0)
-						ProjectService.LoadSolution(ProjectService.OpenSolution.FileName);
+						SD.ProjectService.OpenSolutionOrProject(ProjectService.OpenSolution.FileName);
 					else if (result == 2)
 						new CloseSolution().Run();
 				} else {
@@ -149,9 +184,9 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		public void Dispose()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (!disposed) {
-				WorkbenchSingleton.MainWindow.Activated -= MainFormActivated;
+				SD.Workbench.MainWindow.Activated -= MainFormActivated;
 				activeWatchers.Remove(this);
 			}
 			if (watcher != null) {

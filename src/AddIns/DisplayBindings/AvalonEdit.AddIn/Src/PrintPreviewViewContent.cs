@@ -12,7 +12,9 @@ using System.Windows.Media;
 using System.Windows.Xps;
 using System.Windows.Xps.Packaging;
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -109,12 +111,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public static void ShowDocument(IDocumentPaginatorSource document, string description)
 		{
-			PrintPreviewViewContent vc = WorkbenchSingleton.Workbench.ViewContentCollection.OfType<PrintPreviewViewContent>().FirstOrDefault();
+			PrintPreviewViewContent vc = SD.Workbench.ViewContentCollection.OfType<PrintPreviewViewContent>().FirstOrDefault();
 			if (vc != null) {
 				vc.WorkbenchWindow.SelectWindow();
 			} else {
 				vc = new PrintPreviewViewContent();
-				WorkbenchSingleton.Workbench.ShowView(vc);
+				SD.Workbench.ShowView(vc);
 			}
 			vc.Document = document;
 			vc.Description = description;

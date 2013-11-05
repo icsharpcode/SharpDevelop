@@ -2,14 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Resources;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
+using Microsoft.Build.Evaluation;
+using Rhino.Mocks;
 
 namespace WixBinding.Tests.Utils
 {
@@ -24,7 +27,7 @@ namespace WixBinding.Tests.Utils
 			{
 			}
 			
-			public override bool ReadOnly {
+			public override bool IsReadOnly {
 				get { return false; }
 			}
 		}
@@ -42,10 +45,9 @@ namespace WixBinding.Tests.Utils
 			InitMSBuildEngine();
 			
 			// create the project.
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.Solution = new Solution(new MockProjectChangeWatcher());
+			ProjectCreateInformation info = new ProjectCreateInformation(MockRepository.GenerateStub<ISolution>(), new FileName(@"C:\Projects\Test\Test.wixproj"));
+			info.Solution.Stub(s => s.MSBuildProjectCollection).Return(new ProjectCollection());
 			info.ProjectName = "Test";
-			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
 
 			return new DummyWixProject(info);
 		}
@@ -80,7 +82,10 @@ namespace WixBinding.Tests.Utils
 			string codeBase = typeof(WixBindingTestsHelper).Assembly.CodeBase.Replace("file:///", String.Empty);
 			string folder = Path.GetDirectoryName(codeBase);
 			string fileName = Path.Combine(folder, "wix2010.targets");
-			MSBuildEngine.MSBuildProperties["WixTargetsPath"] = fileName;
+			SD.Services.RemoveService(typeof(IMSBuildEngine));
+			SD.Services.AddService(typeof(IMSBuildEngine), MockRepository.GenerateStrictMock<IMSBuildEngine>());
+			var globalBuildProperties = new Dictionary<string, string> { { "WixTargetsPath", fileName } };
+			SD.MSBuildEngine.Stub(e => e.GlobalBuildProperties).Return(globalBuildProperties);
 		}
 		
 		/// <summary>
@@ -88,8 +93,9 @@ namespace WixBinding.Tests.Utils
 		/// </summary>
 		public static void RegisterResourceStringsWithSharpDevelopResourceManager()
 		{
+			ResourceServiceHelper.InitializeForUnitTests();
 			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", typeof(WixBindingTestsHelper).Assembly);
-			ResourceService.RegisterNeutralStrings(rm);
+			SD.ResourceService.RegisterNeutralStrings(rm);
 		}
 	}
 }

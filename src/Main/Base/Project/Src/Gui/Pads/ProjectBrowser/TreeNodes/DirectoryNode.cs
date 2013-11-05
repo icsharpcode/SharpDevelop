@@ -7,9 +7,9 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -34,20 +34,20 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.performMove = performMove;
 		}
 		
-		public static IDataObject CreateDataObject(FileNode node, bool performMove)
+		public static System.Windows.IDataObject CreateDataObject(FileNode node, bool performMove)
 		{
-			return new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(node.FileName, performMove));
+			return new System.Windows.DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(node.FileName, performMove));
 		}
 		
-		public static IDataObject CreateDataObject(SolutionItemNode node, bool performMove)
+		public static System.Windows.IDataObject CreateDataObject(SolutionItemNode node, bool performMove)
 		{
-			return new DataObject(typeof(SolutionItemNode).ToString(),
+			return new System.Windows.DataObject(typeof(SolutionItemNode).ToString(),
 			                      new FileOperationClipboardObject(node.FileName, performMove));
 		}
 		
-		public static IDataObject CreateDataObject(DirectoryNode node, bool performMove)
+		public static System.Windows.IDataObject CreateDataObject(DirectoryNode node, bool performMove)
 		{
-			return new DataObject(typeof(DirectoryNode).ToString(),
+			return new System.Windows.DataObject(typeof(DirectoryNode).ToString(),
 			                      new FileOperationClipboardObject(node.Directory, performMove));
 		}
 	}
@@ -188,8 +188,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		string directory = String.Empty;
-		public virtual string Directory {
+		DirectoryName directory;
+		public virtual DirectoryName Directory {
 			get {
 				return directory;
 			}
@@ -233,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			sortOrder = 1;
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode";
-			this.Directory = directory.Trim('\\', '/');
+			this.Directory = DirectoryName.Create(directory);
 			this.fileNodeStatus = fileNodeStatus;
 			this.ProjectItem = projectItem;
 			
@@ -493,7 +493,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				}
 				
-				this.directory = newPath;
+				this.directory = DirectoryName.Create(newPath);
 				Project.Save();
 			}
 		}
@@ -524,11 +524,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnablePaste {
 			get {
-				IDataObject dataObject = ClipboardWrapper.GetDataObject();
+				System.Windows.IDataObject dataObject = SD.Clipboard.GetDataObject();
 				if (dataObject == null) {
 					return false;
 				}
-				if (dataObject.GetDataPresent(DataFormats.FileDrop)) {
+				if (dataObject.GetDataPresent(System.Windows.DataFormats.FileDrop)) {
 					return true;
 				}
 				if (dataObject.GetDataPresent(typeof(FileNode))) {
@@ -550,7 +550,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Paste()
 		{
-			IDataObject dataObject = ClipboardWrapper.GetDataObject();
+			System.Windows.IDataObject dataObject = SD.Clipboard.GetDataObject();
 			if (dataObject == null)
 				return;
 			
@@ -645,7 +645,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			FileProjectItem newItem = AddExistingItemsToProject.CopyFile(fileName, this, true);
-			IProject sourceProject = Solution.FindProjectContainingFile(fileName);
+			IProject sourceProject = SD.ProjectService.FindProjectContainingFile(FileName.Create(fileName));
 			if (sourceProject != null) {
 				string sourceDirectory = Path.GetDirectoryName(fileName);
 				bool dependendElementsCopied = false;
@@ -674,7 +674,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					RecreateSubNodes();
 			}
 			if (performMove) {
-				foreach (OpenedFile file in FileService.OpenedFiles) {
+				foreach (OpenedFile file in SD.FileService.OpenedFiles) {
 					if (file.FileName != null &&
 					    FileUtility.IsEqualFileName(file.FileName, fileName))
 					{
@@ -729,7 +729,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		public override void Copy()
 		{
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
 		}
 		
 		public override bool EnableCut {
@@ -744,7 +744,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
 		}
 		#endregion
 		

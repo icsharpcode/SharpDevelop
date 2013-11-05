@@ -4,8 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
-
+/*
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	public class FindLocalVariableReferencesCommand : AbstractMenuCommand
@@ -37,3 +36,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
+*/

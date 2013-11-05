@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextTemplating;
 using NUnit.Framework;
@@ -15,6 +16,18 @@ namespace TextTemplating.Tests
 		NamespaceHint namespaceHint;
 		IProject project;
 		TestableFileProjectItem templateFile;
+		
+		[SetUp]
+		public void Init()
+		{
+			SD.InitializeForUnitTests();
+		}
+		
+		[TearDown]
+		public void TearDown()
+		{
+			SD.TearDownForUnitTests();
+		}
 		
 		void CreateProjectTemplateFile()
 		{

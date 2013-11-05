@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+/* TODO: Reimplement C#<->VB converter
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -34,9 +35,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 				PreprocessingDirective.VBToCSharp(specials);
 				IAstVisitor v = new VBNetToCSharpConvertVisitor(ParserService.CurrentProjectContent,
 				                                                ParserService.GetParseInformation(content.PrimaryFileName));
-				v.VisitCompilationUnit(p.CompilationUnit, null);
+				v.VisitSyntaxTree(p.SyntaxTree, null);
 				using (SpecialNodesInserter.Install(specials, output)) {
-					output.VisitCompilationUnit(p.CompilationUnit, null);
+					output.VisitSyntaxTree(p.SyntaxTree, null);
 				}
 				
 				FileService.NewFile("Generated.cs", output.Text);
@@ -44,3 +45,4 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 }
+*/

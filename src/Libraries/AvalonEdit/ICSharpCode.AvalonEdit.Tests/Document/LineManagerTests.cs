@@ -105,7 +105,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void InsertNull()
 		{
-			document.Insert(0, null);
+			document.Insert(0, (string)null);
 		}
 		
 		[Test, ExpectedException(typeof(ArgumentNullException))]

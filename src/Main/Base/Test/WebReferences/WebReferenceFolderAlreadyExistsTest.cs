@@ -19,9 +19,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// one exists with the same name.
 	/// </summary>
 	[TestFixture]
-	public class WebReferenceFolderAlreadyExistsTest
+	public class WebReferenceFolderAlreadyExistsTest : SDTestFixtureBase
 	{
-		SD.WebReference webReference;
+		Gui.WebReference webReference;
 		DiscoveryClientProtocol protocol;
 		MSBuildBasedProject project;
 		WebReferenceUrl webReferenceUrl;
@@ -35,11 +35,11 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		string proxyNamespace = "WebReferenceNamespace";
 		string updateFromUrl = "http://localhost/test.asmx";
 		
-		[TestFixtureSetUp]
-		public void SetupFixture()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			project = WebReferenceTestHelper.CreateTestProject("C#");
-			project.FileName = "C:\\Projects\\Web.csproj";
+			project.FileName = FileName.Create("C:\\Projects\\Web.csproj");
 			WebReferencesProjectItem item = new WebReferencesProjectItem(project);
 			item.Include = "Web References\\";
 			ProjectService.AddProjectItem(project, item);
@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			WebReferenceTestHelper.InitializeProjectBindings();
 			
-			webReference = new SD.WebReference(project, updateFromUrl, oldName, proxyNamespace, protocol);
+			webReference = new Gui.WebReference(project, updateFromUrl, oldName, proxyNamespace, protocol);
 			
 			// Force generation of items.
 			List<ProjectItem> items = webReference.Items;

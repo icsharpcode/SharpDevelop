@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
+using ICSharpCode.AvalonEdit.AddIn.ContextActions;
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Document;
@@ -24,13 +25,16 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Commands;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -44,7 +48,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public ITextEditor Adapter { get; set; }
 		
 		BracketHighlightRenderer bracketRenderer;
-		CaretReferencesRenderer caretReferencesRenderer;
+		//CaretReferencesRenderer caretReferencesRenderer;
 		ContextActionsRenderer contextActionsRenderer;
 		HiddenDefinition.HiddenDefinitionRenderer hiddenDefinitionRenderer;
 		
@@ -53,7 +57,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
 			
 			this.bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
-			this.caretReferencesRenderer = new CaretReferencesRenderer(this);
+			//this.caretReferencesRenderer = new CaretReferencesRenderer(this);
 			this.contextActionsRenderer = new ContextActionsRenderer(this);
 			this.hiddenDefinitionRenderer = new HiddenDefinition.HiddenDefinitionRenderer(this);
 			
@@ -61,8 +65,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			this.MouseHover += TextEditorMouseHover;
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;
+			this.MouseMove += TextEditorMouseMove;
 			this.MouseLeave += TextEditorMouseLeave;
+			this.Unloaded += OnUnloaded;
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
+			this.TextArea.TextView.MouseUp += TextViewMouseUp;
 			this.TextArea.Caret.PositionChanged += HighlightBrackets;
 			this.TextArea.TextView.VisualLinesChanged += CodeEditorView_VisualLinesChanged;
 			
@@ -79,10 +86,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public virtual void Dispose()
 		{
 			contextActionsRenderer.Dispose();
-			hiddenDefinitionRenderer.Dispose();
+			hiddenDefinitionRenderer.ClosePopup();
 		}
 		
-		protected override string FileName {
+		public IList<IContextActionProvider> ContextActionProviders {
+			get { return contextActionsRenderer.Providers; }
+		}
+		
+		protected override ICSharpCode.Core.FileName FileName {
 			get { return this.Adapter.FileName; }
 		}
 		
@@ -97,8 +108,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					UpdateParseInformationForFolding();
 					break;
 				case "HighlightSymbol":
-					if (this.caretReferencesRenderer != null)
-						this.caretReferencesRenderer.ClearHighlight();
+					//if (this.caretReferencesRenderer != null)
+					//	this.caretReferencesRenderer.ClearHighlight();
 					break;
 			}
 		}
@@ -124,8 +135,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						this.bracketRenderer.SetHighlight(null);
 					}
 					if (CodeEditorOptions.Instance.ShowHiddenDefinitions) {
-						this.hiddenDefinitionRenderer.BracketSearchResult = bracketSearchResult;
-						this.hiddenDefinitionRenderer.Show();
+						this.hiddenDefinitionRenderer.Show(bracketSearchResult);
 					} else {
 						this.hiddenDefinitionRenderer.ClosePopup();
 					}
@@ -171,7 +181,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public void Execute(object parameter)
 			{
 				if (editor.SelectionLength == 0) {
-					int wordStart = DocumentUtilitites.FindPrevWordStart(editor.Adapter.Document, editor.CaretOffset);
+					int wordStart = DocumentUtilities.FindPrevWordStart(editor.Adapter.Document, editor.CaretOffset);
 					if (wordStart > 0) {
 						string word = editor.Adapter.Document.GetText(wordStart, editor.CaretOffset - wordStart);
 						CodeSnippet snippet = SnippetManager.Instance.FindSnippet(Path.GetExtension(editor.Adapter.FileName),
@@ -214,29 +224,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void ShowHelp()
 		{
 			// Resolve expression at cursor and show help
-			TextArea textArea = this.TextArea;
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(this.Adapter.FileName);
-			if (expressionFinder == null)
-				return;
-			string textContent = this.Text;
-			ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, textArea.Caret.Offset);
-			string expression = expressionResult.Expression;
-			if (!string.IsNullOrEmpty(expression)) {
-				ResolveResult result = ParserService.Resolve(expressionResult, textArea.Caret.Line, textArea.Caret.Column, this.Adapter.FileName, textContent);
-				TypeResolveResult trr = result as TypeResolveResult;
-				if (trr != null) {
-					HelpProvider.ShowHelp(trr.ResolvedClass);
-				}
-				MemberResolveResult mrr = result as MemberResolveResult;
-				if (mrr != null) {
-					switch (mrr.ResolvedMember.DeclaringType.ClassType) {
-						case ClassType.Enum:
-							HelpProvider.ShowHelp(mrr.ResolvedMember.DeclaringType);
-							break;
-						default:
-							HelpProvider.ShowHelp(mrr.ResolvedMember);
-							break;
-					}
+			var compilation = SD.ParserService.GetCompilationForFile(FileName);
+			var result = SD.ParserService.Resolve(Adapter, TextArea.Caret.Location, compilation);
+			TypeResolveResult trr = result as TypeResolveResult;
+			if (trr != null && trr.Type.GetDefinition() != null) {
+				HelpProvider.ShowHelp(trr.Type.GetDefinition());
+			}
+			MemberResolveResult mrr = result as MemberResolveResult;
+			if (mrr != null) {
+				if ((mrr.Member.DeclaringType.Kind == TypeKind.Enum) &&
+				    (mrr.Member.DeclaringType.GetDefinition() != null)) {
+					HelpProvider.ShowHelp(mrr.Member.DeclaringType.GetDefinition());
+				} else {
+					HelpProvider.ShowHelp(mrr.Member);
 				}
 			}
 		}
@@ -244,40 +244,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		#region Tooltip
 		ToolTip toolTip;
-		Popup popup;
+		Popup popupToolTip;
 		
 		void TextEditorMouseHover(object sender, MouseEventArgs e)
 		{
 			Debug.Assert(sender == this);
+			
+			if (!TryCloseExistingPopup(false)) {
+				return;
+			}
+			
 			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(this.Adapter);
 			var pos = this.TextArea.TextView.GetPositionFloor(e.GetPosition(this.TextArea.TextView) + this.TextArea.TextView.ScrollOffset);
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
-				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value.Location);
-			}
-			
-			if (args.InDocument) {
-				int offset = args.Editor.Document.PositionToOffset(args.LogicalPosition.Line, args.LogicalPosition.Column);
-				
-				FoldingManager foldings = this.Adapter.GetService(typeof(FoldingManager)) as FoldingManager;
-				if (foldings != null) {
-					var foldingsAtOffset = foldings.GetFoldingsAt(offset);
-					FoldingSection collapsedSection = foldingsAtOffset.FirstOrDefault(section => section.IsFolded);
-					
-					if (collapsedSection != null) {
-						args.SetToolTip(GetTooltipTextForCollapsedSection(collapsedSection));
-					}
-				}
-				
-				TextMarkerService textMarkerService = this.Adapter.GetService(typeof(ITextMarkerService)) as TextMarkerService;
-				if (textMarkerService != null) {
-					var markersAtOffset = textMarkerService.GetMarkersAtOffset(offset);
-					ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
-					
-					if (markerWithToolTip != null) {
-						args.SetToolTip(markerWithToolTip.ToolTip);
-					}
-				}
+				args.LogicalPosition = pos.Value.Location;
 			}
 			
 			if (!args.Handled) {
@@ -286,26 +267,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			
 			if (args.ContentToShow != null) {
-				var contentToShowITooltip = args.ContentToShow as ITooltip;
+				popupToolTip = args.ContentToShow as Popup;
 				
-				if (contentToShowITooltip != null && contentToShowITooltip.ShowAsPopup) {
-					if (!(args.ContentToShow is UIElement)) {
-						throw new NotSupportedException("Content to show in Popup must be UIElement: " + args.ContentToShow);
-					}
-					if (popup == null) {
-						popup = CreatePopup();
-					}
-					// if popup was only first level, hovering somewhere else closes it
-					if (TryCloseExistingPopup(false)) {
-						
-						// when popup content decides to close, close the popup
-						contentToShowITooltip.Closed += (closedSender, closedArgs) => { popup.IsOpen = false; };
-						popup.Child = (UIElement)args.ContentToShow;
-						//ICSharpCode.SharpDevelop.Debugging.DebuggerService.CurrentDebugger.IsProcessRunningChanged
-						SetPopupPosition(popup, e);
-						popup.IsOpen = true;
-					}
+				if (popupToolTip != null) {
+					var popupPosition = GetPopupPosition(e);
+					popupToolTip.Closed += ToolTipClosed;
+					popupToolTip.HorizontalOffset = popupPosition.X;
+					popupToolTip.VerticalOffset = popupPosition.Y;
+					popupToolTip.StaysOpen = true;  // We will close it ourselves
+					
 					e.Handled = true;
+					popupToolTip.IsOpen = true;
+					distanceToPopupLimit = double.PositiveInfinity; // reset limit; we'll re-calculate it on the next mouse movement
 				} else {
 					if (toolTip == null) {
 						toolTip = new ToolTip();
@@ -323,38 +296,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					else
 						toolTip.Content = args.ContentToShow;
 					
+					e.Handled = true;
 					toolTip.IsOpen = true;
-					e.Handled = true;
 				}
-			} else {
-				// close popup if mouse hovered over empty area
-				if (popup != null) {
-					e.Handled = true;
-				}
-				TryCloseExistingPopup(false);
 			}
 		}
 		
-		bool TryCloseExistingPopup(bool hard)
+		bool TryCloseExistingPopup(bool mouseClick)
 		{
-			bool canClose = true;
-			if (popup != null) {
-				var popupContentITooltip = popup.Child as ITooltip;
-				if (popupContentITooltip != null) {
-					canClose = popupContentITooltip.Close(hard);
+			if (popupToolTip != null) {
+				if (popupToolTip.IsOpen && !mouseClick && popupToolTip is ITooltip && !((ITooltip)popupToolTip).CloseWhenMouseMovesAway) {
+					return false; // Popup does not want to be closed yet
 				}
-				if (canClose) {
-					popup.IsOpen = false;
-				}
+				popupToolTip.IsOpen = false;
+				popupToolTip = null;
 			}
-			return canClose;
-		}
-		
-		void SetPopupPosition(Popup popup, MouseEventArgs mouseArgs)
-		{
-			var popupPosition = GetPopupPosition(mouseArgs);
-			popup.HorizontalOffset = popupPosition.X;
-			popup.VerticalOffset = popupPosition.Y;
+			return true;
 		}
 		
 		/// <summary> Returns Popup position based on mouse position, in device independent units </summary>
@@ -377,133 +334,104 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return positionInPixels.TransformFromDevice(this);
 		}
 		
-		Popup CreatePopup()
-		{
-			popup = new Popup();
-			popup.Closed += PopupClosed;
-			popup.AllowsTransparency = true;
-			popup.PlacementTarget = this; // required for property inheritance
-			popup.Placement = PlacementMode.Absolute;
-			popup.StaysOpen = true;
-			return popup;
-		}
-		
 		void TextEditorMouseHoverStopped(object sender, MouseEventArgs e)
 		{
+			// Non-popup tooltips get closed as soon as the mouse starts moving again
 			if (toolTip != null) {
 				toolTip.IsOpen = false;
 				e.Handled = true;
 			}
 		}
 		
+		double distanceToPopupLimit;
+		const double MaxMovementAwayFromPopup = 5;
+		
+		void TextEditorMouseMove(object sender, MouseEventArgs e)
+		{
+			if (popupToolTip != null) {
+				double distanceToPopup = GetDistanceToPopup(e);
+				if (distanceToPopup > distanceToPopupLimit) {
+					// Close popup if mouse moved away, exceeding the limit
+					TryCloseExistingPopup(false);
+				} else {
+					// reduce distanceToPopupLimit
+					distanceToPopupLimit = Math.Min(distanceToPopupLimit, distanceToPopup + MaxMovementAwayFromPopup);
+				}
+			}
+		}
+		
+		double GetDistanceToPopup(MouseEventArgs e)
+		{
+			Point p = popupToolTip.Child.PointFromScreen(PointToScreen(e.GetPosition(this)));
+			Size size = popupToolTip.Child.RenderSize;
+			double x = 0;
+			if (p.X < 0)
+				x = -p.X;
+			else if (p.X > size.Width)
+				x = p.X - size.Width;
+			double y = 0;
+			if (p.Y < 0)
+				y = -p.Y;
+			else if (p.Y > size.Height)
+				y = p.Y - size.Height;
+			return Math.Sqrt(x * x + y * y);
+		}
+		
 		void TextEditorMouseLeave(object sender, MouseEventArgs e)
 		{
-			if (popup != null && !popup.IsMouseOver) {
+			if (popupToolTip != null && !popupToolTip.IsMouseOver) {
 				// do not close popup if mouse moved from editor to popup
 				TryCloseExistingPopup(false);
 			}
 		}
+		
+		void OnUnloaded(object sender, EventArgs e)
+		{
+			// Close popup when another document gets selected
+			// TextEditorMouseLeave is not sufficient for this because the mouse might be over the popup when the document switch happens (e.g. Ctrl+Tab)
+			TryCloseExistingPopup(true);
+		}
 
-		void ToolTipClosed(object sender, RoutedEventArgs e)
+		void ToolTipClosed(object sender, EventArgs e)
 		{
-			toolTip = null;
-		}
-		
-		void PopupClosed(object sender, EventArgs e)
-		{
-			popup = null;
-		}
-		
-		#region GetTooltipTextForCollapsedSection
-		string GetTooltipTextForCollapsedSection(FoldingSection foldingSection)
-		{
-			// This fixes SD-1394:
-			// Each line is checked for leading indentation whitespaces. If
-			// a line has the same or more indentation than the first line,
-			// it is reduced. If a line is less indented than the first line
-			// the indentation is removed completely.
-			//
-			// See the following example:
-			// 	line 1
-			// 		line 2
-			// 			line 3
-			//  line 4
-			//
-			// is reduced to:
-			// line 1
-			// 	line 2
-			// 		line 3
-			// line 4
-			
-			const int maxLineCount = 15;
-			
-			TextDocument document = this.Document;
-			int startOffset = foldingSection.StartOffset;
-			int endOffset = foldingSection.EndOffset;
-			
-			DocumentLine startLine = document.GetLineByOffset(startOffset);
-			DocumentLine endLine = document.GetLineByOffset(endOffset);
-			StringBuilder builder = new StringBuilder();
-			
-			DocumentLine current = startLine;
-			ISegment startIndent = TextUtilities.GetLeadingWhitespace(document, startLine);
-			int lineCount = 0;
-			while (current != endLine.NextLine && lineCount < maxLineCount) {
-				ISegment currentIndent = TextUtilities.GetLeadingWhitespace(document, current);
-				
-				if (current == startLine && current == endLine)
-					builder.Append(document.GetText(startOffset, endOffset - startOffset));
-				else if (current == startLine) {
-					if (current.EndOffset - startOffset > 0)
-						builder.AppendLine(document.GetText(startOffset, current.EndOffset - startOffset).TrimStart());
-				} else if (current == endLine) {
-					if (startIndent.Length <= currentIndent.Length)
-						builder.Append(document.GetText(current.Offset + startIndent.Length, endOffset - current.Offset - startIndent.Length));
-					else
-						builder.Append(document.GetText(current.Offset + currentIndent.Length, endOffset - current.Offset - currentIndent.Length));
-				} else {
-					if (startIndent.Length <= currentIndent.Length)
-						builder.AppendLine(document.GetText(current.Offset + startIndent.Length, current.Length - startIndent.Length));
-					else
-						builder.AppendLine(document.GetText(current.Offset + currentIndent.Length, current.Length - currentIndent.Length));
-				}
-				
-				current = current.NextLine;
-				lineCount++;
+			if (toolTip == sender) {
+				toolTip = null;
 			}
-			if (current != endLine.NextLine)
-				builder.Append("...");
-			
-			return builder.ToString();
+			if (popupToolTip == sender) {
+				// Because popupToolTip instances are created by the tooltip provider,
+				// they might be reused; so we should detach the event handler
+				popupToolTip.Closed -= ToolTipClosed;
+				popupToolTip = null;
+			}
 		}
-		#endregion
 		#endregion
 		
 		#region Ctrl+Click Go To Definition
-		GoToDefinition goToDefinitionCommand;
-		protected GoToDefinition GotoDefinitionCommand {
-			get
-			{
-				if (goToDefinitionCommand == null)
-					goToDefinitionCommand = new GoToDefinition();
-				return goToDefinitionCommand;
-			}
-		}
+		bool ctrlClickExecuted = false;
 		
 		void TextViewMouseDown(object sender, MouseButtonEventArgs e)
 		{
 			// close existing debugger popup immediately on text editor mouse down
 			TryCloseExistingPopup(false);
+			ctrlClickExecuted = false;
 			
 			if (options.CtrlClickGoToDefinition && e.ChangedButton == MouseButton.Left && Keyboard.Modifiers == ModifierKeys.Control) {
 				// Ctrl+Click Go to definition
 				var position = GetPositionFromPoint(e.GetPosition(this));
 				if (position == null)
 					return;
-				Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
-				this.GotoDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value.Location));
+				SD.AnalyticsMonitor.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
+				var resolveResult = SD.ParserService.Resolve(Adapter, position.Value.Location);
+				var goToDefinitionCommand = new GoToDefinition();
+				goToDefinitionCommand.Run(resolveResult);
 				e.Handled = true;
+				ctrlClickExecuted = true;
 			}
+		}
+		
+		void TextViewMouseUp(object sender, MouseButtonEventArgs e)
+		{
+			e.Handled = options.CtrlClickGoToDefinition && ctrlClickExecuted;
 		}
 		#endregion
 		
@@ -535,31 +463,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			CaretHighlightAdorner adorner = new CaretHighlightAdorner(textArea);
 			layer.Add(adorner);
 			
-			WorkbenchSingleton.CallLater(TimeSpan.FromSeconds(1), (Action)(() => layer.Remove(adorner)));
+			SD.MainThread.CallLater(TimeSpan.FromSeconds(1), () => layer.Remove(adorner));
 		}
 		
 		#region UpdateParseInformation - Folding
 		void UpdateParseInformationForFolding()
 		{
-			UpdateParseInformationForFolding(ParserService.GetExistingParseInformation(this.Adapter.FileName));
-		}
-		
-		bool disableParseInformationFolding;
-		
-		public bool DisableParseInformationFolding {
-			get { return disableParseInformationFolding; }
-			set {
-				if (disableParseInformationFolding != value) {
-					disableParseInformationFolding = value;
-					UpdateParseInformationForFolding();
-				}
-			}
+			UpdateParseInformationForFolding(null);
 		}
 		
 		public void UpdateParseInformationForFolding(ParseInformation parseInfo)
 		{
-			if (!CodeEditorOptions.Instance.EnableFolding || disableParseInformationFolding)
+			if (!CodeEditorOptions.Instance.EnableFolding) {
 				parseInfo = null;
+			} else {
+				if (parseInfo == null || !parseInfo.IsFullParseInformation)
+					parseInfo = SD.ParserService.Parse(this.FileName, this.Document);
+				if (parseInfo != null && !parseInfo.SupportsFolding)
+					parseInfo = null;
+			}
 			
 			IServiceContainer container = this.Adapter.GetService(typeof(IServiceContainer)) as IServiceContainer;
 			ParserFoldingStrategy folding = container.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
@@ -581,24 +503,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override IVisualLineTransformer CreateColorizer(IHighlightingDefinition highlightingDefinition)
 		{
-			return new CustomizableHighlightingColorizer(
-				highlightingDefinition.MainRuleSet,
-				FetchCustomizations(highlightingDefinition.Name));
+			return null;
 		}
 		
-		// TODO: move this into SharpDevelopTextEditor
 		public void UpdateCustomizedHighlighting()
 		{
 			string language = this.SyntaxHighlighting != null ? this.SyntaxHighlighting.Name : null;
-			CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(this, FetchCustomizations(language));
-			BracketHighlightRenderer.ApplyCustomizationsToRendering(this.bracketRenderer, FetchCustomizations(language));
-			HighlightingOptions.ApplyToRendering(this, FetchCustomizations(language));
+			var customizations = CustomizedHighlightingColor.FetchCustomizations(language);
+			CustomizingHighlighter.ApplyCustomizationsToDefaultElements(this, customizations);
+			BracketHighlightRenderer.ApplyCustomizationsToRendering(this.bracketRenderer, customizations);
+			HighlightingOptions.ApplyToRendering(this, customizations);
 			this.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
-		}
-		
-		static IEnumerable<CustomizedHighlightingColor> FetchCustomizations(string languageName)
-		{
-			return CustomizedHighlightingColor.FetchCustomizations(languageName);
 		}
 	}
 }

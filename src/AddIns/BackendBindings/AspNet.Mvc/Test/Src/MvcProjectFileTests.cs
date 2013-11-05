@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using ICSharpCode.SharpDevelop.Project;
@@ -9,7 +10,7 @@ using NUnit.Framework;
 
 namespace AspNet.Mvc.Tests
 {
-	public class MvcProjectFileTests
+	public class MvcProjectFileTests : MvcTestsBase
 	{
 		TestableProject project;
 		MvcProjectFile file;
@@ -22,7 +23,7 @@ namespace AspNet.Mvc.Tests
 		MvcProjectFile CreateProjectFile(string fullPath)
 		{
 			var projectItem = new FileProjectItem(project, ItemType.Compile);
-			projectItem.FileName = fullPath;
+			projectItem.FileName = FileName.Create(fullPath);
 			file = new MvcProjectFile(projectItem);
 			return file;
 		}

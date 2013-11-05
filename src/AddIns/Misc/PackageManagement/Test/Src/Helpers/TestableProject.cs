@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 
@@ -24,11 +22,25 @@ namespace PackageManagement.Tests.Helpers
 			set { TestableProjectBehaviour.ItemTypeToReturnFromGetDefaultItemType = value; }
 		}
 		
-		public ReadOnlyCollection<ProjectItem> ItemsWhenSaved;
+		public IReadOnlyCollection<ProjectItem> ItemsWhenSaved;
 		
 		public TestableProject(ProjectCreateInformation createInfo)
 			: base(createInfo)
 		{
+		}
+		
+		public override string Language {
+			get {
+				// HACK: unit tests only provide the file extension, but we now need the language
+				switch (this.FileName.GetExtension().ToLowerInvariant()) {
+					case ".csproj":
+						return "C#";
+					case ".vbproj":
+						return "VB";
+					default:
+						return string.Empty;
+				}
+			}
 		}
 		
 		public override bool IsStartable {
@@ -62,6 +74,7 @@ namespace PackageManagement.Tests.Helpers
 		public ProjectReferenceProjectItem AddProjectReference(IProject referencedProject)
 		{
 			var referenceProjectItem = new ProjectReferenceProjectItem(this, referencedProject);
+			referenceProjectItem.FileName = referencedProject.FileName;
 			ProjectService.AddProjectItem(this, referenceProjectItem);
 			return referenceProjectItem;
 		}
@@ -99,17 +112,23 @@ namespace PackageManagement.Tests.Helpers
 		
 		public ProjectImportElement GetLastMSBuildChildElement()
 		{
-			return MSBuildProjectFile.LastChild as ProjectImportElement;
+			lock (SyncRoot) {
+				return MSBuildProjectFile.LastChild as ProjectImportElement;
+			}
 		}
 		
 		public ProjectImportElement GetFirstMSBuildChildElement()
 		{
-			return MSBuildProjectFile.FirstChild as ProjectImportElement;
+			lock (SyncRoot) {
+				return MSBuildProjectFile.FirstChild as ProjectImportElement;
+			}
 		}
 		
 		public ICollection<ProjectImportElement> GetImports()
 		{
-			return MSBuildProjectFile.Imports;
+			lock (SyncRoot) {
+				return MSBuildProjectFile.Imports;
+			}
 		}
 	}
 }

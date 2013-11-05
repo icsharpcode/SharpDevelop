@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.XmlEditor;
 using System.Text;
 
 namespace ICSharpCode.XamlBinding

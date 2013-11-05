@@ -7,13 +7,13 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
-using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 {
 	/// <summary>
 	/// The basic xml generated form.
 	/// </summary>
+	[Obsolete("XML Forms are obsolete")]
 	public abstract class XmlForm : Form
 	{
 		protected XmlLoader xmlLoader;
@@ -27,45 +27,11 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 			}
 		}
 		
-		public XmlForm()
-		{
-		}
-		
-//		/// <summary>
-//		/// Creates a new instance
-//		/// </summary>
-//		/// <param name="fileName">
-//		/// Name of the xml file which defines this form.
-//		/// </param>
-//		public XmlForm(string fileName)
-//		{
-//			SetupFromXml(fileName);
-//		}
-		
-		
 		public T Get<T>(string name) where T: System.Windows.Forms.Control
 		{
 			return xmlLoader.Get<T>(name);
 		}
-//
-//		protected void SetupFromXml(string fileName)
-//		{
-//			if (fileName == null) {
-//				throw new System.ArgumentNullException("fileName");
-//			}
-//
-//			using (Stream stream = File.OpenRead(fileName)) {
-//				SetupFromXmlStream(stream);
-//			}
-//		}
-		
-		protected void SetupFromXmlResource(string resourceName)
-		{
-			Assembly caller = Assembly.GetCallingAssembly();
-			resourceName = "Resources." + resourceName;
-			SetupFromXmlStream(caller.GetManifestResourceStream(resourceName));
-		}
-		
+
 		protected void SetupFromXmlStream(Stream stream)
 		{
 			if (stream == null) {
@@ -77,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 			if (stream != null) {
 				xmlLoader.LoadObjectFromStream(this, stream);
 			}
-			RightToLeftConverter.ConvertRecursive(this);
+			SD.WinForms.ApplyRightToLeftConverter(this);
 			ResumeLayout(false);
 		}
 		
