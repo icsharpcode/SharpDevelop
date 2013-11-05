@@ -29,7 +29,7 @@ namespace ResourceEditor
 				fdiag.Multiselect    = true;
 				fdiag.CheckFileExists = true;
 				
-				if (fdiag.ShowDialog(SD.Workbench.MainWin32Window) == DialogResult.OK) {
+				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					foreach (string filename in fdiag.FileNames) {
 						string oresname = Path.ChangeExtension(Path.GetFileName(filename), null);
 						if (oresname == "") oresname = "new";

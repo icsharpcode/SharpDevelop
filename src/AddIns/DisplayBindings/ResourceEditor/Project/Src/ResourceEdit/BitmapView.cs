@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ResourceEditor
 {
@@ -38,7 +39,7 @@ namespace ResourceEditor
 				fileDialog.Filter = "All files (*.*)|*.*";
 				fileDialog.CheckFileExists = true;
 				
-				if(fileDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if(fileDialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					try {
 						bitmap = new Bitmap(fileDialog.FileName);
 					} catch {
