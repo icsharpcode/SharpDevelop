@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			
 			var items = new List<object>();
 			var declaringTypeItem = new MenuItem() {
-				Header = "Declaring type: " + declaringType.Name,
+				Header = SD.ResourceService.GetString("SharpDevelop.Refactoring.DeclaringType") + ": " + declaringType.Name,
 				Icon = new Image() { Source = ClassBrowserIconService.GetIcon(declaringType).ImageSource }
 			};
 			
