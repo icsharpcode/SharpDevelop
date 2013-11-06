@@ -30,6 +30,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
+	[TestFixture]
 	public class AccessToDisposedClosureTests : InspectionActionTestBase
 	{
 		void Test (string input, int issueCount)

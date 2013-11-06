@@ -93,7 +93,50 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"}"
 			);
 		}
-		
+
+
+		[Test]
+		public void TestWrongLocation()
+		{
+			TestWrongContext<RemoveBackingStoreAction> (@"class TestClass
+{
+	string test;
+	public $string Test {
+		get {
+			return test;
+		}
+		set {
+			test = value;
+		}
+	}
+}");
+
+			TestWrongContext<RemoveBackingStoreAction> (@"class TestClass
+{
+	string test;
+	public string $FooBar.Test {
+		get {
+			return test;
+		}
+		set {
+			test = value;
+		}
+	}
+}");
+
+			TestWrongContext<RemoveBackingStoreAction> (@"class TestClass
+{
+	string test;
+	public string Test ${
+		get {
+			return test;
+		}
+		set {
+			test = value;
+		}
+	}
+}");
+		}
 		
 	}
 }

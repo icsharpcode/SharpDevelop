@@ -180,7 +180,7 @@ class $A
 ";
 			CollectMembers(code, "A");
 		}
-
+		
 		[Test]
 		public void TestShadowedMember ()
 		{
@@ -193,6 +193,32 @@ class A
 class B : A
 {
 	public int Prop
+	{ get; set; }
+}
+";
+			CollectMembers(code, "A.Prop");
+		}
+
+
+
+		
+		[Test]
+		public void TestShadowedMemberCase2 ()
+		{
+			var code = @"interface IA 
+{
+	int $Prop { get; set; } 
+}
+
+class A : IA
+{
+	public int $Prop
+	{ get; set; }
+}
+
+class B : A, IA
+{
+	public int $Prop
 	{ get; set; }
 }
 ";

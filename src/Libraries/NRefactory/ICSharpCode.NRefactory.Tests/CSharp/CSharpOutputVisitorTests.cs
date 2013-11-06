@@ -147,5 +147,49 @@ namespace ICSharpCode.NRefactory.CSharp
 			AssertOutput("0f", new PrimitiveExpression(0f));
 			AssertOutput("-0f", new PrimitiveExpression(-0f));
 		}
+
+		[Test]
+		public void BlankLinesBetweenMembers()
+		{
+			var code = @"class Test
+{
+	Test() {}
+	void Foo() {}
+	int P { get; set; }
+}
+";
+			var unit = SyntaxTree.Parse(code);
+			var options = FormattingOptionsFactory.CreateMono();
+			options.BlankLinesBetweenMembers = 2;
+			AssertOutput("class Test\n{\n$Test ()\n${\n$}\n\n\n$void Foo ()\n${\n$}\n\n\n$int P {\n$$get;\n$$set;\n$}\n}\n", unit, options);
+		}
+
+		[Test]
+		public void BlankLinesAfterUsings() {
+			var code = @"using System;
+using System.Collections;
+using List = System.Collections.List;
+namespace NS
+{
+	using System.Collections.Generic;
+	using Collection = System.Collections.Collection;
+	using System.Xml;
+	class C {}
+}
+";
+			var unit = SyntaxTree.Parse(code);
+			var options = FormattingOptionsFactory.CreateMono();
+			options.BlankLinesAfterUsings = 2;
+			AssertOutput("using System;\nusing System.Collections;\nusing List = System.Collections.List;\n\n\nnamespace NS\n{\n$using System.Collections.Generic;\n$using Collection = System.Collections.Collection;\n$using System.Xml;\n\n\n$class C\n${\n$}\n}\n", unit, options);
+		}
+		
+		[Test, Ignore("#pragma warning not implemented in output visitor - issue #188")]
+		public void PragmaWarning()
+		{
+			var code = @"#pragma warning disable 414";
+			var unit = SyntaxTree.Parse(code);
+			var options = FormattingOptionsFactory.CreateMono();
+			AssertOutput("#pragma warning disable 414\n", unit, options);
+		}
 	}
 }

@@ -22,11 +22,10 @@ namespace PortSD4AddInToSD5
 	[IssueDescription ("Usage of SD4 WorkbenchSingleton",
 	                   Description = "Usage of SD4 WorkbenchSingleton",
 	                   Category = "SD4->SD5",
-	                   Severity = Severity.Warning,
-	                   IssueMarker = IssueMarker.Underline)]
-	public class WorkbenchSingletonIssueProvider : ICodeIssueProvider
+	                   Severity = Severity.Warning)]
+	public class WorkbenchSingletonIssueProvider : CodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
+		public override IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context, string subIssue = null)
 		{
 			foreach (var mre in context.RootNode.Descendants.OfType<MemberReferenceExpression>()) {
 				var rr = context.Resolve(mre);
@@ -129,8 +128,8 @@ namespace PortSD4AddInToSD5
 						if (invocationExpression.Clone().Invoke("FireAndForget").IsMatch(invocationExpression.Parent.Parent)) {
 							var ident = invocationExpression.Parent.GetChildByRole(Roles.Identifier);
 							yield return new CodeIssue(
-								"Use InvokeAsyncAndForget() instead",
 								ident.StartLocation, ident.EndLocation,
+								"Use InvokeAsyncAndForget() instead",
 								new CodeAction("Use InvokeAsyncAndForget() instead",
 								               script => {
 								               	var newInvocation = (InvocationExpression)invocationExpression.Clone();
@@ -146,7 +145,7 @@ namespace PortSD4AddInToSD5
 		
 		CodeIssue Issue(AstNode node, Action<Script> fix = null)
 		{
-			return new CodeIssue("WorkbenchSingleton is obsolete", node.StartLocation, node.EndLocation,
+			return new CodeIssue(node.StartLocation, node.EndLocation, "WorkbenchSingleton is obsolete",
 			                     fix != null ? new CodeAction("Use SD5 API", fix, node) : null);
 		}
 	}

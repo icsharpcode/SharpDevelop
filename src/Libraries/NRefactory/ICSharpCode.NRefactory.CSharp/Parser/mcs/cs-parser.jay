@@ -116,6 +116,8 @@ namespace Mono.CSharp
 		// Keeps track of global data changes to undo on parser error
 		//
 		public Undo undo;
+
+		bool? interactive_async;
 		
 		Stack<Linq.QueryBlock> linq_clause_blocks;
 
@@ -145,7 +147,6 @@ namespace Mono.CSharp
 		Stack<Location> opt_intoStack = new Stack<Location> ();
 
 		bool HadAttributeParens;
-		List<Location> attributeCommas = new List<Location> ();
 		List<Location> attributeArgumentCommas = new List<Location> ();
 		List<Location> parameterListCommas = new List<Location> ();
 		Stack<Location> location_stack;
@@ -669,23 +670,14 @@ attribute_sections
 	  {
 		var sect = (List<Attribute>) $1;
 		$$ = new Attributes (sect);
-		if (locationListStack.Count > 0)
-			lbag.AddLocation (sect, locationListStack.Pop ());
-		if (attributeCommas.Count > 0) {
-			lbag.AddLocation (sect, attributeCommas);
-			attributeCommas.Clear ();
-		}
 	  }
 	| attribute_sections attribute_section
 	  {
 		Attributes attrs = $1 as Attributes;
 		var sect = (List<Attribute>) $2;
-		
-		if (locationListStack.Count > 0)
-			lbag.AddLocation (sect, locationListStack.Pop ());
 		if (attrs == null)
 			attrs = new Attributes (sect);
-		else
+		else if (sect != null)
 			attrs.AddAttributes (sect);
 		$$ = attrs;
 	  }
@@ -696,7 +688,6 @@ attribute_section
 	  {
 	  	PushLocation (GetLocation ($1));
 		lexer.parsing_attribute_section = true;
-		savedOpenLocation = GetLocation ($1);
 	  }
 	  attribute_section_cont
 	  {
@@ -720,12 +711,13 @@ attribute_section_cont
 			$$ = new List<Attribute> (0);
 		else
 			$$ = $4;
-
+		lbag.InsertLocation ($$, 0, GetLocation ($2));
+		lbag.InsertLocation ($$, 0, PopLocation ());
 		lbag.InsertLocation ($$, 0, PopLocation ());
 		if ($5 != null) {
-			lbag.AddLocation ($$, GetLocation ($2), GetLocation ($5), GetLocation ($6));
+			lbag.AddLocation ($$, GetLocation ($5), GetLocation ($6));
 		} else {
-			lbag.AddLocation ($$, GetLocation ($2), GetLocation ($6));
+			lbag.AddLocation ($$, GetLocation ($6));
 		}
 
 		current_attr_target = null;
@@ -734,7 +726,6 @@ attribute_section_cont
 	| attribute_list opt_comma CLOSE_BRACKET
 	  {
 		$$ = $1;
-
 		lbag.InsertLocation ($$, 0, PopLocation ());
 		if ($2 != null) {
 			lbag.AddLocation ($$, GetLocation($2), GetLocation ($3));
@@ -755,7 +746,7 @@ attribute_section_cont
 	  }
 	| error
 	  {
- 		$$ = CheckAttributeTarget (GetTokenName (yyToken), GetLocation ($1)); 
+ 		CheckAttributeTarget (GetTokenName (yyToken), GetLocation ($1)); 
  		$$ = null;
 	  }
 	;	
@@ -765,10 +756,10 @@ attribute_target
 	  {
 		var lt = (LocatedToken) $1;
 		$$ = CheckAttributeTarget (lt.Value, lt.Location);
-		savedCloseLocation = GetLocation ($1);
+		PushLocation (GetLocation ($1));
 	  }
-	| EVENT  { $$ = "event"; savedCloseLocation = GetLocation ($1); }
-	| RETURN { $$ = "return"; savedCloseLocation = GetLocation ($1); }
+	| EVENT  { $$ = "event"; PushLocation (GetLocation ($1)); }
+	| RETURN { $$ = "return"; PushLocation (GetLocation ($1)); }
 	;
 
 attribute_list
@@ -4058,6 +4049,9 @@ unary_expression
 			} else if (current_anonymous_method is AnonymousMethodExpression) {
 				report.Error (4035, GetLocation ($1),
 					"The `await' operator can only be used when its containing anonymous method is marked with the `async' modifier");
+			} else if (interactive_async != null) {
+				current_block.Explicit.RegisterAsyncAwait ();
+				interactive_async = true;
 			} else {
 				report.Error (4033, GetLocation ($1),
 					"The `await' operator can only be used when its containing method is marked with the `async' modifier");
@@ -5563,10 +5557,7 @@ interactive_statement_expression
 	: expression
 	  {
 		Expression expr = (Expression) $1;
-		ExpressionStatement s;
-
-	        s = new OptionalAssign (new SimpleName ("$retval", lexer.Location), expr, lexer.Location);
-		$$ = new StatementExpression (s);
+		$$ = new StatementExpression (new OptionalAssign (expr, lexer.Location));
 	  }
 	| error
 	  {
@@ -6011,6 +6002,11 @@ throw_statement
 	  {
 		$$ = new Throw ((Expression) $2, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($3));
+	  }
+	| THROW expression error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = new Throw ((Expression) $2, GetLocation ($1));
 	  }
 	| THROW error
 	  {
@@ -6873,26 +6869,29 @@ interactive_parsing
 			mods |= Modifiers.UNSAFE;
 
 		current_local_parameters = pars;
-		Method method = new Method (
+		var method = new InteractiveMethod (
 			current_type,
 			new TypeExpression (compiler.BuiltinTypes.Void, Location.Null),
 			mods,
-			new MemberName ("Host"),
-			pars,
-			null /* attributes */);
+			pars);
 			
 		current_type.AddMember (method);			
-
 		oob_stack.Push (method);
+
+		interactive_async = false;
+
 		++lexer.parsing_block;
 		start_block (lexer.Location);
 	  }		
 	  interactive_statement_list opt_COMPLETE_COMPLETION
 	  {
 		--lexer.parsing_block;
-		Method method = (Method) oob_stack.Pop ();
-
+		var method = (InteractiveMethod) oob_stack.Pop ();
 		method.Block = (ToplevelBlock) end_block(lexer.Location);
+
+		if (interactive_async == true) {
+			method.ChangeToAsync ();
+		}
 
 		InteractiveResult = (Class) pop_current_class ();
 		current_local_parameters = null;

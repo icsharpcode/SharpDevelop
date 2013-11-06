@@ -89,5 +89,12 @@ namespace ICSharpCode.NRefactory.PatternMatching
 				results.Add(new KeyValuePair<string, INode>(groupName, node));
 			}
 		}
+
+		internal void AddNull (string groupName)
+		{
+			if (groupName != null) {
+				results.Add(new KeyValuePair<string, INode>(groupName, null));
+			}
+		}
 	}
 }

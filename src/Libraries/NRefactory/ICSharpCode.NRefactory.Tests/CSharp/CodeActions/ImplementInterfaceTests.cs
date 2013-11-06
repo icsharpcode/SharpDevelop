@@ -192,12 +192,10 @@ class Foo : $ITest
 
 class Foo : ITest
 {
-	#region ITest implementation
 	public void Method1 ()
 	{
 		throw new System.NotImplementedException ();
 	}
-	#endregion
 	public void Method2 () {}
 }");
 		}
@@ -444,6 +442,37 @@ class M : IB
 	#endregion
 }");
 		}
+
+		[Test]
+		public void TestImplementMissingMembers()
+		{
+			Test<ImplementInterfaceAction>(@"using System;
+interface IFoo
+{
+	void FooBar ();
+	void BarFoo ();
+}
+class Foo : $IFoo
+{
+	public void FooBar () {}
+}
+", @"using System;
+interface IFoo
+{
+	void FooBar ();
+	void BarFoo ();
+}
+class Foo : IFoo
+{
+	public void BarFoo ()
+	{
+		throw new NotImplementedException ();
+	}
+	public void FooBar () {}
+}
+");
+		}
+
 	}
 }
 

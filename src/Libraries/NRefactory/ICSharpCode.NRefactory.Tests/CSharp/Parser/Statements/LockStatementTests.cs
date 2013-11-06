@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		[Test]
 		public void LockStatementTest()
 		{
-			LockStatement lockStmt = ParseUtilCSharp.ParseStatement<LockStatement>("lock (myObj) {}");
+			ParseUtilCSharp.ParseStatement<LockStatement>("lock (myObj) {}");
 			// TODO : Extend test.
 		}
 	}

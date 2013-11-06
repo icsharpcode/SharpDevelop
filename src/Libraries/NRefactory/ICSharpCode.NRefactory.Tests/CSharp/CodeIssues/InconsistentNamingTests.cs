@@ -89,6 +89,14 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		}
 
 		[Test]
+		public void TestEventArgsSuffixOptimizationName ()
+		{
+			var input = @"			public class TestArgs : System.EventArgs {}";
+			var output = @"			public class TestEventArgs : System.EventArgs {}";
+			CheckNaming (input, output);
+		}
+
+		[Test]
 		public void TestException ()
 		{
 			var input = @"class test : System.Exception {}";
@@ -329,6 +337,184 @@ class MyClass : Base { public override int Method (int Param) {} }";
 			Assert.AreEqual (2, result.Count);
 			Assert.AreEqual ("FIX", result [0]);
 			Assert.AreEqual ("1", result [1]);
+		}
+
+	}
+
+	[TestFixture]
+	public class NamingRuleTest
+	{
+		[Test]
+		public void TestPascalCase()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.PascalCase;
+			Assert.IsTrue(rule.IsValid("PascalCase"));
+			Assert.IsTrue(rule.IsValid("PascalCase_1_23"));
+			Assert.IsFalse(rule.IsValid("Pascal_Case"));
+			Assert.IsFalse(rule.IsValid("camelCase"));
+		}
+
+		[Test]
+		public void TestCamelCase()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.CamelCase;
+			Assert.IsFalse(rule.IsValid("PascalCase"));
+			Assert.IsFalse(rule.IsValid("camel_Case"));
+			Assert.IsTrue(rule.IsValid("camelCase"));
+			Assert.IsTrue(rule.IsValid("camelCase_10_11"));
+		}
+
+		[Test]
+		public void TestAllUpper()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.AllUpper;
+			Assert.IsFalse(rule.IsValid("PascalCase"));
+			Assert.IsFalse(rule.IsValid("camelCase"));
+			Assert.IsTrue(rule.IsValid("ALL_UPPER"));
+			Assert.IsTrue(rule.IsValid("ALLUPPER"));
+		}
+
+		[Test]
+		public void TestAllLower()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.AllLower;
+			Assert.IsFalse(rule.IsValid("PascalCase"));
+			Assert.IsFalse(rule.IsValid("camelCase"));
+			Assert.IsTrue(rule.IsValid("all_lower"));
+			Assert.IsTrue(rule.IsValid("alllower"));
+		}
+
+		[Test]
+		public void TestFirstUpper()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.FirstUpper;
+			Assert.IsFalse(rule.IsValid("PascalCase"));
+			Assert.IsFalse(rule.IsValid("camelCase"));
+			Assert.IsTrue(rule.IsValid("First_upper"));
+			Assert.IsTrue(rule.IsValid("Firstupper"));
+		}
+
+		[Test]
+		public void UnderscoreTolerantPascalCaseWithUpperStart()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.PascalCaseWithUpperLetterUnderscore;
+			Assert.IsFalse(rule.IsValid("camelCase"));
+			Assert.IsFalse(rule.IsValid("PascalCase_underscoreTolerant"));
+			Assert.IsFalse(rule.IsValid("PascalCase__UnderscoreTolerant"));
+			Assert.IsFalse(rule.IsValid("_PascalCase_UnderscoreTolerant"));
+			Assert.IsTrue(rule.IsValid("PascalCase_UnderscoreTolerant"));
+			Assert.IsTrue(rule.IsValid("PascalCase_UnderscoreTolerant_12"));
+		}
+
+		[Test]
+		public void UnderscoreTolerantPascalCaseWithLowStart()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.PascalCaseWithLowerLetterUnderscore;
+			Assert.IsFalse(rule.IsValid("camelCase"));
+			Assert.IsFalse(rule.IsValid("PascalCase_UnderscoreTolerant"));
+			Assert.IsFalse(rule.IsValid("PascalCase__underscoreTolerant"));
+			Assert.IsFalse(rule.IsValid("_PascalCase_underscoreTolerant"));
+			Assert.IsTrue(rule.IsValid("PascalCase_underscoreTolerant"));
+		}
+
+		[Test]
+		public void UnderscoreTolerantCamelCaseWithLowStart()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.CamelCaseWithLowerLetterUnderscore;
+			Assert.IsFalse(rule.IsValid("PascalCase"));
+			Assert.IsFalse(rule.IsValid("camelCase_UnderscoreTolerant"));
+			Assert.IsFalse(rule.IsValid("camelCase__underscoreTolerant"));
+			Assert.IsTrue(rule.IsValid("camelCase_underscoreTolerant"));
+		}
+
+		[Test]
+		public void UnderscoreTolerantCamelCaseWithUpperStart()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.CamelCaseWithUpperLetterUnderscore;
+			Assert.IsFalse(rule.IsValid("PascalCase"));
+			Assert.IsFalse(rule.IsValid("camelCase_underscoreTolerant"));
+			Assert.IsFalse(rule.IsValid("camelCase__UnderscoreTolerant"));
+			Assert.IsTrue(rule.IsValid("camelCase_UnderscoreTolerant"));
+		}
+
+		[Test]
+		public void TestSuggestionForCamelCaseWithUpperStart()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.CamelCaseWithUpperLetterUnderscore;
+			System.Collections.Generic.IList<string> suggestedNames;
+			rule.GetErrorMessage(new TestRefactoringContext (null, TextLocation.Empty, null), "camelCase_underscoreTolerant", out suggestedNames); 
+			Assert.IsTrue(suggestedNames.Contains("camelCase_UnderscoreTolerant"));
+		}
+
+		[Test]
+		public void TestSuggestionForCamelCaseWithUpperStartWithUnderscoreStart()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.CamelCaseWithUpperLetterUnderscore;
+			System.Collections.Generic.IList<string> suggestedNames;
+			rule.GetErrorMessage(new TestRefactoringContext (null, TextLocation.Empty, null), "_camelCase_underscoreTolerant", out suggestedNames); 
+			Assert.IsTrue(suggestedNames.Contains("camelCase_UnderscoreTolerant"));
+		}
+
+		[Test]
+		public void TestSuggestionForCamelCaseWithLowerStart()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.CamelCaseWithLowerLetterUnderscore;
+			System.Collections.Generic.IList<string> suggestedNames;
+			rule.GetErrorMessage(new TestRefactoringContext (null, TextLocation.Empty, null), "camelCase_UnderscoreTolerant", out suggestedNames); 
+			Assert.IsTrue(suggestedNames.Contains("camelCase_underscoreTolerant"));
+		}
+
+		[Test]
+		public void TestSuggestionForCamelCaseWithLowerStartMultipleUnderscores()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.CamelCaseWithLowerLetterUnderscore;
+			System.Collections.Generic.IList<string> suggestedNames;
+			rule.GetErrorMessage(new TestRefactoringContext (null, TextLocation.Empty, null), "camelCase_____UnderscoreTolerant", out suggestedNames); 
+			Assert.IsTrue(suggestedNames.Contains("camelCase_underscoreTolerant"));
+		}
+
+		[Test]
+		public void TestSuggestionForPascalCaseWithUpperStart()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.PascalCaseWithUpperLetterUnderscore;
+			System.Collections.Generic.IList<string> suggestedNames;
+			rule.GetErrorMessage(new TestRefactoringContext (null, TextLocation.Empty, null), "PascalCase_underscoreTolerant", out suggestedNames); 
+			Assert.IsTrue(suggestedNames.Contains("PascalCase_UnderscoreTolerant"));
+		}
+
+		[Test]
+		public void TestSuggestionForPascalCaseWithLowerStart()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.PascalCaseWithLowerLetterUnderscore;
+			System.Collections.Generic.IList<string> suggestedNames;
+			rule.GetErrorMessage(new TestRefactoringContext (null, TextLocation.Empty, null), "PascalCase_UnderscoreTolerant", out suggestedNames); 
+			Assert.IsTrue(suggestedNames.Contains("PascalCase_underscoreTolerant"));
+		}
+
+
+		[Test]
+		public void TestSuggestionForPascalCase()
+		{
+			var rule = new NamingRule(AffectedEntity.Class);
+			rule.NamingStyle = NamingStyle.PascalCase;
+			System.Collections.Generic.IList<string> suggestedNames;
+			rule.GetErrorMessage(new TestRefactoringContext (null, TextLocation.Empty, null), "pascalCase_12_____12323", out suggestedNames); 
+			Assert.IsTrue(suggestedNames.Contains("PascalCase_12_12323"));
 		}
 
 	}

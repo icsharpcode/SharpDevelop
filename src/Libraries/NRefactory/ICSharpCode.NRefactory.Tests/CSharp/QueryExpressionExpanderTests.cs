@@ -268,6 +268,23 @@ namespace ICSharpCode.NRefactory.CSharp {
 		}
 
 		[Test]
+		public void JoinWithCast() {
+			var node = ParseUtilCSharp.ParseExpression<QueryExpression>("from i in arr1 join CJ j in arr2 on i.keyi equals j.keyj select i.valuei + j.valuej");
+			var actual = new QueryExpressionExpander().ExpandQueryExpressions(node);
+			AssertCorrect(actual.AstNode, "arr1.Join(arr2.Cast<CJ>(),i=>i.keyi,j=>j.keyj,(i,j)=>i.valuei+j.valuej)");
+			dynamic astNode = actual.AstNode;
+			AssertLookupCorrect(actual.RangeVariables, new[] {
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 0)),
+				Tuple.Create(new TextLocation(1, 24), (AstNode)ElementAt(ElementAt(astNode.Arguments, 2).Parameters, 0)),
+			});
+			AssertLookupCorrect(actual.Expressions, new[] {
+				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
+				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode),
+				Tuple.Create(new TextLocation(1, 58), (AstNode)astNode),
+			});
+		}
+
+		[Test]
 		public void JoinFollowedByLet() {
 			var node = ParseUtilCSharp.ParseExpression<QueryExpression>("from i in arr1 join j in arr2 on i.keyi equals j.keyj let k = i + j select i + j + k");
 			var actual = new QueryExpressionExpander().ExpandQueryExpressions(node);

@@ -250,5 +250,47 @@ class Test {
 ");
 			Assert.AreEqual("System.Environment", rr.Type.FullName);
 		}
+
+		[Test]
+		public void TestIndexer()
+		{
+			var rr = ResolveAtLocation<MemberResolveResult>(
+				@"using System;
+class Test {
+	public int $this[int index] { get { return 1; } }
+}
+");
+			Assert.AreEqual("Test.Item", rr.Member.FullName);
+		}
+
+		[Test]
+		public void TestUserDefinedOperator()
+		{
+			var rr = ResolveAtLocation<OperatorResolveResult>(
+				@"class Foo 
+{
+	public static Foo operator+(Foo a, Foo b)
+	{
+		return a;
+	}
+}
+
+class MainClass
+{
+	public static void Main (string[] args)
+	{
+		Foo f = new Foo () $+ new Foo ();
+	}
+}
+");
+			Assert.AreEqual("Foo.op_Addition", rr.UserDefinedOperatorMethod.FullName);
+		}
+
+		
+		[Test]
+		public void PragmaWarningID()
+		{
+			ResolveAtLocation(@"#pragma warning disable 1$0");
+		}
 	}
 }

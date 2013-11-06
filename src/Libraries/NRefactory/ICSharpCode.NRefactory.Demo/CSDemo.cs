@@ -195,7 +195,7 @@ namespace ICSharpCode.NRefactory.Demo
 					0, assemblies.Length,
 					delegate (int i) {
 						Stopwatch w = Stopwatch.StartNew();
-						CecilLoader loader = new CecilLoader();
+						AssemblyLoader loader = AssemblyLoader.Create();
 						projectContents[i] = loader.LoadAssemblyFile(assemblies[i].Location);
 						Debug.WriteLine(Path.GetFileName(assemblies[i].Location) + ": " + w.Elapsed);
 					});

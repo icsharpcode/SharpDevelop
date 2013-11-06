@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		void Resolved(AstNode node, ResolveResult result);
 		
 		/// <summary>
-		/// Notifies the navigator that a conversion was applied.
+		/// Notifies the navigator that an implicit conversion was applied.
 		/// </summary>
 		/// <param name="expression">The expression that was resolved.</param>
 		/// <param name="result">The resolve result of the expression.</param>

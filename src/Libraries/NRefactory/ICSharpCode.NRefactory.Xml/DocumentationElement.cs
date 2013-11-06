@@ -198,9 +198,13 @@ namespace ICSharpCode.NRefactory.Xml
 			List<XmlDocumentationElement> list = new List<XmlDocumentationElement>();
 			foreach (var child in childObjects) {
 				var childText = child as AXmlText;
+				var childTag = child as AXmlTag;
 				var childElement = child as AXmlElement;
 				if (childText != null) {
 					list.Add(new XmlDocumentationElement(childText.Value, declaringEntity));
+				} else if (childTag != null && childTag.IsCData) {
+					foreach (var text in childTag.Children.OfType<AXmlText>())
+						list.Add(new XmlDocumentationElement(text.Value, declaringEntity));
 				} else if (childElement != null) {
 					if (nestingLevel < 5 && childElement.Name == "inheritdoc") {
 						string cref = childElement.GetAttributeValue("cref");

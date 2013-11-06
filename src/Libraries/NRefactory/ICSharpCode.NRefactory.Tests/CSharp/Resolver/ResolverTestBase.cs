@@ -204,11 +204,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ResolveResult rr = Resolve(code);
 			Assert.IsNotNull(rr);
-			if (typeof(T) == typeof(LambdaResolveResult)) {
-				Assert.IsTrue(rr is LambdaResolveResult, "Resolve should be " + typeof(T).Name + ", but was " + rr.GetType().Name);
-			} else {
-				Assert.IsTrue(rr.GetType() == typeof(T), "Resolve should be " + typeof(T).Name + ", but was " + rr.GetType().Name);
-			}
+			// Find most specific public type:
+			Type rrType = rr.GetType();
+			while (!rrType.IsPublic)
+				rrType = rrType.BaseType;
+			
+			Assert.IsTrue(rrType == typeof(T), "Resolve should be " + typeof(T).Name + ", but was " + rr.GetType().Name);
 			return (T)rr;
 		}
 		

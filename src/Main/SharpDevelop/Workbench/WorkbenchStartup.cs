@@ -12,6 +12,7 @@ using System.Windows.Threading;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -200,6 +201,8 @@ class Test {
 			foreach (var node in cu.Descendants) {
 				resolver.Resolve(node);
 			}
+			// load CSharp.Refactoring.dll
+			new RedundantUsingDirectiveIssue();
 			// warm up AvalonEdit (must be done on main thread)
 			SD.MainThread.InvokeAsyncAndForget(
 				delegate {

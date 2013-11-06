@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		[Test]
 		public void EmptyStatementTest()
 		{
-			EmptyStatement emptyStmt = ParseUtilCSharp.ParseStatement<EmptyStatement>(";");
+			ParseUtilCSharp.ParseStatement<EmptyStatement>(";");
 		}
 	}
 }

@@ -43,5 +43,17 @@ class TestClass { }";
 class TestClass { }";
 			Test<RedundantAttributeParenthesesIssue> (input, 1, output);
 		}
+
+		
+		[Test]
+		public void TestDisable ()
+		{
+			var input = @"
+// Resharper disable once RedundantAttributeParentheses
+[Test ()]
+class TestClass { }";
+			Test<RedundantAttributeParenthesesIssue> (input, 0);
+		}
+
 	}
 }

@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class GenerateSwitchLabelsTests : ContextActionTestBase
 	{
-		[Test()]
+		[Test]
 		public void Test ()
 		{
 			string result = RunContextAction (
@@ -68,5 +68,47 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
+
+		[Test]
+		public void TestAddMissing ()
+		{
+			Test<GenerateSwitchLabelsAction>(@"
+using System;
+
+class Foo
+{
+	void Bar (ConsoleModifiers mods)
+	{
+		$switch (mods) {
+		case ConsoleModifiers.Alt:
+			break;
+		default:
+			throw new ArgumentOutOfRangeException ();
+		}
+	}
+}
+", @"
+using System;
+
+class Foo
+{
+	void Bar (ConsoleModifiers mods)
+	{
+		switch (mods) {
+		case ConsoleModifiers.Alt:
+			break;
+		case ConsoleModifiers.Shift:
+			break;
+		case ConsoleModifiers.Control:
+			break;
+		default:
+			throw new ArgumentOutOfRangeException ();
+		}
+	}
+}
+");
+
+		}
+
 	}
 }

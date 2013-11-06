@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class RemoveBracesTests : ContextActionTestBase
 	{
-		[Test()]
+		[Test]
 		public void TestSimpleBraces()
 		{
 			string result = RunContextAction(
@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"}", result);
 		}
 
-		[Test()]
+		[Test]
 		public void TestTryCatch()
 		{
 			TestWrongContext<RemoveBracesAction>(@"class TestClass
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestTryCatchCatch()
 		{
 			TestWrongContext<RemoveBracesAction>(@"class TestClass
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestTryCatchFinally()
 		{
 			TestWrongContext<RemoveBracesAction>(@"class TestClass
@@ -96,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 
 
-		[Test()]
+		[Test]
 		public void TestSwitchCatch()
 		{
 			TestWrongContext<RemoveBracesAction>(@"class TestClass
@@ -108,7 +108,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestMethodDeclaration()
 		{
 			TestWrongContext<RemoveBracesAction>(@"class TestClass
@@ -119,7 +119,196 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	}
 }");
 		}
-		
+
+		[Test]
+		public void TestRemoveBracesFromIf()
+		{
+			Test<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		$if (true) {
+			Console.WriteLine (""Hello"");
+		}
+	}
+}", @"class TestClass
+{
+	void Test ()
+	{
+		if (true)
+			Console.WriteLine (""Hello"");
+	}
+}");
+		}
+
+		[Test]
+		public void TestRemoveBracesFromElse()
+		{
+			Test<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		if (true) {
+			Console.WriteLine (""Hello"");
+		} $else {
+			Console.WriteLine (""World"");
+		}
+	}
+}", @"class TestClass
+{
+	void Test ()
+	{
+		if (true) {
+			Console.WriteLine (""Hello"");
+		} else
+			Console.WriteLine (""World"");
+	}
+}");
+		}
+
+		[Test]
+		public void TestRemoveBracesFromDoWhile()
+		{
+			Test<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		$do {
+			Console.WriteLine (""Hello"");
+		} while (true);
+	}
+}", @"class TestClass
+{
+	void Test ()
+	{
+		do
+			Console.WriteLine (""Hello"");
+		while (true);
+	}
+}");
+		}
+
+		[Test]
+		public void TestRemoveBracesFromForeach()
+		{
+			Test<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		$foreach (var a in b) {
+			Console.WriteLine (""Hello"");
+		}
+	}
+}", @"class TestClass
+{
+	void Test ()
+	{
+		foreach (var a in b)
+			Console.WriteLine (""Hello"");
+	}
+}");
+		}
+	
+		[Test]
+		public void TestRemoveBracesFromFor()
+		{
+			Test<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		$for (;;) {
+			Console.WriteLine (""Hello"");
+		}
+	}
+}", @"class TestClass
+{
+	void Test ()
+	{
+		for (;;)
+			Console.WriteLine (""Hello"");
+	}
+}");
+		}
+
+		[Test]
+		public void TestRemoveBracesFromLock()
+		{
+			Test<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		$lock (this) {
+			Console.WriteLine (""Hello"");
+		}
+	}
+}", @"class TestClass
+{
+	void Test ()
+	{
+		lock (this)
+			Console.WriteLine (""Hello"");
+	}
+}");
+		}
+
+		[Test]
+		public void TestRemoveBracesFromUsing()
+		{
+			Test<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		$using (var a = new A ()) {
+			Console.WriteLine (""Hello"");
+		}
+	}
+}", @"class TestClass
+{
+	void Test ()
+	{
+		using (var a = new A ())
+			Console.WriteLine (""Hello"");
+	}
+}");
+		}
+
+		[Test]
+		public void TestRemoveBracesFromWhile()
+		{
+			Test<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		$while (true) {
+			Console.WriteLine (""Hello"");
+		}
+	}
+}", @"class TestClass
+{
+	void Test ()
+	{
+		while (true)
+			Console.WriteLine (""Hello"");
+	}
+}");
+		}
+
+		[Test]
+		public void TestNullNode()
+		{
+			TestWrongContext<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		if (true) {
+			Console.WriteLine (""Hello"");
+		}
+	}
+}
+
+        $          
+");
+		}
 	}
 }
 

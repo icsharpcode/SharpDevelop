@@ -47,7 +47,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsConst {
 			get { return ((IUnresolvedField)unresolved).IsConst; }
 		}
-		
+
+		public bool IsFixed {
+			get { return ((IUnresolvedField)unresolved).IsFixed; }
+		}
+
 		public object ConstantValue {
 			get {
 				ResolveResult rr = this.constantValue;

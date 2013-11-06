@@ -184,6 +184,8 @@
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryCSharpDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryXmlDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryCecilDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryCSharpRefactoringDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopWidgets"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditDll"/>

@@ -30,6 +30,8 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Threading;
 using System.Linq;
 using System.Text;
+using ICSharpCode.NRefactory;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
@@ -48,11 +50,10 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			var sb = new StringBuilder ();
 			for (int i = 0; i < str.Length; i++) {
 				var ch = str [i];
-				if (ch == '\n') {
+				var possibleNewline = NewLine.GetDelimiterLength(ch, i + 1 < str.Length ? str [i + 1] : '\0');
+				if (possibleNewline > 0) {
 					sb.AppendLine ();
-				} else if (ch == '\r') {
-					sb.AppendLine ();
-					if (i + 1 < str.Length && str [i + 1] == '\n')
+					if (possibleNewline == 2)
 						i++;
 				} else {
 					sb.Append (ch);
@@ -62,12 +63,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 
 		public void Test<T> (string input, string output, int action = 0, bool expectErrors = false)
-			where T : ICodeActionProvider, new ()
+			where T : CodeActionProvider, new ()
 		{
 			Test(new T(), input, output, action, expectErrors);
 		}
 		
-		public void Test (ICodeActionProvider provider, string input, string output, int action = 0, bool expectErrors = false)
+		public void Test (CodeActionProvider provider, string input, string output, int action = 0, bool expectErrors = false)
 		{
 			string result = RunContextAction (provider, HomogenizeEol (input), action, expectErrors);
 			bool passed = result == output;
@@ -80,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			Assert.AreEqual (HomogenizeEol (output), result);
 		}
 
-		protected string RunContextAction (ICodeActionProvider action, string input,
+		protected string RunContextAction (CodeActionProvider action, string input,
 		                                          int actionIndex = 0, bool expectErrors = false)
 		{
 			var context = TestRefactoringContext.Create (input, expectErrors);
@@ -97,22 +98,29 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			return context.doc.Text;
 		}
 		
-		protected void TestWrongContext<T> (string input) where T : ICodeActionProvider, new ()
+		protected void TestWrongContext<T> (string input) where T : CodeActionProvider, new ()
 		{
 			TestWrongContext (new T(), input);
 		}
 		
-		protected void TestWrongContext (ICodeActionProvider action, string input)
+		protected void TestWrongContext (CodeActionProvider action, string input)
 		{
 			var context = TestRefactoringContext.Create (input);
 			context.FormattingOptions = formattingOptions;
 			bool isValid = action.GetActions (context).Any ();
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
+			if (isValid)
+				Console.WriteLine ("valid node is:" + context.GetNode ());
 			Assert.IsTrue (!isValid, action.GetType () + " shouldn't be valid there.");
 		}
-		
-		protected void TestActionDescriptions (ICodeActionProvider provider, string input, params string[] expected)
+
+		protected List<CodeAction> GetActions<T> (string input) where T : CodeActionProvider, new ()
+		{
+			var ctx = TestRefactoringContext.Create(input);
+			ctx.FormattingOptions = formattingOptions;
+			return new T().GetActions(ctx).ToList();
+		}
+
+		protected void TestActionDescriptions (CodeActionProvider provider, string input, params string[] expected)
 		{
 			var ctx = TestRefactoringContext.Create(input);
 			ctx.FormattingOptions = formattingOptions;

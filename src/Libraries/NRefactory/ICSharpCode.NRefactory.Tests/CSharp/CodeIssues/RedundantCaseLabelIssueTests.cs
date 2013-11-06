@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
 
@@ -59,7 +60,57 @@ class TestClass
 		}
 	}
 }";
-			Test<RedundantCaseLabelIssue> (input, 1, output);
+			Test<RedundantCaseLabelIssue> (input, 2, output);
+		}
+
+
+		[Test]
+		public void TestLabelAfterDefault ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (int i)
+	{
+		switch (i) {
+			default:
+			case 1:
+				break;
 		}
 	}
+}";
+			var output = @"
+class TestClass
+{
+	void TestMethod (int i)
+	{
+		switch (i) {
+			default:
+				break;
+		}
+	}
+}";
+			Test<RedundantCaseLabelIssue> (input, 1, output);
+		}
+
+
+        [Test]
+        public void TestDisable()
+        {
+            var input = @"
+class TestClass
+{
+	void TestMethod (int i)
+	{
+		switch (i) {
+// ReSharper disable once RedundantCaseLabel
+			case 1:
+			default:
+				break;
+		}
+	}
+}";
+            TestWrongContext<RedundantCaseLabelIssue>(input);
+        }
+    }
 }

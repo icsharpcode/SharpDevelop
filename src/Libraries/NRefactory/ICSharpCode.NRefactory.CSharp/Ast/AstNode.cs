@@ -384,7 +384,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return Ancestors.OfType<T>().FirstOrDefault();
 		}
-		
+
+		public AstNode GetParent(Func<AstNode, bool> pred)
+		{
+			return Ancestors.FirstOrDefault(pred);
+		}
+
 		public AstNodeCollection<T> GetChildrenByRole<T> (Role<T> role) where T : AstNode
 		{
 			return new AstNodeCollection<T> (this, role);

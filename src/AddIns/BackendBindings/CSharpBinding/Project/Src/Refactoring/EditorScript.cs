@@ -81,6 +81,7 @@ namespace CSharpBinding.Refactoring
 			return completedTask;
 		}
 		
+		/*
 		public override Task InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 		{
 			AstNode contextNode = context.GetNode();
@@ -107,6 +108,7 @@ namespace CSharpBinding.Refactoring
 			}
 			return completedTask;
 		}
+		*/
 		
 		public override void Dispose()
 		{

@@ -204,6 +204,57 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region Import
 		/// <summary>
+		/// Imports a symbol from another compilation.
+		/// </summary>
+		public static ISymbol Import(this ICompilation compilation, ISymbol symbol)
+		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			if (symbol == null)
+				return null;
+			switch (symbol.SymbolKind) {
+				case SymbolKind.TypeParameter:
+					return (ITypeParameter)Import(compilation, (IType)symbol);
+				case SymbolKind.Variable:
+					IVariable v = (IVariable)symbol;
+					return new DefaultVariable(
+						Import(compilation, v.Type),
+						v.Name, v.Region, v.IsConst, v.ConstantValue
+					);
+				case SymbolKind.Parameter:
+					IParameter p = (IParameter)symbol;
+					if (p.Owner != null) {
+						int index = p.Owner.Parameters.IndexOf(p);
+						var owner = (IParameterizedMember)Import(compilation, p.Owner);
+						if (owner == null || index < 0 || index >= owner.Parameters.Count)
+							return null;
+						return owner.Parameters[index];
+					} else {
+						return new DefaultParameter(
+							Import(compilation, p.Type),
+							p.Name, null, p.Region,
+							null, p.IsRef, p.IsOut, p.IsParams
+						);
+					}
+				case SymbolKind.Namespace:
+					INamespace ns = (INamespace)symbol;
+					if (ns.ParentNamespace == null) {
+						return compilation.RootNamespace;
+					} else {
+						INamespace importedParent = Import(compilation, ns.ParentNamespace);
+						if (importedParent != null)
+							return importedParent.GetChildNamespace(ns.Name);
+						else
+							return null;
+					}
+				default:
+					if (symbol is IEntity)
+						return Import(compilation, (IEntity)symbol);
+					throw new NotSupportedException("Unsupported symbol kind: " + symbol.SymbolKind);
+			}
+		}
+		
+		/// <summary>
 		/// Imports a type from another compilation.
 		/// </summary>
 		public static IType Import(this ICompilation compilation, IType type)
@@ -634,6 +685,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			                     	ITypeDefinition typeDef = attrType.GetDefinition();
 			                     	return typeDef != null && typeDef.FullTypeName == attributeType;
 			                     }, inherit);
+		}
+
+		/// <summary>
+		/// Gets the attribute of the specified attribute type (or derived attribute types).
+		/// </summary>
+		/// <param name="entity">The entity on which the attributes are declared.</param>
+		/// <param name="inherit">
+		/// Specifies whether attributes inherited from base classes and base members (if the given <paramref name="entity"/> in an <c>override</c>)
+		/// should be returned. The default is <c>true</c>.
+		/// </param>
+		/// <returns>
+		/// Returns the attribute that was found; or <c>null</c> if none was found.
+		/// If inherit is true, an from the entity itself will be returned if possible;
+		/// and the base entity will only be searched if none exists.
+		/// </returns>
+		public static IEnumerable<IAttribute> GetAttributes(this IEntity entity, bool inherit = true)
+		{
+			if (entity == null)
+				throw new ArgumentNullException ("entity");
+			return GetAttributes(entity, a => true, inherit);
 		}
 		
 		static IEnumerable<IAttribute> GetAttributes(IEntity entity, Predicate<IType> attributeTypePredicate, bool inherit)

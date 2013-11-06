@@ -186,7 +186,7 @@ namespace CSharpBinding.Parser
 					typeof(Uri).Assembly,
 					typeof(Enumerable).Assembly
 				};
-				return assemblies.Select(asm => new CecilLoader().LoadAssemblyFile(asm.Location)).ToArray();
+				return assemblies.Select(asm => SD.AssemblyParserService.GetAssembly(FileName.Create(asm.Location))).ToArray();
 			});
 		
 		public ICompilation CreateCompilationForSingleFile(FileName fileName, IUnresolvedFile unresolvedFile)

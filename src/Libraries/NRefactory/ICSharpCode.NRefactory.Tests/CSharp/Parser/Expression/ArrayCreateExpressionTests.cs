@@ -169,5 +169,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			                	Roles.RBrace
 			                }, ace.Initializer.Children.Select(c => c.Role).ToArray());
 		}
+		
+		[Test]
+		public void IncompleteExpressionInArrayCreateExpression()
+		{
+			// test that the parser doesn't crash
+			ParseUtilCSharp.ParseExpression<ArrayCreateExpression>("new int[sections.]", expectErrors: true);
+		}
 	}
 }

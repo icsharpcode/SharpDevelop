@@ -33,6 +33,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		readonly IList<IAttribute> attributes;
 		readonly bool isRef, isOut, isParams, isOptional;
 		readonly object defaultValue;
+		readonly IParameterizedMember owner;
 		
 		public DefaultParameter(IType type, string name)
 		{
@@ -44,7 +45,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.name = name;
 		}
 		
-		public DefaultParameter(IType type, string name, DomRegion region = default(DomRegion), IList<IAttribute> attributes = null,
+		public DefaultParameter(IType type, string name, IParameterizedMember owner = null, DomRegion region = default(DomRegion), IList<IAttribute> attributes = null,
 		                        bool isRef = false, bool isOut = false, bool isParams = false, bool isOptional = false, object defaultValue = null)
 		{
 			if (type == null)
@@ -53,6 +54,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentNullException("name");
 			this.type = type;
 			this.name = name;
+			this.owner = owner;
 			this.region = region;
 			this.attributes = attributes;
 			this.isRef = isRef;
@@ -64,6 +66,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		SymbolKind ISymbol.SymbolKind {
 			get { return SymbolKind.Parameter; }
+		}
+		
+		public IParameterizedMember Owner {
+			get { return owner; }
 		}
 		
 		public IList<IAttribute> Attributes {

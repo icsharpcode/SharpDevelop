@@ -201,6 +201,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			policy.MethodCallArgumentWrapping = Wrapping.WrapAlways;
 			policy.NewLineAferMethodCallOpenParentheses = NewLinePlacement.SameLine;
 			policy.MethodCallClosingParenthesesOnNewLine = NewLinePlacement.SameLine;
+			policy.AlignToFirstMethodCallArgument = true;
 
 			Test(policy, @"class Test
 {
@@ -553,6 +554,7 @@ int j,
 			policy.MethodCallArgumentWrapping = Wrapping.DoNotChange;
 			policy.NewLineAferMethodCallOpenParentheses = NewLinePlacement.NewLine;
 			policy.MethodCallClosingParenthesesOnNewLine = NewLinePlacement.NewLine;
+			policy.AlignToFirstMethodCallArgument = true;
 
 			Test(policy, @"class Test
 {
@@ -583,6 +585,7 @@ int j,
 			policy.MethodCallArgumentWrapping = Wrapping.DoNotChange;
 			policy.NewLineAferMethodCallOpenParentheses = NewLinePlacement.NewLine;
 			policy.MethodCallClosingParenthesesOnNewLine = NewLinePlacement.NewLine;
+			policy.AlignToFirstMethodCallArgument = true;
 
 			Test(policy, @"class Test
 {
@@ -609,7 +612,7 @@ int j,
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 
-			var adapter = Test (policy, @"class Test
+			Test (policy, @"class Test
 {
 	int Foo (int i, double d, Action a)
 	{
@@ -631,7 +634,7 @@ int j,
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.BlankLinesBetweenMembers = 1;
 
-			var adapter = Test (policy, @"class Test
+			Test (policy, @"class Test
 {
 	int Foo (int i, double d, Action a)
 	{
@@ -870,6 +873,7 @@ int foo)
 		public void TestWrappingWithSpaceIndent()
 		{
 			var policy = FormattingOptionsFactory.CreateMono();
+			policy.AlignToFirstMethodCallArgument = true;
 
 			TextEditorOptions options = new TextEditorOptions();
 			options.IndentSize = options.TabSize = 2;

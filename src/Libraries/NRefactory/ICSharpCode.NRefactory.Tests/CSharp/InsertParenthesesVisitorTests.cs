@@ -214,8 +214,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}.Invoke("ToArray");
 			
-			Assert.AreEqual("( from a in b select a.c ()).ToArray ()", InsertRequired(expr));
-			Assert.AreEqual("( from a in b select a.c ()).ToArray ()", InsertReadable(expr));
+			Assert.AreEqual("(from a in b select a.c ()).ToArray ()", InsertRequired(expr));
+			Assert.AreEqual("(from a in b select a.c ()).ToArray ()", InsertReadable(expr));
 		}
 		
 		[Test]
@@ -238,10 +238,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				query.Clone()
 			);
 			
-			Assert.AreEqual("( from a in b select a) + " +
-			                " from a in b select a", InsertRequired(expr));
-			Assert.AreEqual("( from a in b select a) + " +
-			                "( from a in b select a)", InsertReadable(expr));
+			Assert.AreEqual("(from a in b select a) + " +
+			                "from a in b select a", InsertRequired(expr));
+			Assert.AreEqual("(from a in b select a) + " +
+			                "(from a in b select a)", InsertReadable(expr));
 		}
 		
 		[Test]
@@ -259,8 +259,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}.IsType(new PrimitiveType("int"));
 			
-			Assert.AreEqual("( from a in b select a) is int", InsertRequired(expr));
-			Assert.AreEqual("( from a in b select a) is int", InsertReadable(expr));
+			Assert.AreEqual("(from a in b select a) is int", InsertRequired(expr));
+			Assert.AreEqual("(from a in b select a) is int", InsertReadable(expr));
 		}
 		
 		[Test]

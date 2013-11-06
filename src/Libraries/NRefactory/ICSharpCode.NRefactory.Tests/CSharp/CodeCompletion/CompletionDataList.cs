@@ -56,9 +56,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		
 		public string DefaultCompletionString { get; set; }
 		
-		public ICompletionData Find (string name)
+		public ICompletionData Find (string name, bool includeImportData = false)
 		{
-			return Data.FirstOrDefault (d => d.DisplayText == name);
+			return Data.FirstOrDefault (d => (!(d is CodeCompletionBugTests.TestFactory.ImportCompletionData) || includeImportData) && d.DisplayText == name);
 		}
 	}
 }

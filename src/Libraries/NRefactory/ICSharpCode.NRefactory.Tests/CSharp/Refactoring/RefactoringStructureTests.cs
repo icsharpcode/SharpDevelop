@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		[Test]
 		public void GatherVisitorBaseClass()
 		{
-			Assembly NR_CSharp = typeof(ICodeIssueProvider).Assembly;
+			Assembly NR_CSharp = typeof(InconsistentNamingIssue).Assembly;
 			bool foundGatherVisitor = false;
 			foreach (var topLevelType in NR_CSharp.GetTypes()) {
 				foreach (var nestedType in topLevelType.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public)) {

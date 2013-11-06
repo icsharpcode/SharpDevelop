@@ -120,7 +120,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		void CheckMissingTokens(AstNode node)
 		{
-			if (node is CSharpTokenNode) {
+			if (IsLeafNode(node)) {
 				Assert.IsNull(node.FirstChild, "Token nodes should not have children");
 			} else {
 				var prevNodeEnd = node.StartLocation;
@@ -135,9 +135,18 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			}
 		}
 		
+		bool IsLeafNode(AstNode node)
+		{
+			if (node.NodeType == NodeType.Token)
+				return true;
+			if (node.NodeType == NodeType.Whitespace)
+				return !(node is PragmaWarningPreprocessorDirective);
+			return node is PrimitiveType || node is PrimitiveExpression || node is NullReferenceExpression;
+		}
+		
 		void CheckWhitespace(AstNode startNode, TextLocation whitespaceStart, AstNode endNode, TextLocation whitespaceEnd)
 		{
-			if (whitespaceStart == whitespaceEnd || startNode == endNode)
+			if (whitespaceStart == whitespaceEnd)
 				return;
 			int start = currentDocument.GetOffset(whitespaceStart.Line, whitespaceStart.Column);
 			int end = currentDocument.GetOffset(whitespaceEnd.Line, whitespaceEnd.Column);

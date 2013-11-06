@@ -142,6 +142,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
+		public CSharpTokenNode Keyword {
+			get {
+				if (ConstructorInitializerType == ConstructorInitializerType.Base)
+					return GetChildByRole(BaseKeywordRole);
+				else
+					return GetChildByRole(ThisKeywordRole);
+			}
+		}
+		
 		public CSharpTokenNode LParToken {
 			get { return GetChildByRole (Roles.LPar); }
 		}

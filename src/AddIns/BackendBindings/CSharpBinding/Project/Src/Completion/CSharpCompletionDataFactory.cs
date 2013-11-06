@@ -46,7 +46,7 @@ namespace CSharpBinding.Completion
 			};
 		}
 		
-		ICompletionData ICompletionDataFactory.CreateTypeCompletionData(IType type, bool showFullName, bool isInAttributeContext)
+		ICompletionData ICompletionDataFactory.CreateTypeCompletionData(IType type, bool showFullName, bool isInAttributeContext, bool addForTypeCreation)
 		{
 			var data = new TypeCompletionData(type);
 			if (showFullName) {
@@ -135,13 +135,23 @@ namespace CSharpBinding.Completion
 			return completionContext.ParseInformation.SyntaxTree.ConditionalSymbols.Select(def => new CompletionData(def));
 		}
 		
-		ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName)
+		ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName, bool addForTypeCreation)
 		{
 			ITypeDefinition typeDef = type.GetDefinition();
 			if (typeDef != null)
 				return new ImportCompletionData(typeDef, contextAtCaret, useFullName);
 			else
 				throw new InvalidOperationException("Should never happen");
+		}
+		
+		ICompletionData ICompletionDataFactory.CreateFormatItemCompletionData(string format, string description, object example)
+		{
+			return new CompletionData("TODO: format item completion");
+		}
+
+		ICompletionData ICompletionDataFactory.CreateXmlDocCompletionData(string tag, string description, string tagInsertionText)
+		{
+			return new CompletionData("TODO: XmlDoc completion");
 		}
 		#endregion
 		

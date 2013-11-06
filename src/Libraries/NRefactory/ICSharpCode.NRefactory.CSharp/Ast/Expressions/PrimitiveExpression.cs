@@ -116,19 +116,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				char* p = start;
 				char* endPtr = start + str.Length;
 				while (p < endPtr) {
-					switch (*p) {
-						case '\r':
-							char* nextp = p + 1;
-							if (nextp < endPtr && *nextp == '\n') 
-								p++;
-							goto case '\n';
-						case '\n':
-							line++;
-							col = 1;
-							break;
-						default:
-							col++;
-							break;
+					var nl = NewLine.GetDelimiterLength(*p, () => {
+						char* nextp = p + 1;
+						if (nextp < endPtr)
+							return *nextp;
+						return '\0';
+					});
+					if (nl > 0) {
+						line++;
+						col = 1;
+						if (nl == 2)
+							p++;
+					} else {
+						col++;
 					}
 					p++;
 				}
