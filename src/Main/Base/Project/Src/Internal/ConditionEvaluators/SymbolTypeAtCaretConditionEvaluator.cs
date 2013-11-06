@@ -4,7 +4,10 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Commands;
 
 namespace ICSharpCode.SharpDevelop.Internal.ConditionEvaluators
 {
@@ -15,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Internal.ConditionEvaluators
 	{
 		public bool IsValid(object parameter, Condition condition)
 		{
-			ResolveResult resolveResult = GetResolveResult();
+			ResolveResult resolveResult = GetResolveResult(parameter);
 			if ((resolveResult != null) && !resolveResult.IsError) {
 				// Check type of symbol
 				string typesList = condition.Properties["type"];
@@ -53,14 +56,46 @@ namespace ICSharpCode.SharpDevelop.Internal.ConditionEvaluators
 			return false;
 		}
 		
-		static ResolveResult GetResolveResult()
+		static ResolveResult GetResolveResult(object parameter)
+		{
+			if (parameter == null)
+				return GetResolveResultFromCurrentEditor();
+			
+			if (parameter is ITextEditor)
+				return GetResolveResultFromCurrentEditor((ITextEditor) parameter);
+			
+			if (parameter is ResolveResult)
+				return (ResolveResult) parameter;
+			
+			if (parameter is IEntityModel)
+				return GetResolveResultFromEntityModel((IEntityModel) parameter);
+			
+			return null;
+		}
+		
+		static ResolveResult GetResolveResultFromEntityModel(IEntityModel entityModel)
+		{
+			IEntity entity = entityModel.Resolve();
+			if (entity is IMember)
+				return new MemberResolveResult(null, (IMember) entity);
+			if (entity is ITypeDefinition)
+				return new TypeResolveResult((ITypeDefinition) entity);
+			return ErrorResolveResult.UnknownError;
+		}
+		
+		static ResolveResult GetResolveResultFromCurrentEditor()
 		{
 			ITextEditor currentEditor = SD.GetActiveViewContentService<ITextEditor>();
+			return GetResolveResultFromCurrentEditor(currentEditor);
+		}
+		
+		static ResolveResult GetResolveResultFromCurrentEditor(ITextEditor currentEditor)
+		{
 			if (currentEditor != null) {
 				return SD.ParserService.Resolve(currentEditor, currentEditor.Caret.Location);
-			} else {
-				return ErrorResolveResult.UnknownError;
 			}
+			
+			return ErrorResolveResult.UnknownError;
 		}
 	}
 }

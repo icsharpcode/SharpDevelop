@@ -22,6 +22,7 @@
 	
 	<!-- Text editor context menu: Launch ILSpy command -->
 	<Path name="/SharpDevelop/EntityContextMenu">
+		<MenuItem id="ILSpySeparator" type="Separator" />
 		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.OpenInILSpyCommand"/>
 	</Path>
 </AddIn>

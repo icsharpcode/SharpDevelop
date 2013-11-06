@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +10,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
@@ -19,12 +21,28 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		public IEnumerable<object> BuildItems(Codon codon, object parameter)
 		{
-			MemberResolveResult resolveResult = GetResolveResult() as MemberResolveResult;
-			if (resolveResult == null) {
-				return null;
+			IMember member = null;
+			
+			if (parameter is IMemberModel) {
+				// Menu is directly created from a member model (e.g. bookmarks etc.)
+				member = ((IMemberModel) parameter).Resolve();
+			} else if (parameter is ResolveResult) {
+				MemberResolveResult resolveResult = parameter as MemberResolveResult;
+				if (resolveResult != null) {
+					member = resolveResult.Member;
+				}
+			} else if (parameter is ITextEditor) {
+				// Shown in context menu of a text editor
+				MemberResolveResult resolveResult = GetResolveResult((ITextEditor) parameter) as MemberResolveResult;
+				if (resolveResult != null) {
+					member = resolveResult.Member;
+				}
 			}
 			
-			IMember member = resolveResult.Member;
+			if (member == null) {
+				return null;
+			}
+
 			IType declaringType = member.DeclaringTypeDefinition;
 			if (declaringType == null) {
 				return null;
@@ -33,31 +51,28 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			var items = new List<object>();
 			var declaringTypeItem = new MenuItem() {
 				Header = "Declaring type: " + declaringType.Name,
-				Icon = ClassBrowserIconService.GetIcon(declaringType).ImageSource
+				Icon = new Image() { Source = ClassBrowserIconService.GetIcon(declaringType).ImageSource }
 			};
 			
 			var subItems = MenuService.CreateMenuItems(
-				null, new TypeResolveResult(declaringType), "/SharpDevelop/ViewContent/TextEditor/ContextMenu/TypeContextMenu");
+				null, new TypeResolveResult(declaringType), "/SharpDevelop/EntityContextMenu");
 			if (subItems != null) {
 				foreach (var item in subItems) {
 					declaringTypeItem.Items.Add(item);
 				}
 			}
-			
 			items.Add(declaringTypeItem);
-			items.Add(new Separator());
 			
 			return items;
 		}
 		
-		static ResolveResult GetResolveResult()
+		static ResolveResult GetResolveResult(ITextEditor currentEditor)
 		{
-			ITextEditor currentEditor = SD.GetActiveViewContentService<ITextEditor>();
 			if (currentEditor != null) {
 				return SD.ParserService.Resolve(currentEditor, currentEditor.Caret.Location);
-			} else {
-				return ErrorResolveResult.UnknownError;
 			}
+			
+			return ErrorResolveResult.UnknownError;
 		}
 	}
 }

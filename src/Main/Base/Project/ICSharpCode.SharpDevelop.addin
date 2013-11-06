@@ -1994,9 +1994,13 @@
 	<!-- TEXT EDITOR -->
 	
 	<Path name = "/SharpDevelop/EntityContextMenu">
+		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
+		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
 		<MenuItem id = "FindReferences"
 		          label = "${res:SharpDevelop.Refactoring.FindReferencesCommand}"
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
+		
+		<MenuItem id="DeclaringTypeContextMenu" type="Builder" class="ICSharpCode.SharpDevelop.Editor.Commands.DeclaringTypeSubMenuBuilder" />
 	</Path>
 	
 	<!--
@@ -2025,38 +2029,11 @@
 		<Include id = "Common" path = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common"/>
 	</Path>-->
 	
-	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/MemberContextMenu">
-		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
-		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
-	</Path>
-	
-	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/TypeContextMenu">
-		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
-		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
-	</Path>
-	
-	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/LocalContextMenu">
-		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
-		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
-	</Path>
-	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
-		<Condition name="SymbolTypeAtCaret" type="member" action="Exclude">
-			<Include id="MemberContextMenu" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu/MemberContextMenu" />
+		<Condition name="SymbolTypeAtCaret" type="member,type,local" action="Exclude">
 			<Include id="EntityContextMenu" path="/SharpDevelop/EntityContextMenu" />
 			<MenuItem id="Separator1" type="Separator" />
 		</Condition>
-		<Condition name="SymbolTypeAtCaret" type="type" action="Exclude">
-			<Include id="TypeContextMenu" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu/TypeContextMenu" />
-			<Include id="EntityContextMenu" path="/SharpDevelop/EntityContextMenu" />
-			<MenuItem id="Separator1" type="Separator" />
-		</Condition>
-		<Condition name="SymbolTypeAtCaret" type="local" action="Exclude">
-			<Include id="LocalContextMenu" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu/LocalContextMenu" />
-			<MenuItem id="Separator1" type="Separator" />
-		</Condition>
-		
-		<MenuItem id="DeclaringTypeContextMenu" type="Builder" class="ICSharpCode.SharpDevelop.Editor.Commands.DeclaringTypeSubMenuBuilder" />
 		
 		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
 		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
