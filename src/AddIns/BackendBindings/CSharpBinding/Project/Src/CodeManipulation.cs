@@ -302,20 +302,15 @@ namespace CSharpBinding
 			
 			// Swap them
 			string currentNodeText = editor.Document.GetText(statementSelection.Start, statementSelection.End);
-			try {
-				SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSiblingSelection.Start, swapSiblingSelection.End);
-				// Move caret to the start of moved statement
-				TextLocation upperLocation = new TextLocation[] {statementSelection.Start, swapSiblingSelection.Start}.Min();
-				if (direction == MoveStatementDirection.Up)
-					editor.Caret.Location = upperLocation;
-				else {
-					// look where current statement ended up because it is hard to calculate it correctly
-					int currentMovedOffset = editor.Document.Text.IndexOf(currentNodeText, editor.Document.GetOffset(upperLocation));
-					editor.Caret.Offset = currentMovedOffset;
-				}
-			} catch (Exception ex) {
-				// SD.MessageService.ShowWarning(ex.ToString());
-				return;
+			SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSiblingSelection.Start, swapSiblingSelection.End);
+			// Move caret to the start of moved statement
+			TextLocation upperLocation = new TextLocation[] {statementSelection.Start, swapSiblingSelection.Start}.Min();
+			if (direction == MoveStatementDirection.Up)
+				editor.Caret.Location = upperLocation;
+			else {
+				// look where current statement ended up because it is hard to calculate it correctly
+				int currentMovedOffset = editor.Document.Text.IndexOf(currentNodeText, editor.Document.GetOffset(upperLocation));
+				editor.Caret.Offset = currentMovedOffset;
 			}
 		}
 		
