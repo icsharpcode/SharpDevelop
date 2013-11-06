@@ -31,7 +31,7 @@ namespace ICSharpCode.WpfDesign.Designer
 	/// </summary>
 	[TemplatePart(Name = "PART_DesignContent", Type = typeof(ContentControl))]
 	[TemplatePart(Name = "PART_Zoom", Type = typeof(ZoomControl))]
-	public class DesignSurface : ContentControl
+	public partial class DesignSurface : ContentControl
 	{
 		private FocusNavigator _focusNav;
 		
@@ -73,10 +73,21 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			base.OnApplyTemplate();
 		}
+		
+		private bool enableBringIntoView = false;
+		
+		public void ScrollIntoView(DesignItem designItem)
+		{
+			enableBringIntoView = true;
+			LogicalTreeHelper.BringIntoView(designItem.View);
+			enableBringIntoView = false;
+		}
 
 		void _partDesignContent_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
 		{
-			e.Handled = true;
+			if (!enableBringIntoView)
+				e.Handled = true;
+			enableBringIntoView = false;
 		}
 
 		protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)

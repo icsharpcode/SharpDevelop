@@ -56,7 +56,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			tree.ShowRoot = false;
 			tree.View = (GridView)res["variableGridView"];
 			tree.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "50%;25%;25%");
-			//tree.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
 			tree.MouseDoubleClick += delegate(object sender, MouseButtonEventArgs e) {
 				if (this.tree.SelectedItem == null) {
 					AddWatch(focus: true);
@@ -65,34 +64,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			panel.Children.Add(tree);
 			
 //			ProjectService.SolutionLoaded  += delegate { LoadNodes(); };
-//			ProjectService.SolutionClosing += delegate { SaveNodes(); };
+//			SD.ProjectService.CurrentSolution.PreferencesSaving += delegate { SaveNodes(); };
 //			LoadNodes();
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
 			RefreshPad();
 		}
 
-//		void LoadNodes()
-//		{
-//			if (ProjectService.OpenSolution != null) {
-//				var props = ProjectService.OpenSolution.Preferences.NestedProperties("Watches");
-//				foreach (var key in props.Keys) {
-//					this.Items.Add(new TreeNode(props.Get(key, ""), () => null).ToSharpTreeNode());
-//				}
-//			}
-//		}
-//
-//		void SaveNodes()
-//		{
-//			if (ProjectService.OpenSolution != null) {
-//				var props = new Properties();
-//				ProjectService.OpenSolution.Preferences.SetNestedProperties("Watches", props);
-//				foreach(var node in this.Items.OfType<TreeNode>()) {
-//					props.Set(node.Name, node.EvalEnabled);
-//				}
-//			}
-//		}
-		
 		public void AddWatch(string expression = null, bool focus = false)
 		{
 			var node = MakeNode(expression);
@@ -145,6 +123,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				process.EnqueueForEach(
 					Dispatcher.CurrentDispatcher,
 					expressions,
+					expr => this.Items.Add(MakeNode(expr)),
 					expr => this.Items.Add(MakeNode(expr))
 				);
 			}

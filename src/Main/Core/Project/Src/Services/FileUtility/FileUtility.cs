@@ -337,16 +337,19 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		[Obsolete("Use SD.FileSystem.GetFiles() instead")]
 		public static List<string> SearchDirectory(string directory, string filemask, bool searchSubdirectories, bool ignoreHidden)
 		{
 			return SearchDirectoryInternal(directory, filemask, searchSubdirectories, ignoreHidden).Select(file => file.ToString()).ToList();
 		}
 		
+		[Obsolete("Use SD.FileSystem.GetFiles() instead")]
 		public static List<string> SearchDirectory(string directory, string filemask, bool searchSubdirectories)
 		{
 			return SearchDirectory(directory, filemask, searchSubdirectories, true);
 		}
 		
+		[Obsolete("Use SD.FileSystem.GetFiles() instead")]
 		public static List<string> SearchDirectory(string directory, string filemask)
 		{
 			return SearchDirectory(directory, filemask, true, true);

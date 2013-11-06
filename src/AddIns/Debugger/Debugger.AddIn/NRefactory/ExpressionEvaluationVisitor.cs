@@ -300,17 +300,17 @@ namespace Debugger.AddIn
 		
 		Value Visit(TypeResolveResult result)
 		{
-			throw new GetValueException("Types not supported!");
+			throw new GetValueException("Error: Types not supported.");
 		}
 		
 		Value Visit(UnknownMemberResolveResult result)
 		{
-			throw new GetValueException("Member not found!");
+			throw new GetValueException("Error: Member '{0}' not found.", result.MemberName);
 		}
 		
 		Value Visit(UnknownIdentifierResolveResult result)
 		{
-			throw new GetValueException("Identifier not found!");
+			throw new GetValueException("Error: Identifier '{0}' not declared.", result.Identifier);
 		}
 		
 		Value Visit(ArrayAccessResolveResult result)

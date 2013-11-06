@@ -47,9 +47,9 @@ namespace ICSharpCode.SharpDevelop
 			return fileSystem.OpenText(basePath.Combine(fileName));
 		}
 		
-		public IEnumerable<FileName> GetFiles(DirectoryName directory, string searchPattern, SearchOption searchOption)
+		public IEnumerable<FileName> GetFiles(DirectoryName directory, string searchPattern, DirectorySearchOptions searchOptions)
 		{
-			return fileSystem.GetFiles(basePath.Combine(directory), searchPattern, searchOption)
+			return fileSystem.GetFiles(basePath.Combine(directory), searchPattern, searchOptions)
 				.Select(file => basePath.GetRelativePath(file));
 		}
 	}

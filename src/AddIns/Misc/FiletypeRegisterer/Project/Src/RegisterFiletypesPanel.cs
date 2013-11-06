@@ -12,6 +12,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FiletypeRegisterer
 {
+	#pragma warning disable 618
 	public partial class RegisterFiletypesPanel : XmlFormsOptionPanel
 	{
 		sealed class ListEntry

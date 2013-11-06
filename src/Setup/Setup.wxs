@@ -176,6 +176,7 @@
 				<ComponentRef Id="SharpDevelopExe"/>
 				<ComponentRef Id="SharpDevelopExeFiles"/>
 				<ComponentRef Id="SharpDevelopDocFiles"/>
+				<ComponentRef Id="DependenciesHtml"/>
 				<ComponentRef Id="ICSharpCodeBuildTasksDll"/>
 				<ComponentRef Id="BuildTasksTargetFiles"/>
 				<ComponentRef Id="ICSharpCodeCoreDll"/>
@@ -656,7 +657,24 @@
 		
 		<!-- Using WixUI -->
 		<Property Id="WIXUI_INSTALLDIR">INSTALLDIR</Property>
-		<UIRef Id="WixUI_FeatureTree"/>
+		<UI>
+			<UIRef Id="WixUI_FeatureTree" />
+			<Publish
+				Dialog="ExitDialog"
+				Control="Finish"
+				Event="DoAction"
+				Value="ShowReadme">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+		</UI>
+		
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Learn about dependencies you should install" />
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1"/>
+		
+		<Property Id="WixShellExecTarget" Value="[#Dependencies.html]" />
+		<CustomAction
+			Id="ShowReadme"
+			BinaryKey="WixCA"
+			DllEntry="WixShellExec"
+			Impersonate="yes" />
 		
 		<!--
 			If a newer version of SharpDevelop is installed, show an error message.

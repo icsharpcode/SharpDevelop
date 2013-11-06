@@ -321,6 +321,9 @@
 								<File Source="..\..\doc\readme.rtf" Name="readme.rtf" Id="readme.rtf" />
 								<File Source="..\..\doc\SharpDevelopInfoResources.txt" Id="SharpDevelopInfoResources.txt" Name="SharpDevelopInfoResources.txt" />
 							</Component>
+							<Component Id="DependenciesHtml" Guid="898AC4F4-9331-4C3C-A170-ECB09B890EDD" DiskId="1">
+								<File Id="Dependencies.html" Name="Dependencies.html" Source="..\..\doc\Dependencies.html" KeyPath="yes" />
+							</Component>
 						</Directory>
 						<Directory Id="DataFolder" Name="data">
 							<Directory Id="ConversionStyleSheetsFolder" Name="ConversionStyleSheets">
@@ -1576,8 +1579,6 @@
 										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn.dll" Name="SharpSvn.dll" Id="SharpSvn.dll" />
 										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn.UI.dll" Name="SharpSvn.UI.dll" Id="SharpSvn.UI.dll" />
 										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpPlink-Win32.svnExe" Name="SharpPlink-Win32.svnExe" Id="SharpPlink_Win32.svnExe" />
-										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn-DB44-20-Win32.dll" Name="SharpSvn-DB44-20-Win32.dll" Id="SharpSvn_DB44_20_Win32.dll" />
-										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn-SASL21-23-Win32.dll" Name="SharpSvn-SASL21-23-Win32.dll" Id="SharpSvn_SASL21_23_Win32.dll" />
 									</Component>
 								</Directory>
 								<Component Id="GitAddInDll" Guid="4AB2E967-7267-42F7-AED1-AB64809F0BC1" DiskId="1">

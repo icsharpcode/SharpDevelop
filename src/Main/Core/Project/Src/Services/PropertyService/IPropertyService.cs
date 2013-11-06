@@ -17,13 +17,11 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Gets the configuration directory. (usually "%ApplicationData%\%ApplicationName%")
 		/// </summary>
-		/// <seealso cref="CoreStartup.ConfigDirectory"/>
 		DirectoryName ConfigDirectory { get; }
 		
 		/// <summary>
 		/// Gets the data directory (usually "ApplicationRootPath\data")
 		/// </summary>
-		/// <seealso cref="CoreStartup.DataDirectory"/>
 		DirectoryName DataDirectory { get; }
 		
 		/// <summary>
@@ -56,8 +54,23 @@ namespace ICSharpCode.Core
 		void Remove(string key);
 		
 		/// <summary>
-		/// Saves the properties to disk.
+		/// Saves the main properties to disk.
 		/// </summary>
 		void Save();
+		
+		/// <summary>
+		/// Loads extra properties that are not part of the main properties container.
+		/// Unlike <see cref="NestedProperties"/>, multiple calls to <see cref="LoadExtraProperties"/>
+		/// will return different instances, as the properties are re-loaded from disk every time.
+		/// To save the properties, you need to call <see cref="SaveExtraProperties"/>.
+		/// </summary>
+		/// <returns>Properties container that was loaded; or an empty properties container
+		/// if no container with the specified key exists.</returns>
+		Properties LoadExtraProperties(string key);
+		
+		/// <summary>
+		/// Saves extra properties that are not part of the main properties container.
+		/// </summary>
+		void SaveExtraProperties(string key, Properties p);
 	}
 }

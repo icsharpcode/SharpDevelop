@@ -8,7 +8,8 @@ using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace Plugins.RegExpTk {
-
+	// TODO: remove XmlForms
+	#pragma warning disable 618
 	public class GroupForm : BaseSharpDevelopForm
 	{
 		public GroupForm(Match match)

@@ -50,8 +50,8 @@ namespace ICSharpCode.SharpDevelop.Templates
 		{
 			var fileSystem = GetFileSystem(args);
 			var templates = new List<TemplateBase>();
-			var xpt = fileSystem.GetFiles(DirectoryName.Create("."), "*.xpt", SearchOption.AllDirectories);
-			var xft = fileSystem.GetFiles(DirectoryName.Create("."), "*.xft", SearchOption.AllDirectories);
+			var xpt = fileSystem.GetFiles(DirectoryName.Create("."), "*.xpt", DirectorySearchOptions.IncludeSubdirectories);
+			var xft = fileSystem.GetFiles(DirectoryName.Create("."), "*.xft", DirectorySearchOptions.IncludeSubdirectories);
 			foreach (var fileName in xpt.Concat(xft)) {
 				using (var stream = fileSystem.OpenRead(fileName)) {
 					var relFileSystem = new ReadOnlyChrootFileSystem(fileSystem, fileName.GetParentDirectory());

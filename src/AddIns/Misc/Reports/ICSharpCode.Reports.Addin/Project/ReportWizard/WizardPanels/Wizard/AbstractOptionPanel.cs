@@ -10,6 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
+	#pragma warning disable 618
 	public class AbstractOptionPanel : BaseSharpDevelopUserControl, IDialogPanel
 	{
 		bool   wasActivated = false;

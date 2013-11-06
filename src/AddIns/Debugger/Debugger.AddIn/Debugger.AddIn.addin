@@ -75,6 +75,16 @@
 			          label = "${res:MainWindow.Windows.Debug.DebugExecutable}"
 			          class = "Debugger.AddIn.DebugExecutableMenuCommand"/>
 		</Condition>
+<!--		<MenuItem id="AddExpressionBreakpoint"
+		          insertafter="Toggle Breakpoint"
+		          label = "${res:MainWindow.Windows.Debug.AddExpressionBreakpoint}"
+		          shortcut="Shift|F7"
+		          class = "Debugger.AddIn.AddExpressionBreakpointCommand"/>-->
+		<MenuItem id="AddWatchExpression"
+		          insertafter="AddExpressionBreakpoint"
+		          label = "${res:MainWindow.Windows.Debug.AddWatchExpression}"
+		          shortcut="Ctrl|F7"
+		          class = "Debugger.AddIn.AddWatchExpressionCommand"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
@@ -126,12 +136,6 @@
 		     icon     = "PadIcons.Watches"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.WatchPad"
 		     defaultPosition = "Bottom, Hidden" />
-	</Path>
-	
-	<Path name ="/SharpDevelop/Pads/WatchPad/ContextMenu">
-		<MenuItem id="AddWatch" label="${res:MainWindow.Windows.Debug.Watch.AddWatch}" class="Debugger.AddIn.AddWatchCommand" />
-		<MenuItem id="RemoveWatch" label="${res:MainWindow.Windows.Debug.Watch.RemoveWatch}" class="Debugger.AddIn.RemoveWatchCommand" />
-		<MenuItem id="ClearWatches" label="${res:MainWindow.Windows.Debug.Watch.RemoveAll}" class="Debugger.AddIn.ClearWatchesCommand" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">

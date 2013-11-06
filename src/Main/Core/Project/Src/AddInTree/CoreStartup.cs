@@ -18,7 +18,7 @@ namespace ICSharpCode.Core
 	/// for you, provided you use it like this:
 	/// 1. Create a new CoreStartup instance
 	/// 2. (Optional) Set the values of the properties.
-	/// 3. Call <see cref="StartCoreServices()"/>.
+	/// 3. Call <see cref="StartCoreServices"/>.
 	/// 4. Add "preinstalled" AddIns using <see cref="AddAddInsFromDirectory"/>
 	///    and <see cref="AddAddInFile"/>.
 	/// 5. (Optional) Call <see cref="ConfigureExternalAddIns"/> to support
@@ -32,58 +32,8 @@ namespace ICSharpCode.Core
 		List<string> addInFiles = new List<string>();
 		List<string> disabledAddIns = new List<string>();
 		bool externalAddInsConfigured;
-		string propertiesName;
-		string configDirectory;
-		string dataDirectory;
-		string applicationName;
 		AddInTreeImpl addInTree;
-		
-		/// <summary>
-		/// Sets the name used for the properties (only name, without path or extension).
-		/// Must be set before StartCoreServices() is called.
-		/// </summary>
-		public string PropertiesName {
-			get {
-				return propertiesName;
-			}
-			set {
-				if (value == null || value.Length == 0)
-					throw new ArgumentNullException("value");
-				propertiesName = value;
-			}
-		}
-		
-		/// <summary>
-		/// Sets the directory name used for the property service.
-		/// Must be set before StartCoreServices() is called.
-		/// Use null to use the default path "%ApplicationData%\%ApplicationName%",
-		/// where %ApplicationData% is the system setting for
-		/// "c:\documents and settings\username\application data"
-		/// and %ApplicationName% is the application name you used in the
-		/// CoreStartup constructor call.
-		/// </summary>
-		public string ConfigDirectory {
-			get {
-				return configDirectory;
-			}
-			set {
-				configDirectory = value;
-			}
-		}
-		
-		/// <summary>
-		/// Sets the data directory used to load resources.
-		/// Must be set before StartCoreServices() is called.
-		/// Use null to use the default path "ApplicationRootPath\data".
-		/// </summary>
-		public string DataDirectory {
-			get {
-				return dataDirectory;
-			}
-			set {
-				dataDirectory = value;
-			}
-		}
+		string applicationName;
 		
 		/// <summary>
 		/// Creates a new CoreStartup instance.
@@ -98,7 +48,6 @@ namespace ICSharpCode.Core
 			if (applicationName == null)
 				throw new ArgumentNullException("applicationName");
 			this.applicationName = applicationName;
-			propertiesName = applicationName + "Properties";
 		}
 		
 		/// <summary>
@@ -198,16 +147,9 @@ namespace ICSharpCode.Core
 		/// Starts the core services.
 		/// This initializes the PropertyService and ResourceService.
 		/// </summary>
-		public void StartCoreServices()
+		public void StartCoreServices(IPropertyService propertyService)
 		{
-			if (configDirectory == null)
-				configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				                               applicationName);
 			var container = ServiceSingleton.GetRequiredService<IServiceContainer>();
-			var propertyService = new PropertyServiceImpl(
-				DirectoryName.Create(configDirectory),
-				DirectoryName.Create(dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data")),
-				propertiesName);
 			var applicationStateInfoService = new ApplicationStateInfoService();
 			addInTree = new AddInTreeImpl(applicationStateInfoService);
 			

@@ -43,33 +43,33 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public IRecentOpen RecentOpen {
 			get {
 				return LazyInitializer.EnsureInitialized(
-					ref recentOpen, () => new RecentOpen(PropertyService.NestedProperties("RecentOpen")));
+					ref recentOpen, () => new RecentOpen(SD.PropertyService.NestedProperties("RecentOpen")));
 			}
 		}
 		
 		public bool DeleteToRecycleBin {
 			get {
-				return PropertyService.Get("SharpDevelop.DeleteToRecycleBin", true);
+				return SD.PropertyService.Get("SharpDevelop.DeleteToRecycleBin", true);
 			}
 			set {
-				PropertyService.Set("SharpDevelop.DeleteToRecycleBin", value);
+				SD.PropertyService.Set("SharpDevelop.DeleteToRecycleBin", value);
 			}
 		}
 		
 		public bool SaveUsingTemporaryFile {
 			get {
-				return PropertyService.Get("SharpDevelop.SaveUsingTemporaryFile", true);
+				return SD.PropertyService.Get("SharpDevelop.SaveUsingTemporaryFile", true);
 			}
 			set {
-				PropertyService.Set("SharpDevelop.SaveUsingTemporaryFile", value);
+				SD.PropertyService.Set("SharpDevelop.SaveUsingTemporaryFile", value);
 			}
 		}
 		#endregion
 		
 		#region DefaultFileEncoding
 		public int DefaultFileEncodingCodePage {
-			get { return PropertyService.Get("SharpDevelop.DefaultFileEncoding", 65001); }
-			set { PropertyService.Set("SharpDevelop.DefaultFileEncoding", value); }
+			get { return SD.PropertyService.Get("SharpDevelop.DefaultFileEncoding", 65001); }
+			set { SD.PropertyService.Set("SharpDevelop.DefaultFileEncoding", value); }
 		}
 		
 		public Encoding DefaultFileEncoding {

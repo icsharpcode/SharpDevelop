@@ -80,7 +80,8 @@ namespace SearchAndReplace
 				case SearchTarget.Directory:
 					if (!Directory.Exists(BaseDirectory))
 						break;
-					return FileUtility.LazySearchDirectory(BaseDirectory, Filter, SearchSubdirs);
+					var options = SearchSubdirs ? DirectorySearchOptions.IncludeSubdirectories : DirectorySearchOptions.None;
+					return SD.FileSystem.GetFiles(DirectoryName.Create(BaseDirectory), Filter, options);
 				default:
 					throw new Exception("Invalid value for FileListType");
 			}

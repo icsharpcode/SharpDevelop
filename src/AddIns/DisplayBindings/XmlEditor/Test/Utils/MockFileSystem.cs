@@ -36,7 +36,7 @@ namespace XmlEditor.Tests.Utils
 				directoryFiles.Add(DirectoryName.Create(folder), FileName.Create(file));
 		}
 		
-		public IEnumerable<FileName> GetFiles(DirectoryName folder, string extension, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+		public IEnumerable<FileName> GetFiles(DirectoryName folder, string extension, DirectorySearchOptions searchOptions = DirectorySearchOptions.None)
 		{
 			searchedFolders.Add(folder);
 			searchedForFileExtensions.Add(extension);

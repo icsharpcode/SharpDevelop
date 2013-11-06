@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public DisplayBindingService()
 		{
 			bindings = AddInTree.BuildItems<DisplayBindingDescriptor>(displayBindingPath, null, true);
-			displayBindingServiceProperties = PropertyService.NestedProperties("DisplayBindingService");
+			displayBindingServiceProperties = SD.PropertyService.NestedProperties("DisplayBindingService");
 			foreach (var binding in displayBindingServiceProperties.GetList<ExternalProcessDisplayBinding>("ExternalProcesses")) {
 				if (binding != null) {
 					AddExternalProcessDisplayBindingInternal(binding);

@@ -3,6 +3,9 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 using Debugger.AddIn.Pads;
 using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
@@ -45,6 +48,19 @@ namespace Debugger.AddIn
 				WatchPad pad = (WatchPad)this.Owner;
 				pad.Items.Clear();
 			}
+		}
+	}
+
+	public class AddWatchExpressionCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			var editor = SD.GetActiveViewContentService<ITextEditor>();
+			if (editor == null) return;
+			var pad = SD.Workbench.GetPad(typeof(WatchPad));
+			if (pad == null) return;
+			pad.BringPadToFront();
+			((WatchPad)pad.PadContent).AddWatch(editor.SelectedText);
 		}
 	}
 }

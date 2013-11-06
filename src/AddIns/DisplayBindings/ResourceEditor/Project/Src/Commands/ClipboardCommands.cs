@@ -3,7 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 namespace ResourceEditor
 {
@@ -12,7 +12,7 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			ResourceEditWrapper editor = (ResourceEditWrapper)WorkbenchSingleton.Workbench.ActiveViewContent;
+			ResourceEditWrapper editor = (ResourceEditWrapper)SD.Workbench.ActiveViewContent;
 			
 			editor.SelectAll();
 		}

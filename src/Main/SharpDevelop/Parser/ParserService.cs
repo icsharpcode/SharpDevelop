@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				SD.MainThread.VerifyAccess();
 				if (!value.SequenceEqual(taskListTokens)) {
 					taskListTokens = value.ToArray();
-					PropertyService.SetList("SharpDevelop.TaskListTokens", taskListTokens);
+					SD.PropertyService.SetList("SharpDevelop.TaskListTokens", taskListTokens);
 					// TODO: trigger reparse?
 				}
 			}
@@ -75,8 +75,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		static IReadOnlyList<string> LoadTaskListTokens()
 		{
-			if (PropertyService.Contains("SharpDevelop.TaskListTokens"))
-				return PropertyService.GetList<string>("SharpDevelop.TaskListTokens").ToArray();
+			if (SD.PropertyService.Contains("SharpDevelop.TaskListTokens"))
+				return SD.PropertyService.GetList<string>("SharpDevelop.TaskListTokens");
 			else
 				return new string[] { "HACK", "TODO", "UNDONE", "FIXME" };
 		}
