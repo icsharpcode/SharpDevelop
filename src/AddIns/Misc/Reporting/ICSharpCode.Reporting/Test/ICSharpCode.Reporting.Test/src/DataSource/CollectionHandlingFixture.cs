@@ -126,15 +126,26 @@ namespace ICSharpCode.Reporting.Test.DataSource
 				},
 				new BaseDataItem(){
 					ColumnName = "Firstname"
+				},
+				
+				new BaseDataItem(){
+					ColumnName = "GroupItem"
 				}
 			};
 			var rs = new ReportSettings();
 			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
 			var collectionSource = new CollectionSource	(list,typeof(Contributor),rs);
 			collectionSource.Bind();
+			int i = 0;
 			do {
 				collectionSource.Fill_Test(ric);
+				Console.WriteLine("first : <{0}> Last <{1}> Group <{2}>",((BaseDataItem)ric[0]).DBValue,
+				                  ((BaseDataItem)ric[1]).DBValue,
+				                  ((BaseDataItem)ric[2]).DBValue);
+				i ++;
 			}while (collectionSource.MoveNext_Test_List());
+			
+			Assert.That(i,Is.EqualTo(collectionSource.Count));
 		}
 		
 		/*

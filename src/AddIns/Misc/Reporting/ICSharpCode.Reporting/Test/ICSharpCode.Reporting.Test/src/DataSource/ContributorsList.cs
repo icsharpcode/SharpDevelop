@@ -26,7 +26,13 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		
 		public ContributorCollection ContributorCollection {get; private set;}
 		
+//		list.Add(new Contributor("Ifko","Kovacka","",31,d3,"A"));
+//		list.Add(new Contributor("Nathan","Allen","",5,d3,"A"));
 		
+//		list.Add(new Contributor("Dickon","Field","DBTools",10,d3,"U"));	
+//		list.Add(new Contributor("Roman","Taranchenko","",2,d2,"U"));
+//		list.Add(new Contributor("Denis","Erchoff","",13,d2,"U"));
+			
 		private ContributorCollection CreateContributorsList () {
 			
 			DateTime d1 = new DateTime(2000,11,11);

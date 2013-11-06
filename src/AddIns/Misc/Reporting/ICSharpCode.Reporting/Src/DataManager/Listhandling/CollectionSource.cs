@@ -65,6 +65,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 		}
 		
+		protected object Current_test {get;private set;}
+		
 		public object Current {
 			get {
 				return baseList[((BaseComparer)IndexList[CurrentPosition]).ListIndex];
@@ -144,23 +146,40 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		public void Fill_Test (List<IPrintableObject> collection) {
 			
 			var currentKey = groupEnumerator.Current;
-			Console.WriteLine("{0} - {1}",currentKey.Key,currentKey.Count());
+			Console.WriteLine("{0}",currentKey.Key);
 			var z = listEnumerator.Current;
 			Console.WriteLine("\t...{0} - {1}",((BaseComparer)z).ListIndex.ToString(),
 			                  ((BaseComparer)z).ObjectArray[0].ToString());
+			foreach (IPrintableObject item in collection)
+			{
+				var dbItem = item as IDataItem;
+				if (dbItem != null) {
+					
+					dbItem.DBValue = String.Empty;
+					var p = listProperties.Find(dbItem.ColumnName,true);
+					dbItem.DBValue = p.GetValue(Current_test).ToString();
+					if (String.IsNullOrEmpty(dbItem.DataType)) {
+						dbItem.DataType = p.PropertyType.ToString();
+					}
+				}
+			}
 		}
 		
 		
 		public bool MoveNext_Test_List() {
 			var canMove = listEnumerator.MoveNext();
-			if (! canMove) {
+			if (! canMove) { 
 				var groupCanMove = groupEnumerator.MoveNext();
 				if (groupCanMove) {
 					listEnumerator = groupEnumerator.Current.GetEnumerator();
 					canMove = listEnumerator.MoveNext();
+//					Current_test = listEnumerator.Current;
+					Current_test = baseList[listEnumerator.Current.ListIndex];
 				} else {
 					Console.WriteLine("end");
 				}
+			} else {
+				Current_test = baseList[listEnumerator.Current.ListIndex];
 			}
 			return canMove;
 		}
@@ -171,71 +190,38 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		#region Grouping
 		public void Group()
 		{
+			var sortedList = BuildSortIndex(baseList,reportSettings.GroupColumnCollection);
 			var unsortedList = this.BuildIndexInternal(baseList,reportSettings.GroupColumnCollection);
 
-
-			Console.WriteLine("GroupBy() _ 0");
-			
-//			var grouped_x = unsortedList.GroupBy(a => a.ObjectArray[0]);
-			/*
-			var grouped_x = GroupTestOne(unsortedList);
-			
-			foreach (var element in grouped_x) {
-				Console.WriteLine("{0} - {1} ",element.Key.ToString(),element.ToString());
-				foreach (var xx in element) {
-					Console.WriteLine("...{0}",((BaseComparer)xx).ObjectArray[0].ToString());
-				}
-			}
-			*/
-			
-			Console.WriteLine("GroupBy() _ 1");
-			
-			
-//			   var groupByLinq = (from car in unsortedList
-//			                           group car by car.ObjectArray[0]);
-
-			
-//			foreach (var element in groupByLinq) {
-//				Console.WriteLine("{0} - {1} ",element.Key.ToString(),element.Key is BaseComparer);
-//				foreach (var xx in element) {
-//					Console.WriteLine("...{0}",((BaseComparer)xx).ObjectArray[0].ToString());
-//				}
-//			}
-			
-			
-//			IEnumerable<IGrouping<BaseComparer, BaseComparer>> xx = unsortedList.GroupBy(a => a.ObjectArray[0]);
-			
-			IEnumerable<IGrouping<object, BaseComparer>> grouped = unsortedList.GroupBy(a => a.ObjectArray[0]);;
-			Console.WriteLine("GroupBy() _ 2");
-			
-			foreach (var element in grouped) {
-				Console.WriteLine("{0} - {1} ",element.Key.ToString(),element.Key is BaseComparer);
-				foreach (var xx in element) {
-					Console.WriteLine("...{0}",((BaseComparer)xx).ObjectArray[0].ToString());
-				}
-			}
-			
+			ShowIndexList(unsortedList);
 
 //			newList = GroupTestOne(unsortedList);
-			newList = GroupTestLinq(unsortedList);
-			
+			newList = GroupTestLinq(sortedList);
+			ShowGrouping(newList);
 			groupEnumerator = newList.GetEnumerator();
 			groupEnumerator.MoveNext();
 			listEnumerator = groupEnumerator.Current.GetEnumerator();
 			listEnumerator.MoveNext();
-			var z = listEnumerator.Current;
+//			Current_test = listEnumerator.Current;
+//			return baseList[((BaseComparer)IndexList[CurrentPosition]).ListIndex];
+			Current_test = baseList[listEnumerator.Current.ListIndex];
 			Console.WriteLine("--------Display output-----");
 		}
 
+//		http://stackoverflow.com/questions/5013710/linq-order-by-group-by-and-order-by-each-group?rq=1
 		
-		IEnumerable<IGrouping<object, BaseComparer>> GroupTestOne (IndexList list) {
+		IEnumerable<IGrouping<object, BaseComparer>> GroupOrderByRandomInt (IndexList list) {
+			SortColumnCollection sc = new SortColumnCollection();
+			sc.Add(new SortColumn("RandomInt", ListSortDirection.Ascending));
+			
 			return list.GroupBy(a => a.ObjectArray[0]);
 		}
 		
 		IEnumerable<IGrouping<object, BaseComparer>> GroupTestLinq (IndexList list) {
 			return (from car in list
-			                           group car by car.ObjectArray[0]);
+			        group car by car.ObjectArray[0]);
 		}
+		
 		
 		/*
 		void Group_test(IndexList unsortedList)
@@ -286,31 +272,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 		}
 		*/
-		/*
 		
-		private Dictionary<string,IndexList> BuildGroup_1 (IndexList list,GroupColumnCollection groups) {
-			var dictionary = new Dictionary<string,IndexList>();
-			PropertyDescriptor[] groupProperties = BuildSortProperties (groups);
-			foreach (var element in list) {
-				string groupValue = ExtractValue (element,groupProperties);
-				if (!dictionary.ContainsKey(groupValue)) {
-					dictionary[groupValue] = new IndexList();
-				}
-				
-				dictionary[groupValue].Add(element);
-			}
-			
-			Console.WriteLine("Dictonary ");
-			foreach (var el in dictionary.Values) {
-				Console.WriteLine(el.Count.ToString());
-				
-				foreach (var element in el) {
-					Console.WriteLine("-- {0}",element.ToString());
-				}
-			}
-			return dictionary;
-		}
-		*/
 		
 /*
 		private IndexList BuildGroup (IndexList source,GroupColumnCollection groups)
@@ -344,6 +306,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		}
 */
 
+/*
 		void ShowGrouping(ref IndexList idlist)
 		{
 			Console.WriteLine("----ShowGrouping---");
@@ -356,7 +319,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				}
 			}
 		}
-		
+		*/
 		
 		string ExtractValue(BaseComparer element,PropertyDescriptor[] groupProperties)
 		{
@@ -501,19 +464,24 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 
 		private static void ShowIndexList (IndexList list)
 		{
+			Console.WriteLine("ShowIndexList");
 			foreach (BaseComparer element in list) {
-				var groupComparer = element as GroupComparer;
-				if (groupComparer == null) continue;
-				if (groupComparer.IndexList.Any()) {
-					var ss = String.Format("{0} with {1} Children",element.ObjectArray[0],groupComparer.IndexList.Count);
-					System.Console.WriteLine(ss);
-					foreach (BaseComparer c in groupComparer.IndexList) {
-						Console.WriteLine("---- {0}",c.ObjectArray[0]);
-					}
+				Console.WriteLine("\t...{0} - {1}",((BaseComparer)element).ListIndex.ToString(),
+			                  ((BaseComparer)element).ObjectArray[0].ToString());
+			}
+		}
+	
+		
+		static void ShowGrouping(IEnumerable<IGrouping<object, BaseComparer>> grouping)
+		{
+			Console.WriteLine("----------ShowGrouping-----------");
+			foreach (var element in grouping) {
+				Console.WriteLine("{0} - {1} ", element.Key.ToString(), element.Key is BaseComparer);
+				foreach (var xx in element) {
+					Console.WriteLine("...{0}", ((BaseComparer)xx).ObjectArray[0].ToString());
 				}
 			}
 		}
-		
 //		static string  WrongColumnName(string propertyName)
 //		{
 //			return String.Format(CultureInfo.InvariantCulture, "Error : <{0}> missing!", propertyName);
