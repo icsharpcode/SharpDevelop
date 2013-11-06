@@ -115,16 +115,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			lastWritten = LastWritten.Whitespace;
 		}
 		
-		public void Indent()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Unindent()
-		{
-			throw new NotImplementedException();
-		}
-		
 		public override void NewLine()
 		{
 			base.NewLine();

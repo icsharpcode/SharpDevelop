@@ -185,7 +185,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		static IAssemblyModel CreateAssemblyModel(Module module)
 		{
-			// references??
 			IEntityModelContext context = new DebuggerProcessEntityModelContext(module.Process, module);
 			IUpdateableAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
 			var types = module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList();

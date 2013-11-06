@@ -415,7 +415,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChildUnsafe (child, role);
 		}
 		
-		public void AddChildWithExistingRole<T> (T child) where T : AstNode
+		public void AddChildWithExistingRole (AstNode child)
 		{
 			if (child == null || child.IsNull)
 				return;
