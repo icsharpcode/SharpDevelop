@@ -41,5 +41,48 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// May return <c>null</c> if on-disk caching is disabled.
 		/// </summary>
 		string DomPersistencePath { get; }
+		
+		/// <summary>
+		/// Refreshes the specified assembly.
+		/// Raises the <see cref="AssemblyRefreshed"/> event if the assembly has changed since it was originally loaded. 
+		/// </summary>
+		/// <remarks>This method has no effect is the specified file is not a loaded assembly.</remarks>
+		void RefreshAssembly(FileName fileName);
+		
+		event EventHandler<RefreshAssemblyEventArgs> AssemblyRefreshed;
+	}
+	
+	public class RefreshAssemblyEventArgs : EventArgs
+	{
+		readonly FileName fileName;
+		readonly IUnresolvedAssembly oldAssembly;
+		readonly IUnresolvedAssembly newAssembly;
+		
+		public RefreshAssemblyEventArgs(FileName fileName, IUnresolvedAssembly oldAssembly, IUnresolvedAssembly newAssembly)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			this.fileName = fileName;
+			this.oldAssembly = oldAssembly;
+			this.newAssembly = newAssembly;
+		}
+
+		public FileName FileName {
+			get {
+				return fileName;
+			}
+		}
+
+		public IUnresolvedAssembly OldAssembly {
+			get {
+				return oldAssembly;
+			}
+		}
+		
+		public IUnresolvedAssembly NewAssembly {
+			get {
+				return newAssembly;
+			}
+		}
 	}
 }

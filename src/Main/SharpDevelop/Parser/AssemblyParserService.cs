@@ -305,5 +305,27 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		#endregion
+		
+		#region Refresh
+		public event EventHandler<RefreshAssemblyEventArgs> AssemblyRefreshed;
+		
+		public void RefreshAssembly(FileName fileName)
+		{
+			LoadedAssembly asm;
+			lock (projectContentDictionary) {
+				if (!projectContentDictionary.TryGetValue(fileName, out asm)) {
+					// Assembly is not loaded; nothing to refresh
+					return;
+				}
+			}
+			var oldAssembly = asm.ProjectContent.Result;
+			var newAssembly = GetAssembly(fileName);
+			if (oldAssembly != newAssembly) {
+				var handler = AssemblyRefreshed;
+				if (handler != null)
+					handler(this, new RefreshAssemblyEventArgs(fileName, oldAssembly, newAssembly));
+			}
+		}
+		#endregion
 	}
 }
