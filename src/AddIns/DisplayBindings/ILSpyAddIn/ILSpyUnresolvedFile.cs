@@ -9,6 +9,7 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.ILSpyAddIn
@@ -16,12 +17,10 @@ namespace ICSharpCode.ILSpyAddIn
 	/// <summary>
 	/// Description of ILSpyUnresolvedFile.
 	/// </summary>
-	public class ILSpyUnresolvedFile : IUnresolvedFile
+	public class ILSpyUnresolvedFile : CSharpUnresolvedFile
 	{
 		DecompiledTypeReference name;
 		StringWriter writer;
-		IList<Error> errors;
-		IList<IUnresolvedTypeDefinition> topLevel;
 		
 		public static ILSpyUnresolvedFile Create(DecompiledTypeReference name, AstBuilder builder)
 		{
@@ -33,10 +32,10 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			syntaxTree.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
 			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(output, FormattingOptionsFactory.CreateSharpDevelop()));
-			ILSpyUnresolvedFile file = new ILSpyUnresolvedFile(name, syntaxTree.Errors);
-			builder.SyntaxTree.FileName = name.ToFileName();
-			var ts = syntaxTree.ToTypeSystem();
-			file.topLevel = ts.TopLevelTypeDefinitions;
+			ILSpyUnresolvedFile file = new ILSpyUnresolvedFile(name);
+			var v = new TypeSystemConvertVisitor(file);
+			syntaxTree.AcceptVisitor(v);
+	
 			file.MemberLocations = output.MemberLocations;
 			file.DebugSymbols = output.DebugSymbols;
 			file.writer = writer;
@@ -44,10 +43,10 @@ namespace ICSharpCode.ILSpyAddIn
 			return file;
 		}
 		
-		ILSpyUnresolvedFile(DecompiledTypeReference name, IList<Error> errors)
+		ILSpyUnresolvedFile(DecompiledTypeReference name)
 		{
 			this.name = name;
-			this.errors = errors;
+			FileName = name.ToFileName();
 		}
 		
 		public Dictionary<string, TextLocation> MemberLocations { get; private set; }
@@ -60,73 +59,6 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public FileName AssemblyFile {
 			get { return name.AssemblyFile; }
-		}
-		
-		public IUnresolvedTypeDefinition GetTopLevelTypeDefinition(TextLocation location)
-		{
-			return FindEntity(topLevel, location);
-		}
-		
-		public IUnresolvedTypeDefinition GetInnermostTypeDefinition(TextLocation location)
-		{
-			IUnresolvedTypeDefinition parent = null;
-			IUnresolvedTypeDefinition type = GetTopLevelTypeDefinition(location);
-			while (type != null) {
-				parent = type;
-				type = FindEntity(parent.NestedTypes, location);
-			}
-			return parent;
-		}
-		
-		public IUnresolvedMember GetMember(TextLocation location)
-		{
-			IUnresolvedTypeDefinition type = GetInnermostTypeDefinition(location);
-			if (type == null)
-				return null;
-			return FindEntity(type.Members, location);
-		}
-		
-		static T FindEntity<T>(IList<T> list, TextLocation location) where T : class, IUnresolvedEntity
-		{
-			// This could be improved using a binary search
-			foreach (T entity in list) {
-				if (entity.Region.IsInside(location.Line, location.Column))
-					return entity;
-			}
-			return null;
-		}
-		
-		public string FileName {
-			get { return name.ToFileName(); }
-		}
-		
-		public DateTime? LastWriteTime {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
-			get { return topLevel; }
-		}
-		
-		public IList<IUnresolvedAttribute> AssemblyAttributes {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IList<IUnresolvedAttribute> ModuleAttributes {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IList<Error> Errors {
-			get { return errors; }
 		}
 	}
 }
