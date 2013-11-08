@@ -59,10 +59,11 @@ namespace ICSharpCode.ILSpyAddIn
 		public Debugger.SequencePoint GetSequencePoint(Module module, string filename, int line, int column)
 		{
 			var name = DecompiledTypeReference.FromFileName(filename);
+			if (name == null || !FileUtility.IsEqualFileName(module.FullPath, name.AssemblyFile))
+				return null;
+			
 			var content = DecompiledViewContent.Get(name);
 			if (content == null)
-				return null;
-			if (!FileUtility.IsEqualFileName(module.FullPath, content.AssemblyFile))
 				return null;
 			
 			TextLocation loc = new TextLocation(line, column);
