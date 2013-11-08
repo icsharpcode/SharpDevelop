@@ -31,7 +31,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			string program = "using\n";
 			CSharpParser parser = new CSharpParser();
-			SyntaxTree syntaxTree = parser.Parse (program);
+			//SyntaxTree syntaxTree = 
+			parser.Parse (program);
 //			Assert.AreEqual(0, syntaxTree.Children.Count());
 			Assert.IsTrue(parser.HasErrors);
 		}

@@ -286,6 +286,7 @@ class Foo : FooBar
 	public override int MoreFoo {
 		get;
 	}
+
 	protected override void SomeFoo ()
 	{
 		throw new System.NotImplementedException ();

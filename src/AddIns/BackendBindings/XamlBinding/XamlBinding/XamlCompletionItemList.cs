@@ -60,40 +60,38 @@ namespace ICSharpCode.XamlBinding
 					context.EndOffset++;
 				}
 				
-				if (item is XamlCompletionItem) {
+				if (item is XamlCompletionItem && !item.Text.EndsWith(":", StringComparison.Ordinal)) {
 					XamlCompletionItem cItem = item as XamlCompletionItem;
 					
-					if (cItem.Entity is IProperty || cItem.Entity is IEvent) {
-						if (xamlContext.Description == XamlContextDescription.InTag) {
-							context.Editor.Document.Insert(context.EndOffset, "=\"\"");
-							context.CompletionCharHandled = context.CompletionChar == '=';
-							context.Editor.Caret.Offset--;
-							new XamlCodeCompletionBinding().CtrlSpace(context.Editor);
-						} else if (xamlContext.Description == XamlContextDescription.InMarkupExtension && !string.IsNullOrEmpty(xamlContext.RawAttributeValue)) {
-							string valuePart = xamlContext.RawAttributeValue.Substring(0, xamlContext.ValueStartOffset);
-							AttributeValue value = MarkupExtensionParser.ParseValue(valuePart);
-							
-							if (value != null && !value.IsString) {
-								var markup = Utils.GetMarkupExtensionAtPosition(value.ExtensionValue, context.Editor.Caret.Offset);
-								if (markup.NamedArguments.Count > 0 || markup.PositionalArguments.Count > 0) {
-									int oldOffset = context.Editor.Caret.Offset;
-									context.Editor.Caret.Offset = context.StartOffset;
-									string word = context.Editor.GetWordBeforeCaret().TrimEnd();
-									int spaces = CountWhiteSpacesAtEnd(context.Editor.GetWordBeforeCaret());
-									int typeNameStart = markup.ExtensionType.IndexOf(':') + 1;
-									
-									if (!(word == "." || word == "," || word == ":") && markup.ExtensionType.Substring(typeNameStart, markup.ExtensionType.Length - typeNameStart) != word) {
-										context.Editor.Document.Replace(context.Editor.Caret.Offset - spaces, spaces, ", ");
-										oldOffset += (2 - spaces);
-									}
-									
-									context.Editor.Caret.Offset = oldOffset;
+					if (xamlContext.Description == XamlContextDescription.InTag) {
+						context.Editor.Document.Insert(context.EndOffset, "=\"\"");
+						context.CompletionCharHandled = context.CompletionChar == '=';
+						context.Editor.Caret.Offset--;
+						new XamlCodeCompletionBinding().CtrlSpace(context.Editor);
+					} else if (xamlContext.Description == XamlContextDescription.InMarkupExtension && !string.IsNullOrEmpty(xamlContext.RawAttributeValue)) {
+						string valuePart = xamlContext.RawAttributeValue.Substring(0, xamlContext.ValueStartOffset);
+						AttributeValue value = MarkupExtensionParser.ParseValue(valuePart);
+						
+						if (value != null && !value.IsString) {
+							var markup = Utils.GetMarkupExtensionAtPosition(value.ExtensionValue, context.Editor.Caret.Offset);
+							if (markup.NamedArguments.Count > 0 || markup.PositionalArguments.Count > 0) {
+								int oldOffset = context.Editor.Caret.Offset;
+								context.Editor.Caret.Offset = context.StartOffset;
+								string word = context.Editor.GetWordBeforeCaret().TrimEnd();
+								int spaces = CountWhiteSpacesAtEnd(context.Editor.GetWordBeforeCaret());
+								int typeNameStart = markup.ExtensionType.IndexOf(':') + 1;
+								
+								if (!(word == "." || word == "," || word == ":") && markup.ExtensionType.Substring(typeNameStart, markup.ExtensionType.Length - typeNameStart) != word) {
+									context.Editor.Document.Replace(context.Editor.Caret.Offset - spaces, spaces, ", ");
+									oldOffset += (2 - spaces);
 								}
+								
+								context.Editor.Caret.Offset = oldOffset;
 							}
-							
-							if (cItem.Text.EndsWith("=", StringComparison.OrdinalIgnoreCase))
-								new XamlCodeCompletionBinding().CtrlSpace(context.Editor);
 						}
+						
+						if (cItem.Text.EndsWith("=", StringComparison.OrdinalIgnoreCase))
+							new XamlCodeCompletionBinding().CtrlSpace(context.Editor);
 					}
 				}
 				

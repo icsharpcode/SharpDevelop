@@ -43,11 +43,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
 		}
-		
+
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+
 		public AstNodeCollection<Expression> Arguments {
 			get { return base.GetChildrenByRole (Roles.Argument); }
 		}
-		
+
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
+
 		// HasArgumentList == false: [Empty]
 		public bool HasArgumentList {
 			get;

@@ -142,8 +142,11 @@
     <Compile Include="Service\ExecuteProcessWindow.xaml.cs">
       <DependentUpon>ExecuteProcessWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tooltips\DebuggerTooltipControl.xaml.cs" />
+    <Compile Include="Tooltips\DebuggerTooltipControl.xaml.cs">
+      <DependentUpon>DebuggerTooltipControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tooltips\VisualizerPicker.cs" />
+    <Compile Include="TreeModel\Commands.cs" />
     <Compile Include="TreeModel\SharpTreeNodeAdapter.cs" />
     <Compile Include="TreeModel\TreeNode.cs" />
     <Compile Include="Visualizers\Commands\ExpressionVisualizerCommand.cs" />

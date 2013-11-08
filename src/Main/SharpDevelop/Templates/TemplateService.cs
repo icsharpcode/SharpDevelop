@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 		
 		IReadOnlyList<TextTemplateGroup> LoadTextTemplates()
 		{
-			var dir = PropertyService.DataDirectory.Combine(DirectoryName.Create("options/textlib"));
+			var dir = SD.PropertyService.DataDirectory.CombineDirectory("options/textlib");
 			return SD.FileSystem.GetFiles(dir, "*.xml")
 				.Select(file => TextTemplateGroup.Load(file))
 				.ToList();

@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.Semantics
 		readonly bool isVirtualCall;
 		
 		public MemberResolveResult(ResolveResult targetResult, IMember member, IType returnTypeOverride = null)
-			: base(returnTypeOverride ?? (member.SymbolKind == SymbolKind.Constructor ? member.DeclaringType : member.ReturnType))
+			: base(returnTypeOverride ?? ComputeType(member))
 		{
 			this.targetResult = targetResult;
 			this.member = member;
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.Semantics
 		}
 		
 		public MemberResolveResult(ResolveResult targetResult, IMember member, bool isVirtualCall, IType returnTypeOverride = null)
-			: base(returnTypeOverride ?? (member.SymbolKind == SymbolKind.Constructor ? member.DeclaringType : member.ReturnType))
+			: base(returnTypeOverride ?? ComputeType(member))
 		{
 			this.targetResult = targetResult;
 			this.member = member;
@@ -66,6 +66,19 @@ namespace ICSharpCode.NRefactory.Semantics
 				if (isConstant)
 					constantValue = field.ConstantValue;
 			}
+		}
+		
+		static IType ComputeType(IMember member)
+		{
+			switch (member.SymbolKind) {
+				case SymbolKind.Constructor:
+					return member.DeclaringType;
+				case SymbolKind.Field:
+					if (((IField)member).IsFixed)
+						return new PointerType(member.ReturnType);
+					break;
+			}
+			return member.ReturnType;
 		}
 		
 		public MemberResolveResult(ResolveResult targetResult, IMember member, IType returnType, bool isConstant, object constantValue)

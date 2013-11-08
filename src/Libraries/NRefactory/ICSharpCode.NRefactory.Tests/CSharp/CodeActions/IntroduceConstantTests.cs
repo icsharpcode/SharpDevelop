@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class IntroduceConstantTests : ContextActionTestBase
 	{
-		[Test()]
+		[Test]
 		public void TestLocalConstant ()
 		{
 			Test<IntroduceConstantAction> (@"class TestClass
@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestLocalConstantHexNumber ()
 		{
 			Test<IntroduceConstantAction> (@"class TestClass
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestFieldConstant ()
 		{
 			Test<IntroduceConstantAction> (@"class TestClass
@@ -90,8 +90,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }", 1);
 		}
 
-
-		[Test()]
+		[Test]
 		public void TestLocalConstantReplaceAll ()
 		{
 			Test<IntroduceConstantAction> (@"class TestClass
@@ -112,6 +111,40 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		System.Console.WriteLine (helloWorld);
 	}
 }", 2);
+		}
+	
+		[Test]
+		public void TestAlreadyConstant ()
+		{
+			TestWrongContext<IntroduceConstantAction> (@"class TestClass
+{
+	public void Hello ()
+	{
+		const int i = $0xAFFE;
+	}
+}");
+		}
+
+		[Test]
+		public void TestAlreadyConstantCase2 ()
+		{
+			TestWrongContext<IntroduceConstantAction> (@"class TestClass
+{
+	const int i = $0xAFFE;
+}");
+		}
+
+		[Test]
+		public void TestIntroduceConstantInInitializer ()
+		{
+			Test<IntroduceConstantAction> (@"class TestClass
+{
+	readonly int foo = new Foo ($5);
+}", @"class TestClass
+{
+	const int i = 5;
+	readonly int foo = new Foo (i);
+}");
 		}
 	}
 }

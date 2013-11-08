@@ -54,6 +54,8 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			}
 			// Mutate primitive values:
 			foreach (var pe in copy.Descendants.OfType<PrimitiveExpression>()) {
+				if (pe.Ancestors.Any(a => a is PreProcessorDirective))
+					continue;
 				object oldVal = pe.Value;
 				pe.Value = "Mutated " + "Value";
 				if (copy.IsMatch(file.SyntaxTree))

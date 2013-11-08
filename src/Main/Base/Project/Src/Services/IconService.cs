@@ -60,17 +60,20 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static Bitmap GetBitmap(string name)
 		{
-			Bitmap bmp;
+			Bitmap bmp = null;
 			try {
-				bmp = SD.ResourceService.GetBitmap(name);
+				bmp = FileIconService.GetBitmap(name);
+				if (bmp == null) {
+					bmp = SD.ResourceService.GetBitmap(name);
+				}
 			} catch (ResourceNotFoundException ex) {
 				LoggingService.Warn(ex);
-				bmp = null;
+			} catch (FileNotFoundException ex) {
+				LoggingService.Warn(ex);
 			}
 			if (bmp != null) {
 				return bmp;
 			}
-			
 			return SD.ResourceService.GetBitmap("Icons.16x16.MiscFiles");
 		}
 		

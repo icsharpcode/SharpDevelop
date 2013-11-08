@@ -29,6 +29,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
+   
 	[TestFixture]
 	public class RedundantObjectOrCollectionInitializerIssueTests : InspectionActionTestBase
 	{
@@ -51,8 +52,21 @@ class TestClass
 		var x = new TestClass ();
 	}
 }";
-			Test<RedundantObjectOrCollectionInitializerIssue> (input, 1, output);
+            Test<RedundantObjectOrCollectionInitializerIssue>(input, 1, output);
 		}
+
+        [Test]
+	    public void TestDisable()
+	    {
+            TestWrongContext<RedundantObjectOrCollectionInitializerIssue>(@" class TestClass
+    {
+        void TestMethod()
+        {
+// ReSharper disable once RedundantEmptyObjectOrCollectionInitializer
+            var x = new TestClass() { };
+        }
+    }");
+	    }
 
 		[Test]
 		public void TestNoArgumentList ()

@@ -26,7 +26,7 @@
 						Header="{core:Localize CompilerResultView.DescriptionText}">
 						<core:SortableGridViewColumn.CellTemplate>
 							<DataTemplate>
-								<TextBlock Text="{Binding Description}" TextTrimming="WordEllipsis" SizeChanged="TextBlockSizeChanged" />
+								<TextBlock Text="{Binding Description}" TextTrimming="CharacterEllipsis" SizeChanged="TextBlockSizeChanged" />
 							</DataTemplate>
 						</core:SortableGridViewColumn.CellTemplate>
 					</core:SortableGridViewColumn>
@@ -37,7 +37,7 @@
 						Header="{core:Localize Global.Path}">
 						<core:SortableGridViewColumn.CellTemplate>
 							<DataTemplate>
-								<TextBlock Text="{Binding Path}" TextTrimming="WordEllipsis" SizeChanged="TextBlockSizeChanged" />
+								<TextBlock Text="{Binding Path}" TextTrimming="CharacterEllipsis" SizeChanged="TextBlockSizeChanged" />
 							</DataTemplate>
 						</core:SortableGridViewColumn.CellTemplate>
 					</core:SortableGridViewColumn>

@@ -225,6 +225,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				case UnicodeCategory.SpaceSeparator:
 				case UnicodeCategory.LineSeparator:
 				case UnicodeCategory.ParagraphSeparator:
+				case UnicodeCategory.Control:
 					return CharacterClass.Whitespace;
 				case UnicodeCategory.UppercaseLetter:
 				case UnicodeCategory.LowercaseLetter:

@@ -37,8 +37,8 @@ namespace CSharpBinding.Refactoring
 				LoggingService.Error("[ContextAction] attribute is missing on " + providerType.FullName);
 				return null;
 			}
-			if (!typeof(ICodeActionProvider).IsAssignableFrom(providerType)) {
-				LoggingService.Error(providerType.FullName + " does nto implement ICodeActionProvider");
+			if (!typeof(CodeActionProvider).IsAssignableFrom(providerType)) {
+				LoggingService.Error(providerType.FullName + " does not implement CodeActionProvider");
 				return null;
 			}
 			return new CSharpContextActionProviderWrapper((ContextActionAttribute)attributes[0], providerType);
@@ -55,13 +55,13 @@ namespace CSharpBinding.Refactoring
 				this.type = type;
 			}
 			
-			ICodeActionProvider codeActionProvider;
+			CodeActionProvider codeActionProvider;
 			
 			bool CreateCodeActionProvider()
 			{
 				lock (this) {
 					if (codeActionProvider == null) {
-						codeActionProvider = (ICodeActionProvider)Activator.CreateInstance(type);
+						codeActionProvider = (CodeActionProvider)Activator.CreateInstance(type);
 					}
 					return true;
 				}

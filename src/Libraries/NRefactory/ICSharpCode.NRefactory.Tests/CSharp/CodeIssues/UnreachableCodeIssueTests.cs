@@ -26,6 +26,7 @@
 
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
+using ICSharpCode.NRefactory.CSharp.CodeActions;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
@@ -62,6 +63,46 @@ class TestClass
 	}
 }";
 			Test<UnreachableCodeIssue> (input, 1);
+		}
+
+		[Test]
+		public void TestRedundantGoto ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		goto Foo; Foo:
+		int a = 1;
+	}
+}";
+			TestWrongContext<UnreachableCodeIssue> (input);
+		}
+
+		[Test]
+		public void TestGotoUnreachableBlock ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		int x = 1;
+		goto Foo;
+		{
+			x = 2;
+			Foo:
+			x = 3;
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues (new UnreachableCodeIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			var issue = issues [0];
+			Assert.AreEqual(9, issue.Start.Line);
+			Assert.AreEqual(9, issue.End.Line);
 		}
 
 		[Test]
@@ -293,5 +334,58 @@ namespace TestProjectForBug
 }";
 			Test<UnreachableCodeIssue> (input, 0);
 		}
+
+		[Test]
+		public void TestIfTrueBranch ()
+		{
+			Test<UnreachableCodeIssue> (@"
+class TestClass
+{
+	void TestMethod ()
+	{
+		if (true) {
+			System.Console.WriteLine (1);
+		} else {
+			System.Console.WriteLine (2);
+		}
+	}
+}", @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		if (true) {
+			System.Console.WriteLine (1);
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void TestIfFalseBranch ()
+		{
+			Test<UnreachableCodeIssue> (@"
+class TestClass
+{
+	void TestMethod ()
+	{
+		if (false) {
+			System.Console.WriteLine (1);
+		} else {
+			System.Console.WriteLine (2);
+		}
+	}
+}", @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		{
+			System.Console.WriteLine (2);
+		}
+	}
+}");
+		}
+
 	}
 }

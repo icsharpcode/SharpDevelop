@@ -26,32 +26,30 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
-	[TestFixture()]
+	[TestFixture]
 	public class ParameterCompletionTests : TestBase
 	{
 		internal class TestFactory : IParameterCompletionDataFactory
 		{
-			IProjectContent ctx;
+//			IProjectContent ctx;
 			
 			public TestFactory (IProjectContent ctx)
 			{
-				this.ctx = ctx;
+//				this.ctx = ctx;
 			}
 			
-			class Provider : IParameterDataProvider
+			internal class Provider : IParameterDataProvider
 			{
 				public IEnumerable<IMethod> Data { get; set; }
 				#region IParameterDataProvider implementation
@@ -276,33 +274,33 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			}
 			
 			#region IParameterCompletionDataFactory implementation
-			public IParameterDataProvider CreateConstructorProvider(int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
+			public IParameterDataProvider CreateConstructorProvider(int startOffset, IType type)
 			{
 				Assert.IsTrue(type.Kind != TypeKind.Unknown);
-				return new Provider () {
+				return new Provider {
 					Data = type.GetConstructors (m => m.Accessibility == Accessibility.Public)
 				};
 			}
 
-			public IParameterDataProvider CreateConstructorProvider(int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type, AstNode skipNode)
+			public IParameterDataProvider CreateConstructorProvider(int startOffset, IType type, AstNode skipNode)
 			{
 				Assert.IsTrue(type.Kind != TypeKind.Unknown);
-				return new Provider () {
+				return new Provider {
 					Data = type.GetConstructors (m => m.Accessibility == Accessibility.Public)
 				};
 			}
 
 			public IParameterDataProvider CreateMethodDataProvider (int startOffset, IEnumerable<IMethod> methods)
 			{
-				return new Provider () {
+				return new Provider {
 					Data = methods
 				};
 			}
 
-			public IParameterDataProvider CreateDelegateDataProvider(int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
+			public IParameterDataProvider CreateDelegateDataProvider(int startOffset, IType type)
 			{
 				Assert.IsTrue(type.Kind != TypeKind.Unknown);
-				return new Provider () {
+				return new Provider {
 					Data = new [] { type.GetDelegateInvokeMethod () }
 				};
 			}
@@ -312,21 +310,21 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				Assert.IsTrue(type.Kind != TypeKind.Unknown);
 				if (type.Kind == TypeKind.Array)
 					return new ArrayProvider ();
-				return new IndexerProvider () {
+				return new IndexerProvider {
 					Data = accessibleIndexers
 				};
 			}
 			
 			public IParameterDataProvider CreateTypeParameterDataProvider (int startOffset, IEnumerable<IType> types)
 			{
-				return new TypeParameterDataProvider () {
+				return new TypeParameterDataProvider {
 					Data = types
 				};
 			}
 
 			public IParameterDataProvider CreateTypeParameterDataProvider (int startOffset, IEnumerable<IMethod> methods)
 			{
-				return new MethodTypeParameterDataProvider () {
+				return new MethodTypeParameterDataProvider {
 					Data = methods
 				};
 			}
@@ -378,7 +376,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		/// <summary>
 		/// Bug 427448 - Code Completion: completion of constructor parameters not working
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug427448 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -413,7 +411,7 @@ class AClass
 		/// <summary>
 		/// Bug 432437 - No completion when invoking delegates
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug432437 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -435,7 +433,7 @@ class Test
 		/// <summary>
 		/// Bug 432658 - Incorrect completion when calling an extension method from inside another extension method
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug432658 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -457,7 +455,7 @@ class Test
 		/// <summary>
 		/// Bug 432727 - No completion if no constructor
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug432727 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -475,7 +473,7 @@ class Test
 		/// <summary>
 		/// Bug 434705 - No autocomplete offered if not assigning result of 'new' to a variable
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug434705 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -500,7 +498,7 @@ class AClass
 		/// <summary>
 		/// Bug 434705 - No autocomplete offered if not assigning result of 'new' to a variable
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug434705B ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -526,7 +524,7 @@ class TestClass
 		/// <summary>
 		/// Bug 434701 - No autocomplete in attributes
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug434701 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -550,7 +548,7 @@ class AClass
 		/// <summary>
 		/// Bug 447985 - Exception display tip is inaccurate for derived (custom) exceptions
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug447985 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -585,7 +583,7 @@ class AClass
 		/// <summary>
 		/// Bug 1760 - [New Resolver] Parameter tooltip not shown for indexers 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void Test1760 ()
 		{
 			var provider = CreateProvider (
@@ -601,7 +599,7 @@ class TestClass
 			Assert.AreEqual (1, provider.Count);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestSecondIndexerParameter ()
 		{
 			var provider = CreateProvider (
@@ -618,7 +616,7 @@ class TestClass
 			Assert.AreEqual (1, provider.Count);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestSecondMethodParameter ()
 		{
 			var provider = CreateProvider (
@@ -637,7 +635,7 @@ class TestClass
 		
 		
 		/// Bug 599 - Regression: No intellisense over Func delegate
-		[Test()]
+		[Test]
 		public void TestBug599 ()
 		{
 			var provider = CreateProvider (
@@ -656,7 +654,7 @@ class TestClass
 		}
 		
 		/// Bug 3307 - Chained linq methods do not work correctly
-		[Test()]
+		[Test]
 		public void TestBug3307 ()
 		{
 			var provider = CreateProvider (
@@ -674,7 +672,7 @@ class TestClass
 			Assert.IsTrue (provider.Count > 0);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBug3307FollowUp ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (
@@ -696,7 +694,7 @@ public class MainClass
 			Assert.IsFalse (provider.AutoSelect, "auto select enabled !");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBug3307FollowUp2 ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (
@@ -714,7 +712,7 @@ public class MainClass
 			Assert.IsFalse (provider.AutoSelect, "auto select enabled !");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestConstructor ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -732,7 +730,7 @@ class A
 		}
 		
 		
-		[Test()]
+		[Test]
 		public void TestConstructorCase2 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -758,7 +756,7 @@ namespace Test
 			Assert.AreEqual (2, provider.Count);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestTypeParameter ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -778,7 +776,7 @@ namespace Test
 			Assert.AreEqual (16, provider.Count);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestSecondTypeParameter ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -799,7 +797,7 @@ namespace Test
 		}
 		
 		[Ignore("TODO")]
-		[Test()]
+		[Test]
 		public void TestMethodTypeParameter ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -824,7 +822,7 @@ namespace Test
 		}
 		
 		[Ignore("TODO")]
-		[Test()]
+		[Test]
 		public void TestSecondMethodTypeParameter ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -848,7 +846,7 @@ namespace Test
 			Assert.AreEqual (1, provider.Count);
 		}		
 	
-		[Test()]
+		[Test]
 		public void TestArrayParameter ()
 		{
 			var provider = CreateProvider (
@@ -865,7 +863,7 @@ class TestClass
 			Assert.AreEqual (1, provider.Count);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestSecondArrayParameter ()
 		{
 			var provider = CreateProvider (
@@ -883,7 +881,7 @@ class TestClass
 		}
 		
 		[Ignore("TODO!")]
-		[Test()]
+		[Test]
 		public void TestTypeParameterInBaseType ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -898,7 +896,7 @@ namespace Test
 		}
 		
 		
-		[Test()]
+		[Test]
 		public void TestBaseConstructorCall ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -925,7 +923,7 @@ namespace Test
 			Assert.AreEqual (2, provider.Count);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestThisConstructorCall ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -957,7 +955,7 @@ namespace Test
 		/// <summary>
 		/// Bug 3645 - [New Resolver]Parameter completion shows all static and non-static overloads
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug3645 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -984,7 +982,7 @@ namespace Test
 		/// <summary>
 		/// Bug 3991 - constructor argument completion not working for attributes applied to methods or parameters
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug3991()
 		{
 			IParameterDataProvider provider = CreateProvider(
@@ -1007,7 +1005,7 @@ namespace Test
 		/// <summary>
 		/// Bug 4087 - code completion handles object and collection initializers (braces) incorrectly in method calls
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4087()
 		{
 			IParameterDataProvider provider = CreateProvider(
@@ -1026,7 +1024,7 @@ class TestClass
 		/// <summary>
 		/// Bug 4927 - [New Resolver] Autocomplete shows non-static methods when using class name
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4927 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
@@ -1058,7 +1056,7 @@ public class B
 		}
 
 
-		[Test()]
+		[Test]
 		public void TestLambdaCase()
 		{
 			IParameterDataProvider provider = CreateProvider(
@@ -1075,7 +1073,7 @@ class TestClass
 			Assert.IsTrue (provider != null && provider.Count == 1);
 		}
 
-		[Test()]
+		[Test]
 		public void TestJaggedArrayCreation()
 		{
 			IParameterDataProvider provider = CreateProvider(
@@ -1227,6 +1225,30 @@ class NUnitTestClass {
     }
 }");
 			Assert.AreEqual (1, provider.Count);
+		}
+
+		/// <summary>
+		/// Bug 12824 - Invalid argument intellisense inside lambda
+		/// </summary>
+		[Ignore("Parser bug.")]
+		[Test]
+		public void TestBug12824 ()
+		{
+			var provider = (TestFactory.Provider)CreateProvider (
+				@"using System.Threading.Tasks;
+using System;
+
+public class MyEventArgs 
+{
+	public static void Main (string[] args)
+	{
+		Task.Factory.StartNew (() => {
+				$throw new Exception ($
+		});
+	}
+}");
+			string name = provider.Data.First().FullName;
+			Assert.AreEqual ("System.Exception..ctor", name);
 		}
 	}
 }

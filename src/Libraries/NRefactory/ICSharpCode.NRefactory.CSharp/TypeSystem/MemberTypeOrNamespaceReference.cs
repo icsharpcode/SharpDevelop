@@ -81,14 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			if (targetRR.IsError)
 				return targetRR;
 			IList<IType> typeArgs = typeArguments.Resolve(resolver.CurrentTypeResolveContext);
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					return resolver.ResolveMemberAccess(targetRR, identifier, typeArgs, lookupMode);
-				} else {
-					// This can happen for "class Test : $Test.Base$ { public class Base {} }":
-					return ErrorResolveResult.UnknownError; // don't cache this error
-				}
-			}
+			return resolver.ResolveMemberAccess(targetRR, identifier, typeArgs, lookupMode);
 		}
 		
 		public override IType ResolveType(CSharpResolver resolver)

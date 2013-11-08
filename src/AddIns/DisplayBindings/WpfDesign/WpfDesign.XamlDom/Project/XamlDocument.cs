@@ -180,7 +180,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 			if (hasStringConverter && XamlObject.GetContentPropertyName(elementType) != null) {
 				xml.InnerText = c.ConvertToInvariantString(instance);
-			} else if (instance is Brush) {  // TODO: this is a hacky fix, because Brush Editor doesn't
+			} else if (instance is Brush && forProperty != null) {  // TODO: this is a hacky fix, because Brush Editor doesn't
 										     // edit Design Items and so we have no XML, only the Brush 
 										     // object and we need to parse the Brush to XAML!
 				var s = new MemoryStream();

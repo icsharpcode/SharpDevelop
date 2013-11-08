@@ -131,10 +131,15 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		{
 			Test<AddAnotherAccessorAction> (@"class TestClass
 {
-	string $Test { get; }
+	string $Test {
+		get;
+	}
 }", @"class TestClass
 {
-	string Test { get; set; }
+	string Test {
+		get;
+		set;
+	}
 }");
 		}
 	}

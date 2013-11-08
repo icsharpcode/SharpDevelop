@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		[Test]
 		public void TestField ()
 		{
-			var input = @"
+		    const string input = @"
 class TestClass
 {
 	int i;
@@ -44,8 +44,22 @@ class TestClass
 		int i, j;
 	}
 }";
-			Test<LocalVariableHidesMemberIssue> (input, 1);
+		    Test<LocalVariableHidesMemberIssue>(input, 1);
 		}
+
+	    public void TestDisable()
+	    {
+	        var input = @"class TestClass
+{
+    int i;
+    void TestMethod()
+    {
+// ReSharper disable once LocalVariableHidesMember
+        int i, j;
+    }
+}";
+            TestWrongContext<LocalVariableHidesMemberIssue>(input);
+	    }
 
 		[Test]
 		public void TestMethod ()
@@ -190,6 +204,24 @@ class TestClass : BaseClass
 		int i = 0;
 	}
 }";
+			Test<LocalVariableHidesMemberIssue> (input, 0);
+		}
+		
+		[Test]
+		public void SuppressIssueIfVariableInitializedFromField ()
+		{
+			var input = @"
+class TestClass
+{
+	int i;
+	
+	void Method ()
+	{
+		int i = this.i;
+	}
+}";
+			// Given the initializer, member hiding is obviously intended in this case;
+			// so we suppress the warning.
 			Test<LocalVariableHidesMemberIssue> (input, 0);
 		}
 	}

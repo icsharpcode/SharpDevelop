@@ -47,9 +47,7 @@ class A
 {
 	void F ()
 	{
-		System.Action<int, int> action = (i1, i2) => {
-			System.Console.WriteLine (i1);
-		};
+		System.Action<int, int> action = (i1, i2) => System.Console.WriteLine (i1);
 	}
 }");
 		}
@@ -62,7 +60,7 @@ class A
 {
 	void F ()
 	{
-		var action = delegate$ (int i1, int i2) { System.Console.WriteLine (i1); };
+		var action = delegate$ (int i1, int i2) { System.Console.WriteLine (i1); System.Console.WriteLine (i2); };
 	}
 }", @"
 class A
@@ -71,20 +69,28 @@ class A
 	{
 		var action = (int i1, int i2) => {
 			System.Console.WriteLine (i1);
+			System.Console.WriteLine (i2);
 		};
 	}
 }");
 		}
 
 		[Test]
-		public void IgnoresParameterLessDelegates ()
+		public void ParameterLessDelegate ()
 		{
-			TestWrongContext<ConvertAnonymousDelegateToLambdaAction>(@"
+			Test<ConvertAnonymousDelegateToLambdaAction>(@"
 class A
 {
-	void F ()
+	void F (int i)
 	{
-		System.Action<int> = delegate$ { System.Console.WriteLine (i); };
+		System.Action<int> act = $delegate { System.Console.WriteLine (i); };
+	}
+}", @"
+class A
+{
+	void F (int i)
+	{
+		System.Action<int> act = obj => System.Console.WriteLine (i);
 	}
 }");
 		}

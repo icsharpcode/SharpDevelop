@@ -58,6 +58,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public void AddNextNode (VariableReferenceNode node)
 		{
+			if (node == null)
+				return;
 			NextNodes.Add (node);
 			node.PreviousNodes.Add (this);
 		}
@@ -294,9 +296,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				startNode = startNode ?? new VariableReferenceNode ();
 				endNode = startNode;
-				foreach (var expr in expressions) {
-					var visitor = CreateVisitor (references, resolver, expr, endNode);
-					endNode = visitor.endNode;
+				if (expressions != null) {
+					foreach (var expr in expressions) {
+						var visitor = CreateVisitor(references, resolver, expr, endNode);
+						endNode = visitor.endNode;
+					}
 				}
 				return startNode;
 			}

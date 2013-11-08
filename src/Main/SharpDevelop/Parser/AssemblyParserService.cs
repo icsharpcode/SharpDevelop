@@ -137,11 +137,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 			cancellationToken.ThrowIfCancellationRequested();
 			var param = new ReaderParameters();
 			param.AssemblyResolver = new DummyAssemblyResolver();
-			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
+			ModuleDefinition module = ModuleDefinition.ReadModule(fileName, param);
 			
 			CecilLoader l = new CecilLoader();
 			l.IncludeInternalMembers = includeInternalMembers;
-			string xmlDocFile = FindXmlDocumentation(fileName, asm.MainModule.Runtime);
+			string xmlDocFile = FindXmlDocumentation(fileName, module.Runtime);
 			if (xmlDocFile != null) {
 				try {
 					l.DocumentationProvider = new XmlDocumentationProvider(xmlDocFile);
@@ -154,9 +154,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			l.CancellationToken = cancellationToken;
-			var references = asm.MainModule.AssemblyReferences
+			var references = module.AssemblyReferences
 				.Select(anr => new DomAssemblyName(anr.FullName));
-			pc = new LoadedAssembly(l.LoadAssembly(asm), lastWriteTime, includeInternalMembers, references);
+			pc = new LoadedAssembly(l.LoadModule(module), lastWriteTime, includeInternalMembers, references);
 			SaveToCacheAsync(cacheFileName, lastWriteTime, pc).FireAndForget();
 			//SaveToCache(cacheFileName, lastWriteTime, pc);
 			return pc;
@@ -300,6 +300,28 @@ namespace ICSharpCode.SharpDevelop.Parser
 				// Similarly, we also ignore the other kinds of IO exceptions.
 			} catch (UnauthorizedAccessException ex) {
 				LoggingService.Warn(ex);
+			}
+		}
+		#endregion
+		
+		#region Refresh
+		public event EventHandler<RefreshAssemblyEventArgs> AssemblyRefreshed;
+		
+		public void RefreshAssembly(FileName fileName)
+		{
+			LoadedAssembly asm;
+			lock (projectContentDictionary) {
+				if (!projectContentDictionary.TryGetValue(fileName, out asm)) {
+					// Assembly is not loaded; nothing to refresh
+					return;
+				}
+			}
+			var oldAssembly = asm.ProjectContent;
+			var newAssembly = GetAssembly(fileName);
+			if (oldAssembly != newAssembly) {
+				var handler = AssemblyRefreshed;
+				if (handler != null)
+					handler(this, new RefreshAssemblyEventArgs(fileName, oldAssembly, newAssembly));
 			}
 		}
 		#endregion

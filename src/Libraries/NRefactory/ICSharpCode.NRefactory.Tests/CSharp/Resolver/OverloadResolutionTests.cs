@@ -29,11 +29,8 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	[TestFixture]
-	public class OverloadResolutionTests
+	public class OverloadResolutionTests : ResolverTestBase
 	{
-		readonly ICompilation compilation = new SimpleCompilation(
-			CecilLoaderTests.SystemCore, new[] { CecilLoaderTests.Mscorlib });
-		
 		ResolveResult[] MakeArgumentList(params Type[] argumentTypes)
 		{
 			return argumentTypes.Select(t => new ResolveResult(compilation.FindType(t))).ToArray();
@@ -269,6 +266,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { throw new NotImplementedException(); }
 			}
 			
+			public override IType ReturnType {
+				get { throw new NotImplementedException(); }
+			}
+			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
 			{
 				return inferredReturnType;
@@ -326,6 +327,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(OverloadResolutionErrors.None, r.AddCandidate(m1));
 			Assert.AreEqual(OverloadResolutionErrors.None, r.AddCandidate(m2));
 			Assert.AreEqual(OverloadResolutionErrors.AmbiguousMatch, r.BestCandidateErrors);
+		}
+		
+		[Test, Ignore("Overload Resolution bug")]
+		public void BetterFunctionMemberIsNotTransitive()
+		{
+			string program = @"using System;
+class Program
+{
+	static void Method(Action<string> a) {}
+	static void Method<T>(Func<string, T> a) {}
+	static void Method(Action<object> a) {}
+	static void Method<T>(Func<object, T> a) {}
+	
+	public static void Main(string[] args)
+	{
+	        $Method(a => a.ToString())$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual(OverloadResolutionErrors.AmbiguousMatch, rr.OverloadResolutionErrors);
 		}
 	}
 }

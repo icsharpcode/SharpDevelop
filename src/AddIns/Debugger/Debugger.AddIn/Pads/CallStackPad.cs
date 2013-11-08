@@ -116,15 +116,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void RefreshPad()
 		{
-			Thread thead = WindowsDebugger.CurrentThread;
-			if (thead == null) {
+			Thread thread = WindowsDebugger.CurrentThread;
+			if (thread == null) {
 				listView.ItemsSource = null;
 			} else {
 				var items = new ObservableCollection<CallStackItem>();
 				bool previousItemIsExternalMethod = false;
 				WindowsDebugger.CurrentProcess.EnqueueForEach(
 					listView.Dispatcher,
-					thead.GetCallstack(100),
+					thread.GetCallstack(100),
 					f => items.AddIfNotNull(CreateItem(f, ref previousItemIsExternalMethod))
 				);
 				listView.ItemsSource = items;

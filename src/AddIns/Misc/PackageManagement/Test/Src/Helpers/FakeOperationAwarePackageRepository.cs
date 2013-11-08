@@ -16,7 +16,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		IDisposable Operation = MockRepository.GenerateStub<IDisposable>();
 		
-		public IDisposable StartOperation(string operationName, string mainPackageId)
+		public IDisposable StartOperation(string operationName, string mainPackageId, string mainPackageVersion)
 		{
 			OperationStarted = operationName;
 			MainPackageIdForOperationStarted = mainPackageId;

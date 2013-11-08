@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			var compilation = TypeSystemHelper.CreateCompilation(a, b);
 			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a.FullTypeName);
-			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b.FullTypeName);
+//			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b.FullTypeName);
 			
 			// A<> gets self-parameterized, B<> stays unbound
 			Assert.AreEqual("A`1+B`1[[`0],[]]", resolvedA.GetNestedTypes().Single().ReflectionName);

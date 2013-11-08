@@ -40,7 +40,12 @@ namespace ICSharpCode.NRefactory.Refactoring
 		/// <summary>
 		/// The region is marked as underline in the severity color.
 		/// </summary>
-		Underline,
+		WavedLine,
+
+		/// <summary>
+		/// The region is marked as dotted line in the severity color.
+		/// </summary>
+		DottedLine,
 
 		/// <summary>
 		/// The text is grayed out.

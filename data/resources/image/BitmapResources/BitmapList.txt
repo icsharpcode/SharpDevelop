@@ -272,6 +272,7 @@ PadIcons\Parallel.png
 PadIcons\ProjectBrowser.png
 PadIcons\TaskList.png
 PadIcons\Toolbar.png
+PadIcons\WatchPad.png
 PadIcons\memory.png
 PadIcons\nextmemory.png
 PadIcons\previousmemory.png
@@ -326,7 +327,9 @@ SubversionIcons\Svn.CreatePatch.png
 SubversionIcons\Svn.Export.png
 SubversionIcons\Svn.Import.png
 SubversionIcons\Svn.Update.png
-
+WatchIcons\WatchAdd.png
+WatchIcons\WatchDelete.png
+WatchIcons\WatchesDelete.png
 
 -------------------------------------------------------------------------------
 Copied from the Fugue Icon Library and modified or mashed up with other Fugue 

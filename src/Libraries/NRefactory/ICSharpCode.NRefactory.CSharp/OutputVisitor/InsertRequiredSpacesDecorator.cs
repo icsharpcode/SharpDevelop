@@ -140,7 +140,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override void WritePrimitiveValue(object value, string literalValue = null)
 		{
-			base.WritePrimitiveValue(value);
+			base.WritePrimitiveValue(value, literalValue);
 			if (value == null || value is bool)
 				return;
 			if (value is string) {

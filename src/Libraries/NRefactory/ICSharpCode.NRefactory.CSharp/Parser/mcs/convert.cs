@@ -479,7 +479,7 @@ namespace Mono.CSharp {
 			}
 			
 			if (expr_type != expr.Type)
-				return new Nullable.Lifted (conv, unwrap, target_type).Resolve (ec);
+				return new Nullable.LiftedConversion (conv, unwrap, target_type).Resolve (ec);
 
 			return Nullable.Wrap.Create (conv, target_type);
 		}
@@ -1097,14 +1097,16 @@ namespace Mono.CSharp {
 			TypeSpec source_type = source.Type;
 			TypeSpec target_type = target;
 			Expression source_type_expr;
+			bool nullable_source = false;
 
 			if (source_type.IsNullableType) {
 				// No unwrapping conversion S? -> T for non-reference types
 				if (implicitOnly && !TypeSpec.IsReferenceType (target_type) && !target_type.IsNullableType) {
 					source_type_expr = source;
 				} else {
-					source_type_expr = Nullable.Unwrap.Create (source);
+					source_type_expr = Nullable.Unwrap.CreateUnwrapped (source);
 					source_type = source_type_expr.Type;
+					nullable_source = true;
 				}
 			} else {
 				source_type_expr = source;
@@ -1231,26 +1233,48 @@ namespace Mono.CSharp {
 			//
 			if (t_x != target_type) {
 				//
-				// User operator is of T?, no need to lift it
+				// User operator is of T?
 				//
-				if (t_x == target && t_x.IsNullableType)
-					return source;
+				if (t_x.IsNullableType && target.IsNullableType) {
+					//
+					// User operator return type does not match target type we need
+					// yet another conversion. This should happen for promoted numeric
+					// types only
+					//
+					if (t_x != target) {
+						var unwrap = Nullable.Unwrap.CreateUnwrapped (source);
 
-				source = implicitOnly ?
-					ImplicitConversionStandard (ec, source, target_type, loc) :
-					ExplicitConversionStandard (ec, source, target_type, loc);
+						source = implicitOnly ?
+							ImplicitConversionStandard (ec, unwrap, target_type, loc) :
+							ExplicitConversionStandard (ec, unwrap, target_type, loc);
 
-				if (source == null)
-					return null;
+						if (source == null)
+							return null;
+
+						source = new Nullable.LiftedConversion (source, unwrap, target).Resolve (ec);
+					}
+				} else {
+					source = implicitOnly ?
+						ImplicitConversionStandard (ec, source, target_type, loc) :
+						ExplicitConversionStandard (ec, source, target_type, loc);
+
+					if (source == null)
+						return null;
+				}
 			}
 
+
 			//
-			// Source expression is of nullable type, lift the result in the case it's null and
-			// not nullable/lifted user operator is used
+			// Source expression is of nullable type and underlying conversion returns
+			// only non-nullable type we need to lift it manually
 			//
-			if (source_type_expr is Nullable.Unwrap && !s_x.IsNullableType && (TypeSpec.IsReferenceType (target) || target_type != target))
-				source = new Nullable.Lifted (source, source_type_expr, target).Resolve (ec);
-			else if (target_type != target)
+			if (nullable_source && !s_x.IsNullableType)
+				return new Nullable.LiftedConversion (source, source_type_expr, target).Resolve (ec);
+
+			//
+			// Target is of nullable type but source type is not, wrap the result expression
+			//
+			if (target.IsNullableType && !t_x.IsNullableType)
 				source = Nullable.Wrap.Create (source, target);
 
 			return source;
@@ -1414,6 +1438,9 @@ namespace Mono.CSharp {
 				Expression am = ame.Compatible (ec, target_type);
 				if (am != null)
 					return am.Resolve (ec);
+
+				// Avoid CS1503 after CS1661
+				return ErrorExpression.Instance;
 			}
 
 			if (expr_type == InternalType.Arglist && target_type == ec.Module.PredefinedTypes.ArgIterator.TypeSpec)
@@ -2165,7 +2192,7 @@ namespace Mono.CSharp {
 					if (e == null)
 						return null;
 
-					return new Nullable.Lifted (e, unwrap, target_type).Resolve (ec);
+					return new Nullable.LiftedConversion (e, unwrap, target_type).Resolve (ec);
 				}
 				if (expr_type.BuiltinType == BuiltinTypeSpec.Type.Object) {
 					return new UnboxCast (expr, target_type);

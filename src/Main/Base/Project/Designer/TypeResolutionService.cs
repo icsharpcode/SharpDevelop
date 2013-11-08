@@ -86,7 +86,8 @@ namespace ICSharpCode.SharpDevelop.Designer
 		public IProject CallingProject {
 			get {
 				if (formSourceFileName != null) {
-					return SD.ProjectService.FindProjectContainingFile(formSourceFileName);
+					callingProject = SD.ProjectService.FindProjectContainingFile(formSourceFileName);
+					formSourceFileName = null;
 				}
 				return callingProject;
 			}

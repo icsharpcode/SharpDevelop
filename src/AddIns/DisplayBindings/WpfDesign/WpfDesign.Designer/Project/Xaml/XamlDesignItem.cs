@@ -145,6 +145,23 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
+		/// <summary>
+		/// Item is Locked at Design Time
+		/// </summary>
+		public bool IsDesignTimeLocked { 
+			get {
+				var locked = Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
+				return (locked != null && (bool) locked == true);
+			}
+			set {
+				if (value)
+					Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).SetValue(true);
+				else
+					Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).Reset();
+			}
+				
+		}
+		
 		public override DesignItem Clone()
 		{
 			DesignItem item = null;

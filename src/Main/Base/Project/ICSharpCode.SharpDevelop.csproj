@@ -206,6 +206,7 @@
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
+    <Compile Include="Src\Editor\Commands\DeclaringTypeSubMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\FindReferencesCommand.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
     <Compile Include="Src\Editor\Commands\SymbolUnderCaretMenuCommand.cs" />
@@ -272,6 +273,7 @@
     <Compile Include="Src\Gui\Pads\TaskList\TaskViewResources.xaml.cs">
       <DependentUpon>TaskViewResources.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Src\Internal\ConditionEvaluators\SymbolTypeAtCaretConditionEvaluator.cs" />
     <Compile Include="Src\Internal\Templates\StringParserPropertyContainer.cs" />
     <Compile Include="Src\Project\MSBuildConfigurationOrPlatformNameCollection.cs" />
     <Compile Include="Templates\FileTemplate.cs" />
@@ -558,6 +560,7 @@
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
     <Compile Include="Workbench\File\IFileService.cs" />
     <Compile Include="Workbench\File\OpenedFile.cs" />
+    <Compile Include="Src\Services\FileIconService.cs" />
     <Compile Include="Src\Services\LanguageBinding\DefaultLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\ILanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingDoozer.cs" />
@@ -881,9 +884,9 @@
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\cecil\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
+      <Project>{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}</Project>
+      <Name>ICSharpCode.NRefactory.Cecil</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>

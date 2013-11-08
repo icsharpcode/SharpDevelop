@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.PackageManagement</RootNamespace>
     <AssemblyName>PackageManagement</AssemblyName>
@@ -16,14 +16,14 @@
     <TargetFrameworkProfile />
     <NoWin32Manifest>False</NoWin32Manifest>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
     <FileAlignment>4096</FileAlignment>
-    <Prefer32Bit>False</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -228,6 +228,8 @@
     <Compile Include="Src\ManagePackagesViewTitle.cs" />
     <Compile Include="Src\MSBuildBasedProjectExtensions.cs" />
     <Compile Include="Src\IPackageFromRepositoryExtensions.cs" />
+    <Compile Include="Src\NuGetExePath.cs" />
+    <Compile Include="Src\NuGetPackageRestoreCommandLine.cs" />
     <Compile Include="Src\PackageLicenseViewModel.cs" />
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
     <Compile Include="Src\IPackageRepositoryExtensions.cs" />
@@ -237,6 +239,7 @@
     <Compile Include="Src\ProjectRootElementExtensions.cs" />
     <Compile Include="Src\ReducedPackageOperations.cs" />
     <Compile Include="Src\ResolveFileConflictEventArgs.cs" />
+    <Compile Include="Src\RestorePackagesCommand.cs" />
     <Compile Include="Src\Scripting\ConsoleHostFileConflictResolver.cs" />
     <Compile Include="Src\Scripting\FileConflictAction.cs" />
     <Compile Include="Src\Scripting\GlobalMSBuildProjectCollection.cs" />
@@ -596,4 +599,5 @@
     <None Include="Resources\license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>

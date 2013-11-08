@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		// TODO: Remove this when the formatter handles object and collection initializers
 		// This tests the expected code vs the actual code based on their ASTs instead of the text they produce.
 		public new void Test<T>(string input, string output, int action = 0, bool expectErrors = false)
-			where T : ICodeActionProvider, new ()
+			where T : CodeActionProvider, new ()
 		{
 			string result = RunContextAction(new T(), HomogenizeEol(input), action, expectErrors);
 

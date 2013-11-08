@@ -12,7 +12,9 @@ How to compile:
 		Get Cecil from https://github.com/jbevain/cecil ('git clone git://github.com/jbevain/cecil.git')
 		or download Cecil from https://github.com/jbevain/cecil/ and unzip it into a directory named "cecil"
 		next to the directory containing NRefactory.
-	2. Open NRefactory.sln in your favorite .NET IDE and compile.
+	2. If you need the IKVM binding get it from https://github.com/mono/ikvm-fork and put it next to the NRefactory directory
+		like Mono.Cecil - name it "ikvm".
+	3. Open NRefactory.sln in your favorite .NET IDE and compile.
 
 Features:
 	- C# Parser

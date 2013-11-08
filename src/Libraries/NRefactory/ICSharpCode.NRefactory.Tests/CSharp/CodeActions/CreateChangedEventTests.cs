@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test]
 		public void TestSimpleCase ()
 		{
-			Test<CreateChangedEvent> (@"class TestClass
+			Test<CreateChangedEventAction> (@"class TestClass
 {
 	string test;
 	public string $Test {
@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test]
 		public void TestStaticClassCase ()
 		{
-			Test<CreateChangedEvent> (@"static class TestClass
+			Test<CreateChangedEventAction> (@"static class TestClass
 {
 	static string test;
 	public static string $Test {
@@ -106,7 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test]
 		public void TestSealedCase ()
 		{
-			Test<CreateChangedEvent> (@"sealed class TestClass
+			Test<CreateChangedEventAction> (@"sealed class TestClass
 {
 	string test;
 	public string $Test {
@@ -134,6 +134,49 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		set {
 			test = value;
 			OnTestChanged (System.EventArgs.Empty);
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void TestWrongLocation()
+		{
+			TestWrongContext<CreateChangedEventAction> (@"class TestClass
+{
+	string test;
+	public $string Test {
+		get {
+			return test;
+		}
+		set {
+			test = value;
+		}
+	}
+}");
+
+			TestWrongContext<CreateChangedEventAction> (@"class TestClass
+{
+	string test;
+	public string $FooBar.Test {
+		get {
+			return test;
+		}
+		set {
+			test = value;
+		}
+	}
+}");
+
+			TestWrongContext<CreateChangedEventAction> (@"class TestClass
+{
+	string test;
+	public string Test ${
+		get {
+			return test;
+		}
+		set {
+			test = value;
 		}
 	}
 }");

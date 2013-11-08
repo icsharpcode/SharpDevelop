@@ -264,6 +264,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { throw new NotImplementedException(); }
 			}
 			
+			public override IType ReturnType {
+				get { throw new NotImplementedException(); }
+			}
+			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
 			{
 				Assert.AreEqual(expectedParameterTypes, parameterTypes, "Parameters types passed to " + this);
@@ -597,6 +601,48 @@ class C : I<string>
 			var mrr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("System.String", mrr.Type.FullName);
 			Assert.IsFalse(mrr.IsError);
+		}
+
+		[Test]
+		public void GenericArgumentImplicitlyConvertibleToAndFromAnotherTypeList() {
+			string program = @"
+using System.Collections.Generic;
+public class MyConvertible {
+	public static implicit operator MyConvertible(int number) { return null; }
+	public static implicit operator int(MyConvertible obj) { return 0; }
+}
+
+class C {
+	public static void F<K>(IList<K> a, K b) {
+	}
+	void M() {
+		$F(new List<MyConvertible>(), 1)$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.That(rr.Member, Is.InstanceOf<SpecializedMethod>());
+			Assert.That(((SpecializedMethod)rr.Member).TypeArguments.Select(ta => ta.FullName), Is.EqualTo(new[] { "MyConvertible" }));
+		}
+
+		[Test]
+		public void GenericArgumentImplicitlyConvertibleToAndFromAnotherTypeIEnumerable() {
+			string program = @"
+using System.Collections.Generic;
+public class MyConvertible {
+	public static implicit operator MyConvertible(int number) { return null; }
+	public static implicit operator int(MyConvertible obj) { return 0; }
+}
+
+class C {
+	public static void F<K>(IEnumerable<K> a, K b) {
+	}
+	void M() {
+		$F(new List<MyConvertible>(), 1)$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsTrue(rr.IsError);
 		}
 	}
 }

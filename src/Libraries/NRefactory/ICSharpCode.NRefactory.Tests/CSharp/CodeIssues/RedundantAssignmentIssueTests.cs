@@ -493,5 +493,33 @@ public class Test
 
 		}
 
+
+		/// <summary>
+		/// Bug 14929 - Assignment greyed out (meaning "redundant") when it should not be
+		/// </summary>
+		[Test]
+		public void TestBug14929 ()
+		{
+			TestWrongContext<RedundantAssignmentIssue>(@"
+using system;
+
+public class Test
+{
+	public void Demo ()
+	{
+		bool save = true;
+		try {
+			throw new Exception ();
+		} catch (Exception) {
+			save = false;
+			throw;
+		} finally {
+			System.Console.WriteLine (save);
+		}
+	}
+
+}");
+
+		}
 	}
 }

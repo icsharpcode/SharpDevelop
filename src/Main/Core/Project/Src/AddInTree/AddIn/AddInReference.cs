@@ -96,11 +96,11 @@ namespace ICSharpCode.Core
 				}
 				
 				if (reference.Name == "SharpDevelop") {
-					// HACK: SD 4.1/4.2 AddIns work with SharpDevelop 4.3
+					// HACK: SD 4.1/4.2/4.3 AddIns work with SharpDevelop 4.4
 					// Because some 4.1 AddIns restrict themselves to SD 4.1, we extend the
 					// supported SD range.
-					if (reference.maximumVersion == new Version("4.1") || reference.maximumVersion == new Version("4.2")) {
-						reference.maximumVersion = new Version("4.3");
+					if (reference.maximumVersion == new Version("4.1") || reference.maximumVersion == new Version("4.2") || reference.maximumVersion == new Version("4.3")) {
+						reference.maximumVersion = new Version("4.4");
 					}
 				}
 			}

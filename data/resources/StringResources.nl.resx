@@ -290,7 +290,7 @@
 
 {1}
 
-Ze stoppen met werken als deze AddIn uitgeschakeld wordt. Wilt u doorgaan?</value>
+Ze stoppen met werken nadat deze AddIn wordt uitgeschakeld. Weet u zeker dat u wilt doorgaan?</value>
   </data>
   <data name="AddInManager2.InstallDependentMessage" xml:space="preserve">
     <value>Package "{0}" heeft tenminste één toegevoegde package nodig:
@@ -353,7 +353,7 @@ Als u het niet eens bent met de licentie voorwaarden, klik dan de "Ik weiger" kn
 
 {1}
 
-Deze stoppen met werken na verwijderen van deze AddIn.</value>
+Deze stoppen met werken nadat deze AddIn wordt  verwijderd. Weet u zeker dat u wilt doorgaan?</value>
   </data>
   <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
     <value>SharpDevelop AddIns|*.sdaddin;*.addin|Alle bestanden|*.*</value>
@@ -2020,6 +2020,12 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Foutopsporing</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.AskForArguments" xml:space="preserve">
+    <value>Vraag naar argumenten en werkmap bij starten uitvoerend bestand.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
+    <value>Breek op de eerste uitvoeringsregel.</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
     <value>Decompiler inschakelen</value>
   </data>
@@ -2067,6 +2073,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption" xml:space="preserve">
     <value>Symbool- en broncodepaden:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.WithoutSource" xml:space="preserve">
+    <value>Zonder broncode fout-opsporing.</value>
   </data>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel" xml:space="preserve">
     <value>&amp;Koptekst</value>
@@ -4998,6 +5007,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC" xml:space="preserve">
     <value>Assembly openen vanuit GAK...</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenInClassBrowser" xml:space="preserve">
+    <value>Open in de klasse  bladeraar</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.SearchButton.ToolTip" xml:space="preserve">
     <value>Zoeken in Klassen Overzicht</value>
   </data>
@@ -5111,6 +5123,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.Console" xml:space="preserve">
     <value>Console</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.DebugExecutable" xml:space="preserve">
+    <value>Fout-opsporen in uitvoerend bestand</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Break" xml:space="preserve">
     <value>Onderbreken</value>
@@ -5469,6 +5484,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.SearchResultPanel.In" xml:space="preserve">
     <value>in</value>
   </data>
+  <data name="MainWindow.Windows.SearchResultPanel.NoProject" xml:space="preserve">
+    <value>&lt;geen project&gt;</value>
+  </data>
   <data name="MainWindow.Windows.SearchResultPanel.OccurrencesCount" xml:space="preserve">
     <value>${Count} resultaten</value>
   </data>
@@ -5483,6 +5501,12 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.PerFile" xml:space="preserve">
     <value>Per bestand</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProject" xml:space="preserve">
+    <value>Per project</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProjectAndFile" xml:space="preserve">
+    <value>Per project en bestand</value>
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip" xml:space="preserve">
     <value>Selecteer de zoeklijst modus</value>
@@ -6140,6 +6164,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="SharpDevelop.Refactoring.OverridesOf" xml:space="preserve">
     <value>Overschrijvingen van $(Name)</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.PartsOfClass" xml:space="preserve">
+    <value>Delen van ${Name}</value>
   </data>
   <data name="SharpDevelop.Refactoring.ReferencesTo" xml:space="preserve">
     <value>Referenties met ${Name}</value>

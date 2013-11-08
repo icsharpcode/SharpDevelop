@@ -1092,6 +1092,31 @@ namespace Test
 			var nrr = Resolve<NamespaceResolveResult>(program);
 			Assert.AreEqual("A.B.C.D", nrr.NamespaceName);
 		}
-
+		
+		[Test]
+		public void CuriouslyRecurringInnerClass()
+		{
+			string program = @"
+	abstract class Table<T>
+	{
+		internal T[] records = {};
+	}
+	
+	sealed class ConcreteTable : Table<ConcreteTable.Record>
+	{
+		internal struct Record
+		{
+			public int Value;
+		}
+		
+		int First()
+		{
+			return $records[0].Value$;
+		}
+	}";
+			var rr = Resolve<MemberResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("ConcreteTable+Record.Value", rr.Member.ReflectionName);
+		}
 	}
 }

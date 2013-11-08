@@ -32,8 +32,22 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		int GetGlobalNewLinesFor(AstNode child)
 		{
+			if (child.NextSibling == null)
+				// last node in the document => no extra newlines
+				return 0;
+			if (child.NextSibling.Role == Roles.RBrace)
+				// Last node in a block => no extra newlines, it's handled later by FixClosingBrace()
+				return 0;
+
 			int newLines = 1;
 			var nextSibling = child.GetNextSibling(NoWhitespacePredicate);
+			if (nextSibling is PreProcessorDirective) {
+				var directive = (PreProcessorDirective)nextSibling;
+				if (directive.Type == PreProcessorDirectiveType.Endif)
+					return -1;
+				if (directive.Type == PreProcessorDirectiveType.Undef)
+					return -1;
+			}
 			if ((child is UsingDeclaration || child is UsingAliasDeclaration) && !(nextSibling is UsingDeclaration || nextSibling is UsingAliasDeclaration)) {
 				newLines += policy.BlankLinesAfterUsings;
 			} else if ((child is TypeDeclaration) && (nextSibling is TypeDeclaration)) {
@@ -54,9 +68,33 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (NoWhitespacePredicate(child))
 					FixIndentation(child);
 				child.AcceptVisitor(this);
-				if (NoWhitespacePredicate(child))
+				if (NoWhitespacePredicate(child) && !first)
 					EnsureNewLinesAfter(child, GetGlobalNewLinesFor(child));
 			});
+		}
+
+		public override void VisitAttributeSection(AttributeSection attributeSection)
+		{
+			VisitChildrenToFormat(attributeSection, child => {
+				child.AcceptVisitor(this);
+				if (child.NextSibling != null && child.NextSibling.Role == Roles.RBracket) {
+					ForceSpacesAfter(child, false);
+				}
+			});
+		}
+
+		public override void VisitAttribute(Attribute attribute)
+		{
+			if (attribute.HasArgumentList) {
+				ForceSpacesBefore(attribute.LParToken, policy.SpaceBeforeMethodCallParentheses);
+				if (attribute.Arguments.Any()) {
+					ForceSpacesAfter(attribute.LParToken, policy.SpaceWithinMethodCallParentheses);
+				} else {
+					ForceSpacesAfter(attribute.LParToken, policy.SpaceBetweenEmptyMethodCallParentheses);
+					ForceSpacesBefore(attribute.RParToken, policy.SpaceBetweenEmptyMethodCallParentheses);
+				}
+				FormatArguments(attribute);
+			}
 		}
 
 		public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
@@ -68,6 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration)
 		{
 			ForceSpacesAfter(usingDeclaration.UsingToken, true);
+			ForceSpacesAround(usingDeclaration.AssignToken, policy.SpaceAroundAssignment);
 			FixSemicolon(usingDeclaration.SemicolonToken);
 		}
 
@@ -127,8 +166,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			if (entity.Attributes.Count > 0) {
 				AstNode n = null;
+				entity.Attributes.First().AcceptVisitor(this);
 				foreach (var attr in entity.Attributes.Skip (1)) {
 					FixIndentation(attr);
+					attr.AcceptVisitor(this);
 					n = attr;
 				}
 				if (n != null) {
@@ -181,6 +222,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				if (child.Role == Roles.LBrace) {
 					startFormat = true;
+					if (braceStyle != BraceStyle.DoNotChange)
+						EnsureNewLinesAfter(child, GetTypeLevelNewLinesFor(child));
 					return;
 				}
 				if (child.Role == Roles.RBrace) {
@@ -211,7 +254,30 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var blankLines = 1;
 			var nextSibling = child.GetNextSibling(NoWhitespacePredicate);
-			if (child is PreProcessorDirective || child is Comment)
+			if (child is PreProcessorDirective) {
+				var directive = (PreProcessorDirective)child;
+				if (directive.Type == PreProcessorDirectiveType.Region)
+					blankLines += policy.BlankLinesInsideRegion;
+				if (directive.Type == PreProcessorDirectiveType.Endregion)
+					blankLines += policy.BlankLinesAroundRegion;
+				return blankLines;
+			}
+
+			if (nextSibling is PreProcessorDirective) {
+				var directive = (PreProcessorDirective)nextSibling;
+				if (directive.Type == PreProcessorDirectiveType.Region)
+					blankLines += policy.BlankLinesAroundRegion;
+				if (directive.Type == PreProcessorDirectiveType.Endregion)
+					blankLines += policy.BlankLinesInsideRegion;
+				if (directive.Type == PreProcessorDirectiveType.Endif)
+					return -1;
+				if (directive.Type == PreProcessorDirectiveType.Undef)
+					return -1;
+				return blankLines;
+			}
+			if (child.Role == Roles.LBrace)
+				return 1;
+			if (child is Comment)
 				return 1;
 			if (child is EventDeclaration) {
 				if (nextSibling is EventDeclaration) {

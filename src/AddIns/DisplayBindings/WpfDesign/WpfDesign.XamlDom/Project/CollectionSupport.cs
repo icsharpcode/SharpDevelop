@@ -72,7 +72,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				//	if (val is Style)
 				//		key = ((Style)val).TargetType;
 				//}
-				if (key == null || key == "")
+				if (key == null || (key as string) == "")
 					key = val;
 				((ResourceDictionary)collectionInstance).Add(key, val);
 			} else {

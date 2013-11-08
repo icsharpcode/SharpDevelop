@@ -4,7 +4,7 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 namespace ResourceEditor
 {
@@ -12,7 +12,7 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)WorkbenchSingleton.Workbench.ActiveViewContent).ResourceEditor;
+			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
 			
 			if(editor.ResourceList.WriteProtected) {
 				return;

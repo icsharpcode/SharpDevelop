@@ -8,6 +8,8 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Svn.Gui
 {
+	// TODO: rewrite without XMLForms
+	#pragma warning disable 618
 	/// <summary>
 	/// The Output Window options panel.
 	/// </summary>

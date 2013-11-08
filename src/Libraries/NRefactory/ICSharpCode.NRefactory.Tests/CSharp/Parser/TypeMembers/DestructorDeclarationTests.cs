@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		[Test]
 		public void DestructorDeclarationTest()
 		{
-			DestructorDeclaration dd = ParseUtilCSharp.ParseTypeMember<DestructorDeclaration>("~MyClass() {}");
+			ParseUtilCSharp.ParseTypeMember<DestructorDeclaration>("~MyClass() {}");
 		}
 		
 		[Test]

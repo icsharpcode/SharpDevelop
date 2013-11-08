@@ -415,6 +415,11 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			InactiveCode
 		}
 
+		public bool Suppress {
+			get;
+			set;
+		}
+
 		public class SpecialVisitor
 		{
 			public virtual void Visit (Comment comment)
@@ -486,7 +491,18 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		public class PragmaPreProcessorDirective : PreProcessorDirective
 		{
 			public bool Disalbe { get; set; }
-			public List<int> Codes = new List<int> ();
+
+			public int WarningColumn {
+				get;
+				set;
+			}
+
+			public int DisableRestoreColumn {
+				get;
+				set;
+			}
+
+			public List<Constant> Codes = new List<Constant> ();
 
 			public PragmaPreProcessorDirective (int line, int col, int endLine, int endCol, Tokenizer.PreprocessorDirective cmd, string arg) : base (line, col, endLine, endCol, cmd, arg)
 			{
@@ -546,6 +562,8 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void StartComment (CommentType type, bool startsLine, int startLine, int startCol)
 		{
+			if (Suppress)
+				return;
 			inComment = true;
 			curComment = type;
 			this.startsLine = startsLine;
@@ -557,6 +575,8 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void PushCommentChar (int ch)
 		{
+			if (Suppress)
+				return;
 			if (ch < 0)
 				return;
 			contentBuilder.Append ((char)ch);
@@ -564,6 +584,8 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void PushCommentString (string str)
 		{
+			if (Suppress)
+				return;
 			contentBuilder.Append (str);
 		}
 		
@@ -571,15 +593,22 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void EndComment (int endLine, int endColumn)
 		{
+			if (Suppress)
+				return;
 			if (!inComment)
 				return;
 			inComment = false;
+			// Ignore empty comments
+			if (startLine == endLine && startCol == endColumn)
+				return;
 			Specials.Add (new Comment (curComment, startsLine, startLine, startCol, endLine, endColumn, contentBuilder.ToString ()));
 		}
 		
 		[Conditional ("FULL_AST")]
 		public void AddPreProcessorDirective (int startLine, int startCol, int endLine, int endColumn, Tokenizer.PreprocessorDirective cmd, string arg)
 		{
+			if (Suppress)
+				return;
 			if (inComment)
 				EndComment (startLine, startCol);
 			switch (cmd) {
@@ -595,34 +624,47 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			}
 		}
 
-		[Conditional ("FULL_AST")]
-		public void SetPragmaDisable(bool disable)
+		#if FULL_AST
+		public PragmaPreProcessorDirective SetPragmaDisable(bool disable)
 		{
+			if (Suppress)
+				return null;
 			var pragmaDirective = Specials [Specials.Count - 1] as PragmaPreProcessorDirective;
 			if (pragmaDirective == null)
-				return;
+				return null;
 			pragmaDirective.Disalbe = disable;
+			return pragmaDirective;
+		}
+		#endif
+
+		public PragmaPreProcessorDirective GetPragmaPreProcessorDirective()
+		{
+			if (Suppress)
+				return null;
+			return Specials [Specials.Count - 1] as PragmaPreProcessorDirective;
 		}
 
-		[Conditional ("FULL_AST")]
-		public void AddPragmaCode(int code)
-		{
-			var pragmaDirective = Specials [Specials.Count - 1] as PragmaPreProcessorDirective;
-			if (pragmaDirective == null)
-				return;
-			pragmaDirective.Codes.Add (code);
-		}
 
 		public LineProcessorDirective GetCurrentLineProcessorDirective()
 		{
+			if (Suppress)
+				return null;
 			return Specials [Specials.Count - 1] as LineProcessorDirective;
 		}
 
 		public enum NewLine { Unix, Windows }
 
+		int lastNewLine = -1;
+		int lastNewCol = -1;
 		[Conditional ("FULL_AST")]
 		public void AddNewLine (int line, int col, NewLine newLine)
 		{
+			if (Suppress)
+				return;
+			if (line == lastNewLine && col == lastNewCol)
+				return;
+			lastNewLine = line;
+			lastNewCol = col;
 			Specials.Add (new NewLineToken (line, col, newLine));
 		}
 

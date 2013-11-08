@@ -49,6 +49,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.document = document;
 		}
 
+		public int Count {
+			get {
+				return changes.Count;
+			}
+		}
+
 		/// <summary>
 		/// Applies the changes to the input document.
 		/// </summary>
@@ -111,6 +117,14 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		internal TextReplaceAction AddChange(int offset, int removedChars, string insertedText)
 		{
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException("offset", "Should be >= 0");
+			if (offset >= document.TextLength)
+				throw new ArgumentOutOfRangeException("offset", "Should be < document.TextLength");
+			if (removedChars < 0)
+				throw new ArgumentOutOfRangeException("removedChars", "Should be >= 0");
+			if (removedChars > offset + document.TextLength)
+				throw new ArgumentOutOfRangeException("removedChars", "Tried to remove beyond end of text");
 			if (removedChars == 0 && string.IsNullOrEmpty (insertedText))
 				return null;
 			var action = new TextReplaceAction (offset, removedChars, insertedText);

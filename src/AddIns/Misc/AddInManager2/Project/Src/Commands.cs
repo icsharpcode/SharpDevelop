@@ -32,9 +32,12 @@ namespace ICSharpCode.AddInManager2
 	{
 		public override void Execute(object parameter)
 		{
-			// Initialize UpdateNotifier and let it check for available updates
-			UpdateNotifier updateNotifier = new UpdateNotifier();
-			updateNotifier.StartUpdateLookup();
+			if (AddInManagerServices.Settings.AutoSearchForUpdates)
+			{
+				// Initialize UpdateNotifier and let it check for available updates
+				UpdateNotifier updateNotifier = new UpdateNotifier();
+				updateNotifier.StartUpdateLookup();
+			}
 		}
 	}
 }

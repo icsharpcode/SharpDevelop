@@ -663,7 +663,7 @@ namespace Mono.CSharp {
 		//
 		// Returns true when type is MVAR or has MVAR reference
 		//
-		static bool ContainsMethodTypeParameter (TypeSpec type)
+		public static bool ContainsMethodTypeParameter (TypeSpec type)
 		{
 			var tps = type as TypeParameterSpec;
 			if (tps != null)
@@ -857,7 +857,7 @@ namespace Mono.CSharp {
 			//
 			var call = new CallEmitter ();
 			call.InstanceExpression = InstanceExpr;
-			call.EmitPredefined (ec, method, arguments);
+			call.EmitPredefined (ec, method, arguments, loc);
 		}
 
 		public override void EmitStatement (EmitContext ec)

@@ -92,6 +92,8 @@ class Class
 	}
 }
 ");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNull (provider.Find ("case"), "keyword 'case' found.");
 	}
 		
 		[Test()]

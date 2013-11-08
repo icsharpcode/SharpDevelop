@@ -27,6 +27,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -231,7 +232,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			MemberResolveResult mrr = result as MemberResolveResult;
 			if (mrr != null) {
-				HelpProvider.ShowHelp(mrr.Member);
+				if ((mrr.Member.DeclaringType.Kind == TypeKind.Enum) &&
+				    (mrr.Member.DeclaringType.GetDefinition() != null)) {
+					HelpProvider.ShowHelp(mrr.Member.DeclaringType.GetDefinition());
+				} else {
+					HelpProvider.ShowHelp(mrr.Member);
+				}
 			}
 		}
 		#endregion

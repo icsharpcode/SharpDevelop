@@ -216,23 +216,23 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					if (invoke.Node is ObjectCreateExpression) {
 						var createType = ResolveExpression(((ObjectCreateExpression)invoke.Node).Type);
-						if (createType.Item1.Type.Kind == TypeKind.Unknown)
+						if (createType.Result.Type.Kind == TypeKind.Unknown)
 							return null;
-						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), createType.Item1.Type);
+						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), createType.Result.Type);
 					}
 					
 					if (invoke.Node is ICSharpCode.NRefactory.CSharp.Attribute) {
 						var attribute = ResolveExpression(invoke);
-						if (attribute == null || attribute.Item1 == null) {
+						if (attribute == null || attribute.Result == null) {
 							return null;
 						}
-						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), attribute.Item1.Type);
+						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), attribute.Result.Type);
 					}
 					var invocationExpression = ResolveExpression(invoke);
-					if (invocationExpression == null || invocationExpression.Item1 == null || invocationExpression.Item1.IsError) {
+					if (invocationExpression == null || invocationExpression.Result == null || invocationExpression.Result.IsError) {
 						return null;
 					}
-					resolveResult = invocationExpression.Item1;
+					resolveResult = invocationExpression.Result;
 					if (resolveResult is MethodGroupResolveResult) {
 						return factory.CreateMethodDataProvider(document.GetOffset(invoke.Node.StartLocation), CollectMethods(invoke.Node, resolveResult as MethodGroupResolveResult));
 					}
@@ -267,11 +267,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (GetCurrentParameterIndex(document.GetOffset(invoke.Node.StartLocation), offset) < 0)
 								return null;
 							var typeExpression = ResolveExpression(invoke);
-							if (typeExpression == null || typeExpression.Item1 == null || typeExpression.Item1.IsError) {
+							if (typeExpression == null || typeExpression.Result == null || typeExpression.Result.IsError) {
 								return null;
 							}
 							
-							return factory.CreateTypeParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), CollectAllTypes(typeExpression.Item1.Type));
+							return factory.CreateTypeParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), CollectAllTypes(typeExpression.Result.Type));
 						}
 						return null;
 					}
@@ -281,24 +281,24 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					if (invoke.Node is ObjectCreateExpression) {
 						var createType = ResolveExpression(((ObjectCreateExpression)invoke.Node).Type);
-						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), createType.Item1.Type);
+						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), createType.Result.Type);
 					}
 					
 					if (invoke.Node is ICSharpCode.NRefactory.CSharp.Attribute) {
 						var attribute = ResolveExpression(invoke);
-						if (attribute == null || attribute.Item1 == null) {
+						if (attribute == null || attribute.Result == null) {
 							return null;
 						}
-						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), attribute.Item1.Type);
+						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), attribute.Result.Type);
 					}
 					
 					invocationExpression = ResolveExpression(invoke);
 					
-					if (invocationExpression == null || invocationExpression.Item1 == null || invocationExpression.Item1.IsError) {
+					if (invocationExpression == null || invocationExpression.Result == null || invocationExpression.Result.IsError) {
 						return null;
 					}
 					
-					resolveResult = invocationExpression.Item1;
+					resolveResult = invocationExpression.Result;
 					if (resolveResult is MethodGroupResolveResult) {
 						return factory.CreateMethodDataProvider(document.GetOffset(invoke.Node.StartLocation), CollectMethods(invoke.Node, resolveResult as MethodGroupResolveResult));
 					}
@@ -319,8 +319,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					invoke = GetMethodTypeArgumentInvocationBeforeCursor();
 					if (invoke != null) {
 						var tExpr2 = ResolveExpression(invoke);
-						if (tExpr2 != null && tExpr2.Item1 is MethodGroupResolveResult && !tExpr2.Item1.IsError) {
-							return factory.CreateTypeParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), CollectMethods(invoke.Node, tExpr2.Item1 as MethodGroupResolveResult));
+						if (tExpr2 != null && tExpr2.Result is MethodGroupResolveResult && !tExpr2.Result.IsError) {
+							return factory.CreateTypeParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), CollectMethods(invoke.Node, tExpr2.Result as MethodGroupResolveResult));
 						}
 					}
 					invoke = GetTypeBeforeCursor();
@@ -328,11 +328,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					}
 					var tExpr = ResolveExpression(invoke);
-					if (tExpr == null || tExpr.Item1 == null || tExpr.Item1.IsError) {
+					if (tExpr == null || tExpr.Result == null || tExpr.Result.IsError) {
 						return null;
 					}
 
-					return factory.CreateTypeParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), CollectAllTypes(tExpr.Item1.Type));
+					return factory.CreateTypeParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), CollectAllTypes(tExpr.Result.Type));
 				case '[':
 					invoke = GetIndexerBeforeCursor();
 					if (invoke == null) {
@@ -342,10 +342,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					}
 					var indexerExpression = ResolveExpression(invoke);
-					if (indexerExpression == null || indexerExpression.Item1 == null || indexerExpression.Item1.IsError) {
+					if (indexerExpression == null || indexerExpression.Result == null || indexerExpression.Result.IsError) {
 						return null;
 					}
-					return factory.CreateIndexerParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), indexerExpression.Item1.Type, GetAccessibleIndexers (indexerExpression.Item1.Type), invoke.Node);
+					return factory.CreateIndexerParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), indexerExpression.Result.Type, GetAccessibleIndexers (indexerExpression.Result.Type), invoke.Node);
 			}
 			return null;
 		}

@@ -19,7 +19,9 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace SearchAndReplace
 {
-	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
+	// TODO: remove XmlForms
+	#pragma warning disable 618
+	class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
 		SearchAndReplaceMode searchAndReplaceMode;
 		

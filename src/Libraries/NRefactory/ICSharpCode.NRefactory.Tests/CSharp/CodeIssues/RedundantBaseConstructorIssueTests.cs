@@ -62,7 +62,26 @@ class TestClass : BaseClass
 	{ }
 }
 ";
-			Test<RedundantBaseConstructorIssue> (input, 1, output);
+			Test<RedundantBaseConstructorCallIssue> (input, 1, output);
 		}
+
+        [Test]
+        public void TestDisable()
+        {
+            var input = @"
+class BaseClass
+{
+    public BaseClass()
+    {
+    }
+}
+class TestClass : BaseClass
+{
+// ReSharper disable once RedundantBaseConstructorCall
+    public TestClass(int data) : base() { }
+}
+";
+            TestWrongContext<RedundantBaseConstructorCallIssue>(input);
+        }
 	}
 }

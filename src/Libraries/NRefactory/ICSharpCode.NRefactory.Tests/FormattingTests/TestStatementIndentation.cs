@@ -1,21 +1,21 @@
-// 
+//
 // TestStatementIndentation.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.IO;
 using NUnit.Framework;
@@ -35,19 +34,19 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 	public class TestStatements : TestBase
 	{
 		[Test]
-		public void TestInvocationIndentation ()
+		public void TestInvocationIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy,
-@"class Test {
+			Test(policy,
+			     @"class Test {
 	Test TestMethod ()
 	{
 this.TestMethod ();
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		this.TestMethod ();
@@ -56,13 +55,13 @@ this.TestMethod ();
 		}
 
 		[Test]
-		public void TestIndentBlocks ()
+		public void TestIndentBlocks()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.IndentBlocks = true;
 			
-			var adapter = Test (policy,
-@"class Test {
+			var adapter = Test(policy,
+			                   @"class Test {
 	Test TestMethod ()
 	{
 {
@@ -70,7 +69,7 @@ this.TestMethod ();
 }
 	}
 }",
-@"class Test
+			                   @"class Test
 {
 	Test TestMethod ()
 	{
@@ -80,7 +79,7 @@ this.TestMethod ();
 	}
 }");
 			policy.IndentBlocks = false;
-			Continue (policy, adapter, @"class Test
+			Continue(policy, adapter, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -90,15 +89,15 @@ this.TestMethod ();
 	}
 }");
 		}
-		
+
 		[Test]
-		public void TestIndentBlocksCase2 ()
+		public void TestIndentBlocksCase2()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.IndentBlocks = true;
 			
-			var adapter = Test (policy,
-@"class Test {
+			var adapter = Test(policy,
+			                   @"class Test {
 	Test TestMethod ()
 	{
 		if (true) {
@@ -106,7 +105,7 @@ this.TestMethod ();
 		}
 	}
 }",
-@"class Test
+			                   @"class Test
 {
 	Test TestMethod ()
 	{
@@ -116,7 +115,7 @@ this.TestMethod ();
 	}
 }");
 			policy.IndentBlocks = false;
-			Continue (policy, adapter, @"class Test
+			Continue(policy, adapter, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -128,19 +127,19 @@ this.TestMethod ();
 		}
 
 		[Test]
-		public void TestBreakIndentation ()
+		public void TestBreakIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, 
-@"class Test {
+			Test(policy, 
+			     @"class Test {
 	Test TestMethod ()
 	{
                               break;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		break;
@@ -149,19 +148,19 @@ this.TestMethod ();
 		}
 
 		[Test]
-		public void TestBreakSemicolon ()
+		public void TestBreakSemicolon()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 
-			Test (policy, 
-@"class Test
+			Test(policy, 
+			     @"class Test
 {
 	Test TestMethod ()
 	{
 		break     ;
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -171,13 +170,13 @@ this.TestMethod ();
 		}
 
 		[Test]
-		public void TestCheckedIndentation ()
+		public void TestCheckedIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 checked {
@@ -193,12 +192,12 @@ checked {
 		}
 
 		[Test]
-		public void TestBaseIndentation ()
+		public void TestBaseIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
                               base.FooBar();
@@ -212,19 +211,19 @@ checked {
 		}
 
 		[Test]
-		public void TestUncheckedIndentation ()
+		public void TestUncheckedIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 unchecked {
 }
 	}
 }", 
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		unchecked {
@@ -234,18 +233,18 @@ unchecked {
 		}
 
 		[Test]
-		public void TestContinueIndentation ()
+		public void TestContinueIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 continue;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		continue;
@@ -254,17 +253,17 @@ continue;
 		}
 
 		[Test]
-		public void TestContinueSemicolon ()
+		public void TestContinueSemicolon()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			Test (policy, @"class Test
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		continue ;
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -274,12 +273,12 @@ continue;
 		}
 
 		[Test]
-		public void TestEmptyStatementIndentation ()
+		public void TestEmptyStatementIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 ;
@@ -293,19 +292,19 @@ continue;
 		}
 
 		[Test]
-		public void TestFixedStatementIndentation ()
+		public void TestFixedStatementIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 fixed (object* obj = &obj)
 ;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		fixed (object* obj = &obj)
@@ -315,12 +314,12 @@ fixed (object* obj = &obj)
 		}
 
 		[Test]
-		public void TestForeachIndentation ()
+		public void TestForeachIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -338,13 +337,13 @@ foreach (var obj in col) {
 		}
 
 		[Test]
-		public void TestForIndentation ()
+		public void TestForIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 for (;;) {
@@ -360,18 +359,43 @@ for (;;) {
 		}
 
 		[Test]
-		public void TestGotoIndentation ()
+		public void TestForInitializerIteratorConditionFormatting ()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			var policy = FormattingOptionsFactory.CreateMono ();
+			Test (policy, @"
+class Test
+{
+	void Init ()
+	{
+		for (int i     =        12; i <           10; i               ++) {
+		}
+	}
+}", @"
+class Test
+{
+	void Init ()
+	{
+		for (int i = 12; i < 10; i++) {
+		}
+	}
+}");
+		}
+
+
+
+		[Test]
+		public void TestGotoIndentation()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 goto label;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		goto label;
@@ -380,10 +404,10 @@ goto label;
 		}
 
 		[Test]
-		public void TestGotoSemicolon ()
+		public void TestGotoSemicolon()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			Test (policy, @"class Test
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -391,7 +415,7 @@ goto label;
 ;
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -401,18 +425,18 @@ goto label;
 		}
 
 		[Test]
-		public void TestReturnIndentation ()
+		public void TestReturnIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 		return;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		return;
@@ -421,17 +445,17 @@ goto label;
 		}
 
 		[Test]
-		public void TestReturnSemicolon ()
+		public void TestReturnSemicolon()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			Test (policy, @"class Test
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		return ;
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -439,20 +463,21 @@ goto label;
 	}
 }");
 		}
+
 		[Test]
-		public void TestLockIndentation ()
+		public void TestLockIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 lock (this) {
 }
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		lock (this) {
@@ -462,19 +487,19 @@ lock (this) {
 		}
 
 		[Test]
-		public void TestThrowIndentation ()
+		public void TestThrowIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 throw new NotSupportedException ();
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		throw new NotSupportedException ();
@@ -483,17 +508,17 @@ throw new NotSupportedException ();
 		}
 
 		[Test]
-		public void TestThrowSemicolon ()
+		public void TestThrowSemicolon()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			Test (policy, @"class Test
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		throw new NotSupportedException () 	 ;
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -503,20 +528,20 @@ throw new NotSupportedException ();
 		}
 
 		[Test]
-		public void TestUnsafeIndentation ()
+		public void TestUnsafeIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 unsafe {
 }
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		unsafe {
@@ -526,74 +551,99 @@ unsafe {
 		}
 
 		[Test]
-		public void TestUsingIndentation ()
+		public void TestUsingIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
-using (var o = new MyObj()) {
+using (var o = new MyObj ()) {
 }
 	}
 }", @"class Test {
 	Test TestMethod ()
 	{
-		using (var o = new MyObj()) {
+		using (var o = new MyObj ()) {
 		}
 	}
 }");
 		}
 
 		[Test]
-		public void TestUsingAlignment ()
+		public void TestUsingAlignment()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.AlignEmbeddedUsingStatements = true;
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			var adapter = Test (policy, @"class Test {
+			var adapter = Test(policy, @"class Test {
 	Test TestMethod ()
 	{
-using (var p = new MyObj())
-using (var o = new MyObj()) {
+using (var p = new MyObj ())
+using (var o = new MyObj ()) {
 }
 	}
 }",
-@"class Test {
+			                   @"class Test {
 	Test TestMethod ()
 	{
-		using (var p = new MyObj())
-		using (var o = new MyObj()) {
+		using (var p = new MyObj ())
+		using (var o = new MyObj ()) {
 		}
 	}
 }");
 			policy.AlignEmbeddedUsingStatements = false;
-			Continue (policy, adapter, @"class Test {
+			Continue(policy, adapter, @"class Test {
 	Test TestMethod ()
 	{
-		using (var p = new MyObj())
-			using (var o = new MyObj()) {
+		using (var p = new MyObj ())
+			using (var o = new MyObj ()) {
 			}
 	}
 }");
 		}
 
 		[Test]
-		public void TestVariableDeclarationIndentation ()
+		public void TestUsingExpressionFormatting ()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			var policy = FormattingOptionsFactory.CreateMono ();
+			Test (policy, @"
+class Test
+{
+	void Init ()
+	{
+		using (var o = new object(              )) {
+		}
+	}
+}", @"
+class Test
+{
+	void Init ()
+	{
+		using (var o = new object ()) {
+		}
+	}
+}");
+		}
+
+
+
+		[Test]
+		public void TestVariableDeclarationIndentation()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 Test a;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		Test a;
@@ -602,18 +652,18 @@ Test a;
 		}
 
 		[Test]
-		public void TestConstantVariableDeclarationIndentation ()
+		public void TestConstantVariableDeclarationIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 const int a = 5;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		const int a = 5;
@@ -622,18 +672,18 @@ const int a = 5;
 		}
 
 		[Test]
-		public void TestYieldReturnIndentation ()
+		public void TestYieldReturnIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 yield return null;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		yield return null;
@@ -642,18 +692,18 @@ yield return null;
 		}
 
 		[Test]
-		public void TestYieldReturnSemicolon ()
+		public void TestYieldReturnSemicolon()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 		yield return null     ;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		yield return null;
@@ -662,18 +712,18 @@ yield return null;
 		}
 
 		[Test]
-		public void TestYieldBreakIndentation ()
+		public void TestYieldBreakIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 yield break;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		yield break;
@@ -682,39 +732,40 @@ yield break;
 		}
 
 		[Test]
-		public void TestYieldBreakSemicolon ()
+		public void TestYieldBreakSemicolon()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 		yield break      ;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		yield break;
 	}
 }");
 		}
+
 		[Test]
-		public void TestWhileIndentation ()
+		public void TestWhileIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 while (true)
 ;
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		while (true)
@@ -724,19 +775,19 @@ while (true)
 		}
 
 		[Test]
-		public void TestDoWhileIndentation ()
+		public void TestDoWhileIndentation()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 do {
 } while (true);
 	}
 }",
-@"class Test {
+			     @"class Test {
 	Test TestMethod ()
 	{
 		do {
@@ -746,19 +797,42 @@ do {
 		}
 
 		[Test]
-		public void TestForeachBracketPlacement ()
+		public void TestDoWhileWithoutBrackets()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy, @"class Test
+{
+	Test TestMethod ()
+	{
+do FooBar(); while (true);
+	}
+}",
+			     @"class Test
+{
+	Test TestMethod ()
+	{
+		do
+			FooBar ();
+		while (true);
+	}
+}");
+		}
+
+		[Test]
+		public void TestForeachBracketPlacement()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		foreach (var obj in col) {}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -769,19 +843,19 @@ do {
 		}
 
 		[Test]
-		public void TestForeachBracketPlacement2 ()
+		public void TestForeachBracketPlacement2()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.NextLineShifted2;
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		foreach (var obj in col) {;}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -794,20 +868,20 @@ do {
 		}
 
 		[Test]
-		public void TestIfBracketPlacement ()
+		public void TestIfBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		if (true) {}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -818,13 +892,13 @@ do {
 		}
 
 		[Test]
-		public void TestAllowIfBlockInline ()
+		public void TestAllowIfBlockInline()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			policy.AllowIfBlockInline = true;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -839,7 +913,7 @@ do {
 }");
 			
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -852,24 +926,7 @@ do {
 		if (true) { Foo (); }
 	}
 }");
-			
-			
-			Test (policy, @"class Test
-{
-	Test TestMethod ()
-	{
-		if (true) Foo ();
-	}
-}", @"class Test
-{
-	Test TestMethod ()
-	{
-		if (true) Foo ();
-	}
-}");
-			
-			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -877,7 +934,7 @@ do {
 			Foo ();
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -888,20 +945,20 @@ do {
 		}
 
 		[Test]
-		public void TestIfElseBracketPlacement ()
+		public void TestIfElseBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		if (true) {} else {}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -913,13 +970,13 @@ do {
 		}
 
 		[Test]
-		public void TestIfAlignment ()
+		public void TestIfAlignment()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.AlignEmbeddedIfStatements = true;
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
-			var adapter = Test (policy, @"class Test {
+			var adapter = Test(policy, @"class Test {
 	Test TestMethod ()
 	{
 if (a)
@@ -927,7 +984,7 @@ if (b) {
 }
 	}
 }",
-@"class Test {
+			                   @"class Test {
 	Test TestMethod ()
 	{
 		if (a)
@@ -936,7 +993,7 @@ if (b) {
 	}
 }");
 			policy.AlignEmbeddedIfStatements = false;
-			Continue (policy, adapter, @"class Test {
+			Continue(policy, adapter, @"class Test {
 	Test TestMethod ()
 	{
 		if (a)
@@ -946,12 +1003,11 @@ if (b) {
 }");
 		}
 
-		
 		[Test]
 		public void TestElseWithPreprocessorDirective()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	void TestMethod ()
 	{
@@ -963,7 +1019,7 @@ if (b) {
 				#endif
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	void TestMethod ()
 	{
@@ -983,7 +1039,7 @@ if (b) {
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ElseNewLinePlacement = NewLinePlacement.NewLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -994,7 +1050,7 @@ if (b) {
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1014,7 +1070,7 @@ if (b) {
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ElseIfNewLinePlacement = NewLinePlacement.NewLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1025,7 +1081,7 @@ if (b) {
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1045,7 +1101,7 @@ if (b) {
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ElseNewLinePlacement = NewLinePlacement.SameLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1057,7 +1113,7 @@ if (b) {
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1078,14 +1134,14 @@ if (b) {
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			policy.ElseIfNewLinePlacement = NewLinePlacement.SameLine; // for simple statements it must be new line.
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	void TestMethod ()
 	{
 		if (true) Call (); else Call ();
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	void TestMethod ()
 	{
@@ -1098,13 +1154,126 @@ if (b) {
 		}
 
 		[Test]
-		public void TestFixedBracketPlacement ()
+		public void TestIfElseIfCorrection()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateKRStyle();
+
+			Test(policy, @"class Test
+{
+	void TestMethod()
+	{
+		int i = 0;
+		if (i == 0) {
+		} else
+			if (i == 1) {
+		} else
+if (i == 2) {
+		} else                     if (i == 2)	
+		Foo();
+		else {
+		}
+	}
+}", @"class Test
+{
+	void TestMethod()
+	{
+		int i = 0;
+		if (i == 0) {
+		} else if (i == 1) {
+		} else if (i == 2) {
+		} else if (i == 2)
+			Foo();
+		else {
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void TestIfElseNewLine()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateKRStyle();
+			policy.ElseIfNewLinePlacement = NewLinePlacement.NewLine;
+			Test(policy, @"class Test
+{
+	void TestMethod()
+	{
+		int i = 0;
+		if (i == 0) {
+		} else
+			if (i == 1) {
+		} else
+if (i == 2) {
+		} else                     if (i == 2)	
+		Foo();
+		else {
+		}
+	}
+}", @"class Test
+{
+	void TestMethod()
+	{
+		int i = 0;
+		if (i == 0) {
+		} else
+		if (i == 1) {
+		} else
+		if (i == 2) {
+		} else
+		if (i == 2)
+			Foo();
+		else {
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void TestIfElseDoNotCare()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateKRStyle();
+			policy.ElseIfNewLinePlacement = NewLinePlacement.DoNotCare;
+			Test(policy, @"class Test
+{
+	void TestMethod()
+	{
+		int i = 0;
+		if (i == 0) {
+		} else
+			if (i == 1) {
+		} else
+if (i == 2) {
+		} else                     if (i == 2)	
+		Foo();
+		else {
+		}
+	}
+}", @"class Test
+{
+	void TestMethod()
+	{
+		int i = 0;
+		if (i == 0) {
+		} else
+		if (i == 1) {
+		} else
+		if (i == 2) {
+		} else if (i == 2)
+			Foo();
+		else {
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void TestFixedBracketPlacement()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.NextLineShifted;
 
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1113,7 +1282,7 @@ if (b) {
 ;}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1127,19 +1296,19 @@ if (b) {
 		}
 
 		[Test]
-		public void TestForBracketPlacement ()
+		public void TestForBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLineWithoutSpace;
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		for (;;) {;}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1151,20 +1320,20 @@ if (b) {
 		}
 
 		[Test]
-		public void TestCheckedBracketPlacement ()
+		public void TestCheckedBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLineWithoutSpace;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		checked {;}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1176,20 +1345,20 @@ if (b) {
 		}
 
 		[Test]
-		public void TestUncheckedBracketPlacement ()
+		public void TestUncheckedBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLineWithoutSpace;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		unchecked {;}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1201,13 +1370,13 @@ if (b) {
 		}
 
 		[Test]
-		public void TestLockBracketPlacement ()
+		public void TestLockBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1217,7 +1386,7 @@ if (b) {
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1229,13 +1398,13 @@ if (b) {
 		}
 
 		[Test]
-		public void TestUnsafeBracketPlacement ()
+		public void TestUnsafeBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1245,7 +1414,7 @@ if (b) {
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1257,27 +1426,27 @@ if (b) {
 		}
 
 		[Test]
-		public void TestUsingBracketPlacement ()
+		public void TestUsingBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
-		using (var e = new E())
+		using (var e = new E ())
 		{
 			;
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
-		using (var e = new E()) {
+		using (var e = new E ()) {
 			;
 		}
 	}
@@ -1285,13 +1454,13 @@ if (b) {
 		}
 
 		[Test]
-		public void TestWhileBracketPlacement ()
+		public void TestWhileBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1301,7 +1470,7 @@ if (b) {
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1313,13 +1482,13 @@ if (b) {
 		}
 
 		[Test]
-		public void TestDoWhileBracketPlacement ()
+		public void TestDoWhileBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1329,7 +1498,7 @@ if (b) {
 		} while (true);
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1341,22 +1510,22 @@ if (b) {
 		}
 
 		[Test]
-		public void TestSwitchFormatting1 ()
+		public void TestSwitchFormatting1()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.IndentSwitchBody = true;
 			policy.IndentCaseBody = true;
 			policy.IndentBreakStatements = true;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		switch (a) { case 1: case 2: DoSomething(); break; default: Foo (); break;}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1374,22 +1543,22 @@ if (b) {
 		}
 
 		[Test]
-		public void TestSwitchFormatting2 ()
+		public void TestSwitchFormatting2()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.IndentSwitchBody = false;
 			policy.IndentCaseBody = false;
 			policy.IndentBreakStatements = false;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		switch (a) { case 1: case 2: DoSomething(); break; default: Foo (); break;}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1405,17 +1574,16 @@ if (b) {
 	}
 }");
 		}
-		
-		
+
 		[Test]
-		public void TestSwitchIndentBreak ()
+		public void TestSwitchIndentBreak()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.IndentSwitchBody = true;
 			policy.IndentBreakStatements = true;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1430,7 +1598,7 @@ if (b) {
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1448,7 +1616,7 @@ if (b) {
 			policy.IndentSwitchBody = true;
 			policy.IndentBreakStatements = false;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1463,7 +1631,7 @@ if (b) {
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1480,22 +1648,21 @@ if (b) {
 }");
 		}
 
-
 		[Test]
-		public void TestTryCatchBracketPlacement ()
+		public void TestTryCatchBracketPlacement()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
 		try { ; } catch (Exception e) { } finally { }
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1515,7 +1682,7 @@ if (b) {
 			
 			policy.CatchNewLinePlacement = NewLinePlacement.NewLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1526,7 +1693,7 @@ if (b) {
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1546,7 +1713,7 @@ if (b) {
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.FinallyNewLinePlacement = NewLinePlacement.NewLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1557,7 +1724,7 @@ if (b) {
 		}
 	}
 }",
-	@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1578,7 +1745,7 @@ if (b) {
 			
 			policy.WhileNewLinePlacement = NewLinePlacement.NewLine;
 			
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1587,7 +1754,7 @@ if (b) {
 		} while (true);
 	}
 }",
-	@"class Test
+			     @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1600,11 +1767,11 @@ if (b) {
 		}
 
 		[Test]
-		public void TestBlockStatementWithComments ()
+		public void TestBlockStatementWithComments()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1628,11 +1795,11 @@ if (b) {
 		}
 
 		[Test]
-		public void TestBlockStatementWithPreProcessorDirective ()
+		public void TestBlockStatementWithPreProcessorDirective()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 
-			Test (policy, @"class Test
+			Test(policy, @"class Test
 {
 	Test TestMethod ()
 	{
@@ -1677,6 +1844,173 @@ using System;
 	}
 }");
 		}
-		
+
+		[Test]
+		public void TestEmbeddedStatementPlacement()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.EmbeddedStatementPlacement = NewLinePlacement.SameLine;
+
+			Test(policy, @"class Test
+{
+	void MyTest ()
+	{
+		if (true)                 ;
+	}
+}", @"class Test
+{
+	void MyTest ()
+	{
+		if (true) ;
+	}
+}");
+
+			Test(policy, @"class Test
+{
+	void MyTest ()
+	{
+		if (true)
+			;
+	}
+}", @"class Test
+{
+	void MyTest ()
+	{
+		if (true) ;
+	}
+}");
+			policy.EmbeddedStatementPlacement = NewLinePlacement.NewLine;
+			Test(policy, @"class Test
+{
+	void MyTest ()
+	{
+		if (true) ;
+	}
+}", @"class Test
+{
+	void MyTest ()
+	{
+		if (true)
+			;
+	}
+}");
+		}
+
+		[Test]
+		public void AlignmentTest_DoWhile()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy, @"
+class Test
+{
+	void Foo ()
+	{
+		do {
+		} while(a <
+b);
+	}
+}
+", @"
+class Test
+{
+	void Foo ()
+	{
+		do {
+		} while(a <
+		        b);
+	}
+}
+");
+		}
+
+		[Test]
+		public void AlignmentTest_IfElse()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy, @"
+class Test
+{
+	void Foo ()
+	{
+		if (a 
+> b) {
+		}
+	}
+}
+", @"
+class Test
+{
+	void Foo ()
+	{
+		if (a
+		    > b) {
+		}
+	}
+}
+");
+		}
+
+		[Test]
+		public void AlignmentTest_While()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy, @"
+class Test
+{
+	void Foo()
+	{
+		while (a 
+> b) {
+		}
+	}
+}
+", @"
+class Test
+{
+	void Foo ()
+	{
+		while (a
+		       > b) {
+		}
+	}
+}
+");
+		}
+
+		[Ignore("fixme")]
+		[Test]
+		public void AlignmentTest_StackedIfElse_ElseIf()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy, @"
+class Foo
+{
+	void Test ()
+	{ 
+		if (true)
+			FooBar ();
+		else
+		if (true) {
+		}
+	}
+}
+", @"
+class Foo
+{
+	void Test ()
+	{ 
+		if (true)
+			FooBar ();
+		else 
+			if (true) {
+			}
+	}
+}
+");
+		}
 	}
 }

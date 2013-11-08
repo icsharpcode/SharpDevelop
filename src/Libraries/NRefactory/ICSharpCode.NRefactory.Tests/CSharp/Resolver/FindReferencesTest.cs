@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			findReferences = new FindReferences();
 		}
 		
-		AstNode[] FindReferences(IEntity entity)
+		AstNode[] FindReferences(ISymbol entity)
 		{
 			var result = new List<AstNode>();
 			var searchScopes = findReferences.GetSearchScopes(entity);
@@ -63,6 +63,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			                                    (node, rr) => result.Add(node), CancellationToken.None);
 			return result.OrderBy(n => n.StartLocation).ToArray();
 		}
+
+		#region Parameters
+		[Test]
+		public void FindParameterReferences()
+		{
+			Init(@"using System;
+class Test {
+	void M(string par) {
+		Console.WriteLine (par);
+	}
+
+	void Other()
+	{
+		M(par:null);
+	}
+}");
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single();
+			var method = test.Methods.Single(m => m.Name == "M");
+			Assert.AreEqual(new int[] { 3, 4, 9 }, FindReferences(method.Parameters[0]).Select(n => n.StartLocation.Line).ToArray());
+		}
+		#endregion
+
 
 		#region Method Group
 		[Test]
@@ -164,6 +186,43 @@ class Test {
 			Assert.AreEqual(2, actual.Count);
 			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 4 && r is ObjectCreateExpression));
 			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 6 && r is OperatorDeclaration));
+		}
+		
+		[Test]
+		public void FindReferencesForOpImplicitInLocalVariableInitialization_ExplicitCast()
+		{
+			Init(@"using System;
+class Test {
+ static void T() {
+  int x = (int)new Test();
+ }
+ public static implicit operator int(Test x) { return 0; }
+}");
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single(t => t.Name == "Test");
+			var opImplicit = test.Methods.Single(m => m.Name == "op_Implicit");
+			var actual = FindReferences(opImplicit).ToList();
+			Assert.AreEqual(2, actual.Count);
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 4 && r is ObjectCreateExpression));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 6 && r is OperatorDeclaration));
+		}
+		
+		[Test]
+		public void FindReferencesForOpImplicitInAssignment_ExplicitCast()
+		{
+			Init(@"using System;
+class Test {
+ static void T() {
+  int x;
+  x = (int)new Test();
+ }
+ public static implicit operator int(Test x) { return 0; }
+}");
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single(t => t.Name == "Test");
+			var opImplicit = test.Methods.Single(m => m.Name == "op_Implicit");
+			var actual = FindReferences(opImplicit).ToList();
+			Assert.AreEqual(2, actual.Count);
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 5 && r is ObjectCreateExpression));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 7 && r is OperatorDeclaration));
 		}
 		#endregion
 		
@@ -312,7 +371,7 @@ public class C {
 		#endif // NET_4_5
 
 		#endregion
-	
+		
 		#region Namespaces
 		[Test]
 		public void FindNamespaceTest()
@@ -328,9 +387,9 @@ namespace Other.Bar {
 	class OtherTest {}
 }
 
-namespace Foo 
+namespace Foo
 {
-	class Test 
+	class Test
 	{
 		static void T()
 		{
@@ -369,9 +428,9 @@ namespace Foo.Bar {
 	class MyTest { }
 }
 
-namespace Foo 
+namespace Foo
 {
-	class Test 
+	class Test
 	{
 		Foo.Bar.MyTest t;
 	}
@@ -386,7 +445,7 @@ namespace Foo
 			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 12 && r is SimpleType));
 		}
 		#endregion
-	
+		
 		#region Rename
 
 		internal static ISymbol GetSymbol (ICompilation compilation, string reflectionName)
@@ -425,8 +484,8 @@ namespace Foo
 					result.Add (obj.NodeToReplace);
 				},
 				delegate(Error obj) {
-			
-			});
+					
+				});
 			return result;
 		}
 

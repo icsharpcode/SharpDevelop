@@ -87,15 +87,9 @@
     <Compile Include="Dom\ProjectEntityModelContextTests.cs" />
     <Compile Include="Dom\TopLevelTypeModelsTests.cs" />
     <Compile Include="Dom\TreeNodeFactoryServiceTests.cs" />
-    <Compile Include="ExceptionClassOverridesTestFixture.cs" />
-    <Compile Include="GenerateOverrideMethodTests.cs" />
-    <Compile Include="GetElementByReflectionNameTests.cs" />
     <Compile Include="Highlighting\SyntaxDoozerAddsHighlightingToHighlightingManagerTestFixture.cs" />
     <Compile Include="MimeDetectionTests.cs" />
-    <Compile Include="CollectionClassOverridesTestFixture.cs" />
     <Compile Include="OutputTextLineParserTests.cs" />
-    <Compile Include="OverridableMethodsTestFixture.cs" />
-    <Compile Include="OverridablePropertiesTestFixture.cs" />
     <Compile Include="ProcessRunner\CancelLongRunningAppTestFixture.cs" />
     <Compile Include="ProcessRunner\ConsoleAppTestFixtureBase.cs" />
     <Compile Include="ProcessRunner\ExitCodeTestFixture.cs" />
@@ -110,14 +104,7 @@
     <Compile Include="Project\SolutionTests.cs" />
     <Compile Include="Project\SolutionWriterTests.cs" />
     <Compile Include="PropertyPadSortingTests.cs" />
-    <Compile Include="ReflectionLayerTests.cs" />
-    <Compile Include="GenericResolverTests.cs" />
-    <Compile Include="InnerClassesResolverTests.cs" />
-    <Compile Include="RefactoringTests.cs" />
     <Compile Include="SDTestFixtureBase.cs" />
-    <Compile Include="SearchClassTests.cs" />
-    <Compile Include="OverloadFinding.cs" />
-    <Compile Include="SearchGenericClassTests.cs" />
     <Compile Include="ServiceReferences\DirectoryNodeFactoryTests.cs" />
     <Compile Include="ServiceReferences\ItemTypeTests.cs" />
     <Compile Include="ServiceReferences\MSBuildBasedProjectTests.cs" />
@@ -131,7 +118,6 @@
     <Compile Include="ServiceReferences\ServiceReferencesFolderNodeTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesProjectItemTests.cs" />
     <Compile Include="SharpDevelopAddInTests.cs" />
-    <Compile Include="StringTagProvider\MockProjectForTagProvider.cs" />
     <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />
     <Compile Include="StringTagProvider\ProjectTagsTestFixture.cs" />
     <Compile Include="Utils\AssemblyLoader.cs" />
@@ -172,6 +158,10 @@
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
+      <Project>{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}</Project>
+      <Name>ICSharpCode.NRefactory.Cecil</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory.CSharp</Name>
@@ -203,6 +193,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ProcessRunner" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="mime_bug1.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

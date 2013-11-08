@@ -204,18 +204,21 @@ class TestClass
 		[Test]
 		public void AssignCustomClassToString()
 		{
-			var input = @"
+			Test<CS0029InvalidConversionIssue>(@"
 class TestClass
 {
 	void TestMethod ()
 	{
 		string x = this;
 	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues (new CS0029InvalidConversionIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			Assert.IsFalse(issues[0].Actions.Any());
+}", @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		var x = this;
+	}
+}");
 		}
 
 		/// <summary>
@@ -237,5 +240,296 @@ class TestClass
 			var issues = GetIssues (new CS0029InvalidConversionIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
+		
+		[Test]
+		public void TestReturnInMethod()
+		{
+			var input = @"
+class TestClass
+{
+	enum Enum{ };
+	int TestMethod (Enum i)
+	{
+		return i;
+	}
+}";
+			var output = @"
+class TestClass
+{
+	enum Enum{ };
+	int TestMethod (Enum i)
+	{
+		return (int)i;
+	}
+}";
+			Test<CS0029InvalidConversionIssue>(input, output);
+		}
+
+		[Test]
+		public void TestReturnInMethodChangeReturnType()
+		{
+			var input = @"
+class TestClass
+{
+	int TestMethod ()
+	{
+		return ""foo"";
+	}
+}";
+			var output = @"
+class TestClass
+{
+	string TestMethod ()
+	{
+		return ""foo"";
+	}
+}";
+			Test<CS0029InvalidConversionIssue>(input, output);
+		}
+
+		
+		[Test]
+		public void TestReturnInAnonymousMethod()
+		{
+			var input = @"using System;
+
+class TestClass
+{
+	enum Enum{ };
+	void TestMethod (Enum i)
+	{
+		Func<int> foo = delegate {
+			return i;
+		};
+	}
+}";
+			var output = @"using System;
+
+class TestClass
+{
+	enum Enum{ };
+	void TestMethod (Enum i)
+	{
+		Func<int> foo = delegate {
+			return (int)i;
+		};
+	}
+}";
+			Test<CS0029InvalidConversionIssue>(input, output);
+		}
+
+
+		[Test]
+		public void TestReturnInProperty()
+		{
+			var input = @"
+class TestClass
+{
+	enum Enum{ A };
+	int Test {
+		get {
+			return Enum.A;
+		}
+	}
+}";
+			var output = @"
+class TestClass
+{
+	enum Enum{ A };
+	int Test {
+		get {
+			return (int)Enum.A;
+		}
+	}
+}";
+			Test<CS0029InvalidConversionIssue>(input, output);
+		}
+
+		[Test]
+		public void TestCall()
+		{
+			var input = @"
+class TestClass
+{
+	enum Enum{ };
+	void Foo(string s, int i) {}
+	void TestMethod (Enum i)
+	{
+		Foo (""Bar"", i);
+	}
+}";
+			var output = @"
+class TestClass
+{
+	enum Enum{ };
+	void Foo(string s, int i) {}
+	void TestMethod (Enum i)
+	{
+		Foo (""Bar"", (int)i);
+	}
+}";
+			Test<CS0029InvalidConversionIssue>(input, output);
+		}
+
+
+		[Test]
+		public void TestCallWithOverloads()
+		{
+			var input = @"
+class TestClass
+{
+	enum Enum{ };
+	void Foo(string s, object o) {}
+	void Foo(string s, int i) {}
+	void TestMethod (Enum i)
+	{
+		Foo (""Bar"", i);
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0029InvalidConversionIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+		[Test]
+		public void TestCallWithOverloads2()
+		{
+			var input = @"
+class TestClass
+{
+	enum Enum{ };
+	void Foo(string s, string o) {}
+	void Foo(string s, int i) {}
+	void TestMethod (Enum i)
+	{
+		Foo (""Bar"", i);
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0029InvalidConversionIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+		}
+
+		[Test]
+		public void TestArrayInitializer()
+		{
+			var input = @"
+class TestClass
+{
+	enum Enum{ A }
+	public static void Main (string[] args)
+	{
+		System.Console.WriteLine (new int[] { Enum.A });
+	}
+}";
+			var output = @"
+class TestClass
+{
+	enum Enum{ A }
+	public static void Main (string[] args)
+	{
+		System.Console.WriteLine (new int[] { (int)Enum.A });
+	}
+}";
+			Test<CS0029InvalidConversionIssue>(input, output);
+		}
+		
+		[Test]
+		public void ExplicitConversionFromUnknownType()
+		{
+			string input = @"
+class Test {
+	void M(MissingInterface m) {
+		this.Project = (Project)m;
+	}
+	public Project Project { get; set; }
+}
+class Project : MissingInterface {}";
+			TestWrongContext<CS0029InvalidConversionIssue>(input);
+		}
+
+		[Test]
+		public void TestFixedConversion()
+		{
+			var input = @"unsafe struct TestMe
+{
+	fixed int textureID[8], fooBar[12];
+
+	public void Randomize ()
+	{
+		fixed (int* buf = textureID) {
+			buf [0] = 1;
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0029InvalidConversionIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+		[Test]
+		public void TestBinaryOperator()
+		{
+			var input = @"
+class TestClass
+{
+enum Enum{ };
+	void TestMethod (ulong i)
+	{
+		int x;
+		x = i + i;
+	}
+}";
+			var output = @"
+class TestClass
+{
+enum Enum{ };
+	void TestMethod (ulong i)
+	{
+		int x;
+		x = (int)(i + i);
+	}
+}";
+			Test<CS0029InvalidConversionIssue>(input, output);
+		}
+	
+		[Test]
+		public void TestDeclarationFix ()
+		{
+			Test<CS0029InvalidConversionIssue>(@"
+using System.Collections.Generic;
+class TestClass
+{
+	string[] str = new List<string> ();
+}", @"
+using System.Collections.Generic;
+class TestClass
+{
+	List<string> str = new List<string> ();
+}");
+		}
+
+		[Test]
+		public void TestLocalDeclarationFix ()
+		{
+			Test<CS0029InvalidConversionIssue>(@"
+using System.Collections.Generic;
+class TestClass
+{
+	void Foo ()
+	{
+		string[] str = new List<string> ();
+	}
+}", @"
+using System.Collections.Generic;
+class TestClass
+{
+	void Foo ()
+	{
+		var str = new List<string> ();
+	}
+}");
+		}
+
 	}
 }

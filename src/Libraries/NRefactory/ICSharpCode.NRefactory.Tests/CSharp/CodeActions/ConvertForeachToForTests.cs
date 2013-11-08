@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class ConvertForeachToForTests : ContextActionTestBase
 	{
-		[Test()]
+		[Test]
 		public void TestArray ()
 		{
 			string result = RunContextAction (
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"}", result);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestListOfT ()
 		{
 			string result = RunContextAction (
@@ -95,24 +95,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
-		
-		[Test()]
-		public void TestEnumerableOfT ()
-		{
-			TestWrongContext<ConvertForeachToForAction> (
-				"using System;" + Environment.NewLine +
-				"using System.Collections.Generic;" + Environment.NewLine +
-				"class TestClass" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	void Test (IEnumerable<string> args)" + Environment.NewLine +
-				"	{" + Environment.NewLine +
-				"		$foreach (var v in args) {" + Environment.NewLine +
-				"			Console.WriteLine (v);" + Environment.NewLine +
-				"		}" + Environment.NewLine +
-				"	}" + Environment.NewLine +
-				"}"
-			);
-		}
 
 		/// <summary>
 		/// Bug 9876 - Convert to for loop created invalid code if iteration variable is called i
@@ -140,6 +122,62 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		for (int j = 0; j < list.Length; j++) {
 			var i = list [j];
 			Console.WriteLine (i);
+		}
+	}
+}");
+		}
+	
+		[Test]
+		public void TestOptimizedForLoop ()
+		{
+			Test<ConvertForeachToForAction>(@"
+class Test
+{
+	void Foo (object[] o)
+	{
+		$foreach (var p in o) {
+			System.Console.WriteLine (p);
+		}
+	}
+}", @"
+class Test
+{
+	void Foo (object[] o)
+	{
+		for (int i = 0, oLength = o.Length; i < oLength; i++) {
+			var p = o [i];
+			System.Console.WriteLine (p);
+		}
+	}
+}", 1);
+		}
+
+		[Test]
+		public void TestEnumerableConversion ()
+		{
+			Test<ConvertForeachToForAction>(@"
+using System;
+using System.Collections.Generic;
+
+class Test
+{
+	public void Foo (IEnumerable<string> bar)
+	{
+		$foreach (var b in bar) {
+			Console.WriteLine (b);
+		}
+	}
+}", @"
+using System;
+using System.Collections.Generic;
+
+class Test
+{
+	public void Foo (IEnumerable<string> bar)
+	{
+		for (var i = bar.GetEnumerator (); i.MoveNext ();) {
+			var b = i.Current;
+			Console.WriteLine (b);
 		}
 	}
 }");

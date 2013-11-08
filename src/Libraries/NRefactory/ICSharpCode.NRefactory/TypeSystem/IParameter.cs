@@ -94,5 +94,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// The default value is given by the <see cref="IVariable.ConstantValue"/> property.
 		/// </summary>
 		bool IsOptional { get; }
+		
+		/// <summary>
+		/// Gets the owner of this parameter.
+		/// May return null; for example when parameters belong to lambdas or anonymous methods.
+		/// </summary>
+		IParameterizedMember Owner { get; }
 	}
 }

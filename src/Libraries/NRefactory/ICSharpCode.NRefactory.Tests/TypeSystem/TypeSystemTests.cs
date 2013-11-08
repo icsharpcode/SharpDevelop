@@ -83,7 +83,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(SpecialType.Dynamic, testClass.Properties.Single().ReturnType);
 			Assert.AreEqual(0, testClass.Properties.Single().Attributes.Count);
 		}
-		
+		#if !__MonoCS__
+
 		[Test]
 		public void DynamicTypeInGenerics()
 		{
@@ -111,7 +112,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IMethod m7 = testClass.Methods.Single(me => me.Name == "DynamicGenerics7");
 			Assert.AreEqual("System.Action`3[[System.Int32[][,]],[dynamic],[System.Object]]", m7.Parameters[0].Type.ReflectionName);
 		}
-		
+		#endif
+
 		[Test]
 		public void DynamicParameterHasNoAttributes()
 		{
@@ -654,6 +656,42 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void MethodWithOptionalNullableParameter()
+		{
+			IParameter p = GetTypeDefinition(typeof(ParameterTests)).Methods.Single(m => m.Name == "MethodWithOptionalNullableParameter").Parameters.Single();
+			Assert.IsTrue(p.IsOptional);
+			Assert.IsFalse(p.IsRef);
+			Assert.IsFalse(p.IsOut);
+			Assert.IsFalse(p.IsParams);
+			Assert.AreEqual(0, p.Attributes.Count);
+			Assert.IsNull(p.ConstantValue);
+		}
+		
+		[Test]
+		public void MethodWithOptionalLongParameter()
+		{
+			IParameter p = GetTypeDefinition(typeof(ParameterTests)).Methods.Single(m => m.Name == "MethodWithOptionalLongParameter").Parameters.Single();
+			Assert.IsTrue(p.IsOptional);
+			Assert.IsFalse(p.IsRef);
+			Assert.IsFalse(p.IsOut);
+			Assert.IsFalse(p.IsParams);
+			Assert.AreEqual(1L, p.ConstantValue);
+			Assert.AreEqual(typeof(long), p.ConstantValue.GetType());
+		}
+		
+		[Test]
+		public void MethodWithOptionalNullableLongParameter()
+		{
+			IParameter p = GetTypeDefinition(typeof(ParameterTests)).Methods.Single(m => m.Name == "MethodWithOptionalNullableLongParameter").Parameters.Single();
+			Assert.IsTrue(p.IsOptional);
+			Assert.IsFalse(p.IsRef);
+			Assert.IsFalse(p.IsOut);
+			Assert.IsFalse(p.IsParams);
+			Assert.AreEqual(1L, p.ConstantValue);
+			Assert.AreEqual(typeof(long), p.ConstantValue.GetType());
+		}
+		
+		[Test]
 		public void GenericDelegate_Variance()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(GenericDelegate<,>));
@@ -875,6 +913,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void ParamsAttribute_Getter_ReturnType()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ParamsAttribute));
+			IProperty prop = type.Properties.Single(p => p.Name == "Property");
+			Assert.AreEqual(0, prop.Getter.Attributes.Count);
+			Assert.AreEqual(1, prop.Getter.ReturnTypeAttributes.Count);
+		}
+		
+		[Test]
 		public void DoubleAttribute_ImplicitNumericConversion()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(DoubleAttribute));
@@ -948,6 +995,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void PropertyAccessorsHaveBody()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassWithStaticAndNonStaticMembers));
+			foreach (var prop in type.Properties) {
+				Assert.IsTrue(prop.Getter.HasBody, prop.Getter.Name);
+				Assert.IsTrue(prop.Setter.HasBody, prop.Setter.Name);
+			}
+		}
+		
+		[Test]
 		public void EventAccessorNames()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ClassWithStaticAndNonStaticMembers));
@@ -958,6 +1015,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var normalEvent = type.Events.Single(e => e.Name == "Event3");
 			Assert.AreEqual("add_Event3", normalEvent.AddAccessor.Name);
 			Assert.AreEqual("remove_Event3", normalEvent.RemoveAccessor.Name);
+		}
+		
+		[Test]
+		public void EventAccessorHaveBody()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassWithStaticAndNonStaticMembers));
+			foreach (var ev in type.Events) {
+				Assert.IsTrue(ev.AddAccessor.HasBody, ev.AddAccessor.Name);
+				Assert.IsTrue(ev.RemoveAccessor.HasBody, ev.RemoveAccessor.Name);
+			}
 		}
 
 		[Test]
@@ -1345,6 +1412,54 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(events.SelectMany(e => e.AddAccessor.ImplementedInterfaceMembers).Single(), ievent.AddAccessor);
 			Assert.That(events.Select(e => e.RemoveAccessor.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
 			Assert.AreEqual(events.SelectMany(e => e.RemoveAccessor.ImplementedInterfaceMembers).Single(), ievent.RemoveAccessor);
+		}
+
+
+		[Test]
+		public void MarshalTests()
+		{
+			ITypeDefinition c = compilation.FindType(typeof(IMarshalAsTests)).GetDefinition();
+			Assert.AreEqual(1, c.GetMethods(m => m.Name == "GetCollectionByQuery2").Count());
+		}
+
+
+		[Test]
+		public void AttributesUsingNestedMembers() {
+			var type = GetTypeDefinition(typeof(ClassWithAttributesUsingNestedMembers));
+			var inner = type.GetNestedTypes().Single(t => t.Name == "Inner");
+			var myAttribute = type.GetNestedTypes().Single(t => t.Name == "MyAttribute");
+			var typeTypeTestAttr = type.Attributes.Single(a => a.AttributeType.Name == "TypeTestAttribute");
+			Assert.AreEqual(42, typeTypeTestAttr.PositionalArguments[0].ConstantValue);
+			Assert.IsInstanceOf<TypeOfResolveResult>(typeTypeTestAttr.PositionalArguments[1]);
+			Assert.AreEqual(inner, ((TypeOfResolveResult)typeTypeTestAttr.PositionalArguments[1]).ReferencedType);
+			var typeMyAttr = type.Attributes.Single(a => a.AttributeType.Name == "MyAttribute");
+			Assert.AreEqual(myAttribute, typeMyAttr.AttributeType);
+
+			var prop = type.GetProperties().Single(p => p.Name == "P");
+			var propTypeTestAttr = prop.Attributes.Single(a => a.AttributeType.Name == "TypeTestAttribute");
+			Assert.AreEqual(42, propTypeTestAttr.PositionalArguments[0].ConstantValue);
+			Assert.IsInstanceOf<TypeOfResolveResult>(propTypeTestAttr.PositionalArguments[1]);
+			Assert.AreEqual(inner, ((TypeOfResolveResult)propTypeTestAttr.PositionalArguments[1]).ReferencedType);
+			var propMyAttr = prop.Attributes.Single(a => a.AttributeType.Name == "MyAttribute");
+			Assert.AreEqual(myAttribute, propMyAttr.AttributeType);
+
+			var attributedInner = (ITypeDefinition)type.GetNestedTypes().Single(t => t.Name == "AttributedInner");
+			var innerTypeTestAttr = attributedInner.Attributes.Single(a => a.AttributeType.Name == "TypeTestAttribute");
+			Assert.AreEqual(42, innerTypeTestAttr.PositionalArguments[0].ConstantValue);
+			Assert.IsInstanceOf<TypeOfResolveResult>(innerTypeTestAttr.PositionalArguments[1]);
+			Assert.AreEqual(inner, ((TypeOfResolveResult)innerTypeTestAttr.PositionalArguments[1]).ReferencedType);
+			var innerMyAttr = attributedInner.Attributes.Single(a => a.AttributeType.Name == "MyAttribute");
+			Assert.AreEqual(myAttribute, innerMyAttr.AttributeType);
+
+			var attributedInner2 = (ITypeDefinition)type.GetNestedTypes().Single(t => t.Name == "AttributedInner2");
+			var inner2 = attributedInner2.GetNestedTypes().Single(t => t.Name == "Inner");
+			var myAttribute2 = attributedInner2.GetNestedTypes().Single(t => t.Name == "MyAttribute");
+			var inner2TypeTestAttr = attributedInner2.Attributes.Single(a => a.AttributeType.Name == "TypeTestAttribute");
+			Assert.AreEqual(43, inner2TypeTestAttr.PositionalArguments[0].ConstantValue);
+			Assert.IsInstanceOf<TypeOfResolveResult>(inner2TypeTestAttr.PositionalArguments[1]);
+			Assert.AreEqual(inner2, ((TypeOfResolveResult)inner2TypeTestAttr.PositionalArguments[1]).ReferencedType);
+			var inner2MyAttr = attributedInner2.Attributes.Single(a => a.AttributeType.Name == "MyAttribute");
+			Assert.AreEqual(myAttribute2, inner2MyAttr.AttributeType);
 		}
 	}
 }

@@ -33,58 +33,61 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class RemoveRegionTests : ContextActionTestBase
 	{
-		[Test()]
+		[Test]
 		public void TestSimpleRegion ()
 		{
-			string result = RunContextAction (
-				new RemoveRegionAction (),
-				"class TestClass" + Environment.NewLine +
-					"{" + Environment.NewLine +
-					"	#region$ Foo" + Environment.NewLine +
-					"	void Test ()" + Environment.NewLine +
-					"	{" + Environment.NewLine +
-					"	}" + Environment.NewLine +
-					"	#endregion" + Environment.NewLine +
-					"}"
-			);
-			
-			Assert.AreEqual (
-				"class TestClass" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	void Test ()" + Environment.NewLine +
-				"	{" + Environment.NewLine +
-				"	}" + Environment.NewLine +
-				"}", result);
+			Test<RemoveRegionAction> (@"class TestClass{
+#region$ Foo
+	void Test ()
+	{
+	}
+#endregion
+}", @"class TestClass{
+	void Test ()
+	{
+	}
+}");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestNestedRegion ()
 		{
-			string result = RunContextAction (
-				new RemoveRegionAction (),
-				"class TestClass" + Environment.NewLine +
-					"{" + Environment.NewLine +
-					"	#region$ Foo" + Environment.NewLine +
-					"	void Test ()" + Environment.NewLine +
-					"	{" + Environment.NewLine +
-					"		#region Nested" + Environment.NewLine +
-					"		Foo ();" + Environment.NewLine +
-					"		#endregion" + Environment.NewLine +
-					"	}" + Environment.NewLine +
-					"	#endregion" + Environment.NewLine +
-					"}"
-			);
-			
-			Assert.AreEqual (
-				"class TestClass" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	void Test ()" + Environment.NewLine +
-				"	{" + Environment.NewLine +
-				"		#region Nested" + Environment.NewLine +
-				"		Foo ();" + Environment.NewLine +
-				"		#endregion" + Environment.NewLine +
-				"	}" + Environment.NewLine +
-				"}", result);
+			Test<RemoveRegionAction> (@"class TestClass
+{
+	#region$ Foo
+	void Test ()
+	{
+		#region Nested
+		Foo ();
+		#endregion
+	}
+	#endregion
+}", @"class TestClass
+{
+	void Test ()
+	{
+		#region Nested
+		Foo ();
+		#endregion
+	}
+}");
+		}
+	
+
+		[Test]
+		public void TestEndRegion ()
+		{
+			Test<RemoveRegionAction> (@"class TestClass{
+#region Foo
+	void Test ()
+	{
+	}
+$#endregion
+}", @"class TestClass{
+	void Test ()
+	{
+	}
+}");
 		}
 	}
 }

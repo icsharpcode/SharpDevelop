@@ -43,7 +43,7 @@ namespace Debugger.AddIn.TreeModel
 		long cachedValueDebuggeeState;
 		
 		string fullValue;
-		GetValueException error;
+		internal GetValueException error;
 		
 		public string FullText {
 			get { return this.Value; }
@@ -57,6 +57,7 @@ namespace Debugger.AddIn.TreeModel
 			
 			this.getValue = getValue;
 			this.setValue = setValue;
+			this.ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ValueNode";
 			
 			GetValueAndUpdateUI();
 		}
@@ -105,6 +106,14 @@ namespace Debugger.AddIn.TreeModel
 				
 				// Do not keep permanent reference
 				Value val = this.getValue();
+				
+				if (val == null) {
+					Value = string.Empty;
+					Type  = string.Empty;
+					GetChildren = null;
+					VisualizerCommands = null;
+					return;
+				}
 				
 				// Note that the child collections are lazy-evaluated
 				if (val.IsNull) {
@@ -186,55 +195,12 @@ namespace Debugger.AddIn.TreeModel
 				this.Type  = string.Empty;
 				this.GetChildren = null;
 				this.VisualizerCommands = null;
+			} finally {
+				if (error == null)
+					ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ValueNode";
+				else
+					ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ErrorNode";
 			}
-		}
-		
-//		public ContextMenuStrip GetContextMenu()
-//		{
-//			if (this.Error != null) return GetErrorContextMenu();
-//
-//			ContextMenuStrip menu = new ContextMenuStrip();
-//
-//			ToolStripMenuItem copyItem;
-//			copyItem = new ToolStripMenuItem();
-//			copyItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CopyToClipboard");
-//			copyItem.Checked = false;
-//			copyItem.Click += delegate {
-//				ClipboardWrapper.SetText(fullText);
-//			};
-		
-//			ToolStripMenuItem hexView;
-//			hexView = new ToolStripMenuItem();
-//			hexView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
-//			hexView.Checked = DebuggingOptions.Instance.ShowValuesInHexadecimal;
-//			hexView.Click += delegate {
-//				// refresh all pads that use ValueNode for display
-//				DebuggingOptions.Instance.ShowValuesInHexadecimal = !DebuggingOptions.Instance.ShowValuesInHexadecimal;
-//				// always check if instance is null, might be null if pad is not opened
-//				if (LocalVarPad.Instance != null)
-//					LocalVarPad.Instance.RefreshPad();
-//				if (WatchPad.Instance != null)
-//					WatchPad.Instance.RefreshPad();
-//			};
-		
-//			menu.Items.AddRange(new ToolStripItem[] {
-//			                    	copyItem,
-//			                    	//hexView
-//			                    });
-//
-//			return menu;
-//		}
-		
-		ContextMenuStrip GetErrorContextMenu()
-		{
-			ContextMenuStrip menu = new ContextMenuStrip();
-			
-			ToolStripMenuItem showError = new ToolStripMenuItem();
-			showError.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.ShowFullError}");
-			showError.Click += delegate { MessageService.ShowException(error, null); };
-			menu.Items.Add(showError);
-			
-			return menu;
 		}
 		
 		/// <summary>
@@ -273,7 +239,7 @@ namespace Debugger.AddIn.TreeModel
 			foreach(LocalVariable locVar in localVars) {
 				var locVarCopy = locVar;
 				yield return new ValueNode(ClassBrowserIconService.LocalVariable, locVar.Name,
-				                          () => locVarCopy.GetValue(stackFrame));
+				                           () => locVarCopy.GetValue(stackFrame));
 			}
 		}
 		
@@ -294,7 +260,7 @@ namespace Debugger.AddIn.TreeModel
 					ClassBrowserIconService.Class,
 					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}"),
 					baseType.Name,
-					baseType.FullName,
+					string.Empty,
 					baseType.FullName == "System.Object" ? (Func<IEnumerable<TreeNode>>) null : () => GetObjectChildren(baseType)
 				);
 			}
@@ -368,7 +334,7 @@ namespace Debugger.AddIn.TreeModel
 			int count = 0;
 			try {
 				Value list = getValue();
-				IType iListType = list.Type.GetAllBaseTypeDefinitions().Where(t => t.FullName == typeof(IList).FullName).FirstOrDefault();
+				IType iListType = list.Type.GetAllBaseTypeDefinitions().FirstOrDefault(t => t.FullName == typeof(IList).FullName);
 				itemProp = iListType.GetProperties(p => p.Name == "Item").Single();
 				// Do not get string representation since it can be printed in hex
 				count = (int)list.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperties(p => p.Name == "Count").Single()).PrimitiveValue;

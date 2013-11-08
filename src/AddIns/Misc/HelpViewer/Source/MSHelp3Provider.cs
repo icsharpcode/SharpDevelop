@@ -15,7 +15,7 @@ namespace MSHelpSystem
 			if (string.IsNullOrEmpty(fullTypeName)) {
 				throw new ArgumentNullException("fullTypeName");
 			}
-			LoggingService.Info(string.Format("Help 3.0: Calling \"TryShowHelp\" with {0}", fullTypeName));
+			LoggingService.Info(string.Format("HelpViewer: TryShowHelp calls \"{0}\"", fullTypeName));
 			return DisplayHelp.ContextualHelp(fullTypeName);
 		}
 
@@ -24,7 +24,7 @@ namespace MSHelpSystem
 			if (string.IsNullOrEmpty(keyword)) {
 				throw new ArgumentNullException("keyword");
 			}
-			LoggingService.Info(string.Format("Help 3.0: Calling \"TryShowHelpByKeyword\" with {0}", keyword));
+			LoggingService.Info(string.Format("HelpViewer: TryShowHelpByKeyword calls \"{0}\"", keyword));
 			DisplayHelp.Keywords(keyword);
 			return true;
 		}

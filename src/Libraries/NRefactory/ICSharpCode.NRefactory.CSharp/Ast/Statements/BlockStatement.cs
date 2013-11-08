@@ -150,11 +150,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChild(statement, StatementRole);
 		}
 		
-		public void Add(Expression expression)
-		{
-			AddChild(new ExpressionStatement(expression), StatementRole);
-		}
-		
 		IEnumerator<Statement> IEnumerable<Statement>.GetEnumerator()
 		{
 			return this.Statements.GetEnumerator();

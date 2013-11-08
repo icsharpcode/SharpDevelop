@@ -130,7 +130,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Builds an member reference expression using this expression as target.
 		/// </summary>
-		public MemberReferenceExpression Member(string memberName)
+		public virtual MemberReferenceExpression Member(string memberName)
 		{
 			return new MemberReferenceExpression { Target = this, MemberName = memberName };
 		}
@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Builds an indexer expression using this expression as target.
 		/// </summary>
-		public IndexerExpression Indexer(IEnumerable<Expression> arguments)
+		public virtual IndexerExpression Indexer(IEnumerable<Expression> arguments)
 		{
 			IndexerExpression expr = new IndexerExpression();
 			expr.Target = this;
@@ -149,7 +149,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Builds an indexer expression using this expression as target.
 		/// </summary>
-		public IndexerExpression Indexer(params Expression[] arguments)
+		public virtual IndexerExpression Indexer(params Expression[] arguments)
 		{
 			IndexerExpression expr = new IndexerExpression();
 			expr.Target = this;
@@ -160,7 +160,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Builds an invocation expression using this expression as target.
 		/// </summary>
-		public InvocationExpression Invoke(string methodName, IEnumerable<Expression> arguments)
+		public virtual InvocationExpression Invoke(string methodName, IEnumerable<Expression> arguments)
 		{
 			return Invoke(methodName, null, arguments);
 		}
@@ -168,7 +168,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Builds an invocation expression using this expression as target.
 		/// </summary>
-		public InvocationExpression Invoke(string methodName, params Expression[] arguments)
+		public virtual InvocationExpression Invoke(string methodName, params Expression[] arguments)
 		{
 			return Invoke(methodName, null, arguments);
 		}
@@ -176,7 +176,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Builds an invocation expression using this expression as target.
 		/// </summary>
-		public InvocationExpression Invoke(string methodName, IEnumerable<AstType> typeArguments, IEnumerable<Expression> arguments)
+		public virtual InvocationExpression Invoke(string methodName, IEnumerable<AstType> typeArguments, IEnumerable<Expression> arguments)
 		{
 			InvocationExpression ie = new InvocationExpression();
 			MemberReferenceExpression mre = new MemberReferenceExpression();
@@ -191,7 +191,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Builds an invocation expression using this expression as target.
 		/// </summary>
-		public InvocationExpression Invoke(IEnumerable<Expression> arguments)
+		public virtual InvocationExpression Invoke(IEnumerable<Expression> arguments)
 		{
 			InvocationExpression ie = new InvocationExpression();
 			ie.Target = this;
@@ -202,7 +202,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Builds an invocation expression using this expression as target.
 		/// </summary>
-		public InvocationExpression Invoke(params Expression[] arguments)
+		public virtual InvocationExpression Invoke(params Expression[] arguments)
 		{
 			InvocationExpression ie = new InvocationExpression();
 			ie.Target = this;
@@ -210,17 +210,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			return ie;
 		}
 		
-		public CastExpression CastTo(AstType type)
+		public virtual CastExpression CastTo(AstType type)
 		{
 			return new CastExpression { Type = type,  Expression = this };
 		}
 		
-		public AsExpression CastAs(AstType type)
+		public virtual AsExpression CastAs(AstType type)
 		{
 			return new AsExpression { Type = type,  Expression = this };
 		}
 		
-		public IsExpression IsType(AstType type)
+		public virtual IsExpression IsType(AstType type)
 		{
 			return new IsExpression { Type = type,  Expression = this };
 		}

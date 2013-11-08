@@ -198,21 +198,22 @@ namespace Debugger
 			this.Process.AssertPaused();
 			
 			foreach(var symbolSource in this.Process.Debugger.SymbolSources) {
-				var seq = symbolSource.GetSequencePoint(this.Module, filename, line, column);
-				if (seq != null && seq.MethodDefToken == this.MethodInfo.GetMetadataToken()) {
-					try {
-						if (dryRun) {
-							CorILFrame.CanSetIP((uint)seq.ILOffset);
-						} else {
-							CorILFrame.SetIP((uint)seq.ILOffset);
-							// Invalidates all frames and chains for the current thread
-							this.Process.NotifyResumed(DebuggeeStateAction.Keep);
-							this.Process.NotifyPaused();
+				foreach (var seq in symbolSource.GetSequencePoints(this.Module, filename, line, column)) {
+					if (seq.MethodDefToken == this.MethodInfo.GetMetadataToken()) {
+						try {
+							if (dryRun) {
+								CorILFrame.CanSetIP((uint)seq.ILOffset);
+							} else {
+								CorILFrame.SetIP((uint)seq.ILOffset);
+								// Invalidates all frames and chains for the current thread
+								this.Process.NotifyResumed(DebuggeeStateAction.Keep);
+								this.Process.NotifyPaused();
+							}
+						} catch {
+							return false;
 						}
-					} catch {
-						return false;
+						return true;
 					}
-					return true;
 				}
 			}
 			return false;

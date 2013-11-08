@@ -75,6 +75,16 @@
 			          label = "${res:MainWindow.Windows.Debug.DebugExecutable}"
 			          class = "Debugger.AddIn.DebugExecutableMenuCommand"/>
 		</Condition>
+<!--		<MenuItem id="AddExpressionBreakpoint"
+		          insertafter="Toggle Breakpoint"
+		          label = "${res:MainWindow.Windows.Debug.AddExpressionBreakpoint}"
+		          shortcut="Shift|F7"
+		          class = "Debugger.AddIn.AddExpressionBreakpointCommand"/>-->
+		<MenuItem id="AddWatchExpression"
+		          insertafter="AddExpressionBreakpoint"
+		          label = "${res:MainWindow.Windows.Debug.AddWatchExpression}"
+		          shortcut="Ctrl|F7"
+		          class = "Debugger.AddIn.AddWatchExpressionCommand"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/ClassBrowser/Toolbar">
@@ -132,15 +142,9 @@
 		<Pad id    = "WatchPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Watch}"
-		     icon     = "PadIcons.LocalVariables"
+		     icon     = "PadIcons.Watches"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.WatchPad"
 		     defaultPosition = "Bottom, Hidden" />
-	</Path>
-	
-	<Path name ="/SharpDevelop/Pads/WatchPad/ContextMenu">
-		<MenuItem id="AddWatch" label="${res:MainWindow.Windows.Debug.Watch.AddWatch}" class="Debugger.AddIn.AddWatchCommand" />
-		<MenuItem id="RemoveWatch" label="${res:MainWindow.Windows.Debug.Watch.RemoveWatch}" class="Debugger.AddIn.RemoveWatchCommand" />
-		<MenuItem id="ClearWatches" label="${res:MainWindow.Windows.Debug.Watch.RemoveAll}" class="Debugger.AddIn.ClearWatchesCommand" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
@@ -169,7 +173,8 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/TreeNodeFactories">
-		<Class id="DebuggerTreeNodesFactory" class="ICSharpCode.SharpDevelop.Gui.Pads.DebuggerTreeNodesFactory" />
+		<Class id="DebuggerTreeNodesFactory"
+		       class="ICSharpCode.SharpDevelop.Gui.Pads.DebuggerTreeNodesFactory" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Services/DebuggerService/ModuleContextMenu">
@@ -177,5 +182,40 @@
 		          label = "${res:MainWindow.Windows.ClassBrowser.AddToWorkspace}"
 		          icon = "Icons.16x16.AssemblyFromFile"
 		          class = "ICSharpCode.SharpDevelop.Gui.Pads.AddModuleToWorkspaceCommand"/>
+	</Path>
+	
+	<Path name="/AddIns/Debugger/Tooltips/ContextMenu/TreeNode">
+		<MenuItem id="Copy"
+		          label="${res:MainWindow.Windows.Debug.LocalVariables.CopyToClipboard}"
+		          icon="Icons.16x16.CopyIcon"
+		          class="Debugger.AddIn.TreeModel.CopyCommand" />
+	</Path>
+	
+	<Path name="/AddIns/Debugger/Tooltips/ContextMenu/ErrorNode">
+		<MenuItem id="ShowFullError"
+		          label="${res:MainWindow.Windows.Debug.LocalVariables.ShowFullError}"
+		          class="Debugger.AddIn.TreeModel.ShowFullErrorCommand" />
+		<Include path="/AddIns/Debugger/Tooltips/ContextMenu/TreeNode" />
+	</Path>
+	
+	<Path name="/AddIns/Debugger/Tooltips/ContextMenu/ValueNode">
+		<Include path="/AddIns/Debugger/Tooltips/ContextMenu/TreeNode" />
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/WatchPad/ToolBar">
+		<ToolbarItem id="AddWatch"
+		             icon="Icons.16x16.WatchAdd"
+		             tooltip="${res:MainWindow.Windows.Debug.Watch.AddWatch}"
+		             class="Debugger.AddIn.AddWatchCommand" />
+		<ToolbarItem id="RemoveWatch"
+		             icon="Icons.16x16.WatchDelete"
+		             tooltip="${res:MainWindow.Windows.Debug.Watch.RemoveWatch}"
+		             class="Debugger.AddIn.RemoveWatchCommand" />
+		<ToolbarItem type="Separator" />
+		<ToolbarItem id="ClearWatches"
+		             icon="Icons.16x16.WatchesDelete"
+		             tooltip="${res:MainWindow.Windows.Debug.Watch.RemoveAll}"
+		             class="Debugger.AddIn.ClearWatchesCommand" />
+		<ToolbarItem type="Separator" />
 	</Path>
 </AddIn>

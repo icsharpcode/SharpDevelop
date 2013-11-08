@@ -67,7 +67,6 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		}
 		
 		#region ParseAndCheckPositions
-
 		
 		[Test, Ignore("Positions still are incorrect in several cases")]
 		public void ParseAndCheckPositions()
@@ -82,6 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				ConsistencyChecker.CheckMissingTokens(syntaxTree, fileName, currentDocument);
 			}
 		}
+		
 		#endregion
 	}
 }

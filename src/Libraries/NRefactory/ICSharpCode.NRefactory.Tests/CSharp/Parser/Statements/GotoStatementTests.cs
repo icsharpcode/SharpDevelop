@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		[Test]
 		public void GotoDefaultStatementTest()
 		{
-			var gotoCaseStmt = ParseUtilCSharp.ParseStatement<GotoDefaultStatement>("goto default;");
+			ParseUtilCSharp.ParseStatement<GotoDefaultStatement>("goto default;");
 		}
 		
 		[Test]
@@ -47,13 +47,13 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		[Test]
 		public void BreakStatementTest()
 		{
-			BreakStatement breakStmt = ParseUtilCSharp.ParseStatement<BreakStatement>("break;");
+			ParseUtilCSharp.ParseStatement<BreakStatement>("break;");
 		}
 		
 		[Test]
 		public void ContinueStatementTest()
 		{
-			ContinueStatement continueStmt = ParseUtilCSharp.ParseStatement<ContinueStatement>("continue;");
+			ParseUtilCSharp.ParseStatement<ContinueStatement>("continue;");
 		}
 	}
 }

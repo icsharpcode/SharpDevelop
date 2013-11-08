@@ -58,5 +58,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	}
 }");
 		}
+
+		
+		[Test]
+		public void TestNestedClass ()
+		{
+			TestWrongContext<RedundantInternalIssue>(@"class Foo
+{
+	internal class Nested
+	{
+	}
+}");
+		}
 	}
 }

@@ -18,6 +18,7 @@
 
 using System;
 using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -35,6 +36,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				new BinaryOperatorExpression(expr1, op, expr2),
 				new BinaryOperatorExpression(expr2.Clone(), op, expr1.Clone())
 			};
+		}
+
+		public static Expression CommutativeOperatorWithOptionalParentheses(Expression expr1, BinaryOperatorType op, Expression expr2)
+		{
+			return OptionalParentheses(CommutativeOperator(OptionalParentheses(expr1), op, OptionalParentheses(expr2)));
 		}
 		
 		/// <summary>
@@ -59,6 +65,108 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				INode unpacked = ParenthesizedExpression.UnpackParenthesizedExpression(other as Expression);
 				return child.DoMatch(unpacked, match);
 			}
+		}
+
+		/// <summary>
+		/// Optionally allow a block around the given statement;
+		/// </summary>
+		/// <returns>The statement.</returns>
+		public static Statement EmbeddedStatement(Statement statement)
+		{
+			return new OptionalBlockPattern(statement);
+		}
+
+		sealed class OptionalBlockPattern : Pattern
+		{
+			readonly INode child;
+
+			public OptionalBlockPattern(INode child)
+			{
+				this.child = child;
+			}
+
+			public override bool DoMatch(INode other, Match match)
+			{
+				INode unpacked = UnpackBlockStatement(other as Statement);
+				return child.DoMatch(unpacked, match);
+			}
+
+			
+			/// <summary>
+			/// Unpacks the given expression if it is a ParenthesizedExpression, CheckedExpression or UncheckedExpression.
+			/// </summary>
+			public static Statement UnpackBlockStatement(Statement stmt)
+			{
+				while (stmt is BlockStatement) {
+					stmt = stmt.GetChildByRole(BlockStatement.StatementRole);
+					if (stmt.GetNextSibling(s => s.Role == BlockStatement.StatementRole) != null)
+						return null;
+				}
+				return stmt;
+			}
+		}
+
+	
+		/// <summary>
+		/// Allows to give parameter declaration group names.
+		/// </summary>
+		public static ParameterDeclaration NamedParameter(string groupName)
+		{
+			return new NamedParameterDeclaration (groupName);
+		}
+
+		/// <summary>
+		/// Allows to give parameter declaration group names.
+		/// </summary>
+		public static ParameterDeclaration NamedParameter(string groupName, AstType type, string name, ParameterModifier modifier = ParameterModifier.None)
+		{
+			return new NamedParameterDeclaration (groupName, type, name, modifier);
+		}
+
+		sealed class NamedParameterDeclaration : ParameterDeclaration
+		{
+			readonly string groupName;
+			public string GroupName {
+				get { return groupName; }
+			}
+
+			public NamedParameterDeclaration(string groupName = null)
+			{
+				this.groupName = groupName;
+			}
+
+			public NamedParameterDeclaration(string groupName, AstType type, string name, ParameterModifier modifier = ParameterModifier.None) : base (type, name, modifier)
+			{
+				this.groupName = groupName;
+			}
+
+			protected internal override bool DoMatch(AstNode other, Match match)
+			{
+				match.Add(this.groupName, other);
+				return base.DoMatch(other, match);
+			}
+		}
+
+		/// <summary>
+		/// Matches any type
+		/// </summary>
+		public static AstType AnyType (bool doesMatchNullTypes = false)
+		{
+			if (doesMatchNullTypes)
+				return new OptionalNode(new AnyNode());
+			else
+				return new AnyNode();
+		}
+
+		/// <summary>
+		/// Matches any type
+		/// </summary>
+		public static AstType AnyType (string groupName, bool doesMatchNullTypes = false)
+		{
+			if (doesMatchNullTypes)
+				return new OptionalNode(new AnyNode(groupName));
+			else
+				return new AnyNode(groupName);
 		}
 	}
 }

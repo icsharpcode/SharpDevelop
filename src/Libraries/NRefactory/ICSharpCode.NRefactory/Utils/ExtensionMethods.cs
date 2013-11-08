@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Utils
 	/// <summary>
 	/// Contains extension methods for use within NRefactory.
 	/// </summary>
-	internal static class ExtensionMethods
+	static class ExtensionMethods
 	{
 		public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> input)
 		{

@@ -169,5 +169,18 @@ class Test { }");
 class Test { }");
 			Assert.AreEqual("<summary/>", typeDefinition.Documentation.ToString());
 		}
+		
+		[Test]
+		public void CDATAInDocumentation()
+		{
+			Init(@"using System;
+/// <summary>before<![CDATA[<xml/>]]>after</summary>
+class Test { }
+");
+			var element = XmlDocumentationElement.Get(typeDefinition);
+			Assert.AreEqual(1, element.Children.Count());
+			Assert.AreEqual("summary", element.Children[0].Name);
+			Assert.AreEqual("before<xml/>after", element.Children[0].TextContent);
+		}
 	}
 }

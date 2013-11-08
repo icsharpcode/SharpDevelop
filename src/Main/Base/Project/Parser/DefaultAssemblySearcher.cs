@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ICSharpCode.Core;
-using Mono.Cecil;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 
@@ -16,7 +15,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 	{
 		FileName mainAssemblyFileName;
 		DirectoryName baseDirectory;
-		Lazy<IDictionary<DomAssemblyName, FileName>> localAssemblies;
 		
 		public DefaultAssemblySearcher(FileName mainAssemblyFileName)
 		{
@@ -24,27 +22,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 				throw new ArgumentNullException("mainAssemblyFileName");
 			this.mainAssemblyFileName = mainAssemblyFileName;
 			this.baseDirectory = mainAssemblyFileName.GetParentDirectory();
-			this.localAssemblies = new Lazy<IDictionary<DomAssemblyName, FileName>>(
-				delegate {
-					var list = new Dictionary<DomAssemblyName, FileName>();
-					var dirInfo = new DirectoryInfo(baseDirectory);
-					
-					foreach (var file in dirInfo.GetFiles("*.dll").Concat(dirInfo.GetFiles("*.exe"))) {
-						try {
-							var definition = AssemblyDefinition.ReadAssembly(file.FullName);
-							var name = new DomAssemblyName(definition.FullName);
-							if (!list.ContainsKey(name))
-								list.Add(name, new FileName(file.FullName));
-						} catch (IOException ex) {
-							LoggingService.Warn("Ignoring error while scanning local assemblies from " + baseDirectory, ex);
-						} catch (UnauthorizedAccessException ex) {
-							LoggingService.Warn("Ignoring error while scanning local assemblies from " + baseDirectory, ex);
-						}
-					}
-					
-					return list;
-				}
-			);
 		}
 		
 		public FileName FindAssembly(DomAssemblyName fullName)
@@ -60,16 +37,22 @@ namespace ICSharpCode.SharpDevelop.Parser
 					return asm.Location;
 			}
 			
-			// scan current directory
-			var files = localAssemblies.Value;
-			FileName file;
-			if (files.TryGetValue(fullName, out file))
-				return file;
-			
 			// look in GAC
-			return SD.GlobalAssemblyCache.FindAssemblyInNetGac(fullName);
-		}
+			var gacFileName = SD.GlobalAssemblyCache.FindAssemblyInNetGac(fullName);
+			if (gacFileName != null)
+				return gacFileName;
+			
+			// scan current directory
+			var fileName = baseDirectory.CombineFile(fullName.ShortName + ".dll");
+			if (File.Exists(fileName))
+				return fileName;
+			
+			fileName = baseDirectory.CombineFile(fullName.ShortName + ".exe");
+			if (File.Exists(fileName))
+				return fileName;
+			return null;
 	}
+}
 }
 
 

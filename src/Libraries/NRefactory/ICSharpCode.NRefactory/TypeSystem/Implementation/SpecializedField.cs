@@ -49,7 +49,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsConst {
 			get { return fieldDefinition.IsConst; }
 		}
-		
+
+		public bool IsFixed {
+			get { return fieldDefinition.IsFixed; }
+		}
+
 		public object ConstantValue {
 			get { return fieldDefinition.ConstantValue; }
 		}

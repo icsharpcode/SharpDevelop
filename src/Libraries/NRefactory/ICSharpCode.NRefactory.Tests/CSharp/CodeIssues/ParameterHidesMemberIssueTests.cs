@@ -46,6 +46,21 @@ class TestClass
 			Test<ParameterHidesMemberIssue> (input, 1);
 		}
 
+        [Test]
+		public void TestDisable ()
+		{
+			var input = @"
+class TestClass
+{
+	int i;
+// ReSharper disable once ParameterHidesMember
+	void TestMethod (int i, int j)
+	{
+	}
+}";
+			TestWrongContext<ParameterHidesMemberIssue> (input);
+		}
+
 		[Test]
 		public void TestMethod ()
 		{
@@ -173,6 +188,67 @@ class BaseClass
 class TestClass : BaseClass
 {
 	void Method (int i)
+	{
+	}
+}";
+			Test<ParameterHidesMemberIssue> (input, 0);
+		}
+
+		[Test]
+		public void TestIgnorePublicMethods ()
+		{
+			var input = @"
+class TestClass
+{
+	private int i;
+
+	public void SetI (int i) { this.i = i; }
+}";
+			Test<ParameterHidesMemberIssue> (input, 0);
+		}
+
+
+		[Test]
+		public void TestIgnoreAbstractMethods ()
+		{
+			var input = @"
+abstract class TestClass
+{
+	private int i;
+
+	public abstract void Method (int i);
+}";
+			Test<ParameterHidesMemberIssue> (input, 0);
+		}
+
+		[Test]
+		public void TestIgnoreOverridenMethods ()
+		{
+			var input = @"
+class TestClass
+{
+	private int i;
+
+	protected override void Method (int i)
+	{
+	}
+}";
+			Test<ParameterHidesMemberIssue> (input, 0);
+		}
+
+		[Test]
+		public void TestIgnoreInterfaceImplementations ()
+		{
+			var input = @"
+interface ITest {
+	void Method (int i);
+}
+
+class TestClass : ITest 
+{
+	private int i;
+
+	void ITest.Method (int i)
 	{
 	}
 }";

@@ -891,6 +891,86 @@ class Test {
 		}
 
 		[Test]
+		public void MethodGroupConversion_ObjectToDynamic() {
+			string program = @"using System;
+class Test {
+	public void F(object o) {}
+	public void M() {
+		Action<dynamic> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void MethodGroupConversion_ObjectToDynamicGenericArgument() {
+			string program = @"using System;
+using System.Collections.Generic;
+class Test {
+	public void F(List<object> l) {}
+	public void M() {
+		Action<List<dynamic>> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void MethodGroupConversion_ObjectToDynamicReturnValue() {
+			string program = @"using System;
+class Test {
+	public object F() {}
+	public void M() {
+		Func<dynamic> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void MethodGroupConversion_DynamicToObject() {
+			string program = @"using System;
+class Test {
+	public void F(dynamic o) {}
+	public void M() {
+		Action<object> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void MethodGroupConversion_DynamicToObjectGenericArgument() {
+			string program = @"using System;
+using System.Collections.Generic;
+class Test {
+	public void F(List<dynamic> l) {}
+	public void M() {
+		Action<List<object>> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void MethodGroupConversion_DynamicToObjectReturnValue() {
+			string program = @"using System;
+class Test {
+	public dynamic F() {}
+	public void M() {
+		Func<object> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
 		public void UserDefined_IntLiteral_ViaUInt_ToCustomStruct()
 		{
 			string program = @"using System;

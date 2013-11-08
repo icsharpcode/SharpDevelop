@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Debugger;
@@ -56,15 +57,15 @@ namespace ICSharpCode.ILSpyAddIn
 			return null;
 		}
 		
-		public Debugger.SequencePoint GetSequencePoint(Module module, string filename, int line, int column)
+		public IEnumerable<Debugger.SequencePoint> GetSequencePoints(Module module, string filename, int line, int column)
 		{
 			var name = DecompiledTypeReference.FromFileName(filename);
 			if (name == null || !FileUtility.IsEqualFileName(module.FullPath, name.AssemblyFile))
-				return null;
+				yield break;
 			
 			var content = DecompiledViewContent.Get(name);
 			if (content == null)
-				return null;
+				yield break;
 			
 			TextLocation loc = new TextLocation(line, column);
 			foreach(var symbols in content.DebugSymbols.Values.Where(s => s.StartLocation <= loc && loc <= s.EndLocation)) {
@@ -74,9 +75,8 @@ namespace ICSharpCode.ILSpyAddIn
 				if (seq == null)
 					seq = symbols.SequencePoints.FirstOrDefault(p => line <= p.StartLocation.Line);
 				if (seq != null)
-					return seq.ToDebugger(symbols, content.PrimaryFileName);
+					yield return seq.ToDebugger(symbols, content.PrimaryFileName);
 			}
-			return null;
 		}
 		
 		public IEnumerable<ILRange> GetIgnoredILRanges(IMethod method)

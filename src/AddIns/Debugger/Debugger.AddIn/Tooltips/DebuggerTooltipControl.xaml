@@ -4,6 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:aero="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
 	xmlns:debugging="clr-namespace:Debugger.AddIn.Tooltips"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	AllowsTransparency="True"
 >
 	<Popup.Resources>
@@ -62,7 +63,7 @@
 					</Trigger>
 				</ControlTemplate.Triggers>
 			</ControlTemplate>
-		
+			
 			<ControlTemplate x:Key="PinButtonTemplate" TargetType="Button">
 				<Border Width="16" Height="16" Name="TheBorder" CornerRadius="3" BorderThickness="1" BorderBrush="Black" Background="{StaticResource SilverPressedBrushKey}">
 					<Canvas Name="TheCanvas">
@@ -86,7 +87,7 @@
 			</ControlTemplate>
 			
 			<SolidColorBrush x:Key="MouseOverPinBrush" Color="Black" />
-		
+			
 			<Style TargetType="{x:Type TextBox}" x:Key="TextStyle">
 				<Setter Property="OverridesDefaultStyle" Value="True" />
 				<Setter Property="VerticalAlignment" Value="Center" />
@@ -104,7 +105,7 @@
 					</Setter.Value>
 				</Setter>
 			</Style>
-		
+			
 			<Style x:Key="PinThumbStyle" TargetType="Thumb">
 				<Setter Property="Template">
 					<Setter.Value>
@@ -114,6 +115,8 @@
 					</Setter.Value>
 				</Setter>
 			</Style>
+			
+			<core:ContextMenuBuilder x:Key="menuBuilder" />
 		
 		</ResourceDictionary>
 	</Popup.Resources>
@@ -126,7 +129,7 @@
 			MaxHeight="202"
 			SelectionMode="Single"
 			SelectionUnit="FullRow"
-			Name="dataGrid"
+			x:Name="dataGrid"
 			AutoGenerateColumns="False"
 			CanUserAddRows="False"
 			HeadersVisibility="None"
@@ -179,16 +182,16 @@
 										Focusable="False"
 										Width="19"
 										Height="13"
-										>
+									>
 										<ToggleButton.Template>
 											<ControlTemplate TargetType="{x:Type ToggleButton}">
 												<Border Width="19" Height="13" Background="Transparent">
 													<Border Width="9"
-														Height="9"
-														BorderThickness="1"
-														BorderBrush="#FF7898B5"
-														CornerRadius="1"
-														SnapsToDevicePixels="true">
+													        Height="9"
+													        BorderThickness="1"
+													        BorderBrush="#FF7898B5"
+													        CornerRadius="1"
+													        SnapsToDevicePixels="true">
 														<Border.Background>
 															<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
 																<LinearGradientBrush.GradientStops>
@@ -198,9 +201,9 @@
 															</LinearGradientBrush>
 														</Border.Background>
 														<Path x:Name="ExpandPath"
-															Margin="1,1,1,1"
-															Fill="Black"
-															Data="M 0 2 L 0 3 L 2 3 L 2 5 L 3 5 L 3 3 L 5 3 L 5 2 L 3 2 L 3 0 L 2 0 L 2 2 Z"/>
+														      Margin="1,1,1,1"
+														      Fill="Black"
+														      Data="M 0 2 L 0 3 L 2 3 L 2 5 L 3 5 L 3 3 L 5 3 L 5 2 L 3 2 L 3 0 L 2 0 L 2 2 Z"/>
 													</Border>
 												</Border>
 												<ControlTemplate.Triggers>
@@ -239,6 +242,16 @@
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
+				<!-- Type -->
+				<DataGridTemplateColumn MinWidth="20" Header="Type">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Border BorderBrush="#FFDDDDDD"  BorderThickness="0 0 1 0">
+								<TextBlock Margin="6 0" Text="{Binding Path=Type, Mode=OneWay}" VerticalAlignment="Top"></TextBlock>
+							</Border>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
 				<!-- Visualizer picker  -->
 				<DataGridTemplateColumn>
 					<DataGridTemplateColumn.CellTemplate>
@@ -257,19 +270,16 @@
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
 							<TextBox
+								x:Name="valueText"
 								Style="{StaticResource TextStyle}"
 								IsEnabled="{Binding CanSetValue}"
 								ContextMenuService.ShowOnDisabled="True"
-								Text="{Binding Value}"
-								>
+								Text="{Binding Value}">
 								<TextBox.ContextMenu>
-									<ContextMenu>
-<!--										<MenuItem Header="{core:Localize XML.MainMenu.EditMenu.Copy}" DataContext="{Binding}" Click="CopyMenuItemClick">
-											<MenuItem.Icon>
-												<Image Source="{core:GetBitmap Icons.16x16.CopyIcon}" />
-											</MenuItem.Icon>
-										</MenuItem>-->
-									</ContextMenu>
+									<MultiBinding Converter="{StaticResource menuBuilder}">
+										<Binding Path="ContextMenuAddInTreeEntry" />
+										<Binding />
+									</MultiBinding>
 								</TextBox.ContextMenu>
 							</TextBox>
 						</DataTemplate>
@@ -277,7 +287,7 @@
 				</DataGridTemplateColumn>
 			</DataGrid.Columns>
 		</DataGrid>
-<!--		<StackPanel Opacity="0.2" Name="SideButtons" Margin="3">
+		<!--		<StackPanel Opacity="0.2" Name="SideButtons" Margin="3">
 			<Button
 				Name="CloseButton"
 				Click="CloseButton_Click"
