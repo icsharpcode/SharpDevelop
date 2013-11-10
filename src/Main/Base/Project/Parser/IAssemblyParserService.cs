@@ -52,16 +52,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		event EventHandler<RefreshAssemblyEventArgs> AssemblyRefreshed;
 		
 		/// <summary>
-		/// Creates a compilation for the specified assembly.
-		/// </summary>
-		ICompilation CreateCompilationForAssembly(IAssemblyModel assembly, bool includeInternalMembers = false);
-		
-		/// <summary>
-		/// Creates a compilation for the specified assembly.
-		/// </summary>
-		ICompilation CreateCompilationForAssembly(FileName assembly, bool includeInternalMembers = false);
-		
-		/// <summary>
 		/// Creates an IAssemblyModel for the given assembly file.
 		/// </summary>
 		IAssemblyModel GetAssemblyModel(FileName fileName, bool includeInternalMembers = false);

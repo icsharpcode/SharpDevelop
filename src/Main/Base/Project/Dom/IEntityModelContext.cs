@@ -91,20 +91,40 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 	
+	public class DomAssemblyNameReference : IAssemblyReference
+	{
+		DomAssemblyName name;
+		IAssemblySearcher searcher;
+		
+		public DomAssemblyNameReference(DomAssemblyName name, IAssemblySearcher searcher)
+		{
+			if (name == null)
+				throw new ArgumentNullException("name");
+			if (searcher == null)
+				throw new ArgumentNullException("searcher");
+			this.name = name;
+			this.searcher = searcher;
+		}
+		
+		public IAssembly Resolve(ITypeResolveContext context)
+		{
+			return SD.AssemblyParserService.GetAssembly(searcher.FindAssembly(name), true).Resolve(context);
+		}
+	}
+	
 	public class AssemblyEntityModelContext : IEntityModelContext
 	{
-		ICompilation compilation;
+		Lazy<ICompilation> compilation;
 		IUnresolvedAssembly mainAssembly;
 		IAssemblyReference[] references;
 		
-		public AssemblyEntityModelContext(IUnresolvedAssembly mainAssembly, params IAssemblyReference[] references)
+		public AssemblyEntityModelContext(IUnresolvedAssembly mainAssembly, IAssemblyReference[] references)
 		{
 			if (mainAssembly == null)
 				throw new ArgumentNullException("mainAssembly");
 			this.mainAssembly = mainAssembly;
 			this.references = references;
-			// implement lazy init + weak caching
-			this.compilation = new SimpleCompilation(mainAssembly, references);
+			this.compilation = new Lazy<ICompilation>(() => new SimpleCompilation(mainAssembly, references));
 		}
 		
 		public string AssemblyName {
@@ -117,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public ICompilation GetCompilation()
 		{
-			return compilation;
+			return compilation.Value;
 		}
 		
 		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)

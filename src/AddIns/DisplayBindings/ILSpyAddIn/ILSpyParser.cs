@@ -55,16 +55,6 @@ namespace ICSharpCode.ILSpyAddIn
 			throw new NotImplementedException();
 		}
 		
-		static readonly Lazy<IAssemblyReference[]> defaultReferences = new Lazy<IAssemblyReference[]>(
-			delegate {
-				Assembly[] assemblies = {
-					typeof(object).Assembly,
-					typeof(Uri).Assembly,
-					typeof(Enumerable).Assembly
-				};
-				return assemblies.Select(asm => new CecilLoader().LoadAssemblyFile(asm.Location)).ToArray();
-			});
-		
 		public ICompilation CreateCompilationForSingleFile(FileName fileName, IUnresolvedFile unresolvedFile)
 		{
 			DecompiledTypeReference reference = DecompiledTypeReference.FromFileName(fileName);
@@ -73,10 +63,9 @@ namespace ICSharpCode.ILSpyAddIn
 				if (model == null)
 					model = SD.AssemblyParserService.GetAssemblyModelSafe(reference.AssemblyFile, true);
 				if (model != null)
-					return SD.AssemblyParserService.CreateCompilationForAssembly(model, true);
+					return model.Context.GetCompilation();
 			}
 			return new CSharpProjectContent()
-				.AddAssemblyReferences(defaultReferences.Value)
 				.AddOrUpdateFiles(unresolvedFile)
 				.CreateCompilation();
 		}
