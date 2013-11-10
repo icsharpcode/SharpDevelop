@@ -613,12 +613,14 @@ namespace Debugger
 		
 		internal void OnAppDomainCreated(AppDomain appDomain)
 		{
-			
+			if (AppDomainCreated != null)
+				AppDomainCreated(this, new AppDomainEventArgs(appDomain));
 		}
 		
 		internal void OnAppDomainDestroyed(AppDomain appDomain)
 		{
-			
+			if (AppDomainDestroyed != null)
+				AppDomainDestroyed(this, new AppDomainEventArgs(appDomain));
 		}
 	}
 }
