@@ -20,8 +20,7 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public bool IsCompilerGenerated(IMethod method)
 		{
-			var symbols = GetSymbols(method);
-			return symbols == null || symbols.SequencePoints.Count == 0;
+			return false;
 		}
 		
 		public static MethodDebugSymbols GetSymbols(IMethod method)
