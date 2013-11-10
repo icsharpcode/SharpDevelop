@@ -86,6 +86,8 @@ namespace ICSharpCode.SharpDevelop.Editor.ContextActions
 		
 		public void Execute(object parameter)
 		{
+			if (action.Provider != null)
+				SD.AnalyticsMonitor.TrackFeature(action.Provider.ID);
 			this.action.Execute(context);
 		}
 		

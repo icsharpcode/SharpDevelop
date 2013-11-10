@@ -54,7 +54,6 @@ namespace CSharpBinding.Refactoring
 		
 		public void Execute(EditorRefactoringContext context)
 		{
-			SD.AnalyticsMonitor.TrackFeature(provider.ID);
 			var resolver = context.GetAstResolverAsync().Result;
 			var refactoringContext = new SDRefactoringContext(context.Editor, resolver, context.CaretLocation);
 			var action = getUpdatedCodeAction(refactoringContext);
