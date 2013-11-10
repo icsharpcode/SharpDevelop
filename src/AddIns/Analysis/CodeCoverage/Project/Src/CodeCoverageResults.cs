@@ -64,7 +64,7 @@ namespace ICSharpCode.CodeCoverage
 				assembly.Elements("Classes").Elements("Class").Where(
 					c =>
 					!c.Element("FullName").Value.Contains("__") && 
-					!c.Element("FullName").Value.Contains("<") &&
+					//!c.Element("FullName").Value.Contains("<") &&
 					c.Attribute("skippedDueTo") == null).Select(
 						c => c.Element("FullName").Value).Distinct().OrderBy(name => name);
 			foreach (string className in classNames) {

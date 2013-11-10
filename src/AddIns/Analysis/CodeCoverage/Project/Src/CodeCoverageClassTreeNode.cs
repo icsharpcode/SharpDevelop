@@ -51,7 +51,8 @@ namespace ICSharpCode.CodeCoverage
 			// Add methods.
 			CodeCoveragePropertyCollection properties = new CodeCoveragePropertyCollection();
 			foreach (CodeCoverageMethod method in Methods) {
-				if ( !method.Name.Contains("<") && !method.Name.Contains("__") ) {
+				//if ( !method.Name.Contains("<") && !method.Name.Contains("__") ) {
+				if ( !method.Name.Contains("__") ) {
 					if (method.IsProperty) {
 						properties.Add(method);
 					} else {
