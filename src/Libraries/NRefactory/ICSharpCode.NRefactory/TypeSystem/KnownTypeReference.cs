@@ -107,6 +107,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList,
 		/// <summary><c>System.Collections.Generic.IList{T}</c></summary>
 		IListOfT,
+		/// <summary><c>System.Collections.Generic.IReadOnlyCollection{T}</c></summary>
+		IReadOnlyCollectionOfT,
 		/// <summary><c>System.Collections.Generic.IReadOnlyList{T}</c></summary>
 		IReadOnlyListOfT,
 		/// <summary><c>System.Threading.Tasks.Task</c></summary>
@@ -171,6 +173,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			new KnownTypeReference(KnownTypeCode.IList,          "System.Collections", "IList"),
 			new KnownTypeReference(KnownTypeCode.IListOfT,       "System.Collections.Generic", "IList", 1),
 
+			new KnownTypeReference(KnownTypeCode.IReadOnlyCollectionOfT, "System.Collections.Generic", "IReadOnlyCollection", 1),
 			new KnownTypeReference(KnownTypeCode.IReadOnlyListOfT, "System.Collections.Generic", "IReadOnlyList", 1),
 			new KnownTypeReference(KnownTypeCode.Task,        "System.Threading.Tasks", "Task"),
 			new KnownTypeReference(KnownTypeCode.TaskOfT,     "System.Threading.Tasks", "Task", 1, baseType: KnownTypeCode.Task),
@@ -368,6 +371,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets a type reference pointing to the <c>System.Collections.Generic.IList{T}</c> type.
 		/// </summary>
 		public static readonly KnownTypeReference IListOfT = Get(KnownTypeCode.IListOfT);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>System.Collections.Generic.IReadOnlyCollection{T}</c> type.
+		/// </summary>
+		public static readonly KnownTypeReference IReadOnlyCollectionOfT = Get(KnownTypeCode.IReadOnlyCollectionOfT);
 		
 		/// <summary>
 		/// Gets a type reference pointing to the <c>System.Collections.Generic.IReadOnlyList{T}</c> type.

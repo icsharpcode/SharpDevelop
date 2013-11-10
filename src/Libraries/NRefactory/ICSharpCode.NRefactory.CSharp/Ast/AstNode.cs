@@ -384,7 +384,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return Ancestors.OfType<T>().FirstOrDefault();
 		}
-		
+
+		public AstNode GetParent(Func<AstNode, bool> pred)
+		{
+			return Ancestors.FirstOrDefault(pred);
+		}
+
 		public AstNodeCollection<T> GetChildrenByRole<T> (Role<T> role) where T : AstNode
 		{
 			return new AstNodeCollection<T> (this, role);
@@ -415,7 +420,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChildUnsafe (child, role);
 		}
 		
-		public void AddChildWithExistingRole<T> (T child) where T : AstNode
+		public void AddChildWithExistingRole (AstNode child)
 		{
 			if (child == null || child.IsNull)
 				return;

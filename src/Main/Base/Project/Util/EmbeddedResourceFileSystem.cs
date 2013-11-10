@@ -74,10 +74,16 @@ namespace ICSharpCode.SharpDevelop
 			return new StreamReader(OpenRead(fileName));
 		}
 		
-		public IEnumerable<FileName> GetFiles(DirectoryName directory, string searchPattern, SearchOption searchOption)
+		public IEnumerable<FileName> GetFiles(DirectoryName directory, string searchPattern, DirectorySearchOptions searchOptions)
 		{
-			return fileNames.Value.Where(fn => FileUtility.IsBaseDirectory(directory, fn)
-			                             && FileUtility.MatchesPattern(fn.GetFileName(), searchPattern));
+			return fileNames.Value.Where(delegate(FileName fn) {
+				if (!FileUtility.MatchesPattern(fn.GetFileName(), searchPattern))
+					return false;
+				if ((searchOptions & DirectorySearchOptions.IncludeSubdirectories) != 0)
+					return FileUtility.IsBaseDirectory(directory, fn);
+				else
+					return directory.Equals(fn.GetParentDirectory());
+			});
 		}
 	}
 }

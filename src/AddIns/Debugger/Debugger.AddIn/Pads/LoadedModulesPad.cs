@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 
 using Debugger;
+using ICSharpCode.Core.Presentation;
 using Debugger.AddIn.Pads.Controls;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
@@ -32,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			listView = new ListView();
 			listView.View = (GridView)res["loadedModulesGridView"];
+			listView.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "50%;70;50%;35;120");
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
 			RefreshPad();

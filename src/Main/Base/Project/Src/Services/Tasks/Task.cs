@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows.Media;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
@@ -26,8 +28,6 @@ namespace ICSharpCode.SharpDevelop
 		TaskType type;
 		PermanentAnchor position;
 		bool hasLocation;
-		string contextMenuAddInTreeEntry;
-		object tag;
 
 		public override string ToString()
 		{
@@ -78,29 +78,40 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		public string File {
+			get { return position == null ? null : System.IO.Path.GetFileName(position.FileName); }
+		}
+		
+		public string Path {
+			get { return position == null ? null : System.IO.Path.GetDirectoryName(position.FileName); }
+		}
+		
 		public TaskType TaskType {
 			get {
 				return type;
 			}
 		}
 		
-		public string ContextMenuAddInTreeEntry {
+		public ImageSource TaskTypeImage {
 			get {
-				return contextMenuAddInTreeEntry;
-			}
-			set {
-				contextMenuAddInTreeEntry = value;
+				switch (type) {
+					case TaskType.Error:
+						return PresentationResourceService.GetBitmapSource("Icons.16x16.Error");
+					case TaskType.Warning:
+						return PresentationResourceService.GetBitmapSource("Icons.16x16.Warning");
+					case TaskType.Message:
+						return PresentationResourceService.GetBitmapSource("Icons.16x16.Information");
+					case TaskType.Comment:
+						return PresentationResourceService.GetBitmapSource("Icons.16x16.Question");
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
 			}
 		}
 		
-		public object Tag {
-			get {
-				return tag;
-			}
-			set {
-				tag = value;
-			}
-		}
+		public string ContextMenuAddInTreeEntry { get; set; }
+		
+		public object Tag { get; set; }
 		
 		/// <summary>
 		/// Contains a reference to the build error.
@@ -151,9 +162,9 @@ namespace ICSharpCode.SharpDevelop
 				description = error.ErrorText + " (" + error.ErrorCode + ")";
 			}
 			if (error.ContextMenuAddInTreeEntry != null) {
-				contextMenuAddInTreeEntry = error.ContextMenuAddInTreeEntry;
+				ContextMenuAddInTreeEntry = error.ContextMenuAddInTreeEntry;
 			}
-			tag = error.Tag;
+			this.Tag = error.Tag;
 			this.BuildError = error;
 		}
 		

@@ -16,7 +16,9 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class WordCountDialog : BaseSharpDevelopForm
+	// TODO: rewrite without XMLForms
+	#pragma warning disable 618
+	class WordCountDialog : BaseSharpDevelopForm
 	{
 		List<Report> items;
 		Report total;

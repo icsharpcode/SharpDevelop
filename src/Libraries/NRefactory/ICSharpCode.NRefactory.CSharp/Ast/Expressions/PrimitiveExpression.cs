@@ -54,8 +54,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override TextLocation EndLocation {
 			get {
 				if (!endLocation.HasValue) {
-					endLocation = value is string ? AdvanceLocation (StartLocation, literalValue) :
-						new TextLocation (StartLocation.Line, StartLocation.Column + literalValue.Length);
+					endLocation = value is string ? AdvanceLocation (StartLocation, literalValue ?? "") :
+						new TextLocation (StartLocation.Line, StartLocation.Column + (literalValue ?? "").Length);
 				}
 				return endLocation.Value;
 			}
@@ -72,7 +72,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		/// <remarks>Never returns null.</remarks>
 		public string LiteralValue {
+			get { return literalValue ?? ""; }
+		}
+		
+		/// <remarks>Can be null.</remarks>
+		public string UnsafeLiteralValue {
 			get { return literalValue; }
 		}
 		
@@ -88,20 +94,20 @@ namespace ICSharpCode.NRefactory.CSharp
 		public PrimitiveExpression (object value)
 		{
 			this.Value = value;
-			this.literalValue = "";
+			this.literalValue = null;
 		}
 		
 		public PrimitiveExpression (object value, string literalValue)
 		{
 			this.Value = value;
-			this.literalValue = literalValue ?? "";
+			this.literalValue = literalValue;
 		}
 		
 		public PrimitiveExpression (object value, TextLocation startLocation, string literalValue)
 		{
 			this.Value = value;
 			this.startLocation = startLocation;
-			this.literalValue = literalValue ?? "";
+			this.literalValue = literalValue;
 		}
 		
 		public override void AcceptVisitor (IAstVisitor visitor)
@@ -127,19 +133,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				char* p = start;
 				char* endPtr = start + str.Length;
 				while (p < endPtr) {
-					switch (*p) {
-						case '\r':
-							char* nextp = p + 1;
-							if (nextp < endPtr && *nextp == '\n')
-								p++;
-							goto case '\n';
-						case '\n':
-							line++;
-							col = 1;
-							break;
-						default:
-							col++;
-							break;
+					var nl = NewLine.GetDelimiterLength(*p, () => {
+						char* nextp = p + 1;
+						if (nextp < endPtr)
+							return *nextp;
+						return '\0';
+					});
+					if (nl > 0) {
+						line++;
+						col = 1;
+						if (nl == 2)
+							p++;
+					} else {
+						col++;
 					}
 					p++;
 				}

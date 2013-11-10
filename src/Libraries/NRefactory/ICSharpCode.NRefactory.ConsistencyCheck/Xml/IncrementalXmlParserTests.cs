@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				
 				// Randomly mutate the file:
 				
-				List<TextChangeEventArgs> changes = new List<TextChangeEventArgs>();
+//				List<TextChangeEventArgs> changes = new List<TextChangeEventArgs>();
 				int modifications = rnd.Next(0, 25);
 				int offset = 0;
 				for (int i = 0; i < modifications; i++) {

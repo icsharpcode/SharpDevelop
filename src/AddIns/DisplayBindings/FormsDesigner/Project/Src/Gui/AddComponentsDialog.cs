@@ -18,6 +18,7 @@ using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
+	#pragma warning disable 618
 	public class AddComponentsDialog : BaseSharpDevelopForm
 	{
 		ArrayList selectedComponents;

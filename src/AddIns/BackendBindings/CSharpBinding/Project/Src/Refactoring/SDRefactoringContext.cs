@@ -146,6 +146,12 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
+		public override string DefaultNamespace {
+			get {
+				return string.Empty; // TODO: get namespace from current project
+			}
+		}
+		
 		public override string GetText(int offset, int length)
 		{
 			return textSource.GetText(offset, length);

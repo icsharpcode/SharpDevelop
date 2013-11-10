@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		{
 			if (currentDocument == null)
 				currentDocument = new ReadOnlyDocument(File.ReadAllText(currentFileName));
-			if (node is CSharpTokenNode) {
+			if (IsLeafNode(node)) {
 				Assert.IsNull(node.FirstChild, "Token nodes should not have children");
 			} else {
 				var prevNodeEnd = node.StartLocation;
@@ -64,6 +64,16 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				}
 				CheckWhitespace(prevNode, prevNodeEnd, node, node.EndLocation, currentFileName, currentDocument);
 			}
+		}
+		
+		static bool IsLeafNode(AstNode node)
+		{
+
+			if (node.NodeType == NodeType.Token)
+				return true;
+			if (node.NodeType == NodeType.Whitespace)
+				return !(node is PragmaWarningPreprocessorDirective);
+			return node is PrimitiveType || node is PrimitiveExpression || node is NullReferenceExpression;
 		}
 		
 		static void CheckWhitespace(AstNode startNode, TextLocation whitespaceStart, AstNode endNode, TextLocation whitespaceEnd, string currentFileName, IDocument currentDocument)

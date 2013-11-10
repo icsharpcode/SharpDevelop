@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			
 			Assert.AreEqual(new Role[] {
 			                	Roles.NamespaceKeyword,
-			                	Roles.Identifier,
+			                	NamespaceDeclaration.NamespaceNameRole,
 			                	Roles.LBrace,
 			                	Roles.PreProcessorDirective,
 			                	Roles.Comment,
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			
 			Assert.AreEqual(new Role[] {
 			                	Roles.NamespaceKeyword,
-			                	Roles.Identifier,
+			                	NamespaceDeclaration.NamespaceNameRole,
 			                	Roles.LBrace,
 			                	Roles.PreProcessorDirective,
 			                	Roles.Comment,
@@ -121,15 +121,33 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(CommentType.SingleLine, ns.GetChildrenByRole(Roles.Comment).First().CommentType);
 			Assert.AreEqual(CommentType.InactiveCode, ns.GetChildrenByRole(Roles.Comment).Last().CommentType);
 		}
-		
+
 		[Test]
 		public void PragmaWarning()
 		{
 			string program = "#pragma warning disable 809";
-			var ppd = ParseUtilCSharp.ParseGlobal<PragmaWarningPreprocssorDirective>(program);
+			var ppd = ParseUtilCSharp.ParseGlobal<PragmaWarningPreprocessorDirective>(program);
 			Assert.AreEqual(PreProcessorDirectiveType.Pragma, ppd.Type);
 			Assert.IsTrue(ppd.Disable);
-			Assert.IsTrue(ppd.WarningList.Contains (809));
+			Assert.IsTrue(ppd.IsDefined (809));
+		}
+		
+		[Test]
+		public void PragmaWarningLocations()
+		{
+			string program = "#pragma warning disable 809";
+			var ppd = ParseUtilCSharp.ParseGlobal<PragmaWarningPreprocessorDirective>(program);
+			Assert.AreEqual(new TextLocation(1, 1), ppd.StartLocation);
+			Assert.AreEqual(new TextLocation(1, 1), ppd.PragmaToken.StartLocation);
+			Assert.AreEqual(new TextLocation(1, 8), ppd.PragmaToken.EndLocation);
+			Assert.AreEqual(new TextLocation(1, 9), ppd.WarningToken.StartLocation);
+			Assert.AreEqual(new TextLocation(1, 16), ppd.WarningToken.EndLocation);
+			Assert.AreEqual(new TextLocation(1, 17), ppd.DisableToken.StartLocation);
+			Assert.AreEqual(new TextLocation(1, 24), ppd.DisableToken.EndLocation);
+			var id = ppd.Warnings.Single();
+			Assert.AreEqual(new TextLocation(1, 25), id.StartLocation);
+			Assert.AreEqual(new TextLocation(1, 28), id.EndLocation);
+			Assert.AreEqual(new TextLocation(1, 28), ppd.EndLocation);
 		}
 		
 		[Test, Ignore("mcs crashes because it tries to compute the full path to file.cs")]
@@ -137,7 +155,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			string program = "#pragma checksum \"file.cs\" \"{3673e4ca-6098-4ec1-890f-8fceb2a794a2}\" \"{012345678AB}\"";
 			var ppd = ParseUtilCSharp.ParseGlobal<PreProcessorDirective>(program);
-			Assert.IsFalse(ppd is PragmaWarningPreprocssorDirective);
+			Assert.IsFalse(ppd is PragmaWarningPreprocessorDirective);
 			Assert.AreEqual(PreProcessorDirectiveType.Pragma, ppd.Type);
 			Assert.AreEqual("checksum \"file.cs\" \"{3673e4ca-6098-4ec1-890f-8fceb2a794a2}\" \"{012345678AB}\"", ppd.Argument);
 		}
@@ -156,7 +174,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			}, syntaxTree.Children.Select(c => c.Role).ToArray());
 			Assert.AreEqual(new TextLocation(2, 1), syntaxTree.Members.Single().StartLocation);
 
-			var ppd = (LinePreprocssorDirective)syntaxTree.FirstChild;
+			var ppd = (LinePreprocessorDirective)syntaxTree.FirstChild;
 			Assert.AreEqual(PreProcessorDirectiveType.Line, ppd.Type);
 			Assert.AreEqual(200, ppd.LineNumber);
 			Assert.AreEqual("otherfile.cs", ppd.FileName);
@@ -169,13 +187,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			CSharpParser parser = new CSharpParser();
 			SyntaxTree syntaxTree = parser.Parse(program);
 			Assert.IsFalse(parser.HasErrors, string.Join(Environment.NewLine, parser.Errors.Select(e => e.Message)));
+			var roles = syntaxTree.Children.Select(c => c.Role).ToArray();
 			Assert.AreEqual(new Role[] {
-			                	Roles.PreProcessorDirective,
-			                	Roles.NewLine,
-			                	NamespaceDeclaration.MemberRole
-			}, syntaxTree.Children.Select(c => c.Role).ToArray());
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				NamespaceDeclaration.MemberRole
+			}, roles);
 			Assert.AreEqual(new TextLocation(2, 1), syntaxTree.Members.Single().StartLocation);
-			var ppd = (LinePreprocssorDirective)syntaxTree.FirstChild;
+			var ppd = (LinePreprocessorDirective)syntaxTree.FirstChild;
 			Assert.AreEqual(PreProcessorDirectiveType.Line, ppd.Type);
 			Assert.AreEqual(200, ppd.LineNumber);
 		}
@@ -288,7 +307,63 @@ class B { }
 			Assert.AreEqual(PreProcessorDirectiveType.Elif, bbb.Type);
 			Assert.AreEqual("BBB", bbb.Argument);
 		}
-		
+
+		[Test]
+		public void NewLinesAfterPreprocessorDirectives()
+		{
+			string program = @"#define FOO
+#undef FOO
+#define FOO
+#region Blah
+#if FOO
+class Test {}
+#elif FOO
+class Test {}
+#else
+class Test {}
+#endif
+#endregion";
+			CSharpParser parser = new CSharpParser();
+			SyntaxTree syntaxTree = parser.Parse(program);
+			Assert.IsFalse(parser.HasErrors, string.Join(Environment.NewLine, parser.Errors.Select(e => string.Format("{0}: {1}", e.Region.BeginLine, e.Message))));
+			var roles = syntaxTree.Children.Select(c => c.Role).ToArray();
+			Assert.AreEqual(new Role[] {
+				// #define FOO
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				// #undef FOO
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				// #define FOO
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				// #region Blah
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				// #if FOO
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				// class Test {}
+				NamespaceDeclaration.MemberRole,
+				Roles.NewLine,
+				// #elif FOO
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				// class Test {}
+				Roles.Comment,
+				// #else
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				// class Test {}
+				Roles.Comment,
+				// #endif
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				// #endregion
+				Roles.PreProcessorDirective
+			}, roles);
+		}
+				
 		[Test]
 		public void ConditionalSymbolTest()
 		{

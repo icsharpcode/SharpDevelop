@@ -51,7 +51,11 @@ namespace Mono.CSharp
 		public virtual void Visit (UsingExternAlias uea)
 		{
 		}
-		
+
+		public virtual void Visit (CompilationSourceFile csf)
+		{
+		}
+
 		public virtual void Visit (Class c)
 		{
 			VisitTypeDefinition (c);

@@ -466,12 +466,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if ((candidate.Errors & OverloadResolutionErrors.TypeInferenceFailed) != 0)
 				return OverloadResolutionErrors.None;
 			
-			IMethod method = candidate.Member as IMethod;
-			if (method == null || method.TypeParameters.Count == 0)
+			if (candidate.TypeParameters == null || candidate.TypeParameters.Count == 0)
 				return OverloadResolutionErrors.None; // the method isn't generic
 			var substitution = GetSubstitution(candidate);
-			for (int i = 0; i < method.TypeParameters.Count; i++) {
-				if (!ValidateConstraints(method.TypeParameters[i], substitution.MethodTypeArguments[i], substitution))
+			for (int i = 0; i < candidate.TypeParameters.Count; i++) {
+				if (!ValidateConstraints(candidate.TypeParameters[i], substitution.MethodTypeArguments[i], substitution))
 					return OverloadResolutionErrors.MethodConstraintsNotSatisfied;
 			}
 			return OverloadResolutionErrors.None;
@@ -937,7 +936,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <see cref="InvocationResolveResult.InitializerStatements"/>
 		/// <param name="returnTypeOverride">
 		/// If not null, use this instead of the ReturnType of the member as the type of the created resolve result.
-		/// </param>
 		/// </param>
 		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult, IList<ResolveResult> initializerStatements = null, IType returnTypeOverride = null)
 		{

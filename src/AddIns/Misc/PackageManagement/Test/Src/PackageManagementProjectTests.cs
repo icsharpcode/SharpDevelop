@@ -486,14 +486,14 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void PackageReferenceRemoved_ProjectManagerPackageReferenceRemovedEventFired_EventFiresWithPackage()
+		public void PackageReferenceRemoving_ProjectManagerPackageReferenceRemovingEventFired_EventFiresWithPackage()
 		{
 			CreateProject();
 			PackageOperationEventArgs eventArgs = null;
-			project.PackageReferenceRemoved += (sender, e) => eventArgs = e;
+			project.PackageReferenceRemoving += (sender, e) => eventArgs = e;
 			
 			var expectedPackage = new FakePackage();
-			fakeProjectManager.FirePackageReferenceRemoved(expectedPackage);
+			fakeProjectManager.FirePackageReferenceRemoving(expectedPackage);
 			
 			Assert.AreEqual(expectedPackage, eventArgs.Package);
 		}

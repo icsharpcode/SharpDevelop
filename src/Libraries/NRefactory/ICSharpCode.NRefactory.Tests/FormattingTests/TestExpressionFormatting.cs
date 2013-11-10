@@ -80,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		}
 
 
-
+		
 		[Test]
 		public void TestArrayInitializer ()
 		{
@@ -108,6 +108,23 @@ class Test
 		};
 	}
 }");
+		}
+
+		[Test]
+		public void TestNoUneccessaryChangesToImplicitArrayInitializer ()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			const string input = @"using System.Collections.Generic;
+
+class Test
+{
+	void Init ()
+	{
+		var list = { 1, 2 };
+	}
+}";
+
+			TestNoUnnecessaryChanges(policy, input);
 		}
 
 
@@ -154,6 +171,206 @@ class Test
 		System.Console.WriteLine ();
 	}
 }");
+		}
+
+
+		[Test]
+		public void AnonymousBlocksAsParameter ()
+		{
+			var policy = FormattingOptionsFactory.CreateMono ();
+
+			Test (policy, @"class Test
+{
+	Test TestMethod ()
+	{
+		FooBar (
+			foo,
+			delegate {
+Bar ();
+}, 
+test
+);
+	}
+}", @"class Test
+{
+	Test TestMethod ()
+	{
+		FooBar (
+			foo,
+			delegate {
+				Bar ();
+			}, 
+			test
+		);
+	}
+}");
+		}
+
+
+		[Test]
+		public void TestAnonymousMethodBlocks ()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+
+			policy.AnonymousMethodBraceStyle = BraceStyle.NextLine;
+
+			Test (policy, @"class Test
+{
+	Test TestMethod ()
+	{
+		Action act = delegate{};
+	}
+}", @"class Test
+{
+	Test TestMethod ()
+	{
+		Action act = delegate
+		{
+		};
+	}
+}");
+		}
+
+		[Test]
+		public void TestLambdaBraceStyle ()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+
+			policy.AnonymousMethodBraceStyle = BraceStyle.NextLine;
+
+			Test (policy, @"class Test
+{
+	Test TestMethod ()
+	{
+		Action act = () => {};
+	}
+}", @"class Test
+{
+	Test TestMethod ()
+	{
+		Action act = () =>
+		{
+		};
+	}
+}");
+		}
+
+		[Test]
+		public void TestBinaryExpressionsInInitializer ()
+		{
+			var policy = FormattingOptionsFactory.CreateMono ();
+			Test (policy, @"class Test
+{
+	private void Foo ()
+	{
+		int x =    5+ 
+23 - 
+43*12 - 44*
+5;
+	}
+}
+", @"class Test
+{
+	private void Foo ()
+	{
+		int x = 5 +
+		        23 -
+		        43 * 12 - 44 *
+		        5;
+	}
+}
+");
+		}
+
+		[Test]
+		public void TestBinaryExpressionsInInitializerBreakAfterAssign ()
+		{
+			var policy = FormattingOptionsFactory.CreateMono ();
+			Test (policy, @"class Test
+{
+	private void Foo ()
+	{
+		int x =
+ 5+ 
+23 
+- 43
+*12 
+ - 
+44*
+5;
+	}
+}
+", @"class Test
+{
+	private void Foo ()
+	{
+		int x =
+			5 +
+			23
+			- 43
+			* 12
+			-
+			44 *
+			5;
+	}
+}
+");
+			}
+
+		[Test]
+		public void TestBinaryExpressionsInInitializerWithParenthesizedExpr ()
+		{
+			var policy = FormattingOptionsFactory.CreateMono ();
+			Test (policy, @"class Test
+{
+	private void Foo ()
+	{
+		int x = 5
+		+ (2343 *  12)            - (
+		44 * 5
+		);
+	}
+}
+", @"class Test
+{
+	private void Foo ()
+	{
+		int x = 5
+		        + (2343 * 12) - (
+		            44 * 5
+		        );
+	}
+}
+");
+		}
+
+		[Test]
+		public void TestArrayInitializerFormattingBugSimple ()
+		{
+			var policy = FormattingOptionsFactory.CreateSharpDevelop ();
+			Test (policy, @"class Test
+{
+	static readonly AstNode forPattern =
+		new Choice {
+			new BinaryOperatorExpression(
+				PatternHelper.OptionalParentheses(
+					new AnyNode(""upperBound"")
+				)
+			)
+		};
+}
+", @"class Test
+{
+	static readonly AstNode forPattern =
+		new Choice {
+			new BinaryOperatorExpression(
+				PatternHelper.OptionalParentheses(
+					new AnyNode(""upperBound"")
+				)
+			)
+		};
+}
+");
 		}
 	}
 }

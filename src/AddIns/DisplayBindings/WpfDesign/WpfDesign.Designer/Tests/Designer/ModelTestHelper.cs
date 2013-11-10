@@ -59,14 +59,23 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			return canvasChild;
 		}
 		
-		protected void AssertCanvasDesignerOutput(string expectedXaml, DesignContext context)
+		protected void AssertCanvasDesignerOutput(string expectedXaml, DesignContext context, params String[] additionalXmlns)
 		{
+			string canvasStartTag =
+				"<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
+				 "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" " +
+				 "xmlns:t=\"" + DesignerTestsNamespace + "\"";
+
+			
+			foreach(string ns in additionalXmlns) {
+				canvasStartTag += " " + ns;
+			}
+
+			expectedXaml = canvasStartTag + ">\n" + expectedXaml.Trim();
+			
 			expectedXaml =
 				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\n" +
-				("<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
-				 "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" " +
-				 "xmlns:t=\"" + DesignerTestsNamespace + "\">\n" + expectedXaml.Trim())
-				.Replace("\r", "").Replace("\n", "\n  ")
+				expectedXaml.Replace("\r", "").Replace("\n", "\n  ")
 				+ "\n</Canvas>";
 			
 			StringWriter stringWriter = new StringWriter();

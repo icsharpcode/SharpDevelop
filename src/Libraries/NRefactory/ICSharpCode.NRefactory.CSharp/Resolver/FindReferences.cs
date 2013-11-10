@@ -230,66 +230,74 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return new[] { GetSearchScopeForNamespace((INamespace)symbol) };
 				case SymbolKind.TypeParameter:
 					return new[] { GetSearchScopeForTypeParameter((ITypeParameter)symbol) };
-					// TODO: IVariable etc.
 			}
-			IEntity entity = symbol as IEntity;
-			if (entity == null)
-				throw new NotSupportedException("Unsupported symbol type");
-			if (entity is IMember)
-				entity = NormalizeMember((IMember)entity);
-			Accessibility effectiveAccessibility = GetEffectiveAccessibility(entity);
-			var topLevelTypeDefinition = GetTopLevelTypeDefinition(entity);
 			SearchScope scope;
 			SearchScope additionalScope = null;
-			switch (entity.SymbolKind) {
-				case SymbolKind.TypeDefinition:
-					scope = FindTypeDefinitionReferences((ITypeDefinition)entity, this.FindTypeReferencesEvenIfAliased, out additionalScope);
-					break;
-				case SymbolKind.Field:
-					if (entity.DeclaringTypeDefinition != null && entity.DeclaringTypeDefinition.Kind == TypeKind.Enum)
-						scope = FindMemberReferences(entity, m => new FindEnumMemberReferences((IField)m));
-					else
-						scope = FindMemberReferences(entity, m => new FindFieldReferences((IField)m));
-					break;
-				case SymbolKind.Property:
-					scope = FindMemberReferences(entity, m => new FindPropertyReferences((IProperty)m));
-					if (entity.Name == "Current")
-						additionalScope = FindEnumeratorCurrentReferences((IProperty)entity);
-					else if (entity.Name == "IsCompleted")
-						additionalScope = FindAwaiterIsCompletedReferences((IProperty)entity);
-					break;
-				case SymbolKind.Event:
-					scope = FindMemberReferences(entity, m => new FindEventReferences((IEvent)m));
-					break;
-				case SymbolKind.Method:
-					scope = GetSearchScopeForMethod((IMethod)entity);
-					break;
-				case SymbolKind.Indexer:
-					scope = FindIndexerReferences((IProperty)entity);
-					break;
-				case SymbolKind.Operator:
-					scope = GetSearchScopeForOperator((IMethod)entity);
-					break;
-				case SymbolKind.Constructor:
-					IMethod ctor = (IMethod)entity;
-					scope = FindObjectCreateReferences(ctor);
-					additionalScope = FindChainedConstructorReferences(ctor);
-					break;
-				case SymbolKind.Destructor:
-					scope = GetSearchScopeForDestructor((IMethod)entity);
-					break;
-				default:
-					throw new ArgumentException("Unknown entity type " + entity.SymbolKind);
+			IEntity entity;
+
+			if (symbol.SymbolKind == SymbolKind.Parameter) {
+				var par = (IParameter)symbol;
+				scope = GetSearchScopeForParameter(par);
+				entity = par.Owner;
+			} else {
+				entity = symbol as IEntity;
+				if (entity == null)
+					throw new NotSupportedException("Unsupported symbol type");
+				if (entity is IMember)
+					entity = NormalizeMember((IMember)entity);
+				switch (entity.SymbolKind) {
+					case SymbolKind.TypeDefinition:
+						scope = FindTypeDefinitionReferences((ITypeDefinition)entity, this.FindTypeReferencesEvenIfAliased, out additionalScope);
+						break;
+					case SymbolKind.Field:
+						if (entity.DeclaringTypeDefinition != null && entity.DeclaringTypeDefinition.Kind == TypeKind.Enum)
+							scope = FindMemberReferences(entity, m => new FindEnumMemberReferences((IField)m));
+						else
+							scope = FindMemberReferences(entity, m => new FindFieldReferences((IField)m));
+						break;
+					case SymbolKind.Property:
+						scope = FindMemberReferences(entity, m => new FindPropertyReferences((IProperty)m));
+						if (entity.Name == "Current")
+							additionalScope = FindEnumeratorCurrentReferences((IProperty)entity);
+						else if (entity.Name == "IsCompleted")
+							additionalScope = FindAwaiterIsCompletedReferences((IProperty)entity);
+						break;
+					case SymbolKind.Event:
+						scope = FindMemberReferences(entity, m => new FindEventReferences((IEvent)m));
+						break;
+					case SymbolKind.Method:
+						scope = GetSearchScopeForMethod((IMethod)entity);
+						break;
+					case SymbolKind.Indexer:
+						scope = FindIndexerReferences((IProperty)entity);
+						break;
+					case SymbolKind.Operator:
+						scope = GetSearchScopeForOperator((IMethod)entity);
+						break;
+					case SymbolKind.Constructor:
+						IMethod ctor = (IMethod)entity;
+						scope = FindObjectCreateReferences(ctor);
+						additionalScope = FindChainedConstructorReferences(ctor);
+						break;
+					case SymbolKind.Destructor:
+						scope = GetSearchScopeForDestructor((IMethod)entity);
+						break;
+					default:
+						throw new ArgumentException("Unknown entity type " + entity.SymbolKind);
+				}
 			}
+			var effectiveAccessibility = entity != null ? GetEffectiveAccessibility(entity) : Accessibility.Private;
+			var topLevelTypeDefinition = GetTopLevelTypeDefinition(entity);
+
 			if (scope.accessibility == Accessibility.None)
 				scope.accessibility = effectiveAccessibility;
-			scope.declarationCompilation = entity.Compilation;
+			scope.declarationCompilation = entity != null ? entity.Compilation : null;
 			scope.topLevelTypeDefinition = topLevelTypeDefinition;
 			scope.findReferences = this;
 			if (additionalScope != null) {
 				if (additionalScope.accessibility == Accessibility.None)
 					additionalScope.accessibility = effectiveAccessibility;
-				additionalScope.declarationCompilation = entity.Compilation;
+				additionalScope.declarationCompilation = scope.declarationCompilation;
 				additionalScope.topLevelTypeDefinition = topLevelTypeDefinition;
 				additionalScope.findReferences = this;
 				return new[] { scope, additionalScope };
@@ -692,6 +700,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			referencedMember = NormalizeMember(referencedMember);
 			if (member.Equals(referencedMember))
 				return true;
+			if (FindCallsThroughInterface && member.DeclaringTypeDefinition != null && member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
+				if (FindOnlySpecializedReferences) {
+					return referencedMember.ImplementedInterfaceMembers.Contains(member);
+				} else {
+					return referencedMember.ImplementedInterfaceMembers.Any(m => m.MemberDefinition.Equals(member));
+				}
+			}
 			if (!isVirtualCall)
 				return false;
 			bool isInterfaceCall = referencedMember.DeclaringTypeDefinition != null && referencedMember.DeclaringTypeDefinition.Kind == TypeKind.Interface;
@@ -1487,12 +1502,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return true;
 
 				var st = node as SimpleType;
-				if (st != null && st.Identifier == ns.Name)
-					return true;
+				if (st != null && st.Identifier == ns.Name) 
+					return !st.AncestorsAndSelf.TakeWhile (n => n is AstType).Any (m => m.Role == NamespaceDeclaration.NamespaceNameRole);
 
 				var mt = node as MemberType;
 				if (mt != null && mt.MemberName == ns.Name)
-					return true;
+					return !mt.AncestorsAndSelf.TakeWhile (n => n is AstType).Any (m => m.Role == NamespaceDeclaration.NamespaceNameRole);
 
 				var identifer = node as IdentifierExpression;
 				if (identifer != null && identifer.Identifier == ns.Name)
@@ -1510,6 +1525,59 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				var nsrr = rr as NamespaceResolveResult;
 				return nsrr != null && nsrr.NamespaceName.StartsWith(ns.FullName, StringComparison.Ordinal);
+			}
+		}
+		#endregion
+	
+		#region Find Parameter References
+
+		SearchScope GetSearchScopeForParameter(IParameter parameter)
+		{
+			var scope = new SearchScope (
+				delegate {
+					return new FindParameterReferencesNavigator (parameter);
+				}
+			);
+			return scope;
+		}
+
+		class FindParameterReferencesNavigator : FindReferenceNavigator
+		{
+			readonly IParameter parameter;
+
+			public FindParameterReferencesNavigator(IParameter parameter)
+			{
+				this.parameter = parameter;
+			}
+
+			internal override bool CanMatch(AstNode node)
+			{
+				var expr = node as IdentifierExpression;
+				if (expr != null)
+					return expr.TypeArguments.Count == 0 && parameter.Name == expr.Identifier;
+				var vi = node as VariableInitializer;
+				if (vi != null)
+					return vi.Name == parameter.Name;
+				var pd = node as ParameterDeclaration;
+				if (pd != null)
+					return pd.Name == parameter.Name;
+				var id = node as Identifier;
+				if (id != null)
+					return id.Name == parameter.Name;
+				var nae = node as NamedArgumentExpression;
+				if (nae != null)
+					return nae.Name == parameter.Name;
+				return false;
+			}
+
+			internal override bool IsMatch(ResolveResult rr)
+			{
+				var lrr = rr as LocalResolveResult;
+				if (lrr != null)
+					return lrr.Variable.Name == parameter.Name && lrr.Variable.Region == parameter.Region;
+
+				var nar = rr as NamedArgumentResolveResult;
+				return nar != null && nar.Parameter.Name == parameter.Name && nar.Parameter.Region == parameter.Region;
 			}
 		}
 		#endregion

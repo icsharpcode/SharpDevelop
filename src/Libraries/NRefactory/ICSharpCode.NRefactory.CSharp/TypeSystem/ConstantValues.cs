@@ -241,8 +241,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 	{
 		readonly ITypeReference targetType;
 		readonly ConstantExpression expression;
+		readonly bool allowNullableConstants;
 		
-		public ConstantCast(ITypeReference targetType, ConstantExpression expression)
+		public ConstantCast(ITypeReference targetType, ConstantExpression expression, bool allowNullableConstants)
 		{
 			if (targetType == null)
 				throw new ArgumentNullException("targetType");
@@ -250,11 +251,19 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 				throw new ArgumentNullException("expression");
 			this.targetType = targetType;
 			this.expression = expression;
+			this.allowNullableConstants = allowNullableConstants;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			return resolver.ResolveCast(targetType.Resolve(resolver.CurrentTypeResolveContext), expression.Resolve(resolver));
+			var type = targetType.Resolve(resolver.CurrentTypeResolveContext);
+			var resolveResult = expression.Resolve(resolver);
+			if (allowNullableConstants && NullableType.IsNullable(type)) {
+				resolveResult = resolver.ResolveCast(NullableType.GetUnderlyingType(type), resolveResult);
+				if (resolveResult.IsCompileTimeConstant)
+					return new ConstantResolveResult(type, resolveResult.ConstantValue);
+			}
+			return resolver.ResolveCast(type, resolveResult);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()
@@ -268,7 +277,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		{
 			ConstantCast cast = other as ConstantCast;
 			return cast != null
-				&& this.targetType == cast.targetType && this.expression == cast.expression;
+				&& this.targetType == cast.targetType && this.expression == cast.expression && this.allowNullableConstants == cast.allowNullableConstants;
 		}
 	}
 	

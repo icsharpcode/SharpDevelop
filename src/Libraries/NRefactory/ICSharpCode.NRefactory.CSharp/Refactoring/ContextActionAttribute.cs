@@ -34,13 +34,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		public string Description { get; set; }
 		public string Category { get; set; }
 
-		/// <summary>
-		/// When this action pops up show code issue options for this issue as well. This is used for code actions
-		/// that are useful on their own without issues. But the user may choose to disable the issue but may want the action.
-		/// Use case: 'var <--> explicit type' action
-		/// </summary>
-		public Type BoundToIssue { get; set; }
-
 		public ContextActionAttribute (string title)
 		{
 			Title = title;

@@ -316,8 +316,11 @@ namespace Mono.CSharp {
 
 			var hoisted = localVariable.HoistedVariant;
 			if (hoisted != null && hoisted.Storey != this && hoisted.Storey is StateMachine) {
-				// TODO: It's too late the field is defined in HoistedLocalVariable ctor
+				//
+				// Variable is already hoisted but we need it in storey which can be shared
+				//
 				hoisted.Storey.hoisted_locals.Remove (hoisted);
+				hoisted.Storey.Members.Remove (hoisted.Field);
 				hoisted = null;
 			}
 
@@ -729,6 +732,12 @@ namespace Mono.CSharp {
 			this.field = field;
 		}
 
+		public Field Field {
+			get {
+				return field;
+			}
+		}
+
 		public AnonymousMethodStorey Storey {
 			get {
 				return storey;
@@ -849,12 +858,6 @@ namespace Mono.CSharp {
 
 		#region Properties
 
-		public Field Field {
-			get {
-				return field;
-			}
-		}
-
 		public bool IsAssigned { get; set; }
 
 		public ParameterReference Parameter {
@@ -893,12 +896,6 @@ namespace Mono.CSharp {
 		public HoistedThis (AnonymousMethodStorey storey, Field field)
 			: base (storey, field)
 		{
-		}
-
-		public Field Field {
-			get {
-				return field;
-			}
 		}
 	}
 
@@ -1050,10 +1047,10 @@ namespace Mono.CSharp {
 						return false;
 					
 					if (p_mod == Parameter.Modifier.NONE)
-						ec.Report.Error (1677, loc, "Parameter `{0}' should not be declared with the `{1}' keyword",
-							      (i + 1).ToString (), Parameter.GetModifierSignature (Parameters.FixedParameters [i].ModFlags));
+						ec.Report.Error (1677, Parameters[i].Location, "Parameter `{0}' should not be declared with the `{1}' keyword",
+							      (i + 1).ToString (), Parameter.GetModifierSignature (Parameters [i].ModFlags));
 					else
-						ec.Report.Error (1676, loc, "Parameter `{0}' must be declared with the `{1}' keyword",
+						ec.Report.Error (1676, Parameters[i].Location, "Parameter `{0}' must be declared with the `{1}' keyword",
 							      (i+1).ToString (), Parameter.GetModifierSignature (p_mod));
 					error = true;
 				}
@@ -1063,18 +1060,17 @@ namespace Mono.CSharp {
 
 				TypeSpec type = invoke_pd.Types [i];
 				
-				// We assume that generic parameters are always inflated
-				if (TypeManager.IsGenericParameter (type))
-					continue;
-				
-				if (TypeManager.HasElementType (type) && TypeManager.IsGenericParameter (TypeManager.GetElementType (type)))
+				//
+				// Assumes that generic mvar parameters are always inflated
+				//
+				if (ImplicitDelegateCreation.ContainsMethodTypeParameter (type))
 					continue;
 				
 				if (!TypeSpecComparer.IsEqual (invoke_pd.Types [i], Parameters.Types [i])) {
 					if (ignore_errors)
 						return false;
 					
-					ec.Report.Error (1678, loc, "Parameter `{0}' is declared as type `{1}' but should be `{2}'",
+					ec.Report.Error (1678, Parameters [i].Location, "Parameter `{0}' is declared as type `{1}' but should be `{2}'",
 						      (i+1).ToString (),
 						      Parameters.Types [i].GetSignatureForError (),
 						      invoke_pd.Types [i].GetSignatureForError ());
@@ -1667,18 +1663,25 @@ namespace Mono.CSharp {
 					if (src_block.HasCapturedThis) {
 						//
 						// Remove hoisted 'this' request when simple instance method is
-						// enough (no hoisted variables only 'this')
+						// enough. No hoisted variables only 'this' and don't need to
+						// propagate this to value type state machine.
 						//
-						if (src_block.ParametersBlock.StateMachine == null)
-							top_block.RemoveThisReferenceFromChildrenBlock (src_block);
+						StateMachine sm_parent = null;
+						var pb = src_block.ParametersBlock;
+						do {
+							sm_parent = pb.StateMachine;
+							pb = pb.Parent == null ? null : pb.Parent.ParametersBlock;
+						} while (sm_parent == null && pb != null);
 
-						//
-						// Special case where parent class is used to emit instance method
-						// because currect storey is of value type (async host). We cannot
-						// use ldftn on non-boxed instances either to share mutated state
-						//
-						if (sm != null && sm.Kind == MemberKind.Struct) {
-							parent = sm.Parent.PartialContainer;
+						if (sm_parent == null) {
+							top_block.RemoveThisReferenceFromChildrenBlock (src_block);
+						} else if (sm_parent.Kind == MemberKind.Struct) {
+							//
+							// Special case where parent class is used to emit instance method
+							// because currect storey is of value type (async host). We cannot
+							// use ldftn on non-boxed instances either to share mutated state
+							//
+							parent = sm_parent.Parent.PartialContainer;
 						}
 					}
 

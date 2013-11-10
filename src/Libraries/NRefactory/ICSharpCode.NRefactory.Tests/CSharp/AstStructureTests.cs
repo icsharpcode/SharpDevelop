@@ -31,13 +31,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			foreach (Type type in typeof(AstNode).Assembly.GetExportedTypes()) {
 				if (type.IsSubclassOf (typeof(AstNode))) {
 					foreach (FieldInfo field in type.GetFields()) {
-						Console.WriteLine (field);
 						if (field.FieldType.IsSubclassOf(typeof(Role))) {
-							Assert.IsTrue(field.IsPublic);
-							Assert.IsTrue(field.IsStatic);
-							Assert.IsTrue(field.IsInitOnly);
-							Assert.IsTrue(field.Name.EndsWith("Role", StringComparison.Ordinal));
-							Assert.IsNotNull(field.GetValue(null));
+							Assert.IsTrue(field.IsPublic, field + " should be public");
+							Assert.IsTrue(field.IsStatic, field + " should be static");
+							Assert.IsTrue(field.IsInitOnly, field + " should be readonly");
+							Assert.That(field.Name, Is.StringEnding("Role"));
+							Assert.IsNotNull(field.GetValue(null), field + " should not have null value");
 						}
 					}
 				}

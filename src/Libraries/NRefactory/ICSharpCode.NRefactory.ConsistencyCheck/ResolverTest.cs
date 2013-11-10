@@ -92,7 +92,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			{
 				foreach (AstNode node in syntaxTree.DescendantsAndSelf.Except(resolvedNodes.Keys)) {
 					if (!CSharpAstResolver.IsUnresolvableNode(node)) {
-						Console.WriteLine("Forgot to resolve " + node);
+						if (!node.Ancestors.Any(a => a is PreProcessorDirective)) {
+							Console.WriteLine("Forgot to resolve " + node);
+						}
 					}
 				}
 				foreach (var pair in resolvedNodes) {

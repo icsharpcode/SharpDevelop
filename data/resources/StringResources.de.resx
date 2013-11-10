@@ -415,10 +415,13 @@ Sie werden nicht mehr funktionieren, nachdem dieses AddIn entfernt wurde! Sind S
     <value>Hilfebibliothek</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
-    <value>Hilfetyp</value>
+    <value>Hilfetyp wählen</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
     <value>Help Library Manager kann nicht gestartet werden, weil kein Hilfekatalog installiert oder ausgewählt wurde. Bitte überprüfen Sie die Hilfeeinstellungen (siehe Extras &gt; Optionen... &gt; Tools &gt; Microsoft Help Viewer).</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotAvailableDownloadWinSDK" xml:space="preserve">
+    <value>Der Help Library Manager wurde nicht gefunden. Um die Hilfe von SharpDevelop nutzen zu können, laden Sie bitte das Windows SDK 7.1 von Microsoft herunter und installieren Sie es.</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>Help Library Manager wurde nicht gefunden. Bitte stellen Sie sicher, dass es korrekt installiert wurde.</value>
@@ -448,7 +451,7 @@ Sie werden nicht mehr funktionieren, nachdem dieses AddIn entfernt wurde! Sind S
     <value>Hilfe anzeigen</value>
   </data>
   <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
-    <value>Externe Hilfe verwenden</value>
+    <value>Externen Hilfebetrachter verwenden</value>
   </data>
   <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
     <value>Ich möchte die lokale Hilfe verwenden</value>
@@ -2017,6 +2020,12 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Debugger</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.AskForArguments" xml:space="preserve">
+    <value>Abfrage für Argumente und Arbeitsverzeichnis beim Start der ausführbaren Datei anzeigen.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
+    <value>Auf erster Anweisung des Programmes anhalten.</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
     <value>Decompiler aktivieren</value>
   </data>
@@ -2064,6 +2073,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption" xml:space="preserve">
     <value>Symbol- und Quellcodepfade:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.WithoutSource" xml:space="preserve">
+    <value>Debuggen ohne Quellcode</value>
   </data>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel" xml:space="preserve">
     <value>&amp;Header</value>
@@ -5121,6 +5133,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.Console" xml:space="preserve">
     <value>Konsole</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.DebugExecutable" xml:space="preserve">
+    <value>Ausführbare Datei debuggen</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Break" xml:space="preserve">
     <value>Unterbrechen</value>

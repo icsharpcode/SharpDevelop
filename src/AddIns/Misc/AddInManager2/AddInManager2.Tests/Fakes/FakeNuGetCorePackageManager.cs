@@ -151,5 +151,10 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 				UninstallPackageWithVersionCallback(packageId, version, forceRemove, removeDependencies);
 			}
 		}
+		
+		public void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions, bool ignoreWalkInfo)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

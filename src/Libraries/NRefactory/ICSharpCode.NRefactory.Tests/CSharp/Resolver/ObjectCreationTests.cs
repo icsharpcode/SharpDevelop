@@ -286,13 +286,10 @@ class C {
 }";
 			var rr = Resolve<ConversionResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
-			Assert.IsTrue(rr.Conversion.IsIdentityConversion);
-			var rr2 = (ConversionResolveResult)rr.Input;
-			Assert.IsFalse(rr2.IsError);
-			Assert.IsTrue(rr2.Conversion.IsMethodGroupConversion);
+			Assert.IsTrue(rr.Conversion.IsMethodGroupConversion);
 			
-			Assert.AreEqual("C.M", rr2.Conversion.Method.FullName);
-			var mgrr = (MethodGroupResolveResult)rr2.Input;
+			Assert.AreEqual("C.M", rr.Conversion.Method.FullName);
+			var mgrr = (MethodGroupResolveResult)rr.Input;
 			Assert.IsInstanceOf<ThisResolveResult>(mgrr.TargetResult);
 		}
 		

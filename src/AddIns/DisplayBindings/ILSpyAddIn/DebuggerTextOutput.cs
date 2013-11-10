@@ -11,20 +11,16 @@ using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {
-	public sealed class DebugInfoTokenWriterDecorator : DecoratingTokenWriter, ILocatable
+	public sealed class DebugInfoTokenWriterDecorator : DecoratingTokenWriter
 	{
 		readonly Stack<MethodDebugSymbols> symbolsStack = new Stack<MethodDebugSymbols>();
-		readonly ILocatable locationProvider;
 		
 		public readonly Dictionary<string, MethodDebugSymbols> DebugSymbols = new Dictionary<string, MethodDebugSymbols>();
 		public readonly Dictionary<string, ICSharpCode.NRefactory.TextLocation> MemberLocations = new Dictionary<string, ICSharpCode.NRefactory.TextLocation>();
 		
-		public DebugInfoTokenWriterDecorator(TokenWriter writer, ILocatable locationProvider)
+		public DebugInfoTokenWriterDecorator(TokenWriter writer)
 			: base(writer)
 		{
-			if (locationProvider == null)
-				throw new ArgumentNullException("locationProvider");
-			this.locationProvider = locationProvider;
 		}
 		
 		public override void StartNode(AstNode node)
@@ -60,10 +56,6 @@ namespace ICSharpCode.ILSpyAddIn
 				symbols.EndLocation = node.EndLocation;
 				DebugSymbols[XmlDocKeyProvider.GetKey(symbols.CecilMethod)] = symbols;
 			}
-		}
-		
-		public ICSharpCode.NRefactory.TextLocation Location {
-			get { return locationProvider.Location; }
 		}
 	}
 }

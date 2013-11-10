@@ -21,12 +21,13 @@ namespace CSharpBinding.Tests
 	public class RegistrationTests
 	{
 		Type[] exceptions = {
-			typeof(MultipleEnumerationIssue), // disabled due to https://github.com/icsharpcode/NRefactory/issues/123
+			typeof(PossibleMultipleEnumerationIssue), // disabled due to https://github.com/icsharpcode/NRefactory/issues/123
 			typeof(RedundantAssignmentIssue), // disabled due to https://github.com/icsharpcode/NRefactory/issues/123
-			typeof(RedundantTypeCastIssue), // disabled due to plenty of false positives (e.g. when cast is necessary for overload resolution)
+			typeof(RedundantCastIssue), // disabled due to plenty of false positives (e.g. when cast is necessary for overload resolution)
 		};
 		
-		Assembly NRCSharp = typeof(ICodeIssueProvider).Assembly;
+		Assembly NRCSharp = typeof(CodeIssueProvider).Assembly;
+		Assembly NRCSharpRefactoring = typeof(AddBracesAction).Assembly;
 		Assembly CSharpBinding = typeof(SDRefactoringContext).Assembly;
 		
 		AddIn addIn;
@@ -37,7 +38,7 @@ namespace CSharpBinding.Tests
 		
 		Type FindType(string @class)
 		{
-			return CSharpBinding.GetType(@class, false) ?? NRCSharp.GetType(@class, true);
+			return CSharpBinding.GetType(@class, false) ?? NRCSharpRefactoring.GetType(@class, false);
 		}
 		
 		[TestFixtureSetUpAttribute]
@@ -47,12 +48,22 @@ namespace CSharpBinding.Tests
 			addIn = AddIn.Load(addInTree, "CSharpBinding.addin");
 			
 			registeredIssueProviders = addIn.Paths["/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders"].Codons
-				.Select(c => FindType(c.Properties["class"])).ToList();
-			NRissueProviders = NRCSharp.ExportedTypes.Where(t => t.GetCustomAttribute<IssueDescriptionAttribute>() != null).ToList();
+				.Select(c => FindType(c.Properties["class"])).Where(t => t != null).ToList();
+			NRissueProviders = NRCSharpRefactoring.ExportedTypes.Where(t => t.GetCustomAttribute<IssueDescriptionAttribute>() != null).ToList();
 			
 			registeredContextActions = addIn.Paths["/SharpDevelop/ViewContent/TextEditor/C#/ContextActions"].Codons
-				.Select(c => FindType(c.Properties["class"])).ToList();
-			NRcontextActions = NRCSharp.ExportedTypes.Where(t => t.GetCustomAttribute<ContextActionAttribute>() != null).ToList();
+				.Select(c => FindType(c.Properties["class"])).Where(t => t != null).ToList();
+			NRcontextActions = NRCSharpRefactoring.ExportedTypes.Where(t => t.GetCustomAttribute<ContextActionAttribute>() != null).ToList();
+		}
+		
+		
+		[Test]
+		public void NoMissingClasses()
+		{
+			var classNames = addIn.Paths["/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders"].Codons
+				.Concat(addIn.Paths["/SharpDevelop/ViewContent/TextEditor/C#/ContextActions"].Codons)
+				.Select(c => c.Properties["class"]);
+			Assert.IsEmpty(classNames.Where(c => FindType(c) == null));
 		}
 		
 		[Test]

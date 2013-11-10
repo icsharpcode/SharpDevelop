@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -23,6 +24,10 @@ namespace ICSharpCode.PackageManagement
 		public void Clear()
 		{
 			messageViewCategory.ClearText();
+		}
+		
+		public IOutputCategory OutputCategory {
+			get { return messageViewCategory; }
 		}
 	}
 }

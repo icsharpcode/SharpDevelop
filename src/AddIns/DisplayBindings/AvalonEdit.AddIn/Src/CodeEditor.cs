@@ -55,7 +55,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return primaryTextEditor; }
 		}
 		
-		[Obsolete()]
 		public CodeEditorView ActiveTextEditor {
 			get { return primaryTextEditor; }
 		}

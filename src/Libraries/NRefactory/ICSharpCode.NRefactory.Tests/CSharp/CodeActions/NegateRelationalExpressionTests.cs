@@ -86,5 +86,29 @@ class TestClass
 		{
 			Test ("<=", ">");
 		}
+
+		[Test]
+		public void TestUnaryOperator ()
+		{
+			Test<NegateRelationalExpressionAction> (
+				@"
+class Foo 
+{
+	void Bar ()
+	{
+		var cond = $!(1 < 2);
+	}
+}
+", @"
+class Foo 
+{
+	void Bar ()
+	{
+		var cond = 1 < 2;
+	}
+}
+");
+
+		}
 	}
 }

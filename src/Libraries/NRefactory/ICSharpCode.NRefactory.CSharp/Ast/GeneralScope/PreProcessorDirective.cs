@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -47,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		Line = 12
 	}
 
-	public class LinePreprocssorDirective : PreProcessorDirective
+	public class LinePreprocessorDirective : PreProcessorDirective
 	{
 		public int LineNumber {
 			get;
@@ -59,45 +60,70 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public LinePreprocssorDirective(TextLocation startLocation, TextLocation endLocation) : base (PreProcessorDirectiveType.Line, startLocation, endLocation)
+		public LinePreprocessorDirective(TextLocation startLocation, TextLocation endLocation) : base (PreProcessorDirectiveType.Line, startLocation, endLocation)
 		{
 		}
 
-		public LinePreprocssorDirective(string argument = null) : base (PreProcessorDirectiveType.Line, argument)
+		public LinePreprocessorDirective(string argument = null) : base (PreProcessorDirectiveType.Line, argument)
 		{
 		}
 	}
 
-	public class PragmaWarningPreprocssorDirective : PreProcessorDirective
+	public class PragmaWarningPreprocessorDirective : PreProcessorDirective
 	{
-		public bool Disable {
-			get;
-			set;
-		}
+		public static readonly Role<PrimitiveExpression>  WarningRole = new Role<PrimitiveExpression> ("Warning");
 
-		List<int> warningList = new List<int> ();
-		public IList<int> WarningList {
+		public static readonly TokenRole PragmaKeywordRole = new TokenRole ("#pragma");
+		public static readonly TokenRole WarningKeywordRole = new TokenRole ("warning");
+		public static readonly TokenRole DisableKeywordRole = new TokenRole ("disable");
+		public static readonly TokenRole RestoreKeywordRole = new TokenRole ("restore");
+
+		public bool Disable {
 			get {
-				return warningList;
+				return !DisableToken.IsNull;
 			}
 		}
 
-		public PragmaWarningPreprocssorDirective(TextLocation startLocation, TextLocation endLocation) : base (PreProcessorDirectiveType.Pragma, startLocation, endLocation)
+		public CSharpTokenNode PragmaToken {
+			get { return GetChildByRole (PragmaKeywordRole); }
+		}
+
+		public CSharpTokenNode WarningToken {
+			get { return GetChildByRole (WarningKeywordRole); }
+		}
+
+		public CSharpTokenNode DisableToken {
+			get { return GetChildByRole (DisableKeywordRole); }
+		}
+
+		public CSharpTokenNode RestoreToken {
+			get { return GetChildByRole (RestoreKeywordRole); }
+		}
+
+		public AstNodeCollection<PrimitiveExpression> Warnings {
+			get { return GetChildrenByRole(WarningRole); }
+		}
+
+		public override TextLocation EndLocation {
+			get {
+				var child = LastChild;
+				if (child == null)
+					return base.EndLocation;
+				return child.EndLocation;
+			}
+		}
+
+		public PragmaWarningPreprocessorDirective(TextLocation startLocation, TextLocation endLocation) : base (PreProcessorDirectiveType.Pragma, startLocation, endLocation)
 		{
 		}
 
-		public PragmaWarningPreprocssorDirective(string argument = null) : base (PreProcessorDirectiveType.Pragma, argument)
+		public PragmaWarningPreprocessorDirective(string argument = null) : base (PreProcessorDirectiveType.Pragma, argument)
 		{
 		}
 
-		public void AddWarnings(IEnumerable<int> warningCodes)
+		public bool IsDefined(int pragmaWarning)
 		{
-			warningList.AddRange(warningCodes);
-		}
-
-		public void AddWarnings(params int[] warningCodes)
-		{
-			warningList.AddRange(warningCodes);
+			return Warnings.Select(w => (int)w.Value).Any(n => n == pragmaWarning);
 		}
 	}
 	

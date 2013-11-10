@@ -183,12 +183,12 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
 		
-		public void FirePackageReferenceRemovedEvent(PackageOperationEventArgs e)
+		public void FirePackageReferenceRemovingEvent(PackageOperationEventArgs e)
 		{
-			if (PackageReferenceRemoved != null) {
-				PackageReferenceRemoved(this, e);
+			if (PackageReferenceRemoving != null) {
+				PackageReferenceRemoving(this, e);
 			}
 		}
 		

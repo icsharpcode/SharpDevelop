@@ -129,6 +129,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			TestOperator(MakeResult(typeof(StringComparison?)), BinaryOperatorType.Add, MakeResult(typeof(int)),
 			             Conversion.IdentityConversion, Conversion.ImplicitNullableConversion, typeof(StringComparison?));
 			
+			TestOperator(MakeResult(typeof(StringComparison)), BinaryOperatorType.Add, MakeResult(typeof(int?)),
+			             Conversion.ImplicitNullableConversion, Conversion.IdentityConversion, typeof(StringComparison?));
+			
 			TestOperator(MakeResult(typeof(StringComparison?)), BinaryOperatorType.Add, MakeResult(typeof(int?)),
 			             Conversion.IdentityConversion, Conversion.IdentityConversion, typeof(StringComparison?));
 			
@@ -185,14 +188,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertConstant(3, resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Subtract, MakeConstant(StringComparison.OrdinalIgnoreCase), MakeConstant(StringComparison.InvariantCulture)));
 			
+			AssertConstant(StringComparison.InvariantCulture, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Subtract, MakeConstant(StringComparison.InvariantCulture), MakeConstant(0)));
+			
 			TestOperator(MakeResult(typeof(StringComparison?)), BinaryOperatorType.Subtract, MakeResult(typeof(int)),
 			             Conversion.IdentityConversion, Conversion.ImplicitNullableConversion, typeof(StringComparison?));
 			
 			TestOperator(MakeResult(typeof(StringComparison?)), BinaryOperatorType.Subtract, MakeResult(typeof(StringComparison)),
 			             Conversion.IdentityConversion, Conversion.ImplicitNullableConversion, typeof(int?));
 			
-			Assert.IsTrue(resolver.ResolveBinaryOperator(
-				BinaryOperatorType.Subtract, MakeResult(typeof(int?)), MakeResult(typeof(StringComparison))).IsError);
+			TestOperator(MakeResult(typeof(int?)), BinaryOperatorType.Subtract, MakeResult(typeof(StringComparison)),
+			             Conversion.IdentityConversion, Conversion.ImplicitNullableConversion, typeof(StringComparison?));
+			
+			TestOperator(MakeResult(typeof(int)), BinaryOperatorType.Subtract, MakeResult(typeof(StringComparison?)),
+			             Conversion.ImplicitNullableConversion, Conversion.IdentityConversion, typeof(StringComparison?));
 		}
 		
 		[Test]
@@ -450,6 +459,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		[Test]
+		public void NullableBitwiseEnum()
+		{
+			TestOperator(MakeResult(typeof(StringComparison?)), BinaryOperatorType.BitwiseAnd, MakeResult(typeof(StringComparison?)),
+			             Conversion.IdentityConversion, Conversion.IdentityConversion, typeof(StringComparison?));
+			
+			TestOperator(MakeResult(typeof(StringComparison)), BinaryOperatorType.BitwiseAnd, MakeResult(typeof(StringComparison?)),
+			             Conversion.ImplicitNullableConversion, Conversion.IdentityConversion, typeof(StringComparison?));
+			
+			TestOperator(MakeResult(typeof(StringComparison?)), BinaryOperatorType.BitwiseAnd, MakeResult(typeof(StringComparison)),
+			             Conversion.IdentityConversion, Conversion.ImplicitNullableConversion, typeof(StringComparison?));
+		}
+		
+		[Test]
 		public void LogicalAnd()
 		{
 			AssertConstant(true, resolver.ResolveBinaryOperator(
@@ -702,7 +724,7 @@ class Test {
 			Assert.IsFalse(irr.IsError);
 			Assert.IsTrue(irr.IsLiftedOperator);
 		}
-
+		
 		[Test]
 		public void IsLiftedProperty2()
 		{
@@ -716,6 +738,160 @@ class Test {
 			var irr = Resolve<OperatorResolveResult>(program);
 			Assert.IsFalse(irr.IsError);
 			Assert.IsTrue(irr.IsLiftedOperator);
+		}
+		
+		[Test]
+		public void TestLiftedOperatorBug()
+		{
+			string program = @"
+using System;
+
+struct C<T>
+{
+	public static C<T> operator+(C<T> u, T u2)
+	{
+		return u;
+	}
+
+	public C ()
+	{
+		int? foo = 4;
+		var a = $new C<int> () + foo$;
+	}
+}";
+			var irr = Resolve<OperatorResolveResult>(program);
+			Assert.IsFalse(irr.IsError);
+			Assert.IsTrue(irr.IsLiftedOperator);
+			Assert.AreEqual("System.Nullable`1[[C`1[[System.Int32]]]]", irr.Type.ReflectionName);
+		}
+
+		/// <summary>
+		/// Bug 12717 - Wrong type resolved for enum substraction
+		/// </summary>
+		[Test]
+		public void TestIntEnumSubstraction()
+		{
+			string program = @"using System;
+
+enum E
+{
+    V
+}
+
+class Test
+{
+    public static void Main ()
+    {
+
+        E e = 0;
+        var res = $1 - e$;
+    }
+}";
+			var rr = Resolve<OperatorResolveResult>(program);
+			Assert.AreEqual("E", rr.Type.FullName);
+		}
+
+		/// <summary>
+		/// Bug 12689 - Wrong type of bitwise operation with enums
+		/// </summary>
+		[Test]
+		public void TestEnumBitwiseAndOperatorOverloading()
+		{
+			string program = @"using System;
+
+struct S
+{
+    public static implicit operator E? (S s)
+    {
+        return 0;
+    }
+}
+
+
+public enum E
+{
+
+}
+
+class C
+{
+    public static void Main ()
+    {
+        E e = 0;
+        S s;
+        var res = $e & s$; // INVALID type of res XS shows int but should be E?
+    }
+}";
+			var rr = Resolve<OperatorResolveResult>(program);
+			Assert.AreEqual("System.Nullable`1[[E]]", rr.Type.ReflectionName);
+		}
+
+		/// <summary>
+		/// Bug 12677 - Wrong result of constant binary result
+		/// </summary>
+		[Test]
+		public void TestEnumSubstractionWithNull()
+		{
+			string program = @"using System;
+
+public enum E
+{
+}
+
+class C
+{
+    public static void Main ()
+    {
+        E? e = null;
+        var res = $(e - null).Value$; // Value is E but should be int
+    }
+}";
+			var rr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("System.Int32", rr.Type.ReflectionName);
+		}
+
+		/// <summary>
+		/// Bug 12670 - Wrong type resolution for enums
+		/// </summary>
+		[Test]
+		public void TestEnumBitwiseAndOperatorWithNull()
+		{
+			string program = @"public enum E {}
+
+class C
+{
+    public static void Main ()
+    {
+        E f = 0;
+        var res = $f & null$; // XS sees Value as type uint instead of E
+    }
+}";
+			var rr = Resolve<OperatorResolveResult>(program);
+			Assert.AreEqual("System.Nullable`1[[E]]", rr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void EnumSubtractionWithImplicitOperators()
+		{
+			string program = @"using System;
+public enum E {}
+struct S {
+    public static implicit operator E (S s) { return 0; }
+    public static implicit operator int (S s) { return 0; }
+}
+
+class C
+{
+    public void Test(E e, S s)
+    {
+        var res = $e - s$; // C# uses the conversion to E, so result will be int
+    }
+}";
+			var rr = Resolve<OperatorResolveResult>(program);
+			Assert.AreEqual("System.Int32", rr.Type.ReflectionName);
+			var c = ((ConversionResolveResult)rr.Operands[1]).Conversion;
+			Assert.IsTrue(c.IsUserDefined);
+			Assert.AreEqual("E", c.Method.ReturnType.ReflectionName);
 		}
 	}
 }

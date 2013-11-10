@@ -20,6 +20,9 @@ using Microsoft.Build.Framework.XamlTypes;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	// TODO: rewrite without XMLForms
+	#pragma warning disable 618
+
 	/// <summary>
 	///  This class is for creating a new "empty" file
 	/// </summary>

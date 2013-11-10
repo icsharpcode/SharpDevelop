@@ -12,6 +12,7 @@ using System.Windows.Threading;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -50,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			Project.CustomToolsService.Initialize();
 			
 			workbench.Initialize();
-			workbench.SetMemento(PropertyService.NestedProperties(workbenchMemento));
+			workbench.SetMemento(SD.PropertyService.NestedProperties(workbenchMemento));
 			workbench.WorkbenchLayout = layout;
 			
 			var dlgMsgService = SD.MessageService as IDialogMessageService;
@@ -111,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 			
 			// load previous solution
-			if (!didLoadSolutionOrFile && PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
+			if (!didLoadSolutionOrFile && SD.PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
 				if (SD.FileService.RecentOpen.RecentProjects.Count > 0) {
 					SD.ProjectService.OpenSolutionOrProject(SD.FileService.RecentOpen.RecentProjects[0]);
 					didLoadSolutionOrFile = true;
@@ -138,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			// save the workbench memento in the ide properties
 			try {
-				PropertyService.SetNestedProperties(workbenchMemento, SD.Workbench.CreateMemento());
+				SD.PropertyService.SetNestedProperties(workbenchMemento, ((WpfWorkbench)SD.Workbench).CreateMemento());
 			} catch (Exception e) {
 				MessageService.ShowException(e, "Exception while saving workbench state.");
 			}
@@ -200,6 +201,8 @@ class Test {
 			foreach (var node in cu.Descendants) {
 				resolver.Resolve(node);
 			}
+			// load CSharp.Refactoring.dll
+			new RedundantUsingDirectiveIssue();
 			// warm up AvalonEdit (must be done on main thread)
 			SD.MainThread.InvokeAsyncAndForget(
 				delegate {

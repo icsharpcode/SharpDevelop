@@ -83,8 +83,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			DebuggerModuleModel model = new DebuggerModuleModel(e.Module);
 			moduleModels.Add(model);
 			Assemblies.Add(model.AssemblyModel);
-			foreach (var module in moduleModels)
-				module.UpdateReferences();
 		}
 		
 		void ModuleUnloaded(object sender, ModuleEventArgs e)
@@ -93,8 +91,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (deletedModel != null) {
 				moduleModels.Remove(deletedModel);
 				Assemblies.Remove(deletedModel.AssemblyModel);
-				foreach (var module in moduleModels)
-					module.UpdateReferences();
 			}
 		}
 
@@ -187,24 +183,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public void UpdateReferences()
-		{
-			var model = assemblyModel as IUpdateableAssemblyModel;
-			if (model == null) return;
-			// this could be totally wrong ...
-			model.References = module.AppDomain.Compilation.Assemblies.Where(a => a.FullAssemblyName != module.UnresolvedAssembly.FullAssemblyName).Select(a => new DomAssemblyName(a.FullAssemblyName)).ToList();
-		}
-		
 		static IAssemblyModel CreateAssemblyModel(Module module)
 		{
-			// references??
-			IEntityModelContext context = new DebuggerProcessEntityModelContext(module);
+			IEntityModelContext context = new DebuggerProcessEntityModelContext(module.Process, module);
 			IUpdateableAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
 			var types = module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList();
 			model.AssemblyName = module.UnresolvedAssembly.AssemblyName;
 			model.FullAssemblyName = module.UnresolvedAssembly.FullAssemblyName;
 			model.Update(EmptyList<IUnresolvedTypeDefinition>.Instance, types);
-			
+			model.References = module.GetReferences().Select(r => new DomAssemblyName(r)).ToArray();
 			return model;
 		}
 	}
@@ -242,18 +229,24 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	
 	class DebuggerProcessEntityModelContext : IEntityModelContext
 	{
+		Debugger.Process process;
 		Debugger.Module module;
+		Debugger.Module currentModule;
 		
-		public DebuggerProcessEntityModelContext(Module module)
+		public DebuggerProcessEntityModelContext(Process process, Module currentModule)
 		{
-			if (module == null)
-				throw new ArgumentNullException("module");
-			this.module = module;
+			if (process == null)
+				throw new ArgumentNullException("process");
+			if (currentModule == null)
+				throw new ArgumentNullException("currentModule");
+			this.process = process;
+			this.currentModule = currentModule;
 		}
 		
 		public ICompilation GetCompilation()
 		{
-			return new SimpleCompilation(module.UnresolvedAssembly, module.Process.Modules.Where(m => m != module).Select(m => m.UnresolvedAssembly));
+			var mainModule = currentModule;
+			return new SimpleCompilation(mainModule.UnresolvedAssembly, process.Modules.Where(m => m != mainModule).Select(m => m.UnresolvedAssembly));
 		}
 		
 		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)
@@ -266,7 +259,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 		public string AssemblyName {
-			get { return module.Assembly.AssemblyName; }
+			get { return currentModule.UnresolvedAssembly.AssemblyName; }
 		}
 		
 		public string FullAssemblyName {
@@ -274,7 +267,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 		public string Location {
-			get { return module.FullPath; }
+			get { return currentModule.FullPath; }
 		}
 		
 		public bool IsValid {

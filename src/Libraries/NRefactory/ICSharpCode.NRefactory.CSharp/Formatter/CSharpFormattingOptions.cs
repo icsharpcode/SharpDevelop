@@ -66,6 +66,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		InsideNamespace
 	}
 
+	public enum EmptyLineFormatting {
+		DoNotChange,
+		Indent,
+		DoNotIndent
+	}
+
 	public class CSharpFormattingOptions
 	{
 		public string Name {
@@ -154,11 +160,30 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public PropertyFormatting PropertyFormatting { // tested
+		public PropertyFormatting AutoPropertyFormatting { // tested
 			get;
 			set;
 		}
 
+		public PropertyFormatting SimplePropertyFormatting { // tested
+			get;
+			set;
+		}
+
+		public EmptyLineFormatting EmptyLineFormatting {
+			get;
+			set;
+		}
+
+		public bool IndentPreprocessorDirectives { // tested
+			get;
+			set;
+		}
+
+		public bool AlignToMemberReferenceDot { // TODO!
+			get;
+			set;
+		}
 		#endregion
 		
 		#region Braces
@@ -222,12 +247,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool AllowPropertyGetBlockInline { // tested
+		public PropertyFormatting SimpleGetBlockFormatting { // tested
 			get;
 			set;
 		}
 
-		public bool AllowPropertySetBlockInline { // tested
+		public PropertyFormatting SimpleSetBlockFormatting { // tested
 			get;
 			set;
 		}
@@ -302,6 +327,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		public NewLinePlacement WhileNewLinePlacement { // tested
 			get;
 			set;
+		}
+
+		NewLinePlacement embeddedStatementPlacement = NewLinePlacement.NewLine;
+		public NewLinePlacement EmbeddedStatementPlacement {
+			get {
+				return embeddedStatementPlacement;
+			}
+			set {
+				embeddedStatementPlacement = value;
+			}
 		}
 		#endregion
 		
@@ -542,7 +577,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool SpaceAroundNullCoalescingOperator {
+		public bool SpaceAroundNullCoalescingOperator { // Tested
+			get;
+			set;
+		}
+
+		public bool SpaceAfterUnsafeAddressOfOperator { // Tested
+			get;
+			set;
+		}
+
+		public bool SpaceAfterUnsafeAsteriskOfOperator { // Tested
+			get;
+			set;
+		}
+
+		public bool SpaceAroundUnsafeArrowOperator { // Tested
 			get;
 			set;
 		}
@@ -707,6 +757,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 			set;
 		}
+
+		public bool RemoveEndOfLineWhiteSpace {
+			get;
+			set;
+		}
 		#endregion
 		
 		#region Blank Lines
@@ -741,6 +796,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		public int BlankLinesBetweenMembers {
+			get;
+			set;
+		}
+
+		public int BlankLinesAroundRegion {
+			get;
+			set;
+		}
+
+		public int BlankLinesInsideRegion {
 			get;
 			set;
 		}
@@ -848,6 +913,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		public bool AlignToFirstMethodDeclarationParameter {
+			get;
+			set;
+		}
+
+		public NewLinePlacement NewLineBeforeNewQueryClause {
 			get;
 			set;
 		}

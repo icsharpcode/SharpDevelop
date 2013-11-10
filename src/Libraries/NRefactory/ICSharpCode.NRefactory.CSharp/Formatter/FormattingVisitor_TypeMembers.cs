@@ -35,7 +35,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			FixAttributesAndDocComment(propertyDeclaration);
 			bool oneLine = false;
 			bool fixClosingBrace = false;
-			switch (policy.PropertyFormatting) {
+			PropertyFormatting propertyFormatting;
+
+			if ((propertyDeclaration.Getter.IsNull || propertyDeclaration.Getter.Body.IsNull) &&
+			    (propertyDeclaration.Setter.IsNull || propertyDeclaration.Setter.Body.IsNull)) {
+				propertyFormatting = policy.AutoPropertyFormatting;
+			} else {
+				propertyFormatting = policy.SimplePropertyFormatting;
+			}
+
+			switch (propertyFormatting) {
 				case PropertyFormatting.AllowOneLine:
 					bool isSimple = IsSimpleAccessor(propertyDeclaration.Getter) && IsSimpleAccessor(propertyDeclaration.Setter);
 					int accessorLine = propertyDeclaration.RBraceToken.StartLocation.Line;
@@ -48,6 +57,10 @@ namespace ICSharpCode.NRefactory.CSharp
 							propertyDeclaration.Getter : propertyDeclaration.Setter;
 						accessorLine = acc.StartLocation.Line;
 					}
+					if (isSimple && 
+					    Math.Min(propertyDeclaration.Getter.StartLocation.Line, propertyDeclaration.Setter.StartLocation.Line) == propertyDeclaration.LBraceToken.StartLocation.Line &&
+				        propertyDeclaration.Getter.StartLocation.Line != propertyDeclaration.Setter.StartLocation.Line)
+						goto case PropertyFormatting.ForceOneLine;
 					if (!isSimple || propertyDeclaration.LBraceToken.StartLocation.Line != accessorLine) {
 						fixClosingBrace = true;
 						FixOpenBrace(policy.PropertyBraceStyle, propertyDeclaration.LBraceToken);
@@ -58,102 +71,103 @@ namespace ICSharpCode.NRefactory.CSharp
 						oneLine = true;
 					}
 					break;
-					case PropertyFormatting.ForceNewLine:
+				case PropertyFormatting.ForceNewLine:
+					fixClosingBrace = true;
+					FixOpenBrace(policy.PropertyBraceStyle, propertyDeclaration.LBraceToken);
+					break;
+				case PropertyFormatting.ForceOneLine:
+					isSimple = IsSimpleAccessor(propertyDeclaration.Getter) && IsSimpleAccessor(propertyDeclaration.Setter);
+					if (isSimple) {
+						var lBraceToken = propertyDeclaration.LBraceToken;
+						var rBraceToken = propertyDeclaration.RBraceToken;
+						ForceSpacesBeforeRemoveNewLines(lBraceToken, true);
+						if (!propertyDeclaration.Getter.IsNull)
+							ForceSpacesBeforeRemoveNewLines(propertyDeclaration.Getter, true);
+						if (!propertyDeclaration.Setter.IsNull)
+							ForceSpacesBeforeRemoveNewLines(propertyDeclaration.Setter, true);
+
+						ForceSpacesBeforeRemoveNewLines(rBraceToken, true);
+						oneLine = true;
+					} else {
 						fixClosingBrace = true;
 						FixOpenBrace(policy.PropertyBraceStyle, propertyDeclaration.LBraceToken);
-						break;
-					case PropertyFormatting.ForceOneLine:
-						isSimple = IsSimpleAccessor(propertyDeclaration.Getter) && IsSimpleAccessor(propertyDeclaration.Setter);
-						if (isSimple) {
-							int offset = this.document.GetOffset(propertyDeclaration.LBraceToken.StartLocation);
-
-							int start = SearchWhitespaceStart(offset);
-							int end = SearchWhitespaceEnd(offset);
-							AddChange(start, offset - start, " ");
-							AddChange(offset + 1, end - offset - 2, " ");
-
-							offset = this.document.GetOffset(propertyDeclaration.RBraceToken.StartLocation);
-							start = SearchWhitespaceStart(offset);
-							AddChange(start, offset - start, " ");
-							oneLine = true;
-
-						} else {
-							fixClosingBrace = true;
-							FixOpenBrace(policy.PropertyBraceStyle, propertyDeclaration.LBraceToken);
-						}
+					}
 					break;
 			}
 			if (policy.IndentPropertyBody)
 				curIndent.Push(IndentType.Block);
 
-			///System.Console.WriteLine ("one line: " + oneLine);
-			if (!propertyDeclaration.Getter.IsNull) {
-				if (!oneLine) {
-					if (!IsLineIsEmptyUpToEol(propertyDeclaration.Getter.StartLocation)) {
-						int offset = this.document.GetOffset(propertyDeclaration.Getter.StartLocation);
-						int start = SearchWhitespaceStart(offset);
-						string indentString = this.curIndent.IndentString;
-						AddChange(start, offset - start, this.options.EolMarker + indentString);
-					} else {
-						FixIndentation(propertyDeclaration.Getter);
-					}
-				} else {
-					int offset = this.document.GetOffset(propertyDeclaration.Getter.StartLocation);
-					int start = SearchWhitespaceStart(offset);
-					AddChange(start, offset - start, " ");
-
-					ForceSpacesBefore(propertyDeclaration.Getter.Body.LBraceToken, true);
-					ForceSpacesBefore(propertyDeclaration.Getter.Body.RBraceToken, true);
-				}
-				if (!propertyDeclaration.Getter.Body.IsNull) {
-					if (!policy.AllowPropertyGetBlockInline || propertyDeclaration.Getter.Body.LBraceToken.StartLocation.Line != propertyDeclaration.Getter.Body.RBraceToken.StartLocation.Line) {
-						FixOpenBrace(policy.PropertyGetBraceStyle, propertyDeclaration.Getter.Body.LBraceToken);
-						VisitBlockWithoutFixingBraces(propertyDeclaration.Getter.Body, policy.IndentBlocks);
-						FixClosingBrace(policy.PropertyGetBraceStyle, propertyDeclaration.Getter.Body.RBraceToken);
-					} else {
-						nextStatementIndent = " ";
-						VisitBlockWithoutFixingBraces(propertyDeclaration.Getter.Body, policy.IndentBlocks);
-
-					}
-				}
-			}
-
-			if (!propertyDeclaration.Setter.IsNull) {
-				if (!oneLine) {
-					if (!IsLineIsEmptyUpToEol(propertyDeclaration.Setter.StartLocation)) {
-						int offset = document.GetOffset(propertyDeclaration.Setter.StartLocation);
-						int start = SearchWhitespaceStart(offset);
-						string indentString = curIndent.IndentString;
-						AddChange(start, offset - start, options.EolMarker + indentString);
-					} else {
-						FixIndentation(propertyDeclaration.Setter);
-					}
-				} else {
-					int offset = this.document.GetOffset(propertyDeclaration.Setter.StartLocation);
-					int start = SearchWhitespaceStart(offset);
-					AddChange(start, offset - start, " ");
-
-					ForceSpacesBefore(propertyDeclaration.Setter.Body.LBraceToken, true);
-					ForceSpacesBefore(propertyDeclaration.Setter.Body.RBraceToken, true);
-				}
-				if (!propertyDeclaration.Setter.Body.IsNull) {
-					if (!policy.AllowPropertySetBlockInline || propertyDeclaration.Setter.Body.LBraceToken.StartLocation.Line != propertyDeclaration.Setter.Body.RBraceToken.StartLocation.Line) {
-						FixOpenBrace(policy.PropertySetBraceStyle, propertyDeclaration.Setter.Body.LBraceToken);
-						VisitBlockWithoutFixingBraces(propertyDeclaration.Setter.Body, policy.IndentBlocks);
-						FixClosingBrace(policy.PropertySetBraceStyle, propertyDeclaration.Setter.Body.RBraceToken);
-					} else {
-						nextStatementIndent = " ";
-						VisitBlockWithoutFixingBraces(propertyDeclaration.Setter.Body, policy.IndentBlocks);
-					}
-				}
-			}
+			FormatAccessor(propertyDeclaration.Getter, policy.PropertyGetBraceStyle, policy.SimpleGetBlockFormatting, oneLine);
+			FormatAccessor(propertyDeclaration.Setter, policy.PropertySetBraceStyle, policy.SimpleSetBlockFormatting, oneLine);
 
 			if (policy.IndentPropertyBody) {
-				curIndent.Pop ();
+				curIndent.Pop();
 			}
 			if (fixClosingBrace)
 				FixClosingBrace(policy.PropertyBraceStyle, propertyDeclaration.RBraceToken);
 
+		}
+
+		void FormatAccessor(Accessor accessor, BraceStyle braceStyle, PropertyFormatting blockFormatting, bool oneLine)
+		{
+			if (accessor.IsNull)
+				return;
+			if (!oneLine) {
+				if (!IsLineIsEmptyUpToEol(accessor.StartLocation)) {
+					int offset = this.document.GetOffset(accessor.StartLocation);
+					int start = SearchWhitespaceStart(offset);
+					string indentString = this.curIndent.IndentString;
+					AddChange(start, offset - start, this.options.EolMarker + indentString);
+				} else {
+					FixIndentation(accessor);
+				}
+			} else {
+				blockFormatting = PropertyFormatting.ForceOneLine;
+				if (!accessor.Body.IsNull) {
+					ForceSpacesBeforeRemoveNewLines(accessor.Body.LBraceToken, true);
+					ForceSpacesBeforeRemoveNewLines(accessor.Body.RBraceToken, true);
+				}
+			}
+
+		
+			if (!accessor.IsNull) {
+				if (!accessor.Body.IsNull) {
+					if (IsSimpleAccessor (accessor)) {
+						switch (blockFormatting) {
+							case PropertyFormatting.AllowOneLine:
+								if (accessor.Body.LBraceToken.StartLocation.Line != accessor.Body.RBraceToken.StartLocation.Line)
+									goto case PropertyFormatting.ForceNewLine;
+								nextStatementIndent = " ";
+								VisitBlockWithoutFixingBraces(accessor.Body, policy.IndentBlocks);
+								if (!oneLine)
+									ForceSpacesBeforeRemoveNewLines(accessor.Body.RBraceToken, true);
+								break;
+							case PropertyFormatting.ForceOneLine:
+								FixOpenBrace(BraceStyle.EndOfLine, accessor.Body.LBraceToken);
+
+
+								var statement = accessor.Body.Statements.FirstOrDefault();
+								if (statement != null) {
+									ForceSpacesBeforeRemoveNewLines(statement, true);
+									statement.AcceptVisitor(this);
+								}
+								if (!oneLine)
+									ForceSpacesBeforeRemoveNewLines(accessor.Body.RBraceToken, true);
+								break;
+							case PropertyFormatting.ForceNewLine:
+								FixOpenBrace(braceStyle, accessor.Body.LBraceToken);
+								VisitBlockWithoutFixingBraces(accessor.Body, policy.IndentBlocks);
+								if (!oneLine)
+									FixClosingBrace(braceStyle, accessor.Body.RBraceToken);
+								break;
+						}
+					} else {
+						FixOpenBrace(braceStyle, accessor.Body.LBraceToken);
+						VisitBlockWithoutFixingBraces(accessor.Body, policy.IndentBlocks);
+						FixClosingBrace(braceStyle, accessor.Body.RBraceToken);
+					}
+				} 
+			}
 		}
 
 		public override void VisitAccessor(Accessor accessor)
@@ -162,7 +176,6 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			base.VisitAccessor(accessor);
 		}
-
 
 		public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
 		{
@@ -173,41 +186,67 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			FormatArguments(indexerDeclaration);
 
-			FixOpenBrace(policy.PropertyBraceStyle, indexerDeclaration.LBraceToken);
+			bool oneLine = false;
+			bool fixClosingBrace = false;
+			switch (policy.SimplePropertyFormatting) {
+				case PropertyFormatting.AllowOneLine:
+					bool isSimple = IsSimpleAccessor(indexerDeclaration.Getter) && IsSimpleAccessor(indexerDeclaration.Setter);
+					int accessorLine = indexerDeclaration.RBraceToken.StartLocation.Line;
+					if (!indexerDeclaration.Getter.IsNull && indexerDeclaration.Setter.IsNull) {
+						accessorLine = indexerDeclaration.Getter.StartLocation.Line;
+					} else if (indexerDeclaration.Getter.IsNull && !indexerDeclaration.Setter.IsNull) {
+						accessorLine = indexerDeclaration.Setter.StartLocation.Line;
+					} else {
+						var acc = indexerDeclaration.Getter.StartLocation < indexerDeclaration.Setter.StartLocation ?
+							indexerDeclaration.Getter : indexerDeclaration.Setter;
+						accessorLine = acc.StartLocation.Line;
+					}
+					if (!isSimple || indexerDeclaration.LBraceToken.StartLocation.Line != accessorLine) {
+						fixClosingBrace = true;
+						FixOpenBrace(policy.PropertyBraceStyle, indexerDeclaration.LBraceToken);
+					} else {
+						ForceSpacesBefore(indexerDeclaration.Getter, true);
+						ForceSpacesBefore(indexerDeclaration.Setter, true);
+						ForceSpacesBeforeRemoveNewLines(indexerDeclaration.RBraceToken, true);
+						oneLine = true;
+					}
+					break;
+				case PropertyFormatting.ForceNewLine:
+					fixClosingBrace = true;
+					FixOpenBrace(policy.PropertyBraceStyle, indexerDeclaration.LBraceToken);
+					break;
+				case PropertyFormatting.ForceOneLine:
+					isSimple = IsSimpleAccessor(indexerDeclaration.Getter) && IsSimpleAccessor(indexerDeclaration.Setter);
+					if (isSimple) {
+						int offset = this.document.GetOffset(indexerDeclaration.LBraceToken.StartLocation);
+
+						int start = SearchWhitespaceStart(offset);
+						int end = SearchWhitespaceEnd(offset);
+						AddChange(start, offset - start, " ");
+						AddChange(offset + 1, end - offset - 2, " ");
+
+						offset = this.document.GetOffset(indexerDeclaration.RBraceToken.StartLocation);
+						start = SearchWhitespaceStart(offset);
+						AddChange(start, offset - start, " ");
+						oneLine = true;
+
+					} else {
+						fixClosingBrace = true;
+						FixOpenBrace(policy.PropertyBraceStyle, indexerDeclaration.LBraceToken);
+					}
+					break;
+			}
+
 			if (policy.IndentPropertyBody)
 				curIndent.Push(IndentType.Block);
 
-			if (!indexerDeclaration.Getter.IsNull) {
-				FixIndentation(indexerDeclaration.Getter);
-				if (!indexerDeclaration.Getter.Body.IsNull) {
-					if (!policy.AllowPropertyGetBlockInline || indexerDeclaration.Getter.Body.LBraceToken.StartLocation.Line != indexerDeclaration.Getter.Body.RBraceToken.StartLocation.Line) {
-						FixOpenBrace(policy.PropertyGetBraceStyle, indexerDeclaration.Getter.Body.LBraceToken);
-						VisitBlockWithoutFixingBraces(indexerDeclaration.Getter.Body, policy.IndentBlocks);
-						FixClosingBrace(policy.PropertyGetBraceStyle, indexerDeclaration.Getter.Body.RBraceToken);
-					} else {
-						nextStatementIndent = " ";
-						VisitBlockWithoutFixingBraces(indexerDeclaration.Getter.Body, policy.IndentBlocks);
-					}
-				}
-			}
-
-			if (!indexerDeclaration.Setter.IsNull) {
-				FixIndentation(indexerDeclaration.Setter);
-				if (!indexerDeclaration.Setter.Body.IsNull) {
-					if (!policy.AllowPropertySetBlockInline || indexerDeclaration.Setter.Body.LBraceToken.StartLocation.Line != indexerDeclaration.Setter.Body.RBraceToken.StartLocation.Line) {
-						FixOpenBrace(policy.PropertySetBraceStyle, indexerDeclaration.Setter.Body.LBraceToken);
-						VisitBlockWithoutFixingBraces(indexerDeclaration.Setter.Body, policy.IndentBlocks);
-						FixClosingBrace(policy.PropertySetBraceStyle, indexerDeclaration.Setter.Body.RBraceToken);
-					} else {
-						nextStatementIndent = " ";
-						VisitBlockWithoutFixingBraces(indexerDeclaration.Setter.Body, policy.IndentBlocks);
-					}
-				}
-			}
+			FormatAccessor(indexerDeclaration.Getter, policy.PropertyGetBraceStyle, policy.SimpleGetBlockFormatting, oneLine);
+			FormatAccessor(indexerDeclaration.Setter, policy.PropertySetBraceStyle, policy.SimpleSetBlockFormatting, oneLine);
 			if (policy.IndentPropertyBody)
 				curIndent.Pop();
 
-			FixClosingBrace(policy.PropertyBraceStyle, indexerDeclaration.RBraceToken);
+			if (fixClosingBrace)
+				FixClosingBrace(policy.PropertyBraceStyle, indexerDeclaration.RBraceToken);
 		}
 
 		static bool IsSimpleEvent(AstNode node)
@@ -265,7 +304,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesAfter(m, true);
 			}
 
-			ForceSpacesBeforeRemoveNewLines(eventDeclaration.EventToken.GetNextSibling (NoWhitespacePredicate), true);
+			ForceSpacesBeforeRemoveNewLines(eventDeclaration.EventToken.GetNextSibling(NoWhitespacePredicate), true);
 			eventDeclaration.ReturnType.AcceptVisitor(this);
 			ForceSpacesAfter(eventDeclaration.ReturnType, true);
 			/*
@@ -283,7 +322,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			FixSemicolon(eventDeclaration.SemicolonToken);
 		}
 
-		
 		public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 		{
 			FixAttributesAndDocComment(fieldDeclaration);
@@ -298,7 +336,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (lastLoc.Line != initializer.StartLocation.Line) {
 					curIndent.Push(IndentType.Block);
 					FixStatementIndentation(initializer.StartLocation);
-					curIndent.Pop ();
+					curIndent.Pop();
 					lastLoc = initializer.StartLocation;
 				}
 				initializer.AcceptVisitor(this);
@@ -321,7 +359,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				initializer.AcceptVisitor(this);
 			}
-			curIndent.Pop ();
+			curIndent.Pop();
 			FixSemicolon(fixedFieldDeclaration.SemicolonToken);
 		}
 
@@ -331,7 +369,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			var initializer = enumMemberDeclaration.Initializer;
 			if (!initializer.IsNull) {
 				ForceSpacesAround(enumMemberDeclaration.AssignToken, policy.SpaceAroundAssignment);
-				initializer.AcceptVisitor (this);
+				initializer.AcceptVisitor(this);
 			}
 		}
 
@@ -349,7 +387,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			foreach (var constraint in methodDeclaration.Constraints)
-				constraint.AcceptVisitor (this);
+				constraint.AcceptVisitor(this);
 
 			if (!methodDeclaration.Body.IsNull) {
 				FixOpenBrace(policy.MethodBraceStyle, methodDeclaration.Body.LBraceToken);
@@ -391,13 +429,38 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesBefore(constructorDeclaration.RParToken, policy.SpaceBetweenEmptyConstructorDeclarationParentheses);
 			}
 
+			var initializer = constructorDeclaration.Initializer;
+			if (!initializer.IsNull) {
+				ForceSpacesBefore(constructorDeclaration.ColonToken, true);
+				ForceSpacesAfter(constructorDeclaration.ColonToken, true);
+				bool popIndent = initializer.StartLocation.Line != constructorDeclaration.ColonToken.StartLocation.Line;
+				if (popIndent) {
+					curIndent.Push(IndentType.Block);
+					FixIndentation(initializer);
+				}
+				initializer.AcceptVisitor(this);
+				if (popIndent)
+					curIndent.Pop();
+			}
 			if (!constructorDeclaration.Body.IsNull) {
 				FixOpenBrace(policy.ConstructorBraceStyle, constructorDeclaration.Body.LBraceToken);
 				VisitBlockWithoutFixingBraces(constructorDeclaration.Body, policy.IndentMethodBody);
 				FixClosingBrace(policy.ConstructorBraceStyle, constructorDeclaration.Body.RBraceToken);
 			}
 		}
+		public override void VisitConstructorInitializer(ConstructorInitializer constructorInitializer)
+		{
+			ForceSpacesBefore(constructorInitializer.LParToken, policy.SpaceBeforeMethodCallParentheses);
+			if (constructorInitializer.Arguments.Any()) {
+				ForceSpacesAfter(constructorInitializer.LParToken, policy.SpaceWithinMethodCallParentheses);
+			} else {
+				ForceSpacesAfter(constructorInitializer.LParToken, policy.SpaceBetweenEmptyMethodCallParentheses);
+				ForceSpacesBefore(constructorInitializer.RParToken, policy.SpaceBetweenEmptyMethodCallParentheses);
+			}
 
+			FormatArguments(constructorInitializer);
+
+		}
 		public override void VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration)
 		{
 			FixAttributesAndDocComment(destructorDeclaration);

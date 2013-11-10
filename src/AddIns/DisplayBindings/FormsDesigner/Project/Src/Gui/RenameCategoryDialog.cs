@@ -11,6 +11,7 @@ using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
+	#pragma warning disable 618
 	public class RenameCategoryDialog : BaseSharpDevelopForm
 	{
 		string categoryName = String.Empty;

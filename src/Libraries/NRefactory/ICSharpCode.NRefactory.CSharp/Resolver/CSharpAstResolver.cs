@@ -231,7 +231,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveVisitor.ConversionWithTargetType GetConversionWithTargetType(Expression expr, CancellationToken cancellationToken)
 		{
 			if (expr == null || expr.IsNull)
-				throw new ArgumentNullException("expr");
+				return new ResolveVisitor.ConversionWithTargetType(Conversion.None, SpecialType.UnknownType);
 			lock (resolveVisitor) {
 				InitResolver();
 				resolveVisitor.cancellationToken = cancellationToken;

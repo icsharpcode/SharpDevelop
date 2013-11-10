@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
-	class CompletionDataWrapper
+	public class CompletionDataWrapper
 	{
 		CSharpCompletionEngine completion;
 		List<ICompletionData> result = new List<ICompletionData> ();
@@ -47,6 +47,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			get {
 				return completion.factory;
 			}
+		}
+
+		internal bool AnonymousDelegateAdded {
+			get;
+			set;
 		}
 		
 		public CompletionDataWrapper (CSharpCompletionEngine completion)
@@ -96,7 +101,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		Dictionary<string, ICompletionData> typeDisplayText = new Dictionary<string, ICompletionData> ();
 		Dictionary<IType, ICompletionData> addedTypes = new Dictionary<IType, ICompletionData> ();
+
+		public ICompletionData AddConstructors(IType type, bool showFullName, bool isInAttributeContext = false)
+		{
+			return InternalAddType(type, showFullName, isInAttributeContext, true);
+		}
+
 		public ICompletionData AddType(IType type, bool showFullName, bool isInAttributeContext = false)
+		{
+			return InternalAddType(type, showFullName, isInAttributeContext, false);
+		}
+
+		ICompletionData InternalAddType(IType type, bool showFullName, bool isInAttributeContext, bool addConstrurs)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
@@ -104,12 +120,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			if (addedTypes.ContainsKey (type))
 				return addedTypes[type];
-
+			usedNamespaces.Add(type.Name);
 			var def = type.GetDefinition();
-			if (def != null && def.ParentAssembly != completion.ctx.CurrentAssembly && !def.IsBrowsable())
-				return null;
+			if (def != null && def.ParentAssembly != completion.ctx.CurrentAssembly) {
+				switch (completion.EditorBrowsableBehavior) {
+					case EditorBrowsableBehavior.Ignore:
+						break;
+					case EditorBrowsableBehavior.Normal:
+						var state = def.GetEditorBrowsableState();
+						if (state != System.ComponentModel.EditorBrowsableState.Always)
+							return null;
+						break;
+					case EditorBrowsableBehavior.IncludeAdvanced:
+						if (!def.IsBrowsable())
+							return null;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
 			ICompletionData usedType;
-			var data = Factory.CreateTypeCompletionData(type, showFullName, isInAttributeContext);
+			var data = Factory.CreateTypeCompletionData(type, showFullName, isInAttributeContext, addConstrurs);
 			var text = data.DisplayText;
 			if (typeDisplayText.TryGetValue(text, out usedType)) {
 				usedType.AddOverload(data);
@@ -155,20 +186,38 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			result.Add (Factory.CreateVariableCompletionData (variable));
 		}
 
+		public void AddTypeImport(ITypeDefinition type, bool useFullName, bool addForTypeCreation)
+		{
+			result.Add(Factory.CreateImportCompletionData(type, useFullName, addForTypeCreation));
+		}
+
 		public ICompletionData AddMember (IMember member)
 		{
 			var newData = Factory.CreateEntityCompletionData (member);
 			
-			if (member.ParentAssembly != completion.ctx.CurrentAssembly && !member.IsBrowsable ())
-				return null;
-
+			if (member.ParentAssembly != completion.ctx.CurrentAssembly) {
+				switch (completion.EditorBrowsableBehavior) {
+					case EditorBrowsableBehavior.Ignore:
+						break;
+					case EditorBrowsableBehavior.Normal:
+						var state = member.GetEditorBrowsableState();
+						if (state != System.ComponentModel.EditorBrowsableState.Always)
+							return null;
+						break;
+					case EditorBrowsableBehavior.IncludeAdvanced:
+						if (!member.IsBrowsable())
+							return null;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
 			string memberKey = newData.DisplayText;
 			if (memberKey == null)
 				return null;
 
-			if (member is IMember) {
-				newData.CompletionCategory = GetCompletionCategory (member.DeclaringTypeDefinition);
-			}
+			newData.CompletionCategory = GetCompletionCategory (member.DeclaringTypeDefinition);
+
 			List<ICompletionData> existingData;
 			data.TryGetValue (memberKey, out existingData);
 			if (existingData != null) {
@@ -259,6 +308,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			return result;
+		}
+		HashSet<string> anonymousSignatures = new HashSet<string> ();
+
+		public bool HasAnonymousDelegateAdded(string signature)
+		{
+			return anonymousSignatures.Contains(signature); 
+		}
+
+		public void AddAnonymousDelegateAdded(string signature)
+		{
+			anonymousSignatures.Add(signature); 
 		}
 	}
 }

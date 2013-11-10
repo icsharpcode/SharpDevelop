@@ -63,7 +63,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		System.Collections.Generic.IEnumerable<FileName> IReadOnlyFileSystem.GetFiles(DirectoryName directory, string searchPattern, SearchOption searchOption)
+		System.Collections.Generic.IEnumerable<FileName> IReadOnlyFileSystem.GetFiles(DirectoryName directory, string searchPattern, DirectorySearchOptions searchOptions)
 		{
 			throw new NotImplementedException();
 		}

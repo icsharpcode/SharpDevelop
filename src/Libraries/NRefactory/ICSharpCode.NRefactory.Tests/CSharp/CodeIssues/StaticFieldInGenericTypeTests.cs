@@ -23,10 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using ICSharpCode.NRefactory.CSharp.CodeActions;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
+
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 
@@ -131,6 +133,7 @@ class Foo<T>
 			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 		}
+
 		[Test]
 		public void TestAssemblyMicrosoftSuppressMessage()
 		{
@@ -148,6 +151,20 @@ class Foo<T>
 			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
+
+        [Test]
+        public void TestDisable()
+        {
+            var input = @"using System.Diagnostics.CodeAnalysis;
+
+class Foo<T>
+{
+    // ReSharper disable once StaticFieldInGenericType
+	static string Data;
+}";
+            TestWrongContext<StaticFieldInGenericTypeIssue>(input);
+        }
+
 	}
 }
 

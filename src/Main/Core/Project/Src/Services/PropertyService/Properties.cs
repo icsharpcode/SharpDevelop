@@ -190,7 +190,7 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Sets a single element in this Properties-container.
-		/// The element will be serialized using a TypeConverter if possible, or DataContractSerializer otherwise.
+		/// The element will be serialized using a TypeConverter if possible, or XAML serializer otherwise.
 		/// </summary>
 		/// <remarks>Setting a key to <c>null</c> has the same effect as calling <see cref="Remove"/>.</remarks>
 		public void Set<T>(string key, T value)
@@ -255,7 +255,7 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Sets a list of elements in this Properties-container.
-		/// The elements will be serialized using a TypeConverter if possible, or DataContractSerializer otherwise.
+		/// The elements will be serialized using a TypeConverter if possible, or XAML serializer otherwise.
 		/// </summary>
 		/// <remarks>Passing <c>null</c> or an empty list as value has the same effect as calling <see cref="Remove"/>.</remarks>
 		public void SetList<T>(string key, IEnumerable<T> value)

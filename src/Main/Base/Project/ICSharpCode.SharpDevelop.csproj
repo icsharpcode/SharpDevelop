@@ -209,6 +209,7 @@
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
+    <Compile Include="Src\Editor\Commands\DeclaringTypeSubMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\FindReferencesCommand.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
     <Compile Include="Src\Editor\Commands\SymbolUnderCaretMenuCommand.cs" />
@@ -272,6 +273,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategoryTextWriter.cs" />
+    <Compile Include="Src\Gui\Pads\TaskList\TaskViewResources.xaml.cs">
+      <DependentUpon>TaskViewResources.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Internal\ConditionEvaluators\SymbolTypeAtCaretConditionEvaluator.cs" />
     <Compile Include="Src\Internal\Templates\StringParserPropertyContainer.cs" />
     <Compile Include="Src\Project\MSBuildConfigurationOrPlatformNameCollection.cs" />
     <Compile Include="Templates\FileTemplate.cs" />
@@ -558,6 +563,7 @@
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
     <Compile Include="Workbench\File\IFileService.cs" />
     <Compile Include="Workbench\File\OpenedFile.cs" />
+    <Compile Include="Src\Services\FileIconService.cs" />
     <Compile Include="Src\Services\LanguageBinding\DefaultLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\ILanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingDoozer.cs" />
@@ -792,7 +798,6 @@
     <Compile Include="Src\Project\ConfigurationGuiBinding.cs" />
     <Compile Include="Src\Project\ChooseStorageLocationButton.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\NodeBuilder\NodeBuilders.cs" />
-    <Compile Include="Src\Gui\Pads\TaskList\TaskView.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPad.cs" />
     <Compile Include="Src\Gui\FormLocationHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AddWebReferenceDialog.cs" />
@@ -875,15 +880,16 @@
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel.xaml" />
     <Page Include="Project\PortableLibrary\SelectProfileDialog.xaml" />
+    <Page Include="Src\Gui\Pads\TaskList\TaskViewResources.xaml" />
     <Page Include="themes\generic.xaml" />
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\cecil\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
+      <Project>{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}</Project>
+      <Name>ICSharpCode.NRefactory.Cecil</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>

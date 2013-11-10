@@ -147,6 +147,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (alignment.Vertical == VerticalAlignment.Bottom) dy = drag.Delta.Y;
 			
 			var designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+			
+			if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && alignment.Horizontal != HorizontalAlignment.Center && alignment.Vertical != VerticalAlignment.Center)
+			{
+				if (dx > dy)
+					dx = dy;
+				else
+					dy = dx;
+			}
+			
 			if (zoom != null)
 			{
 				dx = dx * (1 / zoom.CurrentZoom);

@@ -59,9 +59,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return Identifier.Null; }
 			set { throw new NotSupportedException(); }
 		}
-		
+
 		public CSharpTokenNode LBracketToken {
 			get { return GetChildByRole (Roles.LBracket); }
+		}
+
+		public CSharpTokenNode ThisToken {
+			get { return GetChildByRole (ThisKeywordRole); }
 		}
 		
 		public AstNodeCollection<ParameterDeclaration> Parameters {

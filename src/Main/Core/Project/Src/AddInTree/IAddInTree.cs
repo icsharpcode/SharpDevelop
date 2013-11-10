@@ -31,7 +31,7 @@ namespace ICSharpCode.Core
 		/// <param name="path">A path in the addin tree.</param>
 		/// <param name="parameter">A parameter that gets passed into the doozer and condition evaluators.</param>
 		/// <param name="throwOnNotFound">If true, throws a <see cref="TreePathNotFoundException"/>
-		/// if the path is not found. If false, an empty ArrayList is returned when the
+		/// if the path is not found. If false, an empty list is returned when the
 		/// path is not found.</param>
 		IReadOnlyList<T> BuildItems<T>(string path, object parameter, bool throwOnNotFound = true);
 		

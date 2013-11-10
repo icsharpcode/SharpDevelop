@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			AssertOutput(unit);
 		}
 		
-		[Test]
+		[Test, Ignore]
 		public void SelfTest()
 		{
 			foreach (var file in fileNames) {

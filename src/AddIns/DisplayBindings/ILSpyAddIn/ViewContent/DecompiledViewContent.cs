@@ -26,14 +26,6 @@ namespace ICSharpCode.ILSpyAddIn
 	/// </summary>
 	class DecompiledViewContent : AbstractViewContentWithoutFile
 	{
-		readonly FileName assemblyFile;
-		readonly string fullTypeName;
-		public DecompiledTypeReference DecompiledTypeName { get; private set; }
-		
-		public override FileName PrimaryFileName {
-			get { return this.DecompiledTypeName.ToFileName(); }
-		}
-		
 		/// <summary>
 		/// Entity to jump to once decompilation has finished.
 		/// </summary>
@@ -48,18 +40,13 @@ namespace ICSharpCode.ILSpyAddIn
 		public Dictionary<string, MethodDebugSymbols> DebugSymbols { get; private set; }
 		
 		#region Constructor
-		public DecompiledViewContent(FileName assemblyFile, string fullTypeName, string entityTag)
+		public DecompiledViewContent(DecompiledTypeReference typeName, string entityTag)
 		{
-			this.DecompiledTypeName = new DecompiledTypeReference(assemblyFile, new FullTypeName(fullTypeName));
+			this.DecompiledTypeName = typeName;
 			
 			this.Services = codeEditor.GetRequiredService<IServiceContainer>();
-			
-			this.assemblyFile = assemblyFile;
-			this.fullTypeName = fullTypeName;
 			this.jumpToEntityIdStringWhenDecompilationFinished = entityTag;
-			
-			string shortTypeName = fullTypeName.Substring(fullTypeName.LastIndexOf('.') + 1);
-			this.TitleName = "[" + ReflectionHelper.SplitTypeParameterCountFromReflectionName(shortTypeName) + "]";
+			this.TitleName = "[" + ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeName.Type.Name) + "]";
 			
 			DecompilationThread();
 //			Thread thread = new Thread(DecompilationThread);
@@ -112,27 +99,25 @@ namespace ICSharpCode.ILSpyAddIn
 			if (string.IsNullOrEmpty(typeName))
 				throw new ArgumentException("typeName is null or empty");
 			
+			var type = new FullTypeName(typeName);
+			
 			foreach (var viewContent in SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				if (viewContent.AssemblyFile == assemblyFile && typeName == viewContent.FullTypeName) {
+				var viewContentName = viewContent.DecompiledTypeName;
+				if (viewContentName.AssemblyFile == assemblyFile && type == viewContentName.Type) {
 					return viewContent;
 				}
 			}
 			
-			var newViewContent = new DecompiledViewContent(assemblyFile, typeName, null);
+			var newViewContent = new DecompiledViewContent(new DecompiledTypeReference(assemblyFile, new FullTypeName(typeName)), null);
 			SD.Workbench.ShowView(newViewContent);
 			return newViewContent;
 		}
 		
 		#region Properties
-		public FileName AssemblyFile {
-			get { return assemblyFile; }
-		}
+		public DecompiledTypeReference DecompiledTypeName { get; private set; }
 		
-		/// <summary>
-		/// The reflection name of the top-level type displayed in this view content.
-		/// </summary>
-		public string FullTypeName {
-			get { return fullTypeName; }
+		public override FileName PrimaryFileName {
+			get { return this.DecompiledTypeName.ToFileName(); }
 		}
 		
 		public override object Control {
@@ -142,7 +127,6 @@ namespace ICSharpCode.ILSpyAddIn
 		public override bool IsReadOnly {
 			get { return true; }
 		}
-		
 		#endregion
 		
 		#region Dispose
@@ -152,8 +136,6 @@ namespace ICSharpCode.ILSpyAddIn
 			codeEditor.Dispose();
 			SD.BookmarkManager.BookmarkAdded -= BookmarkManager_Added;
 			SD.BookmarkManager.BookmarkRemoved -= BookmarkManager_Removed;
-//			DecompileInformation data;
-//			DebuggerDecompilerService.DebugInformation.TryRemove(decompiledType.MetadataToken.ToInt32(), out data);
 			base.Dispose();
 		}
 		#endregion
@@ -208,7 +190,7 @@ namespace ICSharpCode.ILSpyAddIn
 				SD.AnalyticsMonitor.TrackException(ex);
 				
 				StringWriter writer = new StringWriter();
-				writer.WriteLine(string.Format("Exception while decompiling {0} ({1})", fullTypeName, assemblyFile));
+				writer.WriteLine(string.Format("Exception while decompiling {0} ({1})", DecompiledTypeName.Type, DecompiledTypeName.AssemblyFile));
 				writer.WriteLine();
 				writer.WriteLine(ex.ToString());
 				SD.MainThread.InvokeAsyncAndForget(() => OnDecompilationFinished(writer));

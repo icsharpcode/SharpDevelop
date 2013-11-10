@@ -11,6 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 {
 	public abstract class TestBase
 	{
+
 		/*public static string ApplyChanges (string text, List<TextReplaceAction> changes)
 		{
 			changes.Sort ((x, y) => y.Offset.CompareTo (x.Offset));
@@ -28,23 +29,49 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			return b.ToString();
 		}*/
 		
-		protected static IDocument GetResult(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
+		static TextEditorOptions GetActualOptions(TextEditorOptions options)
 		{
 			if (options == null) {
 				options = new TextEditorOptions();
 				options.EolMarker = "\n";
 				options.WrapLineLength = 80;
 			}
+			return options;
+		}
 
-
+		protected static FormattingChanges GetChanges(CSharpFormattingOptions policy, string input, out StringBuilderDocument document, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
+		{
+			options = GetActualOptions(options);
 			input = NormalizeNewlines(input);
-			var document = new StringBuilderDocument(input);
-			var visitor = new CSharpFormatter (policy, options);
+
+			document = new StringBuilderDocument(input);
+			var visitor = new CSharpFormatter(policy, options);
 			visitor.FormattingMode = mode;
-			var syntaxTree = new CSharpParser ().Parse (document, "test.cs");
-			var changes = visitor.AnalyzeFormatting(document, syntaxTree);
+			var syntaxTree = new CSharpParser().Parse(document, "test.cs");
+
+			return visitor.AnalyzeFormatting(document, syntaxTree);
+		}
+
+		protected static IDocument GetResult(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
+		{
+			StringBuilderDocument document;
+			var changes = GetChanges(policy, input, out document, mode, options);
+			
 			changes.ApplyChanges();
 			return document;
+		}
+
+		protected static FormattingChanges GetChanges(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
+		{
+			StringBuilderDocument document;
+			return GetChanges(policy, input, out document, mode, options);
+		}
+
+		protected static void TestNoUnnecessaryChanges(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
+		{
+			var formatted = GetResult(policy, input, mode, options).Text;
+			var changes = GetChanges(policy, formatted, mode, options);
+			Assert.AreEqual(0, changes.Count, "Wrong amount of changes");
 		}
 		
 		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
@@ -89,7 +116,10 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			formatter.FormattingMode = formattingMode;
 			string newText = formatter.Format (document);
 			if (expectedOutput != newText) {
-				Console.WriteLine (newText);
+				Console.WriteLine("expected:");
+				Console.WriteLine(expectedOutput);
+				Console.WriteLine("got:");
+				Console.WriteLine(newText);
 			}
 			Assert.AreEqual (expectedOutput, newText);
 		}

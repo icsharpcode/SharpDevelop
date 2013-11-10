@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -73,18 +74,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			box.SelectedIndex = box.Items.IndexOf(itemName);
 		}
-		void SelectElement(DataGridViewComboBoxCell box, string itemName)
-		{
-			if (box.Items.IndexOf(itemName) == -1) {
-				if (itemName == "Any CPU" && box.Items.IndexOf("AnyCPU") >= 0) {
-					box.Value = "AnyCPU";
-				} else {
-					box.Value = box.Items[0];
-				}
-			} else {
-				box.Value = itemName;
-			}
-		}
 		
 		sealed class EditTag
 		{
@@ -93,6 +82,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			public override string ToString()
 			{
 				return StringParser.Parse("${res:Dialog.Options.CombineOptions.Configurations.ConfigurationEditor.EditItem}");
+			}
+		}
+		
+		sealed class MissingItem
+		{
+			internal readonly string value;
+			
+			public MissingItem(string value)
+			{
+				this.value = value;
+			}
+			
+			public override string ToString()
+			{
+				return "(" + value + ")";
 			}
 		}
 		
@@ -108,16 +112,26 @@ namespace ICSharpCode.SharpDevelop.Project
 				var projectConfig = p.ConfigurationMapping.GetProjectConfiguration(solutionConfig);
 				
 				DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)row.Cells[1];
-				SetItems(c1.Items, p.ConfigurationNames);
-				SelectElement(c1, projectConfig.Configuration);
+				SetItemsAndSelect(c1, p.ConfigurationNames, projectConfig.Configuration);
 				c1.Items.Add(EditTag.Instance);
 				
 				DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)row.Cells[2];
-				SetItems(c2.Items, p.PlatformNames);
-				SelectElement(c2, projectConfig.Platform);
+				SetItemsAndSelect(c2, p.PlatformNames, projectConfig.Platform);
 				c2.Items.Add(EditTag.Instance);
 			}
 			inUpdate = false;
+		}
+		
+		void SetItemsAndSelect(DataGridViewComboBoxCell c, IEnumerable<string> items, string item)
+		{
+			SetItems(c.Items, items);
+			if (items.Contains(item)) {
+				c.Value = item;
+			} else {
+				var missingItem = new MissingItem(item);
+				c.Items.Insert(0, missingItem);
+				c.Value = missingItem;
+			}
 		}
 		
 		void ConfigurationComboBoxSelectedIndexChanged(object sender, EventArgs e)
@@ -160,11 +174,19 @@ namespace ICSharpCode.SharpDevelop.Project
 				IProject project = (IProject)row.Tag;
 				
 				var newConfig = new ConfigurationAndPlatform(
-					row.Cells[configurationColumn.Index].Value.ToString(),
-					row.Cells[platformColumn.Index].Value.ToString());
+					GetValue(row.Cells[configurationColumn.Index]),
+					GetValue(row.Cells[platformColumn.Index]));
 				
 				project.ConfigurationMapping.SetProjectConfiguration(solutionConfig, newConfig);
 			}
+		}
+		
+		string GetValue(DataGridViewCell dataGridViewCell)
+		{
+			var missingItem = dataGridViewCell.Value as MissingItem;
+			if (missingItem != null)
+				return missingItem.value;
+			return dataGridViewCell.Value.ToString();
 		}
 		
 		ComboBox gridEditingControl;

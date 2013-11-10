@@ -9,17 +9,13 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Xml;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.Core
 {
-	public sealed class PropertyServiceImpl : IPropertyService
+	public class PropertyServiceImpl : IPropertyService
 	{
-		string propertyFileName;
-		
-		DirectoryName configDirectory;
-		DirectoryName dataDirectory;
-		
-		Properties properties;
+		readonly Properties properties;
 		
 		/// <summary>
 		/// Initializes the service for unit-testing (reset properties to an empty property container).
@@ -29,25 +25,23 @@ namespace ICSharpCode.Core
 		{
 			properties = new Properties();
 		}
-
-		public PropertyServiceImpl(DirectoryName configDirectory, DirectoryName dataDirectory, string propertiesName)
+		
+		public PropertyServiceImpl(Properties properties)
 		{
-			this.configDirectory = configDirectory;
-			this.dataDirectory = dataDirectory;
-			this.propertyFileName = propertiesName + ".xml";
-			Directory.CreateDirectory(configDirectory);
-			LoadPropertiesFromStream(FileName.Create(Path.Combine(configDirectory, propertyFileName)));
+			if (properties == null)
+				throw new ArgumentNullException("properties");
+			this.properties = properties;
 		}
 		
-		public DirectoryName ConfigDirectory {
+		public virtual DirectoryName ConfigDirectory {
 			get {
-				return configDirectory;
+				throw new NotImplementedException();
 			}
 		}
 		
-		public DirectoryName DataDirectory {
+		public virtual DirectoryName DataDirectory {
 			get {
-				return dataDirectory;
+				throw new NotImplementedException();
 			}
 		}
 		
@@ -105,50 +99,6 @@ namespace ICSharpCode.Core
 			properties.Remove(key);
 		}
 		
-		bool LoadPropertiesFromStream(FileName fileName)
-		{
-			if (!File.Exists(fileName)) {
-				properties = new Properties();
-				return false;
-			}
-			try {
-				using (LockPropertyFile()) {
-					properties = Properties.Load(fileName);
-					return true;
-				}
-			} catch (XmlException ex) {
-				var msgService = ServiceSingleton.GetRequiredService<IMessageService>();
-				msgService.ShowError("Error loading properties: " + ex.Message + "\nSettings have been restored to default values.");
-			}
-			properties = new Properties();
-			return false;
-		}
-		
-		public void Save()
-		{
-			if (string.IsNullOrEmpty(configDirectory) || string.IsNullOrEmpty(propertyFileName))
-				throw new InvalidOperationException("No file name was specified on service creation");
-			
-			var fileName = FileName.Create(Path.Combine(configDirectory, propertyFileName));
-			using (LockPropertyFile()) {
-				properties.Save(fileName);
-			}
-		}
-		
-		/// <summary>
-		/// Acquires an exclusive lock on the properties file so that it can be opened safely.
-		/// </summary>
-		public IDisposable LockPropertyFile()
-		{
-			Mutex mutex = new Mutex(false, "PropertyServiceSave-30F32619-F92D-4BC0-BF49-AA18BF4AC313");
-			mutex.WaitOne();
-			return new CallbackOnDispose(
-				delegate {
-					mutex.ReleaseMutex();
-					mutex.Close();
-				});
-		}
-		
 		public event PropertyChangedEventHandler PropertyChanged {
 			add { properties.PropertyChanged += value; }
 			remove { properties.PropertyChanged -= value; }
@@ -156,6 +106,19 @@ namespace ICSharpCode.Core
 		
 		public Properties MainPropertiesContainer {
 			get { return properties; }
+		}
+		
+		public virtual void Save()
+		{
+		}
+
+		public virtual Properties LoadExtraProperties(string key)
+		{
+			return new Properties();
+		}
+
+		public virtual void SaveExtraProperties(string key, Properties p)
+		{
 		}
 	}
 }

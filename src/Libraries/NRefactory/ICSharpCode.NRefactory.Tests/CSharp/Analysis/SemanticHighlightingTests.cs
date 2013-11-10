@@ -1,4 +1,4 @@
-//
+﻿//
 // SemanticHighlightingTests.cs
 //
 // Author:
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 
 			foreach (var offset in offsets) {
 				var loc = doc.GetLocation (offset);
-				var color = visitor.GetColor (loc);
+				var color = visitor.GetColor (loc) ?? "defaultTextColor";
 				Assert.AreEqual (keywordColor.Name, color, "Color at " + loc + " is wrong:" + color);
 			}
 		}
@@ -346,6 +346,79 @@ class Class {
 			}
 		}
 ", varKeywordTypeColor);
+		}
+
+
+		[Test]
+		public void TestStringFormatItemColor()
+		{
+			TestColor (@"using System;
+class MyClass {
+			public static void Main ()
+			{
+				string str = string.Format ("" ${0} ${1} ${2} "", 1, 2, 3);
+			}
+		}
+", stringFormatItemColor);
+		}
+
+		[Test]
+		public void TestStringFormatItemInVerbatimStringColor()
+		{
+			TestColor ("using System;\nclass MyClass {\n\npublic static void Main () { Console.WriteLine (@\" ${0}\n ${1} \n\n ${2} \", 1, 2, 3); } }", stringFormatItemColor);
+		}
+
+		[Test]
+		public void TestFormatItemBug()
+		{
+			TestColor (@"using System;
+class MyClass {
+			public static void Main ()
+			{
+				string str = string.Format ("" ${{ {0} {1} {2} $}} "", 1, 2, 3);
+			}
+		}
+", defaultTextColor);
+		}
+
+		[Test]
+		public void TestInactiveConditionalCall()
+		{
+			TestColor (@"using System.Diagnostics;
+
+class Test
+{
+	[Conditional(""FOO"")]
+	public void Test22()
+	{
+	}
+
+	public void Foo()
+	{
+		$Test22();
+	}
+}
+", inactiveCodeColor);
+		}
+
+		[Test]
+		public void TestInactivePartialCall()
+		{
+			TestColor (@"using System.Diagnostics;
+
+partial class Test
+{
+	partial void FooBar();
+}
+
+partial class Test
+{
+	public void Foo()
+	{
+		$FooBar();
+	}
+}
+", inactiveCodeColor);
 		}
 	}
 }

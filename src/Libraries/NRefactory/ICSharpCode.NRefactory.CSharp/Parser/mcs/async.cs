@@ -201,7 +201,9 @@ namespace Mono.CSharp
 
 		protected override void DoEmit (EmitContext ec)
 		{
-			GetResultExpression (ec).Emit (ec);
+			using (ec.With (BuilderContext.Options.OmitDebugInfo, true)) {
+				GetResultExpression (ec).Emit (ec);
+			}
 		}
 
 		public Expression GetResultExpression (EmitContext ec)
@@ -230,33 +232,33 @@ namespace Mono.CSharp
 			var fe_awaiter = new FieldExpr (awaiter, loc);
 			fe_awaiter.InstanceExpression = new CompilerGeneratedThis (ec.CurrentType, loc);
 
-			//
-			// awaiter = expr.GetAwaiter ();
-			//
+				Label skip_continuation = ec.DefineLabel ();
+
 			using (ec.With (BuilderContext.Options.OmitDebugInfo, true)) {
+				//
+				// awaiter = expr.GetAwaiter ();
+				//
 				fe_awaiter.EmitAssign (ec, expr, false, false);
+
+				Expression completed_expr;
+				if (IsDynamic) {
+					var rc = new ResolveContext (ec.MemberContext);
+
+					Arguments dargs = new Arguments (1);
+					dargs.Add (new Argument (fe_awaiter));
+					completed_expr = new DynamicMemberBinder ("IsCompleted", dargs, loc).Resolve (rc);
+
+					dargs = new Arguments (1);
+					dargs.Add (new Argument (completed_expr));
+					completed_expr = new DynamicConversion (ec.Module.Compiler.BuiltinTypes.Bool, 0, dargs, loc).Resolve (rc);
+				} else {
+					var pe = PropertyExpr.CreatePredefined (awaiter_definition.IsCompleted, loc);
+					pe.InstanceExpression = fe_awaiter;
+					completed_expr = pe;
+				}
+
+				completed_expr.EmitBranchable (ec, skip_continuation, true);
 			}
-
-			Label skip_continuation = ec.DefineLabel ();
-
-			Expression completed_expr;
-			if (IsDynamic) {
-				var rc = new ResolveContext (ec.MemberContext);
-
-				Arguments dargs = new Arguments (1);
-				dargs.Add (new Argument (fe_awaiter));
-				completed_expr = new DynamicMemberBinder ("IsCompleted", dargs, loc).Resolve (rc);
-
-				dargs = new Arguments (1);
-				dargs.Add (new Argument (completed_expr));
-				completed_expr = new DynamicConversion (ec.Module.Compiler.BuiltinTypes.Bool, 0, dargs, loc).Resolve (rc);
-			} else {
-				var pe = PropertyExpr.CreatePredefined (awaiter_definition.IsCompleted, loc);
-				pe.InstanceExpression = fe_awaiter;
-				completed_expr = pe;
-			}
-
-			completed_expr.EmitBranchable (ec, skip_continuation, true);
 
 			base.DoEmit (ec);
 
@@ -747,7 +749,9 @@ namespace Mono.CSharp
 			var args = new Arguments (2);
 			args.Add (new Argument (awaiter, Argument.AType.Ref));
 			args.Add (new Argument (new CompilerGeneratedThis (CurrentType, Location), Argument.AType.Ref));
-			mg.EmitCall (ec, args);
+			using (ec.With (BuilderContext.Options.OmitDebugInfo, true)) {
+				mg.EmitCall (ec, args);
+			}
 		}
 
 		public void EmitInitializer (EmitContext ec)
@@ -823,7 +827,9 @@ namespace Mono.CSharp
 			Arguments args = new Arguments (1);
 			args.Add (new Argument (exceptionVariable));
 
-			mg.EmitCall (ec, args);
+			using (ec.With (BuilderContext.Options.OmitDebugInfo, true)) {
+				mg.EmitCall (ec, args);
+			}
 		}
 
 		public void EmitSetResult (EmitContext ec)
@@ -845,7 +851,9 @@ namespace Mono.CSharp
 				args.Add (new Argument (new LocalVariableReference (hoisted_return, Location)));
 			}
 
-			mg.EmitCall (ec, args);
+			using (ec.With (BuilderContext.Options.OmitDebugInfo, true)) {
+				mg.EmitCall (ec, args);
+			}
 		}
 
 		protected override TypeSpec[] ResolveBaseTypes (out FullNamedExpression base_class)

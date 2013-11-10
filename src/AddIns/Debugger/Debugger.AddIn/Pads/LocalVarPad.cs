@@ -32,11 +32,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			var res = new CommonResources();
 			res.InitializeComponent();
 			
-			this.tree = new SharpTreeView();
-			this.tree.Root = new SharpTreeNode();
-			this.tree.ShowRoot = false;
-			this.tree.View = (GridView)res["variableGridView"];
-			this.tree.ItemContainerStyle = (Style)res["itemContainerStyle"];
+			tree = new SharpTreeView();
+			tree.Root = new SharpTreeNode();
+			tree.ShowRoot = false;
+			tree.View = (GridView)res["variableGridView"];
+			tree.ItemContainerStyle = (Style)res["itemContainerStyle"];
+			tree.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "50%;25%;25%");
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
 			RefreshPad();

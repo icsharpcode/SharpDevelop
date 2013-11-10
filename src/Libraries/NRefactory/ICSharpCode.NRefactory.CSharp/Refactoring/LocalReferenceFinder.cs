@@ -120,6 +120,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				referenceFinder.visitedRoots.Add(rootNode);
 			}
 
+			public override void VisitCSharpTokenNode(CSharpTokenNode token)
+			{
+				// Nothing
+			}
+
 			protected override void VisitChildren(AstNode node)
 			{
 				if (referenceFinder.visitedRoots.Contains(node))

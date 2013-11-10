@@ -77,6 +77,25 @@ class TestClass
 }";
 			Test<RedundantObjectCreationArgumentListIssue> (input, 0);
 		}
+
+		[Test]
+		public void TestDisable ()
+		{
+			var input = @"
+class TestClass
+{
+	public int Prop { get; set; }
+	void TestMethod ()
+	{
+		// ReSharper disable once RedundantEmptyObjectCreationArgumentList
+		var x = new TestClass () {
+			Prop = 1
+		};
+	}
+}";
+			Test<RedundantObjectCreationArgumentListIssue> (input, 0);
+		}
+
 	}
 
 }

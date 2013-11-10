@@ -53,6 +53,7 @@ namespace ICSharpCode.SharpDevelop
 							reader = new StreamReader(stream, Encoding.UTF8);
 							break;
 						} else {
+							stream.Position = 0;
 							byte[] buffer = new byte[BUFFER_SIZE];
 							int length = stream.Read(buffer, 0, BUFFER_SIZE);
 							return FindMimeType(buffer, 0, length);

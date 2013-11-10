@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		public static string DataLayoutPath {
 			get {
-				return Path.Combine(PropertyService.DataDirectory, "layouts");
+				return Path.Combine(SD.PropertyService.DataDirectory, "layouts");
 			}
 		}
 		
@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		public static string ConfigLayoutPath {
 			get {
-				return Path.Combine(PropertyService.ConfigDirectory, "layouts");
+				return Path.Combine(SD.PropertyService.ConfigDirectory, "layouts");
 			}
 		}
 		

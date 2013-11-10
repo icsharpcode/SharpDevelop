@@ -105,7 +105,7 @@ namespace ICSharpCode.NRefactory
 			if (cloneable != null)
 				annotations = cloneable.Clone();
 		}
-		
+
 		sealed class AnnotationList : List<object>, ICloneable
 		{
 			// There are two uses for this custom list type:
@@ -181,7 +181,7 @@ namespace ICSharpCode.NRefactory
 			AnnotationList list = oldAnnotations as AnnotationList;
 			if (list != null) {
 				lock (list)
-					list.RemoveAll (obj => type.IsInstanceOfType (obj));
+					list.RemoveAll(type.IsInstanceOfType);
 			} else if (type.IsInstanceOfType (oldAnnotations)) {
 				if (Interlocked.CompareExchange (ref this.annotations, null, oldAnnotations) != oldAnnotations) {
 					// Operation failed (some other thread wrote to this.annotations first)

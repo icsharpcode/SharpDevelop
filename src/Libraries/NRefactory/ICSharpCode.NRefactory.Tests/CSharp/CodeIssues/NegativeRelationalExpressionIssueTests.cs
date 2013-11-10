@@ -136,5 +136,20 @@ struct LineChangeInfo
 }";
 			Test<NegativeRelationalExpressionIssue> (input, 0);
 		}
+
+		[Test]
+		public void TestBug ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (bool a, bool b)
+	{
+		var x = !(a || b);
+	}
+}";
+			TestWrongContext<NegativeRelationalExpressionIssue> (input);
+		}
+
 	}
 }

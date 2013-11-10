@@ -136,6 +136,7 @@
     <Compile Include="Src\ViewModel\NuGetPackageViewModel.cs" />
     <Compile Include="Src\ViewModel\OfflineAddInViewModel.cs" />
     <Compile Include="Src\ViewModel\OpenHyperlinkCommand.cs" />
+    <Compile Include="Src\ViewModel\PackageOptionsViewModel.cs" />
     <Compile Include="Src\ViewModel\PackageRepositoriesViewModel.cs" />
     <Compile Include="Src\ViewModel\UpdatedAddInsViewModel.cs" />
     <Compile Include="Src\View\AddInManagerView.xaml.cs">
@@ -147,6 +148,10 @@
     <Compile Include="Src\View\LicenseAcceptanceView.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>LicenseAcceptanceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\View\PackageOptionsView.xaml.cs">
+      <DependentUpon>PackageOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\View\PagedResultsView.xaml.cs">
       <DependentUpon>PagedResultsView.xaml</DependentUpon>
@@ -190,6 +195,7 @@
     <Page Include="Src\View\AddInManagerView.xaml" />
     <Page Include="Src\View\AddInsView.xaml" />
     <Page Include="Src\View\LicenseAcceptanceView.xaml" />
+    <Page Include="Src\View\PackageOptionsView.xaml" />
     <Page Include="Src\View\PagedResultsView.xaml" />
     <Page Include="Src\View\PackageRepositoriesView.xaml" />
   </ItemGroup>

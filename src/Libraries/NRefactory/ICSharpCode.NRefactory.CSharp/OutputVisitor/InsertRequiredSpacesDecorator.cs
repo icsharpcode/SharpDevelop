@@ -115,16 +115,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			lastWritten = LastWritten.Whitespace;
 		}
 		
-		public void Indent()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Unindent()
-		{
-			throw new NotImplementedException();
-		}
-		
 		public override void NewLine()
 		{
 			base.NewLine();
@@ -150,7 +140,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override void WritePrimitiveValue(object value, string literalValue = null)
 		{
-			base.WritePrimitiveValue(value);
+			base.WritePrimitiveValue(value, literalValue);
 			if (value == null || value is bool)
 				return;
 			if (value is string) {

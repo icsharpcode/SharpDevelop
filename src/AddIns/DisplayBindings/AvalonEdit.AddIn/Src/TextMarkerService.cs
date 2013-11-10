@@ -168,13 +168,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						drawingContext.DrawGeometry(brush, null, geometry);
 					}
 				}
-				if ((marker.MarkerTypes & (TextMarkerTypes.SquigglyUnderline | TextMarkerTypes.NormalUnderline)) != 0) {
+				var underlineMarkerTypes = TextMarkerTypes.SquigglyUnderline | TextMarkerTypes.NormalUnderline | TextMarkerTypes.DottedUnderline;
+				if ((marker.MarkerTypes & underlineMarkerTypes) != 0) {
 					foreach (Rect r in BackgroundGeometryBuilder.GetRectsForSegment(textView, marker)) {
 						Point startPoint = r.BottomLeft;
 						Point endPoint = r.BottomRight;
 						
-						Pen usedPen = new Pen(new SolidColorBrush(marker.MarkerColor), 1);
-						usedPen.Freeze();
+						Brush usedBrush = new SolidColorBrush(marker.MarkerColor);
+						usedBrush.Freeze();
 						if ((marker.MarkerTypes & TextMarkerTypes.SquigglyUnderline) != 0) {
 							double offset = 2.5;
 							
@@ -189,9 +190,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 							
 							geometry.Freeze();
 							
+							Pen usedPen = new Pen(usedBrush, 1);
+							usedPen.Freeze();
 							drawingContext.DrawGeometry(Brushes.Transparent, usedPen, geometry);
 						}
 						if ((marker.MarkerTypes & TextMarkerTypes.NormalUnderline) != 0) {
+							Pen usedPen = new Pen(usedBrush, 1);
+							usedPen.Freeze();
+							drawingContext.DrawLine(usedPen, startPoint, endPoint);
+						}
+						if ((marker.MarkerTypes & TextMarkerTypes.DottedUnderline) != 0) {
+							Pen usedPen = new Pen(usedBrush, 1);
+							usedPen.DashStyle = DashStyles.Dot;
+							usedPen.Freeze();
 							drawingContext.DrawLine(usedPen, startPoint, endPoint);
 						}
 					}

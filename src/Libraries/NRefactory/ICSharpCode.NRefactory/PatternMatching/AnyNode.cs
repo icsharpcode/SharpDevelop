@@ -43,4 +43,5 @@ namespace ICSharpCode.NRefactory.PatternMatching
 			return other != null && !other.IsNull;
 		}
 	}
+
 }

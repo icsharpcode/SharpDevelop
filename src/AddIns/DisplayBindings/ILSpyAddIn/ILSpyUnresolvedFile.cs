@@ -9,6 +9,7 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.ILSpyAddIn
@@ -16,28 +17,25 @@ namespace ICSharpCode.ILSpyAddIn
 	/// <summary>
 	/// Description of ILSpyUnresolvedFile.
 	/// </summary>
-	public class ILSpyUnresolvedFile : IUnresolvedFile
+	public class ILSpyUnresolvedFile : CSharpUnresolvedFile
 	{
 		DecompiledTypeReference name;
 		StringWriter writer;
-		IList<Error> errors;
-		IList<IUnresolvedTypeDefinition> topLevel;
 		
 		public static ILSpyUnresolvedFile Create(DecompiledTypeReference name, AstBuilder builder)
 		{
 			var writer = new StringWriter();
 			var target = new TextWriterTokenWriter(writer) { IndentationString = "\t" };
-			var output = new DebugInfoTokenWriterDecorator(target, target);
+			var output = new DebugInfoTokenWriterDecorator(TokenWriter.WrapInWriterThatSetsLocationsInAST(target));
 			builder.RunTransformations();
 			var syntaxTree = builder.SyntaxTree;
 			
 			syntaxTree.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
-			var outputFormatter = TokenWriter.WrapInWriterThatSetsLocationsInAST(output);
-			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, FormattingOptionsFactory.CreateSharpDevelop()));
-			ILSpyUnresolvedFile file = new ILSpyUnresolvedFile(name, syntaxTree.Errors);
-			builder.SyntaxTree.FileName = name.ToFileName();
-			var ts = syntaxTree.ToTypeSystem();
-			file.topLevel = ts.TopLevelTypeDefinitions;
+			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(output, FormattingOptionsFactory.CreateSharpDevelop()));
+			ILSpyUnresolvedFile file = new ILSpyUnresolvedFile(name);
+			var v = new TypeSystemConvertVisitor(file);
+			syntaxTree.AcceptVisitor(v);
+	
 			file.MemberLocations = output.MemberLocations;
 			file.DebugSymbols = output.DebugSymbols;
 			file.writer = writer;
@@ -45,10 +43,10 @@ namespace ICSharpCode.ILSpyAddIn
 			return file;
 		}
 		
-		ILSpyUnresolvedFile(DecompiledTypeReference name, IList<Error> errors)
+		ILSpyUnresolvedFile(DecompiledTypeReference name)
 		{
 			this.name = name;
-			this.errors = errors;
+			FileName = name.ToFileName();
 		}
 		
 		public Dictionary<string, TextLocation> MemberLocations { get; private set; }
@@ -61,56 +59,6 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public FileName AssemblyFile {
 			get { return name.AssemblyFile; }
-		}
-		
-		public IUnresolvedTypeDefinition GetTopLevelTypeDefinition(TextLocation location)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public IUnresolvedTypeDefinition GetInnermostTypeDefinition(TextLocation location)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public IUnresolvedMember GetMember(TextLocation location)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public string FileName {
-			get { return name.ToFileName(); }
-		}
-		
-		public DateTime? LastWriteTime {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
-			get {
-				return topLevel;
-			}
-		}
-		
-		public IList<IUnresolvedAttribute> AssemblyAttributes {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IList<IUnresolvedAttribute> ModuleAttributes {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IList<Error> Errors {
-			get { return errors; }
 		}
 	}
 }

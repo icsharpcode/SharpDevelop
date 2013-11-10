@@ -200,7 +200,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return globalSections; }
 		}
 		
-		void OnProjectConfigurationMappingChanged(object sender, EventArgs e) 
+		void OnProjectConfigurationMappingChanged(object sender, EventArgs e)
 		{
 			this.IsDirty = true;
 		}
@@ -235,26 +235,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return preferences; }
 		}
 		
-		static FileName GetPreferenceFileName(string projectFileName)
+		string GetPreferencesKey()
 		{
-			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
-			return FileName.Create(Path.Combine(directory,
-			                                    Path.GetFileName(projectFileName)
-			                                    + "." + projectFileName.ToUpperInvariant().GetStableHashCode().ToString("x")
-			                                    + ".xml"));
+			return "solution:" + fileName.ToString().ToUpperInvariant();
 		}
 		
 		internal void LoadPreferences()
 		{
-			FileName preferencesFile = GetPreferenceFileName(fileName);
-			if (FileUtility.IsValidPath(preferencesFile) && File.Exists(preferencesFile)) {
-				try {
-					preferences = Properties.Load(preferencesFile);
-				} catch (IOException) {
-				} catch (UnauthorizedAccessException) {
-				} catch (XmlException) {
-					// ignore errors about inaccessible or malformed files
-				}
+			try {
+				preferences = SD.PropertyService.LoadExtraProperties(GetPreferencesKey());
+			} catch (IOException) {
+			} catch (XmlException) {
+				// ignore errors about inaccessible or malformed files
 			}
 			// Load active configuration from preferences
 			CreateDefaultConfigurationsIfMissing();
@@ -274,12 +266,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			preferences.Set("ActiveConfiguration.Platform", activeConfiguration.Platform);
 			PreferencesSaving(this, EventArgs.Empty);
 			
-			FileName preferencesFile = GetPreferenceFileName(fileName);
-			System.IO.Directory.CreateDirectory(preferencesFile.GetParentDirectory());
 			try {
-				preferences.Save(preferencesFile);
+				SD.PropertyService.SaveExtraProperties(GetPreferencesKey(), preferences);
 			} catch (IOException) {
-			} catch (UnauthorizedAccessException) {
+				// ignore errors writing to extra properties
 			}
 		}
 		#endregion

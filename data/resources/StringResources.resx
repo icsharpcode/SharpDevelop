@@ -329,6 +329,9 @@ If you do not agree to the license terms click "I Decline".</value>
   <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
     <value>Add</value>
   </data>
+  <data name="AddInManager2.OptionPanel.AutoCheckForUpdates" xml:space="preserve">
+    <value>Automatically check for updates</value>
+  </data>
   <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
     <value>Move Down</value>
   </data>
@@ -346,6 +349,9 @@ If you do not agree to the license terms click "I Decline".</value>
   </data>
   <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
     <value>AddIns</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.General" xml:space="preserve">
+    <value>General</value>
   </data>
   <data name="AddInManager2.OptionPanel.Tree.Repositories" xml:space="preserve">
     <value>Repositories</value>
@@ -420,11 +426,14 @@ They will stop working after removing this AddIn! Are you sure you want to conti
     <value>Help Library</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
-    <value>Help Mode</value>
+    <value>Set Help Preference</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
     <value>Cannot launch Help Library Manager, because there is no help catalog installed/selected. Please check your help settings (see Tools &gt; Options &gt; Tools &gt; Microsoft Help Viewer).</value>
     <comment>Error message when there is no help catalog active</comment>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotAvailableDownloadWinSDK" xml:space="preserve">
+    <value>The Help Library Manager was not found. In order to use SharpDevelop's help feature please download and install Microsoft's Windows SDK 7.1.</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>Help Library Manager was not found. Please check if it was installed correctly.</value>
@@ -454,7 +463,7 @@ They will stop working after removing this AddIn! Are you sure you want to conti
     <value>Show Help</value>
   </data>
   <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
-    <value>Use external help</value>
+    <value>Use external help viewer</value>
   </data>
   <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
     <value>I want to use local help</value>
@@ -2079,6 +2088,12 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
     <value>Debugging</value>
     <comment>The root node in the options dialog</comment>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.AskForArguments" xml:space="preserve">
+    <value>Ask for arguments and working directory on executable launch.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
+    <value>Break at first line of execution.</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
     <value>Enable decompiler</value>
   </data>
@@ -2126,6 +2141,9 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption" xml:space="preserve">
     <value>Symbol and source code paths:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.WithoutSource" xml:space="preserve">
+    <value>Without Source Debugging</value>
   </data>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel" xml:space="preserve">
     <value>&amp;Header</value>
@@ -5276,6 +5294,9 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC" xml:space="preserve">
     <value>Open assembly from GAC...</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenInClassBrowser" xml:space="preserve">
+    <value>Open in Class Browser</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.SearchButton.ToolTip" xml:space="preserve">
     <value>Class View Search</value>
   </data>
@@ -5392,6 +5413,9 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   </data>
   <data name="MainWindow.Windows.Debug.Console" xml:space="preserve">
     <value>Console</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.DebugExecutable" xml:space="preserve">
+    <value>Debug executable</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Break" xml:space="preserve">
     <value>Break</value>

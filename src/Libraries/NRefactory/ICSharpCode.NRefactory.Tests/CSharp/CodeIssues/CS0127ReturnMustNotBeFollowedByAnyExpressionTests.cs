@@ -51,11 +51,35 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	void Bar (string str)
 	{
-		return ;
+		return;
 	}
 }");
 		}
-		
+
+
+		[Test]
+		public void TestReturnTypeFix ()
+		{
+			var input = @"class Foo
+{
+	void Bar (string str)
+	{
+		return str;
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0127ReturnMustNotBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			CheckFix (context, issues, @"class Foo
+{
+	string Bar (string str)
+	{
+		return str;
+	}
+}", 1);
+		}
+
 		[Test]
 		public void TestSimpleInvalidCase ()
 		{
@@ -107,7 +131,47 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		}
 
 		[Test]
+		public void TestIndexerSetter ()
+		{
+			var input = @"class Foo {
+	string this [int idx]
+	{
+		set {
+			return ""Hello World "";
+		}
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0127ReturnMustNotBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+		}
+
+
+		[Test]
 		public void TestAnonymousMethod ()
+		{
+			Test<CS0127ReturnMustNotBeFollowedByAnyExpression>(@"class Foo
+{
+	void Bar (string str)
+	{
+		System.Action func = delegate {
+			return str;
+		};
+	}
+}", @"class Foo
+{
+	void Bar (string str)
+	{
+		System.Action func = delegate {
+			return;
+		};
+	}
+}");
+		}
+
+		[Test]
+		public void TestAnonymousMethodReturningValue ()
 		{
 			var input = @"class Foo
 {
@@ -188,6 +252,54 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			TestRefactoringContext context;
 			var issues = GetIssues (new CS0127ReturnMustNotBeFollowedByAnyExpression (), input, out context);
 			Assert.AreEqual (1, issues.Count);
+		}
+	
+
+		[Test]
+		public void TestDontShowUpOnUndecidableCase ()
+		{
+			TestWrongContext<CS0127ReturnMustNotBeFollowedByAnyExpression>(@"
+using System;
+
+class Test
+{
+	void Foo (Func<int, int> func) {}
+	void Foo (Action<int> func) {}
+
+	void Bar (string str)
+	{
+		Foo(delegate {
+			return str;
+		});
+	}
+}");
+		}
+
+
+
+		/// <summary>
+		/// Bug 14843 - CS0127ReturnMustNotBeFollowedByAnyExpression Code Issue false positive
+		/// </summary>
+		[Test]
+		public void TestBug14843 ()
+		{
+			TestWrongContext<CS0127ReturnMustNotBeFollowedByAnyExpression>(@"
+using System;
+
+class Foo {
+	public Func<object, object> Func;
+}
+class Bar
+{
+	void Test ()
+	{
+		new Foo {
+			Func = o => {
+				return o;
+			}
+		};
+	}
+}");
 		}
 	}
 }

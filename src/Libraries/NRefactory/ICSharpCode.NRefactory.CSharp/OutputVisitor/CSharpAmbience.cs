@@ -182,7 +182,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			EntityDeclaration node = astBuilder.ConvertEntity(member);
-//			TypeDeclaration typeDecl = (TypeDeclaration)astBuilder.ConvertEntity(member.DeclaringTypeDefinition);
 			if ((ConversionFlags & ConversionFlags.ShowDeclaringType) == ConversionFlags.ShowDeclaringType) {
 				ConvertType(member.DeclaringType, writer, formattingPolicy);
 				writer.WriteToken(Roles.Dot, ".");
@@ -257,7 +256,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			AstNode astNode = astBuilder.ConvertVariable(v);
-			return astNode.ToString().TrimEnd(';', '\r', '\n');
+			return astNode.ToString().TrimEnd(';', '\r', '\n', (char)8232);
 		}
 		
 		public string ConvertType(IType type)

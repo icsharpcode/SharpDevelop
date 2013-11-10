@@ -28,7 +28,7 @@ namespace CSharpBinding.Refactoring
 	public class IssueManager : IDisposable, IContextActionProvider
 	{
 		static readonly Lazy<IReadOnlyList<IssueProvider>> issueProviders = new Lazy<IReadOnlyList<IssueProvider>>(
-			() => AddInTree.BuildItems<ICodeIssueProvider>("/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders", null, false)
+			() => AddInTree.BuildItems<CodeIssueProvider>("/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders", null, false)
 			.Select(p => new IssueProvider(p)).ToList());
 		
 		internal static IReadOnlyList<IssueProvider> IssueProviders {
@@ -40,7 +40,7 @@ namespace CSharpBinding.Refactoring
 			public readonly Type ProviderType;
 			public readonly IssueDescriptionAttribute Attribute;
 			
-			public IssueProvider(ICodeIssueProvider provider)
+			public IssueProvider(CodeIssueProvider provider)
 			{
 				if (provider == null)
 					throw new ArgumentNullException("provider");
@@ -51,7 +51,7 @@ namespace CSharpBinding.Refactoring
 				if (attributes.Length == 1) {
 					this.Attribute = (IssueDescriptionAttribute)attributes[0];
 					defaultSeverity = this.Attribute.Severity;
-					IsRedundancy = this.Attribute.Category == IssueCategories.Redundancies;
+					IsRedundancy = this.Attribute.Category == IssueCategories.RedundanciesInCode || this.Attribute.Category == IssueCategories.RedundanciesInDeclarations;
 				} else {
 					SD.Log.Warn("Issue provider without attribute: " + ProviderType);
 				}
@@ -62,15 +62,11 @@ namespace CSharpBinding.Refactoring
 			public Severity CurrentSeverity { get; set; }
 			public bool IsRedundancy { get; set; }
 			
-			public IssueMarker MarkerType {
-				get { return Attribute != null ? Attribute.IssueMarker : IssueMarker.Underline; }
-			}
-			
 			public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 			{
 				// use a separate instance for every call, this is necessary
 				// for thread-safety
-				var provider = (ICodeIssueProvider)Activator.CreateInstance(ProviderType);
+				var provider = (CodeIssueProvider)Activator.CreateInstance(ProviderType);
 				return provider.GetIssues(context);
 			}
 		}
@@ -119,8 +115,9 @@ namespace CSharpBinding.Refactoring
 			public readonly int EndOffset;
 			public readonly IReadOnlyList<IContextAction> Actions;
 			public readonly Severity Severity;
+			public readonly IssueMarker MarkerType;
 			
-			public InspectionTag(IssueManager manager, IssueProvider provider, ITextSourceVersion inspectedVersion, string description, int startOffset, int endOffset, IEnumerable<CodeAction> actions)
+			public InspectionTag(IssueManager manager, IssueProvider provider, ITextSourceVersion inspectedVersion, string description, int startOffset, int endOffset, IssueMarker markerType, IEnumerable<CodeAction> actions)
 			{
 				this.manager = manager;
 				this.Provider = provider;
@@ -129,6 +126,7 @@ namespace CSharpBinding.Refactoring
 				this.StartOffset = startOffset;
 				this.EndOffset = endOffset;
 				this.Severity = provider.CurrentSeverity;
+				this.MarkerType = markerType;
 				
 				this.Actions = actions.Select(Wrap).ToList();
 			}
@@ -175,9 +173,12 @@ namespace CSharpBinding.Refactoring
 				marker.MarkerColor = color;
 				if (!Provider.IsRedundancy)
 					marker.MarkerTypes = TextMarkerTypes.ScrollBarRightTriangle;
-				switch (Provider.MarkerType) {
-					case IssueMarker.Underline:
+				switch (MarkerType) {
+					case IssueMarker.WavedLine:
 						marker.MarkerTypes |= TextMarkerTypes.SquigglyUnderline;
+						break;
+					case IssueMarker.DottedLine:
+						marker.MarkerTypes |= TextMarkerTypes.DottedUnderline;
 						break;
 					case IssueMarker.GrayOut:
 						marker.ForegroundColor = SystemColors.GrayTextColor;
@@ -272,6 +273,7 @@ namespace CSharpBinding.Refactoring
 									issue.Description,
 									context.GetOffset(issue.Start),
 									context.GetOffset(issue.End),
+									issue.IssueMarker,
 									issue.Actions));
 							}
 						}

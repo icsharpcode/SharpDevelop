@@ -435,8 +435,14 @@ namespace Mono.CSharp {
 		/// </remarks>
 		public Expression Resolve (ResolveContext ec, ResolveFlags flags)
 		{
-			if (eclass != ExprClass.Unresolved)
+			if (eclass != ExprClass.Unresolved) {
+				if ((flags & ExprClassToResolveFlags) == 0) {
+					Error_UnexpectedKind (ec, flags, loc);
+					return null;
+				}
+
 				return this;
+			}
 			
 			Expression e;
 			try {
@@ -509,6 +515,23 @@ namespace Mono.CSharp {
 				throw new Exception ("Expression " + e + " did not set its type after Resolve");
 
 			return e;
+		}
+
+		public Constant ResolveLabelConstant (ResolveContext rc)
+		{
+			var expr = Resolve (rc);
+			if (expr == null)
+				return null;
+
+			Constant c = expr as Constant;
+			if (c == null) {
+				if (c.type != InternalType.ErrorType)
+					rc.Report.Error (150, StartLocation, "A constant value is expected");
+
+				return null;
+			}
+
+			return c;
 		}
 
 		public virtual void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
@@ -761,8 +784,18 @@ namespace Mono.CSharp {
 					}
 
 					if ((restrictions & MemberLookupRestrictions.InvocableOnly) != 0) {
-						if (member is MethodSpec)
+						if (member is MethodSpec) {
+							//
+							// Interface members that are hidden by class members are removed from the set. This
+							// step only has an effect if T is a type parameter and T has both an effective base 
+							// class other than object and a non-empty effective interface set
+							//
+							var tps = queried_type as TypeParameterSpec;
+							if (tps != null && tps.HasTypeConstraint)
+								members = RemoveHiddenTypeParameterMethods (members);
+
 							return new MethodGroupExpr (members, queried_type, loc);
+						}
 
 						if (!Invocation.IsMemberInvocable (member))
 							continue;
@@ -815,6 +848,54 @@ namespace Mono.CSharp {
 			} while (members != null);
 
 			return null;
+		}
+
+		static IList<MemberSpec> RemoveHiddenTypeParameterMethods (IList<MemberSpec> members)
+		{
+			if (members.Count < 2)
+				return members;
+
+			//
+			// If M is a method, then all non-method members declared in an interface declaration
+			// are removed from the set, and all methods with the same signature as M declared in
+			// an interface declaration are removed from the set
+			//
+
+			bool copied = false;
+			for (int i = 0; i < members.Count; ++i) {
+				var method = members[i] as MethodSpec;
+				if (method == null) {
+					if (!copied) {
+						copied = true;
+						members = new List<MemberSpec> (members);
+					} 
+					
+					members.RemoveAt (i--);
+					continue;
+				}
+
+				if (!method.DeclaringType.IsInterface)
+					continue;
+
+				for (int ii = 0; ii < members.Count; ++ii) {
+					var candidate = members[ii] as MethodSpec;
+					if (candidate == null || !candidate.DeclaringType.IsClass)
+						continue;
+
+					if (!TypeSpecComparer.Override.IsEqual (candidate.Parameters, method.Parameters))
+						continue;
+
+					if (!copied) {
+						copied = true;
+						members = new List<MemberSpec> (members);
+					}
+
+					members.RemoveAt (i--);
+					break;
+				}
+			}
+
+			return members;
 		}
 
 		protected virtual void Error_NegativeArrayIndex (ResolveContext ec, Location loc)
@@ -1253,8 +1334,20 @@ namespace Mono.CSharp {
 		public static Expression Create (Expression child, TypeSpec type)
 		{
 			Constant c = child as Constant;
-			if (c != null)
-				return new EmptyConstantCast (c, type);
+			if (c != null) {
+				var enum_constant = c as EnumConstant;
+				if (enum_constant != null)
+					c = enum_constant.Child;
+
+				if (!(c is ReducedExpression.ReducedConstantExpression)) {
+					if (c.Type == type)
+						return c;
+
+					var res = c.ConvertImplicitly (type);
+					if (res != null)
+						return res;
+				}
+			}
 
 			EmptyCast e = child as EmptyCast;
 			if (e != null)
@@ -1680,7 +1773,11 @@ namespace Mono.CSharp {
 		public override void Emit (EmitContext ec)
 		{
 			base.Emit (ec);
+			Emit (ec, mode);
+		}
 
+		public static void Emit (EmitContext ec, Mode mode)
+		{
 			if (ec.HasSet (EmitContext.Options.CheckedScope)) {
 				switch (mode){
 				case Mode.I1_U1: ec.Emit (OpCodes.Conv_Ovf_U1); break;
@@ -1949,7 +2046,7 @@ namespace Mono.CSharp {
 	//
 	public class ReducedExpression : Expression
 	{
-		sealed class ReducedConstantExpression : EmptyConstantCast
+		public sealed class ReducedConstantExpression : EmptyConstantCast
 		{
 			readonly Expression orig_expr;
 
@@ -2361,7 +2458,7 @@ namespace Mono.CSharp {
 
 		protected override Expression DoResolve (ResolveContext rc)
 		{
-			var e = SimpleNameResolve (rc, null, false);
+			var e = SimpleNameResolve (rc, null);
 
 			var fe = e as FieldExpr;
 			if (fe != null) {
@@ -2373,7 +2470,7 @@ namespace Mono.CSharp {
 
 		public override Expression DoResolveLValue (ResolveContext ec, Expression right_side)
 		{
-			return SimpleNameResolve (ec, right_side, false);
+			return SimpleNameResolve (ec, right_side);
 		}
 
 		protected virtual void Error_TypeOrNamespaceNotFound (IMemberContext ctx)
@@ -2639,7 +2736,10 @@ namespace Mono.CSharp {
 							}
 
 							if (e is TypeExpr) {
-								e.Error_UnexpectedKind (rc, e, "variable", e.ExprClassName, loc);
+								// TypeExpression does not have correct location
+								if (e is TypeExpression)
+									e = new TypeExpression (e.Type, loc);
+
 								return e;
 							}
 						}
@@ -2661,19 +2761,19 @@ namespace Mono.CSharp {
 			}
 		}
 		
-		Expression SimpleNameResolve (ResolveContext ec, Expression right_side, bool intermediate)
+		Expression SimpleNameResolve (ResolveContext ec, Expression right_side)
 		{
 			Expression e = LookupNameExpression (ec, right_side == null ? MemberLookupRestrictions.ReadAccess : MemberLookupRestrictions.None);
 
 			if (e == null)
 				return null;
 
-			if (right_side != null) {
-				if (e is FullNamedExpression && e.eclass != ExprClass.Unresolved) {
-					e.Error_UnexpectedKind (ec, e, "variable", e.ExprClassName, loc);
-				    return null;
-				}
+			if (e is FullNamedExpression && e.eclass != ExprClass.Unresolved) {
+				e.Error_UnexpectedKind (ec, e, "variable", e.ExprClassName, loc);
+				return e;
+			}
 
+			if (right_side != null) {
 				e = e.ResolveLValue (ec, right_side);
 			} else {
 				e = e.Resolve (ec);
@@ -3574,7 +3674,7 @@ namespace Mono.CSharp {
 							InstanceExpression = ProbeIdenticalTypeName (ec, InstanceExpression, simple_name);
 						}
 
-						InstanceExpression.Resolve (ec);
+						InstanceExpression.Resolve (ec, ResolveFlags.VariableOrValue | ResolveFlags.MethodGroup | ResolveFlags.Type);
 					}
 				}
 
@@ -3648,7 +3748,7 @@ namespace Mono.CSharp {
 		//
 		public virtual MethodGroupExpr LookupExtensionMethod (ResolveContext rc)
 		{
-			if (InstanceExpression == null)
+			if (InstanceExpression == null || InstanceExpression.eclass == ExprClass.Type)
 				return null;
 
 			InstanceExpression = InstanceExpression.Resolve (rc);
@@ -4677,7 +4777,7 @@ namespace Mono.CSharp {
 				// is used as argument or delegate conversion
 				//
 				if (!Convert.ImplicitConversionExists (ec, argument.Expr, parameter)) {
-					return 2;
+					return parameter.IsDelegate && argument.Expr is AnonymousMethodExpression ? 2 : 3;
 				}
 			}
 

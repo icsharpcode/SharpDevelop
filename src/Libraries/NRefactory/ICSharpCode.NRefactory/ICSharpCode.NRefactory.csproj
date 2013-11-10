@@ -142,11 +142,15 @@
     <Compile Include="TypeSystem\ArrayType.cs" />
     <Compile Include="TypeSystem\AssemblyQualifiedTypeName.cs" />
     <Compile Include="TypeSystem\ByReferenceType.cs" />
-    <Compile Include="TypeSystem\CecilLoader.cs" />
     <Compile Include="TypeSystem\ComHelper.cs" />
     <Compile Include="TypeSystem\DefaultSolutionSnapshot.cs" />
     <Compile Include="TypeSystem\DomRegion.cs" />
     <Compile Include="TypeSystem\EntityType.cs" />
+    <Compile Include="TypeSystem\Implementation\BlobReader.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultVariable.cs" />
+    <Compile Include="TypeSystem\Implementation\ResolvedAttributeBlob.cs" />
+    <Compile Include="TypeSystem\Implementation\UnresolvedAttributeBlob.cs" />
+    <Compile Include="TypeSystem\Implementation\UnresolvedSecurityDeclarationBlob.cs" />
     <Compile Include="TypeSystem\ISymbol.cs" />
     <Compile Include="TypeSystem\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\TypeSystemExtensions.cs" />
@@ -279,6 +283,12 @@
     <Compile Include="Refactoring\IssueMarker.cs" />
     <Compile Include="Refactoring\Severity.cs" />
     <Compile Include="Analysis\SymbolCollector.cs" />
+    <Compile Include="TypeSystem\AssemblyLoader.cs" />
+    <Compile Include="Editor\UnicodeNewline.cs" />
+    <Compile Include="Completion\FrameworkLookup.cs" />
+    <Compile Include="Utils\ComparableList.cs" />
+    <Compile Include="PatternMatching\AnyNodeOrNull.cs" />
+    <Compile Include="Editor\ITextPasteHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
@@ -293,13 +303,6 @@
     <None Include="..\doc\XML Documentation.html">
       <Link>Documentation\XML Documentation.html</Link>
     </None>
-    <None Include="TypeSystem\IkvmLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

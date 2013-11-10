@@ -23,27 +23,68 @@ namespace ICSharpCode.ILSpyAddIn
 	/// </summary>
 	public static class ILSpyDecompilerService
 	{
-		static readonly Dictionary<FileName, AssemblyDefinition> assemblyCache = new Dictionary<FileName, AssemblyDefinition>();
+		class AssemblyCacheInfo
+		{
+			public readonly DateTime LastUpdateTime;
+			public readonly WeakReference<AssemblyDefinition> Assembly;
+			
+			public AssemblyCacheInfo(DateTime lastUpdateTime, AssemblyDefinition assembly)
+			{
+				if (assembly == null)
+					throw new ArgumentNullException("assembly");
+				this.LastUpdateTime = lastUpdateTime;
+				this.Assembly = new WeakReference<AssemblyDefinition>(assembly);
+			}
+		}
+		
+		static readonly Dictionary<FileName, AssemblyCacheInfo> assemblyCache = new Dictionary<FileName, AssemblyCacheInfo>();
+		
+		static AssemblyDefinition GetAssemblyDefinitionFromCache(FileName file, ReaderParameters parameters = null)
+		{
+			if (file == null) return null;
+			if (parameters == null) parameters = new ReaderParameters();
+			var lastUpdateTime = File.GetLastWriteTimeUtc(file);
+			lock (assemblyCache) {
+				AssemblyCacheInfo info;
+				AssemblyDefinition asm;
+				if (!assemblyCache.TryGetValue(file, out info)) {
+					asm = AssemblyDefinition.ReadAssembly(file, parameters);
+					assemblyCache.Add(file, new AssemblyCacheInfo(lastUpdateTime, asm));
+					return asm;
+				} else if (info.LastUpdateTime < lastUpdateTime) {
+					assemblyCache.Remove(file);
+					asm = AssemblyDefinition.ReadAssembly(file, parameters);
+					assemblyCache.Add(file, new AssemblyCacheInfo(lastUpdateTime, asm));
+					return asm;
+				} else {
+					if (info.Assembly.TryGetTarget(out asm))
+						return asm;
+					asm = AssemblyDefinition.ReadAssembly(file, parameters);
+					info.Assembly.SetTarget(asm);
+					return asm;
+				}
+			}
+		}
 		
 		class ILSpyAssemblyResolver : DefaultAssemblySearcher, IAssemblyResolver
 		{
+			public ISet<AssemblyDefinition> ResolvedAssemblies {
+				get { return resolvedAssemblies; }
+			}
+
 			public ILSpyAssemblyResolver(FileName fileName)
 				: base(fileName)
 			{
 			}
 			
+			readonly ISet<AssemblyDefinition> resolvedAssemblies = new HashSet<AssemblyDefinition>();
+			
 			AssemblyDefinition Resolve(DomAssemblyName name, ReaderParameters parameters)
 			{
-				var file = FindAssembly(name);
-				if (file == null) return null;
-				AssemblyDefinition asm;
-				lock (assemblyCache) {
-					if (!assemblyCache.TryGetValue(file, out asm)) {
-						asm = AssemblyDefinition.ReadAssembly(file, parameters);
-						assemblyCache.Add(file, asm);
-					}
-				}
-				return asm;
+				var assemblyDefinition = GetAssemblyDefinitionFromCache(FindAssembly(name), parameters);
+				if (assemblyDefinition != null)
+					resolvedAssemblies.Add(assemblyDefinition);
+				return assemblyDefinition;
 			}
 			
 			public AssemblyDefinition Resolve(AssemblyNameReference name)
@@ -81,14 +122,17 @@ namespace ICSharpCode.ILSpyAddIn
 				cancellationToken);
 		}
 		
-		static AstBuilder CreateAstBuilder(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
+		static AstBuilder CreateAstBuilder(DecompiledTypeReference name, out AssemblyDefinition[] neededAssemblies, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			ReaderParameters readerParameters = new ReaderParameters();
 			// Use new assembly resolver instance so that the AssemblyDefinitions
 			// can be garbage-collected once the code is decompiled.
-			readerParameters.AssemblyResolver = new ILSpyAssemblyResolver(name.AssemblyFile);
-			
-			ModuleDefinition module = ModuleDefinition.ReadModule(name.AssemblyFile, readerParameters);
+			var resolver = new ILSpyAssemblyResolver(name.AssemblyFile);
+			readerParameters.AssemblyResolver = resolver;
+			AssemblyDefinition asm = GetAssemblyDefinitionFromCache(name.AssemblyFile, readerParameters);
+			if (asm == null)
+				throw new InvalidOperationException("Could not find assembly file");
+			ModuleDefinition module = asm.MainModule;
 			TypeDefinition typeDefinition = module.GetType(name.Type.ReflectionName);
 			if (typeDefinition == null)
 				throw new InvalidOperationException("Could not find type");
@@ -96,18 +140,21 @@ namespace ICSharpCode.ILSpyAddIn
 			context.CancellationToken = cancellationToken;
 			AstBuilder astBuilder = new AstBuilder(context);
 			astBuilder.AddType(typeDefinition);
+			neededAssemblies = resolver.ResolvedAssemblies.ToArray();
 			return astBuilder;
 		}
 		
 		static ILSpyUnresolvedFile DoDecompile(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return ILSpyUnresolvedFile.Create(name, CreateAstBuilder(name, cancellationToken));
+			AssemblyDefinition[] assemblies;
+			return ILSpyUnresolvedFile.Create(name, CreateAstBuilder(name, out assemblies, cancellationToken));
 		}
 		
 		public static ILSpyFullParseInformation ParseDecompiledType(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var astBuilder = CreateAstBuilder(name, cancellationToken);
-			return new ILSpyFullParseInformation(ILSpyUnresolvedFile.Create(name, astBuilder), null, astBuilder.SyntaxTree);
+			AssemblyDefinition[] assemblies;
+			var astBuilder = CreateAstBuilder(name, out assemblies, cancellationToken);
+			return new ILSpyFullParseInformation(ILSpyUnresolvedFile.Create(name, astBuilder), null, astBuilder.SyntaxTree, assemblies);
 		}
 	}
 	

@@ -478,7 +478,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		FileName ViewContentMementosFileName {
 			get {
 				if (viewContentMementosFileName == null) {
-					viewContentMementosFileName = FileName.Create(Path.Combine(PropertyService.ConfigDirectory, "LastViewStates.xml"));
+					viewContentMementosFileName = SD.PropertyService.ConfigDirectory.CombineFile("LastViewStates.xml");
 				}
 				return viewContentMementosFileName;
 			}
@@ -500,8 +500,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		}
 		
 		public static bool LoadDocumentProperties {
-			get { return PropertyService.Get("SharpDevelop.LoadDocumentProperties", true); }
-			set { PropertyService.Set("SharpDevelop.LoadDocumentProperties", value); }
+			get { return SD.PropertyService.Get("SharpDevelop.LoadDocumentProperties", true); }
+			set { SD.PropertyService.Set("SharpDevelop.LoadDocumentProperties", value); }
 		}
 		
 		/// <summary>

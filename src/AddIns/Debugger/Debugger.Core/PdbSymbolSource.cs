@@ -72,9 +72,9 @@ namespace Debugger
 		/// <summary> Find sequence point by IL offset </summary>
 		SequencePoint GetSequencePoint(IMethod method, int iloffset);
 		
-		/// <summary> Find sequence point by source code location </summary>
+		/// <summary> Find sequence points by source code location. Might find multiple methods at one location (lambda expressions, etc.) </summary>
 		/// <remarks> Only source files corresponding to the given module are searched </remarks>
-		SequencePoint GetSequencePoint(Module module, string filename, int line, int column);
+		IEnumerable<SequencePoint> GetSequencePoints(Module module, string filename, int line, int column);
 		
 		/// <summary> Get IL ranges that should be always stepped over by the debugger </summary>
 		/// <remarks> This is used for compiler generated code </remarks>
@@ -190,14 +190,14 @@ namespace Debugger
 			return sequencePoint;
 		}
 		
-		public SequencePoint GetSequencePoint(Module module, string filename, int line, int column)
+		public IEnumerable<SequencePoint> GetSequencePoints(Module module, string filename, int line, int column)
 		{
 			// Do not use ISymUnmanagedReader.GetDocument!  It is broken if two files have the same name
 			// Do not use ISymUnmanagedMethod.GetOffset!  It sometimes returns negative offset
 			
 			ISymUnmanagedReader symReader = module.SymReader;
 			if (symReader == null)
-				return null; // No symbols
+				yield break; // No symbols
 			
 			// Find ISymUnmanagedDocument which excactly matches the filename.
 			var symDoc = module.SymDocuments.FirstOrDefault(d => string.Equals(filename, d.GetURL(), StringComparison.OrdinalIgnoreCase));
@@ -205,26 +205,29 @@ namespace Debugger
 			// Find the file even if the symbol is relative or if the file was moved
 			var symDocs = module.SymDocuments.Where(d => string.Equals(Path.GetFileName(filename), Path.GetFileName(d.GetURL()), StringComparison.OrdinalIgnoreCase));
 			symDoc = symDoc ?? symDocs.FirstOrDefault(d => string.Equals(GetSourceCodePath(module.Process, d.GetURL()), filename, StringComparison.OrdinalIgnoreCase));
-			if (symDoc == null) return null; // Document not found
+			if (symDoc == null) yield break; // Document not found
 			
-			ISymUnmanagedMethod symMethod;
+			ISymUnmanagedMethod[] symMethods;
 			try {
 				uint validLine = symDoc.FindClosestLine((uint)line);
-				symMethod = symReader.GetMethodFromDocumentPosition(symDoc, (uint)validLine, (uint)column);
+				symMethods = symReader.GetMethodsFromDocumentPosition(symDoc, validLine, (uint)column);
 			} catch {
-				return null; //Not found
+				yield break; //Not found
 			}
 			
-			var corFunction = module.CorModule.GetFunctionFromToken(symMethod.GetToken());
-			int codesize = (int)corFunction.GetILCode().GetSize();
-			var seqPoints = symMethod.GetSequencePoints(codesize).Where(s => s.StartLine != 0xFEEFEE);
-			SequencePoint seqPoint = null;
-			if (column != 0) {
-				seqPoint = seqPoints.FirstOrDefault(s => (s.StartLine < line || (s.StartLine == line && s.StartColumn <= column)) &&
-				                                    (line < s.EndLine || (line == s.EndLine && column <= s.EndColumn)));
+			foreach (ISymUnmanagedMethod symMethod in symMethods) {
+				var corFunction = module.CorModule.GetFunctionFromToken(symMethod.GetToken());
+				int codesize = (int)corFunction.GetILCode().GetSize();
+				var seqPoints = symMethod.GetSequencePoints(codesize).Where(s => s.StartLine != 0xFEEFEE);
+				SequencePoint seqPoint = null;
+				if (column != 0) {
+					seqPoint = seqPoints.FirstOrDefault(s => (s.StartLine < line || (s.StartLine == line && s.StartColumn <= column)) &&
+					                                    (line < s.EndLine || (line == s.EndLine && column <= s.EndColumn)));
+				}
+				seqPoint = seqPoint ?? seqPoints.FirstOrDefault(s => line <= s.StartLine);
+				if (seqPoint != null)
+					yield return seqPoint;
 			}
-			seqPoint = seqPoint ?? seqPoints.FirstOrDefault(s => line <= s.StartLine);
-			return seqPoint;
 		}
 		
 		public IEnumerable<ILRange> GetIgnoredILRanges(IMethod method)

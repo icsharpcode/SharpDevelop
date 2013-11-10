@@ -304,7 +304,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			Assert.AreEqual("short", ((PrimitiveType)td.BaseTypes.Single()).Keyword);
 		}
 		
-		[Test, Ignore("Mono parser crash")]
+		[Test]
 		public void EnumWithIncorrectNewlineAfterIntegerLiteral ()
 		{
 			ParseUtilCSharp.AssertGlobal (

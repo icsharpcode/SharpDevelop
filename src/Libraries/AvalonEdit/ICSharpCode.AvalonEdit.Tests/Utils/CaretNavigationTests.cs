@@ -129,5 +129,13 @@ namespace ICSharpCode.AvalonEdit.Utils
 			Assert.AreEqual(6, GetNextCaretStop(str, 1, CaretPositioningMode.Normal));
 			Assert.AreEqual(1, GetPrevCaretStop(str, 6, CaretPositioningMode.Normal));
 		}
+		
+		[Test]
+		public void SingleClosingBraceAtLineEnd()
+		{
+			string str = "\t\t}";
+			Assert.AreEqual(2, GetNextCaretStop(str, 1, CaretPositioningMode.WordStart));
+			Assert.AreEqual(-1, GetPrevCaretStop(str, 1, CaretPositioningMode.WordStart));
+		}
 	}
 }

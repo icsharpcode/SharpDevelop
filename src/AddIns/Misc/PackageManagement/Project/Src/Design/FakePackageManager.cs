@@ -193,5 +193,10 @@ namespace ICSharpCode.PackageManagement.Design
 			PackagePassedToUpdatePackageReference = package;
 			SettingsPassedToUpdatePackageReference = settings;
 		}
+		
+		public void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions, bool ignoreWalkInfo)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
