@@ -104,7 +104,7 @@ namespace ICSharpCode.ILSpyAddIn
 				}
 			}
 			
-			var newViewContent = new DecompiledViewContent(new DecompiledTypeReference(assemblyFile, new FullTypeName(typeName)), null);
+			var newViewContent = new DecompiledViewContent(new DecompiledTypeReference(assemblyFile, new TopLevelTypeName(typeName)), null);
 			SD.Workbench.ShowView(newViewContent);
 			return newViewContent;
 		}

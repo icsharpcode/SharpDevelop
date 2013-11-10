@@ -13,6 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
 using Mono.Cecil;
 
@@ -151,9 +152,9 @@ namespace ICSharpCode.ILSpyAddIn
 	public class DecompiledTypeReference : IEquatable<DecompiledTypeReference>
 	{
 		public FileName AssemblyFile { get; private set; }
-		public FullTypeName Type { get; private set; }
+		public TopLevelTypeName Type { get; private set; }
 		
-		public DecompiledTypeReference(FileName assemblyFile, FullTypeName type)
+		public DecompiledTypeReference(FileName assemblyFile, TopLevelTypeName type)
 		{
 			this.AssemblyFile = assemblyFile;
 			this.Type = type;
@@ -175,7 +176,16 @@ namespace ICSharpCode.ILSpyAddIn
 			asm = match.Groups[1].Value;
 			typeName = UnescapeTypeName(match.Groups[2].Value);
 			
-			return new DecompiledTypeReference(new FileName(asm), new FullTypeName(typeName));
+			return new DecompiledTypeReference(new FileName(asm), new TopLevelTypeName(typeName));
+		}
+		
+		public static DecompiledTypeReference FromTypeDefinition(ITypeDefinition definition)
+		{
+			FileName assemblyLocation = definition.ParentAssembly.GetRuntimeAssemblyLocation();
+			if (assemblyLocation != null && SD.FileSystem.FileExists(assemblyLocation)) {
+				return new DecompiledTypeReference(assemblyLocation, definition.FullTypeName.TopLevelTypeName);
+			}
+			return null;
 		}
 		
 		public static string EscapeTypeName(string typeName)
@@ -194,9 +204,7 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			if (typeName == null)
 				throw new ArgumentNullException("typeName");
-			foreach (var ch in Path.GetInvalidFileNameChars().Concat(new[] { '_' })) {
-				typeName = unescapeRegex.Replace(typeName, m => ((char)int.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber)).ToString());
-			}
+			typeName = unescapeRegex.Replace(typeName, m => ((char)int.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber)).ToString());
 			return typeName;
 		}
 		

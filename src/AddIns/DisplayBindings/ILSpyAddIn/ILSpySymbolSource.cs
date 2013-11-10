@@ -8,6 +8,7 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.ILSpyAddIn
 {
@@ -25,11 +26,13 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public static MethodDebugSymbols GetSymbols(IMethod method)
 		{
-			// Use the non-specialised method definition to look up decompiled symbols
+			var typeName = DecompiledTypeReference.FromTypeDefinition(method.DeclaringTypeDefinition);
 			var id = IdStringProvider.GetIdString(method.MemberDefinition);
-			var content = DecompiledViewContent.Get(method);
-			if (content != null && content.DebugSymbols.ContainsKey(id)) {
-				return content.DebugSymbols[id];
+			
+			if (typeName == null) return null;
+			var file = SD.ParserService.ParseFile(typeName.ToFileName()) as ILSpyUnresolvedFile;
+			if (file != null && file.DebugSymbols.ContainsKey(id)) {
+				return file.DebugSymbols[id];
 			}
 			return null;
 		}
