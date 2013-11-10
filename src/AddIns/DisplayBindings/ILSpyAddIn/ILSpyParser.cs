@@ -34,7 +34,7 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested, IProject parentProject, CancellationToken cancellationToken)
 		{
-			return ILSpyDecompilerService.ParseDecompiledType(DecompiledTypeReference.FromFileName(fileName), cancellationToken);
+			return ILSpyDecompilerService.DecompileType(DecompiledTypeReference.FromFileName(fileName), cancellationToken);
 		}
 		
 		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)

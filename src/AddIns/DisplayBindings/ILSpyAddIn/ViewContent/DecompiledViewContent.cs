@@ -48,11 +48,7 @@ namespace ICSharpCode.ILSpyAddIn
 			this.jumpToEntityIdStringWhenDecompilationFinished = entityTag;
 			this.TitleName = "[" + ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeName.Type.Name) + "]";
 			
-			DecompilationThread();
-//			Thread thread = new Thread(DecompilationThread);
-//			thread.Name = "Decompiler (" + shortTypeName + ")";
-//			thread.Start();
-//			thread.Join();
+			InitializeView();
 			
 			SD.BookmarkManager.BookmarkRemoved += BookmarkManager_Removed;
 			SD.BookmarkManager.BookmarkAdded += BookmarkManager_Added;
@@ -173,10 +169,12 @@ namespace ICSharpCode.ILSpyAddIn
 		#endregion
 		
 		#region Decompilation
-		void DecompilationThread()
+		async void InitializeView()
 		{
 			try {
-				var file = ILSpyDecompilerService.DecompileType(DecompiledTypeName);
+				var parseInformation = await SD.ParserService.ParseAsync(DecompiledTypeName.ToFileName(), cancellationToken: cancellation.Token);
+				if (parseInformation == null || !(parseInformation.UnresolvedFile is ILSpyUnresolvedFile)) return;
+				var file = (ILSpyUnresolvedFile)parseInformation.UnresolvedFile;
 				memberLocations = file.MemberLocations;
 				DebugSymbols = file.DebugSymbols;
 				OnDecompilationFinished(file.Output);
@@ -193,7 +191,7 @@ namespace ICSharpCode.ILSpyAddIn
 				writer.WriteLine(string.Format("Exception while decompiling {0} ({1})", DecompiledTypeName.Type, DecompiledTypeName.AssemblyFile));
 				writer.WriteLine();
 				writer.WriteLine(ex.ToString());
-				SD.MainThread.InvokeAsyncAndForget(() => OnDecompilationFinished(writer.ToString()));
+				OnDecompilationFinished(writer.ToString());
 			}
 		}
 		

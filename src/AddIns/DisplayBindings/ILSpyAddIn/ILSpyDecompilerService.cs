@@ -114,18 +114,12 @@ namespace ICSharpCode.ILSpyAddIn
 			}
 		}
 		
-		public static ILSpyUnresolvedFile DecompileType(DecompiledTypeReference name)
+		public static ILSpyFullParseInformation DecompileType(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (name == null)
 				throw new ArgumentNullException("name");
-			return DoDecompile(name);
-		}
-		
-		public static async Task<ILSpyUnresolvedFile> DecompileTypeAsync(DecompiledTypeReference name, CancellationToken cancellationToken)
-		{
-			return await Task.Run(
-				delegate() { return DoDecompile(name, cancellationToken); },
-				cancellationToken);
+			var astBuilder = CreateAstBuilder(name, cancellationToken);
+			return new ILSpyFullParseInformation(ILSpyUnresolvedFile.Create(name, astBuilder), null, astBuilder.SyntaxTree);
 		}
 		
 		static AstBuilder CreateAstBuilder(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
@@ -151,12 +145,6 @@ namespace ICSharpCode.ILSpyAddIn
 		static ILSpyUnresolvedFile DoDecompile(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ILSpyUnresolvedFile.Create(name, CreateAstBuilder(name, cancellationToken));
-		}
-		
-		public static ILSpyFullParseInformation ParseDecompiledType(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var astBuilder = CreateAstBuilder(name, cancellationToken);
-			return new ILSpyFullParseInformation(ILSpyUnresolvedFile.Create(name, astBuilder), null, astBuilder.SyntaxTree);
 		}
 	}
 	
