@@ -96,13 +96,17 @@ namespace ICSharpCode.ILSpyAddIn
 			if (symbols == null)
 				return null;
 			
-			return symbols.LocalVariables.Select(v => new Debugger.ILLocalVariable() {
-			                                     	Index = v.OriginalVariable.Index,
-			                                     	Type = method.Compilation.FindType(KnownTypeCode.Object), // TODO
-			                                     	Name = v.Name,
-			                                     	IsCompilerGenerated = false,
-			                                     	ILRanges = new [] { new Debugger.ILRange(0, int.MaxValue) }
-			                                     });
+			var context = new SimpleTypeResolveContext(method);
+			var loader = new CecilLoader();
+			
+			return symbols.LocalVariables.Select(
+				v => new Debugger.ILLocalVariable() {
+					Index = v.OriginalVariable.Index,
+					Type = loader.ReadTypeReference(v.Type).Resolve(context),
+					Name = v.Name,
+					IsCompilerGenerated = false,
+					ILRanges = new [] { new ILRange(0, int.MaxValue) }
+				});
 		}
 	}
 	
