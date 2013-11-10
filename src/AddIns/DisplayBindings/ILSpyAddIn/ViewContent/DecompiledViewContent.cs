@@ -179,7 +179,7 @@ namespace ICSharpCode.ILSpyAddIn
 				var file = ILSpyDecompilerService.DecompileType(DecompiledTypeName);
 				memberLocations = file.MemberLocations;
 				DebugSymbols = file.DebugSymbols;
-				OnDecompilationFinished(file.Writer);
+				OnDecompilationFinished(file.Output);
 			} catch (OperationCanceledException) {
 				// ignore cancellation
 			} catch (Exception ex) {
@@ -193,15 +193,15 @@ namespace ICSharpCode.ILSpyAddIn
 				writer.WriteLine(string.Format("Exception while decompiling {0} ({1})", DecompiledTypeName.Type, DecompiledTypeName.AssemblyFile));
 				writer.WriteLine();
 				writer.WriteLine(ex.ToString());
-				SD.MainThread.InvokeAsyncAndForget(() => OnDecompilationFinished(writer));
+				SD.MainThread.InvokeAsyncAndForget(() => OnDecompilationFinished(writer.ToString()));
 			}
 		}
 		
-		void OnDecompilationFinished(StringWriter output)
+		void OnDecompilationFinished(string output)
 		{
 			if (cancellation.IsCancellationRequested)
 				return;
-			codeEditor.Document.Text = output.ToString();
+			codeEditor.Document.Text = output;
 			codeEditor.Document.UndoStack.ClearAll();
 			
 			this.decompilationFinished = true;

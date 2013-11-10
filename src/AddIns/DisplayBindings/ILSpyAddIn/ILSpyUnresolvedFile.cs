@@ -20,7 +20,7 @@ namespace ICSharpCode.ILSpyAddIn
 	public class ILSpyUnresolvedFile : CSharpUnresolvedFile
 	{
 		DecompiledTypeReference name;
-		StringWriter writer;
+		string output;
 		
 		public static ILSpyUnresolvedFile Create(DecompiledTypeReference name, AstBuilder builder)
 		{
@@ -38,7 +38,7 @@ namespace ICSharpCode.ILSpyAddIn
 	
 			file.MemberLocations = output.MemberLocations;
 			file.DebugSymbols = output.DebugSymbols;
-			file.writer = writer;
+			file.output = writer.ToString();
 			
 			return file;
 		}
@@ -53,8 +53,8 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public Dictionary<string, MethodDebugSymbols> DebugSymbols { get; private set; }
 
-		public StringWriter Writer {
-			get { return writer; }
+		public string Output {
+			get { return output; }
 		}
 		
 		public FileName AssemblyFile {
