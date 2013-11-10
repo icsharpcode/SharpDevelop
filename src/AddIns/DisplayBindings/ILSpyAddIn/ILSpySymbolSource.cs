@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Debugger;
 using ICSharpCode.Core;
@@ -9,6 +8,7 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.ILSpyAddIn
 {
@@ -21,28 +21,29 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public bool IsCompilerGenerated(IMethod method)
 		{
-			var symbols = GetSymbols(method);
-			return symbols == null || symbols.SequencePoints.Count == 0;
+			return false;
 		}
 		
 		public static MethodDebugSymbols GetSymbols(IMethod method)
 		{
-			// Use the non-specialised method definition to look up decompiled symbols
+			var typeName = DecompiledTypeReference.FromTypeDefinition(method.DeclaringTypeDefinition);
 			var id = IdStringProvider.GetIdString(method.MemberDefinition);
-			var content = DecompiledViewContent.Get(method);
-			if (content != null && content.DebugSymbols.ContainsKey(id)) {
-				return content.DebugSymbols[id];
+			
+			if (typeName == null) return null;
+			var file = SD.ParserService.ParseFile(typeName.ToFileName()) as ILSpyUnresolvedFile;
+			if (file != null && file.DebugSymbols.ContainsKey(id)) {
+				return file.DebugSymbols[id];
 			}
 			return null;
 		}
 		
 		public Debugger.SequencePoint GetSequencePoint(IMethod method, int iloffset)
 		{
-			var symbols = GetSymbols(method);
-			if (symbols == null)
-				return null;
-			
+			string id = IdStringProvider.GetIdString(method.MemberDefinition);
 			var content = DecompiledViewContent.Get(method);
+			if (content == null || !content.DebugSymbols.ContainsKey(id))
+				return null;
+			var symbols = content.DebugSymbols[id];
 			var seqs = symbols.SequencePoints;
 			var seq = seqs.FirstOrDefault(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To));
 			if (seq == null)
@@ -51,19 +52,21 @@ namespace ICSharpCode.ILSpyAddIn
 				// Use the widest sequence point containing the IL offset
 				iloffset = seq.ILOffset;
 				seq = seqs.Where(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To))
-				          .OrderByDescending(p => p.ILRanges.Last().To - p.ILRanges.First().From)
-				          .FirstOrDefault();
-				return seq.ToDebugger(symbols, content.VirtualFileName);
+					.OrderByDescending(p => p.ILRanges.Last().To - p.ILRanges.First().From)
+					.FirstOrDefault();
+				return seq.ToDebugger(symbols, content.PrimaryFileName);
 			}
 			return null;
 		}
 		
 		public IEnumerable<Debugger.SequencePoint> GetSequencePoints(Module module, string filename, int line, int column)
 		{
-			var content = DecompiledViewContent.Get(new FileName(filename));
-			if (content == null)
+			var name = DecompiledTypeReference.FromFileName(filename);
+			if (name == null || !FileUtility.IsEqualFileName(module.FullPath, name.AssemblyFile))
 				yield break;
-			if (!FileUtility.IsEqualFileName(module.FullPath, content.AssemblyFile))
+			
+			var content = DecompiledViewContent.Get(name);
+			if (content == null)
 				yield break;
 			
 			TextLocation loc = new TextLocation(line, column);
@@ -74,7 +77,7 @@ namespace ICSharpCode.ILSpyAddIn
 				if (seq == null)
 					seq = symbols.SequencePoints.FirstOrDefault(p => line <= p.StartLocation.Line);
 				if (seq != null)
-					yield return seq.ToDebugger(symbols, content.VirtualFileName);
+					yield return seq.ToDebugger(symbols, content.PrimaryFileName);
 			}
 		}
 		
@@ -95,13 +98,17 @@ namespace ICSharpCode.ILSpyAddIn
 			if (symbols == null)
 				return null;
 			
-			return symbols.LocalVariables.Select(v => new Debugger.ILLocalVariable() {
+			var context = new SimpleTypeResolveContext(method);
+			var loader = new CecilLoader();
+			
+			return symbols.LocalVariables.Select(
+				v => new Debugger.ILLocalVariable() {
 					Index = v.OriginalVariable.Index,
-					Type = method.Compilation.FindType(KnownTypeCode.Object), // TODO
-				Name = v.Name,
-				IsCompilerGenerated = false,
-				ILRanges = new [] { new Debugger.ILRange(0, int.MaxValue) }
-			});
+					Type = loader.ReadTypeReference(v.Type).Resolve(context),
+					Name = v.Name,
+					IsCompilerGenerated = false,
+					ILRanges = new [] { new ILRange(0, int.MaxValue) }
+				});
 		}
 	}
 	

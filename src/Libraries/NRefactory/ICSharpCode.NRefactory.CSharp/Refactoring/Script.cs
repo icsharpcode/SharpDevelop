@@ -436,16 +436,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return 0;
 		}
 		
-		sealed class SegmentTrackingOutputFormatter : TextWriterOutputFormatter
+		sealed class SegmentTrackingTokenWriter : TextWriterTokenWriter
 		{
 			internal List<KeyValuePair<AstNode, Segment>> NewSegments = new List<KeyValuePair<AstNode, Segment>>();
 			readonly Stack<int> startOffsets = new Stack<int>();
 			readonly StringWriter stringWriter;
 			
-			public SegmentTrackingOutputFormatter (StringWriter stringWriter)
+			public SegmentTrackingTokenWriter(StringWriter stringWriter)
 				: base(stringWriter)
 			{
 				this.stringWriter = stringWriter;
+			}
+			
+			public override void WriteIdentifier (Identifier identifier)
+			{
+				int startOffset = stringWriter.GetStringBuilder ().Length;
+				int endOffset = startOffset + (identifier.Name ?? "").Length + (identifier.IsVerbatim ? 1 : 0);
+				NewSegments.Add(new KeyValuePair<AstNode, Segment>(identifier, new Segment(startOffset, endOffset)));
+				base.WriteIdentifier (identifier);
 			}
 			
 			public override void StartNode (AstNode node)
@@ -466,7 +474,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		protected NodeOutput OutputNode(int indentLevel, AstNode node, bool startWithNewLine = false)
 		{
 			var stringWriter = new StringWriter ();
-			var formatter = new SegmentTrackingOutputFormatter (stringWriter);
+			var formatter = new SegmentTrackingTokenWriter(stringWriter);
 			formatter.Indentation = indentLevel;
 			formatter.IndentationString = Options.TabsToSpaces ? new string (' ', Options.IndentSize) : "\t";
 			stringWriter.NewLine = Options.EolMarker;

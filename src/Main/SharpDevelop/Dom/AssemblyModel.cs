@@ -19,12 +19,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		TopLevelTypeDefinitionModelCollection typeDeclarations;
 		KeyedModelCollection<string, NamespaceModel> namespaces;
 		NamespaceModel rootNamespace;
+		IReadOnlyList<DomAssemblyName> references;
 		
 		public AssemblyModel(IEntityModelContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
+			this.references = EmptyList<DomAssemblyName>.Instance;
 			this.rootNamespace = new NamespaceModel(context.Project, null, "");
 			this.typeDeclarations = new TopLevelTypeDefinitionModelCollection(context);
 			this.typeDeclarations.CollectionChanged += TypeDeclarationsCollectionChanged;
@@ -138,6 +140,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (IDisposable d in batchList)
 					d.Dispose();
 			}
+		}
+		
+		public IReadOnlyList<DomAssemblyName> References {
+			get { return references; }
+			set { references = value; }
 		}
 	}	
 }

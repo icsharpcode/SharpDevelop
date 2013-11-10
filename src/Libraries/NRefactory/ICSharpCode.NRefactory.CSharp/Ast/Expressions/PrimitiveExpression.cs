@@ -1,6 +1,6 @@
 ﻿// 
 // PrimitiveExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -42,13 +42,20 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		internal void SetStartLocation(TextLocation value)
+		{
+			ThrowIfFrozen();
+			this.startLocation = value;
+			this.endLocation = null;
+		}
+		
 		string literalValue;
 		TextLocation? endLocation;
 		public override TextLocation EndLocation {
 			get {
 				if (!endLocation.HasValue) {
-					endLocation = value is string ? AdvanceLocation (StartLocation, literalValue) :
-						new TextLocation (StartLocation.Line, StartLocation.Column + literalValue.Length);
+					endLocation = value is string ? AdvanceLocation (StartLocation, literalValue ?? "") :
+						new TextLocation (StartLocation.Line, StartLocation.Column + (literalValue ?? "").Length);
 				}
 				return endLocation.Value;
 			}
@@ -58,46 +65,56 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public object Value {
 			get { return this.value; }
-			set { 
-				ThrowIfFrozen(); 
+			set {
+				ThrowIfFrozen();
 				this.value = value;
+				literalValue = null;
 			}
 		}
 		
+		/// <remarks>Never returns null.</remarks>
 		public string LiteralValue {
+			get { return literalValue ?? ""; }
+		}
+		
+		/// <remarks>Can be null.</remarks>
+		public string UnsafeLiteralValue {
 			get { return literalValue; }
-			set {
-				if (value == null)
-					throw new ArgumentNullException();
-				ThrowIfFrozen();
-				literalValue = value;
-			}
+		}
+		
+		public void SetValue(object value, string literalValue)
+		{
+			if (value == null)
+				throw new ArgumentNullException();
+			ThrowIfFrozen();
+			this.value = value;
+			this.literalValue = literalValue;
 		}
 		
 		public PrimitiveExpression (object value)
 		{
 			this.Value = value;
-			this.literalValue = "";
+			this.literalValue = null;
 		}
 		
 		public PrimitiveExpression (object value, string literalValue)
 		{
 			this.Value = value;
-			this.literalValue = literalValue ?? "";
+			this.literalValue = literalValue;
 		}
 		
 		public PrimitiveExpression (object value, TextLocation startLocation, string literalValue)
 		{
 			this.Value = value;
 			this.startLocation = startLocation;
-			this.literalValue = literalValue ?? "";
+			this.literalValue = literalValue;
 		}
 		
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
 			visitor.VisitPrimitiveExpression (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitPrimitiveExpression (this);

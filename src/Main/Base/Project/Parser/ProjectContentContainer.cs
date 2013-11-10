@@ -440,7 +440,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			foreach (var file in assemblyFiles) {
 				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 				if (File.Exists(file)) {
-					var pc = SD.AssemblyParserService.GetAssembly(file, progressMonitor.CancellationToken);
+					var pc = SD.AssemblyParserService.GetAssembly(file, false, progressMonitor.CancellationToken);
 					if (pc != null) {
 						newReferences.Add(pc);
 					}

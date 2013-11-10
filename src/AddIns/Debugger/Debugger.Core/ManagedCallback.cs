@@ -353,7 +353,9 @@ namespace Debugger
 			EnterCallback("CreateAppDomain", pAppDomain);
 
 			pAppDomain.Attach();
-			process.appDomains.Add(new AppDomain(process, pAppDomain));
+			AppDomain appDomain = new AppDomain(process, pAppDomain);
+			process.appDomains.Add(appDomain);
+			process.OnAppDomainCreated(appDomain);
 
 			ExitCallback();
 		}
@@ -476,7 +478,9 @@ namespace Debugger
 		{
 			EnterCallback("ExitAppDomain", pAppDomain);
 			
-			process.appDomains.Remove(process.GetAppDomain(pAppDomain));
+			AppDomain appDomain = process.GetAppDomain(pAppDomain);
+			process.appDomains.Remove(appDomain);
+			process.OnAppDomainDestroyed(appDomain);
 			
 			ExitCallback();
 		}

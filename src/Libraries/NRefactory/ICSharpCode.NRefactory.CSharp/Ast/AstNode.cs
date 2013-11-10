@@ -411,11 +411,27 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (child == null || child.IsNull)
 				return;
 			ThrowIfFrozen();
+			if (child == this)
+				throw new ArgumentException ("Cannot add a node to itself as a child.", "child");
 			if (child.parent != null)
 				throw new ArgumentException ("Node is already used in another tree.", "child");
 			if (child.IsFrozen)
 				throw new ArgumentException ("Cannot add a frozen node.", "child");
 			AddChildUnsafe (child, role);
+		}
+		
+		public void AddChildWithExistingRole (AstNode child)
+		{
+			if (child == null || child.IsNull)
+				return;
+			ThrowIfFrozen();
+			if (child == this)
+				throw new ArgumentException ("Cannot add a node to itself as a child.", "child");
+			if (child.parent != null)
+				throw new ArgumentException ("Node is already used in another tree.", "child");
+			if (child.IsFrozen)
+				throw new ArgumentException ("Cannot add a frozen node.", "child");
+			AddChildUnsafe (child, child.Role);
 		}
 		
 		/// <summary>

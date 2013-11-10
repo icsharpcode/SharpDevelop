@@ -169,5 +169,50 @@ namespace ICSharpCode.NRefactory.CSharp
 					throw new NotSupportedException("Invalid value for Modifiers");
 			}
 		}
+		
+		public static Modifiers GetModifierValue(string modifier)
+		{
+			switch (modifier) {
+				case "private":
+					return Modifiers.Private;
+				case "internal":
+					return Modifiers.Internal;
+				case "protected":
+					return Modifiers.Protected;
+				case "public":
+					return Modifiers.Public;
+				case "abstract":
+					return Modifiers.Abstract;
+				case "virtual":
+					return Modifiers.Virtual;
+				case "sealed":
+					return Modifiers.Sealed;
+				case "static":
+					return Modifiers.Static;
+				case "override":
+					return Modifiers.Override;
+				case "readonly":
+					return Modifiers.Readonly;
+				case "const":
+					return Modifiers.Const;
+				case "new":
+					return Modifiers.New;
+				case "partial":
+					return Modifiers.Partial;
+				case "extern":
+					return Modifiers.Extern;
+				case "volatile":
+					return Modifiers.Volatile;
+				case "unsafe":
+					return Modifiers.Unsafe;
+				case "async":
+					return Modifiers.Async;
+				case "any":
+					// even though it's used for pattern matching only, 'any' needs to be in this list to be usable in the AST
+					return Modifiers.Any;
+				default:
+					throw new NotSupportedException("Invalid value for Modifiers");
+			}
+		}
 	}
 }

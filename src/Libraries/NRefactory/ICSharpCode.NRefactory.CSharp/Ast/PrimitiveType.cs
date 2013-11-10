@@ -71,6 +71,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				return location;
 			}
 		}
+		
+		internal void SetStartLocation(TextLocation value)
+		{
+			ThrowIfFrozen();
+			this.location = value;
+		}
+		
 		public override TextLocation EndLocation {
 			get {
 				return new TextLocation (location.Line, location.Column + keyword.Length);

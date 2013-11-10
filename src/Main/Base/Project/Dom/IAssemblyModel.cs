@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -53,6 +55,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Returns the location of the assembly represented by this model.
 		/// </summary>
 		FileName Location { get; }
+		
+		/// <summary>
+		/// Returns the assembly references.
+		/// </summary>
+		IReadOnlyList<DomAssemblyName> References { get; }
 	}
 	
 	/// <summary>
@@ -78,6 +85,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets the assembly name (short name).
 		/// </summary>
 		new string AssemblyName { get; set; }
+		
+		/// <summary>
+		/// Returns the assembly references.
+		/// </summary>
+		new IReadOnlyList<DomAssemblyName> References { get; set; }
 	}
 	
 	public sealed class EmptyAssemblyModel : IAssemblyModel
@@ -114,6 +126,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return null;
 			}
+		}
+		
+		public IReadOnlyList<DomAssemblyName> References {
+			get { return EmptyList<DomAssemblyName>.Instance; }
 		}
 	}
 }

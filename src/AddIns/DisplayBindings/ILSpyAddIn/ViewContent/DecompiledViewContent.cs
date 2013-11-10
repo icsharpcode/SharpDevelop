@@ -12,18 +12,12 @@ using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.Ast;
-using ICSharpCode.Decompiler.Disassembler;
-using ICSharpCode.NRefactory.Documentation;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.ILSpyAddIn.LaunchILSpy;
+using ICSharpCode.ILSpyAddIn;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Workbench;
-using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {
@@ -32,14 +26,6 @@ namespace ICSharpCode.ILSpyAddIn
 	/// </summary>
 	class DecompiledViewContent : AbstractViewContentWithoutFile
 	{
-		readonly FileName assemblyFile;
-		readonly string fullTypeName;
-		public FileName VirtualFileName { get; private set; }
-		
-		public override FileName PrimaryFileName {
-			get { return this.VirtualFileName; }
-		}
-		
 		/// <summary>
 		/// Entity to jump to once decompilation has finished.
 		/// </summary>
@@ -54,38 +40,29 @@ namespace ICSharpCode.ILSpyAddIn
 		public Dictionary<string, MethodDebugSymbols> DebugSymbols { get; private set; }
 		
 		#region Constructor
-		public DecompiledViewContent(FileName assemblyFile, string fullTypeName, string entityTag)
+		public DecompiledViewContent(DecompiledTypeReference typeName, string entityTag)
 		{
-			this.VirtualFileName = FileName.Create("ilspy://" + assemblyFile + "/" + fullTypeName + ".cs");
+			this.DecompiledTypeName = typeName;
 			
 			this.Services = codeEditor.GetRequiredService<IServiceContainer>();
-			
-			this.assemblyFile = assemblyFile;
-			this.fullTypeName = fullTypeName;
 			this.jumpToEntityIdStringWhenDecompilationFinished = entityTag;
+			this.TitleName = "[" + ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeName.Type.Name) + "]";
 			
-			string shortTypeName = fullTypeName.Substring(fullTypeName.LastIndexOf('.') + 1);
-			this.TitleName = "[" + ReflectionHelper.SplitTypeParameterCountFromReflectionName(shortTypeName) + "]";
-			
-			DecompilationThread();
-//			Thread thread = new Thread(DecompilationThread);
-//			thread.Name = "Decompiler (" + shortTypeName + ")";
-//			thread.Start();
-//			thread.Join();
+			InitializeView();
 			
 			SD.BookmarkManager.BookmarkRemoved += BookmarkManager_Removed;
 			SD.BookmarkManager.BookmarkAdded += BookmarkManager_Added;
 			
-			this.codeEditor.FileName = this.VirtualFileName;
+			this.codeEditor.FileName = this.DecompiledTypeName.ToFileName();
 			this.codeEditor.ActiveTextEditor.IsReadOnly = true;
 			this.codeEditor.ActiveTextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
 		}
 		#endregion
 		
-		public static DecompiledViewContent Get(FileName virtualFileName)
+		public static DecompiledViewContent Get(DecompiledTypeReference name)
 		{
 			var viewContents = SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>();
-			return viewContents.FirstOrDefault(c => c.VirtualFileName == virtualFileName);
+			return viewContents.FirstOrDefault(c => c.DecompiledTypeName == name);
 		}
 		
 		public static DecompiledViewContent Get(IEntity entity)
@@ -118,27 +95,25 @@ namespace ICSharpCode.ILSpyAddIn
 			if (string.IsNullOrEmpty(typeName))
 				throw new ArgumentException("typeName is null or empty");
 			
+			var type = new FullTypeName(typeName);
+			
 			foreach (var viewContent in SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				if (viewContent.AssemblyFile == assemblyFile && typeName == viewContent.FullTypeName) {
+				var viewContentName = viewContent.DecompiledTypeName;
+				if (viewContentName.AssemblyFile == assemblyFile && type == viewContentName.Type) {
 					return viewContent;
 				}
 			}
 			
-			var newViewContent = new DecompiledViewContent(assemblyFile, typeName, null);
+			var newViewContent = new DecompiledViewContent(new DecompiledTypeReference(assemblyFile, new TopLevelTypeName(typeName)), null);
 			SD.Workbench.ShowView(newViewContent);
 			return newViewContent;
 		}
 		
 		#region Properties
-		public FileName AssemblyFile {
-			get { return assemblyFile; }
-		}
+		public DecompiledTypeReference DecompiledTypeName { get; private set; }
 		
-		/// <summary>
-		/// The reflection name of the top-level type displayed in this view content.
-		/// </summary>
-		public string FullTypeName {
-			get { return fullTypeName; }
+		public override FileName PrimaryFileName {
+			get { return this.DecompiledTypeName.ToFileName(); }
 		}
 		
 		public override object Control {
@@ -148,7 +123,6 @@ namespace ICSharpCode.ILSpyAddIn
 		public override bool IsReadOnly {
 			get { return true; }
 		}
-		
 		#endregion
 		
 		#region Dispose
@@ -158,8 +132,6 @@ namespace ICSharpCode.ILSpyAddIn
 			codeEditor.Dispose();
 			SD.BookmarkManager.BookmarkAdded -= BookmarkManager_Added;
 			SD.BookmarkManager.BookmarkRemoved -= BookmarkManager_Removed;
-//			DecompileInformation data;
-//			DebuggerDecompilerService.DebugInformation.TryRemove(decompiledType.MetadataToken.ToInt32(), out data);
 			base.Dispose();
 		}
 		#endregion
@@ -197,15 +169,15 @@ namespace ICSharpCode.ILSpyAddIn
 		#endregion
 		
 		#region Decompilation
-		void DecompilationThread()
+		async void InitializeView()
 		{
 			try {
-				StringWriter writer = new StringWriter();
-				RunDecompiler(assemblyFile, fullTypeName, new DebuggerTextOutput(new PlainTextOutput(writer)), cancellation.Token);
-//				if (!cancellation.IsCancellationRequested) {
-//					SD.MainThread.InvokeAsyncAndForget(() => OnDecompilationFinished(writer));
-//				}
-				OnDecompilationFinished(writer);
+				var parseInformation = await SD.ParserService.ParseAsync(DecompiledTypeName.ToFileName(), cancellationToken: cancellation.Token);
+				if (parseInformation == null || !(parseInformation.UnresolvedFile is ILSpyUnresolvedFile)) return;
+				var file = (ILSpyUnresolvedFile)parseInformation.UnresolvedFile;
+				memberLocations = file.MemberLocations;
+				DebugSymbols = file.DebugSymbols;
+				OnDecompilationFinished(file.Output);
 			} catch (OperationCanceledException) {
 				// ignore cancellation
 			} catch (Exception ex) {
@@ -216,43 +188,18 @@ namespace ICSharpCode.ILSpyAddIn
 				SD.AnalyticsMonitor.TrackException(ex);
 				
 				StringWriter writer = new StringWriter();
-				writer.WriteLine(string.Format("Exception while decompiling {0} ({1})", fullTypeName, assemblyFile));
+				writer.WriteLine(string.Format("Exception while decompiling {0} ({1})", DecompiledTypeName.Type, DecompiledTypeName.AssemblyFile));
 				writer.WriteLine();
 				writer.WriteLine(ex.ToString());
-				SD.MainThread.InvokeAsyncAndForget(() => OnDecompilationFinished(writer));
+				OnDecompilationFinished(writer.ToString());
 			}
 		}
 		
-		void RunDecompiler(string assemblyFile, string fullTypeName, DebuggerTextOutput textOutput, CancellationToken cancellationToken)
-		{
-			ReaderParameters readerParameters = new ReaderParameters();
-			// Use new assembly resolver instance so that the AssemblyDefinitions can be garbage-collected
-			// once the code is decompiled.
-			readerParameters.AssemblyResolver = new ILSpyAssemblyResolver(Path.GetDirectoryName(assemblyFile));
-			
-			ModuleDefinition module = ModuleDefinition.ReadModule(assemblyFile, readerParameters);
-			TypeDefinition typeDefinition = module.GetType(fullTypeName);
-			if (typeDefinition == null)
-				throw new InvalidOperationException("Could not find type");
-			DecompilerContext context = new DecompilerContext(module);
-			context.CancellationToken = cancellationToken;
-			AstBuilder astBuilder = new AstBuilder(context);
-			astBuilder.AddType(typeDefinition);
-			astBuilder.GenerateCode(textOutput);
-			
-			// ReflectionDisassembler disasm = new ReflectionDisassembler(textOutput, true, cancellationToken);
-			// disasm.DisassembleType(typeDefinition);
-			
-			// save decompilation data
-			memberLocations = textOutput.MemberLocations;
-			this.DebugSymbols = textOutput.DebugSymbols;
-		}
-		
-		void OnDecompilationFinished(StringWriter output)
+		void OnDecompilationFinished(string output)
 		{
 			if (cancellation.IsCancellationRequested)
 				return;
-			codeEditor.Document.Text = output.ToString();
+			codeEditor.Document.Text = output;
 			codeEditor.Document.UndoStack.ClearAll();
 			
 			this.decompilationFinished = true;
@@ -280,7 +227,7 @@ namespace ICSharpCode.ILSpyAddIn
 				codeView.IconBarManager.Bookmarks.Add(bookmark);
 			}
 		}
-		*/
+		 */
 		#endregion
 		
 		#region Bookmarks
@@ -296,7 +243,7 @@ namespace ICSharpCode.ILSpyAddIn
 		void BookmarkManager_Added(object sender, BookmarkEventArgs e)
 		{
 			var mark = e.Bookmark;
-			if (mark != null && mark.FileName == VirtualFileName) {
+			if (mark != null && mark.FileName == PrimaryFileName) {
 				codeEditor.IconBarManager.Bookmarks.Add(mark);
 				mark.Document = this.codeEditor.Document;
 			}

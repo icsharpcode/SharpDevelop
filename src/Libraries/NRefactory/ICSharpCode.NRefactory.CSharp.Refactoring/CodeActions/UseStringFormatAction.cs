@@ -114,7 +114,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				format.Append('"');
 				if (verbatim)
 					format.Insert(0, '@');
-				formatLiteral.LiteralValue = format.ToString();
+				formatLiteral.SetValue(format.ToString(), format.ToString());
 				if (arguments.Count > 0)
 					script.Replace(expr, formatInvocation);
 				else

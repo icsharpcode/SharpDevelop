@@ -83,6 +83,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		internal void SetStartLocation(TextLocation value)
+		{
+			ThrowIfFrozen();
+			this.startLocation = value;
+		}
+		
 		const uint verbatimBit = 1u << AstNodeFlagsUsedBits;
 		
 		public bool IsVerbatim {

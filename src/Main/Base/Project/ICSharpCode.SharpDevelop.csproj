@@ -118,7 +118,6 @@
     <Compile Include="Dom\ModelCollectionLinq.cs" />
     <Compile Include="Dom\ImmutableModelCollection.cs" />
     <Compile Include="Dom\ModelCollectionTreeNode.cs" />
-    <Compile Include="Dom\ModelFactoryExtensions.cs" />
     <Compile Include="Dom\SimpleModelCollection.cs" />
     <Compile Include="Dom\SynchronizedModelCollection.cs" />
     <Compile Include="Editor\AvalonEditTextEditorAdapter.cs" />
@@ -160,6 +159,7 @@
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor\ToolTipService.cs" />
+    <Compile Include="Parser\DefaultAssemblySearcher.cs" />
     <Compile Include="Parser\DomAssemblyName.cs" />
     <Compile Include="Parser\IAssemblyParserService.cs" />
     <Compile Include="Parser\IGlobalAssemblyCacheService.cs" />

@@ -32,6 +32,8 @@ namespace Debugger
 		public event EventHandler<MessageEventArgs> LogMessage;
 		public event EventHandler<ModuleEventArgs> ModuleLoaded;
 		public event EventHandler<ModuleEventArgs> ModuleUnloaded;
+		public event EventHandler<AppDomainEventArgs> AppDomainCreated;
+		public event EventHandler<AppDomainEventArgs> AppDomainDestroyed;
 		public event EventHandler<DebuggerPausedEventArgs> Paused;
 		public event EventHandler<DebuggerEventArgs> Resumed;
 		public event EventHandler<DebuggerEventArgs> Exited;
@@ -608,5 +610,17 @@ namespace Debugger
 		}
 		
 		#endregion
+		
+		internal void OnAppDomainCreated(AppDomain appDomain)
+		{
+			if (AppDomainCreated != null)
+				AppDomainCreated(this, new AppDomainEventArgs(appDomain));
+		}
+		
+		internal void OnAppDomainDestroyed(AppDomain appDomain)
+		{
+			if (AppDomainDestroyed != null)
+				AppDomainDestroyed(this, new AppDomainEventArgs(appDomain));
+		}
 	}
 }

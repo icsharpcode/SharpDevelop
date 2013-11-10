@@ -209,9 +209,12 @@
     <Compile Include="Formatter\Indent.cs" />
     <Compile Include="OutputVisitor\CodeDomConvertVisitor.cs" />
     <Compile Include="OutputVisitor\CSharpAmbience.cs" />
+    <Compile Include="OutputVisitor\InsertMissingTokensDecorator.cs" />
     <Compile Include="OutputVisitor\InsertParenthesesVisitor.cs" />
-    <Compile Include="OutputVisitor\IOutputFormatter.cs" />
+    <Compile Include="OutputVisitor\InsertRequiredSpacesDecorator.cs" />
     <Compile Include="OutputVisitor\CSharpOutputVisitor.cs" />
+    <Compile Include="OutputVisitor\InsertSpecialsDecorator.cs" />
+    <Compile Include="OutputVisitor\ITokenWriter.cs" />
     <Compile Include="OutputVisitor\TextWriterOutputFormatter.cs" />
     <Compile Include="Parser\CompilerSettings.cs" />
     <Compile Include="Parser\CSharpParser.cs" />

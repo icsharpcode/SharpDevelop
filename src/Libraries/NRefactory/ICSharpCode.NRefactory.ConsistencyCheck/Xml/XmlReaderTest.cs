@@ -92,9 +92,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck.Xml
 			if (val == null)
 				return "null";
 			else if (val is string)
-				return "\"" + CSharpOutputVisitor.ConvertString((string)val) + "\"";
+				return "\"" + TextWriterTokenWriter.ConvertString((string)val) + "\"";
 			else if (val is char)
-				return "'" + CSharpOutputVisitor.ConvertChar((char)val) + "'";
+				return "'" + TextWriterTokenWriter.ConvertChar((char)val) + "'";
 			else
 				return val.ToString();
 		}

@@ -15,6 +15,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		ITypeDefinitionModel CreateTypeDefinitionModel(IEntityModelContext context, params IUnresolvedTypeDefinition[] parts);
 		IMemberModel CreateMemberModel(IEntityModelContext context, IUnresolvedMember member);
-		IAssemblyModel CreateAssemblyModel(IEntityModelContext context);
+		IUpdateableAssemblyModel CreateAssemblyModel(IEntityModelContext context);
 	}
 }

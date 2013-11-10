@@ -359,6 +359,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					var pc = ProjectContent;
 					if (pc != null && assemblyModel is IUpdateableAssemblyModel) {
 						((IUpdateableAssemblyModel)assemblyModel).AssemblyName = AssemblyName;
+						((IUpdateableAssemblyModel)assemblyModel).References = pc.AssemblyReferences
+							.Select(ResolveReference).Where(r => r != null).ToList();
 						// Add the already loaded files into the model
 						foreach (var file in pc.Files) {
 							((IUpdateableAssemblyModel)assemblyModel).Update(null, file);
@@ -367,6 +369,18 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				return assemblyModel;
 			}
+		}
+		
+		DomAssemblyName ResolveReference(IAssemblyReference reference)
+		{
+			if (reference is IUnresolvedAssembly)
+				return new DomAssemblyName(((IUnresolvedAssembly)reference).FullAssemblyName);
+			if (reference is ProjectReferenceProjectItem) {
+				var project = ((ProjectReferenceProjectItem)reference).ReferencedProject;
+				if (project == null) return null;
+				return new DomAssemblyName(project.ProjectContent.FullAssemblyName);
+			}
+			return null;
 		}
 		
 		public override void OnParseInformationUpdated(ParseInformationEventArgs args)
@@ -379,6 +393,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			SD.MainThread.InvokeAsyncAndForget(delegate {
 				if (assemblyModel is IUpdateableAssemblyModel) {
 					((IUpdateableAssemblyModel)assemblyModel).Update(args.OldUnresolvedFile, args.NewUnresolvedFile);
+					// TODO : update references as well?
 				}
 				ParseInformationUpdated(null, args);
 			});

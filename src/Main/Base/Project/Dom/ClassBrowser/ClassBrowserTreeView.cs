@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using ICSharpCode.Core;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -11,14 +12,21 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	public class ClassBrowserTreeView : SharpTreeView, IClassBrowserTreeView
 	{
 		#region IClassBrowser implementation
+		
+		WorkspaceModel workspace;
 
 		public ICollection<IAssemblyList> AssemblyLists {
-			get { return ((WorkspaceTreeNode)Root).AssemblyLists; }
+			get { return workspace.AssemblyLists; }
 		}
 
 		public IAssemblyList MainAssemblyList {
-			get { return ((WorkspaceTreeNode)Root).AssemblyList; }
-			set { ((WorkspaceTreeNode)Root).AssemblyList = value; }
+			get { return workspace.MainAssemblyList; }
+			set { workspace.MainAssemblyList = value; }
+		}
+		
+		public IAssemblyModel FindAssemblyModel(FileName fileName)
+		{
+			return workspace.FindAssemblyModel(fileName);
 		}
 
 		#endregion
@@ -26,12 +34,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public ClassBrowserTreeView()
 		{
 			WorkspaceTreeNode root = new WorkspaceTreeNode();
+			this.workspace = root.Workspace;
 			ClassBrowserTreeView instance = this;
-			root.AssemblyLists.CollectionChanged += delegate {
-				instance.ShowRoot = root.AssemblyLists.Count > 0;
+			root.Workspace.AssemblyLists.CollectionChanged += delegate {
+				instance.ShowRoot = root.Workspace.AssemblyLists.Count > 0;
 			};
 			root.PropertyChanged += delegate {
-				instance.ShowRoot = root.AssemblyLists.Count > 0;
+				instance.ShowRoot = root.Workspace.AssemblyLists.Count > 0;
 			};
 			this.Root = root;
 		}

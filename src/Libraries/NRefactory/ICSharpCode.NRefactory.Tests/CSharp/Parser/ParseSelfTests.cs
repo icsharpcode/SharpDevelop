@@ -67,99 +67,21 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		}
 		
 		#region ParseAndCheckPositions
-		string currentFileName;
-		ReadOnlyDocument currentDocument;
 		
 		[Test, Ignore("Positions still are incorrect in several cases")]
 		public void ParseAndCheckPositions()
 		{
 			CSharpParser parser = new CSharpParser();
 			foreach (string fileName in fileNames) {
-				this.currentDocument = new ReadOnlyDocument(File.ReadAllText(fileName));
+				var currentDocument = new ReadOnlyDocument(File.ReadAllText(fileName));
 				SyntaxTree syntaxTree = parser.Parse(currentDocument, fileName);
 				if (parser.HasErrors)
 					continue;
-				this.currentFileName = fileName;
-				CheckPositionConsistency(syntaxTree);
-				CheckMissingTokens(syntaxTree);
-			}
-		}
-
-		void PrintNode (AstNode node)
-		{
-			Console.WriteLine ("Parent:" + node.GetType ());
-			Console.WriteLine ("Children:");
-			foreach (var c in node.Children)
-				Console.WriteLine (c.GetType () +" at:"+ c.StartLocation +"-"+ c.EndLocation + " Role: "+ c.Role);
-			Console.WriteLine ("----");
-		}
-		
-		void CheckPositionConsistency (AstNode node)
-		{
-			string comment = "(" + node.GetType ().Name + " at " + node.StartLocation + " in " + currentFileName + ")";
-			var pred = node.StartLocation <= node.EndLocation;
-			if (!pred)
-				PrintNode (node);
-			Assert.IsTrue(pred, "StartLocation must be before EndLocation " + comment);
-			var prevNodeEnd = node.StartLocation;
-			var prevNode = node;
-			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
-				bool assertion = child.StartLocation >= prevNodeEnd;
-				if (!assertion) {
-					PrintNode (prevNode);
-					PrintNode (node);
-					
-				}
-				Assert.IsTrue(assertion, currentFileName + ": Child " + child.GetType () +" (" + child.StartLocation  + ")" +" must start after previous sibling " + prevNode.GetType () + "(" + prevNode.StartLocation + ")");
-				CheckPositionConsistency(child);
-				prevNodeEnd = child.EndLocation;
-				prevNode = child;
-			}
-			Assert.IsTrue(prevNodeEnd <= node.EndLocation, "Last child must end before parent node ends " + comment);
-		}
-		
-		void CheckMissingTokens(AstNode node)
-		{
-			if (IsLeafNode(node)) {
-				Assert.IsNull(node.FirstChild, "Token nodes should not have children");
-			} else {
-				var prevNodeEnd = node.StartLocation;
-				var prevNode = node;
-				for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
-					CheckWhitespace(prevNode, prevNodeEnd, child, child.StartLocation);
-					CheckMissingTokens(child);
-					prevNode = child;
-					prevNodeEnd = child.EndLocation;
-				}
-				CheckWhitespace(prevNode, prevNodeEnd, node, node.EndLocation);
+				ConsistencyChecker.CheckPositionConsistency(syntaxTree, fileName, currentDocument);
+				ConsistencyChecker.CheckMissingTokens(syntaxTree, fileName, currentDocument);
 			}
 		}
 		
-		bool IsLeafNode(AstNode node)
-		{
-			if (node.NodeType == NodeType.Token)
-				return true;
-			if (node.NodeType == NodeType.Whitespace)
-				return !(node is PragmaWarningPreprocessorDirective);
-			return node is PrimitiveType || node is PrimitiveExpression || node is NullReferenceExpression;
-		}
-		
-		void CheckWhitespace(AstNode startNode, TextLocation whitespaceStart, AstNode endNode, TextLocation whitespaceEnd)
-		{
-			if (whitespaceStart == whitespaceEnd)
-				return;
-			int start = currentDocument.GetOffset(whitespaceStart.Line, whitespaceStart.Column);
-			int end = currentDocument.GetOffset(whitespaceEnd.Line, whitespaceEnd.Column);
-			string text = currentDocument.GetText(start, end - start);
-			bool assertion = string.IsNullOrWhiteSpace(text);
-			if (!assertion) {
-				if (startNode.Parent != endNode.Parent)
-					PrintNode (startNode.Parent);
-				PrintNode (endNode.Parent);
-			}
-			Assert.IsTrue(assertion, "Expected whitespace between " + startNode.GetType () +":" + whitespaceStart + " and " + endNode.GetType () + ":" + whitespaceEnd
-			              + ", but got '" + text + "' (in " + currentFileName + " parent:" + startNode.Parent.GetType () +")");
-		}
 		#endregion
 	}
 }

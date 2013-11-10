@@ -7,9 +7,11 @@ using Debugger;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 using System.Linq;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -183,12 +185,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		static IAssemblyModel CreateAssemblyModel(Module module)
 		{
-			// references??
-			IEntityModelContext context = new AssemblyEntityModelContext(module.Assembly.UnresolvedAssembly);
-			IAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
-			if (model is IUpdateableAssemblyModel) {
-				((IUpdateableAssemblyModel)model).Update(EmptyList<IUnresolvedTypeDefinition>.Instance, module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList());
-			}
+			IEntityModelContext context = new DebuggerProcessEntityModelContext(module.Process, module);
+			IUpdateableAssemblyModel model = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(context);
+			var types = module.Assembly.TopLevelTypeDefinitions.SelectMany(td => td.Parts).ToList();
+			model.AssemblyName = module.UnresolvedAssembly.AssemblyName;
+			model.Update(EmptyList<IUnresolvedTypeDefinition>.Instance, types);
+			model.References = module.GetReferences().Select(r => new DomAssemblyName(r)).ToArray();
 			return model;
 		}
 	}
@@ -224,6 +226,49 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 	}
 	
+	class DebuggerProcessEntityModelContext : IEntityModelContext
+	{
+		Debugger.Process process;
+		Debugger.Module currentModule;
+		
+		public DebuggerProcessEntityModelContext(Process process, Module currentModule)
+		{
+			if (process == null)
+				throw new ArgumentNullException("process");
+			if (currentModule == null)
+				throw new ArgumentNullException("currentModule");
+			this.process = process;
+			this.currentModule = currentModule;
+		}
+		
+		public ICompilation GetCompilation()
+		{
+			var mainModule = currentModule;
+			return new SimpleCompilation(mainModule.UnresolvedAssembly, process.Modules.Where(m => m != mainModule).Select(m => m.UnresolvedAssembly));
+		}
+		
+		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)
+		{
+			return false;
+		}
+		
+		public ICSharpCode.SharpDevelop.Project.IProject Project {
+			get { return null; }
+		}
+		
+		public string AssemblyName {
+			get { return currentModule.UnresolvedAssembly.AssemblyName; }
+		}
+		
+		public string Location {
+			get { return currentModule.FullPath; }
+		}
+		
+		public bool IsValid {
+			get { return true; }
+		}
+	}
+	
 	/// <summary>
 	/// AddModuleToWorkspaceCommand.
 	/// </summary>
@@ -238,12 +283,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public override void Execute(object parameter)
 		{
 			var classBrowser = SD.GetService<IClassBrowser>();
-			var modelFactory = SD.GetService<IModelFactory>();
-			if ((classBrowser != null) && (modelFactory != null)) {
+			if (classBrowser != null) {
 				IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
 				
 				// Create a new copy of this assembly model
-				IAssemblyModel newAssemblyModel = modelFactory.SafelyCreateAssemblyModelFromFile(assemblyModel.Context.Location);
+				IAssemblyModel newAssemblyModel = SD.AssemblyParserService.GetAssemblyModelSafe(new ICSharpCode.Core.FileName(assemblyModel.Context.Location), true);
 				if (newAssemblyModel != null)
 					classBrowser.MainAssemblyList.Assemblies.Add(newAssemblyModel);
 			}

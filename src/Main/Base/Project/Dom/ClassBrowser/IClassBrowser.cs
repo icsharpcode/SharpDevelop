@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.TreeView;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
@@ -11,10 +11,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		IAssemblyList MainAssemblyList { get; set; }
 		ICollection<IAssemblyList> AssemblyLists { get; }
-		
-		/*
-		  	IAssemblyList MainAssemblyList { get; set; }
-			ICollection<IAssemblyList> AssemblyLists { get; }
-		 */
+		IAssemblyModel FindAssemblyModel(FileName fileName);
 	}
 }

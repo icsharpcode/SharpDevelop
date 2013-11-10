@@ -87,6 +87,15 @@
 		          class = "Debugger.AddIn.AddWatchExpressionCommand"/>
 	</Path>
 	
+	<Path name="/SharpDevelop/Pads/ClassBrowser/Toolbar">
+		<Condition name = "IsProcessRunning" isdebugging="False" action="Disable">
+			<ToolbarItem id = "DebugExecutable"
+			             icon    = "Icons.16x16.Debug.Assembly"
+			             tooltip = "${res:MainWindow.Windows.Debug.DebugExecutable}"
+			             class = "Debugger.AddIn.DebugExecutableMenuCommand"/>
+		</Condition>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id    = "BreakPointsPad"
 		     category = "Debugger"

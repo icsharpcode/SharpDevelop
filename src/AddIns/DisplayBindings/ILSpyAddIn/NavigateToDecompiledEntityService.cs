@@ -44,14 +44,18 @@ namespace ICSharpCode.ILSpyAddIn
 			if (string.IsNullOrEmpty(typeName))
 				throw new ArgumentException("typeName is null or empty");
 			
+			var type = new TopLevelTypeName(typeName);
+			var target = new DecompiledTypeReference(assemblyFile, type);
+			
 			foreach (var viewContent in SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				if (viewContent.AssemblyFile == assemblyFile && typeName == viewContent.FullTypeName) {
+				var viewContentName = viewContent.DecompiledTypeName;
+				if (viewContentName.AssemblyFile == assemblyFile && type == viewContentName.Type) {
 					viewContent.WorkbenchWindow.SelectWindow();
 					viewContent.JumpToEntity(entityIdString);
 					return;
 				}
 			}
-			SD.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityIdString));
+			SD.Workbench.ShowView(new DecompiledViewContent(target, entityIdString));
 		}
 	}
 }

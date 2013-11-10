@@ -157,8 +157,10 @@
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
     <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
     <Compile Include="CSharp\DepthFirstVisitorTests.cs" />
+    <Compile Include="CSharp\InsertMissingTokensDecoratorTests.cs" />
     <Compile Include="CSharp\InsertParenthesesVisitorTests.cs" />
     <Compile Include="CSharp\CSharpOutputVisitorTests.cs" />
+    <Compile Include="CSharp\Parser\ConsistencyChecker.cs" />
     <Compile Include="CSharp\Parser\Expression\AnonymousTypeCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\ObjectCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\UndocumentedExpressionTests.cs" />

@@ -35,7 +35,7 @@
 	
 	<Path name = "/SharpDevelop/Parser">
 		<Parser id    = "XAML"
-		        supportedextensions  = ".xaml"
+		        supportedfilenamepattern = "\.(xaml)$"
 		        class = "ICSharpCode.XamlBinding.XamlParser"/>
 	</Path>
 	

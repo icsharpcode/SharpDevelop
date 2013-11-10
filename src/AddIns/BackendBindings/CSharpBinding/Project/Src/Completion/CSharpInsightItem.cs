@@ -64,7 +64,7 @@ namespace CSharpBinding.Completion
 			get { return null; }
 		}
 		
-		sealed class ParameterHighlightingOutputFormatter : TextWriterOutputFormatter
+		sealed class ParameterHighlightingOutputFormatter : TextWriterTokenWriter
 		{
 			StringBuilder b;
 			int highlightedParameterIndex;

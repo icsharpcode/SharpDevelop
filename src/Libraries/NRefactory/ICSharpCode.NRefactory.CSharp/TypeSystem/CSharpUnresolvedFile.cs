@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	/// Represents a file that was parsed and converted for the type system.
 	/// </summary>
 	[Serializable, FastSerializerVersion(TypeSystemConvertVisitor.version)]
-	public sealed class CSharpUnresolvedFile : AbstractFreezable, IUnresolvedFile, IUnresolvedDocumentationProvider
+	public class CSharpUnresolvedFile : AbstractFreezable, IUnresolvedFile, IUnresolvedDocumentationProvider
 	{
 		// The 'FastSerializerVersion' attribute on CSharpUnresolvedFile must be incremented when fixing 
 		// bugs in the TypeSystemConvertVisitor

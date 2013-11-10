@@ -115,7 +115,7 @@ namespace Debugger.AddIn
 				}
 			} else {
 				OpenFileDialog dialog = new OpenFileDialog() {
-					Filter = ".NET Executable (*.exe) | *.exe",
+					Filter = ".NET executable|*.exe",
 					RestoreDirectory = true,
 					DefaultExt = "exe"
 				};

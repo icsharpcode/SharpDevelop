@@ -55,7 +55,7 @@
 	
 	<Path name = "/SharpDevelop/Parser">
 		<Parser id    = "C#"
-		        supportedextensions  = ".cs"
+		        supportedfilenamepattern = "\.(cs)$"
 		        projectfileextension = ".csproj"
 		        class = "CSharpBinding.Parser.TParser"/>
 	</Path>
