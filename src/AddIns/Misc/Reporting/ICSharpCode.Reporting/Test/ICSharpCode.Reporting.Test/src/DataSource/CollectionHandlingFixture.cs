@@ -105,7 +105,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		
 		
 		#region Grouping
-		
+		/*
 		[Test]
 		public void GroupbyOneColumn () {
 			var rs = new ReportSettings();
@@ -130,37 +130,33 @@ namespace ICSharpCode.Reporting.Test.DataSource
 				
 				new BaseDataItem(){
 					ColumnName = "GroupItem"
+				},
+				
+				new BaseDataItem(){
+					ColumnName = "RandomInt"
 				}
 			};
 			var rs = new ReportSettings();
 			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
+			rs.GroupColumnCollection.Add( new GroupColumn("RandomInt",1,ListSortDirection.Ascending));
+			
 			var collectionSource = new CollectionSource	(list,typeof(Contributor),rs);
+			
 			collectionSource.Bind();
 			int i = 0;
 			do {
-				collectionSource.Fill_Test(ric);
-				Console.WriteLine("first : <{0}> Last <{1}> Group <{2}>",((BaseDataItem)ric[0]).DBValue,
+				collectionSource.Fill(ric);
+				Console.WriteLine("first : <{0}> Last <{1}> Group <{2}> Randomint <{3}>",((BaseDataItem)ric[0]).DBValue,
 				                  ((BaseDataItem)ric[1]).DBValue,
-				                  ((BaseDataItem)ric[2]).DBValue);
+				                  ((BaseDataItem)ric[2]).DBValue,
+				                  ((BaseDataItem)ric[3]).DBValue);
 				i ++;
-			}while (collectionSource.MoveNext_Test_List());
+			}while (collectionSource.MoveNext());
 			
 			Assert.That(i,Is.EqualTo(collectionSource.Count));
 		}
-		
-		/*
-		[Test]
-		public void bla () {
-			var s = list.OrderBy(a => a.Lastname);
-			var x = s.GroupBy(y => y.GroupItem);
-			foreach (var group in x) {
-				Console.WriteLine("{0} - {1}",group.Key,group.GetType().ToString());
-				foreach (var element in group) {
-					Console.WriteLine(element.Firstname);
-				}
-			}
-		}
 		*/
+		
 		#endregion
 		
 		#region Sort
