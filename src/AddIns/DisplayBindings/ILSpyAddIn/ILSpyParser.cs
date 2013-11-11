@@ -32,6 +32,13 @@ namespace ICSharpCode.ILSpyAddIn
 			return fileName != null && fileName.StartsWith("ilspy://", StringComparison.OrdinalIgnoreCase);
 		}
 		
+		readonly static ITextSource EmptyFileContent = new StringTextSource("");
+		
+		public ITextSource GetFileContent(FileName fileName)
+		{
+			return EmptyFileContent;
+		}
+		
 		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested, IProject parentProject, CancellationToken cancellationToken)
 		{
 			return ILSpyDecompilerService.DecompileType(DecompiledTypeReference.FromFileName(fileName), cancellationToken);
@@ -41,7 +48,7 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			var decompiledParseInfo = parseInfo as ILSpyFullParseInformation;
 			if (decompiledParseInfo == null)
-				throw new ArgumentException("Parse info does not have SyntaxTree");
+				throw new ArgumentException("ParseInfo does not have SyntaxTree");
 			return ResolveAtLocation.Resolve(compilation, null, decompiledParseInfo.SyntaxTree, location, cancellationToken);
 		}
 		

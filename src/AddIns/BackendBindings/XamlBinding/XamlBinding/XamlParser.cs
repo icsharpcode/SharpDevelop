@@ -39,9 +39,9 @@ namespace ICSharpCode.XamlBinding
 			return Path.GetExtension(fileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase);
 		}
 
-		public bool CanParse(IProject project)
+		public ITextSource GetFileContent(FileName fileName)
 		{
-			return false;
+			return SD.FileService.GetFileContent(fileName);
 		}
 		
 		volatile IncrementalParserState parserState;

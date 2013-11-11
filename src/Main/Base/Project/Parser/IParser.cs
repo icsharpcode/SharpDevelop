@@ -35,9 +35,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 		bool CanParse(string fileName);
 		
 		/// <summary>
+		/// Returns the content for a given filename.
+		/// </summary>
+		ITextSource GetFileContent(FileName fileName);
+		
+		/// <summary>
 		/// Parses a file.
 		/// </summary>
-		/// <param name="projectContent">The parent project of the file.</param>
 		/// <param name="fileName">The name of the file being parsed.</param>
 		/// <param name="fileContent">The content of the file.</param>
 		/// <param name="fullParseInformationRequested">

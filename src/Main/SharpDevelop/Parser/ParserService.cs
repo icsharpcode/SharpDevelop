@@ -315,7 +315,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (entry.parser == null)
 				return;
 			if (fileContent == null)
-				fileContent = SD.FileService.GetFileContent(fileName);
+				fileContent = entry.parser.GetFileContent(fileName);
 			if (compilation == null)
 				compilation = GetCompilationForFile(fileName);
 			var parseInfo = await entry.ParseAsync(fileContent, compilation.GetProject(), cancellationToken).ConfigureAwait(false);

@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public ParseInformation Parse(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
 		{
 			if (fileContent == null) {
-				fileContent = SD.FileService.GetFileContent(fileName);
+				fileContent = parser.GetFileContent(fileName);
 			}
 			
 			return DoParse(fileContent, parentProject, true, cancellationToken).CachedParseInformation;
@@ -176,7 +176,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public IUnresolvedFile ParseFile(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
 		{
 			if (fileContent == null) {
-				fileContent = SD.FileService.GetFileContent(fileName);
+				fileContent = parser.GetFileContent(fileName);
 			}
 			
 			return DoParse(fileContent, parentProject, false, cancellationToken).UnresolvedFile;
@@ -302,7 +302,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				// Let's look up the file in the list of open files right now
 				// so that we don't need to SafeThreadCall() later on.
 				lookupOpenFileOnTargetThread = false;
-				fileContent = SD.FileService.GetFileContentForOpenFile(fileName);
+				fileContent = parser.GetFileContent(fileName);
 			}
 			Task<ProjectEntry> task;
 			lock (this) {
