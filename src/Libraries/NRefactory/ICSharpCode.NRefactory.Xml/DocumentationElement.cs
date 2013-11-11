@@ -46,6 +46,12 @@ namespace ICSharpCode.NRefactory.Xml
 			
 			IMember member = entity as IMember;
 			if (inheritDocIfMissing && member != null) {
+				if (member.SymbolKind == SymbolKind.Constructor) {
+					// For constructors, the documentation of the base class ctor
+					// isn't really suitable as constructors are not inherited.
+					// We'll use the type's documentation instead:
+					return Get(entity.DeclaringTypeDefinition, inheritDocIfMissing);
+				}
 				foreach (IMember baseMember in InheritanceHelper.GetBaseMembers(member, includeImplementedInterfaces: true)) {
 					documentationComment = baseMember.Documentation;
 					if (documentationComment != null)
