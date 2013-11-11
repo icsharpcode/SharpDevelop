@@ -110,6 +110,7 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 			if (text == null)
 				throw new ArgumentNullException("text");
+			this.declaringEntity = declaringEntity;
 			this.textContent = text;
 		}
 		
@@ -118,7 +119,7 @@ namespace ICSharpCode.NRefactory.Xml
 		/// May return null.
 		/// </summary>
 		public IEntity DeclaringEntity {
-			get { return null; }
+			get { return declaringEntity; }
 		}
 		
 		IEntity referencedEntity;
