@@ -124,7 +124,7 @@ namespace Debugger.AddIn
 			}
 			if (!allowMethodInvoke && (importedMember is IMethod))
 				throw new InvalidOperationException("Method invocation not allowed in the current context!");
-			Value val = Value.GetMemberValue(evalThread, target, importedMember);
+			Value val = Value.GetMemberValue(evalThread, target, importedMember.Specialize(context.MethodInfo.Substitution));
 			if (val == null)
 				throw new GetValueException("Member not found!");
 			return val;
@@ -272,7 +272,7 @@ namespace Debugger.AddIn
 			return Convert(val);
 		}
 		
-		/// <remark
+		/// <remarks>
 		/// See $7.10.10 of C# 4 Spec for details.
 		/// </remarks>
 		Value Visit(TypeIsResolveResult result)

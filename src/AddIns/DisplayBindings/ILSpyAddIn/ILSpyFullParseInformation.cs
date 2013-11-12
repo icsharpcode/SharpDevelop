@@ -17,14 +17,11 @@ namespace ICSharpCode.ILSpyAddIn
 	public class ILSpyFullParseInformation : ParseInformation
 	{
 		SyntaxTree syntaxTree;
-		// Required to make WeakReferences work properly as cache policy.
-		AssemblyDefinition[] neededAssemblies;
 
-		public ILSpyFullParseInformation(ILSpyUnresolvedFile unresolvedFile, ITextSourceVersion parsedVersion, SyntaxTree syntaxTree, IEnumerable<AssemblyDefinition> neededAssemblies)
+		public ILSpyFullParseInformation(ILSpyUnresolvedFile unresolvedFile, ITextSourceVersion parsedVersion, SyntaxTree syntaxTree)
 			: base(unresolvedFile, parsedVersion, true)
 		{
 			this.syntaxTree = syntaxTree;
-			this.neededAssemblies = neededAssemblies.ToArray();
 		}
 		
 		public SyntaxTree SyntaxTree { get { return syntaxTree; } }

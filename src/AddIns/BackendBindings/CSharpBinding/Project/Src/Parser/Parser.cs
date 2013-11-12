@@ -68,6 +68,11 @@ namespace CSharpBinding.Parser
 		}
 		 */
 		
+		public ITextSource GetFileContent(FileName fileName)
+		{
+			return SD.FileService.GetFileContent(fileName);
+		}
+		
 		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested,
 		                              IProject parentProject, CancellationToken cancellationToken)
 		{

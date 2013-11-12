@@ -48,11 +48,7 @@ namespace ICSharpCode.ILSpyAddIn
 			this.jumpToEntityIdStringWhenDecompilationFinished = entityTag;
 			this.TitleName = "[" + ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeName.Type.Name) + "]";
 			
-			DecompilationThread();
-//			Thread thread = new Thread(DecompilationThread);
-//			thread.Name = "Decompiler (" + shortTypeName + ")";
-//			thread.Start();
-//			thread.Join();
+			InitializeView();
 			
 			SD.BookmarkManager.BookmarkRemoved += BookmarkManager_Removed;
 			SD.BookmarkManager.BookmarkAdded += BookmarkManager_Added;
@@ -62,56 +58,6 @@ namespace ICSharpCode.ILSpyAddIn
 			this.codeEditor.ActiveTextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
 		}
 		#endregion
-		
-		public static DecompiledViewContent Get(DecompiledTypeReference name)
-		{
-			var viewContents = SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>();
-			return viewContents.FirstOrDefault(c => c.DecompiledTypeName == name);
-		}
-		
-		public static DecompiledViewContent Get(IEntity entity)
-		{
-			if (entity == null)
-				throw new ArgumentNullException("entity");
-			
-			// Get the underlying entity for generic instance members
-			if (entity is IMember)
-				entity = ((IMember)entity).MemberDefinition;
-			
-			ITypeDefinition declaringType = (entity as ITypeDefinition) ?? entity.DeclaringTypeDefinition;
-			if (declaringType == null)
-				return null;
-			// get the top-level type
-			while (declaringType.DeclaringTypeDefinition != null)
-				declaringType = declaringType.DeclaringTypeDefinition;
-			
-			FileName assemblyLocation = declaringType.ParentAssembly.GetRuntimeAssemblyLocation();
-			if (assemblyLocation != null && File.Exists(assemblyLocation)) {
-				return Get(assemblyLocation, declaringType.ReflectionName);
-			}
-			return null;
-		}
-		
-		public static DecompiledViewContent Get(FileName assemblyFile, string typeName)
-		{
-			if (assemblyFile == null)
-				throw new ArgumentNullException("assemblyFile");
-			if (string.IsNullOrEmpty(typeName))
-				throw new ArgumentException("typeName is null or empty");
-			
-			var type = new FullTypeName(typeName);
-			
-			foreach (var viewContent in SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				var viewContentName = viewContent.DecompiledTypeName;
-				if (viewContentName.AssemblyFile == assemblyFile && type == viewContentName.Type) {
-					return viewContent;
-				}
-			}
-			
-			var newViewContent = new DecompiledViewContent(new DecompiledTypeReference(assemblyFile, new FullTypeName(typeName)), null);
-			SD.Workbench.ShowView(newViewContent);
-			return newViewContent;
-		}
 		
 		#region Properties
 		public DecompiledTypeReference DecompiledTypeName { get; private set; }
@@ -173,13 +119,15 @@ namespace ICSharpCode.ILSpyAddIn
 		#endregion
 		
 		#region Decompilation
-		void DecompilationThread()
+		async void InitializeView()
 		{
 			try {
-				var file = ILSpyDecompilerService.DecompileType(DecompiledTypeName);
+				var parseInformation = await SD.ParserService.ParseAsync(DecompiledTypeName.ToFileName(), cancellationToken: cancellation.Token);
+				if (parseInformation == null || !(parseInformation.UnresolvedFile is ILSpyUnresolvedFile)) return;
+				var file = (ILSpyUnresolvedFile)parseInformation.UnresolvedFile;
 				memberLocations = file.MemberLocations;
 				DebugSymbols = file.DebugSymbols;
-				OnDecompilationFinished(file.Writer);
+				OnDecompilationFinished(file.Output);
 			} catch (OperationCanceledException) {
 				// ignore cancellation
 			} catch (Exception ex) {
@@ -193,15 +141,15 @@ namespace ICSharpCode.ILSpyAddIn
 				writer.WriteLine(string.Format("Exception while decompiling {0} ({1})", DecompiledTypeName.Type, DecompiledTypeName.AssemblyFile));
 				writer.WriteLine();
 				writer.WriteLine(ex.ToString());
-				SD.MainThread.InvokeAsyncAndForget(() => OnDecompilationFinished(writer));
+				OnDecompilationFinished(writer.ToString());
 			}
 		}
 		
-		void OnDecompilationFinished(StringWriter output)
+		void OnDecompilationFinished(string output)
 		{
 			if (cancellation.IsCancellationRequested)
 				return;
-			codeEditor.Document.Text = output.ToString();
+			codeEditor.Document.Text = output;
 			codeEditor.Document.UndoStack.ClearAll();
 			
 			this.decompilationFinished = true;

@@ -32,4 +32,11 @@
 		<MenuItem id="ILSpySeparator" type="Separator" />
 		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.OpenInILSpyCommand"/>
 	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings/UrlBased">
+		<DisplayBinding id = "ILSpyView"
+		                class = "ICSharpCode.ILSpyAddIn.ILSpyDisplayBinding"
+		                fileNamePattern = "^ilspy://"
+		                title = "ILSpy Decompiler View"/>
+	</Path>
 </AddIn>

@@ -83,15 +83,15 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		void CleanWeakDictionary()
 		{
-			Debug.Assert(Monitor.IsEntered(projectContentDictionary));
-			List<FileName> removed = new List<FileName>();
-			foreach (var pair in projectContentDictionary) {
-				//if (!pair.Value.IsAlive)
-				//	removed.Add(pair.Key);
+//			Debug.Assert(Monitor.IsEntered(projectContentDictionary));
+//			List<FileName> removed = new List<FileName>();
+//			foreach (var pair in projectContentDictionary) {
+//				if (!pair.Value.IsAlive)
+//					removed.Add(pair.Key);
+//			}
+//			foreach (var key in removed)
+//				projectContentDictionary.Remove(key);
 			}
-			foreach (var key in removed)
-				projectContentDictionary.Remove(key);
-		}
 		
 		LoadedAssembly GetLoadedAssembly(FileName fileName, bool includeInternalMembers)
 		{
@@ -326,21 +326,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		#endregion
-		
-		public ICompilation CreateCompilationForAssembly(IAssemblyModel assembly, bool includeInternalMembers = false)
-		{
-			var mainAssembly = GetAssembly(assembly.Location, includeInternalMembers);
-			var searcher = new DefaultAssemblySearcher(assembly.Location);
-			var references = assembly.References
-				.Select(searcher.FindAssembly)
-				.Where(f => f != null);
-			return new SimpleCompilation(mainAssembly, references.Select(fn => GetAssembly(fn, includeInternalMembers)));
-		}
-		
-		public ICompilation CreateCompilationForAssembly(FileName assembly, bool includeInternalMembers = false)
-		{
-			return CreateCompilationForAssembly(GetAssemblyModel(assembly, includeInternalMembers), includeInternalMembers);
-		}
 		
 		public IAssemblyModel GetAssemblyModel(FileName fileName, bool includeInternalMembers = false)
 		{

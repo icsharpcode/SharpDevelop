@@ -46,6 +46,12 @@ namespace ICSharpCode.NRefactory.Xml
 			
 			IMember member = entity as IMember;
 			if (inheritDocIfMissing && member != null) {
+				if (member.SymbolKind == SymbolKind.Constructor) {
+					// For constructors, the documentation of the base class ctor
+					// isn't really suitable as constructors are not inherited.
+					// We'll use the type's documentation instead:
+					return Get(entity.DeclaringTypeDefinition, inheritDocIfMissing);
+				}
 				foreach (IMember baseMember in InheritanceHelper.GetBaseMembers(member, includeImplementedInterfaces: true)) {
 					documentationComment = baseMember.Documentation;
 					if (documentationComment != null)
@@ -104,6 +110,7 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 			if (text == null)
 				throw new ArgumentNullException("text");
+			this.declaringEntity = declaringEntity;
 			this.textContent = text;
 		}
 		
@@ -112,7 +119,7 @@ namespace ICSharpCode.NRefactory.Xml
 		/// May return null.
 		/// </summary>
 		public IEntity DeclaringEntity {
-			get { return null; }
+			get { return declaringEntity; }
 		}
 		
 		IEntity referencedEntity;

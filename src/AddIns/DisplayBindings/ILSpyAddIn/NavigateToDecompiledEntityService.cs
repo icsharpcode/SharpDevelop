@@ -44,7 +44,7 @@ namespace ICSharpCode.ILSpyAddIn
 			if (string.IsNullOrEmpty(typeName))
 				throw new ArgumentException("typeName is null or empty");
 			
-			var type = new FullTypeName(typeName);
+			var type = new TopLevelTypeName(typeName);
 			var target = new DecompiledTypeReference(assemblyFile, type);
 			
 			foreach (var viewContent in SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {

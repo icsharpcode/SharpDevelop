@@ -32,16 +32,23 @@ namespace ICSharpCode.ILSpyAddIn
 			return fileName != null && fileName.StartsWith("ilspy://", StringComparison.OrdinalIgnoreCase);
 		}
 		
+		readonly static ITextSource EmptyFileContent = new StringTextSource("");
+		
+		public ITextSource GetFileContent(FileName fileName)
+		{
+			return EmptyFileContent;
+		}
+		
 		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested, IProject parentProject, CancellationToken cancellationToken)
 		{
-			return ILSpyDecompilerService.ParseDecompiledType(DecompiledTypeReference.FromFileName(fileName), cancellationToken);
+			return ILSpyDecompilerService.DecompileType(DecompiledTypeReference.FromFileName(fileName), cancellationToken);
 		}
 		
 		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
 		{
 			var decompiledParseInfo = parseInfo as ILSpyFullParseInformation;
 			if (decompiledParseInfo == null)
-				throw new ArgumentException("Parse info does not have SyntaxTree");
+				throw new ArgumentException("ParseInfo does not have SyntaxTree");
 			return ResolveAtLocation.Resolve(compilation, null, decompiledParseInfo.SyntaxTree, location, cancellationToken);
 		}
 		
@@ -55,16 +62,6 @@ namespace ICSharpCode.ILSpyAddIn
 			throw new NotImplementedException();
 		}
 		
-		static readonly Lazy<IAssemblyReference[]> defaultReferences = new Lazy<IAssemblyReference[]>(
-			delegate {
-				Assembly[] assemblies = {
-					typeof(object).Assembly,
-					typeof(Uri).Assembly,
-					typeof(Enumerable).Assembly
-				};
-				return assemblies.Select(asm => new CecilLoader().LoadAssemblyFile(asm.Location)).ToArray();
-			});
-		
 		public ICompilation CreateCompilationForSingleFile(FileName fileName, IUnresolvedFile unresolvedFile)
 		{
 			DecompiledTypeReference reference = DecompiledTypeReference.FromFileName(fileName);
@@ -73,10 +70,9 @@ namespace ICSharpCode.ILSpyAddIn
 				if (model == null)
 					model = SD.AssemblyParserService.GetAssemblyModelSafe(reference.AssemblyFile, true);
 				if (model != null)
-					return SD.AssemblyParserService.CreateCompilationForAssembly(model, true);
+					return model.Context.GetCompilation();
 			}
 			return new CSharpProjectContent()
-				.AddAssemblyReferences(defaultReferences.Value)
 				.AddOrUpdateFiles(unresolvedFile)
 				.CreateCompilation();
 		}
