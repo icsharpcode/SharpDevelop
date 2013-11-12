@@ -15,15 +15,18 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	sealed class DisplayBindingService : IDisplayBindingService
 	{
 		const string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
+		const string urlBasedDisplayBindingPath = "/SharpDevelop/Workbench/DisplayBindings/UrlBased";
 		
 		Properties displayBindingServiceProperties;
 		
 		List<DisplayBindingDescriptor> bindings;
+		List<DisplayBindingDescriptor> urlBasedBindings;
 		List<ExternalProcessDisplayBinding> externalProcessDisplayBindings = new List<ExternalProcessDisplayBinding>();
 		
 		public DisplayBindingService()
 		{
 			bindings = AddInTree.BuildItems<DisplayBindingDescriptor>(displayBindingPath, null, true);
+			urlBasedBindings = AddInTree.BuildItems<DisplayBindingDescriptor>(urlBasedDisplayBindingPath, null, false);
 			displayBindingServiceProperties = SD.PropertyService.NestedProperties("DisplayBindingService");
 			foreach (var binding in displayBindingServiceProperties.GetList<ExternalProcessDisplayBinding>("ExternalProcesses")) {
 				if (binding != null) {
@@ -84,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (FileUtility.IsUrl(filename)) {
 				// The normal display binding dispatching code can't handle URLs (e.g. because it uses Path.GetExtension),
 				// so we'll directly return the browser display binding.
-				return new BrowserDisplayBinding.BrowserDisplayBinding();
+				return GetBindingForUrl(filename);
 			}
 			DisplayBindingDescriptor codon = GetDefaultCodonPerFileName(filename);
 			return codon == null ? null : codon.Binding;
@@ -112,11 +115,22 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				if (IsPrimaryBindingValidForFileName(binding, filename)) {
 					if (binding.Binding.IsPreferredBindingForFile(filename))
 						return binding;
-					else if (binding.Binding is AutoDetectDisplayBinding)
+					if (binding.Binding is AutoDetectDisplayBinding)
 						autoDetectDescriptor = binding;
 				}
 			}
 			return autoDetectDescriptor;
+		}
+		
+		IDisplayBinding GetBindingForUrl(FileName url)
+		{
+			foreach (DisplayBindingDescriptor binding in urlBasedBindings) {
+				if (IsPrimaryBindingValidForFileName(binding, url)) {
+					if (binding.Binding.IsPreferredBindingForFile(url))
+						return binding.Binding;
+				}
+			}
+			return new BrowserDisplayBinding.BrowserDisplayBinding();
 		}
 		
 		public void SetDefaultCodon(string extension, DisplayBindingDescriptor bindingDescriptor)
