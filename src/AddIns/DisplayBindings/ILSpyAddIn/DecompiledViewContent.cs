@@ -59,56 +59,6 @@ namespace ICSharpCode.ILSpyAddIn
 		}
 		#endregion
 		
-		public static DecompiledViewContent Get(DecompiledTypeReference name)
-		{
-			var viewContents = SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>();
-			return viewContents.FirstOrDefault(c => c.DecompiledTypeName == name);
-		}
-		
-		public static DecompiledViewContent Get(IEntity entity)
-		{
-			if (entity == null)
-				throw new ArgumentNullException("entity");
-			
-			// Get the underlying entity for generic instance members
-			if (entity is IMember)
-				entity = ((IMember)entity).MemberDefinition;
-			
-			ITypeDefinition declaringType = (entity as ITypeDefinition) ?? entity.DeclaringTypeDefinition;
-			if (declaringType == null)
-				return null;
-			// get the top-level type
-			while (declaringType.DeclaringTypeDefinition != null)
-				declaringType = declaringType.DeclaringTypeDefinition;
-			
-			FileName assemblyLocation = declaringType.ParentAssembly.GetRuntimeAssemblyLocation();
-			if (assemblyLocation != null && File.Exists(assemblyLocation)) {
-				return Get(assemblyLocation, declaringType.ReflectionName);
-			}
-			return null;
-		}
-		
-		public static DecompiledViewContent Get(FileName assemblyFile, string typeName)
-		{
-			if (assemblyFile == null)
-				throw new ArgumentNullException("assemblyFile");
-			if (string.IsNullOrEmpty(typeName))
-				throw new ArgumentException("typeName is null or empty");
-			
-			var type = new FullTypeName(typeName);
-			
-			foreach (var viewContent in SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				var viewContentName = viewContent.DecompiledTypeName;
-				if (viewContentName.AssemblyFile == assemblyFile && type == viewContentName.Type) {
-					return viewContent;
-				}
-			}
-			
-			var newViewContent = new DecompiledViewContent(new DecompiledTypeReference(assemblyFile, new TopLevelTypeName(typeName)), null);
-			SD.Workbench.ShowView(newViewContent);
-			return newViewContent;
-		}
-		
 		#region Properties
 		public DecompiledTypeReference DecompiledTypeName { get; private set; }
 		
