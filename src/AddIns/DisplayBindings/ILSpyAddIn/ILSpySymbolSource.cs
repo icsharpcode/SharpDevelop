@@ -24,26 +24,20 @@ namespace ICSharpCode.ILSpyAddIn
 			return false;
 		}
 		
-		public static MethodDebugSymbols GetSymbols(IMethod method)
+		public static ILSpyUnresolvedFile GetSymbols(IMethod method)
 		{
 			var typeName = DecompiledTypeReference.FromTypeDefinition(method.DeclaringTypeDefinition);
-			var id = IdStringProvider.GetIdString(method.MemberDefinition);
-			
 			if (typeName == null) return null;
-			var file = SD.ParserService.ParseFile(typeName.ToFileName()) as ILSpyUnresolvedFile;
-			if (file != null && file.DebugSymbols.ContainsKey(id)) {
-				return file.DebugSymbols[id];
-			}
-			return null;
+			return SD.ParserService.ParseFile(typeName.ToFileName()) as ILSpyUnresolvedFile;
 		}
 		
 		public Debugger.SequencePoint GetSequencePoint(IMethod method, int iloffset)
 		{
 			string id = IdStringProvider.GetIdString(method.MemberDefinition);
-			var content = DecompiledViewContent.Get(method);
-			if (content == null || !content.DebugSymbols.ContainsKey(id))
+			var file = GetSymbols(method);
+			if (file == null || !file.DebugSymbols.ContainsKey(id))
 				return null;
-			var symbols = content.DebugSymbols[id];
+			var symbols = file.DebugSymbols[id];
 			var seqs = symbols.SequencePoints;
 			var seq = seqs.FirstOrDefault(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To));
 			if (seq == null)
@@ -54,7 +48,7 @@ namespace ICSharpCode.ILSpyAddIn
 				seq = seqs.Where(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To))
 					.OrderByDescending(p => p.ILRanges.Last().To - p.ILRanges.First().From)
 					.FirstOrDefault();
-				return seq.ToDebugger(symbols, content.PrimaryFileName);
+				return seq.ToDebugger(symbols, file.FileName);
 			}
 			return null;
 		}
@@ -65,28 +59,31 @@ namespace ICSharpCode.ILSpyAddIn
 			if (name == null || !FileUtility.IsEqualFileName(module.FullPath, name.AssemblyFile))
 				yield break;
 			
-			var content = DecompiledViewContent.Get(name);
-			if (content == null)
+			var file = SD.ParserService.ParseFile(name.ToFileName()) as ILSpyUnresolvedFile;
+			if (file == null)
 				yield break;
 			
 			TextLocation loc = new TextLocation(line, column);
-			foreach(var symbols in content.DebugSymbols.Values.Where(s => s.StartLocation <= loc && loc <= s.EndLocation)) {
+			foreach(var symbols in file.DebugSymbols.Values.Where(s => s.StartLocation <= loc && loc <= s.EndLocation)) {
 				Decompiler.SequencePoint seq = null;
 				if (column != 0)
 					seq = symbols.SequencePoints.FirstOrDefault(p => p.StartLocation <= loc && loc <= p.EndLocation);
 				if (seq == null)
 					seq = symbols.SequencePoints.FirstOrDefault(p => line <= p.StartLocation.Line);
 				if (seq != null)
-					yield return seq.ToDebugger(symbols, content.PrimaryFileName);
+					yield return seq.ToDebugger(symbols, filename);
 			}
 		}
 		
 		public IEnumerable<ILRange> GetIgnoredILRanges(IMethod method)
 		{
-			var symbols = GetSymbols(method);
-			if (symbols == null)
+			string id = IdStringProvider.GetIdString(method.MemberDefinition);
+			var file = GetSymbols(method);
+			
+			if (file == null || !file.DebugSymbols.ContainsKey(id))
 				return new ILRange[] { };
 			
+			var symbols = file.DebugSymbols[id];
 			int codesize = symbols.CecilMethod.Body.CodeSize;
 			var inv = ICSharpCode.Decompiler.ILAst.ILRange.Invert(symbols.SequencePoints.SelectMany(s => s.ILRanges), codesize);
 			return inv.Select(r => new ILRange(r.From, r.To));
@@ -94,9 +91,13 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public IEnumerable<ILLocalVariable> GetLocalVariables(IMethod method)
 		{
-			var symbols = GetSymbols(method);
-			if (symbols == null)
+			string id = IdStringProvider.GetIdString(method.MemberDefinition);
+			var file = GetSymbols(method);
+			
+			if (file == null || !file.DebugSymbols.ContainsKey(id))
 				return null;
+			
+			var symbols = file.DebugSymbols[id];
 			
 			var context = new SimpleTypeResolveContext(method);
 			var loader = new CecilLoader();
