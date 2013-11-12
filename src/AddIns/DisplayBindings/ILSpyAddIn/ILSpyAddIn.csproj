@@ -66,7 +66,9 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DebuggerTextOutput.cs" />
+    <Compile Include="DecompiledViewContent.cs" />
     <Compile Include="ILSpyDecompilerService.cs" />
+    <Compile Include="ILSpyDisplayBinding.cs" />
     <Compile Include="ILSpyFullParseInformation.cs" />
     <Compile Include="ILSpyParser.cs" />
     <Compile Include="ILSpySymbolSource.cs" />
@@ -81,7 +83,6 @@
       <DependentUpon>SetILSpyPathDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="LaunchILSpy\OpenInILSpyCommand.cs" />
-    <Compile Include="ViewContent\DecompiledViewContent.cs" />
     <EmbeddedResource Include="LaunchILSpy\SetILSpyPathDialog.resx">
       <DependentUpon>SetILSpyPathDialog.cs</DependentUpon>
     </EmbeddedResource>
