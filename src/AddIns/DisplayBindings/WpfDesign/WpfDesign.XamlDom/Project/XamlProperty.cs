@@ -286,11 +286,43 @@ namespace ICSharpCode.WpfDesign.XamlDom
                 );
         }
 		
+		static XmlNode FindChildNode(XmlNode node, string localName, string namespaceURI)
+		{
+			foreach (XmlNode childNode in node.ChildNodes) {
+				if (childNode.LocalName == localName && childNode.NamespaceURI == namespaceURI)
+					return childNode;
+			}
+
+			return null;
+		}
+
+		bool IsNodeCollectionForThisProperty(XmlNode node)
+		{
+			return _propertyElement == null && this.PropertyName != this.ParentObject.ContentPropertyName && this.ReturnType.IsAssignableFrom(this.ParentObject.OwnerDocument.TypeFinder.GetType(node.NamespaceURI, node.LocalName));
+		}
+		
 		internal void AddChildNodeToProperty(XmlNode newChildNode)
 		{
 			if (this.IsCollection) {
-				// this is the default collection
-				InsertNodeInCollection(newChildNode, collectionElements.Count);
+				if (IsNodeCollectionForThisProperty(newChildNode)) {
+					XmlNode parentNode = FindChildNode(parentObject.XmlElement, parentObject.ElementType.Name + "." + this.PropertyName, parentObject.OwnerDocument.GetNamespaceFor(parentObject.ElementType));
+
+					if (parentNode == null) {
+						parentNode = CreatePropertyElement();
+
+						parentObject.XmlElement.AppendChild(parentNode);
+					}
+					else if (parentNode.ChildNodes.Count > 0)
+						throw new XamlLoadException("Collection property node must have no children when adding collection element.");
+
+					parentNode.AppendChild(newChildNode);
+					_propertyElement = (XmlElement)newChildNode;
+				}
+				else {
+					// this is the default collection
+					InsertNodeInCollection(newChildNode, collectionElements.Count);
+				}
+				
 				return;
 			}
 			if (_propertyElement == null) {
