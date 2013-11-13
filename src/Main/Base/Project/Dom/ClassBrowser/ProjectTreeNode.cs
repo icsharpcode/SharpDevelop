@@ -47,6 +47,23 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				return project.AssemblyModel.Namespaces;
 			}
 		}
+		
+		protected override bool IsSpecialNode()
+		{
+			return true;
+		}
+		
+		protected override void InsertSpecialNodes()
+		{
+			UpdateReferencesNode();
+		}
+		
+		void UpdateReferencesNode()
+		{
+			this.Children.RemoveAll(n => n is AssemblyReferencesTreeNode);
+			var refsTreeNode = new AssemblyReferencesTreeNode(project.AssemblyModel);
+			Children.Insert(0, refsTreeNode);
+		}
 	}
 }
 
