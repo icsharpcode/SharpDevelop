@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public override void ShowContextMenu()
 		{
 			var entityModel = this.Model as IEntityModel;
-			if ((entityModel != null) && (entityModel.ParentProject != null)) {
+			if (entityModel != null) {
 				var ctx = MenuService.ShowContextMenu(null, entityModel, "/SharpDevelop/EntityContextMenu");
 			}
 		}
