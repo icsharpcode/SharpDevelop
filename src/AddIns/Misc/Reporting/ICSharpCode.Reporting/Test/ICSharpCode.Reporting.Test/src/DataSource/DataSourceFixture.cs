@@ -38,6 +38,39 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			
 		}
 		
+		[Test]
+		public void SortOneColumnAscending() {
+			var ric = new System.Collections.Generic.List<IPrintableObject>(){
+				new BaseDataItem(){
+					ColumnName = "Lastname"
+						
+				},
+				new BaseDataItem(){
+					ColumnName = "Firstname"
+				}
+				
+				
+			};
+			
+			var rs = new ReportSettings();
+			rs.SortColumnsCollection.Add(new SortColumn("Lastname",ListSortDirection.Ascending));
+			var collectionSource = new CollectionDataSource	(list,typeof(Contributor),rs);
+			collectionSource.Bind();
+			string compare = String.Empty;
+			int i = 0;
+			do {
+				collectionSource.Fill(ric);
+				Console.WriteLine("first : <{0}> Last <{1}> ",((BaseDataItem)ric[0]).DBValue,
+				                  ((BaseDataItem)ric[1]).DBValue);
+				Assert.That(((BaseDataItem)ric[0]).DBValue,Is.GreaterThanOrEqualTo(compare));
+				compare = ((BaseDataItem)ric[0]).DBValue;
+				                 
+				i ++;
+			}while (collectionSource.MoveNext());
+			
+			Assert.That(i,Is.EqualTo(collectionSource.Count));
+		}
+		
 		
 		[Test]
 		public void GroupbyOneColumnAndFill () {

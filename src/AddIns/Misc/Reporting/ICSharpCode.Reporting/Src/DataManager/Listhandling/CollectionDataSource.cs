@@ -21,19 +21,28 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 	/// <summary>
 	/// Description of DataSource.
 	/// </summary>
+	enum OrderGroup {
+		AsIs,
+		Sorted,
+		Grouped
+	}
 	public class CollectionDataSource:IDataViewHandling
 	{
+		
+
 		readonly DataCollection<object> baseList;
 		readonly ReportSettings reportSettings;
 		readonly Type elementType;
 		readonly PropertyDescriptorCollection listProperties;
-	
+		OrderGroup orderGroup;
+		
 		public CollectionDataSource(IEnumerable list, Type elementType, ReportSettings reportSettings)
 		{
 			this.elementType = elementType;
 			this.reportSettings = reportSettings;
 			baseList = CreateBaseList(list, elementType);
 			this.listProperties = this.baseList.GetItemProperties(null);
+			orderGroup = OrderGroup.AsIs;
 		}
 		
 		
@@ -45,7 +54,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		}
 		
 		
-		public System.Collections.ObjectModel.Collection<ICSharpCode.Reporting.BaseClasses.AbstractColumn> AvailableFields {
+		public Collection<AbstractColumn> AvailableFields {
 			get {
 				var availableFields = new Collection<AbstractColumn>();
 				foreach (PropertyDescriptor p in this.listProperties){
@@ -73,17 +82,40 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		public object Current {get; private set;}
 			
-
+		#region Sort
 		
 		public void Sort()
 		{
-			throw new NotImplementedException();
+			
+			if ((reportSettings.SortColumnsCollection != null)) {
+				if (reportSettings.SortColumnsCollection.Count > 0) {
+					var s = SortInternal();
+					orderGroup = OrderGroup.Sorted;
+					listEnumerator = s.GetEnumerator();
+					listEnumerator.MoveNext();
+					Current = listEnumerator.Current;
+				}
+			}
 		}
+		
+		IEnumerable<object> SortInternal (){
+			IEnumerable<object> sortedList = null;
+			var sortProperty = listProperties.Find(reportSettings.SortColumnsCollection[0].ColumnName,true);
+			if(reportSettings.SortColumnsCollection.Count == 1) {
+				sortedList = baseList.OrderBy(o => o.GetType().GetProperty(sortProperty.Name).GetValue(o, null) );
+			}
+			
+			return sortedList;
+		}
+		
+		#endregion
+	
 		
 		#region Grouping
 		
 		public void Group()
 		{
+			orderGroup = OrderGroup.Grouped;
 			groupedList = GroupInternal();
 			groupEnumerator = groupedList.GetEnumerator();
 			groupEnumerator.MoveNext();
@@ -94,10 +126,11 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		
 		IEnumerable<IGrouping<object, object>> GroupInternal () {
-			var properties = listProperties.Find(reportSettings.GroupColumnCollection[0].ColumnName,true);
-			var property = listProperties.Find("Randomint",true);
-			var groupedList = baseList.OrderBy(o => o.GetType().GetProperty(property.Name).GetValue(o, null) )
-				.GroupBy(a => a.GetType().GetProperty(properties.Name).GetValue(a, null)).OrderBy(c => c.Key);
+			var property = listProperties.Find(reportSettings.GroupColumnCollection[0].ColumnName,true);
+			var sortProperty = listProperties.Find("Randomint",true);
+
+			var groupedList = baseList.OrderBy(o => o.GetType().GetProperty(sortProperty.Name).GetValue(o, null) )
+				.GroupBy(a => a.GetType().GetProperty(property.Name).GetValue(a, null)).OrderBy(c => c.Key);
 			return groupedList;
 		}
 		
@@ -106,9 +139,9 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		public void Bind()
 		{
 			if (reportSettings.GroupColumnCollection.Any()) {
-				this.Group();
+				Group();
 			} else {
-				this.Sort ();
+				Sort();
 			}
 		}
 		
@@ -118,7 +151,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		private IEnumerator<IGrouping<object, object>> groupEnumerator;
 		private IEnumerator<object> listEnumerator;
 		
-		public void Fill(System.Collections.Generic.List<ICSharpCode.Reporting.Interfaces.IPrintableObject> collection)
+		public void Fill(List<IPrintableObject> collection)
 		{
 			foreach (IPrintableObject item in collection)
 			{
@@ -146,24 +179,52 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			return p.PropertyType;
 		}
 		
+		/*
+		public bool MoveNext()
+		{
+			
+			if (orderGroup == OrderGroup.Grouped) {
+				var canMove = listEnumerator.MoveNext();
+				if (! canMove) {
+					var groupCanMove = groupEnumerator.MoveNext();
+					if (groupCanMove) {
+						listEnumerator = groupEnumerator.Current.GetEnumerator();
+						canMove = listEnumerator.MoveNext();
+						Current = listEnumerator.Current;
+					} else {
+						Console.WriteLine("end");
+					}
+				} else {
+					Current = listEnumerator.Current;
+				}
+				return canMove;
+			} else {
+				var b = listEnumerator.MoveNext();
+				Current = listEnumerator.Current;
+				return b;
+			}
+		}
+		*/
 		
 		public bool MoveNext()
 		{
-			var canMove = listEnumerator.MoveNext();
-			if (! canMove) { 
-				var groupCanMove = groupEnumerator.MoveNext();
-				if (groupCanMove) {
-					listEnumerator = groupEnumerator.Current.GetEnumerator();
-					canMove = listEnumerator.MoveNext();
-					Current = listEnumerator.Current;
-				} else {
-					Console.WriteLine("end");
-				}
-			} else {
-				Current = listEnumerator.Current;
-			}
-			return canMove;
 			
+			var canMove = listEnumerator.MoveNext();
+			if (orderGroup == OrderGroup.Grouped) {
+				if (! canMove) {
+					var groupCanMove = groupEnumerator.MoveNext();
+					if (groupCanMove) {
+						listEnumerator = groupEnumerator.Current.GetEnumerator();
+						canMove = listEnumerator.MoveNext();
+						Current = listEnumerator.Current;
+					} 
+				} else {
+					Current = listEnumerator.Current;
+				}
+				return canMove;
+			}
+			Current = listEnumerator.Current;
+			return canMove;
 		}
 		
 		#endregion

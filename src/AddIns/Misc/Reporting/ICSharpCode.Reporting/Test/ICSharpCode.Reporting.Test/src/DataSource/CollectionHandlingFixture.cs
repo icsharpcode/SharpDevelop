@@ -191,7 +191,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			string compare = collectionSource.IndexList[0].ObjectArray[0].ToString();
 			foreach (var element in collectionSource.IndexList) {
 				string result = String.Format("{0} - {1}",element.ListIndex,element.ObjectArray[0]);
-				Console.WriteLine(result);
+//				Coole.WriteLine(result);
 				Assert.That(compare,Is.LessThanOrEqualTo(element.ObjectArray[0].ToString()));
 				compare = element.ObjectArray[0].ToString();
 			}

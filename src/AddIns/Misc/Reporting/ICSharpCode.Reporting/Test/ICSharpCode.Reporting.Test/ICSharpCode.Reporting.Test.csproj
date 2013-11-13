@@ -66,7 +66,7 @@
   <ItemGroup>
     <Compile Include="src\DataSource\ContributorsList.cs" />
     <Compile Include="src\DataSource\CollectionHandlingFixture.cs" />
-    <Compile Include="src\DataSource\DataSourceGroupingFixture.cs" />
+    <Compile Include="src\DataSource\DataSourceFixture.cs" />
     <Compile Include="src\Expressions\Aggregates\AggregateFuctionHelper.cs" />
     <Compile Include="src\Expressions\Aggregates\SumAggregate.cs" />
     <Compile Include="src\Expressions\IntegrationTests\FieldsFixture.cs" />
