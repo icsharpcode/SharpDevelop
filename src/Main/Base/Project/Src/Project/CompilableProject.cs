@@ -384,6 +384,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (reference is ProjectReferenceProjectItem) {
 				var project = ((ProjectReferenceProjectItem)reference).ReferencedProject;
 				if (project == null) return null;
+				if (project.ProjectContent == null) {
+					SD.Log.InfoFormatted("ResolveReference: ProjectContent for project '{0}', language {1} was not found. Cannot resolve reference!", project.Name, project.Language);
+					return null;
+				}
 				return new DomAssemblyName(project.ProjectContent.FullAssemblyName);
 			}
 			return null;
