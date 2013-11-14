@@ -229,9 +229,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	
 	class DebuggerProcessEntityModelContext : IEntityModelContext
 	{
-		Debugger.Process process;
-		Debugger.Module module;
-		Debugger.Module currentModule;
+		readonly Debugger.Process process;
+		readonly Debugger.Module currentModule;
 		
 		public DebuggerProcessEntityModelContext(Process process, Module currentModule)
 		{
@@ -263,7 +262,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 		public string FullAssemblyName {
-			get { return module.Assembly.FullAssemblyName; }
+			get { return currentModule.Assembly.FullAssemblyName; }
 		}
 		
 		public string Location {
