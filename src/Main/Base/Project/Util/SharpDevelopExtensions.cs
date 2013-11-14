@@ -18,9 +18,7 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -825,6 +823,17 @@ namespace ICSharpCode.SharpDevelop
 			if (service == null)
 				throw new ServiceNotFoundException(serviceType);
 			return service;
+		}
+		#endregion
+		
+		#region Service Extensions
+		public static ICompilation GetCompilationForCurrentProject(this IParserService svc)
+		{
+			if (svc == null)
+				throw new ArgumentNullException("svc");
+			IProject project = SD.ProjectService.CurrentProject;
+			if (project == null) return null;
+			return SD.ParserService.GetCompilation(project);
 		}
 		#endregion
 		

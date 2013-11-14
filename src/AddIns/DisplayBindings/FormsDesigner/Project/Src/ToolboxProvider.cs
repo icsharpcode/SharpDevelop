@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -103,7 +104,7 @@ namespace ICSharpCode.FormsDesigner
 						newTab.ItemsExchanged += SideTabItemsExchanged;
 						sideBar.Tabs.Add(newTab);
 					} catch (Exception e) {
-						ICSharpCode.Core.LoggingService.Warn("Can't add tab : " + e);
+						SD.Log.Warn("Can't add tab : " + e);
 					}
 				}
 			}
@@ -122,30 +123,26 @@ namespace ICSharpCode.FormsDesigner
 		
 		static void SelectedToolUsedHandler(object sender, EventArgs e)
 		{
-			LoggingService.Debug("SelectedToolUsedHandler");
+			SD.Log.Debug("SelectedToolUsedHandler");
 			SideTab tab = sideBar.ActiveTab;
 			
 			// try to add project reference
-			if (sender != null && sender is ICSharpCode.FormsDesigner.Services.ToolboxService) {
-				ToolboxItem selectedItem = (sender as IToolboxService).GetSelectedToolboxItem();
+			if (sender is ICSharpCode.FormsDesigner.Services.ToolboxService) {
+				ToolboxItem selectedItem = ((IToolboxService)sender).GetSelectedToolboxItem();
 				if (tab is CustomComponentsSideTab) {
 					if (selectedItem != null && selectedItem.TypeName != null) {
-						LoggingService.Debug("Checking for reference to CustomComponent: " + selectedItem.TypeName);
+						SD.Log.Debug("Checking for reference to CustomComponent: " + selectedItem.TypeName);
 						// Check current project has the custom component first.
-						#warning reimplement automatic add reference
-						/*
-						IProjectContent currentProjectContent = ParserService.CurrentProjectContent;
-						if (currentProjectContent != null) {
-							if (currentProjectContent.GetClass(selectedItem.TypeName, 0) == null) {
-								// Check other projects in the solution.
-								LoggingService.Debug("Checking other projects in the solution.");
-								IProject projectContainingType = FindProjectContainingType(selectedItem.TypeName);
-								if (projectContainingType != null) {
-									AddProjectReferenceToProject(ProjectService.CurrentProject, projectContainingType);
-								}
+						ICompilation currentCompilation = SD.ParserService.GetCompilationForCurrentProject();
+						var typeName = new FullTypeName(selectedItem.TypeName);
+						if (currentCompilation != null && currentCompilation.FindType(typeName).Kind == TypeKind.Unknown) {
+							// Check other projects in the solution.
+							SD.Log.Debug("Checking other projects in the solution.");
+							IProject projectContainingType = FindProjectContainingType(typeName);
+							if (projectContainingType != null) {
+								AddProjectReferenceToProject(SD.ProjectService.CurrentProject, projectContainingType);
 							}
 						}
-						 */
 					}
 				} else {
 					if (selectedItem != null && selectedItem.AssemblyName != null) {
@@ -227,19 +224,15 @@ namespace ICSharpCode.FormsDesigner
 		/// Looks for the specified type in all the projects in the open solution
 		/// excluding the current project.
 		/// </summary>
-		static IProject FindProjectContainingType(string type)
+		static IProject FindProjectContainingType(FullTypeName type)
 		{
-			IProject currentProject = ProjectService.CurrentProject;
-			if (currentProject == null) {
-				return null;
-			}
+			IProject currentProject = SD.ProjectService.CurrentProject;
+			if (currentProject == null) return null;
 			
-			foreach (IProject project in ProjectService.OpenSolution.Projects) {
-				if (project != currentProject) {
-					if (project.ProjectContent.TopLevelTypeDefinitions.Any(t => t.FullName == type)) {
-						LoggingService.Debug("Found project containing type: " + project.FileName);
-						return project;
-					}
+			foreach (IProject project in SD.ProjectService.CurrentSolution.Projects.Where(p => p != currentProject)) {
+				if (project.ProjectContent.TopLevelTypeDefinitions.Any(t => t.FullTypeName == type)) {
+					SD.Log.Debug("Found project containing type: " + project.FileName);
+					return project;
 				}
 			}
 			return null;
