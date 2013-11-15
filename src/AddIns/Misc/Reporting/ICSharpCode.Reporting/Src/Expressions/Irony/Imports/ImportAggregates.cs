@@ -20,8 +20,8 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 	/// </summary>
 	public static class ImportExtensions
 	{
-		public static CollectionSource GetDataSource (this ScriptThread thread){
-			return (CollectionSource)thread.App.Globals["DataSource"];
+		public static CollectionDataSource GetDataSource (this ScriptThread thread){
+			return (CollectionDataSource)thread.App.Globals["DataSource"];
 		}
 	}
 	
@@ -32,9 +32,9 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 			var fieldName = childNodes[0].Evaluate(thread).ToString();
 			
 			var dataSource = thread.GetDataSource();
-			var curpos = dataSource.CurrentPosition;
+//			var curpos = dataSource.CurrentPosition;
 			
-			dataSource.CurrentPosition = 0;
+//			dataSource.CurrentPosition = 0;
 			
 			if (FieldExist(dataSource.Current,fieldName)) {
 				do {
@@ -47,7 +47,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 				while (dataSource.MoveNext());
 			}
 
-			dataSource.CurrentPosition = curpos;
+//			dataSource.CurrentPosition = curpos;
 			return sum;
 		}
 		

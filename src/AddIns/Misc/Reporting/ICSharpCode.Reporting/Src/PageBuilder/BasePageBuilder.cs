@@ -192,7 +192,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		#region Visitors
 		
-		protected void RunExpressions(ReportSettings reportsettings,CollectionSource dataSource)
+		protected void RunExpressions(ReportSettings reportsettings,CollectionDataSource dataSource)
 		{
 			var expressionRunner = new ExpressionRunner(Pages,reportsettings,dataSource);
 			expressionRunner.Run();

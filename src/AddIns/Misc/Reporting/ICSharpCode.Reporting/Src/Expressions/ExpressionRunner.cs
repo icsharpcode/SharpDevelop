@@ -21,9 +21,9 @@ namespace ICSharpCode.Reporting.Expressions
 //		
 		readonly Collection<ExportPage> pages;
 		readonly ReportSettings reportSettings;
-		readonly CollectionSource dataSource;
+		readonly CollectionDataSource dataSource;
 		
-		public ExpressionRunner(Collection<ExportPage> pages,ReportSettings reportSettings,CollectionSource dataSource)
+		public ExpressionRunner(Collection<ExportPage> pages,ReportSettings reportSettings,CollectionDataSource dataSource)
 		{
 			this.pages = pages;
 			this.dataSource = dataSource;

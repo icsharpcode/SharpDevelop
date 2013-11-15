@@ -21,7 +21,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		
 		
-		public ExpressionVisitor(ReportSettings reportSettings,CollectionSource dataSource) {
+		public ExpressionVisitor(ReportSettings reportSettings,CollectionDataSource dataSource) {
 			grammar = new ReportingLanguageGrammer();
 			evaluator = new ReportingExpressionEvaluator(grammar);
 			evaluator.AddReportSettings(reportSettings);

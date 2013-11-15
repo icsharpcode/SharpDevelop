@@ -15,9 +15,9 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 	{
 		
 		Collection<ExportText> collection;
-		AggregateCollection agc;
+		AggregateCollection aggregateCollection;
 		AggregateFuctionHelper helper;
-		CollectionSource dataSource;
+		CollectionDataSource dataSource;
 		
 		
 		[Test]
@@ -56,8 +56,8 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 			               });
 			
 			helper = new AggregateFuctionHelper();
-			agc = helper.AggregateCollection;
-			dataSource = new CollectionSource(agc,typeof(Aggregate),new ReportSettings());
+			aggregateCollection = helper.AggregateCollection;
+			dataSource = new CollectionDataSource(aggregateCollection,typeof(Aggregate),new ReportSettings());
 			dataSource.Bind();
 		}
 		

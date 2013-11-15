@@ -36,11 +36,19 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		readonly PropertyDescriptorCollection listProperties;
 		OrderGroup orderGroup;
 		
+		
 		public CollectionDataSource(IEnumerable list, Type elementType, ReportSettings reportSettings)
 		{
+			if (list == null)
+				throw new ArgumentNullException("list");
+			if (reportSettings == null)
+				throw new ArgumentNullException("reportSettings");
+			
+			baseList = CreateBaseList(list, elementType);
+			
 			this.elementType = elementType;
 			this.reportSettings = reportSettings;
-			baseList = CreateBaseList(list, elementType);
+			
 			this.listProperties = this.baseList.GetItemProperties(null);
 			orderGroup = OrderGroup.AsIs;
 		}
@@ -71,31 +79,35 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 		}
 		
-		public int CurrentPosition {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
+		public int CurrentPosition {get;set;}
+	
 		
-		public object Current {get; private set;}
-			
+		public object Current {get;  set;}
+		
 		#region Sort
 		
 		public void Sort()
 		{
 			
-			if ((reportSettings.SortColumnsCollection != null)) {
-				if (reportSettings.SortColumnsCollection.Count > 0) {
-					var s = SortInternal();
-					orderGroup = OrderGroup.Sorted;
-					listEnumerator = s.GetEnumerator();
-					listEnumerator.MoveNext();
-					Current = listEnumerator.Current;
-				}
+//			if ((reportSettings.SortColumnsCollection != null)) {
+			if (reportSettings.SortColumnsCollection.Count > 0) {
+				var sorted = SortInternal();
+				orderGroup = OrderGroup.Sorted;
+				listEnumerator = sorted.GetEnumerator();
+				listEnumerator.MoveNext();
+				Current = listEnumerator.Current;
+				CurrentPosition = baseList.IndexOf(Current);
+				Console.WriteLine("sort CurrentPosition {0}",CurrentPosition);
+			} else {
+				orderGroup = OrderGroup.AsIs;
+				listEnumerator = baseList.GetEnumerator();
+				listEnumerator.MoveNext();
+				Current = listEnumerator.Current;
+				CurrentPosition = baseList.IndexOf(Current);
+				Console.WriteLine("asis CurrentPosition {0}",CurrentPosition);
 			}
+//			}
+			
 		}
 		
 		IEnumerable<object> SortInternal (){
@@ -109,7 +121,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		}
 		
 		#endregion
-	
+		
 		
 		#region Grouping
 		
@@ -122,6 +134,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			listEnumerator = groupEnumerator.Current.GetEnumerator();
 			listEnumerator.MoveNext();
 			Current = listEnumerator.Current;
+			CurrentPosition = baseList.IndexOf(Current);
+			Console.WriteLine("group CurrentPosition {0}",CurrentPosition);
 		}
 		
 		
@@ -155,14 +169,19 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		{
 			foreach (IPrintableObject item in collection)
 			{
-				var dbItem = item as IDataItem;
-				if (dbItem != null) {
-					
-					dbItem.DBValue = String.Empty;
-					dbItem.DBValue = ReadValueFromProperty(dbItem.ColumnName);
-					if (String.IsNullOrEmpty(dbItem.DataType)) {
-						dbItem.DataType = SetTypeFromProperty(dbItem.ColumnName).ToString();
-					}
+				FillInternal(item);
+			}
+		}
+
+
+		void FillInternal(IPrintableObject item)
+		{
+			var dbItem = item as IDataItem;
+			if (dbItem != null) {
+				dbItem.DBValue = String.Empty;
+				dbItem.DBValue = ReadValueFromProperty(dbItem.ColumnName);
+				if (String.IsNullOrEmpty(dbItem.DataType)) {
+					dbItem.DataType = SetTypeFromProperty(dbItem.ColumnName).ToString();
 				}
 			}
 		}
@@ -204,12 +223,13 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				return b;
 			}
 		}
-		*/
+		 */
 		
 		public bool MoveNext()
 		{
 			
 			var canMove = listEnumerator.MoveNext();
+			
 			if (orderGroup == OrderGroup.Grouped) {
 				if (! canMove) {
 					var groupCanMove = groupEnumerator.MoveNext();
@@ -217,13 +237,16 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 						listEnumerator = groupEnumerator.Current.GetEnumerator();
 						canMove = listEnumerator.MoveNext();
 						Current = listEnumerator.Current;
-					} 
+					}
 				} else {
 					Current = listEnumerator.Current;
 				}
 				return canMove;
 			}
+			
 			Current = listEnumerator.Current;
+			CurrentPosition = baseList.IndexOf(Current);
+			Console.WriteLine("CurrentPosition {0}",CurrentPosition);
 			return canMove;
 		}
 		
@@ -246,10 +269,10 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			if (listAccessors != null && listAccessors.Length > 0){
 				var t = this.elementType;
 
-			    t = listAccessors.Aggregate(t,
-                    (current, pd) => (Type) PropertyTypeHash.Instance[current, pd.Name]);
+				t = listAccessors.Aggregate(t,
+				                            (current, pd) => (Type) PropertyTypeHash.Instance[current, pd.Name]);
 
-			    // if t is null an empty list will be generated
+				// if t is null an empty list will be generated
 				return ExtendedTypeDescriptor.GetProperties(t);
 			}
 			return ExtendedTypeDescriptor.GetProperties(elementType);

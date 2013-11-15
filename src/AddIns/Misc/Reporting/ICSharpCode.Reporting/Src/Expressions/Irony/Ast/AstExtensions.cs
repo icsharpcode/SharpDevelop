@@ -69,7 +69,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 		
 		#region DataSource
 		
-		public static void AddDataSource (this ReportingExpressionEvaluator app,CollectionSource dataSource){
+		public static void AddDataSource (this ReportingExpressionEvaluator app,CollectionDataSource dataSource){
 			if (dataSource == null)
 				throw new ArgumentNullException("dataSource");
 			if (!app.Globals.ContainsKey("DataSource")) {

@@ -103,7 +103,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 
 		void CreateDataSource()
 		{
-			DataSource = new CollectionSource(List, ElementType, ReportModel.ReportSettings);
+			DataSource = new CollectionDataSource(List, ElementType, ReportModel.ReportSettings);
 			if (DataSourceContainsData()) {
 				DataSource.Bind();
 			}
@@ -148,7 +148,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		internal CollectionSource DataSource {get; private set;}
+		internal CollectionDataSource DataSource {get; private set;}
 		
 		internal IEnumerable List {get; private set;}
 		

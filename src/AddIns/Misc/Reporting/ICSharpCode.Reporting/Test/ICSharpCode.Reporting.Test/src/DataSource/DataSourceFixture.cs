@@ -29,14 +29,15 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		}
 		
 		
+		
 		[Test]
 		public void GroupbyOneColumn () {
 			var rs = new ReportSettings();
 			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
 			var collectionSource = new CollectionDataSource	(list,typeof(Contributor),rs);
 			collectionSource.Bind();
-			
 		}
+		
 		
 		[Test]
 		public void SortOneColumnAscending() {
