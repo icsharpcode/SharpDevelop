@@ -101,7 +101,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			var classBrowser = SD.GetService<IClassBrowser>();
 			if (classBrowser != null) {
 				IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
-				classBrowser.MainAssemblyList.Assemblies.Remove(assemblyModel);
+				if (assemblyModel.IsUnpinned()) {
+					classBrowser.UnpinnedAssemblies.Assemblies.Remove(assemblyModel);
+				} else {
+					classBrowser.MainAssemblyList.Assemblies.Remove(assemblyModel);
+				}
 			}
 		}
 	}

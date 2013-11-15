@@ -56,7 +56,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public override object Icon {
 			get {
 				if (model.Context.IsValid) {
-					return SD.ResourceService.GetImageSource("Icons.16x16.Assembly");
+					if (model.IsUnpinned()) {
+						return SD.ResourceService.GetImageSource("Icons.16x16.AssemblyUnpinned");
+					} else {
+						return SD.ResourceService.GetImageSource("Icons.16x16.Assembly");
+					}
 				} else {
 					return SD.ResourceService.GetImageSource("Icons.16x16.AssemblyError");
 				}

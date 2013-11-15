@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.TreeView;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -61,6 +62,24 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
+		private SharpTreeNode FindAssemblyTreeNode(string fullAssemblyName)
+		{
+			var assemblyTreeNode = this.Root.Children.FirstOrDefault(
+				node => {
+					if (node is AssemblyTreeNode) {
+						var asmTreeNode = (AssemblyTreeNode) node;
+						if (node.Model is IAssemblyModel) {
+							var asmModel = (IAssemblyModel) node.Model;
+							return asmModel.FullAssemblyName == fullAssemblyName;
+						}
+					}
+					
+					return false;
+				});
+			
+			return assemblyTreeNode;
+		}
+		
 		public bool GoToEntity(IEntity entity)
 		{
 			// Try to find assembly in workspace
@@ -102,25 +121,28 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				
 				if (namespaceChildren == null) {
 					// Try to find assembly of passed entity among additional assemblies
-					var assemblyTreeNode = this.Root.Children.FirstOrDefault(
-						node => {
-							if (node is AssemblyTreeNode) {
-								var asmTreeNode = (AssemblyTreeNode) node;
-								if (node.Model is IAssemblyModel) {
-									var asmModel = (IAssemblyModel) node.Model;
-									return asmModel.FullAssemblyName == entityAssembly.FullAssemblyName;
-								}
-							}
-							
-							return false;
-						});
+					var assemblyTreeNode = FindAssemblyTreeNode(entityAssembly.FullAssemblyName);
 					if (assemblyTreeNode != null) {
 						assemblyTreeNode.EnsureLazyChildren();
 						namespaceChildren = assemblyTreeNode.Children;
 					}
 				}
 				
-				// TODO Add assembly to workspace, if not available in ClassBrowser
+				if (namespaceChildren == null) {
+					// Add assembly to workspace (unpinned), if not available in ClassBrowser
+					IAssemblyParserService assemblyParser = SD.GetService<IAssemblyParserService>();
+					if (assemblyParser != null) {
+						IAssemblyModel unpinnedAssemblyModel = assemblyParser.GetAssemblyModel(new FileName(entityAssembly.UnresolvedAssembly.Location));
+						if (unpinnedAssemblyModel != null) {
+							this.UnpinnedAssemblies.Assemblies.Add(unpinnedAssemblyModel);
+							var assemblyTreeNode = FindAssemblyTreeNode(entityAssembly.FullAssemblyName);
+							if (assemblyTreeNode != null) {
+								assemblyTreeNode.EnsureLazyChildren();
+								namespaceChildren = assemblyTreeNode.Children;
+							}
+						}
+					}
+				}
 				
 				if (namespaceChildren != null) {
 					var nsTreeNode = namespaceChildren.FirstOrDefault(
