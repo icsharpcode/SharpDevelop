@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		ITypeDefinitionModel definition;
 		string text;
+		bool childrenLoaded;
 		SimpleModelCollection<ITypeDefinitionModel> derivedTypes;
 		
 		public DerivedTypesTreeNode(ITypeDefinitionModel definition)
@@ -30,11 +31,15 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			this.definition.Updated += (sender, e) => UpdateDerivedTypes();
 			this.text = SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.DerivedTypes");
 			derivedTypes = new SimpleModelCollection<ITypeDefinitionModel>();
-			UpdateDerivedTypes();
+			childrenLoaded = false;
 		}
 
 		protected override IModelCollection<object> ModelChildren {
 			get {
+				if (!childrenLoaded) {
+					UpdateDerivedTypes();
+					childrenLoaded = true;
+				}
 				return derivedTypes;
 			}
 		}
@@ -47,7 +52,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public bool HasDerivedTypes()
 		{
-			return derivedTypes.Count > 0;
+			ITypeDefinition currentTypeDef = definition.Resolve();
+			// TODO Searching for derived types every time just to get children count might be too expensive
+			return (currentTypeDef != null) && (FindReferenceService.FindDerivedTypes(currentTypeDef, true).Count > 0);
 		}
 		
 		void UpdateDerivedTypes()
@@ -60,15 +67,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					if (derivedTypeModel != null)
 						derivedTypes.Add(derivedTypeModel);
 				}
-				
-//				foreach (var baseType in currentTypeDef.DirectBaseTypes) {
-//					ITypeDefinition baseTypeDef = baseType.GetDefinition();
-//					if ((baseTypeDef != null) && (baseTypeDef.FullName != "System.Object")) {
-//						ITypeDefinitionModel baseTypeModel = GetTypeDefinitionModel(currentTypeDef, baseTypeDef);
-//						if (baseTypeModel != null)
-//							derivedTypes.Add(baseTypeModel);
-//					}
-//				}
 			}
 		}
 		

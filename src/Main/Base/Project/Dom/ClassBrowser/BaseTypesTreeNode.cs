@@ -18,6 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		ITypeDefinitionModel definition;
 		string text;
+		bool childrenLoaded;
 		SimpleModelCollection<ITypeDefinitionModel> baseTypes;
 		
 		public BaseTypesTreeNode(ITypeDefinitionModel definition)
@@ -28,11 +29,15 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			this.definition.Updated += (sender, e) => UpdateBaseTypes();
 			this.text = SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.BaseTypes");
 			baseTypes = new SimpleModelCollection<ITypeDefinitionModel>();
-			UpdateBaseTypes();
+			childrenLoaded = false;
 		}
 
 		protected override IModelCollection<object> ModelChildren {
 			get {
+				if (!childrenLoaded) {
+					UpdateBaseTypes();
+					childrenLoaded = true;
+				}
 				return baseTypes;
 			}
 		}
@@ -45,7 +50,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public bool HasBaseTypes()
 		{
-			return baseTypes.Count > 0;
+			ITypeDefinition currentTypeDef = definition.Resolve();
+			return (currentTypeDef != null) && currentTypeDef.DirectBaseTypes.Any();
 		}
 		
 		void UpdateBaseTypes()
@@ -55,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (currentTypeDef != null) {
 				foreach (var baseType in currentTypeDef.DirectBaseTypes) {
 					ITypeDefinition baseTypeDef = baseType.GetDefinition();
-					if ((baseTypeDef != null) && (baseTypeDef.FullName != "System.Object")) {
+					if ((baseTypeDef != null)) {
 						ITypeDefinitionModel baseTypeModel = GetTypeDefinitionModel(currentTypeDef, baseTypeDef);
 						if (baseTypeModel != null)
 							baseTypes.Add(baseTypeModel);
