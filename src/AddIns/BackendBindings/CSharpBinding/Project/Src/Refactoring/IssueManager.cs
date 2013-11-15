@@ -280,6 +280,9 @@ namespace CSharpBinding.Refactoring
 					}, cancellationToken);
 			} catch (TaskCanceledException) {
 			} catch (OperationCanceledException) {
+			} catch (Exception ex) {
+				SD.Log.WarnFormatted("IssueManager crashed: {0}", ex);
+				SD.AnalyticsMonitor.TrackException(ex);
 			}
 			if (!cancellationToken.IsCancellationRequested) {
 				analyzedVersion = textSource.Version;
