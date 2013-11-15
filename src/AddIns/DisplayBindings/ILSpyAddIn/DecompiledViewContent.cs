@@ -45,6 +45,7 @@ namespace ICSharpCode.ILSpyAddIn
 			this.DecompiledTypeName = typeName;
 			
 			this.Services = codeEditor.GetRequiredService<IServiceContainer>();
+			codeEditor.PrimaryTextEditor.TextArea.LeftMargins.RemoveAll(m => m is ChangeMarkerMargin);
 			this.jumpToEntityIdStringWhenDecompilationFinished = entityTag;
 			this.TitleName = "[" + ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeName.Type.Name) + "]";
 			
