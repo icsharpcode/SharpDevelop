@@ -47,7 +47,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		readonly FrameworkElement adornedControl;
 
 		/// <summary> This grid contains the handle line and the endarrow.</summary>
-		Grid lineArrow;
+//		Grid lineArrow;
 
 		private DependencyPropertyDescriptor leftDescriptor;
 		private DependencyPropertyDescriptor rightDescriptor;
@@ -114,7 +114,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		}
 		
 		/// <summary>
-		/// Binds the <see cref="HandleLength"/> to the margin and place the handles.
+		/// Binds the <see cref="MarginHandle.HandleLength"/> to the margin and place the handles.
 		/// </summary>
 		void BindAndPlaceHandle()
 		{

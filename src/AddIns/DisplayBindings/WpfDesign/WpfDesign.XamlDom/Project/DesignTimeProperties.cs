@@ -1,7 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using System.Security.Cryptography;
 using System.Windows;
 
 namespace ICSharpCode.WpfDesign.XamlDom
@@ -9,12 +8,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// <summary>
 	/// Helper Class for the Design Time Properties used by VS and Blend
 	/// </summary>
-	public class DesignTimeProperties : FrameworkElement
+	public static class DesignTimeProperties
 	{
 		#region IsHidden
 		
 		/// <summary>
-		/// Getter for the <see cref="IsHiddenProperty"/>
+		/// Getter for <see cref="IsHiddenProperty"/>
 		/// </summary>
 		public static bool GetIsHidden(DependencyObject obj)
 		{
@@ -22,7 +21,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		/// <summary>
-		/// Setter for the <see cref="IsHiddenProperty"/>
+		/// Setter for <see cref="IsHiddenProperty"/>
 		/// </summary>
 		public static void SetIsHidden(DependencyObject obj, bool value)
 		{
@@ -40,7 +39,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		#region IsLocked
 
 		/// <summary>
-		/// Getter for the <see cref="IsLockedProperty"/>
+		/// Getter for <see cref="IsLockedProperty"/>
 		/// </summary>
 		public static bool GetIsLocked(DependencyObject obj)
 		{
@@ -48,7 +47,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		/// <summary>
-		/// Setter for the <see cref="IsLockedProperty"/>
+		/// Setter for <see cref="IsLockedProperty"/>
 		/// </summary>
 		public static void SetIsLocked(DependencyObject obj, bool value)
 		{
@@ -65,7 +64,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		#region DataContext
 		/// <summary>
-		/// Getter for the <see cref="DataContextProperty"/>
+		/// Getter for <see cref="DataContextProperty"/>
 		/// </summary>
 		public static object GetDataContext(DependencyObject obj)
 		{
@@ -73,7 +72,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		/// <summary>
-		/// Setter for the <see cref="DataContextProperty"/>
+		/// Setter for <see cref="DataContextProperty"/>
 		/// </summary>
 		public static void SetDataContext(DependencyObject obj, bool value)
 		{
@@ -90,7 +89,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		#region DesignSource
 		/// <summary>
-		/// Getter for the <see cref="DesignSourceProperty"/>
+		/// Getter for <see cref="DesignSourceProperty"/>
 		/// </summary>
 		public static object GetDesignSource(DependencyObject obj)
 		{
@@ -98,7 +97,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
-		/// Setter for the <see cref="DesignSourceProperty"/>
+		/// Setter for <see cref="DesignSourceProperty"/>
 		/// </summary>
 		public static void SetDesignSource(DependencyObject obj, bool value)
 		{
@@ -115,7 +114,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		#region DesignWidth
 		/// <summary>
-		/// Getter for the <see cref="DesignWidthProperty"/>
+		/// Getter for <see cref="DesignWidthProperty"/>
 		/// </summary>
 		public static double GetDesignWidth(DependencyObject obj)
 		{
@@ -123,7 +122,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		/// <summary>
-		/// Setter for the <see cref="DesignWidthProperty"/>
+		/// Setter for <see cref="DesignWidthProperty"/>
 		/// </summary>
 		public static void SetDesignWidth(DependencyObject obj, double value)
 		{
@@ -135,12 +134,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static readonly DependencyProperty DesignWidthProperty =
 			DependencyProperty.RegisterAttached("DesignWidth", typeof(double), typeof(DesignTimeProperties));
-
 		#endregion
 
 		#region DesignHeight
 		/// <summary>
-		/// Getter for the <see cref="DesignHeightProperty"/>
+		/// Getter for <see cref="DesignHeightProperty"/>
 		/// </summary>
 		public static double GetDesignHeight(DependencyObject obj)
 		{
@@ -148,7 +146,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		/// <summary>
-		/// Setter for the <see cref="DesignHeightProperty"/>
+		/// Setter for <see cref="DesignHeightProperty"/>
 		/// </summary>
 		public static void SetDesignHeight(DependencyObject obj, double value)
 		{
@@ -160,23 +158,30 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static readonly DependencyProperty DesignHeightProperty =
 			DependencyProperty.RegisterAttached("DesignHeight", typeof(double), typeof(DesignTimeProperties));
-		
 		#endregion
 		
 		#region LayoutRounding
+		/// <summary>
+		/// Getter for <see cref="LayoutRoundingProperty"/>
+		/// </summary>
 		public static bool GetLayoutRounding(DependencyObject obj)
 		{
-			return (bool)obj.GetValue(DesignLayoutRounding);
+			return (bool)obj.GetValue(LayoutRoundingProperty);
 		}
 
+		/// <summary>
+		/// Setter for <see cref="LayoutRoundingProperty"/>
+		/// </summary>
 		public static void SetLayoutRounding(DependencyObject obj, bool value)
 		{
-			obj.SetValue(DesignLayoutRounding, value);
+			obj.SetValue(LayoutRoundingProperty, value);
 		}
 
-		public static readonly DependencyProperty DesignLayoutRounding =
+		/// <summary>
+		/// Design-time layout rounding
+		/// </summary>
+		public static readonly DependencyProperty LayoutRoundingProperty =
 			DependencyProperty.RegisterAttached("LayoutRounding", typeof(bool), typeof(DesignTimeProperties));
-		
 		#endregion
 	}
 }

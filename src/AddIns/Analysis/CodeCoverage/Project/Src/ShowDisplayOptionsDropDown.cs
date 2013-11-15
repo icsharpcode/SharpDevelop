@@ -10,7 +10,7 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class ShowDisplayOptionsDropDown : AbstractMenuCommand
 	{
-		ToolBarDropDownButton dropDownButton;
+//		ToolBarDropDownButton dropDownButton;
 
 		public override void Run()
 		{

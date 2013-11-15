@@ -17,13 +17,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 {
 	public class RotateThumb : ResizeThumb
 	{
-		private double initialAngle;
-		private RotateTransform rotateTransform;
-		private Vector startVector;
-		private Point centerPoint;
-		private Control designerItem;
-		private Panel canvas;
-		private AdornerPanel parent;
+//		private double initialAngle;
+//		private RotateTransform rotateTransform;
+//		private Vector startVector;
+//		private Point centerPoint;
+//		private Control designerItem;
+//		private Panel canvas;
+//		private AdornerPanel parent;
 
 		static RotateThumb()
 		{

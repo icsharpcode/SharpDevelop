@@ -24,9 +24,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		RenderTransformOriginThumb renderTransformOriginThumb;
 		/// <summary>An array containing this.ExtendedItem as only element</summary>
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
-		IPlacementBehavior resizeBehavior;
-		PlacementOperation operation;
-		ChangeGroup changeGroup;
+//		IPlacementBehavior resizeBehavior;
+//		PlacementOperation operation;
+//		ChangeGroup changeGroup;
 		
 		public RenderTransformOriginExtension()
 		{
@@ -52,18 +52,19 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		void renderTransformOriginThumb_DragCompleted(object sender, DragCompletedEventArgs e)
 		{
-			this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(Math.Round(renderTransformOrigin.X, 4), Math.Round(renderTransformOrigin.Y, 4)));
+			ExtendedItem.Properties.GetProperty(UIElement.RenderTransformOriginProperty).SetValue(new Point(Math.Round(renderTransformOrigin.X, 4), Math.Round(renderTransformOrigin.Y, 4)));
 		}
 		
 		void renderTransformOriginThumb_DragDelta(object sender, DragDeltaEventArgs e)
 		{
 			var p = AdornerPanel.GetPlacement(renderTransformOriginThumb) as RelativePlacement;
+			if (p == null) return;
 			var pointAbs = adornerPanel.RelativeToAbsolute(new Vector(p.XRelativeToContentWidth, p.YRelativeToContentHeight));
 			var pointAbsNew = pointAbs + new Vector(e.HorizontalChange, e.VerticalChange);
 			var pRel = adornerPanel.AbsoluteToRelative(pointAbsNew);
 			renderTransformOrigin = new Point(pRel.X, pRel.Y);
 			
-			this.ExtendedItem.View.SetValue(FrameworkElement.RenderTransformOriginProperty, renderTransformOrigin);
+			this.ExtendedItem.View.SetValue(UIElement.RenderTransformOriginProperty, renderTransformOrigin);
 			//this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(Math.Round(pRel.X, 4), Math.Round(pRel.Y, 4)));
 		}
 		
