@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Globalization;
 
 namespace ICSharpCode.Reporting.Expressions
 {
@@ -27,13 +28,13 @@ namespace ICSharpCode.Reporting.Expressions
 
 			try
 			{
-				right = Convert.ChangeType(right,left.GetType());
+				right = Convert.ChangeType(right,left.GetType(),CultureInfo.CurrentCulture);
 			}
 			catch
 			{
 				try
 				{
-					left = Convert.ChangeType(left, right.GetType());
+					left = Convert.ChangeType(left, right.GetType(),CultureInfo.CurrentCulture);
 				}
 				catch
 				{
@@ -92,7 +93,7 @@ namespace ICSharpCode.Reporting.Expressions
 				return value;
 
 			try {
-				return Convert.ChangeType(value, targetType);
+				return Convert.ChangeType(value, targetType,CultureInfo.CurrentCulture);
 			} catch (Exception e) {
 				
 				Console.WriteLine("TypeNormalizer {0} - {1}",value.ToString(),e.Message);

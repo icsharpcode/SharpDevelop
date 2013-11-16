@@ -22,7 +22,7 @@ namespace ICSharpCode.Reporting.Expressions
 		
 		public static bool CanEvaluate (string expression)
 		{
-			if ((!String.IsNullOrEmpty(expression)) && (expression.StartsWith("=",StringComparison.InvariantCultureIgnoreCase))) {
+			if ((!String.IsNullOrEmpty(expression)) && (expression.StartsWith("=",StringComparison.OrdinalIgnoreCase))) {
 				return true;
 			}
 			return false;

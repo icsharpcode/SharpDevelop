@@ -51,7 +51,7 @@ namespace ICSharpCode.Reporting.Globals
 					retValue = FormatDate(valueToFormat,format);
 					break;
 				case TypeCode.Boolean:
-					retValue = FormatBool (valueToFormat,format);
+					retValue = FormatBool (valueToFormat);
 					break;
 				case TypeCode.Decimal:
 					retValue = FormatDecimal (valueToFormat,format);
@@ -74,7 +74,7 @@ namespace ICSharpCode.Reporting.Globals
 		}
 		
 		
-		private static string FormatBool (string toFormat, string format)
+		private static string FormatBool (string toFormat)
 		{
 			if (CheckValue(toFormat)) {
 				bool b = bool.Parse (toFormat);
@@ -142,7 +142,7 @@ namespace ICSharpCode.Reporting.Globals
 			                                    CultureInfo.CurrentCulture,
 			                                    out time);
 			if (valid) {
-				return time.ToString("g");
+				return time.ToString("g",DateTimeFormatInfo.CurrentInfo);
 			}
 			return toFormat;
 		}

@@ -29,7 +29,7 @@ namespace ICSharpCode.Reporting
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,StringComparison.OrdinalIgnoreCase));
 		}
 	
 		
@@ -54,7 +54,7 @@ namespace ICSharpCode.Reporting
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,StringComparison.OrdinalIgnoreCase));
 		}
 	}
 	
@@ -71,7 +71,7 @@ namespace ICSharpCode.Reporting
 			if (String.IsNullOrEmpty(parameterName)) {
 				throw new ArgumentNullException("parameterName");
 			}
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true,CultureInfo.InvariantCulture));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,StringComparison.OrdinalIgnoreCase));
 		}
 		
 		

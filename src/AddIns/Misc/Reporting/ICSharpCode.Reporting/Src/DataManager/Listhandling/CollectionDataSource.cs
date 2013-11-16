@@ -257,14 +257,14 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			throw new NotImplementedException();
 		}
 		
-		DataCollection<object> CreateBaseList(IEnumerable source, Type elementType)
+		static DataCollection<object> CreateBaseList(IEnumerable source, Type elementType)
 		{
 			var list = new DataCollection<object>(elementType);
 			list.AddRange(source);
 			return list;
 		}
 		
-		
+		/*
 		PropertyDescriptorCollection GetItemProperties(PropertyDescriptor[] listAccessors){
 			if (listAccessors != null && listAccessors.Length > 0){
 				var t = this.elementType;
@@ -277,5 +277,6 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 			return ExtendedTypeDescriptor.GetProperties(elementType);
 		}
+		*/
 	}
 }
