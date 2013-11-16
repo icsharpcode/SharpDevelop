@@ -119,15 +119,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				
 				// Search in all children of this node
-				child.EnsureLazyChildren();
-				if (child is ModelCollectionTreeNode) {
-					foundNode = ((ModelCollectionTreeNode) child).FindChildNodeRecursively(predicate);
+				var modelNode = child as ModelCollectionTreeNode;
+				if (modelNode != null && modelNode.CanFindChildNodeRecursively) {
+					child.EnsureLazyChildren();
+					foundNode = modelNode.FindChildNodeRecursively(predicate);
 					if (foundNode != null)
 						break;
 				}
 			}
 			
 			return foundNode;
+		}
+		
+		public virtual bool CanFindChildNodeRecursively {
+			get { return true; }
 		}
 		#endregion
 	}

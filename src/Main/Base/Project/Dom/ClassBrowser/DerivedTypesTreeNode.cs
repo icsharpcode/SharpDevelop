@@ -50,6 +50,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			return null;
 		}
 		
+		public override bool CanFindChildNodeRecursively {
+			get { return false; }
+		}
+		
 		public bool HasDerivedTypes()
 		{
 			ITypeDefinition currentTypeDef = definition.Resolve();
