@@ -57,7 +57,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 			
 			helper = new AggregateFuctionHelper();
 			aggregateCollection = helper.AggregateCollection;
-			dataSource = new CollectionDataSource(aggregateCollection,typeof(Aggregate),new ReportSettings());
+			dataSource = new CollectionDataSource(aggregateCollection,new ReportSettings());
 			dataSource.Bind();
 		}
 		

@@ -24,12 +24,20 @@ namespace ICSharpCode.Reporting
 	public class ReportingFactory
 	{
 		
+		public IReportCreator ReportCreator (Stream stream,IEnumerable list)
+		{
+			ReportModel = LoadReportModel (stream);
+			IReportCreator builder = null;
+			builder = new DataPageBuilder(ReportModel,list );
+			return builder;
+		}
 		
+		[Obsolete("Use public IReportCreator ReportCreator (Stream stream,IEnumerable list")]
 		public IReportCreator ReportCreator (Stream stream,Type listType,IEnumerable list)
 		{
 			ReportModel = LoadReportModel (stream);
 			IReportCreator builder = null;
-			builder = new DataPageBuilder(ReportModel,listType,list );
+			builder = new DataPageBuilder(ReportModel,list );
 			return builder;
 		}
 		

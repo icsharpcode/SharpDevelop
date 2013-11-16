@@ -17,14 +17,14 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		
 		[Test]
 		public void CollectionCountIsEqualToListCount() {
-			var collectionSource = new CollectionDataSource	(list,typeof(Contributor),new ReportSettings());
+			var collectionSource = new CollectionDataSource	(list,new ReportSettings());
 			Assert.That(collectionSource.Count,Is.EqualTo(list.Count));
 		}
 		
 		
 		[Test]
 		public void AvailableFieldsEqualContibutorsPropertyCount() {
-			var collectionSource = new CollectionDataSource	(list,typeof(Contributor),new ReportSettings());
+			var collectionSource = new CollectionDataSource	(list,new ReportSettings());
 			Assert.That(collectionSource.AvailableFields.Count,Is.EqualTo(6));
 		}
 		
@@ -34,7 +34,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		public void GroupbyOneColumn () {
 			var rs = new ReportSettings();
 			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
-			var collectionSource = new CollectionDataSource	(list,typeof(Contributor),rs);
+			var collectionSource = new CollectionDataSource	(list,rs);
 			collectionSource.Bind();
 		}
 		
@@ -50,7 +50,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 					ColumnName = "Firstname"
 				}
 			};
-			var collectionSource = new CollectionDataSource	(list,typeof(Contributor),new ReportSettings());
+			var collectionSource = new CollectionDataSource	(list,new ReportSettings());
 			collectionSource.Bind();
 			collectionSource.Fill(ric);
 			foreach (BaseDataItem element in ric) {
@@ -75,7 +75,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			
 			var rs = new ReportSettings();
 			rs.SortColumnsCollection.Add(new SortColumn("Lastname",ListSortDirection.Ascending));
-			var collectionSource = new CollectionDataSource	(list,typeof(Contributor),rs);
+			var collectionSource = new CollectionDataSource	(list,rs);
 			collectionSource.Bind();
 			string compare = String.Empty;
 			int i = 0;
@@ -117,7 +117,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
 			rs.GroupColumnCollection.Add( new GroupColumn("RandomInt",1,ListSortDirection.Ascending));
 			
-			var collectionSource = new CollectionDataSource (list,typeof(Contributor),rs);
+			var collectionSource = new CollectionDataSource (list,rs);
 			collectionSource.Bind();
 			int i = 0;
 			do {

@@ -19,35 +19,16 @@ namespace ICSharpCode.Reporting.Interfaces.Data
 	/// <summary>
 	/// Description of IDataViewHandling.
 	/// </summary>
-	public interface IDataViewHandling:IEnumerator{
-		
-		void Sort ();
-		
-		void Group();
+	public interface IDataSource{
 		
 		void Bind();
 		
-//		void Fill (int position,ReportItemCollection collection);
-		
-		//rausnehmen
-//		void Fill (List<IDataItem> items);
 		void Fill(List<IPrintableObject> collection);
 		
-//		void Fill(ReportItemCollection collection);
-		
-		IndexList IndexList {get;}
-		
-//        object CurrentFromPosition(int pos);
-        
-//		CurrentItemsCollection FillDataRow();
-//        CurrentItemsCollection FillDataRow(int pos);
-		//
 		Collection<AbstractColumn> AvailableFields {get;}
-	
+		IList <object> CurrentList {get;}
 		int Count {get;}
-	
- 		int CurrentPosition {get;set;}
- 		
-// 		IExpressionEvaluatorFacade ExpressionEvaluator {get;}
+		
+		object Current {get;}
 	}
 }

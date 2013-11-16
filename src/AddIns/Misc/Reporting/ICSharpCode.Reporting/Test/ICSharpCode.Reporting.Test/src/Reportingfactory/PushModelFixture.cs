@@ -32,7 +32,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		
 		[Test]
 		public void DataSourceIsSet() {
-			var dataPageBuilder = new DataPageBuilder (new ReportModel(),typeof(string),new System.Collections.Generic.List<string>());
+			var dataPageBuilder = new DataPageBuilder (new ReportModel(),new System.Collections.Generic.List<string>());
 			Assert.That(dataPageBuilder.List,Is.Not.Null);
 		}
 		
@@ -41,7 +41,6 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		public void CanInitDataPageBuilder()
 		{
 			var dpb = new DataPageBuilder (new ReportModel(),
-			                               typeof(string),
 			                               new System.Collections.Generic.List<string>());
 			Assert.That(dpb,Is.Not.Null);
 		}
@@ -158,7 +157,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 
 			var reportingFactory  = new ReportingFactory();
 			var model =  reportingFactory.LoadReportModel (stream);
-			reportCreator = new DataPageBuilder(model,typeof(string),new List<string>());
+			reportCreator = new DataPageBuilder(model,new List<string>());
 			reportCreator.BuildExportList();
 			Assert.That(reportCreator.Pages[0].ExportedItems.Count,Is.EqualTo(4));
 		}
@@ -175,7 +174,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 
 			var reportingFactory  = new ReportingFactory();
 			var model =  reportingFactory.LoadReportModel (stream);
-			reportCreator = new DataPageBuilder(model,typeof(Contributor),list);
+			reportCreator = new DataPageBuilder(model,list);
 		}	
 	}
 }

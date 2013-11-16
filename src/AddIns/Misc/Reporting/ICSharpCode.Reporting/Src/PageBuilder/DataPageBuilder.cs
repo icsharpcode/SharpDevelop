@@ -27,10 +27,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 	public class DataPageBuilder:BasePageBuilder
 	{
 		
-		public DataPageBuilder(IReportModel reportModel, Type elementType,IEnumerable list):base(reportModel)
+		public DataPageBuilder(IReportModel reportModel,IEnumerable list):base(reportModel)
 		{
 			List = list;
-			ElementType = elementType;
 		}
 		
 		
@@ -101,13 +100,15 @@ namespace ICSharpCode.Reporting.PageBuilder
 			}
 		}
 
+		
 		void CreateDataSource()
 		{
-			DataSource = new CollectionDataSource(List, ElementType, ReportModel.ReportSettings);
+			DataSource = new CollectionDataSource(List, ReportModel.ReportSettings);
 			if (DataSourceContainsData()) {
 				DataSource.Bind();
 			}
 		}
+		
 		
 		bool DataSourceContainsData () {
 			if (DataSource.Count > 0) {
@@ -154,6 +155,5 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		protected IReportContainer CurrentSection { get; private set; }
 		
-		protected Type ElementType {get;private set;}
 	}
 }

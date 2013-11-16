@@ -132,7 +132,7 @@
     <Compile Include="Src\Globals\StandardFormatter.cs" />
     <Compile Include="Src\Globals\StringHelper.cs" />
     <Compile Include="Src\Globals\TypeHelper.cs" />
-    <Compile Include="Src\Interfaces\Data\IDataViewHandling.cs" />
+    <Compile Include="Src\Interfaces\Data\IDataSource.cs" />
     <Compile Include="Src\Interfaces\Export\IExportColumn.cs" />
     <Compile Include="Src\Interfaces\Export\IExportContainer.cs" />
     <Compile Include="Src\Interfaces\Export\IPage.cs" />

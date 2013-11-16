@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.DataSource;
+using ICSharpCode.Reporting.Interfaces.Data;
 using Irony.Interpreter;
 using Irony.Interpreter.Ast;
 
@@ -14,8 +15,8 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 	/// </summary>
 	public static class ImportExtensions
 	{
-		public static CollectionDataSource GetDataSource (this ScriptThread thread){
-			return (CollectionDataSource)thread.App.Globals["DataSource"];
+		public static IDataSource GetDataSource (this ScriptThread thread){
+			return (IDataSource)thread.App.Globals["DataSource"];
 		}
 	}
 	
