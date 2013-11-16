@@ -14,6 +14,7 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -23,6 +24,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 	{
 		readonly IProject project;
 		readonly IParserService parserService = SD.ParserService;
+		readonly IUpdateableAssemblyModel assemblyModel;
 		
 		/// <summary>
 		/// Lock for accessing mutable fields of this class.
@@ -54,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				throw new ArgumentNullException("project");
 			this.project = project;
 			this.projectContent = initialProjectContent.SetAssemblyName(project.AssemblyName).SetLocation(project.OutputAssemblyFullPath);
-			
+			this.assemblyModel = (IUpdateableAssemblyModel)project.AssemblyModel;
 			this.cacheFileName = GetCacheFileName(project.FileName);
 			
 			SD.ProjectService.ProjectItemAdded += OnProjectItemAdded;
@@ -242,6 +244,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 						projectContent = projectContent.RemoveFiles(oldFile.FileName);
 					serializedProjectContentIsUpToDate = false;
 					SD.ParserService.InvalidateCurrentSolutionSnapshot();
+					SD.MainThread.InvokeAsyncAndForget(delegate { assemblyModel.Update(oldFile, newFile); });
 				}
 			}
 		}
@@ -253,6 +256,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 					if (projectContent.FullAssemblyName == newAssemblyName)
 						return;
 					projectContent = projectContent.SetAssemblyName(newAssemblyName);
+					assemblyModel.AssemblyName = projectContent.AssemblyName;
+					assemblyModel.FullAssemblyName = projectContent.FullAssemblyName;
 					SD.ParserService.InvalidateCurrentSolutionSnapshot();
 				}
 			}
@@ -361,6 +366,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 							if (IsSerializable(unresolvedFile))
 								fileCountParsedAndSerializable++;
 						}
+						SD.MainThread.InvokeAsyncAndForget(delegate { assemblyModel.Update(null, unresolvedFile); });
 						progressMonitor.Progress += fileCountInverse;
 					}
 				});
@@ -452,6 +458,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 					projectContent = projectContent.RemoveAssemblyReferences(this.references).AddAssemblyReferences(newReferences);
 					this.references = newReferences.ToArray();
 					SD.ParserService.InvalidateCurrentSolutionSnapshot();
+					assemblyModel.References = projectContent.AssemblyReferences
+						.Select(ResolveReferenceForAssemblyModel).Where(r => r != null).ToList();
 				}
 			}
 		}
@@ -478,8 +486,26 @@ namespace ICSharpCode.SharpDevelop.Parser
 					this.references[index] = e.NewAssembly;
 					projectContent = projectContent.RemoveAssemblyReferences(e.OldAssembly).AddAssemblyReferences(e.NewAssembly);
 					SD.ParserService.InvalidateCurrentSolutionSnapshot();
+					assemblyModel.References = projectContent.AssemblyReferences
+						.Select(ResolveReferenceForAssemblyModel).Where(r => r != null).ToList();
 				}
 			}
+		}
+		
+		DomAssemblyName ResolveReferenceForAssemblyModel(IAssemblyReference reference)
+		{
+			if (reference is IUnresolvedAssembly)
+				return new DomAssemblyName(((IUnresolvedAssembly)reference).FullAssemblyName);
+			if (reference is ProjectReferenceProjectItem) {
+				var project = ((ProjectReferenceProjectItem)reference).ReferencedProject;
+				if (project == null) return null;
+				if (project.ProjectContent == null) {
+					SD.Log.InfoFormatted("ResolveReference: ProjectContent for project '{0}', language {1} was not found. Cannot resolve reference!", project.Name, project.Language);
+					return null;
+				}
+				return new DomAssemblyName(project.ProjectContent.FullAssemblyName);
+			}
+			return null;
 		}
 		#endregion
 		
@@ -518,5 +544,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		#endregion
+		
+		public IAssemblyModel AssembyModel {
+			get { return assemblyModel; }
+		}
 	}
 }
