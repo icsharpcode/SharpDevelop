@@ -37,6 +37,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 			public readonly DateTime AssemblyFileLastWriteTime;
 			public readonly bool HasInternalMembers;
 			public readonly IReadOnlyList<DomAssemblyName> References;
+			[NonSerialized]
+			public IAssemblyModel Model;
 			
 			public LoadedAssembly(IUnresolvedAssembly projectContent, DateTime assemblyFileLastWriteTime, bool hasInternalMembers, IEnumerable<DomAssemblyName> references)
 			{
@@ -330,27 +332,31 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public IAssemblyModel GetAssemblyModel(FileName fileName, bool includeInternalMembers = false)
 		{
 			LoadedAssembly assembly = GetLoadedAssembly(fileName, includeInternalMembers);
-			// Get references
-			DefaultAssemblySearcher assemblySearcher = new DefaultAssemblySearcher(fileName);
-			var referencedAssemblies = new List<IUnresolvedAssembly>();
-			foreach (var referencedAssemblyName in assembly.References) {
-				var assemblyFileName = assemblySearcher.FindAssembly(referencedAssemblyName);
-				if (assemblyFileName != null) {
-					var loadedRefAssembly = GetLoadedAssembly(assemblyFileName, includeInternalMembers);
-					if (loadedRefAssembly != null) {
-						referencedAssemblies.Add(loadedRefAssembly.ProjectContent);
+			if (assembly.Model == null) {
+				// Get references
+				DefaultAssemblySearcher assemblySearcher = new DefaultAssemblySearcher(fileName);
+				var referencedAssemblies = new List<IUnresolvedAssembly>();
+				foreach (var referencedAssemblyName in assembly.References) {
+					var assemblyFileName = assemblySearcher.FindAssembly(referencedAssemblyName);
+					if (assemblyFileName != null) {
+						var loadedRefAssembly = GetLoadedAssembly(assemblyFileName, includeInternalMembers);
+						if (loadedRefAssembly != null) {
+							referencedAssemblies.Add(loadedRefAssembly.ProjectContent);
+						}
 					}
 				}
+				
+				IEntityModelContext context = new AssemblyEntityModelContext(assembly.ProjectContent, referencedAssemblies.ToArray());
+				IUpdateableAssemblyModel model = SD.GetService<IModelFactory>().CreateAssemblyModel(context);
+				
+				model.Update(EmptyList<IUnresolvedTypeDefinition>.Instance, assembly.ProjectContent.TopLevelTypeDefinitions.ToList());
+				model.AssemblyName = assembly.ProjectContent.AssemblyName;
+				model.FullAssemblyName = assembly.ProjectContent.FullAssemblyName;
+				model.References = assembly.References.ToList();
+				assembly.Model = model;
 			}
-			IEntityModelContext context = new AssemblyEntityModelContext(assembly.ProjectContent, referencedAssemblies.ToArray());
-			IUpdateableAssemblyModel model = SD.GetService<IModelFactory>().CreateAssemblyModel(context);
 			
-			model.Update(EmptyList<IUnresolvedTypeDefinition>.Instance, assembly.ProjectContent.TopLevelTypeDefinitions.ToList());
-			model.AssemblyName = assembly.ProjectContent.AssemblyName;
-			model.FullAssemblyName = assembly.ProjectContent.FullAssemblyName;
-			model.References = assembly.References.ToList();
-			
-			return model;
+			return assembly.Model;
 		}
 		
 		public IAssemblyModel GetAssemblyModelSafe(FileName fileName, bool includeInternalMembers = false)
