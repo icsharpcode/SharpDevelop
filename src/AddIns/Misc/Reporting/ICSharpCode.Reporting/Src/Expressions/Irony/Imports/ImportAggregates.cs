@@ -1,17 +1,11 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.DataSource;
 using Irony.Interpreter;
 using Irony.Interpreter.Ast;
-
 
 namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 {
@@ -32,25 +26,18 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 			var fieldName = childNodes[0].Evaluate(thread).ToString();
 			
 			var dataSource = thread.GetDataSource();
-//			var curpos = dataSource.CurrentPosition;
-			
-//			dataSource.CurrentPosition = 0;
-			
-			if (FieldExist(dataSource.Current,fieldName)) {
-				do {
-					var current = dataSource.Current;
-					var property = current.ParsePropertyPath(fieldName);
-					var val = property.Evaluate(current);
-					var nextVal = TypeNormalizer.EnsureType<double>(val);
-					sum = sum + nextVal;
-				}
-				while (dataSource.MoveNext());
-			}
 
-//			dataSource.CurrentPosition = curpos;
+			if (FieldExist(dataSource.CurrentList[0],fieldName)) {
+				
+				sum = dataSource.CurrentList.Sum(o => {
+				                                 	var pp = o.ParsePropertyPath(fieldName);
+				                                 	var value = pp.Evaluate(o);
+				                                 	return TypeNormalizer.EnsureType<double>(value);
+				                                 });
+			}
 			return sum;
 		}
-		
+	
 		
 		static bool  FieldExist (object current,string fieldName) {
 			var property1 = current.ParsePropertyPath(fieldName);

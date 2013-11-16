@@ -39,8 +39,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CreateDataSource();
 			base.BuildExportList();
 			BuildDetail();
-			base.BuildReportFooter();
-			base.AddPage(CurrentPage);
+			BuildReportFooter();
+			AddPage(CurrentPage);
 			UpdatePageInfo();
 			RunExpressions(ReportModel.ReportSettings,DataSource);
 			

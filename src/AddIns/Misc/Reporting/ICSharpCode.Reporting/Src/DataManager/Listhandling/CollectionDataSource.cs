@@ -45,6 +45,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				throw new ArgumentNullException("reportSettings");
 			
 			baseList = CreateBaseList(list, elementType);
+			//test
+			CurrentList = baseList;
 			
 			this.elementType = elementType;
 			this.reportSettings = reportSettings;
@@ -71,7 +73,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				return availableFields;
 			}
 		}
-		
+		//test
+		public IList <object> CurrentList {get;private set;}
 		
 		public int Count {
 			get {
@@ -88,8 +91,6 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		public void Sort()
 		{
-			
-//			if ((reportSettings.SortColumnsCollection != null)) {
 			if (reportSettings.SortColumnsCollection.Count > 0) {
 				var sorted = SortInternal();
 				orderGroup = OrderGroup.Sorted;
@@ -106,9 +107,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				CurrentPosition = baseList.IndexOf(Current);
 				Console.WriteLine("asis CurrentPosition {0}",CurrentPosition);
 			}
-//			}
-			
 		}
+		
 		
 		IEnumerable<object> SortInternal (){
 			IEnumerable<object> sortedList = null;
