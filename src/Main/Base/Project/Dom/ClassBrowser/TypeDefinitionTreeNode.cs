@@ -71,20 +71,22 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			UpdateBaseTypesNode();
 		}
 		
+		static readonly FullTypeName SystemObjectName = new FullTypeName("System.Object");
+		
 		void UpdateBaseTypesNode()
 		{
 			this.Children.RemoveAll(n => n is BaseTypesTreeNode);
-			var baseTypesTreeNode = new BaseTypesTreeNode(definition);
-			if (baseTypesTreeNode.HasBaseTypes())
-				Children.Insert(0, baseTypesTreeNode);
+			if (definition.FullTypeName != SystemObjectName) {
+				Children.Insert(0, new BaseTypesTreeNode(definition));
+			}
 		}
 		
 		void UpdateDerivedTypesNode()
 		{
 			this.Children.RemoveAll(n => n is DerivedTypesTreeNode);
-			var derivedTypesTreeNode = new DerivedTypesTreeNode(definition);
-			if (derivedTypesTreeNode.HasDerivedTypes())
-				Children.Insert(0, derivedTypesTreeNode);
+			if (!definition.IsSealed) {
+				Children.Insert(0, new DerivedTypesTreeNode(definition));
+			}
 		}
 		
 		public override void ActivateItem(System.Windows.RoutedEventArgs e)
