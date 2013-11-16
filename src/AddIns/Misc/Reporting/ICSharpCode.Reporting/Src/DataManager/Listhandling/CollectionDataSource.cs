@@ -115,8 +115,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			var sortProperty = listProperties.Find(reportSettings.SortColumnsCollection[0].ColumnName,true);
 			if(reportSettings.SortColumnsCollection.Count == 1) {
 				sortedList = baseList.OrderBy(o => o.GetType().GetProperty(sortProperty.Name).GetValue(o, null) );
+				
 			}
-			
 			return sortedList;
 		}
 		

@@ -17,7 +17,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		
 		[Test]
 		public void CollectionCountIsEqualToListCount() {
-			var collectionSource = new CollectionSource	(list,typeof(Contributor),new ReportSettings());
+			var collectionSource = new CollectionDataSource	(list,typeof(Contributor),new ReportSettings());
 			Assert.That(collectionSource.Count,Is.EqualTo(list.Count));
 		}
 		
@@ -36,6 +36,26 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
 			var collectionSource = new CollectionDataSource	(list,typeof(Contributor),rs);
 			collectionSource.Bind();
+		}
+		
+		
+		[Test]
+		public void TypeOfReportItemIsString () {
+			var ric = new System.Collections.Generic.List<IPrintableObject>(){
+				new BaseDataItem(){
+					ColumnName = "Lastname"
+						
+				},
+				new BaseDataItem(){
+					ColumnName = "Firstname"
+				}
+			};
+			var collectionSource = new CollectionDataSource	(list,typeof(Contributor),new ReportSettings());
+			collectionSource.Bind();
+			collectionSource.Fill(ric);
+			foreach (BaseDataItem element in ric) {
+				Assert.That(element.DataType,Is.EqualTo("System.String"));
+			}
 		}
 		
 		

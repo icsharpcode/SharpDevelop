@@ -87,7 +87,6 @@
     <Compile Include="Src\BaseClasses\SortColumn.cs" />
     <Compile Include="Src\Collections.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\DataManager\Listhandling\CollectionSource.cs" />
     <Compile Include="Src\DataManager\Listhandling\CollectionDataSource.cs" />
     <Compile Include="Src\DataManager\Listhandling\IndexList.cs" />
     <Compile Include="Src\DataSource\Comparer\BaseComparer.cs" />

@@ -30,9 +30,9 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 			if (FieldExist(dataSource.CurrentList[0],fieldName)) {
 				
 				sum = dataSource.CurrentList.Sum(o => {
-				                                 	var pp = o.ParsePropertyPath(fieldName);
-				                                 	var value = pp.Evaluate(o);
-				                                 	return TypeNormalizer.EnsureType<double>(value);
+				                                 	var propertyPath = o.ParsePropertyPath(fieldName);
+				                                 	var val = propertyPath.Evaluate(o);
+				                                 	return TypeNormalizer.EnsureType<double>(val);
 				                                 });
 			}
 			return sum;
