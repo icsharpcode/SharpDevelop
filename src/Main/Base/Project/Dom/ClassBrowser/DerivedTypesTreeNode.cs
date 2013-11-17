@@ -54,13 +54,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			get { return false; }
 		}
 		
-		public bool HasDerivedTypes()
-		{
-			ITypeDefinition currentTypeDef = definition.Resolve();
-			// TODO Searching for derived types every time just to get children count might be too expensive
-			return (currentTypeDef != null) && (FindReferenceService.FindDerivedTypes(currentTypeDef, true).Count > 0);
-		}
-		
 		void UpdateDerivedTypes()
 		{
 			derivedTypes.Clear();

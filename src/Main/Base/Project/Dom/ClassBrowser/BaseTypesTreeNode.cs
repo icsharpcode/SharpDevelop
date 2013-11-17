@@ -52,12 +52,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			get { return false; }
 		}
 		
-		public bool HasBaseTypes()
-		{
-			ITypeDefinition currentTypeDef = definition.Resolve();
-			return (currentTypeDef != null) && currentTypeDef.DirectBaseTypes.Any();
-		}
-		
 		void UpdateBaseTypes()
 		{
 			baseTypes.Clear();
