@@ -109,27 +109,29 @@ namespace CSharpBinding.Parser
 			foreach (var comment in cu.Descendants.OfType<Comment>()) {
 				if (comment.CommentType == CommentType.InactiveCode)
 					continue;
-				int matchLength;
-				int index = comment.Content.IndexOfAny(TaskListTokens, 0, out matchLength);
-				if (index > -1) {
+				string match;
+				if (comment.Content.ContainsAny(TaskListTokens, 0, out match)) {
 					if (document == null)
 						document = new ReadOnlyDocument(fileContent, fileName);
 					int commentSignLength = comment.CommentType == CommentType.Documentation || comment.CommentType == CommentType.MultiLineDocumentation ? 3 : 2;
 					int commentEndSignLength = comment.CommentType == CommentType.MultiLine || comment.CommentType == CommentType.MultiLineDocumentation ? 2 : 0;
 					int commentStartOffset = document.GetOffset(comment.StartLocation) + commentSignLength;
 					int commentEndOffset = document.GetOffset(comment.EndLocation) - commentEndSignLength;
+					int endOffset;
+					int searchOffset = 0;
 					do {
-						int absoluteOffset = commentStartOffset + index;
+						int start = commentStartOffset + searchOffset;
+						int absoluteOffset = document.IndexOf(match, start, document.TextLength - start, StringComparison.Ordinal);
 						var startLocation = document.GetLocation(absoluteOffset);
-						int endOffset = Math.Min(document.GetLineByNumber(startLocation.Line).EndOffset, commentEndOffset);
+						endOffset = Math.Min(document.GetLineByNumber(startLocation.Line).EndOffset, commentEndOffset);
 						string content = document.GetText(absoluteOffset, endOffset - absoluteOffset);
-						if (content.Length < matchLength) {
+						if (content.Length < match.Length) {
 							// HACK: workaround parser bug with multi-line documentation comments
 							break;
 						}
-						tagComments.Add(new TagComment(content.Substring(0, matchLength), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(matchLength)));
-						index = comment.Content.IndexOfAny(TaskListTokens, endOffset - commentStartOffset, out matchLength);
-					} while (index > -1);
+						tagComments.Add(new TagComment(content.Substring(0, match.Length), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(match.Length)));
+						searchOffset = endOffset - commentStartOffset;
+					} while (comment.Content.ContainsAny(TaskListTokens, searchOffset, out match));
 				}
 			}
 		}

@@ -766,6 +766,24 @@ namespace ICSharpCode.SharpDevelop
 			return index;
 		}
 		
+		public static bool ContainsAny(this string haystack, IEnumerable<string> needles, int startIndex, out string match)
+		{
+			if (haystack == null)
+				throw new ArgumentNullException("haystack");
+			if (needles == null)
+				throw new ArgumentNullException("needles");
+			int index = -1;
+			match = null;
+			foreach (var needle in needles) {
+				int i = haystack.IndexOf(needle, startIndex, StringComparison.Ordinal);
+				if (i != -1 && (index == -1 || index > i)) {
+					index = i;
+					match = needle;
+				}
+			}
+			return index > -1;
+		}
+		
 		/// <summary>
 		/// Retrieves a hash code for the specified string that is stable across
 		/// multiple runs of SharpDevelop and .NET upgrades.
