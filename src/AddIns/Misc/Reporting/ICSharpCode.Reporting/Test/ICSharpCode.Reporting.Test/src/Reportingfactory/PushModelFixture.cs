@@ -55,7 +55,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
 
 			var reportingFactory  = new ReportingFactory();
-			var rc = reportingFactory.ReportCreator(stream,typeof(Contributor),list);
+			var rc = reportingFactory.ReportCreator(stream,list);
 			Assert.That(rc,Is.Not.Null);
 				Assert.That(rc,Is.TypeOf(typeof(DataPageBuilder)));
 		}

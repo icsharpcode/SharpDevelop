@@ -103,14 +103,12 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				var sorted = SortInternal();
 				orderGroup = OrderGroup.Sorted;
 				listEnumerator = sorted.GetEnumerator();
-				listEnumerator.MoveNext();
-				Current = listEnumerator.Current;
 			} else {
 				orderGroup = OrderGroup.AsIs;
 				listEnumerator = baseList.GetEnumerator();
-				listEnumerator.MoveNext();
-				Current = listEnumerator.Current;
 			}
+			listEnumerator.MoveNext();
+			Current = listEnumerator.Current;
 		}
 		
 		
@@ -163,8 +161,9 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		#region Fill
 		
-		private IEnumerable<IGrouping<object, object>> groupedList;
+		
 		private IEnumerator<IGrouping<object, object>> groupEnumerator;
+		private IEnumerable<IGrouping<object, object>> groupedList;
 		private IEnumerator<object> listEnumerator;
 		
 		public void Fill(List<IPrintableObject> collection)
@@ -190,8 +189,9 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		
 		string ReadValueFromProperty (string columnName) {
-			var p = listProperties.Find(columnName,true);
-			return p.GetValue(Current).ToString();
+			var propertyPath = Current.ParsePropertyPath(columnName);
+			var val = propertyPath.Evaluate(Current);
+			return val.ToString();
 		}
 		
 		
@@ -203,20 +203,17 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		public bool MoveNext()
 		{
-			
 			var canMove = listEnumerator.MoveNext();
-			
+	
 			if (orderGroup == OrderGroup.Grouped) {
 				if (! canMove) {
 					var groupCanMove = groupEnumerator.MoveNext();
 					if (groupCanMove) {
 						listEnumerator = groupEnumerator.Current.GetEnumerator();
 						canMove = listEnumerator.MoveNext();
-						Current = listEnumerator.Current;
 					}
-				} else {
-					Current = listEnumerator.Current;
-				}
+				} 
+				Current = listEnumerator.Current;
 				return canMove;
 			}
 			
@@ -229,8 +226,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		static DataCollection<object> CreateBaseList(IEnumerable source)
 		{
-			Type et = source.AsQueryable().ElementType;
-			var list = new DataCollection<object>(et);
+			Type elementType = source.AsQueryable().ElementType;
+			var list = new DataCollection<object>(elementType);
 			list.AddRange(source);
 			return list;
 		}
