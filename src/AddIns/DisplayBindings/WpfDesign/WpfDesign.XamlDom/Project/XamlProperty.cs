@@ -276,15 +276,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				obj.Properties.Where((prop) => prop.IsResources).FirstOrDefault() != null;
 		}
 
-        XmlElement CreatePropertyElement()
-        {
-            string ns = parentObject.OwnerDocument.GetNamespaceFor(parentObject.ElementType);
-            return parentObject.OwnerDocument.XmlDocument.CreateElement(
-                parentObject.OwnerDocument.GetPrefixForNamespace(ns),
-                parentObject.ElementType.Name + "." + this.PropertyName,
-                ns
-                );
-        }
+		XmlElement CreatePropertyElement()
+		{
+			Type propertyElementType = GetPropertyElementType();
+			string ns = parentObject.OwnerDocument.GetNamespaceFor(propertyElementType);
+			return parentObject.OwnerDocument.XmlDocument.CreateElement(
+				parentObject.OwnerDocument.GetPrefixForNamespace(ns),
+				propertyElementType.Name + "." + this.PropertyName,
+				ns
+			);
+		}
+
+		Type GetPropertyElementType()
+		{
+			return this.IsAttached ? this.PropertyTargetType : parentObject.ElementType;
+		}
 		
 		static XmlNode FindChildNode(XmlNode node, string localName, string namespaceURI)
 		{
@@ -305,7 +311,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			if (this.IsCollection) {
 				if (IsNodeCollectionForThisProperty(newChildNode)) {
-					XmlNode parentNode = FindChildNode(parentObject.XmlElement, parentObject.ElementType.Name + "." + this.PropertyName, parentObject.OwnerDocument.GetNamespaceFor(parentObject.ElementType));
+					Type propertyElementType = GetPropertyElementType();
+					XmlNode parentNode = FindChildNode(parentObject.XmlElement, propertyElementType.Name + "." + this.PropertyName, parentObject.OwnerDocument.GetNamespaceFor(propertyElementType));
 
 					if (parentNode == null) {
 						parentNode = CreatePropertyElement();

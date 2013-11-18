@@ -222,6 +222,25 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 		
 		[Test]
+		public void ExampleServiceCollectionTest()
+		{
+			TestLoading(@"
+<t:ExampleDependencyObject
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+   <t:ExampleService.ExampleCollection>
+      <t:ExampleClassList>
+         <t:ExampleClass OtherProp=""a""> </t:ExampleClass>
+         <t:ExampleClass OtherProp=""b"" />
+         <t:ExampleClass OtherProp=""c"" />
+      </t:ExampleClassList>
+   </t:ExampleService.ExampleCollection>
+</t:ExampleDependencyObject>
+			");
+		}
+		
+		[Test]
 		public void ExampleClassObjectPropWithStringValue()
 		{
 			TestLoading(@"
