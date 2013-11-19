@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string FullAssemblyName {
 			get {
-				if (project.ProjectContent == null) {
+				if (project.ProjectContent != null) {
 					return project.ProjectContent.FullAssemblyName;
 				}
 				
