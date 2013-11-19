@@ -15,7 +15,9 @@ namespace ICSharpCode.CodeCoverage
 			: base(method.Name, 
 				CodeCoverageImageListIndex.Method,
 				method.GetVisitedCodeLength(),
-				method.GetUnvisitedCodeLength())
+				method.GetUnvisitedCodeLength(),
+				method.BranchCoverage
+			)
 		{
 			this.method = method;
 		}

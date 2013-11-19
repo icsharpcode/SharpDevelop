@@ -15,18 +15,24 @@ namespace ICSharpCode.CodeCoverage
 		/// Code coverage is less than one hundred percent.
 		/// </summary>
 		public static readonly Color PartialCoverageTextColor = Color.Red;
-		
+
+		/// <summary>
+		/// Code coverage is 100% but branch coverage is not 0%(no branches present) or 100%(all branches covered)
+		/// </summary>
+		public static readonly Color PartialBranchesTextColor = Color.DarkGreen;
+
 		/// <summary>
 		/// Code coverage is zero.
 		/// </summary>
 		public static readonly Color ZeroCoverageTextColor = Color.Gray;
 		
 		int visitedCodeLength;
-		int unvisitedCodeLength;		
+		int unvisitedCodeLength;
+		decimal visitedBranchCoverage;
 		int baseImageIndex;
 		
 		public CodeCoverageTreeNode(string name, CodeCoverageImageListIndex index) 
-			: this(name, index, 0, 0)
+			: this(name, index, 0, 0, 0)
 		{
 		}
 		
@@ -34,15 +40,18 @@ namespace ICSharpCode.CodeCoverage
 			: this(codeCoverageWithVisits.Name,
 				index,
 				codeCoverageWithVisits.GetVisitedCodeLength(),
-				codeCoverageWithVisits.GetUnvisitedCodeLength())
+				codeCoverageWithVisits.GetUnvisitedCodeLength(),
+				codeCoverageWithVisits.GetVisitedBranchCoverage()
+			)
 		{
 		}
 		
-		public CodeCoverageTreeNode(string name, CodeCoverageImageListIndex index, int visitedCodeLength, int unvisitedCodeLength)
+		public CodeCoverageTreeNode(string name, CodeCoverageImageListIndex index, int visitedCodeLength, int unvisitedCodeLength, decimal visitedBranchCoverage)
 		{
 			sortOrder = 10;
 			this.visitedCodeLength = visitedCodeLength;
 			this.unvisitedCodeLength = unvisitedCodeLength;
+			this.visitedBranchCoverage = visitedBranchCoverage;
 			
 			Name = name;
 			SetText();
@@ -63,6 +72,8 @@ namespace ICSharpCode.CodeCoverage
 				ForeColor = ZeroCoverageTextColor; 
 			} else if(TotalCodeLength != visitedCodeLength) {
 				ForeColor = PartialCoverageTextColor;
+			} else if(TotalCodeLength == visitedCodeLength && VisitedBranchCoverage != 0 && VisitedBranchCoverage != 100 ) {
+				ForeColor = PartialBranchesTextColor;
 			} else {
 				ForeColor = Color.Empty;
 			}
@@ -76,6 +87,9 @@ namespace ICSharpCode.CodeCoverage
 		string GetNodeText()
 		{
 			if (TotalCodeLength > 0) {
+				if ( visitedCodeLength == TotalCodeLength && visitedBranchCoverage != 0 && visitedBranchCoverage != 100 ) {
+					return String.Format("{0} (100%/{1}%)", Name, visitedBranchCoverage);
+				}
 				int percentage = GetPercentage();
 				return String.Format("{0} ({1}%)", Name, percentage);
 			}
@@ -116,6 +130,14 @@ namespace ICSharpCode.CodeCoverage
 		
 		public int TotalCodeLength {
 			get { return visitedCodeLength + unvisitedCodeLength; }
+		}
+		
+		public decimal VisitedBranchCoverage {
+			get { return visitedBranchCoverage; }
+			set { 
+				visitedBranchCoverage = value;
+				SetText();
+			}
 		}
 		
 		/// <summary>

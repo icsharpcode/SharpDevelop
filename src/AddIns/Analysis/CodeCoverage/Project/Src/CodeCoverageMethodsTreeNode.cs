@@ -23,14 +23,24 @@ namespace ICSharpCode.CodeCoverage
 			
 			int visitedCodeLength = 0;
 			int unvisitedCodeLength = 0;
+			decimal branchCoverage = 0;
+			int branchCoverageCount = 0;
 			foreach (CodeCoverageMethod method in methods) {
+				if (method.Name.Contains("__")) {
+					continue;
+				}
 				visitedCodeLength += method.GetVisitedCodeLength();
 				unvisitedCodeLength += method.GetUnvisitedCodeLength();
+				if ( method.IsVisited ) {
+					branchCoverageCount += 1;
+					branchCoverage += method.BranchCoverage == 0 ? 100 : method.BranchCoverage ;
+				}
 			}
 			
 			Name = name;
 			VisitedCodeLength = visitedCodeLength;
 			UnvisitedCodeLength = unvisitedCodeLength;
+			VisitedBranchCoverage = branchCoverageCount == 0 ? 100 : decimal.Round(branchCoverage/branchCoverageCount,2);
 		}
 		
 		void AddDummyNodeIfHasNoMethods()

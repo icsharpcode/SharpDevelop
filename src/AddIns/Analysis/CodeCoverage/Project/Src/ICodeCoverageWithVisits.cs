@@ -10,5 +10,6 @@ namespace ICSharpCode.CodeCoverage
 		string Name { get; }
 		int GetVisitedCodeLength();
 		int GetUnvisitedCodeLength();
+		decimal GetVisitedBranchCoverage();
 	}
 }

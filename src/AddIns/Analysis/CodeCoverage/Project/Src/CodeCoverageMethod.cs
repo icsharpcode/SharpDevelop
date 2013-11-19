@@ -43,6 +43,12 @@ namespace ICSharpCode.CodeCoverage
 			IsProperty = element.IsProperty && IsPropertyMethodName();
 			IsGetter = element.IsGetter;
 			IsSetter = element.IsSetter;
+
+			this.IsVisited = element.IsVisited;
+			this.BranchCoverage = element.BranchCoverage;
+			this.BranchCoverageRatio = element.BranchCoverageRatio;
+			this.SequencePointsCount = element.SequencePointsCount;
+			
 		}
 		
 		/// <summary>
@@ -52,6 +58,11 @@ namespace ICSharpCode.CodeCoverage
 		public bool IsGetter { get; private set; }
 		public bool IsSetter { get; private set; }
 		
+		public bool IsVisited { get; private set; }
+		public decimal BranchCoverage { get; private set; }
+		public Tuple<int,int> BranchCoverageRatio { get; private set; }
+		public int SequencePointsCount { get; private set; }
+
 		bool IsPropertyMethodName()
 		{
 			return name.Contains("get_") || name.Contains("set_");
@@ -97,7 +108,7 @@ namespace ICSharpCode.CodeCoverage
 			get {
 				int count = 0;
 				foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-					if (sequencePoint.VisitCount > 0) {
+					if (sequencePoint.VisitCount != 0) {
 						count++;
 					}
 				}
@@ -121,7 +132,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			int total = 0;
 			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-				if (sequencePoint.VisitCount > 0) {
+				if (sequencePoint.VisitCount != 0) {
 					total += sequencePoint.Length;
 				}
 			}
