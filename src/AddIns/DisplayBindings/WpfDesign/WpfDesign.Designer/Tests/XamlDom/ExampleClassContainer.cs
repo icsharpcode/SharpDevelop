@@ -11,6 +11,10 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 	{
 	}
 	
+	public class ExampleClassDictionary : Dictionary<string, ExampleClass>
+	{
+	}
+	
 	[ContentProperty("List")]
 	public class ExampleClassContainer : ExampleClass
 	{
@@ -33,6 +37,19 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 			set {
 				TestHelperLog.Log("OtherList.set " + Identity);
 				otherList = value;
+			}
+		}
+		
+		ExampleClassDictionary dictionary = new ExampleClassDictionary();
+		
+		public ExampleClassDictionary Dictionary {
+			get {
+				TestHelperLog.Log("Dictionary.get " + Identity);
+				return dictionary;
+			}
+			set {
+				TestHelperLog.Log("Dictionary.set " + Identity);
+				dictionary = value;
 			}
 		}
 	}

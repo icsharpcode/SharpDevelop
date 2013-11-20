@@ -25,7 +25,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return typeof(IList).IsAssignableFrom(type)
 				|| type.IsArray
 				|| typeof(IAddChild).IsAssignableFrom(type)
-				|| typeof(ResourceDictionary).IsAssignableFrom(type);
+				|| typeof(IDictionary).IsAssignableFrom(type);
 		}		
 
 		/// <summary>
@@ -65,7 +65,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				} else {
 					addChild.AddChild(newElement.GetValueFor(null));
 				}
-			} else if (collectionInstance is ResourceDictionary) {
+			} else if (collectionInstance is IDictionary) {
 				object val = newElement.GetValueFor(null);
 				object key = newElement is XamlObject ? ((XamlObject)newElement).GetXamlAttribute("Key") : null;
 				//if (key == null || key == "") {
@@ -74,7 +74,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				//}
 				if (key == null || key == "")
 					key = val;
-				((ResourceDictionary)collectionInstance).Add(key, val);
+				((IDictionary)collectionInstance).Add(key, val);
 			} else {
 				collectionType.InvokeMember(
 					"Add", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
