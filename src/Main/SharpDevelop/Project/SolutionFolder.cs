@@ -82,12 +82,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			protected override void OnCollectionChanged(IReadOnlyCollection<ISolutionItem> removedItems, IReadOnlyCollection<ISolutionItem> addedItems)
 			{
-				using (folder.parentSolution.ReportBatch()) {
-					foreach (ISolutionItem item in removedItems) {
-						folder.parentSolution.ReportRemovedItem(item);
-					}
-					foreach (ISolutionItem item in addedItems) {
-						folder.parentSolution.ReportAddedItem(item);
+				if (folder.parentSolution.IsAncestorOf(folder)) {
+					using (folder.parentSolution.ReportBatch()) {
+						foreach (ISolutionItem item in removedItems) {
+							folder.parentSolution.ReportRemovedItem(item);
+						}
+						foreach (ISolutionItem item in addedItems) {
+							folder.parentSolution.ReportAddedItem(item);
+						}
 					}
 				}
 				base.OnCollectionChanged(removedItems, addedItems);
