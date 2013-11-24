@@ -23,6 +23,7 @@ namespace ICSharpCode.Reporting.Interfaces
 		Color ForeColor {get;set;}
 		Color BackColor {get;set;}
 		Color FrameColor{get;set;}
+		bool DrawBorder {get;set;}
 		bool CanGrow {get;set;}
 	}
 	

@@ -30,18 +30,13 @@ namespace ICSharpCode.Reporting.Exporter{
 		
 		public override void Run () {
 			Document = new FixedDocument();
-			Console.WriteLine();
-			Console.WriteLine("Start WpfExporter with {0} Pages ",Pages.Count);
 			foreach (var page in Pages) {
 				IAcceptor acceptor = page as IAcceptor;
 				if (acceptor != null) {
 					visitor.Visit(page);
 				}
 				AddPageToDocument(Document,visitor.FixedPage);
-				Console.WriteLine("-----------PageBreak---------");
 			}
-			Console.WriteLine("Finish WpfVisitor");
-			Console.WriteLine();
 		}
 		
 		

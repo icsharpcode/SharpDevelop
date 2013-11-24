@@ -50,8 +50,8 @@
     <Reference Include="Irony.Interpreter">
       <HintPath>..\Libraries\Irony.Interpreter.dll</HintPath>
     </Reference>
-    <Reference Include="PdfSharp-WPF">
-      <HintPath>..\Libraries\PdfSharp-WPF.dll</HintPath>
+    <Reference Include="PdfSharp">
+      <HintPath>..\Libraries\PdfSharp.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -164,6 +164,8 @@
     <Compile Include="Src\PageBuilder\ExportColumns\ExportPage.cs" />
     <Compile Include="Src\PageBuilder\FormPageBuilder.cs" />
     <Compile Include="Src\Pdf\PdfExporter.cs" />
+    <Compile Include="Src\Pdf\PdfExtensions.cs" />
+    <Compile Include="Src\Pdf\PdfHelper.cs" />
     <Compile Include="Src\Pdf\PdfVisitor.cs" />
     <Compile Include="Src\ReportingFactory.cs" />
     <Compile Include="Src\Wpf\PreviewViewModel.cs" />

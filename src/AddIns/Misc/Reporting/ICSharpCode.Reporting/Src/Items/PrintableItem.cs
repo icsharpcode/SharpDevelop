@@ -35,5 +35,7 @@ namespace ICSharpCode.Reporting.Items
 		
 		public bool CanGrow {get;set;}
 		
+		public bool DrawBorder {get;set;}
+		
 	}
 }

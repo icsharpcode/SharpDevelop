@@ -1,8 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Drawing;
 using ICSharpCode.Reporting.Exporter.Visitors;
+using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
+using PdfSharp.Drawing;
+using PdfSharp.Drawing.Layout;
+using PdfSharp.Pdf;
 
 namespace ICSharpCode.Reporting.Pdf
 {
@@ -11,21 +16,30 @@ namespace ICSharpCode.Reporting.Pdf
 	/// </summary>
 	class PdfVisitor: AbstractVisitor
 	{
-		public PdfVisitor()
+		readonly PdfDocument pdfDocument;
+		XGraphics gfx;
+		XTextFormatter textFormatter;
+		Point containerLocation;
+		
+		public PdfVisitor(PdfDocument pdfDocument)
 		{
+			this.pdfDocument = pdfDocument;
 		}
 		
 		public override void Visit(ExportPage page)
 		{
-			Console.WriteLine("Pdf_Visitor page <{0}>",page.PageInfo.PageNumber);
+			var pageSize = page.Size.ToXSize();
+			PdfPage = pdfDocument.AddPage();
+			gfx = XGraphics.FromPdfPage(PdfPage);
+			textFormatter  = new XTextFormatter(gfx);
 			base.Visit(page);
 		}
 		
-		public override void Visit(ExportContainer exportColumn)
+		public override void Visit(ExportContainer exportContainer)
 		{
-			
-			Console.WriteLine("\tPdf_Visitor <{0}>",exportColumn.Name);
-			foreach (var element in exportColumn.ExportedItems) {
+			containerLocation = exportContainer.Location;
+			PdfHelper.DrawRectangle(exportContainer,gfx);
+			foreach (var element in exportContainer.ExportedItems) {
 				var ac = element as IAcceptor;
 				ac.Accept(this);
 			}
@@ -34,7 +48,14 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		public override void Visit(ExportText exportColumn)
 		{
-			Console.WriteLine("\t\tPdf_Visitor <{0}>",exportColumn.Name);
+			var columnLocation = containerLocation;
+			columnLocation.Offset(exportColumn.Location);
+			PdfHelper.WriteText(textFormatter,columnLocation, exportColumn);
+			if (exportColumn.DrawBorder) {
+				PdfHelper.DrawRectangle(new Rectangle(columnLocation,exportColumn.DesiredSize),exportColumn.FrameColor,gfx);
+			}
 		}
+
+		public PdfPage PdfPage {get; private set;}
 	}
 }

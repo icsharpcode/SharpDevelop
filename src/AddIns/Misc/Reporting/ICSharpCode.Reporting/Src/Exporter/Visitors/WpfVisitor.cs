@@ -31,18 +31,13 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			documentCreator = new FixedDocumentCreator();
 		}
 		
-		public override void Visit(ExportPage page)
-		{
-			Console.WriteLine("WpfVisitor page <{0}>",page.PageInfo.PageNumber);
+		public override void Visit(ExportPage page){
 			fixedPage = FixedDocumentCreator.CreateFixedPage(page);
 			FixedPage = fixedPage;
 			base.Visit(page);
 		}
 		
-		public override void Visit(ExportContainer exportContainer)
-		{
-			
-			Console.WriteLine("\tWpfVisitor <{0}>",exportContainer.Name);
+		public override void Visit(ExportContainer exportContainer){
 			currentCanvas = documentCreator.CreateContainer(exportContainer);
 			CanvasHelper.SetPosition(currentCanvas,new Point(exportContainer.Location.X,exportContainer.Location.Y));
 			base.Visit(exportContainer);
@@ -50,12 +45,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
-		public override void Visit(ExportText exportColumn)
-		{
-			Console.WriteLine("\t\tExpressionVisitor <{0}>",exportColumn.GetType());
-			if (exportColumn.ContentAlignment != System.Drawing.ContentAlignment.TopLeft) {
-				Console.WriteLine("heureka {0}",exportColumn.ContentAlignment);
-			}
+		public override void Visit(ExportText exportColumn){
 			var textBlock = documentCreator.CreateTextBlock((ExportText)exportColumn);
 			CanvasHelper.SetPosition(textBlock,new Point(exportColumn.Location.X,exportColumn.Location.Y));
 			currentCanvas.Children.Add(textBlock);

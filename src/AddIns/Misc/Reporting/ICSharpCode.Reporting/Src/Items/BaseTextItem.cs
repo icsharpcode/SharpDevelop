@@ -75,6 +75,7 @@ namespace ICSharpCode.Reporting.Items
 			ex.ContentAlignment = ContentAlignment;
 			ex.DataType = DataType;
 			ex.CanGrow = CanGrow;
+			ex.DrawBorder = DrawBorder;
 			return ex;
 		}	
 	}
