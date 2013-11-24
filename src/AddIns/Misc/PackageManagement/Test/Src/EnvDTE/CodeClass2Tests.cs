@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Dom;
@@ -57,7 +58,7 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void Access_InternalClass_ReturnsPrivate()
+		public void Access_PrivateClass_ReturnsPrivate()
 		{
 			CreateClass("class MyClass {}");
 			
@@ -69,8 +70,9 @@ namespace PackageManagement.Tests.EnvDTE
 //		[Test]
 //		public void ImplementedInterfaces_ClassImplementsGenericICollectionOfString_ReturnsCodeInterfaceForICollection()
 //		{
-//			CreateClass("using System.Collection.Generic;" +
-//			            "class MyClass : ICollection<string> {}");
+//			CreateClass(
+//				"using System.Collection.Generic;" +
+//				"class MyClass : ICollection<string> {}");
 //			
 //			global::EnvDTE.CodeElements codeElements = codeClass.ImplementedInterfaces;
 //			CodeInterface codeInterface = codeElements.FirstCodeInterfaceOrDefault();

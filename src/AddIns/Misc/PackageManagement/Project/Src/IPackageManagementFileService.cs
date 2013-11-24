@@ -6,6 +6,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -23,5 +24,6 @@ namespace ICSharpCode.PackageManagement
 		
 		void ParseFile(string fileName);
 		ICompilation GetCompilationUnit(string fileName);
+		ICompilation GetCompilationUnit(IProject project);
 	}
 }

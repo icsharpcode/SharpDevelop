@@ -13,7 +13,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	/// This differs from the CodeModel CodeNamespace which breaks up the namespaces into
 	/// parts.
 	/// </summary>
-	public class FileCodeModelCodeNamespace : CodeNamespace
+	public class FileCodeModelCodeNamespace : CodeNamespaceBase
 	{
 		public FileCodeModelCodeNamespace(CodeModelContext context, string namespaceName)
 			: base(context, namespaceName)

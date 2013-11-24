@@ -22,10 +22,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public static global::EnvDTE.vsCMAccess ToAccess(this Accessibility accessiblity)
 		{
-			if (accessiblity == Accessibility.Public)
+			if (accessiblity == Accessibility.Public) {
 				return global::EnvDTE.vsCMAccess.vsCMAccessPublic;
-			else
-				return global::EnvDTE.vsCMAccess.vsCMAccessPrivate;
+			}
+			return global::EnvDTE.vsCMAccess.vsCMAccessPrivate;
 		}
 		
 		public static Accessibility ToAccessibility(this global::EnvDTE.vsCMAccess access)

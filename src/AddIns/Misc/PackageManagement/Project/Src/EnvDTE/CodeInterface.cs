@@ -1,21 +1,28 @@
-﻿//// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-//// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//
-//using System;
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System;
+using ICSharpCode.SharpDevelop.Dom;
+
 //using ICSharpCode.SharpDevelop.Dom;
-//
-//namespace ICSharpCode.PackageManagement.EnvDTE
-//{
-//	public class CodeInterface : CodeType, global::EnvDTE.CodeInterface
-//	{
-//		string fullName;
-//		
+
+namespace ICSharpCode.PackageManagement.EnvDTE
+{
+	public class CodeInterface : CodeType, global::EnvDTE.CodeInterface
+	{
+		string fullName;
+		
 //		public CodeInterface(IProjectContent projectContent, IClass c)
 //			: base(projectContent, c)
 //		{
-//			fullName = base.FullName;
 //		}
-//		
+		
+		public CodeInterface(CodeModelContext context, ITypeDefinitionModel typeModel)
+			: base(context, typeModel)
+		{
+//			fullName = base.FullName;
+		}
+		
 //		public CodeInterface(IProjectContent projectContent, IReturnType type, IClass c)
 //			: base(projectContent, c)
 //		{
@@ -38,14 +45,15 @@
 //			return null;
 //		}
 //		
-//		public global::EnvDTE.CodeFunction AddFunction(string name, global::EnvDTE.vsCMFunction kind, object type, object Position = null, global::EnvDTE.vsCMAccess Access = global::EnvDTE.vsCMAccess.vsCMAccessPublic)
-//		{
-//			var codeGenerator = new ClassCodeGenerator(Class);
-//			return codeGenerator.AddPublicMethod(name, (string)type);
-//		}
+		public global::EnvDTE.CodeFunction AddFunction(string name, global::EnvDTE.vsCMFunction kind, object type, object Position = null, global::EnvDTE.vsCMAccess Access = global::EnvDTE.vsCMAccess.vsCMAccessPublic)
+		{
+		//	var codeGenerator = new ClassCodeGenerator(Class);
+		//	return codeGenerator.AddPublicMethod(name, (string)type);
+			return null;
+		}
 //		
 //		public override string FullName {
 //			get { return fullName; }
 //		}
-//	}
-//}
+	}
+}

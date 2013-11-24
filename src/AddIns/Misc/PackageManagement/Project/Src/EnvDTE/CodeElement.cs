@@ -11,7 +11,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeElement : global::EnvDTE.CodeElementBase, global::EnvDTE.CodeElement
 	{
 		DTE dte;
-		protected readonly CodeModelContext context;
+		protected CodeModelContext context;
 		readonly ISymbolModel symbolModel;
 		
 		public CodeElement()
@@ -27,8 +27,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			this.context = context;
 			this.symbolModel = symbolModel;
-			if (symbolModel.ParentProject != null)
+			if (symbolModel.ParentProject != null) {
 				this.Language = symbolModel.ParentProject.GetCodeModelLanguage();
+			}
 		}
 		
 		public static CodeElement CreateMember(CodeModelContext context, IMemberModel m)
@@ -61,28 +62,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		// default is vsCMPart.vsCMPartWholeWithAttributes
 		public virtual global::EnvDTE.TextPoint GetStartPoint()
 		{
-			if (symbolModel != null)
-				return TextPoint.CreateStartPoint(context, symbolModel.Region);
-			else
-				return null;
+//			if (symbolModel != null)
+//				return TextPoint.CreateStartPoint(context, symbolModel.Region);
+			return null;
 		}
 		
 		public virtual global::EnvDTE.TextPoint GetEndPoint()
 		{
-			if (symbolModel != null)
-				return TextPoint.CreateEndPoint(context, symbolModel.Region);
-			else
-				return null;
+//			if (symbolModel != null)
+//				return TextPoint.CreateEndPoint(context, symbolModel.Region);
+			return null;
 		}
 		
-		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation {
-			get {
-				if (symbolModel != null && symbolModel.ParentProject == context)
-					return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject;
-				else
-					return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
-			}
-		}
+		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation { get; protected set; }
 		
 		public virtual global::EnvDTE.DTE DTE {
 			get {
@@ -99,19 +91,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected bool IsInFilter(DomRegion region)
 		{
-			if (context.FilteredFileName == null)
+			if (context.FilteredFileName == null) {
 				return true;
+			}
 			return context.FilteredFileName == region.FileName;
 		}
 		
 		protected CodeElementsList<CodeAttribute2> GetAttributes(IEntityModel entityModel)
 		{
 			var list = new CodeElementsList<CodeAttribute2>();
-			var td = entityModel.Resolve();
+			IEntity td = entityModel.Resolve();
 			if (td != null) {
-				foreach (var attr in td.Attributes) {
-					if (IsInFilter(attr.Region))
+				foreach (IAttribute attr in td.Attributes) {
+					if (IsInFilter(attr.Region)) {
 						list.Add(new CodeAttribute2(context, attr));
+					}
 				}
 			}
 			return list;

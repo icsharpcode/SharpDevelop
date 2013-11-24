@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
@@ -14,11 +15,10 @@ using Rhino.Mocks;
 namespace PackageManagement.Tests.EnvDTE
 {
 	[TestFixture]
-	public class ProjectTests
+	public class ProjectTests : CodeModelTestBase
 	{
-		Project project;
+		Project dteProject;
 		TestableProject msbuildProject;
-		//ProjectContentHelper helper;
 		IPackageManagementProjectService fakeProjectService;
 		IPackageManagementFileService fakeFileService;
 		
@@ -26,18 +26,22 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			msbuildProject = ProjectHelper.CreateTestProject();
 			msbuildProject.FileName = new FileName(fileName);
-			//helper = new ProjectContentHelper();
 			
 			fakeProjectService = MockRepository.GenerateStub<IPackageManagementProjectService>();
-			//fakeProjectService.Stub(service => service.GetProjectContent(msbuildProject)).Return(helper.ProjectContent);
 			
 			fakeFileService = MockRepository.GenerateStub<IPackageManagementFileService>();
-			project = new Project(msbuildProject, fakeProjectService, fakeFileService);
+			dteProject = new Project(msbuildProject, fakeProjectService, fakeFileService);
+			
+			msbuildProject.SetAssemblyModel(assemblyModel);
+			
+			fakeFileService
+				.Stub(fileService => fileService.GetCompilationUnit(msbuildProject))
+				.WhenCalled(compilation => compilation.ReturnValue = projectContent.CreateCompilation());
 		}
 		
-		void AddClassToProjectContent(string className)
+		void AddClassToProject(string code)
 		{
-//			helper.AddClassToProjectContent(className);
+			AddCodeFile("class.cs", code);
 		}
 		
 		void SetProjectForProjectContent()
@@ -50,13 +54,20 @@ namespace PackageManagement.Tests.EnvDTE
 //			helper.SetProjectForProjectContent(ProjectHelper.CreateTestProject());
 		}
 		
+		void SetParentSolutionFileName(string fileName)
+		{
+			var solutionFileName = new FileName(fileName);
+			msbuildProject.ParentSolution.Stub(s => s.FileName).Return(solutionFileName);
+			msbuildProject.ParentSolution.Stub(s => s.Directory).Return(solutionFileName.GetParentDirectory());
+		}
+		
 		[Test]
 		public void Name_ProjectNameIsMyApp_ReturnsMyApp()
 		{
 			CreateProject();
 			msbuildProject.Name = "MyApp";
 			
-			string name = project.Name;
+			string name = dteProject.Name;
 			
 			Assert.AreEqual("MyApp", name);
 		}
@@ -67,7 +78,7 @@ namespace PackageManagement.Tests.EnvDTE
 			string expectedFullName = @"d:\projects\myproject\myproject.csproj";
 			CreateProject(expectedFullName);
 			
-			string fullName = project.FullName;
+			string fullName = dteProject.FullName;
 			
 			Assert.AreEqual(expectedFullName, fullName);
 		}
@@ -78,7 +89,7 @@ namespace PackageManagement.Tests.EnvDTE
 			string expectedFileName = @"d:\projects\myproject\myproject.csproj";
 			CreateProject(expectedFileName);
 			
-			string fileName = project.FileName;
+			string fileName = dteProject.FileName;
 			
 			Assert.AreEqual(expectedFileName, fileName);
 		}
@@ -88,7 +99,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject(@"c:\projects\myproject\test.csproj", "C#");
 			
-			string projectType = project.Type;
+			string projectType = dteProject.Type;
 			
 			Assert.AreEqual("C#", projectType);
 		}
@@ -98,7 +109,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject(@"c:\projects\myproject\TEST.CSPROJ");
 			
-			string projectType = project.Type;
+			string projectType = dteProject.Type;
 			
 			Assert.AreEqual("C#", projectType);
 		}
@@ -108,7 +119,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject(@"c:\projects\myproject\test.vbproj");
 			
-			string projectType = project.Type;
+			string projectType = dteProject.Type;
 			
 			Assert.AreEqual("VB.NET", projectType);
 		}
@@ -118,7 +129,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject(@"c:\projects\myproject\test.unknown");
 			
-			string projectType = project.Type;
+			string projectType = dteProject.Type;
 			
 			Assert.AreEqual(String.Empty, projectType);
 		}
@@ -128,7 +139,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject(@"d:\projects\myproject\test.csproj");
 			
-			string kind = project.Kind;
+			string kind = dteProject.Kind;
 			
 			Assert.AreEqual(ProjectTypeGuids.CSharp.ToString(), kind);
 		}
@@ -138,7 +149,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject( @"d:\projects\myproject\test.vbproj");
 			
-			string kind = project.Kind;
+			string kind = dteProject.Kind;
 			
 			Assert.AreEqual(ProjectTypeGuids.VBNet.ToString(), kind);
 		}
@@ -148,7 +159,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject(@"d:\projects\myproject\test.unknown");
 			
-			string kind = project.Kind;
+			string kind = dteProject.Kind;
 			
 			Assert.AreEqual(String.Empty, kind);
 		}
@@ -159,7 +170,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProject(@"d:\projects\myproject\MyProject.csproj");
 			SetParentSolutionFileName(@"d:\projects\myproject\MyProject.sln");
 			
-			string name = project.UniqueName;
+			string name = dteProject.UniqueName;
 			
 			Assert.AreEqual("MyProject.csproj", name);
 		}
@@ -169,18 +180,10 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject(@"d:\projects\myproject\SubFolder\MyProject.csproj");
 			SetParentSolutionFileName(@"d:\projects\myproject\MyProject.sln");
-
 			
-			string name = project.UniqueName;
+			string name = dteProject.UniqueName;
 			
 			Assert.AreEqual(@"SubFolder\MyProject.csproj", name);
-		}
-		
-		void SetParentSolutionFileName(string fileName)
-		{
-			var solutionFileName = new FileName(fileName);
-			msbuildProject.ParentSolution.Stub(s => s.FileName).Return(solutionFileName);
-			msbuildProject.ParentSolution.Stub(s => s.Directory).Return(solutionFileName.GetParentDirectory());
 		}
 		
 		[Test]
@@ -188,9 +191,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject();
 			
-			object parent = project.ProjectItems.Parent;
+			object parent = dteProject.ProjectItems.Parent;
 			
-			Assert.AreEqual(project, parent);
+			Assert.AreEqual(dteProject, parent);
 		}
 		
 		[Test]
@@ -198,7 +201,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject();
 			msbuildProject.SetProperty("OutputPath", @"bin\debug\");
-			global::EnvDTE.Configuration activeConfig = project.ConfigurationManager.ActiveConfiguration;
+			global::EnvDTE.Configuration activeConfig = dteProject.ConfigurationManager.ActiveConfiguration;
 			
 			string outputPath = (string)activeConfig.Properties.Item("OutputPath").Value;
 			
@@ -206,24 +209,26 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		[Ignore("TODO")]
 		public void CodeModel_NoTypesInProjectAndCallCodeTypeFromFullName_ReturnsNull()
 		{
 			CreateProject();
+			AddClassToProject("");
 			
-			global::EnvDTE.CodeType codeType = project.CodeModel.CodeTypeFromFullName("UnknownTypeName");
+			global::EnvDTE.CodeType codeType = dteProject.CodeModel.CodeTypeFromFullName("UnknownTypeName");
 			
 			Assert.IsNull(codeType);
 		}
 		
 		[Test]
-		[Ignore("TODO")]
 		public void CodeModel_ClassExistsInProjectContentAndCallCodeTypeFromFullName_ReturnsNonCodeType()
 		{
 			CreateProject();
-			AddClassToProjectContent("Tests.MyClass");
+			AddClassToProject(
+				"namespace Tests {\r\n" +
+				"    public class MyClass {}\r\n"+
+				"}");
 			
-			global::EnvDTE.CodeType codeType = project.CodeModel.CodeTypeFromFullName("Tests.MyClass");
+			global::EnvDTE.CodeType codeType = dteProject.CodeModel.CodeTypeFromFullName("Tests.MyClass");
 			
 			Assert.IsNotNull(codeType);
 		}
@@ -252,6 +257,20 @@ namespace PackageManagement.Tests.EnvDTE
 			//CodeElement element = project.CodeModel.CodeElements.FirstOrDefault();
 			
 			//Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, element.InfoLocation);
+		}
+		
+		[Test]
+		public void CodeModel_EmptyNamespaceExistsInProject_CodeElementsReturnsNamespace()
+		{
+			CreateProject();
+			AddClassToProject("namespace Test {}");
+			
+			global::EnvDTE.CodeElements codeElements = dteProject.CodeModel.CodeElements;
+			global::EnvDTE.CodeNamespace codeNamespace = codeElements
+				.FindFirstCodeNamespaceOrDefault(e => e.Name == "Test");
+			
+			Assert.AreEqual("Test", codeNamespace.FullName);
+			Assert.AreEqual("Test", codeNamespace.Name);
 		}
 	}
 }

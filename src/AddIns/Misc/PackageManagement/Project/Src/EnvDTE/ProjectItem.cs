@@ -155,12 +155,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public global::EnvDTE.FileCodeModel2 FileCodeModel {
 			get {
-//				if (!IsDirectory) {
-//					return new FileCodeModel2(containingProject, projectItem);
-//				}
-//				return null;
-				throw new NotImplementedException();
+				if (!IsDirectory) {
+					return new FileCodeModel2(CreateModelContext(), containingProject);
+				}
+				return null;
 			}
+		}
+		
+		CodeModelContext CreateModelContext()
+		{
+			return new CodeModelContext {
+				FilteredFileName = projectItem.FileName
+			};
 		}
 		
 		internal string GetIncludePath(string fileName)

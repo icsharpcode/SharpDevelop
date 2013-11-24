@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
@@ -17,10 +18,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public global::EnvDTE.CodeElements PartialClasses {
 			get {
 				var list = new CodeElementsList<CodeType>();
-				var td = typeModel.Resolve();
-				if (td != null) {
-					foreach (var fileName in td.Parts.Select(p => p.UnresolvedFile.FileName).Distinct()) {
-						var newContext = context.WithFilteredFileName(fileName);
+				ITypeDefinition typeDefinition = typeModel.Resolve();
+				if (typeDefinition != null) {
+					foreach (string fileName in typeDefinition.Parts.Select(p => p.UnresolvedFile.FileName).Distinct()) {
+						CodeModelContext newContext = context.WithFilteredFileName(fileName);
 						list.Add(CodeType.Create(newContext, typeModel));
 					}
 				} else {
@@ -42,13 +43,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return global::EnvDTE.vsCMClassKind.vsCMClassKindMainClass;
 			}
 			set {
-				if (value == this.ClassKind)
+				if (value == this.ClassKind) {
 					return;
+				}
+				
 				if (value == global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass) {
-					var td = typeModel.Resolve();
-					if (td == null)
+					ITypeDefinition typeDefinition = typeModel.Resolve();
+					if (typeDefinition == null) {
 						throw new NotSupportedException();
-					context.CodeGenerator.MakePartial(td);
+					}
+					context.CodeGenerator.MakePartial(typeDefinition);
 				} else {
 					throw new NotSupportedException();
 				}

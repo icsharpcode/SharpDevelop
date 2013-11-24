@@ -22,6 +22,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		IPackageManagementProjectService projectService;
 		IPackageManagementFileService fileService;
 		DTE dte;
+		CodeModelContext context;
 		
 		public Project(MSBuildBasedProject project)
 			: this(
@@ -39,6 +40,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.MSBuildProject = project;
 			this.projectService = projectService;
 			this.fileService = fileService;
+			
+			context = new CodeModelContext {
+				CurrentProject = project,
+				DteProject = this
+			};
 			
 			CreateProperties();
 			Object = new ProjectObject(this);
@@ -228,8 +234,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual global::EnvDTE.CodeModel CodeModel {
-			get { throw new NotImplementedException(); }
-			//get { return new CodeModel(projectService.GetProjectContent(MSBuildProject) ); }
+			get { return new CodeModel(context, this); }
 		}
 		
 		public virtual global::EnvDTE.ConfigurationManager ConfigurationManager {
@@ -295,6 +300,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal ICompilation GetCompilationUnit(string fileName)
 		{
 			return fileService.GetCompilationUnit(fileName);
+		}
+		
+		internal ICompilation GetCompilationUnit()
+		{
+			return fileService.GetCompilationUnit(MSBuildProject);
 		}
 		
 		internal void RemoveProjectItem(ProjectItem projectItem)

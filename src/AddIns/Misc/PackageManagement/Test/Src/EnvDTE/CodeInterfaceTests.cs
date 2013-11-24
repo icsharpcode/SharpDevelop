@@ -10,27 +10,21 @@
 //namespace PackageManagement.Tests.EnvDTE
 //{
 //	[TestFixture]
-//	public class CodeInterfaceTests
+//	public class CodeInterfaceTests : CodeModelTestBase
 //	{
-//		ProjectContentHelper helper;
 //		CodeInterface codeInterface;
 //		
-//		[SetUp]
-//		public void Init()
+//		void CreateInterface(string code)
 //		{
-//			helper = new ProjectContentHelper();
-//		}
-//		
-//		void CreateInterface()
-//		{
-//			IClass c = helper.AddInterfaceToProjectContent("MyInterface");
-//			codeInterface = new CodeInterface(helper.ProjectContent, c);
+//			AddCodeFile("interface.cs", code);
+//			ITypeDefinitionModel typeModel = assemblyModel.TopLevelTypeDefinitions.Single();
+//			codeInterface = new CodeInterface(codeModelContext, typeModel);
 //		}
 //		
 //		[Test]
 //		public void Kind_Interface_ReturnsInterface()
 //		{
-//			CreateInterface();
+//			CreateInterface("interface MyInterface {}");
 //			
 //			global::EnvDTE.vsCMElement kind = codeInterface.Kind;
 //			

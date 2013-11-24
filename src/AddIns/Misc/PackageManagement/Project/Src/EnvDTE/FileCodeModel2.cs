@@ -16,29 +16,34 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class FileCodeModel2 : MarshalByRefObject, global::EnvDTE.FileCodeModel2
 	{
-		readonly CodeModelContext context;
+		CodeModelContext context;
 		CodeElementsList<CodeElement> codeElements = new CodeElementsList<CodeElement>();
 		Dictionary<string, FileCodeModelCodeNamespace> namespaces = new Dictionary<string, FileCodeModelCodeNamespace>();
 		
-		public FileCodeModel2(CodeModelContext context)
+		public FileCodeModel2(CodeModelContext context, Project project)
 		{
-			if (context == null || context.FilteredFileName == null)
+			if (context == null || context.FilteredFileName == null) {
 				throw new ArgumentException("context must be restricted to a file");
+			}
+			
 			this.context = context;
-			var compilation = SD.ParserService.GetCompilation(context.CurrentProject);
+			ICompilation compilation = project.GetCompilationUnit();
 			
 			var projectContent = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
 			if (projectContent != null) {
 				IUnresolvedFile file = projectContent.GetFile(context.FilteredFileName);
 				if (file != null) {
 					var csharpFile = file as CSharpUnresolvedFile;
-					if (csharpFile != null)
+					if (csharpFile != null) {
 						AddUsings(codeElements, csharpFile.RootUsingScope, compilation);
+					}
 					
 					var resolveContext = new SimpleTypeResolveContext(compilation.MainAssembly);
-					AddTypes(file.TopLevelTypeDefinitions
-					         .Select(td => td.Resolve(resolveContext) as ITypeDefinition)
-					         .Where(td => td != null).Distinct());
+					AddTypes(
+						file.TopLevelTypeDefinitions
+						.Select(td => td.Resolve(resolveContext) as ITypeDefinition)
+						.Where(td => td != null)
+						.Distinct());
 				}
 			}
 		}
@@ -49,23 +54,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void AddTypes(IEnumerable<ITypeDefinition> types)
 		{
-			foreach (var td in types) {
-				var model = td.GetModel();
-				if (model == null)
+			foreach (ITypeDefinition typeDefinition in types) {
+				ITypeDefinitionModel model = typeDefinition.GetModel();
+				if (model == null) {
 					continue;
-				var codeType = CodeType.Create(context, td);
-				if (string.IsNullOrEmpty(td.Namespace))
+				}
+				CodeType codeType = CodeType.Create(context, typeDefinition);
+				if (string.IsNullOrEmpty(typeDefinition.Namespace)) {
 					codeElements.Add(codeType);
-				else
-					GetNamespace(td.Namespace).AddMember(codeType);
+				} else {
+					GetNamespace(typeDefinition.Namespace).AddMember(codeType);
+				}
 			}
-			codeElements.AddRange(types.Select(td => CodeType.Create(context, td)));
+			codeElements.AddRange(types.Select(typeDefinition => CodeType.Create(context, typeDefinition)));
 		}
 		
 		public static void AddUsings(CodeElementsList<CodeElement> codeElements, UsingScope usingScope, ICompilation compilation)
 		{
-			var resolvedUsingScope = usingScope.Resolve(compilation);
-			foreach (var ns in resolvedUsingScope.Usings) {
+			ResolvedUsingScope resolvedUsingScope = usingScope.Resolve(compilation);
+			foreach (INamespace ns in resolvedUsingScope.Usings) {
 				codeElements.Add(new CodeImport(ns.FullName));
 			}
 		}

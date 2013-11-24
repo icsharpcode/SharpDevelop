@@ -9,6 +9,47 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
+	public class CodeElementsList2 : MarshalByRefObject, global::EnvDTE.CodeElements
+	{
+		List<CodeElement> elements = new List<CodeElement>();
+		
+		public CodeElementsList2()
+		{
+		}
+		
+		protected virtual void AddCodeElement(CodeElement element)
+		{
+			elements.Add(element);
+		}
+		
+		public int Count {
+			get { return elements.Count; }
+		}
+		
+		public IEnumerator GetEnumerator()
+		{
+			return elements.GetEnumerator();
+		}
+		
+		public global::EnvDTE.CodeElement Item(object index)
+		{
+			if (index is int) {
+				return Item((int)index);
+			}
+			return Item((string)index);
+		}
+		
+		global::EnvDTE.CodeElement Item(int index)
+		{
+			return elements[index - 1];
+		}
+		
+		global::EnvDTE.CodeElement Item(string name)
+		{
+			return elements.Single(item => item.Name == name);
+		}
+	}
+	
 	public class CodeElementsList<T> : MarshalByRefObject, global::EnvDTE.CodeElements, IList<T>
 		where T : global::EnvDTE.CodeElement
 	{

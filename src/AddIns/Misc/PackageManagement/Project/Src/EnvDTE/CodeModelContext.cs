@@ -9,6 +9,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeModelContext
 	{
+		public EnvDTE.Project DteProject { get; set; }
 		public IProject CurrentProject { get; set; }
 		public IDocumentLoader DocumentLoader { get; set; }
 		public CodeGenerator CodeGenerator { get; set; }

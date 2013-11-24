@@ -141,6 +141,7 @@
     <Compile Include="Src\Helpers\TestablePackageFromRepository.cs" />
     <Compile Include="Src\Helpers\TestableProjectBehaviour.cs" />
     <Compile Include="Src\Helpers\TestableSelectedProjectsForUpdatedPackages.cs" />
+    <Compile Include="Src\Helpers\TestableSolutionSnapshot.cs" />
     <Compile Include="Src\Helpers\TestableUpdatePackagesAction.cs" />
     <Compile Include="Src\Helpers\TestableUpdateSolutionPackagesAction.cs" />
     <Compile Include="Src\Helpers\TestPackageHelper.cs" />
