@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor.Commands;
 using Microsoft.Win32;
@@ -141,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public override void Run(ResolveResult symbol)
 		{
 			var classBrowser = SD.GetService<IClassBrowser>();
-			var entity = GetEntity(symbol);
+			var entity = GetSymbol(symbol) as IEntity;
 			if ((classBrowser != null) && (entity != null)) {
 				classBrowser.GoToEntity(entity);
 			}

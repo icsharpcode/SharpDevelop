@@ -20,7 +20,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 	{
 		public override void Run(ResolveResult symbol)
 		{
-			IEntity entityUnderCaret = GetEntity(symbol);
+			IEntity entityUnderCaret = GetSymbol(symbol) as IEntity;
 			if (entityUnderCaret is ITypeDefinition && !entityUnderCaret.IsSealed) {
 				MakePopupWithDerivedClasses((ITypeDefinition)entityUnderCaret).OpenAtCaretAndFocus();
 				return;

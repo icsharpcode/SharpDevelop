@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			
 			DomRegion pos = symbol.GetDefinitionRegion();
 			if (string.IsNullOrEmpty(pos.FileName)) {
-				IEntity entity = GetEntity(symbol);
+				IEntity entity = GetSymbol(symbol) as IEntity;
 				if (entity != null) {
 					NavigationService.NavigateTo(entity);
 				}

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Dialogs;
 using ICSharpCode.SharpDevelop.Gui;
@@ -18,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		public override void Run(ResolveResult symbol)
 		{
-			var entity = GetEntity(symbol);
+			var entity = GetSymbol(symbol) as IEntity;
 			if (entity != null) {
 				FindReferencesAndRenameHelper.RunFindReferences(entity);
 				return;
@@ -36,9 +37,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		public override void Run(ResolveResult symbol)
 		{
-			var entity = GetEntity(symbol);
+			var entity = GetSymbol(symbol);
 			if (entity != null) {
-				var project = entity.ParentAssembly.GetProject();
+				var project = GetProjectFromSymbol(entity);
 				if (project != null) {
 					var languageBinding = project.LanguageBinding;
 					
@@ -55,6 +56,35 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 								.Subscribe(error => SD.MessageService.ShowError(error.Message), ex => SD.MessageService.ShowException(ex), () => {});
 					}
 				}
+			}
+		}
+		
+		ICSharpCode.SharpDevelop.Project.IProject GetProjectFromSymbol(ISymbol symbol)
+		{
+			switch (symbol.SymbolKind) {
+				case SymbolKind.None:
+					return null;
+				case SymbolKind.TypeDefinition:
+				case SymbolKind.Field:
+				case SymbolKind.Property:
+				case SymbolKind.Indexer:
+				case SymbolKind.Event:
+				case SymbolKind.Method:
+				case SymbolKind.Operator:
+				case SymbolKind.Constructor:
+				case SymbolKind.Destructor:
+				case SymbolKind.Accessor:
+					return ((IEntity)symbol).ParentAssembly.GetProject();
+				case SymbolKind.Namespace:
+					return null; // TODO : extend rename on namespaces
+				case SymbolKind.Variable:
+					return SD.ProjectService.FindProjectContainingFile(new FileName(((IVariable)symbol).Region.FileName));
+				case SymbolKind.Parameter:
+					return ((IParameter)symbol).Owner.ParentAssembly.GetProject();
+				case SymbolKind.TypeParameter:
+					return null; // TODO : extend rename on type parameters
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
 		}
 		

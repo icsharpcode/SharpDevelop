@@ -52,9 +52,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			return GetResolveResult(null, owner);
 		}
 		
-		public static IEntity GetEntity(object owner)
+		public static ISymbol GetSymbol(object owner)
 		{
-			return GetEntity(GetResolveResult(null, owner));
+			return GetSymbol(GetResolveResult(null, owner));
 		}
 		
 		static ResolveResult GetResolveResult(ITextEditor currentEditor, object owner)
@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			return ErrorResolveResult.UnknownError;
 		}
 		
-		protected static IEntity GetEntity(ResolveResult symbol)
+		protected static ISymbol GetSymbol(ResolveResult symbol)
 		{
 			TypeResolveResult trr = symbol as TypeResolveResult;
 			if (trr != null)
@@ -88,6 +88,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			MemberResolveResult mrr = symbol as MemberResolveResult;
 			if (mrr != null)
 				return mrr.Member.MemberDefinition;
+			LocalResolveResult lrr = symbol as LocalResolveResult;
+			if (lrr != null)
+				return lrr.Variable;
 			return null;
 		}
 	}

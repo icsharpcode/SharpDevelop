@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor.Commands;
 
 namespace ICSharpCode.ILSpyAddIn
@@ -15,7 +16,7 @@ namespace ICSharpCode.ILSpyAddIn
 	{
 		public override void Run(ResolveResult symbol)
 		{
-			var entity = GetEntity(symbol);
+			var entity = GetSymbol(symbol) as IEntity;
 			if (entity != null) {
 				ILSpyController.OpenInILSpy(entity);
 			}

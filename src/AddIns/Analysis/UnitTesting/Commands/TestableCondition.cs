@@ -41,7 +41,7 @@ namespace ICSharpCode.UnitTesting
 				return testTreeView.SelectedTests;
 			}
 			if (testSolution != null) {
-				IEntity entity = ResolveResultMenuCommand.GetEntity(caller);
+				IEntity entity = ResolveResultMenuCommand.GetSymbol(caller) as IEntity;
 				return testSolution.GetTestsForEntity(entity);
 			}
 			return Enumerable.Empty<ITest>();

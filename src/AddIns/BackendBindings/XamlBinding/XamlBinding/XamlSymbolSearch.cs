@@ -24,7 +24,7 @@ namespace ICSharpCode.XamlBinding
 	public class XamlSymbolSearch : ISymbolSearch
 	{
 		ICompilation compilation;
-		IEntity entity;
+		ISymbol entity;
 		List<FileName> interestingFileNames;
 		int workAmount;
 		double workAmountInverse;
@@ -32,7 +32,8 @@ namespace ICSharpCode.XamlBinding
 		public XamlSymbolSearch(IProject project, ISymbol entity)
 		{
 			compilation = SD.ParserService.GetCompilation(project);
-			this.entity = compilation.Import((IEntity)entity);
+			if (entity is IEntity)
+				this.entity = compilation.Import((IEntity)entity);
 			interestingFileNames = new List<FileName>();
 			if (this.entity == null)
 				return;
@@ -69,7 +70,7 @@ namespace ICSharpCode.XamlBinding
 			);
 		}
 		
-		void FindReferencesInFile(SymbolSearchArgs searchArguments, IEntity entity, FileName fileName, Action<SearchedFile> callback, CancellationToken cancellationToken)
+		void FindReferencesInFile(SymbolSearchArgs searchArguments, ISymbol entity, FileName fileName, Action<SearchedFile> callback, CancellationToken cancellationToken)
 		{
 			ITextSource textSource = searchArguments.ParseableFileContentFinder.Create(fileName);
 			if (textSource == null)
