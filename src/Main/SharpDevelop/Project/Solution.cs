@@ -20,6 +20,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		DirectoryName directory;
 		readonly IProjectChangeWatcher changeWatcher;
 		readonly IFileService fileService;
+		internal Version currVSVersion, minVSVersion;
+		
+		static readonly Version DefaultVSVersion = new Version(12, 0, 20827, 3);
+		static readonly Version DefaultMinVSVersion = new Version(10, 0, 40219, 1);
 		
 		public Solution(FileName fileName, IProjectChangeWatcher changeWatcher, IFileService fileService)
 		{
@@ -280,7 +284,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				changeWatcher.Disable();
 				using (var solutionWriter = new SolutionWriter(fileName)) {
-					solutionWriter.WriteFormatHeader(ComputeSolutionVersion());
+					var version = ComputeSolutionVersion();
+					solutionWriter.WriteFormatHeader(version);
+					solutionWriter.WriteSolutionVersionProperties(version, currVSVersion ?? DefaultVSVersion, minVSVersion ?? DefaultMinVSVersion);
 					solutionWriter.WriteSolutionItems(this);
 					solutionWriter.WriteGlobalSections(this);
 				}
@@ -307,6 +313,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (project.MinimumSolutionVersion > version)
 					version = project.MinimumSolutionVersion;
 			}
+			
+			if ((minVSVersion != null || currVSVersion != null) && version < SolutionFormatVersion.VS2012)
+				version = SolutionFormatVersion.VS2012;
 			return version;
 		}
 		#endregion
@@ -460,6 +469,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override string ToString()
 		{
 			return "[Solution " + fileName + " with " + projects.Count + " projects]";
+		}
+		
+		public Version VSVersion {
+			get { return currVSVersion; }
+		}
+		
+		public Version MinVSVersion {
+			get { return minVSVersion; }
 		}
 	}
 }

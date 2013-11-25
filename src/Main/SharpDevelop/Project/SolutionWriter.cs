@@ -55,6 +55,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			writer.WriteLine("# SharpDevelop " + RevisionClass.Major + "." + RevisionClass.Minor);
 		}
+		
+		public void WriteSolutionVersionProperties(SolutionFormatVersion version, Version currVSVersion, Version minVSVersion)
+		{
+			if (version >= SolutionFormatVersion.VS2012) {
+				writer.WriteLine("VisualStudioVersion = {0}", currVSVersion);
+				writer.WriteLine("MinimumVisualStudioVersion = {0}", minVSVersion);
+			}
+		}
 		#endregion
 		
 		#region Sections

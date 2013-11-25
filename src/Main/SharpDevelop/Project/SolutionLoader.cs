@@ -60,6 +60,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void ReadSolution(Solution solution, IProgressMonitor progress)
 		{
 			ReadFormatHeader();
+			ReadVersionProperties(solution);
 			
 			// Read solution folder and project entries:
 			var solutionEntries = new List<ProjectLoadInformation>();
@@ -158,6 +159,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region ReadFormatHeader
 		static Regex versionPattern = new Regex(@"^Microsoft Visual Studio Solution File, Format Version\s+(?<Version>[\d\.]+)\s*$");
+		static Regex ideVersionPattern = new Regex(@"((Minimum)?VisualStudioVersion)\s+=\s(?<Version>\d+\.\d+\.\d+\.\d+)");
 		
 		public SolutionFormatVersion ReadFormatHeader()
 		{
@@ -189,6 +191,24 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			NextLine();
 			return version;
+		}
+		
+		void ReadVersionProperties(Solution solution)
+		{
+			Match match = ideVersionPattern.Match(currentLine);
+			while (match.Success) {
+				Version ideVersion = new Version(match.Result("${Version}"));
+				switch (match.Groups[1].Value) {
+					case "VisualStudioVersion":
+						solution.currVSVersion = ideVersion;
+						break;
+					case "MinimumVisualStudioVersion":
+						solution.minVSVersion = ideVersion;
+						break;
+				}
+				NextLine();
+				match = ideVersionPattern.Match(currentLine);
+			}
 		}
 		#endregion
 		
