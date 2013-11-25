@@ -2,12 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Drawing;
-using ICSharpCode.Reporting.Exporter.Visitors;
-using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
+using ICSharpCode.Reporting.Exporter.Visitors;
+using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Pdf
 {

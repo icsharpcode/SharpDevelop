@@ -12,7 +12,7 @@ namespace ICSharpCode.Reporting.Pdf
 	/// <summary>
 	/// Description of PdfHelper.
 	/// </summary>
-	public class PdfHelper
+	public static class PdfHelper
 	{
 		
 		public static void WriteText(XTextFormatter textFormatter,Point columnLocation, ExportText exportColumn)
@@ -26,9 +26,7 @@ namespace ICSharpCode.Reporting.Pdf
 		static XFont CreatePdfFont(IExportColumn exportColumn)
 		{
 			var textColumn = (ExportText)exportColumn;
-			XFont font = new XFont(textColumn.Font.FontFamily.Name, textColumn.Font.Size);
-		
-			return font;
+			return new XFont(textColumn.Font.FontFamily.Name, textColumn.Font.Size);
 		}
 		
 		
@@ -45,7 +43,7 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		public static void DrawRectangle (IExportColumn column, XGraphics graphics) {
 			var c = XColor.FromArgb(column.FrameColor.R,column.FrameColor.G,column.FrameColor.B);
-			XPen pen = new XPen(c, 1);
+			var pen = new XPen(c, 1);
 			var r = CreateDisplayRectangle(column);
 			graphics.DrawRectangle(pen,r);
 		}
@@ -55,7 +53,7 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		public static void DrawRectangle(Rectangle rect,Color color,XGraphics graphics) {
 			var c = XColor.FromArgb(color.R,color.G,color.B);
-			XPen pen = new XPen(c, 1);
+			var pen = new XPen(c, 1);
 			var r = CreateDisplayRectangle(rect.Location,rect.Size);
 			graphics.DrawRectangle(pen,r);
 		}

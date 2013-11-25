@@ -4,11 +4,10 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
+using PdfSharp.Pdf;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
 
 namespace ICSharpCode.Reporting.Pdf
 {
@@ -35,7 +34,7 @@ namespace ICSharpCode.Reporting.Pdf
 			Console.WriteLine("Start PdfExporter with {0} Pages ",Pages.Count);
 			
 			foreach (var page in Pages) {
-				IAcceptor acceptor = page as IAcceptor;
+				var acceptor = page as IAcceptor;
 				if (acceptor != null) {
 					visitor.Visit(page);
 				}
@@ -57,7 +56,6 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		void SetDocumentTitle(string reportName)
 		{
-			Console.WriteLine("Set DocumentTitle to {0}",reportName);
 			pdfDocument.Info.Title = reportName;
 		}
 		

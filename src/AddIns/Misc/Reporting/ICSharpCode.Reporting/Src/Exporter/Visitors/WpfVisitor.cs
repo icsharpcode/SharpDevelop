@@ -37,6 +37,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			base.Visit(page);
 		}
 		
+		
 		public override void Visit(ExportContainer exportContainer){
 			currentCanvas = documentCreator.CreateContainer(exportContainer);
 			CanvasHelper.SetPosition(currentCanvas,new Point(exportContainer.Location.X,exportContainer.Location.Y));
