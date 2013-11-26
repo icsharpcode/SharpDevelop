@@ -17,18 +17,18 @@ using NUnit.Framework;
 namespace ICSharpCode.Reporting.Test.PageBuilder
 {
 	[TestFixture]
-	public class ContainerConverterFixture
+	public class SectionConverterFixture
 	{
-		private IReportContainer container;
-		private Graphics graphics;
-		
+		IReportContainer container;
+		Graphics graphics;
 		
 		[Test]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void ConverterThrowIfGraphicsEqualNull() {
 			var converter = new ContainerConverter(null,new Point(30,30));
 		}
-			
+		
+		
 		[Test]
 		public void ConverterReturnExportContainer() {
 			var converter = new ContainerConverter(graphics,new Point(30,30));
@@ -38,7 +38,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		
 		[Test]
-		public void ConverterReturnExportContainerwithTwoItems()
+		public void ConverterReturnExportContainerWithTwoItems()
 		{
 			var converter = new ContainerConverter(graphics,new Point(30,30));
 			var result = converter.ConvertToExportContainer(container);
@@ -56,6 +56,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			Assert.That(result.Location,Is.EqualTo(location));
 		}
 		
+		
 		[Test]
 		public void ParentInChildsIsSet () {
 			var converter = new ContainerConverter(graphics,container.Location);
@@ -67,9 +68,9 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 				Assert.That(element.Parent,Is.Not.Null);
 			}
 		}
-			
 		
-		[TestFixtureSetUp]
+			
+		[SetUp]
 		public void Init()
 		{
 			container = new BaseSection(){

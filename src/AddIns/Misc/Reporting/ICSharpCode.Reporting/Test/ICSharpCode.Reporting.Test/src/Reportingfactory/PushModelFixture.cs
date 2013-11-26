@@ -57,7 +57,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 			var reportingFactory  = new ReportingFactory();
 			var rc = reportingFactory.ReportCreator(stream,list);
 			Assert.That(rc,Is.Not.Null);
-				Assert.That(rc,Is.TypeOf(typeof(DataPageBuilder)));
+			Assert.That(rc,Is.TypeOf(typeof(DataPageBuilder)));
 		}
 	
 		

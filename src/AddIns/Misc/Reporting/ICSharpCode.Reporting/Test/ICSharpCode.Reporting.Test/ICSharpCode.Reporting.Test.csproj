@@ -79,10 +79,11 @@
     <Compile Include="src\Model\Report_FromListFixture.cs" />
     <Compile Include="src\Model\Report_TwoItemsFixture.cs" />
     <Compile Include="src\PageBuilder\BaseConvertFixture.cs" />
-    <Compile Include="src\PageBuilder\ContainerConverterFixture.cs" />
+    <Compile Include="src\PageBuilder\SectionConverterFixture.cs" />
     <Compile Include="src\PageBuilder\FormBuilderFixture.cs" />
     <Compile Include="src\PageBuilder\PageFixture.cs" />
     <Compile Include="src\PageBuilder\PageLayoutFixture.cs" />
+    <Compile Include="src\PageBuilder\SectionWithContainerFixture.cs" />
     <Compile Include="src\Properties\AssemblyInfo.cs" />
     <Compile Include="src\Reportingfactory\FormPageFixture.cs" />
     <Compile Include="src\Reportingfactory\GeneralReportLoading.cs" />

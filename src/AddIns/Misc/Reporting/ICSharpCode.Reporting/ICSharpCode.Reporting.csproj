@@ -145,6 +145,7 @@
     <Compile Include="Src\Interfaces\IReportContainer.cs" />
     <Compile Include="Src\Interfaces\IReportCreator.cs" />
     <Compile Include="Src\Items\BaseDataItem.cs" />
+    <Compile Include="Src\Items\BaseRowItem.cs" />
     <Compile Include="Src\Items\BaseSection.cs" />
     <Compile Include="Src\Globals\GlobalEnums.cs" />
     <Compile Include="Src\Globals\GlobalValues.cs" />

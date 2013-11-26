@@ -44,6 +44,13 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			var itemsList = new List<IExportColumn>();
 			foreach (var element in items) {
 				var exportColumn = ExportColumnFactory.CreateItem(element);
+				var ec = element as IReportContainer;
+				if (ec != null) {
+					Console.WriteLine("yyyyyyyyyyy");
+					var l = CreateConvertedList(ec.Items);
+					((IExportContainer)exportColumn).ExportedItems.AddRange(l);
+				}
+				
 				itemsList.Add(exportColumn);
 			}
 			return itemsList;
