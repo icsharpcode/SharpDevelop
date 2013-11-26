@@ -30,7 +30,7 @@ namespace ICSharpCode.CodeCoverage
 			Init();
 		}
 		
-		public string FileRef { get; private set; }
+		public string FileID { get; private set; }
 		public bool IsVisited { get; private set; }
 		public int CyclomaticComplexity { get; private set; }
 		public decimal SequenceCoverage { get; private set; }
@@ -56,37 +56,40 @@ namespace ICSharpCode.CodeCoverage
 			IsGetter = GetBooleanAttributeValue("isGetter");
 			IsSetter = GetBooleanAttributeValue("isSetter");
 
-			this.FileRef = GetFileRef();
+			this.FileID = GetFileRef();
 			this.IsVisited = this.GetBooleanAttributeValue("visited");
 			this.CyclomaticComplexity = (int)this.GetDecimalAttributeValue("cyclomaticComplexity");
-			this.SequencePoints = this.GetSequencePoints();
-			this.SequencePointsCount = this.SequencePoints.Count;
-			//this.SequencePointsCount = this.GetSequencePointsCount();
+			this.SequencePointsCount = this.GetSequencePointsCount();
 			this.SequenceCoverage = (int)this.GetDecimalAttributeValue("sequenceCoverage");
-			this.BranchPoints = this.GetBranchPoints();
-			this.BranchCoverageRatio = this.GetBranchRatio();
-			this.BranchCoverage = this.GetBranchCoverage();
 			this.IsConstructor = this.GetBooleanAttributeValue("isConstructor");
 			this.IsStatic = this.GetBooleanAttributeValue("isStatic");
-
+			if ( !String.IsNullOrEmpty( this.FileID ) ) {
+				this.SequencePoints = this.GetSequencePoints();
+				this.BranchPoints = this.GetBranchPoints();
+				this.BranchCoverageRatio = this.GetBranchRatio();
+				this.BranchCoverage = this.GetBranchCoverage();
+			}
 		}
 		
 		List<CodeCoverageSequencePoint> GetSequencePoints() {
-			// get all SequencePoints
+
 			List<CodeCoverageSequencePoint> sps = new List<CodeCoverageSequencePoint>();
 			var xSPoints = this.element			
 				.Elements("SequencePoints")
 				.Elements("SequencePoint");
+
 			foreach (XElement xSPoint in xSPoints) {
 				CodeCoverageSequencePoint sp = new CodeCoverageSequencePoint();
-				sp.FileRef = this.FileRef;
+				sp.FileID = this.FileID;
 				sp.Line = (int)GetDecimalAttributeValue(xSPoint.Attribute("sl"));
 				sp.EndLine = (int)GetDecimalAttributeValue(xSPoint.Attribute("el"));
 				sp.Column = (int)GetDecimalAttributeValue(xSPoint.Attribute("sc"));
 				sp.EndColumn = (int)GetDecimalAttributeValue(xSPoint.Attribute("ec"));
 				sp.VisitCount = (int)GetDecimalAttributeValue(xSPoint.Attribute("vc"));
 				sp.Length = 1;
-				sp.BranchCovered = true;
+				sp.Offset = (int)GetDecimalAttributeValue(xSPoint.Attribute("offset"));
+				sp.BranchCoverage = true;
+
 				sps.Add(sp);
 			}
 			return sps;
@@ -251,7 +254,7 @@ namespace ICSharpCode.CodeCoverage
 						foreach ( CodeCoverageSequencePoint sp in this.SequencePoints ) {
 							if ( sp.Offset > uniqueBranch.Offset ) {
 								if ( !Object.ReferenceEquals( sp_target, null ) ) {
-									sp_target.BranchCovered = false;
+									sp_target.BranchCoverage = false;
 								}
 								break;
 							}

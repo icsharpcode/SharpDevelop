@@ -34,6 +34,7 @@ namespace ICSharpCode.CodeCoverage
 		ColumnHeader endLineColumnHeader;
 		ColumnHeader startColumnColumnHeader;
 		ColumnHeader endColumnColumnHeader;
+		ColumnHeader allBranchesColumnHeader;
 		ToolStrip toolStrip;
 		bool showSourceCodePanel;
 		bool showVisitCountPanel = true;
@@ -300,7 +301,7 @@ namespace ICSharpCode.CodeCoverage
 			item.SubItems.Add(sequencePoint.Column.ToString());
 			item.SubItems.Add(sequencePoint.EndLine.ToString());
 			item.SubItems.Add(sequencePoint.EndColumn.ToString());
-			item.SubItems.Add(sequencePoint.BranchCovered.ToString());
+			item.SubItems.Add(sequencePoint.BranchCoverage.ToString());
 			item.Tag = sequencePoint;
 			
 			listView.Items.Add(item);
@@ -414,11 +415,17 @@ namespace ICSharpCode.CodeCoverage
 			endColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndColumn}");
 			endColumnColumnHeader.Width = 80;
 
+			allBranchesColumnHeader = new ColumnHeader();
+			allBranchesColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.AllBranches}");
+			allBranchesColumnHeader.Width = 80;
+
 			listView.Columns.AddRange(new ColumnHeader[] {visitCountColumnHeader,
 			   	                      startLineColumnHeader,
 			                          startColumnColumnHeader,
 			                          endLineColumnHeader,
-			                          endColumnColumnHeader});
+			                          endColumnColumnHeader,
+			                          allBranchesColumnHeader
+			                          });
 			
 			// Create custom list view sorter.
 			sequencePointListViewSorter = new SequencePointListViewSorter(listView);

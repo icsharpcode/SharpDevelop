@@ -94,10 +94,10 @@ namespace ICSharpCode.CodeCoverage
 		public static Color GetSequencePointColor(CodeCoverageSequencePoint sequencePoint)
 		{
 			if (sequencePoint.VisitCount > 0) {
-				if ( sequencePoint.BranchCovered ) {
+				if ( sequencePoint.BranchCoverage == true ) {
 					return CodeCoverageOptions.VisitedColor.ToWpf();
 				}
-				return CodeCoverageOptions.PartialVisitedColor.ToWpf();
+				return CodeCoverageOptions.PartVisitedColor.ToWpf();
 			}
 			return CodeCoverageOptions.NotVisitedColor.ToWpf();
 		}
@@ -105,7 +105,10 @@ namespace ICSharpCode.CodeCoverage
 		public static Color GetSequencePointForeColor(CodeCoverageSequencePoint sequencePoint)
 		{
 			if (sequencePoint.VisitCount > 0) {
-				return CodeCoverageOptions.VisitedForeColor.ToWpf();
+				if ( sequencePoint.BranchCoverage == true ) {
+					return CodeCoverageOptions.VisitedForeColor.ToWpf();
+				}
+				return CodeCoverageOptions.PartVisitedForeColor.ToWpf();
 			}
 			return CodeCoverageOptions.NotVisitedForeColor.ToWpf();
 		}

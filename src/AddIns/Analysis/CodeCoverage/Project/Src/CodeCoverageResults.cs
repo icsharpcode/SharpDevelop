@@ -106,49 +106,31 @@ namespace ICSharpCode.CodeCoverage
 			string id = reader.Attribute("hash").Value;
 			return GetAssembly(id);
 		}
-		
-		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XElement reader)
-		{
-			CodeCoverageMethod method = new CodeCoverageMethod(className, reader);
-			module.Methods.Add(method);
-			/* move that code into CodeCoverageMethod/Element
-			var points = reader
-				.Elements("SequencePoints")
-				.Elements("SequencePoint");
-			foreach (XElement point in points) {
-				AddSequencePoint(method, point, reader);
-			}
-			*/
-			// UPDATE SEQUENCE POINTS DOCUMENT
-			foreach ( var sp in method.SequencePoints ) {
-				sp.Document = GetFileName(sp.FileRef);
-			}
-			return method;
-		}
-		
+
 		/// <summary>
 		/// Sequence points that do not have a file id are not
 		/// added to the code coverage method. Typically these are
 		/// for types that are not part of the project but types from
 		/// the .NET framework. 
 		/// </summary>
-		void AddSequencePoint(CodeCoverageMethod method, XElement reader, XElement methodNode)
+		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XElement reader)
 		{
-			string fileName = GetFileName(methodNode);
-			
-			CodeCoverageSequencePoint sequencePoint = 
-				new CodeCoverageSequencePoint(fileName, reader);
-			method.SequencePoints.Add(sequencePoint);
+			CodeCoverageMethod method = new CodeCoverageMethod(className, reader);
+			module.Methods.Add(method);
+			// to resolve SequencePoint.BranchCoverage ...
+			// reading/adding method.sequencepoints is moved from this class into CodeCoverageMethod/Element
+			// but here yet must resolve sequencepoint.document
+			foreach ( var sp in method.SequencePoints ) {
+				if ( !String.IsNullOrEmpty(sp.FileID) )
+					sp.Document = GetFileName(sp.FileID);
+			}
+			return method;
 		}
 		
-		string GetFileName(XElement reader)
-		{
-			XElement fileId = reader.Element("FileRef");
-			if (fileId != null) {
-				return GetFileName(fileId.Attribute("uid").Value);
-			}
-			return String.Empty;
-		}
+		/// <summary>
+		/// Cache result because same FileID is repeated for each SequencePoint
+		/// </summary>
+		private static Tuple<string,string> fileIdNameCache = new Tuple<string, string>(String.Empty,String.Empty);
 
 		/// <summary>
 		/// Returns a filename based on the file id. The filenames are stored in the
@@ -156,7 +138,10 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		string GetFileName(string id)
 		{
-			return GetDictionaryValue(fileNames, id);
+			if (fileIdNameCache.Item1 != id) {
+				fileIdNameCache = new Tuple<string, string>(id, GetDictionaryValue(fileNames, id));
+			}
+			return fileIdNameCache.Item2;
 		}
 		
 		/// <summary>
