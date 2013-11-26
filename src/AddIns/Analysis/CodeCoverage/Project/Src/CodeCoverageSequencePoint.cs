@@ -64,6 +64,7 @@ namespace ICSharpCode.CodeCoverage
 			return !String.IsNullOrEmpty(Document);
 		}
 		
+		public string FileRef { get; set; }
 		public string Document { get; set; }
 		public int VisitCount { get; set; }
 		public int Line { get; set; }
@@ -71,6 +72,8 @@ namespace ICSharpCode.CodeCoverage
 		public int EndLine { get; set; }
 		public int EndColumn { get; set; }
 		public int Length { get; set; }
+		public int Offset { get; set; }
+		public bool BranchCovered { get; set; }
 		
 		public override bool Equals(object obj)
 		{

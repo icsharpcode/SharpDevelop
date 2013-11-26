@@ -48,6 +48,7 @@ namespace ICSharpCode.CodeCoverage
 			this.BranchCoverage = element.BranchCoverage;
 			this.BranchCoverageRatio = element.BranchCoverageRatio;
 			this.SequencePointsCount = element.SequencePointsCount;
+			this.sequencePoints = element.SequencePoints;
 			
 		}
 		

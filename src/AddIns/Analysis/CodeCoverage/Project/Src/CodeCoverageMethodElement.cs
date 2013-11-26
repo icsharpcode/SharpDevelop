@@ -13,17 +13,24 @@ namespace ICSharpCode.CodeCoverage
 	{
 		XElement element;
 
-		private class branch {
+		private class branchOffset {
+			public int Offset;
 			public int Visit;
 			public int Count;
+			public branchOffset( int offset ) {
+				this.Offset = offset;
+			}
 		}
 
 		public CodeCoverageMethodElement(XElement element)
 		{
 			this.element = element;
+			this.SequencePoints = new List<CodeCoverageSequencePoint>();
+			this.BranchPoints = new List<CodeCoverageBranchPoint>();
 			Init();
 		}
 		
+		public string FileRef { get; private set; }
 		public bool IsVisited { get; private set; }
 		public int CyclomaticComplexity { get; private set; }
 		public decimal SequenceCoverage { get; private set; }
@@ -32,6 +39,8 @@ namespace ICSharpCode.CodeCoverage
 		public Tuple<int,int> BranchCoverageRatio { get; private set; }
 		public bool IsConstructor { get; private set; }
 		public bool IsStatic { get; private set; }
+		public List<CodeCoverageSequencePoint> SequencePoints { get; private set; }
+		public List<CodeCoverageBranchPoint> BranchPoints { get; private set; }
 
 		public bool IsGetter { get; private set; }
 		public bool IsSetter { get; private set; }
@@ -47,15 +56,40 @@ namespace ICSharpCode.CodeCoverage
 			IsGetter = GetBooleanAttributeValue("isGetter");
 			IsSetter = GetBooleanAttributeValue("isSetter");
 
+			this.FileRef = GetFileRef();
 			this.IsVisited = this.GetBooleanAttributeValue("visited");
 			this.CyclomaticComplexity = (int)this.GetDecimalAttributeValue("cyclomaticComplexity");
-			this.SequencePointsCount = this.GetSequencePointsCount();
-			this.SequenceCoverage = this.GetDecimalAttributeValue("sequenceCoverage");
+			this.SequencePoints = this.GetSequencePoints();
+			this.SequencePointsCount = this.SequencePoints.Count;
+			//this.SequencePointsCount = this.GetSequencePointsCount();
+			this.SequenceCoverage = (int)this.GetDecimalAttributeValue("sequenceCoverage");
+			this.BranchPoints = this.GetBranchPoints();
 			this.BranchCoverageRatio = this.GetBranchRatio();
 			this.BranchCoverage = this.GetBranchCoverage();
 			this.IsConstructor = this.GetBooleanAttributeValue("isConstructor");
 			this.IsStatic = this.GetBooleanAttributeValue("isStatic");
 
+		}
+		
+		List<CodeCoverageSequencePoint> GetSequencePoints() {
+			// get all SequencePoints
+			List<CodeCoverageSequencePoint> sps = new List<CodeCoverageSequencePoint>();
+			var xSPoints = this.element			
+				.Elements("SequencePoints")
+				.Elements("SequencePoint");
+			foreach (XElement xSPoint in xSPoints) {
+				CodeCoverageSequencePoint sp = new CodeCoverageSequencePoint();
+				sp.FileRef = this.FileRef;
+				sp.Line = (int)GetDecimalAttributeValue(xSPoint.Attribute("sl"));
+				sp.EndLine = (int)GetDecimalAttributeValue(xSPoint.Attribute("el"));
+				sp.Column = (int)GetDecimalAttributeValue(xSPoint.Attribute("sc"));
+				sp.EndColumn = (int)GetDecimalAttributeValue(xSPoint.Attribute("ec"));
+				sp.VisitCount = (int)GetDecimalAttributeValue(xSPoint.Attribute("vc"));
+				sp.Length = 1;
+				sp.BranchCovered = true;
+				sps.Add(sp);
+			}
+			return sps;
 		}
 
 		int GetSequencePointsCount() {
@@ -63,30 +97,36 @@ namespace ICSharpCode.CodeCoverage
 			if ( summary != null ) {
 				XAttribute nsp = summary.Attribute("numSequencePoints");
 				if ( nsp != null ) {
-					return (int)this.GetDecimalAttributeValue( nsp );
+					return (int)GetDecimalAttributeValue( nsp );
 				}
 			}
 			return 0;
+		}
+
+		List<CodeCoverageBranchPoint> GetBranchPoints() {
+			// get all SequencePoints
+			List<CodeCoverageBranchPoint> bps = new List<CodeCoverageBranchPoint>();
+			var xBPoints = this.element			
+				.Elements("BranchPoints")
+				.Elements("BranchPoint");
+			foreach (XElement xBPoint in xBPoints) {
+				CodeCoverageBranchPoint bp = new CodeCoverageBranchPoint();
+				bp.VisitCount = (int)GetDecimalAttributeValue(xBPoint.Attribute("vc"));
+				bp.Offset = (int)GetDecimalAttributeValue(xBPoint.Attribute("offset"));
+				bp.Path = (int)GetDecimalAttributeValue(xBPoint.Attribute("path"));
+				bps.Add(bp);
+			}
+			return bps;
 		}
 
 		Tuple<int,int> GetBranchRatio () {
 
 			// goal: Get branch ratio and exclude (rewriten) Code Contracts branches 
 
-			// get all BranchPoints
-			var bPoints = this.element
-				.Elements("BranchPoints")
-				.Elements("BranchPoint");
-
-			if ( bPoints == null || bPoints.Count() == 0 ) {
+			if ( this.BranchPoints == null || this.BranchPoints.Count() == 0 ) {
 				return null;
 			}
 
-			// get all SequencePoints
-			var sPoints = this.element			
-				.Elements("SequencePoints")
-				.Elements("SequencePoint");
-			
 			// start & final method sequence points line and offset
 			int methodStartLine = 0;
 			int methodStartOffset = 0;
@@ -105,14 +145,14 @@ namespace ICSharpCode.CodeCoverage
 			// and then first next sequencePoint (and offset of first instruction in body)
 			// This will skip Contract.Require SequencePoints 
 			// and help to filter-out Contract.Require BranchPoint's
-			foreach (XElement sPoint in sPoints) {
-				startLine = (int)GetDecimalAttributeValue(sPoint.Attribute("sl"));
-				finalLine = (int)GetDecimalAttributeValue(sPoint.Attribute("el"));
-				startChar = (int)GetDecimalAttributeValue(sPoint.Attribute("sc"));
-				finalChar = (int)GetDecimalAttributeValue(sPoint.Attribute("ec"));
+			foreach (CodeCoverageSequencePoint sp in this.SequencePoints) {
+				startLine = sp.Line;
+				finalLine = sp.EndLine;
+				startChar = sp.Column;
+				finalChar = sp.EndColumn;
 				if ( nextMatch ) {
 					methodStartLine = startLine;
-					methodStartOffset = (int)GetDecimalAttributeValue(sPoint.Attribute("offset"));
+					methodStartOffset = sp.Offset;
 					break;
 				}
 				if ( startLine==finalLine && (finalChar-startChar)==1 ) {
@@ -123,14 +163,14 @@ namespace ICSharpCode.CodeCoverage
 			// find method body last SequencePoint and final offset (})
 			// This will skip Contract.Ensures SequencePoints 
 			// and help to filter-out Contract.Ensures BranchPoint's
-			foreach (XElement sPoint in sPoints.Reverse()) {
-				startLine = (int)GetDecimalAttributeValue(sPoint.Attribute("sl"));
-				finalLine = (int)GetDecimalAttributeValue(sPoint.Attribute("el"));
-				startChar = (int)GetDecimalAttributeValue(sPoint.Attribute("sc"));
-				finalChar = (int)GetDecimalAttributeValue(sPoint.Attribute("ec"));
+			foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(this.SequencePoints)) {
+				startLine = sp.Line;
+				finalLine = sp.EndLine;
+				startChar = sp.Column;
+				finalChar = sp.EndColumn;
 				if ( startLine==finalLine && (finalChar-startChar)==1 ) {
 					methodFinalLine = finalLine;
-					methodFinalOffset = (int)GetDecimalAttributeValue(sPoint.Attribute("offset"));
+					methodFinalOffset = sp.Offset;
 					break;
 				}
 			}
@@ -145,68 +185,83 @@ namespace ICSharpCode.CodeCoverage
 			nextMatch = false;
 			int lastOffset = 0;
 			int lastLine = methodStartLine;
-			int currLine = 0;
 			List<Tuple<int,int>> excludeList = new List<Tuple<int, int>>();
-			foreach (XElement sPoint in sPoints) {
-				currLine = (int)GetDecimalAttributeValue(sPoint.Attribute("sl"));
-				if ( (currLine < methodStartLine) || currLine > methodFinalLine ) { continue ; }
+			foreach (CodeCoverageSequencePoint sp in this.SequencePoints) {
+				if ( (sp.Line < methodStartLine) || methodFinalLine < sp.Line ) { continue ; }
 				
-				if (nextMatch && (currLine > lastLine)) {
+				if (nextMatch && (sp.Line > lastLine)) {
 					nextMatch = false;
-					excludeList.Add(new Tuple<int, int> ( lastOffset , (int)GetDecimalAttributeValue(sPoint.Attribute("offset"))));
+					excludeList.Add(new Tuple<int, int> ( lastOffset , sp.Offset ));
 				}
 				// reversed line number?
-				if (!nextMatch && (currLine < lastLine)) {
+				if (!nextMatch && (sp.Line < lastLine)) {
 					nextMatch = true;
-					lastOffset = (int)GetDecimalAttributeValue(sPoint.Attribute("offset"));
+					lastOffset = sp.Offset;
 				}
-				lastLine = currLine;
+				lastLine = sp.Line;
 			}
 
-			int visited = 0;
-			int offset = 0;
+			// Collect branch offsets within method boundary { } (exclude Contracts)
+			// and filter with excludeList
+			Dictionary<int, branchOffset> branchDictionary = new Dictionary<int, branchOffset>();
+			foreach (CodeCoverageBranchPoint bp in this.BranchPoints) {
 
-			// collect all branch offsets
-			Dictionary<int, branch> branches = new Dictionary<int, branch>();
-			foreach (XElement bPoint in bPoints) {
-				visited = (int)GetDecimalAttributeValue(bPoint.Attribute("vc"));
-				offset =  (int)GetDecimalAttributeValue(bPoint.Attribute("offset"));
-				if ( offset > methodStartOffset && offset < methodFinalOffset ) {
+				if ( methodStartOffset <= bp.Offset && bp.Offset <= methodFinalOffset ) {
 
 					// Apply exclude BranchPoint filter
 					nextMatch = true;
 					foreach (var range in excludeList) {
-						if (offset > range.Item1 && offset < range.Item2) {
+						if (range.Item1 < bp.Offset  && bp.Offset < range.Item2) {
+							// exclude range match
 							nextMatch = false; break;
 						}
 					} if (!nextMatch) { continue; }
 
-					// Add/insert coverage data
-					if ( branches.ContainsKey( offset ) ) {
-						branch update = branches[offset];
-						update.Visit += visited!=0?1:0;
+					// update/insert branch offset coverage data
+					if ( branchDictionary.ContainsKey( bp.Offset ) ) {
+						branchOffset update = branchDictionary[bp.Offset];
+						update.Visit += bp.VisitCount!=0?1:0;
 						update.Count += 1;
 					} else {
-						// Insert first branch
-						branches[offset] = new branch{Visit=visited!=0?1:0,Count=1};
+						// Insert first branch at offset
+						branchOffset insert = new branchOffset(bp.Offset);
+						insert.Visit = bp.VisitCount!=0?1:0;
+						insert.Count = 1;
+						branchDictionary[insert.Offset] = insert;
 					}
 				}
 			}
 			
-			int totalVisit = 0;
-			int totalCount = 0;
+			int totalBranchVisit = 0;
+			int totalBranchCount = 0;
+			CodeCoverageSequencePoint sp_target = null;
 			// Branch percentage will display only if code SequencePoints coverage is 100%, so ...
 			// Do not add branch if branch is not visited at all because ... :
 			// If "branch" is completely unvisited and 100% SequencePoints covered, 
 			// then that "branch" does not really exists in SOURCE code we try to cover
-			foreach ( branch item in branches.Values ) {
-				if ( item.Visit != 0 ) {
-					totalVisit += item.Visit;
-					totalCount += item.Count;
+			foreach ( branchOffset uniqueBranch in branchDictionary.Values ) {
+				if ( uniqueBranch.Visit != 0 ) {
+					totalBranchVisit += uniqueBranch.Visit;
+					totalBranchCount += uniqueBranch.Count;
+
+					// not full branch coverage?
+					if ( uniqueBranch.Visit != uniqueBranch.Count ) {
+						// update matching sequence point branch covered
+						sp_target = null;
+						foreach ( CodeCoverageSequencePoint sp in this.SequencePoints ) {
+							if ( sp.Offset > uniqueBranch.Offset ) {
+								if ( !Object.ReferenceEquals( sp_target, null ) ) {
+									sp_target.BranchCovered = false;
+								}
+								break;
+							}
+							sp_target = sp;
+						}
+					}
 				}
 			}
 
-			return (totalCount!=0) ? new Tuple<int,int>(totalVisit,totalCount) : null;
+			return (totalBranchCount!=0) ? new Tuple<int,int>(totalBranchVisit,totalBranchCount) : null;
 			
 		}
 
@@ -247,7 +302,15 @@ namespace ICSharpCode.CodeCoverage
 			}
 			return false;
 		}
-		
+
+		string GetFileRef() {
+			XElement fileId = element.Element("FileRef");
+			if (fileId != null) {
+				return fileId.Attribute("uid").Value;
+			}
+			return String.Empty;
+		}
+
 		string GetMethodName()
 		{
 			XElement nameElement = element.Element("Name");

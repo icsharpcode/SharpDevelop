@@ -76,6 +76,23 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		/// <summary>
+		/// Gets the colour that will be used when highlighting visited code.
+		/// </summary>
+		public static Color PartialVisitedColor {
+			get { return Properties.Get<Color>(VisitedColorProperty, Color.Yellow); }
+			set { Properties.Set<Color>(VisitedColorProperty, value); }
+		}
+		
+		/// <summary>
+		/// Gets the foreground colour that will be used when highlighting
+		/// visited code.
+		/// </summary>
+		public static Color PartialVisitedForeColor {
+			get { return Properties.Get<Color>(VisitedForeColorProperty, Color.Black); }
+			set { Properties.Set<Color>(VisitedForeColorProperty, value); }
+		}
+		
+		/// <summary>
 		/// Gets the colour that will be used when highlighting code that has not
 		/// been visited.
 		/// </summary>

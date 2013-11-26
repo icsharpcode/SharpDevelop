@@ -300,6 +300,7 @@ namespace ICSharpCode.CodeCoverage
 			item.SubItems.Add(sequencePoint.Column.ToString());
 			item.SubItems.Add(sequencePoint.EndLine.ToString());
 			item.SubItems.Add(sequencePoint.EndColumn.ToString());
+			item.SubItems.Add(sequencePoint.BranchCovered.ToString());
 			item.Tag = sequencePoint;
 			
 			listView.Items.Add(item);

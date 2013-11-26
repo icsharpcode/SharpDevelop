@@ -61,6 +61,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\CodeCoverageBranchPoint.cs" />
     <Compile Include="Src\CodeCoverageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

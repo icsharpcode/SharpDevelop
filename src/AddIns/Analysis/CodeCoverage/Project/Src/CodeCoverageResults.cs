@@ -111,11 +111,17 @@ namespace ICSharpCode.CodeCoverage
 		{
 			CodeCoverageMethod method = new CodeCoverageMethod(className, reader);
 			module.Methods.Add(method);
+			/* move that code into CodeCoverageMethod/Element
 			var points = reader
 				.Elements("SequencePoints")
 				.Elements("SequencePoint");
 			foreach (XElement point in points) {
 				AddSequencePoint(method, point, reader);
+			}
+			*/
+			// UPDATE SEQUENCE POINTS DOCUMENT
+			foreach ( var sp in method.SequencePoints ) {
+				sp.Document = GetFileName(sp.FileRef);
 			}
 			return method;
 		}
