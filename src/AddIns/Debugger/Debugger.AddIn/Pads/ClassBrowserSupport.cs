@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			model.AssemblyName = module.UnresolvedAssembly.AssemblyName;
 			model.FullAssemblyName = module.UnresolvedAssembly.FullAssemblyName;
 			model.Update(EmptyList<IUnresolvedTypeDefinition>.Instance, types);
-			model.References = module.GetReferences().Select(r => new DomAssemblyName(r)).ToArray();
+			model.UpdateReferences(module.GetReferences().Select(r => new DomAssemblyName(r)).ToArray());
 			return model;
 		}
 	}

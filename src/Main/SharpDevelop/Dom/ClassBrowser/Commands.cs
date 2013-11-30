@@ -9,6 +9,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor.Commands;
+using ICSharpCode.SharpDevelop.Parser;
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -67,22 +68,36 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public override bool CanExecute(object parameter)
 		{
 			IAssemblyModel assemblyModel = parameter as IAssemblyModel;
-			return (assemblyModel != null) && assemblyModel.Context.IsValid;
+			IAssemblyReferenceModel assemblyReferenceModel = parameter as IAssemblyReferenceModel;
+			return ((assemblyModel != null) && assemblyModel.Context.IsValid) || (assemblyReferenceModel != null);
 		}
 		
 		public override void Execute(object parameter)
 		{
 			var classBrowser = SD.GetService<IClassBrowser>();
 			if (classBrowser != null) {
-				IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
+				IAssemblyModel assemblyModel = parameter as IAssemblyModel;
+				if (assemblyModel == null) {
+					IAssemblyReferenceModel assemblyReference = parameter as IAssemblyReferenceModel;
+					if (assemblyReference == null) {
+						// Neither assembly model, nor a assembly reference model
+						return;
+					}
+					
+					// Model is an assembly reference
+					IAssemblyParserService assemblyParserService = SD.GetRequiredService<IAssemblyParserService>();
+					DefaultAssemblySearcher searcher = new DefaultAssemblySearcher(assemblyReference.ParentAssemblyModel.Location);
+					var resolvedFile = searcher.FindAssembly(assemblyReference.AssemblyName);
+					assemblyModel = assemblyParserService.GetAssemblyModelSafe(resolvedFile);
+				}
 				
-				// Try to remove AssemblyModel from list of UnpinnedAssemblies
-				classBrowser.UnpinnedAssemblies.Assemblies.Remove(assemblyModel);
-				
-				// Create a new copy of this assembly model
-				IAssemblyModel newAssemblyModel = SD.AssemblyParserService.GetAssemblyModelSafe(new ICSharpCode.Core.FileName(assemblyModel.Context.Location), true);
-				if (newAssemblyModel != null)
-					classBrowser.MainAssemblyList.Assemblies.Add(newAssemblyModel);
+				if (assemblyModel != null) {
+					// Try to remove AssemblyModel from list of UnpinnedAssemblies
+					classBrowser.UnpinnedAssemblies.Assemblies.RemoveAll(a => a.FullAssemblyName == assemblyModel.FullAssemblyName);
+					
+					if (!classBrowser.MainAssemblyList.Assemblies.Contains(assemblyModel))
+						classBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
+				}
 			}
 		}
 	}

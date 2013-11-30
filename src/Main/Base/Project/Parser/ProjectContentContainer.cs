@@ -460,8 +460,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 					projectContent = projectContent.RemoveAssemblyReferences(this.references).AddAssemblyReferences(newReferences);
 					this.references = newReferences.ToArray();
 					SD.ParserService.InvalidateCurrentSolutionSnapshot();
-					assemblyModel.References = projectContent.AssemblyReferences
-						.Select(ResolveReferenceForAssemblyModel).Where(r => r != null).ToList();
+					assemblyModel.UpdateReferences(projectContent.AssemblyReferences
+					                               .Select(ResolveReferenceForAssemblyModel).Where(r => r != null).ToList());
 				}
 			}
 		}
@@ -488,8 +488,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 					this.references[index] = e.NewAssembly;
 					projectContent = projectContent.RemoveAssemblyReferences(e.OldAssembly).AddAssemblyReferences(e.NewAssembly);
 					SD.ParserService.InvalidateCurrentSolutionSnapshot();
-					assemblyModel.References = projectContent.AssemblyReferences
-						.Select(ResolveReferenceForAssemblyModel).Where(r => r != null).ToList();
+					assemblyModel.UpdateReferences(projectContent.AssemblyReferences
+					                               .Select(ResolveReferenceForAssemblyModel).Where(r => r != null).ToList());
 				}
 			}
 		}

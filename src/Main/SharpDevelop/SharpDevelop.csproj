@@ -106,6 +106,7 @@
     <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
       <Link>Project\Build\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
+    <Compile Include="Dom\AssemblyReferenceModel.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserPad.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserTreeNodesFactory.cs" />
     <Compile Include="Dom\ClassBrowser\Commands.cs" />

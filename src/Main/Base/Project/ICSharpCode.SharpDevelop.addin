@@ -1013,6 +1013,13 @@
 		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.RemoveAssemblyCommand"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/AssemblyReferenceContextMenu">
+		<MenuItem id = "PermanentlyAddToWorkspace"
+		          label = "${res:MainWindow.Windows.ClassBrowser.AddToWorkspace}"
+		          icon = "Icons.16x16.AssemblyFromFile"
+		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.PermanentlyAddModuleToWorkspaceCommand"/>
+	</Path>
+	
 	<Path name="/SharpDevelop/EntityContextMenu">
 		<MenuItem id="OpenInClassBrowser"
 		          icon="ILSpy"

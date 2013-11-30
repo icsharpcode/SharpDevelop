@@ -259,7 +259,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				IUpdateableAssemblyModel unresolvedModel = modelFactory.CreateAssemblyModel(unresolvedContext);
 				unresolvedModel.AssemblyName = unresolvedContext.AssemblyName;
 				unresolvedModel.FullAssemblyName = unresolvedContext.FullAssemblyName;
-				unresolvedModel.References = EmptyList<DomAssemblyName>.Instance;
 				
 				return unresolvedModel;
 			}

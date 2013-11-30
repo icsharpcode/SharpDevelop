@@ -103,9 +103,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					
 					// Look at referenced assemblies
 					if ((assemblyModel.References != null) && (assemblyParserService != null)) {
-						foreach (var referencedAssemblyName in assemblyModel.References) {
+						foreach (var referencedAssemblyName in assemblyModel.References.AssemblyNames) {
 							DefaultAssemblySearcher searcher = new DefaultAssemblySearcher(assemblyModel.Location);
-							var resolvedFile = searcher.FindAssembly(referencedAssemblyName);
+							var resolvedFile = searcher.FindAssembly(referencedAssemblyName.AssemblyName);
 							var referenceAssemblyModel = assemblyParserService.GetAssemblyModel(resolvedFile);
 							resolveTypeDefModel = referenceAssemblyModel.TopLevelTypeDefinitions[baseTypeDefinition.FullTypeName];
 							if (resolveTypeDefModel != null) {

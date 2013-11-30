@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -12,24 +13,21 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	/// </summary>
 	public class AssemblyReferencesTreeNode : ModelCollectionTreeNode
 	{
-		private IAssemblyModel assemblyModel;
+		private IAssemblyReferencesModel referencesModel;
 		private string text;
-		private SimpleModelCollection<IAssemblyModel> references;
 		
-		public AssemblyReferencesTreeNode(IAssemblyModel assemblyModel)
+		public AssemblyReferencesTreeNode(IAssemblyReferencesModel referencesModel)
 		{
-			if (assemblyModel == null)
-				throw new ArgumentNullException("assemblyModel");
-			this.assemblyModel = assemblyModel;
+			if (referencesModel == null)
+				throw new ArgumentNullException("referencesModel");
+			this.referencesModel = referencesModel;
 			this.text = SD.ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.ReferencesNodeText");
-			references = new SimpleModelCollection<IAssemblyModel>();
-			UpdateReferences();
 		}
 		
 		protected override IModelCollection<object> ModelChildren
 		{
 			get {
-				return references;
+				return referencesModel.AssemblyNames;
 			}
 		}
 		
@@ -51,20 +49,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			get {
 				return SD.ResourceService.GetImageSource("ProjectBrowser.ReferenceFolder.Closed");
-			}
-		}
-		
-		void UpdateReferences()
-		{
-			references.Clear();
-			var assemblyParserService = SD.GetRequiredService<IAssemblyParserService>();
-			if (assemblyModel.References != null) {
-				foreach (var referencedAssemblyName in assemblyModel.References) {
-					DefaultAssemblySearcher searcher = new DefaultAssemblySearcher(assemblyModel.Location);
-					var resolvedFile = searcher.FindAssembly(referencedAssemblyName);
-					var referenceAssemblyModel = assemblyParserService.GetAssemblyModel(resolvedFile);
-					references.Add(referenceAssemblyModel);
-				}
 			}
 		}
 	}

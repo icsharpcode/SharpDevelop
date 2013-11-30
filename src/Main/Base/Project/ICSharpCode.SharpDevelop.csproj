@@ -86,6 +86,7 @@
     <Compile Include="Designer\TypeResolutionService.cs" />
     <Compile Include="Dom\ClassBrowser\AssemblyLoadErrorTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\AssemblyReferencesTreeNode.cs" />
+    <Compile Include="Dom\ClassBrowser\AssemblyReferenceTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\AssemblyTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\BaseTypesTreeNode.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserAssemblyModelExtensions.cs" />
@@ -102,6 +103,8 @@
     <Compile Include="Dom\ClassBrowser\WorkspaceTreeNode.cs" />
     <Compile Include="Dom\IAssemblyList.cs" />
     <Compile Include="Dom\IAssemblyModel.cs" />
+    <Compile Include="Dom\IAssemblyReferenceModel.cs" />
+    <Compile Include="Dom\IAssemblyReferencesModel.cs" />
     <Compile Include="Dom\IEntityModelContext.cs" />
     <Compile Include="Dom\IEventModel.cs" />
     <Compile Include="Dom\IFieldModel.cs" />

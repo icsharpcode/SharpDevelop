@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.TreeView;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -23,6 +24,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				return typeof(IMemberModel);
 			if (model is IAssemblyModel)
 				return typeof(IAssemblyModel);
+			if (model is IAssemblyReferenceModel)
+				return typeof(IAssemblyReferenceModel);
+			if (model is IAssemblyReferencesModel)
+				return typeof(IAssemblyReferencesModel);
 			return null;
 		}
 		
@@ -40,6 +45,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				return new MemberTreeNode((IMemberModel)model);
 			if (model is IAssemblyModel)
 				return new AssemblyTreeNode((IAssemblyModel) model);
+			if (model is IAssemblyReferenceModel)
+				return new AssemblyReferenceTreeNode((IAssemblyReferenceModel) model);
+			if (model is IAssemblyReferencesModel)
+				return new AssemblyReferencesTreeNode((IAssemblyReferencesModel) model);
 			return null;
 		}
 	}

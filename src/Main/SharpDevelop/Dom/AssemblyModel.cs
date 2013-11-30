@@ -19,18 +19,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		TopLevelTypeDefinitionModelCollection typeDeclarations;
 		KeyedModelCollection<string, NamespaceModel> namespaces;
 		NamespaceModel rootNamespace;
-		IReadOnlyList<DomAssemblyName> references;
+		AssemblyReferencesModel referencesModel;
 		
 		public AssemblyModel(IEntityModelContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
-			this.references = EmptyList<DomAssemblyName>.Instance;
 			this.rootNamespace = new NamespaceModel(context.Project, null, "");
 			this.typeDeclarations = new TopLevelTypeDefinitionModelCollection(context);
 			this.typeDeclarations.CollectionChanged += TypeDeclarationsCollectionChanged;
 			this.namespaces = new KeyedModelCollection<string, NamespaceModel>(value => value.FullName);
+			this.referencesModel = new AssemblyReferencesModel(this);
 		}
 		
 		public string AssemblyName { get; set; }
@@ -45,6 +45,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IModelCollection<INamespaceModel> Namespaces {
 			get {
 				return namespaces;
+			}
+		}
+		
+		public IAssemblyReferencesModel ReferencesModel {
+			get {
+				return referencesModel;
 			}
 		}
 		
@@ -84,6 +90,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public void Update(IList<IUnresolvedTypeDefinition> oldFile, IList<IUnresolvedTypeDefinition> newFile)
 		{
 			typeDeclarations.Update(oldFile, newFile);
+		}
+		
+		public void UpdateReferences(IReadOnlyList<DomAssemblyName> references)
+		{
+			referencesModel.Update(references);
 		}
 		
 		void TypeDeclarationsCollectionChanged(IReadOnlyCollection<ITypeDefinitionModel> removedItems, IReadOnlyCollection<ITypeDefinitionModel> addedItems)
@@ -143,9 +154,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public IReadOnlyList<DomAssemblyName> References {
-			get { return references; }
-			set { references = value; }
+		public IAssemblyReferencesModel References {
+			get { return referencesModel; }
 		}
 	}	
 }
