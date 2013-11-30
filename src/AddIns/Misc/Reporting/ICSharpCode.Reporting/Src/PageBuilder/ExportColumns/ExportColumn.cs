@@ -18,6 +18,12 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	/// </summary>
 	public class ExportColumn:IExportColumn
 	{
+		public ExportColumn() {
+			ForeColor = Color.Black;
+			FrameColor = Color.Black;
+			BackColor = Color.White;
+		}
+		
 		
 		public string Name {get;set;}
 		

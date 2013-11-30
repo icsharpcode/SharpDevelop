@@ -22,6 +22,12 @@ namespace ICSharpCode.Reporting.Pdf
 			return p;
 		}
 		
+		
+		public static XRect ToXRect( this Rectangle rectangle) {
+			return new XRect(rectangle.Location.ToXPoints(),rectangle.Size.ToXSize());
+		}
+		
+		
 		public static float ToPoint (this int integer) {
 			return Convert(integer);
 		}

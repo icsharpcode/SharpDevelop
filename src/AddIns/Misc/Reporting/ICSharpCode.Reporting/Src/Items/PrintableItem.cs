@@ -15,6 +15,12 @@ namespace ICSharpCode.Reporting.Items
 {
 	public class PrintableItem : IPrintableObject
 	{
+		public PrintableItem() {
+			ForeColor = Color.Black;
+			FrameColor = Color.Black;
+			BackColor = Color.White;
+		}
+		
 		public string Name { get; set; }
 
 		public Point Location { get; set; }

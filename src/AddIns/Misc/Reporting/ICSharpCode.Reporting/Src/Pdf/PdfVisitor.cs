@@ -2,12 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.Exporter.Visitors;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
-using ICSharpCode.Reporting.Exporter.Visitors;
-using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Pdf
 {
@@ -35,11 +34,18 @@ namespace ICSharpCode.Reporting.Pdf
 			base.Visit(page);
 		}
 		
+		
 		public override void Visit(ExportContainer exportContainer)
 		{
-			containerLocation = exportContainer.Location;
-			PdfHelper.DrawRectangle(exportContainer,gfx);
 			foreach (var element in exportContainer.ExportedItems) {
+				var con = element as ExportContainer;
+				if (con != null) {
+					containerLocation = PdfHelper.LocationRelToParent(con);
+					var r = new Rectangle(containerLocation,con.DisplayRectangle.Size);
+					PdfHelper.FillRectangle(r,con.BackColor,gfx);
+					Visit(con);
+				}
+				containerLocation = PdfHelper.LocationRelToParent(exportContainer);
 				var ac = element as IAcceptor;
 				ac.Accept(this);
 			}
@@ -50,12 +56,16 @@ namespace ICSharpCode.Reporting.Pdf
 		{
 			var columnLocation = containerLocation;
 			columnLocation.Offset(exportColumn.Location);
-			PdfHelper.WriteText(textFormatter,columnLocation, exportColumn);
-			if (exportColumn.DrawBorder) {
-				PdfHelper.DrawRectangle(new Rectangle(columnLocation,exportColumn.DesiredSize),exportColumn.FrameColor,gfx);
+			
+			if (exportColumn.BackColor != Color.White) {
+				var r = new Rectangle(columnLocation,exportColumn.DisplayRectangle.Size);
+				PdfHelper.FillRectangle(r,exportColumn.BackColor,gfx);
 			}
+			PdfHelper.WriteText(textFormatter,columnLocation, exportColumn);
+			
 		}
 
+		
 		public PdfPage PdfPage {get; private set;}
 	}
 }

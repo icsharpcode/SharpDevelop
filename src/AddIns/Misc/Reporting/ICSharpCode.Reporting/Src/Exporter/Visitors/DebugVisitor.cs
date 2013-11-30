@@ -34,6 +34,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			Console.WriteLine();
 			Console.WriteLine("\t{0} - {1}  Items {2}",
 			                  exportContainer.Name,exportContainer.Location,exportContainer.BackColor);
+			Console.WriteLine("\thas Child {0}",exportContainer.ExportedItems.Count);
 			base.Visit(exportContainer);
 		}
 		

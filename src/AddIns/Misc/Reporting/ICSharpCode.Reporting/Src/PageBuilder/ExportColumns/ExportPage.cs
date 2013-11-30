@@ -33,6 +33,7 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 			exportedItems = new List<IExportColumn>();
 		}
 		
+		
 		public bool IsFirstPage {get;set;}
 		
 		
