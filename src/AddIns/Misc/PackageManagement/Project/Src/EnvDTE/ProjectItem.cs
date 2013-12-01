@@ -229,5 +229,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return Path.GetDirectoryName(GetProjectItemRelativePathToProject());
 		}
+		
+		public void Save(string fileName = null)
+		{
+			IViewContent view = containingProject.GetOpenFile(FileName);
+			if (view != null) {
+				containingProject.SaveFile(view);
+			}
+		}
 	}
 }

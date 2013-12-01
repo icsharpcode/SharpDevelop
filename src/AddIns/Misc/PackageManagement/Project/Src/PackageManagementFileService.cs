@@ -60,6 +60,18 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
+		public void SaveFile(IViewContent view)
+		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				Action<IViewContent> action = SaveFile;
+				WorkbenchSingleton.SafeThreadCall<IViewContent>(action, view);
+			} else {
+				if (view.IsDirty) {
+					view.Files.ForEach(ICSharpCode.SharpDevelop.Commands.SaveFile.Save);
+				}
+			}
+		}
+		
 		public bool FileExists(string fileName)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {

@@ -317,5 +317,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return FileUtility.IsBaseDirectory(MSBuildProject.Directory, filePath);
 		}
+		
+		internal void SaveFile(IViewContent view)
+		{
+			fileService.SaveFile(view);
+		}
 	}
 }

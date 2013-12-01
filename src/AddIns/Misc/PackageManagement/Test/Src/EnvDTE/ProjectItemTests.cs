@@ -39,11 +39,12 @@ namespace PackageManagement.Tests.EnvDTE
 			OpenFileInSharpDevelop(fileName, dirty: true);
 		}
 		
-		void OpenFileInSharpDevelop(string fileName, bool dirty)
+		IViewContent OpenFileInSharpDevelop(string fileName, bool dirty)
 		{
 			IViewContent view = MockRepository.GenerateStub<IViewContent>();
 			view.Stub(v => v.IsDirty).Return(dirty);
 			fakeFileService.AddOpenView(view, fileName);
+			return view;
 		}
 		
 		[Test]
@@ -399,6 +400,33 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			global::EnvDTE.ProjectItem item = collection.Item("program.cs");
 			Assert.AreEqual("program.cs", item.Name);
+		}
+		
+		[Test]
+		public void Save_FileNameNotPassed_SavesFile()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			IViewContent view = OpenFileInSharpDevelop(@"d:\projects\MyProject\program.cs", false);
+			global::EnvDTE.ProjectItem item = projectItems.Item("program.cs");
+			
+			item.Save();
+			
+			Assert.AreEqual(view, fakeFileService.ViewContentPassedToSaveFile);
+		}
+		
+		[Test]
+		public void Save_FileNameNotPassedAndFileNotOpen_FileNotSaved()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			global::EnvDTE.ProjectItem item = projectItems.Item("program.cs");
+			
+			item.Save();
+			
+			Assert.IsFalse(fakeFileService.IsSaveFileCalled);
 		}
 	}
 }
