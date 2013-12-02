@@ -83,7 +83,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetFullPath()
 		{
-			return MSBuildProject.Directory;
+			return MSBuildProject.Directory + Path.DirectorySeparatorChar.ToString();
 		}
 		
 		string GetOutputFileName()

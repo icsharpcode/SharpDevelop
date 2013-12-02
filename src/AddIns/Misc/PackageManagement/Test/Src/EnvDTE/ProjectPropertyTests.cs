@@ -150,7 +150,7 @@ namespace PackageManagement.Tests.EnvDTE
 			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FullPath");
 			string fullPath = fullPathProperty.Value as string;
 			
-			string expectedFullPath = @"d:\projects\MyProject";
+			string expectedFullPath = @"d:\projects\MyProject\";
 			Assert.AreEqual(expectedFullPath, fullPath);
 		}
 		
@@ -163,7 +163,7 @@ namespace PackageManagement.Tests.EnvDTE
 			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FULLPATH");
 			string fullPath = fullPathProperty.Value as string;
 			
-			string expectedFullPath = @"d:\projects\MyProject";
+			string expectedFullPath = @"d:\projects\MyProject\";
 			Assert.AreEqual(expectedFullPath, fullPath);
 		}
 		
@@ -257,7 +257,7 @@ namespace PackageManagement.Tests.EnvDTE
 			global::EnvDTE.Property localPathProperty = project.Properties.Item("LocalPath");
 			string localPath = localPathProperty.Value as string;
 			
-			string expectedLocalPath = @"d:\projects\MyProject";
+			string expectedLocalPath = @"d:\projects\MyProject\";
 			Assert.AreEqual(expectedLocalPath, localPath);
 		}
 		
@@ -281,7 +281,7 @@ namespace PackageManagement.Tests.EnvDTE
 			global::EnvDTE.Property fullPathProperty = project.Properties.Item("LOCALPATH");
 			string fullPath = fullPathProperty.Value as string;
 			
-			string expectedFullPath = @"d:\projects\MyProject";
+			string expectedFullPath = @"d:\projects\MyProject\";
 			Assert.AreEqual(expectedFullPath, fullPath);
 		}
 	}
