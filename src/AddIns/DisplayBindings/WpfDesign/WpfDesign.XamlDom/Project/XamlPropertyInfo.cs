@@ -39,6 +39,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	{
 		readonly DependencyProperty property;
 		readonly bool isAttached;
+		readonly bool isCollection;
 
 		public override DependencyProperty DependencyProperty {
 			get { return property; }
@@ -49,6 +50,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			Debug.Assert(property != null);
 			this.property = property;
 			this.isAttached = isAttached;
+			this.isCollection = CollectionSupport.IsCollectionType(property.PropertyType);
 		}
 		
 		public override TypeConverter TypeConverter {
@@ -84,7 +86,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		public override bool IsCollection {
-			get { return false; }
+			get {
+				return isCollection;
+			}
 		}
 		
 		public override object GetValue(object instance)
