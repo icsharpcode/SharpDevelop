@@ -57,8 +57,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				typeNamespaceUri = GetNamespaceOfPrefix("");
 				typeLocalName = typeName;
 			}
-			if (string.IsNullOrEmpty(typeNamespaceUri))
+			if (string.IsNullOrEmpty(typeNamespaceUri)) {
+				var documentResolver = this.document.RootElement.ServiceProvider.Resolver;
+				if (documentResolver != null && documentResolver != this) {
+					return documentResolver.Resolve(typeName);
+				}
+				
 				throw new XamlMarkupExtensionParseException("Unrecognized namespace prefix in type " + typeName);
+			}
 			return document.TypeFinder.GetType(typeNamespaceUri, typeLocalName);
 		}
 		
