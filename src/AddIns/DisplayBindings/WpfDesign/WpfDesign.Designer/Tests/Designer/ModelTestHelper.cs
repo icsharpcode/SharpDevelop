@@ -30,7 +30,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		protected XamlDesignContext CreateContext(string xaml)
 		{
 			log = new StringBuilder();
-			XamlDesignContext context = new XamlDesignContext(new XmlTextReader(new StringReader(xaml)), new XamlLoadSettings());
+			XamlDesignContext context = new XamlDesignContext(new XmlTextReader(new StringReader(xaml)), CreateXamlLoadSettings());
 			/*context.Services.Component.ComponentRegistered += delegate(object sender, DesignItemEventArgs e) {
 				log.AppendLine("Register " + ItemIdentity(e.Item));
 			};
@@ -78,19 +78,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 				expectedXaml.Replace("\r", "").Replace("\n", "\n  ")
 				+ "\n</Canvas>";
 			
-			StringWriter stringWriter = new StringWriter();
-			XmlTextWriter xmlWriter = new XmlTextWriter(stringWriter);
-			xmlWriter.Formatting = Formatting.Indented;
-			context.Save(xmlWriter);
-			
-			string actualXaml = stringWriter.ToString().Replace("\r", "");;
-			if (expectedXaml != actualXaml) {
-				Debug.WriteLine("expected xaml:");
-				Debug.WriteLine(expectedXaml);
-				Debug.WriteLine("actual xaml:");
-				Debug.WriteLine(actualXaml);
-			}
-			Assert.AreEqual(expectedXaml, actualXaml);
+			AssertDesignerOutput(expectedXaml, context);
 		}
 		
 		protected DesignItem CreateGridContext(string xaml)
@@ -107,14 +95,49 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			var surface = new DesignSurface();
 			var xamlWithGrid=@"<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >
             " + xaml + "</Grid>";
-			surface.LoadDesigner(new XmlTextReader(new StringReader(xamlWithGrid)), new XamlLoadSettings());
+			surface.LoadDesigner(new XmlTextReader(new StringReader(xamlWithGrid)), CreateXamlLoadSettings());
 			Assert.IsNotNull(surface.DesignContext.RootItem);
 			return surface.DesignContext.RootItem;
+		}
+		
+		protected void AssertGridDesignerOutput(string expectedXaml, DesignContext context, params String[] additionalXmlns)
+		{
+			string gridStartTag = "<Grid xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"";
+			
+			foreach(string ns in additionalXmlns) {
+				gridStartTag += " " + ns;
+			}
+
+			expectedXaml = gridStartTag + ">\n" + expectedXaml.Trim();
+			
+			expectedXaml =
+				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\n" +
+				expectedXaml.Replace("\r", "").Replace("\n", "\n  ")
+				+ "\n</Grid>";
+			
+			AssertDesignerOutput(expectedXaml, context);
 		}
 		
 		static string ItemIdentity(DesignItem item)
 		{
 			return item.ComponentType.Name + " (" + item.GetHashCode() + ")";
+		}
+		
+		protected void AssertDesignerOutput(string expectedXaml, DesignContext context)
+		{
+			StringWriter stringWriter = new StringWriter();
+			XmlTextWriter xmlWriter = new XmlTextWriter(stringWriter);
+			xmlWriter.Formatting = Formatting.Indented;
+			context.Save(xmlWriter);
+			
+			string actualXaml = stringWriter.ToString().Replace("\r", "");;
+			if (expectedXaml != actualXaml) {
+				Debug.WriteLine("expected xaml:");
+				Debug.WriteLine(expectedXaml);
+				Debug.WriteLine("actual xaml:");
+				Debug.WriteLine(actualXaml);
+			}
+			Assert.AreEqual(expectedXaml, actualXaml);
 		}
 		
 		protected void AssertLog(string expectedLog)
@@ -128,6 +151,11 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 				Debug.WriteLine(actualLog);
 			}
 			Assert.AreEqual(expectedLog, actualLog);
+		}
+		
+		protected virtual XamlLoadSettings CreateXamlLoadSettings()
+		{
+			return new XamlLoadSettings();
 		}
 	}
 }
