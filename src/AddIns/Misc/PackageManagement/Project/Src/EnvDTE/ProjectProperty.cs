@@ -48,7 +48,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		bool IsFullPath()
 		{
-			return IsCaseInsensitiveMatch(Name, "FullPath");
+			return IsCaseInsensitiveMatch(Name, "FullPath") || IsCaseInsensitiveMatch(Name, "LocalPath");
 		}
 		
 		bool IsOutputFileName()

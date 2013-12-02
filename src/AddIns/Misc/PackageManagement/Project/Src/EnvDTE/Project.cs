@@ -216,6 +216,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					names.Add(propertyElement.Name);
 				}
 				names.Add("OutputFileName");
+				names.Add("LocalPath");
 			}
 			return names;
 		}
