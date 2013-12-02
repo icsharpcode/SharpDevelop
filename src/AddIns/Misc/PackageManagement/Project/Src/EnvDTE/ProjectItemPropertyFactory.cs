@@ -32,6 +32,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			yield return new ProjectItemProperty(projectItem, ProjectItem.CopyToOutputDirectoryPropertyName);
 			yield return new ProjectItemProperty(projectItem, ProjectItem.CustomToolPropertyName);
 			yield return new ProjectItemProperty(projectItem, ProjectItem.FullPathPropertyName);
+			yield return new ProjectItemProperty(projectItem, ProjectItem.LocalPathPropertyName);
 		}
 	}
 }
