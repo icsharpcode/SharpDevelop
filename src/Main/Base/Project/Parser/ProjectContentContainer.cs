@@ -246,8 +246,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 						projectContent = projectContent.RemoveFiles(oldFile.FileName);
 					serializedProjectContentIsUpToDate = false;
 					SD.ParserService.InvalidateCurrentSolutionSnapshot();
-					if (!SD.ParserService.LoadSolutionProjectsThread.IsRunning)
-						SD.MainThread.InvokeAsyncAndForget(delegate { assemblyModel.Update(oldFile, newFile); });
+					SD.MainThread.InvokeAsyncAndForget(delegate { assemblyModel.Update(oldFile, newFile); });
 				}
 			}
 		}
