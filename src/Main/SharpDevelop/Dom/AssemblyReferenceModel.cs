@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class AssemblyReferencesModel : IAssemblyReferencesModel
 	{
 		IAssemblyModel parentAssemblyModel;
-		private NullSafeSimpleModelCollection<IAssemblyReferenceModel> assemblyNames;
+		NullSafeSimpleModelCollection<IAssemblyReferenceModel> assemblyNames;
 		
 		public AssemblyReferencesModel(IAssemblyModel parentAssemblyModel)
 		{
@@ -29,6 +29,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			get {
 				return assemblyNames;
+			}
+		}
+		
+		public IAssemblyModel ParentAssemblyModel {
+			get {
+				return parentAssemblyModel;
 			}
 		}
 		

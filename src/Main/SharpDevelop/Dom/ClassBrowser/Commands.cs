@@ -5,11 +5,14 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor.Commands;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -160,6 +163,87 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			var entity = GetSymbol(symbol) as IEntity;
 			if ((classBrowser != null) && (entity != null)) {
 				classBrowser.GoToEntity(entity);
+			}
+		}
+	}
+	
+	/// <summary>
+	/// AddProjectReferenceCommand
+	/// </summary>
+	class AddProjectReferenceCommand : SimpleCommand
+	{
+		public override bool CanExecute(object parameter)
+		{
+			var assemblyReferencesModel = parameter as IAssemblyReferencesModel;
+			if (assemblyReferencesModel != null) {
+				IAssemblyModel assemblyModel = assemblyReferencesModel.ParentAssemblyModel;
+				if ((assemblyModel != null) && (assemblyModel.Context != null)) {
+					return assemblyModel.Context.Project != null;
+				}
+			}
+			
+			return false;
+		}
+		
+		public override void Execute(object parameter)
+		{
+			IAssemblyReferencesModel assemblyReferencesModel = parameter as IAssemblyReferencesModel;
+			if (assemblyReferencesModel != null) {
+				IAssemblyModel assemblyModel = assemblyReferencesModel.ParentAssemblyModel;
+				if ((assemblyModel != null) && (assemblyModel.Context != null)) {
+					IProject project = (parameter != null) ? assemblyModel.Context.Project : ProjectService.CurrentProject;
+					if (project == null) {
+						return;
+					}
+					using (SelectReferenceDialog selDialog = new SelectReferenceDialog(project)) {
+						if (selDialog.ShowDialog(SD.WinForms.MainWin32Window) == System.Windows.Forms.DialogResult.OK) {
+							foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
+								ProjectService.AddProjectItem(project, reference);
+							}
+							project.Save();
+						}
+					}
+				}
+			}
+		}
+	}
+	/// <summary>
+	/// RemoveProjectReferenceCommand
+	/// </summary>
+	class RemoveProjectReferenceCommand : SimpleCommand
+	{
+		public override bool CanExecute(object parameter)
+		{
+			var assemblyReferenceModel = parameter as IAssemblyReferenceModel;
+			if (assemblyReferenceModel != null) {
+				IAssemblyModel assemblyModel = assemblyReferenceModel.ParentAssemblyModel;
+				if ((assemblyModel != null) && (assemblyModel.Context != null)) {
+					return assemblyModel.Context.Project != null;
+				}
+			}
+			
+			return false;
+		}
+		
+		public override void Execute(object parameter)
+		{
+			IAssemblyReferenceModel assemblyReferenceModel = parameter as IAssemblyReferenceModel;
+			if (assemblyReferenceModel != null) {
+				IAssemblyModel assemblyModel = assemblyReferenceModel.ParentAssemblyModel;
+				if ((assemblyModel != null) && (assemblyModel.Context != null)) {
+					IProject project = (parameter != null) ? assemblyModel.Context.Project : ProjectService.CurrentProject;
+					if (project == null) {
+						return;
+					}
+					
+					// TODO Matching item.Include == ShortName fails for interop assemblies, because they are calld "Interop..."
+					ReferenceProjectItem referenceProjectItem =
+						project.Items.FirstOrDefault(item => (item.Include == assemblyReferenceModel.AssemblyName.ShortName) && ItemType.ReferenceItemTypes.Contains(item.ItemType)) as ReferenceProjectItem;
+					if (referenceProjectItem != null) {
+						ProjectService.RemoveProjectItem(referenceProjectItem.Project, referenceProjectItem);
+						project.Save();
+					}
+				}
 			}
 		}
 	}

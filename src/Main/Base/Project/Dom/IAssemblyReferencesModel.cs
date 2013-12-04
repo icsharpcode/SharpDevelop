@@ -2,8 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -13,6 +11,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public interface IAssemblyReferencesModel
 	{
 		IModelCollection<IAssemblyReferenceModel> AssemblyNames { get; }
+		IAssemblyModel ParentAssemblyModel { get; }
 	}
 	
 	/// <summary>
@@ -28,6 +27,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IModelCollection<IAssemblyReferenceModel> AssemblyNames {
 			get {
 				return EmptyReferenceCollection;
+			}
+		}
+		
+		public IAssemblyModel ParentAssemblyModel
+		{
+			get {
+				return EmptyAssemblyModel.Instance;
 			}
 		}
 	}

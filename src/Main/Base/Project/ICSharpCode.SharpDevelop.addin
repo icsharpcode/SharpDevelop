@@ -1013,19 +1013,21 @@
 		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.RemoveAssemblyCommand"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/AssemblyReferencesContextMenu">
+		<MenuItem id    = "AddReference"
+		          label = "${res:ProjectComponent.ContextMenu.AddReference}"
+		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.AddProjectReferenceCommand"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/AssemblyReferenceContextMenu">
 		<MenuItem id = "PermanentlyAddToWorkspace"
 		          label = "${res:MainWindow.Windows.ClassBrowser.AddToWorkspace}"
 		          icon = "Icons.16x16.AssemblyFromFile"
 		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.PermanentlyAddModuleToWorkspaceCommand"/>
-	</Path>
-	
-	<Path name="/SharpDevelop/EntityContextMenu">
-		<MenuItem id="OpenInClassBrowser"
-		          icon="ILSpy"
-		          type="Item"
-		          label="${res:MainWindow.Windows.ClassBrowser.OpenInClassBrowser}"
-		          class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenInClassBrowserCommand"/>
+		<MenuItem id    = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.RemoveProjectReferenceCommand"/>
 	</Path>
 	
 	<!-- end ClassBrowser -->
@@ -2017,6 +2019,13 @@
 	
 	<Path name = "/SharpDevelop/EntityContextMenu">
 		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
+		<MenuItem id="OpenInClassBrowser"
+		          icon="ILSpy"
+		          type="Item"
+		          label="${res:MainWindow.Windows.ClassBrowser.OpenInClassBrowser}"
+		          class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenInClassBrowserCommand"/>
+		<MenuItem id="Separator1" type="Separator" />
+		
 		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
 		<MenuItem id = "FindReferences"
 		          label = "${res:SharpDevelop.Refactoring.FindReferencesCommand}"
