@@ -38,12 +38,12 @@ namespace ICSharpCode.Reporting.Pdf
 		public override void Visit(ExportContainer exportContainer)
 		{
 			foreach (var element in exportContainer.ExportedItems) {
-				var con = element as ExportContainer;
-				if (con != null) {
-					containerLocation = PdfHelper.LocationRelToParent(con);
-					var r = new Rectangle(containerLocation,con.DisplayRectangle.Size);
-					PdfHelper.FillRectangle(r,con.BackColor,gfx);
-					Visit(con);
+				var container = element as ExportContainer;
+				if (container != null) {
+					containerLocation = PdfHelper.LocationRelToParent(container);
+					var r = new Rectangle(containerLocation,container.DisplayRectangle.Size);
+					PdfHelper.FillRectangle(r,container.BackColor,gfx);
+					Visit(container);
 				}
 				containerLocation = PdfHelper.LocationRelToParent(exportContainer);
 				var ac = element as IAcceptor;
@@ -52,17 +52,16 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 		
 		
-		public override void Visit(ExportText exportColumn)
+		public override void Visit(ExportText exportText)
 		{
 			var columnLocation = containerLocation;
-			columnLocation.Offset(exportColumn.Location);
-			
-			if (exportColumn.BackColor != Color.White) {
-				var r = new Rectangle(columnLocation,exportColumn.DisplayRectangle.Size);
-				PdfHelper.FillRectangle(r,exportColumn.BackColor,gfx);
+			columnLocation.Offset(exportText.Location);
+			if (ShouldSetBackcolor(exportText)) {
+				var r = new Rectangle(columnLocation,exportText.DisplayRectangle.Size);
+				PdfHelper.FillRectangle(r,exportText.BackColor,gfx);
 			}
-			PdfHelper.WriteText(textFormatter,columnLocation, exportColumn);
 			
+			PdfHelper.WriteText(textFormatter,columnLocation, exportText);
 		}
 
 		

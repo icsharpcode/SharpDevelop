@@ -58,11 +58,16 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		public TextBlock CreateTextBlock(ExportText exportText){
+		public TextBlock CreateTextBlock(ExportText exportText,bool setBackcolor){
 			var textBlock = new TextBlock();
+			
 			textBlock.Foreground = ConvertBrush(exportText.ForeColor);
-//			textBlock.Background = ConvertBrush(exportText.BackColor);
-			textBlock.Background = ConvertBrush(System.Drawing.Color.LightGray);
+			
+			if (setBackcolor) {
+				textBlock.Background = ConvertBrush(exportText.BackColor);
+			}
+			
+//			textBlock.Background = ConvertBrush(System.Drawing.Color.LightGray);
 		
 			SetFont(textBlock,exportText);
 			

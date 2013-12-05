@@ -8,6 +8,8 @@
  */
 using System;
 using System.Collections.ObjectModel;
+using System.Drawing;
+
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
@@ -24,9 +26,9 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			Pages = pages;
 			foreach (var page in pages) {
 				Visit(page);
-				Console.WriteLine("-----------AbstractVisitor - PageBreak---------");
 			}
 		}
+		
 		
 		public virtual void Visit (ExportPage page) {
 			
@@ -46,9 +48,16 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
-		public virtual void Visit(ExportText exportColumn){
-			
+		public virtual void Visit(ExportText exportColumn)
+		{
+			throw new NotImplementedException();
 		}
+		
+		
+		protected bool ShouldSetBackcolor (ExportColumn exportColumn) {
+			return exportColumn.BackColor != Color.White;
+		}
+		
 		
 		protected Collection<ExportPage> Pages {get; private set;}
 	}

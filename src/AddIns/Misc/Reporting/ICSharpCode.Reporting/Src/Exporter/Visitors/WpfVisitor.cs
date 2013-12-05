@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 
 using ICSharpCode.Reporting.ExportRenderer;
+using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
@@ -24,33 +25,64 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		readonly FixedDocumentCreator documentCreator;
 		FixedPage fixedPage;
-		Canvas currentCanvas;
+		Canvas sectionCanvas;
 		
 		public WpfVisitor()
 		{
 			documentCreator = new FixedDocumentCreator();
 		}
 		
+		
 		public override void Visit(ExportPage page){
 			fixedPage = FixedDocumentCreator.CreateFixedPage(page);
 			FixedPage = fixedPage;
-			base.Visit(page);
+			foreach (var element in page.ExportedItems) {
+				var acceptor = element as IAcceptor;
+				acceptor.Accept(this);
+				fixedPage.Children.Add(sectionCanvas);
+			}
 		}
 		
 		
 		public override void Visit(ExportContainer exportContainer){
-			currentCanvas = documentCreator.CreateContainer(exportContainer);
-			CanvasHelper.SetPosition(currentCanvas,new Point(exportContainer.Location.X,exportContainer.Location.Y));
-			base.Visit(exportContainer);
-			fixedPage.Children.Add(currentCanvas);
+			
+			sectionCanvas = documentCreator.CreateContainer(exportContainer);
+			sectionCanvas.Name = exportContainer.Name;
+			CanvasHelper.SetPosition(sectionCanvas,new Point(exportContainer.Location.X,exportContainer.Location.Y));
+			PerformList(sectionCanvas,exportContainer.ExportedItems);
+		}
+		
+		
+		void PerformList(Canvas myCanvas, System.Collections.Generic.List<IExportColumn> exportedItems)
+		{
+			Console.WriteLine(myCanvas.Name);
+			foreach (var element in exportedItems) {
+				var container = element as ExportContainer;
+				if (container != null) {
+//					Console.WriteLine("recursive");
+					var containerCanvas = documentCreator.CreateContainer(container);
+					CanvasHelper.SetPosition(containerCanvas,new Point(container.Location.X,container.Location.Y));
+					myCanvas.Children.Add(containerCanvas);
+//					Console.WriteLine("call recursive");
+					PerformList(containerCanvas,container.ExportedItems);
+				} else {
+					var acceptor = element as IAcceptor;
+					acceptor.Accept(this);
+					myCanvas.Children.Add(UIElement);
+				}
+			}
 		}
 		
 		
 		public override void Visit(ExportText exportColumn){
-			var textBlock = documentCreator.CreateTextBlock((ExportText)exportColumn);
+			var textBlock = documentCreator.CreateTextBlock((ExportText)exportColumn,ShouldSetBackcolor(exportColumn));
 			CanvasHelper.SetPosition(textBlock,new Point(exportColumn.Location.X,exportColumn.Location.Y));
-			currentCanvas.Children.Add(textBlock);
+			UIElement = textBlock;
 		}
+		
+		
+		protected UIElement UIElement {get;private set;}
+		
 		
 		public FixedPage FixedPage {get; private set;}
 	}
