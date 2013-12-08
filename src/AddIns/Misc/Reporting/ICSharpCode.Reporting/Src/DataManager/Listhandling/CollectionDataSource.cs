@@ -60,7 +60,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				throw new ArgumentNullException("reportSettings");
 			
 			baseList = CreateBaseList(list);
-		
+			
 			CurrentList = baseList;
 			
 			this.elementType = elementType;
@@ -91,7 +91,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 		}
 		
-	
+		
 		public object Current {get; private set;}
 		
 		
@@ -168,8 +168,21 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		public void Fill(List<IPrintableObject> collection)
 		{
-			foreach (IPrintableObject item in collection)
-			{
+			foreach (var element in collection) {
+				var container = element as ReportContainer;
+				if (container != null) {
+					FillFromList(container.Items);
+				} else {
+					
+					//FillFromList(collection);
+					FillInternal(element);
+				}
+			}
+		}
+
+		void FillFromList(List<IPrintableObject> collection)
+		{
+			foreach (IPrintableObject item in collection) {
 				FillInternal(item);
 			}
 		}
@@ -204,7 +217,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		public bool MoveNext()
 		{
 			var canMove = listEnumerator.MoveNext();
-	
+			
 			if (orderGroup == OrderGroup.Grouped) {
 				if (! canMove) {
 					var groupCanMove = groupEnumerator.MoveNext();
@@ -212,7 +225,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 						listEnumerator = groupEnumerator.Current.GetEnumerator();
 						canMove = listEnumerator.MoveNext();
 					}
-				} 
+				}
 				Current = listEnumerator.Current;
 				return canMove;
 			}
