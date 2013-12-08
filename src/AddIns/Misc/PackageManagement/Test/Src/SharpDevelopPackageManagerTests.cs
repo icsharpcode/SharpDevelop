@@ -12,6 +12,7 @@ using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 using Rhino.Mocks;
+using Rhino.Mocks.Expectations;
 
 namespace PackageManagement.Tests
 {
@@ -308,6 +309,34 @@ namespace PackageManagement.Tests
 		{
 			fakePackageOperationResolver = MockRepository.GenerateStub<IPackageOperationResolver>();
 			fakePackageOperationResolverFactory.UpdatePackageOperationsResolver = fakePackageOperationResolver;
+		}
+		
+		void RaisePackageRemovedEventWhenPackageReferenceUpdated(
+			ISharpDevelopProjectManager projectManager,
+			FakePackage updatedPackage,
+			params PackageOperationEventArgs[] eventArgs)
+		{
+			projectManager
+				.Stub(manager => manager.UpdatePackageReference(
+					Arg<string>.Is.Equal(updatedPackage.Id),
+					Arg<SemanticVersion>.Is.Equal(updatedPackage.Version),
+					Arg<bool>.Is.Anything,
+					Arg<bool>.Is.Anything))
+				.WhenCalled(call => eventArgs.ToList().ForEach(eventArg => projectManager.Raise(manager => manager.PackageReferenceRemoved += null, projectManager, eventArg)));
+		}
+		
+		void RaisePackageRemovedEventWhenPackageReferenceAdded(
+			ISharpDevelopProjectManager projectManager,
+			FakePackage newPackage,
+			params PackageOperationEventArgs[] eventArgs)
+		{
+			projectManager
+				.Stub(manager => manager.AddPackageReference(
+					Arg<string>.Is.Equal(newPackage.Id),
+					Arg<SemanticVersion>.Is.Equal(newPackage.Version),
+					Arg<bool>.Is.Anything,
+					Arg<bool>.Is.Anything))
+				.WhenCalled(call => eventArgs.ToList().ForEach(eventArg => projectManager.Raise(manager => manager.PackageReferenceRemoved += null, projectManager, eventArg)));
 		}
 		
 		[Test]
@@ -967,6 +996,109 @@ namespace PackageManagement.Tests
 			packageManager.RunPackageOperations(operations);
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, fakeSolutionSharedRepository.PackagesAdded);
+		}
+		
+		[Test]
+		public void UpdatePackage_OldPackageReferenceIsRemovedOnUpdating_OldPackageIsUninstalled()
+		{
+			CreatePackageManager();
+			var fakeProjectManager = MockRepository.GenerateStub<ISharpDevelopProjectManager>();
+			packageManager.ProjectManager = fakeProjectManager;
+			FakePackage installedPackage = fakeSolutionSharedRepository.AddFakePackageWithVersion("MyPackage", "1.0");
+			FakePackage updatedPackage = fakeFeedSourceRepository.AddFakePackageWithVersion("MyPackage", "1.1");
+			var eventArgs = new PackageOperationEventArgs(installedPackage, null, null);
+			RaisePackageRemovedEventWhenPackageReferenceUpdated(fakeProjectManager, updatedPackage, eventArgs);
+			var updateAction = new FakeUpdatePackageAction {
+				Operations = new List<PackageOperation>(),
+				UpdateDependencies = false
+			};
+			
+			packageManager.UpdatePackage(updatedPackage, updateAction);
+			
+			Assert.IsFalse(fakeSolutionSharedRepository.FakePackages.Contains(installedPackage));
+		}
+		
+		[Test]
+		public void UpdatePackage_TwoOldPackageReferencesAreRemovedOnUpdating_BothOldPackagesAreUninstalled()
+		{
+			CreatePackageManager();
+			var fakeProjectManager = MockRepository.GenerateStub<ISharpDevelopProjectManager>();
+			packageManager.ProjectManager = fakeProjectManager;
+			FakePackage installedPackage1 = fakeSolutionSharedRepository.AddFakePackageWithVersion("MyPackage-Core", "1.0");
+			FakePackage installedPackage2 = fakeSolutionSharedRepository.AddFakePackageWithVersion("MyPackage", "1.0");
+			FakePackage updatedPackage = fakeFeedSourceRepository.AddFakePackageWithVersion("MyPackage", "1.1");
+			var eventArgs1 = new PackageOperationEventArgs(installedPackage1, null, null);
+			var eventArgs2 = new PackageOperationEventArgs(installedPackage2, null, null);
+			RaisePackageRemovedEventWhenPackageReferenceUpdated(fakeProjectManager, updatedPackage, eventArgs1, eventArgs2);
+			var updateAction = new FakeUpdatePackageAction {
+				Operations = new List<PackageOperation>(),
+				UpdateDependencies = false
+			};
+			
+			packageManager.UpdatePackage(updatedPackage, updateAction);
+			
+			Assert.IsFalse(fakeSolutionSharedRepository.FakePackages.Contains(installedPackage2));
+			Assert.IsFalse(fakeSolutionSharedRepository.FakePackages.Contains(installedPackage1));
+		}
+		
+		[Test]
+		public void UpdatePackage_OldPackageReferenceIsRemovedOnUpdatingButAnotherProjectStillReferencesThePackage_OldPackageIsNotUninstalled()
+		{
+			CreatePackageManager();
+			var fakeProjectManager = MockRepository.GenerateStub<ISharpDevelopProjectManager>();
+			packageManager.ProjectManager = fakeProjectManager;
+			FakePackage installedPackage = fakeSolutionSharedRepository.AddFakePackageWithVersion("MyPackage-Core", "1.0");
+			FakePackage updatedPackage = fakeFeedSourceRepository.AddFakePackageWithVersion("MyPackage", "1.1");
+			var eventArgs = new PackageOperationEventArgs(installedPackage, null, null);
+			RaisePackageRemovedEventWhenPackageReferenceUpdated(fakeProjectManager, updatedPackage, eventArgs);
+			var updateAction = new FakeUpdatePackageAction {
+				Operations = new List<PackageOperation>(),
+				UpdateDependencies = false
+			};
+			fakeSolutionSharedRepository.PackageIdsReferences.Add("MyPackage-Core");
+			
+			packageManager.UpdatePackage(updatedPackage, updateAction);
+			
+			Assert.IsTrue(fakeSolutionSharedRepository.FakePackages.Contains(installedPackage));
+		}
+		
+		[Test]
+		public void InstallPackage_OldPackageReferenceIsRemovedOnInstalling_OldPackageIsUninstalled()
+		{
+			CreatePackageManager();
+			var fakeProjectManager = MockRepository.GenerateStub<ISharpDevelopProjectManager>();
+			packageManager.ProjectManager = fakeProjectManager;
+			FakePackage installedPackage = fakeSolutionSharedRepository.AddFakePackageWithVersion("MyPackage", "1.0");
+			FakePackage newPackage = fakeFeedSourceRepository.AddFakePackageWithVersion("MyPackage", "1.1");
+			var eventArgs = new PackageOperationEventArgs(installedPackage, null, null);
+			RaisePackageRemovedEventWhenPackageReferenceAdded(fakeProjectManager, newPackage, eventArgs);
+			var installAction = new FakeInstallPackageAction {
+				Operations = new List<PackageOperation>()
+			};
+			
+			packageManager.InstallPackage(newPackage, installAction);
+			
+			Assert.IsFalse(fakeSolutionSharedRepository.FakePackages.Contains(installedPackage));
+		}
+		
+		[Test]
+		public void InstallPackage_OldPackageReferenceIsRemovedOnInstallingButOtherProjectsReferencesOldPackage_OldPackageIsNotUninstalled()
+		{
+			CreatePackageManager();
+			var fakeProjectManager = MockRepository.GenerateStub<ISharpDevelopProjectManager>();
+			packageManager.ProjectManager = fakeProjectManager;
+			FakePackage installedPackage = fakeSolutionSharedRepository.AddFakePackageWithVersion("MyPackage.Core", "1.0");
+			FakePackage newPackage = fakeFeedSourceRepository.AddFakePackageWithVersion("MyPackage", "1.1");
+			fakeSolutionSharedRepository.PackageIdsReferences.Add("MyPackage.Core");
+			var eventArgs = new PackageOperationEventArgs(installedPackage, null, null);
+			RaisePackageRemovedEventWhenPackageReferenceAdded(fakeProjectManager, newPackage, eventArgs);
+			var installAction = new FakeInstallPackageAction {
+				Operations = new List<PackageOperation>()
+			};
+			
+			packageManager.InstallPackage(newPackage, installAction);
+			
+			Assert.IsTrue(fakeSolutionSharedRepository.FakePackages.Contains(installedPackage));
 		}
 	}
 }
