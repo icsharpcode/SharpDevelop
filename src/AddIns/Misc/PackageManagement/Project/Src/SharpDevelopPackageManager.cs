@@ -148,13 +148,6 @@ namespace ICSharpCode.PackageManagement
 			monitor.PackagesRemoved.ForEach(packageRemoved => UninstallPackageFromSolutionRepository(packageRemoved));
 		}
 		
-		void ExecuteUninstallIfPackageNotReferencedByOtherProjects(IPackage package)
-		{
-			if (!IsPackageReferencedByOtherProjects(package)) {
-				ExecuteUninstall(package);
-			}
-		}
-		
 		public void UpdatePackages(UpdatePackagesAction updateAction)
 		{
 			RunPackageOperations(updateAction.Operations);
