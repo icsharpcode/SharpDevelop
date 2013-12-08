@@ -32,8 +32,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				.Where(l => l.Assemblies.Any(a => a.Location == mainAssemblyFileName))
 				.SelectMany(l => l.Assemblies);
 			foreach (var asm in relevantClassBrowserAssemblies) {
-				// TODO I am pretty sure we need the full name here as well...
-				if (asm.AssemblyName == fullName.ShortName)
+				if (asm.FullAssemblyName == fullName.FullName)
 					return asm.Location;
 			}
 			
@@ -51,8 +50,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (File.Exists(fileName))
 				return fileName;
 			return null;
+		}
 	}
-}
 }
 
 

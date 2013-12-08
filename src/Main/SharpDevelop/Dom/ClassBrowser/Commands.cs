@@ -71,8 +71,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		public override bool CanExecute(object parameter)
 		{
 			IAssemblyModel assemblyModel = parameter as IAssemblyModel;
-			IAssemblyReferenceModel assemblyReferenceModel = parameter as IAssemblyReferenceModel;
-			return ((assemblyModel != null) && assemblyModel.Context.IsValid) || (assemblyReferenceModel != null);
+			return ((assemblyModel != null) && assemblyModel.Context.IsValid) || (parameter is IProject) || (parameter is IAssemblyReferenceModel);
 		}
 		
 		public override void Execute(object parameter)
@@ -81,17 +80,34 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (classBrowser != null) {
 				IAssemblyModel assemblyModel = parameter as IAssemblyModel;
 				if (assemblyModel == null) {
-					IAssemblyReferenceModel assemblyReference = parameter as IAssemblyReferenceModel;
-					if (assemblyReference == null) {
-						// Neither assembly model, nor a assembly reference model
-						return;
+					// Node is a project?
+					IProject project = parameter as IProject;
+					if (project != null) {
+						assemblyModel = project.AssemblyModel;
 					}
-					
-					// Model is an assembly reference
-					IAssemblyParserService assemblyParserService = SD.GetRequiredService<IAssemblyParserService>();
-					DefaultAssemblySearcher searcher = new DefaultAssemblySearcher(assemblyReference.ParentAssemblyModel.Location);
-					var resolvedFile = searcher.FindAssembly(assemblyReference.AssemblyName);
-					assemblyModel = assemblyParserService.GetAssemblyModelSafe(resolvedFile);
+				}
+				
+				if (assemblyModel == null) {
+					// Node is an assembly reference?
+					IAssemblyReferenceModel assemblyReference = parameter as IAssemblyReferenceModel;
+					if (assemblyReference != null) {
+						// Model is an assembly reference
+						IAssemblyParserService assemblyParserService = SD.GetRequiredService<IAssemblyParserService>();
+						IAssemblySearcher searcher = null;
+						IEntityModelContext entityModelContext = assemblyReference.ParentAssemblyModel.Context;
+						if ((entityModelContext != null) && (entityModelContext.Project != null)) {
+							searcher = new ProjectAssemblyReferenceSearcher(entityModelContext.Project);
+						} else {
+							searcher = new DefaultAssemblySearcher(assemblyReference.ParentAssemblyModel.Location);
+						}
+						var resolvedFile = searcher.FindAssembly(assemblyReference.AssemblyName);
+						if (resolvedFile != null) {
+							assemblyModel = assemblyParserService.GetAssemblyModelSafe(resolvedFile);
+						} else {
+							// Assembly file not resolvable
+							SD.MessageService.ShowWarningFormatted("Could not resolve reference '{0}'.", assemblyReference.AssemblyName.ShortName);
+						}
+					}
 				}
 				
 				if (assemblyModel != null) {
@@ -100,6 +116,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					
 					if (!classBrowser.MainAssemblyList.Assemblies.Contains(assemblyModel))
 						classBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
+					
+					// Bring the node into view
+					classBrowser.GotoAssemblyModel(assemblyModel);
 				}
 			}
 		}
@@ -236,9 +255,15 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 						return;
 					}
 					
-					// TODO Matching item.Include == ShortName fails for interop assemblies, because they are calld "Interop..."
-					ReferenceProjectItem referenceProjectItem =
-						project.Items.FirstOrDefault(item => (item.Include == assemblyReferenceModel.AssemblyName.ShortName) && ItemType.ReferenceItemTypes.Contains(item.ItemType)) as ReferenceProjectItem;
+					ProjectItem referenceProjectItem =
+						project.Items.FirstOrDefault(
+							item => {
+								if (item.ItemType == ItemType.COMReference) {
+									// Special handling for COM references: Their assembly names are prefixed with "Interop."
+									return assemblyReferenceModel.AssemblyName.ShortName == "Interop." + item.Include;
+								}
+								return (item.Include == assemblyReferenceModel.AssemblyName.ShortName) && ItemType.ReferenceItemTypes.Contains(item.ItemType);
+							});
 					if (referenceProjectItem != null) {
 						ProjectService.RemoveProjectItem(referenceProjectItem.Project, referenceProjectItem);
 						project.Save();

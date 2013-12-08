@@ -80,6 +80,20 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			return assemblyTreeNode;
 		}
 		
+		public bool GotoAssemblyModel(IAssemblyModel assemblyModel)
+		{
+			if (assemblyModel == null)
+				throw new ArgumentNullException("assemblyModel");
+			
+			SharpTreeNode assemblyTreeNode = FindAssemblyTreeNode(assemblyModel.FullAssemblyName);
+			if (assemblyTreeNode != null) {
+				this.FocusNode(assemblyTreeNode);
+				return true;
+			}
+			
+			return false;
+		}
+		
 		public bool GoToEntity(IEntity entity)
 		{
 			// Try to find assembly in workspace

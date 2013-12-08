@@ -15,5 +15,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		ICollection<IAssemblyList> AssemblyLists { get; }
 		IAssemblyModel FindAssemblyModel(FileName fileName);
 		bool GoToEntity(IEntity entity);
+		bool GotoAssemblyModel(IAssemblyModel assemblyModel);
 	}
 }

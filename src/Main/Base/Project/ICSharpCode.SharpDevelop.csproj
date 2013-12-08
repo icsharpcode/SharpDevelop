@@ -175,6 +175,7 @@
     <Compile Include="Parser\ISolutionSnapshotWithProjectMapping.cs" />
     <Compile Include="Parser\ParseInformation.cs" />
     <Compile Include="Parser\ParseInformationEventArgs.cs" />
+    <Compile Include="Parser\ProjectAssemblyReferenceSearcher.cs" />
     <Compile Include="Parser\ProjectContentContainer.cs" />
     <Compile Include="Project\Build\BuildDetection.cs" />
     <Compile Include="Project\Build\BuildError.cs" />

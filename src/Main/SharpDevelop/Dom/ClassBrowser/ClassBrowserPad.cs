@@ -166,6 +166,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			return treeView.GoToEntity(entity);
 		}
 		
+		public bool GotoAssemblyModel(IAssemblyModel assemblyModel)
+		{
+			// Activate the pad
+			this.BringToFront();
+			// Look for assembly node in tree
+			return treeView.GotoAssemblyModel(assemblyModel);
+		}
+		
 		void ProjectServiceCurrentSolutionChanged(object sender, EventArgs e)
 		{
 			foreach (var node in treeView.AssemblyLists.OfType<ISolutionAssemblyList>().ToArray())
