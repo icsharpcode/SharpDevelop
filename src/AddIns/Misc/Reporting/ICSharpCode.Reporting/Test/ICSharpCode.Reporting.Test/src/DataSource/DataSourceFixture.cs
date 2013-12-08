@@ -95,7 +95,90 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		
 		[Test]
 		public void GroupbyOneColumnAndFill () {
+			var dataItemsCollection = CreateDataItems();
+			var repiortsettings = new ReportSettings();
+			repiortsettings.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
+			repiortsettings.GroupColumnCollection.Add( new GroupColumn("RandomInt",1,ListSortDirection.Ascending));
 			
+			var collectionSource = new CollectionDataSource (list,repiortsettings);
+			collectionSource.Bind();
+			int i = 0;
+			do {
+				collectionSource.Fill(dataItemsCollection);
+				Console.WriteLine("first : <{0}> Last <{1}> Group <{2}> Randomint <{3}>",((BaseDataItem)dataItemsCollection[0]).DBValue,
+				                  ((BaseDataItem)dataItemsCollection[1]).DBValue,
+				                  ((BaseDataItem)dataItemsCollection[2]).DBValue,
+				                  ((BaseDataItem)dataItemsCollection[3]).DBValue);
+				i ++;
+			}while (collectionSource.MoveNext());
+			
+			Assert.That(i,Is.EqualTo(collectionSource.Count));
+		}
+	
+		
+		[Test]
+		public void FillDataIncludedInRow() {
+			
+			var baseRow = new BaseRowItem();
+			var dataItemsCollection = CreateDataItems();
+			baseRow.Items.AddRange(dataItemsCollection);
+			
+			var row = new System.Collections.Generic.List<IPrintableObject>();
+			row.Add(baseRow);
+			var reportSettings = new ReportSettings();
+			var collectionSource = new CollectionDataSource (list,reportSettings);
+			collectionSource.Bind();
+			int i = 0;
+			do {
+				collectionSource.Fill(row);
+				var r = (BaseRowItem)row[0];
+				foreach (var element in r.Items) {
+					Assert.That(((BaseDataItem)element).DBValue,Is.Not.Empty);
+				}
+				i ++;
+			}while (collectionSource.MoveNext());
+			
+			Assert.That(i,Is.EqualTo(collectionSource.Count));
+		}
+		
+		
+		[Test]
+		public void RowContainsRowAndItem() {
+			var row = new System.Collections.Generic.List<IPrintableObject>();
+				var gItem = 	new BaseDataItem(){
+					ColumnName = "GroupItem"
+				};
+			row.Add(gItem);
+			
+			var baseRow = new BaseRowItem();
+			
+			var ric = new System.Collections.Generic.List<IPrintableObject>(){
+				new BaseDataItem(){
+					ColumnName = "Lastname"
+						
+				},
+				new BaseDataItem(){
+					ColumnName = "Firstname"
+				}
+			};
+			baseRow.Items.AddRange(ric);
+			row.Add(baseRow);
+			var rs = new ReportSettings();
+			var collectionSource = new CollectionDataSource (list,rs);
+			collectionSource.Bind();
+			int i = 0;
+			do {
+				collectionSource.Fill(row);
+				var res = (BaseDataItem)row.Find(c => ((BaseDataItem)c).ColumnName == "GroupItem");
+				Assert.That(res.DBValue,Is.Not.Empty);
+				i ++;
+			}while (collectionSource.MoveNext());
+			
+			Assert.That(i,Is.EqualTo(collectionSource.Count));
+		}
+		
+		
+		System.Collections.Generic.List<IPrintableObject> CreateDataItems() {
 			var ric = new System.Collections.Generic.List<IPrintableObject>(){
 				new BaseDataItem(){
 					ColumnName = "Lastname"
@@ -108,30 +191,13 @@ namespace ICSharpCode.Reporting.Test.DataSource
 				new BaseDataItem(){
 					ColumnName = "GroupItem"
 				},
-				
 				new BaseDataItem(){
 					ColumnName = "RandomInt"
 				}
 			};
-			var rs = new ReportSettings();
-			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
-			rs.GroupColumnCollection.Add( new GroupColumn("RandomInt",1,ListSortDirection.Ascending));
-			
-			var collectionSource = new CollectionDataSource (list,rs);
-			collectionSource.Bind();
-			int i = 0;
-			do {
-				collectionSource.Fill(ric);
-				Console.WriteLine("first : <{0}> Last <{1}> Group <{2}> Randomint <{3}>",((BaseDataItem)ric[0]).DBValue,
-				                  ((BaseDataItem)ric[1]).DBValue,
-				                  ((BaseDataItem)ric[2]).DBValue,
-				                  ((BaseDataItem)ric[3]).DBValue);
-				i ++;
-			}while (collectionSource.MoveNext());
-			
-			Assert.That(i,Is.EqualTo(collectionSource.Count));
+			return ric;
 		}
-	
+		
 		
 		[SetUp]
 		public void CreateList() {

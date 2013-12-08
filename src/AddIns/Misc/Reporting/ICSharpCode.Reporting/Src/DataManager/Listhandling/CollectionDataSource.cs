@@ -162,9 +162,9 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		#region Fill
 		
 		
-		private IEnumerator<IGrouping<object, object>> groupEnumerator;
-		private IEnumerable<IGrouping<object, object>> groupedList;
-		private IEnumerator<object> listEnumerator;
+		IEnumerator<IGrouping<object, object>> groupEnumerator;
+		IEnumerable<IGrouping<object, object>> groupedList;
+		IEnumerator<object> listEnumerator;
 		
 		public void Fill(List<IPrintableObject> collection)
 		{
