@@ -8,8 +8,6 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Globals;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -20,7 +18,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class ReportWizardCommand : AbstractMenuCommand
 	{
 		private const string WizardPath = "/ReportGenerator/ReportGeneratorWizard";
-		private OpenedFile file;
+		private readonly OpenedFile file;
 		private ReportModel reportModel;
 		private IReportGenerator reportGenerator;
 //		private Properties customizer = new Properties();

@@ -6,12 +6,9 @@ using System.Globalization;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Dialogs;
 using ICSharpCode.Reports.Core.Globals;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.Commands
@@ -19,56 +16,34 @@ namespace ICSharpCode.Reports.Addin.Commands
 	/// <summary>
 	/// Description of StartView
 	/// </summary>
-	public class StartViewCommand : AbstractMenuCommand
+	public class CreateDesignViewCommand : AbstractMenuCommand
 	{
+		readonly OpenedFile openedFile;
 		
-		public override void Run()
-		{
-			throw new NotImplementedException("StartViewCommand-Run");
-//			SD.Workbench.ShowView(SetupDesigner());
+		public CreateDesignViewCommand (OpenedFile openedFile) {
+			if (openedFile == null)
+				throw new ArgumentNullException("openedFile");
+			this.openedFile = openedFile;
 		}
 		
-		/*
-		public static ReportDesignerView SetupDesigner ()
-		{
-			throw new NotImplementedException("SetupDesigner");
-			ReportModel model = ReportModel.Create();
-			
-			var reportStructure = new ReportStructure()
-			{
-				ReportLayout = GlobalEnums.ReportLayout.ListLayout;
-			}
-			IReportGenerator generator = new GeneratePlainReport(model,reportStructure);
-			generator.GenerateReport();
-			
-//			OpenedFile file = FileService.CreateUntitledOpenedFile(GlobalValues.PlainFileName,new byte[0]);
-//			file.SetData(generator.Generated.ToArray());
-//			return SetupDesigner(file);
-			return SetupDesigner(null);
-		}
-		*/
-		
-		public static ReportDesignerView SetupDesigner (OpenedFile file)
-		{
-			if (file == null) {
-				throw new ArgumentNullException("file");
-			}
-			IDesignerGenerator generator = new ReportDesignerGenerator();
-			return new ReportDesignerView(file, generator);
+		public override void Run(){
+			var generator = new ReportDesignerGenerator();
+			DesignerView =  new ReportDesignerView(openedFile, generator);
 		}
 		
+		public ReportDesignerView DesignerView {get; private set;}
 	}
 	
 	
 	
 	public class CollectParametersCommand :AbstractCommand
 	{
-		ReportSettings reportSettings;
+		readonly ReportSettings reportSettings;
 		
 		public CollectParametersCommand (ReportSettings reportSettings)
 		{
 			if (reportSettings == null) {
-				throw new ArgumentNullException("ReportSettings");
+				throw new ArgumentNullException("reportSettings");
 			}
 			this.reportSettings = reportSettings;
 		}
@@ -77,7 +52,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 		public override void Run()
 		{
 			if (reportSettings.SqlParameters.Count > 0) {
-				using (ParameterDialog paramDialog = new ParameterDialog(reportSettings.SqlParameters))
+				using (var paramDialog = new ParameterDialog(reportSettings.SqlParameters))
 				{
 					paramDialog.ShowDialog();
 					if (paramDialog.DialogResult == System.Windows.Forms.DialogResult.OK) {
