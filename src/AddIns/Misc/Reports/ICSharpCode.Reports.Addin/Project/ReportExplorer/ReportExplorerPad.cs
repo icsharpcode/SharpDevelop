@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -29,8 +30,8 @@ namespace ICSharpCode.Reports.Addin
 		
 		public ReportExplorerPad():base()
 		{
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
-			WorkbenchSingleton.Workbench.ViewClosed += ActiveViewClosed;
+			SD.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
+			SD.Workbench.ViewClosed += ActiveViewClosed;
 			this.explorerTree = new ExplorerTree();
 			this.explorerTree.MouseDown += new MouseEventHandler(ReportExplorer_MouseDown);
 			this.explorerTree.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(ReportExplorerPad_PropertyChanged);

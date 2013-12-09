@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -32,10 +33,12 @@ namespace ICSharpCode.Reports.Addin
 				}
 				file.SetData(cmd.GeneratedReport.ToArray());
 			}
-			ReportDesignerView view = ICSharpCode.Reports.Addin.Commands.StartViewCommand.SetupDesigner(file);
-			return view;
+			var viewCmd = new CreateDesignViewCommand(file);
+			viewCmd.Run();
+			return viewCmd.DesignerView;
 		}
 
+		
 		public bool IsPreferredBindingForFile(ICSharpCode.Core.FileName fileName)
 		{
 			return true;
