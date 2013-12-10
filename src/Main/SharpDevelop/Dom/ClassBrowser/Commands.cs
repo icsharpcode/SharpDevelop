@@ -93,13 +93,12 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					if (assemblyReference != null) {
 						// Model is an assembly reference
 						IAssemblyParserService assemblyParserService = SD.GetRequiredService<IAssemblyParserService>();
-						IAssemblySearcher searcher = null;
 						IEntityModelContext entityModelContext = assemblyReference.ParentAssemblyModel.Context;
+						CombinedAssemblySearcher searcher = new CombinedAssemblySearcher();
 						if ((entityModelContext != null) && (entityModelContext.Project != null)) {
-							searcher = new ProjectAssemblyReferenceSearcher(entityModelContext.Project);
-						} else {
-							searcher = new DefaultAssemblySearcher(assemblyReference.ParentAssemblyModel.Location);
+							searcher.AddSearcher(new ProjectAssemblyReferenceSearcher(entityModelContext.Project));
 						}
+						searcher.AddSearcher(new DefaultAssemblySearcher(assemblyReference.ParentAssemblyModel.Location));
 						var resolvedFile = searcher.FindAssembly(assemblyReference.AssemblyName);
 						if (resolvedFile != null) {
 							assemblyModel = assemblyParserService.GetAssemblyModelSafe(resolvedFile);

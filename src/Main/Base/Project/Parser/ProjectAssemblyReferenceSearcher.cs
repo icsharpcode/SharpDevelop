@@ -25,9 +25,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			// Try to find assembly among solution projects
 			IProjectService projectService = SD.GetRequiredService<IProjectService>();
-			if (projectService.CurrentSolution != null) {
-				var projectOfAssembly = projectService.CurrentSolution.Projects.FirstOrDefault(p => p.AssemblyModel.FullAssemblyName == fullName.FullName);
-			}
 			
 			ProjectItem projectItem =
 				project.Items.FirstOrDefault(
@@ -36,18 +33,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 							// Special handling for COM references: Their assembly names are prefixed with "Interop."
 							return fullName.ShortName == "Interop." + item.Include;
 						}
-						if ((item.ItemType == ItemType.ProjectReference) && item is ProjectReferenceProjectItem) {
-							// Special handling for project references: Find assembly name among solution projects
-							if (projectService.CurrentSolution != null) {
-								return projectService.CurrentSolution.Projects.Any(p => p.Name == ((ProjectReferenceProjectItem) item).ProjectName);
-							}
-							return false;
+						if ((item.ItemType == ItemType.ProjectReference) && (item is ProjectReferenceProjectItem)) {
+							// Special handling for project references: Compare with project name instead of file name
+							return (((ProjectReferenceProjectItem) item).ProjectName == fullName.ShortName);
 						}
-						if (item.ItemType == ItemType.Reference) {
-							return (item.Include == fullName.ShortName);
-						}
-						
-						return false;
+						return (item.ItemType == ItemType.Reference) && (item.Include == fullName.ShortName);
 					});
 			
 			if (projectItem != null) {
