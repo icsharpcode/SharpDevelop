@@ -81,7 +81,7 @@ namespace CSharpBinding.Refactoring
 			offset += str.Length;
 		}
 		
-		public void Insert (IDocument document, string text)
+		public int Insert (IDocument document, string text)
 		{
 			int offset = document.GetOffset (Location);
 			using (var undo = document.OpenUndoGroup ()) {
@@ -95,6 +95,7 @@ namespace CSharpBinding.Refactoring
 				document.Insert (offset, text);
 				offset += text.Length;
 				InsertNewLine (document, LineAfter, ref offset);
+				return offset;
 			}
 		}
 		
@@ -106,7 +107,7 @@ namespace CSharpBinding.Refactoring
 			// update type from parsed document, since this is always newer.
 			//type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
 			
-			List<InsertionPoint > result = new List<InsertionPoint> ();
+			List<InsertionPoint> result = new List<InsertionPoint> ();
 			int offset = document.GetOffset (type.Region.Begin);
 			if (offset < 0)
 				return result;
