@@ -90,7 +90,6 @@
     <Compile Include="Src\Refactoring\AbstractInlineRefactorDialog.cs" />
     <Compile Include="Src\Refactoring\ConvertInterfaceToAbstractClassContextAction.cs" />
     <Compile Include="Src\Refactoring\CreateProperties.cs" />
-    <Compile Include="Src\Refactoring\CreatePropertiesCommand.cs" />
     <Compile Include="Src\Refactoring\CreatePropertiesDialog.xaml.cs">
       <DependentUpon>CreatePropertiesDialog.xaml</DependentUpon>
     </Compile>

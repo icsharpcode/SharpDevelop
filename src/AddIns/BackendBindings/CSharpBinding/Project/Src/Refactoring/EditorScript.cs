@@ -117,7 +117,7 @@ namespace CSharpBinding.Refactoring
 			layer.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
 					if (args.InsertionPoint.LineAfter == NewLineInsertion.None &&
-					    args.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count () > 1) {
+					    args.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count > 1) {
 						args.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
 					}
 					foreach (var node in nodes.Reverse ()) {
@@ -127,7 +127,7 @@ namespace CSharpBinding.Refactoring
 						var delta = args.InsertionPoint.Insert (editor.Document, output.Text);
 						output.RegisterTrackedSegments (this, delta + offset);
 					}
-					tcs.SetResult (this);
+					tcs.SetResult(this);
 				}
 				area.TextView.Layers.Remove(layer);
 				layer.Dispose();
