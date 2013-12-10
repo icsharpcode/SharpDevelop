@@ -148,9 +148,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (reference.PublicKeyToken == null)
 				return null;
 			
-			for (int ipath = 0; ipath < gac_paths.Length; ipath++) {
-				for (int igac = 0; igac < gacs.Length; igac++) {
-					for (int iext = 0; iext < extensions.Length; iext++) {
+			for (int iext = 0; iext < extensions.Length; iext++) {
+				for (int ipath = 0; ipath < gac_paths.Length; ipath++) {
+					for (int igac = 0; igac < gacs.Length; igac++) {
 						var gac = Path.Combine (gac_paths[ipath], gacs[igac]);
 						var file = GetAssemblyFile (reference, prefixes[ipath], gac, extensions[iext]);
 						if (File.Exists (file))
