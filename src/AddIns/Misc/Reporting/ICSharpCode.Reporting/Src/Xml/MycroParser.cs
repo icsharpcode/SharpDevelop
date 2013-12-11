@@ -48,16 +48,18 @@ namespace ICSharpCode.Reporting.Xml
 				// instantiate the class
 				string ns=node.Prefix;
 				string cname=node.LocalName;
-//				Console.WriteLine ("ProcessNode(XmlNode node, object parent)  {0}",cname);
+				Console.WriteLine ("ProcessNode(XmlNode node, object parent)  {0}",cname);
+				
+				
 				Type t=GetTypeByName(ns, cname);
 				if (t == null) {
-					Console.WriteLine("\t Not found {0}",t.FullName);
+					Console.WriteLine("\t Not found {0}",cname);
 //					t = GetTypeByName (ns,"ErrorItem");
 				}
 				
-				Trace.Assert(t != null, "Type "+cname+" could not be determined.");
+//				Trace.Assert(t != null, "Type "+cname+" could not be determined.");
 //				Debug.WriteLine("Looking for " + cname + " and got " + t.FullName);
-				Console.WriteLine("Looking for " + cname + " and got " + t.FullName);
+//				Console.WriteLine("Looking for " + cname + " and got " + t.FullName);
 				try
 				{
 					ret=Activator.CreateInstance(t);
@@ -97,6 +99,7 @@ namespace ICSharpCode.Reporting.Xml
 			return ret;
 		}
 
+	    
 		protected void ProcessChildProperties(XmlNode node, object parent)
 		{
 			var t=parent.GetType();
@@ -106,6 +109,7 @@ namespace ICSharpCode.Reporting.Xml
 			{
 			    if (!(child is XmlElement)) continue;
 			    string pname=child.LocalName;
+			
 			    var pi=t.GetProperty(pname);
 
 			    if (pi==null)
