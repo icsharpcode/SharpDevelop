@@ -87,6 +87,7 @@
     <Compile Include="src\Properties\AssemblyInfo.cs" />
     <Compile Include="src\Reportingfactory\FormPageFixture.cs" />
     <Compile Include="src\Reportingfactory\GeneralReportLoading.cs" />
+    <Compile Include="src\Reportingfactory\GroupedPushModel.cs" />
     <Compile Include="src\Reportingfactory\PushModelFixture.cs" />
     <Compile Include="src\ReportItems\TextItemFixture.cs" />
     <Compile Include="src\TestHelper.cs" />
@@ -121,6 +122,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\TestReports\TestForGlobals.srd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\TestReports\GroupedList.srd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

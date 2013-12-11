@@ -76,7 +76,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 						InsertExportRows(exportRows);
 						MeasureAndArrangeContainer(row);
 						exportRows.Clear();
-//						ExpressionVisitor.Visit(CurrentPage);
 						CurrentPage.PageInfo.PageNumber = Pages.Count + 1;
 						Pages.Add(CurrentPage);
 
@@ -90,7 +89,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 					}
 
 					row.ExportedItems.AddRange(convertedItems);
-//					ExpressionVisitor.Visit(row as ExportContainer);
 					exportRows.Add(row);
 					position = new Point(CurrentSection.Location.X,position.Y + row.DesiredSize.Height + 1);
 				}
