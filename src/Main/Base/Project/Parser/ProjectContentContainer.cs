@@ -368,7 +368,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 							if (IsSerializable(unresolvedFile))
 								fileCountParsedAndSerializable++;
 						}
-						SD.MainThread.InvokeAsyncAndForget(delegate { assemblyModel.Update(null, unresolvedFile); });
+//						SD.MainThread.InvokeAsyncAndForget(delegate { assemblyModel.Update(null, unresolvedFile); });
 						progressMonitor.Progress += fileCountInverse;
 					}
 				});
