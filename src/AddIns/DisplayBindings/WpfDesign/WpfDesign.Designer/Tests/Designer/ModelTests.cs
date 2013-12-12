@@ -398,6 +398,33 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			AssertCanvasDesignerOutput(expectedXaml, checkBox.Context);
 			AssertLog("");
 		}
+		
+		[Test]
+		public void AddStringAsResource()
+		{
+			DesignItem textBlock = CreateCanvasContext("<TextBlock/>");
+			DesignItem canvas = textBlock.Parent;
+			
+			DesignItemProperty canvasResources = canvas.Properties.GetProperty("Resources");
+			
+			DesignItem str = canvas.Services.Component.RegisterComponentForDesigner("stringresource 1");
+			str.Key = "str1";
+			
+			Assert.IsTrue(canvasResources.IsCollection);
+			canvasResources.CollectionElements.Add(str);
+			
+			textBlock.Properties[TextBlock.TextProperty].SetValue(new StaticResourceExtension());
+			DesignItemProperty prop = textBlock.Properties[TextBlock.TextProperty];
+			prop.Value.Properties["ResourceKey"].SetValue("str1");
+			
+			string expectedXaml = "<Canvas.Resources>\n" +
+								  "  <Controls0:String x:Key=\"str1\">stringresource 1</Controls0:String>\n" +
+								  "</Canvas.Resources>\n" +
+								  "<TextBlock Text=\"{StaticResource ResourceKey=str1}\" />";
+			
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context, "xmlns:Controls0=\"clr-namespace:System;assembly=mscorlib\"");
+			AssertLog("");
+		}
 	}
 	
 	public class MyMultiConverter : IMultiValueConverter
