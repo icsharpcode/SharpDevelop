@@ -134,20 +134,29 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			public int Compare(SharpTreeNode x, SharpTreeNode y)
 			{
+				// "Base types" and "Derive types" nodes have precedence over other nodes
+				if ((x is BaseTypesTreeNode) && !(y is BaseTypesTreeNode))
+					return -1;
+				if (!(x is BaseTypesTreeNode) && (y is BaseTypesTreeNode))
+					return 1;
+				if ((x is DerivedTypesTreeNode) && !(y is DerivedTypesTreeNode))
+					return -1;
+				if (!(x is DerivedTypesTreeNode) && (y is DerivedTypesTreeNode))
+					return 1;
+				
 				var a = x.Model as IMemberModel;
 				var b = y.Model as IMemberModel;
 				
-				if (a == null && b == null)
-					return NodeTextComparer.Compare(x, y);
-				if (a == null)
+				if ((a == null) && (b != null))
 					return -1;
-				if (b == null)
+				if ((a != null) && (b == null))
 					return 1;
-				
-				if (a.SymbolKind < b.SymbolKind)
-					return -1;
-				if (a.SymbolKind > b.SymbolKind)
-					return 1;
+				if ((a != null) && (b != null)) {
+					if (a.SymbolKind < b.SymbolKind)
+						return -1;
+					if (a.SymbolKind > b.SymbolKind)
+						return 1;
+				}
 				
 				return NodeTextComparer.Compare(x, y);
 			}
