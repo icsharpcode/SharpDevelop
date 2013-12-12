@@ -81,7 +81,12 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
+    <Compile Include="Extensions\RightClickContextMenu.xaml.cs">
+      <DependentUpon>RightClickContextMenu.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
+    <Compile Include="Extensions\RightClickContextMenuExtension.cs" />
     <Compile Include="PropertyGrid\Editors\FlatCollectionEditor.xaml.cs">
       <DependentUpon>FlatCollectionEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -243,6 +248,7 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Extensions\RightClickContextMenu.xaml" />
     <Page Include="PropertyGrid\Editors\FlatCollectionEditor.xaml" />
     <Page Include="ThumbnailView\ThumbnailView.xaml" />
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">

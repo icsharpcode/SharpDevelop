@@ -21,6 +21,30 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
+		public virtual string SendToFrontText {
+			get {
+				return "Bring to front";
+			}
+		}
+		
+		public virtual string SendForward {
+			get {
+				return "Forward";
+			}
+		}
+		
+		public virtual string SendBackward {
+			get {
+				return "Backward";
+			}
+		}
+		
+		public virtual string SendToBack {
+			get {
+				return "Send to back";
+			}
+		}
+		
 		public virtual string PressAltText {
 			get {
 				return "Press \"Alt\" to Enter Container";
