@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// A IMSBuildLoggerFilter object that lazy-loads the specified
 	/// IMSBuildLoggerFilter when the specified task is running.
 	/// </returns>
-	public class TaskBoundLoggerFilterDoozer : IDoozer
+	class TaskBoundLoggerFilterDoozer : IDoozer
 	{
 		public bool HandleConditions {
 			get {

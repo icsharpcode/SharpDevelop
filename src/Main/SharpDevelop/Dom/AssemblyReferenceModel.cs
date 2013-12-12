@@ -11,7 +11,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>
 	/// Model representing list of assembly references.
 	/// </summary>
-	public class AssemblyReferencesModel : IAssemblyReferencesModel
+	class AssemblyReferencesModel : IAssemblyReferencesModel
 	{
 		IAssemblyModel parentAssemblyModel;
 		NullSafeSimpleModelCollection<IAssemblyReferenceModel> assemblyNames;
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>
 	/// Model representing an assembly reference.
 	/// </summary>
-	public class AssemblyReferenceModel : IAssemblyReferenceModel
+	class AssemblyReferenceModel : IAssemblyReferenceModel
 	{
 		IAssemblyModel parentAssemblyModel;
 		DomAssemblyName assemblyName;
