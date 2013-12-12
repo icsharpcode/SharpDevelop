@@ -285,10 +285,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Load Configurations
-		IEnumerable<ConfigurationAndPlatform> LoadSolutionConfigurations(IEnumerable<KeyValuePair<string, string>> section)
+		internal IEnumerable<ConfigurationAndPlatform> LoadSolutionConfigurations(IEnumerable<KeyValuePair<string, string>> section)
 		{
 			// Entries in the section look like this: 'Debug|Any CPU = Debug|Any CPU'
-			return section.Select(e => ConfigurationAndPlatform.FromKey(e.Key));
+			return section.Select(e => ConfigurationAndPlatform.FromKey(e.Key))
+				.Where(e => ConfigurationAndPlatform.IsValidName(e.Configuration) && ConfigurationAndPlatform.IsValidName(e.Platform));
 		}
 		
 		void LoadProjectConfigurations(SolutionSection section, Dictionary<Guid, ProjectLoadInformation> projectInfoDict)

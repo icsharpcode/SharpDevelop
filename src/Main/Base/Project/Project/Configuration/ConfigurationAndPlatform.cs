@@ -28,6 +28,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets configuration and platform from an MSBuild condition in the format "'$(Configuration)|$(Platform)' == 'configuration|platform'".
+		/// If the condition only tests the configuration, the platform property will be null (and vice versa).
+		/// If the condition is not recognized, both condition and platform of the result will be null.
 		/// </summary>
 		public static ConfigurationAndPlatform FromCondition(string condition)
 		{
@@ -52,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets configuration and platform from a key string in the format 'configuration|platform'.
+		/// If the key string has an invalid format, both condition and platform of the result will be null.
 		/// </summary>
 		public static ConfigurationAndPlatform FromKey(string key)
 		{

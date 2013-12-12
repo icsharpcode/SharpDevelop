@@ -30,5 +30,25 @@ namespace ICSharpCode.SharpDevelop.Project
 			Assert.AreEqual("{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Release|Any CPU.ActiveCfg", entries[1].Key);
 			Assert.AreEqual("Release|Any CPU", entries[1].Value);
 		}
+		
+		[Test]
+		public void DescriptionInSolutionConfigurationPlatforms()
+		{
+			// http://community.sharpdevelop.net/forums/t/19948.aspx
+			string input = "\tGlobalSection(SolutionConfigurationPlatforms) = preSolution" + Environment.NewLine +
+				"\t\tDebug|Any CPU = Debug|Any CPU" + Environment.NewLine +
+				"\t\tRelease|Any CPU = Release|Any CPU" + Environment.NewLine +
+				"\t\tDescription = Some fancy description of the application." + Environment.NewLine +
+				"\tEndGlobalSection" + Environment.NewLine;
+			
+			var loader = new SolutionLoader(new StringReader(input));
+			SolutionSection section = loader.ReadSection(isGlobal: true);
+			
+			var configs = loader.LoadSolutionConfigurations(section).ToArray();
+			Assert.AreEqual(new[] {
+			                	new ConfigurationAndPlatform("Debug", "Any CPU"),
+			                	new ConfigurationAndPlatform("Release", "Any CPU")
+			                }, configs);
+		}
 	}
 }
