@@ -199,6 +199,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						}
 					}
 				}
+			} else if (instance is string) {
+				xml.InnerText = (string)instance;
 			}
 
 			return new XamlObject(this, xml, elementType, instance);
