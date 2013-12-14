@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
@@ -75,6 +76,7 @@ namespace CSharpBinding.Refactoring
 		
 		public override Task<Script> InsertWithCursor(string operation, InsertPosition defaultPosition, IList<AstNode> nodes)
 		{
+			// TODO : Use undo group
 			var tcs = new TaskCompletionSource<Script>();
 			var loc = editor.Caret.Location;
 			var currentPart = context.UnresolvedFile.GetInnermostTypeDefinition(loc);
@@ -89,8 +91,7 @@ namespace CSharpBinding.Refactoring
 			if (area == null) return tcs.Task;
 			
 			var layer = new InsertionCursorLayer(area, operation, insertionPoints);
-			area.TextView.InsertLayer(layer, KnownLayer.Text, LayerInsertionPosition.Above);
-
+			
 			switch (defaultPosition) {
 				case InsertPosition.Start:
 					layer.CurrentInsertionPoint = 0;
@@ -113,7 +114,13 @@ namespace CSharpBinding.Refactoring
 					}
 					break;
 			}
-
+			operationsRunning++;
+			InsertWithCursorOnLayer(this, layer, tcs, nodes, editor.Document);
+			return tcs.Task;
+		}
+		
+		static void InsertWithCursorOnLayer(EditorScript currentScript, InsertionCursorLayer layer, TaskCompletionSource<Script> tcs, IList<AstNode> nodes, IDocument target)
+		{
 			layer.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
 					if (args.InsertionPoint.LineAfter == NewLineInsertion.None &&
@@ -121,31 +128,100 @@ namespace CSharpBinding.Refactoring
 						args.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
 					}
 					foreach (var node in nodes.Reverse ()) {
-						int indentLevel = GetIndentLevelAt(editor.Document.GetOffset(insertionPoints[0].Location));
-						var output = OutputNode(indentLevel, node);
-						var offset = editor.Document.GetOffset(args.InsertionPoint.Location);
-						var delta = args.InsertionPoint.Insert (editor.Document, output.Text);
-						output.RegisterTrackedSegments (this, delta + offset);
+						int indentLevel = currentScript.GetIndentLevelAt(target.GetOffset(args.InsertionPoint.Location));
+						var output = currentScript.OutputNode(indentLevel, node);
+						var offset = target.GetOffset(args.InsertionPoint.Location);
+						var delta = args.InsertionPoint.Insert(target, output.Text);
+						output.RegisterTrackedSegments(currentScript, delta + offset);
 					}
-					tcs.SetResult(this);
+					tcs.SetResult(currentScript);
 				}
-				area.TextView.Layers.Remove(layer);
 				layer.Dispose();
+				currentScript.DisposeOnClose();
 			};
-			return tcs.Task;
 		}
+		
+		readonly List<Script> startedScripts = new List<Script>();
+		int operationsRunning;
 		
 		public override Task<Script> InsertWithCursor(string operation, ITypeDefinition parentType, Func<Script, RefactoringContext, IList<AstNode>> nodeCallback)
 		{
-			return base.InsertWithCursor(operation, parentType, nodeCallback);
+			// TODO : Use undo group
+			var tcs = new TaskCompletionSource<Script>();
+			if (parentType == null)
+				return tcs.Task;
+			var part = parentType.Parts.FirstOrDefault ();
+			if (part == null)
+				return tcs.Task;
+			
+			var fileName = new ICSharpCode.Core.FileName(part.Region.FileName);
+			IViewContent document = SD.FileService.OpenFile(fileName);
+			var area = document.GetService<TextArea>();
+			
+			if (area == null) return tcs.Task;
+			
+			var loc = part.Region.Begin;
+			var parsedFile = SD.ParserService.ParseFile(fileName, area.Document, cancellationToken: context.CancellationToken);
+			var declaringType = parsedFile.GetInnermostTypeDefinition(loc);
+			EditorScript script;
+
+			if (area.Document != context.Document) {
+				script = new EditorScript(area.GetService<ITextEditor>(), SDRefactoringContext.Create(fileName, area.Document, loc, context.CancellationToken), FormattingOptions);
+				startedScripts.Add(script);
+			} else {
+				script = this;
+			}
+			var nodes = nodeCallback (script, script.context);
+			var insertionPoints = InsertionPoint.GetInsertionPoints(area.Document, part);
+			
+			if (insertionPoints.Count == 0) {
+				SD.MessageService.ShowErrorFormatted("No valid insertion point can be found in type '{0}'.", part.Name);
+				return tcs.Task;
+			}
+			
+			var layer = new InsertionCursorLayer(area, operation, insertionPoints);
+			area.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)area.TextView.InvalidateVisual);
+			
+			if (declaringType.Kind == TypeKind.Enum) {
+				foreach (var node in nodes.Reverse()) {
+					int indentLevel = GetIndentLevelAt(area.Document.GetOffset(declaringType.BodyRegion.Begin));
+					var output = OutputNode(indentLevel, node);
+					var point = insertionPoints[0];
+					var offset = area.Document.GetOffset(point.Location);
+					var text = output.Text + ",";
+					var delta = point.Insert(area.Document, text);
+					output.RegisterTrackedSegments(script, delta + offset);
+				}
+				tcs.SetResult(script);
+				return tcs.Task;
+			}
+			operationsRunning++;
+			InsertWithCursorOnLayer(script, layer, tcs, nodes, area.Document);
+			return tcs.Task;
+		}
+		
+		bool isDisposed;
+		void DisposeOnClose(bool force = false)
+		{
+			if (isDisposed)
+				return;
+			if (force)
+				operationsRunning = 0;
+			if (operationsRunning-- == 0) {
+				isDisposed = true;
+				base.Dispose ();
+				// refresh parse information so that the issue can disappear immediately
+				SD.ParserService.ParseAsync(editor.FileName, editor.Document).FireAndForget();
+			}
+			foreach (var script in startedScripts)
+				script.Dispose();
 		}
 		
 		public override void Dispose()
 		{
-			base.Dispose();
-			// refresh parse information so that the issue can disappear immediately
-			SD.ParserService.ParseAsync(editor.FileName, editor.Document).FireAndForget();
+			DisposeOnClose();
 		}
+
 	}
 	
 	class InsertionCursorLayer : UIElement, IDisposable
@@ -171,6 +247,7 @@ namespace CSharpBinding.Refactoring
 			this.operation = operation;
 			this.insertionPoints = insertionPoints.ToArray();
 			this.editor.ActiveInputHandler = new InputHandler(this);
+			this.editor.TextView.InsertLayer(this, KnownLayer.Text, LayerInsertionPosition.Above);
 		}
 		
 		static readonly Pen markerPen = new Pen(Brushes.Blue, 1);
@@ -211,7 +288,8 @@ namespace CSharpBinding.Refactoring
 		
 		public void Dispose()
 		{
-			this.editor.ActiveInputHandler = this.editor.DefaultInputHandler;
+			editor.TextView.Layers.Remove(this);
+			editor.ActiveInputHandler = editor.DefaultInputHandler;
 		}
 		
 		void InsertCode(object sender, ExecutedRoutedEventArgs e)
