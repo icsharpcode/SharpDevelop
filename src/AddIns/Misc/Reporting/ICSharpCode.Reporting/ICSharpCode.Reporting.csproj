@@ -85,9 +85,7 @@
     <Compile Include="Src\BaseClasses\AbstractColumn.cs" />
     <Compile Include="Src\BaseClasses\BasicParameter.cs" />
     <Compile Include="Src\BaseClasses\ExtensionMethods.cs" />
-    <Compile Include="Src\BaseClasses\GroupColumn.cs" />
     <Compile Include="Src\BaseClasses\PageInfo.cs" />
-    <Compile Include="Src\BaseClasses\SortColumn.cs" />
     <Compile Include="Src\Collections.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\DataManager\Listhandling\CollectionDataSource.cs" />
@@ -151,10 +149,12 @@
     <Compile Include="Src\Globals\GlobalValues.cs" />
     <Compile Include="Src\Interfaces\IReportModel.cs" />
     <Compile Include="Src\Items\BaseTextItem.cs" />
+    <Compile Include="Src\Items\GroupColumn.cs" />
     <Compile Include="Src\Items\PrintableItem.cs" />
     <Compile Include="Src\Items\ReportContainer.cs" />
     <Compile Include="Src\Items\ReportModel.cs" />
     <Compile Include="Src\Items\ReportSettings.cs" />
+    <Compile Include="Src\Items\SortColumn.cs" />
     <Compile Include="Src\PageBuilder\BasePageBuilder.cs" />
     <Compile Include="Src\PageBuilder\Converter\ContainerConverter.cs" />
     <Compile Include="Src\PageBuilder\Converter\IContainerConverter.cs" />

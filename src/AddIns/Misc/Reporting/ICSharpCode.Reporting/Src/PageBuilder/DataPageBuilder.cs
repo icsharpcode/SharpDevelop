@@ -51,42 +51,39 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		void BuildDetail()
 		{
+			Console.WriteLine("DatapageBuilder");
 			var exportRows = new List<IExportContainer>();
 			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
 
 			var position = DetailStart;
-			
+
 			CurrentSection = ReportModel.DetailSection;
-			
+//			Console.WriteLine("Report -grouping {0} ",DataSource.OrderGroup.ToString());
+//			Console.WriteLine ("groupkey {0}",DataSource.CurrentKey);
 			if(DataSourceContainsData()) {
 				CurrentLocation = DetailStart;
-				
+				if (! IsGrouped()) {
+					Console.WriteLine("report is not grouped");
+				} else {
+					Console.WriteLine("report is grouped");
+				}
 				do {
 					var row = CreateContainerForSection(CurrentPage,position);
-
 					DataSource.Fill(CurrentSection.Items);
 					
 					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection.Items);
 					
 					converter.SetParent(row,convertedItems);
 					
-					MeasureAndArrangeContainer(row);
-
 					if (PageFull(row)) {
 						InsertExportRows(exportRows);
-						MeasureAndArrangeContainer(row);
 						exportRows.Clear();
-						CurrentPage.PageInfo.PageNumber = Pages.Count + 1;
-						Pages.Add(CurrentPage);
-
-						position = ResetPosition();
-						CurrentPage = CreateNewPage();
-						WriteStandardSections();
-						CurrentLocation = DetailStart;
-						
+						PerformPageBreak();
 						position = DetailStart;
 						row.Location = position;
 					}
+
+					MeasureAndArrangeContainer(row);
 
 					row.ExportedItems.AddRange(convertedItems);
 					exportRows.Add(row);
@@ -96,6 +93,23 @@ namespace ICSharpCode.Reporting.PageBuilder
 				while (DataSource.MoveNext());
 				InsertExportRows(exportRows);
 			}
+		}
+
+		void PerformPageBreak()
+		{
+			CurrentPage.PageInfo.PageNumber = Pages.Count + 1;
+			Pages.Add(CurrentPage);
+			CurrentPage = CreateNewPage();
+			WriteStandardSections();
+			CurrentLocation = DetailStart;
+			ResetPosition();
+		}
+
+		
+		
+		bool IsGrouped()
+		{
+			return DataSource.OrderGroup == OrderGroup.Grouped;
 		}
 
 		
@@ -116,6 +130,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 
+		
 		Point ResetPosition () {
 			return new Point(DetailStart.X,1);
 		}

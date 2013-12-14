@@ -8,8 +8,9 @@
  */
 using System;
 using System.ComponentModel;
+using ICSharpCode.Reporting.BaseClasses;
 
-namespace ICSharpCode.Reporting.BaseClasses
+namespace ICSharpCode.Reporting.Items
 {
 	/// <summary>
 	/// Description of SortColumn.

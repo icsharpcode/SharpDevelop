@@ -16,22 +16,9 @@ namespace ICSharpCode.Reporting.Xml
 	/// </summary>
 	internal class ModelLoader: MycroParser
 	{
-		
 		protected override Type GetTypeByName(string ns, string name)
 		{
-//			var b = typeof(BaseSection).Assembly.GetType("ICSharpCode.Reporting.Items" + "." + name);
-//			var s = typeof(BaseSection).Assembly.GetType(typeof(BaseSection).Namespace + "." + name);
-//			Console.WriteLine("getTypeByname <{0}>",s.Name);
-			
-			var	t = typeof(BaseSection).Assembly.GetType(typeof(BaseSection).Namespace + "." + name);
-			
-			if (t == null) {
-				Console.WriteLine();
-				Console.WriteLine("Can't find Item <{0}>",name);
-				Console.WriteLine();
-			}
-			return t;
+			return typeof(BaseSection).Assembly.GetType(typeof(BaseSection).Namespace + "." + name);
 		}
-		
 	}
 }

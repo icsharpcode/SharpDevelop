@@ -33,7 +33,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		[Test]
 		public void GroupbyOneColumn () {
 			var rs = new ReportSettings();
-			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
+			rs.GroupColumnsCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
 			var collectionSource = new CollectionDataSource	(list,rs);
 			collectionSource.Bind();
 		}
@@ -97,8 +97,8 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		public void GroupbyOneColumnAndFill () {
 			var dataItemsCollection = CreateDataItems();
 			var repiortsettings = new ReportSettings();
-			repiortsettings.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
-			repiortsettings.GroupColumnCollection.Add( new GroupColumn("RandomInt",1,ListSortDirection.Ascending));
+			repiortsettings.GroupColumnsCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
+			repiortsettings.GroupColumnsCollection.Add( new GroupColumn("RandomInt",1,ListSortDirection.Ascending));
 			
 			var collectionSource = new CollectionDataSource (list,repiortsettings);
 			collectionSource.Bind();

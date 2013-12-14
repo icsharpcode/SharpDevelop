@@ -6,12 +6,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.DataSource;
-using ICSharpCode.Reporting.DataSource.Comparer;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Data;
 using ICSharpCode.Reporting.Items;
@@ -21,11 +19,12 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 	/// <summary>
 	/// Description of DataSource.
 	/// </summary>
-	enum OrderGroup {
+	public enum OrderGroup {
 		AsIs,
 		Sorted,
 		Grouped
 	}
+	
 	public class CollectionDataSource:IDataSource
 	{
 		
@@ -34,8 +33,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		readonly ReportSettings reportSettings;
 		readonly Type elementType;
 		readonly PropertyDescriptorCollection listProperties;
-		OrderGroup orderGroup;
-		
+//		OrderGroup orderGroup;
+	
 		public CollectionDataSource(IEnumerable list, ReportSettings reportSettings)
 		{
 			if (list == null)
@@ -47,7 +46,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			
 			this.reportSettings = reportSettings;
 			this.listProperties = this.baseList.GetItemProperties(null);
-			orderGroup = OrderGroup.AsIs;
+			OrderGroup = OrderGroup.AsIs;
 		}
 		
 		
@@ -67,7 +66,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			this.reportSettings = reportSettings;
 			
 			this.listProperties = this.baseList.GetItemProperties(null);
-			orderGroup = OrderGroup.AsIs;
+			OrderGroup = OrderGroup.AsIs;
 		}
 		
 		
@@ -94,6 +93,10 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		public object Current {get; private set;}
 		
+		public OrderGroup OrderGroup {get; private set;}
+		
+		
+		public IGrouping<object, object> CurrentKey {get; private set; }
 		
 		#region Sort
 		
@@ -101,10 +104,10 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		{
 			if (reportSettings.SortColumnsCollection.Count > 0) {
 				var sorted = SortInternal();
-				orderGroup = OrderGroup.Sorted;
+				OrderGroup = OrderGroup.Sorted;
 				listEnumerator = sorted.GetEnumerator();
 			} else {
-				orderGroup = OrderGroup.AsIs;
+				OrderGroup = OrderGroup.AsIs;
 				listEnumerator = baseList.GetEnumerator();
 			}
 			listEnumerator.MoveNext();
@@ -129,10 +132,11 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		void Group()
 		{
-			orderGroup = OrderGroup.Grouped;
+			OrderGroup = OrderGroup.Grouped;
 			groupedList = GroupInternal();
 			groupEnumerator = groupedList.GetEnumerator();
 			groupEnumerator.MoveNext();
+			CurrentKey = groupEnumerator.Current;
 			listEnumerator = groupEnumerator.Current.GetEnumerator();
 			listEnumerator.MoveNext();
 			Current = listEnumerator.Current;
@@ -140,7 +144,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		
 		IEnumerable<IGrouping<object, object>> GroupInternal () {
-			var property = listProperties.Find(reportSettings.GroupColumnCollection[0].ColumnName,true);
+			var property = listProperties.Find(reportSettings.GroupColumnsCollection[0].ColumnName,true);
 			var sortProperty = listProperties.Find("Randomint",true);
 
 			var groupedList = baseList.OrderBy(o => o.GetType().GetProperty(sortProperty.Name).GetValue(o, null) )
@@ -152,7 +156,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		public void Bind()
 		{
-			if (reportSettings.GroupColumnCollection.Any()) {
+			if (reportSettings.GroupColumnsCollection.Any()) {
 				Group();
 			} else {
 				Sort();
@@ -173,8 +177,6 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				if (container != null) {
 					FillFromList(container.Items);
 				} else {
-					
-					//FillFromList(collection);
 					FillInternal(element);
 				}
 			}
@@ -218,9 +220,10 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		{
 			var canMove = listEnumerator.MoveNext();
 			
-			if (orderGroup == OrderGroup.Grouped) {
+			if (OrderGroup == OrderGroup.Grouped) {
 				if (! canMove) {
 					var groupCanMove = groupEnumerator.MoveNext();
+		CurrentKey = groupEnumerator.Current;
 					if (groupCanMove) {
 						listEnumerator = groupEnumerator.Current.GetEnumerator();
 						canMove = listEnumerator.MoveNext();

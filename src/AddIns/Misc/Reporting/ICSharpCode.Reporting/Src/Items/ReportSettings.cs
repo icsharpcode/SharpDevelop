@@ -51,7 +51,7 @@ namespace ICSharpCode.Reporting.Items
 //			this.availableFields = new AvailableFieldsCollection();
 //			this.groupingsCollection = new GroupColumnCollection();
 			this.SortColumnsCollection = new SortColumnCollection();
-			GroupColumnCollection = new GroupColumnCollection();
+			this.GroupColumnsCollection = new GroupColumnCollection();
 //			this.sqlParameters = new SqlParameterCollection();
 			ParameterCollection = new ParameterCollection();
 //			this.NoDataMessage = "No Data for this Report";
@@ -141,10 +141,11 @@ namespace ICSharpCode.Reporting.Items
 //		[Category("Parameters")]
 //		[EditorAttribute ( typeof(ParameterCollectionEditor),
 //		                  typeof(System.Drawing.Design.UITypeEditor) )]
+		
 		public ParameterCollection ParameterCollection {get; private set;}
 	
 		public SortColumnCollection SortColumnsCollection {get;private set;}
 		
-		public GroupColumnCollection GroupColumnCollection {get;private set;}
+		public GroupColumnCollection GroupColumnsCollection {get;private set;}
 	}
 }

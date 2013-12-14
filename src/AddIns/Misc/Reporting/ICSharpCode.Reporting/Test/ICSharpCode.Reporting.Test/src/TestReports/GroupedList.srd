@@ -14,7 +14,13 @@
             <Padding>5, 5, 5, 5</Padding>
             <AvailableFieldsCollection />
             <SortColumnsCollection />
-            <GroupColumnsCollection />
+            <GroupColumnsCollection>
+                <GroupColumn>
+                    <SortDirection>Ascending</SortDirection>
+                    <ColumnName>GroupItem</ColumnName>
+                    <DataTypeName>System.String</DataTypeName>
+                </GroupColumn>
+            </GroupColumnsCollection>
             <ParameterCollection />
             <SqlParameters />
             <ConnectionString />
@@ -100,7 +106,7 @@
                             <DrawBorder>False</DrawBorder>
                             <FrameColor>Black</FrameColor>
                             <ForeColor>ControlText</ForeColor>
-                            <ColumnName>GoupItem</ColumnName>
+                            <ColumnName>GroupItem</ColumnName>
                             <Name>BaseDataItem3</Name>
                         </BaseDataItem>
                     </Items>

@@ -9,7 +9,7 @@
 using System;
 using System.ComponentModel;
 
-namespace ICSharpCode.Reporting.BaseClasses
+namespace ICSharpCode.Reporting.Items
 {
 	/// <summary>
 	/// Description of GroupColumn.

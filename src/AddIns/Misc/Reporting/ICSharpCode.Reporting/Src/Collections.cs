@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 
 using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.Items;
 
 namespace ICSharpCode.Reporting
 {

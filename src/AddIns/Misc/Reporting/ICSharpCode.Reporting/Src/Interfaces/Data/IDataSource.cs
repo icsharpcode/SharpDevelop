@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.DataManager.Listhandling;
@@ -30,5 +31,8 @@ namespace ICSharpCode.Reporting.Interfaces.Data
 		int Count {get;}
 		
 		object Current {get;}
+		OrderGroup OrderGroup {get;}
+		IGrouping<object, object> CurrentKey {get;}
+		
 	}
 }

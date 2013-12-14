@@ -17,8 +17,11 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		[Test]
 		public void TestMethod()
 		{
-			Assert.That("a",Is.EqualTo("b"));
+			reportCreator.BuildExportList();
+			// Only a test value
+			Assert.That(reportCreator.Pages.Count,Is.EqualTo(3));
 		}
+		
 		
 		[SetUp]
 		public void LoadFromStream()

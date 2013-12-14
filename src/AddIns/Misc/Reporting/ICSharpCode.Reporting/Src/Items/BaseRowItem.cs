@@ -13,4 +13,11 @@ namespace ICSharpCode.Reporting.Items
 		{
 		}
 	}
+	
+	public class GroupHeader :BaseRowItem
+	{
+		public GroupHeader() {
+			Console.WriteLine("init groupHeader");
+		}
+	}
 }
