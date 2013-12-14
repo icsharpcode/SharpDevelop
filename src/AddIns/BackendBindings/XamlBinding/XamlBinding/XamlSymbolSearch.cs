@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
@@ -110,8 +112,76 @@ namespace ICSharpCode.XamlBinding
 		
 		public Task RenameAsync(SymbolRenameArgs args, Action<PatchedFile> callback, Action<Error> errorCallback)
 		{
-			// TODO implement Rename for XAML
-			return Task.Run(() => {});
+			if (callback == null)
+				throw new ArgumentNullException("callback");
+			var cancellationToken = args.ProgressMonitor.CancellationToken;
+			return Task.Run(
+				() => {
+					bool isNameValid = XmlReader.IsNameToken(args.NewName);
+					object progressLock = new object();
+					Parallel.ForEach(
+						interestingFileNames,
+						new ParallelOptions {
+							MaxDegreeOfParallelism = Environment.ProcessorCount,
+							CancellationToken = cancellationToken
+						},
+						delegate (FileName fileName) {
+							RenameReferencesInFile(args, fileName, callback, errorCallback, isNameValid, cancellationToken);
+							lock (progressLock)
+								args.ProgressMonitor.Progress += workAmountInverse;
+						});
+				}, cancellationToken
+			);
+		}
+		
+		void RenameReferencesInFile(SymbolRenameArgs args, FileName fileName, Action<PatchedFile> callback, Action<Error> errorCallback, bool isNameValid, CancellationToken cancellationToken)
+		{
+			ITextSource textSource = args.ParseableFileContentFinder.Create(fileName);
+			if (textSource == null)
+				return;
+			int offset = textSource.IndexOf(entity.Name, 0, textSource.TextLength, StringComparison.Ordinal);
+			if (offset < 0)
+				return;
+			
+			var parseInfo = SD.ParserService.Parse(fileName, textSource) as XamlFullParseInformation;
+			if (parseInfo == null)
+				return;
+			ReadOnlyDocument document = null;
+			IHighlighter highlighter = null;
+			List<RenameResultMatch> results = new List<RenameResultMatch>();
+			XamlAstResolver resolver = new XamlAstResolver(compilation, parseInfo);
+			string newCode = args.NewName;
+			do {
+				if (document == null) {
+					document = new ReadOnlyDocument(textSource, fileName);
+					highlighter = SD.EditorControlService.CreateHighlighter(document);
+					highlighter.BeginHighlighting();
+				}
+				var result = resolver.ResolveAtLocation(document.GetLocation(offset + entity.Name.Length / 2 + 1), cancellationToken);
+				int length = entity.Name.Length;
+				if ((result is TypeResolveResult && ((TypeResolveResult)result).Type.Equals(entity)) || (result is MemberResolveResult && ((MemberResolveResult)result).Member.Equals(entity))) {
+					var region = new DomRegion(fileName, document.GetLocation(offset), document.GetLocation(offset + length));
+					var builder = SearchResultsPad.CreateInlineBuilder(region.Begin, region.End, document, highlighter);
+					results.Add(new RenameResultMatch(fileName, document.GetLocation(offset), document.GetLocation(offset + length), offset, length, newCode, builder, highlighter.DefaultTextColor));
+				}
+				offset = textSource.IndexOf(entity.Name, offset + length, textSource.TextLength - offset - length, StringComparison.OrdinalIgnoreCase);
+			} while (offset > 0);
+			if (highlighter != null) {
+				highlighter.Dispose();
+			}
+			if (results.Count > 0) {
+				if (!isNameValid) {
+					errorCallback(new Error(ErrorType.Error, string.Format("The name '{0}' is not valid in the current context!", args.NewName),
+					                        new DomRegion(fileName, results[0].StartLocation)));
+					return;
+				}
+				IDocument changedDocument = new TextDocument(document);
+				var oldVersion = changedDocument.Version;
+				foreach (var result in results.OrderByDescending(m => m.StartOffset)) {
+					changedDocument.Replace(result.StartOffset, result.Length, result.NewCode);
+				}
+				callback(new PatchedFile(fileName, results, oldVersion, changedDocument.Version));
+			}
 		}
 	}
 }

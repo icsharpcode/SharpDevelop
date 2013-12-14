@@ -229,20 +229,9 @@ namespace CSharpBinding
 				IDocument changedDocument = new TextDocument(document);
 				var oldVersion = changedDocument.Version;
 				foreach (var result in results.OrderByDescending(m => m.StartOffset)) {
-					changedDocument.Replace(result.StartOffset, result.Length, result.newCode);
+					changedDocument.Replace(result.StartOffset, result.Length, result.NewCode);
 				}
 				callback(new PatchedFile(fileName, results, oldVersion, changedDocument.Version));
-			}
-		}
-		
-		class RenameResultMatch : SearchResultMatch
-		{
-			internal readonly string newCode;
-			
-			public RenameResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, string newCode, RichText richText = null, HighlightingColor defaultTextColor = null)
-				: base(fileName, startLocation, endLocation, offset, length, richText, defaultTextColor)
-			{
-				this.newCode = newCode;
 			}
 		}
 	}
