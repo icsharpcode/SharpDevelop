@@ -25,7 +25,7 @@ namespace CSharpBinding.Parser
 		
 		NewFolding AddFolding(TextLocation start, TextLocation end, bool isDefinition = false)
 		{
-			if (end.Line <= start.Line)
+			if (end.Line <= start.Line || start.IsEmpty || end.IsEmpty)
 				return null;
 			NewFolding folding = new NewFolding(GetOffset(start), GetOffset(end));
 			folding.IsDefinition = isDefinition;
