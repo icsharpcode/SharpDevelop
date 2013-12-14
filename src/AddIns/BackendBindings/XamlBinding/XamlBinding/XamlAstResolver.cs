@@ -54,6 +54,22 @@ namespace ICSharpCode.XamlBinding
 		{
 			IMember member = null, underlying = null;
 			IType type = null;
+			if (attribute.Namespace == XamlConst.XamlNamespace) {
+				switch (attribute.LocalName) {
+					case "Name":
+						IUnresolvedTypeDefinition typeDefinition = parseInfo.UnresolvedFile.TypeDefinition;
+						if (typeDefinition != null) {
+							type = typeDefinition.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+							IField field = type.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
+							if (field != null)
+								return new MemberResolveResult(null, field);
+						}
+						break;
+					case "Class":
+						type = compilation.FindType(new FullTypeName(attribute.Value));
+						return new TypeResolveResult(type);
+				}
+			}
 			string propertyName = attribute.LocalName;
 			if (propertyName.Contains(".")) {
 				string namespaceName = string.IsNullOrEmpty(attribute.Namespace) ? attribute.ParentElement.LookupNamespace("") : attribute.Namespace;
@@ -160,18 +176,18 @@ namespace ICSharpCode.XamlBinding
 							return new MemberResolveResult(null, method);
 					}
 					return rr;
-				} else {
-					if (propertyOrEvent.Name == "Name") {
-						IField field = type.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
-						if (field != null)
-							return new MemberResolveResult(null, field);
-					}
-					if (propertyOrEvent.ReturnType.Kind == TypeKind.Enum) {
-						IField field = propertyOrEvent.ReturnType.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
-						if (field != null)
-							return new MemberResolveResult(null, field);
-					}
 				}
+				if (propertyOrEvent.Name == "Name") {
+					IField field = type.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
+					if (field != null)
+						return new MemberResolveResult(null, field);
+				}
+				if (propertyOrEvent.ReturnType.Kind == TypeKind.Enum) {
+					IField field = propertyOrEvent.ReturnType.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
+					if (field != null)
+						return new MemberResolveResult(null, field);
+				}
+				// TODO might be a markup extension
 				return new UnknownMemberResolveResult(type, attribute.Value, EmptyList<IType>.Instance);
 			}
 			return ErrorResolveResult.UnknownError;
