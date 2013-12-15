@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			this.Children.RemoveAll(n => n is BaseTypesTreeNode);
 			if (definition.FullTypeName != SystemObjectName) {
-				Children.Insert(0, new BaseTypesTreeNode(definition));
+				Children.OrderedInsert(new BaseTypesTreeNode(definition), TypeMemberNodeComparer);
 			}
 		}
 		
@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			this.Children.RemoveAll(n => n is DerivedTypesTreeNode);
 			if (!definition.IsSealed) {
-				Children.Insert(0, new DerivedTypesTreeNode(definition));
+				Children.OrderedInsert(new DerivedTypesTreeNode(definition), TypeMemberNodeComparer);
 			}
 		}
 		
