@@ -248,6 +248,7 @@ namespace CSharpBinding.Refactoring
 			this.insertionPoints = insertionPoints.ToArray();
 			this.editor.ActiveInputHandler = new InputHandler(this);
 			this.editor.TextView.InsertLayer(this, KnownLayer.Text, LayerInsertionPosition.Above);
+			this.editor.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
 		}
 		
 		static readonly Pen markerPen = new Pen(Brushes.Blue, 1);
@@ -257,7 +258,12 @@ namespace CSharpBinding.Refactoring
 			var currentInsertionPoint = insertionPoints[CurrentInsertionPoint];
 			var pos = editor.TextView.GetVisualPosition(new TextViewPosition(currentInsertionPoint.Location), VisualYPosition.LineMiddle);
 			var endPos = new Point(pos.X + editor.TextView.ActualWidth * 0.6, pos.Y);
-			drawingContext.DrawLine(markerPen, pos, endPos);
+			drawingContext.DrawLine(markerPen, pos - editor.TextView.ScrollOffset, endPos - editor.TextView.ScrollOffset);
+		}
+		
+		void TextViewScrollOffsetChanged(object sender, EventArgs e)
+		{
+			InvalidateVisual();
 		}
 		
 		class InputHandler : TextAreaDefaultInputHandler
@@ -290,19 +296,30 @@ namespace CSharpBinding.Refactoring
 		{
 			editor.TextView.Layers.Remove(this);
 			editor.ActiveInputHandler = editor.DefaultInputHandler;
+			editor.TextView.ScrollOffsetChanged -= TextViewScrollOffsetChanged;
 		}
 		
 		void InsertCode(object sender, ExecutedRoutedEventArgs e)
 		{
-			if (Exited != null) {
-				Exited(this, new InsertionCursorEventArgs(insertionPoints[CurrentInsertionPoint], true));
-			}
+			FireExited(true);
 		}
 		
 		void Cancel(object sender, ExecutedRoutedEventArgs e)
 		{
+			FireExited(false);
+		}
+		/// <summary>
+		/// call this somewhere useful, please... :)
+		/// </summary>
+		public void EndMode()
+		{
+			FireExited(false);
+		}
+
+		void FireExited(bool success)
+		{
 			if (Exited != null) {
-				Exited(this, new InsertionCursorEventArgs(insertionPoints[CurrentInsertionPoint], false));
+				Exited(this, new InsertionCursorEventArgs(insertionPoints[CurrentInsertionPoint], success));
 			}
 		}
 	}
