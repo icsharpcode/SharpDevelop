@@ -27,13 +27,11 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 	
 	public class CollectionDataSource:IDataSource
 	{
-		
-
 		readonly DataCollection<object> baseList;
 		readonly ReportSettings reportSettings;
 		readonly Type elementType;
 		readonly PropertyDescriptorCollection listProperties;
-//		OrderGroup orderGroup;
+
 	
 		public CollectionDataSource(IEnumerable list, ReportSettings reportSettings)
 		{
@@ -81,13 +79,12 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 		}
 		
+		
 		public IList <object> CurrentList {get;private set;}
 		
 		
 		public int Count {
-			get {
-				return baseList.Count;
-			}
+			get {return baseList.Count;}	
 		}
 		
 		
@@ -97,6 +94,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		
 		public IGrouping<object, object> CurrentKey {get; private set; }
+		
 		
 		#region Sort
 		
@@ -167,7 +165,14 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		
 		IEnumerator<IGrouping<object, object>> groupEnumerator;
+		
+		
 		IEnumerable<IGrouping<object, object>> groupedList;
+		
+		public IEnumerable<IGrouping<object, object>> GroupedList {
+			get { return groupedList; }
+		}
+		
 		IEnumerator<object> listEnumerator;
 		
 		public void Fill(List<IPrintableObject> collection)
@@ -219,11 +224,11 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		public bool MoveNext()
 		{
 			var canMove = listEnumerator.MoveNext();
-			
+		
 			if (OrderGroup == OrderGroup.Grouped) {
 				if (! canMove) {
 					var groupCanMove = groupEnumerator.MoveNext();
-		CurrentKey = groupEnumerator.Current;
+					CurrentKey = groupEnumerator.Current;
 					if (groupCanMove) {
 						listEnumerator = groupEnumerator.Current.GetEnumerator();
 						canMove = listEnumerator.MoveNext();

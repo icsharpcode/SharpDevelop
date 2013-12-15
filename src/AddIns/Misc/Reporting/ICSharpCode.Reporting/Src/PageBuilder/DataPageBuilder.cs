@@ -42,61 +42,80 @@ namespace ICSharpCode.Reporting.PageBuilder
 			AddPage(CurrentPage);
 			UpdatePageInfo();
 			RunExpressions(ReportModel.ReportSettings,DataSource);
-			
 			var formatVisitor = new FormatVisitor();
 			formatVisitor.Run(Pages);
-
 		}
 		
 		
 		void BuildDetail()
 		{
-			Console.WriteLine("DatapageBuilder");
-			var exportRows = new List<IExportContainer>();
-			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
-
-			var position = DetailStart;
-
 			CurrentSection = ReportModel.DetailSection;
 //			Console.WriteLine("Report -grouping {0} ",DataSource.OrderGroup.ToString());
 //			Console.WriteLine ("groupkey {0}",DataSource.CurrentKey);
 			if(DataSourceContainsData()) {
 				CurrentLocation = DetailStart;
-				if (! IsGrouped()) {
-					Console.WriteLine("report is not grouped");
+				if (IsGrouped()) {
+					BuildGroupedDetails();
 				} else {
-					Console.WriteLine("report is grouped");
+					BuildSortedDetails();
 				}
-				do {
-					var row = CreateContainerForSection(CurrentPage,position);
-					DataSource.Fill(CurrentSection.Items);
-					
-					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection.Items);
-					
-					converter.SetParent(row,convertedItems);
-					
-					if (PageFull(row)) {
-						InsertExportRows(exportRows);
-						exportRows.Clear();
-						PerformPageBreak();
-						position = DetailStart;
-						row.Location = position;
-					}
-
-					MeasureAndArrangeContainer(row);
-
-					row.ExportedItems.AddRange(convertedItems);
-					exportRows.Add(row);
-					position = new Point(CurrentSection.Location.X,position.Y + row.DesiredSize.Height + 1);
-				}
-				
-				while (DataSource.MoveNext());
-				InsertExportRows(exportRows);
 			}
 		}
 
-		void PerformPageBreak()
-		{
+		
+		void BuildGroupedDetails () {
+			Console.WriteLine("report is grouped");
+			var exportRows = new List<IExportContainer>();
+			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
+			var position = DetailStart;
+			
+			foreach (IGrouping<object, object> element in DataSource.GroupedList) {
+				Console.WriteLine ("groupkey {0} - {1}",element.Key,element.Count());
+				foreach (var e in element) {
+					Console.WriteLine("\t{0}",e.ToString());
+				}
+				
+			}
+				
+				
+			
+			InsertExportRows(exportRows);
+		}
+		
+		void BuildSortedDetails(){
+		
+			var exportRows = new List<IExportContainer>();
+			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
+			var position = DetailStart;
+			
+			do {
+				var row = CreateContainerForSection(CurrentPage, position);
+				DataSource.Fill(CurrentSection.Items);
+
+				var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection.Items);
+
+				converter.SetParent(row, convertedItems);
+
+				if (PageFull(row)) {
+					InsertExportRows(exportRows);
+					exportRows.Clear();
+					PerformPageBreak();
+					position = DetailStart;
+					row.Location = position;
+				}
+
+				MeasureAndArrangeContainer(row);
+
+				row.ExportedItems.AddRange(convertedItems);
+				exportRows.Add(row);
+				position = new Point(CurrentSection.Location.X, position.Y + row.DesiredSize.Height + 1);
+
+			} while (DataSource.MoveNext());
+			InsertExportRows(exportRows);
+		}
+
+		
+		void PerformPageBreak(){
 			CurrentPage.PageInfo.PageNumber = Pages.Count + 1;
 			Pages.Add(CurrentPage);
 			CurrentPage = CreateNewPage();
@@ -106,15 +125,12 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 
 		
-		
-		bool IsGrouped()
-		{
+		bool IsGrouped(){
 			return DataSource.OrderGroup == OrderGroup.Grouped;
 		}
 
 		
-		void CreateDataSource()
-		{
+		void CreateDataSource(){
 			DataSource = new CollectionDataSource(List, ReportModel.ReportSettings);
 			if (DataSourceContainsData()) {
 				DataSource.Bind();
@@ -136,15 +152,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		void MeasureAndArrangeContainer(IExportContainer container)
-		{
+		void MeasureAndArrangeContainer(IExportContainer container){
 			container.DesiredSize = MeasureElement(container);
 			ArrangeContainer(container);
 		}
 
 		
-		ExportContainer CreateContainerForSection(ExportPage parent,Point location )
-		{
+		ExportContainer CreateContainerForSection(ExportPage parent,Point location ){
 			var detail = (ExportContainer)CurrentSection.CreateExportColumn();
 			detail.Location = location;
 			detail.Parent = parent;
@@ -152,8 +166,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		void InsertExportRows(List<IExportContainer> list)
-		{
+		void InsertExportRows(List<IExportContainer> list){
 			if (Pages.Count == 0) {
 				CurrentPage.ExportedItems.InsertRange(2, list);
 			} else {
