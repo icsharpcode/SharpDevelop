@@ -249,6 +249,7 @@ namespace CSharpBinding.Refactoring
 			this.editor.ActiveInputHandler = new InputHandler(this);
 			this.editor.TextView.InsertLayer(this, KnownLayer.Text, LayerInsertionPosition.Above);
 			this.editor.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
+			ScrollToInsertionPoint();
 		}
 		
 		static readonly Pen markerPen = new Pen(Brushes.Blue, 1);
@@ -288,6 +289,7 @@ namespace CSharpBinding.Refactoring
 					else
 						layer.CurrentInsertionPoint = Math.Min(layer.insertionPoints.Length - 1, layer.CurrentInsertionPoint + 1);
 					layer.InvalidateVisual();
+					layer.ScrollToInsertionPoint();
 				};
 			}
 		}
@@ -303,7 +305,13 @@ namespace CSharpBinding.Refactoring
 		{
 			FireExited(true);
 		}
-		
+
+		void ScrollToInsertionPoint()
+		{
+			var location = insertionPoints[CurrentInsertionPoint].Location;
+			editor.GetService<TextEditor>().ScrollTo(location.Line, location.Column);
+		}
+
 		void Cancel(object sender, ExecutedRoutedEventArgs e)
 		{
 			FireExited(false);
