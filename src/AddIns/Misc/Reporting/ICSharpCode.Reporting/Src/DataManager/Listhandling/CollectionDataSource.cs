@@ -87,29 +87,26 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			get {return baseList.Count;}	
 		}
 		
-		
 		public object Current {get; private set;}
 		
 		public OrderGroup OrderGroup {get; private set;}
 		
+		public IEnumerable<object> SortedList {get; private set;}
 		
-		public IGrouping<object, object> CurrentKey {get; private set; }
-		
+		public IEnumerable<IGrouping<object, object>> GroupedList {get;private set;}
 		
 		#region Sort
 		
 		void Sort()
 		{
 			if (reportSettings.SortColumnsCollection.Count > 0) {
-				var sorted = SortInternal();
+				SortedList = SortInternal();
 				OrderGroup = OrderGroup.Sorted;
-				listEnumerator = sorted.GetEnumerator();
 			} else {
 				OrderGroup = OrderGroup.AsIs;
-				listEnumerator = baseList.GetEnumerator();
+				SortedList = CurrentList;
 			}
-			listEnumerator.MoveNext();
-			Current = listEnumerator.Current;
+
 		}
 		
 		
@@ -131,13 +128,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		void Group()
 		{
 			OrderGroup = OrderGroup.Grouped;
-			groupedList = GroupInternal();
-			groupEnumerator = groupedList.GetEnumerator();
-			groupEnumerator.MoveNext();
-			CurrentKey = groupEnumerator.Current;
-			listEnumerator = groupEnumerator.Current.GetEnumerator();
-			listEnumerator.MoveNext();
-			Current = listEnumerator.Current;
+			GroupedList = GroupInternal();
 		}
 		
 		
@@ -164,20 +155,9 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		#region Fill
 		
 		
-		IEnumerator<IGrouping<object, object>> groupEnumerator;
-		
-		
-		IEnumerable<IGrouping<object, object>> groupedList;
-		
-		public IEnumerable<IGrouping<object, object>> GroupedList {
-			get { return groupedList; }
-		}
-		
-		IEnumerator<object> listEnumerator;
-		
-		public void Fill(List<IPrintableObject> collection)
-		{
-			foreach (var element in collection) {
+		public void Fill (List<IPrintableObject> collection, object toFill) {
+			Current = toFill;
+						foreach (var element in collection) {
 				var container = element as ReportContainer;
 				if (container != null) {
 					FillFromList(container.Items);
@@ -186,7 +166,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				}
 			}
 		}
-
+		
 		void FillFromList(List<IPrintableObject> collection)
 		{
 			foreach (IPrintableObject item in collection) {
@@ -218,28 +198,6 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		Type SetTypeFromProperty (string columnName) {
 			var p = listProperties.Find(columnName,true);
 			return p.PropertyType;
-		}
-		
-		
-		public bool MoveNext()
-		{
-			var canMove = listEnumerator.MoveNext();
-		
-			if (OrderGroup == OrderGroup.Grouped) {
-				if (! canMove) {
-					var groupCanMove = groupEnumerator.MoveNext();
-					CurrentKey = groupEnumerator.Current;
-					if (groupCanMove) {
-						listEnumerator = groupEnumerator.Current.GetEnumerator();
-						canMove = listEnumerator.MoveNext();
-					}
-				}
-				Current = listEnumerator.Current;
-				return canMove;
-			}
-			
-			Current = listEnumerator.Current;
-			return canMove;
 		}
 		
 		#endregion

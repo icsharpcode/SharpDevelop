@@ -7,6 +7,7 @@ using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using NUnit.Framework;
+using System.Linq;
 
 namespace ICSharpCode.Reporting.Test.DataSource
 {
@@ -52,7 +53,8 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			};
 			var collectionSource = new CollectionDataSource	(list,new ReportSettings());
 			collectionSource.Bind();
-			collectionSource.Fill(ric);
+			var result = collectionSource.SortedList.FirstOrDefault();
+			collectionSource.Fill(ric,result);
 			foreach (BaseDataItem element in ric) {
 				Assert.That(element.DataType,Is.EqualTo("System.String"));
 			}
@@ -64,13 +66,10 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			var ric = new System.Collections.Generic.List<IPrintableObject>(){
 				new BaseDataItem(){
 					ColumnName = "Lastname"
-						
 				},
 				new BaseDataItem(){
 					ColumnName = "Firstname"
 				}
-				
-				
 			};
 			
 			var rs = new ReportSettings();
@@ -79,6 +78,16 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			collectionSource.Bind();
 			string compare = String.Empty;
 			int i = 0;
+			foreach (var element in collectionSource.SortedList) {
+				collectionSource.Fill(ric,element);
+				Console.WriteLine("first : <{0}> Last <{1}> ",((BaseDataItem)ric[0]).DBValue,((BaseDataItem)ric[1]).DBValue);
+				                  
+				Assert.That(((BaseDataItem)ric[0]).DBValue,Is.GreaterThanOrEqualTo(compare));
+				
+				compare = ((BaseDataItem)ric[0]).DBValue;
+				i++;
+			}
+			/*
 			do {
 				collectionSource.Fill(ric);
 				Console.WriteLine("first : <{0}> Last <{1}> ",((BaseDataItem)ric[0]).DBValue,
@@ -89,6 +98,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 				i ++;
 			}while (collectionSource.MoveNext());
 			
+			 */
 			Assert.That(i,Is.EqualTo(collectionSource.Count));
 		}
 		
@@ -96,13 +106,26 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		[Test]
 		public void GroupbyOneColumnAndFill () {
 			var dataItemsCollection = CreateDataItems();
-			var repiortsettings = new ReportSettings();
-			repiortsettings.GroupColumnsCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
-			repiortsettings.GroupColumnsCollection.Add( new GroupColumn("RandomInt",1,ListSortDirection.Ascending));
+			var reportsettings = new ReportSettings();
+			reportsettings.GroupColumnsCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
+			//repiortsettings.GroupColumnsCollection.Add( new GroupColumn("RandomInt",1,ListSortDirection.Ascending));
 			
-			var collectionSource = new CollectionDataSource (list,repiortsettings);
+			var collectionSource = new CollectionDataSource (list,reportsettings);
 			collectionSource.Bind();
 			int i = 0;
+			
+			foreach (var element in collectionSource.GroupedList) {
+				Console.WriteLine("Key {0} ",element.Key);
+				foreach (var l in element) {
+					collectionSource.Fill(dataItemsCollection,l);
+					Console.WriteLine("first : <{0}> Last <{1}> Group <{2}> Randomint <{3}>",((BaseDataItem)dataItemsCollection[0]).DBValue,
+					                  ((BaseDataItem)dataItemsCollection[1]).DBValue,
+					                  ((BaseDataItem)dataItemsCollection[2]).DBValue,
+					                  ((BaseDataItem)dataItemsCollection[3]).DBValue);
+					i++;
+				}
+			}
+			/*
 			do {
 				collectionSource.Fill(dataItemsCollection);
 				Console.WriteLine("first : <{0}> Last <{1}> Group <{2}> Randomint <{3}>",((BaseDataItem)dataItemsCollection[0]).DBValue,
@@ -111,7 +134,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 				                  ((BaseDataItem)dataItemsCollection[3]).DBValue);
 				i ++;
 			}while (collectionSource.MoveNext());
-			
+			*/
 			Assert.That(i,Is.EqualTo(collectionSource.Count));
 		}
 	
@@ -129,6 +152,15 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			var collectionSource = new CollectionDataSource (list,reportSettings);
 			collectionSource.Bind();
 			int i = 0;
+			foreach (var element in collectionSource.SortedList) {
+				collectionSource.Fill(row,element);
+				var r = (BaseRowItem)row[0];
+				foreach (var result in r.Items) {
+					Assert.That(((BaseDataItem)result).DBValue,Is.Not.Empty);
+				}
+				i ++;
+			}
+			/*
 			do {
 				collectionSource.Fill(row);
 				var r = (BaseRowItem)row[0];
@@ -137,7 +169,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 				}
 				i ++;
 			}while (collectionSource.MoveNext());
-			
+			*/
 			Assert.That(i,Is.EqualTo(collectionSource.Count));
 		}
 		
@@ -167,13 +199,21 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			var collectionSource = new CollectionDataSource (list,rs);
 			collectionSource.Bind();
 			int i = 0;
+			foreach (var element in collectionSource.SortedList) {
+				collectionSource.Fill(row,element);
+				var res = (BaseDataItem)row.Find(c => ((BaseDataItem)c).ColumnName == "GroupItem");
+				Assert.That(res.DBValue,Is.Not.Empty);
+				i ++;
+			}
+			
+			/*
 			do {
 				collectionSource.Fill(row);
 				var res = (BaseDataItem)row.Find(c => ((BaseDataItem)c).ColumnName == "GroupItem");
 				Assert.That(res.DBValue,Is.Not.Empty);
 				i ++;
 			}while (collectionSource.MoveNext());
-			
+			*/
 			Assert.That(i,Is.EqualTo(collectionSource.Count));
 		}
 		

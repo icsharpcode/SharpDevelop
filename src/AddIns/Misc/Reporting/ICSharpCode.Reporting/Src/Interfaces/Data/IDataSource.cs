@@ -23,16 +23,11 @@ namespace ICSharpCode.Reporting.Interfaces.Data
 	public interface IDataSource{
 		
 		void Bind();
-		
-		void Fill(List<IPrintableObject> collection);
-		
+		void Fill(List<IPrintableObject> collection,object current);
 		Collection<AbstractColumn> AvailableFields {get;}
 		IList <object> CurrentList {get;}
 		int Count {get;}
-		
 		object Current {get;}
 		OrderGroup OrderGroup {get;}
-		IGrouping<object, object> CurrentKey {get;}
-		
 	}
 }
