@@ -63,7 +63,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public Accessibility Accessibility {
 			get { return member.Accessibility; }
-			set { throw new NotImplementedException(); }
 		}
 		
 		public DomRegion Region {
