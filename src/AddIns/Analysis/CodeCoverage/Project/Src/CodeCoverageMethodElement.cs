@@ -107,7 +107,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 
 		List<CodeCoverageBranchPoint> GetBranchPoints() {
-			// get all SequencePoints
+			// get all BranchPoints
 			List<CodeCoverageBranchPoint> bps = new List<CodeCoverageBranchPoint>();
 			var xBPoints = this.element			
 				.Elements("BranchPoints")
@@ -130,108 +130,94 @@ namespace ICSharpCode.CodeCoverage
 				return null;
 			}
 
-			// start & final method sequence points line and offset
-			int methodStartLine = 0;
-			int methodStartOffset = 0;
-
-			int methodFinalLine = 0;
-			int methodFinalOffset = 0;
-
-			// find start & final method sequence points and offsets
-			bool nextMatch = false;
-			int startLine = 0;
-			int finalLine = 0;
-			int startChar = 0;
-			int finalChar = 0;
-
-			// Find method body SequencePoint ({)
-			// and then first next sequencePoint (and offset of first instruction in body)
-			// This will skip Contract.Require SequencePoints 
-			// and help to filter-out Contract.Require BranchPoint's
+			// Find method-body first SequencePoint "{"
+			// and then first next sequencePoint (and offset of that instruction in body)
+			// This will be used to skip CCRewrite(n) BranchPoint's (Requires)
+			CodeCoverageSequencePoint startSeqPoint = null;
 			foreach (CodeCoverageSequencePoint sp in this.SequencePoints) {
-				startLine = sp.Line;
-				finalLine = sp.EndLine;
-				startChar = sp.Column;
-				finalChar = sp.EndColumn;
-				if ( nextMatch ) {
-					methodStartLine = startLine;
-					methodStartOffset = sp.Offset;
+				if ( sp.Line == sp.EndLine && ((sp.EndColumn-sp.Column) == 1) ) {
+					startSeqPoint = sp;
 					break;
 				}
-				if ( startLine==finalLine && (finalChar-startChar)==1 ) {
-					nextMatch = true;
-				}
 			}
+			Debug.Assert (!Object.ReferenceEquals(null, startSeqPoint));
+			if (Object.ReferenceEquals(null, startSeqPoint)) { return null; }
 
-			// find method body last SequencePoint and final offset (})
-			// This will skip Contract.Ensures SequencePoints 
-			// and help to filter-out Contract.Ensures BranchPoint's
+			// Find method-body last SequencePoint "}" and offset 
+			// This will be used to skip CCRewrite(n) BranchPoint's (Ensures)
+			CodeCoverageSequencePoint finalSeqPoint = null;
 			foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(this.SequencePoints)) {
-				startLine = sp.Line;
-				finalLine = sp.EndLine;
-				startChar = sp.Column;
-				finalChar = sp.EndColumn;
-				if ( startLine==finalLine && (finalChar-startChar)==1 ) {
-					methodFinalLine = finalLine;
-					methodFinalOffset = sp.Offset;
+				if ( sp.Line == sp.EndLine && ((sp.EndColumn-sp.Column) == 1) ) {
+					finalSeqPoint = sp;
 					break;
 				}
 			}
+			Debug.Assert ( !Object.ReferenceEquals( null, finalSeqPoint) );
+			if (Object.ReferenceEquals(null, finalSeqPoint)) { return null; }
 			
 			// Find compiler inserted code (=> inserted hidden branches)
 			// SequencePoints are ordered by offset and that order exposes reverse ordered lines
-			// ie: In code: foreach ( var item in items ) 
-			// Keyword "in" code is generated after loop with lower line number than previous line (reversed line order).
-			// That "in" code contains hidden branches that we 
-			// do not want or cannot cover by test-case because is handled by earlier line
-			// ie: Possible NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
-			nextMatch = false;
-			int lastOffset = 0;
-			int lastLine = methodStartLine;
-			List<Tuple<int,int>> excludeList = new List<Tuple<int, int>>();
-			foreach (CodeCoverageSequencePoint sp in this.SequencePoints) {
-				if ( (sp.Line < methodStartLine) || methodFinalLine < sp.Line ) { continue ; }
+			// ie: foreach ( var item in (IEnumerable)items ) code for "in" keyword is generated "out-of-sequence", 
+			// with lower line number than previous line (reversed line order).
+			// Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
+			// we do not want or cannot cover by test-case because is handled in earlier code (SequencePoint)
+			// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
+			bool nextMatch = false;
+			CodeCoverageSequencePoint previousSeqPoint = startSeqPoint;
+			List<Tuple<int,int>> excludeOffsetList = new List<Tuple<int, int>>();
+			foreach (CodeCoverageSequencePoint currentSeqPoint in this.SequencePoints) {
+
+				// ignore CCRewrite(n) contracts
+				if (currentSeqPoint.Offset < startSeqPoint.Offset)
+					continue;
+				if (currentSeqPoint.Offset > finalSeqPoint.Offset)
+					break;
 				
-				if (nextMatch && (sp.Line > lastLine)) {
+				if (nextMatch) {
 					nextMatch = false;
-					excludeList.Add(new Tuple<int, int> ( lastOffset , sp.Offset ));
+					excludeOffsetList.Add(new Tuple<int, int> ( previousSeqPoint.Offset , currentSeqPoint.Offset ));
 				}
-				// reversed line number?
-				if (!nextMatch && (sp.Line < lastLine)) {
+				// current SP has lower line number than stored SP and is made of two characters? 
+				// Very likely to be only "in" keyword (as observed in coverage.xml)
+				if (currentSeqPoint.Line < previousSeqPoint.Line 
+					&& currentSeqPoint.Line == currentSeqPoint.EndLine 
+					&& (currentSeqPoint.EndColumn - currentSeqPoint.Column) == 2 ) {
 					nextMatch = true;
-					lastOffset = sp.Offset;
 				}
-				lastLine = sp.Line;
+				previousSeqPoint = currentSeqPoint;
 			}
 
-			// Collect branch offsets within method boundary { } (exclude Contracts)
-			// and filter with excludeList
+			// Collect & offset-merge BranchPoints within method boundary { }
+			// => exclude CCRewrite(n) Contracts and filter with excludeOffsetList
 			Dictionary<int, branchOffset> branchDictionary = new Dictionary<int, branchOffset>();
 			foreach (CodeCoverageBranchPoint bp in this.BranchPoints) {
 
-				if ( methodStartOffset <= bp.Offset && bp.Offset <= methodFinalOffset ) {
+				// exclude CCRewrite(n) contracts
+				if (bp.Offset < startSeqPoint.Offset)
+					continue;
+				if (bp.Offset > finalSeqPoint.Offset)
+					break;
 
-					// Apply exclude BranchPoint filter
-					nextMatch = true;
-					foreach (var range in excludeList) {
-						if (range.Item1 < bp.Offset  && bp.Offset < range.Item2) {
-							// exclude range match
-							nextMatch = false; break;
-						}
-					} if (!nextMatch) { continue; }
-
-					// update/insert branch offset coverage data
-					if ( branchDictionary.ContainsKey( bp.Offset ) ) {
-						branchOffset update = branchDictionary[bp.Offset];
-						update.Visit += bp.VisitCount!=0?1:0;
-						update.Count += 1;
-					} else {
-						// Insert first branch at offset
-						branchOffset insert = new branchOffset(bp.Offset);
-						insert.Visit = bp.VisitCount!=0?1:0;
-						insert.Count = 1;
-						branchDictionary[insert.Offset] = insert;
+				// Apply excludeOffset filter
+				nextMatch = true;
+				foreach (var offsetRange in excludeOffsetList) {
+					if (offsetRange.Item1 < bp.Offset  && bp.Offset < offsetRange.Item2) {
+						// exclude range match
+						nextMatch = false; break;
 					}
+				} if (!nextMatch) { continue; }
+
+				// update/insert branch offset coverage data
+				if ( branchDictionary.ContainsKey( bp.Offset ) ) {
+					branchOffset update = branchDictionary[bp.Offset];
+					update.Visit += bp.VisitCount!=0?1:0;
+					update.Count += 1;
+				} else {
+					// Insert first branch at offset
+					branchOffset insert = new branchOffset(bp.Offset);
+					insert.Visit = bp.VisitCount!=0?1:0;
+					insert.Count = 1;
+					branchDictionary[insert.Offset] = insert;
 				}
 			}
 			
