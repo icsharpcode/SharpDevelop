@@ -11,7 +11,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// <summary>
 	/// Read-only implementation of IDocument.
 	/// </summary>
-	sealed class ReadOnlyDocument : IDocument
+	public sealed class ReadOnlyDocument : IDocument
 	{
 		ITextBuffer textBuffer;
 		int[] lines;

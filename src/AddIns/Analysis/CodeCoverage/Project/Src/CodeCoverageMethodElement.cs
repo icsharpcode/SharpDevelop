@@ -4,14 +4,21 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
+
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageMethodElement
 	{
 		XElement element;
+		CodeCoverageResults parent;
 
 		private class branchOffset {
 			public int Offset;
@@ -22,15 +29,19 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 
-		public CodeCoverageMethodElement(XElement element)
+		public CodeCoverageMethodElement(XElement element, CodeCoverageResults parent)
 		{
+			this.parent = parent;
 			this.element = element;
 			this.SequencePoints = new List<CodeCoverageSequencePoint>();
 			this.BranchPoints = new List<CodeCoverageBranchPoint>();
 			Init();
 		}
-		
+		private static string cacheFileName = String.Empty;
+		private static IDocument cacheDocument = null;
+
 		public string FileID { get; private set; }
+		public string FileName { get; private set; }
 		public bool IsVisited { get; private set; }
 		public int CyclomaticComplexity { get; private set; }
 		public decimal SequenceCoverage { get; private set; }
@@ -57,6 +68,27 @@ namespace ICSharpCode.CodeCoverage
 			IsSetter = GetBooleanAttributeValue("isSetter");
 
 			this.FileID = GetFileRef();
+			this.FileName = String.Empty;
+			if (!String.IsNullOrEmpty(this.FileID)) {
+				this.FileName = parent.GetFileName(this.FileID);
+				if ( File.Exists(this.FileName) ) {
+					if (cacheFileName != this.FileName) {
+						cacheFileName = this.FileName;
+						cacheDocument = null;
+						try {
+							using (Stream stream = new FileStream(this.FileName, FileMode.Open, FileAccess.Read)) {
+								try {
+									stream.Position = 0;
+									string textSource = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default);
+									ITextBuffer textBuffer = new StringTextBuffer (textSource);
+									cacheDocument = new ReadOnlyDocument(textBuffer);
+								} catch {}
+							}
+						} catch {}
+					}
+				}
+			}
+			
 			this.IsVisited = this.GetBooleanAttributeValue("visited");
 			this.CyclomaticComplexity = (int)this.GetDecimalAttributeValue("cyclomaticComplexity");
 			this.SequencePointsCount = this.GetSequencePointsCount();
@@ -81,12 +113,21 @@ namespace ICSharpCode.CodeCoverage
 			foreach (XElement xSPoint in xSPoints) {
 				CodeCoverageSequencePoint sp = new CodeCoverageSequencePoint();
 				sp.FileID = this.FileID;
+				sp.Document = this.FileName;
 				sp.Line = (int)GetDecimalAttributeValue(xSPoint.Attribute("sl"));
 				sp.EndLine = (int)GetDecimalAttributeValue(xSPoint.Attribute("el"));
 				sp.Column = (int)GetDecimalAttributeValue(xSPoint.Attribute("sc"));
 				sp.EndColumn = (int)GetDecimalAttributeValue(xSPoint.Attribute("ec"));
 				sp.VisitCount = (int)GetDecimalAttributeValue(xSPoint.Attribute("vc"));
-				sp.Length = 1;
+				if (cacheFileName == sp.Document && cacheDocument != null) {
+					int startOffset = cacheDocument.PositionToOffset(sp.Line, sp.Column);
+					int finalOffset = cacheDocument.PositionToOffset(sp.EndLine, sp.EndColumn);
+					// normalise white-space
+					sp.Content = Regex.Replace(cacheDocument.GetText(startOffset, finalOffset - startOffset), @"\s+", " ");
+				} else {
+					sp.Content = String.Empty;
+				}
+				sp.Length = sp.Content.Length;
 				sp.Offset = (int)GetDecimalAttributeValue(xSPoint.Attribute("offset"));
 				sp.BranchCoverage = true;
 
@@ -126,7 +167,12 @@ namespace ICSharpCode.CodeCoverage
 
 			// goal: Get branch ratio and exclude (rewriten) Code Contracts branches 
 
-			if ( this.BranchPoints == null || this.BranchPoints.Count() == 0 ) {
+			if ( this.BranchPoints == null 
+			    || this.BranchPoints.Count() == 0 
+			    || this.SequencePoints == null
+			    || this.SequencePoints.Count == 0
+			   )
+			{
 				return null;
 			}
 
@@ -135,7 +181,7 @@ namespace ICSharpCode.CodeCoverage
 			// This will be used to skip CCRewrite(n) BranchPoint's (Requires)
 			CodeCoverageSequencePoint startSeqPoint = null;
 			foreach (CodeCoverageSequencePoint sp in this.SequencePoints) {
-				if ( sp.Line == sp.EndLine && ((sp.EndColumn-sp.Column) == 1) ) {
+				if ( sp.Content == "{") {
 					startSeqPoint = sp;
 					break;
 				}
@@ -147,7 +193,7 @@ namespace ICSharpCode.CodeCoverage
 			// This will be used to skip CCRewrite(n) BranchPoint's (Ensures)
 			CodeCoverageSequencePoint finalSeqPoint = null;
 			foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(this.SequencePoints)) {
-				if ( sp.Line == sp.EndLine && ((sp.EndColumn-sp.Column) == 1) ) {
+				if ( sp.Content == "}") {
 					finalSeqPoint = sp;
 					break;
 				}
@@ -155,13 +201,7 @@ namespace ICSharpCode.CodeCoverage
 			Debug.Assert ( !Object.ReferenceEquals( null, finalSeqPoint) );
 			if (Object.ReferenceEquals(null, finalSeqPoint)) { return null; }
 			
-			// Find compiler inserted code (=> inserted hidden branches)
-			// SequencePoints are ordered by offset and that order exposes reverse ordered lines
-			// ie: foreach ( var item in (IEnumerable)items ) code for "in" keyword is generated "out-of-sequence", 
-			// with lower line number than previous line (reversed line order).
-			// Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
-			// we do not want or cannot cover by test-case because is handled in earlier code (SequencePoint)
-			// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
+			// Create&populate excludeOffsetList (BranchPoint offset-filter)
 			bool nextMatch = false;
 			CodeCoverageSequencePoint previousSeqPoint = startSeqPoint;
 			List<Tuple<int,int>> excludeOffsetList = new List<Tuple<int, int>>();
@@ -177,18 +217,23 @@ namespace ICSharpCode.CodeCoverage
 					nextMatch = false;
 					excludeOffsetList.Add(new Tuple<int, int> ( previousSeqPoint.Offset , currentSeqPoint.Offset ));
 				}
-				// current SP has lower line number than stored SP and is made of two characters? 
-				// Very likely to be only "in" keyword (as observed in coverage.xml)
+				// SequencePoints are ordered by offset and that order exposes reverse ordered lines
+				// ie: foreach ( var item in (IEnumerable)items ) code for "in" keyword is generated "out-of-sequence", 
+				// with lower line number than previous line (reversed line order).
+				// Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
+				// one do not want or cannot cover by test-case because is handled earlier at same method.
+				// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
 				if (currentSeqPoint.Line < previousSeqPoint.Line 
-					&& currentSeqPoint.Line == currentSeqPoint.EndLine 
-					&& (currentSeqPoint.EndColumn - currentSeqPoint.Column) == 2 ) {
+				    && currentSeqPoint.Content == "in" ) {
+					// currentSeqPoint has lower line number than previousSeqPoint and content is equal to "in" keyword
 					nextMatch = true;
 				}
 				previousSeqPoint = currentSeqPoint;
 			}
 
-			// Collect & offset-merge BranchPoints within method boundary { }
-			// => exclude CCRewrite(n) Contracts and filter with excludeOffsetList
+			// Merge BranchPoints on same offset 
+			// Exclude BranchPoints outside of method boundary {...} => exclude CCRewrite(n) Contracts
+			// Exclude BranchPoints from excludeOffsetList
 			Dictionary<int, branchOffset> branchDictionary = new Dictionary<int, branchOffset>();
 			foreach (CodeCoverageBranchPoint bp in this.BranchPoints) {
 
@@ -199,21 +244,24 @@ namespace ICSharpCode.CodeCoverage
 					break;
 
 				// Apply excludeOffset filter
-				nextMatch = true;
-				foreach (var offsetRange in excludeOffsetList) {
-					if (offsetRange.Item1 < bp.Offset  && bp.Offset < offsetRange.Item2) {
-						// exclude range match
-						nextMatch = false; break;
-					}
-				} if (!nextMatch) { continue; }
+				if (excludeOffsetList.Count != 0) {
+					nextMatch = true;
+					foreach (var offsetRange in excludeOffsetList) {
+						if (offsetRange.Item1 < bp.Offset  && bp.Offset < offsetRange.Item2) {
+							// exclude range match
+							nextMatch = false; break;
+						}
+					} if (!nextMatch) { continue; }
+				}
 
-				// update/insert branch offset coverage data
+				// merge BranchPoint's with same offset
 				if ( branchDictionary.ContainsKey( bp.Offset ) ) {
+					// Update BranchPoint coverage at offset
 					branchOffset update = branchDictionary[bp.Offset];
 					update.Visit += bp.VisitCount!=0?1:0;
 					update.Count += 1;
 				} else {
-					// Insert first branch at offset
+					// Insert BranchPoint coverage at offset
 					branchOffset insert = new branchOffset(bp.Offset);
 					insert.Visit = bp.VisitCount!=0?1:0;
 					insert.Count = 1;
@@ -223,11 +271,12 @@ namespace ICSharpCode.CodeCoverage
 			
 			int totalBranchVisit = 0;
 			int totalBranchCount = 0;
+
+			// Branch coverage will display only if sequence coverage is 100%, so ...
+			// Ignore branch-offset if is not visited at all because ... :
+			// if SequencePoint is covered and branch-offset within that SequencePoint not visited (uncovered), 
+			// then that branch-offset does not really exists in SOURCE code we try to cover
 			CodeCoverageSequencePoint sp_target = null;
-			// Branch percentage will display only if code SequencePoints coverage is 100%, so ...
-			// Do not add branch if branch is not visited at all because ... :
-			// If "branch" is completely unvisited and 100% SequencePoints covered, 
-			// then that "branch" does not really exists in SOURCE code we try to cover
 			foreach ( branchOffset uniqueBranch in branchDictionary.Values ) {
 				if ( uniqueBranch.Visit != 0 ) {
 					totalBranchVisit += uniqueBranch.Visit;
@@ -235,16 +284,14 @@ namespace ICSharpCode.CodeCoverage
 
 					// not full branch coverage?
 					if ( uniqueBranch.Visit != uniqueBranch.Count ) {
-						// update matching sequence point branch covered
+						// update parent SequencePoint.BranchCoverage to false (== partial branch coverage)
 						sp_target = null;
-						foreach ( CodeCoverageSequencePoint sp in this.SequencePoints ) {
-							if ( sp.Offset > uniqueBranch.Offset ) {
-								if ( !Object.ReferenceEquals( sp_target, null ) ) {
-									sp_target.BranchCoverage = false;
-								}
+						foreach ( CodeCoverageSequencePoint sp_next in this.SequencePoints ) {
+							if ( uniqueBranch.Offset < sp_next.Offset && sp_target != null ) {
+								sp_target.BranchCoverage = false;
 								break;
 							}
-							sp_target = sp;
+							sp_target = sp_next;
 						}
 					}
 				}

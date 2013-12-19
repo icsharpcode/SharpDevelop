@@ -32,8 +32,8 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		public CodeCoverageMethod(string className, XElement reader)
-			: this(className, new CodeCoverageMethodElement(reader))
+		public CodeCoverageMethod(string className, XElement reader, CodeCoverageResults parent)
+			: this(className, new CodeCoverageMethodElement(reader, parent))
 		{
 		}
 		

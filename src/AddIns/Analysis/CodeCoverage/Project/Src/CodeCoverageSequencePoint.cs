@@ -66,6 +66,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		public string FileID { get; set; }
 		public string Document { get; set; }
+		public string Content { get; set; }
 		public int VisitCount { get; set; }
 		public int Line { get; set; }
 		public int Column { get; set; }

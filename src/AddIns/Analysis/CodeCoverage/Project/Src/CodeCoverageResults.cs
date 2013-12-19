@@ -115,20 +115,13 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XElement reader)
 		{
-			CodeCoverageMethod method = new CodeCoverageMethod(className, reader);
+			CodeCoverageMethod method = new CodeCoverageMethod(className, reader, this);
 			module.Methods.Add(method);
-			// to resolve SequencePoint.BranchCoverage ...
-			// reading/adding method.sequencepoints is moved from this class into CodeCoverageMethod/Element
-			// but here yet must resolve sequencepoint.document
-			foreach ( var sp in method.SequencePoints ) {
-				if ( !String.IsNullOrEmpty(sp.FileID) )
-					sp.Document = GetFileName(sp.FileID);
-			}
 			return method;
 		}
 		
 		/// <summary>
-		/// Cache result because same FileID is repeated for each SequencePoint
+		/// Cache result because same FileID is repeated for all (class.)method(s).SequencePoints
 		/// </summary>
 		private static Tuple<string,string> fileIdNameCache = new Tuple<string, string>(String.Empty,String.Empty);
 
@@ -136,7 +129,7 @@ namespace ICSharpCode.CodeCoverage
 		/// Returns a filename based on the file id. The filenames are stored in the
 		/// PartCover results xml at the start of the file each with its own id.
 		/// </summary>
-		string GetFileName(string id)
+		public string GetFileName(string id)
 		{
 			if (fileIdNameCache.Item1 != id) {
 				fileIdNameCache = new Tuple<string, string>(id, GetDictionaryValue(fileNames, id));
