@@ -46,7 +46,6 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 				var exportColumn = ExportColumnFactory.CreateItem(element);
 				var ec = element as IReportContainer;
 				if (ec != null) {
-					Console.WriteLine("Convert Recursive");
 					var l = CreateConvertedList(ec.Items);
 					((IExportContainer)exportColumn).ExportedItems.AddRange(l);
 				}

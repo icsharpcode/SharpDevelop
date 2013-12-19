@@ -16,6 +16,7 @@ using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.Converter;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -44,6 +45,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 			RunExpressions(ReportModel.ReportSettings,DataSource);
 			var formatVisitor = new FormatVisitor();
 			formatVisitor.Run(Pages);
+			var dv = new DebugVisitor();
+			dv.Run(Pages);
 		}
 		
 		
@@ -62,18 +65,61 @@ namespace ICSharpCode.Reporting.PageBuilder
 
 		
 		void BuildGroupedDetails () {
-			Console.WriteLine("report is grouped");
+			
 			var exportRows = new List<IExportContainer>();
 			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
 			var position = DetailStart;
 			
 			foreach (IGrouping<object, object> grouping in DataSource.GroupedList) {
-				Console.WriteLine ("groupkey {0} - {1}",grouping.Key,grouping.Count());
+				
+				var groupHeader = (BaseRowItem)CurrentSection.Items.Where(p => p.GetType() == typeof(GroupHeader)).FirstOrDefault();
+				DataSource.Fill(groupHeader.Items,grouping.FirstOrDefault());
+				
+				var sectionContainer = CreateContainerForSection(CurrentPage, position);
+				
+				var headerRow = converter.ConvertToExportContainer(groupHeader);
+				headerRow.Location = new Point(headerRow.Location.X,groupHeader.Location.Y);
+				
+				var headerItems = converter.CreateConvertedList(groupHeader.Items);
+				headerRow.ExportedItems.AddRange(headerItems);
+				
+				sectionContainer.ExportedItems.Add(headerRow);
+				exportRows.Add(sectionContainer);
+				
+				position = new Point(CurrentSection.Location.X, position.Y + sectionContainer.DesiredSize.Height + 1);
+				
+//				position = new Point(position.X,headerRow.DisplayRectangle.Bottom + 2);
 				
 				foreach (var current in grouping) {
-					Console.WriteLine("\t{0}",current.ToString());
-				}
 				
+					DataSource.Fill(CurrentSection.Items,current);
+					/*	
+					var ll = CurrentSection.Items.Where(p => p.GetType() == typeof(BaseDataItem));
+					var convertedItems = converter.CreateConvertedList(ll.ToList());
+					foreach (var element in convertedItems) {
+						element.Location = new Point(element.Location.X,position.Y);
+					}
+//					converter.SetParent(row, convertedItems);
+*/
+/*
+					if (PageFull(row)) {
+						InsertExportRows(exportRows);
+						exportRows.Clear();
+						PerformPageBreak();
+						position = DetailStart;
+						row.Location = position;
+					}
+*/
+/*					
+					sectionContainer.ExportedItems.AddRange(convertedItems);
+					MeasureAndArrangeContainer(sectionContainer);
+//					row.ExportedItems.AddRange(convertedItems);
+					exportRows.Add(sectionContainer);
+					position = new Point(CurrentSection.Location.X, position.Y + convertedItems[0].DesiredSize.Height + 1);
+//					position = new Point(CurrentSection.Location.X, position.Y + sectionContainer.DesiredSize.Height + 1);
+*/
+				}
+			
 			}
 			InsertExportRows(exportRows);
 		}
