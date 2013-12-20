@@ -68,90 +68,98 @@ namespace ICSharpCode.Reporting.PageBuilder
 			
 			var exportRows = new List<IExportContainer>();
 			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
-			var position = DetailStart;
+			var pagePosition = DetailStart;
+			var sectionPosition = pagePosition;
 			
 			foreach (IGrouping<object, object> grouping in DataSource.GroupedList) {
 				
 				var groupHeader = (BaseRowItem)CurrentSection.Items.Where(p => p.GetType() == typeof(GroupHeader)).FirstOrDefault();
+				
 				DataSource.Fill(groupHeader.Items,grouping.FirstOrDefault());
 				
-				var sectionContainer = CreateContainerForSection(CurrentPage, position);
+				var sectionContainer = CreateContainerForSection(CurrentPage, pagePosition);
+//				Console.WriteLine("Page Position {0}",pagePosition);
 				
 				var headerRow = converter.ConvertToExportContainer(groupHeader);
 				headerRow.Location = new Point(headerRow.Location.X,groupHeader.Location.Y);
 				
 				var headerItems = converter.CreateConvertedList(groupHeader.Items);
+				converter.SetParent(sectionContainer, headerItems);
+				
 				headerRow.ExportedItems.AddRange(headerItems);
 				
 				sectionContainer.ExportedItems.Add(headerRow);
+				
 				exportRows.Add(sectionContainer);
 				
-				position = new Point(CurrentSection.Location.X, position.Y + sectionContainer.DesiredSize.Height + 1);
+				pagePosition = new Point(CurrentSection.Location.X, pagePosition.Y + sectionContainer.DesiredSize.Height + 1);
 				
-//				position = new Point(position.X,headerRow.DisplayRectangle.Bottom + 2);
+				// Set Position Child Elements
 				
-				foreach (var current in grouping) {
+				sectionPosition = new Point(pagePosition.X,headerRow.Location.Y + headerRow.Size.Height + 3);
 				
-					DataSource.Fill(CurrentSection.Items,current);
-					/*	
-					var ll = CurrentSection.Items.Where(p => p.GetType() == typeof(BaseDataItem));
-					var convertedItems = converter.CreateConvertedList(ll.ToList());
-					foreach (var element in convertedItems) {
-						element.Location = new Point(element.Location.X,position.Y);
-					}
-//					converter.SetParent(row, convertedItems);
-*/
-/*
-					if (PageFull(row)) {
-						InsertExportRows(exportRows);
-						exportRows.Clear();
-						PerformPageBreak();
-						position = DetailStart;
-						row.Location = position;
-					}
-*/
-/*					
+				//Childs
+				foreach (var child in grouping) {
+					
+					var dataItems = CurrentSection.Items.Where(p => p.GetType() == typeof(BaseDataItem)).ToList();
+					DataSource.Fill(dataItems,child);
+					
+					var convertedItems = converter.CreateConvertedList(dataItems.ToList());
+					
+					AdjustLocationInSection(sectionPosition,  convertedItems);
+
+//					Console.WriteLine("section height {0} Bottom {1}",sectionContainer.Size,convertedItems[0].DisplayRectangle.Bottom);
+					converter.SetParent(sectionContainer, convertedItems);
+					
 					sectionContainer.ExportedItems.AddRange(convertedItems);
 					MeasureAndArrangeContainer(sectionContainer);
-//					row.ExportedItems.AddRange(convertedItems);
+					
 					exportRows.Add(sectionContainer);
-					position = new Point(CurrentSection.Location.X, position.Y + convertedItems[0].DesiredSize.Height + 1);
-//					position = new Point(CurrentSection.Location.X, position.Y + sectionContainer.DesiredSize.Height + 1);
-*/
+					
+					sectionPosition = new Point(CurrentSection.Location.X, sectionPosition.Y + 25);
+					sectionContainer.Size = new Size(sectionContainer.Size.Width,convertedItems[0].Location.Y + 40);
 				}
-			
+				pagePosition = new Point(pagePosition.X,sectionContainer.DisplayRectangle.Bottom + 1);
 			}
 			InsertExportRows(exportRows);
 		}
+
+		
+		void AdjustLocationInSection(Point sectionPosition,List<IExportColumn> convertedItems)
+		{
+			foreach (var element in convertedItems) {
+				element.Location = new Point(element.Location.X, sectionPosition.Y);
+			}
+		}
+		
 		
 		void BuildSortedDetails(){
 			
 			var exportRows = new List<IExportContainer>();
 			var converter = new ContainerConverter(base.Graphics, CurrentLocation);
-			var position = DetailStart;
+			var pagePosition = DetailStart;
 			
 			foreach (var element in DataSource.SortedList) {
 				
-				var row = CreateContainerForSection(CurrentPage, position);
+				var sectionContainer = CreateContainerForSection(CurrentPage, pagePosition);
 				DataSource.Fill(CurrentSection.Items,element);
 
 				var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection.Items);
+				converter.SetParent(sectionContainer, convertedItems);
 
-				converter.SetParent(row, convertedItems);
-
-				if (PageFull(row)) {
+				if (PageFull(sectionContainer)) {
 					InsertExportRows(exportRows);
 					exportRows.Clear();
 					PerformPageBreak();
-					position = DetailStart;
-					row.Location = position;
+					pagePosition = DetailStart;
+					sectionContainer.Location = pagePosition;
 				}
 
-				MeasureAndArrangeContainer(row);
+				MeasureAndArrangeContainer(sectionContainer);
 
-				row.ExportedItems.AddRange(convertedItems);
-				exportRows.Add(row);
-				position = new Point(CurrentSection.Location.X, position.Y + row.DesiredSize.Height + 1);
+				sectionContainer.ExportedItems.AddRange(convertedItems);
+				exportRows.Add(sectionContainer);
+				pagePosition = new Point(CurrentSection.Location.X, pagePosition.Y + sectionContainer.DesiredSize.Height + 1);
 			}
 
 			InsertExportRows(exportRows);
@@ -189,7 +197,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			} while (DataSource.MoveNext());
 			InsertExportRows(exportRows);
 		}
-*/
+		 */
 		
 		void PerformPageBreak(){
 			CurrentPage.PageInfo.PageNumber = Pages.Count + 1;
