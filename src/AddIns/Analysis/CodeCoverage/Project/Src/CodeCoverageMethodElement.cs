@@ -214,15 +214,11 @@ namespace ICSharpCode.CodeCoverage
 					nextMatch = false;
 					excludeOffsetList.Add(new Tuple<int, int> ( previousSeqPoint.Offset , currentSeqPoint.Offset ));
 				}
-				// SequencePoints are ordered by offset and that order exposes reverse ordered lines
-				// ie: foreach ( var item in (IEnumerable)items ) code for "in" keyword is generated "out-of-sequence", 
-				// with lower line number than previous line (reversed line order).
 				// Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
 				// one do not want or cannot cover by test-case because is handled earlier at same method.
 				// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
-				if (currentSeqPoint.Line < previousSeqPoint.Line 
-				    && currentSeqPoint.Content == "in" ) {
-					// currentSeqPoint has lower line number than previousSeqPoint and content is equal to "in" keyword
+				if (currentSeqPoint.Content == "in") {
+					// Content is equal to "in" keyword
 					nextMatch = true;
 				}
 				previousSeqPoint = currentSeqPoint;
