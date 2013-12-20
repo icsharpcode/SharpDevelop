@@ -235,7 +235,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			SearchScope additionalScope = null;
 			IEntity entity;
 
-			if (symbol.SymbolKind == SymbolKind.Parameter) {
+			if (symbol.SymbolKind == SymbolKind.Variable) {
+				var variable = (IVariable) symbol;
+				scope = GetSearchScopeForLocalVariable(variable);
+				entity = null;
+			} else if (symbol.SymbolKind == SymbolKind.Parameter) {
 				var par = (IParameter)symbol;
 				scope = GetSearchScopeForParameter(par);
 				entity = par.Owner;
@@ -1372,6 +1376,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var searchScope = new SearchScope(c => new FindLocalReferencesNavigator(variable));
 			searchScope.declarationCompilation = compilation;
 			FindReferencesInFile(searchScope, unresolvedFile, syntaxTree, compilation, callback, cancellationToken);
+		}
+		
+		SearchScope GetSearchScopeForLocalVariable(IVariable variable)
+		{
+			var scope = new SearchScope (
+				delegate {
+					return new FindLocalReferencesNavigator(variable);
+				}
+			);
+			return scope;
 		}
 		
 		class FindLocalReferencesNavigator : FindReferenceNavigator
