@@ -302,31 +302,11 @@ namespace ICSharpCode.CodeCoverage
 			item.SubItems.Add(sequencePoint.EndLine.ToString());
 			item.SubItems.Add(sequencePoint.EndColumn.ToString());
 			item.SubItems.Add(sequencePoint.Content.Length>80?sequencePoint.Content.Substring(0,80):sequencePoint.Content);
-			item.BackColor = GetSequencePointBackColor(sequencePoint);
-			item.ForeColor = GetSequencePointForeColor(sequencePoint);
+			item.BackColor = CodeCoverageHighlighter.GetSequencePointBackColor(sequencePoint);
+			item.ForeColor = CodeCoverageHighlighter.GetSequencePointForeColor(sequencePoint);
 			item.Tag = sequencePoint;
 			
 			listView.Items.Add(item);
-		}
-
-		static System.Drawing.Color GetSequencePointBackColor(CodeCoverageSequencePoint sequencePoint) {
-			if (sequencePoint.VisitCount > 0) {
-				if ( sequencePoint.BranchCoverage == true ) {
-					return CodeCoverageOptions.VisitedColor;
-				}
-				return CodeCoverageOptions.PartVisitedColor;
-			}
-			return CodeCoverageOptions.NotVisitedColor;
-		}
-		
-		static System.Drawing.Color GetSequencePointForeColor(CodeCoverageSequencePoint sequencePoint) {
-			if (sequencePoint.VisitCount > 0) {
-				if ( sequencePoint.BranchCoverage == true ) {
-					return CodeCoverageOptions.VisitedForeColor;
-				}
-				return CodeCoverageOptions.PartVisitedForeColor;
-			}
-			return CodeCoverageOptions.NotVisitedForeColor;
 		}
 
 		void ListViewItemActivate(object sender, EventArgs e)

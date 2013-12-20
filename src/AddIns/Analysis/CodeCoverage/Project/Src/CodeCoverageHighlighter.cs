@@ -39,8 +39,8 @@ namespace ICSharpCode.CodeCoverage
 				int endOffset = document.PositionToOffset(sequencePoint.EndLine, sequencePoint.EndColumn);
 				ITextMarker marker = markerService.Create(startOffset, endOffset - startOffset);
 				marker.Tag = typeof(CodeCoverageHighlighter);
-				marker.BackgroundColor = GetSequencePointColor(sequencePoint);
-				marker.ForegroundColor = GetSequencePointForeColor(sequencePoint);
+				marker.BackgroundColor = GetSequencePointBackColor(sequencePoint).ToWpf();
+				marker.ForegroundColor = GetSequencePointForeColor(sequencePoint).ToWpf();
 			}
 		}
 		
@@ -90,27 +90,26 @@ namespace ICSharpCode.CodeCoverage
 			}
 			return true;
 		}
-		
-		public static Color GetSequencePointColor(CodeCoverageSequencePoint sequencePoint)
-		{
+	
+		public static System.Drawing.Color GetSequencePointBackColor(CodeCoverageSequencePoint sequencePoint) {
 			if (sequencePoint.VisitCount > 0) {
 				if ( sequencePoint.BranchCoverage == true ) {
-					return CodeCoverageOptions.VisitedColor.ToWpf();
+					return CodeCoverageOptions.VisitedColor;
 				}
-				return CodeCoverageOptions.PartVisitedColor.ToWpf();
+				return CodeCoverageOptions.PartVisitedColor;
 			}
-			return CodeCoverageOptions.NotVisitedColor.ToWpf();
+			return CodeCoverageOptions.NotVisitedColor;
 		}
 		
-		public static Color GetSequencePointForeColor(CodeCoverageSequencePoint sequencePoint)
-		{
+		public static System.Drawing.Color GetSequencePointForeColor(CodeCoverageSequencePoint sequencePoint) {
 			if (sequencePoint.VisitCount > 0) {
 				if ( sequencePoint.BranchCoverage == true ) {
-					return CodeCoverageOptions.VisitedForeColor.ToWpf();
+					return CodeCoverageOptions.VisitedForeColor;
 				}
-				return CodeCoverageOptions.PartVisitedForeColor.ToWpf();
+				return CodeCoverageOptions.PartVisitedForeColor;
 			}
-			return CodeCoverageOptions.NotVisitedForeColor.ToWpf();
+			return CodeCoverageOptions.NotVisitedForeColor;
 		}
+
 	}
 }
