@@ -3316,8 +3316,8 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>End Line</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.AllBranches" xml:space="preserve">
-    <value>All Branches</value>
+  <data name="ICSharpCode.CodeCoverage.Content" xml:space="preserve">
+    <value>Content</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated" xml:space="preserve">
     <value>No code coverage results file generated:</value>

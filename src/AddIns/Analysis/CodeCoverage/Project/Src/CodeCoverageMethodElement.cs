@@ -10,9 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
-
 namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageMethodElement
@@ -38,7 +35,7 @@ namespace ICSharpCode.CodeCoverage
 			Init();
 		}
 		private static string cacheFileName = String.Empty;
-		private static IDocument cacheDocument = null;
+		private static CodeCoverageStringTextSource cacheDocument = null;
 
 		public string FileID { get; private set; }
 		public string FileName { get; private set; }
@@ -80,8 +77,7 @@ namespace ICSharpCode.CodeCoverage
 								try {
 									stream.Position = 0;
 									string textSource = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default);
-									ITextBuffer textBuffer = new StringTextBuffer (textSource);
-									cacheDocument = new ReadOnlyDocument(textBuffer);
+									cacheDocument = new CodeCoverageStringTextSource(textSource);
 								} catch {}
 							}
 						} catch {}
@@ -120,14 +116,15 @@ namespace ICSharpCode.CodeCoverage
 				sp.EndColumn = (int)GetDecimalAttributeValue(xSPoint.Attribute("ec"));
 				sp.VisitCount = (int)GetDecimalAttributeValue(xSPoint.Attribute("vc"));
 				if (cacheFileName == sp.Document && cacheDocument != null) {
-					int startOffset = cacheDocument.PositionToOffset(sp.Line, sp.Column);
-					int finalOffset = cacheDocument.PositionToOffset(sp.EndLine, sp.EndColumn);
-					// normalise white-space
-					sp.Content = Regex.Replace(cacheDocument.GetText(startOffset, finalOffset - startOffset), @"\s+", " ");
+					sp.Content = cacheDocument.GetText(sp);
+					if (sp.Line != sp.EndLine) {
+					    sp.Content = Regex.Replace (sp.Content, @"\s+", " ");
+					}
+    				sp.Length = Regex.Replace (sp.Content, @"\s", "").Length; // ignore white-space for coverage%
 				} else {
 					sp.Content = String.Empty;
+    				sp.Length = 0;
 				}
-				sp.Length = sp.Content.Length;
 				sp.Offset = (int)GetDecimalAttributeValue(xSPoint.Attribute("offset"));
 				sp.BranchCoverage = true;
 

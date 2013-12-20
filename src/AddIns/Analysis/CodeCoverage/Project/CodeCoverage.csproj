@@ -83,6 +83,7 @@
     <Compile Include="Src\CodeCoverageResults.cs" />
     <Compile Include="Src\CodeCoverageMethod.cs" />
     <Compile Include="Src\CodeCoverageSequencePoint.cs" />
+    <Compile Include="Src\CodeCoverageStringTextSource.cs" />
     <Compile Include="Src\CodeCoverageTestRunner.cs" />
     <Compile Include="Src\CodeCoverageTestRunnerContext.cs" />
     <Compile Include="Src\CodeCoverageTestRunnerFactory.cs" />

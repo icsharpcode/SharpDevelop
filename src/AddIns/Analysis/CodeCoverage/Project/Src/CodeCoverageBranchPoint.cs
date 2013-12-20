@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: ddur
- * Date: 26/11/2013
- * Time: 02:58
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) https://github.com/ddur
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 
 namespace ICSharpCode.CodeCoverage

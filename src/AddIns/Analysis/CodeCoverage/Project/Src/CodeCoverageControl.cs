@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Document;
@@ -34,7 +34,7 @@ namespace ICSharpCode.CodeCoverage
 		ColumnHeader endLineColumnHeader;
 		ColumnHeader startColumnColumnHeader;
 		ColumnHeader endColumnColumnHeader;
-		ColumnHeader allBranchesColumnHeader;
+		ColumnHeader contentColumnHeader;
 		ToolStrip toolStrip;
 		bool showSourceCodePanel;
 		bool showVisitCountPanel = true;
@@ -301,12 +301,34 @@ namespace ICSharpCode.CodeCoverage
 			item.SubItems.Add(sequencePoint.Column.ToString());
 			item.SubItems.Add(sequencePoint.EndLine.ToString());
 			item.SubItems.Add(sequencePoint.EndColumn.ToString());
-			item.SubItems.Add(sequencePoint.BranchCoverage.ToString());
+			item.SubItems.Add(sequencePoint.Content.Length>80?sequencePoint.Content.Substring(0,80):sequencePoint.Content);
+			item.BackColor = GetSequencePointBackColor(sequencePoint);
+			item.ForeColor = GetSequencePointForeColor(sequencePoint);
 			item.Tag = sequencePoint;
 			
 			listView.Items.Add(item);
 		}
+
+		static System.Drawing.Color GetSequencePointBackColor(CodeCoverageSequencePoint sequencePoint) {
+			if (sequencePoint.VisitCount > 0) {
+				if ( sequencePoint.BranchCoverage == true ) {
+					return CodeCoverageOptions.VisitedColor;
+				}
+				return CodeCoverageOptions.PartVisitedColor;
+			}
+			return CodeCoverageOptions.NotVisitedColor;
+		}
 		
+		static System.Drawing.Color GetSequencePointForeColor(CodeCoverageSequencePoint sequencePoint) {
+			if (sequencePoint.VisitCount > 0) {
+				if ( sequencePoint.BranchCoverage == true ) {
+					return CodeCoverageOptions.VisitedForeColor;
+				}
+				return CodeCoverageOptions.PartVisitedForeColor;
+			}
+			return CodeCoverageOptions.NotVisitedForeColor;
+		}
+
 		void ListViewItemActivate(object sender, EventArgs e)
 		{
 			if (listView.SelectedItems.Count > 0) {
@@ -394,37 +416,39 @@ namespace ICSharpCode.CodeCoverage
 			listView.FullRowSelect = true;
 			listView.HideSelection = false;
 			listView.ItemActivate += ListViewItemActivate;
+			
+			listView.Font = Core.WinForms.WinFormsResourceService.DefaultMonospacedFont;
 						
 			visitCountColumnHeader = new ColumnHeader();
 			visitCountColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.VisitCount}");
-			visitCountColumnHeader.Width = 80;
+			visitCountColumnHeader.Width = -2;
 			
 			startLineColumnHeader = new ColumnHeader();
 			startLineColumnHeader.Text = StringParser.Parse("${res:Global.TextLine}");
-			startLineColumnHeader.Width = 80;
+			startLineColumnHeader.Width = -2;
 				
 			startColumnColumnHeader = new ColumnHeader();
 			startColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Column}");
-			startColumnColumnHeader.Width = 80;
+			startColumnColumnHeader.Width = -2;
 
 			endLineColumnHeader = new ColumnHeader();
 			endLineColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndLine}");
-			endLineColumnHeader.Width = 80;
+			endLineColumnHeader.Width = -2;
 
 			endColumnColumnHeader = new ColumnHeader();
 			endColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndColumn}");
-			endColumnColumnHeader.Width = 80;
+			endColumnColumnHeader.Width = -2;
 
-			allBranchesColumnHeader = new ColumnHeader();
-			allBranchesColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.AllBranches}");
-			allBranchesColumnHeader.Width = 80;
+			contentColumnHeader = new ColumnHeader();
+			contentColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Content}");
+			contentColumnHeader.Width = 500;
 
 			listView.Columns.AddRange(new ColumnHeader[] {visitCountColumnHeader,
 			   	                      startLineColumnHeader,
 			                          startColumnColumnHeader,
 			                          endLineColumnHeader,
 			                          endColumnColumnHeader,
-			                          allBranchesColumnHeader
+			                          contentColumnHeader
 			                          });
 			
 			// Create custom list view sorter.
