@@ -22,12 +22,8 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	/// </summary>
 	class ContainerConverter : IContainerConverter
 	{
-		public ContainerConverter(Graphics graphics, Point currentLocation)
+		public ContainerConverter(Point currentLocation)
 		{
-			if (graphics == null) {
-				throw new ArgumentNullException("graphics");
-			}
-			Graphics = graphics;
 			CurrentLocation = currentLocation;
 		}
 
@@ -63,9 +59,6 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			}
 		}
 		
-
 		protected Point CurrentLocation { get;  set; }
-		
-		internal Graphics Graphics {get;private set;}
 	}
 }

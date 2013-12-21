@@ -40,7 +40,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 			ReportModel = reportModel;
 			Pages = new Collection<ExportPage>();
 			Graphics = CreateGraphics.FromSize(reportModel.ReportSettings.PageSize);
-//			ExpressionVisitor = new ExpressionVisitor(ReportModel.ReportSettings,null);
 		}
 		
 		#region create Report Sections
@@ -101,7 +100,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		
 		protected bool PageFull(IExportContainer row) {
-			if (row.DisplayRectangle.Bottom > DetailEnds.Y) {
+			if (row.DisplayRectangle.Bottom> DetailEnds.Y) {
 				return true;
 			}
 			return false;
@@ -112,7 +111,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 
 		protected IExportContainer CreateSection(IReportContainer container,Point location)
 		{
-			var containerConverter = new ContainerConverter(Graphics, location);
+			var containerConverter = new ContainerConverter(location);
 			var convertedContainer = containerConverter.ConvertToExportContainer(container);
 			
 			var list = containerConverter.CreateConvertedList(container.Items);
