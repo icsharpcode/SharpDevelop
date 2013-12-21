@@ -158,7 +158,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		void HighlightCurrentLine(object sender, EventArgs e)
 		{
-			this.currentLineRenderer.SetHighlight(this.TextArea.Caret.Line);
+			if(this.Adapter.Language != null) {
+				if(CodeEditorOptions.Instance.HighlightCurrentLine) {
+					this.currentLineRenderer.SetHighlight(this.TextArea.Caret.Line);
+				} else {
+					this.currentLineRenderer.SetHighlight(-1);
+				}
+			}
 		}
 		
 		#endregion

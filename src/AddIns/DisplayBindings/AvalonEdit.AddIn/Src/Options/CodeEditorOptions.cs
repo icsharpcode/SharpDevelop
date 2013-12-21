@@ -153,6 +153,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool highlightCurrentLine = true;
+		
+		[DefaultValueAttribute(true)]
+		public bool HighlightCurrentLine {
+			get { return highlightCurrentLine; }
+			set {
+				if(highlightCurrentLine != value) {
+					highlightCurrentLine = value;
+					OnPropertyChanged("HighlightCurrentLine");
+				}
+			}
+		}
+		
 		bool highlightSymbol = true;
 		
 		[DefaultValue(true)]
