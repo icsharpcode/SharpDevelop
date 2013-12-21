@@ -118,5 +118,75 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(@"c:\Program Files\Microsoft\Reference Assemblies\v4\System.Xml.dll", path);
 		}
+		
+		[Test]
+		public void PublicKeyToken_ReferenceHasPublicKeyToken_ReturnsPublicKeyToken()
+		{
+			CreateReference("ICSharpCode.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=f829da5c02be14ee");
+			
+			string publicKeyToken = reference.PublicKeyToken;
+			
+			Assert.AreEqual("f829da5c02be14ee", publicKeyToken);
+		}
+		
+		[Test]
+		public void PublicKeyToken_ReferenceHasNullPublicKeyToken_ReturnsEmptyString()
+		{
+			CreateReference("ICSharpCode.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=null");
+			
+			string publicKeyToken = reference.PublicKeyToken;
+			
+			Assert.AreEqual(String.Empty, publicKeyToken);
+		}
+		
+		[Test]
+		public void StrongName_ReferenceHasStrongName_ReturnsTrue()
+		{
+			CreateReference("ICSharpCode.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=f829da5c02be14ee");
+			
+			bool result = reference.StrongName;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void StrongName_ReferenceMissingVersion_ReturnsFalse()
+		{
+			CreateReference("ICSharpCode.Core, Culture=neutral, PublicKeyToken=f829da5c02be14ee");
+			
+			bool result = reference.StrongName;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void StrongName_ReferenceMissingPublicKeyToken_ReturnsFalse()
+		{
+			CreateReference("ICSharpCode.Core, Version=4.4.0.0, Culture=neutral");
+			
+			bool result = reference.StrongName;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void StrongName_ReferenceHasNullPublicKeyToken_ReturnsFalse()
+		{
+			CreateReference("ICSharpCode.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=null");
+			
+			bool result = reference.StrongName;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Identity_FullyQualifiedReference_ReturnsAssemblyShortName()
+		{
+			CreateReference("ICSharpCode.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=f829da5c02be14ee");
+			
+			string identity = reference.Identity;
+			
+			Assert.AreEqual("ICSharpCode.Core", identity);
+		}
 	}
 }
