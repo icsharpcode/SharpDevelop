@@ -109,6 +109,7 @@
     <Compile Include="Src\ContextActions\FindBaseClasses.cs" />
     <Compile Include="Src\ContextActions\FindDerivedClassesOrOverrides.cs" />
     <Compile Include="Src\ContextActions\GoToEntityAction.cs" />
+    <Compile Include="Src\CurrentLineHighlightRenderer.cs" />
     <Compile Include="Src\EnhancedScrollBar.cs" />
     <Compile Include="Src\HiddenDefinitionRenderer.cs" />
     <Compile Include="Src\SyntaxHighlighting\CustomizingHighlighter.cs" />
