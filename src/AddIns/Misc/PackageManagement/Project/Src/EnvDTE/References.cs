@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class References : MarshalByRefObject, IEnumerable<Reference>, global::EnvDTE.References
+	public class References : MarshalByRefObject, IEnumerable, global::EnvDTE.References
 	{
 		MSBuildBasedProject msbuildProject;
 		IPackageManagementProjectService projectService;
@@ -45,22 +45,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			project.Save();
 		}
 		
-		public IEnumerator<Reference> GetEnumerator()
+		public IEnumerator GetEnumerator()
 		{
-			List<Reference> references = GetReferences().ToList();
-			return references.GetEnumerator();
+			return GetReferences().ToList().GetEnumerator();
 		}
 		
-		IEnumerable<Reference> GetReferences()
+		IEnumerable<global::EnvDTE.Reference> GetReferences()
 		{
 			foreach (ReferenceProjectItem referenceProjectItem in project.GetReferences()) {
 				yield return new Reference3(project, referenceProjectItem);
 			}
-		}
-		
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
 		}
 		
 		public global::EnvDTE.Reference Item(string identity)

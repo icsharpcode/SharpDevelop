@@ -30,18 +30,10 @@ namespace PackageManagement.Tests.EnvDTE
 			references = (References)projectObject.References;
 		}
 		
-		void ReferenceCollectionAssertAreEqual(string[] expectedReferences, List<Reference> referenceList)
-		{
-			var actualReferences = new List<string>();
-			referenceList.ForEach(r => actualReferences.Add(r.Name));
-			
-			CollectionAssert.AreEqual(expectedReferences, actualReferences);
-		}
-		
 		void ReferenceCollectionAssertAreEqual(string[] expectedReferences, IEnumerable referenceList)
 		{
 			var actualReferences = new List<string>();
-			foreach (Reference reference in referenceList) {
+			foreach (global::EnvDTE.Reference reference in referenceList) {
 				actualReferences.Add(reference.Name);
 			}
 			
@@ -116,15 +108,14 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddReference("System.Data");
 			msbuildProject.AddReference("System.Xml");
 			
-			var referenceList = new List<Reference>();
-			referenceList.AddRange(references);
+			var enumerable = references as IEnumerable;
 			
 			var expectedReferences = new string[] {
 				"System.Data",
 				"System.Xml"
 			};
 			
-			ReferenceCollectionAssertAreEqual(expectedReferences, referenceList);
+			ReferenceCollectionAssertAreEqual(expectedReferences, enumerable);
 		}
 		
 		[Test]
@@ -134,14 +125,13 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddFile(@"src\Test.cs");
 			msbuildProject.AddReference("System.Xml");
 			
-			var referenceList = new List<Reference>();
-			referenceList.AddRange(references);
+			var enumerable = references as IEnumerable;
 			
 			var expectedReferences = new string[] {
 				"System.Xml"
 			};
 			
-			ReferenceCollectionAssertAreEqual(expectedReferences, referenceList);
+			ReferenceCollectionAssertAreEqual(expectedReferences, enumerable);
 		}
 		
 		[Test]
