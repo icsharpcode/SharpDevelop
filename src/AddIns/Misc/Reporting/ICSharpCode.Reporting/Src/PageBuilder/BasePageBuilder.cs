@@ -98,9 +98,29 @@ namespace ICSharpCode.Reporting.PageBuilder
 			BuildPageFooter();
 		}
 		
+		/*
+		protected bool PageFull (Rectangle rect) {
+			var sectionRect = new Rectangle(0,0,DetailsRectangle.Width,DetailsRectangle.Height);
+			var testRect = new Rectangle(1,rect.Location.Y,rect.Width -2,rect.Height);
+			if (sectionRect.Contains(testRect)) {
+				return false;
+			} else {
+				Console.WriteLine("PageBreak");
+				return true;
+			}
+		}
+		*/
 		
-		protected bool PageFull(IExportContainer row) {
-			if (row.DisplayRectangle.Bottom> DetailEnds.Y) {
+
+		protected bool PageFull(IExportContainer container) {
+			int pos;
+			if (container.ExportedItems.Count > 0) {
+				pos = container.Location.Y + container.ExportedItems.Last().Location.Y + container.ExportedItems.Last().Size.Height;
+			} else {
+				pos = container.Location.Y + container.Size.Height;
+			}
+			
+			if (pos > DetailEnds.Y) {
 				return true;
 			}
 			return false;

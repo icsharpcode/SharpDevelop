@@ -26,7 +26,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		[Test]
 		public void SectionContainsOneItemThatIsRow() {
-			var converter = new ContainerConverter(graphics,section.Location);
+			var converter = new ContainerConverter(section.Location);
 			var list = converter.CreateConvertedList(section.Items);
 			Assert.That(list.Count,Is.EqualTo(1));
 		}
@@ -34,7 +34,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		[Test]
 		public void RowContainsOneItem() {
-			var converter = new ContainerConverter(graphics,section.Location);
+			var converter = new ContainerConverter(section.Location);
 			var list = converter.CreateConvertedList(section.Items);
 			var item = list[0] as ExportContainer;
 			var text = item.ExportedItems[0];

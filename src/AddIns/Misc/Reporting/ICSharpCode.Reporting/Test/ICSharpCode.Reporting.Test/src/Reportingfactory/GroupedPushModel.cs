@@ -19,7 +19,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		{
 			reportCreator.BuildExportList();
 			// Only a test value
-			Assert.That(reportCreator.Pages.Count,Is.EqualTo(3));
+			Assert.That(reportCreator.Pages.Count,Is.EqualTo(2));
 		}
 		
 		
