@@ -84,12 +84,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 				string shortenedText = text.Trim();
 				if (shortenedText.Length > 50)
 					shortenedText = shortenedText.Substring(0, 47) + "...";
-				clipboardRing.Items.Add("Text:" + shortenedText, text);
+				
+				RemoveFromClipboardRing(text);
+				clipboardRing.Items.Add(shortenedText, text);
 				if (clipboardRing.Items.Count > 20) {
 					clipboardRing.Items.RemoveAt(0);
 				}
 			}
 			Refresh();
+		}
+		
+		void RemoveFromClipboardRing(string text) 
+		{
+			int pos = 0;
+			foreach (var item in clipboardRing.Items) {
+				string itemData = item.Tag as string;
+				if(itemData != null && itemData.Equals(text))
+					break;
+				pos++;
+			}
+				
+			if (pos < clipboardRing.Items.Count) {
+				clipboardRing.Items.RemoveAt(pos);
+			}
 		}
 		
 		public void SaveSideBarViewConfig()
