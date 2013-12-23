@@ -102,9 +102,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					shortenedText = shortenedText.Substring(0, 47) + "...";
 				
 				RemoveFromClipboardRing(text);
-				clipboardRing.Items.Add(shortenedText, text);
+				clipboardRing.Items.Insert(0, shortenedText, text);
 				if (clipboardRing.Items.Count > 20) {
-					clipboardRing.Items.RemoveAt(0);
+					clipboardRing.Items.RemoveAt(clipboardRing.Items.Count - 1);
 				}
 			}
 			Refresh();
