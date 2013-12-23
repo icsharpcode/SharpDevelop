@@ -21,6 +21,7 @@ namespace ICSharpCode.CodeCoverage
 			public int Offset;
 			public int Visit;
 			public int Count;
+			public CodeCoverageSequencePoint SeqPoint;
 			public branchOffset( int offset ) {
 				this.Offset = offset;
 			}
@@ -118,12 +119,12 @@ namespace ICSharpCode.CodeCoverage
 				if (cacheFileName == sp.Document && cacheDocument != null) {
 					sp.Content = cacheDocument.GetText(sp);
 					if (sp.Line != sp.EndLine) {
-					    sp.Content = Regex.Replace (sp.Content, @"\s+", " ");
+						sp.Content = Regex.Replace (sp.Content, @"\s+", " ");
 					}
-    				sp.Length = Regex.Replace (sp.Content, @"\s", "").Length; // ignore white-space for coverage%
+					sp.Length = Regex.Replace (sp.Content, @"\s", "").Length; // ignore white-space for coverage%
 				} else {
 					sp.Content = String.Empty;
-    				sp.Length = 0;
+					sp.Length = 0;
 				}
 				sp.Offset = (int)GetDecimalAttributeValue(xSPoint.Attribute("offset"));
 				sp.BranchCoverage = true;
@@ -165,9 +166,9 @@ namespace ICSharpCode.CodeCoverage
 			// goal: Get branch ratio and exclude (rewriten) Code Contracts branches 
 
 			if ( this.BranchPoints == null 
-			    || this.BranchPoints.Count() == 0 
-			    || this.SequencePoints == null
-			    || this.SequencePoints.Count == 0
+				|| this.BranchPoints.Count() == 0 
+				|| this.SequencePoints == null
+				|| this.SequencePoints.Count == 0
 			   )
 			{
 				return null;
@@ -198,31 +199,9 @@ namespace ICSharpCode.CodeCoverage
 			Debug.Assert ( !Object.ReferenceEquals( null, finalSeqPoint) );
 			if (Object.ReferenceEquals(null, finalSeqPoint)) { return null; }
 			
-			// Create&populate excludeOffsetList (BranchPoint offset-filter)
-			bool nextMatch = false;
-			CodeCoverageSequencePoint previousSeqPoint = startSeqPoint;
-			List<Tuple<int,int>> excludeOffsetList = new List<Tuple<int, int>>();
-			foreach (CodeCoverageSequencePoint currentSeqPoint in this.SequencePoints) {
-
-				// ignore CCRewrite(n) contracts
-				if (currentSeqPoint.Offset < startSeqPoint.Offset)
-					continue;
-				if (currentSeqPoint.Offset > finalSeqPoint.Offset)
-					break;
-				
-				if (nextMatch) {
-					nextMatch = false;
-					excludeOffsetList.Add(new Tuple<int, int> ( previousSeqPoint.Offset , currentSeqPoint.Offset ));
-				}
-				// Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
-				// one do not want or cannot cover by test-case because is handled earlier at same method.
-				// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
-				if (currentSeqPoint.Content == "in") {
-					// Content is equal to "in" keyword
-					nextMatch = true;
-				}
-				previousSeqPoint = currentSeqPoint;
-			}
+			IEnumerator<CodeCoverageSequencePoint> SPEnumerator = this.SequencePoints.GetEnumerator();
+			CodeCoverageSequencePoint branchSeqPoint = startSeqPoint;
+			int nextOffset = branchSeqPoint.Offset;
 
 			// Merge BranchPoints on same offset 
 			// Exclude BranchPoints outside of method boundary {...} => exclude CCRewrite(n) Contracts
@@ -236,55 +215,55 @@ namespace ICSharpCode.CodeCoverage
 				if (bp.Offset > finalSeqPoint.Offset)
 					break;
 
-				// Apply excludeOffset filter
-				if (excludeOffsetList.Count != 0) {
-					nextMatch = true;
-					foreach (var offsetRange in excludeOffsetList) {
-						if (offsetRange.Item1 < bp.Offset  && bp.Offset < offsetRange.Item2) {
-							// exclude range match
-							nextMatch = false; break;
-						}
-					} if (!nextMatch) { continue; }
-				}
-
 				// merge BranchPoint's with same offset
-				if ( branchDictionary.ContainsKey( bp.Offset ) ) {
-					// Update BranchPoint coverage at offset
-					branchOffset update = branchDictionary[bp.Offset];
-					update.Visit += bp.VisitCount!=0?1:0;
-					update.Count += 1;
-				} else {
+				if ( !branchDictionary.ContainsKey( bp.Offset ) ) {
 					// Insert BranchPoint coverage at offset
 					branchOffset insert = new branchOffset(bp.Offset);
 					insert.Visit = bp.VisitCount!=0?1:0;
 					insert.Count = 1;
+
+					// attach Sequence to Branch-Offset
+					while ( nextOffset < insert.Offset ) {
+						   branchSeqPoint = SPEnumerator.Current;
+						if ( SPEnumerator.MoveNext() ) {
+							nextOffset = SPEnumerator.Current.Offset;
+						} else {
+							nextOffset = int.MaxValue;
+						}
+					}
+					insert.SeqPoint = branchSeqPoint;
 					branchDictionary[insert.Offset] = insert;
+
+				} else {
+					// Update BranchPoint coverage at offset
+					branchOffset update = branchDictionary[bp.Offset];
+					update.Visit += bp.VisitCount!=0?1:0;
+					update.Count += 1;
 				}
 			}
 			
+			// Calculate Method Branch coverage
 			int totalBranchVisit = 0;
 			int totalBranchCount = 0;
-
-			// Branch coverage will display only if sequence coverage is 100%, so ...
-			// Ignore branch-offset if is not visited at all because ... :
-			// if SequencePoint is covered and branch-offset within that SequencePoint not visited (uncovered), 
-			// then that branch-offset does not really exists in SOURCE code we try to cover
-			CodeCoverageSequencePoint sp_target = null;
 			foreach ( branchOffset uniqueBranch in branchDictionary.Values ) {
-				if ( uniqueBranch.Visit != 0 ) {
-					totalBranchVisit += uniqueBranch.Visit;
-					totalBranchCount += uniqueBranch.Count;
 
-					// not full branch coverage?
-					if ( uniqueBranch.Visit != uniqueBranch.Count ) {
-						// update parent SequencePoint.BranchCoverage to false (== partial branch coverage)
-						sp_target = null;
-						foreach ( CodeCoverageSequencePoint sp_next in this.SequencePoints ) {
-							if ( uniqueBranch.Offset < sp_next.Offset && sp_target != null ) {
-								sp_target.BranchCoverage = false;
-								break;
-							}
-							sp_target = sp_next;
+				// Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
+				// one do not want or cannot cover by test-case because is handled earlier at same method.
+				// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
+				if (uniqueBranch.SeqPoint.Content != "in") {
+
+					// Branch coverage will display only if sequence coverage is 100%, so ...
+					// Ignore branch-offset if is not visited at all because ... :
+					// if SequencePoint is covered and branch-offset within that SequencePoint not visited (uncovered), 
+					// then that branch-offset does not really exists in SOURCE code we try to cover
+					if ( uniqueBranch.Visit != 0 ) {
+						totalBranchVisit += uniqueBranch.Visit;
+						totalBranchCount += uniqueBranch.Count;
+	
+						// not full branch coverage?
+						if ( uniqueBranch.Visit != uniqueBranch.Count ) {
+							// update attached SequencePoint.BranchCoverage to false (== partial branch coverage)
+							uniqueBranch.SeqPoint.BranchCoverage = false;
 						}
 					}
 				}
