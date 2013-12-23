@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -76,6 +78,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			clipboardRing.CanDragDrop  = false;
 			this.Tabs.Add(clipboardRing);
 			this.ActiveTab = clipboardRing;
+		}
+		
+		public List<string> GetClipboardRingItems()
+		{
+			var list = new List<string>();
+			foreach (var item in clipboardRing.Items) {
+				string itemData = item.Tag as string;
+				if (itemData != null)
+					list.Add(itemData);
+			}
+			return list;
 		}
 		
 		public void PutInClipboardRing(string text)
