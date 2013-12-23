@@ -368,16 +368,10 @@ namespace ICSharpCode.FormsDesigner
 		
 		void ComponentChanged(object sender, ComponentChangedEventArgs e)
 		{
-			bool loading = this.loader != null && this.loader.Loading;
-			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
+			bool loading = loader != null && loader.Loading;
+			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + unloading);
 			if (!loading && !unloading) {
-				this.MakeDirty();
-				#warning Reimplement designer component rename
-//					if (e.Component != null && e.Member != null && e.Member.Name == "Name" &&
-//					    e.NewValue is string && !object.Equals(e.OldValue, e.NewValue)) {
-//						// changing the name of the component
-//						generator.NotifyComponentRenamed(e.Component, (string)e.NewValue, (string)e.OldValue);
-//					}
+				MakeDirty();
 			}
 		}
 

@@ -237,11 +237,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		static void ApplyChanges(PatchedFile file)
 		{
-			var view = SD.FileService.OpenFile(file.FileName, false);
-			ITextEditor editor = view.GetService(typeof(ITextEditor)) as ITextEditor;
-			if (editor == null)
-				throw new InvalidOperationException("Editor/document not found!");
-			file.Apply(editor.Document);
+			var openedFile = SD.FileService.GetOpenedFile(file.FileName);
+			if (openedFile == null) {
+				SD.FileService.OpenFile(file.FileName, false);
+				openedFile = SD.FileService.GetOpenedFile(file.FileName); //?
+			}
+			
+			var provider = openedFile.CurrentView.GetService<IFileDocumentProvider>();
+			if (provider != null) {
+				var document = provider.GetDocumentForFile(openedFile);
+				if (document == null)
+					throw new InvalidOperationException("Editor/document not found!");
+				file.Apply(document);
+				openedFile.MakeDirty();
+			}
 		}
 	}
 	
