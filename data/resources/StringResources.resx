@@ -6434,6 +6434,12 @@ Removed the end part of the original message ", reason '${Message}'" since this 
     <value>Classes deriving from ${Name}</value>
     <comment>Title for search results for derived classes</comment>
   </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRing" xml:space="preserve">
+    <value>Clipboard ring</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
+    <value>From clipboard ring</value>
+  </data>
   <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
     <value>Convert to automatic property</value>
   </data>
