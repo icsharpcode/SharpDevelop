@@ -218,7 +218,7 @@ namespace CSharpBinding.FormsDesigner
 				ITypeDefinition designerClass = FormsDesignerSecondaryDisplayBinding.GetDesignableClass(primaryParseInfo.UnresolvedFile, compilation, out primaryPart);
 				
 				ISymbol controlSymbol;
-				if (context.IsRootComponent(component))
+				if (DesignerLoaderHost != null && DesignerLoaderHost.RootComponent == component)
 					controlSymbol = designerClass;
 				else
 					controlSymbol = designerClass.GetFields(f => f.Name == oldName, GetMemberOptions.IgnoreInheritedMembers)
