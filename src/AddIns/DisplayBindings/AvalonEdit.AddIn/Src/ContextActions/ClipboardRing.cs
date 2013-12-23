@@ -24,6 +24,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		public override void Run(ResolveResult symbol)
 		{
 			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			if(editor == null)
+				return;
+			
 			EditorRefactoringContext context = new EditorRefactoringContext(editor);
 			MakePopupWithClipboardOptions(context).OpenAtCaretAndFocus();
 		}

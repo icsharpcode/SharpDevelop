@@ -95,6 +95,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (clipboardRing != null) {
 				string shortenedText = text.Trim();
+				if (shortenedText == String.Empty)
+					return;
+				
 				if (shortenedText.Length > 50)
 					shortenedText = shortenedText.Substring(0, 47) + "...";
 				
