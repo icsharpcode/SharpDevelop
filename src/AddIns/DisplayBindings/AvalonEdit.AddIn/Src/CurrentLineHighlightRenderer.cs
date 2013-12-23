@@ -76,7 +76,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			var lineWidth = this.textView.ActualWidth;
 			var lineHeigth = visualLine.Height;
-			var linePosX = position.X - this.textView.ScrollOffset.X;
+			var linePosX = position.X;
 			var linePosY = position.Y - this.textView.ScrollOffset.Y;
 			
 			builder.AddRectangle(textView, new Rect(linePosX, linePosY, lineWidth, lineHeigth));
