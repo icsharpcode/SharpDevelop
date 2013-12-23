@@ -216,8 +216,13 @@ namespace CSharpBinding.FormsDesigner
 				
 				// Find designer class
 				ITypeDefinition designerClass = FormsDesignerSecondaryDisplayBinding.GetDesignableClass(primaryParseInfo.UnresolvedFile, compilation, out primaryPart);
-				ISymbol controlSymbol = designerClass.GetFields(f => f.Name == oldName, GetMemberOptions.IgnoreInheritedMembers)
-					.SingleOrDefault();
+				
+				ISymbol controlSymbol;
+				if (context.IsRootComponent(component))
+					controlSymbol = designerClass;
+				else
+					controlSymbol = designerClass.GetFields(f => f.Name == oldName, GetMemberOptions.IgnoreInheritedMembers)
+						.SingleOrDefault();
 				if (controlSymbol != null) {
 					FindReferenceService.RenameSymbol(controlSymbol, newName, new DummyProgressMonitor())
 						.ObserveOnUIThread()

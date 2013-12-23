@@ -16,6 +16,7 @@ namespace CSharpBinding.FormsDesigner
 		CSharpFullParseInformation GetPrimaryFileParseInformation();
 		ICompilation GetCompilation();
 		IDocument GetDocument(FileName fileName);
+		bool IsRootComponent(object component);
 		void ShowSourceCode(int lineNumber = 0);
 	}
 }

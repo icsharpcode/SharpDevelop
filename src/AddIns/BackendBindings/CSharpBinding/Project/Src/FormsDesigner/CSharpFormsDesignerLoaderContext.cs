@@ -57,6 +57,11 @@ namespace CSharpBinding.FormsDesigner
 		{
 			viewContent.ShowSourceCode(lineNumber);
 		}
+		
+		public bool IsRootComponent(object component)
+		{
+			return viewContent.Host != null && viewContent.Host.RootComponent == component;
+		}
 	}
 }
 
