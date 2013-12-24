@@ -49,6 +49,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ITypeDefinition TopLevelTypeDefinition { get; }
 		
 		/// <summary>
+		/// Gets the file name that defines the search scope.
+		/// If null, all files are searched.
+		/// </summary>
+		string FileName { get; }
+		
+		/// <summary>
 		/// Creates a navigator that can find references to this entity and reports
 		/// them to the specified callback.
 		/// </summary>
