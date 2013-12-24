@@ -80,7 +80,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				case SymbolKind.Variable:
 					return SD.ProjectService.FindProjectContainingFile(new FileName(((IVariable)symbol).Region.FileName));
 				case SymbolKind.Parameter:
-					return ((IParameter)symbol).Owner.ParentAssembly.GetProject();
+					if (((IParameter) symbol).Owner != null) {
+						return ((IParameter)symbol).Owner.ParentAssembly.GetProject();
+					} else {
+						return SD.ProjectService.FindProjectContainingFile(new FileName(((IParameter)symbol).Region.FileName));
+					}
 				case SymbolKind.TypeParameter:
 					return null; // TODO : extend rename on type parameters
 				default:

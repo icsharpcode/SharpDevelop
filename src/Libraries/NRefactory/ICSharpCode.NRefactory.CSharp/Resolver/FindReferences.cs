@@ -1560,6 +1560,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return new FindParameterReferencesNavigator (parameter);
 				}
 			);
+			if (parameter.Owner == null) {
+				scope.fileName = parameter.Region.FileName;
+			}
 			return scope;
 		}
 
