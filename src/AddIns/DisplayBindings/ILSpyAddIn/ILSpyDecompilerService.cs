@@ -44,7 +44,7 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			if (file == null) return null;
 			ReaderParameters parameters = new ReaderParameters();
-			var resolver = new ILSpyAssemblyResolver(file);
+			parameters.AssemblyResolver = new ILSpyAssemblyResolver(file);
 			var lastUpdateTime = File.GetLastWriteTimeUtc(file);
 			lock (moduleCache) {
 				ModuleCacheInfo info;
@@ -125,11 +125,6 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		static AstBuilder CreateAstBuilder(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			ReaderParameters readerParameters = new ReaderParameters();
-			// Use new assembly resolver instance so that the AssemblyDefinitions
-			// can be garbage-collected once the code is decompiled.
-			var resolver = new ILSpyAssemblyResolver(name.AssemblyFile);
-			readerParameters.AssemblyResolver = resolver;
 			ModuleDefinition module = GetModuleDefinitionFromCache(name.AssemblyFile);
 			if (module == null)
 				throw new InvalidOperationException("Could not find assembly file");
