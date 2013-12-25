@@ -131,6 +131,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					this.accessorRole = accessorRole;
 				}
 
+				public override bool VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
+				{
+					switch (binaryOperatorExpression.Operator) {
+						case BinaryOperatorType.ConditionalAnd:
+						case BinaryOperatorType.ConditionalOr:
+							return binaryOperatorExpression.Left.AcceptVisitor(this);
+					}
+					return base.VisitBinaryOperatorExpression(binaryOperatorExpression);
+				}
+
+				public override bool VisitAssignmentExpression(AssignmentExpression assignmentExpression)
+				{
+					if (accessorRole != null) {
+						if (accessorRole == PropertyDeclaration.SetKeywordRole) {
+							return assignmentExpression.Left.AcceptVisitor(this); 
+						}
+						return assignmentExpression.Right.AcceptVisitor(this); 
+					}
+					return base.VisitAssignmentExpression(assignmentExpression);
+				}
+
 				public override bool VisitIdentifierExpression(IdentifierExpression identifierExpression)
 				{
 					return CheckRecursion(identifierExpression);

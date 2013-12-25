@@ -137,7 +137,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				foreach (var node in nodes.Reverse ()) {
 					var output = OutputNode (1, node, true);
 					if (parentType.Kind == TypeKind.Enum) {
-						InsertText (startOffset, output.Text +",");
+						InsertText (startOffset, output.Text + (!parentType.Fields.Any() ? "" : ","));
 					} else {
 						InsertText (startOffset, output.Text);
 					}

@@ -314,7 +314,6 @@
     <Compile Include="CodeIssues\Uncategorized\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\ExpressionIsNeverOfProvidedTypeIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\IncorrectCallToObjectGetHashCodeIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\MethodOverloadHidesOptionalParameterIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\OptionalParameterCouldBeSkippedIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\RedundantAssignmentIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\ResultOfAsyncCallShouldNotBeIgnoredIssue.cs" />

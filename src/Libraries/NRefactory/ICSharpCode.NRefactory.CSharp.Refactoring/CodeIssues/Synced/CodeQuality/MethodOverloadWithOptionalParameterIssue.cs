@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				CheckParameters (method, 
 					method.DeclaringType.GetMethods(m =>
-						m.Name == method.Name).Cast<IParameterizedMember>().ToList(),
+						m.Name == method.Name && m.TypeParameters.Count == method.TypeParameters.Count).Cast<IParameterizedMember>().ToList(),
 					methodDeclaration.Parameters.ToList()
 				);
 

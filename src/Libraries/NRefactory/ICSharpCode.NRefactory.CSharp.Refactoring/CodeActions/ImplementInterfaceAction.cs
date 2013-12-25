@@ -66,18 +66,29 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				)
 			, type);
 		}
+
+		static void RemoveConstraints(EntityDeclaration decl)
+		{
+			foreach (var child in decl.GetChildrenByRole(Roles.Constraint).ToArray()) {
+				child.Remove();
+			}
+		}
 		
 		public static IEnumerable<AstNode> GenerateImplementation(RefactoringContext context, IEnumerable<Tuple<IMember, bool>> toImplement, bool generateRegion)
 		{
 			var service = (CodeGenerationService)context.GetService(typeof(CodeGenerationService)); 
 			if (service == null)
 				yield break;
-			var nodes = new Dictionary<IType, List<AstNode>>();
+			var nodes = new Dictionary<IType, List<EntityDeclaration>>();
 			
 			foreach (var member in toImplement) {
 				if (!nodes.ContainsKey(member.Item1.DeclaringType)) 
-					nodes [member.Item1.DeclaringType] = new List<AstNode>();
-				nodes [member.Item1.DeclaringType].Add(service.GenerateMemberImplementation(context, member.Item1, member.Item2));
+					nodes [member.Item1.DeclaringType] = new List<EntityDeclaration>();
+				var decl = service.GenerateMemberImplementation(context, member.Item1, member.Item2);
+				if (member.Item2 || member.Item1.DeclaringType.Kind != TypeKind.Interface)
+					RemoveConstraints(decl);
+
+				nodes[member.Item1.DeclaringType].Add(decl);
 			}
 			
 			foreach (var kv in nodes) {

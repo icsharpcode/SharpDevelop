@@ -248,11 +248,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override IMember Specialize(TypeParameterSubstitution substitution)
 		{
+			if (TypeParameterSubstitution.Identity.Equals(substitution))
+				return this;
 			return new SpecializedMethod(this, substitution);
 		}
 		
 		IMethod IMethod.Specialize(TypeParameterSubstitution substitution)
 		{
+			if (TypeParameterSubstitution.Identity.Equals(substitution))
+				return this;
 			return new SpecializedMethod(this, substitution);
 		}
 		

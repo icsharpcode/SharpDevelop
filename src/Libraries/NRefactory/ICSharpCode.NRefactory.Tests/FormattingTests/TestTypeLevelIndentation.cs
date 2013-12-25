@@ -70,19 +70,15 @@ using Foo;");
 			Test(policy,
 			      @"
 class Test {
-
     #region FooBar
 
     #endregion
-
 }",
 			      @"
 class Test {
-
 	#region FooBar
 
 	#endregion
-
 }");
 		}
 
@@ -956,11 +952,9 @@ class Foo
 #endregion
 }", @"class Test
 {
-
 	#region DEBUG
 
 	#endregion
-
 }");
 		}
 	
@@ -973,18 +967,14 @@ class Foo
 			Test(policy,
 			     @"class Test
 {
-
 	#region DEBUG
 
 	#endregion
-
 }", @"class Test
 {
-
 #region DEBUG
 
 #endregion
-
 }");
 		}
 

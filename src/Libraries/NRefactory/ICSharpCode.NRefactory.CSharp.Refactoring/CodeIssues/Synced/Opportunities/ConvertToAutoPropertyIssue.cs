@@ -46,6 +46,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase<ConvertToAutoPropertyIssue>
 		{
+			readonly Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration>();
+
 			public GatherVisitor (BaseRefactoringContext ctx) : base (ctx)
 			{
 			}
@@ -55,10 +57,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				// SKIP
 			}
 
+			bool IsValidField(IField field)
+			{
+				if (field == null || field.Attributes.Count > 0)
+					return false;
+				foreach (var m in typeStack.Peek().Members.OfType<FieldDeclaration>()) {
+					foreach (var i in m.Variables) {
+						if (i.StartLocation == field.BodyRegion.Begin) {
+							if (!i.Initializer.IsNull)
+								return false;
+							break;
+						}
+					}
+				}
+				return true;
+			}
+
 			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 			{
 				var field = RemoveBackingStoreAction.GetBackingField(ctx, propertyDeclaration);
-				if (field == null)
+				if (!IsValidField(field))
 					return;
 				AddIssue(new CodeIssue(
 					propertyDeclaration.NameToken,
@@ -67,6 +85,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					ActionProvider = { typeof (RemoveBackingStoreAction) }
 				}
 				);
+			}
+
+			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
+			{
+				typeStack.Push(typeDeclaration); 
+				base.VisitTypeDeclaration(typeDeclaration);
+				typeStack.Pop();
 			}
 		}
 	}

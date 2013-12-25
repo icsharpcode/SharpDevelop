@@ -120,6 +120,59 @@ public class FooBar
 }
 ");
 		}
+
+		[Test]
+		public void Test ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (int a)
+	{ }
+	void TestMethod (int a, int b = 1)
+	{ }
+}";
+			Test<MethodOverloadWithOptionalParameterIssue> (input, 1);
+		}
+
+		[Test]
+		public void Test2 ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (int a, int b)
+	{ }
+	void TestMethod (int a, int b = 1, int c = 1)
+	{ }
+}";
+			Test<MethodOverloadWithOptionalParameterIssue> (input, 1);
+		}
+
+		[Test]
+		public void TestNoIssue ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (int a, int b = 1, int c = 1)
+	{ }
+}";
+			Test<MethodOverloadWithOptionalParameterIssue> (input, 0);
+		}
+
+		[Test]
+		public void TestNoIssue_Generics ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (object obj) { }
+	void TestMethod<T> (object obj, int arg = 0) { }
+}";
+			Test<MethodOverloadWithOptionalParameterIssue> (input, 0);
+		}
+
 	}
 }
 

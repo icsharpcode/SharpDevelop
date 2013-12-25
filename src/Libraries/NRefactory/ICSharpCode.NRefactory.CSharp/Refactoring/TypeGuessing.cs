@@ -146,6 +146,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new [] { resolver.Compilation.FindType (KnownTypeCode.Boolean) };
 			}
 
+			var mref = expr as MemberReferenceExpression;
+			if (mref != null) {
+				// case: guess enum when trying to access not existent enum member
+				var rr = resolver.Resolve(mref.Target);
+				if (!rr.IsError && rr.Type.Kind == TypeKind.Enum)
+					return new [] { rr.Type };
+			}
+
 			if (expr.Parent is ParenthesizedExpression || expr.Parent is NamedArgumentExpression) {
 				return GetValidTypes(resolver, expr.Parent);
 			}

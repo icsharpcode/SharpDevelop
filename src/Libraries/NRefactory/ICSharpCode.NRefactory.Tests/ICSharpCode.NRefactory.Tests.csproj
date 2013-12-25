@@ -131,7 +131,6 @@
     <Compile Include="CSharp\CodeIssues\ForControlVariableIsNeverModifiedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\LocalVariableHidesMemberIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\LocalVariableNotUsedIssueTests.cs" />
-    <Compile Include="CSharp\CodeIssues\MethodOverloadHidesOptionalParameterIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\NegativeRelationalExpressionIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterHidesMemberIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterOnlyAssignedIssueTests.cs" />

@@ -267,6 +267,28 @@ class Foo
 }
 ", provider => Assert.AreEqual(0, provider.Count, "provider needs to be empty"));
 		}
+
+		/// <summary>
+		/// Bug 16491 - Wrong completion on multiple parameter lambdas
+		/// </summary>
+		[Test]
+		public void TestBug16491 ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"
+using System;
+using System.IO;
+
+class Foo
+{
+	public static void Main (string[] args)
+	{
+		$new Action<int, int> ((x, y$
+	}
+}
+", provider => Assert.AreEqual(0, provider.Count, "provider needs to be empty"));
+
+		}
+
 	}
 }
 

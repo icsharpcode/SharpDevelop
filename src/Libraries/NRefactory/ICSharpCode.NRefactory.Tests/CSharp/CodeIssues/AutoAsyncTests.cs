@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿// 
 // AutoAsyncTests.cs
 //  
 // Author:
@@ -221,10 +221,10 @@ class TestClass
 }");
 		}
 
-		[Ignore("Broken on windows")]
 		[Test]
 		public void TestContinueWithUsingPrecedent() {
 			Test<AutoAsyncIssue>(@"
+using System;
 using System.Threading.Tasks;
 class TestClass
 {
@@ -242,6 +242,7 @@ class TestClass
 		return tcs.Task;
 	}
 }", @"
+using System;
 using System.Threading.Tasks;
 class TestClass
 {
@@ -255,6 +256,43 @@ class TestClass
 		int precedentResult = await precedent1;
 		Console.WriteLine (precedent1.IsFaulted);
 		return precedentResult;
+	}
+}");
+		}
+
+		[Test]
+		public void TestContinueWithUsingPrecedentTaskWithNoParameters() {
+			Test<AutoAsyncIssue>(@"
+using System.Threading.Tasks;
+class TestClass
+{
+	public Task Foo ()
+	{
+		return null;
+	}
+	public Task<int> $TestMethod ()
+	{
+		var tcs = new TaskCompletionSource<int> ();
+		Foo ().ContinueWith (precedent => {
+			Console.WriteLine (precedent.IsFaulted);
+			tcs.SetResult (0);
+		});
+		return tcs.Task;
+	}
+}", @"
+using System.Threading.Tasks;
+class TestClass
+{
+	public Task Foo ()
+	{
+		return null;
+	}
+	public async Task<int> TestMethod ()
+	{
+		Task precedent1 = Foo ();
+		await precedent1;
+		Console.WriteLine (precedent1.IsFaulted);
+		return 0;
 	}
 }");
 		}
@@ -576,6 +614,7 @@ class TestClass
 		[Test]
 		public void TestInvalidInLambda() {
 			TestWrongContext<AutoAsyncIssue>(@"
+using System;
 using System.Threading.Tasks;
 class TestClass
 {
@@ -588,10 +627,10 @@ class TestClass
 }");
 		}
 
-		[Ignore("Broken on windows")]
 		[Test]
 		public void TestInvalidContinue() {
 			Test<AutoAsyncIssue>(@"
+using System;
 using System.Threading.Tasks;
 class TestClass
 {
@@ -606,6 +645,7 @@ class TestClass
 		return tcs.Task;
 	}
 }", @"
+using System;
 using System.Threading.Tasks;
 class TestClass
 {
@@ -620,10 +660,10 @@ class TestClass
 }");
 		}
 
-		[Ignore("Broken on windows")]
 		[Test]
 		public void TestLongInvalidContinue() {
 			Test<AutoAsyncIssue>(@"
+using System;
 using System.Threading.Tasks;
 class TestClass
 {
@@ -640,6 +680,7 @@ class TestClass
 		return tcs.Task;
 	}
 }", @"
+using System;
 using System.Threading.Tasks;
 class TestClass
 {

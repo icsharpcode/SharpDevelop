@@ -241,6 +241,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 
 			IMember IMember.Specialize(TypeParameterSubstitution substitution)
 			{
+				if (TypeParameterSubstitution.Identity.Equals(substitution))
+					return this;
 				throw new NotSupportedException();
 			}
 

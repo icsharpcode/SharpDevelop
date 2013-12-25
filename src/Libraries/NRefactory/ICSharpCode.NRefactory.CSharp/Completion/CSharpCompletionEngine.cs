@@ -983,6 +983,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null)) {
 						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
 					}
+
 					if (identifierStart != null) {
 						if (identifierStart.Node is TypeParameterDeclaration) {
 							return null;
@@ -1577,7 +1578,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return wrapper.Result;
 				}
 			}
-
+			var pDecl = node as ParameterDeclaration;
+			if (pDecl != null && pDecl.Parent is LambdaExpression) {
+				return null;
+			}
 			/*						if (Unit != null && (node == null || node is TypeDeclaration)) {
 				var constructor = Unit.GetNodeAt<ConstructorDeclaration>(
 					location.Line,
@@ -3277,10 +3281,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null)
 				expr = baseUnit.GetNodeAt<Identifier>(location.Line, location.Column - 1);
 			// try insertStatement
-			if (expr == null && baseUnit.GetNodeAt<EmptyStatement>(
-				location.Line,
-				location.Column
-			) != null) {
+			if (expr == null && baseUnit.GetNodeAt<EmptyStatement>(location.Line, location.Column) != null) {
 				tmpUnit = baseUnit = ParseStub("a();", false);
 				expr = baseUnit.GetNodeAt<InvocationExpression>(
 					location.Line,
@@ -3382,9 +3383,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				} 
 			}
 
+			// try lambda 
 			if (expr == null) {
-				return null;
+				baseUnit = ParseStub(") => {}", false);
+				expr = baseUnit.GetNodeAt<ParameterDeclaration>(
+					location.Line,
+					location.Column
+				); 
 			}
+
+			if (expr == null)
+				return null;
 			return new ExpressionResult(expr, baseUnit);
 		}
 

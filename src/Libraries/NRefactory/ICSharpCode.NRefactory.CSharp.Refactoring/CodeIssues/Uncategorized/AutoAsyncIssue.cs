@@ -473,27 +473,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var awaitedExpression = new UnaryOperatorExpression(UnaryOperatorType.Await, target);
 					var replacements = new List<Statement>();
 					var lambdaExpression = originalInvocation.Arguments.First();
-					var continuationLambdaResolveResult = ctx.Resolve(lambdaExpression) as LambdaResolveResult;
+					var continuationLambdaResolveResult = (LambdaResolveResult) ctx.Resolve(lambdaExpression);
 
-					if (!continuationLambdaResolveResult.HasParameterList ||
-					    !continuationLambdaResolveResult.Parameters.First().Type.IsParameterized)
+					if (!continuationLambdaResolveResult.HasParameterList)
 					{
-						//Either precedent is of type Task or the result is not used
+						//Lambda has no parameter, so creating a variable for the argument is not needed
+						// (since you can't use an argument that doesn't exist).
 						replacements.Add(new ExpressionStatement(awaitedExpression));
 					} else {
-						//Precedent is of type Task<T>
-						var lambdaParameter = continuationLambdaResolveResult.Parameters.First();
-						var precedentTaskType = lambdaParameter.Type;
-						var precedentResultType = precedentTaskType.TypeArguments.First();
+						//Lambda has a parameter, which can either be a Task or a Task<T>.
 
-						//We might need to separate the task creation and awaiting
-						var taskIdentifiers = lambdaExpression.Descendants.OfType<IdentifierExpression>().Where(identifier => {
+						var lambdaParameter = continuationLambdaResolveResult.Parameters[0];
+						bool isTaskIdentifierUsed = lambdaExpression.Descendants.OfType<IdentifierExpression>().Any(identifier => {
 							if (identifier.Identifier != lambdaParameter.Name)
 								return false;
 							var identifierMre = identifier.Parent as MemberReferenceExpression;
 							return identifierMre == null || identifierMre.MemberName != "Result";
 						});
-						if (taskIdentifiers.Any()) {
+
+						var precedentTaskType = lambdaParameter.Type;
+
+						//We might need to separate the task creation and awaiting
+						if (isTaskIdentifierUsed) {
 							//Create new task variable
 							var taskExpression = awaitedExpression.Expression;
 							taskExpression.Detach();
@@ -503,7 +504,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							awaitedExpression.Expression = new IdentifierExpression(effectiveTaskName);
 						}
 
-						replacements.Add(new VariableDeclarationStatement(CreateShortType(originalInvocation, precedentResultType), resultName, awaitedExpression));
+						if (precedentTaskType.IsParameterized) {
+							//precedent is Task<T>
+							var precedentResultType = precedentTaskType.TypeArguments.First();
+							replacements.Add(new VariableDeclarationStatement(CreateShortType(originalInvocation, precedentResultType), resultName, awaitedExpression));
+						} else {
+							//precedent is Task
+							replacements.Add(awaitedExpression);
+						}
 					}
 
 					var parentStatement = continuation.GetParent<Statement>();

@@ -247,6 +247,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
+			bool ContainsOtherAssignments(AstNode parent)
+			{
+				int count = 0;
+				foreach (var child in parent.Children.OfType<VariableInitializer>()) {
+					count++;
+					if (count > 1)
+						return true;
+				}
+				return false;
+			}
+
 			void AddIssue(AstNode node)
 			{
 				var issueDescription = ctx.TranslateString("Assignment is redundant");
@@ -277,7 +288,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (containsInvocations && isDeclareStatement) {
 						grayOutNode = variableInitializer.AssignToken;
 					} else {
-						if (isDeclareStatement && !containsRefOrOut && !containsLaterAssignments) {
+						if (isDeclareStatement && !containsRefOrOut && !containsLaterAssignments && !ContainsOtherAssignments(variableInitializer.Parent)) {
 							grayOutNode = variableInitializer.Parent;
 						} else {
 							grayOutNode = variableInitializer.Initializer;
@@ -301,7 +312,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							script.Replace(node.Parent, expression);
 							return;
 						}
-						if (isDeclareStatement && !containsRefOrOut && !containsLaterAssignments) {
+						if (isDeclareStatement && !containsRefOrOut && !containsLaterAssignments&& !ContainsOtherAssignments(variableInitializer.Parent)) {
 							script.Remove(node.Parent);
 							return;
 						}

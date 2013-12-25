@@ -62,6 +62,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void VisitParameterizedEntityDeclaration(string memberType, EntityDeclaration entityDeclaration, AstNodeCollection<ParameterDeclaration> parameters)
 			{
+				// Ignore explicit interface implementations (those should have no optional parameters as there can't be any direct calls) 
+				if (!entityDeclaration.GetChildByRole(EntityDeclaration.PrivateImplementationTypeRole).IsNull)
+					return;
 				//Override is not strictly necessary because methodDeclaration
 				//might still implement an interface member
 				var memberResolveResult = ctx.Resolve(entityDeclaration) as MemberResolveResult;

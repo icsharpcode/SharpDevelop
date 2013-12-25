@@ -484,6 +484,44 @@ class C : B
 ");
 		}
 
+
+		[Test]
+		public void TestConstraints()
+		{
+			Test<ImplementAbstractMembersAction>(@"class NSObject
+{
+}
+
+abstract class A
+{
+	public abstract void Foo<T, U> () where T : NSObject, U where U : NSObject;
+}
+
+class B : $A
+{
+}
+", @"class NSObject
+{
+}
+
+abstract class A
+{
+	public abstract void Foo<T, U> () where T : NSObject, U where U : NSObject;
+}
+
+class B : A
+{
+	#region implemented abstract members of A
+	public override void Foo<T, U> ()
+	{
+		throw new System.NotImplementedException ();
+	}
+	#endregion
+}
+");
+		}
+
+
 	}
 }
 

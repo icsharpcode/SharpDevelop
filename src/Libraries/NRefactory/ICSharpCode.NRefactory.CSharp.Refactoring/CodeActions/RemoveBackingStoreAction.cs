@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 
 			var field = GetBackingField(context, property);
-			if (field == null) {
+			if (!IsValidField(field, property.GetParent<TypeDeclaration>())) {
 				yield break;
 			}
 			// create new auto property
@@ -53,11 +53,39 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			yield return new CodeAction(context.TranslateString("Convert to auto property"), script => {
 				script.Rename((IEntity)field, newProperty.Name);
-				script.Remove (context.RootNode.GetNodeAt<FieldDeclaration> (field.Region.Begin));
+				var oldField = context.RootNode.GetNodeAt<FieldDeclaration>(field.Region.Begin);
+				if (oldField.Variables.Count == 1) {
+					script.Remove(oldField);
+				} else {
+					var newField = (FieldDeclaration)oldField.Clone();
+					foreach (var init in newField.Variables) {
+						if (init.Name == field.Name) {
+							init.Remove();
+							break;
+						}
+					}
+					script.Replace(oldField, newField);
+				}
 				script.Replace (property, newProperty);
 			}, property.NameToken);
 		}
-		
+
+		static bool IsValidField(IField field, TypeDeclaration declaringType)
+		{
+			if (field == null || field.Attributes.Count > 0)
+				return false;
+			foreach (var m in declaringType.Members.OfType<FieldDeclaration>()) {
+				foreach (var i in m.Variables) {
+					if (i.StartLocation == field.BodyRegion.Begin) {
+						if (!i.Initializer.IsNull)
+							return false;
+						break;
+					}
+				}
+			}
+			return true;
+		}
+
 //		void ReplaceBackingFieldReferences (MDRefactoringContext context, IField backingStore, PropertyDeclaration property)
 //		{
 //			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
@@ -118,6 +146,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var setAssignment = propertyDeclaration.Setter.Body.Statements.First () as ExpressionStatement;
 			var assignment = setAssignment != null ? setAssignment.Expression as AssignmentExpression : null;
 			if (assignment == null || assignment.Operator != AssignmentOperatorType.Assign)
+				return null;
+			var idExpr = assignment.Right as IdentifierExpression;
+			if (idExpr == null || idExpr.Identifier != "value")
 				return null;
 			if (!IsPossibleExpression(assignment.Left))
 				return null;

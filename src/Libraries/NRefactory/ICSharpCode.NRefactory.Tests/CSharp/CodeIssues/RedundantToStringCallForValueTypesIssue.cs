@@ -172,6 +172,9 @@ class Foo
 	void FakeFormat(string format, string arg0, object arg1)
 	{
 	}
+	void FakeFormat(string format, params object[] args)
+	{
+	}
 }";
 
 			TestRefactoringContext context;
@@ -186,6 +189,9 @@ class Foo
 	}
 
 	void FakeFormat(string format, string arg0, object arg1)
+	{
+	}
+	void FakeFormat(string format, params object[] args)
 	{
 	}
 }");

@@ -57,8 +57,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				yield return member;
 			}
 			
-			// TODO: can we get rid of this upcast?
-			SpecializedMember specializedMember = member as SpecializedMember;
+			// Remove generic specialization
+			var substitution = member.Substitution;
 			member = member.MemberDefinition;
 			
 			IEnumerable<IType> allBaseTypes;
@@ -79,10 +79,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				foreach (IMember baseMember in baseMembers) {
 					if (SignatureComparer.Ordinal.Equals(member, baseMember)) {
-						if (specializedMember != null)
-							yield return baseMember.Specialize(specializedMember.Substitution);
-						else
-							yield return baseMember;
+						yield return baseMember.Specialize(substitution);
 					}
 				}
 			}

@@ -160,6 +160,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
+		public bool AlignElseInIfStatements {
+			get;
+			set;
+		}
+
+
+
 		public PropertyFormatting AutoPropertyFormatting { // tested
 			get;
 			set;

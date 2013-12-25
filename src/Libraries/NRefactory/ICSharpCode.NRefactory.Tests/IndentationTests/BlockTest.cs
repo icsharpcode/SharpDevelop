@@ -532,6 +532,7 @@ class Foo {
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
 			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignElseInIfStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -549,6 +550,7 @@ class Foo {
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
 			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignElseInIfStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -590,6 +592,7 @@ class Foo {
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
 			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignElseInIfStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -843,6 +846,38 @@ class Foo
 		}
 
 		[Test]
+		public void TestBrackets_AnonymousMethodOpenBracketAlignment()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{ 
+		Foo (delegate
+		{$
+", policy);
+			Assert.AreEqual("\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestBrackets_AnonymousMethodCloseingBracketAlignment()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{ 
+		Foo (delegate
+		{
+		}$
+", policy);
+			Assert.AreEqual("\t\t", indent.ThisLineIndent);
+		}
+
+		[Test]
 		public void TestBrackets_ArrayCreationAsFirstParameterWithoutAlignment()
 		{
 			var policy = FormattingOptionsFactory.CreateMono();
@@ -893,6 +928,71 @@ class Foo
 			$
 ", policy);
 			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
+
+
+		/// <summary>
+		/// Bug 16231 - smart indent broken in 4.2.0
+		/// </summary>
+		[Test]
+		public void TestBug16231()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{ 
+		switch (foo) {
+		}
+		if (true) {
+			$
+", policy);
+			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestComplexIfElseElsePlacement_AlignmentOff()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.AlignElseInIfStatements = false;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{ 
+		if (1 > 0)
+			a = 1;
+		else
+			if (2 < 10)
+				a = 2;
+			else$
+", policy);
+			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestComplexIfElseElsePlacement_AlignmentOn()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.AlignElseInIfStatements = true;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{ 
+		if (1 > 0)
+			a = 1;
+		else
+			if (2 < 10)
+				a = 2;
+		else$
+", policy);
+			Assert.AreEqual("\t\t", indent.ThisLineIndent);
 			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
 		}
 	}
