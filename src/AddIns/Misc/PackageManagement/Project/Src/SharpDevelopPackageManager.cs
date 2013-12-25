@@ -72,7 +72,12 @@ namespace ICSharpCode.PackageManagement
 		
 		void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
-			ProjectManager.AddPackageReference(package.Id, package.Version, ignoreDependencies, allowPrereleaseVersions);			
+			var monitor = new RemovedPackageReferenceMonitor(ProjectManager);
+			using (monitor) {
+				ProjectManager.AddPackageReference(package.Id, package.Version, ignoreDependencies, allowPrereleaseVersions);
+			}
+			
+			monitor.PackagesRemoved.ForEach(packageRemoved => UninstallPackageFromSolutionRepository(packageRemoved));
 		}
 		
 		public override void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
@@ -91,6 +96,13 @@ namespace ICSharpCode.PackageManagement
 			ProjectManager.RemovePackageReference(package.Id, forceRemove, removeDependencies);
 			if (!IsPackageReferencedByOtherProjects(package)) {
 				base.UninstallPackage(package, forceRemove, removeDependencies);
+			}
+		}
+		
+		public void UninstallPackageFromSolutionRepository(IPackage package)
+		{
+			if (!IsPackageReferencedByOtherProjects(package)) {
+				ExecuteUninstall(package);
 			}
 		}
 		
@@ -128,7 +140,12 @@ namespace ICSharpCode.PackageManagement
 		
 		void UpdatePackageReference(IPackage package, bool updateDependencies, bool allowPrereleaseVersions)
 		{
-			ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies, allowPrereleaseVersions);
+			var monitor = new RemovedPackageReferenceMonitor(ProjectManager);
+			using (monitor) {
+				ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies, allowPrereleaseVersions);
+			}
+			
+			monitor.PackagesRemoved.ForEach(packageRemoved => UninstallPackageFromSolutionRepository(packageRemoved));
 		}
 		
 		public void UpdatePackages(UpdatePackagesAction updateAction)

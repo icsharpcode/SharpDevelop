@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Workbench;
 using NUnit.Framework;
@@ -21,7 +22,7 @@ namespace PackageManagement.Tests.EnvDTE
 		SD.FileProjectItem msbuildFileProjectItem;
 		TestableDTEProject project;
 		TestableProject msbuildProject;
-		Properties properties;
+		ICSharpCode.PackageManagement.EnvDTE.Properties properties;
 		
 		void CreateProjectItemProperties()
 		{
@@ -29,7 +30,7 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject = project.TestableProject;
 			msbuildFileProjectItem = new SD.FileProjectItem(msbuildProject, SD.ItemType.Compile);
 			projectItem = new ProjectItem(project, msbuildFileProjectItem);
-			properties = (Properties)projectItem.Properties;
+			properties = (ICSharpCode.PackageManagement.EnvDTE.Properties)projectItem.Properties;
 			
 			IWorkbench workbench = MockRepository.GenerateStub<IWorkbench>();
 			ICSharpCode.SharpDevelop.SD.Services.AddService(typeof(IWorkbench), workbench);
@@ -144,7 +145,7 @@ namespace PackageManagement.Tests.EnvDTE
 			string path = properties.Item("FullPath").Value as string;
 			
 			Assert.AreEqual(@"d:\projects\test.cs", path);
-		}	
+		}
 		
 		[Test]
 		public void GetEnumerator_FindFullPathPropertyInAllProperties_ReturnsPropertyWithFullPathName()
@@ -152,6 +153,25 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItemProperties();
 			
 			AssertContainsProperty("FullPath", properties);
+		}
+		
+		[Test]
+		public void Value_GetLocalPath_ReturnsProjectItemFullFileName()
+		{
+			CreateProjectItemProperties();
+			msbuildFileProjectItem.FileName = FileName.Create(@"d:\projects\test.cs");
+			
+			string path = properties.Item("LocalPath").Value as string;
+			
+			Assert.AreEqual(@"d:\projects\test.cs", path);
+		}
+		
+		[Test]
+		public void GetEnumerator_FindLocalPathPropertyInAllProperties_ReturnsPropertyWithFullPathName()
+		{
+			CreateProjectItemProperties();
+			
+			AssertContainsProperty("LocalPath", properties);
 		}
 	}
 }

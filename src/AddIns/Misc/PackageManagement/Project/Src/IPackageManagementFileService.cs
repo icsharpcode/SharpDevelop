@@ -19,6 +19,7 @@ namespace ICSharpCode.PackageManagement
 		bool FileExists(string fileName);
 		string[] GetFiles(string path);
 		string[] GetDirectories(string path);
+		void SaveFile(IViewContent view);
 		
 		void ParseFile(string fileName);
 		ICompilation GetCompilationUnit(string fileName);

@@ -48,6 +48,17 @@ namespace ICSharpCode.PackageManagement
 			InvokeIfRequired(() => FileService.CopyFile(oldFileName, newFileName, isDirectory: false, overwrite: false));
 		}
 		
+		public void SaveFile(IViewContent view)
+		{
+			if (SD.MainThread.InvokeRequired) {
+				SD.MainThread.InvokeIfRequired(() => SaveFile(view));
+			} else {
+				if (view.IsDirty) {
+					view.Files.ForEach(ICSharpCode.SharpDevelop.Commands.SaveFile.Save);
+				}
+			}
+		}
+		
 		public bool FileExists(string fileName)
 		{
 			return InvokeIfRequired(() => File.Exists(fileName));

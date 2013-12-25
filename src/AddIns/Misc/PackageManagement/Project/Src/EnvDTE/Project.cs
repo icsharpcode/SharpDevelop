@@ -222,6 +222,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					names.Add(propertyElement.Name);
 				}
 				names.Add("OutputFileName");
+				names.Add("LocalPath");
 			}
 			return names;
 		}
@@ -323,6 +324,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal bool IsFileFileInsideProjectFolder(string filePath)
 		{
 			return FileUtility.IsBaseDirectory(MSBuildProject.Directory, filePath);
+		}
+		
+		internal void SaveFile(IViewContent view)
+		{
+			fileService.SaveFile(view);
 		}
 	}
 }
