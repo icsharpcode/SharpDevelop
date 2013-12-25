@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop
 		ISolution CreateSolution()
 		{
 			IFileService fileService = MockRepository.GenerateStub<IFileService>();
-			IProjectChangeWatcher changeWatcher = MockRepository.GenerateStrictMock<IProjectChangeWatcher>();
+			IProjectChangeWatcher changeWatcher = MockRepository.GenerateStub<IProjectChangeWatcher>();
 			return new Solution(FileName.Create(@"d:\projects\MyProject\MySolution.sln"), changeWatcher, fileService);
 		}
 		
