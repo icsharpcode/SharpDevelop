@@ -363,7 +363,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 						return;
 					var customizationsForCurrentLanguage = customizationList.Where(c => c.Language == null || c.Language == xshd.Name);
 					CurrentLineHighlightRenderer.ApplyCustomizationsToRendering(currentLineHighlighter, customizationsForCurrentLanguage);
-					currentLineHighlighter.SetHighlight(0);
+					currentLineHighlighter.SetHighlight(1);
 				})
 			{
 				Foreground = CurrentLineHighlightRenderer.DefaultBorder,
