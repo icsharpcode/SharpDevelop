@@ -145,19 +145,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			public IAsyncResult BeginInvoke(Delegate method, object[] args)
 			{
 				ISynchronizeInvoke si = targetSynchronizeInvoke;
-				if (si != null)
-					return si.BeginInvoke(method, args);
-				else {
-					// When target is not available, invoke method on current thread, but use a lock
-					// to ensure we don't run multiple methods concurrently.
-					lock (this) {
-						method.DynamicInvoke(args);
-						return null;
-					}
-					// yes this is morally questionable - maybe it would be better to enqueue all invocations and run them later?
-					// ProgressCollector would have to avoid enqueuing stuff multiple times for all kinds of updates
-					// (currently it does this only with updates to the Progress property)
+				if (si != null) {
+					var winForm = si as System.Windows.Forms.Form;
+					if ((winForm == null) || !winForm.IsDisposed)
+						return si.BeginInvoke(method, args);
 				}
+				
+				// When target is not available, invoke method on current thread, but use a lock
+				// to ensure we don't run multiple methods concurrently.
+				lock (this) {
+					method.DynamicInvoke(args);
+					return null;
+				}
+				// yes this is morally questionable - maybe it would be better to enqueue all invocations and run them later?
+				// ProgressCollector would have to avoid enqueuing stuff multiple times for all kinds of updates
+				// (currently it does this only with updates to the Progress property)
 			}
 			
 			public void SetTarget(ISynchronizeInvoke targetSynchronizeInvoke)
