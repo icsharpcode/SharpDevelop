@@ -88,6 +88,7 @@
     <Compile Include="Src\ChangeMarkerMargin\IChangeWatcher.cs" />
     <Compile Include="Src\ChangeMarkerMargin\LineChangeInfo.cs" />
     <Compile Include="Src\ContextActions\ClipboardRing.cs" />
+    <Compile Include="Src\ContextActions\ClipboardRingAction.cs" />
     <Compile Include="Src\ContextActions\ContextActionOptionPanelDoozer.cs" />
     <Compile Include="Src\ContextActions\ContextActionOptions.xaml.cs">
       <DependentUpon>ContextActionOptions.xaml</DependentUpon>

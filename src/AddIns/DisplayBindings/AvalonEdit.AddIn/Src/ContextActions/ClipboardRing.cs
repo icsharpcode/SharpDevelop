@@ -52,42 +52,4 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			return list;
 		}
 	}
-	
-	public class ClipboardRingAction : IContextAction 
-	{
-		string Text;
-		
-		public string DisplayName { get; private set; }
-		
-		public IEntity Entity { get; private set; }
-		
-		public ClipboardRingAction(string text) 
-		{
-			string entry = text.Trim();
-			if(entry.Length > 50)
-				entry = entry.Substring(0,47) + "...";
-			
-			this.DisplayName = entry;			
-			this.Text = text;
-		}
-		
-		public IContextActionProvider Provider 
-		{
-			get { return null; }
-		}
-		
-		public string GetDisplayName(EditorRefactoringContext context)
-		{
-			return DisplayName;
-		}
-		
-		public void Execute(EditorRefactoringContext context)
-		{
-			/*
-			if(context == null)
-				MessageBox.Show("null context :" + Text);
-			else
-				MessageBox.Show(context.CaretLocation + " : " + Text);*/
-		}
-	}
 }
