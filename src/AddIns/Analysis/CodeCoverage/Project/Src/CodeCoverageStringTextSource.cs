@@ -22,44 +22,44 @@ namespace ICSharpCode.CodeCoverage
         private readonly lineInfo[] lines;
         public CodeCoverageStringTextSource(string source)
         {
-            
-            this.textSource = source.Clone() as string; // disconnect from source
+            // protect readonly field from source mutation(s)
+            this.textSource = string.Copy(source);
 
+            lineInfo line;
             List<lineInfo> lineInfoList = new List<lineInfo>();
             int offset = 0;
             int counter = 0;
             bool nl = false;
             bool cr = false;
             bool lf = false;
-            lineInfo sl;
 
-            foreach ( short ch in textSource ) {
+            foreach ( ushort ch in textSource ) {
                 switch (ch) {
                     case 13:
-                        if (cr||lf) {
-                            nl = true;
+                        if (lf || cr) {
+                            nl = true; // cr after [cr]lf
                         } else {
-                            cr = true;
+                            cr = true; // cr found
                         }
                         break;
                     case 10:
                         if (lf) {
-                            nl = true;
+                            nl = true; // lf after lf
                         } else {
-                            lf = true;
+                            lf = true; // lf found
                         }
                         break;
                     default:
                         if (cr||lf) {
-                            nl = true;
+                            nl = true; // any noncrlf char after cr|lf
                         }
                         break;
                 }
-                if (nl) {
-                    sl = new lineInfo();
-                    sl.Offset = offset;
-                    sl.Length = counter - offset;
-                    lineInfoList.Add(sl);
+                if (nl) { // nl detected - add line
+                    line = new lineInfo();
+                    line.Offset = offset;
+                    line.Length = counter - offset;
+                    lineInfoList.Add(line);
                     offset = counter;
                     cr = false;
                     lf = false;
@@ -67,10 +67,14 @@ namespace ICSharpCode.CodeCoverage
                 }
                 ++counter;
             }
-            sl = new lineInfo();
-            sl.Offset = offset;
-            sl.Length = counter - offset;
-            lineInfoList.Add(sl);
+            
+            // Add last line
+            line = new lineInfo();
+            line.Offset = offset;
+            line.Length = counter - offset;
+            lineInfoList.Add(line);
+
+            // Store to readonly field
             lines = lineInfoList.ToArray();
         }
 
@@ -156,6 +160,12 @@ namespace ICSharpCode.CodeCoverage
                 Debug.Fail("Line > EndLine");
             }
             return text.ToString();
+        }
+
+        public int LinesCount {
+            get {
+                return lines.Length;
+            }
         }
 
         /// <summary>Return SequencePoint enumerated line

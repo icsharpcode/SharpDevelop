@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace ICSharpCode.CodeCoverage
@@ -75,6 +76,7 @@ namespace ICSharpCode.CodeCoverage
 		public int Length { get; set; }
 		public int Offset { get; set; }
 		public bool BranchCoverage { get; set; }
+		public List<CodeCoverageBranchPoint> Branches { get; set; }
 		
 		public override bool Equals(object obj)
 		{

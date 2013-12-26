@@ -11,8 +11,9 @@ namespace ICSharpCode.CodeCoverage
 	public class CodeCoverageBranchPoint
 	{
 		public int VisitCount { get; set; }
-		public int Offset { get; set; }
 		public int Path { get; set; }
+		public int Offset { get; set; }
+		public int OffsetEnd { get; set; }
 	}
 
 }

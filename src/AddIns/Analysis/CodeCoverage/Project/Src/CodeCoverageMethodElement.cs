@@ -17,16 +17,6 @@ namespace ICSharpCode.CodeCoverage
 		XElement element;
 		CodeCoverageResults parent;
 
-		private class branchOffset {
-			public int Offset;
-			public int Visit;
-			public int Count;
-			public CodeCoverageSequencePoint SeqPoint;
-			public branchOffset( int offset ) {
-				this.Offset = offset;
-			}
-		}
-
 		public CodeCoverageMethodElement(XElement element, CodeCoverageResults parent)
 		{
 			this.parent = parent;
@@ -156,6 +146,7 @@ namespace ICSharpCode.CodeCoverage
 				bp.VisitCount = (int)GetDecimalAttributeValue(xBPoint.Attribute("vc"));
 				bp.Offset = (int)GetDecimalAttributeValue(xBPoint.Attribute("offset"));
 				bp.Path = (int)GetDecimalAttributeValue(xBPoint.Attribute("path"));
+				bp.OffsetEnd = (int)GetDecimalAttributeValue(xBPoint.Attribute("offsetend"));
 				bps.Add(bp);
 			}
 			return bps;
@@ -176,19 +167,24 @@ namespace ICSharpCode.CodeCoverage
 
 			// Find method-body first SequencePoint "{"
 			// and then first next sequencePoint (and offset of that instruction in body)
-			// This will be used to skip CCRewrite(n) BranchPoint's (Requires)
+			// This is used to skip CCRewrite(n) BranchPoint's (Requires)
+			// and '{' branches at static methods
+			bool startSPFound = false;
 			CodeCoverageSequencePoint startSeqPoint = null;
 			foreach (CodeCoverageSequencePoint sp in this.SequencePoints) {
-				if ( sp.Content == "{") {
+			    if (startSPFound) {
 					startSeqPoint = sp;
 					break;
+				}
+				if ( sp.Content == "{") {
+			        startSPFound = true;
 				}
 			}
 			Debug.Assert (!Object.ReferenceEquals(null, startSeqPoint));
 			if (Object.ReferenceEquals(null, startSeqPoint)) { return null; }
 
 			// Find method-body last SequencePoint "}" and offset 
-			// This will be used to skip CCRewrite(n) BranchPoint's (Ensures)
+			// This is used to skip CCRewrite(n) BranchPoint's (Ensures)
 			CodeCoverageSequencePoint finalSeqPoint = null;
 			foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(this.SequencePoints)) {
 				if ( sp.Content == "}") {
@@ -199,74 +195,94 @@ namespace ICSharpCode.CodeCoverage
 			Debug.Assert ( !Object.ReferenceEquals( null, finalSeqPoint) );
 			if (Object.ReferenceEquals(null, finalSeqPoint)) { return null; }
 			
+			// Connect Sequence & Branches
 			IEnumerator<CodeCoverageSequencePoint> SPEnumerator = this.SequencePoints.GetEnumerator();
-			CodeCoverageSequencePoint branchSeqPoint = startSeqPoint;
-			int nextOffset = branchSeqPoint.Offset;
-
-			// Merge BranchPoints on same offset 
-			// Exclude BranchPoints outside of method boundary {...} => exclude CCRewrite(n) Contracts
-			// Exclude BranchPoints from excludeOffsetList
-			Dictionary<int, branchOffset> branchDictionary = new Dictionary<int, branchOffset>();
-			foreach (CodeCoverageBranchPoint bp in this.BranchPoints) {
-
-				// exclude CCRewrite(n) contracts
+			CodeCoverageSequencePoint currSeqPoint = startSeqPoint;
+			int nextSeqPointOffset = startSeqPoint.Offset;
+			
+			foreach (var bp in this.BranchPoints) {
+			    
+			    // exclude CCRewrite(n) contracts
 				if (bp.Offset < startSeqPoint.Offset)
 					continue;
 				if (bp.Offset > finalSeqPoint.Offset)
 					break;
 
-				// merge BranchPoint's with same offset
-				if ( !branchDictionary.ContainsKey( bp.Offset ) ) {
-					// Insert BranchPoint coverage at offset
-					branchOffset insert = new branchOffset(bp.Offset);
-					insert.Visit = bp.VisitCount!=0?1:0;
-					insert.Count = 1;
-
-					// attach Sequence to Branch-Offset
-					while ( nextOffset < insert.Offset ) {
-						   branchSeqPoint = SPEnumerator.Current;
-						if ( SPEnumerator.MoveNext() ) {
-							nextOffset = SPEnumerator.Current.Offset;
-						} else {
-							nextOffset = int.MaxValue;
-						}
+				// Sync with SequencePoint
+				while ( nextSeqPointOffset < bp.Offset ) {
+					currSeqPoint = SPEnumerator.Current;
+					if ( SPEnumerator.MoveNext() ) {
+						nextSeqPointOffset = SPEnumerator.Current.Offset;
+					} else {
+						nextSeqPointOffset = int.MaxValue;
 					}
-					insert.SeqPoint = branchSeqPoint;
-					branchDictionary[insert.Offset] = insert;
-
-				} else {
-					// Update BranchPoint coverage at offset
-					branchOffset update = branchDictionary[bp.Offset];
-					update.Visit += bp.VisitCount!=0?1:0;
-					update.Count += 1;
 				}
+    			if (currSeqPoint.Branches == null) {
+    			    currSeqPoint.Branches = new List<CodeCoverageBranchPoint>();
+    			}
+				// Add Branch to Branches
+				currSeqPoint.Branches.Add(bp);
 			}
-			
+
+//			for (int i = this.SequencePoints.Count-1; i >= 0; i--) {
+//			    if (this.SequencePoints[i].Content.StartsWith("Assert")) {
+//			        this.SequencePoints.RemoveAt(i);
+//			    }
+//			}
+
+			// Merge sp.Branches on exit-offset
 			// Calculate Method Branch coverage
 			int totalBranchVisit = 0;
 			int totalBranchCount = 0;
-			foreach ( branchOffset uniqueBranch in branchDictionary.Values ) {
+			int pointBranchVisit = 0;
+			int pointBranchCount = 0;
+			Dictionary<int, CodeCoverageBranchPoint> bpExits = new Dictionary<int, CodeCoverageBranchPoint>();
+			foreach (var sp in this.SequencePoints) {
 
-				// Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
-				// one do not want or cannot cover by test-case because is handled earlier at same method.
-				// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
-				if (uniqueBranch.SeqPoint.Content != "in") {
+			    // SequencePoint covered & has branches?
+			    if (sp.VisitCount != 0 && sp.Branches != null) {
 
-					// Branch coverage will display only if sequence coverage is 100%, so ...
-					// Ignore branch-offset if is not visited at all because ... :
-					// if SequencePoint is covered and branch-offset within that SequencePoint not visited (uncovered), 
-					// then that branch-offset does not really exists in SOURCE code we try to cover
-					if ( uniqueBranch.Visit != 0 ) {
-						totalBranchVisit += uniqueBranch.Visit;
-						totalBranchCount += uniqueBranch.Count;
-	
-						// not full branch coverage?
-						if ( uniqueBranch.Visit != uniqueBranch.Count ) {
-							// update attached SequencePoint.BranchCoverage to false (== partial branch coverage)
-							uniqueBranch.SeqPoint.BranchCoverage = false;
-						}
-					}
-				}
+        			// Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
+        			// one do not want or cannot cover by test-case because is handled earlier at same method.
+        			// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
+        			// exclude Contract class (EnsuresOnThrow)
+        			// exclude NUnit Assert class
+			        if (sp.Content == "in" ||
+			            sp.Content.StartsWith("Assert.") ||
+			            sp.Content.StartsWith("Assert ") ||
+			            sp.Content.StartsWith("Contract.") ||
+			            sp.Content.StartsWith("Contract ")
+			           ) {
+			            sp.Branches = null;
+			            continue; // skip
+			        }
+
+				    // Merge sp.Branches on OffsetEnd using bpExits key
+			        bpExits.Clear();
+    			    foreach (var bp in sp.Branches) {
+			            if (!bpExits.ContainsKey(bp.OffsetEnd)) {
+			                bpExits[bp.OffsetEnd] = bp; // insert branch
+			            } else {
+			                bpExits[bp.OffsetEnd].VisitCount += bp.VisitCount; // update branch
+			            }
+    			    }
+
+				    // Compute branch coverage
+				    pointBranchVisit = 0;
+			        pointBranchCount = 0;
+			        foreach (var bp in bpExits.Values) {
+			            pointBranchVisit += bp.VisitCount == 0? 0 : 1 ;
+						pointBranchCount += 1;
+			        }
+			        // Not full coverage?
+		            if (pointBranchVisit != pointBranchCount) {
+   			            sp.BranchCoverage = false; // part-covered
+		            }
+					totalBranchVisit += pointBranchVisit;
+					totalBranchCount += pointBranchCount;
+			    }
+			    if (sp.Branches != null)
+				    sp.Branches = null; // release memory
 			}
 
 			return (totalBranchCount!=0) ? new Tuple<int,int>(totalBranchVisit,totalBranchCount) : null;
