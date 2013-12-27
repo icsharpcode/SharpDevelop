@@ -329,6 +329,9 @@ Si usted no está de acuerdo con los términos de licencia haga clic en "Rechaza
   <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
     <value>Agregar</value>
   </data>
+  <data name="AddInManager2.OptionPanel.AutoCheckForUpdates" xml:space="preserve">
+    <value>Buscar actualizaciones automáticamente</value>
+  </data>
   <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
     <value>Abajo</value>
   </data>
@@ -346,6 +349,9 @@ Si usted no está de acuerdo con los términos de licencia haga clic en "Rechaza
   </data>
   <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
     <value>Complementos</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.General" xml:space="preserve">
+    <value>General</value>
   </data>
   <data name="AddInManager2.OptionPanel.Tree.Repositories" xml:space="preserve">
     <value>Repositorios</value>
@@ -415,10 +421,13 @@ Dejarán de funcionar después de desinstalar este complemento! ¿Esta seguro de
     <value>Biblioteca de Ayuda</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
-    <value>Modo de Ayuda</value>
+    <value>Establecer Preferencias de Ayuda</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
     <value>No se pudo ejecutar el Manejador de Bibliotecas de Ayuda, debido a que no se hay instalado/seleccionado un catalogo. Por favor verifique las opciones de ayuda. (vea Herramientas &gt; Opciones &gt; Herramientas &gt; Microsoft Help View).</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotAvailableDownloadWinSDK" xml:space="preserve">
+    <value>No se encontró la Biblioteca de Ayuda Dinámica. Para poder utilizar la característica de ayuda de SharpDevelop por favor descargue e instale Windows SDK 7.1 de Microsoft.</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>No se encontró Help Library Manager. Por favor verifique que halla sido instalado correctamente.</value>
@@ -448,7 +457,7 @@ Dejarán de funcionar después de desinstalar este complemento! ¿Esta seguro de
     <value>Mostrar Ayuda</value>
   </data>
   <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
-    <value>Usar ayuda externa</value>
+    <value>Usar visor de ayuda externa</value>
   </data>
   <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
     <value>Quiero usar ayuda local</value>
@@ -5010,6 +5019,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC" xml:space="preserve">
     <value>Abrir ensamblado desde el GAC...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenInClassBrowser" xml:space="preserve">
+    <value>Abrir en el Explorador de Clases</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.SearchButton.ToolTip" xml:space="preserve">
     <value>Buscar en la Vista de Clases</value>

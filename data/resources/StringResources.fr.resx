@@ -329,6 +329,9 @@ Si vous ne le souhaitez pas, veuillez cliquer "Je décline".</value>
   <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
     <value>Ajouter</value>
   </data>
+  <data name="AddInManager2.OptionPanel.AutoCheckForUpdates" xml:space="preserve">
+    <value>Vérifier automatiquement les mises à jour</value>
+  </data>
   <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
     <value>Descendre</value>
   </data>
@@ -346,6 +349,9 @@ Si vous ne le souhaitez pas, veuillez cliquer "Je décline".</value>
   </data>
   <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
     <value>Add-Ins</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.General" xml:space="preserve">
+    <value>Général</value>
   </data>
   <data name="AddInManager2.OptionPanel.Tree.Repositories" xml:space="preserve">
     <value>Dépots</value>
@@ -415,10 +421,13 @@ Ils ne fonctionneront plus si vous désinstallez cet Add-In! Souhaitez-vous cont
     <value>Bibliothèque d'Aide</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
-    <value>Mode d'Aide</value>
+    <value>Configurer les préférences de l'Aide</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
     <value>Impossible de démarrer la visionneuse d'Aide Microsoft, aucun catalogue n'est installé/sélectionné. Verifiez votre configuration (Outils &gt; Options &gt; Outils &gt; Visionneuse de l'aide Microsoft</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotAvailableDownloadWinSDK" xml:space="preserve">
+    <value>Le gestionnaire de bibliothèque d'Aide n'a pas été trouvé. Pour utiliser les fonctionnalités d'aide de SharpDevelop, téléchargez et installez le SDK 7.1 de Microsoft.</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>Gestionnaire de la bibliothèque d'aide introuvable. Vérifiez s'il est correctement installé.</value>
@@ -448,7 +457,7 @@ Ils ne fonctionneront plus si vous désinstallez cet Add-In! Souhaitez-vous cont
     <value>Afficher l'Aide</value>
   </data>
   <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
-    <value>Utiliser l'aide externe</value>
+    <value>Utiliser un gestionnaire d'Aide externe</value>
   </data>
   <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
     <value>Je souhaite utiliser l'aide locale</value>
@@ -5005,6 +5014,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC" xml:space="preserve">
     <value>Ouvrir l'assembly depuis le GAC...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenInClassBrowser" xml:space="preserve">
+    <value>Ouvrir dans l'explorateur de classes</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.SearchButton.ToolTip" xml:space="preserve">
     <value>Rechercher une classe</value>
