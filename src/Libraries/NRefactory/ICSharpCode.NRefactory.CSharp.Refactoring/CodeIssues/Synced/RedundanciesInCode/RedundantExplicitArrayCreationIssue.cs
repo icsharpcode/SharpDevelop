@@ -32,8 +32,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[IssueDescription(
-		"Redundant explicit size in array creation",
-		Description = "Redundant explicit size in array creation",
+		"Redundant explicit type in array creation",
+		Description = "Redundant explicit type in array creation",
 		Category = IssueCategories.RedundanciesInCode,
 		Severity = Severity.Warning,
 		AnalysisDisableKeyword = "RedundantExplicitArrayCreation")]

@@ -426,7 +426,41 @@ false) {
 }");
 		}
 
-
+		/// <summary>
+		/// Bug 15218 - Saving causing a crash
+		/// </summary>
+		[Test]
+		public void TestBug15218()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.SimplePropertyFormatting = PropertyFormatting.ForceOneLine;
+			Test(policy,
+				@"class Foo
+{
+	void Bar ()
+	{
+		foo += delegate(object s, EventArgs a)
+		{
+			var myDelegate = delegate()
+			{
+					
+			};
+		};  
+	}
+}
+", @"class Foo
+{
+	void Bar ()
+	{
+		foo += delegate(object s, EventArgs a) {
+			var myDelegate = delegate() {
+					
+			};
+		};  
+	}
+}
+");
+		}
 	}
 }
 

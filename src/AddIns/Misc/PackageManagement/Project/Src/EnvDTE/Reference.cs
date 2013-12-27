@@ -40,5 +40,32 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return null;
 			}
 		}
+		
+		public string Identity {
+			get { return referenceProjectItem.ShortName; }
+		}
+		
+		public string PublicKeyToken {
+			get {
+				if (referenceProjectItem.PublicKeyToken != "null") {
+					return referenceProjectItem.PublicKeyToken;
+				}
+				return String.Empty;
+			}
+		}
+		
+		public bool StrongName {
+			get { return HasVersion() && HasPublicKeyToken(); }
+		}
+		
+		bool HasVersion()
+		{
+			return referenceProjectItem.Version != null;
+		}
+		
+		bool HasPublicKeyToken()
+		{
+			return !String.IsNullOrEmpty(PublicKeyToken);
+		}
 	}
 }

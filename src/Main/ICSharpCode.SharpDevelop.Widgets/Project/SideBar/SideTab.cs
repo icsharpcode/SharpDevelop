@@ -545,7 +545,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			
 			public void CopyTo(SideTabItem[] array, int arrayIndex)
 			{
-				throw new NotImplementedException();
+				list.CopyTo(array, arrayIndex);
 			}
 		}
 	}

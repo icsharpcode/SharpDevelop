@@ -373,6 +373,62 @@ class Program
 }");
 		}
 
+		/// <summary>
+		/// Bug 15868 - Wrong context for Anonymous method can be simplified to method group
+		/// </summary>
+		[Test]
+		public void TestBug15868 ()
+		{
+			TestWrongContext<ConvertClosureToMethodGroupIssue>(@"
+using System;
+
+delegate bool FooBar ();
+
+public class MyClass
+{
+	public static void Main ()
+	{
+		FooBar bar = () => true;
+		Func<bool> b = () => bar ();
+		Console.WriteLine (b());
+	}
+}
+");
+		}
+		[Test]
+		public void TestBug15868Case2 ()
+		{
+			Test<ConvertClosureToMethodGroupIssue>(@"
+using System;
+
+delegate bool FooBar ();
+
+public class MyClass
+{
+	public static void Main ()
+	{
+		FooBar bar = () => true;
+		FooBar b = () => bar ();
+		Console.WriteLine (b());
+	}
+}
+", @"
+using System;
+
+delegate bool FooBar ();
+
+public class MyClass
+{
+	public static void Main ()
+	{
+		FooBar bar = () => true;
+		FooBar b = bar;
+		Console.WriteLine (b());
+	}
+}
+");
+		}
+
 	}
 }
 

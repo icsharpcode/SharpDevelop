@@ -55,6 +55,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			foreach (GlobalAndInternalProject msbuildProjects in projects) {
 				UpdateImports(msbuildProjects);
+				UpdateProperties(msbuildProjects);
 				GetGlobalProjectCollection().UnloadProject(msbuildProjects.GlobalMSBuildProject);
 			}
 		}
@@ -89,6 +90,29 @@ namespace ICSharpCode.PackageManagement.Scripting
 			logger.Log(
 				MessageLevel.Info,
 				"Project import merge result for project '{0}':\r\n{1}",
+				project.Name,
+				result);
+		}
+		
+		void UpdateProperties(GlobalAndInternalProject msbuildProjects)
+		{
+			var propertiesMerger = new MSBuildProjectPropertiesMerger(
+				msbuildProjects.GlobalMSBuildProject,
+				msbuildProjects.SharpDevelopMSBuildProject);
+			
+			propertiesMerger.Merge();
+			
+			if (propertiesMerger.Result.AnyPropertiesChanged())
+			{
+				LogProjectPropertiesMergeResult(msbuildProjects.SharpDevelopMSBuildProject, propertiesMerger.Result);
+			}
+		}
+		
+		void LogProjectPropertiesMergeResult(MSBuildBasedProject project, MSBuildProjectPropertiesMergeResult result)
+		{
+			logger.Log(
+				MessageLevel.Info,
+				"Project properties merge result for project '{0}':\r\n{1}",
 				project.Name,
 				result);
 		}

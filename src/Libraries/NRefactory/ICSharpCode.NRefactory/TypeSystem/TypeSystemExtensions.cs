@@ -507,6 +507,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region GetSubTypeDefinitions
 		public static IEnumerable<ITypeDefinition> GetSubTypeDefinitions (this IType baseType)
 		{
+			if (baseType == null)
+				throw new ArgumentNullException ("baseType");
 			var def = baseType.GetDefinition ();
 			if (def == null)
 				return Enumerable.Empty<ITypeDefinition> ();
@@ -518,6 +520,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static IEnumerable<ITypeDefinition> GetSubTypeDefinitions (this ITypeDefinition baseType)
 		{
+			if (baseType == null)
+				throw new ArgumentNullException ("baseType");
 			foreach (var contextType in baseType.Compilation.GetAllTypeDefinitions ()) {
 				if (contextType.IsDerivedFrom (baseType))
 					yield return contextType;

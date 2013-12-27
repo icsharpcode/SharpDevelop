@@ -76,8 +76,73 @@ class Program
     }
 }
 ");
-				}
-
 		}
+
+		/// <summary>
+		/// Bug 16663 - Enum constants with Flags are not recognized
+		/// </summary>
+		[Test]
+		public void TestBug16663()
+		{
+			Test<CreateEnumValue>(@"
+public enum MyEnum
+{
+}
+
+class Test  
+{
+	static void Main ()
+	{
+		var e = MyEnum.$NotDefinedYetValue;
+	}
+}
+",@"
+public enum MyEnum
+{
+	NotDefinedYetValue
+}
+
+class Test  
+{
+	static void Main ()
+	{
+		var e = MyEnum.NotDefinedYetValue;
+	}
+}
+");
+		}
+
+
+		[Test]
+		public void TestBug16663_Case2()
+		{
+			Test<CreateEnumValue>(@"
+public enum MyEnum
+{
+}
+
+class Test  
+{
+	static void Main ()
+	{
+		var e = MyEnum.$NotDefinedYetValue | MyEnum.Foo;
+	}
+}
+",@"
+public enum MyEnum
+{
+	NotDefinedYetValue
+}
+
+class Test  
+{
+	static void Main ()
+	{
+		var e = MyEnum.NotDefinedYetValue | MyEnum.Foo;
+	}
+}
+");
+		}
+	}
 }
 

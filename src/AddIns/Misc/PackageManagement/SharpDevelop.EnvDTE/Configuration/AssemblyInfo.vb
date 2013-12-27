@@ -13,7 +13,7 @@ Imports System.Runtime.InteropServices
 <assembly: AssemblyConfiguration("")>
 <assembly: AssemblyCompany("ic#code")>
 <assembly: AssemblyProduct("SharpDevelop")>
-<assembly: AssemblyCopyright("2000-2012 AlphaSierraPapa for the SharpDevelop Team")>
+<assembly: AssemblyCopyright("2000-2013 AlphaSierraPapa for the SharpDevelop Team")>
 <assembly: AssemblyTrademark("")>
 <assembly: AssemblyCulture("")>
 
@@ -28,4 +28,4 @@ Imports System.Runtime.InteropServices
 ' You can specify all values by your own or you can build default build and revision
 ' numbers with the '*' character (the default):
 
-<assembly: AssemblyVersion("4.3.0")>
+<assembly: AssemblyVersion("4.4.0")>

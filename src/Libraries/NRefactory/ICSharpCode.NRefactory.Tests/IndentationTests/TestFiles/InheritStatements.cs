@@ -42,8 +42,8 @@
 		{
 			var t = this.ToString();
 			var b = t == "X"
-			        ? true
-			        : false;
+				? true
+				: false;
 
 			if (b) goto x;
 

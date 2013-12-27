@@ -53,7 +53,11 @@ namespace Mono.CSharp
 
 		protected bool is_defined;
 
-		public TypeContainer (TypeContainer parent, MemberName name, Attributes attrs, MemberKind kind)
+		public int CounterAnonymousMethods { get; set; }
+		public int CounterAnonymousContainers { get; set; }
+		public int CounterSwitchTypes { get; set; }
+
+		protected TypeContainer (TypeContainer parent, MemberName name, Attributes attrs, MemberKind kind)
 			: base (parent, name, attrs)
 		{
 			this.Kind = kind;
@@ -186,6 +190,8 @@ namespace Mono.CSharp
 			}
 
 			next_part.PartialContainer = existing;
+
+			existing.AddPartialPart (next_part);
 
 			AddTypeContainerMember (next_part);
 		}
@@ -514,6 +520,9 @@ namespace Mono.CSharp
 
 		protected List<FullNamedExpression> type_bases;
 
+		// Partial parts for classes only
+		List<TypeDefinition> class_partial_parts;
+
 		TypeDefinition InTransit;
 
 		public TypeBuilder TypeBuilder;
@@ -551,7 +560,7 @@ namespace Mono.CSharp
 		/// </remarks>
 		PendingImplementation pending;
 
-		public TypeDefinition (TypeContainer parent, MemberName name, Attributes attrs, MemberKind kind)
+		protected TypeDefinition (TypeContainer parent, MemberName name, Attributes attrs, MemberKind kind)
 			: base (parent, name, attrs, kind)
 		{
 			PartialContainer = this;
@@ -766,7 +775,7 @@ namespace Mono.CSharp
 				}
 			}
 
-			AddNameToContainer (symbol, symbol.MemberName.Basename);
+			AddNameToContainer (symbol, symbol.MemberName.Name);
 			members.Add (symbol);
 		}
 
@@ -882,6 +891,17 @@ namespace Mono.CSharp
 			AddMember (op);
 		}
 
+		public void AddPartialPart (TypeDefinition part)
+		{
+			if (Kind != MemberKind.Class)
+				return;
+
+			if (class_partial_parts == null)
+				class_partial_parts = new List<TypeDefinition> ();
+
+			class_partial_parts.Add (part);
+		}
+
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (has_normal_indexers && a.Type == pa.DefaultMember) {
@@ -978,7 +998,7 @@ namespace Mono.CSharp
 					if (s == null) {
 						s = EmptyExpressionStatement.Instance;
 					} else if (!fi.IsSideEffectFree) {
-						has_complex_initializer |= true;
+						has_complex_initializer = true;
 					}
 
 					init [i] = s;
@@ -1450,6 +1470,14 @@ namespace Mono.CSharp
 
 		protected bool DefineBaseTypes ()
 		{
+			if (IsPartialPart && Kind == MemberKind.Class)
+				return true;
+
+			return DoDefineBaseType ();
+		}
+
+		bool DoDefineBaseType ()
+		{
 			iface_exprs = ResolveBaseTypes (out base_type_expr);
 			bool set_base_type;
 
@@ -1539,6 +1567,18 @@ namespace Mono.CSharp
 
 			if (set_base_type) {
 				SetBaseType ();
+			}
+
+			//
+			// Base type of partial container has to be resolved before we
+			// resolve any nested types of the container. We need to know
+			// partial parts because the base type can be specified in file
+			// defined after current container
+			//
+			if (class_partial_parts != null) {
+				foreach (var pp in class_partial_parts)
+					pp.DoDefineBaseType ();
+
 			}
 
 			return true;
@@ -1807,7 +1847,7 @@ namespace Mono.CSharp
 
 					if (iface_type.Arity > 0) {
 						// TODO: passing `this' is wrong, should be base type iface instead
-						TypeManager.CheckTypeVariance (iface_type, Variance.Covariant, this);
+						VarianceDecl.CheckTypeVariance (iface_type, Variance.Covariant, this);
 
 						if (((InflatedTypeSpec) iface_type).HasDynamicArgument () && !IsCompilerGenerated) {
 							Report.Error (1966, Location,
@@ -2290,11 +2330,20 @@ namespace Mono.CSharp
 		/// </summary>
 		public bool VerifyImplements (InterfaceMemberBase mb)
 		{
-			var ifaces = spec.Interfaces;
+			var ifaces = PartialContainer.Interfaces;
 			if (ifaces != null) {
 				foreach (TypeSpec t in ifaces){
 					if (t == mb.InterfaceType)
 						return true;
+
+					var expanded_base = t.Interfaces;
+					if (expanded_base == null)
+						continue;
+
+					foreach (var bt in expanded_base) {
+						if (bt == mb.InterfaceType)
+							return true;
+					}
 				}
 			}
 			
@@ -2378,7 +2427,13 @@ namespace Mono.CSharp
 				if (t != null && (t.IsAccessible (this) || mode == LookupMode.IgnoreAccessibility))
 					e = new TypeExpression (t, Location.Null);
 				else {
+					var errors = Compiler.Report.Errors;
 					e = Parent.LookupNamespaceOrType (name, arity, mode, loc);
+
+					// TODO: LookupNamespaceOrType does more than just lookup. The result
+					// cannot be cached or the error reporting won't happen
+					if (errors != Compiler.Report.Errors)
+						return e;
 				}
 			}
 
@@ -2461,7 +2516,7 @@ namespace Mono.CSharp
 
 		SecurityType declarative_security;
 
-		public ClassOrStruct (TypeContainer parent, MemberName name, Attributes attrs, MemberKind kind)
+		protected ClassOrStruct (TypeContainer parent, MemberName name, Attributes attrs, MemberKind kind)
 			: base (parent, name, attrs, kind)
 		{
 		}
@@ -2644,7 +2699,7 @@ namespace Mono.CSharp
 				return;
 			}
 
-			if (a.Type.IsConditionallyExcluded (this, Location))
+			if (a.Type.IsConditionallyExcluded (this))
 				return;
 
 			base.ApplyAttributeBuilder (a, ctor, cdata, pa);
@@ -3124,7 +3179,7 @@ namespace Mono.CSharp
 		readonly Modifiers explicit_mod_flags;
 		public MethodAttributes flags;
 
-		public InterfaceMemberBase (TypeDefinition parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod, MemberName name, Attributes attrs)
+		protected InterfaceMemberBase (TypeDefinition parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod, MemberName name, Attributes attrs)
 			: base (parent, type, mod, allowed_mod, Modifiers.PRIVATE, name, attrs)
 		{
 			IsInterface = parent.Kind == MemberKind.Interface;
@@ -3242,7 +3297,7 @@ namespace Mono.CSharp
 					}
 				}
 
-				if (!IsInterface && base_member.IsAbstract && !overrides) {
+				if (!IsInterface && base_member.IsAbstract && !overrides && !IsStatic) {
 					Report.SymbolRelatedToPreviousError (base_member);
 					Report.Error (533, Location, "`{0}' hides inherited abstract member `{1}'",
 						GetSignatureForError (), base_member.GetSignatureForError ());
@@ -3416,7 +3471,7 @@ namespace Mono.CSharp
 		{
 			base.DoMemberTypeDependentChecks ();
 
-			TypeManager.CheckTypeVariance (MemberType, ExpectedMemberTypeVariance, this);
+			VarianceDecl.CheckTypeVariance (MemberType, ExpectedMemberTypeVariance, this);
 		}
 
 		public override void Emit()

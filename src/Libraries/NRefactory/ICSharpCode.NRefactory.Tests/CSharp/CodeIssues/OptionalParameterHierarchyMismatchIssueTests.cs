@@ -302,5 +302,22 @@ class Derived : Base
 }");
 		}
 
+		[Test]
+		public void TestDisableForExplicitInterfaceImplementation ()
+		{
+			TestWrongContext<OptionalParameterHierarchyMismatchIssue>(@"
+interface IA
+{
+    void Foo(int a = 1);
+}
+
+
+class B : IA
+{
+    void IA.Foo(int a)
+    {
+    }
+}");
+		}
 	}
 }

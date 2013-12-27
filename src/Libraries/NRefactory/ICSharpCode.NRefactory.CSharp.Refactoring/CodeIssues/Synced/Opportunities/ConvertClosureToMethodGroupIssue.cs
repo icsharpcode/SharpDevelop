@@ -133,6 +133,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!isValidReturnType)
 					return;
 
+				if (rr.IsDelegateInvocation) {
+					if (!validTypes.Contains(rr.Member.DeclaringType))
+						return;
+				}
+
 				AddIssue(new CodeIssue(expression,
 				         expression is AnonymousMethodExpression ? ctx.TranslateString("Anonymous method can be simplified to method group") : ctx.TranslateString("Lambda expression can be simplified to method group"), 
 				         ctx.TranslateString("Replace with method group"), script =>  {

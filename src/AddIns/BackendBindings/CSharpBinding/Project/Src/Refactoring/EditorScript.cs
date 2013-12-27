@@ -119,7 +119,7 @@ namespace CSharpBinding.Refactoring
 			return tcs.Task;
 		}
 		
-		static void InsertWithCursorOnLayer(EditorScript currentScript, InsertionCursorLayer layer, TaskCompletionSource<Script> tcs, IList<AstNode> nodes, IDocument target)
+		void InsertWithCursorOnLayer(EditorScript currentScript, InsertionCursorLayer layer, TaskCompletionSource<Script> tcs, IList<AstNode> nodes, IDocument target)
 		{
 			layer.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
@@ -137,7 +137,7 @@ namespace CSharpBinding.Refactoring
 					tcs.SetResult(currentScript);
 				}
 				layer.Dispose();
-				currentScript.DisposeOnClose();
+				DisposeOnClose();
 			};
 		}
 		

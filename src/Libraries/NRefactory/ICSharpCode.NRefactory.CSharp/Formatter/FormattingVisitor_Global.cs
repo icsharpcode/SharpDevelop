@@ -256,17 +256,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			var nextSibling = child.GetNextSibling(NoWhitespacePredicate);
 			if (child is PreProcessorDirective) {
 				var directive = (PreProcessorDirective)child;
-				if (directive.Type == PreProcessorDirectiveType.Region)
+				if (directive.Type == PreProcessorDirectiveType.Region) {
 					blankLines += policy.BlankLinesInsideRegion;
-				if (directive.Type == PreProcessorDirectiveType.Endregion)
+				}
+				if (directive.Type == PreProcessorDirectiveType.Endregion) {
+					if (child.GetNextSibling(NoWhitespacePredicate) is CSharpTokenNode)
+						return 1;
 					blankLines += policy.BlankLinesAroundRegion;
+				}
 				return blankLines;
 			}
 
 			if (nextSibling is PreProcessorDirective) {
 				var directive = (PreProcessorDirective)nextSibling;
-				if (directive.Type == PreProcessorDirectiveType.Region)
+				if (directive.Type == PreProcessorDirectiveType.Region) {
+					if (child is CSharpTokenNode)
+						return 1;
 					blankLines += policy.BlankLinesAroundRegion;
+				}
 				if (directive.Type == PreProcessorDirectiveType.Endregion)
 					blankLines += policy.BlankLinesInsideRegion;
 				if (directive.Type == PreProcessorDirectiveType.Endif)

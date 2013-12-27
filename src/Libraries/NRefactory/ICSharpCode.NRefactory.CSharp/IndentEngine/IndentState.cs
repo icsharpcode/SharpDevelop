@@ -210,6 +210,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		public virtual void CheckKeyword(string keyword)
 		{ }
 
+		/// <summary>
+		///     When derived, checks if the given sequence of chars form
+		///     a valid keyword or variable name, depending on the state.
+		/// </summary>
+		/// <param name="keyword">
+		///     A possible keyword.
+		/// </param>
+		/// <remarks>
+		///     This method should be called from <see cref="Push(char)"/>.
+		///     It is left to derived classes to call this method because of
+		///     performance issues.
+		/// </remarks>
+		public virtual void CheckKeywordOnPush(string keyword)
+		{ }
+
 		#endregion
 	}
 
@@ -478,7 +493,8 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public BracesBodyState(CSharpIndentEngine engine, IndentState parent = null)
 			: base(engine, parent)
-		{ }
+		{
+		}
 
 		public BracesBodyState(BracesBodyState prototype, CSharpIndentEngine engine)
 			: base(prototype, engine)
@@ -556,6 +572,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				ThisLineIndent.Push(IndentType.Continuation);
 			}
 
+			if (Engine.wordToken.ToString() == "else")
+			{
+				CheckKeywordOnPush("else");
+			}
+
 			base.Push(ch);
 		}
 
@@ -621,6 +642,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			NextLineIndent.PopWhile(IndentType.Continuation);
 
 			CurrentStatement = Statement.None;
+			NextBody = Body.None;
 			LastBlockIndent = null;
 		}
 
@@ -677,7 +699,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		static readonly Dictionary<string, Statement> statements = new Dictionary<string, Statement>
 		{
 			{ "if", Statement.If },
-			{ "else", Statement.Else },
+			// { "else", Statement.Else }, // should be handled in CheckKeywordAtPush
 			{ "do", Statement.Do },
 			{ "while", Statement.While },
 			{ "for", Statement.For },
@@ -717,6 +739,39 @@ namespace ICSharpCode.NRefactory.CSharp
 			"class",
 			"struct"
 		};
+
+		/// <summary>
+		///     Checks if the given string is a keyword and sets the
+		///     <see cref="NextBody"/> and the <see cref="CurrentStatement"/>
+		///     variables appropriately.
+		/// </summary>
+		/// <param name="keyword">
+		///     A possible keyword.
+		/// </param>
+		/// <remarks>
+		///     This method is called from <see cref="Push(char)"/>
+		/// </remarks>
+		public override void CheckKeywordOnPush(string keyword)
+		{
+			if (keyword == "else")
+			{
+				CurrentStatement = Statement.Else;
+
+				// OPTION: CSharpFormattingOptions.AlignElseInIfStatements
+				if (!Engine.formattingOptions.AlignElseInIfStatements && NestedIfStatementLevels.Count > 0)
+				{
+					ThisLineIndent = NestedIfStatementLevels.Pop().Clone();
+					NextLineIndent = ThisLineIndent.Clone();
+				}
+
+				NextLineIndent.Push(IndentType.Continuation);
+			}
+
+			if (blocks.Contains(keyword) && Engine.NeedsReindent)
+			{
+				LastBlockIndent = Indent.ConvertFrom(Engine.CurrentIndent, ThisLineIndent, Engine.textEditorOptions);
+			}
+		}
 
 		/// <summary>
 		///     Checks if the given string is a keyword and sets the
@@ -778,29 +833,15 @@ namespace ICSharpCode.NRefactory.CSharp
 					NextLineIndent.PopIf(IndentType.Continuation);
 				}
 
-				// else statement is handled differently
-				if (CurrentStatement == Statement.Else)
+				// only add continuation for 'else' in 'else if' statement.
+				if (!(CurrentStatement == Statement.If && previousStatement == Statement.Else && !Engine.isLineStartBeforeWordToken))
 				{
-					if (NestedIfStatementLevels.Count > 0)
-					{
-						ThisLineIndent = NestedIfStatementLevels.Pop().Clone();
-						NextLineIndent = ThisLineIndent.Clone();
-					}
-
 					NextLineIndent.Push(IndentType.Continuation);
 				}
-				else
-				{
-					// only add continuation for 'else' in 'else if' statement.
-					if (!(CurrentStatement == Statement.If && previousStatement == Statement.Else && !Engine.isLineStartBeforeWordToken))
-					{
-						NextLineIndent.Push(IndentType.Continuation);
-					}
 
-					if (CurrentStatement == Statement.If)
-					{
-						NestedIfStatementLevels.Push(ThisLineIndent);
-					}
+				if (CurrentStatement == Statement.If)
+				{
+					NestedIfStatementLevels.Push(ThisLineIndent);
 				}
 			}
 
@@ -1080,9 +1121,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (ch == Engine.newLineChar)
 			{
-				if (NextLineIndent.PopIf(IndentType.Continuation))
-				{
-					NextLineIndent.Push(IndentType.Block);
+				if (Engine.formattingOptions.AnonymousMethodBraceStyle == BraceStyle.EndOfLine || 
+					Engine.formattingOptions.AnonymousMethodBraceStyle == BraceStyle.EndOfLineWithoutSpace) {
+					if (NextLineIndent.PopIf(IndentType.Continuation)) {
+						NextLineIndent.Push(IndentType.Block);
+					}
 				}
 			}
 			else if (!IsSomethingPushed)
@@ -1264,7 +1307,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			//       happen, we check for "endregion" on every push.
 			if (Engine.wordToken.ToString() == "endregion")
 			{
-				ThisLineIndent = Parent.NextLineIndent.Clone();
+				CheckKeywordOnPush("endregion");
 			}
 
 			base.Push(ch);
@@ -1367,7 +1410,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{ "else", PreProcessorDirective.Else },
 			{ "endif", PreProcessorDirective.Endif },
 			{ "region", PreProcessorDirective.Region },
-			{ "endregion", PreProcessorDirective.Region },
+			{ "endregion", PreProcessorDirective.Endregion },
 			{ "pragma", PreProcessorDirective.Pragma },
 			{ "warning", PreProcessorDirective.Warning },
 			{ "error", PreProcessorDirective.Error },
@@ -1375,6 +1418,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			{ "define", PreProcessorDirective.Define },
 			{ "undef", PreProcessorDirective.Undef }
 		};
+
+		public override void CheckKeywordOnPush(string keyword)
+		{
+			if (keyword == "endregion")
+			{
+				DirectiveType = PreProcessorDirective.Endregion;
+				ThisLineIndent = Parent.NextLineIndent.Clone();
+			}
+		}
 
 		public override void CheckKeyword(string keyword)
 		{
@@ -1388,7 +1440,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				DirectiveType = preProcessorDirectives[keyword];
 
-				// adjust the indentation for the region/endregion directives
+				// adjust the indentation for the region directive
 				if (DirectiveType == PreProcessorDirective.Region)
 				{
 					ThisLineIndent = Parent.NextLineIndent.Clone();
@@ -1412,7 +1464,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			Else,
 			Endif,
 			Region,
-			// EndRegion, // use Region instead
+			Endregion,
 			Pragma,
 			Warning,
 			Error,
@@ -1697,8 +1749,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public LineCommentState(CSharpIndentEngine engine, IndentState parent = null)
 			: base(engine, parent)
 		{
-			if (engine.formattingOptions.KeepCommentsAtFirstColumn && engine.column == 2)
-				ThisLineIndent.Reset();
+			/*			if (engine.formattingOptions.KeepCommentsAtFirstColumn && engine.column == 2)
+				ThisLineIndent.Reset();*/
 		}
 
 		public LineCommentState(LineCommentState prototype, CSharpIndentEngine engine)

@@ -233,6 +233,7 @@ class Foo
 			Assert.AreEqual("\t", indent.NextLineIndent);
 		}
 
+		[Ignore ("Should not be respected")]
 		[Test]
 		public void TestFormatFirstLineKeepTrue()
 		{

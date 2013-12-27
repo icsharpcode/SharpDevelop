@@ -280,6 +280,23 @@ class TestClass
 	}
 }");
 		}
+
+		/// <summary>
+		/// Bug 15867 - Wrong Context for string formatting
+		/// </summary>
+		[Test]
+		public void TestBug15867()
+		{
+			TestWrongContext<FormatStringProblemIssue>(@"
+class TestClass
+{
+	void Foo()
+	{
+		double d = 1;
+		d.ToString(""G29"", System.Globalization.CultureInfo.InvariantCulture);
+	}
+}");
+		}
 	}
 }
 

@@ -2,7 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -12,7 +16,7 @@ namespace PackageManagement.Tests.EnvDTE
 	[TestFixture]
 	public class ProjectPropertyTests
 	{
-		Properties properties;
+		ICSharpCode.PackageManagement.EnvDTE.Properties properties;
 		TestableDTEProject project;
 		TestableProject msbuildProject;
 		
@@ -21,7 +25,18 @@ namespace PackageManagement.Tests.EnvDTE
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
 			var factory = new ProjectPropertyFactory(project);
-			properties = new Properties(factory);
+			properties = new ICSharpCode.PackageManagement.EnvDTE.Properties(factory);
+		}
+		
+		void AssertContainsProperty(string propertyName, IEnumerable items)
+		{
+			var itemsList = new List<Property>();
+			foreach (Property property in items) {
+				itemsList.Add(property);
+			}
+			var matchedProperty = itemsList.Find(p => p.Name == propertyName);
+			
+			Assert.AreEqual(propertyName, matchedProperty.Name);
 		}
 		
 		[Test]
@@ -136,7 +151,7 @@ namespace PackageManagement.Tests.EnvDTE
 			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FullPath");
 			string fullPath = fullPathProperty.Value as string;
 			
-			string expectedFullPath = @"d:\projects\MyProject";
+			string expectedFullPath = @"d:\projects\MyProject\";
 			Assert.AreEqual(expectedFullPath, fullPath);
 		}
 		
@@ -149,7 +164,7 @@ namespace PackageManagement.Tests.EnvDTE
 			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FULLPATH");
 			string fullPath = fullPathProperty.Value as string;
 			
-			string expectedFullPath = @"d:\projects\MyProject";
+			string expectedFullPath = @"d:\projects\MyProject\";
 			Assert.AreEqual(expectedFullPath, fullPath);
 		}
 		
@@ -232,6 +247,43 @@ namespace PackageManagement.Tests.EnvDTE
 			string defaultNamespace = (string)project.Properties.Item("DEFAULTNAMESPACE").Value;
 			
 			Assert.AreEqual("MyProjectRootNamespace", defaultNamespace);
+		}
+		
+		[Test]
+		public void Value_GetLocalPathProperty_ReturnsProjectDirectory()
+		{
+			CreateProperties();
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
+			
+			global::EnvDTE.Property localPathProperty = project.Properties.Item("LocalPath");
+			string localPath = localPathProperty.Value as string;
+			
+			string expectedLocalPath = @"d:\projects\MyProject\";
+			Assert.AreEqual(expectedLocalPath, localPath);
+		}
+		
+		[Test]
+		public void GetEnumerator_LocalPathProperty_ExistsInEnumeratedProperties()
+		{
+			CreateProperties();
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
+			
+			var enumerable = project.Properties as IEnumerable;
+			
+			AssertContainsProperty("LocalPath", enumerable);
+		}
+		
+		[Test]
+		public void Value_GetLocalPathPropertyWithUpperCaseCharacters_ReturnsProjectDirectory()
+		{
+			CreateProperties();
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
+			
+			global::EnvDTE.Property fullPathProperty = project.Properties.Item("LOCALPATH");
+			string fullPath = fullPathProperty.Value as string;
+			
+			string expectedFullPath = @"d:\projects\MyProject\";
+			Assert.AreEqual(expectedFullPath, fullPath);
 		}
 	}
 }

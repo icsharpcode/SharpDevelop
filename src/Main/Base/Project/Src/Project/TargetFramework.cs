@@ -46,12 +46,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			RequiresAppConfigEntry = true,
 			IsAvailable = DotnetDetection.IsDotnet45Installed
 		};
-//		public readonly static TargetFramework Net45Client = new ClientProfileTargetFramework(Net45) {
-//			BasedOn = Net40Client
-//		};
+		public readonly static TargetFramework Net451 = new TargetFramework("v4.5.1", ".NET Framework 4.5.1") {
+			BasedOn = Net45,
+			MinimumMSBuildVersion = new Version(4, 0),
+			SupportedRuntimeVersion = "v4.0",
+			SupportedSku = ".NETFramework,Version=v4.5.1",
+			RequiresAppConfigEntry = true,
+			IsAvailable = DotnetDetection.IsDotnet451Installed
+		};
 		
 		public readonly static TargetFramework[] TargetFrameworks = {
-			Net45, Net40, Net40Client, Net35, Net35Client, Net30, Net20
+			Net451, Net45, Net40, Net40Client, Net35, Net35Client, Net30, Net20
 		};
 		
 		public readonly static TargetFramework DefaultTargetFramework = Net40Client;

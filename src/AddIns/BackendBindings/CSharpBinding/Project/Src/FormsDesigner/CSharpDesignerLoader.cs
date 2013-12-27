@@ -15,6 +15,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Refactoring;
 using Microsoft.CSharp;
 using CSharpBinding.Parser;
 using CSharpBinding.Refactoring;
@@ -203,6 +204,36 @@ namespace CSharpBinding.FormsDesigner
 					}
 				}
 				base.VisitMemberReferenceExpression(memberReferenceExpression);
+			}
+		}
+		
+		protected override void OnComponentRename(object component, string oldName, string newName)
+		{
+			base.OnComponentRename(component, oldName, newName);
+			if (oldName != newName) {
+				var primaryParseInfo = context.GetPrimaryFileParseInformation();
+				var compilation = context.GetCompilation();
+				
+				// Find designer class
+				ITypeDefinition designerClass = FormsDesignerSecondaryDisplayBinding.GetDesignableClass(primaryParseInfo.UnresolvedFile, compilation, out primaryPart);
+				
+				ISymbol controlSymbol;
+				if (DesignerLoaderHost != null && DesignerLoaderHost.RootComponent == component)
+					controlSymbol = designerClass;
+				else
+					controlSymbol = designerClass.GetFields(f => f.Name == oldName, GetMemberOptions.IgnoreInheritedMembers)
+						.SingleOrDefault();
+				if (controlSymbol != null) {
+					FindReferenceService.RenameSymbol(controlSymbol, newName, new DummyProgressMonitor())
+						.ObserveOnUIThread()
+						.Subscribe(error => SD.MessageService.ShowError(error.Message), // onNext
+						           ex => SD.MessageService.ShowException(ex), // onError
+						           // onCompleted - force refresh of the DesignerCodeFile's parse info, because the code generator
+						           // seems to work with an outdated version, when the document is saved.
+						           () => SD.ParserService.Parse(new FileName(context.DesignerCodeFileDocument.FileName), context.DesignerCodeFileDocument)
+						          );
+
+				}
 			}
 		}
 	}

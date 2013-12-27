@@ -48,7 +48,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		bool IsFullPath()
 		{
-			return IsCaseInsensitiveMatch(Name, "FullPath");
+			return IsCaseInsensitiveMatch(Name, "FullPath") || IsCaseInsensitiveMatch(Name, "LocalPath");
 		}
 		
 		bool IsOutputFileName()
@@ -83,7 +83,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetFullPath()
 		{
-			return MSBuildProject.Directory;
+			return MSBuildProject.Directory + Path.DirectorySeparatorChar.ToString();
 		}
 		
 		string GetOutputFileName()

@@ -568,7 +568,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
-		/// Changes all instances of a property in the <paramref name="project"/> by applying a method to its unevaluated value.
+		/// Changes all instances of a property in the project by applying a method to its unevaluated value.
 		/// 
 		/// The method will be called within a <code>lock (project.SyncRoot)</code> block.
 		/// </summary>

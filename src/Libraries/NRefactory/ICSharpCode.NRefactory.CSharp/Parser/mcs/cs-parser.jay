@@ -570,7 +570,7 @@ namespace_name
 	| namespace_name DOT IDENTIFIER
 	  {
 		var lt = (LocatedToken) $3;
-		$$ = new MemberName ((MemberName) $1, lt.Value, lt.Location);
+		$$ = new MemberName ((MemberName) $1, lt.Value, lt.Location);		
 		lbag.AddLocation ($$, GetLocation ($2));
 	  }
 	| error
@@ -3006,9 +3006,9 @@ type_parameter
 	: opt_attributes opt_type_parameter_variance IDENTIFIER
 	  {
 		var lt = (LocatedToken)$3;
-		var variance = (Variance) $2;
+		var variance = (VarianceDecl) $2;
 		$$ = new TypeParameter (new MemberName (lt.Value, lt.Location), (Attributes)$1, variance);
-		if (variance != Variance.None)
+		if (variance != null)
 			lbag.AddLocation ($$, savedLocation);
   	  }
   	| error
@@ -3018,7 +3018,7 @@ type_parameter
 		else
 			Error_SyntaxError (yyToken);
 			
-  	  	$$ = new TypeParameter (MemberName.Null, null, Variance.None);
+  	  	$$ = new TypeParameter (MemberName.Null, null, null);
   	  }
  	;
 
@@ -3390,18 +3390,18 @@ member_initializer
 	| OPEN_BRACE expression_list CLOSE_BRACE
 	  {
 		if ($2 == null)
-			$$ = null;
+			$$ = new CollectionElementInitializer (GetLocation ($1));
 		else {
 	  		$$ = new CollectionElementInitializer ((List<Expression>)$2, GetLocation ($1));
 			lbag.AddLocation ($$, GetLocation ($2));
-	  	}
+		}
 	  }
 	| OPEN_BRACE CLOSE_BRACE
 	  {
 	  	report.Error (1920, GetLocation ($1), "An element initializer cannot be empty");
-		$$ = new CollectionElementInitializer (new List<Expression> (), GetLocation ($1));
+		$$ = new CollectionElementInitializer (GetLocation ($1));
 		lbag.AddLocation ($$, GetLocation ($2));
-	  }	  
+	  }
 	;
 
 initializer_value
@@ -3971,7 +3971,7 @@ anonymous_method_expression
 	  {
 		$$ = end_anonymous ((ParametersBlock) $4);
 		if ((ParametersCompiled) $2 != ParametersCompiled.Undefined) {
-			lbag.AddLocation ($$, GetLocation ($1), savedOpenLocation, savedCloseLocation);
+			lbag.AddLocation ($$, GetLocation ($1), PopLocation (), PopLocation ());
 		} else {
 			lbag.AddLocation ($$, GetLocation ($1));
 		}
@@ -3985,7 +3985,7 @@ anonymous_method_expression
 		$$ = end_anonymous ((ParametersBlock) $5);
 		
 		if ((ParametersCompiled) $3 != ParametersCompiled.Undefined) {
-			lbag.AddLocation ($$, GetLocation ($1), GetLocation ($2), savedOpenLocation, savedCloseLocation);
+			lbag.AddLocation ($$, GetLocation ($1), GetLocation ($2), PopLocation (), PopLocation ());
 		} else {
 			lbag.AddLocation ($$, GetLocation ($1), GetLocation ($2));
 		}
@@ -4009,8 +4009,8 @@ anonymous_method_signature
 	  {
 		valid_param_mod = 0;
 	  	$$ = $3;
-	  	savedOpenLocation = GetLocation ($1);
-	  	savedCloseLocation = GetLocation ($2);
+	  	PushLocation (GetLocation ($3));
+	  	PushLocation (GetLocation ($1));
 	  }
 	;
 
@@ -4046,7 +4046,7 @@ unary_expression
 			 if (current_anonymous_method is LambdaExpression) {
 				report.Error (4034, GetLocation ($1),
 					"The `await' operator can only be used when its containing lambda expression is marked with the `async' modifier");
-			} else if (current_anonymous_method is AnonymousMethodExpression) {
+			} else if (current_anonymous_method != null) {
 				report.Error (4035, GetLocation ($1),
 					"The `await' operator can only be used when its containing anonymous method is marked with the `async' modifier");
 			} else if (interactive_async != null) {
@@ -5031,7 +5031,7 @@ type_parameter_constraint
 opt_type_parameter_variance
 	: /* empty */
 	  {
-		$$ = Variance.None;
+		$$ = null;
 	  }
 	| type_parameter_variance
 	  {
@@ -5045,12 +5045,12 @@ opt_type_parameter_variance
 type_parameter_variance
 	: OUT
 	  {
-		$$ = Variance.Covariant;
+		$$ = new VarianceDecl (Variance.Covariant, GetLocation ($1));
 		savedLocation = GetLocation ($1);
 	  }
 	| IN
 	  {
-		$$ = Variance.Contravariant;
+		$$ = new VarianceDecl (Variance.Contravariant, GetLocation ($1));
 		savedLocation = GetLocation ($1);
 	  }
 	;
@@ -6364,9 +6364,9 @@ first_from_clause
 	  
 		var lt = (LocatedToken) $2;
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
-		var start = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1));
-		lbag.AddLocation (start, GetLocation ($3));
-		$$ = new Linq.QueryExpression (start);
+		var clause = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1));
+		lbag.AddLocation (clause, GetLocation ($3));
+		$$ = new Linq.QueryExpression (clause);
 	  }
 	| FROM_FIRST type identifier_inside_body IN expression
 	  {
@@ -6374,11 +6374,11 @@ first_from_clause
 	  
 		var lt = (LocatedToken) $3;
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
-		var start = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$5, rv, GetLocation ($1)) {
-			IdentifierType = (FullNamedExpression)$2
+		var clause = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$5, rv, GetLocation ($1)) {
+				IdentifierType = (FullNamedExpression)$2
 		};
-		lbag.AddLocation (start, GetLocation ($4));
-		$$ = new Linq.QueryExpression (start);
+		lbag.AddLocation (clause, GetLocation ($4));
+		$$ = new Linq.QueryExpression (clause);
 	  }
 	;
 
@@ -6389,9 +6389,9 @@ nested_from_clause
 	  
 		var lt = (LocatedToken) $2;
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
-		var start = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1));
-		lbag.AddLocation (start, GetLocation ($3));
-		$$ = new Linq.QueryExpression (start);
+		var clause = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1));
+		lbag.AddLocation (clause, GetLocation ($3));
+		$$ = new Linq.QueryExpression (clause);
 	  }
 	| FROM type identifier_inside_body IN expression
 	  {
@@ -6399,11 +6399,11 @@ nested_from_clause
 	  
 		var lt = (LocatedToken) $3;
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
-		var start = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$5, rv, GetLocation ($1)) {
-			IdentifierType = (FullNamedExpression)$2
+		var clause = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$5, rv, GetLocation ($1)) {
+				IdentifierType = (FullNamedExpression)$2
 		};
-		lbag.AddLocation (start, GetLocation ($4));
-		$$ = new Linq.QueryExpression (start);
+		lbag.AddLocation (clause, GetLocation ($4));
+		$$ = new Linq.QueryExpression (clause);
 	  }
 	;
 	
@@ -6421,7 +6421,6 @@ from_clause
 		current_block.SetEndLocation (lexer.Location);
 		current_block = current_block.Parent;
 		((Linq.QueryBlock)current_block).AddRangeVariable (sn);
-
 		lbag.AddLocation ($$, GetLocation ($3));
 	  }	  
 	| FROM type identifier_inside_body IN
@@ -7233,7 +7232,7 @@ public CSharpParser (SeekableStreamReader reader, CompilationSourceFile file, Re
 	lang_version = settings.Version;
 	yacc_verbose_flag = settings.VerboseParserFlag;
 	doc_support = settings.DocumentationFile != null;
-	lexer = new Tokenizer (reader, file, session);
+	lexer = new Tokenizer (reader, file, session, report);
 	oob_stack = new Stack<object> ();
 	lbag = session.LocationsBag;
 	use_global_stacks = session.UseJayGlobalArrays;

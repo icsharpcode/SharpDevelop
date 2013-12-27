@@ -97,6 +97,71 @@ class FooBar
 }
 ");
 		}
+
+		/// <summary>
+		/// Bug 16108 - Convert to autoproperty issues
+		/// </summary>
+		[Test]
+		public void TestBug16108Case1 ()
+		{
+			TestWrongContext<ConvertToAutoPropertyIssue>(@"
+class MyClass
+{
+    [DebuggerHiddenAttribute]
+    int a;
+    int A {
+        get { return a; }
+        set { a = value; }
+    }
+}
+");
+		}
+
+		/// <summary>
+		/// Bug 16108 - Convert to autoproperty issues
+		/// </summary>
+		[Test]
+		public void TestBug16108Case2 ()
+		{
+			TestWrongContext<ConvertToAutoPropertyIssue>(@"
+class MyClass
+{
+    int a = 4;
+    int A {
+        get { return a; }
+        set { a = value; }
+    }
+}
+");
+		}
+
+
+		/// <summary>
+		/// Bug 16448 - Refactor incorrectly suggesting "Convert to Auto Property" on property containing custom logic
+		/// </summary>
+		[Test]
+		public void TestBug16448()
+		{
+			TestWrongContext<ConvertToAutoPropertyIssue>(@"
+using System;
+
+public class Foo
+{
+	int _bpm;
+
+	public int BPM
+	{
+		get { return _bpm; }
+		set
+		{
+			_bpm = Math.Min(Math.Max(60, value), 180);
+		}
+	}
+}
+");
+		}
+
+
 	}
 }
 

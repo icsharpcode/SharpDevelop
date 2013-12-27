@@ -521,5 +521,29 @@ public class Test
 }");
 
 		}
+
+		[Test]
+		public void TestMultipleVariableInitializers()
+		{
+			Test<RedundantAssignmentIssue>(@"using System;
+public class MyClass
+{
+	public static void Main ()
+	{
+		string outputFile = null, inputFile = null;
+		Console.WriteLine (outputFile);
+	}
+}
+", 1, @"using System;
+public class MyClass
+{
+	public static void Main ()
+	{
+		string outputFile = null, inputFile;
+		Console.WriteLine (outputFile);
+	}
+}
+", 0);
+		}
 	}
 }

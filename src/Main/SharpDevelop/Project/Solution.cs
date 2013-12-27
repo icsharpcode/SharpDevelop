@@ -40,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			fileService.FileRenamed += FileServiceFileRenamed;
 			fileService.FileRemoved += FileServiceFileRemoved;
+			changeWatcher.Enable();
 		}
 		
 		public void Dispose()
@@ -77,7 +78,18 @@ namespace ICSharpCode.SharpDevelop.Project
 				return base.Name;
 			}
 			set {
-				throw new NotImplementedException();
+				var newFileName = directory.CombineFile(value + ".sln");
+				changeWatcher.Disable();
+				try {
+					if (!FileService.RenameFile(fileName, newFileName, false)) {
+						return;
+					}
+					base.Name = value;
+					this.FileName = newFileName;
+					changeWatcher.Rename(newFileName);
+				} finally {
+					changeWatcher.Enable();
+				}
 			}
 		}
 		#endregion

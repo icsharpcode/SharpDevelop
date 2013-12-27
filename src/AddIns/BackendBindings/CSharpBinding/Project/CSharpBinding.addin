@@ -242,7 +242,6 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.LongLiteralEndingLowerLIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MemberCanBeMadeStaticIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MemberHidesStaticFromOuterClassIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MethodOverloadHidesOptionalParameterIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MethodOverloadWithOptionalParameterIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MissingInterfaceMemberImplementationIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.NegativeRelationalExpressionIssue" />

@@ -69,7 +69,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository ActivePackageRepository {
 			get { return registeredPackageRepositories.ActiveRepository; }
 		}
-				
+		
 		public IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
 		{
 			MSBuildBasedProject activeProject = GetActiveMSBuildBasedProject();
@@ -152,7 +152,18 @@ namespace ICSharpCode.PackageManagement
 		public IQueryable<IPackage> GetPackages()
 		{
 			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
-			return repository.GetPackages();
+			List<IPackageManagementProject> projects = GetProjects(ActivePackageRepository).ToList();
+			return repository
+				.GetPackages()
+				.Where(package => IsPackageInstalledInSolutionOrAnyProject(projects, package));
+		}
+		
+		bool IsPackageInstalledInSolutionOrAnyProject(IList<IPackageManagementProject> projects, IPackage package)
+		{
+			if (projects.Any(project => project.IsPackageInstalled(package))) {
+				return true;
+			}
+			return false;
 		}
 		
 		public string GetInstallPath(IPackage package)

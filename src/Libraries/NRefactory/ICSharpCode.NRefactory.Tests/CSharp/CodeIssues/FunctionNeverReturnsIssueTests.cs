@@ -489,5 +489,32 @@ class TestClass
 }";
 			TestWrongContext<FunctionNeverReturnsIssue> (input);
 		}
+
+		[Test]
+		public void TestPropertyGetterInSetter ()
+		{
+			TestWrongContext<FunctionNeverReturnsIssue> (@"using System;
+class TestClass
+{
+	int a;
+	int Foo {
+		get { return 1; }
+		set { a = Foo; }
+	}
+}");
+		}
+
+		[Test]
+		public void TestRecursiveFunctionBug ()
+		{
+			TestWrongContext<FunctionNeverReturnsIssue> (@"using System;
+class TestClass
+{
+	bool Foo (int i)
+	{
+		return i < 0 || Foo (i - 1);
+	}
+}");
+		}
 	}
 }

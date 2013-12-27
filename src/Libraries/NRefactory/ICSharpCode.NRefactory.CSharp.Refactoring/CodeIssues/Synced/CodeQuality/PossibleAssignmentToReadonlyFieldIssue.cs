@@ -32,8 +32,8 @@ using System.Linq;
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[IssueDescription (
-		"Check if a namespace corresponds to a file location",
-		Description = "Check if a namespace corresponds to a file location",
+		"Possible assignment to readonly field",
+		Description = "Check if a readonly field is used as assignment target",
 		Category = IssueCategories.CodeQualityIssues,
 		Severity = Severity.Warning,
 		AnalysisDisableKeyword = "PossibleAssignmentToReadonlyField")]

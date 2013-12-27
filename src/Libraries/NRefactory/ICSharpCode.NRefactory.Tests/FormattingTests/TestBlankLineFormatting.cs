@@ -293,10 +293,11 @@ namespace Test
 	}
 	
 	#endregion
+	void BMethod ()
+	{
+	}
 }", @"class Test
 {
-
-
 	#region FooBar
 
 	void AMethod ()
@@ -306,6 +307,9 @@ namespace Test
 	#endregion
 
 
+	void BMethod ()
+	{
+	}
 }", FormattingMode.Intrusive);
 
 			policy.BlankLinesAroundRegion = 0;
@@ -318,6 +322,9 @@ namespace Test
 	}
 
 	#endregion
+	void BMethod ()
+	{
+	}
 }", FormattingMode.Intrusive);
 		}
 
@@ -328,16 +335,13 @@ namespace Test
 			policy.BlankLinesInsideRegion = 2;
 			var adapter = Test (policy, @"class Test
 {
-
 	#region FooBar
 	void AMethod ()
 	{
 	}
 	#endregion
-
 }", @"class Test
 {
-
 	#region FooBar
 
 
@@ -347,19 +351,16 @@ namespace Test
 
 
 	#endregion
-
 }", FormattingMode.Intrusive);
 
 			policy.BlankLinesInsideRegion = 0;
 			Continue (policy, adapter, @"class Test
 {
-
 	#region FooBar
 	void AMethod ()
 	{
 	}
 	#endregion
-
 }", FormattingMode.Intrusive);
 		}
 
