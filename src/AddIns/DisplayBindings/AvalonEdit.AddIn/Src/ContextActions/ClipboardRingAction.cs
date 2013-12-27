@@ -10,6 +10,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	public class ClipboardRingAction : IContextAction 
 	{
+		readonly int maxLength = 50;
+		
+		readonly string endString = "...";
+		
 		public string Text { get; private set; }
 		
 		public string DisplayName { get; private set; }
@@ -21,8 +25,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		public ClipboardRingAction(string text) 
 		{
 			string entry = text.Trim();
-			if(entry.Length > 50)
-				entry = entry.Substring(0,47) + "...";
+			if(entry.Length > maxLength)
+				entry = entry.Substring(0, maxLength-endString.Length) + endString;
 			
 			this.DisplayName = entry;			
 			this.Text = text;
@@ -35,8 +39,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		
 		public void Execute(EditorRefactoringContext context)
 		{
+			/* insert to editor */
 			ITextEditor editor = context.Editor;
 			editor.Document.Insert(context.CaretOffset, this.Text);
+			
+			/* update clipboard ring */
+			var clipboardRing = ICSharpCode.SharpDevelop.Gui.TextEditorSideBar.Instance;
+			if (clipboardRing != null) {
+				clipboardRing.PutInClipboardRing(this.Text);
+			}
 		}
 	}
 }
