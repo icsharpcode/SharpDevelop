@@ -66,7 +66,13 @@
 						<ControlTemplate TargetType="TreeViewItem">
 							<StackPanel>
 								<!-- ActionButtonClick event is used just to close the Popup -->
-								<Button Command="{Binding ActionCommand}" Style="{StaticResource ClearButton}" Click="ActionButtonClick">
+								<Button 
+									Command="{Binding ActionCommand}" 
+									Style="{StaticResource ClearButton}" 
+									Click="ActionButtonClick"
+									GotFocus="ActionGotFocus"
+									LostFocus="ActionLostFocus"
+								>
 									<Border SnapsToDevicePixels="True">
 										<ContentPresenter Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentSource="Header" Name="PART_Header"
 											HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />

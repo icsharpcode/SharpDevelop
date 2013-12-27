@@ -16,6 +16,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		
 		public IEntity Entity { get; private set; }
 		
+		public IContextActionProvider Provider { get { return null; } }
+		
 		public ClipboardRingAction(string text) 
 		{
 			string entry = text.Trim();
@@ -24,11 +26,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			
 			this.DisplayName = entry;			
 			this.Text = text;
-		}
-		
-		public IContextActionProvider Provider 
-		{
-			get { return null; }
 		}
 		
 		public string GetDisplayName(EditorRefactoringContext context)

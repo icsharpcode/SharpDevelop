@@ -36,7 +36,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			var popupViewModel = new ContextActionsPopupViewModel();
 			popupViewModel.Title = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.ClipboardRing}"));
 			popupViewModel.Actions = BuildClipboardRingData(context);
-			return new ContextActionsPopup { Actions = popupViewModel };
+			return new ClipboardRingPopup { Actions = popupViewModel };
 		}
 		
 		static ObservableCollection<ContextActionViewModel> BuildClipboardRingData(EditorRefactoringContext context)
