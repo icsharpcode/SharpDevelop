@@ -46,7 +46,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			if (clipboardRingAction == null)
 				return null;
 			
-			return clipboardRingAction.DisplayName;
+			return clipboardRingAction.Text;
 		}
 		
 		void ClipboardRingPopup_ActionSelected(object sender, RoutedEventArgs e)

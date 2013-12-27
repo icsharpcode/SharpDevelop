@@ -10,7 +10,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	public class ClipboardRingAction : IContextAction 
 	{
-		string Text;
+		public string Text { get; private set; }
 		
 		public string DisplayName { get; private set; }
 		
