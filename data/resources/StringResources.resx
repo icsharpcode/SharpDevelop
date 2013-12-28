@@ -6437,6 +6437,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="SharpDevelop.Refactoring.ClipboardRing" xml:space="preserve">
     <value>Clipboard ring</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingEmpty" xml:space="preserve">
+    <value>Clipboard ring is empty</value>
+  </data>
   <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
     <value>From clipboard ring</value>
   </data>

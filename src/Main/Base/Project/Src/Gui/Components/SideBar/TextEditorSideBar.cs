@@ -83,11 +83,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public List<string> GetClipboardRingItems()
 		{
 			var list = new List<string>();
+			if (clipboardRing == null || clipboardRing.Items == null)
+				return list;
+			
 			foreach (var item in clipboardRing.Items) {
 				string itemData = item.Tag as string;
 				if (itemData != null)
 					list.Add(itemData);
 			}
+			
 			return list;
 		}
 		

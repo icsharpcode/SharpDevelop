@@ -34,8 +34,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		static ContextActionsPopup MakePopupWithClipboardOptions(EditorRefactoringContext context)
 		{
 			var popupViewModel = new ContextActionsPopupViewModel();
-			popupViewModel.Title = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.ClipboardRing}"));
-			popupViewModel.Actions = BuildClipboardRingData(context);
+			var actions = BuildClipboardRingData(context);
+			
+			string labelSource = "${res:SharpDevelop.Refactoring.ClipboardRing}";
+			if (actions == null || actions.Count == 0) 
+				labelSource = "${res:SharpDevelop.Refactoring.ClipboardRingEmpty}";
+			
+			popupViewModel.Title = MenuService.ConvertLabel(StringParser.Parse(labelSource));
+			popupViewModel.Actions = actions;
 			return new ClipboardRingPopup { Actions = popupViewModel };
 		}
 		
