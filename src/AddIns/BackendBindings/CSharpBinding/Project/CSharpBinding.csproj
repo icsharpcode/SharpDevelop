@@ -121,6 +121,7 @@
     </Compile>
     <Compile Include="Src\Refactoring\PropertyOrFieldWrapper.cs" />
     <Compile Include="Src\Refactoring\RenameFileToMatchTypeNameContextAction.cs" />
+    <Compile Include="Src\Refactoring\SDCodeGenerationService.cs" />
     <Compile Include="Src\Refactoring\SDNamingConventionService.cs" />
     <Compile Include="Src\Refactoring\SDRedundantUsingIssue.cs" />
     <Compile Include="Src\Refactoring\EditorScript.cs" />

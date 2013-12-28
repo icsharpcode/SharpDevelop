@@ -90,6 +90,7 @@ namespace CSharpBinding.Refactoring
 		{
 			this.Services = new ServiceContainer(SD.Services);
 			this.Services.AddService(typeof(NamingConventionService), new SDNamingConventionService());
+			this.Services.AddService(typeof(CodeGenerationService), new SDCodeGenerationService());
 		}
 		
 		public override bool Supports(Version version)
