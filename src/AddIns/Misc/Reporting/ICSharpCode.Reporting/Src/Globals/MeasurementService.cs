@@ -15,15 +15,12 @@ namespace ICSharpCode.Reporting.Globals
 	/// <summary>
 	/// Description of MeasurementService.
 	/// </summary>
-	internal class MeasurementService
+	internal static class MeasurementService
 	{
 		
-		public MeasurementService()
-		{
-		}
 		
 		public static Size Measure (IExportText item,Graphics graphics) {
-			
+			Console.WriteLine("Measure {0}",item.Text);
 			if (!item.CanGrow) {
 				return item.Size;
 			}

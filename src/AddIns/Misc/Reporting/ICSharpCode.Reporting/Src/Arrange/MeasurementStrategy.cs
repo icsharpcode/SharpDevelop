@@ -31,6 +31,10 @@ namespace ICSharpCode.Reporting.Arrange
 			var items = ((ExportContainer)exportColumn).ExportedItems;
 			
 			foreach (var element in items) {
+				if (element is IExportContainer) {
+					Console.WriteLine("Measure -> Container found");
+					Measure(element,graphics);
+				}
 				var tbi = element as IExportText;
 				if (tbi != null) {
 					element.DesiredSize = MeasurementService.Measure(tbi,graphics);

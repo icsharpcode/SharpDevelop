@@ -15,7 +15,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public static void AddChild<T>(this Canvas canvas, T element)
 		{
-			UIElement uiElement = element as UIElement;
+			var uiElement = element as UIElement;
 			if (uiElement != null && !canvas.Children.Contains(uiElement))
 				canvas.Children.Add(uiElement);
 		}
@@ -23,7 +23,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public static void RemoveChild<T>(this Canvas canvas, T element)
 		{
-			UIElement uiElement = element as UIElement;
+			var uiElement = element as UIElement;
 			if (uiElement != null && canvas.Children.Contains(uiElement))
 				canvas.Children.Remove(uiElement);
 		}
@@ -31,7 +31,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public static void InsertChild<T>(this Canvas canvas, int index, T element)
 		{
-			UIElement uiElement = element as UIElement;
+			var uiElement = element as UIElement;
 			if (uiElement != null && !canvas.Children.Contains(uiElement))
 				canvas.Children.Insert(index, uiElement);
 		}
