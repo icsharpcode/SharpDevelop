@@ -140,5 +140,14 @@ namespace PackageManagement.Tests.Helpers
 			}
 			return null;
 		}
+		
+		public IViewContent ViewContentPassedToSaveFile;
+		public bool IsSaveFileCalled;
+		
+		public void SaveFile(IViewContent view)
+		{
+			IsSaveFileCalled = true;
+			ViewContentPassedToSaveFile = view;
+		}
 	}
 }

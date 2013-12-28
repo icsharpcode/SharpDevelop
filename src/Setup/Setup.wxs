@@ -16,7 +16,7 @@
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
-		UpgradeCode="EAB97D14-7713-4001-98E0-0414F495ECB8"
+		UpgradeCode="98D66C2A-31EE-4264-92D5-54BD8211461C"
 		Version="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)">
 		
 		<!-- When a new major SharpDevelop version should be allowed to be installed in parallel to old versions,
@@ -28,11 +28,11 @@
 			Compressed="yes"/>
 		
 		<!-- Upgrade information -->
-		<Upgrade Id="EAB97D14-7713-4001-98E0-0414F495ECB8">
+		<Upgrade Id="98D66C2A-31EE-4264-92D5-54BD8211461C">
 			<!-- The UpgradeCode must be changed to allow two versions of SharpDevelop to be installed side-by-side -->
 			
 			<!-- Checks for older versions -->
-			<UpgradeVersion Minimum="4.3.0"
+			<UpgradeVersion Minimum="4.4.0"
 				IncludeMinimum="yes"
 				Maximum="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)"
 				IncludeMaximum="no" 
@@ -176,6 +176,7 @@
 				<ComponentRef Id="SharpDevelopExe"/>
 				<ComponentRef Id="SharpDevelopExeFiles"/>
 				<ComponentRef Id="SharpDevelopDocFiles"/>
+				<ComponentRef Id="DependenciesHtml"/>
 				<ComponentRef Id="ICSharpCodeBuildTasksDll"/>
 				<ComponentRef Id="BuildTasksTargetFiles"/>
 				<ComponentRef Id="ICSharpCodeCoreDll"/>
@@ -687,7 +688,24 @@
 		
 		<!-- Using WixUI -->
 		<Property Id="WIXUI_INSTALLDIR">INSTALLDIR</Property>
-		<UIRef Id="WixUI_FeatureTree"/>
+		<UI>
+			<UIRef Id="WixUI_FeatureTree" />
+			<Publish
+				Dialog="ExitDialog"
+				Control="Finish"
+				Event="DoAction"
+				Value="ShowReadme">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+		</UI>
+		
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Learn about dependencies you should install" />
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1"/>
+		
+		<Property Id="WixShellExecTarget" Value="[#Dependencies.html]" />
+		<CustomAction
+			Id="ShowReadme"
+			BinaryKey="WixCA"
+			DllEntry="WixShellExec"
+			Impersonate="yes" />
 		
 		<!--
 			If a newer version of SharpDevelop is installed, show an error message.

@@ -60,7 +60,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				// do not show a warning when the side bar file does not exist
 				GenerateStandardSideBar();
 			} catch (Exception ex) {
-				MessageService.ShowWarning(ex.ToString());
+				LoggingService.Warn("Error loading SideBarConfig.xml", ex);
+				// We cannot show the error to the user; it's possible that this code is called
+				// while dispatcher processing is suspended.
+				// http://community.sharpdevelop.net/forums/t/19984.aspx
+				//MessageService.ShowWarning(ex.ToString());
 				GenerateStandardSideBar();
 			}
 			

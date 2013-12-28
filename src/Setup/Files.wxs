@@ -340,6 +340,9 @@
 									<File Id="AddInWritingHelp.url" Name="AddIn Writing Help.url" Source="..\..\doc\technotes\AddIn Writing Help.url" KeyPath="yes" />
 								</Component>
 							</Directory>
+							<Component Id="DependenciesHtml" Guid="898AC4F4-9331-4C3C-A170-ECB09B890EDD" DiskId="1">
+								<File Id="Dependencies.html" Name="Dependencies.html" Source="..\..\doc\Dependencies.html" KeyPath="yes" />
+							</Component>
 						</Directory>
 						<Directory Id="DataFolder" Name="data">
 							<Directory Id="ConversionStyleSheetsFolder" Name="ConversionStyleSheets">
@@ -1713,8 +1716,6 @@
 										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn.dll" Name="SharpSvn.dll" Id="SharpSvn.dll" />
 										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn.UI.dll" Name="SharpSvn.UI.dll" Id="SharpSvn.UI.dll" />
 										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpPlink-Win32.svnExe" Name="SharpPlink-Win32.svnExe" Id="SharpPlink_Win32.svnExe" />
-										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn-DB44-20-Win32.dll" Name="SharpSvn-DB44-20-Win32.dll" Id="SharpSvn_DB44_20_Win32.dll" />
-										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn-SASL21-23-Win32.dll" Name="SharpSvn-SASL21-23-Win32.dll" Id="SharpSvn_SASL21_23_Win32.dll" />
 									</Component>
 								</Directory>
 								<Component Id="GitAddInDll" Guid="4AB2E967-7267-42F7-AED1-AB64809F0BC1" DiskId="1">
@@ -1776,7 +1777,7 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="Programs">
-				<Component Id="SharpDevelopProgramMenuItems" Guid="D0C47C33-1DD1-41DF-BB48-968C7B4F7C08">
+				<Component Id="SharpDevelopProgramMenuItems" Guid="C75B0E33-A46E-40D7-A491-87F74999A824">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
@@ -1787,7 +1788,7 @@
 			</Directory>
 			<!-- Desktop shortcuts -->
 			<Directory Id="DesktopFolder" Name="Desktop">
-				<Component Id="DesktopFolderItems" Guid="1443FDA1-E22B-4B84-B321-F12960D3FF36">
+				<Component Id="DesktopFolderItems" Guid="BD777F5F-9B51-4A9D-A782-9AA12F88F260">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp

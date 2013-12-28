@@ -221,7 +221,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			string textContent = this.Text;
 			ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, textArea.Caret.Offset);
 			string expression = expressionResult.Expression;
-			if (expression != null && expression.Length > 0) {
+			if (!string.IsNullOrEmpty(expression)) {
 				ResolveResult result = ParserService.Resolve(expressionResult, textArea.Caret.Line, textArea.Caret.Column, this.Adapter.FileName, textContent);
 				TypeResolveResult trr = result as TypeResolveResult;
 				if (trr != null) {
@@ -229,7 +229,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				MemberResolveResult mrr = result as MemberResolveResult;
 				if (mrr != null) {
-					HelpProvider.ShowHelp(mrr.ResolvedMember);
+					switch (mrr.ResolvedMember.DeclaringType.ClassType) {
+						case ClassType.Enum:
+							HelpProvider.ShowHelp(mrr.ResolvedMember.DeclaringType);
+							break;
+						default:
+							HelpProvider.ShowHelp(mrr.ResolvedMember);
+							break;
+					}
 				}
 			}
 		}

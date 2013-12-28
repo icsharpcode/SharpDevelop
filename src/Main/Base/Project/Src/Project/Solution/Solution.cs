@@ -19,7 +19,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public const int SolutionVersionVS2005 = 9;
 		public const int SolutionVersionVS2008 = 10;
 		public const int SolutionVersionVS2010 = 11;
-		public const int SolutionVersionVS11 = 12;
+		public const int SolutionVersionVS2012Or2013 = 12;
+		
+		public static readonly Version DefaultVSVersion = new Version(12, 0, 20827, 3);
+		public static readonly Version DefaultMinVSVersion = new Version(10, 0, 40219, 1);
 		
 		/// <summary>contains &lt;GUID, (IProject/ISolutionFolder)&gt; pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
@@ -27,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		bool isLoading;
 		string fileName = String.Empty;
 		IProjectChangeWatcher changeWatcher;
+		Version currVSVersion, minVSVersion;
 		
 		public Solution(IProjectChangeWatcher changeWatcher)
 		{
@@ -225,6 +229,16 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
+		
+		[Browsable(false)]
+		public Version VSVersion {
+			get { return currVSVersion; }
+		}
+		
+		[Browsable(false)]
+		public Version MinVSVersion {
+			get { return minVSVersion; }
+		}
 		#endregion
 		
 		#region ISolutionFolderContainer implementations
@@ -393,6 +407,9 @@ namespace ICSharpCode.SharpDevelop.Project
 						versionNumber = p.MinimumSolutionVersion;
 				}
 				
+				if ((minVSVersion != null || currVSVersion != null) && versionNumber < SolutionVersionVS2012Or2013)
+					versionNumber = SolutionVersionVS2012Or2013;
+				
 				sw.WriteLine("Microsoft Visual Studio Solution File, Format Version " + versionNumber + ".00");
 				if (versionNumber == SolutionVersionVS2005) {
 					sw.WriteLine("# Visual Studio 2005");
@@ -400,10 +417,15 @@ namespace ICSharpCode.SharpDevelop.Project
 					sw.WriteLine("# Visual Studio 2008");
 				} else if (versionNumber == SolutionVersionVS2010) {
 					sw.WriteLine("# Visual Studio 2010");
-				} else if (versionNumber == SolutionVersionVS11) {
-					sw.WriteLine("# Visual Studio 11");
+				} else if (versionNumber == SolutionVersionVS2012Or2013) {
+					sw.WriteLine("# Visual Studio 2012");
 				}
 				sw.WriteLine("# SharpDevelop " + RevisionClass.Major + "." + RevisionClass.Minor);
+				// VS 2013 stuff
+				if (versionNumber == SolutionVersionVS2012Or2013) {
+					sw.WriteLine("VisualStudioVersion = {0}", currVSVersion ?? DefaultVSVersion);
+					sw.WriteLine("MinimumVisualStudioVersion = {0}", minVSVersion ?? DefaultMinVSVersion);
+				}
 				sw.Write(projectSection.ToString());
 				
 				sw.Write(globalSection.ToString());
@@ -438,6 +460,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Read/SetupSolution
 		static Regex versionPattern       = new Regex("Microsoft Visual Studio Solution File, Format Version\\s+(?<Version>.*)", RegexOptions.Compiled);
+		static Regex ideVersionPattern    = new Regex(@"((Minimum)?VisualStudioVersion)\s+=\s(?<Version>\d+\.\d+\.\d+\.\d+)", RegexOptions.Compiled);
 		
 		static Regex projectLinePattern   = new Regex("Project\\(\"(?<ProjectGuid>.*)\"\\)\\s+=\\s+\"(?<Title>.*)\",\\s*\"(?<Location>.*)\",\\s*\"(?<Guid>.*)\"", RegexOptions.Compiled);
 		static Regex globalSectionPattern = new Regex("\\s*GlobalSection\\((?<Name>.*)\\)\\s*=\\s*(?<Type>.*)", RegexOptions.Compiled);
@@ -559,6 +582,19 @@ namespace ICSharpCode.SharpDevelop.Project
 							nestedProjectsSection = newSection;
 						} else {
 							newSolution.Sections.Add(newSection);
+						}
+					} else {
+						match = ideVersionPattern.Match(line);
+						if (match.Success) {
+							Version version = new Version(match.Result("${Version}"));
+							switch (match.Groups[1].Value) {
+								case "VisualStudioVersion":
+									newSolution.currVSVersion = version;
+									break;
+								case "MinimumVisualStudioVersion":
+									newSolution.minVSVersion = version;
+									break;
+							}
 						}
 					}
 				}

@@ -12,6 +12,17 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class FakePackageManagementProjectFactory : IPackageManagementProjectFactory
 	{
+		public FakePackageManagementProjectFactory()
+		{
+			CreatePackageManagementProject = (sourceRepository, project) => {
+				RepositoriesPassedToCreateProject.Add(sourceRepository);
+				ProjectsPassedToCreateProject.Add(project);
+				
+				var fakeProject = new FakePackageManagementProject();
+				FakeProjectsCreated.Add(fakeProject);
+				return fakeProject;
+			};
+		}
 		public List<FakePackageManagementProject> FakeProjectsCreated = 
 			new List<FakePackageManagementProject>();
 		
@@ -30,17 +41,17 @@ namespace PackageManagement.Tests.Helpers
 			get { return ProjectsPassedToCreateProject[0]; }
 		}
 		
+		public Func<IPackageRepository, MSBuildBasedProject, FakePackageManagementProject>
+			CreatePackageManagementProject = (sourceRepository, project) => {
+			return null;
+		};
+		
 		public List<MSBuildBasedProject> ProjectsPassedToCreateProject  =
 			new List<MSBuildBasedProject>();
 		
 		public IPackageManagementProject CreateProject(IPackageRepository sourceRepository, MSBuildBasedProject project)
 		{
-			RepositoriesPassedToCreateProject.Add(sourceRepository);
-			ProjectsPassedToCreateProject.Add(project);
-			
-			var fakeProject = new FakePackageManagementProject();
-			FakeProjectsCreated.Add(fakeProject);
-			return fakeProject;
+			return CreatePackageManagementProject(sourceRepository, project);
 		}
 	}
 }

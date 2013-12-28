@@ -246,6 +246,7 @@
     <Compile Include="Src\ProjectBuilder.cs" />
     <Compile Include="Src\ProjectRootElementExtensions.cs" />
     <Compile Include="Src\ReducedPackageOperations.cs" />
+    <Compile Include="Src\RemovedPackageReferenceMonitor.cs" />
     <Compile Include="Src\ResolveFileConflictEventArgs.cs" />
     <Compile Include="Src\RestorePackagesCommand.cs" />
     <Compile Include="Src\Scripting\ConsoleHostFileConflictResolver.cs" />
@@ -255,6 +256,8 @@
     <Compile Include="Src\Scripting\IGlobalMSBuildProjectCollection.cs" />
     <Compile Include="Src\Scripting\MSBuildProjectImportsMerger.cs" />
     <Compile Include="Src\Scripting\MSBuildProjectImportsMergeResult.cs" />
+    <Compile Include="Src\Scripting\MSBuildProjectPropertiesMerger.cs" />
+    <Compile Include="Src\Scripting\MSBuildProjectPropertiesMergeResult.cs" />
     <Compile Include="Src\Scripting\NullGlobalMSBuildProjectCollection.cs" />
     <Compile Include="Src\Scripting\RunAllProjectPackageScriptsAction.cs" />
     <Compile Include="Src\ServiceWithWorkbenchOwner.cs" />

@@ -139,7 +139,7 @@ namespace PackageManagement.Tests.EnvDTE
 			string path = properties.Item("FullPath").Value as string;
 			
 			Assert.AreEqual(@"d:\projects\test.cs", path);
-		}	
+		}
 		
 		[Test]
 		public void GetEnumerator_FindFullPathPropertyInAllProperties_ReturnsPropertyWithFullPathName()
@@ -147,6 +147,25 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItemProperties();
 			
 			AssertContainsProperty("FullPath", properties);
+		}
+		
+		[Test]
+		public void Value_GetLocalPath_ReturnsProjectItemFullFileName()
+		{
+			CreateProjectItemProperties();
+			msbuildFileProjectItem.FileName = @"d:\projects\test.cs";
+			
+			string path = properties.Item("LocalPath").Value as string;
+			
+			Assert.AreEqual(@"d:\projects\test.cs", path);
+		}
+		
+		[Test]
+		public void GetEnumerator_FindLocalPathPropertyInAllProperties_ReturnsPropertyWithFullPathName()
+		{
+			CreateProjectItemProperties();
+			
+			AssertContainsProperty("LocalPath", properties);
 		}
 	}
 }

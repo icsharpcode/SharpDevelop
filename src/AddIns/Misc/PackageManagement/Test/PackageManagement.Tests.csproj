@@ -207,6 +207,7 @@
     <Compile Include="Src\RunAllProjectPackageScriptsActionTests.cs" />
     <Compile Include="Src\Scripting\ConsoleHostFileConflictResolverTests.cs" />
     <Compile Include="Src\Scripting\MSBuildProjectImportsMergerTests.cs" />
+    <Compile Include="Src\Scripting\MSBuildProjectPropertiesMergerTests.cs" />
     <Compile Include="Src\UpdatedPackagesTests.cs" />
     <Compile Include="Src\UpdatePackagesActionTests.cs" />
     <Compile Include="Src\UpdateSolutionPackagesActionTests.cs" />

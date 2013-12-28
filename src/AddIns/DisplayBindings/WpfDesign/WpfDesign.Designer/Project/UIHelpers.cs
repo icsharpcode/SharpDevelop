@@ -8,9 +8,9 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 
-namespace ICSharpCode.WpfDesign
+namespace ICSharpCode.WpfDesign.Designer
 {
-	public static class UIHelpers
+	static class UIHelpers
 	{
 		public static DependencyObject GetParentObject(this DependencyObject child)
 		{

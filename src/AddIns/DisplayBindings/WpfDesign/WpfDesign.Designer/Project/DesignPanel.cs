@@ -13,6 +13,7 @@ using System.Windows.Threading;
 
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -35,20 +36,29 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
-		static void RunHitTest(Visual reference, Point point, HitTestFilterCallback filterCallback, HitTestResultCallback resultCallback)
+		void RunHitTest(Visual reference, Point point, HitTestFilterCallback filterCallback, HitTestResultCallback resultCallback)
 		{
 			VisualTreeHelper.HitTest(reference, filterCallback, resultCallback,
 			                         new PointHitTestParameters(point));
 		}
 		
-		static HitTestFilterBehavior FilterHitTestInvisibleElements(DependencyObject potentialHitTestTarget)
+		HitTestFilterBehavior FilterHitTestInvisibleElements(DependencyObject potentialHitTestTarget)
 		{
 			UIElement element = potentialHitTestTarget as UIElement;
+						
 			if (element != null) {
 				if (!(element.IsHitTestVisible && element.Visibility == Visibility.Visible)) {
 					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
 				}
+				
+				var designItem = Context.Services.Component.GetDesignItem(element) as XamlDesignItem;
+			
+				if (designItem != null && designItem.IsDesignTimeLocked) {
+					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
 			}
+			
+			}
+						
 			return HitTestFilterBehavior.Continue;
 		}
 		
@@ -103,7 +113,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			if (continueHitTest && testDesignSurface) {
 				RunHitTest(
-					this.Child, mousePosition, delegate { return HitTestFilterBehavior.Continue; },
+					this.Child, mousePosition, FilterHitTestInvisibleElements,
 					delegate(HitTestResult result) {
 						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
 							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);

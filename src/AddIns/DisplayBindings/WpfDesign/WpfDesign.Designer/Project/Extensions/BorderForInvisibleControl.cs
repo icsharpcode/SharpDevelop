@@ -3,14 +3,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Extensions;
-using System.Windows.Controls;
 using System.Windows;
-using ICSharpCode.WpfDesign.Designer.Controls;
+using System.Windows.Controls;
 using System.Windows.Media;
+
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -21,6 +23,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	public class BorderForInvisibleControl : PermanentAdornerProvider
 	{
 		AdornerPanel adornerPanel;
+		AdornerPanel cachedAdornerPanel;
 		
 		protected override void OnInitialized()
 		{
@@ -28,52 +31,79 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			if (ExtendedItem.Component is Border)
 			{
-				ExtendedItem.PropertyChanged+= (s, e) => ExtendedItem_PropertyChanged();
-				
-				ExtendedItem_PropertyChanged();
+				ExtendedItem.PropertyChanged += (s, e) => UpdateAdorner();
 			}
-			else if (ExtendedItem.Component is Panel || ExtendedItem.Component is Viewbox || ExtendedItem.Component is ContentControl)
-			{
-				CreateAdorner();
-			}			
+			
+			// If component is a ContentControl it must be of type ContentControl specifically, and not derived types like Label and Button.
+			if (!(ExtendedItem.Component is ContentControl) || ExtendedItem.Component.GetType() == typeof(ContentControl)) {
+				UpdateAdorner();
+				
+				var element = ExtendedItem.Component as UIElement;
+				if (element != null) {
+					element.IsVisibleChanged += (s, e) => UpdateAdorner();
+				}
+			}
 		}
 
-		void ExtendedItem_PropertyChanged()
+		void UpdateAdorner()
 		{
-			if (ExtendedItem.Component is Border)
-			{
-				var border = ExtendedItem.Component as Border;
-				if (border.ReadLocalValue(Border.BorderBrushProperty) == DependencyProperty.UnsetValue || border.ReadLocalValue(Border.BorderThicknessProperty) == DependencyProperty.UnsetValue)
-				{
+			var element = ExtendedItem.Component as UIElement;
+			if (element != null) {
+				var border = element as Border;
+				if (element.IsVisible && (border == null || IsAnyBorderEdgeInvisible(border))) {
 					CreateAdorner();
+					
+					if (border != null) {
+						var adornerBorder = (Border)adornerPanel.Children[0];
+						
+						if (IsBorderBrushInvisible(border))
+							adornerBorder.BorderThickness = new Thickness(1);
+						else
+							adornerBorder.BorderThickness = new Thickness(border.BorderThickness.Left   > 0 ? 0 : 1,
+							                                              border.BorderThickness.Top    > 0 ? 0 : 1,
+							                                              border.BorderThickness.Right  > 0 ? 0 : 1,
+							                                              border.BorderThickness.Bottom > 0 ? 0 : 1);
+					}
 				}
-				else
-				{
+				else {
 					RemoveAdorner();
 				}
-			}			
+			}
+		}
+		
+		bool IsAnyBorderEdgeInvisible(Border border)
+		{
+			return IsBorderBrushInvisible(border) || border.BorderThickness.Left == 0 || border.BorderThickness.Top == 0 || border.BorderThickness.Right == 0 || border.BorderThickness.Bottom == 0;
+		}
+		
+		bool IsBorderBrushInvisible(Border border)
+		{
+			return border.BorderBrush == null || border.BorderBrush == Brushes.Transparent;
 		}
 		
 		private void CreateAdorner()
 		{
-			if (adornerPanel == null)
-			{
-				adornerPanel = new AdornerPanel();
-				adornerPanel.Order = AdornerOrder.Background;
-				var border = new Border();
-				border.BorderThickness = new Thickness(1);
-				border.BorderBrush = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
-				border.IsHitTestVisible = false;
-				AdornerPanel.SetPlacement(border, AdornerPlacement.FillContent);
-				adornerPanel.Children.Add(border);
+			if (adornerPanel == null) {
+				
+				if (cachedAdornerPanel == null) {
+					cachedAdornerPanel = new AdornerPanel();
+					cachedAdornerPanel.Order = AdornerOrder.Background;
+					var border = new Border();
+					border.BorderThickness = new Thickness(1);
+					border.BorderBrush = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
+					border.IsHitTestVisible = false;
+					AdornerPanel.SetPlacement(border, AdornerPlacement.FillContent);
+					cachedAdornerPanel.Children.Add(border);
+				}
+				
+				adornerPanel = cachedAdornerPanel;
 				Adorners.Add(adornerPanel);
 			}
 		}
 		
 		private void RemoveAdorner()
 		{
-			if (adornerPanel != null)
-			{
+			if (adornerPanel != null) {
 				Adorners.Remove(adornerPanel);
 				adornerPanel = null;
 			}

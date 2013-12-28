@@ -21,6 +21,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public const string CopyToOutputDirectoryPropertyName = "CopyToOutputDirectory";
 		public const string CustomToolPropertyName = "CustomTool";
 		public const string FullPathPropertyName = "FullPath";
+		public const string LocalPathPropertyName = "LocalPath";
 		
 		public ProjectItem(Project project, FileProjectItem projectItem)
 		{
@@ -93,7 +94,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return GetCopyToOutputDirectory();
 			} else if (name == CustomToolPropertyName) {
 				return projectItem.CustomTool;
-			} else if (name == FullPathPropertyName) {
+			} else if ((name == FullPathPropertyName) || (name == LocalPathPropertyName)) {
 				return projectItem.FileName;
 			}
 			return String.Empty;
@@ -228,6 +229,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		string GetProjectItemRelativeDirectoryToProject()
 		{
 			return Path.GetDirectoryName(GetProjectItemRelativePathToProject());
+		}
+		
+		public void Save(string fileName = null)
+		{
+			IViewContent view = containingProject.GetOpenFile(FileName);
+			if (view != null) {
+				containingProject.SaveFile(view);
+			}
 		}
 	}
 }
