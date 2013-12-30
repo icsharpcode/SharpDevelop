@@ -31,38 +31,34 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public global::EnvDTE.CodeType CodeTypeFromFullName(string name)
 		{
-			ITypeDefinitionModel typeDefinition = GetTypeDefinition(name);
+			ITypeDefinition typeDefinition = GetTypeDefinition(name);
 			if (typeDefinition != null) {
 				return CreateCodeTypeForTypeDefinition(typeDefinition);
 			}
 			return null;
 		}
 		
-		ITypeDefinitionModel GetTypeDefinition(string name)
+		ITypeDefinition GetTypeDefinition(string name)
 		{
 			ICompilation compilation = project.GetCompilationUnit();
 			var typeName = new TopLevelTypeName(name);
-			ITypeDefinitionModel typeDefinitionModel = project.MSBuildProject.AssemblyModel.TopLevelTypeDefinitions[typeName];
-			if (typeDefinitionModel != null) {
-				return typeDefinitionModel;
-			}
 			
-//			foreach (IAssembly assembly in compilation.ReferencedAssemblies) {
-//				ITypeDefinition typeDefinition = assembly.GetTypeDefinition(typeName);
-//				if (typeDefinition != null) {
-//					return typeDefinition.GetModel();
-//				}
-//			}
+			foreach (IAssembly assembly in compilation.Assemblies) {
+				ITypeDefinition typeDefinition = assembly.GetTypeDefinition(typeName);
+				if (typeDefinition != null) {
+					return typeDefinition;
+				}
+			}
 			
 			return null;
 		}
 		
-		CodeType CreateCodeTypeForTypeDefinition(ITypeDefinitionModel typeDefinition)
+		CodeType CreateCodeTypeForTypeDefinition(ITypeDefinition typeDefinition)
 		{
-			if (typeDefinition.TypeKind == TypeKind.Interface) {
-				return new CodeInterface(null, typeDefinition);
+			if (typeDefinition.Kind == TypeKind.Interface) {
+				return new CodeInterface(context, typeDefinition);
 			}
-			return new CodeClass2(null, typeDefinition);
+			return new CodeClass2(context, typeDefinition);
 		}
 		
 		public string Language {

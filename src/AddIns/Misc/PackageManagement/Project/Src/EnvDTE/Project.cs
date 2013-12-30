@@ -314,11 +314,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal ProjectItem FindProjectItem(string fileName)
 		{
-			SD.FileProjectItem item = MSBuildProject.FindFile(new FileName(fileName));
-			if (item != null) {
-				return new ProjectItem(this, item);
-			}
-			return null;
+			return ProjectItem.FindByFileName(MSBuildProject, fileName);
 		}
 		
 		internal IViewContent GetOpenFile(string fileName)

@@ -44,16 +44,6 @@ namespace PackageManagement.Tests.EnvDTE
 			AddCodeFile("class.cs", code);
 		}
 		
-		void SetProjectForProjectContent()
-		{
-//			helper.SetProjectForProjectContent(msbuildProject);
-		}
-		
-		void SetDifferentProjectForProjectContent()
-		{
-//			helper.SetProjectForProjectContent(ProjectHelper.CreateTestProject());
-		}
-		
 		void SetParentSolutionFileName(string fileName)
 		{
 			var solutionFileName = new FileName(fileName);
@@ -234,29 +224,30 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		[Ignore("TODO")]
-		public void CodeModel_ClassExistsInProjectContentForProject_ReturnsClassWithLocationSetToInProject()
+		public void CodeModel_ClassExistsInProject_ReturnsClassWithLocationSetToInProject()
 		{
 			CreateProject();
-			SetProjectForProjectContent();
-			//helper.AddClassToCompletionEntries(String.Empty, "MyClass");
+			AddClassToProject("public class MyClass {}");
 			
-			//CodeElement element = project.CodeModel.CodeElements.FirstOrDefault();
+			CodeElement element = dteProject.CodeModel.CodeElements
+				.FindFirstOrDefault(e => e.Name == "MyClass");
 			
-			//Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, element.InfoLocation);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, element.InfoLocation);
 		}
 		
 		[Test]
-		[Ignore("TODO")]
-		public void CodeModel_ClassExistsInProjectContentForDifferentProject_ReturnsClassWithLocationSetToExternal()
+		public void CodeModel_ClassExistsInDifferentAssembly_ReturnsClassWithLocationSetToExternal()
 		{
 			CreateProject();
-			//SetProjectForProjectContent();
-			//helper.AddClassCompletionEntriesInDifferentProjectContent(String.Empty, "MyClass");
 			
-			//CodeElement element = project.CodeModel.CodeElements.FirstOrDefault();
+			CodeElement element = dteProject
+				.CodeModel
+				.CodeElements
+				.FindFirstCodeNamespaceOrDefault(e => e.Name == "System")
+				.Members
+				.FindFirstOrDefault(e => e.Name == "String");
 			
-			//Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, element.InfoLocation);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, element.InfoLocation);
 		}
 		
 		[Test]

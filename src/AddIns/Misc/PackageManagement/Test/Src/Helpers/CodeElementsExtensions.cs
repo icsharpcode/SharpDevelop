@@ -19,6 +19,11 @@ namespace PackageManagement.Tests.Helpers
 			return list;
 		}
 		
+		public static CodeElement FindFirstOrDefault(this global::EnvDTE.CodeElements codeElements, Func<CodeElement, bool> predicate)
+		{
+			return ToList(codeElements).FirstOrDefault(predicate);
+		}
+		
 		public static CodeElement FirstOrDefault(this global::EnvDTE.CodeElements codeElements)
 		{
 			return ToList(codeElements).FirstOrDefault();

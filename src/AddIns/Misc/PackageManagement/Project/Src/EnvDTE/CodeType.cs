@@ -16,6 +16,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeType : CodeElement, global::EnvDTE.CodeType
 	{
 		protected readonly ITypeDefinitionModel typeModel;
+		protected readonly ITypeDefinition typeDefinition;
 		
 		CodeElementsList<CodeElement> members;
 		
@@ -55,10 +56,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			: base(context, typeModel)
 		{
 			this.typeModel = typeModel;
+			this.InfoLocation = GetInfoLocationOld();
+		}
+		
+		public CodeType(CodeModelContext context, ITypeDefinition typeDefinition)
+			: base(context, typeDefinition)
+		{
+			this.typeDefinition = typeDefinition;
 			this.InfoLocation = GetInfoLocation();
 		}
 		
 		global::EnvDTE.vsCMInfoLocation GetInfoLocation()
+		{
+			if (typeDefinition.ParentAssembly.IsMainAssembly) {
+				return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject;
+			}
+			return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
+		}
+		
+		global::EnvDTE.vsCMInfoLocation GetInfoLocationOld()
 		{
 			if (typeModel != null) {
 				return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject;
@@ -71,9 +87,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual global::EnvDTE.vsCMAccess Access {
-			get { return typeModel.Accessibility.ToAccess(); }
+			get { return typeDefinition.Accessibility.ToAccess(); }
 			set {
-				ITypeDefinition typeDefinition = typeModel.Resolve();
 				if (typeDefinition != null) {
 					context.CodeGenerator.ChangeAccessibility(typeDefinition, value.ToAccessibility());
 				}
@@ -82,7 +97,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual string FullName {
 			get {
-				FullTypeName fullTypeName = typeModel.FullTypeName;
+				FullTypeName fullTypeName = GetFullTypeName();
 				var fullName = new StringBuilder();
 				if (!string.IsNullOrEmpty(fullTypeName.TopLevelTypeName.Namespace)) {
 					fullName.Append(fullTypeName.TopLevelTypeName.Namespace);
@@ -95,6 +110,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				}
 				return fullName.ToString();
 			}
+		}
+		
+		FullTypeName GetFullTypeName()
+		{
+			if (typeModel != null) {
+				return typeModel.FullTypeName;
+			}
+			return typeDefinition.FullTypeName;
 		}
 		
 		public virtual global::EnvDTE.CodeElements Members {
@@ -151,7 +174,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual global::EnvDTE.ProjectItem ProjectItem {
 			get {
 				if (context.CurrentProject != null) {
-					return EnvDTE.ProjectItem.FindByEntity(context.CurrentProject, typeModel);
+					return EnvDTE.ProjectItem.FindByEntity(context.CurrentProject, typeDefinition);
 				}
 				return null;
 			}
@@ -163,8 +186,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		/// </summary>
 		protected override bool GetIsDerivedFrom(string fullName)
 		{
-			ITypeDefinition typeDefinition = typeModel.Resolve();
-			return typeDefinition != null && typeDefinition.GetAllBaseTypeDefinitions().Any(baseType => baseType.FullName == fullName);
+			return typeDefinition
+				.GetAllBaseTypeDefinitions()
+				.Any(baseType => baseType.FullName == fullName);
 		}
 	}
 }

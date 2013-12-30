@@ -71,26 +71,6 @@ namespace PackageManagement.Tests.EnvDTE
 			AddCodeFile("class.cs", code);
 		}
 		
-//		void AddClassToDifferentProjectContent(string className)
-//		{
-//			helper.AddClassToDifferentProjectContent(className);
-//		}
-//		
-//		void AddClassToProjectContent(string namespaceName, string className)
-//		{
-//			helper.AddClassToProjectContentAndCompletionEntries(namespaceName, className);
-//		}
-//		
-//		void AddInterfaceToProjectContent(string interfaceName)
-//		{
-//			helper.AddInterfaceToProjectContent(interfaceName);
-//		}
-//		
-//		void AddInterfaceToDifferentProjectContent(string interfaceName)
-//		{
-//			helper.AddInterfaceToDifferentProjectContent(interfaceName);
-//		}
-//		
 		[Test]
 		public void CodeTypeFromFullName_NoSuchTypeInProject_ReturnsNull()
 		{
@@ -217,39 +197,40 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, codeClass.InfoLocation);
 		}
-//		
-//		[Test]
-//		public void CodeTypeFromFullName_ClassExistsInDifferentProject_InfoLocationIsExternal()
-//		{
-//			CreateCodeModel();
-//			AddClassToDifferentProjectContent("Tests.TestClass");
-//			
-//			var codeClass = codeModel.CodeTypeFromFullName("Tests.TestClass") as CodeClass2;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, codeClass.InfoLocation);
-//		}
-//		
-//		[Test]
-//		public void CodeTypeFromFullName_InterfaceExistsInProject_InfoLocationIsLocalProject()
-//		{
-//			CreateCodeModel();
-//			AddInterfaceToProjectContent("Tests.ITest");
-//			
-//			var codeInterface = codeModel.CodeTypeFromFullName("Tests.ITest") as CodeInterface;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, codeInterface.InfoLocation);
-//		}
-//		
-//		[Test]
-//		public void CodeTypeFromFullName_InterfaceExistsInDifferentProject_InfoLocationIsExternal()
-//		{
-//			CreateCodeModel();
-//			AddInterfaceToDifferentProjectContent("Tests.ITest");
-//			
-//			var codeInterface = codeModel.CodeTypeFromFullName("Tests.ITest") as CodeInterface;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, codeInterface.InfoLocation);
-//		}
+		
+		[Test]
+		public void CodeTypeFromFullName_ClassExistsInDifferentAssembly_InfoLocationIsExternal()
+		{
+			CreateCodeModel();
+			
+			var codeClass = codeModel.CodeTypeFromFullName("System.String") as CodeClass2;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, codeClass.InfoLocation);
+		}
+		
+		[Test]
+		public void CodeTypeFromFullName_InterfaceExistsInProject_InfoLocationIsLocalProject()
+		{
+			CreateCodeModel();
+			AddClassToProject(
+				"namespace Tests {\r\n" +
+				"    public interface ITest {} \r\n" +
+				"}");
+			
+			var codeInterface = codeModel.CodeTypeFromFullName("Tests.ITest") as CodeInterface;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, codeInterface.InfoLocation);
+		}
+		
+		[Test]
+		public void CodeTypeFromFullName_InterfaceExistsInDifferentAssembly_InfoLocationIsExternal()
+		{
+			CreateCodeModel();
+			
+			var codeInterface = codeModel.CodeTypeFromFullName("System.IDisposable") as CodeInterface;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, codeInterface.InfoLocation);
+		}
 		
 		[Test]
 		public void Language_CSharpProject_ReturnsCSharpProjectGuid()
@@ -272,7 +253,6 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		[Ignore("TODO - Use NRefactory")]
 		public void CodeTypeFromFullName_SystemString_ReturnsCodeClass2()
 		{
 			CreateCodeModel();

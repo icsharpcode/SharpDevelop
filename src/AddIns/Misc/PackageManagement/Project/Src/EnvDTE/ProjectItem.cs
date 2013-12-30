@@ -2,12 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.ComponentModel;
 using System.IO;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
 
@@ -40,9 +39,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return new FileProjectItems(this);
 		}
 		
-		internal static ProjectItem FindByEntity(IProject project, IEntityModel entity)
+		internal static ProjectItem FindByEntity(IProject project, IEntity entity)
 		{
-			throw new NotImplementedException();
+			if (entity.Region.FileName != null) {
+				return FindByFileName(project, entity.Region.FileName);
+			}
+			return null;
+		}
+		
+		internal static ProjectItem FindByFileName(IProject project, string fileName)
+		{
+			SD.FileProjectItem item = project.FindFile(new FileName(fileName));
+			if (item != null) {
+				return new ProjectItem(new Project(project as MSBuildBasedProject), item);
+			}
+			return null;
 		}
 		
 //		internal ProjectItem(MSBuildBasedProject project, IClass c)

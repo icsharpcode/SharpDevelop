@@ -2,9 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
-
-//using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -19,6 +18,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public CodeInterface(CodeModelContext context, ITypeDefinitionModel typeModel)
 			: base(context, typeModel)
+		{
+//			fullName = base.FullName;
+		}
+		
+		public CodeInterface(CodeModelContext context, ITypeDefinition typeDefinition)
+			: base(context, typeDefinition)
 		{
 //			fullName = base.FullName;
 		}

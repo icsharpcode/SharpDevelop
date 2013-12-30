@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeElementsInNamespace : CodeElementsList2
+	public class CodeElementsInNamespace : CodeElementsList<CodeElement>
 	{
 		CodeModelContext context;
 		NamespaceName namespaceName;
@@ -55,16 +55,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void AddCodeNamespace(INamespace ns)
 		{
-			AddCodeElement(new CodeNamespace(context, ns));
+			Add(new CodeNamespace(context, ns));
 		}
 		
 		void AddType(IType type)
 		{
-			ITypeDefinitionModel typeDefinition = type.GetDefinition().GetModel();
-			if (typeDefinition.TypeKind == TypeKind.Interface) {
+			ITypeDefinition typeDefinition = type.GetDefinition();
+			if (typeDefinition.Kind == TypeKind.Interface) {
 				
 			} else {
-				AddCodeElement(new CodeClass2(context, typeDefinition));
+				Add(new CodeClass2(context, typeDefinition));
 			}
 		}
 	}

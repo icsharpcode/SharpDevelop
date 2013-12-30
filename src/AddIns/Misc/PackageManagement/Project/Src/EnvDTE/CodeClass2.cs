@@ -15,6 +15,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
+		public CodeClass2(CodeModelContext context, ITypeDefinition typeDefinition)
+			: base(context, typeDefinition)
+		{
+		}
+		
 		public global::EnvDTE.CodeElements PartialClasses {
 			get {
 				var list = new CodeElementsList<CodeType>();

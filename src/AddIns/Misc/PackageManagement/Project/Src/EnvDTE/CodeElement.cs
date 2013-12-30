@@ -13,6 +13,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		DTE dte;
 		protected CodeModelContext context;
 		readonly ISymbolModel symbolModel;
+		IEntity entity;
 		
 		public CodeElement()
 		{
@@ -32,7 +33,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public static CodeElement CreateMember(CodeModelContext context, IMemberModel m)
+		public CodeElement(CodeModelContext context, IEntity entity)
+		{
+			this.context = context;
+			this.entity = entity;
+			if (context.CurrentProject != null) {
+				this.Language = context.CurrentProject.GetCodeModelLanguage();
+			}
+		}
+		
+		internal static CodeElement CreateMember(CodeModelContext context, IMemberModel m)
 		{
 			switch (m.SymbolKind) {
 				case SymbolKind.Field:
@@ -54,7 +64,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual string Name {
-			get { return symbolModel.Name; }
+			get {
+				if (symbolModel != null)
+					return symbolModel.Name;
+				return entity.Name;
+			}
 		}
 		
 		public virtual string Language { get; protected set; }
@@ -99,16 +113,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected CodeElementsList<CodeAttribute2> GetAttributes(IEntityModel entityModel)
 		{
-			var list = new CodeElementsList<CodeAttribute2>();
-			IEntity td = entityModel.Resolve();
-			if (td != null) {
-				foreach (IAttribute attr in td.Attributes) {
-					if (IsInFilter(attr.Region)) {
-						list.Add(new CodeAttribute2(context, attr));
-					}
+			var attributes = new CodeElementsList<CodeAttribute2>();
+			foreach (IAttribute attribute in entity.Attributes) {
+				if (IsInFilter(attribute.Region)) {
+					attributes.Add(new CodeAttribute2(context, attribute));
 				}
 			}
-			return list;
+			return attributes;
 		}
 
 		protected override bool GetIsDerivedFrom(string fullName)

@@ -16,6 +16,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
+		public CodeClass(CodeModelContext context, ITypeDefinition typeDefinition)
+			: base(context, typeDefinition)
+		{
+		}
+		
 		public CodeClass()
 		{
 		}

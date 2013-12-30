@@ -13,6 +13,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		INamespace ns;
 		
 		public CodeNamespace(CodeModelContext context, INamespace ns)
+			: base(context)
 		{
 			this.ns = ns;
 			//this.InfoLocation = global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
