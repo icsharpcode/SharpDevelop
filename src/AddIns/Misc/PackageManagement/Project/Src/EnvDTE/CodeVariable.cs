@@ -2,19 +2,20 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeVariable : CodeElement, global::EnvDTE.CodeVariable
 	{
-		readonly IFieldModel field;
+		readonly IField field;
 		
 		public CodeVariable()
 		{
 		}
 		
-		public CodeVariable(CodeModelContext context, IFieldModel field)
+		public CodeVariable(CodeModelContext context, IField field)
 			: base(context, field)
 		{
 			this.field = field;
@@ -26,12 +27,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public global::EnvDTE.vsCMAccess Access {
 			get { return field.Accessibility.ToAccess(); }
-			set {
-				var f = field.Resolve();
-				if (f != null) {
-					context.CodeGenerator.ChangeAccessibility(f, value.ToAccessibility());
-				}
-			}
+			set { }
 		}
 	}
 }

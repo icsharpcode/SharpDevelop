@@ -46,16 +46,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.CodeVariable AddVariable(string name, object type, object Position = null, global::EnvDTE.vsCMAccess Access = global::EnvDTE.vsCMAccess.vsCMAccessPublic, object Location = null)
 		{
-			var fieldTypeName = new FullTypeName((string)type);
-			var td = typeModel.Resolve();
-			if (td == null)
-				return null;
-			IType fieldType = td.Compilation.FindType(fieldTypeName);
-			context.CodeGenerator.AddField(td, Access.ToAccessibility(), fieldType, name);
-			var fieldModel = typeModel.Members.OfType<IFieldModel>().FirstOrDefault(f => f.Name == name);
-			if (fieldModel != null) {
-				return new CodeVariable(context, fieldModel);
-			}
+//			var fieldTypeName = new FullTypeName((string)type);
+//			var typeDefinition = typeModel.Resolve();
+//			if (typeDefinition == null)
+//				return null;
+//			
+//			IType fieldType = typeDefinition.Compilation.FindType(fieldTypeName);
+//			context.CodeGenerator.AddField(typeDefinition, Access.ToAccessibility(), fieldType, name);
+//			var fieldModel = typeModel.Members.OfType<IFieldModel>().FirstOrDefault(f => f.Name == name);
+//			if (fieldModel != null) {
+//				return new CodeVariable(context, fieldModel);
+//			}
 			return null;
 		}
 	}

@@ -46,7 +46,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			switch (m.SymbolKind) {
 				case SymbolKind.Field:
-					return new CodeVariable(context, (IFieldModel)m);
+					return new CodeVariable(context, m.Resolve() as IField);
 				case SymbolKind.Property:
 				case SymbolKind.Indexer:
 //					return new CodeProperty2(m);
@@ -76,16 +76,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		// default is vsCMPart.vsCMPartWholeWithAttributes
 		public virtual global::EnvDTE.TextPoint GetStartPoint()
 		{
-//			if (symbolModel != null)
-//				return TextPoint.CreateStartPoint(context, symbolModel.Region);
-			return null;
+			return TextPoint.CreateStartPoint(context, entity.Region);
 		}
 		
 		public virtual global::EnvDTE.TextPoint GetEndPoint()
 		{
-//			if (symbolModel != null)
-//				return TextPoint.CreateEndPoint(context, symbolModel.Region);
-			return null;
+			return TextPoint.CreateEndPoint(context, entity.Region);
 		}
 		
 		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation { get; protected set; }
