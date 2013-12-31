@@ -74,10 +74,10 @@ namespace PackageManagement.Tests.Helpers
 			return codeElements.FirstOrDefault() as CodeAttribute2;
 		}
 		
-//		public static CodeProperty2 FirstCodeProperty2OrDefault(this global::EnvDTE.CodeElements codeElements)
-//		{
-//			return codeElements.FirstOrDefault() as CodeProperty2;
-//		}
+		public static CodeProperty2 FirstCodeProperty2OrDefault(this global::EnvDTE.CodeElements codeElements)
+		{
+			return codeElements.FirstOrDefault() as CodeProperty2;
+		}
 		
 		public static CodeVariable FirstCodeVariableOrDefault(this global::EnvDTE.CodeElements codeElements)
 		{

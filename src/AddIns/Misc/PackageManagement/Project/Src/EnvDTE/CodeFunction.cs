@@ -13,6 +13,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public CodeFunction(CodeModelContext context, IMethod method)
 			: base(context, method)
 		{
+			this.method = method;
 		}
 		
 		public CodeFunction()

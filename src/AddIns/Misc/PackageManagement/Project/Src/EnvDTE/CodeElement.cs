@@ -49,10 +49,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					return new CodeVariable(context, (IField)member);
 				case SymbolKind.Property:
 				case SymbolKind.Indexer:
-//					return new CodeProperty2(m);
-					throw new NotImplementedException();
+					return new CodeProperty2(context, (IProperty)member);
 				case SymbolKind.Event:
-					return null; // events are not supported in EnvDTE?
+					return null;
 				case SymbolKind.Method:
 				case SymbolKind.Operator:
 				case SymbolKind.Constructor:

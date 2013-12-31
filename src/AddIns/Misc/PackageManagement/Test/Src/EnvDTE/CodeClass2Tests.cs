@@ -147,20 +147,20 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual("MyMethod", codeFunction.Name);
 		}
 		
-//		[Test]
-//		public void Members_ClassHasOneProperty_ReturnsOneProperty()
-//		{
-//			CreateClass(
-//				"public class MyClass {\r\n" +
-//				"    public int MyProperty { get; set; }\r\n" +
-//				"}");
-//			
-//			global::EnvDTE.CodeElements codeElements = codeClass.Members;
-//			
-//			CodeProperty2 codeFunction = codeElements.FirstCodeProperty2OrDefault();
-//			Assert.AreEqual(1, codeElements.Count);
-//			Assert.AreEqual("MyProperty", codeFunction.Name);
-//		}
+		[Test]
+		public void Members_ClassHasOneProperty_ReturnsOneProperty()
+		{
+			CreateClass(
+				"public class MyClass {\r\n" +
+				"    public int MyProperty { get; set; }\r\n" +
+				"}");
+			
+			global::EnvDTE.CodeElements codeElements = codeClass.Members;
+			
+			CodeProperty2 codeProperty = codeElements.FirstCodeProperty2OrDefault();
+			Assert.AreEqual(1, codeElements.Count);
+			Assert.AreEqual("MyProperty", codeProperty.Name);
+		}
 		
 		[Test]
 		public void Members_ClassHasOneField_ReturnsOneField()
@@ -224,22 +224,23 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(1, partialClasses.Count);
 			Assert.AreEqual(codeClass, firstClass);
 		}
-//		
-//		[Test]
-//		public void Members_GetFirstPropertyTwice_PropertiesAreConsideredEqualWhenAddedToList()
-//		{
-//			CreateProjectContent();
-//			CreatePublicClass("MyClass");
-//			helper.AddPropertyToClass("MyClass.MyProperty");
-//			CodeProperty2 property = codeClass.Members.FirstCodeProperty2OrDefault();
-//			var properties = new List<CodeProperty2>();
-//			properties.Add(property);
-//			
-//			CodeProperty2 property2 = codeClass.Members.FirstCodeProperty2OrDefault();
-//			
-//			bool contains = properties.Contains(property2);
-//			Assert.IsTrue(contains);
-//		}
+		
+		[Test]
+		public void Members_GetFirstPropertyTwice_PropertiesAreConsideredEqualWhenAddedToList()
+		{
+			CreateClass(
+				"public class MyClass {\r\n" +
+				"    public int MyProperty { get; set; }\r\n" +
+				"}");
+			CodeProperty2 property = codeClass.Members.FirstCodeProperty2OrDefault();
+			var properties = new List<CodeProperty2>();
+			properties.Add(property);
+			
+			CodeProperty2 property2 = codeClass.Members.FirstCodeProperty2OrDefault();
+			
+			bool contains = properties.Contains(property2);
+			Assert.IsTrue(contains);
+		}
 		
 		[Test]
 		public void IsAbstract_ClassIsAbstract_ReturnsTrue()
