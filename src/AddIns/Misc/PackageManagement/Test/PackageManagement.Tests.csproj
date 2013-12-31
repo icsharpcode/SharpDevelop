@@ -99,7 +99,6 @@
     </Compile>
     <Compile Include="Src\EnvDTE\CodeNamespaceTests.cs" />
     <Compile Include="Src\EnvDTE\CodeParameter2Tests.cs" />
-    <Compile Include="Src\EnvDTE\CodeParameterTests.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeStructTests.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeRef2Tests.cs" />
@@ -127,7 +126,6 @@
     <Compile Include="Src\Helpers\MethodHelper.cs" />
     <Compile Include="Src\Helpers\MethodOrPropertyHelper.cs" />
     <Compile Include="Src\Helpers\PackageOperationHelper.cs" />
-    <Compile Include="Src\Helpers\ParameterHelper.cs" />
     <Compile Include="Src\Helpers\ProjectContentHelper.cs" />
     <Compile Include="Src\Helpers\PropertiesHelper.cs" />
     <Compile Include="Src\Helpers\ReturnTypeHelper.cs" />
