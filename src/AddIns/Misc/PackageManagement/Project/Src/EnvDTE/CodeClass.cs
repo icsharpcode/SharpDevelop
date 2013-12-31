@@ -11,11 +11,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeClass : CodeType, global::EnvDTE.CodeClass
 	{
-		public CodeClass(CodeModelContext context, ITypeDefinitionModel typeModel)
-			: base(context, typeModel)
-		{
-		}
-		
 		public CodeClass(CodeModelContext context, ITypeDefinition typeDefinition)
 			: base(context, typeDefinition)
 		{
@@ -31,16 +26,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.CodeElements ImplementedInterfaces {
 			get {
-				var list = new CodeElementsList<CodeType>();
-				var td = typeModel.Resolve();
-				if (td != null) {
-					foreach (var baseType in td.GetAllBaseTypes().Where(t => t.Kind == TypeKind.Interface)) {
-						CodeType element = Create(context, baseType);
-						if (element != null)
-							list.Add(element);
+				var interfaces = new CodeElementsList<CodeType>();
+				foreach (IType baseType in typeDefinition.DirectBaseTypes.Where(t => t.Kind == TypeKind.Interface)) {
+					CodeType element = Create(context, baseType);
+					if (element != null) {
+						interfaces.Add(element);
 					}
 				}
-				return list;
+				return interfaces;
 			}
 		}
 		

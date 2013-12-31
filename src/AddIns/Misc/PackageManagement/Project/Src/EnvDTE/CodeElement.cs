@@ -42,11 +42,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		internal static CodeElement CreateMember(CodeModelContext context, IMemberModel m)
+		internal static CodeElement CreateMember(CodeModelContext context, IMember member)
 		{
-			switch (m.SymbolKind) {
+			switch (member.SymbolKind) {
 				case SymbolKind.Field:
-					return new CodeVariable(context, m.Resolve() as IField);
+					return new CodeVariable(context, (IField)member);
 				case SymbolKind.Property:
 				case SymbolKind.Indexer:
 //					return new CodeProperty2(m);
@@ -57,7 +57,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				case SymbolKind.Operator:
 				case SymbolKind.Constructor:
 				case SymbolKind.Destructor:
-					return new CodeFunction2(context, (IMethodModel)m);
+					return new CodeFunction2(context, (IMethod)member);
 				default:
 					throw new NotSupportedException("Invalid value for SymbolKind");
 			}
@@ -107,7 +107,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return context.FilteredFileName == region.FileName;
 		}
 		
-		protected CodeElementsList<CodeAttribute2> GetAttributes(IEntityModel entityModel)
+		protected CodeElementsList<CodeAttribute2> GetAttributes(IEntity entity)
 		{
 			var attributes = new CodeElementsList<CodeAttribute2>();
 			foreach (IAttribute attribute in entity.Attributes) {

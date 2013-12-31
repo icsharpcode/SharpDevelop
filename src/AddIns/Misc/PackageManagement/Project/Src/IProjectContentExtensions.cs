@@ -39,15 +39,5 @@ namespace ICSharpCode.PackageManagement
 					throw new Exception("Invalid value for vsCMAccess");
 			}
 		}
-		
-		public static CodeElementsList<T> AsCodeElements<T>(this IModelCollection<T> input)
-			where T : global::EnvDTE.CodeElement
-		{
-			var list = new CodeElementsList<T>();
-			// TODO: react to changes
-			foreach (var element in input)
-				list.Add(element);
-			return list;
-		}
 	}
 }

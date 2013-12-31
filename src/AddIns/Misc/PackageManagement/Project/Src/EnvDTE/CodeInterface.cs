@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
+using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -11,28 +13,27 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		string fullName;
 		
-//		public CodeInterface(IProjectContent projectContent, IClass c)
-//			: base(projectContent, c)
-//		{
-//		}
-		
-		public CodeInterface(CodeModelContext context, ITypeDefinitionModel typeModel)
-			: base(context, typeModel)
-		{
-//			fullName = base.FullName;
-		}
-		
-		public CodeInterface(CodeModelContext context, ITypeDefinition typeDefinition)
+		public CodeInterface(CodeModelContext context, ITypeDefinition typeDefinition, params IType[] typeArguments)
 			: base(context, typeDefinition)
 		{
-//			fullName = base.FullName;
+			fullName = GetFullName(typeArguments);
 		}
 		
-//		public CodeInterface(IProjectContent projectContent, IReturnType type, IClass c)
-//			: base(projectContent, c)
-//		{
-//			fullName = type.GetFullName();
-//		}
+		string GetFullName(IType[] typeArguments)
+		{
+			if (typeArguments.Length > 0)
+			{
+				return base.FullName + GetParameterisedTypeName(typeArguments);
+			}
+			return base.FullName;
+		}
+		
+		string GetParameterisedTypeName(IType[] typeArguments)
+		{
+			return String.Format(
+				"<{0}>",
+				String.Join(", ", typeArguments.Select(type => type.FullName)));
+		}
 //		
 //		public override global::EnvDTE.vsCMElement Kind {
 //			get { return global::EnvDTE.vsCMElement.vsCMElementInterface; }
@@ -56,9 +57,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		//	return codeGenerator.AddPublicMethod(name, (string)type);
 			return null;
 		}
-//		
-//		public override string FullName {
-//			get { return fullName; }
-//		}
+		
+		public override string FullName {
+			get { return fullName; }
+		}
 	}
 }

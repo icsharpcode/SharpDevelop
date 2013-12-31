@@ -20,35 +20,32 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		CodeElementsList<CodeElement> members;
 		
-		public static CodeType Create(CodeModelContext context, IType type)
+		internal static CodeType Create(CodeModelContext context, IType type)
 		{
-			ITypeDefinition typeDef = type.GetDefinition();
-			if (typeDef != null) {
-				ITypeDefinitionModel typeModel = typeDef.GetModel();
-				if (typeModel != null) {
-					return Create(context.WithFilteredFileName(null), typeModel);
-				}
+			ITypeDefinition typeDefinition = type.GetDefinition();
+			if (typeDefinition != null) {
+				return Create(context.WithFilteredFileName(null), typeDefinition, type.TypeArguments.ToArray());
 			}
 			return null;
 		}
 		
-		public static CodeType Create(CodeModelContext context, ITypeDefinitionModel typeModel)
+		internal static CodeType Create(
+			CodeModelContext context,
+			ITypeDefinition typeDefinition,
+			params IType[] typeArguments)
 		{
-			switch (typeModel.TypeKind) {
+			switch (typeDefinition.Kind) {
 				case TypeKind.Class:
-				case TypeKind.Module:
-					goto default;
+					return new CodeClass2(context, typeDefinition);
 				case TypeKind.Interface:
-					goto default;
+					return new CodeInterface(context, typeDefinition, typeArguments);
+				case TypeKind.Module:
 				case TypeKind.Struct:
 				case TypeKind.Void:
-					goto default;
 				case TypeKind.Delegate:
-					goto default;
 				case TypeKind.Enum:
-					goto default;
 				default:
-					return new CodeType(context, typeModel);
+					return new CodeType(context, typeDefinition);
 			}
 		}
 		
@@ -123,10 +120,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual global::EnvDTE.CodeElements Members {
 			get {
 				if (members == null) {
-					members = typeModel.Members
-						.Where(m => IsInFilter(m.Region))
-						.Select(m => CreateMember(context, m))
-						.AsCodeElements();
+					members = new CodeElementsList<CodeElement>();
+					members.AddRange(typeDefinition.Members
+						.Where(member => IsInFilter(member.Region))
+						.Where(member => !member.Region.End.IsEmpty)
+						.Select(member => CreateMember(context, member)));
 				}
 				return members;
 			}
@@ -134,29 +132,28 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.CodeElements Bases {
 			get {
-				var list = new CodeElementsList<CodeType>();
-				ITypeDefinition typeDefinition = typeModel.Resolve();
-				if (typeDefinition != null) {
-					IEnumerable<IType> baseTypes;
-					if (typeDefinition.Kind == TypeKind.Interface) {
-						baseTypes = typeDefinition.DirectBaseTypes;
-					} else {
-						baseTypes = typeDefinition.DirectBaseTypes.Where(type => type.Kind != TypeKind.Interface);
-					}
-					foreach (IType baseType in baseTypes) {
-						CodeType element = Create(context, baseType);
-						if (element != null) {
-							list.Add(element);
-						}
+				var types = new CodeElementsList<CodeType>();
+				foreach (IType baseType in GetBaseTypes()) {
+					CodeType element = Create(context, baseType);
+					if (element != null) {
+						types.Add(element);
 					}
 				}
-				return list;
+				return types;
 			}
+		}
+		
+		IEnumerable<IType> GetBaseTypes()
+		{
+			if (typeDefinition.Kind == TypeKind.Interface) {
+				return typeDefinition.DirectBaseTypes;
+			}
+			return typeDefinition.DirectBaseTypes.Where(type => type.Kind != TypeKind.Interface);
 		}
 		
 		public virtual global::EnvDTE.CodeElements Attributes {
 			get {
-				return GetAttributes(typeModel);
+				return GetAttributes(typeDefinition);
 			}
 		}
 		
@@ -166,7 +163,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					return new FileCodeModel2(context, null).GetNamespace(typeModel.Namespace);
 				} else {
 					throw new NotImplementedException();
-				//    return new CodeNamespace(context, typeModel.Namespace);
+				//	return new CodeNamespace(context, typeDefinition.Namespace);
 				}
 			}
 		}
