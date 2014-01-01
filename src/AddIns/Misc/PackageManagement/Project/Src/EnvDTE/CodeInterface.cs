@@ -15,23 +15,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			: base(context, typeDefinition, typeArguments)
 		{
 		}
-//		
-//		public override global::EnvDTE.vsCMElement Kind {
-//			get { return global::EnvDTE.vsCMElement.vsCMElementInterface; }
-//		}
-//		
-//		/// <summary>
-//		/// Returns null if base type is not an interface.
-//		/// </summary>
-//		public static CodeInterface CreateFromBaseType(IProjectContent projectContent, IReturnType baseType)
-//		{
-//			IClass baseTypeClass = baseType.GetUnderlyingClass();
-//			if (baseTypeClass.ClassType == ClassType.Interface) {
-//				return new CodeInterface(projectContent, baseType, baseTypeClass);
-//			}
-//			return null;
-//		}
-//		
+		
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementInterface; }
+		}
+		
 		public global::EnvDTE.CodeFunction AddFunction(string name, global::EnvDTE.vsCMFunction kind, object type, object Position = null, global::EnvDTE.vsCMAccess Access = global::EnvDTE.vsCMAccess.vsCMAccessPublic)
 		{
 		//	var codeGenerator = new ClassCodeGenerator(Class);
