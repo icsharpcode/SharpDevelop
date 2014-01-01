@@ -11,28 +11,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeInterface : CodeType, global::EnvDTE.CodeInterface
 	{
-		string fullName;
-		
 		public CodeInterface(CodeModelContext context, ITypeDefinition typeDefinition, params IType[] typeArguments)
-			: base(context, typeDefinition)
+			: base(context, typeDefinition, typeArguments)
 		{
-			fullName = GetFullName(typeArguments);
-		}
-		
-		string GetFullName(IType[] typeArguments)
-		{
-			if (typeArguments.Length > 0)
-			{
-				return base.FullName + GetParameterisedTypeName(typeArguments);
-			}
-			return base.FullName;
-		}
-		
-		string GetParameterisedTypeName(IType[] typeArguments)
-		{
-			return String.Format(
-				"<{0}>",
-				String.Join(", ", typeArguments.Select(type => type.FullName)));
 		}
 //		
 //		public override global::EnvDTE.vsCMElement Kind {
@@ -56,10 +37,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		//	var codeGenerator = new ClassCodeGenerator(Class);
 		//	return codeGenerator.AddPublicMethod(name, (string)type);
 			return null;
-		}
-		
-		public override string FullName {
-			get { return fullName; }
 		}
 	}
 }

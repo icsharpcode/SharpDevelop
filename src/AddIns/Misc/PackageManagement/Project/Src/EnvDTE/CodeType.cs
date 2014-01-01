@@ -17,6 +17,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		protected readonly ITypeDefinitionModel typeModel;
 		protected readonly ITypeDefinition typeDefinition;
+		IType[] typeArguments;
 		
 		CodeElementsList<CodeElement> members;
 		
@@ -45,7 +46,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				case TypeKind.Delegate:
 				case TypeKind.Enum:
 				default:
-					return new CodeType(context, typeDefinition);
+					return new CodeType(context, typeDefinition, typeArguments);
 			}
 		}
 		
@@ -56,10 +57,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.InfoLocation = GetInfoLocationOld();
 		}
 		
-		public CodeType(CodeModelContext context, ITypeDefinition typeDefinition)
+		public CodeType(CodeModelContext context, ITypeDefinition typeDefinition, params IType[] typeArguments)
 			: base(context, typeDefinition)
 		{
 			this.typeDefinition = typeDefinition;
+			this.typeArguments = typeArguments;
 			this.InfoLocation = GetInfoLocation();
 		}
 		
@@ -105,7 +107,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					fullName.Append('.');
 					fullName.Append(fullTypeName.GetNestedTypeName(i));
 				}
-				return fullName.ToString();
+				return fullName.ToString() + GetTypeArguments();
 			}
 		}
 		
@@ -115,6 +117,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return typeModel.FullTypeName;
 			}
 			return typeDefinition.FullTypeName;
+		}
+		
+		string GetTypeArguments()
+		{
+			if (typeArguments.Length == 0) {
+				return String.Empty;
+			}
+			
+			return String.Format(
+				"<{0}>",
+				String.Join(", ", typeArguments.Select(type => type.FullName)));
 		}
 		
 		public virtual global::EnvDTE.CodeElements Members {

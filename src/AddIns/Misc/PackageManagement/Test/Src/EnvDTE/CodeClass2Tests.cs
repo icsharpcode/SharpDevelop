@@ -336,5 +336,18 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("System.IDisposable", codeInterface.FullName);
 		}
+		
+		[Test]
+		public void FullName_GenericClass_ReturnsTypeArguments()
+		{
+			CreateClass(
+				"namespace Test {\r\n" +
+				"    class MyClass<T> {}\r\n" +
+				"}");
+			
+			string name = codeClass.FullName;
+			
+			Assert.AreEqual("Test.MyClass<T>", name);
+		}
 	}
 }

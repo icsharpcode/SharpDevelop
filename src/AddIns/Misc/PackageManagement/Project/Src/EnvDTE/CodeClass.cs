@@ -12,7 +12,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeClass : CodeType, global::EnvDTE.CodeClass
 	{
 		public CodeClass(CodeModelContext context, ITypeDefinition typeDefinition)
-			: base(context, typeDefinition)
+			: base(context, typeDefinition, typeDefinition.TypeArguments.ToArray())
 		{
 		}
 		
