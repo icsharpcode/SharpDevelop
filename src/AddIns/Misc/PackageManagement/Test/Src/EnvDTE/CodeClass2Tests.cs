@@ -349,5 +349,26 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("Test.MyClass<T>", name);
 		}
+		
+		[Test]
+		public void Attributes_ClassHasOneAttribute_ReturnsOneAttribute()
+		{
+			CreateClass("[System.ObsoleteAttribute] class MyClass {}");
+		
+			CodeAttribute2 attribute = codeClass.Attributes.FirstCodeAttribute2OrDefault();
+			
+			Assert.AreEqual(1, codeClass.Attributes.Count);
+			Assert.AreEqual("Obsolete", attribute.Name);
+		}
+		
+		[Test]
+		public void Attributes_GetItemByNameWhenClassHasOneAttribute_ReturnsOneAttribute()
+		{
+			CreateClass("[System.ObsoleteAttribute] class MyClass {}");
+		
+			var attribute = codeClass.Attributes.Item("Obsolete") as CodeAttribute2;
+			
+			Assert.AreEqual("Obsolete", attribute.Name);
+		}
 	}
 }

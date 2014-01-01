@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Semantics;
 
@@ -31,7 +32,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		string GetValue(ResolveResult value)
 		{
 			var astBuilder = new TypeSystemAstBuilder();
-			var ast = astBuilder.ConvertConstantValue(value);
+			Expression ast = astBuilder.ConvertConstantValue(value);
 			return ast.ToString();
 		}
 		
