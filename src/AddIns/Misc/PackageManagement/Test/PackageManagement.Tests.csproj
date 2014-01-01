@@ -114,7 +114,6 @@
     <Compile Include="Src\EnvDTE\SolutionPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionTests.cs" />
     <Compile Include="Src\Helpers\CodeElementsExtensions.cs" />
-    <Compile Include="Src\Helpers\CompilationUnitHelper.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageActionRunner.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingProcessPackageAction.cs" />
     <Compile Include="Src\Helpers\FakeCodeGenerator.cs" />
@@ -123,12 +122,8 @@
     <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />
     <Compile Include="Src\Helpers\FakeUpdatePackageActions.cs" />
     <Compile Include="Src\Helpers\FakeUpdatePackageActionsFactory.cs" />
-    <Compile Include="Src\Helpers\MethodHelper.cs" />
-    <Compile Include="Src\Helpers\MethodOrPropertyHelper.cs" />
     <Compile Include="Src\Helpers\PackageOperationHelper.cs" />
-    <Compile Include="Src\Helpers\ProjectContentHelper.cs" />
     <Compile Include="Src\Helpers\PropertiesHelper.cs" />
-    <Compile Include="Src\Helpers\ReturnTypeHelper.cs" />
     <Compile Include="Src\Helpers\SelectedProjectCollectionAssert.cs" />
     <Compile Include="Src\Helpers\SolutionHelper.cs" />
     <Compile Include="Src\Helpers\TestableInstalledPackageViewModel.cs" />
@@ -139,9 +134,6 @@
     <Compile Include="Src\Helpers\TestableUpdatePackagesAction.cs" />
     <Compile Include="Src\Helpers\TestableUpdateSolutionPackagesAction.cs" />
     <Compile Include="Src\Helpers\TestPackageHelper.cs" />
-    <Compile Include="Src\Helpers\TypeParameterHelper.cs" />
-    <Compile Include="Src\Helpers\UsingHelper.cs" />
-    <Compile Include="Src\Helpers\UsingScopeHelper.cs" />
     <Compile Include="Src\InstalledPackageViewModelTests.cs" />
     <Compile Include="Src\IPackageExtensionsTests.cs" />
     <Compile Include="Src\ManagePackagesCommandTests.cs" />

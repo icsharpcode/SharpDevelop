@@ -57,9 +57,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual bool CanOverride {
 			get { return method.IsOverridable; }
 			set {
-				if (value && !method.IsOverridable) {
-					context.CodeGenerator.MakeVirtual(method);
-				}
+//				if (value && !method.IsOverridable) {
+//					context.CodeGenerator.MakeVirtual(method);
+//				}
 			}
 		}
 		
