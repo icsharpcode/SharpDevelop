@@ -49,6 +49,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 
 		public  Canvas CreateContainer(ExportContainer container)	{
 			var canvas = CreateCanvas(container);
+			Console.WriteLine("WPF Create Container with {0}",container.DesiredSize);
 			var size = container.DesiredSize.ToWpf();
 			canvas.Measure(size);
 			canvas.Arrange(new Rect(new Point(),size ));

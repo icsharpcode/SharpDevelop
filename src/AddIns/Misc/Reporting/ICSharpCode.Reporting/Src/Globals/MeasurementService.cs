@@ -20,7 +20,6 @@ namespace ICSharpCode.Reporting.Globals
 		
 		
 		public static Size Measure (IExportText item,Graphics graphics) {
-			Console.WriteLine("Measure {0}",item.Text);
 			if (!item.CanGrow) {
 				return item.Size;
 			}

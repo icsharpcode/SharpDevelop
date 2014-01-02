@@ -32,7 +32,6 @@ namespace ICSharpCode.Reporting.Arrange
 			
 			foreach (var element in items) {
 				if (element is IExportContainer) {
-					Console.WriteLine("Measure -> Container found");
 					Measure(element,graphics);
 				}
 				var tbi = element as IExportText;

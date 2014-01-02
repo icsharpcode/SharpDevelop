@@ -99,8 +99,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 					
 					AdjustLocationInSection(sectionPosition,  convertedItems);
 				
-					var rr = new Rectangle(sectionContainer.DisplayRectangle.X,sectionContainer.DisplayRectangle.Y,sectionContainer.Size.Width,
-					                       sectionContainer.Size.Height + convertedItems[0].Size.Height );
+//					var rr = new Rectangle(sectionContainer.DisplayRectangle.X,sectionContainer.DisplayRectangle.Y,sectionContainer.Size.Width,
+//					                       sectionContainer.Size.Height + convertedItems[0].Size.Height );
 
 
 					// keep this for 'KeepTogether'
@@ -143,9 +143,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 					sectionContainer.Location = pagePosition;
 				}
 
-				MeasureAndArrangeContainer(sectionContainer);
-
 				sectionContainer.ExportedItems.AddRange(convertedItems);
+				MeasureAndArrangeContainer(sectionContainer);
 				exportRows.Add(sectionContainer);
 				pagePosition = new Point(CurrentSection.Location.X, pagePosition.Y + sectionContainer.DesiredSize.Height + 1);
 			}
@@ -160,7 +159,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentPage = CreateNewPage();
 			WriteStandardSections();
 			CurrentLocation = DetailStart;
-			ResetPosition();
+//			ResetPosition();
 		}
 
 		
@@ -193,11 +192,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 			return false;
 		}
 		
-
+		/*
 		Point ResetPosition () {
 			return new Point(DetailStart.X,1);
 		}
-		
+		*/
 		
 		static void AdjustLocationInSection(Point sectionPosition,List<IExportColumn> convertedItems)
 		{
