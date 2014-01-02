@@ -22,40 +22,56 @@ namespace ICSharpCode.CodeCoverage
         private readonly lineInfo[] lines;
         public CodeCoverageStringTextSource(string source)
         {
-            // protect readonly field from source mutation(s)
-            this.textSource = string.Copy(source);
+            this.textSource = source;
 
             lineInfo line;
             List<lineInfo> lineInfoList = new List<lineInfo>();
             int offset = 0;
             int counter = 0;
-            bool nl = false;
+            bool newLine = false;
             bool cr = false;
             bool lf = false;
+            bool nel = false;
+            bool lsep = false;
 
+            // http://www.w3.org/TR/xml11/#sec-line-ends
             foreach ( ushort ch in textSource ) {
                 switch (ch) {
-                    case 13:
-                        if (lf || cr) {
-                            nl = true; // cr after [cr]lf
+                    case 0xD:
+                        if (lf||nel||cr) {
+                            newLine = true; // cr after cr|nel|lf
                         } else {
                             cr = true; // cr found
                         }
                         break;
-                    case 10:
-                        if (lf) {
-                            nl = true; // lf after lf
+                    case 0xA:
+                        if (lf||nel||lsep) {
+                            newLine = true; // lf after line-end
                         } else {
                             lf = true; // lf found
                         }
                         break;
+                    case 0x85:
+                        if (lf||nel||lsep) {
+                            newLine = true; // nel after line-end
+                        } else {
+                            nel = true; // lf found
+                        }
+                        break;
+                    case 0x2028:
+                        if (cr||lf||nel||lsep) {
+                            newLine = true; // lsep after line-end
+                        } else {
+                            lsep = true; // lsep found
+                        }
+                        break;
                     default:
-                        if (cr||lf) {
-                            nl = true; // any noncrlf char after cr|lf
+                        if (cr||lf||nel||lsep) {
+                            newLine = true; // any non-line-end char after any line-end
                         }
                         break;
                 }
-                if (nl) { // nl detected - add line
+                if (newLine) { // newLine detected - add line
                     line = new lineInfo();
                     line.Offset = offset;
                     line.Length = counter - offset;
@@ -63,7 +79,9 @@ namespace ICSharpCode.CodeCoverage
                     offset = counter;
                     cr = false;
                     lf = false;
-                    nl = false;
+                    nel = false;
+                    lsep = false;
+                    newLine = false;
                 }
                 ++counter;
             }
@@ -102,7 +120,7 @@ namespace ICSharpCode.CodeCoverage
 
             if (Line==EndLine) {
 
-                #region One line request
+                #region One-Line request
                 line = GetLine(Line);
 
                 Debug.Assert(!(Column < 1), "Column < 1");
