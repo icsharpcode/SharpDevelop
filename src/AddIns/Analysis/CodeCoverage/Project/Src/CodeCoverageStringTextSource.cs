@@ -31,42 +31,25 @@ namespace ICSharpCode.CodeCoverage
             bool newLine = false;
             bool cr = false;
             bool lf = false;
-            bool nel = false;
-            bool lsep = false;
 
-            // http://www.w3.org/TR/xml11/#sec-line-ends
             foreach ( ushort ch in textSource ) {
                 switch (ch) {
                     case 0xD:
-                        if (lf||nel||cr) {
-                            newLine = true; // cr after cr|nel|lf
+                        if (lf||cr) {
+                            newLine = true; // cr after cr|lf
                         } else {
                             cr = true; // cr found
                         }
                         break;
                     case 0xA:
-                        if (lf||nel||lsep) {
-                            newLine = true; // lf after line-end
+                        if (lf) {
+                            newLine = true; // lf after lf
                         } else {
                             lf = true; // lf found
                         }
                         break;
-                    case 0x85:
-                        if (lf||nel||lsep) {
-                            newLine = true; // nel after line-end
-                        } else {
-                            nel = true; // lf found
-                        }
-                        break;
-                    case 0x2028:
-                        if (cr||lf||nel||lsep) {
-                            newLine = true; // lsep after line-end
-                        } else {
-                            lsep = true; // lsep found
-                        }
-                        break;
                     default:
-                        if (cr||lf||nel||lsep) {
+                        if (cr||lf) {
                             newLine = true; // any non-line-end char after any line-end
                         }
                         break;
@@ -79,8 +62,6 @@ namespace ICSharpCode.CodeCoverage
                     offset = counter;
                     cr = false;
                     lf = false;
-                    nel = false;
-                    lsep = false;
                     newLine = false;
                 }
                 ++counter;
