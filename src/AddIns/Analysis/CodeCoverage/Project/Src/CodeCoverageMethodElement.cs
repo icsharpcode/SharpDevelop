@@ -151,7 +151,31 @@ namespace ICSharpCode.CodeCoverage
 			}
 			return bps;
 		}
+		
+		// Find method-body first SequencePoint "{"
+		public static CodeCoverageSequencePoint getBodyStartSP(IEnumerable<CodeCoverageSequencePoint> sps) {
+			CodeCoverageSequencePoint startSeqPoint = null;
+			foreach (CodeCoverageSequencePoint sp in sps) {
+				if ( sp.Content == "{") {
+					startSeqPoint = sp;
+					break;
+				}
+			}
+			return startSeqPoint;
+		}
 
+		// Find method-body final SequencePoint "}" 
+		public static CodeCoverageSequencePoint getBodyFinalSP(IEnumerable<CodeCoverageSequencePoint> sps) {
+			CodeCoverageSequencePoint finalSeqPoint = null;
+			foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(sps)) {
+				if ( sp.Content == "}") {
+					finalSeqPoint = sp;
+					break;
+				}
+			}
+			return finalSeqPoint;
+		}
+		
 		Tuple<int,int> GetBranchRatio () {
 
 			// goal: Get branch ratio and exclude (rewriten) Code Contracts branches 
@@ -165,33 +189,14 @@ namespace ICSharpCode.CodeCoverage
 				return null;
 			}
 
-			// Find method-body first SequencePoint "{"
-			// and then first next sequencePoint (and offset of that instruction in body)
-			// This is used to skip CCRewrite(n) BranchPoint's (Requires)
+			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Requires)
 			// and '{' branches at static methods
-			bool startSPFound = false;
-			CodeCoverageSequencePoint startSeqPoint = null;
-			foreach (CodeCoverageSequencePoint sp in this.SequencePoints) {
-			    if (startSPFound) {
-					startSeqPoint = sp;
-					break;
-				}
-				if ( sp.Content == "{") {
-			        startSPFound = true;
-				}
-			}
+			CodeCoverageSequencePoint startSeqPoint = getBodyStartSP(this.SequencePoints);
 			Debug.Assert (!Object.ReferenceEquals(null, startSeqPoint));
 			if (Object.ReferenceEquals(null, startSeqPoint)) { return null; }
 
-			// Find method-body last SequencePoint "}" and offset 
-			// This is used to skip CCRewrite(n) BranchPoint's (Ensures)
-			CodeCoverageSequencePoint finalSeqPoint = null;
-			foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(this.SequencePoints)) {
-				if ( sp.Content == "}") {
-					finalSeqPoint = sp;
-					break;
-				}
-			}
+			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Ensures)
+			CodeCoverageSequencePoint finalSeqPoint = getBodyFinalSP(this.SequencePoints);
 			Debug.Assert ( !Object.ReferenceEquals( null, finalSeqPoint) );
 			if (Object.ReferenceEquals(null, finalSeqPoint)) { return null; }
 			
@@ -202,7 +207,7 @@ namespace ICSharpCode.CodeCoverage
 			
 			foreach (var bp in this.BranchPoints) {
 			    
-			    // exclude CCRewrite(n) contracts
+			    // ignore branches outside of method body
 				if (bp.Offset < startSeqPoint.Offset)
 					continue;
 				if (bp.Offset > finalSeqPoint.Offset)
@@ -224,12 +229,6 @@ namespace ICSharpCode.CodeCoverage
 				currSeqPoint.Branches.Add(bp);
 			}
 
-//			for (int i = this.SequencePoints.Count-1; i >= 0; i--) {
-//			    if (this.SequencePoints[i].Content.StartsWith("Assert")) {
-//			        this.SequencePoints.RemoveAt(i);
-//			    }
-//			}
-
 			// Merge sp.Branches on exit-offset
 			// Calculate Method Branch coverage
 			int totalBranchVisit = 0;
@@ -242,12 +241,14 @@ namespace ICSharpCode.CodeCoverage
 			    // SequencePoint covered & has branches?
 			    if (sp.VisitCount != 0 && sp.Branches != null) {
 
-        			// Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
+        			// 1) Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
         			// one do not want or cannot cover by test-case because is handled earlier at same method.
         			// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
-        			// exclude Contract class (EnsuresOnThrow)
-        			// exclude NUnit Assert class
-			        if (sp.Content == "in" ||
+        			// 2) Branches within sequence points "{" and "}" are not source branches but compiler generated branches
+        			// ie: static methods start sequence point "{" contains compiler generated branches
+        			// 3) Exclude Contract class (EnsuresOnThrow/Assert/Assume is inside method body)
+        			// 4) Exclude NUnit Assert(.Throws) class
+			        if (sp.Content == "in" || sp.Content == "{" || sp.Content == "}" ||
 			            sp.Content.StartsWith("Assert.") ||
 			            sp.Content.StartsWith("Assert ") ||
 			            sp.Content.StartsWith("Contract.") ||
@@ -274,9 +275,9 @@ namespace ICSharpCode.CodeCoverage
 			            pointBranchVisit += bp.VisitCount == 0? 0 : 1 ;
 						pointBranchCount += 1;
 			        }
-			        // Not full coverage?
+		            // Not full coverage?
 		            if (pointBranchVisit != pointBranchCount) {
-   			            sp.BranchCoverage = false; // part-covered
+   			            sp.BranchCoverage = false; // => part-covered
 		            }
 					totalBranchVisit += pointBranchVisit;
 					totalBranchCount += pointBranchCount;
