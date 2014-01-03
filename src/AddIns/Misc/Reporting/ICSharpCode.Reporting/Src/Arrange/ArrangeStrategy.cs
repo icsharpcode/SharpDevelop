@@ -29,24 +29,38 @@ namespace ICSharpCode.Reporting.Arrange
 	{
 		
 		public void Arrange(IExportColumn exportColumn){
-			Console.WriteLine("Start arrange------");
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
 			var container = exportColumn as IExportContainer;
 			if ((container != null) && (container.ExportedItems.Count > 0)) {
-				
-				List<IExportColumn> canGrowItems = CreateCangrowList(container);
+				List<IExportColumn> canGrowItems = CreateCanGrowList(container);
 				if (canGrowItems.Count > 0) {
-					var arSize = ArrangeInternal(container);
-					Console.WriteLine("Ret from arrange {0}",arSize);
-					container.DesiredSize = new Size(arSize.Width,arSize.Height);
+					var containerSize = ArrangeInternal(container);
+					if (containerSize.Height > container.DesiredSize.Height) {
+						container.DesiredSize = new Size(containerSize.Width,containerSize.Height);
+					} 
 				}
 			}
-			Console.WriteLine("End arrange------");
 		}
 
 		
-		static List<IExportColumn> CreateCangrowList(IExportContainer container)
+		static Size ArrangeInternal(IExportContainer container)
+		{
+			var containerRectangle = container.DisplayRectangle;
+			foreach (var element in container.ExportedItems) {
+				var elementRectangle = new Rectangle(element.DisplayRectangle.Left + containerRectangle.Left,
+				                             element.DisplayRectangle.Top + containerRectangle.Top,
+				                             element.DesiredSize.Width,
+				                             element.DesiredSize.Height);
+				if (!containerRectangle.Contains(elementRectangle)) {
+					containerRectangle = Rectangle.Union(containerRectangle,elementRectangle);
+				}
+			}
+			return containerRectangle.Size;
+		}
+		
+		
+		static List<IExportColumn> CreateCanGrowList(IExportContainer container)
 		{
 			var l1 = new List<IExportColumn>();
 			foreach (var element in container.Descendents()) {
@@ -58,27 +72,29 @@ namespace ICSharpCode.Reporting.Arrange
 		}
 		
 		
-		
-		static Size ArrangeInternal(IExportContainer container)
+		static Size old_ArrangeInternal(IExportContainer container)
 		{
 			var result = container.DisplayRectangle;
 			Console.WriteLine();
 			Console.WriteLine("enter arrange for <{0}> with {1}",container.Name,result);
+			if (container.Name.Contains("Det")) {
+			    	Console.WriteLine(container.Name);
+			}
 			foreach (var element in container.ExportedItems) {
 				var con = element as IExportContainer;
 				if (con != null) {
 					Console.WriteLine("recursive");
-					con.DesiredSize = result.Size;
+//					con.DesiredSize = result.Size;
 					ArrangeInternal(con);
 				}
 				var testRext = new Rectangle(element.DisplayRectangle.Left + result.Left,
 				                             element.DisplayRectangle.Top + result.Top,
 				                             element.DesiredSize.Width,
 				                             element.DesiredSize.Height);
-				
+				Console.WriteLine("<<<<<<<{0}",element.DisplayRectangle);
 				if (!result.Contains(testRext)) {
-					Console.WriteLine("No fit do arrange container {0} - elem {1}",result.Bottom,testRext.Bottom);
-					Console.WriteLine("{0} - {1}",result.Bottom,testRext.Bottom);
+//					Console.WriteLine("No fit do arrange container  {0} - elem {1}",result.Bottom,testRext.Bottom);
+//					Console.WriteLine("{0} - {1}",result.Bottom,testRext.Bottom);
 					var r1 = Rectangle.Union(result,testRext);
 					result = new Rectangle(result.Left,
 					                       result.Top,
@@ -86,40 +102,18 @@ namespace ICSharpCode.Reporting.Arrange
 					                       element.DisplayRectangle.Size.Height);
 					Console.WriteLine("Union {0}",r1);
 					Console.WriteLine("{0} - {1}",result.Bottom,testRext.Bottom);
-					container.DesiredSize = result.Size;
+					result = r1;
+//					container.DesiredSize = result.Size;
+//					container.DesiredSize = r1.Size;
 				} else {
 					Console.WriteLine("Nothing to arrange {0} - {1}",result.Bottom,testRext.Bottom);
 				}
 			}
+			Console.WriteLine("Retval for {0} - {1}",container.Name,result);
 			return result.Size;
 		}
-		
-		
-		/*
-		public void a_Arrange(IExportColumn exportColumn){
-			if (exportColumn == null)
-				throw new ArgumentNullException("exportColumn");
-			var container = exportColumn as IExportContainer;
-			if ((container != null) && (container.ExportedItems.Count > 0)) {
-				var resizeable = from resize in container.ExportedItems
-					where ((resize.CanGrow))
-					select resize;
-				if (resizeable.Any()) {
-					
-					//minimun Location
-					var maxLocation  = (from p in container.ExportedItems orderby p.Location.Y select p).Last();
-					// maximum Size
-					var maxBottom  = (from p in container.ExportedItems orderby p.DisplayRectangle.Bottom select p).Last();
-					container.DesiredSize = new Size(container.Size.Width,maxLocation.Location.Y + maxBottom.DesiredSize.Height + 5);
-
-				} else {
-					container.DesiredSize = container.Size;
-				}
-			}
-		}
-		 */
-		
 	}
+	
 	
 	static class Extensions {
 		

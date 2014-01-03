@@ -74,7 +74,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			SetFont(textBlock,exportText);
 			
 			textBlock.TextWrapping = TextWrapping.Wrap;
-			textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
+//			textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
 			
 			CheckForNewLine (textBlock,exportText);
 			SetContentAlignment(textBlock,exportText);
@@ -119,7 +119,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 				ft.MaxTextHeight = Double.MaxValue ;
 				
 				ft.SetFontSize(exportText.Font.Size  * 96.0 / 72.0);
-				
+//				ft.SetFontSize(exportText.Font.Size);
 				var size = new Size {
 					Width = ft.WidthIncludingTrailingWhitespace,
 					Height = ft.Height};
