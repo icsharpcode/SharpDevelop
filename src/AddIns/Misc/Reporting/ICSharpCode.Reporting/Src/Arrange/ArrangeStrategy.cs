@@ -47,16 +47,33 @@ namespace ICSharpCode.Reporting.Arrange
 		static Size ArrangeInternal(IExportContainer container)
 		{
 			var containerRectangle = container.DisplayRectangle;
+			Rectangle elementRectangle = Rectangle.Empty;
+			
 			foreach (var element in container.ExportedItems) {
-				var elementRectangle = new Rectangle(element.DisplayRectangle.Left + containerRectangle.Left,
-				                             element.DisplayRectangle.Top + containerRectangle.Top,
-				                             element.DesiredSize.Width,
-				                             element.DesiredSize.Height);
+				var con = element as IExportContainer;
+				if (con != null) {
+					var keep = containerRectangle;
+					con.DesiredSize = ArrangeInternal(con);
+					elementRectangle  = AdujstRectangles(keep,con.DisplayRectangle);
+					containerRectangle = keep;
+					
+				} else {
+					elementRectangle = AdujstRectangles(containerRectangle,element.DisplayRectangle);
+				}
+				
 				if (!containerRectangle.Contains(elementRectangle)) {
 					containerRectangle = Rectangle.Union(containerRectangle,elementRectangle);
 				}
 			}
 			return containerRectangle.Size;
+		}
+		
+		
+		static Rectangle AdujstRectangles (Rectangle container,Rectangle element) {
+			return new Rectangle(container.Left + element.Left,
+			                     container.Top + element.Top,
+			                     element.Size.Width,
+			                     element.Size.Height);
 		}
 		
 		
@@ -69,48 +86,6 @@ namespace ICSharpCode.Reporting.Arrange
 				}
 			}
 			return l1;
-		}
-		
-		
-		static Size old_ArrangeInternal(IExportContainer container)
-		{
-			var result = container.DisplayRectangle;
-			Console.WriteLine();
-			Console.WriteLine("enter arrange for <{0}> with {1}",container.Name,result);
-			if (container.Name.Contains("Det")) {
-			    	Console.WriteLine(container.Name);
-			}
-			foreach (var element in container.ExportedItems) {
-				var con = element as IExportContainer;
-				if (con != null) {
-					Console.WriteLine("recursive");
-//					con.DesiredSize = result.Size;
-					ArrangeInternal(con);
-				}
-				var testRext = new Rectangle(element.DisplayRectangle.Left + result.Left,
-				                             element.DisplayRectangle.Top + result.Top,
-				                             element.DesiredSize.Width,
-				                             element.DesiredSize.Height);
-				Console.WriteLine("<<<<<<<{0}",element.DisplayRectangle);
-				if (!result.Contains(testRext)) {
-//					Console.WriteLine("No fit do arrange container  {0} - elem {1}",result.Bottom,testRext.Bottom);
-//					Console.WriteLine("{0} - {1}",result.Bottom,testRext.Bottom);
-					var r1 = Rectangle.Union(result,testRext);
-					result = new Rectangle(result.Left,
-					                       result.Top,
-					                       container.DisplayRectangle.Width,
-					                       element.DisplayRectangle.Size.Height);
-					Console.WriteLine("Union {0}",r1);
-					Console.WriteLine("{0} - {1}",result.Bottom,testRext.Bottom);
-					result = r1;
-//					container.DesiredSize = result.Size;
-//					container.DesiredSize = r1.Size;
-				} else {
-					Console.WriteLine("Nothing to arrange {0} - {1}",result.Bottom,testRext.Bottom);
-				}
-			}
-			Console.WriteLine("Retval for {0} - {1}",container.Name,result);
-			return result.Size;
 		}
 	}
 	

@@ -21,7 +21,7 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 	[TestFixture]
 	public class ContainerArrangeStrategyFixture
 	{
-		Graphics graphics = CreateGraphics.FromSize (new Size(1000,1000));
+		readonly Graphics graphics = CreateGraphics.FromSize (new Size(1000,1000));
 		
 		ContainerArrangeStrategy strategy;
 		
@@ -85,7 +85,7 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 			
 			var arrangedRect = CreateItemRectangle(container);
 			
-			Assert.That(containerRect.Bottom,Is.EqualTo(arrangedRect.Bottom + 5));
+			Assert.That(containerRect.Bottom,Is.EqualTo(arrangedRect.Bottom));
 		}
 		
 		

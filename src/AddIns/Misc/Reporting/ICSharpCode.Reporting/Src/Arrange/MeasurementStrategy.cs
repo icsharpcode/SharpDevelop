@@ -39,6 +39,7 @@ namespace ICSharpCode.Reporting.Arrange
 					element.DesiredSize = MeasurementService.Measure(tbi,graphics);
 				}
 			}
+			exportColumn.DesiredSize = exportColumn.Size;
 			return exportColumn.DesiredSize;
 		}
 	}
