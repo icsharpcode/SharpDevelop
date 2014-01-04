@@ -4,7 +4,6 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -12,7 +11,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		DTE dte;
 		protected CodeModelContext context;
-		readonly ISymbolModel symbolModel;
 		IEntity entity;
 		
 		public CodeElement()
@@ -24,22 +22,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.context = context;
 		}
 		
-		public CodeElement(CodeModelContext context, ISymbolModel symbolModel)
-		{
-			this.context = context;
-			this.symbolModel = symbolModel;
-			if (symbolModel.ParentProject != null) {
-				this.Language = symbolModel.ParentProject.GetCodeModelLanguage();
-			}
-		}
-		
 		public CodeElement(CodeModelContext context, IEntity entity)
 		{
 			this.context = context;
 			this.entity = entity;
-			if (context.CurrentProject != null) {
-				this.Language = context.CurrentProject.GetCodeModelLanguage();
-			}
+			this.Language = context.CurrentProject.GetCodeModelLanguage();
 		}
 		
 		internal static CodeElement CreateMember(CodeModelContext context, IMember member)
@@ -63,11 +50,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual string Name {
-			get {
-				if (symbolModel != null)
-					return symbolModel.Name;
-				return entity.Name;
-			}
+			get { return entity.Name; }
 		}
 		
 		public virtual string Language { get; protected set; }

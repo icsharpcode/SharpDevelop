@@ -17,25 +17,20 @@ namespace PackageManagement.Tests.EnvDTE
 	[TestFixture]
 	public class ProjectTests : CodeModelTestBase
 	{
-		Project dteProject;
-		TestableProject msbuildProject;
-		IPackageManagementProjectService fakeProjectService;
-		IPackageManagementFileService fakeFileService;
-		
 		void CreateProject(string fileName = @"d:\projects\MyProject\MyProject.csproj", string language = "C#")
 		{
 			msbuildProject = ProjectHelper.CreateTestProject();
 			msbuildProject.FileName = new FileName(fileName);
 			
-			fakeProjectService = MockRepository.GenerateStub<IPackageManagementProjectService>();
+			projectService = MockRepository.GenerateStub<IPackageManagementProjectService>();
 			
-			fakeFileService = MockRepository.GenerateStub<IPackageManagementFileService>();
-			dteProject = new Project(msbuildProject, fakeProjectService, fakeFileService);
+			fileService = MockRepository.GenerateStub<IPackageManagementFileService>();
+			dteProject = new Project(msbuildProject, projectService, fileService);
 			
 			msbuildProject.SetAssemblyModel(assemblyModel);
 			
-			fakeFileService
-				.Stub(fileService => fileService.GetCompilationUnit(msbuildProject))
+			fileService
+				.Stub(fs => fs.GetCompilationUnit(msbuildProject))
 				.WhenCalled(compilation => compilation.ReturnValue = projectContent.CreateCompilation());
 		}
 		

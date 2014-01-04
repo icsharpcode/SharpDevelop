@@ -15,7 +15,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeElementsInNamespace : CodeElementsList<CodeElement>
 	{
 		CodeModelContext context;
-		NamespaceName namespaceName;
 		INamespace ns;
 		
 		public CodeElementsInNamespace(CodeModelContext context)
@@ -29,18 +28,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.ns = ns;
 			GetCodeElements();
 		}
-		
-//		public CodeElementsInNamespace(CodeModelContext context, string qualifiedNamespaceName)
-//			: this(context, new NamespaceName(qualifiedNamespaceName))
-//		{
-//		}
-//		
-//		public CodeElementsInNamespace(CodeModelContext context, NamespaceName namespaceName)
-//		{
-//			this.context = context;
-//			this.namespaceName = namespaceName;
-//			GetCodeElements();
-//		}
 		
 		void GetCodeElements()
 		{
@@ -60,12 +47,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void AddType(IType type)
 		{
-			ITypeDefinition typeDefinition = type.GetDefinition();
-			if (typeDefinition.Kind == TypeKind.Interface) {
-				
-			} else {
-				Add(new CodeClass2(context, typeDefinition));
-			}
+			Add(CodeType.Create(context, type));
 		}
 	}
 }

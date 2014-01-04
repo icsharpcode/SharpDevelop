@@ -16,17 +16,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			: base(context)
 		{
 			this.ns = ns;
-			//this.InfoLocation = global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
-			//this.Language = context.CurrentProject.GetCodeModelLanguage();
+			this.InfoLocation = global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
+			this.Language = context.CurrentProject.GetCodeModelLanguage();
 		}
 		
 		public override global::EnvDTE.vsCMElement Kind {
 			get { return global::EnvDTE.vsCMElement.vsCMElementNamespace; }
 		}
-		
-//		internal NamespaceName NamespaceName {
-//			get { return namespaceName; }
-//		}
 		
 		public string FullName {
 			get { return ns.FullName; }
@@ -39,21 +35,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual global::EnvDTE.CodeElements Members {
 			get { return new CodeElementsInNamespace(context, ns); }
 		}
-		
-//		CodeElementsList<CodeElement> members;
-		
-//		public virtual global::EnvDTE.CodeElements Members {
-//			get {
-//				if (members == null) {
-//					if (model == null)
-//						throw new NotSupportedException();
-//					IModelCollection<CodeElement> namespaceMembers = model.ChildNamespaces.Select(ns => new CodeNamespace(context, ns));
-//					IModelCollection<CodeElement> typeMembers = model.Types.Select(td => CodeType.Create(context, td));
-//					members = namespaceMembers.Concat(typeMembers).AsCodeElements();
-//				}
-//				return members;
-//			}
-//		}
 	}
 	
 	// Move code below into FileCodeModelNamespace

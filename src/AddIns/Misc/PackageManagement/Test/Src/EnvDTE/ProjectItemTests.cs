@@ -21,18 +21,17 @@ namespace PackageManagement.Tests.EnvDTE
 	[TestFixture]
 	public class ProjectItemTests : CodeModelTestBase
 	{
-		TestableDTEProject dteProject;
+		TestableDTEProject testableDteProject;
 		ProjectItems projectItems;
-		TestableProject msbuildProject;
 		FakeFileService fakeFileService;
 		
 		void CreateProjectItems(string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
-			dteProject = new TestableDTEProject();
-			msbuildProject = dteProject.TestableProject;
+			testableDteProject = new TestableDTEProject();
+			msbuildProject = testableDteProject.TestableProject;
 			msbuildProject.FileName = new FileName(fileName);
-			projectItems = (ProjectItems)dteProject.ProjectItems;
-			fakeFileService = dteProject.FakeFileService;
+			projectItems = (ProjectItems)testableDteProject.ProjectItems;
+			fakeFileService = testableDteProject.FakeFileService;
 		}
 		
 		void OpenSavedFileInSharpDevelop(string fileName)
@@ -164,7 +163,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			fileItem.Delete();
 			
-			Assert.AreEqual(@"d:\projects\myproject\src\program.cs", dteProject.FakeFileService.PathPassedToRemoveFile);
+			Assert.AreEqual(@"d:\projects\myproject\src\program.cs", testableDteProject.FakeFileService.PathPassedToRemoveFile);
 		}
 		
 		[Test]
@@ -220,7 +219,7 @@ namespace PackageManagement.Tests.EnvDTE
 			global::EnvDTE.CodeElements codeElements = fileItem.FileCodeModel.CodeElements;
 			
 			CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
-			Assert.AreEqual(dteProject.TestableProject, fakeFileService.ProjectPassedToGetCompilationUnit);
+			Assert.AreEqual(testableDteProject.TestableProject, fakeFileService.ProjectPassedToGetCompilationUnit);
 			Assert.AreEqual(0, codeElements.Count);
 		}
 		
@@ -336,7 +335,7 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddFile("MainForm.cs");
 			msbuildProject.AddDependentFile("MainForm.Designer.cs", "MainForm.cs");
 			
-			global::EnvDTE.ProjectItems projectItems = dteProject.ProjectItems;
+			global::EnvDTE.ProjectItems projectItems = testableDteProject.ProjectItems;
 			
 			string[] expectedFiles = new string[] {
 				"MainForm.cs"
@@ -351,7 +350,7 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddFile("MainForm.cs");
 			msbuildProject.AddDependentFile("MainForm.Designer.cs", "MainForm.cs");
 			
-			Assert.Throws<ArgumentException>(() => dteProject.ProjectItems.Item("MainForm.Designer.cs"));
+			Assert.Throws<ArgumentException>(() => testableDteProject.ProjectItems.Item("MainForm.Designer.cs"));
 		}
 		
 		[Test]
@@ -360,7 +359,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.AddFile("MainForm.cs");
 			msbuildProject.AddDependentFile("MainForm.Designer.cs", "MainForm.cs");
-			global::EnvDTE.ProjectItem mainFormItem = dteProject.ProjectItems.Item("MainForm.cs");
+			global::EnvDTE.ProjectItem mainFormItem = testableDteProject.ProjectItems.Item("MainForm.cs");
 			
 			global::EnvDTE.ProjectItems mainFormProjectItems = mainFormItem.ProjectItems;
 			
@@ -393,7 +392,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			global::EnvDTE.ProjectItems collection = projectItem.Collection;
 			
-			Assert.AreEqual(dteProject.ProjectItems, collection);
+			Assert.AreEqual(testableDteProject.ProjectItems, collection);
 		}
 		
 		[Test]
@@ -402,7 +401,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = new FileName(@"d:\projects\MyProject\MyProject.csproj");
 			msbuildProject.AddFile(@"src\program.cs");
-			global::EnvDTE.ProjectItem srcDirectoryItem = dteProject.ProjectItems.Item("src");
+			global::EnvDTE.ProjectItem srcDirectoryItem = testableDteProject.ProjectItems.Item("src");
 			global::EnvDTE.ProjectItem fileProjectItem = srcDirectoryItem.ProjectItems.Item("program.cs");
 			
 			global::EnvDTE.ProjectItems collection = fileProjectItem.Collection;

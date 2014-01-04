@@ -2,58 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
-using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
-using Rhino.Mocks;
 
 namespace PackageManagement.Tests.EnvDTE
 {
 	[TestFixture]
 	public class CodeModelTests : CodeModelTestBase
 	{
-		CodeModel codeModel;
-		Project dteProject;
-		IPackageManagementProjectService fakeProjectService;
-		IPackageManagementFileService fakeFileService;
-		TestableProject msbuildProject;
-		
-		void CreateCodeModel()
-		{
-			msbuildProject = ProjectHelper.CreateTestProject();
-			
-			fakeProjectService = MockRepository.GenerateStub<IPackageManagementProjectService>();
-			fakeFileService = MockRepository.GenerateStub<IPackageManagementFileService>();
-			dteProject = new Project(msbuildProject, fakeProjectService, fakeFileService);
-			codeModelContext.DteProject = dteProject;
-			
-			codeModel = new CodeModel(codeModelContext, dteProject);
-			
-			msbuildProject.SetAssemblyModel(assemblyModel);
-			project.Stub(p => p.AssemblyModel).Return(assemblyModel);
-			
-			fakeFileService
-				.Stub(fileService => fileService.GetCompilationUnit(msbuildProject))
-				.WhenCalled(compilation => compilation.ReturnValue = CreateCompilation());
-		}
-		
-		ICompilation CreateCompilation()
-		{
-			var solutionSnapshot = new TestableSolutionSnapshot(msbuildProject);
-			msbuildProject.SetProjectContent(projectContent);
-			ICompilation compilation = new SimpleCompilation(solutionSnapshot, projectContent, projectContent.AssemblyReferences);
-			solutionSnapshot.AddCompilation(projectContent, compilation);
-			return compilation;
-		}
-		
 		void CreateCodeModelWithCSharpProject()
 		{
 			CreateCodeModel();
