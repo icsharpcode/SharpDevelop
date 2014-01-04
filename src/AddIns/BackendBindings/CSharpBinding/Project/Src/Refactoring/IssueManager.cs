@@ -293,7 +293,7 @@ namespace CSharpBinding.Refactoring
 				existingResults = results;
 			}
 			if (cancellationTokenSource != null && cancellationTokenSource.Token == cancellationToken) {
-				// Dispose the cancellation token source if it's still the same on as we originally created
+				// Dispose the cancellation token source if it's still the same one as we originally created
 				cancellationTokenSource.Dispose();
 				cancellationTokenSource = null;
 			}
