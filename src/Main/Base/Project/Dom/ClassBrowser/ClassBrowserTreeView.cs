@@ -170,28 +170,66 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 						// Ensure that we have children
 						nsTreeNode.EnsureLazyChildren();
 						
+						ModelCollectionTreeNode entityTypeNode = null;
+						
 						// Search in namespace node recursively
 						var foundEntityNode = nsTreeNode.FindChildNodeRecursively(
 							node => {
 								var treeNode = node as ModelCollectionTreeNode;
 								if (treeNode != null) {
-									if ((entity is ITypeDefinition) && (treeNode.Model is ITypeDefinitionModel)) {
-										// Compare directly with type
-										var modelFullTypeName = ((ITypeDefinitionModel) treeNode.Model).FullTypeName;
-										return modelFullTypeName == entityType.FullTypeName;
+									var treeNodeTypeModel = treeNode.Model as ITypeDefinitionModel;
+									if (treeNodeTypeModel != null) {
+										var modelFullTypeName = treeNodeTypeModel.FullTypeName;
+										if (modelFullTypeName == entityType.FullTypeName) {
+											// This is the TypeDefinitionModel of searched entity (the type itself or its member)
+											entityTypeNode = treeNode;
+											if (entity is ITypeDefinition) {
+												// We are looking for the type itself
+												return true;
+											}
+										}
 									}
+									
 									if ((entity is IMember) && (treeNode.Model is IMemberModel)) {
 										// Compare parent types and member names
 										IMemberModel memberModel = (IMemberModel) treeNode.Model;
 										IMember member = (IMember) entity;
-										return (member.DeclaringType.FullName == entityType.FullName)
+										bool isSymbolOfTypeAndName =
+											(member.DeclaringType.FullName == memberModel.UnresolvedMember.DeclaringTypeDefinition.FullName)
 											&& (member.Name == memberModel.Name)
 											&& (member.SymbolKind == memberModel.SymbolKind);
+										
+										if (isSymbolOfTypeAndName) {
+											var parametrizedEntityMember = member as IParameterizedMember;
+											var parametrizedTreeNodeMember = memberModel.UnresolvedMember as IUnresolvedParameterizedMember;
+											if ((parametrizedEntityMember != null) && (parametrizedTreeNodeMember != null)) {
+												// For methods and constructors additionally check the parameters and their types to handle overloading properly
+												int treeNodeParamsCount = parametrizedTreeNodeMember.Parameters != null ? parametrizedTreeNodeMember.Parameters.Count : 0;
+												int entityParamsCount = parametrizedEntityMember.Parameters != null ? parametrizedEntityMember.Parameters.Count : 0;
+												if (treeNodeParamsCount == entityParamsCount) {
+													for (int i = 0; i < entityParamsCount; i++) {
+														if (parametrizedEntityMember.Parameters[i].Type.FullName != parametrizedTreeNodeMember.Parameters[i].Type.Resolve(entityAssembly.Compilation).FullName) {
+															return false;
+														}
+													}
+													
+													// All parameters were equal
+													return true;
+												}
+											} else {
+												return true;
+											}
+										}
 									}
 								}
 								
 								return false;
 							});
+						
+						// Special handling for default constructors: If not found, jump to type declaration instead
+						if ((foundEntityNode == null) && (entity.SymbolKind == SymbolKind.Constructor)) {
+							foundEntityNode = entityTypeNode;
+						}
 						
 						if (foundEntityNode != null) {
 							this.FocusNode(foundEntityNode);
