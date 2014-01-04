@@ -15,6 +15,7 @@ using System.Windows.Markup;
 using System.Xml;
 
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -194,24 +195,41 @@ namespace ICSharpCode.WpfDesign.AddIn
 
 		void OnPropertyGridPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (propertyGridView.PropertyGrid.ReloadActive) return;
 			if (e.PropertyName == "Name") {
 				if (!propertyGridView.PropertyGrid.IsNameCorrect) return;
 				
 				// get the XAML file
-				OpenedFile fileName = this.Files.FirstOrDefault(f => f.FileName.ToString().EndsWith(".xaml", StringComparison.OrdinalIgnoreCase));
-				if (fileName == null) return;
+				OpenedFile file = this.Files.FirstOrDefault(f => f.FileName.ToString().EndsWith(".xaml", StringComparison.OrdinalIgnoreCase));
+				if (file == null) return;
 				
 				// parse the XAML file
-				ParseInformation info = SD.ParserService.Parse(fileName.FileName);
+				ParseInformation info = SD.ParserService.Parse(file.FileName);
 				if (info == null) return;
+				ICompilation compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+				var designerClass = info.UnresolvedFile.TopLevelTypeDefinitions[0]
+					.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly))
+					.GetDefinition();
+				if (designerClass == null) return;
+				var reparseFileNameList = designerClass.Parts.Select(p => new ICSharpCode.Core.FileName(p.UnresolvedFile.FileName)).ToArray();
 				
 				// rename the member
-				#warning reimplement rename!
-				/*
-				IMember member = info.CompilationUnit.Classes [0].AllMembers.FirstOrDefault(m => m.Name == propertyGridView.PropertyGrid.OldName);
-				if (member != null) {
-					FindReferencesAndRenameHelper.RenameMember(member, propertyGridView.PropertyGrid.Name);
-				}*/
+				ISymbol controlSymbol = designerClass.GetFields(f => f.Name == propertyGridView.PropertyGrid.OldName, GetMemberOptions.IgnoreInheritedMembers)
+					.SingleOrDefault();
+				if (controlSymbol != null) {
+					FindReferenceService.RenameSymbol(controlSymbol, propertyGridView.PropertyGrid.Name, new DummyProgressMonitor())
+						.ObserveOnUIThread()
+						.Subscribe(error => SD.MessageService.ShowError(error.Message), // onNext
+						           ex => SD.MessageService.ShowException(ex), // onError
+						           // onCompleted
+						           () => {
+						           	foreach (var fileName in reparseFileNameList) {
+						           		SD.ParserService.ParseAsync(fileName).FireAndForget();
+						           	}
+						           }
+						          );
+
+				}
 			}
 		}
 		

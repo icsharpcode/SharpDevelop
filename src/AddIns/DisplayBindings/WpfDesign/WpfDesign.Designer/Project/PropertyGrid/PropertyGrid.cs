@@ -3,12 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Globalization;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using System.Windows.Threading;
 using System.Diagnostics;
@@ -31,7 +34,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		}
 
 		Category specialCategory = new Category("Special");
-		Category popularCategory = new Category("Popular");		
+		Category popularCategory = new Category("Popular");
 		Category otherCategory = new Category("Other");
 		Category attachedCategory = new Category("Attached");
 
@@ -158,14 +161,17 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			}
 		}
 
-		IEnumerable<DesignItem> selectedItems;
+		IList<DesignItem> selectedItems;
 
 		public IEnumerable<DesignItem> SelectedItems {
 			get {
 				return selectedItems;
 			}
 			set {
-				selectedItems = value;
+				if (value == null)
+					selectedItems = null;
+				else
+					selectedItems = value.ToList();
 				RaisePropertyChanged("SelectedItems");
 				Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
 					delegate {
@@ -178,17 +184,27 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		{
 			Filter = null;
 		}
+		
+		volatile bool reloadActive;
+		public bool ReloadActive {
+			get { return reloadActive; }
+		}
 
 		void Reload()
 		{
-			Clear();
-			
-			if (SelectedItems == null || SelectedItems.Count() == 0) return;
-			if (SelectedItems.Count() == 1) SingleItem = SelectedItems.First();
-
-			foreach (var md in GetDescriptors()) {
-				if (PassesFilter(md.Name))
-					AddNode(md);
+			reloadActive = true;
+			try {
+				Clear();
+				
+				if (selectedItems == null || selectedItems.Count == 0) return;
+				if (selectedItems.Count == 1) SingleItem = selectedItems[0];
+	
+				foreach (var md in GetDescriptors()) {
+					if (PassesFilter(md.Name))
+						AddNode(md);
+				}
+			} finally {
+				reloadActive = false;
 			}
 		}
 
@@ -233,7 +249,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			if (string.IsNullOrEmpty(Filter)) return true;
 			for (int i = 0; i < name.Length; i++) {
 				if (i == 0 || char.IsUpper(name[i])) {
-					if (string.Compare(name, i, Filter, 0, Filter.Length, true) == 0) {
+					if (string.Compare(name, i, Filter, 0, Filter.Length, StringComparison.OrdinalIgnoreCase) == 0) {
 						return true;
 					}
 				}
@@ -271,7 +287,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			if (Metadata.IsPopularProperty(node.FirstProperty)) return popularCategory;
 			if (node.FirstProperty.IsAttachedDependencyProperty()) return attachedCategory;
 			var typeName = node.FirstProperty.DeclaringType.FullName;
-			if (typeName.StartsWith("System.Windows.") || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls."))
+			if (typeName.StartsWith("System.Windows.", StringComparison.Ordinal) || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls.", StringComparison.Ordinal))
 				return otherCategory;
 			return specialCategory;
 		}
