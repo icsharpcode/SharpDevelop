@@ -4,8 +4,6 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {

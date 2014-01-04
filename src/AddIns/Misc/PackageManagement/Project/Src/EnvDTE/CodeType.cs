@@ -8,14 +8,11 @@ using System.Text;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeType : CodeElement, global::EnvDTE.CodeType
 	{
-		protected readonly ITypeDefinitionModel typeModel;
 		protected readonly ITypeDefinition typeDefinition;
 		IType[] typeArguments;
 		
@@ -50,13 +47,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public CodeType(CodeModelContext context, ITypeDefinitionModel typeModel)
-			: base(context, typeModel)
-		{
-			this.typeModel = typeModel;
-			this.InfoLocation = GetInfoLocationOld();
-		}
-		
 		public CodeType(CodeModelContext context, ITypeDefinition typeDefinition, params IType[] typeArguments)
 			: base(context, typeDefinition)
 		{
@@ -68,14 +58,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		global::EnvDTE.vsCMInfoLocation GetInfoLocation()
 		{
 			if (typeDefinition.ParentAssembly.IsMainAssembly) {
-				return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject;
-			}
-			return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
-		}
-		
-		global::EnvDTE.vsCMInfoLocation GetInfoLocationOld()
-		{
-			if (typeModel != null) {
 				return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject;
 			}
 			return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
@@ -96,7 +78,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual string FullName {
 			get {
-				FullTypeName fullTypeName = GetFullTypeName();
+				FullTypeName fullTypeName = typeDefinition.FullTypeName;
 				var fullName = new StringBuilder();
 				if (!string.IsNullOrEmpty(fullTypeName.TopLevelTypeName.Namespace)) {
 					fullName.Append(fullTypeName.TopLevelTypeName.Namespace);
@@ -109,14 +91,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				}
 				return fullName.ToString() + GetTypeArguments();
 			}
-		}
-		
-		FullTypeName GetFullTypeName()
-		{
-			if (typeModel != null) {
-				return typeModel.FullTypeName;
-			}
-			return typeDefinition.FullTypeName;
 		}
 		
 		string GetTypeArguments()
@@ -173,7 +147,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual global::EnvDTE.CodeNamespace Namespace {
 			get {
 				if (context.FilteredFileName != null) {
-					return new FileCodeModel2(context, null).GetNamespace(typeModel.Namespace);
+					return new FileCodeModel2(context, null).GetNamespace(typeDefinition.Namespace);
 				} else {
 					throw new NotImplementedException();
 				//	return new CodeNamespace(context, typeDefinition.Namespace);
