@@ -62,7 +62,13 @@ namespace ICSharpCode.Reporting.Arrange
 				}
 				
 				if (!containerRectangle.Contains(elementRectangle)) {
-					containerRectangle = Rectangle.Union(containerRectangle,elementRectangle);
+					
+					containerRectangle = new Rectangle(containerRectangle.Left,
+					                                   containerRectangle.Top ,
+					                                   containerRectangle.Width,
+					                                   element.Location.Y + elementRectangle.Size.Height + 5);
+					                                
+//					containerRectangle = Rectangle.Union(containerRectangle,elementRectangle);
 				}
 			}
 			return containerRectangle.Size;

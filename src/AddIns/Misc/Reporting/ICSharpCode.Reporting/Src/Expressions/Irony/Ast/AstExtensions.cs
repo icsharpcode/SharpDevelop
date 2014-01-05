@@ -80,9 +80,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 		}
 		
 		
-//		public static CollectionSource GetDataSource (this ScriptThread thread){
-//			return (CollectionSource)thread.App.Globals["DataSource"];
-//		}
+		
 		#endregion
 	}
 }

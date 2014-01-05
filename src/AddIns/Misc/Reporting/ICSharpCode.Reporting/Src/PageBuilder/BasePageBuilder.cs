@@ -7,7 +7,6 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
@@ -15,7 +14,6 @@ using System.Linq;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Exporter;
-using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
@@ -98,34 +96,14 @@ namespace ICSharpCode.Reporting.PageBuilder
 			BuildPageFooter();
 		}
 		
-		/*
-		protected bool PageFull (Rectangle rect) {
-			var sectionRect = new Rectangle(0,0,DetailsRectangle.Width,DetailsRectangle.Height);
-			var testRect = new Rectangle(1,rect.Location.Y,rect.Width -2,rect.Height);
-			if (sectionRect.Contains(testRect)) {
-				return false;
-			} else {
-				Console.WriteLine("PageBreak");
-				return true;
-			}
-		}
-		*/
 		
-
 		protected bool PageFull(IExportContainer container) {
-			int pos;
-			if (container.ExportedItems.Count > 0) {
-				pos = container.Location.Y + container.ExportedItems.Last().Location.Y + container.ExportedItems.Last().Size.Height;
-			} else {
-				pos = container.Location.Y + container.Size.Height;
-			}
-			
-			if (pos > DetailEnds.Y) {
+			if (container.DisplayRectangle.Bottom > DetailEnds.Y) {
 				return true;
 			}
 			return false;
 		}
-		
+
 		#endregion
 		
 

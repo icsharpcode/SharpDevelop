@@ -68,6 +68,7 @@
     <Compile Include="src\DataSource\DataSourceFixture.cs" />
     <Compile Include="src\Expressions\Aggregates\AggregateFuctionHelper.cs" />
     <Compile Include="src\Expressions\Aggregates\SumAggregate.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\AggregatesGroupesFixture.cs" />
     <Compile Include="src\Expressions\IntegrationTests\FieldsFixture.cs" />
     <Compile Include="src\Expressions\IntegrationTests\GlobalsFixture.cs" />
     <Compile Include="src\Expressions\IntegrationTests\StandardTests.cs" />
