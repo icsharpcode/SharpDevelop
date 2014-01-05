@@ -50,6 +50,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool? HasExtensionMethods { get; }
 		
 		/// <summary>
+		/// Returns whether this type is partial.
+		/// </summary>
+		bool IsPartial { get; }
+		
+		/// <summary>
 		/// Gets whether this unresolved type definition causes the addition of a default constructor
 		/// if no other constructor is present.
 		/// </summary>

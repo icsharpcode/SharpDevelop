@@ -130,6 +130,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public bool IsPartial {
+			get { return flags[FlagPartial]; }
+			set {
+				ThrowIfFrozen();
+				flags[FlagPartial] = value;
+			}
+		}
+		
 		public override string Namespace {
 			get { return namespaceName; }
 			set {
