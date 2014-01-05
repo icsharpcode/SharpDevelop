@@ -47,6 +47,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			UILanguageService.ValidateLanguage();
 			
+			SD.GetService<IOutputPad>(); // HACK: eagerly load output pad because pad services cannnot be instanciated from background threads
 			TaskService.Initialize();
 			Project.CustomToolsService.Initialize();
 			
