@@ -248,18 +248,16 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.IsFalse(isAbstract);
 		}
-//		
-//		[Test]
-//		public void ClassKind_ClassIsPartial_ReturnsPartialClassKind()
-//		{
-//			CreateProjectContent();
-//			CreatePublicClass("MyClass");
-//			ClassIsPartial();
-//			
-//			global::EnvDTE.vsCMClassKind kind = codeClass.ClassKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass, kind);
-//		}
+		
+		[Test]
+		public void ClassKind_ClassIsPartial_ReturnsPartialClassKind()
+		{
+			CreateClass("public partial class MyClass {}");
+			
+			global::EnvDTE.vsCMClassKind kind = codeClass.ClassKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass, kind);
+		}
 		
 		[Test]
 		public void ClassKind_ClassIsNotPartial_ReturnsMainClassKind()
@@ -290,17 +288,18 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.IsFalse(generic);
 		}
-//		
-//		[Test]
-//		public void ClassKind_ChangeClassToBePartial_UsesClassKindUpdaterToModifyClass()
-//		{
+		
+		[Test]
+		[Ignore("TODO - Not yet implemented")]
+		public void ClassKind_ChangeClassToBePartial_UsesClassKindUpdaterToModifyClass()
+		{
 //			CreateProjectContent();
 //			CreatePublicClass("MyClass");
 //			
 //			codeClass.ClassKind = global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass;
 //			
 //			classKindUpdater.AssertWasCalled(updater => updater.MakeClassPartial());
-//		}
+		}
 		
 		[Test]
 		public void ClassKind_ChangeClassToBeMainClass_ThrowsNotImplementedException()

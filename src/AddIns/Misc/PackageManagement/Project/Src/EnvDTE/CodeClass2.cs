@@ -17,15 +17,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public global::EnvDTE.CodeElements PartialClasses {
 			get {
 				var partialClasses = new CodeElementsList<CodeType>();
-//				ITypeDefinition typeDefinition = typeModel.Resolve();
-//				if (typeDefinition != null) {
-//					foreach (string fileName in typeDefinition.Parts.Select(p => p.UnresolvedFile.FileName).Distinct()) {
-//						CodeModelContext newContext = context.WithFilteredFileName(fileName);
-//						list.Add(CodeType.Create(newContext, typeDefinition));
-//					}
-//				} else {
-					partialClasses.Add(this);
-//				}
+				partialClasses.Add(this);
 				return partialClasses;
 			}
 		}
@@ -36,9 +28,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public global::EnvDTE.vsCMClassKind ClassKind {
 			get {
-				//if (typeDefinition.IsPartial) {
-				//	return global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass;
-				//}
+				if (typeDefinition.Parts.First().IsPartial) {
+					return global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass;
+				}
 				return global::EnvDTE.vsCMClassKind.vsCMClassKindMainClass;
 			}
 			set {
