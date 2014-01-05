@@ -85,7 +85,7 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 			
 			var arrangedRect = CreateItemRectangle(container);
 			
-			Assert.That(containerRect.Bottom,Is.EqualTo(arrangedRect.Bottom));
+			Assert.That(containerRect.Bottom,Is.EqualTo(arrangedRect.Bottom + 5));
 		}
 		
 		

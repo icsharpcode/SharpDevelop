@@ -26,17 +26,12 @@ namespace ICSharpCode.Reporting.Test.Expressions.IntegrationTests
 		[Test]
 		public void TestMethod()
 		{
-			visitor = new ExpressionVisitor(reportSettings,null);
-			var script = "= sum('doubleValue')";
+			visitor = new ExpressionVisitor(reportSettings,dataSource.GroupedList);
+			var script = "= sum('randomint')";
 			collection[0].Text = script;
-			foreach (IGrouping<object, object> grouping in dataSource.GroupedList) {
-				Console.WriteLine("key {0}",grouping.Key);
-				//Childs
-				foreach (var child in grouping) {
-					var c = (Contributor)child;
-					Console.WriteLine("\tContributor {0}, {1}",c.Firstname,c.Lastname);
-				}
-			}
+			visitor.Visit(collection[0]);
+			var result = list.Sum(x => x.RandomInt);
+			Assert.That(Convert.ToDouble(collection[0].Text),Is.EqualTo(result));
 		}
 		
 		

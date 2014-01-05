@@ -19,7 +19,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		readonly ReportingExpressionEvaluator evaluator;
 		
 		
-		public ExpressionVisitor(ReportSettings reportSettings,CollectionDataSource dataSource) {
+		public ExpressionVisitor(ReportSettings reportSettings,IEnumerable<object> dataSource) {
 			grammar = new ReportingLanguageGrammer();
 			evaluator = new ReportingExpressionEvaluator(grammar);
 			evaluator.AddReportSettings(reportSettings);

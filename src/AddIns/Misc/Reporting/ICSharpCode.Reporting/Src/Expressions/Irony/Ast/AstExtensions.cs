@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Collections.Generic;
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
@@ -69,7 +70,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 		
 		#region DataSource
 		
-		public static void AddDataSource (this ReportingExpressionEvaluator app,CollectionDataSource dataSource){
+		public static void AddDataSource (this ReportingExpressionEvaluator app,IEnumerable<object> dataSource){
 			if (dataSource == null)
 				throw new ArgumentNullException("dataSource");
 			if (!app.Globals.ContainsKey("DataSource")) {

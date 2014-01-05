@@ -36,7 +36,7 @@ namespace ICSharpCode.Reporting.Expressions
 			Console.WriteLine();
 			Console.WriteLine("Start ExpressionVisitor");
 			
-			var visitor = new ExpressionVisitor (reportSettings,dataSource);
+			var visitor = new ExpressionVisitor (reportSettings,dataSource.SortedList);
 			visitor.Evaluator.Globals.Add("DataSource",dataSource);
 			visitor.Run(pages);
 			
