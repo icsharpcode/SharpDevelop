@@ -498,6 +498,28 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// Retrieves the model instance for the given assembly.
+		/// May return null if there is no model for the specified assembly.
+		/// </summary>
+		public static IAssemblyModel GetModel(this IAssembly assembly)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+			
+			IProject project = assembly.GetProject();
+			if (project != null)
+				return project.AssemblyModel;
+			
+			try {
+				return SD.AssemblyParserService.GetAssemblyModel(assembly.GetReferenceAssemblyLocation());
+			} catch (Exception ex) {
+				// TODO: use the exact exception types that GetAssemblyModel() throws (+document them)
+				// silently ignore errors when loading the assembly
+				return null;
+			}
+		}
+		
+		/// <summary>
 		/// Retrieves the model instance for the given type definition.
 		/// May return null if there is no model for the specified type definition.
 		/// </summary>
@@ -506,9 +528,9 @@ namespace ICSharpCode.SharpDevelop
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
 			
-			IProject project = typeDefinition.ParentAssembly.GetProject();
-			if (project != null)
-				return project.AssemblyModel.TopLevelTypeDefinitions[typeDefinition.FullTypeName];
+			IAssemblyModel assembly = typeDefinition.ParentAssembly.GetModel();
+			if (assembly != null)
+				return assembly.TopLevelTypeDefinitions[typeDefinition.FullTypeName];
 			else
 				return null;
 		}
