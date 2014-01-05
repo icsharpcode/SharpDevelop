@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Controls;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -27,7 +28,10 @@ namespace CSharpBinding.Completion
 		
 		protected override object CreateFancyDescription()
 		{
-			return XmlDocFormatter.CreateTooltip(entity);
+			return new FlowDocumentScrollViewer {
+				Document = XmlDocFormatter.CreateTooltip(entity),
+				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+			};
 		}
 	}
 }

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows.Controls;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -27,7 +28,10 @@ namespace CSharpBinding.Completion
 		
 		protected override object CreateFancyDescription()
 		{
-			return XmlDocFormatter.CreateTooltip(type);
+			return new FlowDocumentScrollViewer {
+				Document = XmlDocFormatter.CreateTooltip(type),
+				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+			};
 		}
 	}
 }
