@@ -3,20 +3,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
-using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Xml;
-using ICSharpCode.SharpDevelop;
 
-namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Builds a FlowDocument for XML documentation.
@@ -247,7 +245,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 		
 		FontFamily GetCodeFont()
 		{
-			return new FontFamily(CodeEditorOptions.Instance.FontFamily);
+			return new FontFamily(SD.EditorControlService.GlobalOptions.FontFamily);
 		}
 		
 		void AddException(IEntity referencedEntity, IList<XmlDocumentationElement> children)
@@ -489,3 +487,5 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 		}
 	}
 }
+
+

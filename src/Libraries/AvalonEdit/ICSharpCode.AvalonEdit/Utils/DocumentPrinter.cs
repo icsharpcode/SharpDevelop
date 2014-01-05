@@ -9,13 +9,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Xps;
-using System.Windows.Xps.Packaging;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory.Editor;
 
-namespace ICSharpCode.AvalonEdit.AddIn
+namespace ICSharpCode.AvalonEdit.Utils
 {
 	/// <summary>
 	/// Helps printing documents.

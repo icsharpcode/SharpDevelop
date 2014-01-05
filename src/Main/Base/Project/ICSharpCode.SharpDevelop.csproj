@@ -141,6 +141,7 @@
     <Compile Include="Editor\CodeCompletion\SnippetCompletionData.cs" />
     <Compile Include="Editor\ContextActions\ContextActionsPopupViewModel.cs" />
     <Compile Include="Editor\ContextActions\ContextActionViewModel.cs" />
+    <Compile Include="Editor\DocumentationUIBuilder.cs" />
     <Compile Include="Editor\DocumentServiceAttribute.cs" />
     <Compile Include="Editor\DocumentUtilities.cs" />
     <Compile Include="Editor\IBracketSearcher.cs" />
@@ -166,6 +167,7 @@
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor\ToolTipService.cs" />
+    <Compile Include="Editor\XmlDocFormatter.cs" />
     <Compile Include="Parser\CombinedAssemblySearcher.cs" />
     <Compile Include="Parser\DefaultAssemblySearcher.cs" />
     <Compile Include="Parser\DomAssemblyName.cs" />
@@ -896,6 +898,12 @@
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
       <Project>{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}</Project>
       <Name>ICSharpCode.NRefactory.Cecil</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
+      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
+      <Name>ICSharpCode.NRefactory.Xml</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>

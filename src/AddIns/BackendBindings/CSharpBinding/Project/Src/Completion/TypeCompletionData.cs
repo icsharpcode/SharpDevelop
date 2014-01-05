@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.Completion
 {
@@ -22,6 +23,11 @@ namespace CSharpBinding.Completion
 			if (typeDef != null)
 				this.Description = typeDef.Documentation;
 			this.Image = ClassBrowserIconService.GetIcon(type);
+		}
+		
+		protected override object CreateFancyDescription()
+		{
+			return XmlDocFormatter.CreateTooltip(type);
 		}
 	}
 }

@@ -64,6 +64,9 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Printing">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -356,6 +359,7 @@
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Utils\DelayedEvents.cs" />
     <Compile Include="Utils\Deque.cs" />
+    <Compile Include="Utils\DocumentPrinter.cs" />
     <Compile Include="Utils\Empty.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\FileReader.cs" />

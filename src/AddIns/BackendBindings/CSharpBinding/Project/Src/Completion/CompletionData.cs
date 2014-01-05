@@ -76,8 +76,20 @@ namespace CSharpBinding.Completion
 			get { return this.DisplayText; }
 		}
 		
+		object fancyDescription;
+		
 		object IFancyCompletionItem.Description {
-			get { return this.Description; }
+			get {
+				if (fancyDescription == null) {
+					fancyDescription = CreateFancyDescription();
+				}
+				return fancyDescription;
+			}
+		}
+		
+		protected virtual object CreateFancyDescription()
+		{
+			return null;
 		}
 	}
 }
