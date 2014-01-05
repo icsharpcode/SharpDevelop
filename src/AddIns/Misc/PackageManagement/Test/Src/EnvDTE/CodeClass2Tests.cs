@@ -187,31 +187,18 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementClass, kind);
 		}
 		
-//		[Test]
-//		public void Namespace_PublicClass_ReturnsClassNamespace()
-//		{
-//			CreateClass(
-//				"namespace MyNamespace.Test {\r\n" +
-//				"    public class MyClass {}\r\n" +
-//				"}");
-//			
-//			global::EnvDTE.CodeNamespace codeNamespace = codeClass.Namespace;
-//			
-//			Assert.AreEqual("MyNamespace.Test", codeNamespace.FullName);
-//		}
-//		
-//		[Test]
-//		public void Namespace_PublicClassAndNamespaceNameChecked_ReturnsFullyQualifiedClassNamespace()
-//		{
-//			CreateProjectContent();
-//			helper.CreatePublicClass("MyNamespace.Test.MyClass");
-//			helper.AddClassNamespace("MyNamespace.Test");
-//			CreateClass();
-//			
-//			global::EnvDTE.CodeNamespace codeNamespace = codeClass.Namespace;
-//			
-//			Assert.AreEqual("MyNamespace.Test", codeNamespace.Name);
-//		}
+		[Test]
+		public void Namespace_PublicClass_ReturnsClassNamespace()
+		{
+			CreateClass(
+				"namespace MyNamespace.Test {\r\n" +
+				"    public class MyClass {}\r\n" +
+				"}");
+			
+			global::EnvDTE.CodeNamespace codeNamespace = codeClass.Namespace;
+			
+			Assert.AreEqual("MyNamespace.Test", codeNamespace.FullName);
+		}
 		
 		[Test]
 		public void PartialClasses_ClassIsNotPartial_ReturnsClass()

@@ -145,14 +145,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual global::EnvDTE.CodeNamespace Namespace {
-			get {
-				if (context.FilteredFileName != null) {
-					return new FileCodeModel2(context, null).GetNamespace(typeDefinition.Namespace);
-				} else {
-					throw new NotImplementedException();
-				//	return new CodeNamespace(context, typeDefinition.Namespace);
-				}
-			}
+			get { return new FileCodeModelCodeNamespace(context, typeDefinition.Namespace); }
 		}
 		
 		public virtual global::EnvDTE.ProjectItem ProjectItem {
