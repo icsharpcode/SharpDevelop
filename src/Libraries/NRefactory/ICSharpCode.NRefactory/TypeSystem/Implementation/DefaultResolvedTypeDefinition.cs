@@ -477,6 +477,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return Methods.Any(m => m.IsExtensionMethod);
 		}
 		
+		public bool IsPartial {
+			get { return parts.Length > 1 || parts[0].IsPartial; }
+		}
+		
 		public bool? IsReferenceType {
 			get {
 				switch (this.Kind) {

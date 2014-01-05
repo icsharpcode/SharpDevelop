@@ -143,6 +143,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool HasExtensionMethods { get; }
 		
 		/// <summary>
+		/// Gets whether this type definition is made up of one or more partial classes.
+		/// </summary>
+		bool IsPartial { get; }
+		
+		/// <summary>
 		/// Determines how this type is implementing the specified interface member.
 		/// </summary>
 		/// <returns>

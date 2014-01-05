@@ -125,6 +125,18 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			Assert.AreEqual(1, typeDef.Parts.Count);
 			var part = typeDef.Parts.Single();
 			Assert.IsTrue(part.IsPartial);
+			Assert.IsTrue(typeDef.IsPartial);
+		}
+		
+		[Test]
+		public void PartialClassWithTwoPartsWithoutPartialModifier()
+		{
+			var syntaxTree = SyntaxTree.Parse("class Test {} class Test {}");
+			syntaxTree.FileName = "a.cs";
+			var content = CreateContent(syntaxTree.ToTypeSystem());
+			var typeDef = content.CreateCompilation().MainAssembly.GetTypeDefinition("", "Test");
+			Assert.AreEqual(2, typeDef.Parts.Count);
+			Assert.IsTrue(typeDef.IsPartial);
 		}
 	}
 	
