@@ -115,10 +115,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public bool IsPartial {
-			get { return flags[FlagPartial]; }
+			get { return flags[FlagPartialMethod]; }
 			set {
 				ThrowIfFrozen();
-				flags[FlagPartial] = value;
+				flags[FlagPartialMethod] = value;
 			}
 		}
 

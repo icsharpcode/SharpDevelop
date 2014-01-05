@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool? HasExtensionMethods { get; }
 		
 		/// <summary>
-		/// Returns whether this type is partial.
+		/// Gets whether the partial modifier is set on this part of the type definition.
 		/// </summary>
 		bool IsPartial { get; }
 		
