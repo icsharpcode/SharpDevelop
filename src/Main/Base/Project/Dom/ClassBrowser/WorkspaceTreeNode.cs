@@ -34,27 +34,21 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				return stringComparer.Compare(x.Text.ToString(), y.Text.ToString());
 			}
 		}
-		
-		WorkspaceModel workspace;
-		public WorkspaceModel Workspace {
-			get { return workspace; }
-		}
 
 		protected static readonly IComparer<SharpTreeNode> ChildNodeComparer = new WorkspaceChildComparer();
 		
 		public WorkspaceTreeNode()
 		{
-			this.workspace = new WorkspaceModel();
-			this.workspace.AssemblyLists.CollectionChanged += AssemblyListsCollectionChanged;
+			SD.ClassBrowser.CurrentWorkspace.AssemblyLists.CollectionChanged += AssemblyListsCollectionChanged;
 		}
 		
 		protected override object GetModel()
 		{
-			return workspace;
+			return SD.ClassBrowser.CurrentWorkspace;
 		}
 		
 		protected override IModelCollection<object> ModelChildren {
-			get { return workspace.MainAssemblyList.Assemblies.Concat(workspace.UnpinnedAssemblies.Assemblies); }
+			get { return SD.ClassBrowser.MainAssemblyList.Assemblies.Concat(SD.ClassBrowser.UnpinnedAssemblies.Assemblies); }
 		}
 		
 		protected override IComparer<SharpTreeNode> NodeComparer {
@@ -63,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public override object Text {
 			get {
-				return String.Format(SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.Workspace"), Workspace.MainAssemblyList.Name);
+				return String.Format(SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.Workspace"), SD.ClassBrowser.MainAssemblyList.Name);
 			}
 		}
 		
@@ -80,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		protected override void InsertSpecialNodes()
 		{
-			foreach (var assemblyList in workspace.AssemblyLists) {
+			foreach (var assemblyList in SD.ClassBrowser.AssemblyLists) {
 				var treeNode = SD.TreeNodeFactory.CreateTreeNode(assemblyList);
 				if (treeNode != null)
 					Children.OrderedInsert(treeNode, ChildNodeComparer);

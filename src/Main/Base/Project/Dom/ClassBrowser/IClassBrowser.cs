@@ -10,6 +10,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
 	public interface IClassBrowser
 	{
+		WorkspaceModel CurrentWorkspace { get; }
 		IAssemblyList MainAssemblyList { get; set; }
 		IAssemblyList UnpinnedAssemblies { get; set; }
 		ICollection<IAssemblyList> AssemblyLists { get; }

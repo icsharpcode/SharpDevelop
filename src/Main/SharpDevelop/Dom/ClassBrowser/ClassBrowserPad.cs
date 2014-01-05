@@ -83,31 +83,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		}
 	}
 	
-	class ClassBrowserPad : AbstractPadContent, IClassBrowser
+	class ClassBrowserPad : AbstractPadContent
 	{
-		#region IClassBrowser implementation
-
-		public ICollection<IAssemblyList> AssemblyLists {
-			get { return treeView.AssemblyLists; }
-		}
-
-		public IAssemblyList MainAssemblyList {
-			get { return treeView.MainAssemblyList; }
-			set { treeView.MainAssemblyList = value; }
-		}
-		
-		public IAssemblyList UnpinnedAssemblies {
-			get { return treeView.UnpinnedAssemblies; }
-			set { treeView.UnpinnedAssemblies = value; }
-		}
-		
-		public IAssemblyModel FindAssemblyModel(FileName fileName)
-		{
-			return treeView.FindAssemblyModel(fileName);
-		}
-		
-		#endregion
-		
 		const string PersistedWorkspaceSetting = "ClassBrowser.Workspaces";
 		const string DefaultWorkspaceName = "<default>";
 
@@ -154,10 +131,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			get { return panel; }
 		}
 		
-		public IClassBrowserTreeView TreeView {
-			get { return treeView; }
-		}
-		
 		public bool GoToEntity(IEntity entity)
 		{
 			// Activate the pad
@@ -176,10 +149,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		void ProjectServiceCurrentSolutionChanged(object sender, EventArgs e)
 		{
-			foreach (var node in treeView.AssemblyLists.OfType<ISolutionAssemblyList>().ToArray())
-				treeView.AssemblyLists.Remove(node);
+			foreach (var node in SD.ClassBrowser.AssemblyLists.OfType<ISolutionAssemblyList>().ToArray())
+				SD.ClassBrowser.AssemblyLists.Remove(node);
 			if (projectService.CurrentSolution != null)
-				treeView.AssemblyLists.Add(new SolutionAssemblyList(projectService.CurrentSolution));
+				SD.ClassBrowser.AssemblyLists.Add(new SolutionAssemblyList(projectService.CurrentSolution));
 		}
 		
 		void AssemblyListCollectionChanged(IReadOnlyCollection<IAssemblyModel> removedItems, IReadOnlyCollection<IAssemblyModel> addedItems)
@@ -276,7 +249,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			IAssemblyModel assemblyModel = SafelyCreateAssemblyModelFromFile(assemblyFile);
 			if (assemblyModel != null) {
-				MainAssemblyList.Assemblies.Add(assemblyModel);
+				SD.ClassBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
 			}
 		}
 		
@@ -298,9 +271,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		/// </summary>
 		void UpdateActiveWorkspace()
 		{
-			if ((MainAssemblyList != null) && (activeWorkspace != null)) {
+			var mainAssemblyList = SD.ClassBrowser.MainAssemblyList;
+			if ((mainAssemblyList != null) && (activeWorkspace != null)) {
 				// Temporarily detach from event handler
-				MainAssemblyList.Assemblies.CollectionChanged -= AssemblyListCollectionChanged;
+				mainAssemblyList.Assemblies.CollectionChanged -= AssemblyListCollectionChanged;
 			}
 			
 			activeWorkspace = persistedWorkspaces.FirstOrDefault(w => w.IsActive);
@@ -311,7 +285,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				defaultWorkspace.IsActive = true;
 			}
 			
-			MainAssemblyList.Assemblies.Clear();
+			mainAssemblyList.Assemblies.Clear();
 			if (activeWorkspace != null) {
 				foreach (string assemblyFile in activeWorkspace.AssemblyFiles) {
 					AppendAssemblyFileToList(assemblyFile);
@@ -319,8 +293,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 			
 			// Attach to event handler, again.
-			if (MainAssemblyList != null) {
-				MainAssemblyList.Assemblies.CollectionChanged += AssemblyListCollectionChanged;
+			if (mainAssemblyList != null) {
+				mainAssemblyList.Assemblies.CollectionChanged += AssemblyListCollectionChanged;
 			}
 		}
 	}

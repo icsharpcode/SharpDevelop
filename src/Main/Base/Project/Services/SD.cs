@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
@@ -258,6 +259,11 @@ namespace ICSharpCode.SharpDevelop
 		/// <inheritdoc see="IOutputPad"/>
 		public static IOutputPad OutputPad {
 			get { return GetRequiredService<IOutputPad>(); }
+		}
+		
+		/// <inheritdoc see="IClassBrowser"/>
+		public static IClassBrowser ClassBrowser {
+			get { return GetRequiredService<IClassBrowser>(); }
 		}
 	}
 }

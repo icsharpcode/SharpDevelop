@@ -13,43 +13,17 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
-	public class ClassBrowserTreeView : SharpTreeView, IClassBrowserTreeView
+	public class ClassBrowserTreeView : SharpTreeView
 	{
-		#region IClassBrowser implementation
-		
-		WorkspaceModel workspace;
-
-		public ICollection<IAssemblyList> AssemblyLists {
-			get { return workspace.AssemblyLists; }
-		}
-
-		public IAssemblyList MainAssemblyList {
-			get { return workspace.MainAssemblyList; }
-			set { workspace.MainAssemblyList = value; }
-		}
-		
-		public IAssemblyList UnpinnedAssemblies {
-			get { return workspace.UnpinnedAssemblies; }
-			set { workspace.UnpinnedAssemblies = value; }
-		}
-		
-		public IAssemblyModel FindAssemblyModel(FileName fileName)
-		{
-			return workspace.FindAssemblyModel(fileName);
-		}
-
-		#endregion
-		
 		public ClassBrowserTreeView()
 		{
 			WorkspaceTreeNode root = new WorkspaceTreeNode();
-			this.workspace = root.Workspace;
 			ClassBrowserTreeView instance = this;
-			root.Workspace.AssemblyLists.CollectionChanged += delegate {
-				instance.ShowRoot = root.Workspace.AssemblyLists.Count > 0;
+			SD.ClassBrowser.CurrentWorkspace.AssemblyLists.CollectionChanged += delegate {
+				instance.ShowRoot = SD.ClassBrowser.CurrentWorkspace.AssemblyLists.Count > 0;
 			};
 			root.PropertyChanged += delegate {
-				instance.ShowRoot = root.Workspace.AssemblyLists.Count > 0;
+				instance.ShowRoot = SD.ClassBrowser.CurrentWorkspace.AssemblyLists.Count > 0;
 			};
 			this.Root = root;
 		}
@@ -145,10 +119,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				if (namespaceChildren == null) {
 					// Add assembly to workspace (unpinned), if not available in ClassBrowser
 					IAssemblyParserService assemblyParser = SD.GetService<IAssemblyParserService>();
-					if (assemblyParser != null) {
+					IClassBrowser classBrowser = SD.GetService<IClassBrowser>();
+					if (assemblyParser != null && classBrowser != null) {
 						IAssemblyModel unpinnedAssemblyModel = assemblyParser.GetAssemblyModel(new FileName(entityAssembly.UnresolvedAssembly.Location));
 						if (unpinnedAssemblyModel != null) {
-							this.UnpinnedAssemblies.Assemblies.Add(unpinnedAssemblyModel);
+							classBrowser.UnpinnedAssemblies.Assemblies.Add(unpinnedAssemblyModel);
 							var assemblyTreeNode = FindAssemblyTreeNode(entityAssembly.FullAssemblyName);
 							if (assemblyTreeNode != null) {
 								assemblyTreeNode.EnsureLazyChildren();
@@ -242,10 +217,5 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			
 			return false;
 		}
-	}
-
-	public interface IClassBrowserTreeView : IClassBrowser
-	{
-		
 	}
 }

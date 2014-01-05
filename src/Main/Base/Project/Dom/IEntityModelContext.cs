@@ -107,27 +107,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 	
-	public class DomAssemblyNameReference : IAssemblyReference
-	{
-		DomAssemblyName name;
-		IAssemblySearcher searcher;
-		
-		public DomAssemblyNameReference(DomAssemblyName name, IAssemblySearcher searcher)
-		{
-			if (name == null)
-				throw new ArgumentNullException("name");
-			if (searcher == null)
-				throw new ArgumentNullException("searcher");
-			this.name = name;
-			this.searcher = searcher;
-		}
-		
-		public IAssembly Resolve(ITypeResolveContext context)
-		{
-			return SD.AssemblyParserService.GetAssembly(searcher.FindAssembly(name), true).Resolve(context);
-		}
-	}
-	
 	public class AssemblyEntityModelContext : IEntityModelContext
 	{
 		Lazy<ICompilation> compilation;

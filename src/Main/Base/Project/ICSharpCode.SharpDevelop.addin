@@ -93,7 +93,8 @@
 		         class="ICSharpCode.SharpDevelop.Editor.Bookmarks.BookmarkManager"/>
 		<Service id="ICSharpCode.SharpDevelop.IUIService"
 		         class="ICSharpCode.SharpDevelop.UIService"/>
-		
+		<Service id="ICSharpCode.SharpDevelop.Dom.ClassBrowser.IClassBrowser"
+		         class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserServiceImpl"/>
 		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsService"
 		         class="ICSharpCode.SharpDevelop.WinForms.WinFormsService"/>
 		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsMenuService"
@@ -136,7 +137,6 @@
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
 		     class    = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserPad"
-		     serviceInterface = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.IClassBrowser"
 		     defaultPosition = "Right" />
 		
 		<Pad id       = "SideBar"

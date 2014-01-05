@@ -108,6 +108,7 @@
     </Compile>
     <Compile Include="Dom\AssemblyReferenceModel.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserPad.cs" />
+    <Compile Include="Dom\ClassBrowser\ClassBrowserServiceImpl.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserTreeNodesFactory.cs" />
     <Compile Include="Dom\ClassBrowser\Commands.cs" />
     <Compile Include="Dom\ClassBrowser\OpenFromGacDialog.xaml.cs">
