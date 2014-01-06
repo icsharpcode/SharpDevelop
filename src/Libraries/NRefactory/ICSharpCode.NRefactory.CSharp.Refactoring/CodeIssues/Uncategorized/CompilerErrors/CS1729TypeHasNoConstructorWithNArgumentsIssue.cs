@@ -117,6 +117,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			bool BaseTypeHasUsableParameterlessConstructor()
 			{
+				if (baseType.Kind == TypeKind.Unknown)
+					return true; // don't show CS1729 error message if base type is unknown 
 				var memberLookup = new MemberLookup(currentType.GetDefinition(), ctx.Compilation.MainAssembly);
 				OverloadResolution or = new OverloadResolution(ctx.Compilation, new ResolveResult[0]);
 				foreach (var ctor in baseType.GetConstructors()) {
