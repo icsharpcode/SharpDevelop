@@ -158,14 +158,17 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			}
 		}
 
-		IEnumerable<DesignItem> selectedItems;
+		IList<DesignItem> selectedItems;
 
 		public IEnumerable<DesignItem> SelectedItems {
 			get {
 				return selectedItems;
 			}
 			set {
-				selectedItems = value;
+				if (value != null)
+					selectedItems = value.ToList();
+				else
+					selectedItems = null;
 				RaisePropertyChanged("SelectedItems");
 				Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
 					delegate {
@@ -179,16 +182,26 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			Filter = null;
 		}
 
+		volatile bool reloadActive;
+		public bool ReloadActive {
+			get { return reloadActive; }
+		}
+
 		void Reload()
 		{
-			Clear();
-			
-			if (SelectedItems == null || SelectedItems.Count() == 0) return;
-			if (SelectedItems.Count() == 1) SingleItem = SelectedItems.First();
-
-			foreach (var md in GetDescriptors()) {
-				if (PassesFilter(md.Name))
-					AddNode(md);
+			reloadActive = true;
+			try {
+				Clear();
+				
+				if (selectedItems == null || selectedItems.Count == 0) return;
+				if (selectedItems.Count == 1) SingleItem = selectedItems[0];
+	
+				foreach (var md in GetDescriptors()) {
+					if (PassesFilter(md.Name))
+						AddNode(md);
+				}
+			} finally {
+				reloadActive = false;
 			}
 		}
 

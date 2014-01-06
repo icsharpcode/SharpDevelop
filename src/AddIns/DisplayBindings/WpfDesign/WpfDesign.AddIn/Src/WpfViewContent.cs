@@ -191,6 +191,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 
 		void OnPropertyGridPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (propertyGridView.PropertyGrid.ReloadActive) return;
 			if (e.PropertyName == "Name") {
 				if (!propertyGridView.PropertyGrid.IsNameCorrect) return;
 				
@@ -205,7 +206,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				
 				// rename the member
 				IMember member = info.CompilationUnit.Classes [0].AllMembers.FirstOrDefault(m => m.Name == propertyGridView.PropertyGrid.OldName);
-				if (member != null) {
+				if (member != null && propertyGridView.PropertyGrid.Name != null) {
 					FindReferencesAndRenameHelper.RenameMember(member, propertyGridView.PropertyGrid.Name);
 				}
 			}
