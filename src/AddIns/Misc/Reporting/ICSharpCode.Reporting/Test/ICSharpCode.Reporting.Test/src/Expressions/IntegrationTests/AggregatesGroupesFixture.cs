@@ -20,18 +20,60 @@ namespace ICSharpCode.Reporting.Test.Expressions.IntegrationTests
 		Collection<ExportText> collection;
 		CollectionDataSource dataSource;
 		ContributorCollection list;
-		ExpressionVisitor visitor;
 		ReportSettings reportSettings;
 		
 		[Test]
-		public void TestMethod()
+		public void SumGroupedList()
 		{
-			visitor = new ExpressionVisitor(reportSettings,dataSource.GroupedList);
+//			visitor = new ExpressionVisitor(reportSettings,dataSource.GroupedList);
+			var visitor = new ExpressionVisitor (reportSettings);
+			visitor.SetCurrentDataSource(dataSource.GroupedList);
 			var script = "= sum('randomint')";
 			collection[0].Text = script;
 			visitor.Visit(collection[0]);
 			var result = list.Sum(x => x.RandomInt);
 			Assert.That(Convert.ToDouble(collection[0].Text),Is.EqualTo(result));
+		}
+		
+		
+		[Test]
+		public void SumOneGroup () {
+			
+			var container = new ExportContainer();
+			
+			var script = "= sum('randomint')";
+			collection[0].Text = script;
+			container.ExportedItems.AddRange(collection);
+			
+//			visitor = new ExpressionVisitor(reportSettings,dataSource.GroupedList);
+			var visitor = new ExpressionVisitor (reportSettings);
+			visitor.SetCurrentDataSource(dataSource.GroupedList);
+			var group = dataSource.GroupedList.FirstOrDefault();
+			
+			visitor.SetCurrentDataSource(group);
+			visitor.Visit(container);
+			
+			var result = list.Where(k => k.GroupItem == group.Key.ToString()).Sum(x => x.RandomInt);
+			Assert.That(Convert.ToDouble(collection[0].Text),Is.EqualTo(result));
+		}
+		
+		
+		[Test]
+		public void SumAllGroups () {
+			var container = new ExportContainer();
+			container.ExportedItems.AddRange(collection);
+//			visitor = new ExpressionVisitor(reportSettings,dataSource.GroupedList);
+			var visitor = new ExpressionVisitor (reportSettings);
+			visitor.SetCurrentDataSource(dataSource.GroupedList);
+			foreach (var group in dataSource.GroupedList) {
+				var script = "= sum('randomint')";
+				collection[0].Text = script;
+				visitor.SetCurrentDataSource(group);
+				visitor.Visit(container);
+				
+				var result = list.Where(k => k.GroupItem == group.Key.ToString()).Sum(x => x.RandomInt);
+				Assert.That(Convert.ToDouble(collection[0].Text),Is.EqualTo(result));
+			}
 		}
 		
 		

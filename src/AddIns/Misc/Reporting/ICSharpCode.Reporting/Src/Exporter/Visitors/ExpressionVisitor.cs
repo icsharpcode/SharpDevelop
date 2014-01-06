@@ -1,13 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using ICSharpCode.Reporting.DataManager.Listhandling;
+using System.Collections.Generic;
 using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Expressions.Irony;
 using ICSharpCode.Reporting.Expressions.Irony.Ast;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
-using System.Collections.Generic;
+
 namespace ICSharpCode.Reporting.Exporter.Visitors
 {
 	/// <summary>
@@ -18,19 +18,15 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		readonly ReportingLanguageGrammer grammar;
 		readonly ReportingExpressionEvaluator evaluator;
 		
-		
-		public ExpressionVisitor(ReportSettings reportSettings,IEnumerable<object> dataSource) {
+		public ExpressionVisitor(ReportSettings reportSettings) {
 			grammar = new ReportingLanguageGrammer();
 			evaluator = new ReportingExpressionEvaluator(grammar);
 			evaluator.AddReportSettings(reportSettings);
-			if (dataSource != null) {
-				evaluator.AddDataSource(dataSource);
-			}
 		}
 		
 		
-		public void SetSourceList (IEnumerable<object> list) {
-			
+		public void SetCurrentDataSource (IEnumerable<object> dataSource) {
+			evaluator.SetCurrentDataSource(dataSource);
 		}
 		
 		

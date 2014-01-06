@@ -24,7 +24,9 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 		public void CanSum_Int_WholeCollection()
 		{
 			var reportSettings = new ReportSettings();
-			var visitor = new ExpressionVisitor(reportSettings,dataSource.SortedList);
+//			var visitor = new ExpressionVisitor(reportSettings,dataSource.SortedList);
+			var visitor = new ExpressionVisitor (reportSettings);
+			visitor.SetCurrentDataSource(dataSource.SortedList);
 			var script = "= sum('intValue')";
 			collection[0].Text = script;
 			visitor.Visit(collection[0]);
@@ -37,7 +39,9 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 		public void CanSum_Double_WholeCollection()
 		{
 			var reportSettings = new ReportSettings();
-			var visitor = new ExpressionVisitor(reportSettings,dataSource.SortedList);
+//			var visitor = new ExpressionVisitor(reportSettings,dataSource.SortedList);
+			var visitor = new ExpressionVisitor (reportSettings);
+			visitor.SetCurrentDataSource(dataSource.SortedList);
 			var script = "= sum('doubleValue')";
 			collection[0].Text = script;
 			visitor.Visit(collection[0]);

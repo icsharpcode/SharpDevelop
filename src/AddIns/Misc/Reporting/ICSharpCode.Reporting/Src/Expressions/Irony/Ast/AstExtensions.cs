@@ -42,6 +42,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			return rs.ParameterCollection;
 		}
 		
+		
 		public static void  AddReportSettings (this ReportingExpressionEvaluator app,ReportSettings reportSettings) {
 			if (reportSettings == null)
 				throw new ArgumentNullException("reportSettings");
@@ -70,7 +71,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 		
 		#region DataSource
 		
-		public static void AddDataSource (this ReportingExpressionEvaluator app,IEnumerable<object> dataSource){
+		public static void SetCurrentDataSource (this ReportingExpressionEvaluator app,IEnumerable<object> dataSource){
 			if (dataSource == null)
 				throw new ArgumentNullException("dataSource");
 			if (!app.Globals.ContainsKey("DataSource")) {
@@ -79,9 +80,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			    	app.Globals["DataSource"] = dataSource;
 			    }
 		}
-		
-		
-		
+	
 		#endregion
 	}
 }

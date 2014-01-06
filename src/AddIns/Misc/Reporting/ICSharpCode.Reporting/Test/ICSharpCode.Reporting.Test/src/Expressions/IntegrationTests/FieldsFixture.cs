@@ -67,7 +67,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			               {
 			               	Text = "myExporttextColumn"
 			               });
-			visitor = new ExpressionVisitor (new ReportSettings(),null);
+			visitor = new ExpressionVisitor (new ReportSettings());
 		}
 		
 	}

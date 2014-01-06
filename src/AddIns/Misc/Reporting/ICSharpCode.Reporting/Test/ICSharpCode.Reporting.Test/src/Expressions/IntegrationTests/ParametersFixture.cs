@@ -38,7 +38,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			              );
 			
 			var reportSettings = CreateReportSettings(parameters);
-			var visitor = new ExpressionVisitor(reportSettings,null);
+			var visitor = new ExpressionVisitor(reportSettings);
 			
 			var script = "=Parameters!param1 + Parameters!param2 + Parameters!param3";
 			collection[0].Text = script;
@@ -56,7 +56,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			               }
 			              );
 			var reportSettings = CreateReportSettings(parameters);
-			var visitor = new ExpressionVisitor(reportSettings,null);
+			var visitor = new ExpressionVisitor(reportSettings);
 			
 			var script = "=Parameters!paramNotExist";
 			collection[0].Text = script;

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.ObjectModel;
 using ICSharpCode.Reporting.DataManager.Listhandling;
-using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
@@ -33,15 +32,15 @@ namespace ICSharpCode.Reporting.Expressions
 		
 		public  void Run()
 		{
-			Console.WriteLine();
-			Console.WriteLine("Start ExpressionVisitor");
+			var visitor = new ExpressionVisitor (reportSettings);
 			
-			var visitor = new ExpressionVisitor (reportSettings,dataSource.SortedList);
-			visitor.Evaluator.Globals.Add("DataSource",dataSource);
+			if (dataSource.SortedList != null) {
+				visitor.SetCurrentDataSource(dataSource.SortedList);
+			}
+			if (dataSource.GroupedList != null) {
+				visitor.SetCurrentDataSource(dataSource.GroupedList);
+			}
 			visitor.Run(pages);
-			
-			Console.WriteLine("Finish ExpressionVisitor");
-			Console.WriteLine();
 		}
 	}
 }
