@@ -615,7 +615,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 	}
 
-	static class ExtMethods
+	public static class ExtMethods
 	{
 		public static void ContinueScript (this Task task, Action act)
 		{

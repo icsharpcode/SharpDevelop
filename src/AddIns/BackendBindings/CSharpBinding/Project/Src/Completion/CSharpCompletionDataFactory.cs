@@ -105,7 +105,7 @@ namespace CSharpBinding.Completion
 		
 		ICompletionData ICompletionDataFactory.CreateEventCreationCompletionData(string varName, IType delegateType, IEvent evt, string parameterDefinition, IUnresolvedMember currentMember, IUnresolvedTypeDefinition currentType)
 		{
-			return new CompletionData("TODO: event creation");
+			return new EventCreationCompletionData(varName, delegateType, evt, parameterDefinition, currentMember, currentType, contextAtCaret);
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateNewOverrideCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IMember m)

@@ -72,6 +72,7 @@
     <Compile Include="Src\Completion\CSharpCompletionContext.cs" />
     <Compile Include="Src\Completion\CSharpInsightItem.cs" />
     <Compile Include="Src\Completion\CSharpMethodInsight.cs" />
+    <Compile Include="Src\Completion\EventCreationCompletionData.cs" />
     <Compile Include="Src\Completion\ImportCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideEqualsGetHashCodeCompletionData.cs" />
