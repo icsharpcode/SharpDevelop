@@ -37,12 +37,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 		public override void BuildExportList()
 		{
 			CreateDataSource();
+			SetupExpressionRunner(ReportModel.ReportSettings,DataSource);
 			base.BuildExportList();
 			BuildDetail();
 			BuildReportFooter();
 			AddPage(CurrentPage);
 			UpdatePageInfo();
-			RunExpressions(ReportModel.ReportSettings,DataSource);
+			ExpressionRunner.Run();
 			var formatVisitor = new FormatVisitor();
 			formatVisitor.Run(Pages);
 			var dv = new DebugVisitor();
@@ -77,14 +78,17 @@ namespace ICSharpCode.Reporting.PageBuilder
 				DataSource.Fill(groupHeader.Items,grouping.FirstOrDefault());
 				
 				var headerRow = converter.ConvertToExportContainer(groupHeader);
+				
 				headerRow.Location = new Point(headerRow.Location.X,groupHeader.Location.Y);
 				
 				var headerItems = converter.CreateConvertedList(groupHeader.Items);
 				converter.SetParent(sectionContainer, headerItems);
 				
 				headerRow.ExportedItems.AddRange(headerItems);
-				
+
 				sectionContainer.ExportedItems.Add(headerRow);
+				
+				EvaluateExpressionsInGroups(sectionContainer,grouping);
 				
 				pagePosition = new Point(CurrentSection.Location.X, pagePosition.Y + sectionContainer.DesiredSize.Height + 1);
 				
@@ -119,6 +123,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 
 		
+		void EvaluateExpressionsInGroups(ExportContainer sectionContainer, IGrouping<object, object> grouping)
+		{
+			ExpressionRunner.Visitor.SetCurrentDataSource(grouping);
+			ExpressionRunner.Visitor.Visit(sectionContainer);
+		}
+
+		
 		void BuildSortedDetails(IContainerConverter converter,Point startPosition){
 			
 			var exportRows = new List<IExportContainer>();
@@ -126,7 +137,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			foreach (var element in DataSource.SortedList) {
 				var sectionContainer = CreateContainerForSection(CurrentPage, pagePosition);
 				var convertedItems = FillAndConvert(sectionContainer,element,ReportModel.DetailSection.Items,converter);
-			
+				
 				sectionContainer.ExportedItems.AddRange(convertedItems);
 				MeasureAndArrangeContainer(sectionContainer);
 				
@@ -208,7 +219,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			detail.Parent = parent;
 			return detail;
 		}
-	
+		
 		
 		void InsertContainer(ExportContainer sectionContainer)
 		{

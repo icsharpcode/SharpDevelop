@@ -189,11 +189,15 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		#region Visitors
 		
-		protected void RunExpressions(ReportSettings reportsettings,CollectionDataSource dataSource)
-		{
-			var expressionRunner = new ExpressionRunner(Pages,reportsettings,dataSource);
-			expressionRunner.Run();
+		protected void SetupExpressionRunner (ReportSettings reportsettings,CollectionDataSource dataSource){
+			ExpressionRunner = new ExpressionRunner(Pages,reportsettings,dataSource);
 		}
+		
+//		protected void RunExpressions(ReportSettings reportsettings,CollectionDataSource dataSource)
+//		{
+////			var expressionRunner = new ExpressionRunner(Pages,reportsettings,dataSource);
+//			ExpressionRunner.Run();
+//		}
 
 		
 		protected void RunDebugVisitor()
@@ -216,7 +220,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 	    
 	    internal Point DetailEnds {get; private set;}
 	    
-//	    internal ExpressionVisitor ExpressionVisitor {get; private set;}
+	    internal ExpressionRunner ExpressionRunner {get;private set;}
+	    
 	    
 	    internal Rectangle DetailsRectangle {
 	    	get {

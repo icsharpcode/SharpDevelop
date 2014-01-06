@@ -27,20 +27,23 @@ namespace ICSharpCode.Reporting.Expressions
 			this.pages = pages;
 			this.dataSource = dataSource;
 			this.reportSettings = reportSettings;
+			Visitor = new ExpressionVisitor(reportSettings);
 		}
 		
 		
 		public  void Run()
 		{
-			var visitor = new ExpressionVisitor (reportSettings);
+			Visitor = new ExpressionVisitor (reportSettings);
 			
 			if (dataSource.SortedList != null) {
-				visitor.SetCurrentDataSource(dataSource.SortedList);
+				Visitor.SetCurrentDataSource(dataSource.SortedList);
 			}
 			if (dataSource.GroupedList != null) {
-				visitor.SetCurrentDataSource(dataSource.GroupedList);
+				Visitor.SetCurrentDataSource(dataSource.GroupedList);
 			}
-			visitor.Run(pages);
+			Visitor.Run(pages);
 		}
+		
+		public ExpressionVisitor Visitor {get; private set;}
 	}
 }
