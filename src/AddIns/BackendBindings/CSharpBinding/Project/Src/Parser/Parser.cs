@@ -119,6 +119,8 @@ namespace CSharpBinding.Parser
 					int commentEndOffset = document.GetOffset(comment.EndLocation) - commentEndSignLength;
 					int endOffset;
 					int searchOffset = 0;
+					// HACK: workaround for parser bug: uses \n instead of \r\n in comment.Content
+					string commentContent = document.GetText(commentStartOffset, commentEndOffset - commentStartOffset + 1);
 					do {
 						int start = commentStartOffset + searchOffset;
 						int absoluteOffset = document.IndexOf(match, start, document.TextLength - start, StringComparison.Ordinal);
@@ -131,7 +133,7 @@ namespace CSharpBinding.Parser
 						}
 						tagComments.Add(new TagComment(content.Substring(0, match.Length), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(match.Length)));
 						searchOffset = endOffset - commentStartOffset;
-					} while (comment.Content.ContainsAny(TaskListTokens, searchOffset, out match));
+					} while (commentContent.ContainsAny(TaskListTokens, searchOffset, out match));
 				}
 			}
 		}
