@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public FileName Location {
 			get {
-				if (context != null) {
+				if (context != null && !string.IsNullOrEmpty(context.Location)) {
 					return new FileName(context.Location);
 				}
 				return null;
