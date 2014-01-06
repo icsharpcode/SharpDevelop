@@ -21,6 +21,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// </summary>
 	public static class DocumentPrinter
 	{
+		/// <summary>
+		/// Converts a readonly TextDocument to a Block and applies the provided highlighting definition.
+		/// </summary>
 		public static Block ConvertTextDocumentToBlock(ReadOnlyDocument document, IHighlightingDefinition highlightingDefinition)
 		{
 			IHighlighter highlighter;
@@ -31,6 +34,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 			return ConvertTextDocumentToBlock(document, highlighter);
 		}
 		
+		/// <summary>
+		/// Converts a readonly TextDocument to a Block and applies the provided highlighter.
+		/// </summary>
 		public static Block ConvertTextDocumentToBlock(IDocument document, IHighlighter highlighter)
 		{
 			if (document == null)
@@ -61,6 +67,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 			return p;
 		}
 		
+		/// <summary>
+		/// Creates a flow document from the editor's contents.
+		/// </summary>
 		public static FlowDocument CreateFlowDocumentForEditor(TextEditor editor)
 		{
 			IHighlighter highlighter = editor.TextArea.GetService(typeof(IHighlighter)) as IHighlighter;
