@@ -17,6 +17,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	{
 		static readonly IComparer<SharpTreeNode> TypeMemberNodeComparer =  new TypeDefinitionMemberNodeComparer();
 		ITypeDefinitionModel definition;
+		IModelCollection<object> combinedModelChildren;
 		
 		public TypeDefinitionTreeNode(ITypeDefinitionModel definition)
 		{
@@ -27,6 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				UpdateBaseTypesNode();
 				UpdateDerivedTypesNode();
 			};
+			this.combinedModelChildren = definition.NestedTypes.Concat<object>(definition.Members);
 		}
 		
 		protected override object GetModel()
@@ -55,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		protected override IModelCollection<object> ModelChildren {
 			get {
-				return definition.NestedTypes.Concat<object>(definition.Members);
+				return combinedModelChildren;
 			}
 		}
 		

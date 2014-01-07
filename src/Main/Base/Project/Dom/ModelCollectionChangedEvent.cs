@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void AddHandler(ModelCollectionChangedEventHandler<T> handler)
 		{
-			if (handler != null)
+			if ((handler != null) && !_handlers.Contains(handler))
 				_handlers.Add(handler);
 		}
 		

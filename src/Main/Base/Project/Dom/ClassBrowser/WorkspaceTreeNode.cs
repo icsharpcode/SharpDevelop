@@ -34,11 +34,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				return stringComparer.Compare(x.Text.ToString(), y.Text.ToString());
 			}
 		}
+		
+		IModelCollection<object> combinedModelChildren;
 
 		protected static readonly IComparer<SharpTreeNode> ChildNodeComparer = new WorkspaceChildComparer();
 		
 		public WorkspaceTreeNode()
 		{
+			combinedModelChildren = SD.ClassBrowser.MainAssemblyList.Assemblies.Concat(SD.ClassBrowser.UnpinnedAssemblies.Assemblies);
 			SD.ClassBrowser.CurrentWorkspace.AssemblyLists.CollectionChanged += AssemblyListsCollectionChanged;
 		}
 		
@@ -48,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		}
 		
 		protected override IModelCollection<object> ModelChildren {
-			get { return SD.ClassBrowser.MainAssemblyList.Assemblies.Concat(SD.ClassBrowser.UnpinnedAssemblies.Assemblies); }
+			get { return combinedModelChildren; }
 		}
 		
 		protected override IComparer<SharpTreeNode> NodeComparer {

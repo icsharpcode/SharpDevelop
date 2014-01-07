@@ -183,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 												int entityParamsCount = parametrizedEntityMember.Parameters != null ? parametrizedEntityMember.Parameters.Count : 0;
 												if (treeNodeParamsCount == entityParamsCount) {
 													for (int i = 0; i < entityParamsCount; i++) {
-														if (parametrizedEntityMember.Parameters[i].Type.FullName != parametrizedTreeNodeMember.Parameters[i].Type.Resolve(entityAssembly.Compilation).FullName) {
+														if (!parametrizedEntityMember.Parameters[i].Type.Equals(parametrizedTreeNodeMember.Parameters[i].Type.Resolve(entityAssembly.Compilation))) {
 															return false;
 														}
 													}
