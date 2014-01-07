@@ -152,7 +152,7 @@ namespace ICSharpCode.CodeCoverage
 			return bps;
 		}
 		
-		// Find method-body first SequencePoint "{"
+		// Find method-body start SequencePoint "{"
 		public static CodeCoverageSequencePoint getBodyStartSP(IEnumerable<CodeCoverageSequencePoint> sps) {
 			CodeCoverageSequencePoint startSeqPoint = null;
 			foreach (CodeCoverageSequencePoint sp in sps) {
@@ -192,12 +192,10 @@ namespace ICSharpCode.CodeCoverage
 			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Requires)
 			// and '{' branches at static methods
 			CodeCoverageSequencePoint startSeqPoint = getBodyStartSP(this.SequencePoints);
-			Debug.Assert (!Object.ReferenceEquals(null, startSeqPoint));
 			if (Object.ReferenceEquals(null, startSeqPoint)) { return null; }
 
 			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Ensures)
 			CodeCoverageSequencePoint finalSeqPoint = getBodyFinalSP(this.SequencePoints);
-			Debug.Assert ( !Object.ReferenceEquals( null, finalSeqPoint) );
 			if (Object.ReferenceEquals(null, finalSeqPoint)) { return null; }
 			
 			// Connect Sequence & Branches
