@@ -34,12 +34,13 @@ namespace ICSharpCode.Reporting.Expressions
 		public  void Run()
 		{
 			Visitor = new ExpressionVisitor (reportSettings);
-			
-			if (dataSource.SortedList != null) {
-				Visitor.SetCurrentDataSource(dataSource.SortedList);
-			}
-			if (dataSource.GroupedList != null) {
-				Visitor.SetCurrentDataSource(dataSource.GroupedList);
+			if (dataSource != null) {
+				if (dataSource.SortedList != null) {
+					Visitor.SetCurrentDataSource(dataSource.SortedList);
+				}
+				if (dataSource.GroupedList != null) {
+					Visitor.SetCurrentDataSource(dataSource.GroupedList);
+				}
 			}
 			Visitor.Run(pages);
 		}

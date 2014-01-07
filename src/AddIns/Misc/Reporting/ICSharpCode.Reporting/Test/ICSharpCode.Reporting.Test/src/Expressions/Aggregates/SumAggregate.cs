@@ -24,7 +24,6 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 		public void CanSum_Int_WholeCollection()
 		{
 			var reportSettings = new ReportSettings();
-//			var visitor = new ExpressionVisitor(reportSettings,dataSource.SortedList);
 			var visitor = new ExpressionVisitor (reportSettings);
 			visitor.SetCurrentDataSource(dataSource.SortedList);
 			var script = "= sum('intValue')";
@@ -39,7 +38,6 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 		public void CanSum_Double_WholeCollection()
 		{
 			var reportSettings = new ReportSettings();
-//			var visitor = new ExpressionVisitor(reportSettings,dataSource.SortedList);
 			var visitor = new ExpressionVisitor (reportSettings);
 			visitor.SetCurrentDataSource(dataSource.SortedList);
 			var script = "= sum('doubleValue')";
@@ -49,6 +47,18 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 			Assert.That(Convert.ToDouble(collection[0].Text),Is.TypeOf(typeof(double)));
 		}
 		
+		
+		[Test]
+		public void CanSum_Double_With_String_Concat()
+		{
+			var reportSettings = new ReportSettings();
+			var visitor = new ExpressionVisitor (reportSettings);
+			visitor.SetCurrentDataSource(dataSource.SortedList);
+			var script = "= 'myText ' + sum('doubleValue')";
+			collection[0].Text = script;
+			visitor.Visit(collection[0]);
+			Assert.That (collection[0].Text,Is.EqualTo("myText 408,25"));
+		}
 		
 		
 		[SetUp]

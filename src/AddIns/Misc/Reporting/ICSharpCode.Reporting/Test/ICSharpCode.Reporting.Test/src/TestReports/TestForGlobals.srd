@@ -113,7 +113,7 @@
             <Items>
                 <BaseTextItem>
                     <Location>16, 4</Location>
-                    <Size>100, 20</Size>
+                    <Size>264, 20</Size>
                     <BackColor>White</BackColor>
                     <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>

@@ -70,7 +70,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 					                     });
 				}
 			}
-			return sum;
+			return sum.ToString();
 		}
 
 		

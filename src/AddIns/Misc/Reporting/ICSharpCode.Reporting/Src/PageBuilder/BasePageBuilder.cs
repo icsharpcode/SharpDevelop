@@ -193,12 +193,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 			ExpressionRunner = new ExpressionRunner(Pages,reportsettings,dataSource);
 		}
 		
-//		protected void RunExpressions(ReportSettings reportsettings,CollectionDataSource dataSource)
-//		{
-////			var expressionRunner = new ExpressionRunner(Pages,reportsettings,dataSource);
-//			ExpressionRunner.Run();
-//		}
-
 		
 		protected void RunDebugVisitor()
 		{

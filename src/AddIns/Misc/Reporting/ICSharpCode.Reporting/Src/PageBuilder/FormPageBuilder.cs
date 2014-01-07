@@ -27,12 +27,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		public override void BuildExportList()
 		{
+			SetupExpressionRunner(ReportModel.ReportSettings,null);
 			base.BuildExportList();
 			BuildDetail();
 			base.AddPage(CurrentPage);
 			UpdatePageInfo();
 //			RunDebugVisitor();
-//			RunExpressions(ReportModel.ReportSettings);
+			ExpressionRunner.Run();
 		}
 
 		

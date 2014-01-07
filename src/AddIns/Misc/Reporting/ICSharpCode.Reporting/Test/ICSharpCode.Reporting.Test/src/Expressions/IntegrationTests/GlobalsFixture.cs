@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 {
 	[TestFixture]
-	[Ignore]
+//	[Ignore]
 	public class GlobalsFixture
 	{
 		IReportCreator reportCreator;
@@ -105,12 +105,5 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			var reportingFactory = new ReportingFactory();
 			reportCreator = reportingFactory.ReportCreator(stream);
 		}
-		
-		
-//		[TestFixtureSetUp]
-//		public void Setup() {
-//			
-//			expressionVisitor = new ExpressionVisitor(new ReportSettings());
-//		}
 	}
 }
