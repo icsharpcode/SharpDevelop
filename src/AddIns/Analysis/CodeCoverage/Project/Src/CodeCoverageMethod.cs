@@ -211,8 +211,9 @@ namespace ICSharpCode.CodeCoverage
 		public static List<CodeCoverageMethod> GetAllMethods(List<CodeCoverageMethod> methods, string namespaceStartsWith)
 		{
 			List<CodeCoverageMethod> matchedMethods = new List<CodeCoverageMethod>();
+			namespaceStartsWith += ".";
 			foreach (CodeCoverageMethod method in methods) {
-				if (method.ClassNamespace.StartsWith(namespaceStartsWith)) {
+			    if ((method.ClassNamespace+".").StartsWith(namespaceStartsWith)) {
 					matchedMethods.Add(method);
 				}
 			}
