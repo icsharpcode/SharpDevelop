@@ -19,6 +19,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (model == null)
 				throw new ArgumentNullException("model");
 			this.model = model;
+			
+			// To avoid the "+" sign in front of node...
+			this.LazyLoading = false;
 		}
 		
 		protected override object GetModel()
