@@ -23,11 +23,18 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		StatusBarItem txtStatusBarPanel    = new StatusBarItem();
 		StatusBarItem cursorStatusBarPanel = new StatusBarItem();
+		StatusBarItem selectionStatusBarPanel = new StatusBarItem();
 		StatusBarItem modeStatusBarPanel   = new StatusBarItem();
 		
 		public StatusBarItem CursorStatusBarPanel {
 			get {
 				return cursorStatusBarPanel;
+			}
+		}
+		
+		public StatusBarItem SelectionStatusBarPanel {
+			get {
+				return selectionStatusBarPanel;
 			}
 		}
 		
@@ -40,6 +47,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public SDStatusBar()
 		{
 			cursorStatusBarPanel.Width = 150;
+			selectionStatusBarPanel.Content = 50;
 			modeStatusBarPanel.Width = 25;
 			
 			statusProgressBar.Minimum = 0;
@@ -52,11 +60,13 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			statusProgressBarItem.HorizontalContentAlignment = HorizontalAlignment.Stretch;
 			
 			DockPanel.SetDock(modeStatusBarPanel, Dock.Right);
+			DockPanel.SetDock(selectionStatusBarPanel, Dock.Right);
 			DockPanel.SetDock(cursorStatusBarPanel, Dock.Right);
 			DockPanel.SetDock(statusProgressBarItem, Dock.Right);
 			DockPanel.SetDock(jobNamePanel, Dock.Right);
 			
 			Items.Add(modeStatusBarPanel);
+			Items.Add(selectionStatusBarPanel);
 			Items.Add(cursorStatusBarPanel);
 			Items.Add(statusProgressBarItem);
 			Items.Add(jobNamePanel);

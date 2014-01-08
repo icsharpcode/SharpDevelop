@@ -211,6 +211,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			codeEditorView.TextArea.TextEntering += TextAreaTextEntering;
 			codeEditorView.TextArea.TextEntered += TextAreaTextEntered;
 			codeEditorView.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;
+			codeEditorView.TextArea.SelectionChanged += TextAreaSelectionChanged;
 			codeEditorView.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
 			SearchPanel.Install(codeEditorView.TextArea);
@@ -379,6 +380,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					col += 1;
 			}
 			SD.StatusBar.SetCaretPosition(col, this.Line, chOffset);
+		}
+		
+		void TextAreaSelectionChanged(object sender, EventArgs e)
+		{
+			if (document == null)
+				return;
+			
+			if (sender == this.ActiveTextEditor.TextArea) {
+				HandleSelectionChanged();
+			}
+		}
+		
+		void HandleSelectionChanged()
+		{
+			TextArea textArea = this.ActiveTextEditor.TextArea;
+			if (textArea == null)
+				return;
+			
+			Selection selection = textArea.Selection;
+			SD.StatusBar.SetSelectionSingle(selection.Length);
 		}
 		
 		public INavigationPoint BuildNavPoint()

@@ -6938,6 +6938,12 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>ln ${Line} col ${Column} ch ${Character}</value>
   </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextSingle" xml:space="preserve">
+    <value>len ${Lenght}</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextMulti" xml:space="preserve">
+    <value>len ${Rows} * ${Cols} (${Total})$</value>
+  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Misc</value>
   </data>
