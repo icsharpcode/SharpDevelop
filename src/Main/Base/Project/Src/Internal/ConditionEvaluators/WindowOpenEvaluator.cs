@@ -26,15 +26,11 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			if (SD.Workbench == null) {
-				return false;
-			}
-			
 			string openWindow = condition.Properties["openwindow"];
 			
-			Type openWindowType = Type.GetType(openWindow, false);
+			Type openWindowType = condition.AddIn.FindType(openWindow);
 			if (openWindowType == null) {
-				//SD.Log.WarnFormatted("WindowOpenCondition: cannot find Type {0}", openWindow);
+				SD.Log.WarnFormatted("WindowOpenCondition: cannot find Type {0}", openWindow);
 				return false;
 			}
 			

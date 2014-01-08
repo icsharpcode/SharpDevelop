@@ -154,10 +154,10 @@ namespace ICSharpCode.Core
 					case XmlNodeType.Element:
 						switch (reader.LocalName) {
 							case "Condition":
-								conditionStack.Push(Condition.Read(reader));
+								conditionStack.Push(Condition.Read(reader, addIn));
 								break;
 							case "ComplexCondition":
-								conditionStack.Push(Condition.ReadComplexCondition(reader));
+								conditionStack.Push(Condition.ReadComplexCondition(reader, addIn));
 								break;
 							case "Import":
 								runtimes.Add(Runtime.Read(addIn, reader, hintPath, conditionStack));

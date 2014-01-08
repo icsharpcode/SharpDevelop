@@ -2,6 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel.Design;
+using System.Linq;
+using System.Reflection;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -25,18 +28,14 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			if (SD.Workbench == null) {
-				return false;
-			}
-			
 			string activeWindow = condition.Properties["activewindow"];
 			if (activeWindow == "*") {
 				return SD.Workbench.ActiveWorkbenchWindow != null;
 			}
 			
-			Type activeWindowType = Type.GetType(activeWindow, false);
+			Type activeWindowType = condition.AddIn.FindType(activeWindow);
 			if (activeWindowType == null) {
-				//SD.Log.WarnFormatted("WindowActiveCondition: cannot find Type {0}", activeWindow);
+				SD.Log.WarnFormatted("WindowActiveCondition: cannot find Type {0}", activeWindow);
 				return false;
 			}
 			

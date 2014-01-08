@@ -42,9 +42,9 @@ namespace ICSharpCode.Core
 			return !condition.IsValid(parameter);
 		}
 		
-		public static ICondition Read(XmlReader reader)
+		public static ICondition Read(XmlReader reader, AddIn addIn)
 		{
-			return new NegatedCondition(Condition.ReadConditionList(reader, "Not")[0]);
+			return new NegatedCondition(Condition.ReadConditionList(reader, "Not", addIn)[0]);
 		}
 	}
 
@@ -94,9 +94,9 @@ namespace ICSharpCode.Core
 			return true;
 		}
 		
-		public static ICondition Read(XmlReader reader)
+		public static ICondition Read(XmlReader reader, AddIn addIn)
 		{
-			return new AndCondition(Condition.ReadConditionList(reader, "And"));
+			return new AndCondition(Condition.ReadConditionList(reader, "And", addIn));
 		}
 	}
 	
@@ -147,9 +147,9 @@ namespace ICSharpCode.Core
 			return false;
 		}
 		
-		public static ICondition Read(XmlReader reader)
+		public static ICondition Read(XmlReader reader, AddIn addIn)
 		{
-			return new OrCondition(Condition.ReadConditionList(reader, "Or"));
+			return new OrCondition(Condition.ReadConditionList(reader, "Or", addIn));
 		}
 	}
 }
