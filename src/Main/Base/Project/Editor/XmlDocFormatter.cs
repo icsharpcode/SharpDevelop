@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public static FlowDocument CreateTooltip(IType type)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType | ConversionFlags.UseFullyQualifiedTypeNames;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType | ConversionFlags.UseFullyQualifiedMemberNames;
 			string header;
 			if (type is ITypeDefinition)
 				header = ambience.ConvertEntity((ITypeDefinition)type);
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public static FlowDocument CreateTooltip(IEntity entity)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType | ConversionFlags.UseFullyQualifiedTypeNames;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType | ConversionFlags.UseFullyQualifiedMemberNames;
 			string header = ambience.ConvertEntity(entity);
 			var documentation = XmlDocumentationElement.Get(entity);
 			

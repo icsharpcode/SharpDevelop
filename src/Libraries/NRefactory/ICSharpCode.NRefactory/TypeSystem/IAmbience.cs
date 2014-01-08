@@ -70,6 +70,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		ShowBody = 0x200,
 		
+		/// <summary>
+		/// Use fully qualified names for members.
+		/// </summary>
+		UseFullyQualifiedMemberNames = 0x400,
+		
 		StandardConversionFlags = ShowParameterNames |
 			ShowAccessibility |
 			ShowParameterList |
@@ -79,7 +84,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ShowDefinitionKeyword |
 			ShowBody,
 		
-		All = 0x3ff,
+		All = 0x7ff,
 	}
 	
 	public interface IAmbience

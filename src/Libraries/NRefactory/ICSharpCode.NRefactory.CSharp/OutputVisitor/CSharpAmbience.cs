@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (typeDef.DeclaringTypeDefinition != null) {
 				WriteTypeDeclarationName(typeDef.DeclaringTypeDefinition, writer, formattingPolicy);
 				writer.WriteToken(Roles.Dot, ".");
-			} else if ((ConversionFlags & ConversionFlags.UseFullyQualifiedTypeNames) == ConversionFlags.UseFullyQualifiedTypeNames) {
+			} else if ((ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) == ConversionFlags.UseFullyQualifiedMemberNames) {
 				WriteQualifiedName(typeDef.Namespace, writer, formattingPolicy);
 				writer.WriteToken(Roles.Dot, ".");
 			}
@@ -265,6 +265,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				throw new ArgumentNullException("type");
 			
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
+			astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) != ConversionFlags.UseFullyQualifiedMemberNames;
 			AstType astType = astBuilder.ConvertType(type);
 			return astType.ToString();
 		}
@@ -272,6 +273,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void ConvertType(IType type, TokenWriter writer, CSharpFormattingOptions formattingPolicy)
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
+			astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) != ConversionFlags.UseFullyQualifiedMemberNames;
 			AstType astType = astBuilder.ConvertType(type);
 			astType.AcceptVisitor(new CSharpOutputVisitor(writer, formattingPolicy));
 		}
