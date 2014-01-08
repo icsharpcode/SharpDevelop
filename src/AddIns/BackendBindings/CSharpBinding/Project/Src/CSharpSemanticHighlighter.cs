@@ -256,7 +256,7 @@ namespace CSharpBinding
 			if (parseInfo == null) {
 				if (invalidLines != null && !invalidLines.Contains(documentLine)) {
 					invalidLines.Add(documentLine);
-					Debug.WriteLine("Semantic highlighting for line {0} - marking as invalid", lineNumber);
+					//Debug.WriteLine("Semantic highlighting for line {0} - marking as invalid", lineNumber);
 				}
 				
 				if (cachedLine != null) {

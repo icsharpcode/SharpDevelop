@@ -214,8 +214,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 					return new ProjectEntry(parentProject, parseInfo.UnresolvedFile, parseInfo);
 				} else {
 					if (versionComparison == 0 && index >= 0) {
+						// Ensure we have parse info for the specified project (entry.UnresolvedFile is null for newly registered projects)
 						// If full parse info is requested, ensure we have full parse info.
-						if (!(fullParseInformationRequested && entries[index].CachedParseInformation == null)) {
+						if (entries[index].UnresolvedFile != null && !(fullParseInformationRequested && entries[index].CachedParseInformation == null)) {
 							// We already have the requested version parsed, just return it:
 							return entries[index];
 						}
@@ -271,6 +272,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#region ParseAsync
 		Task<ProjectEntry> runningAsyncParseTask;
 		ITextSourceVersion runningAsyncParseFileContentVersion;
+		IProject runningAsyncParseProject;
 		bool runningAsyncParseFullInfoRequested;
 		
 		public async Task<ParseInformation> ParseAsync(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
@@ -312,8 +314,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 					int index = FindIndexForProject(parentProject);
 					int versionComparison = CompareVersions(fileContent.Version);
 					if (versionComparison == 0 && index >= 0) {
+						// Ensure we have parse info for the specified project (entry.UnresolvedFile is null for newly registered projects)
 						// If full parse info is requested, ensure we have full parse info.
-						if (!(requestFullParseInformation && entries[index].CachedParseInformation == null)) {
+						if (entries[index].UnresolvedFile != null && !(requestFullParseInformation && entries[index].CachedParseInformation == null)) {
 							// We already have the requested version parsed, just return it:
 							return Task.FromResult(entries[index]);
 						}
@@ -321,6 +324,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					// Optimization:
 					// if an equivalent task is already running, return that one instead
 					if (runningAsyncParseTask != null && (!requestFullParseInformation || runningAsyncParseFullInfoRequested)
+					    && runningAsyncParseProject == parentProject
 					    && runningAsyncParseFileContentVersion.BelongsToSameDocumentAs(fileContent.Version)
 					    && runningAsyncParseFileContentVersion.CompareAge(fileContent.Version) == 0)
 					{
@@ -338,12 +342,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 							lock (this) {
 								runningAsyncParseTask = null;
 								runningAsyncParseFileContentVersion = null;
+								runningAsyncParseProject = null;
 							}
 						}
 					}, cancellationToken);
 				if (fileContent != null && fileContent.Version != null && !cancellationToken.CanBeCanceled) {
 					runningAsyncParseTask = task;
 					runningAsyncParseFileContentVersion = fileContent.Version;
+					runningAsyncParseProject = parentProject;
 					runningAsyncParseFullInfoRequested = requestFullParseInformation;
 				}
 			}

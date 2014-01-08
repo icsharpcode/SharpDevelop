@@ -194,6 +194,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
+			//SD.Log.Debug("Add " + fileName + " to " + project);
 			var entry = GetFileEntry(fileName, true);
 			entry.AddOwnerProject(project, isLinkedFile);
 			if (startAsyncParse)
@@ -204,6 +205,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
+			//SD.Log.Debug("Remove " + fileName + " from " + project);
 			var entry = GetFileEntry(fileName, false);
 			if (entry != null)
 				entry.RemoveOwnerProject(project);

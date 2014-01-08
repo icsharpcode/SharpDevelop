@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		/// <param name="project">The project/solution to build</param>
 		/// <param name="options">The build options that should be used</param>
-		/// <param name="realtimeBuildFeedbackSink">The build feedback sink that receives the build output.
+		/// <param name="buildFeedbackSink">The build feedback sink that receives the build output.
 		/// The output is nearly sent "as it comes in": sometimes output must wait because the BuildEngine
 		/// will ensure that output from two projects building in parallel isn't interleaved.</param>
 		/// <param name="progressMonitor">The progress monitor that receives build progress. The monitor will be disposed
@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static Task<BuildResults> BuildAsync(IBuildable project, BuildOptions options, IBuildFeedbackSink buildFeedbackSink, IProgressMonitor progressMonitor)
 		{
 			if (project == null)
-				throw new ArgumentNullException("solution");
+				throw new ArgumentNullException("project");
 			if (options == null)
 				throw new ArgumentNullException("options");
 			

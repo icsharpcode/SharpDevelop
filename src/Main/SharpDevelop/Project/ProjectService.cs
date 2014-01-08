@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!CloseSolution(allowCancel: true))
 				return false;
 			FileUtility.ObservedLoad(OpenSolutionInternal, fileName);
-				
+			
 			return currentSolution != null;
 		}
 		
@@ -147,13 +147,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			using (var progress = AsynchronousWaitDialog.ShowWaitDialog("Loading Solution...")) {
 				
 				solution = LoadSolutionFile(fileName, progress);
-				//(openSolution.Preferences as IMementoCapable).SetMemento(solutionProperties);
-				
-//				try {
-//					ApplyConfigurationAndReadProjectPreferences();
-//				} catch (Exception ex) {
-//					MessageService.ShowException(ex);
-//				}
 				
 				this.CurrentSolution = solution;
 			}
@@ -263,7 +256,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public event EventHandler<SolutionClosingEventArgs> SolutionClosing = delegate { };
 		public event EventHandler<SolutionEventArgs> SolutionClosed = delegate { };
 		
-		public bool CloseSolution(bool allowCancel)
+		public bool CloseSolution(bool allowCancel = true)
 		{
 			SD.MainThread.VerifyAccess();
 			var solution = this.CurrentSolution;

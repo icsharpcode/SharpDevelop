@@ -1027,7 +1027,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (heightTree.GetIsCollapsed(documentLine.LineNumber))
 				throw new InvalidOperationException("Trying to build visual line from collapsed line");
 			
-			Debug.WriteLine("Building line " + documentLine.LineNumber);
+			//Debug.WriteLine("Building line " + documentLine.LineNumber);
 			
 			VisualLine visualLine = new VisualLine(this, documentLine);
 			VisualLineTextSource textSource = new VisualLineTextSource(visualLine) {
