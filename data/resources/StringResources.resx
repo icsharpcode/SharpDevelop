@@ -6942,7 +6942,7 @@ The resources files have been renamed/moved accordingly.</value>
     <value>len ${Lenght}</value>
   </data>
   <data name="StatusBarService.SelectionStatusBarPanelTextMulti" xml:space="preserve">
-    <value>len ${Rows} * ${Cols} (${Total})$</value>
+    <value>len ${Rows} * ${Cols} (${Total})</value>
   </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Misc</value>

@@ -399,7 +399,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			Selection selection = textArea.Selection;
-			SD.StatusBar.SetSelectionSingle(selection.Length);
+			if (selection is RectangleSelection) {
+				int rows = Math.Abs(selection.EndPosition.Line - selection.StartPosition.Line) + 1;
+				int cols = Math.Abs(selection.EndPosition.VisualColumn - selection.StartPosition.VisualColumn);
+				SD.StatusBar.SetSelectionMulti(rows, cols);
+			} else {
+				SD.StatusBar.SetSelectionSingle(selection.Length);
+			}
 		}
 		
 		public INavigationPoint BuildNavPoint()

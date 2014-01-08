@@ -58,9 +58,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (rows > 0 && cols > 0) {
 				statusBar.SelectionStatusBarPanel.Content = StringParser.Parse(
 					"${res:StatusBarService.SelectionStatusBarPanelTextMulti}",
-					new StringTagPair("Rows", String.Format("{0,-10}", rows)),
-					new StringTagPair("Cols", String.Format("{0,-10}", cols)),
-					new StringTagPair("Total", String.Format("{0,-10}", rows * cols)));
+					new StringTagPair("Rows", String.Format("{0}", rows)),
+					new StringTagPair("Cols", String.Format("{0}", cols)),
+					new StringTagPair("Total", String.Format("{0}", rows * cols)));
 			} else {
 				statusBar.SelectionStatusBarPanel.Content = null;
 			}
