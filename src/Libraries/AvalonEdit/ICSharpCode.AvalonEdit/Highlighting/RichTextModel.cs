@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -263,6 +264,24 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				pos = endPos;
 				index++;
 			}
+		}
+		
+		/// <summary>
+		/// Creates WPF Run instances that can be used for TextBlock.Inlines.
+		/// </summary>
+		/// <param name="textSource">The text source that holds the text for this RichTextModel.</param>
+		public Run[] CreateRuns(ITextSource textSource)
+		{
+			Run[] runs = new Run[stateChanges.Count];
+			for (int i = 0; i < runs.Length; i++) {
+				int startOffset = stateChangeOffsets[i];
+				int endOffset = i + 1 < stateChangeOffsets.Count ? stateChangeOffsets[i + 1] : textSource.TextLength;
+				Run r = new Run(textSource.GetText(startOffset, endOffset - startOffset));
+				HighlightingColor state = stateChanges[i];
+				RichText.ApplyColorToTextElement(r, state);
+				runs[i] = r;
+			}
+			return runs;
 		}
 	}
 }

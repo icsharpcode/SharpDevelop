@@ -29,47 +29,41 @@ namespace ICSharpCode.TreeView.Demo
 		{
 			return FullPath;
 		}
-//
-//		public override bool CanCopy(SharpTreeNode[] nodes)
-//		{
-//			return true;
-//		}
 
-		public override IDataObject Copy(SharpTreeNode[] nodes)
+		public override bool CanCopy(SharpTreeNode[] nodes)
+		{
+			return nodes.All(n => n is FileSystemNode);
+		}
+		
+		protected override IDataObject GetDataObject(SharpTreeNode[] nodes)
 		{
 			var data = new DataObject();
 			var paths = nodes.OfType<FileSystemNode>().Select(n => n.FullPath).ToArray();
-			data.SetData(typeof(string[]), paths);
+			data.SetData(DataFormats.FileDrop, paths);
 			return data;
 		}
-//
-//		public override bool CanPaste(IDataObject data)
-//		{
-//			return true;
-//		}
-//
-		public override bool CanDelete()
+		
+		public override bool CanDelete(SharpTreeNode[] nodes)
 		{
-			return true;
+			return nodes.All(n => n is FileSystemNode);
 		}
 		
-		public override void Delete()
+		public override void Delete(SharpTreeNode[] nodes)
 		{
-			if (MessageBox.Show("Sure?", "Delete", MessageBoxButton.OKCancel) == MessageBoxResult.OK) {
-				DeleteCore();
+			if (MessageBox.Show("Are you sure you want to delete " + nodes.Length + " items?", "Delete", MessageBoxButton.OKCancel) == MessageBoxResult.OK) {
+				DeleteWithoutConfirmation(nodes);
 			}
 		}
 		
-		public override void DeleteCore()
+		public override void DeleteWithoutConfirmation(SharpTreeNode[] nodes)
 		{
-			this.Parent.Children.Remove(this);
+			foreach (var node in nodes) {
+				if (node.Parent != null)
+					node.Parent.Children.Remove(node);
+			}
 		}
 
-		public override bool CanDrag(SharpTreeNode[] nodes)
-		{
-			return true;
-		}
-
+		
 //		ContextMenu menu;
 //
 //		public override ContextMenu GetContextMenu()

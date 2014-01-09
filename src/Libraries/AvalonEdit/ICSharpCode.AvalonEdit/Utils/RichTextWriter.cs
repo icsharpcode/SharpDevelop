@@ -9,6 +9,9 @@ using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {
+	// TODO: This class (and derived classes) is currently unused; decide whether to keep it.
+	// (until this is decided, keep the class internal)
+	
 	/// <summary>
 	/// A text writer that supports creating spans of highlighted text.
 	/// </summary>

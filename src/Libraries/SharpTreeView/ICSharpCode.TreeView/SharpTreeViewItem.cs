@@ -78,9 +78,7 @@ namespace ICSharpCode.TreeView
 				    Math.Abs(currentPoint.Y - startPoint.Y) >= SystemParameters.MinimumVerticalDragDistance) {
 
 					var selection = ParentTreeView.GetTopLevelSelection().ToArray();
-					if (Node.CanDrag(selection)) {
-						Node.StartDrag(this, selection);
-					}
+					Node.StartDrag(this, selection);
 				}
 			}
 		}

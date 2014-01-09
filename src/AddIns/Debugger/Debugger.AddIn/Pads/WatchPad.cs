@@ -132,29 +132,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	
 	class WatchRootNode : SharpTreeNode
 	{
-		public override bool CanDrop(DragEventArgs e, int index)
+		public override bool CanPaste(IDataObject data)
 		{
-			e.Effects = DragDropEffects.None;
-			if (e.Data.GetDataPresent(DataFormats.StringFormat)) {
-				e.Effects = DragDropEffects.Copy;
-				return true;
-			}
-			return false;
+			return data.GetDataPresent(DataFormats.StringFormat);
 		}
 		
-		public override void Drop(DragEventArgs e, int index)
+		public override void Paste(IDataObject data)
 		{
-			if (e.Data == null) return;
-			if (!e.Data.GetDataPresent(DataFormats.StringFormat)) return;
-			
-			var watchValue = e.Data.GetData(DataFormats.StringFormat).ToString();
+			var watchValue = data.GetData(DataFormats.StringFormat) as string;
 			if (string.IsNullOrEmpty(watchValue)) return;
 			
 			var pad = SD.Workbench.GetPad(typeof(WatchPad)).PadContent as WatchPad;
 			if (pad == null) return;
 			
 			pad.AddWatch(watchValue);
-			WindowsDebugger.RefreshPads();
 		}
 	}
 	

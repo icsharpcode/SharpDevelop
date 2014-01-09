@@ -158,17 +158,22 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				int endOffset = i + 1 < stateChangeOffsets.Length ? stateChangeOffsets[i + 1] : text.Length;
 				Run r = new Run(text.Substring(startOffset, endOffset - startOffset));
 				HighlightingColor state = stateChanges[i];
-				if (state.Foreground != null)
-					r.Foreground = state.Foreground.GetBrush(null);
-				if (state.Background != null)
-					r.Background = state.Background.GetBrush(null);
-				if (state.FontWeight != null)
-					r.FontWeight = state.FontWeight.Value;
-				if (state.FontStyle != null)
-					r.FontStyle = state.FontStyle.Value;
+				ApplyColorToTextElement(r, state);
 				runs[i] = r;
 			}
 			return runs;
+		}
+
+		internal static void ApplyColorToTextElement(TextElement r, HighlightingColor state)
+		{
+			if (state.Foreground != null)
+				r.Foreground = state.Foreground.GetBrush(null);
+			if (state.Background != null)
+				r.Background = state.Background.GetBrush(null);
+			if (state.FontWeight != null)
+				r.FontWeight = state.FontWeight.Value;
+			if (state.FontStyle != null)
+				r.FontStyle = state.FontStyle.Value;
 		}
 		
 		/// <summary>

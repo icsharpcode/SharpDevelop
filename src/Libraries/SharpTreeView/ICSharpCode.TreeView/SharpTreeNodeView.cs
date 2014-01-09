@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
@@ -150,8 +151,10 @@ namespace ICSharpCode.TreeView
 			else {
 				result -= 19;
 			}
-			if (result < 0)
-				throw new InvalidOperationException();
+			if (result < 0) {
+				Debug.WriteLine("Negative indent level detected for node " + Node);
+				result = 0;
+			}
 			return result;
 		}
 	}

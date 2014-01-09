@@ -63,34 +63,46 @@ namespace ICSharpCode.TreeView.Demo
 		{
 			try {
 				foreach (var p in Directory.GetDirectories(path)
-					.OrderBy(d => Path.GetDirectoryName(d))) {
+				         .OrderBy(d => Path.GetDirectoryName(d))) {
 					Children.Add(new FolderNode(p));
 				}
 				foreach (var p in Directory.GetFiles(path)
-					.OrderBy(f => Path.GetFileName(f))) {
+				         .OrderBy(f => Path.GetFileName(f))) {
 					Children.Add(new FileNode(p));
 				}
 			}
 			catch {
 			}
 		}
-
-		public override bool CanDrop(DragEventArgs e, int index)
+		
+		public override bool CanPaste(IDataObject data)
 		{
-			return e.Data.GetDataPresent(typeof(string[]));
+			return data.GetDataPresent(DataFormats.FileDrop);
+		}
+		
+		public override void Paste(IDataObject data)
+		{
+			var paths = data.GetData(DataFormats.FileDrop) as string[];
+			if (paths != null) {
+				foreach (var p in paths) {
+					if (File.Exists(p)) {
+						Children.Add(new FileNode(p));
+					} else {
+						Children.Add(new FolderNode(p));
+					}
+				}
+			}
 		}
 		
 		public override void Drop(DragEventArgs e, int index)
 		{
-			var paths = e.Data.GetData(typeof(string[])) as string[];
+			var paths = e.Data.GetData(DataFormats.FileDrop) as string[];
 			if (paths != null) {
-				for (int i = 0; i < paths.Length; i++) {
-					var p = paths[i];
+				foreach (var p in paths) {
 					if (File.Exists(p)) {
-						Children.Insert(index + i, new FileNode(p));
-					}
-					else {
-						Children.Insert(index + i, new FolderNode(p));
+						Children.Insert(index++, new FileNode(p));
+					} else {
+						Children.Insert(index++, new FolderNode(p));
 					}
 				}
 			}

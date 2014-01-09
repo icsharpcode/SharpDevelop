@@ -35,14 +35,16 @@ namespace Debugger.AddIn.Pads.Controls
 			get { return this.Node.GetChildren != null; }
 		}
 		
-		public override bool CanDelete()
+		public override bool CanDelete(SharpTreeNode[] nodes)
 		{
-			return this.Node.CanDelete;
+			return nodes.All(n => n is SharpTreeNodeAdapter)
+				&& nodes.Cast<SharpTreeNodeAdapter>().All(n => n.Node.CanDelete);
 		}
 		
-		public override void Delete()
+		public override void Delete(SharpTreeNode[] nodes)
 		{
-			Parent.Children.Remove(this);
+			foreach (var node in nodes)
+				node.Parent.Children.Remove(this);
 		}
 		
 		protected override void LoadChildren()
