@@ -85,7 +85,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 				converter.SetParent(sectionContainer, headerItems);
 				
 				headerRow.ExportedItems.AddRange(headerItems);
-
+				headerRow.Parent = sectionContainer;
 				sectionContainer.ExportedItems.Add(headerRow);
 				
 				EvaluateExpressionsInGroups(sectionContainer,grouping);

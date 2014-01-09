@@ -40,8 +40,6 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			var fixedPage = new FixedPage();
 			fixedPage.Width = exportPage.Size.ToWpf().Width;
 			fixedPage.Height = exportPage.Size.ToWpf().Height;
-	
-//			fixedPage.Background = ConvertBrush(System.Drawing.Color.Blue);
 			fixedPage.Background = new SolidColorBrush(System.Drawing.Color.Blue.ToWpf());
 			return fixedPage;
 		}
@@ -49,7 +47,6 @@ namespace ICSharpCode.Reporting.ExportRenderer
 
 		public  Canvas CreateContainer(ExportContainer container)	{
 			var canvas = CreateCanvas(container);
-			Console.WriteLine("WPF Create Container with {0}",container.DesiredSize);
 			var size = container.DesiredSize.ToWpf();
 			canvas.Measure(size);
 			canvas.Arrange(new Rect(new Point(),size ));
@@ -104,25 +101,25 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}	
 		
 		static Size MeasureTextInWpf(ExportText exportText){
+			
 			if (exportText.CanGrow) {
+				var formattedText = new FormattedText(exportText.Text,
+				                           CultureInfo.CurrentCulture,
+				                           FlowDirection.LeftToRight,
+				                           new Typeface(exportText.Font.FontFamily.Name),
+				                           exportText.Font.Size,
+				                           new SolidColorBrush(exportText.ForeColor.ToWpf()),
+				                           null,
+				                           TextFormattingMode.Display);
 				
-				FormattedText ft = new FormattedText(exportText.Text,
-				                                     CultureInfo.CurrentCulture,
-				                                     System.Windows.FlowDirection.LeftToRight,
-				                                     new Typeface(exportText.Font.FontFamily.Name),
-				                                     exportText.Font.Size,
-				                                     new SolidColorBrush(exportText.ForeColor.ToWpf()),
-				                                     null,
-				                                     TextFormattingMode.Display);
+				formattedText.MaxTextWidth = exportText.DesiredSize.Width * 96.0 / 72.0;
+//				ft.MaxTextHeight = exportText.DesiredSize.Height + 5 * 96.0 / 72.0;
+//				ft.MaxTextHeight = Double.MaxValue ;
 				
-				ft.MaxTextWidth = exportText.Size.Width * 96.0 / 72.0;
-				ft.MaxTextHeight = Double.MaxValue ;
-				
-				ft.SetFontSize(exportText.Font.Size  * 96.0 / 72.0);
-//				ft.SetFontSize(exportText.Font.Size);
+				formattedText.SetFontSize(exportText.Font.Size  * 96.0 / 72.0);
 				var size = new Size {
-					Width = ft.WidthIncludingTrailingWhitespace,
-					Height = ft.Height};
+					Width = formattedText.WidthIncludingTrailingWhitespace,
+					Height = formattedText.Height + 6};
 				return size;
 			}
 			return new Size(exportText.Size.Width,exportText.Size.Height);
