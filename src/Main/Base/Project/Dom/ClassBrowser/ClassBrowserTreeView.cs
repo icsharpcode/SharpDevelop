@@ -183,7 +183,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 												int entityParamsCount = parametrizedEntityMember.Parameters != null ? parametrizedEntityMember.Parameters.Count : 0;
 												if (treeNodeParamsCount == entityParamsCount) {
 													for (int i = 0; i < entityParamsCount; i++) {
-														if (!parametrizedEntityMember.Parameters[i].Type.Equals(parametrizedTreeNodeMember.Parameters[i].Type.Resolve(entityAssembly.Compilation))) {
+														// Compare full type names or at least only type names without namespace
+														// This is not precise, but sufficient in most cases.
+														var entityParamType = parametrizedEntityMember.Parameters[i].Type;
+														var treeNodeParamType = parametrizedTreeNodeMember.Parameters[i].Type.Resolve(
+															new SimpleTypeResolveContext(entityAssembly));
+														if ((entityParamType.FullName != treeNodeParamType.FullName) &&
+														    (entityParamType.Name != treeNodeParamType.Name)) {
 															return false;
 														}
 													}
