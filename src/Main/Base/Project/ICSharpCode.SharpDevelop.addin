@@ -2019,11 +2019,13 @@
 	
 	<Path name = "/SharpDevelop/EntityContextMenu">
 		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
-		<MenuItem id="OpenInClassBrowser"
-		          icon="ILSpy"
-		          type="Item"
-		          label="${res:MainWindow.Windows.ClassBrowser.OpenInClassBrowser}"
-		          class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenInClassBrowserCommand"/>
+		<Condition name="SymbolTypeAtCaret" type="member,type" action="Exclude">
+			<MenuItem id="OpenInClassBrowser"
+			          icon="ILSpy"
+			          type="Item"
+			          label="${res:MainWindow.Windows.ClassBrowser.OpenInClassBrowser}"
+			          class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenInClassBrowserCommand"/>
+		</Condition>
 		<MenuItem id="Separator1" type="Separator" />
 		
 		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
