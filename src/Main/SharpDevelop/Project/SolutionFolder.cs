@@ -132,11 +132,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public IProject AddExistingProject(FileName fileName)
 		{
 			ProjectLoadInformation loadInfo = new ProjectLoadInformation(parentSolution, fileName, fileName.GetFileNameWithoutExtension());
-			var descriptor = ProjectBindingService.GetCodonPerProjectFile(fileName);
-			if (descriptor != null) {
-				loadInfo.TypeGuid = descriptor.Guid;
-			}
-			IProject project = ProjectBindingService.LoadProject(loadInfo);
+			IProject project = SD.ProjectService.LoadProject(loadInfo);
 			Debug.Assert(project.IdGuid != Guid.Empty);
 			this.Items.Add(project);
 			project.ProjectLoaded();

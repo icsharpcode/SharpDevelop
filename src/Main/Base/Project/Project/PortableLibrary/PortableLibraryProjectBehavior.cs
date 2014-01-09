@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 		public override IEnumerable<TargetFramework> GetAvailableTargetFrameworks()
 		{
 			TargetFramework[] portableTargets = { this.CurrentTargetFramework, new PickPortableTargetFramework() };
-			if (Project.Language == "C#" || Project.Language == "VBNet") {
+			if (Project.Language == "C#" || Project.Language == "VB") {
 				// we support converting back to regular projects
 				return base.GetAvailableTargetFrameworks().Union(portableTargets);
 			} else {

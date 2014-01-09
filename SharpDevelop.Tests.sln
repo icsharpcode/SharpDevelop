@@ -313,6 +313,10 @@ Global
 		{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}.Debug|Any CPU.Build.0 = net_4_5_Debug|Any CPU
 		{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}.Release|Any CPU.ActiveCfg = net_4_5_Release|Any CPU
 		{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}.Release|Any CPU.Build.0 = net_4_5_Release|Any CPU
+		{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}.Debug|Any CPU.ActiveCfg = net_4_5_Debug|Any CPU
+		{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}.Debug|Any CPU.Build.0 = net_4_5_Debug|Any CPU
+		{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}.Release|Any CPU.ActiveCfg = net_4_5_Release|Any CPU
+		{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}.Release|Any CPU.Build.0 = net_4_5_Release|Any CPU
 		{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -641,10 +645,6 @@ Global
 		{3DF4060F-5EE0-41CF-8096-F27355FD5511}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DF4060F-5EE0-41CF-8096-F27355FD5511}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DF4060F-5EE0-41CF-8096-F27355FD5511}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}.Debug|Any CPU.ActiveCfg = net_4_5_Debug|Any CPU
-		{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}.Debug|Any CPU.Build.0 = net_4_5_Debug|Any CPU
-		{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}.Release|Any CPU.ActiveCfg = net_4_5_Release|Any CPU
-		{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}.Release|Any CPU.Build.0 = net_4_5_Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

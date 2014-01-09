@@ -134,13 +134,13 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void Kind_ProjectIsVBNetProject_ReturnsCSharpProjectTypeGuid()
+		public void Kind_ProjectIsVBNetProject_ReturnsVBProjectTypeGuid()
 		{
 			CreateProject( @"d:\projects\myproject\test.vbproj");
 			
 			string kind = project.Kind;
 			
-			Assert.AreEqual(ProjectTypeGuids.VBNet.ToString(), kind);
+			Assert.AreEqual(ProjectTypeGuids.VB.ToString(), kind);
 		}
 		
 		[Test]

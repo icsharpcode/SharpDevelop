@@ -26,10 +26,10 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">
-		<Condition name = "ProjectActive" activeproject="VBNet">
+		<Condition name = "ProjectActive" activeproject="VB">
 			<MenuItem id = "VBToCSharpConverter"
 			          label = "${res:ICSharpCode.SharpDevelop.Commands.VBConvertProjectToCSharp}"
-			          class = "CSharpBinding.VBNetToCSharpConverter"/>
+			          class = "CSharpBinding.VBToCSharpConverter"/>
 		</Condition>
 	</Path>
 	

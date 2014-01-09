@@ -5,7 +5,7 @@
 <!-- Converted to AvalonEdit format by Daniel Grunwald in 2010 -->
 <!-- Updated 2010 by Siegfried Oleg Pammer for VB.NET 9 and 10 -->
 <!-- Updated 2011 by Siegfried Oleg Pammer for VB 11 CTP -->
-<SyntaxDefinition name="VBNET" extensions=".vb" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+<SyntaxDefinition name="VB" extensions=".vb" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 	<Color name="Comment" foreground="Green" exampleText="' comment" />
 	<Color name="String" exampleText="text = &quot;Hello, World!&quot;" />
 	

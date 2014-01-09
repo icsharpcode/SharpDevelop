@@ -18,8 +18,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			string type = ProjectType.GetProjectType(project);
 			if (type == ProjectType.CSharp) {
 				return SD.ProjectTypeGuids.CSharp.ToString();
-			} else if (type == ProjectType.VBNet.ToString()) {
-				return SD.ProjectTypeGuids.VBNet.ToString();
+			} else if (type == ProjectType.VB) {
+				return SD.ProjectTypeGuids.VB.ToString();
 			}
 			return String.Empty;
 		}

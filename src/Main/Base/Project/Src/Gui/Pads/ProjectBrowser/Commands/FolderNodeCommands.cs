@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		int GetFileFilterIndex(IProject project, IReadOnlyList<FileFilterDescriptor> fileFilters)
 		{
 			if (project != null) {
-				ProjectBindingDescriptor projectCodon = ProjectBindingService.GetCodonPerLanguageName(project.Language);
+				ProjectBindingDescriptor projectCodon = SD.ProjectService.ProjectBindings.FirstOrDefault(b => b.Language == project.Language);
 				if (projectCodon != null) {
 					for (int i = 0; i < fileFilters.Count; ++i) {
 						for (int j = 0; j < projectCodon.CodeFileExtensions.Length; ++j) {

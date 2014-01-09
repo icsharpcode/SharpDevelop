@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
 			ISolutionFolderNode solutionFolderNode = node as ISolutionFolderNode;
-			if (node != null) {
+			if (solutionFolderNode != null) {
 				using (OpenFileDialog fdiag = new OpenFileDialog()) {
 					fdiag.AddExtension    = true;
 					fdiag.Filter = ProjectService.GetAllProjectsFilter(this, false);
@@ -64,8 +64,14 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					fdiag.CheckFileExists = true;
 					fdiag.InitialDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolderNode.Folder);
 					if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
-						foreach (string fileName in fdiag.FileNames) {
-							solutionFolderNode.Folder.AddExistingProject(FileName.Create(fileName));
+						try {
+							foreach (string fileName in fdiag.FileNames) {
+								solutionFolderNode.Folder.AddExistingProject(FileName.Create(fileName));
+							}
+						} catch (ProjectLoadException ex) {
+							MessageService.ShowError(ex.Message);
+						} catch (IOException ex) {
+							MessageService.ShowError(ex.Message);
 						}
 						ProjectService.SaveSolution();
 					}

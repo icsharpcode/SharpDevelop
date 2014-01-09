@@ -85,7 +85,7 @@ namespace AspNet.Mvc.Tests
 		public void GetTemplateLanguage_ProjectIsVisualBasicProject_ReturnsVisualBasicTemplateLanguage()
 		{
 			CreateProject();
-			testableProject.SetLanguage("VBNet");
+			testableProject.SetLanguage("VB");
 			
 			MvcTextTemplateLanguage language = project.GetTemplateLanguage();
 			

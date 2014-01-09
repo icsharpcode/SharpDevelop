@@ -142,6 +142,23 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
 		event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
+		
+		/// <summary>
+		/// Gets the list of registered project bindings.
+		/// </summary>
+		IReadOnlyList<ProjectBindingDescriptor> ProjectBindings { get; }
+		
+		/// <summary>
+		/// Loads a project from disk without opening it in the IDE.
+		/// </summary>
+		/// <exception cref="ProjectLoadException">Invalid project file (or other error)</exception>
+		/// <exception cref="System.IO.IOException">Error reading from the project file</exception>
+		/// <remarks>
+		/// The TypeGuid will be used to identity the project binding used for loading the project.
+		/// If the TypeGuid provided with the ProjectLoadInformation is all zeroes, the project file extension
+		/// will be used instead.
+		/// </remarks>
+		IProject LoadProject(ProjectLoadInformation info);
 	}
 	
 	public interface IProjectServiceRaiseEvents

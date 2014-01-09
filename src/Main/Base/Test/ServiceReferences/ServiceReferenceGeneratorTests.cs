@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		void UseVisualBasicProject()
 		{
-			SetProjectLanguage("VBNet");
+			SetProjectLanguage("VB");
 		}
 		
 		void SetProjectLanguage(string language)

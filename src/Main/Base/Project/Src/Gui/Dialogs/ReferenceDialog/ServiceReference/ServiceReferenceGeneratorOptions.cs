@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 
 		public void MapProjectLanguage(string language)
 		{
-			if (language == "VBNet") {
+			if (language == "VB") {
 				Language = "VB";
 			} else {
 				Language = "CS";

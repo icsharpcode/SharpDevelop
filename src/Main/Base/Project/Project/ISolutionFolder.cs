@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		/// <param name="fileName">Path to the project file</param>
 		/// <exception cref="ProjectLoadException">The specified file is not a valid project file</exception>
-		/// <exception cref="IOException">Error reading from the specified project file</exception>
+		/// <exception cref="System.IO.IOException">Error reading from the specified project file</exception>
 		IProject AddExistingProject(FileName fileName);
 		
 		/* 		if (solutionFolderNode.Solution.SolutionFolders.Any(

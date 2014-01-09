@@ -7,7 +7,7 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public static class MvcTextTemplateLanguageConverter
 	{
-		public static readonly string VisualBasicProjectLanguage = "VBNet";
+		public static readonly string VisualBasicProjectLanguage = "VB";
 		
 		/// <summary>
 		/// Converts from an IProject.Language string to an MvcTemplateLanguage. Only C# and VB.NET languages

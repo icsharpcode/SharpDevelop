@@ -8,7 +8,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public static class ProjectType
 	{
-		public static readonly string VBNet = "VB.NET";
+		public static readonly string VB = "VB.NET";
 		public static readonly string CSharp = "C#";
 		
 		public static string GetProjectType(Project project)
@@ -19,7 +19,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public static string GetProjectType(IProject project)
 		{
 			if (project.Language == "VB")
-				return VBNet;
+				return VB;
 			else
 				return project.Language;
 		}

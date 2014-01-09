@@ -24,7 +24,7 @@ namespace MSHelpSystem.Helper
 			result.Add("C++", "C%2B%2B");
 			result.Add("C#", "CSharp");
 			result.Add("F#", "FSharp");
-			result.Add("VBNet", "VB");
+			result.Add("VB", "VB");
 			return result;
 		}
 

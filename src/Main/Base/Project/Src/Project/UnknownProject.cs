@@ -27,13 +27,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			MessageService.ShowError("Error loading " + this.FileName + ":\n" + warningText);
 		}
 		
-		public UnknownProject(ProjectLoadInformation information, string warningText, bool displayWarningToUser)
+		public UnknownProject(ProjectLoadInformation information, string warningText)
 			: this(information)
 		{
 			this.warningText = warningText;
-			if (displayWarningToUser) {
-				ShowWarningMessageBox();
-			}
 		}
 		
 		public UnknownProject(ProjectLoadInformation information)

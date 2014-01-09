@@ -20,8 +20,7 @@ namespace Debugger.AddIn
 {
 	public enum SupportedLanguage
 	{
-		CSharp,
-		VBNet
+		CSharp
 	}
 	
 	public static class Extensions

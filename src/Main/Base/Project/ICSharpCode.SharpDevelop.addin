@@ -41,7 +41,7 @@
 			<Doozer name="OptionPanel" class="ICSharpCode.SharpDevelop.OptionPanelDoozer"/>
 			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.Workbench.DisplayBindingDoozer"/>
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
-			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.ProjectBindingDoozer"/>
+			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.Project.ProjectBindingDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
 			<Doozer name="TextEditorExtension" class="ICSharpCode.SharpDevelop.Editor.TextEditorExtensionDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
@@ -1922,8 +1922,8 @@
 						          class = "ICSharpCode.SharpDevelop.Commands.CSharpConvertBuffer"/>
 					</Condition>
 					<Condition name="ActiveContentExtension" activeextension=".cs" action = "Disable">
-						<MenuItem id = "VBNet"
-						          label = "VB.NET"
+						<MenuItem id = "VB"
+						          label = "Visual Basic"
 						          class = "ICSharpCode.SharpDevelop.Commands.VBConvertBuffer"/>
 					</Condition>
 				</MenuItem>
@@ -2447,7 +2447,7 @@
 				</Not>
 				<Or> <!-- and either a C# or VB project -->
 					<Condition name = "ProjectActive" activeproject="C#" />
-					<Condition name = "ProjectActive" activeproject="VBNet" />
+					<Condition name = "ProjectActive" activeproject="VB" />
 				</Or>
 			</And>
 			<Class id="ConvertToPortableLibraryBehavior" class="ICSharpCode.SharpDevelop.Project.PortableLibrary.ConvertToPortableLibraryProjectBehavior" />

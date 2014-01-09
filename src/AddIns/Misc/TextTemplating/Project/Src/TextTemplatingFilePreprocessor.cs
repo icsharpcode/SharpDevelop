@@ -46,7 +46,7 @@ namespace ICSharpCode.TextTemplating
 		
 		string GetFileExtensionForProject()
 		{
-			if (TemplateFile.Project.Language == "VBNet") {
+			if (TemplateFile.Project.Language == "VB") {
 				return ".vb";
 			}
 			return ".cs";

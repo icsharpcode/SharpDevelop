@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		void CreateProjectWithVisualBasicMSBuildProject()
 		{
-			msbuildProject = WebReferenceTestHelper.CreateTestProject("VBNet");
+			msbuildProject = WebReferenceTestHelper.CreateTestProject("VB");
 			project = new ProjectWithServiceReferences(msbuildProject);			
 		}
 		
@@ -311,7 +311,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		{
 			CreateProjectWithVisualBasicMSBuildProject();
 			
-			Assert.AreEqual("VBNet", project.Language);
+			Assert.AreEqual("VB", project.Language);
 		}
 		
 		[Test]

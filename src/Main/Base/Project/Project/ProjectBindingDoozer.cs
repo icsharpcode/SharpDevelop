@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
 	/// Creates ProjectBindingDescriptor objects for the project service.
@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop
 	/// <attribute name="class" use="required">
 	/// Name of the IProjectBinding class.
 	/// </attribute>
-	/// <usage>Only in /SharpDevelop/Workbench/ProjectBinding</usage>
+	/// <usage>Only in /SharpDevelop/Workbench/ProjectBindings</usage>
 	/// <returns>
 	/// A ProjectBindingDescriptor object that wraps the IProjectBinding object.
 	/// </returns>

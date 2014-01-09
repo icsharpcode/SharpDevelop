@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 		/// <param name="fileSystem">File system used to open referenced input files.
 		/// This should usually be a <see cref="ReadOnlyChrootFileSystem"/> so that the file template
 		/// can use relative paths.
-		/// The template will keep a reference to the file system instance and use it to create files/projects.
+		/// The template will keep a reference to the file system instance and use it to read the referenced input files when the template is used.
 		/// </param>
 		/// <returns><see cref="FileTemplate"/> or <see cref="ProjectTemplate"/> instance.</returns>
 		/// <exception cref="TemplateLoadException">Invalid file format</exception>

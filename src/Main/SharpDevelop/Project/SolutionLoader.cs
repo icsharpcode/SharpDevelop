@@ -139,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					projectInfo.ActiveProjectConfiguration = projectInfo.ConfigurationMapping.GetProjectConfiguration(solution.ActiveConfiguration);
 					progress.TaskName = "Loading " + projectInfo.ProjectName;
 					using (projectInfo.ProgressMonitor = progress.CreateSubTask(1.0 / projectCount)) {
-						solutionItem = ProjectBindingService.LoadProject(projectInfo);
+						solutionItem = LoadProjectWithErrorHandling(projectInfo);
 					}
 					projectsLoaded++;
 					progress.Progress = (double)projectsLoaded / projectCount;
@@ -154,6 +154,24 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			solution.IsDirty = fixedGuidConflicts; // reset IsDirty=false unless we've fixed GUID conflicts
+		}
+
+		static IProject LoadProjectWithErrorHandling(ProjectLoadInformation projectInfo)
+		{
+			Exception exception;
+			try {
+				return SD.ProjectService.LoadProject(projectInfo);
+			} catch (FileNotFoundException) {
+				return new MissingProject(projectInfo);
+			} catch (ProjectLoadException ex) {
+				exception = ex;
+			} catch (IOException ex) {
+				exception = ex;
+			} catch (UnauthorizedAccessException ex) {
+				exception = ex;
+			}
+			LoggingService.Warn("Project load error", exception);
+			return new UnknownProject(projectInfo, exception.Message);
 		}
 		#endregion
 		

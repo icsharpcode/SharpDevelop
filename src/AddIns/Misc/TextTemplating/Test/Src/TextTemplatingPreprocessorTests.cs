@@ -91,7 +91,7 @@ namespace TextTemplating.Tests
 		public void PreprocessTemplate_TemplateFileInVisualBasicProject_OutputFileNameIsTemplateFileNameWithVisualBasicFileExtension()
 		{
 			var templateFile = CreatePreprocessor(@"d:\MyProject\Test.tt");
-			templateFile.TestableProject.SetLanguage("VBNet");
+			templateFile.TestableProject.SetLanguage("VB");
 			preprocessor.PreprocessTemplate();
 			
 			Assert.AreEqual(@"d:\MyProject\Test.vb", templatingHost.OutputFilePassedToPreprocessTemplate);

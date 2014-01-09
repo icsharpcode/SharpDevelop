@@ -136,7 +136,7 @@
     <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />
     <Compile Include="WebReferences\WebReferenceTests.cs" />
     <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
-    <Compile Include="WebReferences\VBNetWebReferenceTest.cs" />
+    <Compile Include="WebReferences\VBWebReferenceTest.cs" />
     <Compile Include="WebReferences\WebReferenceTestHelper.cs" />
     <Compile Include="WebReferences\UnsupportedLanguageTest.cs" />
     <Compile Include="WebReferences\WebReferenceFolderAlreadyExistsTest.cs" />

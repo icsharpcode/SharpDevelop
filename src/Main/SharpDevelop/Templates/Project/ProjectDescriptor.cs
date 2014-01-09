@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 		/// Creates a project descriptor for the project node specified by the xml element.
 		/// </summary>
 		/// <param name="element">The &lt;Project&gt; node of the xml template file.</param>
-		/// <param name="hintPath">The directory on which relative paths (e.g. for referenced files) are based.</param>
+		/// <param name="fileSystem">The file system from which referenced files are loaded. Use a ChrootFileSystem to specify the base directory for relative paths.</param>
 		public ProjectDescriptor(XmlElement element, IReadOnlyFileSystem fileSystem)
 		{
 			if (element == null)
@@ -276,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 			try
 			{
 				string language = string.IsNullOrEmpty(languageName) ? defaultLanguage : languageName;
-				ProjectBindingDescriptor descriptor = ProjectBindingService.GetCodonPerLanguageName(language);
+				ProjectBindingDescriptor descriptor = SD.ProjectService.ProjectBindings.FirstOrDefault(b => b.Language == language);
 				IProjectBinding languageinfo = (descriptor != null) ? descriptor.Binding : null;
 				
 				if (languageinfo == null) {
@@ -289,13 +289,12 @@ namespace ICSharpCode.SharpDevelop.Templates
 				DirectoryName projectBasePath = projectCreateOptions.ProjectBasePath;
 				string newProjectName = StringParser.Parse(name, new StringTagPair("ProjectName", projectCreateOptions.ProjectName));
 				Directory.CreateDirectory(projectBasePath);
-				FileName projectLocation = FileName.Create(Path.Combine(projectBasePath,
-				                                                        newProjectName + ProjectBindingService.GetProjectFileExtension(language)));
+				FileName projectLocation = projectBasePath.CombineFile(newProjectName + descriptor.ProjectFileExtension);
 				ProjectCreateInformation info = new ProjectCreateInformation(parentSolution, projectLocation);
 				
 				StringBuilder standardNamespace = new StringBuilder();
 				// filter 'illegal' chars from standard namespace
-				if (newProjectName != null && newProjectName.Length > 0) {
+				if (!string.IsNullOrEmpty(newProjectName)) {
 					char ch = '.';
 					for (int i = 0; i < newProjectName.Length; ++i) {
 						if (ch == '.') {
@@ -318,7 +317,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 					}
 				}
 				
-				info.TypeGuid = descriptor.Guid;
+				info.TypeGuid = descriptor.TypeGuid;
 				info.RootNamespace = standardNamespace.ToString();
 				info.ProjectName = newProjectName;
 				if (!string.IsNullOrEmpty(defaultPlatform))

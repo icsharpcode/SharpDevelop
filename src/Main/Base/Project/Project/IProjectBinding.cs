@@ -6,18 +6,17 @@ using System;
 namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
-	/// The <code>IProjectBinding</code> interface is the base interface
-	/// of all project bindings avaiable.
+	/// The <c>IProjectBinding</c> interface is implemented by language binding AddIns
+	/// in order to support project creation/loading.
 	/// </summary>
+	/// <seealso cref="ProjectBindingDoozer"/>
 	public interface IProjectBinding
 	{
-		/// <returns>
-		/// The language for this project binding.
-		/// </returns>
-		string Language {
-			get;
-		}
-		
+		/// <summary>
+		/// Loads a project from disk.
+		/// </summary>
+		/// <exception cref="ProjectLoadException">Invalid project file (or other error)</exception>
+		/// <exception cref="System.IO.IOException">Error reading from the project file</exception>
 		IProject LoadProject(ProjectLoadInformation info);
 		
 		/// <summary>
@@ -25,10 +24,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Each project binding must provide a representation of the project
 		/// it 'controls'.
 		/// </summary>
+		/// <exception cref="ProjectLoadException">Invalid project file (or other error)</exception>
+		/// <exception cref="System.IO.IOException">Error writing new project to disk</exception>
 		IProject CreateProject(ProjectCreateInformation info);
 		
 		/// <summary>
-		/// Determines whether this ProjectBinding handling missing project file 
+		/// Determines whether this ProjectBinding handling missing project file
 		/// itself or it relies on the default logic of creating MissingProject project
 		/// </summary>
 		bool HandlingMissingProject { get; }

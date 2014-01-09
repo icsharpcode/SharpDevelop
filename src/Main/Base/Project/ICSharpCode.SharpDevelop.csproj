@@ -197,10 +197,13 @@
     <Compile Include="Project\Configuration\IConfigurable.cs" />
     <Compile Include="Project\Configuration\ConfigurationMapping.cs" />
     <Compile Include="Project\Configuration\IConfigurationOrPlatformNameCollection.cs" />
+    <Compile Include="Project\IProjectBinding.cs" />
     <Compile Include="Project\IProjectService.cs" />
     <Compile Include="Project\ISolution.cs" />
     <Compile Include="Project\ISolutionFolder.cs" />
     <Compile Include="Project\ISolutionItem.cs" />
+    <Compile Include="Project\ProjectBindingDescriptor.cs" />
+    <Compile Include="Project\ProjectBindingDoozer.cs" />
     <Compile Include="Project\ProjectInformation.cs" />
     <Compile Include="Project\Project_TypeGuids.cs" />
     <Compile Include="Project\SolutionEventArgs.cs" />
@@ -592,10 +595,7 @@
     <Compile Include="Src\Services\Tasks\Task.cs" />
     <Compile Include="Src\Services\Tasks\TaskService.cs" />
     <Compile Include="Src\Internal\ExternalTool\ToolLoader.cs" />
-    <Compile Include="Src\Services\ProjectBinding\IProjectBinding.cs" />
-    <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
-    <Compile Include="Src\Services\ProjectBinding\ProjectBindingDoozer.cs" />
     <Compile Include="Src\Services\Language\UILanguage.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />
@@ -725,7 +725,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\DefaultFileNodeCommands.cs" />
     <Compile Include="Src\Gui\Dialogs\ProjectOptionsView.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ToolbarCommands.cs" />
-    <Compile Include="Src\Services\ProjectBinding\ProjectBindingDescriptor.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IStringValueFilter.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\StringWrapper.cs" />

@@ -512,7 +512,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			try {
 				return SD.AssemblyParserService.GetAssemblyModel(assembly.GetReferenceAssemblyLocation());
-			} catch (Exception ex) {
+			} catch (Exception) {
 				// TODO: use the exact exception types that GetAssemblyModel() throws (+document them)
 				// silently ignore errors when loading the assembly
 				return null;

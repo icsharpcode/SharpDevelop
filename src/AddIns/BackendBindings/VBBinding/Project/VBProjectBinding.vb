@@ -8,12 +8,6 @@ Public Class VBProjectBinding
 	Implements IProjectBinding
 	Public Const LanguageName As String = "VB"
 
-	Public ReadOnly Property Language() As String Implements IProjectBinding.Language
-		Get
-			Return LanguageName
-		End Get
-	End Property
-
 	Public Function LoadProject(info As ProjectLoadInformation) As IProject Implements IProjectBinding.LoadProject
 		Return New VBProject(info)
 	End Function

@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// a vb project.
 	/// </summary>
 	[TestFixture]
-	public class VBNetWebReferenceTest : SDTestFixtureBase
+	public class VBWebReferenceTest : SDTestFixtureBase
 	{
 		Gui.WebReference webReference;
 		DiscoveryClientProtocol protocol;
@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		public override void FixtureSetUp()
 		{
 			base.FixtureSetUp();
-			project = WebReferenceTestHelper.CreateTestProject("VBNet");
+			project = WebReferenceTestHelper.CreateTestProject("VB");
 
 			protocol = new DiscoveryClientProtocol();
 			DiscoveryDocumentReference discoveryRef = new DiscoveryDocumentReference();

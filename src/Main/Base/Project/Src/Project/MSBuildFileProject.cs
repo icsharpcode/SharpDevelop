@@ -29,9 +29,9 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 				}
-			} catch (XmlException) {
-			} catch (IOException) {
-			}
+			} catch (XmlException ex) {
+				throw new ProjectLoadException(ex.Message, ex);
+			} // IOException can also occur, but doesn't need to be converted to ProjectLoadException  
 		}
 		
 		public override SolutionFormatVersion MinimumSolutionVersion {

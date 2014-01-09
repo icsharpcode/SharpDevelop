@@ -44,7 +44,7 @@ namespace PackageManagement.Tests.VisualStudio
 			int result = project.GetAggregateProjectTypeGuids(out guids);
 			
 			Assert.AreEqual(VsConstants.S_OK, result);
-			Assert.AreEqual(ProjectTypeGuids.VBNet.ToString(), guids);
+			Assert.AreEqual(ProjectTypeGuids.VB.ToString(), guids);
 		}
 		
 		[Test]

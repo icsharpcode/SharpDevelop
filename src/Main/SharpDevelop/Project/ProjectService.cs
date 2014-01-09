@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -19,6 +21,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			allSolutions = new NullSafeSimpleModelCollection<ISolution>();
 			allProjects = allSolutions.SelectMany(s => s.Projects);
+			projectBindings = SD.AddInTree.BuildItems<ProjectBindingDescriptor>("/SharpDevelop/Workbench/ProjectBindings", null);
 			
 			SD.GetFutureService<IWorkbench>().ContinueWith(t => t.Result.ActiveViewContentChanged += ActiveViewContentChanged);
 			
@@ -362,6 +365,45 @@ namespace ICSharpCode.SharpDevelop.Project
 		void IProjectServiceRaiseEvents.RaiseProjectItemRemoved(ProjectItemEventArgs e)
 		{
 			ProjectItemRemoved(this, e);
+		}
+		#endregion
+
+		#region Project Bindings
+		readonly IReadOnlyList<ProjectBindingDescriptor> projectBindings;
+		
+		public IReadOnlyList<ProjectBindingDescriptor> ProjectBindings {
+			get { return projectBindings; }
+		}
+		
+		public IProject LoadProject(ProjectLoadInformation info)
+		{
+			if (info == null)
+				throw new ArgumentNullException("info");
+			info.ProgressMonitor.CancellationToken.ThrowIfCancellationRequested();
+			ProjectBindingDescriptor descriptor = null;
+			if (info.TypeGuid != Guid.Empty) {
+				descriptor = projectBindings.FirstOrDefault(b => b.TypeGuid == info.TypeGuid);
+			}
+			if (descriptor == null) {
+				string extension = info.FileName.GetExtension();
+				if (extension.Equals(".proj", StringComparison.OrdinalIgnoreCase) || extension.Equals(".build", StringComparison.OrdinalIgnoreCase))
+					return new MSBuildFileProject(info);
+				descriptor = projectBindings.FirstOrDefault(b => extension.Equals(b.ProjectFileExtension, StringComparison.OrdinalIgnoreCase));
+			}
+			if (descriptor == null)
+				throw new ProjectLoadException(SD.ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.NoBackendForProjectType"));
+			
+			// Set type GUID based on file extension
+			info.TypeGuid = descriptor.TypeGuid;
+			IProjectBinding binding = descriptor.Binding;
+			if (binding == null)
+				throw new ProjectLoadException(SD.ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.NoBackendForProjectType"));
+			if (!binding.HandlingMissingProject && !SD.FileSystem.FileExists(info.FileName))
+				throw new FileNotFoundException("Project file not found", info.FileName);
+			var result = binding.LoadProject(info);
+			if (result == null)
+				throw new InvalidOperationException("IProjectBinding.LoadProject() must not return null");
+			return result;
 		}
 		#endregion
 	}

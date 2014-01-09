@@ -17,6 +17,7 @@ using Microsoft.Build.Construction;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
+	/*
 	/// <summary>
 	/// Converts projects from one language to another, for example C# &lt;-&gt; VB
 	/// </summary>
@@ -206,6 +207,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 	}
+*/
 
 	/*
 	public abstract class NRefactoryLanguageConverter : LanguageConverter
@@ -271,6 +273,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	}
 	*/
 	
+	/*
 	/// <summary>
 	/// Exception used when converting a file fails.
 	/// </summary>
@@ -293,4 +296,5 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		{
 		}
 	}
+	*/
 }
