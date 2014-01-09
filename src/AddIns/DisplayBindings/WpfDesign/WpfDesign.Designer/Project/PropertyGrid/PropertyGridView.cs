@@ -27,13 +27,16 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyGridView), new FrameworkPropertyMetadata(typeof(PropertyGridView)));
 		}
 		
-		
-		public PropertyGridView()
+		public PropertyGridView() : this(null)
 		{
-			PropertyGrid = new PropertyGrid();
-			DataContext = PropertyGrid;
 		}
 		
+		public PropertyGridView(PropertyGrid pg)
+		{
+			PropertyGrid = pg??new PropertyGrid();
+			DataContext = PropertyGrid;
+		}
+
 		private Thumb thumb;
 		public override void OnApplyTemplate()
 		{

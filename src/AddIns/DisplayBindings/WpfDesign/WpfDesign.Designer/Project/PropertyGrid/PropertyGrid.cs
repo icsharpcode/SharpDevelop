@@ -40,9 +40,13 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 		Dictionary<MemberDescriptor, PropertyNode> nodeFromDescriptor = new Dictionary<MemberDescriptor, PropertyNode>();
 
+		public Dictionary<MemberDescriptor, PropertyNode> NodeFromDescriptor { get { return nodeFromDescriptor; } }
+		
 		public CategoriesCollection Categories { get; private set; }
 		public PropertyNodeCollection Events { get; private set; }
 
+		public EventHandler AggregatePropertiesUpdated;
+		
 		private PropertyGridGroupMode _groupMode;
 		
 		public PropertyGridGroupMode GroupMode
@@ -205,6 +209,8 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				}
 			} finally {
 				reloadActive = false;
+				if (AggregatePropertiesUpdated != null)
+		        	AggregatePropertiesUpdated(this, EventArgs.Empty);
 			}
 		}
 
