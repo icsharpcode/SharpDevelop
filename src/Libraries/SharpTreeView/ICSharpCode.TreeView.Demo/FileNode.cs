@@ -84,10 +84,10 @@ namespace ICSharpCode.TreeView.Demo
 		{
 			get { return info.FullName; }
 		}
-
-		public override void Paste(IDataObject data)
-		{
-			Parent.Paste(data);
-		}
+//
+//		public override void Paste(IDataObject data)
+//		{
+//			Parent.Paste(data);
+//		}
 	}
 }

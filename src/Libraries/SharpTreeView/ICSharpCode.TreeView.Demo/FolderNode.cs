@@ -59,7 +59,7 @@ namespace ICSharpCode.TreeView.Demo
 			get { return path; }
 		}
 
-		public override void LoadChildren()
+		protected override void LoadChildren()
 		{
 			try {
 				foreach (var p in Directory.GetDirectories(path)
@@ -75,18 +75,14 @@ namespace ICSharpCode.TreeView.Demo
 			}
 		}
 
-		public override DropEffect CanDrop(IDataObject data, DropEffect requestedEffect)
+		public override bool CanDrop(DragEventArgs e, int index)
 		{
-			var paths = data.GetData(typeof(string[])) as string[];
-			if (paths != null) {
-				return requestedEffect == DropEffect.Link ? DropEffect.Move : requestedEffect;
-			}
-			return DropEffect.None;
+			return e.Data.GetDataPresent(typeof(string[]));
 		}
-
-		public override void Drop(IDataObject data, int index, DropEffect finalEffect)
+		
+		public override void Drop(DragEventArgs e, int index)
 		{
-			var paths = data.GetData(typeof(string[])) as string[];
+			var paths = e.Data.GetData(typeof(string[])) as string[];
 			if (paths != null) {
 				for (int i = 0; i < paths.Length; i++) {
 					var p = paths[i];
