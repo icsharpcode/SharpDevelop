@@ -31,6 +31,28 @@ namespace CSharpBinding.Completion
 			}
 		}
 	}
+	
+	/// <summary>
+	/// Completion item for a literal.
+	/// </summary>
+	class LiteralCompletionData : CompletionData
+	{
+		public LiteralCompletionData(string title)
+			: base(title)
+		{
+		}
+		
+		public override void Complete(CompletionContext context)
+		{
+			int index = CompletionText.IndexOf('|');
+			if (index > -1) {
+				context.Editor.Document.Replace(context.StartOffset, context.Length, CompletionText.Remove(index, 1));
+				context.Editor.Caret.Offset = context.StartOffset + index;
+			} else {
+				base.Complete(context);
+			}
+		}
+	}
 }
 
 
