@@ -158,6 +158,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the name of the currently used font.
 		/// </summary>
 		string FontFamily { get; }
+		
+		/// <summary>
+		/// Gets the currently used font size.
+		/// </summary>
+		double FontSize { get; }
 	}
 	
 	/// <summary>

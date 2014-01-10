@@ -72,6 +72,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 		}
 		
+		public double FontSize {
+			get {
+				return 10.0;
+			}
+		}
+		
 		public IHighlighter CreateHighlighter(IDocument document)
 		{
 			return null;

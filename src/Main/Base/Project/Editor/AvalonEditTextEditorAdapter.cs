@@ -151,6 +151,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 					return "Consolas";
 				}
 			}
+			
+			public double FontSize {
+				get {
+					return 10.0;
+				}
+			}
 		}
 		
 		public virtual ICSharpCode.Core.FileName FileName {

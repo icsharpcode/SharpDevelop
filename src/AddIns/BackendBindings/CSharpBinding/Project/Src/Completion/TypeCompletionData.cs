@@ -30,7 +30,8 @@ namespace CSharpBinding.Completion
 		{
 			return new FlowDocumentScrollViewer {
 				Document = XmlDocFormatter.CreateTooltip(type),
-				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+				VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+				FontSize = SD.EditorControlService.GlobalOptions.FontSize
 			};
 		}
 	}

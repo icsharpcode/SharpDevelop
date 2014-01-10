@@ -36,5 +36,11 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public double FontSize {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
