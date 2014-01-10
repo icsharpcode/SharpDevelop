@@ -89,7 +89,7 @@ namespace CSharpBinding.Completion
 		
 		protected virtual object CreateFancyDescription()
 		{
-			return null;
+			return Description;
 		}
 	}
 }

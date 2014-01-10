@@ -89,5 +89,3 @@ namespace CSharpBinding.Completion
 		}
 	}
 }
-
-

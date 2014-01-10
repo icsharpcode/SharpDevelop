@@ -151,7 +151,7 @@ namespace CSharpBinding.Completion
 
 		ICompletionData ICompletionDataFactory.CreateXmlDocCompletionData(string tag, string description, string tagInsertionText)
 		{
-			return new CompletionData("TODO: XmlDoc completion");
+			return new XmlDocCompletionData(tag, description, tagInsertionText);
 		}
 		#endregion
 		
