@@ -10,11 +10,10 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Profiler.AddIn.Views
 {
-	
 	/// <summary>
-	/// Description of the view content
+	/// ViewContent that displays profiling session results.
 	/// </summary>
-	public class WpfViewer : AbstractViewContent
+	public class ProfilingReportViewer : AbstractViewContent
 	{
 		ProfilingDataProvider provider;
 		ProfilerView dataView;
@@ -37,10 +36,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			get { return file.FileName; }
 		}
 		
-		/// <summary>
-		/// Creates a new WpfViewer object
-		/// </summary>
-		public WpfViewer(OpenedFile file, ProfilingDataSQLiteProvider provider)
+		public ProfilingReportViewer(OpenedFile file, ProfilingDataSQLiteProvider provider)
 		{
 			// HACK : OpenedFile architecture does not allow to keep files open
 			//        but it is necessary for the ProfilerView to keep the session file open.

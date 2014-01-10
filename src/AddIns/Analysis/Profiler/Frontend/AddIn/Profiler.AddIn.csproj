@@ -102,7 +102,7 @@
     </Compile>
     <Compile Include="Src\Views\ProfilerDisplayBinding.cs">
     </Compile>
-    <Compile Include="Src\Views\WpfViewer.cs" />
+    <Compile Include="Src\Views\ProfilingReportViewer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Dialogs\ProfileExecutableForm.xaml">

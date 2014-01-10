@@ -44,7 +44,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 					return null;
 				}
 			}
-			return new WpfViewer(file, provider);
+			return new ProfilingReportViewer(file, provider);
 		}
 		
 		public bool IsPreferredBindingForFile(FileName fileName)
