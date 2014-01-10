@@ -13,10 +13,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// </summary>
 	public static class XmlDocFormatter
 	{
-		public static FlowDocument CreateTooltip(IType type)
+		public static FlowDocument CreateTooltip(IType type, bool useFullyQualifiedMemberNames = true)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType | ConversionFlags.UseFullyQualifiedMemberNames;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
+			if (useFullyQualifiedMemberNames)
+				ambience.ConversionFlags |= ConversionFlags.UseFullyQualifiedMemberNames;
 			string header;
 			if (type is ITypeDefinition)
 				header = ambience.ConvertEntity((ITypeDefinition)type);
@@ -39,10 +41,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 			return b.CreateFlowDocument();
 		}
 		
-		public static FlowDocument CreateTooltip(IEntity entity)
+		public static FlowDocument CreateTooltip(IEntity entity, bool useFullyQualifiedMemberNames = true)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType | ConversionFlags.UseFullyQualifiedMemberNames;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
+			if (useFullyQualifiedMemberNames)
+				ambience.ConversionFlags |= ConversionFlags.UseFullyQualifiedMemberNames;
 			string header = ambience.ConvertEntity(entity);
 			var documentation = XmlDocumentationElement.Get(entity);
 			

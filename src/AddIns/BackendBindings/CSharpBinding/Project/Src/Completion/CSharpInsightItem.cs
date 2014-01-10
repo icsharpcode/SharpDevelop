@@ -79,8 +79,11 @@ namespace CSharpBinding.Completion
 				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
 			};
 			
+			var flowDocument = b.CreateFlowDocument();
+			flowDocument.PagePadding = new Thickness(0); // default is NOT Thickness(0), but Thickness(Auto), which adds unnecessary space
+			
 			return new FlowDocumentScrollViewer {
-				Document = b.CreateFlowDocument(),
+				Document = flowDocument,
 				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
 			};
 		}

@@ -50,6 +50,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public FlowDocument CreateFlowDocument()
 		{
 			FlushAddedText(true);
+			flowDocument.FontSize = SD.EditorControlService.GlobalOptions.FontSize;
 			return flowDocument;
 		}
 		
