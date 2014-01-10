@@ -430,5 +430,21 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
+		
+		bool highlightCurrentLine = false;
+		
+		/// <summary>
+		/// Gets/Sets whether current line should be shown.
+		/// </summary>
+		[DefaultValue(false)]
+		public virtual bool HighlightCurrentLine {
+			get { return highlightCurrentLine; }
+			set {
+				if (highlightCurrentLine != value) {
+					highlightCurrentLine = value;
+					OnPropertyChanged("HighlightCurrentLine");
+				}
+			}
+		}
 	}
 }

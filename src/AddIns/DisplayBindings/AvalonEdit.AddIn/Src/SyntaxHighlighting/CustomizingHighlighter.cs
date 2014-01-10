@@ -29,6 +29,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public const string BreakpointMarker = "Breakpoint";
 		public const string InstructionPointerMarker = "Current statement";
 		public const string ColumnRuler = "Column ruler";
+		public const string CurrentLineHighlighter = "Current line highlighting";
 		
 		public static void ApplyCustomizationsToDefaultElements(TextEditor textEditor, IEnumerable<CustomizedHighlightingColor> customizations)
 		{
@@ -42,6 +43,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.TextView.ClearValue(TextView.LinkTextForegroundBrushProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.LinkTextBackgroundBrushProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.ColumnRulerPenProperty);
+			textEditor.TextArea.TextView.ClearValue(TextView.CurrentLineBorderProperty);
+			textEditor.TextArea.TextView.ClearValue(TextView.CurrentLineBackgroundProperty);
 			
 			// 'assigned' flags are used so that the first matching customization wins.
 			// This is necessary because more specific customizations come first in the list
@@ -52,6 +55,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			bool assignedLineNumbers = false;
 			bool assignedLinkText = false;
 			bool assignedColumnRulerColor = false;
+			bool assignedCurrentLineHighlighter = false;
 			
 			foreach (CustomizedHighlightingColor color in customizations) {
 				switch (color.Name) {
@@ -114,6 +118,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						assignedColumnRulerColor = true;
 						if (color.Foreground != null)
 							textEditor.TextArea.TextView.ColumnRulerPen = CreateFrozenPen(color.Foreground.Value);
+						break;
+					case CurrentLineHighlighter:
+						if (assignedCurrentLineHighlighter)
+							continue;
+						assignedCurrentLineHighlighter = true;
+						if (color.Background != null)
+							textEditor.TextArea.TextView.CurrentLineBackground = CreateFrozenBrush(color.Background.Value);
+						if (color.Foreground != null)
+							textEditor.TextArea.TextView.CurrentLineBorder = CreateFrozenPen(color.Foreground.Value);
 						break;
 				}
 			}

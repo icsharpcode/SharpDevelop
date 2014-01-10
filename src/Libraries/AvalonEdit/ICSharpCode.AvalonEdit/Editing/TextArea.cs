@@ -69,6 +69,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			caret = new Caret(this);
 			caret.PositionChanged += (sender, e) => RequestSelectionValidation();
+			caret.PositionChanged += CaretPositionChanged;
 			ime = new ImeSupport(this);
 			
 			leftMargins.CollectionChanged += leftMargins_CollectionChanged;
@@ -557,6 +558,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public Caret Caret {
 			get { return caret; }
+		}
+		
+		void CaretPositionChanged(object sender, EventArgs e) 
+		{
+			if (textView == null)
+				return;
+			
+			this.textView.HighlightedLine = this.Caret.Line;			
 		}
 		
 		ObservableCollection<UIElement> leftMargins = new ObservableCollection<UIElement>();

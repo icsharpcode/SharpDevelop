@@ -42,6 +42,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		ColumnRulerRenderer columnRulerRenderer;
+		CurrentLineHighlightRenderer currentLineHighlighRenderer;
 		
 		/// <summary>
 		/// Creates a new TextView instance.
@@ -54,6 +55,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			lineTransformers = new ObserveAddRemoveCollection<IVisualLineTransformer>(LineTransformer_Added, LineTransformer_Removed);
 			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
 			columnRulerRenderer = new ColumnRulerRenderer(this);
+			currentLineHighlighRenderer = new CurrentLineHighlightRenderer(this);
 			this.Options = new TextEditorOptions();
 			
 			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
@@ -208,6 +210,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerPen);
 			else
 				columnRulerRenderer.SetRuler(-1, ColumnRulerPen);
+			
+			currentLineHighlighRenderer.Enabled = Options.HighlightCurrentLine;
 			
 			UpdateBuiltinElementGeneratorsFromOptions();
 			Redraw();
@@ -1994,6 +1998,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (e.Property == ColumnRulerPenProperty) {
 				columnRulerRenderer.SetRuler(this.Options.ColumnRulerPosition, this.ColumnRulerPen);
 			}
+			if (e.Property == CurrentLineBorderProperty) {
+				currentLineHighlighRenderer.BorderPen = this.CurrentLineBorder;
+			}
+			if (e.Property == CurrentLineBackgroundProperty) {
+				currentLineHighlighRenderer.BackgroundBrush = this.CurrentLineBackground;
+			}
 		}
 		
 		/// <summary>
@@ -2018,6 +2028,42 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public Pen ColumnRulerPen {
 			get { return (Pen)GetValue(ColumnRulerPenProperty); }
 			set { SetValue(ColumnRulerPenProperty, value); }
+		}
+		
+		/// <summary>
+		/// The <see cref="CurrentLineBackground"/> property.
+		/// </summary>
+		public static readonly DependencyProperty CurrentLineBackgroundProperty =
+			DependencyProperty.Register("CurrentLineBackground", typeof(Brush), typeof(TextView));
+		
+		/// <summary>
+		/// Gets/Sets the background brush used by current line highlighter.
+		/// </summary>
+		public Brush CurrentLineBackground {
+			get { return (Brush)GetValue(CurrentLineBackgroundProperty); }
+			set { SetValue(CurrentLineBackgroundProperty, value); }
+		}
+		
+		/// <summary>
+		/// The <see cref="CurrentLineBorder"/> property.
+		/// </summary>
+		public static readonly DependencyProperty CurrentLineBorderProperty =
+			DependencyProperty.Register("CurrentLineBorder", typeof(Pen), typeof(TextView));
+		
+		/// <summary>
+		/// Gets/Sets the background brush used for the current line.
+		/// </summary>
+		public Pen CurrentLineBorder {
+			get { return (Pen)GetValue(CurrentLineBorderProperty); }
+			set { SetValue(CurrentLineBorderProperty, value); }
+		}
+		
+		/// <summary>
+		/// Gets/Sets highlighted line number.
+		/// </summary>
+		public int HighlightedLine {
+			get { return this.currentLineHighlighRenderer.Line; }
+			set { this.currentLineHighlighRenderer.Line = value; }
 		}
 	}
 }

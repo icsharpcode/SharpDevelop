@@ -9,57 +9,72 @@ using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.AvalonEdit.AddIn
+namespace ICSharpCode.AvalonEdit.Rendering
 {
-	public class CurrentLineHighlightRenderer : IBackgroundRenderer
+	sealed class CurrentLineHighlightRenderer : IBackgroundRenderer
 	{
+		#region Fields
+		
 		int line;
-		Pen borderPen;
-		Brush backgroundBrush;
 		TextView textView;
 		
 		public static readonly Color DefaultBackground = Color.FromArgb(22, 20, 220, 224);
 		public static readonly Color DefaultBorder = Color.FromArgb(52, 0, 255, 110);
 		
-		public const string CurrentLineHighlight = "Current line highlight";
+		#endregion
+
+		#region Properties
+		
+		public int Line {
+			get { return this.Line; } 
+			set {
+				this.line = value;
+				this.textView.InvalidateLayer(this.Layer);
+			}
+		}
+		
+		public bool Enabled {
+			get; set;
+		}
+		
+		public KnownLayer Layer
+		{
+			get { return KnownLayer.Selection; }
+		}
+		
+		public Brush BackgroundBrush {
+			get; set;
+		}
+		
+		public Pen BorderPen {
+			get; set;
+		}
+		
+		#endregion		
 		
 		public CurrentLineHighlightRenderer(TextView textView)
 		{
 			if (textView == null)
 				throw new ArgumentNullException("textView");
 			
+			this.BorderPen = new Pen(new SolidColorBrush(DefaultBorder), 1);
+			this.BorderPen.Freeze();
+			
+			this.BackgroundBrush = new SolidColorBrush(DefaultBackground);
+			this.BackgroundBrush.Freeze();
+			
 			this.textView = textView;
 			this.textView.BackgroundRenderers.Add(this);
-			this.line = -1;
-		}
-		
-		public void SetHighlight(int caretLine)
-		{
-			this.line = caretLine;
-			this.textView.InvalidateLayer(this.Layer);
-		}
-		
-		void UpdateColors(Color background, Color foreground)
-		{
-			this.borderPen = new Pen(new SolidColorBrush(foreground), 1);
-			this.borderPen.Freeze();
-
-			this.backgroundBrush = new SolidColorBrush(background);
-			this.backgroundBrush.Freeze();
-		}
-		
-		public KnownLayer Layer 
-		{
-			get 
-			{
-				return KnownLayer.Selection;
-			}
+			
+			this.line = 0;
 		}
 		
 		public void Draw(TextView textView, DrawingContext drawingContext)
 		{
+			if(!Enabled)
+				return;
+			
 			BackgroundGeometryBuilder builder = new BackgroundGeometryBuilder();
 			
 			builder.CornerRadius = 1;
@@ -83,18 +98,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			Geometry geometry = builder.CreateGeometry();
 			if (geometry != null) {
-				drawingContext.DrawGeometry(backgroundBrush, borderPen, geometry);
-			}
-		}
-		
-		public static void ApplyCustomizationsToRendering(CurrentLineHighlightRenderer renderer, IEnumerable<CustomizedHighlightingColor> customizations)
-		{
-			renderer.UpdateColors(DefaultBackground, DefaultBorder);
-			foreach (CustomizedHighlightingColor color in customizations) {
-				if (color.Name == CurrentLineHighlight) {
-					renderer.UpdateColors(color.Background ?? Colors.Pink, color.Foreground ?? Colors.Pink);
-					break;
-				}
+				drawingContext.DrawGeometry(this.BackgroundBrush, this.BorderPen, geometry);
 			}
 		}
 	}

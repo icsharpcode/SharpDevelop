@@ -40,7 +40,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			CodeEditorOptions.Instance.BindToTextEditor(textEditor);
 			textEditor.Options = new TextEditorOptions(CodeEditorOptions.Instance);
 			bracketHighlighter = new BracketHighlightRenderer(textEditor.TextArea.TextView);
-			currentLineHighlighter = new CurrentLineHighlightRenderer(textEditor.TextArea.TextView);
 			foldingManager = FoldingManager.Install(textEditor.TextArea);
 			textMarkerService = new TextMarkerService(textEditor.Document);
 			textEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
@@ -49,7 +48,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		}
 		
 		BracketHighlightRenderer bracketHighlighter;
-		CurrentLineHighlightRenderer currentLineHighlighter;
 		FoldingManager foldingManager;
 		TextMarkerService textMarkerService;
 		List<CustomizedHighlightingColor> customizationList;
@@ -355,19 +353,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			// Create entry for "Current Line highlight"
 			IHighlightingItem currentLineHighlight = new SimpleHighlightingItem(
-				CurrentLineHighlightRenderer.CurrentLineHighlight,
+				CustomizingHighlighter.CurrentLineHighlighter,
 				ta => {
 					ta.Document.Text = "example text line";
-					XshdSyntaxDefinition xshd = (XshdSyntaxDefinition)languageComboBox.SelectedItem;
-					if (xshd == null)
-						return;
-					var customizationsForCurrentLanguage = customizationList.Where(c => c.Language == null || c.Language == xshd.Name);
-					CurrentLineHighlightRenderer.ApplyCustomizationsToRendering(currentLineHighlighter, customizationsForCurrentLanguage);
-					currentLineHighlighter.SetHighlight(1);
+					ta.TextView.Options.HighlightCurrentLine = true;
 				})
 			{
-				Foreground = CurrentLineHighlightRenderer.DefaultBorder,
-				Background = CurrentLineHighlightRenderer.DefaultBackground
+				Foreground = Colors.Red,//CurrentLineHighlightRenderer.DefaultBorder,
+				Background = Colors.Yellow//CurrentLineHighlightRenderer.DefaultBackground
 			};
 			currentLineHighlight = new CustomizedHighlightingItem(customizationList, currentLineHighlight, language, canSetFont: false);
 			currentLineHighlight.PropertyChanged += item_PropertyChanged;
@@ -587,7 +580,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					}
 					textEditor.Select(0, 0);
 					bracketHighlighter.SetHighlight(null);
-					currentLineHighlighter.SetHighlight(0);
 					item.ShowExample(textEditor.TextArea);
 					ITextMarker m = textMarkerService.TextMarkers.SingleOrDefault();
 					if (m != null && m.Tag != null) {

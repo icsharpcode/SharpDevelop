@@ -48,7 +48,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public ITextEditor Adapter { get; set; }
 		
 		BracketHighlightRenderer bracketRenderer;
-		CurrentLineHighlightRenderer currentLineRenderer;
 		//CaretReferencesRenderer caretReferencesRenderer;
 		ContextActionsRenderer contextActionsRenderer;
 		HiddenDefinition.HiddenDefinitionRenderer hiddenDefinitionRenderer;
@@ -58,7 +57,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
 			
 			this.bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
-			this.currentLineRenderer = new CurrentLineHighlightRenderer(this.TextArea.TextView);
 			//this.caretReferencesRenderer = new CaretReferencesRenderer(this);
 			this.contextActionsRenderer = new ContextActionsRenderer(this);
 			this.hiddenDefinitionRenderer = new HiddenDefinition.HiddenDefinitionRenderer(this);
@@ -73,7 +71,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
 			this.TextArea.TextView.MouseUp += TextViewMouseUp;
 			this.TextArea.Caret.PositionChanged += HighlightBrackets;
-			this.TextArea.Caret.PositionChanged += HighlightCurrentLine;
 			this.TextArea.TextView.VisualLinesChanged += CodeEditorView_VisualLinesChanged;
 			
 			SetupTabSnippetHandler();
@@ -107,9 +104,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				case "HighlightBrackets":
 					HighlightBrackets(null, e);
 					break;
-				case "HighlightCurrentLine":
-					HighlightCurrentLine(null, e);
-					break;
 				case "EnableFolding":
 					UpdateParseInformationForFolding();
 					break;
@@ -120,8 +114,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		#region CaretPositionChanged - Bracket Highlighting and current line highlighting
-		
+		#region CaretPositionChanged - Bracket Highlighting
 		/// <summary>
 		/// Highlights matching brackets.
 		/// </summary>
@@ -149,20 +142,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				} else {
 					this.bracketRenderer.SetHighlight(null);
 					this.hiddenDefinitionRenderer.ClosePopup();
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Highlights current line
-		/// </summary>
-		void HighlightCurrentLine(object sender, EventArgs e)
-		{
-			if(this.Adapter.Language != null) {
-				if(CodeEditorOptions.Instance.HighlightCurrentLine) {
-					this.currentLineRenderer.SetHighlight(this.TextArea.Caret.Line);
-				} else {
-					this.currentLineRenderer.SetHighlight(-1);
 				}
 			}
 		}
@@ -534,7 +513,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var customizations = CustomizedHighlightingColor.FetchCustomizations(language);
 			CustomizingHighlighter.ApplyCustomizationsToDefaultElements(this, customizations);
 			BracketHighlightRenderer.ApplyCustomizationsToRendering(this.bracketRenderer, customizations);
-			CurrentLineHighlightRenderer.ApplyCustomizationsToRendering(this.currentLineRenderer, customizations);
 			HighlightingOptions.ApplyToRendering(this, customizations);
 			this.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
 		}
