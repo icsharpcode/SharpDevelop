@@ -97,6 +97,7 @@
     <Compile Include="ProcessRunner\ProcessExitedTestFixture.cs" />
     <Compile Include="ProcessRunner\ProcessRunnerNotStartedTestFixture.cs" />
     <Compile Include="ProcessRunner\StandardOutputFromProcessTestFixture.cs" />
+    <Compile Include="Project\AddExistingProjectTests.cs" />
     <Compile Include="Project\BeforeBuildCustomToolProjectItemsTests.cs" />
     <Compile Include="Project\MockSolution.cs" />
     <Compile Include="Project\ProjectCustomToolOptionsTests.cs" />

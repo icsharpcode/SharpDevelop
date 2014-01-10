@@ -131,6 +131,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public IProject AddExistingProject(FileName fileName)
 		{
+			if (parentSolution.Projects.Any(p => p.FileName == fileName))
+				throw new ProjectLoadException("Project " + fileName + " is already part of this solution.");
 			ProjectLoadInformation loadInfo = new ProjectLoadInformation(parentSolution, fileName, fileName.GetFileNameWithoutExtension());
 			IProject project = SD.ProjectService.LoadProject(loadInfo);
 			Debug.Assert(project.IdGuid != Guid.Empty);
