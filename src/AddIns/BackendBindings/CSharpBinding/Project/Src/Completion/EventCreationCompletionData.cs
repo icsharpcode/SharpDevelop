@@ -16,23 +16,32 @@ namespace CSharpBinding.Completion
 	/// <summary>
 	/// Completion item that creates an event handler for an event.
 	/// </summary>
-	class EventCreationCompletionData : EntityCompletionData
+	class EventCreationCompletionData : CompletionData
 	{
 		IEvent eventDefinition;
+		string varName;
 		IType delegateType;
+		string parameterList;
+		IUnresolvedMember callingMember;
+		IUnresolvedTypeDefinition declaringType;
+		CSharpResolver contextAtCaret;
 
-		public EventCreationCompletionData(string varName, IType delegateType, IEvent evt, string parameterList, IUnresolvedMember callingMember, IUnresolvedTypeDefinition declaringType, CSharpResolver contextAtCaret) : base(evt)
+		public EventCreationCompletionData(string varName, IType delegateType, IEvent evt, string parameterList, IUnresolvedMember callingMember, IUnresolvedTypeDefinition declaringType, CSharpResolver contextAtCaret)
 		{
 			if (string.IsNullOrEmpty(varName)) {
-				this.DisplayText = "Create handler for " + (evt != null ? evt.Name : "");
+				this.DisplayText = "<Create handler for " + (evt != null ? evt.Name : "") + ">";
 			}
 			else {
-				this.DisplayText = "Create handler for " + char.ToUpper(varName[0]) + varName.Substring(1) + (evt != null ? evt.Name : "");
+				this.DisplayText = "Handle" + char.ToUpper(varName[0]) + varName.Substring(1) + (evt != null ? evt.Name : "");
 			}
 			
-			this.DisplayText = "<" + this.DisplayText + ">";
+			this.varName = varName;
 			this.eventDefinition = evt;
 			this.delegateType = delegateType;
+			this.parameterList = parameterList;
+			this.callingMember = callingMember;
+			this.declaringType = declaringType;
+			this.contextAtCaret = contextAtCaret;
 		}
 
 		public override void Complete(CompletionContext context)
@@ -40,7 +49,15 @@ namespace CSharpBinding.Completion
 			var invokeSignature = delegateType.GetMethods(m => m.Name == "Invoke").Single();
 			var refactoringContext = SDRefactoringContext.Create(context.Editor, CancellationToken.None);
 			var builder = refactoringContext.CreateTypeSystemAstBuilder();
-			var handlerName = eventDefinition.Name;
+			string handlerName;
+			bool isStatic;
+			if (eventDefinition != null) {
+				handlerName = eventDefinition.Name;
+				isStatic = eventDefinition.IsStatic;
+			} else {
+				handlerName = varName;
+				isStatic = callingMember.IsStatic;
+			}
 			
 			var throwStatement = new ThrowStatement();
 			var decl = new MethodDeclaration {
@@ -53,7 +70,7 @@ namespace CSharpBinding.Completion
 			
 			decl.Parameters.AddRange(invokeSignature.Parameters.Select(builder.ConvertParameter));
 			
-			if (eventDefinition.IsStatic)
+			if (isStatic)
 				decl.Modifiers |= Modifiers.Static;
 			
 			throwStatement.Expression = new ObjectCreateExpression(refactoringContext.CreateShortType("System", "NotImplementedException"));
