@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Packaging;
 using System.Printing;
@@ -35,28 +36,18 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		/// <summary>
-		/// Converts a readonly TextDocument to a Block and applies the provided highlighter.
+		/// Converts an IDocument to a Block and applies the provided highlighter.
 		/// </summary>
 		public static Block ConvertTextDocumentToBlock(IDocument document, IHighlighter highlighter)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
-//			Table table = new Table();
-//			table.Columns.Add(new TableColumn { Width = GridLength.Auto });
-//			table.Columns.Add(new TableColumn { Width = new GridLength(1, GridUnitType.Star) });
-//			TableRowGroup trg = new TableRowGroup();
-//			table.RowGroups.Add(trg);
 			Paragraph p = new Paragraph();
 			p.TextAlignment = TextAlignment.Left;
 			for (int lineNumber = 1; lineNumber <= document.LineCount; lineNumber++) {
 				if (lineNumber > 1)
 					p.Inlines.Add(new LineBreak());
 				var line = document.GetLineByNumber(lineNumber);
-//				TableRow row = new TableRow();
-//				trg.Rows.Add(row);
-//				row.Cells.Add(new TableCell(new Paragraph(new Run(lineNumber.ToString()))) { TextAlignment = TextAlignment.Right });
-//				Paragraph p = new Paragraph();
-//				row.Cells.Add(new TableCell(p));
 				if (highlighter != null) {
 					HighlightedLine highlightedLine = highlighter.HighlightLine(lineNumber);
 					p.Inlines.AddRange(highlightedLine.ToRichText().CreateRuns());
@@ -65,6 +56,41 @@ namespace ICSharpCode.AvalonEdit.Utils
 				}
 			}
 			return p;
+		}
+		
+		/// <summary>
+		/// Converts a readonly TextDocument to a RichText and applies the provided highlighting definition.
+		/// </summary>
+		public static RichText ConvertTextDocumentToRichText(ReadOnlyDocument document, IHighlightingDefinition highlightingDefinition)
+		{
+			IHighlighter highlighter;
+			if (highlightingDefinition != null)
+				highlighter = new DocumentHighlighter(document, highlightingDefinition);
+			else
+				highlighter = null;
+			return ConvertTextDocumentToRichText(document, highlighter);
+		}
+		
+		/// <summary>
+		/// Converts an IDocument to a RichText and applies the provided highlighter.
+		/// </summary>
+		public static RichText ConvertTextDocumentToRichText(IDocument document, IHighlighter highlighter)
+		{
+			if (document == null)
+				throw new ArgumentNullException("document");
+			var texts = new List<RichText>();
+			for (int lineNumber = 1; lineNumber <= document.LineCount; lineNumber++) {
+				var line = document.GetLineByNumber(lineNumber);
+				if (lineNumber > 1)
+					texts.Add(line.PreviousLine.DelimiterLength == 2 ? "\r\n" : "\n");
+				if (highlighter != null) {
+					HighlightedLine highlightedLine = highlighter.HighlightLine(lineNumber);
+					texts.Add(highlightedLine.ToRichText());
+				} else {
+					texts.Add(document.GetText(line));
+				}
+			}
+			return RichText.Concat(texts.ToArray());
 		}
 		
 		/// <summary>

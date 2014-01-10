@@ -10,6 +10,8 @@ using System.Windows.Controls;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Xml;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace CSharpBinding.Completion
@@ -23,13 +25,12 @@ namespace CSharpBinding.Completion
 			this.Method = method;
 		}
 		
-		TextBlock header;
+		FlowDocumentScrollViewer header;
 		
 		public object Header {
 			get {
 				if (header == null) {
-					header = new TextBlock();
-					GenerateHeader();
+					header = GenerateHeader();
 				}
 				return header;
 			}
@@ -43,25 +44,56 @@ namespace CSharpBinding.Completion
 				return;
 			this.highlightedParameterIndex = parameterIndex;
 			if (header != null)
-				GenerateHeader();
+				header = GenerateHeader();
 		}
 		
-		void GenerateHeader()
+		FlowDocumentScrollViewer GenerateHeader()
 		{
 			CSharpAmbience ambience = new CSharpAmbience();
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			var stringBuilder = new StringBuilder();
 			var formatter = new ParameterHighlightingOutputFormatter(stringBuilder, highlightedParameterIndex);
 			ambience.ConvertEntity(Method, formatter, FormattingOptionsFactory.CreateSharpDevelop());
-			string code = stringBuilder.ToString();
-			var inlineBuilder = new RichTextModel();
-			inlineBuilder.SetFontWeight(formatter.parameterStartOffset, formatter.parameterLength, FontWeights.Bold);
-			header.Inlines.Clear();
-			header.Inlines.AddRange(new RichText(code, inlineBuilder).CreateRuns());
+			
+			var documentation = XmlDocumentationElement.Get(Method);
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			
+			DocumentationUIBuilder b = new DocumentationUIBuilder(ambience);
+			string parameterName = null;
+			if (Method.Parameters.Count > highlightedParameterIndex)
+				parameterName = Method.Parameters[highlightedParameterIndex].Name;
+			b.AddSignatureBlock(stringBuilder.ToString(), formatter.parameterStartOffset, formatter.parameterLength, parameterName);
+			
+			DocumentationUIBuilder b2 = new DocumentationUIBuilder(ambience);
+			b2.ParameterName = parameterName;
+			b2.ShowAllParameters = false;
+			
+			if (documentation != null) {
+				foreach (var child in documentation.Children) {
+					b2.AddDocumentationElement(child);
+				}
+			}
+			
+			content = new FlowDocumentScrollViewer {
+				Document = b2.CreateFlowDocument(),
+				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+			};
+			
+			return new FlowDocumentScrollViewer {
+				Document = b.CreateFlowDocument(),
+				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+			};
 		}
 		
+		FlowDocumentScrollViewer content;
+		
 		public object Content {
-			get { return null; }
+			get {
+				if (content == null) {
+					GenerateHeader();
+				}
+				return content;
+			}
 		}
 		
 		sealed class ParameterHighlightingOutputFormatter : TextWriterTokenWriter

@@ -214,6 +214,21 @@ namespace ICSharpCode.SharpDevelop.Editor
 			AddBlock(block);
 		}
 		
+		public void AddSignatureBlock(string signature, int currentParameterOffset, int currentParameterLength, string currentParameterName)
+		{
+			ParameterName = currentParameterName;
+			var document = new ReadOnlyDocument(signature);
+			var highlightingDefinition = HighlightingManager.Instance.GetDefinition("C#");
+			
+			var richText = DocumentPrinter.ConvertTextDocumentToRichText(document, highlightingDefinition).ToRichTextModel();
+			richText.SetFontWeight(currentParameterOffset, currentParameterLength, FontWeights.Bold);
+			var block = new Paragraph();
+			block.Inlines.AddRange(new RichText(signature, richText).CreateRuns()); // TODO richText.CreateRuns(document)
+			block.FontFamily = GetCodeFont();
+			block.TextAlignment = TextAlignment.Left;
+			AddBlock(block);
+		}
+		
 		bool? ParseBool(string input)
 		{
 			bool result;
