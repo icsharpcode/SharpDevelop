@@ -122,6 +122,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public event EventHandler MinimumSolutionVersionChanged;
 		
+		public override Guid IdGuid {
+			get {
+				return base.IdGuid;
+			}
+			set {
+				if (base.IdGuid != value) {
+					base.IdGuid = value;
+					// Save changed GUID to project file
+					SetPropertyInternal(null, null, ProjectGuidPropertyName, value.ToString("B").ToUpperInvariant(), PropertyStorageLocations.Base, true);
+				}
+			}
+		}
+		
 		public string ToolsVersion {
 			get { return projectFile.ToolsVersion; }
 			protected internal set {
@@ -181,6 +194,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			else
 				SetProperty(null, platform, "PlatformTarget", "AnyCPU", PropertyStorageLocations.PlatformSpecific, false);
 			LoadConfigurationPlatformNamesFromMSBuild();
+			isLoading = false;
 		}
 		
 		/// <summary>
@@ -914,7 +928,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						propertyRemoved = true;
 					}
 				}
-				if (propertyRemoved && propertyGroup.Children.Count() == 0)
+				if (propertyRemoved && propertyGroup.Children.Count == 0)
 					project.RemoveChild(propertyGroup);
 			}
 		}
@@ -1188,7 +1202,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Loading
-		protected bool isLoading;
+		protected bool isLoading = true;
 		
 		public MSBuildBasedProject(ProjectLoadInformation loadInformation)
 			: base(loadInformation)
@@ -1197,7 +1211,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.configurationNames = new MSBuildConfigurationOrPlatformNameCollection(this, false);
 			this.platformNames = new MSBuildConfigurationOrPlatformNameCollection(this, true);
 			
-			isLoading = true;
 			bool success = false;
 			try {
 				try {
@@ -1277,6 +1290,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				userProjectFile = ProjectRootElement.Create(userFileName, MSBuildProjectCollection);
 			}
 			
+			// Read IdGuid from project file.
+			string idGuidString = GetEvaluatedProperty(ProjectGuidPropertyName);
+			if (idGuidString != null) {
+				Guid idGuid;
+				if (Guid.TryParse(idGuidString, out idGuid)) {
+					// Use 'base.' to avoid writing the changed ID back into the project file
+					base.IdGuid = idGuid;
+				}
+			}
 			CreateItemsListFromMSBuild();
 			LoadConfigurationPlatformNamesFromMSBuild();
 		}

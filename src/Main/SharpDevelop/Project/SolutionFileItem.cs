@@ -9,12 +9,11 @@ namespace ICSharpCode.SharpDevelop.Project
 	class SolutionFileItem : ISolutionFileItem
 	{
 		readonly Solution parentSolution;
-		readonly Guid idGuid;
 		
 		public SolutionFileItem(Solution parentSolution)
 		{
 			this.parentSolution = parentSolution;
-			this.idGuid = Guid.NewGuid();
+			this.IdGuid = Guid.NewGuid();
 		}
 		
 		FileName fileName;
@@ -35,9 +34,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return parentSolution; }
 		}
 
-		public Guid IdGuid {
-			get { return idGuid; }
-		}
+		public Guid IdGuid { get; set; }
 
 		public Guid TypeGuid {
 			get { return Guid.Empty; }

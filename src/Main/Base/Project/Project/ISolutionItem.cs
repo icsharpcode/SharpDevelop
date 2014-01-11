@@ -36,7 +36,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the ID GUID of this solution item.
 		/// </summary>
-		Guid IdGuid { get; }
+		/// <remarks>SharpDevelop will change an item's GUID in order to automatically solve GUID conflicts.</remarks>
+		Guid IdGuid { get; set; }
 		
 		/// <summary>
 		/// Gets the type GUID of this solution item.

@@ -30,7 +30,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		IProject LoadProject(ProjectLoadInformation info)
 		{
 			var project = MockRepository.GenerateStrictMock<IProject>();
-			project.Stub(p => p.IdGuid).Return(projectGuid);
+			project.Stub(p => p.IdGuid).PropertyBehavior();
+			project.IdGuid = projectGuid;
 			project.Stub(p => p.FileName).Return(info.FileName);
 			project.Stub(p => p.ParentSolution).Return(info.Solution);
 			project.Stub(p => p.ParentFolder).PropertyBehavior();
@@ -67,10 +68,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			solution.AddExistingProject(project1FileName);
 		}
 		
-//		[Test]
-//		public void AddTwoProjectsWithSameGUID()
-//		{
-//			
-//		}
+		[Test]
+		public void AddTwoProjectsWithSameGUID()
+		{
+			var solution = CreateSolution();
+			var project1 = solution.AddExistingProject(project1FileName);
+			var project2 = solution.AddExistingProject(project2FileName);
+			Assert.AreEqual(projectGuid, project1.IdGuid);
+			Assert.AreNotEqual(projectGuid, project2.IdGuid);
+		}
 	}
 }
