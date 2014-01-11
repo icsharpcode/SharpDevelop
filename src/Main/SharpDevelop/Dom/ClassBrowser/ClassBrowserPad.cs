@@ -19,7 +19,7 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
-	class PersistedWorkspace
+	public class PersistedWorkspace
 	{
 		public PersistedWorkspace()
 		{
