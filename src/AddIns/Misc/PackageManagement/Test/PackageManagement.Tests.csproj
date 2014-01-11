@@ -89,7 +89,6 @@
     <Compile Include="Src\EnvDTE\CodeDelegateTests.cs" />
     <Compile Include="Src\EnvDTE\CodeFunction2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeFunctionTests.cs" />
-    <Compile Include="Src\EnvDTE\CodeImportTests.cs" />
     <Compile Include="Src\EnvDTE\CodeInterfaceTests.cs" />
     <Compile Include="Src\EnvDTE\CodeModelTestBase.cs" />
     <Compile Include="Src\EnvDTE\CodeModelTests.cs" />

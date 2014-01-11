@@ -4,20 +4,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class FileCodeModel2 : MarshalByRefObject, global::EnvDTE.FileCodeModel2
 	{
 		CodeModelContext context;
-		CodeElementsList<CodeElement> codeElements = new CodeElementsList<CodeElement>();
+		Project project;
+		CodeElementsList<CodeElement> codeElements;
 		Dictionary<string, FileCodeModelCodeNamespace> namespaces = new Dictionary<string, FileCodeModelCodeNamespace>();
 		
 		public FileCodeModel2(CodeModelContext context, Project project)
@@ -27,6 +26,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 			
 			this.context = context;
+			this.project = project;
+		}
+		
+		public global::EnvDTE.CodeElements CodeElements {
+			get {
+				if (codeElements == null) {
+					codeElements = new CodeElementsList<CodeElement>();
+					AddCodeElements();
+				}
+				return codeElements;
+			}
+		}
+		
+		void AddCodeElements()
+		{
 			ICompilation compilation = project.GetCompilationUnit();
 			
 			var projectContent = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
@@ -35,7 +49,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				if (file != null) {
 					var csharpFile = file as CSharpUnresolvedFile;
 					if (csharpFile != null) {
-						AddUsings(codeElements, csharpFile.RootUsingScope, compilation);
+						AddUsings(csharpFile.RootUsingScope, compilation);
 					}
 					
 					var resolveContext = new SimpleTypeResolveContext(compilation.MainAssembly);
@@ -48,17 +62,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public global::EnvDTE.CodeElements CodeElements {
-			get { return codeElements; }
-		}
-		
 		void AddTypes(IEnumerable<ITypeDefinition> types)
 		{
 			foreach (ITypeDefinition typeDefinition in types) {
-				ITypeDefinitionModel model = typeDefinition.GetModel();
-				if (model == null) {
-					continue;
-				}
 				CodeType codeType = CodeType.Create(context, typeDefinition);
 				if (string.IsNullOrEmpty(typeDefinition.Namespace)) {
 					codeElements.Add(codeType);
@@ -66,15 +72,22 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					GetNamespace(typeDefinition.Namespace).AddMember(codeType);
 				}
 			}
-			codeElements.AddRange(types.Select(typeDefinition => CodeType.Create(context, typeDefinition)));
 		}
 		
-		public static void AddUsings(CodeElementsList<CodeElement> codeElements, UsingScope usingScope, ICompilation compilation)
+		public void AddUsings(UsingScope usingScope, ICompilation compilation)
 		{
-			ResolvedUsingScope resolvedUsingScope = usingScope.Resolve(compilation);
-			foreach (INamespace ns in resolvedUsingScope.Usings) {
-				codeElements.Add(new CodeImport(ns.FullName));
+			foreach (KeyValuePair<string, TypeOrNamespaceReference> alias in usingScope.UsingAliases) {
+				AddCodeImport(alias.Value.ToString());
 			}
+			
+			foreach (TypeOrNamespaceReference typeOrNamespace in usingScope.Usings) {
+				AddCodeImport(typeOrNamespace.ToString());
+			}
+		}
+		
+		void AddCodeImport(string namespaceName)
+		{
+			codeElements.Add(new CodeImport(namespaceName));
 		}
 		
 		public void AddImport(string name, object position = null, string alias = null)
@@ -90,7 +103,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				namespaces.Add(namespaceName, ns);
 				codeElements.Add(ns);
 			}
-			return null;
+			return ns;
 		}
 	}
 }
