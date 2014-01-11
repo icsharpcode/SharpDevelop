@@ -65,7 +65,7 @@ namespace AvalonEdit.Sample
 			
 			DispatcherTimer foldingUpdateTimer = new DispatcherTimer();
 			foldingUpdateTimer.Interval = TimeSpan.FromSeconds(2);
-			foldingUpdateTimer.Tick += foldingUpdateTimer_Tick;
+			foldingUpdateTimer.Tick += delegate { UpdateFoldings(); };
 			foldingUpdateTimer.Start();
 		}
 
@@ -147,7 +147,7 @@ namespace AvalonEdit.Sample
 		
 		#region Folding
 		FoldingManager foldingManager;
-		AbstractFoldingStrategy foldingStrategy;
+		object foldingStrategy;
 		
 		void HighlightingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -175,7 +175,7 @@ namespace AvalonEdit.Sample
 			if (foldingStrategy != null) {
 				if (foldingManager == null)
 					foldingManager = FoldingManager.Install(textEditor.TextArea);
-				foldingStrategy.UpdateFoldings(foldingManager, textEditor.Document);
+				UpdateFoldings();
 			} else {
 				if (foldingManager != null) {
 					FoldingManager.Uninstall(foldingManager);
@@ -184,10 +184,13 @@ namespace AvalonEdit.Sample
 			}
 		}
 		
-		void foldingUpdateTimer_Tick(object sender, EventArgs e)
+		void UpdateFoldings()
 		{
-			if (foldingStrategy != null) {
-				foldingStrategy.UpdateFoldings(foldingManager, textEditor.Document);
+			if (foldingStrategy is BraceFoldingStrategy) {
+				((BraceFoldingStrategy)foldingStrategy).UpdateFoldings(foldingManager, textEditor.Document);
+			}
+			if (foldingStrategy is XmlFoldingStrategy) {
+				((XmlFoldingStrategy)foldingStrategy).UpdateFoldings(foldingManager, textEditor.Document);
 			}
 		}
 		#endregion
