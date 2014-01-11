@@ -29,8 +29,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public int Line {
 			get { return this.Line; } 
 			set {
-				this.line = value;
-				this.textView.InvalidateLayer(this.Layer);
+				if (this.line != line) {
+					this.line = value;
+					this.textView.InvalidateLayer(this.Layer);
+				}
 			}
 		}
 		

@@ -359,8 +359,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					ta.TextView.Options.HighlightCurrentLine = true;
 				})
 			{
-				Foreground = Colors.Red,//CurrentLineHighlightRenderer.DefaultBorder,
-				Background = Colors.Yellow//CurrentLineHighlightRenderer.DefaultBackground
+				Foreground = Color.FromArgb(52, 0, 255, 110),
+				Background = Color.FromArgb(22, 20, 220, 224)
 			};
 			currentLineHighlight = new CustomizedHighlightingItem(customizationList, currentLineHighlight, language, canSetFont: false);
 			currentLineHighlight.PropertyChanged += item_PropertyChanged;
