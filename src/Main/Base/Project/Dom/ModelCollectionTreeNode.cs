@@ -13,6 +13,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public abstract class ModelCollectionTreeNode : SharpTreeNode
 	{
 		protected static readonly IComparer<SharpTreeNode> NodeTextComparer = KeyComparer.Create((SharpTreeNode n) => n.Text.ToString(), StringComparer.OrdinalIgnoreCase, StringComparer.OrdinalIgnoreCase);
+		protected bool listeningToCollectionChangedEvents;
 		
 		protected ModelCollectionTreeNode()
 		{
@@ -37,6 +38,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// If children loaded, also detach the collection change event handler
 			if (!LazyLoading) {
 				ModelChildren.CollectionChanged -= ModelChildrenCollectionChanged;
+				listeningToCollectionChangedEvents = false;
 			}
 		}
 		
@@ -46,11 +48,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			if (IsVisible) {
 				if (!LazyLoading) {
-					ModelChildren.CollectionChanged += ModelChildrenCollectionChanged;
+					if (!listeningToCollectionChangedEvents) {
+						ModelChildren.CollectionChanged += ModelChildrenCollectionChanged;
+						listeningToCollectionChangedEvents = true;
+					}
 					SynchronizeModelChildren();
 				}
 			} else {
 				ModelChildren.CollectionChanged -= ModelChildrenCollectionChanged;
+				listeningToCollectionChangedEvents = false;
 			}
 		}
 		
@@ -66,7 +72,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (IsSpecialNode())
 				InsertSpecialNodes();
 			InsertChildren(ModelChildren);
-			ModelChildren.CollectionChanged += ModelChildrenCollectionChanged;
+			if (!listeningToCollectionChangedEvents) {
+				ModelChildren.CollectionChanged += ModelChildrenCollectionChanged;
+				listeningToCollectionChangedEvents = true;
+			}
 		}
 		
 		protected void InsertChildren(IEnumerable children)
@@ -101,6 +110,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		void SwitchBackToLazyLoading()
 		{
 			ModelChildren.CollectionChanged -= ModelChildrenCollectionChanged;
+			listeningToCollectionChangedEvents = false;
 			Children.Clear();
 			LazyLoading = true;
 		}
