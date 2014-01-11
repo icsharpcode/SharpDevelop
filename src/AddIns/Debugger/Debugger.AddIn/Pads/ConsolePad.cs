@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return "No current execution frame";
 			
 			try {
-				var val = WindowsDebugger.Evaluate(code);
+				var val = WindowsDebugger.Evaluate(code, allowSetValue: true);
 				return ExpressionEvaluationVisitor.FormatValue(WindowsDebugger.EvalThread, val);
 			} catch (GetValueException e) {
 				return e.Message;
