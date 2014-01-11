@@ -87,8 +87,6 @@
 	<Target Name="buildsamples">
 		<MSBuild Projects="$(SamplesSrc)\AvalonEdit.Sample\AvalonEdit.Sample.sln"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
-		<MSBuild Projects="$(SamplesSrc)\CodeConverter\Source\CodeConverter.sln"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		<MSBuild Projects="$(SamplesSrc)\CodonCreation\CodonCreation.sln"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		<MSBuild Projects="$(SamplesSrc)\ComponentInspector\ComponentInspector.sln"
