@@ -15,6 +15,7 @@
 		<NUnitToolPath>$(MSBuildProjectDirectory)\Tools\NUnit</NUnitToolPath>
 		<NUnitTempToolPath>$(SharpDevelopBin)\Tools\x86NUnit</NUnitTempToolPath>
 		<ProfilerSrc>$(SharpDevelopSrc)\AddIns\Misc\Profiler</ProfilerSrc>
+		<SamplesSrc>$(ProjectDir)\samples</SamplesSrc>
 		
 		<!-- we cannot use <MSBuild> to build a solution because -->
 		<!-- A) passing properties to a solution called with <MSBuild> doesn't make the
@@ -47,6 +48,7 @@
 		<CallTarget Targets="createsetup"/>
 		<CallTarget Targets="createxcopydeployablezip"/>
 		
+		<CallTarget Targets="buildsamples"/>
 		<CallTarget Targets="buildunittests"/>
 		<CallTarget Targets="rununittests"/>
 		
@@ -80,6 +82,69 @@
 	<Target Name="buildunittests">
 		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln $(BuildProperties)"/>
+	</Target>
+	
+	<Target Name="buildsamples">
+		<MSBuild Projects="$(SamplesSrc)\AvalonEdit.Sample\AvalonEdit.Sample.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\CodeConverter\Source\CodeConverter.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\CodonCreation\CodonCreation.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\ComponentInspector\ComponentInspector.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\CppBackendBinding\CppBackendBinding.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\CustomPad\CustomPad.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\CustomView\CustomView.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\DisplayBindings\AlternateEditor\AlternateEditor.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\DisplayBindings\HtmlPreview\HtmlPreview.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\DisplayBindings\ImageViewer\ImageViewer.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\EmbeddedImageAddIn\EmbeddedImageAddIn.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\Gallio\Gallio.SharpDevelop.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\HtmlSyntaxColorizer\HtmlSyntaxColorizer.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\ICSharpCode.Core.Demo\ICSharpCode.Core.Demo.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\ICSharpCode.Core.Demo\AddInManager\AddInManager.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\ICSharpCode.Core.Demo\Base\Base.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\ICSharpCode.Core.Demo\RichTextEditor\RichTextEditor.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\ICSharpCode.Core.Demo\Startup\Startup.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\ILAsmBinding\ILAsmBinding.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\LineCounter\LineCounter.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\Mono\Mono.AddIn.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\MSTest\MSTest.SharpDevelop.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\NAnt\NAnt.AddIn.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\NRefactoryDemo\NRefactoryDemo.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\PInvokeAddIn\PInvokeAddIn.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\SdaUser\SdaUser.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\SharpDevelopReports\src\ReportSamples.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\SharpSnippetCompiler\SharpSnippetCompiler.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\XamlDesigner\XamlDesigner.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\XmlDOM\XmlDOM.sln"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>	 
 	</Target>
 	
 	<Target Name="rununittests">
