@@ -81,6 +81,11 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
+		public override void Visit(ExportGraphics exportGraphics)
+		{
+//			base.Visit(exportGraphics);
+		}
+		
 		protected UIElement UIElement {get;private set;}
 		
 		

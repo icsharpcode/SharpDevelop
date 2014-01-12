@@ -54,11 +54,19 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
+		public virtual void Visit(ExportGraphics exportGraphics)
+		{
+			throw new NotImplementedException();
+		}
+		
+		
 		protected bool ShouldSetBackcolor (ExportColumn exportColumn) {
 			return exportColumn.BackColor != Color.White;
 		}
 		
 		
 		protected Collection<ExportPage> Pages {get; private set;}
+		
+		
 	}
 }

@@ -54,6 +54,11 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 		
 		
+		public static XPen PdfPen(IExportGraphics column) {
+			return new XPen(ToXColor(column.ForeColor),column.Thickness);
+		}
+		
+		
 		public static Point LocationRelToParent (ExportColumn column) {
 			return new Point(column.Parent.Location.X + column.Location.X,
 			                 column.Parent.Location.Y + column.Location.Y);

@@ -149,6 +149,8 @@
     <Compile Include="Src\Globals\GlobalValues.cs" />
     <Compile Include="Src\Interfaces\IReportModel.cs" />
     <Compile Include="Src\Items\BaseTextItem.cs" />
+    <Compile Include="Src\Items\Graphics\BaseGraphics.cs" />
+    <Compile Include="Src\Items\Graphics\BaseLineItem.cs" />
     <Compile Include="Src\Items\GroupColumn.cs" />
     <Compile Include="Src\Items\PrintableItem.cs" />
     <Compile Include="Src\Items\ReportContainer.cs" />
@@ -161,6 +163,7 @@
     <Compile Include="Src\PageBuilder\DataPageBuilder.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportColumn.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportContainer.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportGraphics.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportText.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportPage.cs" />
     <Compile Include="Src\PageBuilder\FormPageBuilder.cs" />
@@ -199,6 +202,7 @@
     <Folder Include="Src\DataManager" />
     <Folder Include="Src\DataManager\Listhandling" />
     <Folder Include="Src\Expressions" />
+    <Folder Include="Src\Items\Graphics" />
     <Folder Include="Src\Pdf" />
     <Folder Include="Src\Wpf" />
     <Folder Include="Src\PageBuilder" />

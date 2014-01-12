@@ -57,6 +57,10 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			}
 		}
 
+		public override void Visit(ExportGraphics exportGraphics)
+		{
+//			base.Visit(exportGraphics);
+		}
 		
 		object Evaluate(ExportText exportColumn)
 		{

@@ -65,6 +65,16 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 
 		
+		
+		public override void Visit(ExportGraphics exportGraphics)
+		{
+			var columnLocation = containerLocation;
+			columnLocation.Offset(exportGraphics.Location);
+			var p = PdfHelper.PdfPen(exportGraphics);
+			gfx.DrawLine(p,columnLocation.ToXPoints(),new Point(exportGraphics.Size.Width,columnLocation.Y).ToXPoints());
+		}
+		
+		
 		public PdfPage PdfPage {get; private set;}
 	}
 }
