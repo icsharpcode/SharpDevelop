@@ -119,8 +119,6 @@
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		<MSBuild Projects="$(SamplesSrc)\NAnt\NAnt.AddIn.sln"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
-		<MSBuild Projects="$(SamplesSrc)\NRefactoryDemo\NRefactoryDemo.sln"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		<MSBuild Projects="$(SamplesSrc)\PInvokeAddIn\PInvokeAddIn.sln"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		<MSBuild Projects="$(SamplesSrc)\SdaUser\SdaUser.sln"
