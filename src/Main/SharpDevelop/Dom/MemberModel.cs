@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.member = member;
 		}
 		
-		public event PropertyChangedEventHandler PropertyChanged { add {} remove {} }
+		public event PropertyChangedEventHandler PropertyChanged;
 		
 		/// <summary>
 		/// Updates the member model with the specified new member.
@@ -47,6 +47,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (newMember == null)
 				throw new ArgumentNullException("newMember");
 			this.member = newMember;
+			RaisePropertyChanged();
+		}
+		
+		private void RaisePropertyChanged()
+		{
+			if (this.PropertyChanged != null) {
+				this.PropertyChanged(this, new PropertyChangedEventArgs(null));
+			}
 		}
 		
 		public IProject ParentProject {

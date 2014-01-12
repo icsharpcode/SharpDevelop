@@ -36,11 +36,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.fullTypeName = firstPart.FullTypeName;
 		}
 		
-		public IEntityModelContext Context
-		{
-			get { return context; }
-		}
-		
 		public IReadOnlyList<IUnresolvedTypeDefinition> Parts {
 			get { return parts; }
 		}
@@ -144,14 +139,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 				var newMembers = newPart.Members;
 				int startPos = 0;
 				// Look at the initial members and update them if they're matching
-				while (startPos < list.Count && startPos < newMembers.Count && IsMatch(parent.Context, list[startPos], newMembers[startPos])) {
+				while (startPos < list.Count && startPos < newMembers.Count && IsMatch(list[startPos], newMembers[startPos])) {
 					list[startPos].Update(newMembers[startPos]);
 					startPos++;
 				}
 				// Look at the final members
 				int endPosOld = list.Count - 1;
 				int endPosNew = newMembers.Count - 1;
-				while (endPosOld >= startPos && endPosNew >= startPos && IsMatch(parent.Context, list[endPosOld], newMembers[endPosNew])) {
+				while (endPosOld >= startPos && endPosNew >= startPos && IsMatch(list[endPosOld], newMembers[endPosNew])) {
 					list[endPosOld--].Update(newMembers[endPosNew--]);
 				}
 				// [startPos, endPos] is the middle portion that contains all the changes
@@ -177,32 +172,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			static bool IsMatch(IEntityModelContext context, MemberModel memberModel, IUnresolvedMember newMember)
+			static bool IsMatch(MemberModel memberModel, IUnresolvedMember newMember)
 			{
-				bool isSymbolOfTypeAndName = memberModel.SymbolKind == newMember.SymbolKind && memberModel.Name == newMember.Name;
-				if (isSymbolOfTypeAndName) {
-					var parametrizedNewMember = newMember as IUnresolvedParameterizedMember;
-					var parametrizedModelMember = memberModel.UnresolvedMember as IUnresolvedParameterizedMember;
-					if ((parametrizedNewMember != null) && (parametrizedModelMember != null)) {
-						// For methods and constructors additionally check the parameters and their types to handle overloading properly
-						int treeNodeParamsCount = parametrizedModelMember.Parameters != null ? parametrizedModelMember.Parameters.Count : 0;
-						int entityParamsCount = parametrizedNewMember.Parameters != null ? parametrizedNewMember.Parameters.Count : 0;
-						if (treeNodeParamsCount == entityParamsCount) {
-							for (int i = 0; i < entityParamsCount; i++) {
-								if (!parametrizedNewMember.Parameters[i].Type.Resolve(context.GetCompilation()).Equals(parametrizedModelMember.Parameters[i].Type.Resolve(context.GetCompilation()))) {
-									return false;
-								}
-							}
-							
-							// All parameters were equal
-							return true;
-						}
-					} else {
-						return true;
-					}
-				}
-				
-				return false;
+				return memberModel.SymbolKind == newMember.SymbolKind && memberModel.Name == newMember.Name;
 			}
 			
 			public event ModelCollectionChangedEventHandler<MemberModel> CollectionChanged {

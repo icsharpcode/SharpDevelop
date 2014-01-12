@@ -17,9 +17,17 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (model == null)
 				throw new ArgumentNullException("model");
 			this.model = model;
+			this.model.PropertyChanged += OnModelPropertyChanged;
 			// disable lazy loading to avoid showing a useless + sign in the tree.
 			// remove this line if you add child nodes
 			LazyLoading = false;
+		}
+		
+		private void OnModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			// Update properties of tree node, since member model has been changed
+			cachedText = null;
+			RaisePropertyChanged(null);
 		}
 		
 		protected override object GetModel()
