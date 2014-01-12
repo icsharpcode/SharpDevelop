@@ -25,10 +25,9 @@
 // IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using System;
-using System.Windows.Forms;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace CustomView
 {
@@ -36,7 +35,7 @@ namespace CustomView
 	{
 		public override void Run()
 		{
-			WorkbenchSingleton.Workbench.ShowView(new MyCustomView());
+			SD.Workbench.ShowView(new MyCustomView());
 		}
 	}
 }
