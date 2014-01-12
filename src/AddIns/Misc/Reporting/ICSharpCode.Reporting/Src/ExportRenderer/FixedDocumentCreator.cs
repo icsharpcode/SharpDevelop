@@ -61,12 +61,12 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			var textBlock = new TextBlock();
 
 			textBlock.Foreground = ConvertBrush(exportText.ForeColor);
-			/*
+			
 			if (setBackcolor) {
 				textBlock.Background = ConvertBrush(exportText.BackColor);
 			}
-			 */
-			textBlock.Background = ConvertBrush(System.Drawing.Color.LightPink);
+			 
+//			textBlock.Background = ConvertBrush(System.Drawing.Color.LightPink);
 			
 			SetFont(textBlock,exportText);
 			
@@ -116,7 +116,8 @@ namespace ICSharpCode.Reporting.ExportRenderer
 //				ft.MaxTextHeight = exportText.DesiredSize.Height + 5 * 96.0 / 72.0;
 //				ft.MaxTextHeight = Double.MaxValue ;
 				
-				formattedText.SetFontSize(exportText.Font.Size  * 96.0 / 72.0);
+				formattedText.SetFontSize(Math.Floor(exportText.Font.Size  * 96.0 / 72.0));
+				
 				var size = new Size {
 					Width = formattedText.WidthIncludingTrailingWhitespace,
 					Height = formattedText.Height + 6};
@@ -161,7 +162,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 
 			//http://www.codeproject.com/Articles/441009/Drawing-Formatted-Text-in-a-Windows-Forms-Applicat
 			
-			textBlock.FontSize = exportText.Font.Size * 96/72;
+			textBlock.FontSize = Math.Floor(exportText.Font.Size * 96/72);
 
 			if (exportText.Font.Bold) {
 				textBlock.FontWeight = FontWeights.Bold;
