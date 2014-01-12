@@ -90,7 +90,7 @@ namespace ICSharpCode.MachineSpecifications
 				string executableName = "mspec";
 				if (TargetPlatformIs32Bit(project))
 					executableName += "-x86";
-				if (UsesClr4(project))
+				if (!ProjectUsesDotnet20Runtime(project))
 					executableName += "-clr4";
 
 				executableName += ".exe";
@@ -98,12 +98,11 @@ namespace ICSharpCode.MachineSpecifications
 			}
 		}
 
-		bool UsesClr4(IProject project)
+		static bool ProjectUsesDotnet20Runtime(IProject project)
 		{
-			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
-			if (msbuildProject != null) {
-				string targetFrameworkVersion = msbuildProject.GetEvaluatedProperty("TargetFrameworkVersion");
-				return String.Equals(targetFrameworkVersion, "v4.0", StringComparison.OrdinalIgnoreCase);
+			var p = project as ICSharpCode.SharpDevelop.Project.Converter.IUpgradableProject;
+			if (p != null && p.CurrentTargetFramework != null) {
+				return p.CurrentTargetFramework.SupportedRuntimeVersion == "v2.0.50727";
 			}
 			return false;
 		}
