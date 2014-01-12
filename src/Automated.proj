@@ -109,16 +109,6 @@
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		<MSBuild Projects="$(SamplesSrc)\HtmlSyntaxColorizer\HtmlSyntaxColorizer.sln"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
-		<MSBuild Projects="$(SamplesSrc)\ICSharpCode.Core.Demo\ICSharpCode.Core.Demo.sln"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
-		<MSBuild Projects="$(SamplesSrc)\ICSharpCode.Core.Demo\AddInManager\AddInManager.sln"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
-		<MSBuild Projects="$(SamplesSrc)\ICSharpCode.Core.Demo\Base\Base.sln"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
-		<MSBuild Projects="$(SamplesSrc)\ICSharpCode.Core.Demo\RichTextEditor\RichTextEditor.sln"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
-		<MSBuild Projects="$(SamplesSrc)\ICSharpCode.Core.Demo\Startup\Startup.sln"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		<MSBuild Projects="$(SamplesSrc)\ILAsmBinding\ILAsmBinding.sln"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		<MSBuild Projects="$(SamplesSrc)\LineCounter\LineCounter.sln"
