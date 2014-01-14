@@ -17,9 +17,9 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	}
 	
 	
-	public class ExportGraphics:ExportColumn,IExportGraphics,IAcceptor
+	public class ExportLine:ExportColumn,IExportGraphics,IAcceptor
 	{
-		public ExportGraphics()
+		public ExportLine()
 		{
 		}
 		

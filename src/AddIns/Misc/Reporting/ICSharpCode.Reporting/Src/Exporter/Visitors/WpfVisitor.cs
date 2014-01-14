@@ -81,7 +81,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
-		public override void Visit(ExportGraphics exportGraphics)
+		public override void Visit(ExportLine exportGraphics)
 		{
 //			base.Visit(exportGraphics);
 		}

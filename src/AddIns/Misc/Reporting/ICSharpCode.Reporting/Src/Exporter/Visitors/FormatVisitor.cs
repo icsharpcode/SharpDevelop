@@ -20,5 +20,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 				StandardFormatter.FormatOutput(exportColumn);
 			}
 		}
+		
+		
 	}
 }

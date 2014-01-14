@@ -163,7 +163,7 @@
     <Compile Include="Src\PageBuilder\DataPageBuilder.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportColumn.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportContainer.cs" />
-    <Compile Include="Src\PageBuilder\ExportColumns\ExportGraphics.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportLine.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportText.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportPage.cs" />
     <Compile Include="Src\PageBuilder\FormPageBuilder.cs" />

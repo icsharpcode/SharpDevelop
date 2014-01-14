@@ -50,13 +50,11 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public virtual void Visit(ExportText exportColumn)
 		{
-			throw new NotImplementedException();
 		}
 		
 		
-		public virtual void Visit(ExportGraphics exportGraphics)
+		public virtual void Visit(ExportLine exportGraphics)
 		{
-			throw new NotImplementedException();
 		}
 		
 		

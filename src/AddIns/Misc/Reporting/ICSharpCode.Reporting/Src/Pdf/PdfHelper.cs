@@ -5,6 +5,7 @@ using System.Drawing;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using PdfSharp.Drawing;
+using System.Drawing.Drawing2D;
 using PdfSharp.Drawing.Layout;
 
 namespace ICSharpCode.Reporting.Pdf
@@ -56,6 +57,41 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		public static XPen PdfPen(IExportGraphics column) {
 			return new XPen(ToXColor(column.ForeColor),column.Thickness);
+		}
+		
+		
+		public static XLineCap LineCap (IExportGraphics column) {
+			return XLineCap.Round;
+			
+		}
+		
+		
+		public static XDashStyle DashStyle (IExportGraphics column) {
+			XDashStyle style = XDashStyle.Solid;
+			
+			switch (column.DashStyle) {
+				case System.Drawing.Drawing2D.DashStyle.Solid:
+					style = XDashStyle.Solid;
+					break;
+				case System.Drawing.Drawing2D.DashStyle.Dash:
+					style  = XDashStyle.Dash;
+					break;
+				case System.Drawing.Drawing2D.DashStyle.Dot:
+					style = XDashStyle.Dot;
+					break;
+				case System.Drawing.Drawing2D.DashStyle.DashDot:
+					style = XDashStyle.DashDot;
+					break;
+				case System.Drawing.Drawing2D.DashStyle.DashDotDot:
+					style = XDashStyle.DashDotDot;
+					break;
+				case System.Drawing.Drawing2D.DashStyle.Custom:
+					
+					break;
+				default:
+					throw new Exception("Invalid value for DashStyle");
+			}
+			return style;
 		}
 		
 		

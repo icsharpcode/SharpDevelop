@@ -66,12 +66,14 @@ namespace ICSharpCode.Reporting.Pdf
 
 		
 		
-		public override void Visit(ExportGraphics exportGraphics)
+		public override void Visit(ExportLine exportGraphics)
 		{
 			var columnLocation = containerLocation;
 			columnLocation.Offset(exportGraphics.Location);
-			var p = PdfHelper.PdfPen(exportGraphics);
-			gfx.DrawLine(p,columnLocation.ToXPoints(),new Point(exportGraphics.Size.Width,columnLocation.Y).ToXPoints());
+			var pen = PdfHelper.PdfPen(exportGraphics);
+			pen.DashStyle = PdfHelper.DashStyle(exportGraphics);
+			pen.LineCap = PdfHelper.LineCap(exportGraphics);
+			gfx.DrawLine(pen,columnLocation.ToXPoints(),new Point(exportGraphics.Size.Width,columnLocation.Y).ToXPoints());
 		}
 		
 		

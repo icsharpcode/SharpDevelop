@@ -16,7 +16,7 @@ namespace ICSharpCode.Reporting.Items{
 		
 		public override IExportColumn CreateExportColumn()
 		{
-			var ex = new ExportGraphics();
+			var ex = new ExportLine();
 			ex.Location = Location;
 			ex.ForeColor = ForeColor;
 			ex.BackColor = BackColor;
