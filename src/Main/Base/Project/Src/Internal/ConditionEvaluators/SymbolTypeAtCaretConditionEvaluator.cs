@@ -20,6 +20,11 @@ namespace ICSharpCode.SharpDevelop.Internal.ConditionEvaluators
 		{
 			ResolveResult resolveResult = GetResolveResult(parameter);
 			if ((resolveResult != null) && !resolveResult.IsError) {
+				// Check if project-only entities should be valid
+				var defRegion = resolveResult.GetDefinitionRegion();
+				if ((condition.Properties["projectonly"] == "true") && (resolveResult.GetDefinitionRegion().IsEmpty))
+					return false;
+				
 				// Check type of symbol
 				string typesList = condition.Properties["type"];
 				if (typesList != null) {
@@ -58,9 +63,6 @@ namespace ICSharpCode.SharpDevelop.Internal.ConditionEvaluators
 		
 		static ResolveResult GetResolveResult(object parameter)
 		{
-			if (parameter == null)
-				return GetResolveResultFromCurrentEditor();
-			
 			if (parameter is ITextEditor)
 				return GetResolveResultFromCurrentEditor((ITextEditor) parameter);
 			
@@ -70,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Internal.ConditionEvaluators
 			if (parameter is IEntityModel)
 				return GetResolveResultFromEntityModel((IEntityModel) parameter);
 			
-			return null;
+			return GetResolveResultFromCurrentEditor();
 		}
 		
 		static ResolveResult GetResolveResultFromEntityModel(IEntityModel entityModel)
@@ -86,7 +88,10 @@ namespace ICSharpCode.SharpDevelop.Internal.ConditionEvaluators
 		static ResolveResult GetResolveResultFromCurrentEditor()
 		{
 			ITextEditor currentEditor = SD.GetActiveViewContentService<ITextEditor>();
-			return GetResolveResultFromCurrentEditor(currentEditor);
+			if (currentEditor != null)
+				return GetResolveResultFromCurrentEditor(currentEditor);
+			
+			return null;
 		}
 		
 		static ResolveResult GetResolveResultFromCurrentEditor(ITextEditor currentEditor)
