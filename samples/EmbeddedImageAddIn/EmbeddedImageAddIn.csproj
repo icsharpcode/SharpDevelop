@@ -7,12 +7,13 @@
     <OutputType>Library</OutputType>
     <RootNamespace>EmbeddedImageAddIn</RootNamespace>
     <AssemblyName>EmbeddedImageAddIn</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <OutputPath>..\..\AddIns\Samples\EmbeddedImage\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -44,6 +45,9 @@
       <HintPath>..\..\bin\ICSharpCode.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
       <HintPath>..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
       <Private>False</Private>
@@ -70,7 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="EmbeddedImageLanguageBinding.cs" />
+    <Compile Include="EmbeddedImageTextEditorExtension.cs" />
     <Compile Include="ImageCache.cs" />
     <Compile Include="ImageElement.cs" />
     <Compile Include="ImageElementGenerator.cs" />

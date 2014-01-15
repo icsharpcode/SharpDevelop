@@ -4,20 +4,18 @@
 using System;
 using System.IO;
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace EmbeddedImageAddIn
 {
 	// SharpDevelop creates one instance of EmbeddedImageLanguageBinding for each text editor.
-	public class EmbeddedImageLanguageBinding : DefaultLanguageBinding
+	public class EmbeddedImageTextEditorExtension : ITextEditorExtension
 	{
 		TextView textView;
 		ImageElementGenerator g;
 		
-		public override void Attach(ITextEditor editor)
+		public void Attach(ITextEditor editor)
 		{
-			base.Attach(editor);
 			// ITextEditor is SharpDevelop's abstraction of the text editor.
 			// We use GetService() to get the underlying AvalonEdit instance.
 			textView = editor.GetService(typeof(TextView)) as TextView;
@@ -27,12 +25,11 @@ namespace EmbeddedImageAddIn
 			}
 		}
 		
-		public override void Detach()
+		public void Detach()
 		{
 			if (textView != null) {
 				textView.ElementGenerators.Remove(g);
 			}
-			base.Detach();
 		}
 	}
 }
