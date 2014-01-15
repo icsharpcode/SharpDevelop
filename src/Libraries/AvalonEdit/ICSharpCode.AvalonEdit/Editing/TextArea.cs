@@ -70,6 +70,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			caret = new Caret(this);
 			caret.PositionChanged += (sender, e) => RequestSelectionValidation();
 			caret.PositionChanged += CaretPositionChanged;
+			AttachTypingEvents();
 			ime = new ImeSupport(this);
 			
 			leftMargins.CollectionChanged += leftMargins_CollectionChanged;
@@ -951,6 +952,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected override void OnPreviewKeyDown(KeyEventArgs e)
 		{
 			base.OnPreviewKeyDown(e);
+			HideMouseCursor();
 			foreach (TextAreaStackedInputHandler h in stackedInputHandlers) {
 				if (e.Handled)
 					break;
@@ -974,6 +976,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
+			if (e.Key != Key.LeftShift && e.Key != Key.RightShift
+			    && e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl
+			    && e.Key != Key.LeftAlt && e.Key != Key.RightAlt
+			    && e.Key != Key.Up && e.Key != Key.Down && e.Key != Key.Left && e.Key != Key.Right
+			   	&& e.Key != Key.PageDown && e.Key != Key.PageUp)
+			{
+				HideMouseCursor();
+			} else {
+				ShowMouseCursor();
+			}
 			TextView.InvalidateCursorIfMouseWithinTextView();
 		}
 		
@@ -983,6 +995,49 @@ namespace ICSharpCode.AvalonEdit.Editing
 			base.OnKeyUp(e);
 			TextView.InvalidateCursorIfMouseWithinTextView();
 		}
+		#endregion
+		
+		#region Hide Mouse Cursor While Typing
+		
+		bool isMouseCursorHidden;
+		DispatcherTimer typingTimer;
+		
+		void AttachTypingEvents() {
+			this.MouseEnter += delegate { ShowMouseCursor(); };
+			this.MouseLeave += delegate { ShowMouseCursor(); };
+			this.MouseMove += delegate { ShowMouseCursor(); };
+			this.TouchEnter += delegate { ShowMouseCursor(); };
+			this.TouchLeave += delegate { ShowMouseCursor(); };
+			this.TouchMove += delegate { ShowMouseCursor(); };
+		}
+		
+		void ShowMouseCursor() {
+			if (typingTimer != null) {
+				typingTimer.Stop();
+				typingTimer = null;
+			}
+			
+			if (this.isMouseCursorHidden) {
+				System.Windows.Forms.Cursor.Show();
+				this.isMouseCursorHidden = false;
+			}
+		}
+		
+		void HideMouseCursor() {
+			if (typingTimer != null) {
+				typingTimer.Stop();
+			}
+			typingTimer = new DispatcherTimer();
+			typingTimer.Interval = new TimeSpan(0, 0, 0, 1, 200);
+			typingTimer.Tick += delegate { ShowMouseCursor(); };;
+			typingTimer.Start();
+				
+			if (!this.isMouseCursorHidden && this.IsMouseOver) {	
+				this.isMouseCursorHidden = true;
+				System.Windows.Forms.Cursor.Hide();
+			}
+		}
+		
 		#endregion
 		
 		/// <inheritdoc/>
