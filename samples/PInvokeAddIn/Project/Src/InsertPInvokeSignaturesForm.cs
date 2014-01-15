@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.PInvokeAddIn.WebServices;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -140,7 +141,7 @@ namespace ICSharpCode.PInvokeAddIn
 			string signature = GetSelectedPInvokeSignature(language);
 			
 			if (signature.Length > 0) {
-				ITextEditor textEditor = GetTextEditor();
+				ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
 				if (textEditor != null) {
 					generator.Generate(textEditor, signature);
 				}
@@ -242,7 +243,7 @@ namespace ICSharpCode.PInvokeAddIn
 
 		string GetSourceFileLanguage()
 		{
-			ITextEditor textEditor = GetTextEditor();
+			ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
 			if (textEditor != null) {
 				string fileExtension = Path.GetExtension(textEditor.FileName);
 				if (fileExtension.Equals(".vb", StringComparison.OrdinalIgnoreCase)) {
@@ -279,15 +280,6 @@ namespace ICSharpCode.PInvokeAddIn
 					}
 				}
 			}
-		}
-		
-		static ITextEditor GetTextEditor()
-		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			if (provider != null)
-				return provider.TextEditor;
-			else
-				return null;
 		}
 	}
 }
