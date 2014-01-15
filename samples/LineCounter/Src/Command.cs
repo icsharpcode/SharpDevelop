@@ -26,11 +26,8 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
-using System.Text;
-using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace LineCounterAddin
 {
@@ -38,7 +35,7 @@ namespace LineCounterAddin
 	{
 		public override void Run()
 		{
-			WorkbenchSingleton.Workbench.ShowView(new LineCounterViewContent());
+			SD.Workbench.ShowView(new LineCounterViewContent());
 		}
 	}
 }
