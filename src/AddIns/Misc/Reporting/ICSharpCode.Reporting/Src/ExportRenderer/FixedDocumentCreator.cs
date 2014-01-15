@@ -266,12 +266,41 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		Brush ConvertBrush(System.Drawing.Color color){
+		public  Brush ConvertBrush(System.Drawing.Color color){
 			if (brushConverter.IsValid(color.Name)){
 				return brushConverter.ConvertFromString(color.Name) as SolidColorBrush;
 			} else{
 				return brushConverter.ConvertFromString("Black") as SolidColorBrush;
 			}
 		}
+		
+		/*
+		public DashStyle DashStyle (IExportGraphics exportGraphics) {
+			
+			switch (exportGraphics.DashStyle) {
+				case System.Drawing.Drawing2D.DashStyle.Solid:
+					
+					break;
+				case System.Drawing.Drawing2D.DashStyle.Dash:
+					
+					break;
+				case System.Drawing.Drawing2D.DashStyle.Dot:
+					
+					break;
+				case System.Drawing.Drawing2D.DashStyle.DashDot:
+					
+					break;
+				case System.Drawing.Drawing2D.DashStyle.DashDotDot:
+					
+					break;
+				case System.Drawing.Drawing2D.DashStyle.Custom:
+					
+					break;
+				default:
+					throw new Exception("Invalid value for DashStyle");
+			}
+			return DashStyle.Solid();
+		}
+		*/
 	}
 }

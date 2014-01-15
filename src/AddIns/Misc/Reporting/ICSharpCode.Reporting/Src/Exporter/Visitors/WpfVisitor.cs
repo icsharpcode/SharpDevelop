@@ -10,6 +10,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 
 using ICSharpCode.Reporting.ExportRenderer;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -81,10 +82,25 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
+		
 		public override void Visit(ExportLine exportGraphics)
 		{
-//			base.Visit(exportGraphics);
+			var  line = new System.Windows.Shapes.Line();
+		
+			line.Stroke = documentCreator.ConvertBrush(exportGraphics.ForeColor);
+			
+			line.StrokeStartLineCap = PenLineCap.Round;
+			line.StrokeEndLineCap = PenLineCap.Round;
+			
+			line.StrokeThickness = exportGraphics.Thickness;
+			
+			line.X1 = exportGraphics.Location.X;
+			line.Y1 = exportGraphics.Location.Y;
+			line.X2 = exportGraphics.Size.Width;
+			line.Y2 = exportGraphics.Location.Y;
+			UIElement = line;
 		}
+		
 		
 		protected UIElement UIElement {get;private set;}
 		
