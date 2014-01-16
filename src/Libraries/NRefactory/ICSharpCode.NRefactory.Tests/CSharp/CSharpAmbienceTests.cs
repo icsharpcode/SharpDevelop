@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void GenericType()
 		{
 			var typeDef = compilation.FindType(typeof(Dictionary<,>)).GetDefinition();
-			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.ShowTypeParameterList;
+			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
 			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("System.Collections.Generic.Dictionary<TKey, TValue>", result);
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void SimpleType()
 		{
 			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
-			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.ShowTypeParameterList;
+			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
 			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("System.Object", result);
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void SimpleTypeDefinition()
 		{
 			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
-			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedTypeNames);
+			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.UseFullyQualifiedMemberNames);
 			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("public class Object", result);
@@ -88,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void SimpleTypeDefinitionWithoutModifiers()
 		{
 			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
-			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.ShowModifiers | ConversionFlags.ShowAccessibility);
+			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowModifiers | ConversionFlags.ShowAccessibility);
 			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("class Object", result);
@@ -128,7 +128,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void GenericTypeWithNested()
 		{
 			var typeDef = compilation.FindType(typeof(List<>.Enumerator)).GetDefinition();
-			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.ShowTypeParameterList;
+			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
 			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("System.Collections.Generic.List<T>.Enumerator", result);
