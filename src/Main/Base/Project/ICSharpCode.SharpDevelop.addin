@@ -172,7 +172,6 @@
 		     title    = "${res:MainWindow.Windows.OutputWindow}"
 		     icon     = "PadIcons.Output"
 		     class    = "ICSharpCode.SharpDevelop.Gui.CompilerMessageView"
-		     serviceInterface = "ICSharpCode.SharpDevelop.Workbench.IOutputPad"
 		     defaultPosition = "Bottom" />
 		
 		<Pad id       = "PropertyPad"

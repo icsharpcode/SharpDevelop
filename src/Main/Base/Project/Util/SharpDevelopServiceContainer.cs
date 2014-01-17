@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Concurrent;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	sealed class SharpDevelopServiceContainer : IServiceProvider, IServiceContainer, IDisposable
 	{
-		readonly IServiceProvider parentProvider;
+		readonly ConcurrentStack<IServiceProvider> fallbackProviders = new ConcurrentStack<IServiceProvider>();
 		readonly Dictionary<Type, object> services = new Dictionary<Type, object>();
 		readonly List<Type> servicesToDispose = new List<Type>();
 		readonly Dictionary<Type, object> taskCompletionSources = new Dictionary<Type, object>(); // object = TaskCompletionSource<T> for various T
@@ -25,9 +26,9 @@ namespace ICSharpCode.SharpDevelop
 			services.Add(typeof(IServiceContainer), this);
 		}
 		
-		public SharpDevelopServiceContainer(IServiceProvider parentProvider) : this()
+		public void AddFallbackProvider(IServiceProvider provider)
 		{
-			this.parentProvider = parentProvider;
+			this.fallbackProviders.Push(provider);
 		}
 		
 		public object GetService(Type serviceType)
@@ -50,8 +51,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 			if (instance != null)
 				return instance;
-			else
-				return parentProvider != null ? parentProvider.GetService(serviceType) : null;
+			foreach (var fallbackProvider in fallbackProviders) {
+				instance = fallbackProvider.GetService(serviceType);
+				if (instance != null)
+					return instance;
+			}
+			return null;
 		}
 		
 		public void Dispose()

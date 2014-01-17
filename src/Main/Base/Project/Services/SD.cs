@@ -44,7 +44,8 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void InitializeForUnitTests()
 		{
-			var container = new SharpDevelopServiceContainer(ServiceSingleton.FallbackServiceProvider);
+			var container = new SharpDevelopServiceContainer();
+			container.AddFallbackProvider(ServiceSingleton.FallbackServiceProvider);
 			container.AddService(typeof(IPropertyService), new PropertyServiceImpl());
 			container.AddService(typeof(IAddInTree), new AddInTreeImpl(null));
 			ServiceSingleton.ServiceProvider = container;

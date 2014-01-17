@@ -105,10 +105,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			UpdateFlowDirection();
 			
-			foreach (PadDescriptor content in AddInTree.BuildItems<PadDescriptor>(viewContentPath, this, false)) {
-				if (content != null) {
-					ShowPad(content);
-				}
+			var padDescriptors = AddInTree.BuildItems<PadDescriptor>(viewContentPath, this, false);
+			((SharpDevelopServiceContainer)SD.Services).AddFallbackProvider(new PadServiceProvider(padDescriptors));
+			foreach (PadDescriptor content in padDescriptors) {
+				ShowPad(content);
 			}
 			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath, activationMethod: "MainMenu", immediatelyExpandMenuBuildersForShortcuts: true);
@@ -432,9 +432,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				throw new ArgumentException("Pad is already loaded");
 			
 			padDescriptorCollection.Add(content);
-			if (content.ServiceInterface != null) {
-				SD.Services.AddService(content.ServiceInterface, delegate { return content.PadContent; });
-			}
 			
 			if (WorkbenchLayout != null) {
 				WorkbenchLayout.ShowPad(content);

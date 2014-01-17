@@ -47,13 +47,15 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			UILanguageService.ValidateLanguage();
 			
-			SD.GetService<IOutputPad>(); // HACK: eagerly load output pad because pad services cannnot be instanciated from background threads
 			TaskService.Initialize();
 			Project.CustomToolsService.Initialize();
 			
 			workbench.Initialize();
 			workbench.SetMemento(SD.PropertyService.NestedProperties(workbenchMemento));
 			workbench.WorkbenchLayout = layout;
+			
+			// HACK: eagerly load output pad because pad services cannnot be instanciated from background threads
+			SD.Services.AddService(typeof(IOutputPad), CompilerMessageView.Instance);
 			
 			var dlgMsgService = SD.MessageService as IDialogMessageService;
 			if (dlgMsgService != null) {

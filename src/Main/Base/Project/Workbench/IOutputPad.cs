@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
@@ -10,6 +11,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	/// The 'Output' pad.
 	/// Allows showing a text log to the user.
 	/// </summary>
+	/// <remarks>This service is thread-safe.</remarks>
+	[SDService("SD.OutputPad")]
 	public interface IOutputPad
 	{
 		/// <summary>
@@ -39,6 +42,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		IOutputCategory BuildCategory { get; }
 	}
 	
+	/// <summary>
+	/// Represents a category in the <see cref="IOutputPad"/>.
+	/// </summary>
+	/// <remarks>This interface is thread-safe.</remarks>
 	public interface IOutputCategory
 	{
 		/// <summary>

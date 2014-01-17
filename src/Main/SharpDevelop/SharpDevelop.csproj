@@ -212,6 +212,7 @@
     <Compile Include="Workbench\FullScreenEnabledWindow.cs" />
     <Compile Include="Workbench\IWorkbenchLayout.cs" />
     <Compile Include="Workbench\LayoutConfiguration.cs" />
+    <Compile Include="Workbench\PadServiceProvider.cs" />
     <Compile Include="Workbench\RecentOpen.cs" />
     <Compile Include="Workbench\SDStatusBar.cs" />
     <Compile Include="Workbench\ShutdownService.cs" />
