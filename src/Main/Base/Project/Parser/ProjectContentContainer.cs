@@ -205,7 +205,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			} catch (IOException ex) {
 				LoggingService.Warn(ex);
 				// Can happen if two SD instances are trying to access the file at the same time.
-				// We'll just let one of them win, and instance that got the exception won't write to the cache at all.
+				// We'll just let one of them win, and the instance that got the exception won't write to the cache at all.
 				// Similarly, we also ignore the other kinds of IO exceptions.
 			} catch (UnauthorizedAccessException ex) {
 				LoggingService.Warn(ex);

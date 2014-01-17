@@ -579,7 +579,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				
 				var shutdownService = (ShutdownService)SD.ShutdownService;
 				if (shutdownService.CurrentReasonPreventingShutdown != null) {
-					MessageService.ShowMessage(StringParser.Parse(shutdownService.CurrentReasonPreventingShutdown));
+					MessageService.ShowMessage(shutdownService.CurrentReasonPreventingShutdown);
 					e.Cancel = true;
 					return;
 				}
