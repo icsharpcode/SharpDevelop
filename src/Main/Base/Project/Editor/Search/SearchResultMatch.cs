@@ -62,6 +62,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
+			if (startLocation.IsEmpty)
+				throw new ArgumentOutOfRangeException("startLocation");
+			if (endLocation.IsEmpty)
+				throw new ArgumentOutOfRangeException("endLocation");
 			this.fileName = fileName;
 			this.startLocation = startLocation;
 			this.endLocation = endLocation;
