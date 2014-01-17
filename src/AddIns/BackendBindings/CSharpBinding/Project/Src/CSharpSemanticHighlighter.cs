@@ -226,6 +226,9 @@ namespace CSharpBinding
 				
 				if (cachedLine != null && cachedLine.IsValid && newVersion.CompareAge(cachedLine.OldVersion) == 0) {
 					// the file hasn't changed since the cache was created, so just reuse the old highlighted line
+					#if DEBUG
+					cachedLine.HighlightedLine.ValidateInvariants();
+					#endif
 					return cachedLine.HighlightedLine;
 				}
 			}
@@ -263,6 +266,9 @@ namespace CSharpBinding
 					// If there's a cached version, adjust it to the latest document changes and return it.
 					// This avoids flickering when changing a line that contains semantic highlighting.
 					cachedLine.Update(newVersion);
+					#if DEBUG
+					cachedLine.HighlightedLine.ValidateInvariants();
+					#endif
 					return cachedLine.HighlightedLine;
 				} else {
 					return null;
@@ -294,6 +300,14 @@ namespace CSharpBinding
 			}
 			return line;
 		}
+		
+		#if DEBUG
+		public override void VisitSyntaxTree(ICSharpCode.NRefactory.CSharp.SyntaxTree syntaxTree)
+		{
+			base.VisitSyntaxTree(syntaxTree);
+			line.ValidateInvariants();
+		}
+		#endif
 		
 		HighlightingColor IHighlighter.DefaultTextColor {
 			get {
@@ -336,8 +350,13 @@ namespace CSharpBinding
 				return;
 			if (start.Line <= lineNumber && end.Line >= lineNumber) {
 				int lineStartOffset = line.DocumentLine.Offset;
+				int lineEndOffset = lineStartOffset + line.DocumentLine.Length;
 				int startOffset = lineStartOffset + (start.Line == lineNumber ? start.Column - 1 : 0);
 				int endOffset = lineStartOffset + (end.Line == lineNumber ? end.Column - 1 : line.DocumentLine.Length);
+				// For some parser errors, the mcs parser produces grossly wrong locations (e.g. miscounting the number of newlines),
+				// so we need to coerce the offsets to valid values within the line
+				startOffset = startOffset.CoerceValue(lineStartOffset, lineEndOffset);
+				endOffset = endOffset.CoerceValue(lineStartOffset, lineEndOffset);
 				if (line.Sections.Count > 0) {
 					HighlightedSection prevSection = line.Sections.Last();
 					if (startOffset < prevSection.Offset + prevSection.Length) {
