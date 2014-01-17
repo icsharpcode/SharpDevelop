@@ -66,6 +66,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			}
 		}
 		
+		ISearchResult activeSearchResult;
 		List<ISearchResult> lastSearches = new List<ISearchResult>();
 		
 		public IEnumerable<ISearchResult> LastSearches {
@@ -75,6 +76,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public void ClearLastSearchesList()
 		{
 			lastSearches.Clear();
+			if (activeSearchResult != null) {
+				activeSearchResult.OnDeactivate();
+				activeSearchResult = null;
+			}
 			SD.WinForms.SetContent(contentPlaceholder, null);
 		}
 		
@@ -95,6 +100,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			while (lastSearches.Count > 15)
 				lastSearches.RemoveAt(15);
 			
+			if (activeSearchResult != result) {
+				if (activeSearchResult != null) {
+					activeSearchResult.OnDeactivate();
+				}
+				activeSearchResult = result;
+			}
 			SD.WinForms.SetContent(contentPlaceholder, result.GetControl());
 			
 			toolBar.Items.Clear();
@@ -205,6 +216,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			public IList GetToolbarItems()
 			{
 				return null;
+			}
+			
+			public void OnDeactivate()
+			{
 			}
 		}
 	}

@@ -78,7 +78,13 @@ namespace CSharpBinding
 								CancellationToken = cancellationToken
 							},
 							delegate (string fileName) {
-								FindReferencesInFile(args, searchScope, FileName.Create(fileName), callback, cancellationToken);
+								try {
+									FindReferencesInFile(args, searchScope, FileName.Create(fileName), callback, cancellationToken);
+								} catch (OperationCanceledException) {
+									throw;
+								} catch (Exception ex) {
+									throw new ApplicationException("Error searching in file '" + fileName + "'", ex);
+								}
 								lock (progressLock)
 									args.ProgressMonitor.Progress += workAmountInverse;
 							});

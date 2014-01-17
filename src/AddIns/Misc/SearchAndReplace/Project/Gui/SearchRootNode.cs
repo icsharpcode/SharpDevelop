@@ -19,9 +19,19 @@ namespace SearchAndReplace
 		ObservableCollection<SearchFileNode> fileNodes;
 		ObservableCollection<SearchProjectNode> projectNodes;
 		ObservableCollection<SearchProjectNode> projectAndFileNodes;
+		bool wasCancelled;
 		
 		public string Title { get; private set; }
-		public bool WasCancelled { get; set; }
+		
+		public bool WasCancelled {
+			get {
+				return wasCancelled;
+			}
+			set {
+				wasCancelled = value;
+				InvalidateText();
+			}
+		}
 		
 		public SearchRootNode(string title, IList<SearchResultMatch> results)
 		{

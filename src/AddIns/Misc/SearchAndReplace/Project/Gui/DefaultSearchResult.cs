@@ -54,7 +54,11 @@ namespace SearchAndReplace
 			return resultsTreeViewInstance;
 		}
 		
-		static IList toolbarItems;
+		public virtual void OnDeactivate()
+		{
+		}
+		
+		static IList<object> toolbarItems;
 		
 		public virtual IList GetToolbarItems()
 		{
@@ -122,7 +126,8 @@ namespace SearchAndReplace
 				collapseAll.Click += delegate { ExpandCollapseAll(false); };
 				toolbarItems.Add(collapseAll);
 			}
-			return toolbarItems;
+			// Copy the list to avoid modifications to the static list
+			return new List<object>(toolbarItems);
 		}
 		
 		static void SetCheckedItem(MenuItem newTarget, ContextMenu menu)

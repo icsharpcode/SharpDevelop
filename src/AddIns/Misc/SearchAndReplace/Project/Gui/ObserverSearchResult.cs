@@ -37,6 +37,13 @@ namespace SearchAndReplace
 			return resultsTreeViewInstance;
 		}
 		
+		public override void OnDeactivate()
+		{
+			if (!finished)
+				StopButtonClick(null, null);
+			base.OnDeactivate();
+		}
+		
 		public override IList GetToolbarItems()
 		{
 			var items = base.GetToolbarItems();
