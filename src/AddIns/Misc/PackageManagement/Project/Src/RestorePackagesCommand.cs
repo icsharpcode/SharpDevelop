@@ -56,7 +56,7 @@ namespace ICSharpCode.PackageManagement
 			
 			var runner = new ProcessRunner();
 			runner.WorkingDirectory = Path.GetDirectoryName(solution.FileName);
-			runner.RunInOutputPadAsync(outputMessagesView.OutputCategory, commandLine.Command, commandLine.Arguments);
+			runner.RunInOutputPadAsync(outputMessagesView.OutputCategory, commandLine.Command, commandLine.Arguments).FireAndForget();
 		}
 	}
 }

@@ -66,9 +66,12 @@ namespace ICSharpCode.GitAddIn
 		
 		public static Task<int> RunGitAsync(string workingDir, params string[] arguments)
 		{
+			string git = FindGit();
+			if (git == null)
+				return Task.FromResult(9009);
 			ProcessRunner p = new ProcessRunner();
 			p.WorkingDirectory = workingDir;
-			return p.RunInOutputPadAsync(GitMessageView.Category, "git", arguments);
+			return p.RunInOutputPadAsync(GitMessageView.Category, git, arguments);
 		}
 		
 		/// <summary>
@@ -92,7 +95,8 @@ namespace ICSharpCode.GitAddIn
 					// ignore invalid entries in PATH
 				}
 			}
-			string gitExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86, Environment.SpecialFolderOption.DoNotVerify), "bin\\git.exe");
+			string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86, Environment.SpecialFolderOption.DoNotVerify);
+			string gitExe = Path.Combine(programFiles, @"git\bin\git.exe");
 			if (File.Exists(gitExe))
 				return gitExe;
 			return null;

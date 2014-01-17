@@ -30,9 +30,9 @@ namespace ICSharpCode.SharpDevelop.Templates
 		/// <summary>
 		/// Creates projects from the template; and adds them to the solution specified in the parameter object.
 		/// </summary>
-		/// <param name="options">Paramter object used to pass options for the template creation.</param>
+		/// <param name="options">Parameter object used to pass options for the template creation.</param>
 		/// <returns>
-		/// Returns a result object that describes the project that were created;
+		/// Returns a result object that describes the projects that were created;
 		/// or null if the operation was aborted.
 		/// </returns>
 		/// <exception cref="IOException">Error writing the projects to disk</exception>
