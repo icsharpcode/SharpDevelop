@@ -278,8 +278,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void SavePreferences()
 		{
-			preferences.Set("ActiveConfiguration.Configuration", activeConfiguration.Configuration);
-			preferences.Set("ActiveConfiguration.Platform", activeConfiguration.Platform);
+			preferences.Set("ActiveConfiguration", activeConfiguration.ToString());
 			PreferencesSaving(this, EventArgs.Empty);
 			
 			try {
