@@ -78,6 +78,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			SD.WinForms.SetContent(contentPlaceholder, null);
 		}
 		
+		/// <summary>
+		/// Shows a search in the search results pad.
+		/// The previously shown search will be stored in the list of past searches.
+		/// </summary>
 		public void ShowSearchResults(ISearchResult result)
 		{
 			if (result == null)
@@ -108,11 +112,23 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			SearchResultsShown(this, EventArgs.Empty);
 		}
 		
+		/// <summary>
+		/// Shows a search in the search results pad.
+		/// The previously shown search will be stored in the list of past searches.
+		/// </summary>
+		/// <param name="title">The title of the search.</param>
+		/// <param name="matches">The list of matches. ShowSearchResults() will enumerate once through the IEnumerable in order to retrieve the search results.</param>
 		public void ShowSearchResults(string title, IEnumerable<SearchResultMatch> matches)
 		{
 			ShowSearchResults(CreateSearchResult(title, matches));
 		}
 		
+		/// <summary>
+		/// Performs a background search in the search results pad.
+		/// The previously shown search will be stored in the list of past searches.
+		/// </summary>
+		/// <param name="title">The title of the search.</param>
+		/// <param name="matches">The background search operation. ShowSearchResults() will subscribe to the observable in order to retrieve the search results.</param>
 		public void ShowSearchResults(string title, IObservable<SearchedFile> matches)
 		{
 			ShowSearchResults(CreateSearchResult(title, matches));
@@ -120,6 +136,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public event EventHandler SearchResultsShown = delegate {};
 		
+		/// <inheritdoc cref="ISearchResultFactory.CreateSearchResult(string,IEnumerable{SearchResultMatch})"/>
 		public static ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches)
 		{
 			if (title == null)
@@ -135,6 +152,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		}
 		
 		
+		/// <inheritdoc cref="ISearchResultFactory.CreateSearchResult(string,IObservable{SearchResultMatch})"/>
 		public static ISearchResult CreateSearchResult(string title, IObservable<SearchedFile> matches)
 		{
 			if (title == null)

@@ -191,6 +191,9 @@ namespace ICSharpCode.SharpDevelop
 		{
 			lock (namedMonitors) {
 				bool wasFirst = namedMonitors.First == nameEntry;
+				// Note: if Remove() crashes with "InvalidOperationException: The LinkedList node does not belong to current LinkedList.",
+				// that's an indication that the progress monitor is being disposed multiple times concurrently.
+				// (which is not allowed according to IProgressMonitor thread-safety documentation)
 				namedMonitors.Remove(nameEntry);
 				if (wasFirst)
 					SetTaskName(namedMonitors.First != null ? namedMonitors.First.Value : null);

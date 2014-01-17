@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		/// <param name="workAmount">The amount of work this sub-task performs in relation to the work of this task.
 		/// That means, this parameter is used as a scaling factor for work performed within the subtask.</param>
-		/// <param name="childCancellationToken">
+		/// <param name="cancellationToken">
 		/// A cancellation token that can be used to cancel the sub-task.
 		/// Note: cancelling the main task will not cancel the sub-task.
 		/// </param>
