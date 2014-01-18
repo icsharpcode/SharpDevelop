@@ -4,7 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace ICSharpCode.Reporting.Exporter.Visitors
+namespace ICSharpCode.Reporting.WpfReportViewer.Visitor 
 {
 	/// <summary>
 	/// Description of CanvasExtension.

@@ -104,8 +104,6 @@
     <Compile Include="Src\DataSource\ReflectionExtension.cs" />
     <Compile Include="Src\Exporter\BaseExporter.cs" />
     <Compile Include="Src\Exporter\DebugExporter.cs" />
-    <Compile Include="Src\Exporter\Visitors\CanvasExtension.cs" />
-    <Compile Include="Src\Exporter\Visitors\CanvasHelper.cs" />
     <Compile Include="Src\Exporter\Visitors\ExpressionVisitor.cs" />
     <Compile Include="Src\Exporter\Visitors\FormatVisitor.cs" />
     <Compile Include="Src\Exporter\Visitors\AbstractVisitor.cs" />
@@ -170,6 +168,8 @@
     <Compile Include="Src\Pdf\PdfVisitor.cs" />
     <Compile Include="Src\ReportingFactory.cs" />
     <Compile Include="Src\Wpf\PreviewViewModel.cs" />
+    <Compile Include="Src\Wpf\Visitor\CanvasExtension.cs" />
+    <Compile Include="Src\Wpf\Visitor\CanvasHelper.cs" />
     <Compile Include="Src\Wpf\Visitor\FixedDocumentCreator.cs" />
     <Compile Include="Src\Wpf\Visitor\Graphics\ExtendedLine.cs" />
     <Compile Include="Src\Wpf\Visitor\WpfExporter.cs" />
