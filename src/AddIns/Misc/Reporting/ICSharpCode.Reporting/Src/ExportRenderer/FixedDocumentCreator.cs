@@ -27,14 +27,9 @@ namespace ICSharpCode.Reporting.ExportRenderer
 	/// <summary>
 	/// Description of FixedDocumentCreator.
 	/// </summary>
-	class FixedDocumentCreator
+	static class FixedDocumentCreator
 	{
-		private readonly BrushConverter brushConverter ;
 		
-		public FixedDocumentCreator()
-		{
-			brushConverter = new BrushConverter();
-		}
 		
 		public static FixedPage CreateFixedPage(ExportPage exportPage) {
 			var fixedPage = new FixedPage();
@@ -45,7 +40,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 
-		public  Canvas CreateContainer(ExportContainer container)	{
+		public static Canvas CreateContainer(ExportContainer container)	{
 			var canvas = CreateCanvas(container);
 			var size = container.DesiredSize.ToWpf();
 			canvas.Measure(size);
@@ -55,8 +50,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 
 		
-		
-		public TextBlock CreateTextBlock(ExportText exportText,bool setBackcolor){
+		public static TextBlock CreateTextBlock(ExportText exportText,bool setBackcolor){
 			
 			var textBlock = new TextBlock();
 
@@ -66,12 +60,9 @@ namespace ICSharpCode.Reporting.ExportRenderer
 				textBlock.Background = ConvertBrush(exportText.BackColor);
 			}
 			 
-//			textBlock.Background = ConvertBrush(System.Drawing.Color.LightPink);
-			
 			SetFont(textBlock,exportText);
 			
 			textBlock.TextWrapping = TextWrapping.Wrap;
-//			textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
 			
 			CheckForNewLine (textBlock,exportText);
 			SetContentAlignment(textBlock,exportText);
@@ -100,6 +91,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			textBlock.Height = wpfSize.Height;
 		}	
 		
+		
 		static Size MeasureTextInWpf(ExportText exportText){
 			
 			if (exportText.CanGrow) {
@@ -127,7 +119,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		Canvas CreateCanvas(ExportContainer container){
+		static Canvas CreateCanvas(ExportContainer container){
 			var canvas = new Canvas();
 			SetPositionAndSize(canvas,container);
 
@@ -157,7 +149,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		void SetFont(TextBlock textBlock,IExportText exportText){
+		static void SetFont(TextBlock textBlock,IExportText exportText){
 			textBlock.FontFamily = new FontFamily(exportText.Font.FontFamily.Name);
 
 			//http://www.codeproject.com/Articles/441009/Drawing-Formatted-Text-in-a-Windows-Forms-Applicat
@@ -180,7 +172,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		void SetContentAlignment(TextBlock textBlock,ExportText exportText)
+		static void SetContentAlignment(TextBlock textBlock,ExportText exportText)
 		{
 	//	http://social.msdn.microsoft.com/Forums/vstudio/en-US/e480abb9-a86c-4f78-8955-dddb866bcfef/vertical-text-alignment-in-textblock?forum=wpf	
 	//Vertical alignment not working
@@ -228,7 +220,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		void CreateStrikeout (TextBlock textBlock,IExportText exportColumn ){
+		static void CreateStrikeout (TextBlock textBlock,IExportText exportColumn ){
 			if (textBlock == null)
 				throw new ArgumentNullException("textBlock");
 			if (exportColumn == null)
@@ -243,7 +235,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		void CreateUnderline(TextBlock textBlock,IExportText exportColumn){
+		static void CreateUnderline(TextBlock textBlock,IExportText exportColumn){
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
 			if (textBlock == null)
@@ -256,7 +248,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		public Pen CreateWpfPen(IReportObject exportColumn){
+		public static Pen CreateWpfPen(IReportObject exportColumn){
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
 			var myPen = new Pen();
@@ -266,11 +258,12 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		public  Brush ConvertBrush(System.Drawing.Color color){
-			if (brushConverter.IsValid(color.Name)){
-				return brushConverter.ConvertFromString(color.Name) as SolidColorBrush;
+		public static Brush ConvertBrush(System.Drawing.Color color){
+			var b = new BrushConverter();
+			if (b.IsValid(color.Name)){
+				return b.ConvertFromString(color.Name) as SolidColorBrush;
 			} else{
-				return brushConverter.ConvertFromString("Black") as SolidColorBrush;
+				return b.ConvertFromString("Black") as SolidColorBrush;
 			}
 		}
 		

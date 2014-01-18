@@ -25,14 +25,8 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	/// 
 	class WpfVisitor: AbstractVisitor {
 		
-		readonly FixedDocumentCreator documentCreator;
 		FixedPage fixedPage;
 		Canvas sectionCanvas;
-		
-		public WpfVisitor()
-		{
-			documentCreator = new FixedDocumentCreator();
-		}
 		
 		
 		public override void Visit(ExportPage page){
@@ -48,7 +42,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportContainer exportContainer){
 			
-			sectionCanvas = documentCreator.CreateContainer(exportContainer);
+			sectionCanvas = FixedDocumentCreator.CreateContainer(exportContainer);
 			sectionCanvas.Name = exportContainer.Name;
 			CanvasHelper.SetPosition(sectionCanvas,new Point(exportContainer.Location.X,exportContainer.Location.Y));
 			PerformList(sectionCanvas,exportContainer.ExportedItems);
@@ -62,7 +56,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 				var container = element as ExportContainer;
 				if (container != null) {
 //					Console.WriteLine("recursive");
-					var containerCanvas = documentCreator.CreateContainer(container);
+					var containerCanvas = FixedDocumentCreator.CreateContainer(container);
 					CanvasHelper.SetPosition(containerCanvas,new Point(container.Location.X,container.Location.Y));
 					myCanvas.Children.Add(containerCanvas);
 //					Console.WriteLine("call recursive");
@@ -77,7 +71,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		
 		public override void Visit(ExportText exportColumn){
-			var textBlock = documentCreator.CreateTextBlock((ExportText)exportColumn,ShouldSetBackcolor(exportColumn));
+			var textBlock = FixedDocumentCreator.CreateTextBlock((ExportText)exportColumn,ShouldSetBackcolor(exportColumn));
 			CanvasHelper.SetPosition(textBlock,new Point(exportColumn.Location.X,exportColumn.Location.Y));
 			UIElement = textBlock;
 		}
@@ -86,7 +80,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportLine exportGraphics)
 		{
-			var pen = documentCreator.CreateWpfPen(exportGraphics);
+			var pen = FixedDocumentCreator.CreateWpfPen(exportGraphics);
 			pen.Thickness = exportGraphics.Thickness;
 			pen.DashStyle = FixedDocumentCreator.DashStyle(exportGraphics);
 			pen.StartLineCap = FixedDocumentCreator.LineCap(exportGraphics.StartLineCap);
