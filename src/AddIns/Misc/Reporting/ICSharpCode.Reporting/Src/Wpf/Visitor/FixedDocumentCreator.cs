@@ -22,7 +22,7 @@ using FontFamily = System.Windows.Media.FontFamily;
 using Pen = System.Windows.Media.Pen;
 using Size = System.Windows.Size;
 
-namespace ICSharpCode.Reporting.ExportRenderer
+namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 {
 	/// <summary>
 	/// Description of FixedDocumentCreator.

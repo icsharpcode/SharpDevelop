@@ -10,11 +10,10 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Documents;
-using System.Windows.Markup;
 
-using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
+using ICSharpCode.Reporting.WpfReportViewer.Visitor;
 
 namespace ICSharpCode.Reporting.WpfReportViewer
 {

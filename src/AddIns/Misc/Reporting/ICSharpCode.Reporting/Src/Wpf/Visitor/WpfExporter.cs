@@ -11,10 +11,11 @@ using System.Collections.ObjectModel;
 using System.Windows.Documents;
 using System.Windows.Markup;
 
+using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
-namespace ICSharpCode.Reporting.Exporter{
+namespace ICSharpCode.Reporting.WpfReportViewer.Visitor {
 	/// <summary>
 	/// Description of PrintExporter.
 	/// </summary>

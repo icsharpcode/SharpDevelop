@@ -11,13 +11,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
-using ICSharpCode.Reporting.ExportRenderer;
+using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
+using ICSharpCode.Reporting.WpfReportViewer.Visitor.Graphics;
 
-namespace ICSharpCode.Reporting.Exporter.Visitors
+namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 {
 	/// <summary>
 	/// Description of WpfVisitor.
@@ -97,33 +97,5 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	}
 	
 	
-	class ExtendedLine : FrameworkElement{
-		private VisualCollection children;
 
-		public ExtendedLine(ExportLine exportGraphics,Pen pen){
-			children = new VisualCollection(this);
-			var visual = new DrawingVisual();
-			children.Add(visual);
-			using (var dc = visual.RenderOpen())
-			{
-				dc.DrawLine(pen,
-				            new Point(exportGraphics.Location.X, exportGraphics.Location.Y),
-				            new Point(exportGraphics.Location.X + exportGraphics.Size.Width,exportGraphics.Location.Y));
-			}
-		}
-
-
-		protected override int VisualChildrenCount{
-			get { return children.Count; }
-		}
-
-		protected override Visual GetVisualChild(int index){
-			if (index < 0 || index >= children.Count)
-			{
-				throw new ArgumentOutOfRangeException();
-			}
-
-			return children[index];
-		}
-	}
 }
