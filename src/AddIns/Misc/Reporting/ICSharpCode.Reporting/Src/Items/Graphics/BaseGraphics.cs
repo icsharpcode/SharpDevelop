@@ -20,5 +20,9 @@ namespace ICSharpCode.Reporting.Items
 		public virtual int Thickness {get;set;}
 		
 		public virtual DashStyle DashStyle {get;set;}	
+		
+		public virtual LineCap StartLineCap {get;set;}
+		
+		public virtual LineCap EndLineCap {get;set;}
 	}
 }

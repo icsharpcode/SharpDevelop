@@ -256,12 +256,12 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		Pen CreateWpfPen(IReportObject exportColumn){
+		public Pen CreateWpfPen(IReportObject exportColumn){
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
 			var myPen = new Pen();
 			myPen.Brush = ConvertBrush(exportColumn.ForeColor);
-			myPen.Thickness = 1.5;
+			myPen.Thickness = 1;
 			return myPen;
 		}
 		
@@ -274,33 +274,77 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			}
 		}
 		
-		/*
-		public DashStyle DashStyle (IExportGraphics exportGraphics) {
+		
+		public static PenLineCap LineCap (System.Drawing.Drawing2D.LineCap lineCap) {
+			var penLineCap = PenLineCap.Flat;
+			switch (lineCap) {
+				case System.Drawing.Drawing2D.LineCap.Flat:
+					penLineCap = PenLineCap.Flat;
+					break;
+				case System.Drawing.Drawing2D.LineCap.Square:
+					penLineCap = PenLineCap.Square;
+					break;
+				case System.Drawing.Drawing2D.LineCap.Round:
+					penLineCap = PenLineCap.Round;
+					break;
+				case System.Drawing.Drawing2D.LineCap.Triangle:
+					penLineCap = PenLineCap.Triangle;
+					break;
+				case System.Drawing.Drawing2D.LineCap.NoAnchor:
+					penLineCap = PenLineCap.Flat;
+					break;
+				case System.Drawing.Drawing2D.LineCap.SquareAnchor:
+					penLineCap = PenLineCap.Flat;
+					break;
+				case System.Drawing.Drawing2D.LineCap.RoundAnchor:
+					penLineCap = PenLineCap.Flat;
+					break;
+				case System.Drawing.Drawing2D.LineCap.DiamondAnchor:
+					penLineCap = PenLineCap.Flat;
+					break;
+				case System.Drawing.Drawing2D.LineCap.ArrowAnchor:
+					penLineCap = PenLineCap.Flat;
+					break;
+				case System.Drawing.Drawing2D.LineCap.Custom:
+					penLineCap = PenLineCap.Flat;
+					break;
+				case System.Drawing.Drawing2D.LineCap.AnchorMask:
+					
+					break;
+				default:
+					throw new Exception("Invalid value for LineCap");
+					
+			}
+			return penLineCap;
+		}
+		
+		public static DashStyle DashStyle (IExportGraphics exportGraphics) {
+			var dashStyle = DashStyles.Solid;
 			
 			switch (exportGraphics.DashStyle) {
 				case System.Drawing.Drawing2D.DashStyle.Solid:
-					
+					dashStyle = DashStyles.Solid;
 					break;
 				case System.Drawing.Drawing2D.DashStyle.Dash:
-					
+					dashStyle = DashStyles.Dash;
 					break;
 				case System.Drawing.Drawing2D.DashStyle.Dot:
-					
+					dashStyle = DashStyles.Dot;
 					break;
 				case System.Drawing.Drawing2D.DashStyle.DashDot:
-					
+					dashStyle = DashStyles.DashDot;
 					break;
 				case System.Drawing.Drawing2D.DashStyle.DashDotDot:
-					
+					dashStyle = DashStyles.DashDotDot;
 					break;
 				case System.Drawing.Drawing2D.DashStyle.Custom:
-					
+					dashStyle = DashStyles.Solid;
 					break;
 				default:
 					throw new Exception("Invalid value for DashStyle");
 			}
-			return DashStyle.Solid();
+			return dashStyle;
 		}
-		*/
+		
 	}
 }

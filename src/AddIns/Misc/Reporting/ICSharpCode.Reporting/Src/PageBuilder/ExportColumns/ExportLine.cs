@@ -14,6 +14,8 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	public interface IExportGraphics:IExportColumn {
 		int Thickness {get;set;}
 		DashStyle DashStyle {get;set;}
+		LineCap StartLineCap {get;set;}
+		LineCap EndLineCap {get;set;}
 	}
 	
 	
@@ -39,5 +41,8 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		
 		public DashStyle DashStyle {get;set;}
 		
+		public LineCap StartLineCap {get;set;}
+		
+		public LineCap EndLineCap {get;set;}
 	}
 }

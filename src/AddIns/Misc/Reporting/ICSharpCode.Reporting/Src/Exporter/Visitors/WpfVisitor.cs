@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 using ICSharpCode.Reporting.ExportRenderer;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -85,20 +86,13 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportLine exportGraphics)
 		{
-			var  line = new System.Windows.Shapes.Line();
-		
-			line.Stroke = documentCreator.ConvertBrush(exportGraphics.ForeColor);
-			
-			line.StrokeStartLineCap = PenLineCap.Round;
-			line.StrokeEndLineCap = PenLineCap.Round;
-			
-			line.StrokeThickness = exportGraphics.Thickness;
-			
-			line.X1 = exportGraphics.Location.X;
-			line.Y1 = exportGraphics.Location.Y;
-			line.X2 = exportGraphics.Size.Width;
-			line.Y2 = exportGraphics.Location.Y;
-			UIElement = line;
+			var pen = documentCreator.CreateWpfPen(exportGraphics);
+			pen.Thickness = exportGraphics.Thickness;
+			pen.DashStyle = FixedDocumentCreator.DashStyle(exportGraphics);
+			pen.StartLineCap = FixedDocumentCreator.LineCap(exportGraphics.StartLineCap);
+			pen.EndLineCap = FixedDocumentCreator.LineCap(exportGraphics.EndLineCap);
+			ExtendedLine m = new ExtendedLine(exportGraphics,pen);
+			UIElement = m;
 		}
 		
 		
@@ -106,5 +100,36 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		
 		public FixedPage FixedPage {get; private set;}
+	}
+	
+	
+	class ExtendedLine : FrameworkElement{
+		private VisualCollection children;
+
+		public ExtendedLine(ExportLine exportGraphics,Pen pen){
+			children = new VisualCollection(this);
+			var visual = new DrawingVisual();
+			children.Add(visual);
+			using (var dc = visual.RenderOpen())
+			{
+				dc.DrawLine(pen,
+				            new Point(exportGraphics.Location.X, exportGraphics.Location.Y),
+				            new Point(exportGraphics.Location.X + exportGraphics.Size.Width,exportGraphics.Location.Y));
+			}
+		}
+
+
+		protected override int VisualChildrenCount{
+			get { return children.Count; }
+		}
+
+		protected override Visual GetVisualChild(int index){
+			if (index < 0 || index >= children.Count)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
+			return children[index];
+		}
 	}
 }

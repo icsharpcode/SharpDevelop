@@ -24,6 +24,8 @@ namespace ICSharpCode.Reporting.Items{
 			ex.DesiredSize = Size;
 			ex.Thickness = Thickness;
 			ex.DashStyle = DashStyle;
+			ex.StartLineCap = StartLineCap;
+			ex.EndLineCap = EndLineCap;
 			return ex;
 		}
 	}
