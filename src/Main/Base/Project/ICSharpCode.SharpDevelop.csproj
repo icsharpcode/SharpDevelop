@@ -361,8 +361,13 @@
     <Compile Include="Workbench\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Workbench\FakeXmlViewContent.cs" />
     <Compile Include="Workbench\FileChangeWatcher.cs" />
+    <Compile Include="Workbench\File\BinaryFileModelProvider.cs" />
+    <Compile Include="Workbench\File\DocumentFileModelInfo.cs" />
+    <Compile Include="Workbench\File\FileModels.cs" />
     <Compile Include="Workbench\File\FileService.cs" />
+    <Compile Include="Workbench\File\IFileModelProvider.cs" />
     <Compile Include="Workbench\File\IRecentOpen.cs" />
+    <Compile Include="Workbench\File\TextDocumentFileModelProvider.cs" />
     <Compile Include="Workbench\ICustomizedCommands.cs" />
     <Compile Include="Workbench\IOutputPad.cs" />
     <Compile Include="Workbench\IPadContent.cs" />

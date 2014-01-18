@@ -34,10 +34,10 @@ namespace ICSharpCode.SharpDevelop
 		/// <inheritdoc cref="System.IO.File.Delete"/>
 		void Delete(FileName path);
 		
-		/// <inheritdoc cref="System.IO.File.CopyFile"/>
+		/// <inheritdoc cref="System.IO.File.Copy(string, string, bool)"/>
 		void CopyFile(FileName source, FileName destination, bool overwrite = false);
 		
-		/// <inheritdoc cref="System.IO.Directory.Delete"/>
+		/// <inheritdoc cref="System.IO.Directory.CreateDirectory"/>
 		void CreateDirectory(DirectoryName path);
 		
 		/// <inheritdoc cref="System.IO.File.OpenWrite"/>
@@ -69,10 +69,13 @@ namespace ICSharpCode.SharpDevelop
 		/// Options that influence the search.
 		/// </param>
 		/// <returns>An enumerable that iterates through the directory contents</returns>
-		/// <exception cref="IOExcption">The directory does not exist / access is denied.</exception>
+		/// <exception cref="IOException">The directory does not exist / access is denied.</exception>
 		IEnumerable<FileName> GetFiles(DirectoryName directory, string searchPattern = "*", DirectorySearchOptions searchOptions = DirectorySearchOptions.None);
 	}
 	
+	/// <summary>
+	/// Options for <c>SD.FileSystem.GetFiles()</c>.
+	/// </summary>
 	[Flags]
 	public enum DirectorySearchOptions
 	{

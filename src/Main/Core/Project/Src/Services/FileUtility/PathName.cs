@@ -58,6 +58,15 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
+		/// Converts the path into an URI. 
+		/// </summary>
+		/// <exception cref="UriFormatException">The path contains invalid characters for an URI.</exception>
+		public Uri ToUri()
+		{
+			return new Uri(normalizedPath, IsRelative ? UriKind.Relative : UriKind.Absolute);
+		}
+		
+		/// <summary>
 		/// Gets whether this path is relative.
 		/// </summary>
 		public bool IsRelative {

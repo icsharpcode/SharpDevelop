@@ -27,21 +27,49 @@ using ICSharpCode.SharpDevelop.Parser;
 namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
+	/// Options for use with <see cref="OpenedFile.GetModel"/>
+	/// </summary>
+	[Flags]
+	public enum GetModelOptions
+	{
+		None = 0,
+		/// <summary>
+		/// Return stale models without reloading.
+		/// </summary>
+		AllowStale = 1,
+		/// <summary>
+		/// Do not load any models:
+		/// Returns null if the model is not already loaded, or if it is stale and the AllowStale option isn't in use.
+		/// </summary>
+		DoNotLoad = 2,
+	}
+	
+	/// <summary>
+	/// Option that control how <see cref="OpenedFile.ReplaceModel"/> handles the dirty flag.
+	/// </summary>
+	public enum ReplaceModelMode
+	{
+		/// <summary>
+		/// The new model is marked as dirty; and any other models are marked as stale.
+		/// </summary>
+		SetAsDirty,
+		/// <summary>
+		/// The new model is marked as valid; the status of any other models is unchanged.
+		/// </summary>
+		SetAsValid,
+		/// <summary>
+		/// The new model is marked as dirty, the previously dirty model is marked as stale, and any other models are unchanged.
+		/// This mode is intended for use in <see cref="IFileModelProvider{T}.Save"/> implementations.
+		/// </summary>
+		TransferDirty
+	}
+	
+	/// <summary>
 	/// Represents an opened file.
 	/// </summary>
 	public abstract class OpenedFile : ICanBeDirty
 	{
-		protected IViewContent currentView;
-		bool inLoadOperation;
-		bool inSaveOperation;
-		
-		/// <summary>
-		/// holds unsaved file content in memory when view containing the file was closed but no other view
-		/// activated
-		/// </summary>
-		byte[] fileData;
-		
-		#region IsDirty
+		#region IsDirty implementation
 		bool isDirty;
 		public event EventHandler IsDirtyChanged;
 		
@@ -50,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		public bool IsDirty {
 			get { return isDirty;}
-			set {
+			private set {
 				if (isDirty != value) {
 					isDirty = value;
 					
@@ -60,26 +88,16 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				}
 			}
 		}
-		
-		/// <summary>
-		/// Marks the file as dirty if it currently is not in a load operation.
-		/// </summary>
-		public virtual void MakeDirty()
-		{
-			if (!inLoadOperation) {
-				this.IsDirty = true;
-			}
-		}
 		#endregion
 		
-		bool isUntitled;
-		
+		#region FileName
 		/// <summary>
 		/// Gets if the file is untitled. Untitled files show a "Save as" dialog when they are saved.
 		/// </summary>
 		public bool IsUntitled {
-			get { return isUntitled; }
-			protected set { isUntitled = value; }
+			get {
+				return fileName.ToString().StartsWith("untitled:", StringComparison.Ordinal);
+			}
 		}
 		
 		FileName fileName;
@@ -96,6 +114,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
+		/// <summary>
+		/// Occurs when the file name has changed.
+		/// </summary>
+		public event EventHandler FileNameChanged;
+		
 		protected virtual void ChangeFileName(FileName newValue)
 		{
 			SD.MainThread.VerifyAccess();
@@ -106,13 +129,112 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				FileNameChanged(this, EventArgs.Empty);
 			}
 		}
+		#endregion
 		
 		/// <summary>
-		/// Occurs when the file name has changed.
+		/// This method sets all models to 'stale', causing the file to be re-loaded from disk
+		/// on the next GetModel() call.
 		/// </summary>
-		public event EventHandler FileNameChanged;
+		/// <exception cref="InvalidOperationException">The file is untitled.</exception>
+		public void ReloadFromDisk()
+		{
+			if (IsUntitled)
+				throw new InvalidOperationException("Cannot reload an untitled file from disk.");
+			throw new NotImplementedException();
+		}
 		
-		public abstract event EventHandler FileClosed;
+		/// <summary>
+		/// Saves the file to disk.
+		/// </summary>
+		/// <remarks>If the file is saved successfully, the dirty flag will be cleared (the dirty model becomes valid instead).</remarks>
+		/// <exception cref="InvalidOperationException">The file is untitled.</exception>
+		public void SaveToDisk()
+		{
+			if (IsUntitled)
+				throw new InvalidOperationException("Cannot reload an untitled file from disk.");
+			throw new NotImplementedException();
+		}
+		
+		/// <summary>
+		/// Changes the file name, and saves the file to disk.
+		/// </summary>
+		/// <remarks>If the file is saved successfully, the dirty flag will be cleared (the dirty model becomes valid instead).</remarks>
+		public void SaveToDisk(FileName fileName)
+		{
+			this.FileName = fileName;
+			SaveToDisk();
+		}
+		
+		/// <summary>
+		/// Saves a copy of the file to disk. Does not change the name of the OpenedFile to the specified file name, and does not reset the dirty flag.
+		/// </summary>
+		public void SaveCopyAs(FileName fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		/// <summary>
+		/// Retrieves a file model, loading it if necessary.
+		/// </summary>
+		/// <param name="modelProvider">The model provider for the desired model type. Built-in model providers can be found in the <see cref="FileModels"/> class.</param>
+		/// <param name="options">Options that control how</param>
+		/// <returns>The model instance, or possibly <c>null</c> if <c>GetModelOptions.DoNotLoad</c> is in use.</returns>
+		/// <exception cref="IOException">Error loading the file.</exception>
+		/// <exception cref="FormatException">Cannot construct the model because the underyling data is in an invalid format.</exception>
+		public T GetModel<T>(IFileModelProvider<T> modelProvider, GetModelOptions options = GetModelOptions.None) where T : class
+		{
+			throw new NotImplementedException();
+		}
+		
+		/// <summary>
+		/// Sets the model associated with the specified model provider to be dirty.
+		/// All other models are marked as stale. If another model was previously dirty, those earlier changes will be lost.
+		/// </summary>
+		public void MakeDirty<T>(IFileModelProvider<T> modelProvider) where T : class
+		{
+			throw new NotImplementedException();
+		}
+		
+		/// <summary>
+		/// Unloads the model associated with the specified model provider.
+		/// Unloading the dirty model will cause changes to be lost.
+		/// </summary>
+		public void UnloadModel<T>(IFileModelProvider<T> modelProvider) where T : class
+		{
+			throw new NotImplementedException();
+		}
+		
+		/// <summary>
+		/// Replaces the model associated with the specified model provider with a different instance.
+		/// </summary>
+		/// <param name="modelProvider">The model provider for the model type.</param>
+		/// <param name="model">The new model instance.</param>
+		/// <param name="mode">Specifies how the dirty flag is handled during the replacement.
+		/// By default, the new model is marked as dirty and all other models are marked as stale.
+		/// In <see cref="IFileModelProvider{T}.Save"/> implementations, you should use <see cref="ReplaceModelMode.TransferDirty"/> instead.</param>
+		public void ReplaceModel<T>(IFileModelProvider<T> modelProvider, T model, ReplaceModelMode mode = ReplaceModelMode.SetAsDirty) where T : class
+		{
+			throw new NotImplementedException();
+		}
+		
+	}
+	
+	/*
+	/// <summary>
+	/// Represents an opened file.
+	/// </summary>
+	public abstract class OpenedFile : ICanBeDirty
+	{
+		protected IViewContent currentView;
+		bool inLoadOperation;
+		bool inSaveOperation;
+		
+		/// <summary>
+		/// holds unsaved file content in memory when view containing the file was closed but no other view
+		/// activated
+		/// </summary>
+		byte[] fileData;
+		
 		
 		/// <summary>
 		/// Use this method to save the file to disk using a new name.
@@ -378,4 +500,5 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 	}
+	 */
 }
