@@ -132,10 +132,10 @@
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 <!--		<MSBuild Projects="$(SamplesSrc)\MSTest\MSTest.SharpDevelop.sln
 				 Targets="build;clean"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>-->
 		<MSBuild Projects="$(SamplesSrc)\NAnt\NAnt.AddIn.sln"
 				 Targets="build;clean"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>-->
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		<MSBuild Projects="$(SamplesSrc)\PInvokeAddIn\PInvokeAddIn.sln"
 				 Targets="build;clean"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
