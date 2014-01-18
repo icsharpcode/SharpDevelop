@@ -17,7 +17,7 @@ namespace ICSharpCode.NAnt.Tests
 			
 			Assert.AreEqual(1, tasks.Count, "Should be one task.");
 		
-			Task task = tasks[0];
+			SDTask task = tasks[0];
 			Assert.IsNull(task.FileName, "Should not have any filename information.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");
 			Assert.AreEqual(0, task.Line, "Should be line number 0");

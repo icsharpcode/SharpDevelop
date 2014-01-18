@@ -56,7 +56,7 @@ namespace ICSharpCode.NAnt
 			output = output.Replace("\r\n", "\n");
 			
 			// Look for errors on a per line basis.
-			Task task = null;
+			SDTask task = null;
 			StringReader reader = new StringReader(output);
 			while (reader.Peek() != -1) {
 				
@@ -93,9 +93,9 @@ namespace ICSharpCode.NAnt
 		/// <param name="textLine">A NAnt output line.</param>
 		/// <returns>A <see cref="Task"/> if the line contains an error or 
 		/// a warning; otherwise <see langword="null"/>.</returns>
-		static Task ParseLine(string textLine)
+		static SDTask ParseLine(string textLine)
 		{
-			Task task = null;
+			SDTask task = null;
 			
 			task = ParseCSharpError(textLine);
 			
@@ -128,9 +128,9 @@ namespace ICSharpCode.NAnt
 		/// <param name="textLine">The line of text to parse.</param>
 		/// <returns>A <see cref="Task"/> if an error was found; otherwise
 		/// <see langword="null"/>.</returns>
-		static Task ParseCSharpError(string textLine)
+		static SDTask ParseCSharpError(string textLine)
 		{
-			Task task = null;
+			SDTask task = null;
 			Match match = Regex.Match(textLine, @"^.*?(\w+:[/\\].*?)\(([\d]*),([\d]*)\): (.*?) (.*?): (.*?)$");
 			if (match.Success) {
 				try	{
@@ -142,7 +142,7 @@ namespace ICSharpCode.NAnt
 					if (String.Compare(match.Groups[4].Value, "warning", true) == 0) {
 						taskType = TaskType.Warning;
 					}
-					task = new Task(FileName.Create(match.Groups[1].Value), description, col, line, taskType);
+					task = new SDTask(FileName.Create(match.Groups[1].Value), description, col, line, taskType);
 				} catch (Exception) {
 					// Ignore.
 				}
@@ -158,9 +158,9 @@ namespace ICSharpCode.NAnt
 		/// <param name="textLine">The line of text to parse.</param>
 		/// <returns>A <see cref="Task"/> if an error was found; otherwise
 		/// <see langword="null"/>.</returns>
-		static Task ParseNAntError(string textLine)
+		static SDTask ParseNAntError(string textLine)
 		{
-			Task task = null;
+			SDTask task = null;
 			
 			Match match = Regex.Match(textLine, @"^.*?(\w+:[/\\].*?)\(([\d]*),([\d]*)\): (.*?)$");
 			if (match.Success) {
@@ -168,7 +168,7 @@ namespace ICSharpCode.NAnt
 					int line = Convert.ToInt32(match.Groups[2].Value);
 					int col = Convert.ToInt32(match.Groups[3].Value);                     
 					
-					task = new Task(FileName.Create(match.Groups[1].Value), match.Groups[4].Value, col, line, TaskType.Warning);
+					task = new SDTask(FileName.Create(match.Groups[1].Value), match.Groups[4].Value, col, line, TaskType.Warning);
 				} catch (Exception) {
 					// Ignore.
 				}
@@ -186,9 +186,9 @@ namespace ICSharpCode.NAnt
 		/// <param name="textLine">The line of text to parse.</param>
 		/// <returns>A <see cref="Task"/> if an error was found; otherwise
 		/// <see langword="null"/>.</returns>
-		static Task ParseVBError(string textLine)
+		static SDTask ParseVBError(string textLine)
 		{
-			Task task = null;
+			SDTask task = null;
 			Match match = Regex.Match(textLine, @"^.*?(\w+:[/\\].*?)\(([\d]*)\) : (.*?) (.*?): (.*?)$");
 			if (match.Success) {
 				try	{
@@ -199,7 +199,7 @@ namespace ICSharpCode.NAnt
 					if (String.Compare(match.Groups[3].Value, "warning", true) == 0) {
 						taskType = TaskType.Warning;
 					}
-					task = new Task(FileName.Create(match.Groups[1].Value), description, 0, line, taskType);
+					task = new SDTask(FileName.Create(match.Groups[1].Value), description, 0, line, taskType);
 				} catch (Exception) {
 					// Ignore.
 				}
@@ -215,19 +215,19 @@ namespace ICSharpCode.NAnt
 		/// <param name="textLine">The line of text to parse.</param>
 		/// <returns>A <see cref="Task"/> if an error was found; otherwise
 		/// <see langword="null"/>.</returns>
-		static Task ParseFatalError(string textLine)
+		static SDTask ParseFatalError(string textLine)
 		{
-			Task task = null;
+			SDTask task = null;
 			Match match = Regex.Match(textLine, @"^.*?(fatal error .*?: .*?)$");
 			if (match.Success) {
 				try	{
-					task = new Task(null, match.Groups[1].Value, 0, 0, TaskType.Error);
+					task = new SDTask(null, match.Groups[1].Value, 0, 0, TaskType.Error);
 				} catch (Exception) {
 					// Ignore.
 				}
 			}
 			
-			return task;			
+			return task;
 		}
 		
 		/// <summary>
@@ -237,21 +237,21 @@ namespace ICSharpCode.NAnt
 		/// <param name="textLine">The line of text to parse.</param>
 		/// <returns>A <see cref="Task"/> if an error was found; otherwise
 		/// <see langword="null"/>.</returns>
-		static Task ParseVBFatalError(string textLine)
+		static SDTask ParseVBFatalError(string textLine)
 		{
-			Task task = null;
+			SDTask task = null;
 			Match match = Regex.Match(textLine, @"^.*?vbc : error (.*?): (.*?)$");
 			if (match.Success) {
 				try	{
 					string description = String.Concat(match.Groups[2].Value, " (", match.Groups[1].Value, ")");
-					task = new Task(null, description, 0, 0, TaskType.Error);
+					task = new SDTask(null, description, 0, 0, TaskType.Error);
 				} catch (Exception) {
 					// Ignore.
 				}
 			}
 			
-			return task;			
-		}	
+			return task;
+		}
 		
 		/// <summary>
 		/// Looks for errors of the form 
@@ -260,19 +260,19 @@ namespace ICSharpCode.NAnt
 		/// <param name="textLine">The line of text to parse.</param>
 		/// <returns>A <see cref="Task"/> if a warning was found; otherwise
 		/// <see langword="null"/>.</returns>
-		static Task ParseNAntWarning(string textLine)
+		static SDTask ParseNAntWarning(string textLine)
 		{
-			Task task = null;
+			SDTask task = null;
 			Match match = Regex.Match(textLine, @"^.*?(Read-only property .*? cannot be overwritten.)$");
 			if (match.Success) {
 				try	{
-					task = new Task(null, match.Groups[1].Value, 0, 0, TaskType.Warning);
+					task = new SDTask(null, match.Groups[1].Value, 0, 0, TaskType.Warning);
 				} catch (Exception) {
 					// Ignore.
 				}
 			}
 			
-			return task;			
+			return task;
 		}
 		
 		/// <summary>
@@ -284,9 +284,9 @@ namespace ICSharpCode.NAnt
 		/// <param name="textLine">The line of text to parse.</param>
 		/// <returns>A <see cref="Task"/> if an error was found; otherwise
 		/// <see langword="null"/>.</returns>
-		static Task ParseNAntBuildFailedError(string output)
+		static SDTask ParseNAntBuildFailedError(string output)
 		{
-			Task task = null;
+			SDTask task = null;
 			
 			Match match = Regex.Match(output, @"^BUILD FAILED.*?$\n^$\n^(\w+:[/\\].*?)\(([\d]*),([\d]*)\):$\n^(.*?)$\n^(.*?)$", RegexOptions.Multiline);
 			
@@ -296,14 +296,14 @@ namespace ICSharpCode.NAnt
 					int line = Convert.ToInt32(match.Groups[2].Value);
 					int col = Convert.ToInt32(match.Groups[3].Value);
 					string description = String.Concat(match.Groups[4], Environment.NewLine, match.Groups[5]);
-					task = new Task(FileName.Create(match.Groups[1].Value), description, col, line, TaskType.Error);
+					task = new SDTask(FileName.Create(match.Groups[1].Value), description, col, line, TaskType.Error);
 				} catch(Exception) { };
 			} else {
 				
 				match = Regex.Match(output, @"^BUILD FAILED$\n^$\n^(.*?)$", RegexOptions.Multiline);
 				
 				if (match.Success) {
-					task = new Task(null, match.Groups[1].Value, 0, 0, TaskType.Error);
+					task = new SDTask(null, match.Groups[1].Value, 0, 0, TaskType.Error);
 				}
 			}	
 			
@@ -318,9 +318,9 @@ namespace ICSharpCode.NAnt
 		/// <param name="textLine">The line of text to parse.</param>
 		/// <returns>A <see cref="Task"/> if an error was found; otherwise
 		/// <see langword="null"/>.</returns> 
-		static Task ParseMultilineBuildError(string output)
+		static SDTask ParseMultilineBuildError(string output)
 		{
-			Task task = null;
+			SDTask task = null;
 			
 			Match match = Regex.Match(output, @"^.*?\[delete\] (\w+:[/\\].*?)\(([\d]*),([\d]*)\):$\n^.*?\[delete\] (.*?)$", RegexOptions.Multiline);
 			
@@ -330,7 +330,7 @@ namespace ICSharpCode.NAnt
 					int line = Convert.ToInt32(match.Groups[2].Value);
 					int col = Convert.ToInt32(match.Groups[3].Value);
 					string description = String.Concat(match.Groups[4]);
-					task = new Task(FileName.Create(match.Groups[1].Value), description, col, line, TaskType.Error);
+					task = new SDTask(FileName.Create(match.Groups[1].Value), description, col, line, TaskType.Error);
 				} catch(Exception) { };
 			}
 			

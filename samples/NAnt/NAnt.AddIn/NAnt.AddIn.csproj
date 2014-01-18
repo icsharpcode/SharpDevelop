@@ -18,7 +18,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <DebugSymbols>true</DebugSymbols>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>False</Optimize>
@@ -35,8 +36,16 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.AvalonEdit">
+      <HintPath>..\..\..\bin\ICSharpCode.AvalonEdit.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="ICSharpCode.Core">
       <HintPath>..\..\..\bin\ICSharpCode.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.Core.Presentation">
+      <HintPath>..\..\..\bin\ICSharpCode.Core.Presentation.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.Core.WinForms">
@@ -47,6 +56,12 @@
       <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop.Widgets">
+      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Widgets.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -54,14 +69,22 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\Commands\RunSelectedNAntCleanTargetCommand.cs" />
-    <Compile Include="Src\Gui\NAntAddInOptionPanel.cs" />
     <Compile Include="Src\Commands\RunNAntCommand.cs" />
+    <Compile Include="Src\Gui\NAntAddInOptionsView.xaml.cs">
+      <DependentUpon>NAntAddInOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\NAntAddInException.cs" />
+    <Compile Include="Src\NAntMessageViewCategoryTextWriter.cs" />
     <Compile Include="Src\NAntRunner.cs" />
     <Compile Include="Src\NAntExitEventArgs.cs" />
     <Compile Include="Src\Commands\RunNAntCleanTargetCommand.cs" />
@@ -87,7 +110,6 @@
     <None Include="Resources\BitmapResources.resources">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="Resources\NAntAddInOptionPanel.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <None Include="NAnt.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -103,6 +125,9 @@
     <Folder Include="Src\Gui\" />
     <Folder Include="Src\Commands\" />
     <Folder Include="Resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\Gui\NAntAddInOptionsView.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

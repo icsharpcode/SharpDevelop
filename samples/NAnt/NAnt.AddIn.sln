@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.5571
+# SharpDevelop 4.4
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAnt.AddIn", "NAnt.AddIn\NAnt.AddIn.csproj", "{1DB3CAD2-38E8-4C5E-8E1B-0E37B1A5C006}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAnt.AddIn.Tests", "NAnt.AddIn.Tests\NAnt.AddIn.Tests.csproj", "{13AB8351-39E5-4F9D-A59C-B30D60CF6B8C}"
