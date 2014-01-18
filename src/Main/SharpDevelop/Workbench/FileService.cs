@@ -127,20 +127,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				delegate {
 					OpenedFile file = this.GetOpenedFile(fileName);
 					if (file != null) {
-						if (file.CurrentView != null) {
-							IFileDocumentProvider provider = file.CurrentView.GetService<IFileDocumentProvider>();
-							if (provider != null) {
-								IDocument document = provider.GetDocumentForFile(file);
-								if (document != null) {
-									return document.CreateSnapshot();
-								}
-							}
-						}
-						
-						using (Stream s = file.OpenRead()) {
-							// load file
-							return new StringTextSource(FileReader.ReadFileContent(s, DefaultFileEncoding));
-						}
+						return file.GetModel(FileModels.TextDocument).CreateSnapshot();
 					}
 					return null;
 				});
@@ -156,16 +143,16 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		#endregion
 		
 		#region BrowseForFolder
-		public string BrowseForFolder(string description, string selectedPath)
+		public DirectoryName BrowseForFolder(string description, string selectedPath)
 		{
 			using (FolderBrowserDialog dialog = new FolderBrowserDialog()) {
 				dialog.Description = StringParser.Parse(description);
-				if (selectedPath != null && selectedPath.Length > 0 && Directory.Exists(selectedPath)) {
+				if (!string.IsNullOrEmpty(selectedPath) && Directory.Exists(selectedPath)) {
 					dialog.RootFolder = Environment.SpecialFolder.MyComputer;
 					dialog.SelectedPath = selectedPath;
 				}
 				if (dialog.ShowDialog() == DialogResult.OK) {
-					return dialog.SelectedPath;
+					return DirectoryName.Create(dialog.SelectedPath);
 				} else {
 					return null;
 				}
@@ -174,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		#endregion
 		
 		#region OpenedFile
-		Dictionary<FileName, OpenedFile> openedFileDict = new Dictionary<FileName, OpenedFile>();
+		readonly Dictionary<FileName, OpenedFile> openedFileDict = new Dictionary<FileName, OpenedFile>();
 		
 		/// <inheritdoc/>
 		public IReadOnlyList<OpenedFile> OpenedFiles {
@@ -204,23 +191,21 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		}
 		
 		/// <inheritdoc/>
-		public OpenedFile GetOrCreateOpenedFile(string fileName)
-		{
-			return GetOrCreateOpenedFile(FileName.Create(fileName));
-		}
-		
-		/// <inheritdoc/>
-		public OpenedFile GetOrCreateOpenedFile(FileName fileName)
+		public OpenedFile CreateOpenedFile(FileName fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 			
 			OpenedFile file;
-			if (!openedFileDict.TryGetValue(fileName, out file)) {
+			if (openedFileDict.TryGetValue(fileName, out file)) {
+				file.AddReference();
+			} else {
 				openedFileDict[fileName] = file = new FileServiceOpenedFile(this, fileName);
 			}
 			return file;
 		}
+		
+		int untitledFileID;
 		
 		/// <inheritdoc/>
 		public OpenedFile CreateUntitledOpenedFile(string defaultName, byte[] content)
@@ -228,9 +213,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (defaultName == null)
 				throw new ArgumentNullException("defaultName");
 			
-			OpenedFile file = new FileServiceOpenedFile(this, content);
-			file.FileName = new FileName(file.GetHashCode() + "/" + defaultName);
+			untitledFileID++;
+			var fileName = new FileName("untitled://" + untitledFileID + "/" + defaultName);
+			OpenedFile file = new FileServiceOpenedFile(this, fileName);
 			openedFileDict[file.FileName] = file;
+			file.ReplaceModel(FileModels.Binary, new BinaryFileModel(content));
 			return file;
 		}
 		
@@ -243,14 +230,14 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			if (openedFileDict[oldName] != file)
 				throw new ArgumentException("file must be registered as oldName");
-			if (openedFileDict.ContainsKey(newName)) {
-				OpenedFile oldFile = openedFileDict[newName];
-				if (oldFile.CurrentView != null) {
-					if (oldFile.CurrentView.WorkbenchWindow != null)
-						oldFile.CurrentView.WorkbenchWindow.CloseWindow(true);
-				} else {
-					throw new ArgumentException("there already is a file with the newName");
+			OpenedFile oldFile;
+			if (openedFileDict.TryGetValue(newName, out oldFile)) {
+				foreach (var view in SD.Workbench.ViewContentCollection.ToArray()) {
+					if (view.WorkbenchWindow != null && view.Files.Contains(oldFile))
+						view.WorkbenchWindow.CloseWindow(true);
 				}
+				if (oldFile.ReferenceCount > 0)
+					throw new ArgumentException("another file is already registered as newName; and could not be freed by closing its view contents");
 			}
 			openedFileDict.Remove(oldName);
 			openedFileDict[newName] = file;
@@ -265,6 +252,28 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			openedFileDict.Remove(file.FileName);
 			LoggingService.Debug("OpenedFileClosed: " + file.FileName);
+		}
+		
+		public void UpdateFileModel<T>(FileName fileName, IFileModelProvider<T> modelProvider, Action<T> action, FileUpdateOptions options = FileUpdateOptions.None) where T : class
+		{
+			OpenedFile file = CreateOpenedFile(fileName);
+			try {
+				T model = file.GetModel(modelProvider);
+				action(model);
+				if ((options & FileUpdateOptions.SaveToDisk) == FileUpdateOptions.SaveToDisk) {
+					file.SaveToDisk();
+				}
+				if (!IsOpen(fileName) && file.IsDirty) {
+					// The file is not open in a view, but we need to store our changes somewhere:
+					if ((options & FileUpdateOptions.OpenViewIfNoneExists) != 0) {
+						OpenFile(fileName, false);
+					} else {
+						file.SaveToDisk();
+					}
+				}
+			} finally {
+				file.ReleaseReference();
+			}
 		}
 		#endregion
 		
@@ -349,7 +358,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			public void Invoke(FileName fileName)
 			{
-				OpenedFile file = SD.FileService.GetOrCreateOpenedFile(fileName);
+				OpenedFile file = SD.FileService.CreateOpenedFile(fileName);
 				try {
 					IViewContent newContent = binding.CreateContentForFile(file);
 					if (newContent != null) {
@@ -357,7 +366,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 						SD.Workbench.ShowView(newContent, switchToOpenedView);
 					}
 				} finally {
-					file.CloseIfAllViewsClosed();
+					file.ReleaseReference();
 				}
 			}
 		}
@@ -383,18 +392,20 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				binding = new ErrorFallbackBinding("Can't create display binding for file " + defaultName);
 			}
 			OpenedFile file = CreateUntitledOpenedFile(defaultName, content);
-			
-			IViewContent newContent = binding.CreateContentForFile(file);
-			if (newContent == null) {
-				LoggingService.Warn("Created view content was null - DefaultName:" + defaultName);
-				file.CloseIfAllViewsClosed();
-				return null;
+			try {
+				IViewContent newContent = binding.CreateContentForFile(file);
+				if (newContent == null) {
+					LoggingService.Warn("Created view content was null - DefaultName:" + defaultName);
+					return null;
+				}
+				
+				displayBindingService.AttachSubWindows(newContent, false);
+				
+				SD.Workbench.ShowView(newContent);
+				return newContent;
+			} finally {
+				file.ReleaseReference();
 			}
-			
-			displayBindingService.AttachSubWindows(newContent, false);
-			
-			SD.Workbench.ShowView(newContent);
-			return newContent;
 		}
 		
 		/// <inheritdoc/>

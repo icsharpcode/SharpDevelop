@@ -23,6 +23,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
 
+using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 
@@ -230,20 +231,28 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		#endregion
 		
 		#region Files
-		FilesCollection files;
+		ObserveAddRemoveCollection<OpenedFile> files;
 		ReadOnlyCollection<OpenedFile> filesReadonly;
 		
 		void InitFiles()
 		{
-			files = new FilesCollection(this);
+			files = new ObserveAddRemoveCollection<OpenedFile>(RegisterFileEventHandlers, UnregisterFileEventHandlers);
 			filesReadonly = new ReadOnlyCollection<OpenedFile>(files);
 		}
 		
+		/// <summary>
+		/// The list of files that are being edited by this view content.
+		/// The first item in this list is used for the <see cref="PrimaryFile"/> property.
+		/// 
+		/// The collection automatically calls <see cref="OpenedFile.AddReference"/> and <see cref="OpenedFile.ReleaseReference"/> as files
+		/// are added/removed from the collection.
+		/// The collection is cleared (thus freeing all references) when the view content is disposed.
+		/// </summary>
 		protected Collection<OpenedFile> Files {
 			get { return files; }
 		}
 		
-		IList<OpenedFile> IViewContent.Files {
+		IReadOnlyList<OpenedFile> IViewContent.Files {
 			get { return filesReadonly; }
 		}
 		
@@ -273,15 +282,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
-		protected bool AutomaticallyRegisterViewOnFiles = true;
-		
 		void RegisterFileEventHandlers(OpenedFile newItem)
 		{
 			newItem.FileNameChanged += OnFileNameChanged;
 			newItem.IsDirtyChanged += OnIsDirtyChanged;
-			if (AutomaticallyRegisterViewOnFiles) {
-				newItem.RegisterView(this);
-			}
+			newItem.AddReference();
 			OnIsDirtyChanged(null, EventArgs.Empty); // re-evaluate this.IsDirty after changing the file collection
 		}
 		
@@ -289,9 +294,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			oldItem.FileNameChanged -= OnFileNameChanged;
 			oldItem.IsDirtyChanged -= OnIsDirtyChanged;
-			if (AutomaticallyRegisterViewOnFiles) {
-				oldItem.UnregisterView(this);
-			}
+			oldItem.ReleaseReference();
 			OnIsDirtyChanged(null, EventArgs.Empty); // re-evaluate this.IsDirty after changing the file collection
 		}
 		
@@ -308,43 +311,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		protected virtual void OnFileNameChanged(OpenedFile file)
 		{
-		}
-		
-		private sealed class FilesCollection : Collection<OpenedFile>
-		{
-			AbstractViewContent parent;
-			
-			public FilesCollection(AbstractViewContent parent)
-			{
-				this.parent = parent;
-			}
-			
-			protected override void InsertItem(int index, OpenedFile item)
-			{
-				base.InsertItem(index, item);
-				parent.RegisterFileEventHandlers(item);
-			}
-			
-			protected override void SetItem(int index, OpenedFile item)
-			{
-				parent.UnregisterFileEventHandlers(this[index]);
-				base.SetItem(index, item);
-				parent.RegisterFileEventHandlers(item);
-			}
-			
-			protected override void RemoveItem(int index)
-			{
-				parent.UnregisterFileEventHandlers(this[index]);
-				base.RemoveItem(index);
-			}
-			
-			protected override void ClearItems()
-			{
-				foreach (OpenedFile item in this) {
-					parent.UnregisterFileEventHandlers(item);
-				}
-				base.ClearItems();
-			}
 		}
 		#endregion
 		
@@ -487,9 +453,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			workbenchWindow = null;
 			UnregisterOnActiveViewContentChanged();
-			if (AutomaticallyRegisterViewOnFiles) {
-				this.Files.Clear();
-			}
+			this.Files.Clear();
 			isDisposed = true;
 			if (Disposed != null) {
 				Disposed(this, EventArgs.Empty);

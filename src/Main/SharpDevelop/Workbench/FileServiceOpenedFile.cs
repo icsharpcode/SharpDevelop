@@ -42,135 +42,44 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			this.fileService = fileService;
 			this.FileName = fileName;
-			IsUntitled = false;
 			fileChangeWatcher = new FileChangeWatcher(this);
 		}
 		
-		internal FileServiceOpenedFile(FileService fileService, byte[] fileData)
+		protected override void UnloadFile()
 		{
-			this.fileService = fileService;
-			this.FileName = null;
-			SetData(fileData);
-			IsUntitled = true;
-			MakeDirty();
-			fileChangeWatcher = new FileChangeWatcher(this);
-		}
-		
-		/// <summary>
-		/// Gets the list of view contents registered with this opened file.
-		/// </summary>
-		public override IList<IViewContent> RegisteredViewContents {
-			get { return registeredViews.AsReadOnly(); }
-		}
-		
-		public override void ForceInitializeView(IViewContent view)
-		{
-			if (view == null)
-				throw new ArgumentNullException("view");
-			if (!registeredViews.Contains(view))
-				throw new ArgumentException("registeredViews must contain view");
+			bool wasDirty = this.IsDirty;
+			fileService.OpenedFileClosed(this);
+			base.UnloadFile();
 			
-			base.ForceInitializeView(view);
-		}
-		
-		public override void RegisterView(IViewContent view)
-		{
-			if (view == null)
-				throw new ArgumentNullException("view");
-			if (registeredViews.Contains(view))
-				throw new ArgumentException("registeredViews already contains view");
+			//FileClosed(this, EventArgs.Empty);
 			
-			registeredViews.Add(view);
-			
-			if (SD.Workbench != null) {
-				SD.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
-				if (SD.Workbench.ActiveViewContent == view) {
-					SwitchedToView(view);
-				}
+			if (fileChangeWatcher != null) {
+				fileChangeWatcher.Dispose();
+				fileChangeWatcher = null;
 			}
-			#if DEBUG
-			view.Disposed += ViewDisposed;
-			#endif
-		}
-		
-		public override void UnregisterView(IViewContent view)
-		{
-			if (view == null)
-				throw new ArgumentNullException("view");
-			Debug.Assert(registeredViews.Contains(view));
 			
-			if (SD.Workbench != null) {
-				SD.Workbench.ActiveViewContentChanged -= WorkbenchActiveViewContentChanged;
-			}
-			#if DEBUG
-			view.Disposed -= ViewDisposed;
-			#endif
-			
-			registeredViews.Remove(view);
-			if (registeredViews.Count > 0) {
-				if (currentView == view) {
-					SaveCurrentView();
-					currentView = null;
-				}
-			} else {
-				// all views to the file were closed
-				CloseIfAllViewsClosed();
+			if (wasDirty) {
+				// We discarded some information when closing the file,
+				// so we need to re-parse it.
+				if (SD.FileSystem.FileExists(this.FileName))
+					SD.ParserService.ParseAsync(this.FileName).FireAndForget();
+				else
+					SD.ParserService.ClearParseInformation(this.FileName);
 			}
 		}
 		
-		public override void CloseIfAllViewsClosed()
-		{
-			if (registeredViews.Count == 0) {
-				bool wasDirty = this.IsDirty;
-				fileService.OpenedFileClosed(this);
-				
-				FileClosed(this, EventArgs.Empty);
-				
-				if (fileChangeWatcher != null) {
-					fileChangeWatcher.Dispose();
-					fileChangeWatcher = null;
-				}
-				
-				if (wasDirty) {
-					// We discarded some information when closing the file,
-					// so we need to re-parse it.
-					if (File.Exists(this.FileName))
-						SD.ParserService.ParseAsync(this.FileName).FireAndForget();
-					else
-						SD.ParserService.ClearParseInformation(this.FileName);
-				}
-			}
-		}
-		
-		#if DEBUG
-		void ViewDisposed(object sender, EventArgs e)
-		{
-			Debug.Fail("View was disposed while still registered with OpenedFile!");
-		}
-		#endif
-		
-		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
-		{
-			IViewContent newView = SD.Workbench.ActiveViewContent;
-			
-			if (!registeredViews.Contains(newView))
-				return;
-			
-			SwitchedToView(newView);
-		}
-		
-		public override void SaveToDisk()
+		public override void SaveToDisk(FileName fileName)
 		{
 			try {
 				if (fileChangeWatcher != null)
 					fileChangeWatcher.Enabled = false;
-				base.SaveToDisk();
+				base.SaveToDisk(fileName);
 			} finally {
 				if (fileChangeWatcher != null)
 					fileChangeWatcher.Enabled = true;
 			}
 		}
 		
-		public override event EventHandler FileClosed = delegate {};
+		//public override event EventHandler FileClosed = delegate {};
 	}
 }

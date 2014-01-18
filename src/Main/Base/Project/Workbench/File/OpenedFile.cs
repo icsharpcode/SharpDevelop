@@ -20,9 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
@@ -69,6 +67,69 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	/// </summary>
 	public abstract class OpenedFile : ICanBeDirty
 	{
+		abstract class ModelEntry
+		{
+			public bool IsStale;
+			
+			public abstract object Provider { get; }
+			
+			public abstract void Save(OpenedFile file);
+			public abstract void SaveCopyAs(OpenedFile file, FileName outputFileName);
+			public abstract void NotifyRename(OpenedFile file, FileName oldName, FileName newName);
+			public abstract void NotifyStale(OpenedFile file);
+			public abstract void NotifyUnloaded(OpenedFile file);
+			public abstract bool NeedsSaveForLoadInto<T>(IFileModelProvider<T> modelProvider) where T : class;
+		}
+		class ModelEntry<T> : ModelEntry where T : class
+		{
+			readonly IFileModelProvider<T> provider;
+			public T Model;
+			
+			public ModelEntry(IFileModelProvider<T> provider, T model)
+			{
+				Debug.Assert(provider != null);
+				Debug.Assert(model != null);
+				this.provider = provider;
+				this.Model = model;
+			}
+			
+			public override object Provider { get { return provider; } }
+			
+			public override void Save(OpenedFile file)
+			{
+				provider.Save(file, Model);
+			}
+			
+			public override void SaveCopyAs(OpenedFile file, FileName outputFileName)
+			{
+				provider.SaveCopyAs(file, Model, outputFileName);
+			}
+			
+			public override void NotifyRename(OpenedFile file, FileName oldName, FileName newName)
+			{
+				provider.NotifyRename(file, Model, oldName, newName);
+			}
+			
+			public override void NotifyStale(OpenedFile file)
+			{
+				provider.NotifyStale(file, Model);
+			}
+			
+			public override void NotifyUnloaded(OpenedFile file)
+			{
+				provider.NotifyUnloaded(file, Model);
+			}
+			
+			public override bool NeedsSaveForLoadInto<U>(IFileModelProvider<U> modelProvider)
+			{
+				return modelProvider.CanLoadFrom(provider);
+			}
+		}
+		
+		readonly List<ModelEntry> entries = new List<ModelEntry>();
+		ModelEntry dirtyEntry;
+		bool preventLoading;
+		
 		#region IsDirty implementation
 		bool isDirty;
 		public event EventHandler IsDirtyChanged;
@@ -77,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// Gets/sets if the file is has unsaved changes.
 		/// </summary>
 		public bool IsDirty {
-			get { return isDirty;}
+			get { return isDirty; }
 			private set {
 				if (isDirty != value) {
 					isDirty = value;
@@ -123,14 +184,18 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			SD.MainThread.VerifyAccess();
 			
+			FileName oldName = fileName;
 			fileName = newValue;
 			
+			foreach (var entry in entries)
+				entry.NotifyRename(this, oldName, newValue);
 			if (FileNameChanged != null) {
 				FileNameChanged(this, EventArgs.Empty);
 			}
 		}
 		#endregion
 		
+		#region ReloadFromDisk
 		/// <summary>
 		/// This method sets all models to 'stale', causing the file to be re-loaded from disk
 		/// on the next GetModel() call.
@@ -138,11 +203,19 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <exception cref="InvalidOperationException">The file is untitled.</exception>
 		public void ReloadFromDisk()
 		{
+			CheckDisposed();
 			if (IsUntitled)
 				throw new InvalidOperationException("Cannot reload an untitled file from disk.");
-			throw new NotImplementedException();
+			// First set all entries to stale, then call NotifyStale().
+			foreach (var entry in entries)
+				entry.IsStale = true;
+			foreach (var entry in entries)
+				entry.NotifyStale(this);
+			this.IsDirty = false;
 		}
+		#endregion
 		
+		#region SaveToDisk
 		/// <summary>
 		/// Saves the file to disk.
 		/// </summary>
@@ -150,27 +223,78 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <exception cref="InvalidOperationException">The file is untitled.</exception>
 		public void SaveToDisk()
 		{
+			CheckDisposed();
 			if (IsUntitled)
-				throw new InvalidOperationException("Cannot reload an untitled file from disk.");
-			throw new NotImplementedException();
+				throw new InvalidOperationException("Cannot save an untitled file to disk.");
+			SaveToDisk(this.FileName);
 		}
 		
 		/// <summary>
 		/// Changes the file name, and saves the file to disk.
 		/// </summary>
 		/// <remarks>If the file is saved successfully, the dirty flag will be cleared (the dirty model becomes valid instead).</remarks>
-		public void SaveToDisk(FileName fileName)
+		public virtual void SaveToDisk(FileName fileName)
 		{
+			CheckDisposed();
+			
+			bool safeSaving = SD.FileService.SaveUsingTemporaryFile && SD.FileSystem.FileExists(fileName);
+			FileName saveAs = safeSaving ? FileName.Create(fileName + ".bak") : fileName;
+			SaveCopyTo(saveAs);
+			if (safeSaving) {
+				DateTime creationTime = File.GetCreationTimeUtc(fileName);
+				File.Delete(fileName);
+				try {
+					File.Move(saveAs, fileName);
+				} catch (UnauthorizedAccessException) {
+					// sometime File.Move raise exception (TortoiseSVN, Anti-vir ?)
+					// try again after short delay
+					System.Threading.Thread.Sleep(250);
+					File.Move(saveAs, fileName);
+				}
+				File.SetCreationTimeUtc(fileName, creationTime);
+			}
+			
+			dirtyEntry = null;
 			this.FileName = fileName;
-			SaveToDisk();
+			this.IsDirty = false;
 		}
 		
 		/// <summary>
 		/// Saves a copy of the file to disk. Does not change the name of the OpenedFile to the specified file name, and does not reset the dirty flag.
 		/// </summary>
-		public void SaveCopyAs(FileName fileName)
+		public virtual void SaveCopyAs(FileName fileName)
 		{
-			throw new NotImplementedException();
+			CheckDisposed();
+			SaveCopyTo(fileName);
+		}
+		
+		void SaveCopyTo(FileName outputFileName)
+		{
+			preventLoading = true;
+			try {
+				var entry = PickValidEntry();
+				if (entry != null) {
+					entry.SaveCopyAs(this, outputFileName);
+				} else if (outputFileName != this.FileName) {
+					SD.FileSystem.CopyFile(this.FileName, outputFileName, true);
+				}
+			}
+			finally {
+				preventLoading = false;
+			}
+		}
+
+		#endregion
+		
+		#region GetModel
+		ModelEntry<T> GetEntry<T>(IFileModelProvider<T> modelProvider) where T : class
+		{
+			CheckDisposed();
+			foreach (var entry in entries) {
+				if (entry.Provider == modelProvider)
+					return (ModelEntry<T>)entry;
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -179,31 +303,145 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <param name="modelProvider">The model provider for the desired model type. Built-in model providers can be found in the <see cref="FileModels"/> class.</param>
 		/// <param name="options">Options that control how</param>
 		/// <returns>The model instance, or possibly <c>null</c> if <c>GetModelOptions.DoNotLoad</c> is in use.</returns>
-		/// <exception cref="IOException">Error loading the file.</exception>
+		/// <exception cref="System.IO.IOException">Error loading the file.</exception>
 		/// <exception cref="FormatException">Cannot construct the model because the underyling data is in an invalid format.</exception>
 		public T GetModel<T>(IFileModelProvider<T> modelProvider, GetModelOptions options = GetModelOptions.None) where T : class
 		{
-			throw new NotImplementedException();
+			if (modelProvider == null)
+				throw new ArgumentNullException("modelProvider");
+			if (preventLoading && (options & GetModelOptions.DoNotLoad) == 0)
+				throw new InvalidOperationException("GetModel() operations that potentially load models are not permitted at this point. (to retrieve existing models, use the DoNotLoad option)");
+			ModelEntry<T> entry = GetEntry(modelProvider);
+			// Return existing model if possible:
+			if (entry != null && ((options & GetModelOptions.AllowStale) != 0 || !entry.IsStale))
+				return entry.Model;
+			// If we aren't allowed to load, just return null:
+			if ((options & GetModelOptions.DoNotLoad) != 0)
+				return null;
+			Debug.Assert(!preventLoading);
+			preventLoading = true;
+			try {
+				// Before we can load the requested model, save the dirty model (if necessary):
+				while (dirtyEntry != null && dirtyEntry.NeedsSaveForLoadInto(modelProvider)) {
+					dirtyEntry.Save(this);
+					// re-fetch entry because it's possible that it was created/replaced/unloaded
+					entry = GetEntry(modelProvider);
+					// if the entry was made valid by the save operation, return it directly
+					if (entry != null && !entry.IsStale)
+						return entry.Model;
+				}
+			} finally {
+				preventLoading = false;
+			}
+			// Load the model. Note that we do allow (and expect) recursive loads at this point.
+			T model = modelProvider.Load(this);
+			// re-fetch entry because it's possible that it was created/replaced/unloaded (normally this shouldn't happen, but let's be on the safe side)
+			entry = GetEntry(modelProvider);
+			if (entry == null) {
+				// No entry for the model provider exists; we need to create a new one.
+				entry = new ModelEntry<T>(modelProvider, model);
+				entries.Add(entry);
+			} else if (entry.Model == model) {
+				// The existing stale model was reused
+				entry.IsStale = false;
+			} else {
+				// The model is being replaced
+				entry.NotifyUnloaded(this);
+				entry.Model = model;
+				entry.IsStale = false;
+			}
+			return model;
+		}
+		#endregion
+		
+		#region MakeDirty
+		ModelEntry PickValidEntry()
+		{
+			if (dirtyEntry != null)
+				return dirtyEntry; // prefer dirty entry
+			foreach (var entry in entries) {
+				if (!entry.IsStale) {
+					return entry;
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Takes a valid model and marks it as dirty.
+		/// If no valid model exists, this method has no effect.
+		/// If multiple valid models exist, one is picked at random.
+		/// </summary>
+		/// <remarks>
+		/// This method is used when SharpDevelop detects
+		/// </remarks>
+		public void MakeDirty()
+		{
+			var entry = PickValidEntry();
+			if (entry != null) {
+				dirtyEntry = entry;
+				this.IsDirty = true;
+			}
 		}
 		
 		/// <summary>
 		/// Sets the model associated with the specified model provider to be dirty.
 		/// All other models are marked as stale. If another model was previously dirty, those earlier changes will be lost.
 		/// </summary>
+		/// <remarks>
+		/// This method is usually called by the model provider. In a well-designed model, any change to the model
+		/// should result in the model provider calling MakeDirty() automatically.
+		/// </remarks>
 		public void MakeDirty<T>(IFileModelProvider<T> modelProvider) where T : class
 		{
-			throw new NotImplementedException();
+			if (modelProvider == null)
+				throw new ArgumentNullException("modelProvider");
+			var entry = GetEntry(modelProvider);
+			if (entry == null)
+				throw new ArgumentException("There is no model loaded for the specified model provider.");
+			entry.IsStale = false;
+			dirtyEntry = entry;
+			MarkAllAsStaleExcept(entry);
+			this.IsDirty = true;
 		}
 		
+		void MarkAllAsStaleExcept(ModelEntry entry)
+		{
+			foreach (var otherEntry in entries) {
+				if (otherEntry != entry) {
+					otherEntry.IsStale = true;
+				}
+			}
+			// Raise events after all state is updated:
+			foreach (var otherEntry in entries) {
+				if (otherEntry != entry) {
+					otherEntry.NotifyStale(this);
+				}
+			}
+		}
+		#endregion
+		
+		#region UnloadModel
 		/// <summary>
 		/// Unloads the model associated with the specified model provider.
 		/// Unloading the dirty model will cause changes to be lost.
 		/// </summary>
 		public void UnloadModel<T>(IFileModelProvider<T> modelProvider) where T : class
 		{
-			throw new NotImplementedException();
+			if (modelProvider == null)
+				throw new ArgumentNullException("modelProvider");
+			var entry = GetEntry(modelProvider);
+			if (entry != null) {
+				if (dirtyEntry == entry) {
+					dirtyEntry = null;
+				}
+				entries.Remove(entry);
+				entry.NotifyUnloaded(this);
+			}
 		}
+		#endregion
 		
+		#region ReplaceModel
 		/// <summary>
 		/// Replaces the model associated with the specified model provider with a different instance.
 		/// </summary>
@@ -214,9 +452,85 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// In <see cref="IFileModelProvider{T}.Save"/> implementations, you should use <see cref="ReplaceModelMode.TransferDirty"/> instead.</param>
 		public void ReplaceModel<T>(IFileModelProvider<T> modelProvider, T model, ReplaceModelMode mode = ReplaceModelMode.SetAsDirty) where T : class
 		{
-			throw new NotImplementedException();
+			if (modelProvider == null)
+				throw new ArgumentNullException("modelProvider");
+			var entry = GetEntry(modelProvider);
+			if (entry == null) {
+				entry = new ModelEntry<T>(modelProvider, model);
+			} else {
+				if (entry.Model != model) {
+					entry.NotifyUnloaded(this);
+					entry.Model = model;
+				}
+				entry.IsStale = false;
+			}
+			switch (mode) {
+				case ReplaceModelMode.SetAsDirty:
+					dirtyEntry = entry;
+					MarkAllAsStaleExcept(entry);
+					this.IsDirty = true;
+					break;
+				case ReplaceModelMode.SetAsValid:
+					if (dirtyEntry == entry) {
+						dirtyEntry = null;
+						this.IsDirty = false;
+					}
+					break;
+				case ReplaceModelMode.TransferDirty:
+					dirtyEntry = entry;
+					this.IsDirty = true;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+		#endregion
+		
+		#region Reference Counting
+		int referenceCount = 1;
+
+		void CheckDisposed()
+		{
+			if (referenceCount <= 0)
+				throw new ObjectDisposedException("OpenedFile");
 		}
 		
+		/// <summary>
+		/// Gets the reference count of the OpenedFile.
+		/// This is used for the IFileService.UpdateFileModel() implementation.
+		/// </summary>
+		public int ReferenceCount {
+			get { return referenceCount; }
+		}
+		
+		public void AddReference()
+		{
+			CheckDisposed();
+			referenceCount++;
+		}
+		
+		public void ReleaseReference()
+		{
+			CheckDisposed();
+			if (--referenceCount == 0) {
+				UnloadFile();
+			}
+		}
+		
+		/// <summary>
+		/// Unloads the file, this method is called once after the reference count has reached zero.
+		/// </summary>
+		protected virtual void UnloadFile()
+		{
+			Debug.Assert(referenceCount == 0);
+			foreach (var entry in entries) {
+				entry.NotifyUnloaded(this);
+			}
+			// Free memory consumed by models even if the OpenedFile is leaked somewhere
+			entries.Clear();
+			dirtyEntry = null;
+		}
+		#endregion
 	}
 	
 	/*

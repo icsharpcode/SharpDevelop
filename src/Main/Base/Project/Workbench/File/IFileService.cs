@@ -28,6 +28,26 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
+	/// Options for the <see cref="IFileService.UpdateFileModel()"/> method. 
+	/// </summary>
+	[Flags]
+	public enum FileUpdateOptions
+	{
+		None = 0,
+		/// <summary>
+		/// If no view content exists for the file, it will be opened in a new view.
+		/// The view content can then be used to save the changes performed by the update.
+		/// If this option is not used, changes are automatically saved to disk if the file is not open in any view.
+		/// </summary>
+		OpenViewIfNoneExists = 1,
+		/// <summary>
+		/// The changes are saved to disk after the update, even if the file is currently open in a view
+		/// (in that case, other changes from the view may be saved as well).
+		/// </summary>
+		SaveToDisk = 2,
+	}
+	
+	/// <summary>
 	/// Manages the list files opened by view contents so that multiple view contents opening the same file can synchronize.
 	/// Also provides events that can be used to listen to file operations performed in the IDE.
 	/// </summary>
@@ -94,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <param name="description">Description shown in the dialog.</param>
 		/// <param name="selectedPath">Optional: Initially selected folder.</param>
 		/// <returns>The selected folder; or <c>null</c> if the user cancelled the dialog.</returns>
-		string BrowseForFolder(string description, string selectedPath = null);
+		DirectoryName BrowseForFolder(string description, string selectedPath = null);
 		#endregion
 		
 		#region OpenedFiles
@@ -103,38 +123,49 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// The returned collection is a read-only copy of the currently opened files -
 		/// it will not reflect future changes of the list of opened files.
 		/// </summary>
+		/// <remarks>
+		/// Accessing this property does not increase the reference count on the opened files in the collection.
+		/// If you want to maintain a reference over a longer period of time (so that the existing reference might be released),
+		/// you need to call <see cref="OpenedFile.AddReference()"/>.
+		/// </remarks>
 		IReadOnlyList<OpenedFile> OpenedFiles { get; }
 		
 		/// <summary>
 		/// Gets an opened file, or returns null if the file is not opened.
 		/// </summary>
+		/// <remarks>
+		/// This method does not increase the reference count on the opened files in the collection.
+		/// If you want to maintain a reference over a longer period of time (so that the existing reference might be released),
+		/// you need to call <see cref="OpenedFile.AddReference()"/>.
+		/// </remarks>
 		OpenedFile GetOpenedFile(FileName fileName);
 		
-		/// <summary>
-		/// Gets an opened file, or returns null if the file is not opened.
-		/// </summary>
+		/// <inheritdoc cref="GetOpenedFile(FileName)"/>
 		OpenedFile GetOpenedFile(string fileName);
 		
 		/// <summary>
-		/// Gets or creates an opened file.
-		/// Warning: the opened file will be a file without any views attached.
-		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile to
-		/// unload the OpenedFile instance if no views were attached to it.
+		/// Creates a new OpenedFile for the specified file name.
+		/// If the file is already open, an existing OpenedFile is returned instead (and its reference count is increased).
+		/// 
+		/// Every CreateOpenedFile() call <b>must</b> be paired with a <see cref="OpenedFile.ReleaseReference()"/> call!
 		/// </summary>
-		OpenedFile GetOrCreateOpenedFile(FileName fileName);
-		
-		/// <summary>
-		/// Gets or creates an opened file.
-		/// Warning: the opened file will be a file without any views attached.
-		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile to
-		/// unload the OpenedFile instance if no views were attached to it.
-		/// </summary>
-		OpenedFile GetOrCreateOpenedFile(string fileName);
+		OpenedFile CreateOpenedFile(FileName fileName);
 		
 		/// <summary>
 		/// Creates a new untitled OpenedFile.
+		/// 
+		/// Every CreateUntitledOpenedFile() call <b>must</b> be paired with a <see cref="OpenedFile.ReleaseReference()"/> call!
 		/// </summary>
 		OpenedFile CreateUntitledOpenedFile(string defaultName, byte[] content);
+		
+		/// <summary>
+		/// Updates a file by performing actions on a model.
+		/// </summary>
+		/// <param name="fileName">The file to be updated.</param>
+		/// <param name="modelProvider">The type of model to use for the update.</param>
+		/// <param name="action">A delegate that performs the update.</param>
+		/// <param name="options">Provides options regarding the file model update.</param>
+		void UpdateFileModel<T>(FileName fileName, IFileModelProvider<T> modelProvider, Action<T> action, FileUpdateOptions options = FileUpdateOptions.None) where T : class;
 		#endregion
 		
 		#region CheckFileName

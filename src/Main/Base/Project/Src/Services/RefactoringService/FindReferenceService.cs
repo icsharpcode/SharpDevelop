@@ -32,6 +32,7 @@ using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -255,16 +256,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var openedFile = SD.FileService.GetOpenedFile(file.FileName);
 			if (openedFile == null) {
 				SD.FileService.OpenFile(file.FileName, false);
-				openedFile = SD.FileService.GetOpenedFile(file.FileName); //?
+				openedFile = SD.FileService.GetOpenedFile(file.FileName);
 			}
-			
-			var provider = openedFile.CurrentView.GetService<IFileDocumentProvider>();
-			if (provider != null) {
-				var document = provider.GetDocumentForFile(openedFile);
-				if (document == null)
-					throw new InvalidOperationException("Editor/document not found!");
+			if (openedFile != null) {
+				var document = openedFile.GetModel(FileModels.TextDocument);
 				file.Apply(document);
-				openedFile.MakeDirty();
 			}
 		}
 	}

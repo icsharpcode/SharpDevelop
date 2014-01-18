@@ -7,9 +7,9 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
-	sealed class BinaryFileModelProvider : IFileModelProvider<IBinaryModel>
+	sealed class BinaryFileModelProvider : IFileModelProvider<IBinaryFileModel>
 	{
-		sealed class OnDiskBinaryModel : IBinaryModel
+		sealed class OnDiskBinaryModel : IBinaryFileModel
 		{
 			internal readonly OpenedFile file;
 			
@@ -24,24 +24,24 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
-		public IBinaryModel Load(OpenedFile file)
+		public IBinaryFileModel Load(OpenedFile file)
 		{
 			return new OnDiskBinaryModel(file);
 		}
 		
-		public void Save(OpenedFile file, IBinaryModel model)
+		public void Save(OpenedFile file, IBinaryFileModel model)
 		{
 			SaveCopyAs(file, model, file.FileName);
 			file.ReplaceModel(this, model, ReplaceModelMode.SetAsValid); // remove dirty flag
 		}
 		
-		public void SaveCopyAs(OpenedFile file, IBinaryModel model, FileName outputFileName)
+		public void SaveCopyAs(OpenedFile file, IBinaryFileModel model, FileName outputFileName)
 		{
 			var onDisk = model as OnDiskBinaryModel;
 			if (onDisk != null) {
 				// We can just copy the file (but avoid copying to itself)
 				if (onDisk.file.FileName != outputFileName) {
-					SD.FileSystem.CopyFile(onDisk.file.FileName, outputFileName);
+					SD.FileSystem.CopyFile(onDisk.file.FileName, outputFileName, true);
 				}
 			} else {
 				using (var inputStream = model.OpenRead()) {
@@ -57,15 +57,15 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			return false;
 		}
 
-		public void NotifyRename(OpenedFile file, IBinaryModel model, FileName oldName, FileName newName)
+		public void NotifyRename(OpenedFile file, IBinaryFileModel model, FileName oldName, FileName newName)
 		{
 		}
 		
-		public void NotifyStale(OpenedFile file, IBinaryModel model)
+		public void NotifyStale(OpenedFile file, IBinaryFileModel model)
 		{
 		}
 		
-		public void NotifyUnloaded(OpenedFile file, IBinaryModel model)
+		public void NotifyUnloaded(OpenedFile file, IBinaryFileModel model)
 		{
 		}
 	}

@@ -280,13 +280,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			// Also, for applications (not libraries), create an app.config is it is required for the target framework
 			bool createAppConfig = newFramework.RequiresAppConfigEntry && (Project.OutputType != OutputType.Library && Project.OutputType != OutputType.Module);
 			
-			string appConfigFileName = CompilableProject.GetAppConfigFile(Project, createAppConfig);
+			FileName appConfigFileName = CompilableProject.GetAppConfigFile(Project, createAppConfig);
 			if (appConfigFileName == null)
 				return;
 			
-			using (FakeXmlViewContent xml = new FakeXmlViewContent(appConfigFileName)) {
-				if (xml.Document != null) {
-					XElement configuration = xml.Document.Root;
+			SD.FileService.UpdateFileModel(
+				appConfigFileName, FileModels.XDocument,
+				delegate (XDocument document) {
+					XElement configuration = document.Root;
 					XElement startup = configuration.Element("startup");
 					if (startup == null) {
 						startup = new XElement("startup");
@@ -304,7 +305,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					supportedRuntime.SetAttributeValue("version", newFramework.SupportedRuntimeVersion);
 					supportedRuntime.SetAttributeValue("sku", newFramework.SupportedSku);
 				}
-			}
+			);
 		}
 		
 		protected virtual void AddOrRemoveExtensions()

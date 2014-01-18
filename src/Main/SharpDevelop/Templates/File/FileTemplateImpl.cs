@@ -528,8 +528,8 @@ namespace ICSharpCode.SharpDevelop.Templates
 				OpenedFile file = null;
 				try {
 					if (Path.IsPathRooted(fileName)) {
-						file = SD.FileService.GetOrCreateOpenedFile(fileName);
-						file.SetData(data);
+						file = SD.FileService.CreateOpenedFile(fileName);
+						file.ReplaceModel(FileModels.Binary, new BinaryFileModel(data));
 						
 						Directory.CreateDirectory(Path.GetDirectoryName(fileName));
 						file.SaveToDisk();
@@ -543,7 +543,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 					SD.FileService.OpenFile(file.FileName);
 				} finally {
 					if (file != null)
-						file.CloseIfAllViewsClosed();
+						file.ReleaseReference();
 				}
 			}
 			

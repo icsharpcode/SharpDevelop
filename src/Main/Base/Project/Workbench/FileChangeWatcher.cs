@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		bool wasChangedExternally = false;
 		OpenedFile file;
 		
-		public FileChangeWatcher(OpenedFile file)
+		internal FileChangeWatcher(OpenedFile file)
 		{
 			if (file == null)
 				throw new ArgumentNullException("file");
@@ -203,18 +203,18 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				if (file == null)
 					return;
 				
-				string fileName = file.FileName;
-				if (!File.Exists(fileName))
+				var fileName = file.FileName;
+				if (!SD.FileSystem.FileExists(fileName))
 					return;
 				
 				string message = StringParser.Parse(
 					"${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}",
 					new StringTagPair("File", Path.GetFullPath(fileName))
 				);
-				if ((AutoLoadExternalChangesOption && file.IsDirty == false)
+				if ((AutoLoadExternalChangesOption && !file.IsDirty)
 				    || MessageService.AskQuestion(message, StringParser.Parse("${res:MainWindow.DialogName}")))
 				{
-					if (File.Exists(fileName)) {
+					if (SD.FileSystem.FileExists(fileName)) {
 						file.ReloadFromDisk();
 					}
 				} else {

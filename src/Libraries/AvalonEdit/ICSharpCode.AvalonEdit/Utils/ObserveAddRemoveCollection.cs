@@ -26,7 +26,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// It is valid for the onAdd callback to throw an exception - this will prevent the new item from
 	/// being added to the collection.
 	/// </summary>
-	sealed class ObserveAddRemoveCollection<T> : Collection<T>
+	public sealed class ObserveAddRemoveCollection<T> : Collection<T>
 	{
 		readonly Action<T> onAdd, onRemove;
 		

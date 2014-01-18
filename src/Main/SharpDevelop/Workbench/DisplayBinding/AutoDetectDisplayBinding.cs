@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			double max = double.NegativeInfinity;
 			const int BUFFER_LENGTH = 4 * 1024;
 			
-			using (var stream = file.OpenRead()) {
+			using (var stream = file.GetModel(FileModels.Binary).OpenRead()) {
 				string mime = "text/plain";
 				if (stream.Length > 0) {
 					stream.Position = 0;

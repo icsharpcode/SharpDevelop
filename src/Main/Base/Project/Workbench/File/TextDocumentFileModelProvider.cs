@@ -33,11 +33,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				document.Replace(0, document.TextLength, textContent, ToOffsetChangeMap(diff.GetEdits()));
 				document.UndoStack.ClearAll();
 				info.IsStale = false;
-				return document;
 			} else {
 				document = new TextDocument(textContent);
+				document.TextChanged += delegate { file.MakeDirty(this); };
 				document.GetRequiredService<IServiceContainer>().AddService(typeof(DocumentFileModelInfo), info);
 			}
+			return document;
 		}
 		
 		OffsetChangeMap ToOffsetChangeMap(IEnumerable<Edit> edits)
@@ -58,12 +59,23 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public void Save(OpenedFile file, TextDocument model)
 		{
-			throw new NotImplementedException();
+			MemoryStream ms = new MemoryStream();
+			SaveTo(ms, model);
+			file.ReplaceModel(FileModels.Binary, new BinaryFileModel(ms.ToArray()));
 		}
 		
 		public void SaveCopyAs(OpenedFile file, TextDocument model, FileName outputFileName)
 		{
-			throw new NotImplementedException();
+			using (Stream s = SD.FileSystem.OpenWrite(outputFileName)) {
+				SaveTo(s, model);
+			}
+		}
+		
+		static void SaveTo(Stream s, TextDocument model)
+		{
+			using (StreamWriter w = new StreamWriter(s, model.GetFileModelInfo().Encoding)) {
+				model.WriteTextTo(w);
+			}
 		}
 		
 		bool IFileModelProvider<TextDocument>.CanLoadFrom<U>(IFileModelProvider<U> otherProvider)

@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Gets the list of files that are being edited using this view content.
 		/// The returned collection usually is read-only.
 		/// </summary>
-		IList<OpenedFile> Files { get; }
+		IReadOnlyList<OpenedFile> Files { get; }
 		
 		/// <summary>
 		/// Gets the primary file being edited. Might return null if no file is edited.
