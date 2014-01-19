@@ -1009,7 +1009,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		void HideMouseCursor() {
-			if (!this.isMouseCursorHidden && this.IsMouseOver) {	
+			if (Options.HideCursorWhileTyping && !this.isMouseCursorHidden && this.IsMouseOver) {	
 				this.isMouseCursorHidden = true;
 				System.Windows.Forms.Cursor.Hide();
 			}

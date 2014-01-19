@@ -434,7 +434,7 @@ namespace ICSharpCode.AvalonEdit
 		bool highlightCurrentLine = false;
 		
 		/// <summary>
-		/// Gets/Sets whether current line should be shown.
+		/// Gets/Sets if current line should be shown.
 		/// </summary>
 		[DefaultValue(false)]
 		public virtual bool HighlightCurrentLine {
@@ -443,6 +443,22 @@ namespace ICSharpCode.AvalonEdit
 				if (highlightCurrentLine != value) {
 					highlightCurrentLine = value;
 					OnPropertyChanged("HighlightCurrentLine");
+				}
+			}
+		}
+		
+		bool hideCursorWhileTyping = true;
+		
+		[DefaultValue(true)]
+		/// <summary>
+		/// Gets/Sets if mouse cursor should be shown when user is typing
+		/// </summary>
+		public bool HideCursorWhileTyping {
+			get { return hideCursorWhileTyping; }
+			set {
+				if (hideCursorWhileTyping != value) {
+					hideCursorWhileTyping = value;
+					OnPropertyChanged("HideCursorWhileTyping");
 				}
 			}
 		}
