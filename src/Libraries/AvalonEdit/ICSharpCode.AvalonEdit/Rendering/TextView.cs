@@ -211,8 +211,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			else
 				columnRulerRenderer.SetRuler(-1, ColumnRulerPen);
 			
-			currentLineHighlighRenderer.Enabled = Options.HighlightCurrentLine;
-			
 			UpdateBuiltinElementGeneratorsFromOptions();
 			Redraw();
 		}

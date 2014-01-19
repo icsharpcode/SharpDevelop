@@ -29,15 +29,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public int Line {
 			get { return this.Line; } 
 			set {
-				if (this.line != line) {
+				if (this.line != value) {
 					this.line = value;
 					this.textView.InvalidateLayer(this.Layer);
 				}
 			}
-		}
-		
-		public bool Enabled {
-			get; set;
 		}
 		
 		public KnownLayer Layer
@@ -74,7 +70,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		public void Draw(TextView textView, DrawingContext drawingContext)
 		{
-			if(!Enabled)
+			if(!this.textView.Options.HighlightCurrentLine)
 				return;
 			
 			BackgroundGeometryBuilder builder = new BackgroundGeometryBuilder();
