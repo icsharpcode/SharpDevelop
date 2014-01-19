@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.AddInManager2.Model;
 using ICSharpCode.AddInManager2.View;
 using ICSharpCode.SharpDevelop;
@@ -116,7 +117,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		private void ShowErrorMessage(string message)
 		{
-			this.Message = message;
+			this.Message = StringParser.Parse(message);
 			this.HasError = true;
 		}
 		

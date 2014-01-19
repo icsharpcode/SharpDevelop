@@ -149,7 +149,8 @@
 					Grid.Column="1"
 					Margin="4, 4"
 					TextTrimming="CharacterEllipsis"
-					Text="{Binding Path=Message}"/>
+					Text="{Binding Path=Message}"
+					ToolTip="{Binding Path=Message}" />
 				<Button
 					Grid.Column="2"
 					Content="{core:Localize Global.CloseButtonText}"
