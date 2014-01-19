@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel.Design;
 using System.Configuration;
 using System.IO;
 using System.Resources;
@@ -14,6 +15,7 @@ using System.Security.Policy;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using NoGoop.Controls;
 using NoGoop.ObjBrowser.Dialogs;
 using NoGoop.Util;
@@ -139,18 +141,21 @@ namespace NoGoop.ObjBrowser
 		
 		void InitializeServices()
 		{
-			PropertyService.InitializeService(GetConfigurationDirectory(), String.Empty, "ComponentInspector");
-			PropertyService.Load();
-			
-			ResourceService.InitializeService(GetResourceDirectory());
-			ResourceService.RegisterNeutralStrings(new ResourceManager("ComponentInspector.Resources.StringResources", typeof(ComponentInspectorApplication).Assembly));
+			SD.InitializeForUnitTests();
+			var container = ServiceSingleton.GetRequiredService<IServiceContainer>();
+			// Replace IPropertyService initialized by InitializeForUnitServices() with our own PropertyService
+			container.RemoveService(typeof(IPropertyService));
+			container.AddService(typeof(IPropertyService), new PropertyService());
+			container.AddService(typeof(ICSharpCode.Core.IResourceService), new ResourceServiceImpl(
+				GetResourceDirectory(), SD.PropertyService));
 		}
 		
 		string GetResourceDirectory()
 		{
 			string resourceDirectory = ConfigurationSettings.AppSettings.Get("ResourceDirectory");
 			if (resourceDirectory != null) {
-				return Path.Combine(Application.StartupPath, resourceDirectory);
+				var path = new DirectoryName(Path.Combine(Application.StartupPath, resourceDirectory));
+				return path;
 			}
 			return Path.Combine(Application.StartupPath, "resources");
 		}
@@ -170,7 +175,7 @@ namespace NoGoop.ObjBrowser
 			if (!Directory.Exists(configDirectory)) {
 				Directory.CreateDirectory(configDirectory);
 			}
-			PropertyService.Save();
+			SD.PropertyService.Save();
 		}
 	}
 }

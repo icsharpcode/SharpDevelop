@@ -15,8 +15,9 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
@@ -45,7 +46,7 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
       <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
