@@ -462,5 +462,21 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
+		
+		bool useOverstrikeMode = false;
+		
+		[DefaultValue(false)]
+		/// <summary>
+		/// Gets/Sets if overstrike mode is enabled to use
+		/// </summary>
+		public bool UseOverstrikeMode {
+			get { return useOverstrikeMode; }
+			set {
+				if (useOverstrikeMode != value) {
+					useOverstrikeMode = value;
+					OnPropertyChanged("UseOverstrikeMode");
+				}
+			}
+		}
 	}
 }

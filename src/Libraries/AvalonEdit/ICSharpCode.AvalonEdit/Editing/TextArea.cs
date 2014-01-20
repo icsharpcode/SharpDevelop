@@ -866,8 +866,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (!e.Handled) {
 				if (e.Text == "\n" || e.Text == "\r" || e.Text == "\r\n")
 					ReplaceSelectionWithNewLine();
-				else
+				else {
+					if (overstrikeMode && Selection.IsEmpty && Document.GetLineByNumber(Caret.Line).EndOffset > Caret.Offset)
+						Selection = Selection.Create(this, Caret.Offset, Caret.Offset+e.Text.Length);
 					ReplaceSelectionWithText(e.Text);
+				}
 				OnTextEntered(e);
 				caret.BringCaretToView();
 			}
@@ -952,6 +955,15 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected override void OnPreviewKeyDown(KeyEventArgs e)
 		{
 			base.OnPreviewKeyDown(e);
+			
+			if (!this.Options.UseOverstrikeMode) {
+				this.overstrikeMode = false;
+			} else if (!e.Handled && e.Key == Key.Insert) {
+				this.overstrikeMode = !this.overstrikeMode;
+				e.Handled = true;
+				return;
+			}
+			
 			HideMouseCursor();
 			foreach (TextAreaStackedInputHandler h in stackedInputHandlers) {
 				if (e.Handled)
@@ -1014,6 +1026,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 				System.Windows.Forms.Cursor.Hide();
 			}
 		}
+		
+		#endregion
+		
+		#region Overstrike mode
+		
+		bool overstrikeMode = false;
 		
 		#endregion
 		
