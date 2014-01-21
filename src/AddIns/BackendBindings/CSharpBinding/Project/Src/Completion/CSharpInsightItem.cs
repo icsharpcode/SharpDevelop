@@ -2,12 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
-using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Xml;
@@ -31,6 +31,7 @@ namespace CSharpBinding.Completion
 			get {
 				if (header == null) {
 					header = GenerateHeader();
+					OnPropertyChanged("Header");
 				}
 				return header;
 			}
@@ -45,6 +46,8 @@ namespace CSharpBinding.Completion
 			this.highlightedParameterIndex = parameterIndex;
 			if (header != null)
 				header = GenerateHeader();
+			OnPropertyChanged("Header");
+			OnPropertyChanged("Content");
 		}
 		
 		FlowDocumentScrollViewer GenerateHeader()
@@ -94,6 +97,7 @@ namespace CSharpBinding.Completion
 			get {
 				if (content == null) {
 					GenerateHeader();
+					OnPropertyChanged("Content");
 				}
 				return content;
 			}
@@ -131,6 +135,15 @@ namespace CSharpBinding.Completion
 					parameterIndex++;
 				}
 			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		void OnPropertyChanged(string propertyName)
+		{
+			var handler = PropertyChanged;
+			if (handler != null)
+				handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

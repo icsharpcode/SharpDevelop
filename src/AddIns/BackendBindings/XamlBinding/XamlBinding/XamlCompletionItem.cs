@@ -210,6 +210,15 @@ namespace ICSharpCode.XamlBinding
 		public object Content {
 			get { return ctor.Documentation; }
 		}
+
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
+		protected virtual void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			var handler = PropertyChanged;
+			if (handler != null)
+				handler(this, e);
+		}
 	}
 	
 	class MemberInsightItem : IInsightItem
@@ -236,6 +245,15 @@ namespace ICSharpCode.XamlBinding
 		
 		public object Content {
 			get { return member.Documentation; }
+		}
+
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
+		protected virtual void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			var handler = PropertyChanged;
+			if (handler != null)
+				handler(this, e);
 		}
 	}
 }
