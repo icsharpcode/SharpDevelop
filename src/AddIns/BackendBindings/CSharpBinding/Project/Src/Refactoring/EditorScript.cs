@@ -114,35 +114,44 @@ namespace CSharpBinding.Refactoring
 					}
 					break;
 			}
-			operationsRunning++;
 			InsertWithCursorOnLayer(this, layer, tcs, nodes, editor.Document);
 			return tcs.Task;
 		}
 		
 		void InsertWithCursorOnLayer(EditorScript currentScript, InsertionCursorLayer layer, TaskCompletionSource<Script> tcs, IList<AstNode> nodes, IDocument target)
 		{
+			var doc = target as TextDocument;
+			var op = new UndoOperation(layer, tcs);
+			if (doc != null) {
+				doc.UndoStack.Push(op);
+			}
 			layer.Exited += delegate(object s, InsertionCursorEventArgs args) {
-				if (args.Success) {
-					if (args.InsertionPoint.LineAfter == NewLineInsertion.None &&
-					    args.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count > 1) {
-						args.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
+				doc.UndoStack.StartContinuedUndoGroup();
+				try {
+					if (args.Success) {
+						if (args.InsertionPoint.LineAfter == NewLineInsertion.None &&
+						    args.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count > 1) {
+							args.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
+						}
+						foreach (var node in nodes.Reverse ()) {
+							int indentLevel = currentScript.GetIndentLevelAt(target.GetOffset(args.InsertionPoint.Location));
+							var output = currentScript.OutputNode(indentLevel, node);
+							var offset = target.GetOffset(args.InsertionPoint.Location);
+							var delta = args.InsertionPoint.Insert(target, output.Text);
+							output.RegisterTrackedSegments(currentScript, delta + offset);
+						}
+						tcs.SetResult(currentScript);
 					}
-					foreach (var node in nodes.Reverse ()) {
-						int indentLevel = currentScript.GetIndentLevelAt(target.GetOffset(args.InsertionPoint.Location));
-						var output = currentScript.OutputNode(indentLevel, node);
-						var offset = target.GetOffset(args.InsertionPoint.Location);
-						var delta = args.InsertionPoint.Insert(target, output.Text);
-						output.RegisterTrackedSegments(currentScript, delta + offset);
-					}
-					tcs.SetResult(currentScript);
+					layer.Dispose();
+					DisposeOnClose();
+				} finally {
+					doc.UndoStack.EndUndoGroup();
 				}
-				layer.Dispose();
-				DisposeOnClose();
+				op.Reset();
 			};
 		}
 		
 		readonly List<Script> startedScripts = new List<Script>();
-		int operationsRunning;
 		
 		public override Task<Script> InsertWithCursor(string operation, ITypeDefinition parentType, Func<Script, RefactoringContext, IList<AstNode>> nodeCallback)
 		{
@@ -195,7 +204,6 @@ namespace CSharpBinding.Refactoring
 				tcs.SetResult(script);
 				return tcs.Task;
 			}
-			operationsRunning++;
 			InsertWithCursorOnLayer(script, layer, tcs, nodes, area.Document);
 			return tcs.Task;
 		}
@@ -205,14 +213,10 @@ namespace CSharpBinding.Refactoring
 		{
 			if (isDisposed)
 				return;
-			if (force)
-				operationsRunning = 0;
-			if (operationsRunning-- == 0) {
-				isDisposed = true;
-				base.Dispose ();
-				// refresh parse information so that the issue can disappear immediately
-				SD.ParserService.ParseAsync(editor.FileName, editor.Document).FireAndForget();
-			}
+			isDisposed = true;
+			base.Dispose();
+			// refresh parse information so that the issue can disappear immediately
+			SD.ParserService.ParseAsync(editor.FileName, editor.Document).FireAndForget();
 			foreach (var script in startedScripts)
 				script.Dispose();
 		}
@@ -221,7 +225,38 @@ namespace CSharpBinding.Refactoring
 		{
 			DisposeOnClose();
 		}
-
+		
+		class UndoOperation : IUndoableOperation
+		{
+			InsertionCursorLayer layer;
+			TaskCompletionSource<Script> tcs;
+			
+			public UndoOperation(InsertionCursorLayer layer, TaskCompletionSource<Script> tcs)
+			{
+				this.layer = layer;
+				this.tcs = tcs;
+			}
+			
+			public void Reset()
+			{
+				layer = null;
+				tcs = null;
+			}
+			
+			public void Undo()
+			{
+				if (layer != null)
+					layer.Dispose();
+				layer = null;
+				if (tcs != null)
+					tcs.SetCanceled();
+				tcs = null;
+			}
+			
+			public void Redo()
+			{
+			}
+		}
 	}
 	
 	class InsertionCursorLayer : UIElement, IDisposable

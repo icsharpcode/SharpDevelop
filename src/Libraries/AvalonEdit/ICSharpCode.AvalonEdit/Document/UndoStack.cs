@@ -193,7 +193,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		/// <param name="groupDescriptor">An object that is stored with the undo group.
 		/// If this is not a top-level undo group, the parameter is ignored.</param>
-		public void StartContinuedUndoGroup(object groupDescriptor)
+		public void StartContinuedUndoGroup(object groupDescriptor = null)
 		{
 			if (undoGroupDepth == 0) {
 				actionCountInUndoGroup = (allowContinue && undostack.Count > 0) ? 1 : 0;
