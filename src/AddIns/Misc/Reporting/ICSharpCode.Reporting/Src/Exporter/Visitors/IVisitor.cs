@@ -17,5 +17,6 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		void Visit(ExportContainer exportColumn);
 		void Visit(ExportText exportColumn);
 		void Visit(ExportLine exportGraphics);
+		void Visit (ExportRectangle exportRectangle);
 	}
 }

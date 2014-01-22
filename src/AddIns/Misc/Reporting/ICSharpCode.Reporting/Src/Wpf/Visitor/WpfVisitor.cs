@@ -81,13 +81,33 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		public override void Visit(ExportLine exportGraphics)
 		{
 			var pen = FixedDocumentCreator.CreateWpfPen(exportGraphics);
-			pen.Thickness = exportGraphics.Thickness;
-			pen.DashStyle = FixedDocumentCreator.DashStyle(exportGraphics);
-			pen.StartLineCap = FixedDocumentCreator.LineCap(exportGraphics.StartLineCap);
-			pen.EndLineCap = FixedDocumentCreator.LineCap(exportGraphics.EndLineCap);
-			ExtendedLine m = new ExtendedLine(exportGraphics,pen);
+			var visual = new DrawingVisual();
+			using (var dc = visual.RenderOpen())
+			{
+				dc.DrawLine(pen,
+				            new Point(exportGraphics.Location.X, exportGraphics.Location.Y),
+				            new Point(exportGraphics.Location.X + exportGraphics.Size.Width,exportGraphics.Location.Y));
+			}
+			DrawingElement m = new DrawingElement(visual);
 			UIElement = m;
 		}
+		
+		
+		public override void Visit(ExportRectangle exportRectangle)
+		{
+			var pen = FixedDocumentCreator.CreateWpfPen(exportRectangle);
+			var visual = new DrawingVisual();
+		
+			using (var dc = visual.RenderOpen())
+			{dc.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportRectangle.BackColor),
+				                  pen,
+				                  new Rect(exportRectangle.Location.X,exportRectangle.Location.Y,
+				                           exportRectangle.Size.Width,exportRectangle.Size.Height));
+			}
+			DrawingElement m = new DrawingElement(visual);
+			UIElement = m;
+		}
+		
 		
 		
 		protected UIElement UIElement {get;private set;}

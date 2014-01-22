@@ -57,6 +57,9 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		{
 		}
 		
+		public virtual void Visit (ExportRectangle exportRectangle) {
+			
+		}
 		
 		protected bool ShouldSetBackcolor (ExportColumn exportColumn) {
 			return exportColumn.BackColor != Color.White;

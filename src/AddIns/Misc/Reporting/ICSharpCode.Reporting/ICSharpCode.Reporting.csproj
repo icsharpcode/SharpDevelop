@@ -146,6 +146,7 @@
     <Compile Include="Src\Items\BaseTextItem.cs" />
     <Compile Include="Src\Items\Graphics\BaseGraphics.cs" />
     <Compile Include="Src\Items\Graphics\BaseLineItem.cs" />
+    <Compile Include="Src\Items\Graphics\BaseRectangleItem.cs" />
     <Compile Include="Src\Items\GroupColumn.cs" />
     <Compile Include="Src\Items\PrintableItem.cs" />
     <Compile Include="Src\Items\ReportContainer.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="Src\PageBuilder\ExportColumns\ExportColumn.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportContainer.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportLine.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportRectangle.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportText.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportPage.cs" />
     <Compile Include="Src\PageBuilder\FormPageBuilder.cs" />

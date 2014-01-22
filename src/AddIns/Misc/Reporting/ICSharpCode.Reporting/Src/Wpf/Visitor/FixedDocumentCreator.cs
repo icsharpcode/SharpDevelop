@@ -251,10 +251,17 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		public static Pen CreateWpfPen(IReportObject exportColumn){
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
-			var myPen = new Pen();
-			myPen.Brush = ConvertBrush(exportColumn.ForeColor);
-			myPen.Thickness = 1;
-			return myPen;
+			var pen = new Pen();
+			pen.Brush = ConvertBrush(exportColumn.ForeColor);
+			pen.Thickness = 1;
+			var exportGraphics = exportColumn as IExportGraphics;
+			if (exportGraphics != null) {
+				pen.Thickness = exportGraphics.Thickness;
+				pen.DashStyle = FixedDocumentCreator.DashStyle(exportGraphics);
+				pen.StartLineCap = FixedDocumentCreator.LineCap(exportGraphics.StartLineCap);
+				pen.EndLineCap = FixedDocumentCreator.LineCap(exportGraphics.EndLineCap);
+			}
+			return pen;
 		}
 		
 		

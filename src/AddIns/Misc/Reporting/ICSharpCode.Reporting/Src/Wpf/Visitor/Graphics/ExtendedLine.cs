@@ -14,10 +14,16 @@ using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.WpfReportViewer.Visitor.Graphics
 {
-	class ExtendedLine : FrameworkElement{
+	class DrawingElement : FrameworkElement{
 		
 		private VisualCollection children;
 	
+		public DrawingElement(DrawingVisual visual) {
+				children = new VisualCollection(this);
+				children.Add(visual);
+		}
+		
+		/*
 		public ExtendedLine(ExportLine exportGraphics,Pen pen){
 			children = new VisualCollection(this);
 			var visual = new DrawingVisual();
@@ -29,7 +35,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor.Graphics
 				            new Point(exportGraphics.Location.X + exportGraphics.Size.Width,exportGraphics.Location.Y));
 			}
 		}
-	
+	*/
 	
 		protected override int VisualChildrenCount{
 			get { return children.Count; }
