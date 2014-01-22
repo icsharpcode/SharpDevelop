@@ -96,8 +96,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		public override void Visit(ExportRectangle exportRectangle)
 		{
 			var pen = FixedDocumentCreator.CreateWpfPen(exportRectangle);
+			
 			var visual = new DrawingVisual();
-		
 			using (var dc = visual.RenderOpen())
 			{dc.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportRectangle.BackColor),
 				                  pen,
