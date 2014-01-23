@@ -86,12 +86,15 @@ namespace ICSharpCode.WpfDesign.Designer
 				return;
 			}
 			// First try hit-testing on the adorner layer.
-			
+
 			bool continueHitTest = true;
-			
+
+			HitTestFilterCallback filterBehavior = CustomHitTestFilterBehavior ?? FilterHitTestInvisibleElements;
+			CustomHitTestFilterBehavior = null;
 			if (testAdorners) {
+
 				RunHitTest(
-					_adornerLayer, mousePosition, FilterHitTestInvisibleElements,
+					_adornerLayer, mousePosition, filterBehavior,
 					delegate(HitTestResult result) {
 						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
 							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);
@@ -110,14 +113,14 @@ namespace ICSharpCode.WpfDesign.Designer
 						}
 					});
 			}
-			
+
 			if (continueHitTest && testDesignSurface) {
 				RunHitTest(
-					this.Child, mousePosition, FilterHitTestInvisibleElements,
+					this.Child, mousePosition, filterBehavior,
 					delegate(HitTestResult result) {
 						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
 							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);
-							
+
 							ViewService viewService = _context.Services.View;
 							DependencyObject obj = result.VisualHit;
 							while (obj != null) {
@@ -165,6 +168,8 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		#region Properties
 		
+		//Set custom HitTestFilterCallbak
+		public HitTestFilterCallback CustomHitTestFilterBehavior { get; set; }
 		/// <summary>
 		/// Gets/Sets the design context.
 		/// </summary>

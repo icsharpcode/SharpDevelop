@@ -142,6 +142,12 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			return item;
 		}
 		
+		public static bool AddItemWithCustomSizePosition(DesignItem container, Type createdItem, Size size, Point position)
+		{
+			CreateComponentTool cct = new CreateComponentTool(createdItem);
+			return AddItemWithCustomSize(container, cct.CreateItem(container.Context), position, size);
+		}
+		
 		public static bool AddItemWithDefaultSize(DesignItem container, Type createdItem, Size size)
 		{
 			CreateComponentTool cct = new CreateComponentTool(createdItem);

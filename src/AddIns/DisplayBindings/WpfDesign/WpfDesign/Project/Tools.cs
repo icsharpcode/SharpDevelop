@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 using ICSharpCode.WpfDesign.Adorners;
 
@@ -39,6 +40,10 @@ namespace ICSharpCode.WpfDesign
 	public interface IToolService
 	{
 		/// <summary>
+		/// Set custom HitTestFilterCallback for DesignPanel
+		/// </summary>
+		HitTestFilterCallback DesignPanelHitTestFilterCallback{ set; }
+		/// <summary>
 		/// Gets the 'pointer' tool.
 		/// The pointer tool is the default tool for selecting and moving elements.
 		/// </summary>
@@ -61,6 +66,10 @@ namespace ICSharpCode.WpfDesign
 	/// </summary>
 	public interface IDesignPanel : IInputElement
 	{
+		/// <summary>
+        /// Set a custom filter callback so that any element can be filtered out
+        /// </summary>
+        HitTestFilterCallback CustomHitTestFilterBehavior { get; set; }
 		/// <summary>
 		/// Gets the design context used by the DesignPanel.
 		/// </summary>

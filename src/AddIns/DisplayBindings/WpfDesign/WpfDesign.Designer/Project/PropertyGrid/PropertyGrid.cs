@@ -45,7 +45,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		public CategoriesCollection Categories { get; private set; }
 		public PropertyNodeCollection Events { get; private set; }
 
-		public EventHandler AggregatePropertiesUpdated;
+		public EventHandler AggregatePropertiesUpdated { get; set; }
 		
 		private PropertyGridGroupMode _groupMode;
 		
