@@ -960,6 +960,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				this.overstrikeMode = false;
 			} else if (!e.Handled && e.Key == Key.Insert) {
 				this.overstrikeMode = !this.overstrikeMode;
+				this.caret.Show();
 				e.Handled = true;
 				return;
 			}
@@ -1032,6 +1033,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		#region Overstrike mode
 		
 		bool overstrikeMode = false;
+		
+		public bool OverstrikeMode
+		{
+			get { return this.overstrikeMode; }
+		}
 		
 		#endregion
 		
