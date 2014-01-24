@@ -322,7 +322,7 @@
 				<ComponentRef Id="AddInManager2MSWebXmlTransformDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
-				<ComponentRef Id="CodeQualityFiles"/>
+				<!--<ComponentRef Id="CodeQualityFiles"/>-->
 				<ComponentRef Id="CodeCoverageFiles"/>
 				<ComponentRef Id="DebuggerAddInFiles"/>
 				<ComponentRef Id="FiletypeIcons"/>
