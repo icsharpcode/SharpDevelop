@@ -377,9 +377,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 			double xPos = visualLine.GetTextLineVisualXPosition(textLine, position.VisualColumn);
 			double lineTop = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
 			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextBottom);
-			double charSize = 
-				visualLine.GetTextLineVisualXPosition(textLine, VisualColumn + 1) -
-				visualLine.GetTextLineVisualXPosition(textLine, VisualColumn);
+			
+			int currentPos = position.VisualColumn;
+			int nextPos = visualLine.GetNextCaretPosition(currentPos, LogicalDirection.Forward, CaretPositioningMode.Normal, true);
+			double charSize = Math.Abs(
+				visualLine.GetTextLineVisualXPosition(textLine, currentPos) -
+				visualLine.GetTextLineVisualXPosition(textLine, nextPos) );
 			
 			return new Rect(xPos,
 			                lineTop,
