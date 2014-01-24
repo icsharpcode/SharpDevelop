@@ -30,29 +30,43 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public ConversionFlags ConversionFlags { get; set; }
 		
-		#region ConvertEntity
+		#region ConvertSymbol
+		[Obsolete("Use ConvertSymbol() instead")]
 		public string ConvertEntity(IEntity entity)
 		{
-			if (entity == null)
-				throw new ArgumentNullException("entity");
+			return ConvertSymbol(entity);
+		}
+		
+		public string ConvertSymbol(ISymbol symbol)
+		{
+			if (symbol == null)
+				throw new ArgumentNullException("symbol");
 			
 			StringWriter writer = new StringWriter();
-			ConvertEntity(entity, new TextWriterTokenWriter(writer), FormattingOptionsFactory.CreateMono ());
+			ConvertSymbol(symbol, new TextWriterTokenWriter(writer), FormattingOptionsFactory.CreateMono ());
 			return writer.ToString();
 		}
 		
+		[Obsolete("Use ConvertSymbol() instead")]
 		public void ConvertEntity(IEntity entity, TokenWriter writer, CSharpFormattingOptions formattingPolicy)
 		{
-			if (entity == null)
-				throw new ArgumentNullException("entity");
+			ConvertSymbol(entity, writer, formattingPolicy);
+		}
+		
+		public void ConvertSymbol(ISymbol symbol, TokenWriter writer, CSharpFormattingOptions formattingPolicy)
+		{
+			if (symbol == null)
+				throw new ArgumentNullException("symbol");
 			if (writer == null)
 				throw new ArgumentNullException("writer");
 			if (formattingPolicy == null)
-				throw new ArgumentNullException("options");
+				throw new ArgumentNullException("formattingPolicy");
 			
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
-			EntityDeclaration node = astBuilder.ConvertEntity(entity);
-			PrintModifiers(node.Modifiers, writer);
+			AstNode node = astBuilder.ConvertSymbol(symbol);
+			EntityDeclaration entityDecl = node as EntityDeclaration;
+			if (entityDecl != null)
+				PrintModifiers(entityDecl.Modifiers, writer);
 			
 			if ((ConversionFlags & ConversionFlags.ShowDefinitionKeyword) == ConversionFlags.ShowDefinitionKeyword) {
 				if (node is TypeDeclaration) {
@@ -79,6 +93,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				} else if (node is EventDeclaration) {
 					writer.WriteKeyword(EventDeclaration.EventKeywordRole, "event");
 					writer.Space();
+				} else if (node is NamespaceDeclaration) {
+					writer.WriteKeyword(Roles.NamespaceKeyword, "namespace");
+					writer.Space();
 				}
 			}
 			
@@ -90,13 +107,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			if (entity is ITypeDefinition)
-				WriteTypeDeclarationName((ITypeDefinition)entity, writer, formattingPolicy);
+			if (symbol is ITypeDefinition)
+				WriteTypeDeclarationName((ITypeDefinition)symbol, writer, formattingPolicy);
+			else if (symbol is IMember)
+				WriteMemberDeclarationName((IMember)symbol, writer, formattingPolicy);
 			else
-				WriteMemberDeclarationName((IMember)entity, writer, formattingPolicy);
+				writer.WriteIdentifier(Identifier.Create(symbol.Name));
 			
-			if ((ConversionFlags & ConversionFlags.ShowParameterList) == ConversionFlags.ShowParameterList && HasParameters(entity)) {
-				writer.WriteToken(entity.SymbolKind == SymbolKind.Indexer ? Roles.LBracket : Roles.LPar, entity.SymbolKind == SymbolKind.Indexer ? "[" : "(");
+			if ((ConversionFlags & ConversionFlags.ShowParameterList) == ConversionFlags.ShowParameterList && HasParameters(symbol)) {
+				writer.WriteToken(symbol.SymbolKind == SymbolKind.Indexer ? Roles.LBracket : Roles.LPar, symbol.SymbolKind == SymbolKind.Indexer ? "[" : "(");
 				bool first = true;
 				foreach (var param in node.GetChildrenByRole(Roles.Parameter)) {
 					if (first) {
@@ -107,11 +126,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					param.AcceptVisitor(new CSharpOutputVisitor(writer, formattingPolicy));
 				}
-				writer.WriteToken(entity.SymbolKind == SymbolKind.Indexer ? Roles.RBracket : Roles.RPar, entity.SymbolKind == SymbolKind.Indexer ? "]" : ")");
+				writer.WriteToken(symbol.SymbolKind == SymbolKind.Indexer ? Roles.RBracket : Roles.RPar, symbol.SymbolKind == SymbolKind.Indexer ? "]" : ")");
 			}
 			
 			if ((ConversionFlags & ConversionFlags.ShowBody) == ConversionFlags.ShowBody && !(node is TypeDeclaration)) {
-				IProperty property = entity as IProperty;
+				IProperty property = symbol as IProperty;
 				if (property != null) {
 					writer.Space();
 					writer.WriteToken(Roles.LBrace, "{");
@@ -133,7 +152,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		bool HasParameters(IEntity e)
+		static bool HasParameters(ISymbol e)
 		{
 			switch (e.SymbolKind) {
 				case SymbolKind.TypeDefinition:
@@ -167,7 +186,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (typeDef.DeclaringTypeDefinition != null) {
 				WriteTypeDeclarationName(typeDef.DeclaringTypeDefinition, writer, formattingPolicy);
 				writer.WriteToken(Roles.Dot, ".");
-			} else if ((ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) == ConversionFlags.UseFullyQualifiedMemberNames) {
+			} else if ((ConversionFlags & ConversionFlags.UseFullyQualifiedEntityNames) == ConversionFlags.UseFullyQualifiedEntityNames) {
 				WriteQualifiedName(typeDef.Namespace, writer, formattingPolicy);
 				writer.WriteToken(Roles.Dot, ".");
 			}
@@ -265,7 +284,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				throw new ArgumentNullException("type");
 			
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
-			astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) != ConversionFlags.UseFullyQualifiedMemberNames;
+			astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedEntityNames) != ConversionFlags.UseFullyQualifiedEntityNames;
 			AstType astType = astBuilder.ConvertType(type);
 			return astType.ToString();
 		}
@@ -273,7 +292,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void ConvertType(IType type, TokenWriter writer, CSharpFormattingOptions formattingPolicy)
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
-			astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) != ConversionFlags.UseFullyQualifiedMemberNames;
+			astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedEntityNames) != ConversionFlags.UseFullyQualifiedEntityNames;
 			AstType astType = astBuilder.ConvertType(type);
 			astType.AcceptVisitor(new CSharpOutputVisitor(writer, formattingPolicy));
 		}

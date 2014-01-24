@@ -15,6 +15,11 @@ namespace ICSharpCode.SharpDevelop
 	internal class DefaultAmbience : IAmbience
 	{
 		public ConversionFlags ConversionFlags { get; set; }
+
+		public string ConvertSymbol(ISymbol symbol)
+		{
+			return symbol.Name;
+		}
 		
 		public string ConvertEntity(IEntity e)
 		{
@@ -29,11 +34,6 @@ namespace ICSharpCode.SharpDevelop
 		public string ConvertVariable(IVariable variable)
 		{
 			return variable.Name;
-		}
-		
-		public string WrapAttribute(string attribute)
-		{
-			return attribute;
 		}
 		
 		public string WrapComment(string comment)

@@ -245,7 +245,7 @@ class A
 		if (foo != null)
 			throw new ArgumentNullException (""foo"");
 	}
-}", 1);
+}", 0);
 		}
 
 		[Test]
@@ -269,7 +269,7 @@ class A
 		if (foo != null)
 			throw new ArgumentNullException (""foo"", ""bar"");
 	}
-}", 0);
+}", 1);
 		}
 
 		[Test]
@@ -406,7 +406,7 @@ class A
 				throw new ArgumentNullException (""value"");
 		}
 	}
-}", 1);
+}", 0);
 		}
 	}
 }

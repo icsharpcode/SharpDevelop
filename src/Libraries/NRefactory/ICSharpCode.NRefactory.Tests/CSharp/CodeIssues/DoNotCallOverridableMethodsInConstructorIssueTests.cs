@@ -171,6 +171,22 @@ public class Test {
 ";		
 			TestWrongContext<DoNotCallOverridableMethodsInConstructorIssue>(input);
 		}
+		
+		[Test]
+		public void SetVirtualProperty()
+		{
+			var input = @"class Foo
+{
+	Foo()
+	{
+		this.AutoProperty = 1;
+	}
+
+	public virtual int AutoProperty { get; set; }
+}";
+			TestRefactoringContext context;
+            var issues = GetIssues(new DoNotCallOverridableMethodsInConstructorIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+		}
 	}
 }
-

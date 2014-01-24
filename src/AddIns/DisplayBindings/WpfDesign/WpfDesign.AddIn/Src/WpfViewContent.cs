@@ -159,7 +159,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			tasks.Clear();
 			
 			foreach (XamlError error in xamlErrorService.Errors) {
-				var task = new SDTask(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line, TaskType.Error);
+				var task = new SDTask(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line, SharpDevelop.TaskType.Error);
 				tasks.Add(task);
 				TaskService.Add(task);
 			}

@@ -420,6 +420,25 @@ partial class Test
 }
 ", inactiveCodeColor);
 		}
+	
+
+		/// <summary>
+		/// Bug 17011 - XS does not recognize StringBuilder::AppendFormat 
+		/// </summary>
+		[Test]
+		public void TestBug17011()
+		{
+			TestColor (@"
+using System.Text;
+
+class TestClass
+{
+	void Foo(StringBuilder sb)
+	{
+		sb.AppendFormat(""${0} ${1}"", 1, 2);
+	}
+}", stringFormatItemColor);
+		}
 	}
 }
 

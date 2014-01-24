@@ -73,8 +73,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					              script => script.Replace(invocationExpression, new PrimitiveExpression(false)), invocationExpression);
 
 				var action2 = new CodeAction(ctx.TranslateString("Use Equals()"),
-					              script => script.Replace(invocationExpression.Target, new MemberReferenceExpression(
-						              new PrimitiveType("object"), "Equals")), invocationExpression);
+					              script => script.Replace(invocationExpression.Target,
+						              new PrimitiveType("object").Member("Equals")), invocationExpression);
 
 				AddIssue(new CodeIssue(invocationExpression,
 					ctx.TranslateString("'Object.ReferenceEquals' is always false because it is called with value type"),

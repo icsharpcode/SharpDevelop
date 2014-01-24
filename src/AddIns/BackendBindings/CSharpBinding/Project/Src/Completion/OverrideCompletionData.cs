@@ -34,7 +34,7 @@ namespace CSharpBinding.Completion
 			this.contextAtCaret = contextAtCaret;
 			var ambience = new CSharpAmbience();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
-			this.CompletionText = ambience.ConvertEntity(m);
+			this.CompletionText = ambience.ConvertSymbol(m);
 		}
 		
 		public override void Complete(CompletionContext context)

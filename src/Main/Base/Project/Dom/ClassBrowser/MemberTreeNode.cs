@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				return model.Name;
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
-			return ambience.ConvertEntity(member);
+			return ambience.ConvertSymbol(member);
 		}
 		
 		protected override IModelCollection<object> ModelChildren {

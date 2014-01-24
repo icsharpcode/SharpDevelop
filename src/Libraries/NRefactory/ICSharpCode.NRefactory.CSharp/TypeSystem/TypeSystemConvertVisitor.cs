@@ -1006,7 +1006,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			public override ConstantExpression VisitPrimitiveExpression(PrimitiveExpression primitiveExpression)
 			{
 				object val = interningProvider.InternValue(primitiveExpression.Value);
-				TypeCode typeCode = Type.GetTypeCode(val.GetType());
+				TypeCode typeCode = (val == null ? TypeCode.Object : Type.GetTypeCode(val.GetType()));
 				return interningProvider.Intern(
 					new PrimitiveConstantExpression(typeCode.ToTypeReference(), val));
 			}

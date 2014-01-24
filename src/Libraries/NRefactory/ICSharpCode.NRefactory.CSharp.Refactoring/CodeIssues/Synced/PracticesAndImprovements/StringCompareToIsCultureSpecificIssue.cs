@@ -84,8 +84,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var astBuilder = ctx.CreateTypeSystemAstBuilder(invocationExpression);
 				var newArgument = astBuilder.ConvertType(new TopLevelTypeName("System", "StringComparison")).Member(ordinal);
 
-				var newInvocation = new InvocationExpression(
-					new MemberReferenceExpression(new PrimitiveType("string"), "Compare"),
+				var newInvocation = new PrimitiveType("string").Invoke(
+					"Compare",
 					mr.Target.Clone(),
 					invocationExpression.Arguments.First().Clone(),
 					newArgument

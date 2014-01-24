@@ -359,7 +359,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		void ResolveAndProcessConversion(Expression expr, IType targetType)
 		{
-			if (targetType.Kind == TypeKind.Unknown || targetType.Kind == TypeKind.Void) {
+			if (targetType.Kind == TypeKind.Unknown) {
 				// no need to resolve the expression right now
 				Scan(expr);
 			} else {
@@ -2163,7 +2163,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Analyze();
 				IType unpackedReturnType = isAsync ? visitor.UnpackTask(returnType) : returnType;
 				Log.WriteLine("Applying return type {0} to explicitly-typed lambda {1}", unpackedReturnType, this.LambdaExpression);
-				if (unpackedReturnType.Kind != TypeKind.Void) {
+				if (unpackedReturnType.Kind != TypeKind.Void || body is BlockStatement) {
 					for (int i = 0; i < returnExpressions.Count; i++) {
 						visitor.ProcessConversion(returnExpressions[i], returnValues[i], unpackedReturnType);
 					}
@@ -2502,7 +2502,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				Log.WriteLine("Applying return type {0} to implicitly-typed lambda {1}", returnType, lambda.LambdaExpression);
-				if (returnType.Kind != TypeKind.Void) {
+				if (returnType.Kind != TypeKind.Void || lambda.BodyExpression is Statement) {
 					for (int i = 0; i < returnExpressions.Count; i++) {
 						visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
 					}
@@ -2697,7 +2697,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// can be converted to delegates with void return type.
 				// This holds for both async and regular lambdas.
 				return isValidAsVoidMethod;
-			} else if (isAsync && IsTask(returnType) && returnType.TypeParameterCount == 0) {
+			} else if (isAsync && TaskType.IsTask(returnType) && returnType.TypeParameterCount == 0) {
 				// Additionally, async lambdas with the above property can be converted to non-generic Task.
 				return isValidAsVoidMethod;
 			} else {
@@ -2705,7 +2705,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return isEndpointUnreachable;
 				if (isAsync) {
 					// async lambdas must return Task<T>
-					if (!(IsTask(returnType) && returnType.TypeParameterCount == 1))
+					if (!(TaskType.IsTask(returnType) && returnType.TypeParameterCount == 1))
 						return false;
 					// unpack Task<T> for testing the implicit conversions
 					returnType = ((ParameterizedType)returnType).GetTypeArgument(0);
@@ -2718,34 +2718,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		/// <summary>
-		/// Gets the T in Task&lt;T&gt;.
-		/// Returns void for non-generic Task.
-		/// Any other type is returned unmodified.
-		/// </summary>
 		IType UnpackTask(IType type)
 		{
-			if (!IsTask(type))
-				return type;
-			if (type.TypeParameterCount == 0)
-				return resolver.Compilation.FindType(KnownTypeCode.Void);
-			else
-				return ((ParameterizedType)type).GetTypeArgument(0);
-		}
-		
-		/// <summary>
-		/// Gets whether the specified type is Task or Task&lt;T&gt;.
-		/// </summary>
-		static bool IsTask(IType type)
-		{
-			ITypeDefinition def = type.GetDefinition();
-			if (def != null) {
-				if (def.KnownTypeCode == KnownTypeCode.Task)
-					return true;
-				if (def.KnownTypeCode == KnownTypeCode.TaskOfT)
-					return type is ParameterizedType;
-			}
-			return false;
+			return TaskType.UnpackTask(resolver.Compilation, type);
 		}
 		
 		sealed class AnalyzeLambdaVisitor : DepthFirstAstVisitor
@@ -3035,7 +3010,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled && !resolver.IsWithinLambdaExpression && resolver.CurrentMember != null) {
 				IType type = resolver.CurrentMember.ReturnType;
-				if (IsTask(type)) {
+				if (TaskType.IsTask(type)) {
 					var methodDecl = returnStatement.Ancestors.OfType<EntityDeclaration>().FirstOrDefault();
 					if (methodDecl != null && (methodDecl.Modifiers & Modifiers.Async) == Modifiers.Async)
 						type = UnpackTask(type);

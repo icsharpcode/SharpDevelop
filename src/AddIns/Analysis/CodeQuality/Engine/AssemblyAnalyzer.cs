@@ -404,7 +404,7 @@ namespace ICSharpCode.CodeQuality.Engine
 					return Resolve(reference);
 				} catch (AssemblyResolutionException are) {
 					LoggingService.DebugFormatted("CQA: Skipping assembly reference: {0}\r\nException:\r\n{1}", reference, are);
-					TaskService.Add(new SDTask(null, are.Message, 0, 0, TaskType.Warning));
+					TaskService.Add(new SDTask(null, are.Message, 0, 0, SharpDevelop.TaskType.Warning));
 					return null;
 				}
 			}

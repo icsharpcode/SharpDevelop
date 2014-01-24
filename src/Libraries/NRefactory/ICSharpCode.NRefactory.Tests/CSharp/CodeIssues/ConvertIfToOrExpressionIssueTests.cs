@@ -111,6 +111,23 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 }");
 		}
 
+		[Test]
+		public void TestNullCheckBug ()
+		{
+			TestWrongContext<ConvertIfToOrExpressionIssue>(@"class Foo
+{
+	public bool Enabled { get; set; }
+
+	int Bar(Foo fileChangeWatcher)
+	{
+		if (fileChangeWatcher != null)
+			fileChangeWatcher.Enabled = true;
+	}
+}");
+		}
+
+
+
 	}
 }
 

@@ -204,6 +204,7 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS0127ReturnMustNotBeFollowedByAnyExpression" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS0152DuplicateCaseLabelValueIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS0183ExpressionIsAlwaysOfProvidedTypeIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS0618UsageOfObsoleteMemberIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS0659ClassOverrideEqualsWithoutGetHashCode" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS0759RedundantPartialMethodIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS1573ParameterHasNoMatchingParamTagIssue" />

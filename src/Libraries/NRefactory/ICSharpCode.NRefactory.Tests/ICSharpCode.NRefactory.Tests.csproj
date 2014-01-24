@@ -8,7 +8,7 @@
     <RootNamespace>ICSharpCode.NRefactory</RootNamespace>
     <AssemblyName>ICSharpCode.NRefactory.Tests</AssemblyName>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -614,12 +614,12 @@
     <Compile Include="CSharp\CodeIssues\RedundantTypeArgumentsOfMethodIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\PossibleMistakenCallToGetTypeIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantNotNullAttributeInNonNullableTypeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CS0618UsageOfObsoleteMemberIssueTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
-      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>

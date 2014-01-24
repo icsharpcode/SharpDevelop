@@ -899,5 +899,102 @@ int foo)
   }
 }", FormattingMode.Intrusive, options);
 		}
+
+
+		[Test]
+		public void TestIndexerCase1()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.AlignToFirstIndexerDeclarationParameter = true;
+			policy.IndexerDeclarationParameterWrapping = Wrapping.WrapAlways;
+			Test(policy, @"class ClassDeclaration
+{ 
+	public int this [
+int test,
+string foo,
+double bar]
+	{
+		get {}
+	}
+}",
+				@"class ClassDeclaration
+{
+	public int this [
+		int test,
+		string foo,
+		double bar] {
+		get { }
+	}
+}");
+		}
+			
+		[Test]
+		public void TestIndexerCase2()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.AlignToFirstIndexerDeclarationParameter = true;
+			policy.IndexerDeclarationParameterWrapping = Wrapping.WrapAlways;
+			Test(policy, @"class ClassDeclaration
+{ 
+	public int this [int test,
+string foo,
+double bar]
+	{
+		get {}
+	}
+}",
+				@"class ClassDeclaration
+{
+	public int this [int test,
+	                 string foo,
+	                 double bar] {
+		get { }
+	}
+}");
+		}
+
+		[Test]
+		public void TestIndexerCase3()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			Test(policy, @"class ClassDeclaration { 
+	public int this [int test, string foo, double bar]
+	{
+		get {}
+	}
+	public int this [
+int test,
+string foo,
+double bar]
+	{
+		get {}
+	}
+	public int this [int test,
+string foo,
+double bar]
+	{
+		get {}
+	}
+}",
+				@"class ClassDeclaration
+{
+	public int this [int test, string foo, double bar] {
+		get { }
+	}
+
+	public int this [
+		int test,
+		string foo,
+		double bar] {
+		get { }
+	}
+
+	public int this [int test,
+	                 string foo,
+	                 double bar] {
+		get { }
+	}
+}");
+		}
 	}
 }

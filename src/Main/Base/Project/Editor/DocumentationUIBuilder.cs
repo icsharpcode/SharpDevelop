@@ -290,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		Inline ConvertReference(IEntity referencedEntity)
 		{
-			var h = new Hyperlink(new Run(ambience.ConvertEntity(referencedEntity)));
+			var h = new Hyperlink(new Run(ambience.ConvertSymbol(referencedEntity)));
 			h.Click += CreateNavigateOnClickHandler(referencedEntity);
 			return h;
 		}

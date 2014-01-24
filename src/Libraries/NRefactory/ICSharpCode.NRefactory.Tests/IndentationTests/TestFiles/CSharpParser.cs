@@ -2811,14 +2811,16 @@ namespace ICSharpCode.NRefactory.CSharp
 						} else {
 							parent = ArrayInitializerExpression.CreateSingleElementInitializer();
 						}
-						for (int i = 0; i < collectionInit.Arguments.Count; i++) {
-							var arg = collectionInit.Arguments [i] as CollectionElementInitializer.ElementInitializerArgument;
-							if (arg == null)
-								continue;
-							parent.AddChild(
-								(Expression)arg.Expr.Accept(this),
-								Roles.Expression
-							);
+						if (collectionInit.Arguments != null) {
+							for (int i = 0; i < collectionInit.Arguments.Count; i++) {
+								var arg = collectionInit.Arguments [i] as CollectionElementInitializer.ElementInitializerArgument;
+								if (arg == null)
+									continue;
+								parent.AddChild(
+									(Expression)arg.Expr.Accept(this),
+									Roles.Expression
+								);
+							}
 						}
 
 						if (!collectionInit.IsSingle) {

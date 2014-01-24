@@ -275,10 +275,5 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return type;
 		}
-
-		public static implicit operator Expression (AstType type)
-		{
-			return new TypeReferenceExpression(type);
-		}
 	}
 }

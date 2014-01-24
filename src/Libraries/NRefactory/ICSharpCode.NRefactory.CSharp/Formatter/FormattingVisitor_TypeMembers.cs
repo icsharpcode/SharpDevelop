@@ -139,6 +139,7 @@ namespace ICSharpCode.NRefactory.CSharp
 									goto case PropertyFormatting.ForceNewLine;
 								nextStatementIndent = " ";
 								VisitBlockWithoutFixingBraces(accessor.Body, policy.IndentBlocks);
+								nextStatementIndent = null;
 								if (!oneLine)
 									ForceSpacesBeforeRemoveNewLines(accessor.Body.RBraceToken, true);
 								break;
@@ -272,6 +273,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else {
 						nextStatementIndent = " ";
 						VisitBlockWithoutFixingBraces(eventDeclaration.AddAccessor.Body, policy.IndentBlocks);
+						nextStatementIndent = null;
 					}
 				}
 			}
@@ -286,6 +288,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else {
 						nextStatementIndent = " ";
 						VisitBlockWithoutFixingBraces(eventDeclaration.RemoveAccessor.Body, policy.IndentBlocks);
+						nextStatementIndent = null;
 					}
 				}
 			}

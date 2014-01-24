@@ -45,71 +45,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase<CS0127ReturnMustNotBeFollowedByAnyExpression>
 		{
-			bool skip;
-
 			public GatherVisitor (BaseRefactoringContext ctx) : base (ctx)
 			{
-			}
-
-			static bool AnonymousMethodMayReturnNonVoid(BaseRefactoringContext ctx, Expression anonymousMethodExpression)
-			{
-				foreach (var type in TypeGuessing.GetValidTypes(ctx.Resolver, anonymousMethodExpression)) {
-					if (type.Kind != TypeKind.Delegate)
-						continue;
-					var invoke = type.GetDelegateInvokeMethod();
-					if (invoke != null && !invoke.ReturnType.IsKnownType(KnownTypeCode.Void))
-						return true;
-				}
-				return false;
-			}
-
-			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
-			{
-				var primitiveType = methodDeclaration.ReturnType as PrimitiveType;
-				if (primitiveType == null || primitiveType.Keyword != "void")
-					return;
-				base.VisitMethodDeclaration(methodDeclaration);
-			}
-
-			public override void VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration)
-			{
-			}
-
-			public override void VisitAccessor(Accessor accessor)
-			{
-				if (accessor.Role == PropertyDeclaration.SetterRole || 
-				    accessor.Role == IndexerDeclaration.SetterRole )
-				base.VisitAccessor(accessor);
-			}
-	
-				
-			public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
-			{
-			}
-
-			public override void VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression)
-			{
-				bool old = skip;
-				skip = AnonymousMethodMayReturnNonVoid(ctx, anonymousMethodExpression);
-				base.VisitAnonymousMethodExpression(anonymousMethodExpression);
-				skip = old;
-			}
-
-			public override void VisitLambdaExpression(LambdaExpression lambdaExpression)
-			{
-				bool old = skip;
-				skip = AnonymousMethodMayReturnNonVoid(ctx, lambdaExpression);
-				base.VisitLambdaExpression(lambdaExpression);
-				skip = old;
 			}
 
 			public override void VisitReturnStatement(ReturnStatement returnStatement)
 			{
 				base.VisitReturnStatement(returnStatement);
-				if (skip)
-					return;
 
-				if (!returnStatement.Expression.IsNull) {
+				if (ctx.GetExpectedType(returnStatement.Expression).Kind == TypeKind.Void) {
 					var actions = new List<CodeAction>();
 					actions.Add(new CodeAction(ctx.TranslateString("Remove returned expression"), script => {
 						script.Replace(returnStatement, new ReturnStatement());

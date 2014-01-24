@@ -461,6 +461,41 @@ false) {
 }
 ");
 		}
+
+
+		/// <summary>
+		/// Bug 17047 - Smart indent failure
+		/// </summary>
+		[Test]
+		public void TestBug17047()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.ChainedMethodCallWrapping = Wrapping.WrapAlways;
+			Test(policy,
+				@"class Foo
+{
+	void Bar ()
+	{
+		Observable.Merge (shotStats, touchStats)
+			.GroupBy (e => e.Type)
+			.Subscribe (statGroup => {
+				Stats.Add (new StatItemViewModel (statGroup));
+			});
+	}
+}
+", @"class Foo
+{
+	void Bar ()
+	{
+		Observable.Merge (shotStats, touchStats)
+			.GroupBy (e => e.Type)
+			.Subscribe (statGroup => {
+				Stats.Add (new StatItemViewModel (statGroup));
+			});
+	}
+}
+");
+		}
 	}
 }
 

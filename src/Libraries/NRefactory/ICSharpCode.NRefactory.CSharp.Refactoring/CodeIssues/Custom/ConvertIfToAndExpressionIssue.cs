@@ -80,6 +80,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						if (initializer != null && target is IdentifierExpression && ((IdentifierExpression)target).Identifier != initializer.Name)
 							return;
 						var expr = match.Get<Expression>("condition").Single();
+						if (!ConvertIfToOrExpressionIssue.CheckTarget(target, expr))
+							return;
 						AddIssue(new CodeIssue(
 							ifElseStatement.IfToken,
 							ctx.TranslateString("Convert to '&&' expresssion"),
@@ -106,6 +108,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						return;
 					} else {
 						var expr = match.Get<Expression>("condition").Single();
+						if (!ConvertIfToOrExpressionIssue.CheckTarget(target, expr))
+							return;
 						AddIssue(new CodeIssue(
 							ifElseStatement.IfToken,
 							ctx.TranslateString("Convert to '&=' expresssion"),

@@ -200,7 +200,7 @@ namespace ICSharpCode.XamlBinding
 				if (headerText == null) {
 					IAmbience ambience = AmbienceService.GetCurrentAmbience();
 					ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-					headerText = ambience.ConvertEntity(ctor);
+					headerText = ambience.ConvertSymbol(ctor);
 					headerText = headerText.Insert(headerText.LastIndexOf(')'), (ctor.Parameters.Count > 0 ? ", " : "") + "Named Parameters ...");
 				}
 				return headerText;

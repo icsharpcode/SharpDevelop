@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Use fully qualified names for members.
 		/// </summary>
-		UseFullyQualifiedMemberNames = 0x400,
+		UseFullyQualifiedEntityNames = 0x400,
 		
 		StandardConversionFlags = ShowParameterNames |
 			ShowAccessibility |
@@ -91,8 +91,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	{
 		ConversionFlags ConversionFlags { get; set; }
 		
+		[Obsolete("Use ConvertSymbol() instead")]
 		string ConvertEntity(IEntity entity);
+		string ConvertSymbol(ISymbol symbol);
 		string ConvertType(IType type);
+		[Obsolete("Use ConvertSymbol() instead")]
 		string ConvertVariable(IVariable variable);
 		string ConvertConstantValue(object constantValue);
 		

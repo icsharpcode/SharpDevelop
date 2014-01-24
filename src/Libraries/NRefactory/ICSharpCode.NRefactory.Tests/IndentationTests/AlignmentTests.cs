@@ -670,6 +670,34 @@ class Foo
 			Assert.AreEqual("\t\t", indent.NextLineIndent);
 		}
 
+		[Test]
+		public void TestMethodContinuationCase3a()
+		{
+			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
+			var indent = Helper.CreateEngine(@"
+class Foo
+{
+	int Test ()
+	{
+		return obj
+			.Foo ()$", fmt);
+			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+		}
+
+		[Test]
+		public void TestMethodContinuationCase3b()
+		{
+			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
+			var indent = Helper.CreateEngine(@"
+class Foo
+{
+	int Test ()
+	{
+		return 
+			obj
+				.Foo ()$", fmt);
+			Assert.AreEqual("\t\t\t\t", indent.ThisLineIndent);
+		}
 	}
 }
 

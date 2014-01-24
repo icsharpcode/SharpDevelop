@@ -42,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (resolvedDefinition != null) {
 					var ambience = compilation.GetAmbience();
 					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowDeclaringType;
-					this.text = ambience.ConvertEntity(resolvedDefinition);
+					this.text = ambience.ConvertSymbol(resolvedDefinition);
 				} else {
 					this.text = typeDef.Name;
 				}
@@ -54,7 +54,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.IsInSamePart = true;
 				this.entity = member.UnresolvedMember;
 				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
-				text = ambience.ConvertEntity(member);
+				text = ambience.ConvertSymbol(member);
 				image = CompletionImage.GetImage(member);
 			}
 			

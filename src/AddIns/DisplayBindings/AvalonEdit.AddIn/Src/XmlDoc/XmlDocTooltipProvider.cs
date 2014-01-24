@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 				e.SetToolTip(CreateTooltip(mrr.Member));
 			} else if (lrr != null) {
 				var ambience = AmbienceService.GetCurrentAmbience();
-				e.SetToolTip(ambience.ConvertVariable(lrr.Variable));
+				e.SetToolTip(ambience.ConvertSymbol(lrr.Variable));
 			}
 		}
 		

@@ -135,6 +135,36 @@ unsafe class Foo
 ");
 		}
 
+		[Test]
+		public void TestSizeOf ()
+		{
+			TestWrongContext<RedundantUnsafeContextIssue>(@"
+public static class TestClass
+{
+	struct TestStruct {
+	}
+	public static void Main(String[] args)
+	{
+		unsafe {
+			int a = sizeof(TestStruct);
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void TestFixed ()
+		{
+			TestWrongContext<RedundantUnsafeContextIssue>(@"
+class Foo
+{
+	unsafe struct TestStruct
+	{
+		public fixed byte TestVar[32];
+	}
+}
+");
+		}
 	}
 }
 

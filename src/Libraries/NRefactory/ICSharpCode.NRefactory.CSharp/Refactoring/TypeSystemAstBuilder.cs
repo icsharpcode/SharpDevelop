@@ -559,6 +559,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Convert Entity
+		public AstNode ConvertSymbol(ISymbol symbol)
+		{
+			if (symbol == null)
+				throw new ArgumentNullException("symbol");
+			switch (symbol.SymbolKind) {
+				case SymbolKind.Namespace:
+					return ConvertNamespaceDeclaration((INamespace)symbol);
+				case SymbolKind.Variable:
+					return ConvertVariable((IVariable)symbol);
+				case SymbolKind.Parameter:
+					return ConvertParameter((IParameter)symbol);
+				case SymbolKind.TypeParameter:
+					return ConvertTypeParameter((ITypeParameter)symbol);
+				default:
+					IEntity entity = symbol as IEntity;
+					if (entity != null)
+						return ConvertEntity(entity);
+					throw new ArgumentException("Invalid value for SymbolKind: " + symbol.SymbolKind);
+			}
+		}
+		
 		public EntityDeclaration ConvertEntity(IEntity entity)
 		{
 			if (entity == null)
@@ -582,6 +603,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return ConvertConstructor((IMethod)entity);
 				case SymbolKind.Destructor:
 					return ConvertDestructor((IMethod)entity);
+				case SymbolKind.Accessor:
+					IMethod accessor = (IMethod)entity;
+					return ConvertAccessor(accessor, accessor.AccessorOwner != null ? accessor.AccessorOwner.Accessibility : Accessibility.None);
 				default:
 					throw new ArgumentException("Invalid value for SymbolKind: " + entity.SymbolKind);
 			}
@@ -944,5 +968,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return decl;
 		}
 		#endregion
+		
+		NamespaceDeclaration ConvertNamespaceDeclaration(INamespace ns)
+		{
+			return new NamespaceDeclaration(ns.FullName);
+		}
 	}
 }

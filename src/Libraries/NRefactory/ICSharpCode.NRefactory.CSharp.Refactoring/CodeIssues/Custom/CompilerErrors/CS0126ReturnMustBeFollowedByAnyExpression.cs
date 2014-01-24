@@ -48,21 +48,29 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			entityNode = returnStatement.GetParent(p => p is LambdaExpression || p is AnonymousMethodExpression || !(p is Accessor) && p is EntityDeclaration);
 			if (entityNode == null)
-				return null;
+				return SpecialType.UnknownType;
 			if (entityNode is EntityDeclaration) {
 				var rr = ctx.Resolve(entityNode) as MemberResolveResult;
 				if (rr == null)
-					return null;
+					return SpecialType.UnknownType;
+				if (((EntityDeclaration)entityNode).HasModifier(Modifiers.Async))
+					return TaskType.UnpackTask(ctx.Compilation, rr.Member.ReturnType);
 				return rr.Member.ReturnType;
 			}
+			bool isAsync = false;
+			if (entityNode is LambdaExpression)
+				isAsync = ((LambdaExpression)entityNode).IsAsync;
+			if (entityNode is AnonymousMethodExpression)
+				isAsync = ((AnonymousMethodExpression)entityNode).IsAsync;
 			foreach (var type in TypeGuessing.GetValidTypes(ctx.Resolver, entityNode)) {
 				if (type.Kind != TypeKind.Delegate)
 					continue;
 				var invoke = type.GetDelegateInvokeMethod();
-				if (invoke != null && !invoke.ReturnType.IsKnownType(KnownTypeCode.Void))
-					return invoke.ReturnType;
+				if (invoke != null) {
+					return isAsync ? TaskType.UnpackTask(ctx.Compilation, invoke.ReturnType) : invoke.ReturnType;
+				}
 			}
-			return null;
+			return SpecialType.UnknownType;
 		}
 
 
@@ -149,8 +157,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						return;
 					AstNode entityNode;
 					var rr = GetRequestedReturnType (ctx, returnStatement, out entityNode);
+					if (rr.Kind == TypeKind.Void)
+						return;
 					var actions = new List<CodeAction>();
-					if (rr != null) {
+					if (rr.Kind != TypeKind.Unknown) {
 						actions.Add(new CodeAction(ctx.TranslateString("Return default value"), script => {
 							Expression p;
 							if (rr.IsKnownType(KnownTypeCode.Boolean)) {

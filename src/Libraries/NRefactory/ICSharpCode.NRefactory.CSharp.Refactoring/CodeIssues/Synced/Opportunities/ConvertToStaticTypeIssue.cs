@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				if (!typeDeclaration.Members.Any() || typeDeclaration.HasModifier(Modifiers.Abstract) || typeDeclaration.HasModifier(Modifiers.Partial))
 					return;
-				if (typeDeclaration.Members.Any(f => !f.HasModifier(Modifiers.Static) && !f.HasModifier(Modifiers.Const)))
+				if (typeDeclaration.Members.Where(m => !(m is TypeDeclaration)).Any(f => !f.HasModifier(Modifiers.Static) && !f.HasModifier(Modifiers.Const)))
 					return;
 				var rr = ctx.Resolve(typeDeclaration);
 				if (rr.IsError || rr.Type.GetMembers().Any(IsMainMethod))

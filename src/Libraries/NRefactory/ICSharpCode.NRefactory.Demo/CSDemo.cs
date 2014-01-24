@@ -213,11 +213,18 @@ namespace ICSharpCode.NRefactory.Demo
 			ICompilation compilation = project.CreateCompilation();
 			
 			ResolveResult result;
+			IType expectedType = null;
+			Conversion conversion = null;
 			if (csharpTreeView.SelectedNode != null) {
 				var selectedNode = (AstNode)csharpTreeView.SelectedNode.Tag;
 				CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, unresolvedFile);
 				result = resolver.Resolve(selectedNode);
 				// CSharpAstResolver.Resolve() never returns null
+				Expression expr = selectedNode as Expression;
+				if (expr != null) {
+					expectedType = resolver.GetExpectedType(expr);
+					conversion = resolver.GetConversion(expr);
+				}
 			} else {
 				TextLocation location = GetTextLocation(csharpCodeTextBox, csharpCodeTextBox.SelectionStart);
 				result = ResolveAtLocation.Resolve(compilation, unresolvedFile, syntaxTree, location);
@@ -226,8 +233,14 @@ namespace ICSharpCode.NRefactory.Demo
 					return;
 				}
 			}
-			using (var dlg = new SemanticTreeDialog(result))
+			using (var dlg = new SemanticTreeDialog()) {
+				dlg.AddRoot("Resolve() = ", result);
+				if (expectedType != null)
+					dlg.AddRoot("GetExpectedType() = ", expectedType);
+				if (conversion != null)
+					dlg.AddRoot("GetConversion() = ", conversion);
 				dlg.ShowDialog();
+			}
 		}
 		
 		void CSharpCodeTextBoxKeyDown(object sender, KeyEventArgs e)

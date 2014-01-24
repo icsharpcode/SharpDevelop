@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -424,6 +424,7 @@
     <Compile Include="CodeIssues\TODO\RedundantTypeArgumentsOfMethodIssue.cs" />
     <Compile Include="CodeIssues\Synced\PracticesAndImprovements\PossibleMistakenCallToGetTypeIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\RedundantNotNullAttributeInNonNullableTypeIssue.cs" />
+    <Compile Include="CodeIssues\Custom\CompilerErrors\CS0618UsageOfObsoleteMemberIssue.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -81,7 +81,7 @@ namespace ICSharpCode.CodeQuality
 		
 		public static string PrintFullName(this IEntity entity)
 		{
-			return amb.ConvertEntity(entity);
+			return amb.ConvertSymbol(entity);
 		}
 	}
 }

@@ -194,6 +194,25 @@ class Test
 }");
 		}
 
+		[Test]
+		public void MutableStruct ()
+		{
+			TestWrongContext<FieldCanBeMadeReadOnlyIssue>(@"class Test
+{
+	MutableStruct m;
+	public static void Main (string[] args)
+	{
+		m.Increment();
+	}
+}
+struct MutableStruct {
+	int val;
+	public void Increment() {
+		val++;
+	}
+}
+");
+		}
 	}
 }
 

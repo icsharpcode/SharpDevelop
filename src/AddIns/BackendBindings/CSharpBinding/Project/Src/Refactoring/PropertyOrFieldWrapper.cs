@@ -35,7 +35,7 @@ namespace CSharpBinding.Refactoring
 				ConversionFlags.ShowReturnType
 				| ConversionFlags.ShowModifiers
 				| ConversionFlags.ShowAccessibility;
-			this.text = ambience.ConvertEntity(member);
+			this.text = ambience.ConvertSymbol(member);
 		}
 		
 		public bool IsIncluded

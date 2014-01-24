@@ -40,8 +40,8 @@ namespace Comments
 				;
 			
 			/********/ if (false) lock (this)
-					// /*
-					;
+				// /*
+				;
 			
 			{ /*/*/ }
 		}

@@ -193,5 +193,26 @@ namespace Demo
 			var issues = GetIssues(new ConvertToStaticTypeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
+
+		/// <summary>
+		/// Bug 16844 - Convert class to static 
+		/// </summary>
+		[Test]
+		public void TestBug16844 ()
+		{
+			TestIssue<ConvertToStaticTypeIssue>(@"
+class ShouldBeStatic
+{
+    static void Func ()
+    {
+    }
+
+    class OtherNotStatic
+    {
+    }
+}
+");
+		}
+
 	}
 }

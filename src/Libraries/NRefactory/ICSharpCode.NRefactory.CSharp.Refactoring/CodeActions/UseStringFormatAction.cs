@@ -54,8 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new CodeAction(context.TranslateString("Use 'string.Format()'"),
 			                             script => {
 				var stringType = new PrimitiveType("string");
-				var formatInvocation = new InvocationExpression(
-					new MemberReferenceExpression(stringType, "Format"));
+				var formatInvocation = stringType.Invoke("Format");
 				var formatLiteral = new PrimitiveExpression("");
 				var counter = 0;
 				var arguments = new List<Expression>();

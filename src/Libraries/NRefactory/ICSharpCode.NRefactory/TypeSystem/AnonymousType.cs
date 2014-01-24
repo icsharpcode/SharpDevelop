@@ -118,6 +118,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public override TypeKind Kind {
 			get { return TypeKind.Anonymous; }
 		}
+
+		public override IEnumerable<IType> DirectBaseTypes {
+			get {
+				yield return compilation.FindType(KnownTypeCode.Object);
+			}
+		}
 		
 		public override bool? IsReferenceType {
 			get { return true; }

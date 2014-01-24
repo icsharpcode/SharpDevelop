@@ -157,6 +157,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				node.AcceptVisitor(this);
 			}
+			nextStatementIndent = null;
 			if (pushed)
 				curIndent.Pop();
 			if (beginBraceAction != null && endBraceAction != null) {

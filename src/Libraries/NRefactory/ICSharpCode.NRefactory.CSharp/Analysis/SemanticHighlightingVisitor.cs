@@ -319,7 +319,9 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 						return;
 					}
 
-					if (invocationRR.Arguments.Count > 1 && CSharpCompletionEngine.FormatItemMethods.Contains(invocationRR.Member.FullName)) {
+					Expression fmtArgumets;
+					IList<Expression> args;
+					if (invocationRR.Arguments.Count > 1 && FormatStringHelper.TryGetFormattingParameters(invocationRR, invocationExpression, out fmtArgumets, out args, null)) {
 						var expr = invocationExpression.Arguments.First() as PrimitiveExpression; 
 						if (expr != null)
 							HighlightStringFormatItems(expr);
@@ -407,6 +409,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		bool CheckInterfaceImplementation (EntityDeclaration entityDeclaration)
 		{
 			var result = resolver.Resolve (entityDeclaration, cancellationToken) as MemberResolveResult;
+			if (result == null)
+				return false;
 			if (result.Member.ImplementedInterfaceMembers.Count == 0) {
 				Colorize (entityDeclaration.NameToken, syntaxErrorColor);
 				return false;

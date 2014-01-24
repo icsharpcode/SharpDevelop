@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			yield return new CodeAction(context.TranslateString("Use string.Empty"), script => {
-				script.Replace(expr, new MemberReferenceExpression (new PrimitiveType ("string"), "Empty"));
+				script.Replace(expr, new PrimitiveType ("string").Member("Empty"));
 			}, expr);
 		}
 		

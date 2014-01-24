@@ -18,10 +18,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 			var ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
 			if (useFullyQualifiedMemberNames)
-				ambience.ConversionFlags |= ConversionFlags.UseFullyQualifiedMemberNames;
+				ambience.ConversionFlags |= ConversionFlags.UseFullyQualifiedEntityNames;
 			string header;
 			if (type is ITypeDefinition)
-				header = ambience.ConvertEntity((ITypeDefinition)type);
+				header = ambience.ConvertSymbol((ITypeDefinition)type);
 			else
 				header = ambience.ConvertType(type);
 			
@@ -46,8 +46,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 			var ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
 			if (useFullyQualifiedMemberNames)
-				ambience.ConversionFlags |= ConversionFlags.UseFullyQualifiedMemberNames;
-			string header = ambience.ConvertEntity(entity);
+				ambience.ConversionFlags |= ConversionFlags.UseFullyQualifiedEntityNames;
+			string header = ambience.ConvertSymbol(entity);
 			var documentation = XmlDocumentationElement.Get(entity);
 			
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;

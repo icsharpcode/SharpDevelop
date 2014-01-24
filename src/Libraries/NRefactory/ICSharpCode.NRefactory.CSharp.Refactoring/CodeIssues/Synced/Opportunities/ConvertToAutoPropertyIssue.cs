@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			bool IsValidField(IField field)
 			{
-				if (field == null || field.Attributes.Count > 0)
+				if (field == null || field.Attributes.Count > 0 || field.IsVolatile)
 					return false;
 				foreach (var m in typeStack.Peek().Members.OfType<FieldDeclaration>()) {
 					foreach (var i in m.Variables) {

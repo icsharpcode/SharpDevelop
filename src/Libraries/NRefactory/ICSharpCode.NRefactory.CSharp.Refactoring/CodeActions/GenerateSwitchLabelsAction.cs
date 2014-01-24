@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							continue;
 						newSwitch.SwitchSections.Add(new SwitchSection() {
 							CaseLabels = {
-								new CaseLabel(new MemberReferenceExpression(target.Clone(), field.Name))
+								new CaseLabel(target.Clone().Member(field.Name))
 							},
 							Statements = {
 								new BreakStatement()
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					foreach (var field in missingFields) {
 						script.InsertAfter(insertNode, new SwitchSection() {
 							CaseLabels =  {
-								new CaseLabel(new MemberReferenceExpression(target.Clone(), field.Name))
+								new CaseLabel(target.Clone().Member(field.Name))
 							},
 							Statements =  {
 								new BreakStatement()

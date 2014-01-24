@@ -56,7 +56,7 @@ namespace CSharpBinding.Completion
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			var stringBuilder = new StringBuilder();
 			var formatter = new ParameterHighlightingOutputFormatter(stringBuilder, highlightedParameterIndex);
-			ambience.ConvertEntity(Method, formatter, FormattingOptionsFactory.CreateSharpDevelop());
+			ambience.ConvertSymbol(Method, formatter, FormattingOptionsFactory.CreateSharpDevelop());
 			
 			var documentation = XmlDocumentationElement.Get(Method);
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;

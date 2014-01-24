@@ -354,10 +354,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					curIndent.Pop();
 				} else {
-
 					if (!doAlignToFirstArgument) {
 						curIndent.Push(IndentType.Continuation);
 						foreach (var arg in arguments.Take (argumentStart)) {
+							FixStatementIndentation(arg.StartLocation);
 							arg.AcceptVisitor(this);
 						}
 						foreach (var arg in arguments.Skip (argumentStart)) {
@@ -451,14 +451,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesAfter(invocationExpression.LParToken, policy.SpaceBetweenEmptyMethodCallParentheses);
 				ForceSpacesBefore(invocationExpression.RParToken, policy.SpaceBetweenEmptyMethodCallParentheses);
 			}
-
+			bool popIndent = false;
 			if (invocationExpression.Target is MemberReferenceExpression) {
 				var mt = (MemberReferenceExpression)invocationExpression.Target;
 				if (mt.Target is InvocationExpression) {
 					if (DoWrap(policy.ChainedMethodCallWrapping, mt.DotToken, 2)) {
-						curIndent.Push(IndentType.Continuation);
+						curIndent.Push(IndentType.Block);
+						popIndent = true;
 						FixStatementIndentation(mt.DotToken.StartLocation);
-						curIndent.Pop();
 					} else {
 						if (policy.ChainedMethodCallWrapping == Wrapping.DoNotWrap)
 							ForceSpacesBeforeRemoveNewLines(mt.DotToken, false);
@@ -466,6 +466,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			FormatArguments(invocationExpression);
+			if (popIndent)
+				curIndent.Pop();
 		}
 
 		public override void VisitIndexerExpression(IndexerExpression indexerExpression)

@@ -54,7 +54,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				matchWithSameParameterCount = method;
 				bool isCorrect = true;
 				for (int i = 0; i < method.Parameters.Count; i++) {
-					if (parameters[i] != ambience.ConvertVariable(method.Parameters[i])) {
+					if (parameters[i] != ambience.ConvertSymbol(method.Parameters[i])) {
 						isCorrect = false;
 						break;
 					}

@@ -654,6 +654,43 @@ namespace Xamarin.Installer.Core.Components.Android
 
 		}
 
+		[Test]
+		public void TestEmptyCollectionParsing()
+		{
+			string code = @"
+class FooBar
+{
+	Dictionary<byte, string> foo = new Dictionary<byte, string>{
+		{},
+		{}
+	};
+}
+";
+			var unit = SyntaxTree.Parse(code);
+
+			var type = unit.Members.First() as TypeDeclaration;
+			var member = type.Members.First() as FieldDeclaration;
+			var init = member.Variables.First().Initializer as ObjectCreateExpression;
+			Assert.AreEqual(2, init.Initializer.Elements.Count);
+		}
+
+		[Test]
+		public void AsyncAfterEnum() {
+			string code = @"
+using System.Threading.Tasks;
+class C
+{
+	enum E {}
+	async Task M() {
+	}
+}";
+
+			var unit = SyntaxTree.Parse(code);
+			var type = unit.Members.OfType<TypeDeclaration>().Single();
+			var member = type.Members.OfType<MethodDeclaration>().SingleOrDefault(m => m.Name == "M");
+			Assert.IsNotNull(member, "M() not found."); 
+			Assert.That(member.Modifiers, Is.EqualTo(Modifiers.Async));
+		}
 	}
 }
 

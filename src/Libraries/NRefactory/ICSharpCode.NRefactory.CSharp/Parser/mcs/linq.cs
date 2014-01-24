@@ -836,9 +836,8 @@ namespace Mono.CSharp.Linq
 		}
 
 		public QueryBlock (Block parent, Location start)
-			: base (parent, ParametersCompiled.EmptyReadOnlyParameters, start)
+			: base (parent, ParametersCompiled.EmptyReadOnlyParameters, start, Flags.CompilerGenerated)
 		{
-			flags |= Flags.CompilerGenerated;
 		}
 
 		public void AddRangeVariable (RangeVariable variable)
