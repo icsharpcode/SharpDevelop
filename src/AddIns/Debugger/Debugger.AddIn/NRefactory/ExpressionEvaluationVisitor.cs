@@ -294,7 +294,10 @@ namespace Debugger.AddIn
 		
 		Value Visit(TypeOfResolveResult result)
 		{
-			return Eval.NewObjectNoConstructor(evalThread, debuggerTypeSystem.Import(result.ReferencedType));
+			var type = debuggerTypeSystem.Import(result.ReferencedType);
+			if (type == null)
+				throw new GetValueException("Error: cannot find '{0}'.", result.ReferencedType.FullName);
+			return Eval.TypeOf(evalThread, type);
 		}
 		
 		Value Visit(TypeResolveResult result)
@@ -397,7 +400,7 @@ namespace Debugger.AddIn
 				return "null";
 			} else if (val.Type.Kind == TypeKind.Array) {
 				StringBuilder sb = new StringBuilder();
-				sb.Append(val.Type.Name);
+				sb.Append(new CSharpAmbience().ConvertType(val.Type));
 				sb.Append(" {");
 				bool first = true;
 				int size = val.ArrayLength;
@@ -410,7 +413,7 @@ namespace Debugger.AddIn
 				return sb.ToString();
 			} else if (val.Type.GetAllBaseTypeDefinitions().Any(def => def.IsKnownType(KnownTypeCode.ICollection))) {
 				StringBuilder sb = new StringBuilder();
-				sb.Append(val.Type.Name);
+				sb.Append(new CSharpAmbience().ConvertType(val.Type));
 				sb.Append(" {");
 				val = val.GetPermanentReference(evalThread);
 				var countProp = val.Type.GetProperties(p => p.Name == "Count" && !p.IsExplicitInterfaceImplementation).Single();
