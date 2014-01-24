@@ -956,7 +956,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			base.OnPreviewKeyDown(e);
 			
-			if (!this.Options.UseOverstrikeMode) {
+			if (!this.Options.AllowOverstrikeMode) {
 				this.overstrikeMode = false;
 			} else if (!e.Handled && e.Key == Key.Insert) {
 				this.overstrikeMode = !this.overstrikeMode;

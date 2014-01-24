@@ -394,7 +394,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (textView != null && textView.Document != null) {
 				VisualLine visualLine = textView.GetOrConstructVisualLine(textView.Document.GetLineByNumber(position.Line));
-				return (this.textView.Options.UseOverstrikeMode && this.textArea.OverstrikeMode)
+				return (this.textView.Options.AllowOverstrikeMode && this.textArea.OverstrikeMode)
 					? CalcCaretOverstrikeRectangle(visualLine) : CalcCaretRectangle(visualLine);
 			} else {
 				return Rect.Empty;
@@ -451,7 +451,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				VisualLine visualLine = textView.GetVisualLine(position.Line);
 				if (visualLine != null) {
 					Rect caretRect;
-					if (this.textView.Options.UseOverstrikeMode && this.textArea.OverstrikeMode) {
+					if (this.textView.Options.AllowOverstrikeMode && this.textArea.OverstrikeMode) {
 						caretRect = CalcCaretOverstrikeRectangle(visualLine);
 					} else {
 						caretRect = CalcCaretRectangle(visualLine);
