@@ -316,6 +316,7 @@
 				<ComponentRef Id="ICSharpCodeAddInManager2Dll"/>
 				<ComponentRef Id="AddInManager2ICSharpCodeSharpZipLibDll"/>
 				<ComponentRef Id="AddInManager2NuGetCoreDll"/>
+				<ComponentRef Id="AddInManager2MSWebXmlTransformDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
 				<ComponentRef Id="CodeQualityFiles"/>

@@ -1575,6 +1575,9 @@
 									<Component Id="AddInManager2NuGetCoreDll" Guid="29F6AA62-469E-429D-B8F9-2E087093A1E9" DiskId="1">
 										<File Id="AddInManager2.NuGet.Core.dll" Name="NuGet.Core.dll" Source="..\..\AddIns\Misc\AddInManager2\NuGet.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AddInManager2.NuGet.Core.dll" AssemblyManifest="AddInManager2.NuGet.Core.dll" />
 									</Component>
+									<Component Id="AddInManager2MSWebXmlTransformDll" Guid="" DiskId="1">
+										<File Id="AddInManager2.Microsoft.Web.XmlTransform.dll" Name="Microsoft.Web.XmlTransform.dll" Source="..\..\AddIns\Misc\AddInManager2\Microsoft.Web.XmlTransform.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AddInManager2.Microsoft.Web.XmlTransform.dll" AssemblyManifest="AddInManager2.Microsoft.Web.XmlTransform.dll" />
+									</Component>
 								</Directory>
 							</Directory>
 							<Directory Id="VersionControlAddInsFolder" Name="VersionControl">
