@@ -1621,14 +1621,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		[ThreadStatic] static bool invalidCursor;
 		
 		/// <summary>
-		/// Updates the mouse cursor by calling <see cref="Mouse.UpdateCursor"/>, but with input priority.
+		/// Updates the mouse cursor by calling <see cref="Mouse.UpdateCursor"/>, but with background priority.
 		/// </summary>
 		public static void InvalidateCursor()
 		{
 			if (!invalidCursor) {
 				invalidCursor = true;
 				Dispatcher.CurrentDispatcher.BeginInvoke(
-					DispatcherPriority.Input,
+					DispatcherPriority.Background, // fixes issue #288
 					new Action(
 						delegate {
 							invalidCursor = false;
