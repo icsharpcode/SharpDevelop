@@ -54,6 +54,12 @@
  			and then run the msi to uninstall SharpDevelop. Without the 
 			"Installed OR" this would not be allowed.
 		-->
+		
+		<!-- SharpDevelop 5 doesn't support Win XP and below. -->
+		<Condition Message="SharpDevelop $(var.PRODUCTDISPLAYVERSION) can only be installed on Windows Vista and higher.">
+			Installed OR (VersionNT >= 600)
+		</Condition>
+		
 		<!--
 			Check for .NET 4.0 RTM Full
 		-->
