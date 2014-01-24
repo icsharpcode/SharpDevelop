@@ -61,17 +61,14 @@
 		</Condition>
 		
 		<!--
-			Check for .NET 4.0 RTM Full
+			Check for .NET 4.5 RTM
 		-->
-		<Property Id="NETFRAMEWORK40FULL" Secure="yes">
-			<RegistrySearch Id="NetFramework40Full" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Install" Type="raw" />
+		<!-- we could check NETFRAMEWORK45 optionally if we want to force the user to install a specific version -->
+		<Property Id="NETFRAMEWORK45" Secure="yes">
+			<RegistrySearch Id="NetFramework45" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Release" Type="raw" />
 		</Property>
-		<Property Id="NETFRAMEWORK40FULLVERSION" Secure="yes">
-			<RegistrySearch Id="NetFramework40FullVersion" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Version" Type="raw" />
-		</Property>
-		<!-- we could check NETFRAMEWORK40FULLVERSION optionally if we want to force the user to install a specific version -->
-		<Condition Message="This setup requires the .NET 4.0 Full Framework to be installed.">
-			Installed OR NETFRAMEWORK40FULL
+		<Condition Message="This setup requires the .NET Framework 4.5 to be installed.">
+			Installed OR NETFRAMEWORK45
 		</Condition>
 		
 		<!--
