@@ -108,8 +108,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			errorView.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, ExecuteCopy, CanExecuteCopy));
 			errorView.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
 			
-			errors.CollectionChanged += delegate { MenuService.UpdateText(toolBar.Items); };
-			
 			InternalShowResults();
 		}
 		
@@ -127,11 +125,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void OnSolutionOpen(object sender, SolutionEventArgs e)
 		{
 			errors.Clear();
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void OnSolutionClosed(object sender, EventArgs e)
 		{
 			errors.Clear();
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void ProjectServiceEndBuild(object sender, EventArgs e)
@@ -174,6 +174,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (TaskService.InUpdate)
 				return;
 			errors.Clear();
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void TaskServiceAdded(object sender, TaskEventArgs e)
@@ -181,6 +182,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (TaskService.InUpdate)
 				return;
 			AddTask(e.Task);
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
@@ -188,6 +190,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (TaskService.InUpdate)
 				return;
 			errors.Remove(e.Task);
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void InternalShowResults()
@@ -197,6 +200,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach (SDTask task in TaskService.Tasks) {
 				AddTask(task);
 			}
+			
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void CanExecuteCopy(object sender, CanExecuteRoutedEventArgs e)
