@@ -35,6 +35,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		/// <inheritdoc />
+		public IOverlayUIElement CreateOverlayUIElement(UIElement element)
+		{
+			if (element == null)
+				throw new ArgumentNullException("element");
+			CodeEditor codeEditor = textView.GetService<CodeEditor>();
+			if (codeEditor == null)
+				throw new NotSupportedException("This feature is not supported!");
+			var groupBox = new OverlayUIElementContainer(codeEditor);
+			groupBox.Content = element;
+			codeEditor.Children.Add(groupBox);
+			System.Windows.Controls.Grid.SetRow(groupBox, 1);
+			return groupBox;
+		}
+		
+		/// <inheritdoc />
 		public Point GetScreenPosition(int line, int column)
 		{
 			var positionInPixels = textView.PointToScreen(

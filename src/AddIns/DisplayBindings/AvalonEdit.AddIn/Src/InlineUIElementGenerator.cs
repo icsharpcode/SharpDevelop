@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.NRefactory.Editor;
@@ -43,6 +44,35 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void Remove()
 		{
 			this.textView.ElementGenerators.Remove(this);
+		}
+	}
+	
+	sealed class OverlayUIElementContainer : GroupBox, IOverlayUIElement
+	{
+		CodeEditor codeEditor;
+		
+		public OverlayUIElementContainer(CodeEditor codeEditor)
+		{
+			if (codeEditor == null)
+				throw new ArgumentNullException("codeEditor");
+			this.codeEditor = codeEditor;
+			
+			Background = SystemColors.WindowBrush;
+			Foreground = SystemColors.WindowTextBrush;
+			HorizontalAlignment = HorizontalAlignment.Right;
+			VerticalAlignment = VerticalAlignment.Bottom;
+			MaxWidth = 300;
+			Margin = new Thickness(0, 0, 20, 20);
+		}
+		
+		public void Remove()
+		{
+			codeEditor.Children.Remove(this);
+		}
+
+		public string Title {
+			get { return Header.ToString(); }
+			set { Header = value; }
 		}
 	}
 }

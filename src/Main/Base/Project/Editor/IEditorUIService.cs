@@ -18,6 +18,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 	{
 		IInlineUIElement CreateInlineUIElement(ITextAnchor position, UIElement element);
 		
+		IOverlayUIElement CreateOverlayUIElement(UIElement element);
+		
 		/// <summary>
 		/// Gets the absolute screen position of given position in the document.
 		/// </summary>
@@ -32,5 +34,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 	public interface IInlineUIElement
 	{
 		void Remove();
+	}
+	
+	public interface IOverlayUIElement
+	{
+		void Remove();
+		string Title { get; set; }
 	}
 }

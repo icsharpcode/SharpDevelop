@@ -7,6 +7,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -285,6 +286,7 @@ namespace CSharpBinding.Refactoring
 			this.editor.TextView.InsertLayer(this, KnownLayer.Text, LayerInsertionPosition.Above);
 			this.editor.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
 			ScrollToInsertionPoint();
+			AttachToCodeEditor();
 		}
 		
 		static readonly Pen markerPen = new Pen(Brushes.Blue, 1);
@@ -331,6 +333,7 @@ namespace CSharpBinding.Refactoring
 		
 		public void Dispose()
 		{
+			groupBox.Remove();
 			editor.TextView.Layers.Remove(this);
 			editor.ActiveInputHandler = editor.DefaultInputHandler;
 			editor.TextView.ScrollOffsetChanged -= TextViewScrollOffsetChanged;
@@ -351,6 +354,7 @@ namespace CSharpBinding.Refactoring
 		{
 			FireExited(false);
 		}
+		
 		/// <summary>
 		/// call this somewhere useful, please... :)
 		/// </summary>
@@ -364,6 +368,28 @@ namespace CSharpBinding.Refactoring
 			if (Exited != null) {
 				Exited(this, new InsertionCursorEventArgs(insertionPoints[CurrentInsertionPoint], success));
 			}
+		}
+		
+		IOverlayUIElement groupBox;
+		
+		void AttachToCodeEditor()
+		{
+			if (editor.Document == null)
+				return; // editor was disposed
+			
+			var content = new StackPanel {
+				Children = {
+					new TextBlock {
+						Text = "Use Up/Down to move to another location.\r\n" +
+							"Press Enter to select the location.\r\n" +
+							"Press Esc to cancel this operation."
+					}
+				}
+			};
+			
+			groupBox = editor.GetService<IEditorUIService>().CreateOverlayUIElement(content);
+			
+			groupBox.Title = operation;
 		}
 	}
 	
