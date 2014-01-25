@@ -26,15 +26,17 @@ namespace ICSharpCode.WpfDesign.AddIn
 			f.file = file;
 			f.ImportFrom(CreateWpfTypeFinder());
 			
-			var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
-			foreach (var referencedAssembly in compilation.ReferencedAssemblies) {
-				try {
-					var assembly = Assembly.LoadFrom(referencedAssembly.GetReferenceAssemblyLocation());
-					f.RegisterAssembly(assembly);
-				} catch (Exception ex) {
-					ICSharpCode.Core.LoggingService.Warn("Error loading Assembly : " + referencedAssembly.FullAssemblyName, ex);
-				}
-			}
+			// TODO : reimplement this!
+			// DO NOT USE Assembly.LoadFrom
+//			var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+//			foreach (var referencedAssembly in compilation.ReferencedAssemblies) {
+//				try {
+//					var assembly = Assembly.LoadFrom(referencedAssembly.GetReferenceAssemblyLocation());
+//					f.RegisterAssembly(assembly);
+//				} catch (Exceptions ex) {
+//					ICSharpCode.Core.LoggingService.Warn("Error loading Assembly : " + referencedAssembly.FullAssemblyName, ex);
+//				}
+//			}
 			return f;
 		}
 		
