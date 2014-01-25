@@ -87,6 +87,16 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 		
 		
+		public override void Visit(ExportCircle exportCircle){
+			var columnLocation = containerLocation;
+			columnLocation.Offset(exportCircle.Location);
+			var pen = PdfHelper.PdfPen(exportCircle);
+			pen.DashStyle = PdfHelper.DashStyle(exportCircle);
+			gfx.DrawEllipse(pen,new XRect(columnLocation.ToXPoints(),
+			                                exportCircle.Size.ToXSize()));
+		}
+		
+		
 		public PdfPage PdfPage {get; private set;}
 	}
 }
