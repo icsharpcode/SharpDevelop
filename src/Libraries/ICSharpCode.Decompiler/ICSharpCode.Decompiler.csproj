@@ -126,7 +126,6 @@
     <Compile Include="ReferenceResolvingException.cs" />
     <Compile Include="TextOutputWriter.cs" />
     <Compile Include="XmlDocKeyProvider.cs" />
-    <None Include="Properties\AssemblyInfo.template.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cecil\Mono.Cecil.csproj">
