@@ -439,7 +439,6 @@
 									<File Source="..\..\data\schemas\AddIn.xsd" Name="AddIn.xsd" Id="AddIn.xsd" />
 									<File Source="..\..\data\schemas\appconfig.xsd" Id="appconfig.xsd" Name="appconfig.xsd" />
 									<File Source="..\..\data\schemas\manifest.xsd" Name="manifest.xsd" Id="manifest.xsd" />
-									<File Source="..\..\data\schemas\nant.xsd" Name="nant.xsd" Id="nant.xsd" />
 									<File Source="..\..\data\schemas\readme.txt" Name="readme.txt" Id="readme.txt" />
 									<File Source="..\..\data\schemas\W3C-License.html" Id="W3C_License.html" Name="W3C-License.html" />
 									<File Source="..\..\data\schemas\wix.xsd" Name="wix.xsd" Id="Schemas.wix.xsd" />
