@@ -22,27 +22,27 @@ namespace ICSharpCode.WpfDesign.AddIn
 			f.file = file;
 			f.ImportFrom(CreateWpfTypeFinder());
 			
-			var pc = MyTypeFinder.GetProjectContent(file);
-			foreach (var referencedProjectContent in pc.ThreadSafeGetReferencedContents()) {
-				string fileName = null;
-				try{
-					if (referencedProjectContent is ParseProjectContent)
-					{
-						var prj = ((ParseProjectContent)referencedProjectContent).Project as AbstractProject;
-						if (prj != null)
-							fileName = prj.OutputAssemblyFullPath;
-					}
-					else if (referencedProjectContent is ReflectionProjectContent)
-					{
-						fileName = ((ReflectionProjectContent) referencedProjectContent).AssemblyLocation;
-					}
-					var assembly = Assembly.LoadFrom(fileName);
-					f.RegisterAssembly(assembly);
-				}
-				catch (Exception ex) {
-					ICSharpCode.Core.LoggingService.Warn("Error loading Assembly : "+ (fileName ?? ""), ex);
-				}
-			}
+//			var pc = MyTypeFinder.GetProjectContent(file);
+//			foreach (var referencedProjectContent in pc.ThreadSafeGetReferencedContents()) {
+//				string fileName = null;
+//				try{
+//					if (referencedProjectContent is ParseProjectContent)
+//					{
+//						var prj = ((ParseProjectContent)referencedProjectContent).Project as AbstractProject;
+//						if (prj != null)
+//							fileName = prj.OutputAssemblyFullPath;
+//					}
+//					else if (referencedProjectContent is ReflectionProjectContent)
+//					{
+//						fileName = ((ReflectionProjectContent) referencedProjectContent).AssemblyLocation;
+//					}
+//					var assembly = Assembly.LoadFrom(fileName);
+//					f.RegisterAssembly(assembly);
+//				}
+//				catch (Exception ex) {
+//					ICSharpCode.Core.LoggingService.Warn("Error loading Assembly : "+ (fileName ?? ""), ex);
+//				}
+//			}
 			return f;
 		}
 		
