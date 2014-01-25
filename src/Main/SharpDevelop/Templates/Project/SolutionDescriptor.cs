@@ -45,10 +45,9 @@ namespace ICSharpCode.SharpDevelop.Templates
 						return false;
 				}
 				foreach (ProjectDescriptor projectDescriptor in projectDescriptors) {
-					IProject newProject = projectDescriptor.CreateProject(templateResult, defaultLanguage);
-					if (newProject == null)
+					bool success = projectDescriptor.CreateProject(templateResult, defaultLanguage, parentFolder);
+					if (!success)
 						return false;
-					parentFolder.Items.Add(newProject);
 				}
 				return true;
 			}

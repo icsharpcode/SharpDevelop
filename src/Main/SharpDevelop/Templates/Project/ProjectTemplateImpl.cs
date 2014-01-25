@@ -266,10 +266,8 @@ namespace ICSharpCode.SharpDevelop.Templates
 					return null;
 			}
 			if (projectDescriptor != null) {
-				IProject project = projectDescriptor.CreateProject(result, languagename);
-				if (project != null) {
-					options.SolutionFolder.Items.Add(project);
-				} else {
+				bool success = projectDescriptor.CreateProject(result, languagename, options.SolutionFolder);
+				if (!success) {
 					return null;
 				}
 			}

@@ -267,7 +267,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 		
 		#region Create new project from template
 		//Show prompt, create files from template, create project, execute command, save project
-		public IProject CreateProject(ProjectTemplateResult templateResults, string defaultLanguage)
+		public bool CreateProject(ProjectTemplateResult templateResults, string defaultLanguage, ISolutionFolder target)
 		{
 			var projectCreateOptions = templateResults.Options;
 			var parentSolution = templateResults.Options.Solution;
@@ -283,7 +283,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 					MessageService.ShowError(
 						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.CantCreateProjectWithTypeError}",
 						                   new StringTagPair("type", language)));
-					return null;
+					return false;
 				}
 				
 				DirectoryName projectBasePath = projectCreateOptions.ProjectBasePath;
@@ -335,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 						                   new StringTagPair("projectLocation", projectLocation)),
 						"${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}"))
 					{
-						return null; //The user doesnt want to overwrite the project...
+						return false; //The user doesnt want to overwrite the project...
 					}
 				}
 				
@@ -408,10 +408,11 @@ namespace ICSharpCode.SharpDevelop.Templates
 				
 				#region Create Project
 				try {
+					info.InitializeTypeSystem = false;
 					project = languageinfo.CreateProject(info);
 				} catch (ProjectLoadException ex) {
 					MessageService.ShowError(ex.Message);
-					return null;
+					return false;
 				}
 				#endregion
 				
@@ -511,11 +512,18 @@ namespace ICSharpCode.SharpDevelop.Templates
 				// Save project
 				project.Save();
 				
+				// HACK : close and reload
+				var fn = project.FileName;
+				project.Dispose();
+				ProjectLoadInformation loadInfo = new ProjectLoadInformation(parentSolution, fn, fn.GetFileNameWithoutExtension());
+				project = SD.ProjectService.LoadProject(loadInfo);
+				target.Items.Add(project);
+				project.ProjectLoaded();
 				
 				SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectCreated(new ProjectEventArgs(project));
 				templateResults.NewProjects.Add(project);
 				success = true;
-				return project;
+				return true;
 			} finally {
 				if (project != null && !success)
 					project.Dispose();
