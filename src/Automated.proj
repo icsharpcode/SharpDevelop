@@ -94,9 +94,9 @@
 		<MSBuild Projects="$(SamplesSrc)\ComponentInspector\ComponentInspector.sln"
 				 Targets="build;clean"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
-<!--		<MSBuild Projects="$(SamplesSrc)\CppBackendBinding\CppBackendBinding.sln"
+		<MSBuild Projects="$(SamplesSrc)\CppBackendBinding\CppBackendBinding.sln"
 				 Targets="build;clean"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>-->
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		<MSBuild Projects="$(SamplesSrc)\CustomPad\CustomPad.sln"
 				 Targets="build;clean"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
