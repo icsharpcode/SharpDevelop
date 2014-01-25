@@ -27,7 +27,6 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		public override void Visit(ExportPage page)
 		{
-			var pageSize = page.Size.ToXSize();
 			PdfPage = pdfDocument.AddPage();
 			gfx = XGraphics.FromPdfPage(PdfPage);
 			textFormatter  = new XTextFormatter(gfx);

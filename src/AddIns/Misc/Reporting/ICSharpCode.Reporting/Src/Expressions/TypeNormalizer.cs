@@ -8,9 +8,9 @@ namespace ICSharpCode.Reporting.Expressions
 	/// <summary>
 	/// Description of TypeNormalizer.
 	/// </summary>
-	public class TypeNormalizer
+	public  class TypeNormalizer
 	{
-		
+		/*
 		public static void NormalizeTypes(ref object left,ref object right)
 		{
 			NormalizeTypes(ref left,ref right,0);
@@ -59,7 +59,7 @@ namespace ICSharpCode.Reporting.Expressions
 				values[i] = EnsureType(values[i],targetType,nullValue);
 			}
 		}
-
+*/
 		public static T EnsureType<T>(object value)
 		{
 			return EnsureType<T>(value, default(T));

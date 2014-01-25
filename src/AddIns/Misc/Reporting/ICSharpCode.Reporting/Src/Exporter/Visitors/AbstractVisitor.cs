@@ -67,7 +67,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
-		protected bool ShouldSetBackcolor (ExportColumn exportColumn) {
+		protected static bool ShouldSetBackcolor (ExportColumn exportColumn) {
 			return exportColumn.BackColor != Color.White;
 		}
 		

@@ -24,6 +24,6 @@ namespace ICSharpCode.Reporting.DataSource.Comparer
 			IndexList = new IndexList();
 		}
 		
-		public IndexList IndexList {get;set;}
+		public IndexList IndexList {get;private set;}
 	}
 }

@@ -46,12 +46,13 @@ namespace ICSharpCode.Reporting.Expressions.Irony
     public object Evaluate() {
       return App.Evaluate(); 
     }
-
+	/*
     public void ClearOutput() {
       App.ClearOutputBuffer(); 
     }
     public string GetOutput() {
       return App.GetOutput(); 
     }
+    */
 	}
 }

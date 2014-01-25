@@ -128,7 +128,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			UIElement = m;
 		}
 		
-		Point CalcRad(System.Drawing.Size size) {
+		static Point CalcRad(System.Drawing.Size size) {
 			return  new Point(size.Width /2,size.Height /2);
 		}
 		

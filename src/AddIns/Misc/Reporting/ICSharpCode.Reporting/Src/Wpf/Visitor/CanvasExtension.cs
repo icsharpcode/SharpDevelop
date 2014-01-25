@@ -13,27 +13,27 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 	public static class CanvasExtension
 	{
 		
-		public static void AddChild<T>(this Canvas canvas, T element)
+		public static void AddChild<T>(this Panel panel, T element)
 		{
 			var uiElement = element as UIElement;
-			if (uiElement != null && !canvas.Children.Contains(uiElement))
-				canvas.Children.Add(uiElement);
+			if (uiElement != null && !panel.Children.Contains(uiElement))
+				panel.Children.Add(uiElement);
 		}
 
 		
-		public static void RemoveChild<T>(this Canvas canvas, T element)
+		public static void RemoveChild<T>(this Panel panel, T element)
 		{
 			var uiElement = element as UIElement;
-			if (uiElement != null && canvas.Children.Contains(uiElement))
-				canvas.Children.Remove(uiElement);
+			if (uiElement != null && panel.Children.Contains(uiElement))
+				panel.Children.Remove(uiElement);
 		}
 
 		
-		public static void InsertChild<T>(this Canvas canvas, int index, T element)
+		public static void InsertChild<T>(this Panel panel, int index, T element)
 		{
 			var uiElement = element as UIElement;
-			if (uiElement != null && !canvas.Children.Contains(uiElement))
-				canvas.Children.Insert(index, uiElement);
+			if (uiElement != null && !panel.Children.Contains(uiElement))
+				panel.Children.Insert(index, uiElement);
 		}
 	}
 

@@ -44,7 +44,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor.Graphics
 		protected override Visual GetVisualChild(int index){
 			if (index < 0 || index >= children.Count)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new ArgumentOutOfRangeException("index");
 			}
 	
 			return children[index];

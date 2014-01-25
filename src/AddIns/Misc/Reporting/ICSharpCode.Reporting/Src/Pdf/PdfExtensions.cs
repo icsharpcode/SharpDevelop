@@ -28,8 +28,8 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 		
 		
-		public static float ToPoint (this int integer) {
-			return Convert(integer);
+		public static float ToPoint (this int value) {
+			return Convert(value);
 		}
 		
 		

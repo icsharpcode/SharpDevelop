@@ -29,7 +29,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 	{
 		readonly DataCollection<object> baseList;
 		readonly ReportSettings reportSettings;
-		readonly Type elementType;
+//		readonly Type elementType;
 		readonly PropertyDescriptorCollection listProperties;
 
 	
@@ -60,7 +60,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			
 			CurrentList = baseList;
 			
-			this.elementType = elementType;
+//			this.elementType = elementType;
 			this.reportSettings = reportSettings;
 			
 			this.listProperties = this.baseList.GetItemProperties(null);
@@ -155,8 +155,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		#region Fill
 		
 		
-		public void Fill (List<IPrintableObject> collection, object toFill) {
-			Current = toFill;
+		public void Fill (List<IPrintableObject> collection, object current) {
+			Current = current;
 						foreach (var element in collection) {
 				var container = element as ReportContainer;
 				if (container != null) {

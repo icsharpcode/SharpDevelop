@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Expressions.Irony;
 using ICSharpCode.Reporting.Expressions.Irony.Ast;
@@ -51,7 +52,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 					object result = Evaluate(exportColumn);
 					exportColumn.Text = result.ToString();
 				} catch (Exception e) {
-					var s = String.Format("SharpReport.Expressions -> {0} for {1}",e.Message,exportColumn.Text);
+					var s = String.Format(CultureInfo.CurrentCulture,"SharpReport.Expressions -> {0} for {1}",e.Message,exportColumn.Text);
 					Console.WriteLine(s);
 				}
 			}

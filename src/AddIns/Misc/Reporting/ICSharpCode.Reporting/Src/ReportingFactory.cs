@@ -32,6 +32,7 @@ namespace ICSharpCode.Reporting
 			return builder;
 		}
 		
+		
 		[Obsolete("Use public IReportCreator ReportCreator (Stream stream,IEnumerable list")]
 		public IReportCreator ReportCreator (Stream stream,Type listType,IEnumerable list)
 		{

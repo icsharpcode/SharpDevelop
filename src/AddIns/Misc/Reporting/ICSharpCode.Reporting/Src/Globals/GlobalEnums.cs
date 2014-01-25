@@ -13,7 +13,7 @@ namespace ICSharpCode.Reporting.Globals
 	/// <summary>
 	/// Description of GlobalEnums.
 	/// </summary>
-	public  class GlobalEnums
+	public sealed class GlobalEnums
 	{
 		private GlobalEnums() {
 		}

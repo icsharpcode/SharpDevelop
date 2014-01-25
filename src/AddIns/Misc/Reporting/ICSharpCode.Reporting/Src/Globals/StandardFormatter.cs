@@ -93,8 +93,8 @@ namespace ICSharpCode.Reporting.Globals
 					                          CultureInfo.CurrentCulture.NumberFormat);
 					
 					str = number.ToString (format,CultureInfo.CurrentCulture);
-				} catch (System.FormatException e) {
-					throw e;
+				} catch (FormatException e) {
+					throw ;
 				}
 				return str;
 			} else {
@@ -114,8 +114,8 @@ namespace ICSharpCode.Reporting.Globals
 					                            CultureInfo.CurrentCulture.NumberFormat);
 					str = dec.ToString (format,CultureInfo.CurrentCulture);
 					
-				} catch (System.FormatException e) {
-					throw e;
+				} catch (FormatException e) {
+					throw ;
 				}
 				return str;
 			} else {
