@@ -58,7 +58,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>
-    <Paused>_HelloWorldTest.cs:14,4-14,40</Paused>
+    <Paused>_HelloWorldTest.cs:29,4-29,40</Paused>
     <Exited />
   </Test>
 </DebuggerTests>

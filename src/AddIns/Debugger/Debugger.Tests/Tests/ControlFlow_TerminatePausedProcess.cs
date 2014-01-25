@@ -56,12 +56,12 @@ namespace Debugger.Tests {
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_TerminatePausedProcess.exe (Has symbols)</ModuleLoaded>
-    <Paused>ControlFlow_TerminatePausedProcess.cs:12,4-12,40</Paused>
+    <Paused>ControlFlow_TerminatePausedProcess.cs:27,4-27,40</Paused>
     <Exited />
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_TerminatePausedProcess.exe (Has symbols)</ModuleLoaded>
-    <Paused>ControlFlow_TerminatePausedProcess.cs:12,4-12,40</Paused>
+    <Paused>ControlFlow_TerminatePausedProcess.cs:27,4-27,40</Paused>
     <Exited />
   </Test>
 </DebuggerTests>

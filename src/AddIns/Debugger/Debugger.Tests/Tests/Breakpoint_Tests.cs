@@ -47,8 +47,8 @@ namespace Debugger.Tests {
 			
 			string filename = CurrentStackFrame.NextStatement.Filename;
 			
-			Breakpoint breakpoint1 = debugger.AddBreakpoint(filename, 14);
-			Breakpoint breakpoint2 = debugger.AddBreakpoint(filename, 15);
+			Breakpoint breakpoint1 = debugger.AddBreakpoint(filename, 29);
+			Breakpoint breakpoint2 = debugger.AddBreakpoint(filename, 30);
 			
 			Assert.IsTrue(breakpoint1.IsSet);
 			Assert.IsTrue(breakpoint2.IsSet);
@@ -78,37 +78,37 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Breakpoint_Tests.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <Paused>Breakpoint_Tests.cs:12,4-12,40</Paused>
+    <Paused>Breakpoint_Tests.cs:27,4-27,40</Paused>
     <Breakpoint1>
       <Breakpoint
         IsEnabled="True"
         IsSet="True"
-        Line="14" />
+        Line="29" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
         IsEnabled="True"
         IsSet="True"
-        Line="15" />
+        Line="30" />
     </Breakpoint2>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Main 1\r\n</LogMessage>
-    <Paused>Breakpoint_Tests.cs:14,4-14,49</Paused>
+    <Paused>Breakpoint_Tests.cs:29,4-29,49</Paused>
     <LogMessage>Main 2\r\n</LogMessage>
-    <Paused>Breakpoint_Tests.cs:16,4-16,49</Paused>
+    <Paused>Breakpoint_Tests.cs:31,4-31,49</Paused>
     <LogMessage>Main 3\r\n</LogMessage>
-    <Paused>Breakpoint_Tests.cs:17,4-17,40</Paused>
+    <Paused>Breakpoint_Tests.cs:32,4-32,40</Paused>
     <Exited />
     <Breakpoint1>
       <Breakpoint
         IsEnabled="True"
-        Line="14" />
+        Line="29" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
         IsEnabled="True"
-        Line="15" />
+        Line="30" />
     </Breakpoint2>
   </Test>
 </DebuggerTests>

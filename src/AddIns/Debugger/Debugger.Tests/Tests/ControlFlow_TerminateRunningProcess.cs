@@ -68,15 +68,15 @@ namespace Debugger.Tests {
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_TerminateRunningProcess.exe (Has symbols)</ModuleLoaded>
-    <Paused>ControlFlow_TerminateRunningProcess.cs:16,4-16,40</Paused>
-    <Paused>ControlFlow_TerminateRunningProcess.cs:17,4-17,26</Paused>
+    <Paused>ControlFlow_TerminateRunningProcess.cs:31,4-31,40</Paused>
+    <Paused>ControlFlow_TerminateRunningProcess.cs:32,4-32,26</Paused>
     <Log>Calling terminate</Log>
     <Exited />
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_TerminateRunningProcess.exe (Has symbols)</ModuleLoaded>
-    <Paused>ControlFlow_TerminateRunningProcess.cs:16,4-16,40</Paused>
-    <Paused>ControlFlow_TerminateRunningProcess.cs:17,4-17,26</Paused>
+    <Paused>ControlFlow_TerminateRunningProcess.cs:31,4-31,40</Paused>
+    <Paused>ControlFlow_TerminateRunningProcess.cs:32,4-32,26</Paused>
     <Log>Calling terminate</Log>
     <Exited />
   </Test>

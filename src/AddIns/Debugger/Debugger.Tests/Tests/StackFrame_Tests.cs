@@ -72,7 +72,7 @@ namespace Debugger.Tests {
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_Tests.exe (Has symbols)</ModuleLoaded>
-    <Paused>StackFrame_Tests.cs:13,5-13,41</Paused>
+    <Paused>StackFrame_Tests.cs:28,5-28,41</Paused>
     <Loop1>
       <Item>
         <LocalVariable
@@ -87,7 +87,7 @@ namespace Debugger.Tests {
           Value="10" />
       </Item>
     </Loop1>
-    <Paused>StackFrame_Tests.cs:16,5-16,41</Paused>
+    <Paused>StackFrame_Tests.cs:31,5-31,41</Paused>
     <Loop2>
       <Item>
         <LocalVariable
@@ -102,7 +102,7 @@ namespace Debugger.Tests {
           Value="20" />
       </Item>
     </Loop2>
-    <Paused>StackFrame_Tests.cs:19,4-19,40</Paused>
+    <Paused>StackFrame_Tests.cs:34,4-34,40</Paused>
     <None>
       <Item>
         <LocalVariable
@@ -111,7 +111,7 @@ namespace Debugger.Tests {
           Value="0" />
       </Item>
     </None>
-    <Paused>StackFrame_Tests.cs:23,4-23,40</Paused>
+    <Paused>StackFrame_Tests.cs:38,4-38,40</Paused>
     <NewVarDefined>
       <Item>
         <LocalVariable

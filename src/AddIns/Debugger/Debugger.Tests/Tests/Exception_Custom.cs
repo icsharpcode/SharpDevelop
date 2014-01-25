@@ -65,7 +65,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Exception_Custom.exe (Has symbols)</ModuleLoaded>
     <ExceptionThrown>Debugger.Tests.MyException</ExceptionThrown>
-    <Paused>Exception_Custom.cs:23,5-23,39</Paused>
+    <Paused>Exception_Custom.cs:38,5-38,39</Paused>
     <Exited />
   </Test>
 </DebuggerTests>

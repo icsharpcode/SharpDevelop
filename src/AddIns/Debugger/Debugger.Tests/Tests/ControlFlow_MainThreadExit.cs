@@ -71,7 +71,7 @@ namespace Debugger.Tests {
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_MainThreadExit.exe (Has symbols)</ModuleLoaded>
-    <Paused>ControlFlow_MainThreadExit.cs:20,4-20,40</Paused>
+    <Paused>ControlFlow_MainThreadExit.cs:35,4-35,40</Paused>
     <ThreadsBeforeExit
       Capacity="4"
       Count="2">

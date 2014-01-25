@@ -61,7 +61,7 @@ namespace Debugger.Tests {
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Thread_Tests.exe (Has symbols)</ModuleLoaded>
-    <Paused>Thread_Tests.cs:12,4-12,40</Paused>
+    <Paused>Thread_Tests.cs:27,4-27,40</Paused>
     <Thread>
       <Thread
         Callstack="{[Method Debugger.Tests.Thread_Tests.Main():System.Void]}"
@@ -72,7 +72,7 @@ namespace Debugger.Tests {
         Priority="Normal"
         RuntimeValue="null" />
     </Thread>
-    <Paused>Thread_Tests.cs:15,4-15,40</Paused>
+    <Paused>Thread_Tests.cs:30,4-30,40</Paused>
     <Thread>
       <Thread
         Callstack="{[Method Debugger.Tests.Thread_Tests.Main():System.Void]}"
@@ -83,7 +83,7 @@ namespace Debugger.Tests {
         Priority="AboveNormal"
         RuntimeValue="{System.Threading.Thread}" />
     </Thread>
-    <Paused>Thread_Tests.cs:17,4-17,40</Paused>
+    <Paused>Thread_Tests.cs:32,4-32,40</Paused>
     <Thread>
       <Thread
         Callstack="{[Method Debugger.Tests.Thread_Tests.Main():System.Void]}"

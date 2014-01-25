@@ -81,24 +81,24 @@ namespace Debugger.Tests {
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_Lifetime.exe (Has symbols)</ModuleLoaded>
-    <Paused>StackFrame_Lifetime.cs:18,4-18,40</Paused>
+    <Paused>StackFrame_Lifetime.cs:33,4-33,40</Paused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="1"
         ChainIndex="1"
         FrameIndex="1"
         MethodInfo="[Method Debugger.Tests.StackFrame_Lifetime.Function(i:System.Int32):System.Void]"
-        NextStatement="StackFrame_Lifetime.cs:18,4-18,40"
+        NextStatement="StackFrame_Lifetime.cs:33,4-33,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
-    <Paused>StackFrame_Lifetime.cs:25,4-25,40</Paused>
+    <Paused>StackFrame_Lifetime.cs:40,4-40,40</Paused>
     <Old_StackFrame>
       <StackFrame
         ArgumentCount="1"
         ChainIndex="1"
         FrameIndex="1"
         MethodInfo="[Method Debugger.Tests.StackFrame_Lifetime.Function(i:System.Int32):System.Void]"
-        NextStatement="StackFrame_Lifetime.cs:19,4-19,18"
+        NextStatement="StackFrame_Lifetime.cs:34,4-34,18"
         Thread="Thread Name =  Suspended = False" />
     </Old_StackFrame>
     <SelectedStackFrame>
@@ -106,17 +106,17 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="2"
         MethodInfo="[Method Debugger.Tests.StackFrame_Lifetime.SubFunction():System.Void]"
-        NextStatement="StackFrame_Lifetime.cs:25,4-25,40"
+        NextStatement="StackFrame_Lifetime.cs:40,4-40,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
-    <Paused>StackFrame_Lifetime.cs:20,4-20,40</Paused>
+    <Paused>StackFrame_Lifetime.cs:35,4-35,40</Paused>
     <Old_StackFrame>
       <StackFrame
         ArgumentCount="1"
         ChainIndex="1"
         FrameIndex="1"
         MethodInfo="[Method Debugger.Tests.StackFrame_Lifetime.Function(i:System.Int32):System.Void]"
-        NextStatement="StackFrame_Lifetime.cs:20,4-20,40"
+        NextStatement="StackFrame_Lifetime.cs:35,4-35,40"
         Thread="Thread Name =  Suspended = False" />
     </Old_StackFrame>
     <SelectedStackFrame>
@@ -125,15 +125,15 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="1"
         MethodInfo="[Method Debugger.Tests.StackFrame_Lifetime.Function(i:System.Int32):System.Void]"
-        NextStatement="StackFrame_Lifetime.cs:20,4-20,40"
+        NextStatement="StackFrame_Lifetime.cs:35,4-35,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
-    <Paused>StackFrame_Lifetime.cs:13,4-13,40</Paused>
+    <Paused>StackFrame_Lifetime.cs:28,4-28,40</Paused>
     <Main>
       <StackFrame
         ChainIndex="1"
         MethodInfo="[Method Debugger.Tests.StackFrame_Lifetime.Main():System.Void]"
-        NextStatement="StackFrame_Lifetime.cs:13,4-13,40"
+        NextStatement="StackFrame_Lifetime.cs:28,4-28,40"
         Thread="Thread Name =  Suspended = False" />
     </Main>
     <Old_StackFrame>
@@ -150,7 +150,7 @@ namespace Debugger.Tests {
       <StackFrame
         ChainIndex="1"
         MethodInfo="[Method Debugger.Tests.StackFrame_Lifetime.Main():System.Void]"
-        NextStatement="StackFrame_Lifetime.cs:13,4-13,40"
+        NextStatement="StackFrame_Lifetime.cs:28,4-28,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
     <Exited />

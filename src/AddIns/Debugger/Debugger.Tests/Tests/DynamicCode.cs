@@ -92,8 +92,8 @@ namespace Debugger.Tests {
     <ModuleLoaded>DynamicllyGeneratedAssembly (No symbols)</ModuleLoaded>
     <ModuleLoaded>ISymWrapper.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <Paused>DynamicCode.cs:42,4-42,40</Paused>
-    <Paused>DynamicCode.cs:43,4-43,73</Paused>
+    <Paused>DynamicCode.cs:57,4-57,40</Paused>
+    <Paused>DynamicCode.cs:58,4-58,73</Paused>
     <Paused>Source.txt:1,1-1,100</Paused>
     <Exited />
   </Test>

@@ -109,7 +109,7 @@ namespace Debugger.Tests {
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_VariablesLifetime.exe (Has symbols)</ModuleLoaded>
-    <Paused>StackFrame_VariablesLifetime.cs:21,4-21,40</Paused>
+    <Paused>StackFrame_VariablesLifetime.cs:36,4-36,40</Paused>
     <argument>
       <Value
         PrimitiveValue="1"
@@ -125,7 +125,7 @@ namespace Debugger.Tests {
         PrimitiveValue="3"
         Type="System.Int32" />
     </_x0040_class>
-    <Paused>StackFrame_VariablesLifetime.cs:30,4-30,40</Paused>
+    <Paused>StackFrame_VariablesLifetime.cs:45,4-45,40</Paused>
     <argument>
       <Value
         IsInvalid="True"
@@ -152,7 +152,7 @@ namespace Debugger.Tests {
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction>
-    <Paused>StackFrame_VariablesLifetime.cs:23,4-23,40</Paused>
+    <Paused>StackFrame_VariablesLifetime.cs:38,4-38,40</Paused>
     <argument>
       <Value
         IsInvalid="True"
@@ -181,7 +181,7 @@ namespace Debugger.Tests {
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </localInSubFunction>
-    <Paused>StackFrame_VariablesLifetime.cs:30,4-30,40</Paused>
+    <Paused>StackFrame_VariablesLifetime.cs:45,4-45,40</Paused>
     <argument>
       <Value
         IsInvalid="True"
@@ -215,7 +215,7 @@ namespace Debugger.Tests {
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction_x0028_new_x0029_>
-    <Paused>StackFrame_VariablesLifetime.cs:15,4-15,40</Paused>
+    <Paused>StackFrame_VariablesLifetime.cs:30,4-30,40</Paused>
     <argument>
       <Value
         IsInvalid="True"

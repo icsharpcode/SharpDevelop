@@ -67,9 +67,9 @@ namespace Debugger.Tests {
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>1\r\n</LogMessage>
-    <Paused>StackFrame_SetIP.cs:13,4-13,40</Paused>
+    <Paused>StackFrame_SetIP.cs:28,4-28,40</Paused>
     <LogMessage>1\r\n</LogMessage>
-    <Paused>StackFrame_SetIP.cs:13,4-13,40</Paused>
+    <Paused>StackFrame_SetIP.cs:28,4-28,40</Paused>
     <Exited />
   </Test>
 </DebuggerTests>

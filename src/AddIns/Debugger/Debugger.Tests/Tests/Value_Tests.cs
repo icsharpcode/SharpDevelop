@@ -77,7 +77,7 @@ namespace Debugger.Tests {
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Value_Tests.exe (Has symbols)</ModuleLoaded>
-    <Paused>Value_Tests.cs:27,4-27,40</Paused>
+    <Paused>Value_Tests.cs:42,4-42,40</Paused>
     <LocalVariables>
       <Item>
         <LocalVariable
