@@ -9,7 +9,7 @@ namespace ICSharpCode.MSTest
 {
 	public static class MSTestOptions
 	{
-		static Properties properties = PropertyService.Get("MSTestOptions", new Properties());
+		static readonly Properties properties = PropertyService.NestedProperties("MSTestOptions");
 		
 		public static string MSTestPath {
 			get { return properties.Get<string>("MSTestPath", GetDefaultMSTestPath()); }

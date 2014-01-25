@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.UnitTesting;
@@ -67,27 +68,27 @@ namespace ICSharpCode.MSTest
 			return Message;
 		}
 		
-		FilePosition GetStackTraceFilePosition()
+		DomRegion GetStackTraceFilePosition()
 		{
 			if (!String.IsNullOrEmpty(StackTrace)) {
 				return ParseFilePositionFromStackTrace();
 			}
-			return FilePosition.Empty;
+			return DomRegion.Empty;
 		}
 		
-		FilePosition ParseFilePositionFromStackTrace()
+		DomRegion ParseFilePositionFromStackTrace()
 		{
 			FileLineReference fileLineRef = OutputTextLineParser.GetNUnitOutputFileLineReference(StackTrace, true);
 			if (fileLineRef != null) {
 				return CreateFilePosition(fileLineRef);
 			}
-			return FilePosition.Empty;
+			return DomRegion.Empty;
 		}
 		
-		FilePosition CreateFilePosition(FileLineReference fileLineRef)
+		DomRegion CreateFilePosition(FileLineReference fileLineRef)
 		{
 			string fileName = Path.GetFullPath(fileLineRef.FileName);
-			return new FilePosition(fileName, fileLineRef.Line, fileLineRef.Column + 1);
+			return new DomRegion(fileName, fileLineRef.Line, fileLineRef.Column + 1);
 		}
 	}
 }

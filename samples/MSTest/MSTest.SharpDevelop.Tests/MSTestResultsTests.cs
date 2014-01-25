@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using ICSharpCode.MSTest;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -132,7 +133,7 @@ namespace MSTest.SharpDevelop.Tests
 					ResultType = TestResultType.Failure,
 					Message = "System.ApplicationException: asdfafds",
 					StackTrace = "    at FooTest.UnitTest1.TestMethod1() in d:\\projects\\FooTest\\UnitTest1.cs:line 21\r\n",
-					StackTraceFilePosition = new FilePosition(@"d:\projects\FooTest\UnitTest1.cs", 21, 1)
+					StackTraceFilePosition = new DomRegion(@"d:\projects\FooTest\UnitTest1.cs", 21, 1)
 				}
 			};
 			AssertTestResultsAreEqual(expectedResults);
