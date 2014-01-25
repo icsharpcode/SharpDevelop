@@ -29,7 +29,6 @@ Friend NotInheritable Class RevisionClass
 	Public Const Minor As String = "0"
 	Public Const Build As String = "0"
 	Public Const Revision As String = "$INSERTREVISION$"
-	Public Const VersionName As String = "alpha" ' "" is not valid for no version name, you have to use Nothing if you don't want a version name (eg "Beta 1")
 	
 	Public Const FullVersion As String = Major + "." + Minor + "." + Build + ".$INSERTREVISION$$INSERTBRANCHPOSTFIX$$INSERTVERSIONNAMEPOSTFIX$"
 End Class

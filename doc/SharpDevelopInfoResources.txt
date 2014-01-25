@@ -3,6 +3,11 @@
 http://community.sharpdevelop.net/forums/
 
 
+++ ISSUE TRACKER ++
+
+https://github.com/icsharpcode/SharpDevelop/issues
+
+
 ++ WIKI ++
 
 http://wiki.sharpdevelop.net/ (HOME)
