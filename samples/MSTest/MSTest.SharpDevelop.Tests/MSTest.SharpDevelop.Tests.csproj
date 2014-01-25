@@ -37,6 +37,9 @@
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>..\..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory.CSharp">
+      <HintPath>..\..\..\bin\ICSharpCode.NRefactory.CSharp.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
       <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
     </Reference>
@@ -56,7 +59,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MSTestBaseTests.cs" />
     <Compile Include="MSTestFrameworkTests.cs" />
+    <Compile Include="MSTestClassTests.cs" />
+    <Compile Include="MSTestProjectTests.cs" />
     <Compile Include="MSTestResultsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

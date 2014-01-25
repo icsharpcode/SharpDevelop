@@ -24,6 +24,34 @@ namespace ICSharpCode.MSTest
 			BindResultToCompositeResultOfNestedTests();
 		}
 		
+		public static bool IsTestClass(ITypeDefinition typeDefinition)
+		{
+			if ((typeDefinition == null) || (typeDefinition.IsAbstract)) {
+				return false;
+			}
+			
+			foreach (IAttribute attribute in typeDefinition.Attributes) {
+				if (IsMSTestClassAttribute(attribute)) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		static bool IsMSTestClassAttribute(IAttribute attribute)
+		{
+			return IsMSTestClassAttribute(attribute.AttributeType.FullName);
+		}
+		
+		static bool IsMSTestClassAttribute(string name)
+		{
+			return 
+				name == "TestClass" ||
+				name == "TestClassAttribute" ||
+				name == "Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute";
+		}
+		
 		public string GetTypeName()
 		{
 			return fullTypeName.ReflectionName;

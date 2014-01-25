@@ -27,30 +27,7 @@ namespace ICSharpCode.MSTest
 		
 		protected override bool IsTestClass(ITypeDefinition typeDefinition)
 		{
-			if ((typeDefinition == null) || (typeDefinition.IsAbstract)) {
-				return false;
-			}
-			
-			foreach (IAttribute attribute in typeDefinition.Attributes) {
-				if (IsMSTestClassAttribute(attribute)) {
-					return true;
-				}
-			}
-			
-			return false;
-		}
-		
-		bool IsMSTestClassAttribute(IAttribute attribute)
-		{
-			return IsMSTestClassAttribute(attribute.AttributeType.FullName);
-		}
-		
-		bool IsMSTestClassAttribute(string name)
-		{
-			return 
-				name == "TestClass" ||
-				name == "TestClassAttribute" ||
-				name == "Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute";
+			return MSTestClass.IsTestClass(typeDefinition);
 		}
 		
 		protected override ITest CreateTestClass(ITypeDefinition typeDefinition)
