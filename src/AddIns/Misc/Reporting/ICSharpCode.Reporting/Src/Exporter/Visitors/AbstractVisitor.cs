@@ -61,6 +61,12 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			
 		}
 		
+		
+		public virtual void Visit (ExportCircle exportCircle) {
+			
+		}
+		
+		
 		protected bool ShouldSetBackcolor (ExportColumn exportColumn) {
 			return exportColumn.BackColor != Color.White;
 		}

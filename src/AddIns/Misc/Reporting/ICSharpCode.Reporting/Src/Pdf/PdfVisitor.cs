@@ -85,6 +85,8 @@ namespace ICSharpCode.Reporting.Pdf
 			gfx.DrawRectangle(pen,new XRect(columnLocation.ToXPoints(),
 			                                exportRectangle.Size.ToXSize()));
 		}
+		
+		
 		public PdfPage PdfPage {get; private set;}
 	}
 }

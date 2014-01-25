@@ -82,8 +82,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		{
 			var pen = FixedDocumentCreator.CreateWpfPen(exportGraphics);
 			var visual = new DrawingVisual();
-			using (var dc = visual.RenderOpen())
-			{
+			using (var dc = visual.RenderOpen()){
 				dc.DrawLine(pen,
 				            new Point(exportGraphics.Location.X, exportGraphics.Location.Y),
 				            new Point(exportGraphics.Location.X + exportGraphics.Size.Width,exportGraphics.Location.Y));
@@ -98,17 +97,40 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			var pen = FixedDocumentCreator.CreateWpfPen(exportRectangle);
 			
 			var visual = new DrawingVisual();
-			using (var dc = visual.RenderOpen())
-			{dc.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportRectangle.BackColor),
-				                  pen,
-				                  new Rect(exportRectangle.Location.X,exportRectangle.Location.Y,
-				                           exportRectangle.Size.Width,exportRectangle.Size.Height));
+			using (var dc = visual.RenderOpen()){
+				dc.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportRectangle.BackColor),
+				                 pen,
+				                 new Rect(exportRectangle.Location.X,exportRectangle.Location.Y,
+				                          exportRectangle.Size.Width,exportRectangle.Size.Height));
 			}
 			DrawingElement m = new DrawingElement(visual);
 			UIElement = m;
 		}
 		
+		public override void Visit(ExportCircle exportCircle)
+		{
+			var pen = FixedDocumentCreator.CreateWpfPen(exportCircle);
+			var rad = CalcRad(exportCircle.Size);
+			
+			var visual = new DrawingVisual();
+			using (var dc = visual.RenderOpen()){
+				
+				dc.DrawEllipse(FixedDocumentCreator.ConvertBrush(exportCircle.BackColor),
+				                 pen,
+				                 new Point(exportCircle.Location.X + rad.X,
+				                           exportCircle.Location.Y + rad.Y),
+				                 rad.X,
+				                 rad.Y);
+				                           
+				                 
+			}
+			DrawingElement m = new DrawingElement(visual);
+			UIElement = m;
+		}
 		
+		Point CalcRad(System.Drawing.Size size) {
+			return  new Point(size.Width /2,size.Height /2);
+		}
 		
 		protected UIElement UIElement {get;private set;}
 		
