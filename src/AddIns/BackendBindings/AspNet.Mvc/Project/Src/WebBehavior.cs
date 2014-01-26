@@ -141,13 +141,15 @@ namespace ICSharpCode.AspNet.Mvc
 			}
 		}
 		
+		int LastStartedIISExpressProcessId = -1;
+		
 		void AttachToWebWorkerProcessOrStartIISExpress(WebProjectProperties properties, bool withDebugging)
 		{
 			string processName = WebProjectService.GetWorkerProcessName(properties);
 			
 			// try find the worker process directly or using the process monitor callback
 			Process[] processes = System.Diagnostics.Process.GetProcesses();
-			int index = Array.FindIndex(processes, p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
+			int index = Array.FindIndex(processes, p => properties.UseIISExpress ? p.Id == LastStartedIISExpressProcessId : p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
 			if (index > -1) {
 				if (withDebugging)
 					DebuggerService.CurrentDebugger.Attach(processes[index]);
@@ -156,10 +158,12 @@ namespace ICSharpCode.AspNet.Mvc
 					// start IIS express and attach to it
 					if (WebProjectService.IsIISExpressInstalled) {
 						ProcessStartInfo processInfo = IISExpressProcessStartInfo.Create(WebProject);
-						if (withDebugging)
+						if (withDebugging) {
 							DebuggerService.CurrentDebugger.Start(processInfo);
-						else
-							Process.Start(processInfo);
+						} else {
+							var process = Process.Start(processInfo);
+							LastStartedIISExpressProcessId = process.Id;
+						}
 					}
 				} else {
 					DisposeProcessMonitor();
