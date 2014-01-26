@@ -8,7 +8,7 @@ SharpDevelop is distributed under the MIT license.
 
 The #develop project started on September 11th, 2000. The project was initiated
 by Mike Krüger. In the course of the project, several contributors joined in.
-If you want to contribute see http://wiki.sharpdevelop.net/JoiningTheTeam.ashx.
+If you want to contribute see <https://github.com/icsharpcode/SharpDevelop/wiki/Joining-the-Team>.
 
 Overview
 #develop (short for SharpDevelop) is a free Integrated Development Environment
