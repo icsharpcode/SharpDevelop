@@ -115,9 +115,6 @@
 		<MSBuild Projects="$(SamplesSrc)\EmbeddedImageAddIn\EmbeddedImageAddIn.sln"
 				 Targets="build;clean"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
-<!--		<MSBuild Projects="$(SamplesSrc)\Gallio\Gallio.SharpDevelop.sln"
-				 Targets="build;clean"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>-->
 		<MSBuild Projects="$(SamplesSrc)\HtmlSyntaxColorizer\HtmlSyntaxColorizer.sln"
 				 Targets="build;clean"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
