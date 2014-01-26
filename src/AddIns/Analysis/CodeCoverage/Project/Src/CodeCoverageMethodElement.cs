@@ -290,7 +290,7 @@ namespace ICSharpCode.CodeCoverage
 
 		decimal GetBranchCoverage () {
 			
-			return this.BranchCoverageRatio != null ? decimal.Round( ((decimal)(this.BranchCoverageRatio.Item1*100))/(decimal)this.BranchCoverageRatio.Item2, 2) : 0m;
+			return this.BranchCoverageRatio == null ? 0m : ((decimal)(this.BranchCoverageRatio.Item1*100))/((decimal)this.BranchCoverageRatio.Item2);
 			
 		}
 

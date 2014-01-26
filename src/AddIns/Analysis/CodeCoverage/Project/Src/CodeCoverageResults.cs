@@ -116,7 +116,9 @@ namespace ICSharpCode.CodeCoverage
 		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XElement reader)
 		{
 			CodeCoverageMethod method = new CodeCoverageMethod(className, reader, this);
-			module.Methods.Add(method);
+			if (!method.Name.Contains("__")) {
+			    module.Methods.Add(method);
+			}
 			return method;
 		}
 		

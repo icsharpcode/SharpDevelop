@@ -88,7 +88,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			if (TotalCodeLength > 0) {
 				if ( visitedCodeLength == TotalCodeLength && visitedBranchCoverage != 0 && visitedBranchCoverage != 100 ) {
-					return String.Format("{0} (100%/{1}%)", Name, visitedBranchCoverage);
+					return String.Format("{0} (100%/{1}%)", Name, decimal.Round (visitedBranchCoverage, 2));
 				}
 				int percentage = GetPercentage();
 				return String.Format("{0} ({1}%)", Name, percentage);
@@ -98,8 +98,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		int GetPercentage()
 		{
-			int percentage = (visitedCodeLength * 100) / TotalCodeLength;
-			return percentage;
+			return TotalCodeLength == 0? 0 : (int)decimal.Round((((decimal)visitedCodeLength * 100) / (decimal)TotalCodeLength), 0);
 		}
 		
 		void SetImageIndex()

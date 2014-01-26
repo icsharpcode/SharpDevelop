@@ -40,7 +40,7 @@ namespace ICSharpCode.CodeCoverage
 			Name = name;
 			VisitedCodeLength = visitedCodeLength;
 			UnvisitedCodeLength = unvisitedCodeLength;
-			VisitedBranchCoverage = branchCoverageCount == 0 ? 100 : decimal.Round(branchCoverage/branchCoverageCount,2);
+			VisitedBranchCoverage = branchCoverageCount == 0 ? 100 : branchCoverage/branchCoverageCount;
 		}
 		
 		void AddDummyNodeIfHasNoMethods()
