@@ -78,8 +78,7 @@ namespace CheckFileHeaders
 			if (File.Exists(Path.Combine(dir, "license.txt"))) {
 				if (File.ReadAllText(Path.Combine(dir, "license.txt")).Contains("Redistributions  of  source code must retain the above copyright notice")) {
 					//currentLicense = @"// This code is distributed under the BSD license (for details please see \" + dir + @"\license.txt)";
-					// ignore BSD subdirs
-					return 0;
+					// move from BSD to MIT
 				}
 			}
 			int count = 0;
