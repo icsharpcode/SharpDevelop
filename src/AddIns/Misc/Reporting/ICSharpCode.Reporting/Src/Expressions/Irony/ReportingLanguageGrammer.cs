@@ -2,10 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using ICSharpCode.Reporting.Expressions.Irony.Ast;
-using Irony;
 using Irony.Interpreter;
 using Irony.Interpreter.Ast;
-using Irony.Interpreter.Evaluator;
 using Irony.Parsing;
 
 namespace ICSharpCode.Reporting.Expressions.Irony

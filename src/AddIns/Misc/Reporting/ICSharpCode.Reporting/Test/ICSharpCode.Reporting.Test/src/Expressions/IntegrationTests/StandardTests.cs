@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.ObjectModel;
-using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;

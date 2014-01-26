@@ -25,7 +25,6 @@ namespace ICSharpCode.Reporting.Test.Expressions.IntegrationTests
 		[Test]
 		public void SumGroupedList()
 		{
-//			visitor = new ExpressionVisitor(reportSettings,dataSource.GroupedList);
 			var visitor = new ExpressionVisitor (reportSettings);
 			visitor.SetCurrentDataSource(dataSource.GroupedList);
 			var script = "= sum('randomint')";
@@ -45,7 +44,6 @@ namespace ICSharpCode.Reporting.Test.Expressions.IntegrationTests
 			collection[0].Text = script;
 			container.ExportedItems.AddRange(collection);
 			
-//			visitor = new ExpressionVisitor(reportSettings,dataSource.GroupedList);
 			var visitor = new ExpressionVisitor (reportSettings);
 			visitor.SetCurrentDataSource(dataSource.GroupedList);
 			var group = dataSource.GroupedList.FirstOrDefault();
@@ -62,7 +60,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.IntegrationTests
 		public void SumAllGroups () {
 			var container = new ExportContainer();
 			container.ExportedItems.AddRange(collection);
-//			visitor = new ExpressionVisitor(reportSettings,dataSource.GroupedList);
+
 			var visitor = new ExpressionVisitor (reportSettings);
 			visitor.SetCurrentDataSource(dataSource.GroupedList);
 			foreach (var group in dataSource.GroupedList) {
