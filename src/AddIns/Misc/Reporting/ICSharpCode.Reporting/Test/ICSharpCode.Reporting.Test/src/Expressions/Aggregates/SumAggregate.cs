@@ -18,48 +18,42 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 		AggregateCollection aggregateCollection;
 		AggregateFuctionHelper helper;
 		CollectionDataSource dataSource;
-		
+		ExpressionVisitor visitor;
 		
 		[Test]
 		public void CanSum_Int_WholeCollection()
 		{
-			var reportSettings = new ReportSettings();
-			var visitor = new ExpressionVisitor (reportSettings);
-			visitor.SetCurrentDataSource(dataSource.SortedList);
 			var script = "= sum('intValue')";
-			collection[0].Text = script;
-			visitor.Visit(collection[0]);
-			Assert.That (collection[0].Text,Is.EqualTo("406"));
-			Assert.That(Convert.ToInt32(collection[0].Text),Is.TypeOf(typeof(int)));
+			var result = Evaluate(script);
+			Assert.That (result.Text,Is.EqualTo("406"));
+			Assert.That(Convert.ToInt32(result.Text),Is.TypeOf(typeof(int)));
 		}
 		
 		
 		[Test]
 		public void CanSum_Double_WholeCollection()
 		{
-			var reportSettings = new ReportSettings();
-			var visitor = new ExpressionVisitor (reportSettings);
-			visitor.SetCurrentDataSource(dataSource.SortedList);
 			var script = "= sum('doubleValue')";
-			collection[0].Text = script;
-			visitor.Visit(collection[0]);
-			Assert.That (collection[0].Text,Is.EqualTo("408,25"));
-			Assert.That(Convert.ToDouble(collection[0].Text),Is.TypeOf(typeof(double)));
+			var result = Evaluate(script);
+			Assert.That (result.Text,Is.EqualTo("408,25"));
+			Assert.That(Convert.ToDouble(result.Text),Is.TypeOf(typeof(double)));
 		}
 		
 		
 		[Test]
 		public void CanSum_Double_With_String_Concat()
 		{
-			var reportSettings = new ReportSettings();
-			var visitor = new ExpressionVisitor (reportSettings);
-			visitor.SetCurrentDataSource(dataSource.SortedList);
 			var script = "= 'myText ' + sum('doubleValue')";
-			collection[0].Text = script;
-			visitor.Visit(collection[0]);
-			Assert.That (collection[0].Text,Is.EqualTo("myText 408,25"));
+			var result = Evaluate(script);
+			Assert.That (result.Text,Is.EqualTo("myText 408,25"));
 		}
 		
+		
+		ExportText Evaluate (string script) {
+			collection[0].Text = script;
+			visitor.Visit(collection[0]);
+			return collection[0];
+		}
 		
 		[SetUp]
 		public void CreateExportlist() {
@@ -73,6 +67,8 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 			aggregateCollection = helper.AggregateCollection;
 			dataSource = new CollectionDataSource(aggregateCollection,new ReportSettings());
 			dataSource.Bind();
+			visitor = new ExpressionVisitor(new ReportSettings());
+			visitor.SetCurrentDataSource(dataSource.SortedList);
 		}
 		
 	}
