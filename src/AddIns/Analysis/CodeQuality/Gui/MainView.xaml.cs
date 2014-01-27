@@ -32,6 +32,7 @@ using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.CodeQuality.Reporting;
 using ICSharpCode.Reports.Core.WpfReportViewer;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
 
 namespace ICSharpCode.CodeQuality.Gui
@@ -70,6 +71,23 @@ namespace ICSharpCode.CodeQuality.Gui
 			UpdateUI();
 		}
 		
+		void AddCurrentProjectAssemblyClick(object sender, RoutedEventArgs e)
+		{
+			if (ProjectService.CurrentProject == null)
+				return;
+			
+			string fileName = ProjectService.CurrentProject.OutputAssemblyFullPath;
+			if (string.IsNullOrEmpty(fileName))
+			{
+				MessageBox.Show("Project output assembly not found! Please build it first!");
+				return;
+			}
+
+			introBlock.Visibility = Visibility.Collapsed;
+			this.fileNames.Add(fileName);
+			Analyse(new string[] { fileName });
+			UpdateUI();
+		}
 		
 		void Analyse (string[] fileNames)
 		{
