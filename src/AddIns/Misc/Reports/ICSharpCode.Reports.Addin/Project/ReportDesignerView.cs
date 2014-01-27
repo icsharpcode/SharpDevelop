@@ -13,18 +13,18 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Reports.Addin.Commands;
-using ICSharpCode.Reports.Addin.Designer;
-using ICSharpCode.Reports.Addin.SecondaryViews;
-
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
+
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
+using ICSharpCode.Reports.Addin.Commands;
+using ICSharpCode.Reports.Addin.Designer;
+using ICSharpCode.Reports.Addin.SecondaryViews;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -34,26 +34,22 @@ namespace ICSharpCode.Reports.Addin
 	public class ReportDesignerView : AbstractViewContent, IHasPropertyContainer,
 	IClipboardHandler,IUndoHandler, IToolsHost,IPrintable
 	{
+		readonly IDesignerGenerator generator;
+		bool IsFormsDesignerVisible;
+		bool tabOrderMode;
+		bool hasUnmergedChanges;
+		bool unloading;
+		string reportFileContent;
+		Panel panel;
+		ReportDesignerLoader loader;
+		DesignSurface designSurface;
+		DefaultServiceContainer defaultServiceContainer;
+		ReportDesignerUndoEngine undoEngine;
 		
-		private bool IsFormsDesignerVisible;
-		private bool tabOrderMode;
-		private bool hasUnmergedChanges;
-		private bool unloading;
-		
-		private string reportFileContent;
-		
-		private Panel panel;
-		private ReportDesignerLoader loader;
-		
-		private IDesignerGenerator generator;
-		private DesignSurface designSurface;
-		private DefaultServiceContainer defaultServiceContainer;
-		private ReportDesignerUndoEngine undoEngine;
-		
-		private XmlView xmlView;
-		private ReportPreview reportPreview;
-		private ReportViewerSecondaryView reportViewer;
-		private TestWPFReportPreview testView;
+		XmlView xmlView;
+		ReportPreview reportPreview;
+		ReportViewerSecondaryView reportViewer;
+		TestWPFReportPreview testView;
 		
 		#region Constructor
 		
@@ -64,7 +60,7 @@ namespace ICSharpCode.Reports.Addin
 		public ReportDesignerView(OpenedFile openedFile, IDesignerGenerator generator):base (openedFile)
 		{
 			if (openedFile == null) {
-				throw new ArgumentNullException("opendFile");
+				throw new ArgumentNullException("openedFile");
 			}
 			if (generator == null) {
 				throw new ArgumentNullException("generator");
@@ -91,8 +87,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void SetupSecondaryView ()
 		{
-			Console.WriteLine("SetupSecondaryView ()");
-			
+			LoggingService.Info("Form Designer: SetupSecondaryView ");
 			xmlView = new XmlView(generator,this);
 			SecondaryViewContents.Add(xmlView);
 			
@@ -116,8 +111,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void LoadDesigner(Stream stream)
 		{
-			Console.WriteLine("LoadDesigner(Stream stream)");
-			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
+			LoggingService.Info("Form Designer: LoadDesigner");
 			CreatePanel();
 			defaultServiceContainer = new DefaultServiceContainer();
 			
@@ -247,7 +241,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private static string FormatLoadErrors(DesignSurface designSurface)
 		{
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			foreach(Exception le in designSurface.LoadErrors) {
 				sb.AppendLine(le.ToString());
 				sb.AppendLine();
@@ -259,8 +253,7 @@ namespace ICSharpCode.Reports.Addin
 		private void MergeFormChanges()
 		{
 			LoggingService.Info("MergeFormChanges()");
-			System.Diagnostics.Trace.WriteLine("View:MergeFormChanges()");
-			this.designSurface.Flush();
+			designSurface.Flush();
 			generator.MergeFormChanges(null);
 			LoggingService.Info("Finished merging form changes");
 			hasUnmergedChanges = false;
@@ -290,7 +283,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void ReportExplorer_PropertyChanged (object sender,System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			Console.WriteLine("ReportExplorer_PropertyChanged");
+			LoggingService.Info("ReportExplorer_PropertyChanged");
 			this.MakeDirty();
 			ReportExplorerPad explorerPad = CheckReportExplorer();
 			IComponentChangeService change = Host.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
@@ -313,11 +306,11 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void SelectionChangedHandler(object sender, EventArgs args)
 		{
-			ISelectionService ser = (ISelectionService)sender;
-			AbstractItem it = ser.PrimarySelection as AbstractItem;
-			if (it != null) {
-				if (String.IsNullOrEmpty(it.Site.Name)) {
-					it.Site.Name = it.Name;
+			var selectionService = (ISelectionService)sender;
+			var item = selectionService.PrimarySelection as AbstractItem;
+			if (item != null) {
+				if (String.IsNullOrEmpty(item.Site.Name)) {
+					item.Site.Name = item.Name;
 				}
 			}
 			UpdatePropertyPadSelection((ISelectionService)sender);
@@ -332,10 +325,7 @@ namespace ICSharpCode.Reports.Addin
 		void TransactionClose(object sender, DesignerTransactionCloseEventArgs e)
 		{
 			if (shouldUpdateSelectableObjects) {
-				// update the property pad after the transaction is *really* finished
-				// (including updating the selection)
-//				WorkbenchSingleton.SafeThreadAsyncCall(UpdatePropertyPad);
-				SD.MainThread.InvokeAsync(null).FireAndForget();
+				SD.MainThread.InvokeAsync(UpdatePropertyPad).FireAndForget();
 				shouldUpdateSelectableObjects = false;
 			}
 		}
@@ -347,7 +337,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void OnComponentChanged (object sender, ComponentChangedEventArgs e)
 		{
-			BaseImageItem item = e.Component as BaseImageItem;
+			var item = e.Component as BaseImageItem;
 			
 			if (item != null) {
 				item.ReportFileName = this.loader.ReportModel.ReportSettings.FileName;
@@ -626,9 +616,9 @@ namespace ICSharpCode.Reports.Addin
 		
 		public void TogglePageMargin ()
 		{
-			IDesignerHost h = (IDesignerHost)this.designSurface.GetService(typeof(IDesignerHost));
-			RootReportModel r = (RootReportModel)h.RootComponent;
-			r.Toggle();
+			IDesignerHost designerHost = (IDesignerHost)this.designSurface.GetService(typeof(IDesignerHost));
+			RootReportModel rootReportModel = (RootReportModel)designerHost.RootComponent;
+			rootReportModel.Toggle();
 
 		}
 		#endregion
@@ -644,7 +634,7 @@ namespace ICSharpCode.Reports.Addin
 		public virtual void ShowTabOrder()
 		{
 			if (!IsTabOrderMode) {
-				IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
+				var menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
 				menuCommandService.GlobalInvoke(StandardCommands.TabOrder);
 				tabOrderMode = true;
 			}
@@ -653,7 +643,7 @@ namespace ICSharpCode.Reports.Addin
 		public virtual void HideTabOrder()
 		{
 			if (IsTabOrderMode) {
-				IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
+				var menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
 				menuCommandService.GlobalInvoke(StandardCommands.TabOrder);
 				tabOrderMode = false;
 			}

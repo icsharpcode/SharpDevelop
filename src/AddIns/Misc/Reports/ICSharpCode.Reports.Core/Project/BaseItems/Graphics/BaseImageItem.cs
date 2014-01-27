@@ -1,13 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-/// <summary>
-/// Handles the drawing of Images like Bitmap's and so on
-/// </summary>
-/// <remarks>
-/// 	created by - Forstmeier Peter
-/// 	created on - 04.10.2005 11:17:29
-/// </remarks>
 using System;
 using System.Drawing;
 using System.Globalization;

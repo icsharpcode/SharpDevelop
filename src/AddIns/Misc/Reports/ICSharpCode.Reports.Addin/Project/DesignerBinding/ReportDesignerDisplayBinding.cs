@@ -26,7 +26,7 @@ namespace ICSharpCode.Reports.Addin
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			if (file.IsDirty) {
-				ReportWizardCommand cmd = new ReportWizardCommand(file);
+				var cmd = new ReportWizardCommand(file);
 				cmd.Run();
 				if (cmd.Canceled) {
 					return null;
