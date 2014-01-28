@@ -25,11 +25,11 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		}
 
 		public static readonly DependencyProperty RootProperty =
-            DependencyProperty.Register("Root", typeof(IOutlineNode), typeof(Outline));
+			DependencyProperty.Register("Root", typeof(IOutlineNode), typeof(Outline));
 
-        public IOutlineNode Root
-        {
-            get { return (IOutlineNode)GetValue(RootProperty); }
+		public IOutlineNode Root
+		{
+			get { return (IOutlineNode)GetValue(RootProperty); }
 			set { SetValue(RootProperty, value); }
 		}
 		

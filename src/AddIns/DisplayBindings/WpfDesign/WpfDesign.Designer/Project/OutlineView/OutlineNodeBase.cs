@@ -12,7 +12,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Linq;
-using ICSharpCode.WpfDesign.Designer.Xaml; 
+using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.OutlineView
@@ -21,219 +21,205 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 	/// Description of OutlineNodeBase.
 	/// </summary>
 	public abstract class OutlineNodeBase : INotifyPropertyChanged, IOutlineNode
-    {
+	{
 
-        protected abstract void UpdateChildren();
-        //Used to check if element can enter other containers
-        protected static PlacementType DummyPlacementType;
+		protected abstract void UpdateChildren();
+		//Used to check if element can enter other containers
+		protected static PlacementType DummyPlacementType;
 
-        protected OutlineNodeBase(DesignItem designItem)
-        {
-            DesignItem = designItem;
-            
+		protected OutlineNodeBase(DesignItem designItem)
+		{
+			DesignItem = designItem;
+			
 
-            var hidden = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).ValueOnInstance;
-            if (hidden != null && (bool)hidden)
-            {
-                _isDesignTimeVisible = false;
-                ((FrameworkElement)DesignItem.Component).Visibility = Visibility.Hidden;
-            }
+			var hidden = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).ValueOnInstance;
+			if (hidden != null && (bool)hidden) {
+				_isDesignTimeVisible = false;
+				((FrameworkElement)DesignItem.Component).Visibility = Visibility.Hidden;
+			}
 
-            var locked = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
-            if (locked != null && (bool)locked)
-            {
-                _isDesignTimeLocked = true;
-            }
+			var locked = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
+			if (locked != null && (bool)locked) {
+				_isDesignTimeLocked = true;
+			}
 
-            //TODO
+			//TODO
 
-            DesignItem.NameChanged += new EventHandler(DesignItem_NameChanged);
-            DesignItem.PropertyChanged += new PropertyChangedEventHandler(DesignItem_PropertyChanged);
-        }
+			DesignItem.NameChanged += new EventHandler(DesignItem_NameChanged);
+			DesignItem.PropertyChanged += new PropertyChangedEventHandler(DesignItem_PropertyChanged);
+		}
 
-        public DesignItem DesignItem { get; set; }
+		public DesignItem DesignItem { get; set; }
 
-        public ISelectionService SelectionService
-        {
-            get { return DesignItem.Services.Selection; }
-        }
+		public ISelectionService SelectionService
+		{
+			get { return DesignItem.Services.Selection; }
+		}
 
-        bool isExpanded = true;
+		bool isExpanded = true;
 
-        public bool IsExpanded
-        {
-            get
-            {
-                return isExpanded;
-            }
-            set
-            {
-                isExpanded = value;
-                RaisePropertyChanged("IsExpanded");
-            }
-        }
+		public bool IsExpanded
+		{
+			get
+			{
+				return isExpanded;
+			}
+			set
+			{
+				isExpanded = value;
+				RaisePropertyChanged("IsExpanded");
+			}
+		}
 
-        bool isSelected;
+		bool isSelected;
 
-        public bool IsSelected
-        {
-            get
-            {
-                return isSelected;
-            }
-            set
-            {
-                if (isSelected != value)
-                {
-                    isSelected = value;
-                    SelectionService.SetSelectedComponents(new[] { DesignItem },
-                                                           value ? SelectionTypes.Add : SelectionTypes.Remove);
-                    RaisePropertyChanged("IsSelected");
-                }
-            }
-        }
+		public bool IsSelected
+		{
+			get
+			{
+				return isSelected;
+			}
+			set
+			{
+				if (isSelected != value) {
+					isSelected = value;
+					SelectionService.SetSelectedComponents(new[] { DesignItem },
+					                                       value ? SelectionTypes.Add : SelectionTypes.Remove);
+					RaisePropertyChanged("IsSelected");
+				}
+			}
+		}
 
-        bool _isDesignTimeVisible = true;
+		bool _isDesignTimeVisible = true;
 
-        public bool IsDesignTimeVisible
-        {
-            get
-            {
-                return _isDesignTimeVisible;
-            }
-            set
-            {
-                _isDesignTimeVisible = value;
-                var ctl = DesignItem.Component as UIElement;
-                if(ctl!=null)
-                	ctl.Visibility = _isDesignTimeVisible ? Visibility.Visible : Visibility.Hidden;
+		public bool IsDesignTimeVisible
+		{
+			get
+			{
+				return _isDesignTimeVisible;
+			}
+			set
+			{
+				_isDesignTimeVisible = value;
+				var ctl = DesignItem.Component as UIElement;
+				if(ctl!=null)
+					ctl.Visibility = _isDesignTimeVisible ? Visibility.Visible : Visibility.Hidden;
 
-                RaisePropertyChanged("IsDesignTimeVisible");
+				RaisePropertyChanged("IsDesignTimeVisible");
 
-                if (!value)
-                    DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).SetValue(true);
-                else
-                    DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).Reset();
-            }
-        }
+				if (!value)
+					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).SetValue(true);
+				else
+					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).Reset();
+			}
+		}
 
-        bool _isDesignTimeLocked = false;
+		bool _isDesignTimeLocked = false;
 
-        public bool IsDesignTimeLocked
-        {
-            get
-            {
-                return _isDesignTimeLocked;
-            }
-            set
-            {
-                _isDesignTimeLocked = value;
-                ((XamlDesignItem)DesignItem).IsDesignTimeLocked = _isDesignTimeLocked;
+		public bool IsDesignTimeLocked
+		{
+			get
+			{
+				return _isDesignTimeLocked;
+			}
+			set
+			{
+				_isDesignTimeLocked = value;
+				((XamlDesignItem)DesignItem).IsDesignTimeLocked = _isDesignTimeLocked;
 
-                RaisePropertyChanged("IsDesignTimeLocked");
+				RaisePropertyChanged("IsDesignTimeLocked");
 
-                //				if (value)
-                //					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).SetValue(true);
-                //				else
-                //					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).Reset();
-            }
-        }
+				//				if (value)
+				//					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).SetValue(true);
+				//				else
+				//					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).Reset();
+			}
+		}
 
-        ObservableCollection<IOutlineNode> children = new ObservableCollection<IOutlineNode>();
+		ObservableCollection<IOutlineNode> children = new ObservableCollection<IOutlineNode>();
 
-        public ObservableCollection<IOutlineNode> Children
-        {
-            get { return children; }
-        }
+		public ObservableCollection<IOutlineNode> Children
+		{
+			get { return children; }
+		}
 
-        public string Name
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(DesignItem.Name))
-                {
-                    return DesignItem.ComponentType.Name;
-                }
-                return DesignItem.ComponentType.Name + " (" + DesignItem.Name + ")";
-            }
-        }
+		public string Name
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(DesignItem.Name)) {
+					return DesignItem.ComponentType.Name;
+				}
+				return DesignItem.ComponentType.Name + " (" + DesignItem.Name + ")";
+			}
+		}
 
-        void DesignItem_NameChanged(object sender, EventArgs e)
-        {
-            RaisePropertyChanged("Name");
-        }
+		void DesignItem_NameChanged(object sender, EventArgs e)
+		{
+			RaisePropertyChanged("Name");
+		}
 
-        void DesignItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == DesignItem.ContentPropertyName)
-            {
-                UpdateChildren();
-            }
-        }
+		void DesignItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == DesignItem.ContentPropertyName) {
+				UpdateChildren();
+			}
+		}
 
-        
+		
 
-        public bool CanInsert(IEnumerable<IOutlineNode> nodes, IOutlineNode after, bool copy)
-        {
-            var placementBehavior = DesignItem.GetBehavior<IPlacementBehavior>();
-            if (placementBehavior == null)
-                return false;
-            var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
-            if (operation != null)
-            {
-                bool canEnter = placementBehavior.CanEnterContainer(operation, true);
-                operation.Abort();
-                return canEnter;
-            }
-            return false;
-        }
+		public bool CanInsert(IEnumerable<IOutlineNode> nodes, IOutlineNode after, bool copy)
+		{
+			var placementBehavior = DesignItem.GetBehavior<IPlacementBehavior>();
+			if (placementBehavior == null)
+				return false;
+			var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
+			if (operation != null) {
+				bool canEnter = placementBehavior.CanEnterContainer(operation, true);
+				operation.Abort();
+				return canEnter;
+			}
+			return false;
+		}
 
-        public virtual void Insert(IEnumerable<IOutlineNode> nodes, IOutlineNode after, bool copy)
-        {
-            using (var moveTransaction = DesignItem.Context.OpenGroup("Item moved in outline view", nodes.Select(n => n.DesignItem).ToList()))
-            {
-                if (copy)
-                {
-                    nodes = nodes.Select(n => OutlineNode.Create(n.DesignItem.Clone())).ToList();
-                }
-                else
-                {
-                    foreach (var node in nodes)
-                    {
-                        node.DesignItem.Remove();
-                    }
-                }
+		public virtual void Insert(IEnumerable<IOutlineNode> nodes, IOutlineNode after, bool copy)
+		{
+			using (var moveTransaction = DesignItem.Context.OpenGroup("Item moved in outline view", nodes.Select(n => n.DesignItem).ToList()))
+			{
+				if (copy) {
+					nodes = nodes.Select(n => OutlineNode.Create(n.DesignItem.Clone())).ToList();
+				} else {
+					foreach (var node in nodes) {
+						node.DesignItem.Remove();
+					}
+				}
 
-                var index = after == null ? 0 : Children.IndexOf(after) + 1;
+				var index = after == null ? 0 : Children.IndexOf(after) + 1;
 
-                var content = DesignItem.ContentProperty;
-                if (content.IsCollection)
-                {
-                    foreach (var node in nodes)
-                    {
-                        content.CollectionElements.Insert(index++, node.DesignItem);
-                    }
-                }
-                else
-                {
-                    content.SetValue(nodes.First().DesignItem);
-                }
-                moveTransaction.Commit();
-            }
-        }
+				var content = DesignItem.ContentProperty;
+				if (content.IsCollection) {
+					foreach (var node in nodes) {
+						content.CollectionElements.Insert(index++, node.DesignItem);
+					}
+				} else {
+					content.SetValue(nodes.First().DesignItem);
+				}
+				moveTransaction.Commit();
+			}
+		}
 
-        #region INotifyPropertyChanged Members
+		#region INotifyPropertyChanged Members
 
-        public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
-        public void RaisePropertyChanged(string name)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
-        }
+		public void RaisePropertyChanged(string name)
+		{
+			if (PropertyChanged != null)
+			{
+				PropertyChanged(this, new PropertyChangedEventArgs(name));
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

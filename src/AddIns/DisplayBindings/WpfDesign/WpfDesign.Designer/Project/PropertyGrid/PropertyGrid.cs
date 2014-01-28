@@ -51,7 +51,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		
 		public PropertyGridGroupMode GroupMode
 		{
-			get { return _groupMode; } 
+			get { return _groupMode; }
 			set
 			{
 				if (_groupMode != value)
@@ -202,7 +202,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				
 				if (selectedItems == null || selectedItems.Count == 0) return;
 				if (selectedItems.Count == 1) SingleItem = selectedItems[0];
-	
+				
 				foreach (var md in GetDescriptors()) {
 					if (PassesFilter(md.Name))
 						AddNode(md);
@@ -210,7 +210,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			} finally {
 				reloadActive = false;
 				if (AggregatePropertiesUpdated != null)
-		        	AggregatePropertiesUpdated(this, EventArgs.Empty);
+					AggregatePropertiesUpdated(this, EventArgs.Empty);
 			}
 		}
 
