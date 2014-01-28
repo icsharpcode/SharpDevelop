@@ -134,7 +134,7 @@ namespace UnitTesting.Tests.Frameworks
 			
 			Assert.IsFalse(result);
 		}
-
+		
 		[Test]
 		public void IsTestMember_FieldHasOneAttribute_ReturnsFalseAndDoesNotThrowInvalidCastException()
 		{
@@ -147,95 +147,6 @@ namespace UnitTesting.Tests.Frameworks
 			bool result = testFramework.IsTestMember(field);
 			
 			Assert.IsFalse(result);
-		}
-
-		[Test]
-		public void IsTestMember_MethodHasParametersAndTestCaseAttribute_ReturnsTrue()
-		{
-			CreateTestFramework();
-			var testAttribute = new MockAttribute("NUnit.Framework.TestCaseAttribute");
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			var mockParameter = new MockParameter();
-			mockMethod.Parameters.Add(mockParameter);
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
-			Assert.IsTrue(result);
-		}
-
-		[Test]
-		public void IsTestMember_MethodHasParametersAndTestCaseSourceAttribute_ReturnsTrue()
-		{
-			CreateTestFramework();
-			var mockMethodAttribute = new MockAttribute("NUnit.Framework.TestCaseSourceAttribute");
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(mockMethodAttribute);
-			var mockParameter = new MockParameter();
-			mockMethod.Parameters.Add(mockParameter);
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
-			Assert.IsTrue(result);
-		}
-
-		[Test]
-		public void IsTestMember_MethodHasParametersAndTestAttribute_ParameterHasRandomAttribute_ReturnsTrue()
-		{
-			CreateTestFramework();
-
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(new MockAttribute("Test"));
-			var mockParameter = new MockParameter();
-			var mockParamAttribute = new MockAttribute("NUnit.Framework.RandomAttribute");
-			mockParameter.Attributes.Add(mockParamAttribute);
-			mockMethod.Parameters.Add(mockParameter);
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
-			Assert.IsTrue(result);
-		}
-
-		[Test]
-		public void IsTestMember_MethodHasParametersAndTestAttribute_ParameterHasRangeAttribute_ReturnsTrue()
-		{
-			CreateTestFramework();
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(new MockAttribute("Test"));
-			var mockParameter = new MockParameter();
-			var mockParamAttribute = new MockAttribute("NUnit.Framework.RangeAttribute");
-			mockParameter.Attributes.Add(mockParamAttribute);
-			mockMethod.Parameters.Add(mockParameter);
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
-			Assert.IsTrue(result);
-		}
-
-		[Test]
-		public void IsTestMember_MethodHasParametersAndTestAttribute_ParameterHasValuesAttribute_ReturnsTrue()
-		{
-			CreateTestFramework();
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(new MockAttribute("Test"));
-			var mockParameter = new MockParameter();
-			var mockParamAttribute = new MockAttribute("NUnit.Framework.ValuesAttribute");
-			mockParameter.Attributes.Add(mockParamAttribute);
-			mockMethod.Parameters.Add(mockParameter);
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
-			Assert.IsTrue(result);
-		}
-
-		[Test]
-		public void IsTestMember_MethodHasParametersAndTestAttribute_ParameterHasValueSourceAttribute_ReturnsTrue()
-		{
-			CreateTestFramework();
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(new MockAttribute("Test"));
-			var mockParameter = new MockParameter();
-			var mockParamAttribute = new MockAttribute("NUnit.Framework.ValueSourceAttribute");
-			mockParameter.Attributes.Add(mockParamAttribute);
-			mockMethod.Parameters.Add(mockParameter);
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
-			Assert.IsTrue(result);
 		}
 	}
 }
