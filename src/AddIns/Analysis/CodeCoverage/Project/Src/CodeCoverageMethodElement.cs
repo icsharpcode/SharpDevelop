@@ -121,6 +121,46 @@ namespace ICSharpCode.CodeCoverage
 
 				sps.Add(sp);
 			}
+
+			if (sps.Count > 2) {
+			    
+			    // After ccrewrite ContractClass/ContractClassFor
+			    // sequence point(s) from another file/class/method
+			    // is inserted into this method sequence points
+			    //
+			    // To remove alien sequence points, all points 
+			    // before and after method brackets {} are removed
+			    
+    			CodeCoverageSequencePoint startSP = getBodyStartSP(sps);
+    			if (Object.ReferenceEquals(null, startSP)) { return sps; }
+    			CodeCoverageSequencePoint finalSP = getBodyFinalSP(sps);
+    			if (Object.ReferenceEquals(null, finalSP)) { return sps; }
+
+    			List<CodeCoverageSequencePoint> selected = new List<CodeCoverageSequencePoint>();
+    			foreach (var point in sps) {
+    			    if (
+    			        (point.Line > startSP.Line || (point.Line == startSP.Line && point.Column >= startSP.Column)) &&
+    			        (point.Line < finalSP.Line || (point.Line == finalSP.Line && point.Column < finalSP.Column))
+    			       ) {
+    			        selected.Add (point);
+    			    }
+    			    // After ccrewrite ContractClass/ContractClassFor
+    			    // duplicate method end-sequence-point (}) is added
+    			    //
+    			    // Add(point) and Break on first (duplicate) finalSP 
+    			    // Note: IL.Offset of second duplicate finalSP will
+    			    // extend branch coverage outside method-end "}",
+    			    // and that can lead to wrong branch coverage report!  
+    			    if (point.Line == finalSP.Line && point.Column == finalSP.Column) {
+    			        selected.Add (point);
+    			        break;
+    			    }
+    			}
+
+    			sps = selected;
+    			sps.OrderBy(item => item.Line).OrderBy(item => item.Column);
+    			
+			}
 			return sps;
 		}
 
@@ -153,15 +193,18 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		// Find method-body start SequencePoint "{"
-		public static CodeCoverageSequencePoint getBodyStartSP(IEnumerable<CodeCoverageSequencePoint> sps) {
+		public static CodeCoverageSequencePoint getBodyStartSP(IEnumerable<CodeCoverageSequencePoint> sPoints) {
 			CodeCoverageSequencePoint startSeqPoint = null;
-			foreach (CodeCoverageSequencePoint sp in sps) {
-				if ( sp.Content == "{") {
-					startSeqPoint = sp;
+			bool startFound = false;
+			foreach (CodeCoverageSequencePoint sPoint in sPoints) {
+				if ( sPoint.Content == "{") {
+			        if (startSeqPoint == null) startSeqPoint = sPoint;
+			        startFound = true;
 					break;
 				}
+				startSeqPoint = sPoint;
 			}
-			return startSeqPoint;
+			return startFound == true? startSeqPoint : null;
 		}
 
 		// Find method-body final SequencePoint "}" 
