@@ -49,7 +49,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 			if(control!=null){
 				TypeMappings.TryGetValue(control.GetType(), out _type);
 				if (_type != null) {
-					OutlineNode node = OutlineNode.Create(item);
+					IOutlineNode node = OutlineNode.Create(item);
 					Outline.Root = node;
 					PropertyGridView.PropertyGrid.SelectedItems = item.Services.Selection.SelectedItems;
 				}

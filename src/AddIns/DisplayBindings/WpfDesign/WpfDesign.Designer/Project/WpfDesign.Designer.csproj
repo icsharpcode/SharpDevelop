@@ -87,6 +87,7 @@
     </Compile>
     <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
     <Compile Include="Extensions\RightClickContextMenuExtension.cs" />
+    <Compile Include="OutlineView\OutlineNodeBase.cs" />
     <Compile Include="PropertyGrid\Editors\FlatCollectionEditor.xaml.cs">
       <DependentUpon>FlatCollectionEditor.xaml</DependentUpon>
       <SubType>Code</SubType>

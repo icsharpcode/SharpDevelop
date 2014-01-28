@@ -45,13 +45,13 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		public CategoriesCollection Categories { get; private set; }
 		public PropertyNodeCollection Events { get; private set; }
 
-		public EventHandler AggregatePropertiesUpdated { get; set; }
+		public event EventHandler AggregatePropertiesUpdated;
 		
 		private PropertyGridGroupMode _groupMode;
 		
 		public PropertyGridGroupMode GroupMode
 		{
-			get { return _groupMode; }
+			get { return _groupMode; } 
 			set
 			{
 				if (_groupMode != value)
