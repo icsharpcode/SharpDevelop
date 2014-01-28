@@ -32,10 +32,26 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 	/// </summary>
 	sealed class PickPortableTargetFramework : TargetFramework
 	{
-		public PickPortableTargetFramework()
-			: base("PickPortableTargetFramework", Profile.PortableSubsetDisplayName + StringParser.Parse(" (${res:PortableLibrary.ChooseTargetFrameworks})"))
-		{
-			this.MinimumMSBuildVersion = new Version(4, 0);
+		public override string TargetFrameworkVersion {
+			get { return "PickPortableTargetFramework"; }
+		}
+		
+		public override string DisplayName {
+			get {
+				return Profile.PortableSubsetDisplayName + StringParser.Parse(" (${res:PortableLibrary.ChooseTargetFrameworks})");
+			}
+		}
+		
+		public override Version Version {
+			get {
+				return new Version(4, 0);
+			}
+		}
+		
+		public override Version MinimumMSBuildVersion {
+			get {
+				return new Version(4, 0);
+			}
 		}
 		
 		public override bool Equals(object obj)

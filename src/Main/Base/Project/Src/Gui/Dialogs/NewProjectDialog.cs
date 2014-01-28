@@ -152,14 +152,16 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				}
 				targetFrameworkComboBox.Items.AddRange(
 					availableTargetFrameworks.Where(fx => fx.DisplayName != null && fx.IsAvailable())
-					.OrderBy(fx => fx.Name).ToArray());
+					.OrderBy(fx => fx.TargetFrameworkVersion).ToArray());
 			}
 			if (targetFrameworkComboBox.Items.Count > 0) {
 				targetFrameworkComboBox.Visible = true;
 				targetFrameworkComboBox.SelectedIndex = 0;
-				string lastUsedTargetFramework = PropertyService.Get("Dialogs.NewProjectDialog.TargetFramework", TargetFramework.DefaultTargetFramework.Name);
+				string lastUsedTargetFramework = PropertyService.Get("Dialogs.NewProjectDialog.TargetFramework", TargetFramework.DefaultTargetFrameworkVersion);
+				string lastUsedTargetFrameworkProfile = PropertyService.Get("Dialogs.NewProjectDialog.TargetFrameworkProfile", TargetFramework.DefaultTargetFrameworkProfile);
 				for (int i = 0; i < targetFrameworkComboBox.Items.Count; i++) {
-					if (((TargetFramework)targetFrameworkComboBox.Items[i]).Name == lastUsedTargetFramework) {
+					var targetFramework = (TargetFramework)targetFrameworkComboBox.Items[i];
+					if (targetFramework.TargetFrameworkVersion == lastUsedTargetFramework && targetFramework.TargetFrameworkProfile == lastUsedTargetFrameworkProfile) {
 						targetFrameworkComboBox.SelectedIndex = i;
 						break;
 					}
@@ -320,7 +322,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				
 				if (item.Template.SupportedTargetFrameworks.Any()) {
 					cinfo.TargetFramework = (TargetFramework)targetFrameworkComboBox.SelectedItem;
-					PropertyService.Set("Dialogs.NewProjectDialog.TargetFramework", cinfo.TargetFramework.Name);
+					PropertyService.Set("Dialogs.NewProjectDialog.TargetFramework", cinfo.TargetFramework.TargetFrameworkVersion);
 				}
 				
 				cinfo.ProjectBasePath = DirectoryName.Create(NewProjectDirectory);

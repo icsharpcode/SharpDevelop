@@ -44,6 +44,7 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 				SD.AnalyticsMonitor.TrackFeature(GetType(), "ConvertToPortableLibrary");
 				var project = (CompilableProject)Project;
 				lock (project.SyncRoot) {
+					var oldTargetFramework = project.CurrentTargetFramework;
 					if (newVersion != null && GetAvailableCompilerVersions().Contains(newVersion)) {
 						project.ToolsVersion = newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor;
 					}
@@ -68,8 +69,7 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 						string assemblyName = referenceItem.Include;
 						if (assemblyName.IndexOf(',') >= 0)
 							assemblyName = assemblyName.Substring(0, assemblyName.IndexOf(','));
-						assemblyName += ",";
-						if (KnownFrameworkAssemblies.FullAssemblyNames.Any(fullName => fullName.StartsWith(assemblyName, StringComparison.OrdinalIgnoreCase))) {
+						if (oldTargetFramework.ReferenceAssemblies.Any(fullName => string.Equals(fullName.ShortName, assemblyName, StringComparison.OrdinalIgnoreCase))) {
 							// If it's a framework assembly, remove the reference
 							// (portable libraries automatically reference all available framework assemblies)
 							ProjectService.RemoveProjectItem(project, referenceItem);

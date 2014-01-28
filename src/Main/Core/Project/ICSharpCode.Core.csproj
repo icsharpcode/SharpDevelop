@@ -75,6 +75,7 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ICheckableMenuCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\IMenuItemBuilder.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ServiceDoozer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\StaticDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\ExtensionPath.cs" />
     <Compile Include="Src\AddInTree\AddIn\IConditionEvaluator.cs" />
     <Compile Include="Src\AddInTree\AddIn\ICondition.cs" />

@@ -208,6 +208,10 @@
     <Compile Include="Project\Project_TypeGuids.cs" />
     <Compile Include="Project\SolutionEventArgs.cs" />
     <Compile Include="Project\SolutionSection.cs" />
+    <Compile Include="Project\TargetFrameworks\DotNet2x.cs" />
+    <Compile Include="Project\TargetFrameworks\RedistLists.cs" />
+    <Compile Include="Project\TargetFrameworks\TargetFramework.cs" />
+    <Compile Include="Project\TargetFrameworks\DotNet4x.cs" />
     <Compile Include="Refactoring\CodeGenerator.cs" />
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IFileSystem.cs" />
@@ -334,6 +338,7 @@
     <Compile Include="Util\SimpleTaskScheduler.cs" />
     <Compile Include="Util\TreeNode.cs" />
     <Compile Include="Util\UnclosableStream.cs" />
+    <Compile Include="Util\Versions.cs" />
     <Compile Include="WinForms\IClipboardHandler.cs" />
     <Compile Include="WinForms\IContextHelpProvider.cs" />
     <Compile Include="WinForms\IPrintable.cs" />
@@ -563,7 +568,6 @@
     <Compile Include="Src\Project\ProjectLoadException.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Project\ProjectUpgradeException.cs" />
-    <Compile Include="Src\Project\TargetFramework.cs" />
     <Compile Include="Refactoring\ContextAction.cs" />
     <Compile Include="Refactoring\EditorRefactoringContext.cs" />
     <Compile Include="Refactoring\IContextAction.cs" />
@@ -852,6 +856,7 @@
     <Folder Include="Designer" />
     <Folder Include="Dom\ClassBrowser" />
     <Folder Include="Editor\ContextActions" />
+    <Folder Include="Project\TargetFrameworks" />
     <Folder Include="Src\Editor\Dialogs" />
     <Folder Include="Templates" />
     <Folder Include="Project\Configuration" />

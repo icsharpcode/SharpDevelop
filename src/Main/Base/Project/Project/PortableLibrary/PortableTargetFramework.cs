@@ -23,28 +23,68 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 {
 	public class PortableTargetFramework : TargetFramework
 	{
-		public readonly string TargetFrameworkVersion;
-		public readonly string TargetFrameworkProfile;
+		readonly string targetFrameworkVersion;
+		readonly string targetFrameworkProfile;
+		readonly string displayName;
+		readonly IReadOnlyList<DomAssemblyName> redistList;
 		
-		public PortableTargetFramework(string targetFrameworkVersion, string targetFrameworkProfile)
-			: base(targetFrameworkVersion + "-" + targetFrameworkProfile, Profile.PortableSubsetDisplayName + " (" + targetFrameworkVersion + "-" + targetFrameworkProfile + ")")
+		/// <summary>
+		/// Creates a new PortableTargetFramework instance for the given profile.
+		/// </summary>
+		public PortableTargetFramework(Profile profile)
 		{
-			this.TargetFrameworkVersion = targetFrameworkVersion;
-			this.TargetFrameworkProfile = targetFrameworkProfile;
-			this.MinimumMSBuildVersion = new Version(4, 0);
+			this.targetFrameworkVersion = profile.TargetFrameworkVersion;
+			this.targetFrameworkProfile = profile.TargetFrameworkProfile;
+			this.displayName = profile.DisplayName;
+			this.redistList = profile.ReferenceAssemblies;
 		}
 		
-		public PortableTargetFramework(Profile profile)
-			: base(profile.TargetFrameworkVersion + "-" + profile.TargetFrameworkProfile, profile.DisplayName)
+		/// <summary>
+		/// Creates a new PortableTargetFramework for a profile that is not installed.
+		/// </summary>
+		public PortableTargetFramework(string targetFrameworkVersion, string targetFrameworkProfile)
 		{
-			this.TargetFrameworkVersion = profile.TargetFrameworkVersion;
-			this.TargetFrameworkProfile = profile.TargetFrameworkProfile;
-			this.MinimumMSBuildVersion = new Version(4, 0);
+			this.targetFrameworkVersion = targetFrameworkVersion;
+			this.targetFrameworkProfile = targetFrameworkProfile;
+			this.displayName = Profile.PortableSubsetDisplayName + " (" + targetFrameworkVersion + "-" + targetFrameworkProfile + ")";
+			this.redistList = EmptyList<DomAssemblyName>.Instance;
+		}
+		
+		public override string TargetFrameworkVersion {
+			get { return targetFrameworkVersion; }
+		}
+		
+		public override string TargetFrameworkProfile {
+			get { return targetFrameworkProfile; }
+		}
+		
+		public override string DisplayName {
+			get { return displayName; }
+		}
+		
+		public override Version Version {
+			get {
+				switch (targetFrameworkVersion) {
+					case "v4.0":
+						return Versions.V4_0;
+					case "v4.5":
+					default:
+						return Versions.V4_5;
+				}
+			}
+		}
+		
+		public override Version MinimumMSBuildVersion {
+			get {
+				return new Version(4, 0);
+			}
 		}
 		
 		public override bool Equals(object obj)

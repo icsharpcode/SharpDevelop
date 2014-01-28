@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project.Converter;
+using ICSharpCode.SharpDevelop.Project.PortableLibrary;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -157,6 +159,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
 		event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
+		
+		/// <summary>
+		/// Gets the list of registered .NET target frameworks.
+		/// This is the list that is supposed to be displayed to the user when selecting a target framework.
+		/// It corresponds to the AddInTree path '/SharpDevelop/TargetFrameworks'.
+		/// 
+		/// Note that in the project upgrade view, <see cref="IUpgradableProject.GetAvailableTargetFrameworks"/> is used instead.
+		/// Some target framework types (such as 'portable library') might be added by project behaviors, and are not available in this list.
+		/// </summary>
+		IReadOnlyList<TargetFramework> TargetFrameworks { get; }
 		
 		/// <summary>
 		/// Gets the list of registered project bindings.

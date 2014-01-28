@@ -182,7 +182,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 					config["SupportedTargetFrameworks"].InnerText.Split(';')
 					.Select<string,TargetFramework>(TargetFramework.GetByName).ToArray();
 				
-				supportedTargetFrameworks = TargetFramework.TargetFrameworks.Where(fx => specifiedTargetFrameworks.Any(s => fx.IsBasedOn(s))).ToArray();
+				supportedTargetFrameworks = SD.ProjectService.TargetFrameworks.Where(fx => specifiedTargetFrameworks.Any(s => fx.IsBasedOn(s))).ToArray();
 			} else {
 				supportedTargetFrameworks = new TargetFramework[0];
 			}

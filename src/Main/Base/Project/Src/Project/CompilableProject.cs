@@ -84,15 +84,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			: base(information)
 		{
 			this.OutputType = OutputType.Exe;
-			this.RootNamespace = information.RootNamespace;
-			this.AssemblyName = information.ProjectName;
+			SetProperty("RootNamespace", information.RootNamespace);
+			SetProperty("AssemblyName", information.ProjectName);
 			
-			ClientProfileTargetFramework clientProfile = information.TargetFramework as ClientProfileTargetFramework;
-			if (clientProfile != null) {
-				SetProperty(null, null, "TargetFrameworkVersion", clientProfile.FullFramework.Name, PropertyStorageLocations.Base, true);
-				SetProperty(null, null, "TargetFrameworkProfile", "Client", PropertyStorageLocations.Base, true);
-			} else if (information.TargetFramework != null) {
-				SetProperty(null, null, "TargetFrameworkVersion", information.TargetFramework.Name, PropertyStorageLocations.Base, true);
+			if (information.TargetFramework != null) {
+				SetProperty(null, null, "TargetFrameworkVersion", information.TargetFramework.TargetFrameworkVersion, PropertyStorageLocations.Base, true);
+				if (!string.IsNullOrEmpty(information.TargetFramework.TargetFrameworkProfile)) {
+					SetProperty(null, null, "TargetFrameworkProfile", information.TargetFramework.TargetFrameworkProfile, PropertyStorageLocations.Base, true);
+				}
 			}
 			
 			SetProperty("Debug", null, "OutputPath", @"bin\Debug\",

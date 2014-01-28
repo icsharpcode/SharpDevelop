@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			supports32BitPreferred = false;
 			if (DotnetDetection.IsDotnet45Installed()) {
 				var upgradableProject = projectOptions.Project as IUpgradableProject;
-				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.IsBasedOn(TargetFramework.Net45))
+				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.Supports32BitPreferredOption)
 					supports32BitPreferred = projectOptions.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2010;
 				// Show 32 vs. 64 options even for library projects;
 				// it's relevant for web applications.
@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (supports32BitPreferred && string.Equals(this.PlatformTarget.Value, "AnyCPU", StringComparison.OrdinalIgnoreCase)) {
 				bool default32BitPreferred = false;
 				var upgradableProject = projectOptions.Project as IUpgradableProject;
-				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.IsBasedOn(TargetFramework.Net45)) {
+				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.Supports32BitPreferredOption) {
 					default32BitPreferred = true;
 				}
 				if (Prefer32Bit.Value ?? default32BitPreferred)

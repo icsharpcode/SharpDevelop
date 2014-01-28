@@ -25,6 +25,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 {
@@ -47,10 +48,11 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 					XDocument doc = XDocument.Load(frameworkFile);
 					frameworks.Add(new SupportedFramework(doc.Root));
 				}
-				if (frameworks.Count > 0)
-					return new Profile(targetFrameworkVersion, targetFrameworkProfile, frameworks);
-				else
+				if (frameworks.Count == 0)
 					return null;
+				string redistListFileName = Path.Combine(profileDir, "RedistList", "FrameworkList.xml");
+				var redistList = TargetFramework.ReadRedistList(redistListFileName);
+				return new Profile(targetFrameworkVersion, targetFrameworkProfile, frameworks, redistList);
 			} catch (XmlException) {
 				return null;
 			} catch (IOException) {
@@ -59,12 +61,14 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 				return null;
 			}
 		}
-		
+
 		// These must be properties for WPF data binding
 		public string TargetFrameworkVersion { get; private set; }
 		public string TargetFrameworkProfile { get; private set; }
 		public string DisplayName { get; private set; }
-		public IList<SupportedFramework> SupportedFrameworks { get; private set; }
+		public IReadOnlyList<SupportedFramework> SupportedFrameworks { get; private set; }
+		
+		public IReadOnlyList<DomAssemblyName> ReferenceAssemblies { get; private set; }
 		
 		/// <summary>
 		/// Returns ".NET Portable Subset" localized
@@ -75,11 +79,12 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 			}
 		}
 		
-		public Profile(string targetFrameworkVersion, string targetFrameworkProfile, IList<SupportedFramework> supportedFrameworks)
+		public Profile(string targetFrameworkVersion, string targetFrameworkProfile, IReadOnlyList<SupportedFramework> supportedFrameworks, IReadOnlyList<DomAssemblyName> referenceAssemblies)
 		{
 			this.TargetFrameworkVersion = targetFrameworkVersion;
 			this.TargetFrameworkProfile = targetFrameworkProfile;
 			this.SupportedFrameworks = supportedFrameworks;
+			this.ReferenceAssemblies = referenceAssemblies;
 			
 			this.DisplayName = PortableSubsetDisplayName + " (" + string.Join(", ", supportedFrameworks) + ")";
 		}

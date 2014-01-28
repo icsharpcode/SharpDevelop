@@ -37,8 +37,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			allSolutions = new NullSafeSimpleModelCollection<ISolution>();
 			allProjects = allSolutions.SelectMany(s => s.Projects);
 			projectBindings = SD.AddInTree.BuildItems<ProjectBindingDescriptor>("/SharpDevelop/Workbench/ProjectBindings", null);
+			targetFrameworks = SD.AddInTree.BuildItems<TargetFramework>("/SharpDevelop/TargetFrameworks", null);
 			
-			SD.GetFutureService<IWorkbench>().ContinueWith(t => t.Result.ActiveViewContentChanged += ActiveViewContentChanged);
+			SD.GetFutureService<IWorkbench>().ContinueWith(t => t.Result.ActiveViewContentChanged += ActiveViewContentChanged).FireAndForget();
 			
 			var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
 			if (applicationStateInfoService != null) {
@@ -419,6 +420,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (result == null)
 				throw new InvalidOperationException("IProjectBinding.LoadProject() must not return null");
 			return result;
+		}
+		#endregion
+		
+		#region Target Frameworks
+		readonly IReadOnlyList<TargetFramework> targetFrameworks;
+		
+		public IReadOnlyList<TargetFramework> TargetFrameworks {
+			get { return targetFrameworks; }
 		}
 		#endregion
 	}

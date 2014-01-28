@@ -126,7 +126,7 @@ namespace CSharpBinding.Refactoring
 				var attr = new AttributeSection();
 				attr.AttributeTarget = target;
 				attr.Attributes.Add(builder.ConvertAttribute(attribute));
-				script.InsertBefore(node, attr);
+				script.AddAttribute(node, attr);
 			}
 		}
 		

@@ -53,6 +53,8 @@ namespace ICSharpCode.WixBinding
 			: base(info)
 		{
 			SetProperty("OutputType", "Package");
+			SetProperty("AssemblyName", null);
+			this.AssemblyName = info.ProjectName;
 			AddWixTargetsPathProperties();
 			AddImport(DefaultTargetsFile, null);
 			CheckWixIsInstalled();

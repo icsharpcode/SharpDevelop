@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Text;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
@@ -54,6 +55,25 @@ namespace ICSharpCode.SharpDevelop.Parser
 					}
 				}
 			}
+		}
+		
+		public DomAssemblyName(string shortName, Version version, string publicKeyToken, string culture)
+		{
+			this.shortName = shortName;
+			this.version = version;
+			this.publicKeyToken = publicKeyToken;
+			this.culture = culture;
+			const string sep = ", ";
+			StringBuilder b = new StringBuilder(shortName);
+			if (version != null) {
+				b.Append(sep + "Version=");
+				b.Append(version.ToString());
+			}
+			b.Append(sep + "Culture=");
+			b.Append(string.IsNullOrEmpty(culture) ? "neutral" : culture);
+			b.Append(sep + "PublicKeyToken=");
+			b.Append(publicKeyToken ?? "null");
+			this.fullAssemblyName = b.ToString();
 		}
 		
 		public string FullName {

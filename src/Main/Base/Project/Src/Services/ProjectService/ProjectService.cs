@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Removes a project item from the project, raising the ProjectItemRemoved event.
 		/// Make sure you call project.Save() after removing items!
-		/// No action (not even raising the event) is taken when the item was already removed form the project.
+		/// No action (not even raising the event) is taken when the item was already removed from the project.
 		/// </summary>
 		public static void RemoveProjectItem(IProject project, ProjectItem item)
 		{

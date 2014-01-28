@@ -120,16 +120,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void ProjectCreationComplete()
 		{
 			TargetFramework fx = Project.CurrentTargetFramework;
-			if (fx != null && (fx.IsBasedOn(TargetFramework.Net35) || fx.IsBasedOn(TargetFramework.Net35Client))) {
+			if (fx != null && fx.Version >= Versions.V3_5) {
 				AddDotnet35References();
 			}
-			if (fx != null && (fx.IsBasedOn(TargetFramework.Net40) || fx.IsBasedOn(TargetFramework.Net40Client))) {
+			if (fx != null && fx.Version >= Versions.V4_0) {
 				AddDotnet40References();
 			}
 			if (fx != null)
 				UpdateAppConfig(fx);
 			if (Project.OutputType != OutputType.Library) {
-				if (fx != null && DotnetDetection.IsDotnet45Installed() && fx.IsBasedOn(TargetFramework.Net45)) {
+				if (fx != null && fx.Supports32BitPreferredOption) {
 					Project.SetProperty(null, Project.ActiveConfiguration.Platform, "Prefer32Bit", "True", PropertyStorageLocations.PlatformSpecific, true);
 				} else {
 					Project.SetProperty(null, Project.ActiveConfiguration.Platform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, true);
@@ -177,16 +177,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override TargetFramework CurrentTargetFramework {
 			get {
-				string fxVersion = Project.TargetFrameworkVersion;
-				string fxProfile = Project.TargetFrameworkProfile;
-				if (string.Equals(fxProfile, "Client", StringComparison.OrdinalIgnoreCase)) {
-					foreach (ClientProfileTargetFramework fx in TargetFramework.TargetFrameworks.OfType<ClientProfileTargetFramework>())
-						if (fx.FullFramework.Name == fxVersion)
-							return fx;
-				} else {
-					foreach (TargetFramework fx in TargetFramework.TargetFrameworks)
-						if (fx.Name == fxVersion)
-							return fx;
+				string fxVersion = Project.TargetFrameworkVersion ?? string.Empty;
+				string fxProfile = Project.TargetFrameworkProfile ?? string.Empty;
+				foreach (var fx in SD.ProjectService.TargetFrameworks) {
+					if (fx.TargetFrameworkVersion == fxVersion && fx.TargetFrameworkProfile == fxProfile)
+						return fx;
 				}
 				return null;
 			}
@@ -194,7 +189,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override IEnumerable<TargetFramework> GetAvailableTargetFrameworks()
 		{
-			return TargetFramework.TargetFrameworks.Where(fx => fx.IsAvailable());
+			return SD.ProjectService.TargetFrameworks.Where(fx => fx.IsAvailable());
 		}
 		
 		public override void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
@@ -208,26 +203,17 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (newFramework != null) {
 						UpdateAppConfig(newFramework);
 						
-						ClientProfileTargetFramework clientProfile = newFramework as ClientProfileTargetFramework;
-						if (clientProfile != null) {
-							newFramework = clientProfile.FullFramework;
-							((MSBuildBasedProject)Project).SetProperty(null, null, "TargetFrameworkProfile", "Client", PropertyStorageLocations.Base, true);
-						} else {
-							((MSBuildBasedProject)Project).SetProperty(null, null, "TargetFrameworkProfile", "", PropertyStorageLocations.Base, true);
-						}
-						((MSBuildBasedProject)Project).SetProperty(null, null, "TargetFrameworkVersion", newFramework.Name, PropertyStorageLocations.Base, true);
+						((MSBuildBasedProject)Project).SetProperty(null, null, "TargetFrameworkVersion", newFramework.TargetFrameworkVersion, PropertyStorageLocations.Base, true);
+						((MSBuildBasedProject)Project).SetProperty(null, null, "TargetFrameworkProfile", newFramework.TargetFrameworkProfile, PropertyStorageLocations.Base, true);
 						
-						if (oldFramework is ClientProfileTargetFramework)
-							oldFramework = ((ClientProfileTargetFramework)oldFramework).FullFramework;
-						
-						if (oldFramework != null && !oldFramework.IsBasedOn(TargetFramework.Net35) && newFramework.IsBasedOn(TargetFramework.Net35))
+						if (oldFramework != null && oldFramework.Version < Versions.V3_5 && newFramework.Version >= Versions.V3_5)
 							AddDotnet35References();
-						else if (oldFramework != null && oldFramework.IsBasedOn(TargetFramework.Net35) && !newFramework.IsBasedOn(TargetFramework.Net35))
+						else if (oldFramework != null && oldFramework.Version >= Versions.V3_5 && newFramework.Version < Versions.V3_5)
 							RemoveDotnet35References();
 						
-						if (oldFramework != null && !oldFramework.IsBasedOn(TargetFramework.Net40) && newFramework.IsBasedOn(TargetFramework.Net40))
+						if (oldFramework != null && oldFramework.Version < Versions.V4_0 && newFramework.Version >= Versions.V4_0)
 							AddDotnet40References();
-						else if (oldFramework != null && oldFramework.IsBasedOn(TargetFramework.Net40) && !newFramework.IsBasedOn(TargetFramework.Net40))
+						else if (oldFramework != null && oldFramework.Version >= Versions.V4_0 && newFramework.Version < Versions.V4_0)
 							RemoveDotnet40References();
 					}
 					AddOrRemoveExtensions();
@@ -259,13 +245,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void AddDotnet40References()
 		{
+			AddReferenceIfNotExists("Microsoft.CSharp", "4.0");
 			if (Project.GetItemsOfType(ItemType.Reference).Any(r => string.Equals(r.Include, "WindowsBase", StringComparison.OrdinalIgnoreCase))) {
 				AddReferenceIfNotExists("System.Xaml", "4.0");
 			}
 		}
 		
-		protected virtual void RemoveDotnet40References()
+		void RemoveDotnet40References()
 		{
+			RemoveReference("Microsoft.CSharp");
 			RemoveReference("System.Xaml");
 		}
 		

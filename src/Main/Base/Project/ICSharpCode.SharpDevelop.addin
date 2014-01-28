@@ -2456,4 +2456,15 @@
 			<Class id="ConvertToPortableLibraryBehavior" class="ICSharpCode.SharpDevelop.Project.PortableLibrary.ConvertToPortableLibraryProjectBehavior" />
 		</ComplexCondition>
 	</Path>
+	
+	<Path name = "/SharpDevelop/TargetFrameworks">
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net20" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net30" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net35" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net35Client" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net40" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net40Client" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net45" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net451" />
+	</Path>
 </AddIn>

@@ -58,6 +58,7 @@ namespace ICSharpCode.Core
 		public AddInTreeImpl(ApplicationStateInfoService applicationStateService)
 		{
 			doozers.TryAdd("Class", new ClassDoozer());
+			doozers.TryAdd("Static", new StaticDoozer());
 			doozers.TryAdd("FileFilter", new FileFilterDoozer());
 			doozers.TryAdd("String", new StringDoozer());
 			doozers.TryAdd("Icon", new IconDoozer());

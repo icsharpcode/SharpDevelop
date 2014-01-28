@@ -23,6 +23,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -145,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			HashSet<TargetFramework> availableFrameworkSet = null;
 			foreach (Entry entry in listView.SelectedItems) {
 				var entryFrameworks = entry.Project.GetAvailableTargetFrameworks()
-					.Where(fx => fx.IsCompatibleWith(selectedCompiler ?? entry.CompilerVersion));
+					.Where(fx => (selectedCompiler ?? entry.CompilerVersion).CanTarget(fx));
 				if (availableFrameworkSet == null)
 					availableFrameworkSet = new HashSet<TargetFramework>(entryFrameworks);
 				else
@@ -275,8 +276,22 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		sealed class UnchangedTargetFramework : TargetFramework
 		{
-			public UnchangedTargetFramework() : base(string.Empty, Core.StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange}"))
-			{
+			public override string TargetFrameworkVersion {
+				get { return string.Empty; }
+			}
+			
+			public override string DisplayName {
+				get {
+					return Core.StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange}");
+				}
+			}
+			
+			public override Version Version {
+				get { return null; }
+			}
+			
+			public override Version MinimumMSBuildVersion {
+				get { return null; }
 			}
 			
 			public override TargetFramework PickFramework(IEnumerable<IUpgradableProject> selectedProjects)

@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 				project.RemoveProjectType(ProjectTypeGuids.PortableLibrary);
 				AddReferenceIfNotExists("System");
 				AddReferenceIfNotExists("System.Xml");
-				if (newFramework.IsBasedOn(TargetFramework.Net35) || newFramework.IsBasedOn(TargetFramework.Net35Client))
+				if (newFramework.Version >= Versions.V3_5)
 					AddReferenceIfNotExists("System.Core");
 				base.UpgradeProject(newVersion, newFramework);
 				return;
