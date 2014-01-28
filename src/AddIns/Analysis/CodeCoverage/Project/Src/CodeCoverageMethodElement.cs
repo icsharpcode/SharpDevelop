@@ -136,6 +136,7 @@ namespace ICSharpCode.CodeCoverage
     			CodeCoverageSequencePoint finalSP = getBodyFinalSP(sps);
     			if (Object.ReferenceEquals(null, finalSP)) { return sps; }
 
+    			bool foundFinalSP = false;
     			List<CodeCoverageSequencePoint> selected = new List<CodeCoverageSequencePoint>();
     			foreach (var point in sps) {
     			    if (
@@ -147,13 +148,15 @@ namespace ICSharpCode.CodeCoverage
     			    // After ccrewrite ContractClass/ContractClassFor
     			    // duplicate method end-sequence-point (}) is added
     			    //
-    			    // Add(point) and Break on first (duplicate) finalSP 
+    			    // Add (point) on first finalSP (duplicate) 
     			    // Note: IL.Offset of second duplicate finalSP will
     			    // extend branch coverage outside method-end "}",
-    			    // and that can lead to wrong branch coverage report!  
-    			    if (point.Line == finalSP.Line && point.Column == finalSP.Column) {
-    			        selected.Add (point);
-    			        break;
+    			    // and that can lead to wrong branch coverage report!
+    			    if (!foundFinalSP) {
+        			    if (point.Line == finalSP.Line && point.Column == finalSP.Column) {
+        			        selected.Add (point);
+        			        foundFinalSP = true;
+        			    }
     			    }
     			}
 
