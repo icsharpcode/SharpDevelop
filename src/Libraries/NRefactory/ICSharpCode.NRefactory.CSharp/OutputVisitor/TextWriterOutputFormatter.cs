@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void WriteIdentifier(Identifier identifier)
 		{
 			WriteIndentation();
-			if (identifier.IsVerbatim) {
+			if (identifier.IsVerbatim || CSharpOutputVisitor.IsKeyword(identifier.Name, identifier)) {
 				textWriter.Write('@');
 				column++;
 			}
@@ -135,7 +135,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					textWriter.Write("/*");
 					textWriter.Write(content);
 					textWriter.Write("*/");
-				column += 2;
+					column += 2;
 					UpdateEndLocation(content, ref line, ref column);
 					column += 2;
 					isAtStartOfLine = false;
