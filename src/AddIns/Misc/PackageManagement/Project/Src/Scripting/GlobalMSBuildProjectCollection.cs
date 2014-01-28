@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Evaluation;
 using NuGet;
@@ -69,10 +70,15 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public void Dispose()
 		{
 			foreach (GlobalAndInternalProject msbuildProjects in projects) {
-				UpdateImports(msbuildProjects);
-				UpdateProperties(msbuildProjects);
+				SD.MainThread.InvokeIfRequired(() => UpdateProject(msbuildProjects));
 				GetGlobalProjectCollection().UnloadProject(msbuildProjects.GlobalMSBuildProject);
 			}
+		}
+		
+		void UpdateProject(GlobalAndInternalProject msbuildProjects)
+		{
+			UpdateImports(msbuildProjects);
+			UpdateProperties(msbuildProjects);
 		}
 		
 		void UpdateImports(GlobalAndInternalProject msbuildProjects)
