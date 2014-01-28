@@ -474,12 +474,33 @@ namespace ICSharpCode.SharpDevelop
 			return FileName.Create(assembly.UnresolvedAssembly.Location);
 		}
 		
+		/// <summary>
+		/// Gets whether the specified assembly is located in the Global Assembly Cache.
+		/// </summary>
 		public static bool IsGacAssembly(this IAssembly assembly)
 		{
 			if (assembly == null)
 				throw new ArgumentNullException("assembly");
 			return !(assembly.UnresolvedAssembly is IProjectContent)
 				&& SD.GlobalAssemblyCache.FindAssemblyInNetGac(new DomAssemblyName(assembly.FullAssemblyName)) != null;
+		}
+		
+		static readonly string[] dotnetFrameworkPublicKeys = {
+			"b77a5c561934e089", // mscorlib, etc.
+			"b03f5f7f11d50a3a", // System.Drawing, etc.
+			"31bf3856ad364e35" // WPF
+		};
+		
+		/// <summary>
+		/// Gets wether the specified assembly is part of the .net Framework.
+		/// </summary>
+		public static bool IsPartOfDotnetFramework(this IAssembly assembly)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+			if (assembly.UnresolvedAssembly is IProjectContent)
+				return false;
+			return dotnetFrameworkPublicKeys.Contains(new DomAssemblyName(assembly.FullAssemblyName).PublicKeyToken);
 		}
 		
 		/// <summary>
