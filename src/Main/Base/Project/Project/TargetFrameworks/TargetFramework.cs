@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the minimum MSBuild version required to build projects with this target framework.
 		/// </summary>
-		public abstract Version MinimumMSBuildVersion { get; } // TODO: maybe remove this property?
+		public abstract Version MinimumMSBuildVersion { get; }
 		
 		/// <summary>
 		/// Gets whether this is the MS.NET Framework for the desktop. (not Mono, not WinPhone/Win8 app/portable library/...)
@@ -140,6 +140,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual bool IsAvailable()
 		{
 			return true;
+		}
+		
+		/// <summary>
+		/// Gets the solution format version corresponding to the older version of Visual Studio that supports this target framework. 
+		/// </summary>
+		/// <remarks>The default implementation of this property is based on the <see cref="MinimumMSBuildVersion"/> property.</remarks>
+		public virtual SolutionFormatVersion MinimumSolutionVersion {
+			get {
+				if (MinimumMSBuildVersion <= Versions.V2_0)
+					return SolutionFormatVersion.VS2005;
+				else if (MinimumMSBuildVersion <= Versions.V3_5)
+					return SolutionFormatVersion.VS2008;
+				else
+					return SolutionFormatVersion.VS2010;
+			}
 		}
 		
 		/* We might implement+use this API in the future if we want to notify the user about missing reference assemblies.

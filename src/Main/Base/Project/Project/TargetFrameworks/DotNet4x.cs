@@ -94,6 +94,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			// This implementation is used for all non-client versions of .NET 4.x
 			return fx != null && fx.IsDesktopFramework && fx.Version <= this.Version;
 		}
+		
+		public override SolutionFormatVersion MinimumSolutionVersion {
+			get {
+				if (this.Version <= Versions.V4_0)
+					return SolutionFormatVersion.VS2010;
+				else
+					return SolutionFormatVersion.VS2012;
+			}
+		}
 	}
 	
 	/// <summary>

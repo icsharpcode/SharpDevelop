@@ -282,6 +282,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			base.Dispose();
 		}
 		
+		public override SolutionFormatVersion MinimumSolutionVersion {
+			get {
+				SolutionFormatVersion v = base.MinimumSolutionVersion;
+				var fx = this.CurrentTargetFramework;
+				// Check if the current target framework has higher requirements than the ToolsVersion:
+				if (fx != null && fx.MinimumSolutionVersion > v) {
+					v = fx.MinimumSolutionVersion;
+				}
+				return v;
+			}
+		}
+		
 		#region IUpgradableProject
 		[Browsable(false)]
 		public virtual bool UpgradeDesired {
