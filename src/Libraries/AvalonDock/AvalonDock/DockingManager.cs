@@ -1024,71 +1024,51 @@ namespace AvalonDock
             }
         }
 
-        
-        protected override void OnKeyDown(KeyEventArgs e)
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             // accept Control or Control+Shift
             bool isCtrlDown = (Keyboard.Modifiers & ~ModifierKeys.Shift) == ModifierKeys.Control;
             bool _navigatorWindowIsVisible = navigatorWindow != null ? navigatorWindow.IsVisible : false;
             Debug.WriteLine(string.Format("OnKeyDn {0} CtrlDn={1}", e.Key, isCtrlDown));
-
-            if (e.Key == Key.Tab && isCtrlDown)
-            {
-                if (!_navigatorWindowIsVisible)
-                {
-                    ShowNavigatorWindow();
-                }
+    
+            if(isCtrlDown) {
                 
-                e.Handled = true;
+                if (!_navigatorWindowIsVisible && e.Key == Key.Tab) {
+                    ShowNavigatorWindow();
+                    _navigatorWindowIsVisible = true;
+                }
+    
+                if (_navigatorWindowIsVisible)
+                    e.Handled = navigatorWindow.HandleKey(e.Key);
             }
-            else if (NavigatorWindow.IsKeyHandled(e.Key))
-            {
-                HideNavigatorWindow();
-            }
-
-
-            base.OnKeyDown(e);
+    
+            base.OnPreviewKeyDown(e);
         }
-
-        protected override void OnKeyUp(KeyEventArgs e)
+    
+        protected override void OnPreviewKeyUp(KeyEventArgs e)
         {
             // accept Control or Control+Shift
             bool isCtrlDown = (Keyboard.Modifiers & ~ModifierKeys.Shift) == ModifierKeys.Control;
             bool _navigatorWindowIsVisible = navigatorWindow != null ? navigatorWindow.IsVisible : false;
             Debug.WriteLine(string.Format("OnKeyUp {0} CtrlDn={1}", e.Key, isCtrlDown));
-
-            if (NavigatorWindow.IsKeyHandled(e.Key) && isCtrlDown)
+    
+            if (!isCtrlDown && _navigatorWindowIsVisible)
             {
-                if (!_navigatorWindowIsVisible && e.Key == Key.Tab)
+                if (navigatorWindow.Documents.CurrentItem != null)
                 {
-                    ShowNavigatorWindow();
-                    _navigatorWindowIsVisible = true;
+                    var docSelected = (navigatorWindow.Documents.CurrentItem as NavigatorWindowDocumentItem).ItemContent as DocumentContent;
+                    docSelected.Activate();
                 }
-
-                if (_navigatorWindowIsVisible)
-                    e.Handled = navigatorWindow.HandleKey(e.Key); 
-            }
-            else
-            {
-                if (_navigatorWindowIsVisible)
+                else if (navigatorWindow.DockableContents.CurrentItem != null)
                 {
-                    if (navigatorWindow.Documents.CurrentItem != null)
-                    {
-                        var docSelected = (navigatorWindow.Documents.CurrentItem as NavigatorWindowDocumentItem).ItemContent as DocumentContent;
-                        docSelected.Activate();
-                    }
-                    else if (navigatorWindow.DockableContents.CurrentItem != null)
-                    {
-                        var cntSelected = (navigatorWindow.DockableContents.CurrentItem as NavigatorWindowItem).ItemContent as DockableContent;
-                        cntSelected.Activate();
-                    }
-
-                    HideNavigatorWindow();
+                    var cntSelected = (navigatorWindow.DockableContents.CurrentItem as NavigatorWindowItem).ItemContent as DockableContent;
+                    cntSelected.Activate();
                 }
-
+    
+                HideNavigatorWindow();
             }
-
-            base.OnKeyUp(e);
+    
+            base.OnPreviewKeyUp(e);
         }
 
         #region DockablePane operations
