@@ -187,7 +187,7 @@ namespace XmlEditor.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public IEnumerable<ICompletionItem> GetSnippets()
+		public IEnumerable<ISnippetCompletionItem> GetSnippets()
 		{
 			throw new NotImplementedException();
 		}

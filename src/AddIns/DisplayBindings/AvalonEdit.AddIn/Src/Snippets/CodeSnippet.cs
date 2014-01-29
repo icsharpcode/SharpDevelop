@@ -120,7 +120,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			return CreateAvalonEditSnippet(context, this.Text);
 		}
 		
-		public ICompletionItem CreateCompletionItem(ITextEditor context)
+		public ISnippetCompletionItem CreateCompletionItem(ITextEditor context)
 		{
 			return new SnippetCompletionItem(context, this) { AlwaysInsertSnippet = context.SelectionLength > 0 };
 		}

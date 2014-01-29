@@ -120,7 +120,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public System.Collections.Generic.IEnumerable<ICSharpCode.SharpDevelop.Editor.CodeCompletion.ICompletionItem> GetSnippets()
+		public System.Collections.Generic.IEnumerable<ICSharpCode.SharpDevelop.Editor.CodeCompletion.ISnippetCompletionItem> GetSnippets()
 		{
 			throw new NotImplementedException();
 		}

@@ -111,7 +111,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// so we keep it enabled even when the option is set to false.
 		}
 		
-		public override IEnumerable<ICompletionItem> GetSnippets()
+		public override IEnumerable<ISnippetCompletionItem> GetSnippets()
 		{
 			CodeSnippetGroup g = SnippetManager.Instance.FindGroup(Path.GetExtension(this.FileName));
 			if (g != null) {

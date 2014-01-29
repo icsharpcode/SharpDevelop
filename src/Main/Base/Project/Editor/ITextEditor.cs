@@ -127,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <summary>
 		/// Gets the list of available code snippets.
 		/// </summary>
-		IEnumerable<ICompletionItem> GetSnippets();
+		IEnumerable<ISnippetCompletionItem> GetSnippets();
 		
 		/// <summary>
 		/// Gets the list of context action providers.

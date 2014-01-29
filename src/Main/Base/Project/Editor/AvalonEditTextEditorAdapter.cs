@@ -255,9 +255,9 @@ namespace ICSharpCode.SharpDevelop.Editor
 			return null;
 		}
 		
-		public virtual IEnumerable<ICompletionItem> GetSnippets()
+		public virtual IEnumerable<ISnippetCompletionItem> GetSnippets()
 		{
-			return Enumerable.Empty<ICompletionItem>();
+			return Enumerable.Empty<ISnippetCompletionItem>();
 		}
 		
 		public virtual IList<ICSharpCode.SharpDevelop.Refactoring.IContextActionProvider> ContextActionProviders {
