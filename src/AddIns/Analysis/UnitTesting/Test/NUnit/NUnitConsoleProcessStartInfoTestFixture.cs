@@ -19,9 +19,11 @@
 using System;
 using System.Diagnostics;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using ICSharpCode.SharpDevelop;
 using NUnit.Framework;
+using Rhino.Mocks;
 using UnitTesting.Tests.Utils;
 
 namespace UnitTesting.Tests.NUnit
@@ -34,6 +36,8 @@ namespace UnitTesting.Tests.NUnit
 		public override void FixtureSetUp()
 		{
 			base.FixtureSetUp();
+			SD.Services.AddStrictMockService<IProjectService>();
+			SD.ProjectService.Stub(p => p.TargetFrameworks).Return(new[] { TargetFramework.Net40Client, TargetFramework.Net40 });
 			FileUtility.ApplicationRootPath = @"C:\SharpDevelop";
 		}
 		

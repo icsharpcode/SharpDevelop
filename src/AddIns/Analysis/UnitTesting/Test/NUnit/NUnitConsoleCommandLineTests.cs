@@ -23,6 +23,7 @@ using ICSharpCode.UnitTesting;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
+using Rhino.Mocks;
 using UnitTesting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 
@@ -33,6 +34,13 @@ namespace UnitTesting.Tests.NUnit
 	{
 		MockCSharpProject project;
 		NUnitTestProject testProject;
+		
+		public override void FixtureSetUp()
+		{
+			base.FixtureSetUp();
+			SD.Services.AddStrictMockService<IProjectService>();
+			SD.ProjectService.Stub(p => p.TargetFrameworks).Return(new[] { TargetFramework.Net40Client, TargetFramework.Net40 });
+		}
 		
 		[SetUp]
 		public void SetUp()

@@ -38,6 +38,13 @@ namespace UnitTesting.Tests.NUnit
 		NUnitTestProject testProject;
 		string oldRootPath;
 		
+		public override void FixtureSetUp()
+		{
+			base.FixtureSetUp();
+			SD.Services.AddStrictMockService<IProjectService>();
+			SD.ProjectService.Stub(p => p.TargetFrameworks).Return(new[] { TargetFramework.Net20, TargetFramework.Net30, TargetFramework.Net35, TargetFramework.Net35Client, TargetFramework.Net40Client, TargetFramework.Net40 });
+		}
+		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
