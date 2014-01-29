@@ -141,8 +141,9 @@ namespace CSharpBinding.Completion
 		
 		IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData()
 		{
-			return completionContext.Editor.GetSnippets().OfType<ISnippetCompletionItem>()
-				.Select(snippet => new SnippetCompletionData(snippet));
+			// We handle this in CSharpCompletionBinding, because there we have the full list
+			// of keywords available in the given context.
+			return ICSharpCode.NRefactory.EmptyList<ICompletionData>.Instance;
 		}
 		
 		IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData()

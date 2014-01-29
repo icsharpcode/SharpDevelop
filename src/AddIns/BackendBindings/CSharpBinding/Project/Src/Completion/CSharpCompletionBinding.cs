@@ -24,6 +24,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
@@ -92,7 +93,7 @@ namespace CSharpBinding.Completion
 			}
 			
 			DefaultCompletionItemList list = new DefaultCompletionItemList();
-			list.Items.AddRange(completionData.Cast<ICompletionItem>());
+			list.Items.AddRange(FilterAndAddTemplates(editor, completionData.Cast<ICompletionItem>().ToList()));
 			if (list.Items.Count > 0) {
 				list.SortItems();
 				list.PreselectionLength = editor.Caret.Offset - startPos;
@@ -119,6 +120,24 @@ namespace CSharpBinding.Completion
 				}
 			}
 			return false;
+		}
+
+		static IEnumerable<ICompletionItem> FilterAndAddTemplates(ITextEditor editor, IList<ICompletionItem> items)
+		{
+			List<ISnippetCompletionItem> snippets = editor.GetSnippets().ToList();
+			snippets.RemoveAll(item => !FitsInContext(item, items));
+			items.RemoveAll(item => ClassBrowserIconService.Keyword.Equals(item.Image) && snippets.Exists(i => i.Text == item.Text));
+			items.AddRange(snippets);
+			return items;
+		}
+		
+		static bool FitsInContext(ISnippetCompletionItem item, IList<ICompletionItem> list)
+		{
+			if (string.IsNullOrEmpty(item.Keyword))
+				return true;
+			
+			return list.Any(x => ClassBrowserIconService.Keyword.Equals(x.Image)
+			                && x.Text == item.Keyword);
 		}
 	}
 }
