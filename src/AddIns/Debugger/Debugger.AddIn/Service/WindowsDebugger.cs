@@ -641,9 +641,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (!(IsDebugging && CurrentProcess.IsPaused))
 				return;
-			if (CurrentStackFrame == null)
-				return;
-			var resolveResult = SD.ParserService.Resolve(e.Editor, e.LogicalPosition, CurrentStackFrame.AppDomain.Compilation);
+			var resolveResult = e.ResolveResult;
 			if (resolveResult == null)
 				return;
 			if (resolveResult is LocalResolveResult || resolveResult is MemberResolveResult) {
