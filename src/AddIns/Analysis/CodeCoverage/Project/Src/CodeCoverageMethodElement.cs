@@ -39,6 +39,8 @@ namespace ICSharpCode.CodeCoverage
 		public bool IsConstructor { get; private set; }
 		public bool IsStatic { get; private set; }
 		public List<CodeCoverageSequencePoint> SequencePoints { get; private set; }
+		public CodeCoverageSequencePoint BodyStartSP { get; private set; }
+		public CodeCoverageSequencePoint BodyFinalSP { get; private set; }
 		public List<CodeCoverageBranchPoint> BranchPoints { get; private set; }
 
 		public bool IsGetter { get; private set; }
@@ -129,19 +131,19 @@ namespace ICSharpCode.CodeCoverage
 			    // is inserted into this method sequence points
 			    //
 			    // To remove alien sequence points, all points 
-			    // before and after method brackets {} are removed
+			    // before method signature and after end-brackets xxx{} are removed
 			    
-    			CodeCoverageSequencePoint startSP = getBodyStartSP(sps);
-    			if (Object.ReferenceEquals(null, startSP)) { return sps; }
-    			CodeCoverageSequencePoint finalSP = getBodyFinalSP(sps);
-    			if (Object.ReferenceEquals(null, finalSP)) { return sps; }
+			    this.BodyStartSP = getBodyStartSP(sps);
+    			if (this.BodyStartSP == null) { return sps; }
 
-    			bool foundFinalSP = false;
+    			this.BodyFinalSP = getBodyFinalSP(sps);
+    			if (this.BodyFinalSP == null) { return sps; }
+
     			List<CodeCoverageSequencePoint> selected = new List<CodeCoverageSequencePoint>();
     			foreach (var point in sps) {
     			    if (
-    			        (point.Line > startSP.Line || (point.Line == startSP.Line && point.Column >= startSP.Column)) &&
-    			        (point.Line < finalSP.Line || (point.Line == finalSP.Line && point.Column < finalSP.Column))
+    			        (point.Line > BodyStartSP.Line || (point.Line == BodyStartSP.Line && point.Column >= BodyStartSP.Column)) &&
+    			        (point.Line < BodyFinalSP.Line || (point.Line == BodyFinalSP.Line && point.Column < BodyFinalSP.Column))
     			       ) {
     			        selected.Add (point);
     			    }
@@ -152,16 +154,13 @@ namespace ICSharpCode.CodeCoverage
     			    // Note: IL.Offset of second duplicate finalSP will
     			    // extend branch coverage outside method-end "}",
     			    // and that can lead to wrong branch coverage report!
-    			    if (!foundFinalSP) {
-        			    if (point.Line == finalSP.Line && point.Column == finalSP.Column) {
-        			        selected.Add (point);
-        			        foundFinalSP = true;
-        			    }
+    			    if (object.ReferenceEquals (point, this.BodyFinalSP)) {
+       			        selected.Add (point);
     			    }
     			}
 
+    			selected.OrderBy(item => item.Line).OrderBy(item => item.Column);
     			sps = selected;
-    			sps.OrderBy(item => item.Line).OrderBy(item => item.Column);
     			
 			}
 			return sps;
@@ -195,7 +194,7 @@ namespace ICSharpCode.CodeCoverage
 			return bps;
 		}
 		
-		// Find method-body start SequencePoint "{"
+		// Find method-body start SequencePoint "xxxx {"
 		public static CodeCoverageSequencePoint getBodyStartSP(IEnumerable<CodeCoverageSequencePoint> sPoints) {
 			CodeCoverageSequencePoint startSeqPoint = null;
 			bool startFound = false;
@@ -214,10 +213,19 @@ namespace ICSharpCode.CodeCoverage
 		public static CodeCoverageSequencePoint getBodyFinalSP(IEnumerable<CodeCoverageSequencePoint> sps) {
 			CodeCoverageSequencePoint finalSeqPoint = null;
 			foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(sps)) {
-				if ( sp.Content == "}") {
-					finalSeqPoint = sp;
-					break;
-				}
+   				if ( sp.Content == "}") {
+    			    if (finalSeqPoint == null) {
+    					finalSeqPoint = sp;
+    				}
+			        // check for ccrewrite duplicate
+			        else if (sp.Line == finalSeqPoint.Line &&
+			                 sp.Column == finalSeqPoint.Column &&
+			                 sp.EndLine == finalSeqPoint.EndLine &&
+			                 sp.EndColumn == finalSeqPoint.EndColumn &&
+			                 sp.Offset < finalSeqPoint.Offset) {
+    					finalSeqPoint = sp;
+			        }
+			    }
 			}
 			return finalSeqPoint;
 		}
@@ -237,24 +245,22 @@ namespace ICSharpCode.CodeCoverage
 
 			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Requires)
 			// and '{' branches at static methods
-			CodeCoverageSequencePoint startSeqPoint = getBodyStartSP(this.SequencePoints);
-			if (Object.ReferenceEquals(null, startSeqPoint)) { return null; }
+			if (this.BodyStartSP == null) { return null; }
 
 			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Ensures)
-			CodeCoverageSequencePoint finalSeqPoint = getBodyFinalSP(this.SequencePoints);
-			if (Object.ReferenceEquals(null, finalSeqPoint)) { return null; }
+			if (this.BodyFinalSP == null) { return null; }
 			
 			// Connect Sequence & Branches
 			IEnumerator<CodeCoverageSequencePoint> SPEnumerator = this.SequencePoints.GetEnumerator();
-			CodeCoverageSequencePoint currSeqPoint = startSeqPoint;
-			int nextSeqPointOffset = startSeqPoint.Offset;
+			CodeCoverageSequencePoint currSeqPoint = BodyStartSP;
+			int nextSeqPointOffset = BodyStartSP.Offset;
 			
 			foreach (var bp in this.BranchPoints) {
 			    
-			    // ignore branches outside of method body
-				if (bp.Offset < startSeqPoint.Offset)
+			    // ignore branches outside of method body offset range
+				if (bp.Offset < BodyStartSP.Offset)
 					continue;
-				if (bp.Offset > finalSeqPoint.Offset)
+				if (bp.Offset > BodyFinalSP.Offset)
 					break;
 
 				// Sync with SequencePoint
