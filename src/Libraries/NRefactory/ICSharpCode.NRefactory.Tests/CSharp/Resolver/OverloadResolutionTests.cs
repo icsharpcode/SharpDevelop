@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -29,11 +29,8 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	[TestFixture]
-	public class OverloadResolutionTests
+	public class OverloadResolutionTests : ResolverTestBase
 	{
-		readonly ICompilation compilation = new SimpleCompilation(
-			CecilLoaderTests.SystemCore, new[] { CecilLoaderTests.Mscorlib });
-		
 		ResolveResult[] MakeArgumentList(params Type[] argumentTypes)
 		{
 			return argumentTypes.Select(t => new ResolveResult(compilation.FindType(t))).ToArray();
@@ -177,28 +174,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// static void Foo<T>(T? ignored = default(T?)) where T : struct
 			var m1 = MakeUnresolvedMethod();
-			m1.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.Method, 0, "T") { HasValueTypeConstraint = true });
+			m1.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.Method, 0, "T") { HasValueTypeConstraint = true });
 			m1.Parameters.Add(MakeOptionalParameter(
-				NullableType.Create(new TypeParameterReference(EntityType.Method, 0)),
+				NullableType.Create(new TypeParameterReference(SymbolKind.Method, 0)),
 				"ignored"
 			));
 			
 			// class ClassConstraint<T> where T : class {}
 			var classConstraint = new DefaultUnresolvedTypeDefinition(string.Empty, "ClassConstraint");
-			classConstraint.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "T") { HasReferenceTypeConstraint = true });
+			classConstraint.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "T") { HasReferenceTypeConstraint = true });
 			
 			// static void Foo<T>(ClassConstraint<T> ignored = default(ClassConstraint<T>))
 			// where T : class
 			var m2 = MakeUnresolvedMethod();
-			m2.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.Method, 0, "T") { HasReferenceTypeConstraint = true });
+			m2.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.Method, 0, "T") { HasReferenceTypeConstraint = true });
 			m2.Parameters.Add(MakeOptionalParameter(
-				new ParameterizedTypeReference(classConstraint, new[] { new TypeParameterReference(EntityType.Method, 0) }),
+				new ParameterizedTypeReference(classConstraint, new[] { new TypeParameterReference(SymbolKind.Method, 0) }),
 				"ignored"
 			));
 			
 			// static void Foo<T>()
 			var m3 = MakeUnresolvedMethod();
-			m3.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.Method, 0, "T"));
+			m3.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.Method, 0, "T"));
 			
 			ICompilation compilation = TypeSystemHelper.CreateCompilation(classConstraint);
 			var context = new SimpleTypeResolveContext(compilation.MainAssembly);
@@ -269,6 +266,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { throw new NotImplementedException(); }
 			}
 			
+			public override IType ReturnType {
+				get { throw new NotImplementedException(); }
+			}
+			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
 			{
 				return inferredReturnType;
@@ -326,6 +327,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(OverloadResolutionErrors.None, r.AddCandidate(m1));
 			Assert.AreEqual(OverloadResolutionErrors.None, r.AddCandidate(m2));
 			Assert.AreEqual(OverloadResolutionErrors.AmbiguousMatch, r.BestCandidateErrors);
+		}
+		
+		[Test, Ignore("Overload Resolution bug")]
+		public void BetterFunctionMemberIsNotTransitive()
+		{
+			string program = @"using System;
+class Program
+{
+	static void Method(Action<string> a) {}
+	static void Method<T>(Func<string, T> a) {}
+	static void Method(Action<object> a) {}
+	static void Method<T>(Func<object, T> a) {}
+	
+	public static void Main(string[] args)
+	{
+	        $Method(a => a.ToString())$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual(OverloadResolutionErrors.AmbiguousMatch, rr.OverloadResolutionErrors);
 		}
 	}
 }

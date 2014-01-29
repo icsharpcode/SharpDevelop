@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -130,7 +130,7 @@ class A { public A() : ba$se() {} }");
 			var rr = ResolveAtLocation<CSharpInvocationResolveResult>(
 				"using System.Collections.Generic;" +
 				"public class A { int M(List<int> a) { return a$[1]; } }");
-			Assert.AreEqual(EntityType.Indexer, rr.Member.EntityType);
+			Assert.AreEqual(SymbolKind.Indexer, rr.Member.SymbolKind);
 		}
 
 		[Test]
@@ -249,6 +249,48 @@ class Test {
 }
 ");
 			Assert.AreEqual("System.Environment", rr.Type.FullName);
+		}
+
+		[Test]
+		public void TestIndexer()
+		{
+			var rr = ResolveAtLocation<MemberResolveResult>(
+				@"using System;
+class Test {
+	public int $this[int index] { get { return 1; } }
+}
+");
+			Assert.AreEqual("Test.Item", rr.Member.FullName);
+		}
+
+		[Test]
+		public void TestUserDefinedOperator()
+		{
+			var rr = ResolveAtLocation<OperatorResolveResult>(
+				@"class Foo 
+{
+	public static Foo operator+(Foo a, Foo b)
+	{
+		return a;
+	}
+}
+
+class MainClass
+{
+	public static void Main (string[] args)
+	{
+		Foo f = new Foo () $+ new Foo ();
+	}
+}
+");
+			Assert.AreEqual("Foo.op_Addition", rr.UserDefinedOperatorMethod.FullName);
+		}
+
+		
+		[Test]
+		public void PragmaWarningID()
+		{
+			ResolveAtLocation(@"#pragma warning disable 1$0");
 		}
 	}
 }

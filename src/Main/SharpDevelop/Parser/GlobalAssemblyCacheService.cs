@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			throw new NotImplementedException();
 		}
 		
-		public IEnumerable<DomAssemblyName> Assemblies { 
+		public IEnumerable<DomAssemblyName> Assemblies {
 			get { return GetGacAssemblyFullNames(); }
 		}
 		
@@ -135,8 +135,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 		//
 
 		readonly string[] gac_paths = { Fusion.GetGacPath(false), Fusion.GetGacPath(true) };
-		readonly string[] gacs = { "GAC_MSIL", "GAC_32", "GAC" };
+		readonly string[] gacs = { "GAC_MSIL", "GAC_32", "GAC_64", "GAC" };
 		readonly string[] prefixes = { string.Empty, "v4.0_" };
+		readonly string[] extensions = { ".dll", ".exe" };
 		
 		/// <summary>
 		/// Gets the file name for an assembly stored in the GAC.
@@ -147,19 +148,21 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (reference.PublicKeyToken == null)
 				return null;
 			
-			for (int i = 0; i < 2; i++) {
-				for (int j = 0; j < gacs.Length; j++) {
-					var gac = Path.Combine (gac_paths [i], gacs [j]);
-					var file = GetAssemblyFile (reference, prefixes [i], gac);
-					if (File.Exists (file))
-						return FileName.Create(file);
+			for (int iext = 0; iext < extensions.Length; iext++) {
+				for (int ipath = 0; ipath < gac_paths.Length; ipath++) {
+					for (int igac = 0; igac < gacs.Length; igac++) {
+						var gac = Path.Combine (gac_paths[ipath], gacs[igac]);
+						var file = GetAssemblyFile (reference, prefixes[ipath], gac, extensions[iext]);
+						if (File.Exists (file))
+							return FileName.Create(file);
+					}
 				}
 			}
 
 			return null;
 		}
 		
-		static string GetAssemblyFile (DomAssemblyName reference, string prefix, string gac)
+		static string GetAssemblyFile (DomAssemblyName reference, string prefix, string gac, string ext)
 		{
 			var gac_folder = new StringBuilder ()
 				.Append (prefix)
@@ -171,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return Path.Combine (
 				Path.Combine (
 					Path.Combine (gac, reference.ShortName), gac_folder.ToString ()),
-				reference.ShortName + ".dll");
+				reference.ShortName + ext);
 		}
 		#endregion
 	}

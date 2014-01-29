@@ -25,7 +25,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return typeof(IList).IsAssignableFrom(type)
 				|| type.IsArray
 				|| typeof(IAddChild).IsAssignableFrom(type)
-				|| typeof(ResourceDictionary).IsAssignableFrom(type);
+				|| typeof(IDictionary).IsAssignableFrom(type);
 		}		
 
 		/// <summary>
@@ -65,14 +65,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				} else {
 					addChild.AddChild(newElement.GetValueFor(null));
 				}
-			} else if (collectionInstance is ResourceDictionary) {
+			} else if (collectionInstance is IDictionary) {
 				object val = newElement.GetValueFor(null);
 				object key = newElement is XamlObject ? ((XamlObject)newElement).GetXamlAttribute("Key") : null;
-				if (key == null) {
-					if (val is Style)
-						key = ((Style)val).TargetType;
-				}
-				((ResourceDictionary)collectionInstance).Add(key, val);
+				//if (key == null || key == "") {
+				//	if (val is Style)
+				//		key = ((Style)val).TargetType;
+				//}
+				if (key == null || (key as string) == "")
+					key = val;
+				((IDictionary)collectionInstance).Add(key, val);
 			} else {
 				collectionType.InvokeMember(
 					"Add", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
@@ -92,6 +94,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				null, collectionInstance,
 				new object[] { index, newElement.GetValueFor(null) },
 				CultureInfo.InvariantCulture);
+		}
+		
+		/// <summary>
+		/// Adds a value at the specified index in the collection. A return value indicates whether the Insert succeeded.
+		/// </summary>
+		/// <returns>True if the Insert succeeded, false if the collection type does not support Insert.</returns>
+		internal static bool TryInsert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
+		{
+			try {
+				Insert(collectionType, collectionInstance, newElement, index);
+			} catch (MissingMethodException) {
+				return false;
+			}
+			
+			return true;
 		}
 		
 		static readonly Type[] RemoveAtParameters = { typeof(int) };

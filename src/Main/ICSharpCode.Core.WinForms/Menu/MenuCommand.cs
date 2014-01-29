@@ -66,9 +66,9 @@ namespace ICSharpCode.Core.WinForms
 		protected override void OnClick(System.EventArgs e)
 		{
 			base.OnClick(e);
-			if (command != null && command.CanExecute(caller)) {
-				ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(command.GetType().FullName, "Menu");
-				command.Execute(caller);
+			command = CommandWrapper.Unwrap(command);
+			if (command != null) {
+				MenuService.ExecuteCommand(command, caller);
 			}
 		}
 		

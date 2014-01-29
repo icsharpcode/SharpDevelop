@@ -6,7 +6,7 @@
 		<Name>${res:Templates.Project.WinFXNavigationApplication.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>WPF</Subcategory>
-		<Icon>VBNet.Project.WPFNavigationProject</Icon>
+		<Icon>VB.Project.WPFNavigationProject</Icon>
 		<Description>${res:Templates.Project.WinFXNavigationApplication.Description}</Description>
 		<SupportedTargetFrameworks>v3.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -16,7 +16,7 @@
 		<Open filename = "Page1.xaml"/>
 	</Actions>
 	
-	<Project language = "VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />
@@ -71,7 +71,7 @@ End Class]]></File>
 		
 	</Grid>
 </Page>]]></File>
-			<File name="Page1.xaml.vb" language="VBNet" DependentUpon="Page1.xaml" SubType="Code"><![CDATA[${StandardHeader.VBNET}
+			<File name="Page1.xaml.vb" language="VB" DependentUpon="Page1.xaml" SubType="Code"><![CDATA[${StandardHeader.VBNET}
 Imports System
 Imports System.Collections.Generic
 Imports System.Text

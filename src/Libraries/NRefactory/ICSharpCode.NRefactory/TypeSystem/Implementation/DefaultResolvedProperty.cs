@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -68,13 +68,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToMemberReference());
 			} else {
 				return new DefaultMemberReference(
-					this.EntityType, declTypeRef, this.Name, 0,
+					this.SymbolKind, declTypeRef, this.Name, 0,
 					this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 			}
 		}
 		
 		public override IMember Specialize(TypeParameterSubstitution substitution)
 		{
+			if (TypeParameterSubstitution.Identity.Equals(substitution))
+				return this;
 			return new SpecializedProperty(this, substitution);
 		}
 	}

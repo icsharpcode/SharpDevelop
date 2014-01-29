@@ -25,10 +25,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			{
 				this.process = process;
 				try {
-					var modules = process.Modules.Cast<ProcessModule>().Where(
-						m => m.ModuleName.StartsWith("mscor", StringComparison.InvariantCultureIgnoreCase));
-
-					managed = modules.Count() > 0;
+					managed = process.Modules
+						.OfType<ProcessModule>()
+						.Any(m => m.ModuleName.StartsWith("mscor", StringComparison.InvariantCultureIgnoreCase));
 				} catch { }
 				
 				string fileName = Path.GetFileName(process.MainModule.FileName);

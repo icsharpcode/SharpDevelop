@@ -36,10 +36,14 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public static readonly TokenRole EventKeywordRole = new TokenRole ("event");
 		
-		public override EntityType EntityType {
-			get { return EntityType.Event; }
+		public override SymbolKind SymbolKind {
+			get { return SymbolKind.Event; }
 		}
-		
+
+		public CSharpTokenNode EventToken {
+			get { return GetChildByRole (EventKeywordRole); }
+		}
+
 		public AstNodeCollection<VariableInitializer> Variables {
 			get { return GetChildrenByRole (Roles.Variable); }
 		}
@@ -90,8 +94,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly Role<Accessor> AddAccessorRole = new Role<Accessor>("AddAccessor", Accessor.Null);
 		public static readonly Role<Accessor> RemoveAccessorRole = new Role<Accessor>("RemoveAccessor", Accessor.Null);
 		
-		public override EntityType EntityType {
-			get { return EntityType.Event; }
+		public override SymbolKind SymbolKind {
+			get { return SymbolKind.Event; }
 		}
 		
 		/// <summary>

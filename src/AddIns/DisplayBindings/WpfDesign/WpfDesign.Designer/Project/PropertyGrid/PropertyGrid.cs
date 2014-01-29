@@ -3,12 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Globalization;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using System.Windows.Threading;
 using System.Diagnostics;
@@ -21,26 +24,43 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 	{
 		public PropertyGrid()
 		{
-			Categories = new ObservableCollection<Category>(new [] {
-				specialCategory, 
-				popularCategory, 				
-				otherCategory,
-				attachedCategory
-			});
+			Categories = new CategoriesCollection();
+			Categories.Add(specialCategory);
+			Categories.Add(popularCategory);
+			Categories.Add(otherCategory);
+			Categories.Add(attachedCategory);
 
 			Events = new PropertyNodeCollection();
 		}
 
 		Category specialCategory = new Category("Special");
-		Category popularCategory = new Category("Popular");		
+		Category popularCategory = new Category("Popular");
 		Category otherCategory = new Category("Other");
 		Category attachedCategory = new Category("Attached");
 
 		Dictionary<MemberDescriptor, PropertyNode> nodeFromDescriptor = new Dictionary<MemberDescriptor, PropertyNode>();
 
-		public ObservableCollection<Category> Categories { get; private set; }
+		public CategoriesCollection Categories { get; private set; }
 		public PropertyNodeCollection Events { get; private set; }
 
+		private PropertyGridGroupMode _groupMode;
+		
+		public PropertyGridGroupMode GroupMode
+		{
+			get { return _groupMode; }
+			set
+			{
+				if (_groupMode != value)
+				{
+					_groupMode = value;
+
+					RaisePropertyChanged("GroupMode");
+
+					Reload();
+				}
+			}
+		}
+		
 		PropertyGridTab currentTab;
 
 		public PropertyGridTab CurrentTab {
@@ -109,7 +129,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 					try {
 						if (string.IsNullOrEmpty(value)) {
 							OldName = null;
-							SingleItem.Properties["Name"].Reset();
+							SingleItem.Name = null;
 						} else {
 							OldName = SingleItem.Name;
 							SingleItem.Name = value;
@@ -141,14 +161,17 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			}
 		}
 
-		IEnumerable<DesignItem> selectedItems;
+		IList<DesignItem> selectedItems;
 
 		public IEnumerable<DesignItem> SelectedItems {
 			get {
 				return selectedItems;
 			}
 			set {
-				selectedItems = value;
+				if (value == null)
+					selectedItems = null;
+				else
+					selectedItems = value.ToList();
 				RaisePropertyChanged("SelectedItems");
 				Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
 					delegate {
@@ -161,17 +184,27 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		{
 			Filter = null;
 		}
+		
+		volatile bool reloadActive;
+		public bool ReloadActive {
+			get { return reloadActive; }
+		}
 
 		void Reload()
 		{
-			Clear();
-			
-			if (SelectedItems == null || SelectedItems.Count() == 0) return;
-			if (SelectedItems.Count() == 1) SingleItem = SelectedItems.First();
-
-			foreach (var md in GetDescriptors()) {
-				if (PassesFilter(md.Name))
-					AddNode(md);
+			reloadActive = true;
+			try {
+				Clear();
+				
+				if (selectedItems == null || selectedItems.Count == 0) return;
+				if (selectedItems.Count == 1) SingleItem = selectedItems[0];
+	
+				foreach (var md in GetDescriptors()) {
+					if (PassesFilter(md.Name))
+						AddNode(md);
+				}
+			} finally {
+				reloadActive = false;
 			}
 		}
 
@@ -216,7 +249,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			if (string.IsNullOrEmpty(Filter)) return true;
 			for (int i = 0; i < name.Length; i++) {
 				if (i == 0 || char.IsUpper(name[i])) {
-					if (string.Compare(name, i, Filter, 0, Filter.Length, true) == 0) {
+					if (string.Compare(name, i, Filter, 0, Filter.Length, StringComparison.OrdinalIgnoreCase) == 0) {
 						return true;
 					}
 				}
@@ -226,7 +259,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 		void AddNode(MemberDescriptor md)
 		{
-			var designProperties = SelectedItems.Select(item => item.Properties[md.Name]).ToArray();
+			var designProperties = SelectedItems.Select(item => item.Properties.GetProperty(md)).ToArray();
 			if (!Metadata.IsBrowsable(designProperties[0])) return;
 
 			PropertyNode node;
@@ -252,9 +285,9 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		Category PickCategory(PropertyNode node)
 		{
 			if (Metadata.IsPopularProperty(node.FirstProperty)) return popularCategory;
-			if (node.FirstProperty.Name.Contains(".")) return attachedCategory;
+			if (node.FirstProperty.IsAttachedDependencyProperty()) return attachedCategory;
 			var typeName = node.FirstProperty.DeclaringType.FullName;
-			if (typeName.StartsWith("System.Windows.") || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls."))
+			if (typeName.StartsWith("System.Windows.", StringComparison.Ordinal) || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls.", StringComparison.Ordinal))
 				return otherCategory;
 			return specialCategory;
 		}
@@ -286,6 +319,21 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		//        return i1.CompareTo(i2);
 		//    }
 		//}
+	}
+	
+	public class CategoriesCollection : SortedObservableCollection<Category, string>
+	{
+		public CategoriesCollection()
+			: base(n => n.Name)
+		{
+		}
+	}
+
+	public enum PropertyGridGroupMode
+	{
+		GroupByPopularCategorys,
+		GroupByCategorys,
+		Ungrouped,
 	}
 	
 	public enum PropertyGridTab

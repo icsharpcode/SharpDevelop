@@ -69,6 +69,16 @@ namespace ICSharpCode.SharpDevelop.Services
 			set { PS.Set<bool>("Debugger.PauseOnHandledExceptions", value); }
 		}
 		
+		public bool AskForArguments {
+			get { return PS.Get<bool>("Debugger.AskForArguments", false); }
+			set { PS.Set<bool>("Debugger.AskForArguments", value); }
+		}
+		
+		public bool BreakAtBeginning {
+			get { return PS.Get<bool>("Debugger.BreakAtBeginning", false); }
+			set { PS.Set<bool>("Debugger.BreakAtBeginning", value); }
+		}
+		
 		public ShowIntegersAs ShowIntegersAs {
 			get { return PS.Get<ShowIntegersAs>("Debugger.ShowIntegersAs", ShowIntegersAs.Decimal); }
 			set { PS.Set<ShowIntegersAs>("Debugger.ShowIntegersAs", value); }

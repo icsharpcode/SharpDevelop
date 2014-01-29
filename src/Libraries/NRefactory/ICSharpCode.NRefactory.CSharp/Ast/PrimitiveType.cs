@@ -71,6 +71,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				return location;
 			}
 		}
+		
+		internal void SetStartLocation(TextLocation value)
+		{
+			ThrowIfFrozen();
+			this.location = value;
+		}
+		
 		public override TextLocation EndLocation {
 			get {
 				return new TextLocation (location.Line, location.Column + keyword.Length);
@@ -97,8 +104,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			PrimitiveType o = other as PrimitiveType;
 			return o != null && MatchString(this.Keyword, o.Keyword);
 		}
-		
-		public override string ToString()
+
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			return Keyword;
 		}

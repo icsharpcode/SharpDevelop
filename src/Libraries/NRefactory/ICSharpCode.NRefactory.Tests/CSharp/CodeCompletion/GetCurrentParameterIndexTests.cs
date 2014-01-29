@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var doc = new ReadOnlyDocument(editorText.ToString ());
 			var pctx = new CSharpProjectContent();
 			var rctx = new CSharpTypeResolveContext(pctx.CreateCompilation().MainAssembly);
-			var ctxProvider = new DefaultCompletionContextProvider(doc, new CSharpUnresolvedFile("a.cs"));
+			var ctxProvider = new DefaultCompletionContextProvider(doc, new CSharpUnresolvedFile());
 			var engine = new CSharpParameterCompletionEngine(doc, ctxProvider, new ParameterCompletionTests.TestFactory(pctx), pctx, rctx);
 
 			return engine.GetCurrentParameterIndex(trigger, end);

@@ -47,7 +47,7 @@ namespace Mono.CSharp {
 		protected ToplevelBlock block;
 		protected MethodSpec spec;
 
-		public MethodCore (TypeDefinition parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod,
+		protected MethodCore (TypeDefinition parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod,
 			MemberName name, Attributes attrs, ParametersCompiled parameters)
 			: base (parent, type, mod, allowed_mod, name, attrs)
 		{
@@ -188,7 +188,7 @@ namespace Mono.CSharp {
 		}
 	}
 
-	public interface IGenericMethodDefinition : IMemberDefinition
+	public interface IGenericMethodDefinition : IMethodDefinition
 	{
 		TypeParameterSpec[] TypeParameters { get; }
 		int TypeParametersCount { get; }
@@ -198,18 +198,19 @@ namespace Mono.CSharp {
 
 	public sealed class MethodSpec : MemberSpec, IParametersMember
 	{
-		MethodBase metaInfo, inflatedMetaInfo;
+		MethodBase inflatedMetaInfo;
 		AParametersCollection parameters;
 		TypeSpec returnType;
 
 		TypeSpec[] targs;
 		TypeParameterSpec[] constraints;
 
-		public MethodSpec (MemberKind kind, TypeSpec declaringType, IMemberDefinition details, TypeSpec returnType,
-			MethodBase info, AParametersCollection parameters, Modifiers modifiers)
+		public static readonly MethodSpec Excluded = new MethodSpec (MemberKind.Method, InternalType.FakeInternalType, null, null, ParametersCompiled.EmptyReadOnlyParameters, 0);
+
+		public MethodSpec (MemberKind kind, TypeSpec declaringType, IMethodDefinition details, TypeSpec returnType,
+			AParametersCollection parameters, Modifiers modifiers)
 			: base (kind, declaringType, details, modifiers)
 		{
-			this.metaInfo = info;
 			this.parameters = parameters;
 			this.returnType = returnType;
 		}
@@ -234,6 +235,12 @@ namespace Mono.CSharp {
 		public bool IsConstructor {
 			get {
 				return Kind == MemberKind.Constructor;
+			}
+		}
+
+		public new IMethodDefinition MemberDefinition {
+			get {
+				return (IMethodDefinition) definition;
 			}
 		}
 
@@ -322,21 +329,21 @@ namespace Mono.CSharp {
 
 					if (DeclaringType.IsTypeBuilder) {
 						if (IsConstructor)
-							inflatedMetaInfo = TypeBuilder.GetConstructor (dt_meta, (ConstructorInfo) metaInfo);
+							inflatedMetaInfo = TypeBuilder.GetConstructor (dt_meta, (ConstructorInfo) MemberDefinition.Metadata);
 						else
-							inflatedMetaInfo = TypeBuilder.GetMethod (dt_meta, (MethodInfo) metaInfo);
+							inflatedMetaInfo = TypeBuilder.GetMethod (dt_meta, (MethodInfo) MemberDefinition.Metadata);
 					} else {
 #if STATIC
 						// it should not be reached
 						throw new NotImplementedException ();
 #else
-						inflatedMetaInfo = MethodInfo.GetMethodFromHandle (metaInfo.MethodHandle, dt_meta.TypeHandle);
+						inflatedMetaInfo = MethodInfo.GetMethodFromHandle (MemberDefinition.Metadata.MethodHandle, dt_meta.TypeHandle);
 #endif
 					}
 
 					state &= ~StateFlags.PendingMetaInflate;
 				} else {
-					inflatedMetaInfo = metaInfo;
+					inflatedMetaInfo = MemberDefinition.Metadata;
 				}
 			}
 
@@ -488,29 +495,29 @@ namespace Mono.CSharp {
 			return ms;
 		}
 
-		public override List<TypeSpec> ResolveMissingDependencies ()
+		public override List<MissingTypeSpecReference> ResolveMissingDependencies (MemberSpec caller)
 		{
-			var missing = returnType.ResolveMissingDependencies ();
+			var missing = returnType.ResolveMissingDependencies (this);
 			foreach (var pt in parameters.Types) {
-				var m = pt.GetMissingDependencies ();
+				var m = pt.GetMissingDependencies (this);
 				if (m == null)
 					continue;
 
 				if (missing == null)
-					missing = new List<TypeSpec> ();
+					missing = new List<MissingTypeSpecReference> ();
 
 				missing.AddRange (m);
 			}
 
 			if (Arity > 0) {
 				foreach (var tp in GenericDefinition.TypeParameters) {
-					var m = tp.GetMissingDependencies ();
+					var m = tp.GetMissingDependencies (this);
 
 					if (m == null)
 						continue;
 
 					if (missing == null)
-						missing = new List<TypeSpec> ();
+						missing = new List<MissingTypeSpecReference> ();
 
 					missing.AddRange (m);
 				}
@@ -518,19 +525,10 @@ namespace Mono.CSharp {
 
 			return missing;			
 		}
-
-		public void SetMetaInfo (MethodInfo info)
-		{
-			if (this.metaInfo != null)
-				throw new InternalErrorException ("MetaInfo reset");
-
-			this.metaInfo = info;
-		}
 	}
 
-	public abstract class MethodOrOperator : MethodCore, IMethodData
+	public abstract class MethodOrOperator : MethodCore, IMethodData, IMethodDefinition
 	{
-		public MethodBuilder MethodBuilder;
 		ReturnParameter return_attributes;
 		SecurityType declarative_security;
 		protected MethodData MethodData;
@@ -583,6 +581,19 @@ namespace Mono.CSharp {
 			}
 		}
 
+		MethodBase IMethodDefinition.Metadata {
+			get {
+				return MethodData.MethodBuilder;
+			}
+		}
+
+		// TODO: Remove and use MethodData abstraction
+		public MethodBuilder MethodBuilder {
+			get {
+				return MethodData.MethodBuilder;
+			}
+		}
+
 		protected override bool CheckForDuplications ()
 		{
 			return Parent.MemberCache.CheckExistingMembersOverloads (this, parameters);
@@ -609,41 +620,34 @@ namespace Mono.CSharp {
 			else
 				kind = MemberKind.Method;
 
+			string explicit_name;
+
 			if (IsPartialDefinition) {
 				caching_flags &= ~Flags.Excluded_Undetected;
 				caching_flags |= Flags.Excluded;
 
 				// Add to member cache only when a partial method implementation has not been found yet
-				if ((caching_flags & Flags.PartialDefinitionExists) == 0) {
-//					MethodBase mb = new PartialMethodDefinitionInfo (this);
+				if ((caching_flags & Flags.PartialDefinitionExists) != 0)
+					return true;
 
-					spec = new MethodSpec (kind, Parent.Definition, this, ReturnType, null, parameters, ModFlags);
-					if (MemberName.Arity > 0) {
-						spec.IsGeneric = true;
+				if (IsExplicitImpl)
+					return true;
 
-						// TODO: Have to move DefineMethod after Define (ideally to Emit)
-						throw new NotImplementedException ("Generic partial methods");
-					}
+				explicit_name = null;
+			} else {
+				MethodData = new MethodData (this, ModFlags, flags, this, base_method);
 
-					Parent.MemberCache.AddMember (spec);
-				}
+				if (!MethodData.Define (Parent.PartialContainer, GetFullName (MemberName)))
+					return false;
 
-				return true;
+				explicit_name = MethodData.MetadataName;
 			}
 
-			MethodData = new MethodData (
-				this, ModFlags, flags, this, MethodBuilder, base_method);
-
-			if (!MethodData.Define (Parent.PartialContainer, GetFullName (MemberName)))
-				return false;
-					
-			MethodBuilder = MethodData.MethodBuilder;
-
-			spec = new MethodSpec (kind, Parent.Definition, this, ReturnType, MethodBuilder, parameters, ModFlags);
+			spec = new MethodSpec (kind, Parent.Definition, this, ReturnType, parameters, ModFlags);
 			if (MemberName.Arity > 0)
 				spec.IsGeneric = true;
-			
-			Parent.MemberCache.AddMember (this, MethodBuilder.Name, spec);
+
+			Parent.MemberCache.AddMember (this, explicit_name, spec);
 
 			return true;
 		}
@@ -683,6 +687,8 @@ namespace Mono.CSharp {
 				Module.PredefinedAttributes.CompilerGenerated.EmitAttribute (MethodBuilder);
 			if ((ModFlags & Modifiers.DEBUGGER_HIDDEN) != 0)
 				Module.PredefinedAttributes.DebuggerHidden.EmitAttribute (MethodBuilder);
+			if ((ModFlags & Modifiers.DEBUGGER_STEP_THROUGH) != 0)
+				Module.PredefinedAttributes.DebuggerStepThrough.EmitAttribute (MethodBuilder);
 
 			if (ReturnType.BuiltinType == BuiltinTypeSpec.Type.Dynamic) {
 				return_attributes = new ReturnParameter (this, MethodBuilder, Location);
@@ -713,7 +719,8 @@ namespace Mono.CSharp {
 			if (MethodData != null)
 				MethodData.Emit (Parent);
 
-			Block = null;
+			if ((ModFlags & Modifiers.PARTIAL) == 0)
+				Block = null;
 		}
 
 		protected void Error_ConditionalAttributeIsNotValid ()
@@ -798,9 +805,36 @@ namespace Mono.CSharp {
 
 		#endregion
 
+		public virtual void PrepareEmit ()
+		{
+			var mb = MethodData.DefineMethodBuilder (Parent);
+
+			if (CurrentTypeParameters != null) {
+				string[] gnames = new string[CurrentTypeParameters.Count];
+				for (int i = 0; i < gnames.Length; ++i) {
+					gnames[i] = CurrentTypeParameters[i].Name;
+				}
+
+				var gen_params = MethodBuilder.DefineGenericParameters (gnames);
+
+				for (int i = 0; i < CurrentTypeParameters.Count; ++i) {
+					var tp = CurrentTypeParameters[i];
+
+					tp.Define (gen_params[i]);
+				}
+			}
+
+			//
+			// Generic method has been already defined to resolve method parameters
+			// correctly when they use type parameters
+			//
+			mb.SetParameters (parameters.GetMetaInfo ());
+			mb.SetReturnType (ReturnType.GetMetaInfo ());
+		}
+
 		public override void WriteDebugSymbol (MonoSymbolFile file)
 		{
-			if (MethodData != null)
+			if (MethodData != null && !IsPartialDefinition)
 				MethodData.WriteDebugSymbol (file);
 		}
 	}
@@ -844,7 +878,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-#endregion
+		#endregion
 
 		public override void Accept (StructuralVisitor visitor)
 		{
@@ -972,10 +1006,9 @@ namespace Mono.CSharp {
 		void CreateTypeParameters ()
 		{
 			var tparams = MemberName.TypeParameters;
-			string[] snames = new string[MemberName.Arity];
 			var parent_tparams = Parent.TypeParametersAll;
 
-			for (int i = 0; i < snames.Length; i++) {
+			for (int i = 0; i < MemberName.Arity; i++) {
 				string type_argument_name = tparams[i].MemberName.Name;
 
 				if (block == null) {
@@ -1000,12 +1033,9 @@ namespace Mono.CSharp {
 						tparams[i].WarningParentNameConflict (tp);
 					}
 				}
-
-				snames[i] = type_argument_name;
 			}
 
-			GenericTypeParameterBuilder[] gen_params = MethodBuilder.DefineGenericParameters (snames);
-			tparams.Define (gen_params, null, 0, Parent);
+			tparams.Create (null, 0, Parent);
 		}
 
 		protected virtual void DefineTypeParameters ()
@@ -1171,9 +1201,6 @@ namespace Mono.CSharp {
 					"Introducing `Finalize' method can interfere with destructor invocation. Did you intend to declare a destructor?");
 			}
 
-			if (partialMethodImplementation != null && IsPartialDefinition)
-				MethodBuilder = partialMethodImplementation.MethodBuilder;
-
 			if (Compiler.Settings.StdLib && ReturnType.IsSpecialRuntimeType) {
 				Error1599 (Location, ReturnType, Report);
 				return false;
@@ -1208,8 +1235,8 @@ namespace Mono.CSharp {
 						Report.Error (1983, Location, "The return type of an async method must be void, Task, or Task<T>");
 					}
 
-					block = (ToplevelBlock) block.ConvertToAsyncTask (this, Parent.PartialContainer, parameters, ReturnType, Location);
-					ModFlags |= Modifiers.DEBUGGER_HIDDEN;
+					block = (ToplevelBlock) block.ConvertToAsyncTask (this, Parent.PartialContainer, parameters, ReturnType, null, Location);
+					ModFlags |= Modifiers.DEBUGGER_STEP_THROUGH;
 				}
 
 				if (Compiler.Settings.WriteMetadataOnly)
@@ -1272,6 +1299,22 @@ namespace Mono.CSharp {
 			return true;
 		}
 
+		public override void PrepareEmit ()
+		{
+			if (IsPartialDefinition) {
+				//
+				// Use partial method implementation builder for partial method declaration attributes
+				//
+				if (partialMethodImplementation != null) {
+					MethodData = partialMethodImplementation.MethodData;
+				}
+
+				return;
+			}
+
+			base.PrepareEmit ();
+		}
+
 		//
 		// Emits the code
 		// 
@@ -1279,11 +1322,8 @@ namespace Mono.CSharp {
 		{
 			try {
 				if (IsPartialDefinition) {
-					//
-					// Use partial method implementation builder for partial method declaration attributes
-					//
-					if (partialMethodImplementation != null) {
-						MethodBuilder = partialMethodImplementation.MethodBuilder;
+					if (partialMethodImplementation != null && CurrentTypeParameters != null) {
+						CurrentTypeParameters.CheckPartialConstraints (partialMethodImplementation);
 					}
 
 					return;
@@ -1297,6 +1337,7 @@ namespace Mono.CSharp {
 				if (CurrentTypeParameters != null) {
 					for (int i = 0; i < CurrentTypeParameters.Count; ++i) {
 						var tp = CurrentTypeParameters [i];
+
 						tp.CheckGenericConstraints (false);
 						tp.Emit ();
 					}
@@ -1312,10 +1353,8 @@ namespace Mono.CSharp {
 					Module.PredefinedAttributes.Extension.EmitAttribute (MethodBuilder);
 
 				base.Emit ();
-			} catch {
-				Console.WriteLine ("Internal compiler error at {0}: exception caught while emitting {1}",
-						   Location, MethodBuilder);
-				throw;
+			} catch (Exception e) {
+				throw new InternalErrorException (this, e);
 			}
 		}
 
@@ -1329,13 +1368,12 @@ namespace Mono.CSharp {
 
 		public static void Error1599 (Location loc, TypeSpec t, Report Report)
 		{
-			Report.Error (1599, loc, "Method or delegate cannot return type `{0}'", TypeManager.CSharpName (t));
+			Report.Error (1599, loc, "Method or delegate cannot return type `{0}'", t.GetSignatureForError ());
 		}
 
 		protected override bool ResolveMemberType ()
 		{
 			if (CurrentTypeParameters != null) {
-				MethodBuilder = Parent.TypeBuilder.DefineMethod (GetFullName (MemberName), flags);
 				CreateTypeParameters ();
 			}
 
@@ -1369,7 +1407,7 @@ namespace Mono.CSharp {
 		Arguments argument_list;
 		MethodSpec base_ctor;
 
-		public ConstructorInitializer (Arguments argument_list, Location loc)
+		protected ConstructorInitializer (Arguments argument_list, Location loc)
 		{
 			this.argument_list = argument_list;
 			this.loc = loc;
@@ -1428,7 +1466,7 @@ namespace Mono.CSharp {
 				} else {
 					//
 					// It is legal to have "this" initializers that take no arguments
-					// in structs, they are just no-ops.
+					// in structs
 					//
 					// struct D { public D (int a) : this () {}
 					//
@@ -1449,9 +1487,17 @@ namespace Mono.CSharp {
 
 		public override void Emit (EmitContext ec)
 		{
-			// It can be null for static initializers
-			if (base_ctor == null)
+			//
+			// It can be null for struct initializers or System.Object
+			//
+			if (base_ctor == null) {
+				if (type == ec.BuiltinTypes.Object)
+					return;
+
+				ec.Emit (OpCodes.Ldarg_0);
+				ec.Emit (OpCodes.Initobj, type);
 				return;
+			}
 			
 			var call = new CallEmitter ();
 			call.InstanceExpression = new CompilerGeneratedThis (type, loc); 
@@ -1461,6 +1507,12 @@ namespace Mono.CSharp {
 		public override void EmitStatement (EmitContext ec)
 		{
 			Emit (ec);
+		}
+
+		public override void FlowAnalysis (FlowAnalysisContext fc)
+		{
+			if (argument_list != null)
+				argument_list.FlowAnalysis (fc);
 		}
 	}
 
@@ -1485,7 +1537,7 @@ namespace Mono.CSharp {
 		}
 	}
 	
-	public class Constructor : MethodCore, IMethodData
+	public class Constructor : MethodCore, IMethodData, IMethodDefinition
 	{
 		public ConstructorBuilder ConstructorBuilder;
 		public ConstructorInitializer Initializer;
@@ -1531,6 +1583,13 @@ namespace Mono.CSharp {
 		    get {
 		        return false;
 		    }
+		}
+
+		
+		MethodBase IMethodDefinition.Metadata {
+			get {
+				return ConstructorBuilder;
+			}
 		}
 
 		//
@@ -1620,7 +1679,7 @@ namespace Mono.CSharp {
 				ca, CallingConventions,
 				parameters.GetMetaInfo ());
 
-			spec = new MethodSpec (MemberKind.Constructor, Parent.Definition, this, Compiler.BuiltinTypes.Void, ConstructorBuilder, parameters, ModFlags);
+			spec = new MethodSpec (MemberKind.Constructor, Parent.Definition, this, Compiler.BuiltinTypes.Void, parameters, ModFlags);
 			
 			Parent.MemberCache.AddMember (spec);
 			
@@ -1699,7 +1758,7 @@ namespace Mono.CSharp {
 					}
 				}
 
-				if (block.Resolve (null, bc, this)) {
+				if (block.Resolve (bc, this)) {
 					debug_builder = Parent.CreateMethodSymbolEntry ();
 					EmitContext ec = new EmitContext (this, ConstructorBuilder.GetILGenerator (), bc.ReturnType, debug_builder);
 					ec.With (EmitContext.Options.ConstructorScope, true);
@@ -1828,10 +1887,6 @@ namespace Mono.CSharp {
 	//
 	public class MethodData
 	{
-#if !STATIC
-		static FieldInfo methodbuilder_attrs_field;
-#endif
-
 		public readonly IMethodData method;
 
 		//
@@ -1848,6 +1903,7 @@ namespace Mono.CSharp {
 		protected TypeSpec declaring_type;
 		protected MethodSpec parent_method;
 		SourceMethodBuilder debug_builder;
+		string full_name;
 
 		MethodBuilder builder;
 		public MethodBuilder MethodBuilder {
@@ -1859,6 +1915,12 @@ namespace Mono.CSharp {
 		public TypeSpec DeclaringType {
 			get {
 				return declaring_type;
+			}
+		}
+
+		public string MetadataName {
+			get {
+				return full_name;
 			}
 		}
 
@@ -1874,11 +1936,10 @@ namespace Mono.CSharp {
 
 		public MethodData (InterfaceMemberBase member,
 				   Modifiers modifiers, MethodAttributes flags, 
-				   IMethodData method, MethodBuilder builder,
+				   IMethodData method,
 				   MethodSpec parent_method)
 			: this (member, modifiers, flags, method)
 		{
-			this.builder = builder;
 			this.parent_method = parent_method;
 		}
 
@@ -1896,13 +1957,13 @@ namespace Mono.CSharp {
 						if (member is PropertyBase) {
 							container.Compiler.Report.Error (550, method.Location,
 								"`{0}' is an accessor not found in interface member `{1}{2}'",
-									  method.GetSignatureForError (), TypeManager.CSharpName (member.InterfaceType),
+									  method.GetSignatureForError (), member.InterfaceType.GetSignatureForError (),
 									  member.GetSignatureForError ().Substring (member.GetSignatureForError ().LastIndexOf ('.')));
 
 						} else {
 							container.Compiler.Report.Error (539, method.Location,
 									  "`{0}.{1}' in explicit interface declaration is not a member of interface",
-									  TypeManager.CSharpName (member.InterfaceType), member.ShortName);
+									  member.InterfaceType.GetSignatureForError (), member.ShortName);
 						}
 						return false;
 					}
@@ -1910,7 +1971,7 @@ namespace Mono.CSharp {
 						container.Compiler.Report.SymbolRelatedToPreviousError (implementing);
 						container.Compiler.Report.Error (683, method.Location,
 							"`{0}' explicit method implementation cannot implement `{1}' because it is an accessor",
-							member.GetSignatureForError (), TypeManager.CSharpSignature (implementing));
+							member.GetSignatureForError (), implementing.GetSignatureForError ());
 						return false;
 					}
 				} else {
@@ -2033,58 +2094,45 @@ namespace Mono.CSharp {
 					method_full_name = implementing.MemberDefinition.Name;
 			}
 
-			DefineMethodBuilder (container, method_full_name, method.ParameterInfo);
-
-			if (builder == null)
-				return false;
-
-//			if (container.CurrentType != null)
-//				declaring_type = container.CurrentType;
-//			else
-				declaring_type = container.Definition;
-
-			if (implementing != null && member.IsExplicitImpl) {
-				container.TypeBuilder.DefineMethodOverride (builder, (MethodInfo) implementing.GetMetaInfo ());
-			}
+			full_name = method_full_name;
+			declaring_type = container.Definition;
 
 			return true;
 		}
 
-
-		/// <summary>
-		/// Create the MethodBuilder for the method 
-		/// </summary>
-		void DefineMethodBuilder (TypeDefinition container, string method_name, ParametersCompiled param)
+		void DefineOverride (TypeDefinition container)
 		{
-			var return_type = method.ReturnType.GetMetaInfo ();
-			var p_types = param.GetMetaInfo ();
-
-			if (builder == null) {
-				builder = container.TypeBuilder.DefineMethod (
-					method_name, flags, method.CallingConventions,
-					return_type, p_types);
+			if (implementing == null)
 				return;
-			}
 
-			//
-			// Generic method has been already defined to resolve method parameters
-			// correctly when they use type parameters
-			//
-			builder.SetParameters (p_types);
-			builder.SetReturnType (return_type);
-			if (builder.Attributes != flags) {
-#if STATIC
-				builder.__SetAttributes (flags);
-#else
-				try {
-					if (methodbuilder_attrs_field == null)
-						methodbuilder_attrs_field = typeof (MethodBuilder).GetField ("attrs", BindingFlags.NonPublic | BindingFlags.Instance);
-					methodbuilder_attrs_field.SetValue (builder, flags);
-				} catch {
-					container.Compiler.Report.RuntimeMissingSupport (method.Location, "Generic method MethodAttributes");
-				}
-#endif
-			}
+			if (!member.IsExplicitImpl)
+				return;
+
+			container.TypeBuilder.DefineMethodOverride (builder, (MethodInfo) implementing.GetMetaInfo ());
+		}
+
+		//
+		// Creates partial MethodBuilder for the method when has generic parameters used
+		// as arguments or return type
+		//
+		public MethodBuilder DefineMethodBuilder (TypeDefinition container)
+		{
+			if (builder != null)
+				throw new InternalErrorException ();
+
+			builder = container.TypeBuilder.DefineMethod (full_name, flags, method.CallingConventions);
+			return builder;
+		}
+
+		//
+		// Creates full MethodBuilder for the method 
+		//
+		public MethodBuilder DefineMethodBuilder (TypeDefinition container, ParametersCompiled param)
+		{
+			DefineMethodBuilder (container);
+			builder.SetReturnType (method.ReturnType.GetMetaInfo ());
+			builder.SetParameters (param.GetMetaInfo ());
+			return builder;
 		}
 
 		//
@@ -2092,14 +2140,14 @@ namespace Mono.CSharp {
 		// 
 		public void Emit (TypeDefinition parent)
 		{
-			var mc = (IMemberContext) method;
+			DefineOverride (parent);
 
-			method.ParameterInfo.ApplyAttributes (mc, MethodBuilder);
+			method.ParameterInfo.ApplyAttributes (method, MethodBuilder);
 
 			ToplevelBlock block = method.Block;
 			if (block != null) {
-				BlockContext bc = new BlockContext (mc, block, method.ReturnType);
-				if (block.Resolve (null, bc, method)) {
+				BlockContext bc = new BlockContext (method, block, method.ReturnType);
+				if (block.Resolve (bc, method)) {
 					debug_builder = member.Parent.CreateMethodSymbolEntry ();
 					EmitContext ec = method.CreateEmitContext (MethodBuilder.GetILGenerator (), debug_builder);
 
@@ -2231,7 +2279,7 @@ namespace Mono.CSharp {
 
 	// Ooouh Martin, templates are missing here.
 	// When it will be possible move here a lot of child code and template method type.
-	public abstract class AbstractPropertyEventMethod : MemberCore, IMethodData {
+	public abstract class AbstractPropertyEventMethod : MemberCore, IMethodData, IMethodDefinition {
 		protected MethodData method_data;
 		protected ToplevelBlock block;
 		protected SecurityType declarative_security;
@@ -2240,7 +2288,7 @@ namespace Mono.CSharp {
 
 		ReturnParameter return_attributes;
 
-		public AbstractPropertyEventMethod (InterfaceMemberBase member, string prefix, Attributes attrs, Location loc)
+		protected AbstractPropertyEventMethod (InterfaceMemberBase member, string prefix, Attributes attrs, Location loc)
 			: base (member.Parent, SetupName (prefix, member, loc), attrs)
 		{
 			this.prefix = prefix;
@@ -2297,6 +2345,12 @@ namespace Mono.CSharp {
 			}
 		}
 
+		MethodBase IMethodDefinition.Metadata {
+			get {
+				return method_data.MethodBuilder;
+			}
+		}
+
 		public abstract ParametersCompiled ParameterInfo { get ; }
 		public abstract TypeSpec ReturnType { get; }
 
@@ -2307,7 +2361,7 @@ namespace Mono.CSharp {
 			if (a.Type == pa.CLSCompliant || a.Type == pa.Obsolete || a.Type == pa.Conditional) {
 				Report.Error (1667, a.Location,
 					"Attribute `{0}' is not valid on property or event accessors. It is valid on `{1}' declarations only",
-					TypeManager.CSharpName (a.Type), a.GetValidTargets ());
+					a.Type.GetSignatureForError (), a.GetValidTargets ());
 				return;
 			}
 

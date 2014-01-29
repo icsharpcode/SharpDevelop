@@ -26,8 +26,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (options.UseDebugger)
 				return new NUnitTestDebugger();
-			else
-				return new NUnitTestRunner(options);
+			return new NUnitTestRunner(options);
 		}
 		
 		protected override bool IsTestClass(ITypeDefinition typeDefinition)
@@ -74,9 +73,9 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (c == null)
 				return null;
-			if (entity.EntityType == EntityType.TypeDefinition)
+			if (entity.SymbolKind == SymbolKind.TypeDefinition)
 				return c;
-			else if (entity.EntityType == EntityType.Method)
+			else if (entity.SymbolKind == SymbolKind.Method)
 				return c.FindTestMethod(entity.Name);
 			else
 				return null;
@@ -142,5 +141,6 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		#endregion
+		
 	}
 }

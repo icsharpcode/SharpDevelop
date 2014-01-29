@@ -26,6 +26,22 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 			TestHelperLog.Log("ExampleService.SetExample");
 			element.SetValue(ExampleProperty, value);
 		}
+		
+		public static readonly DependencyProperty ExampleCollectionProperty = DependencyProperty.RegisterAttached(
+			"ExampleCollection", typeof(ExampleClassList), typeof(ExampleService)
+		);
+		
+		public static ExampleClassList GetExampleCollection(DependencyObject element)
+		{
+			TestHelperLog.Log("ExampleService.GetExampleCollection");
+			return (ExampleClassList)element.GetValue(ExampleCollectionProperty);
+		}
+		
+		public static void SetExampleCollection(DependencyObject element, ExampleClassList value)
+		{
+			TestHelperLog.Log("ExampleService.SetExampleCollection");
+			element.SetValue(ExampleCollectionProperty, value);
+		}
 	}
 	
 	public class ExampleDependencyObject : DependencyObject

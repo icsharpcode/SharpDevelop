@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return "";
 			}
 		}
-		public override string Directory {
+		public override DirectoryName Directory {
 			get {
 				return project.Directory;
 			}
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.project = project;
 			
 			Text = project.Name;
-			if (project.ReadOnly) {
+			if (project.IsReadOnly) {
 				Text += StringParser.Parse(" (${res:Global.ReadOnly})");
 			}
 			
@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			Tag = project;
 			
 			if (project.ParentSolution != null) {
-				project.ParentSolution.Preferences.StartupProjectChanged += OnStartupProjectChanged;
+				project.ParentSolution.StartupProjectChanged += OnStartupProjectChanged;
 				OnStartupProjectChanged(null, null);
 			}
 		}
@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			base.Dispose();
 			if (project.ParentSolution != null) {
-				project.ParentSolution.Preferences.StartupProjectChanged -= OnStartupProjectChanged;
+				project.ParentSolution.StartupProjectChanged -= OnStartupProjectChanged;
 			}
 		}
 		
@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void OnStartupProjectChanged(object sender, EventArgs e)
 		{
-			bool newIsStartupProject = (this.project == project.ParentSolution.Preferences.StartupProject);
+			bool newIsStartupProject = (this.project == project.ParentSolution.StartupProject);
 			if (newIsStartupProject != isStartupProject) {
 				isStartupProject = newIsStartupProject;
 				drawDefault = !isStartupProject;
@@ -140,8 +140,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			ProjectService.RemoveSolutionFolder(Project.IdGuid);
-			ProjectService.SaveSolution();
+			var parentFolder = ((ISolutionFolderNode)Parent).Folder;
+			parentFolder.Items.Remove(project);
+			base.Remove();
+			parentFolder.ParentSolution.Save();
 		}
 		
 		public override bool EnableCopy {
@@ -166,7 +168,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			SD.Clipboard.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), project.IdGuid));
+			SD.Clipboard.SetDataObject(new DataObject(typeof(ISolutionItem).ToString(), project.IdGuid));
 		}
 		// Paste is inherited from DirectoryNode.
 		

@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -142,7 +142,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (result != null) {
 					return result;
 				} else {
-					result = methodDefinition.AccessorOwner.Specialize(this.Substitution);
+					var ownerDefinition = methodDefinition.AccessorOwner;
+					if (ownerDefinition == null)
+						return null;
+					result = ownerDefinition.Specialize(this.Substitution);
 					return LazyInit.GetOrSet(ref accessorOwner, result);
 				}
 			}

@@ -36,8 +36,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly Role<Accessor> GetterRole = PropertyDeclaration.GetterRole;
 		public static readonly Role<Accessor> SetterRole = PropertyDeclaration.SetterRole;
 		
-		public override EntityType EntityType {
-			get { return EntityType.Indexer; }
+		public override SymbolKind SymbolKind {
+			get { return SymbolKind.Indexer; }
 		}
 		
 		/// <summary>
@@ -59,9 +59,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return Identifier.Null; }
 			set { throw new NotSupportedException(); }
 		}
-		
+
 		public CSharpTokenNode LBracketToken {
 			get { return GetChildByRole (Roles.LBracket); }
+		}
+
+		public CSharpTokenNode ThisToken {
+			get { return GetChildByRole (ThisKeywordRole); }
 		}
 		
 		public AstNodeCollection<ParameterDeclaration> Parameters {

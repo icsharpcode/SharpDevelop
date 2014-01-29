@@ -1,0 +1,64 @@
+﻿<ref:AbstractInlineRefactorDialog x:Class="CSharpBinding.Refactoring.InsertCtorDialog"
+	Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor}"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:ref="clr-namespace:CSharpBinding.Refactoring"
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<ref:AbstractInlineRefactorDialog.Resources>
+		<ref:IntToBoolConverter x:Key="intToBoolConverter" />
+		<Style TargetType="Button" BasedOn="{x:Static sd:GlobalStyles.ButtonStyle}"/>
+	</ref:AbstractInlineRefactorDialog.Resources>
+	<Grid Cursor="Arrow" KeyboardNavigation.TabNavigation="Cycle">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<TextBlock Margin="3"
+		           Text="{sd:Localize AddIns.SharpRefactoring.InsertCtor.Description}"
+		           TextWrapping="Wrap" />
+		<ListView x:Name="varList" Grid.Row="1"
+		          KeyboardNavigation.TabNavigation="Cycle"
+		          MaxHeight="300">
+			<ListView.View>
+				<GridView>
+					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.VariableLabel}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<CheckBox Grid.Column="0" IsChecked="{Binding IsIncluded}" VerticalAlignment="Center" Margin="0,0,3,0" />
+									<TextBlock Grid.Column="1" Text="{Binding Text}" />
+								</Grid>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.AddCheckForNullLabel}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<CheckBox IsChecked="{Binding AddCheckForNull, Mode=TwoWay}" IsEnabled="{Binding IsNullable}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.AddRangeCheckLabel}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<CheckBox IsChecked="{Binding AddRangeCheck, Mode=TwoWay}" IsEnabled="{Binding HasRange}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+				</GridView>
+			</ListView.View>
+		</ListView>
+		<DockPanel Grid.Row="2" LastChildFill="False">
+			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" />
+			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" />
+			<Button x:Name="moveDown" DockPanel.Dock="Right" Content="{sd:Localize Global.MoveDown}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="DownClick" />
+			<Button x:Name="moveUp" DockPanel.Dock="Right" Content="{sd:Localize Global.MoveUp}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="UpClick" />
+			<ToggleButton x:Name="selectAll" DockPanel.Dock="Right" Content="{sd:Localize Global.SelectAllButtonText}" Margin="3" IsChecked="{Binding AllSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ref:InsertCtorDialog}}, Mode=OneWay}" Checked="SelectAllChecked" Unchecked="SelectAllUnchecked" />
+		</DockPanel>
+	</Grid>
+</ref:AbstractInlineRefactorDialog>

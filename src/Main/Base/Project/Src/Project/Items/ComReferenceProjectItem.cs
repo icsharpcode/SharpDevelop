@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -93,12 +94,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the file name of the COM interop assembly.
 		/// </summary>
-		public override string FileName {
+		public override FileName FileName {
 			get {
 				try {
 					if (Project != null && Project.OutputAssemblyFullPath != null) {
-						string outputFolder = Path.GetDirectoryName(Project.OutputAssemblyFullPath);
-						string interopFileName = Path.Combine(outputFolder, String.Concat("Interop.", Include, ".dll"));
+						DirectoryName outputFolder = Project.OutputAssemblyFullPath.GetParentDirectory();
+						FileName interopFileName = outputFolder.CombineFile("Interop." + Include + ".dll");
 						if (File.Exists(interopFileName)) {
 							return interopFileName;
 						}
@@ -111,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						// look in obj\Debug:
 						if (Project is CompilableProject) {
 							outputFolder = (Project as CompilableProject).IntermediateOutputFullPath;
-							interopFileName = Path.Combine(outputFolder, String.Concat("Interop.", Include, ".dll"));
+							interopFileName = outputFolder.CombineFile("Interop." + Include + ".dll");
 							if (File.Exists(interopFileName)) {
 								return interopFileName;
 							}
@@ -124,16 +125,16 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 				catch (Exception) { }
-				return Include;
+				return FileName.Create(Include);
 			}
 			set {
 			}
 		}
 		
-		static string GetActiveXInteropFileName(string outputFolder, string include)
+		static FileName GetActiveXInteropFileName(DirectoryName outputFolder, string include)
 		{
-			if (include.ToLowerInvariant().StartsWith("ax")) {
-				return Path.Combine(outputFolder, String.Concat("AxInterop.", include.Substring(2), ".dll"));
+			if (include.StartsWith("ax", StringComparison.OrdinalIgnoreCase)) {
+				return outputFolder.CombineFile(String.Concat("AxInterop.", include.Substring(2), ".dll"));
 			}
 			return null;
 		}

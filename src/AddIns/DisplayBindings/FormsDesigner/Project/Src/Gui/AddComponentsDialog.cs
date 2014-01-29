@@ -18,6 +18,7 @@ using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
+	#pragma warning disable 618
 	public class AddComponentsDialog : BaseSharpDevelopForm
 	{
 		ArrayList selectedComponents;
@@ -218,7 +219,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				fdiag.Multiselect     = true;
 				fdiag.CheckFileExists = true;
 				
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					ControlDictionary["fileNameTextBox"].Text = string.Join(";", fdiag.FileNames);
 				}
 			}

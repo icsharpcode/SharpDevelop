@@ -22,7 +22,7 @@
 				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.PauseOnHandledExceptions}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
-		<GroupBox Margin="5" Header="{sd:Localize Gloabl.Advanced}">
+		<GroupBox Margin="5" Header="{sd:Localize Global.Advanced}">
 			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
 				<!--
 				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue}"
@@ -32,6 +32,14 @@
 				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.SuppressJITOptimization}" />
 				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.SuppressNGENOptimization}"
 				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.SuppressNGENOptimization}" />
+			</widgets:StackPanelWithSpacing>
+		</GroupBox>
+		<GroupBox Margin="5" Header="{sd:Localize Dialog.Options.IDEOptions.Debugging.WithoutSource}">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.AskForArguments}"
+				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.AskForArguments}" />
+				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.BreakAtBeginning}"
+				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.BreakAtBeginning}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 	</StackPanel>

@@ -32,6 +32,7 @@
   <ItemGroup>
     <WixExtension Include="$(WixToolPath)\WixUIExtension.dll" />
     <WixExtension Include="$(WixToolPath)\WixNetFxExtension.dll" />
+    <WixExtension Include="$(WixToolPath)\WixUtilExtension.dll" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition="Exists('$(WixTargetsPath)')" />
 </Project>

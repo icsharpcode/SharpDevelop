@@ -7,8 +7,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Analysis;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
@@ -23,9 +27,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	public static class FindReferenceService
 	{
 		#region FindReferences
-		static IEnumerable<IProject> GetProjectsThatCouldReferenceEntity(IEntity entity)
+		static IEnumerable<IProject> GetProjectsThatCouldReferenceEntity(ISymbol entity)
 		{
-			Solution solution = ProjectService.OpenSolution;
+			ISolution solution = ProjectService.OpenSolution;
 			if (solution == null)
 				yield break;
 			foreach (IProject project in solution.Projects) {
@@ -36,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		static List<ISymbolSearch> PrepareSymbolSearch(IEntity entity, CancellationToken cancellationToken, out double totalWorkAmount)
+		static List<ISymbolSearch> PrepareSymbolSearch(ISymbol entity, CancellationToken cancellationToken, out double totalWorkAmount)
 		{
 			totalWorkAmount = 0;
 			List<ISymbolSearch> symbolSearches = new List<ISymbolSearch>();
@@ -106,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (progressMonitor == null)
 				throw new ArgumentNullException("progressMonitor");
 			var fileName = FileName.Create(variable.Region.FileName);
-			List<Reference> references = new List<Reference>();
+			List<SearchResultMatch> references = new List<SearchResultMatch>();
 			await SD.ParserService.FindLocalReferencesAsync(
 				fileName, variable,
 				r => { lock (references) references.Add(r); },
@@ -169,10 +173,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (baseType == null)
 				throw new ArgumentNullException("baseType");
 			var solutionSnapshot = GetSolutionSnapshot(baseType.Compilation);
-			var compilations = GetProjectsThatCouldReferenceEntity(baseType).Select(p => solutionSnapshot.GetCompilation(p));
-			var graph = BuildTypeInheritanceGraph(compilations);
-			TypeGraphNode node;
-			if (graph.TryGetValue(new AssemblyQualifiedTypeName(baseType), out node)) {
+			var assemblies = GetProjectsThatCouldReferenceEntity(baseType).Select(p => solutionSnapshot.GetCompilation(p).MainAssembly);
+			var graph = new TypeGraph(assemblies);
+			var node = graph.GetNode(baseType);
+			if (node != null) {
 				// only derived types were requested, so don't return the base types
 				// (this helps the GC to collect the unused parts of the graph more quickly)
 				node.BaseTypes.Clear();
@@ -181,41 +185,73 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return new TypeGraphNode(baseType);
 			}
 		}
-		
-		/// <summary>
-		/// Builds a graph of all type definitions in the specified set of project contents.
-		/// </summary>
-		/// <remarks>The resulting graph may be cyclic if there are cyclic type definitions.</remarks>
-		static Dictionary<AssemblyQualifiedTypeName, TypeGraphNode> BuildTypeInheritanceGraph(IEnumerable<ICompilation> compilations)
-		{
-			if (compilations == null)
-				throw new ArgumentNullException("projectContents");
-			Dictionary<AssemblyQualifiedTypeName, TypeGraphNode> dict = new Dictionary<AssemblyQualifiedTypeName, TypeGraphNode>();
-			foreach (ICompilation compilation in compilations) {
-				foreach (ITypeDefinition typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
-					// Overwrite previous entry - duplicates can occur if there are multiple versions of the
-					// same project loaded in the solution (e.g. separate .csprojs for separate target frameworks)
-					dict[new AssemblyQualifiedTypeName(typeDef)] = new TypeGraphNode(typeDef);
-				}
-			}
-			foreach (ICompilation compilation in compilations) {
-				foreach (ITypeDefinition typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
-					TypeGraphNode typeNode = dict[new AssemblyQualifiedTypeName(typeDef)];
-					foreach (IType baseType in typeDef.DirectBaseTypes) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null) {
-							TypeGraphNode baseTypeNode;
-							if (dict.TryGetValue(new AssemblyQualifiedTypeName(baseTypeDef), out baseTypeNode)) {
-								typeNode.BaseTypes.Add(baseTypeNode);
-								baseTypeNode.DerivedTypes.Add(typeNode);
-							}
-						}
-					}
-				}
-			}
-			return dict;
-		}
 		#endregion
+		
+		public static async Task RenameSymbolAsync(ISymbol symbol, string newName, IProgressMonitor progressMonitor, Action<Error> errorCallback)
+		{
+			if (symbol == null)
+				throw new ArgumentNullException("symbol");
+			if (progressMonitor == null)
+				throw new ArgumentNullException("progressMonitor");
+			SD.MainThread.VerifyAccess();
+			if (SD.ParserService.LoadSolutionProjectsThread.IsRunning) {
+				progressMonitor.ShowingDialog = true;
+				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
+				progressMonitor.ShowingDialog = false;
+				return;
+			}
+			double totalWorkAmount;
+			List<ISymbolSearch> symbolSearches = PrepareSymbolSearch(symbol, progressMonitor.CancellationToken, out totalWorkAmount);
+			double workDone = 0;
+			ParseableFileContentFinder parseableFileContentFinder = new ParseableFileContentFinder();
+			var errors = new List<Error>();
+			var changes = new List<PatchedFile>();
+			foreach (ISymbolSearch s in symbolSearches) {
+				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
+				using (var childProgressMonitor = progressMonitor.CreateSubTask(s.WorkAmount / totalWorkAmount)) {
+					var args = new SymbolRenameArgs(newName, childProgressMonitor, parseableFileContentFinder);
+					args.ProvideHighlightedLine = false;
+					await s.RenameAsync(args, file => changes.Add(file), error => errors.Add(error));
+				}
+				
+				workDone += s.WorkAmount;
+				progressMonitor.Progress = workDone / totalWorkAmount;
+			}
+			if (errors.Count == 0) {
+				foreach (var file in changes) {
+					ApplyChanges(file);
+				}
+			} else {
+				foreach (var error in errors) {
+					errorCallback(error);
+				}
+			}
+		}
+		
+		public static IObservable<Error> RenameSymbol(ISymbol symbol, string newName, IProgressMonitor progressMonitor)
+		{
+			return ReactiveExtensions.CreateObservable<Error>(
+				(monitor, callback) => RenameSymbolAsync(symbol, newName, monitor, callback),
+				progressMonitor);
+		}
+		
+		static void ApplyChanges(PatchedFile file)
+		{
+			var openedFile = SD.FileService.GetOpenedFile(file.FileName);
+			if (openedFile == null) {
+				SD.FileService.OpenFile(file.FileName, false);
+				openedFile = SD.FileService.GetOpenedFile(file.FileName); //?
+			}
+			
+			var provider = openedFile.CurrentView.GetService<IFileDocumentProvider>();
+			if (provider != null) {
+				var document = provider.GetDocumentForFile(openedFile);
+				if (document == null)
+					throw new InvalidOperationException("Editor/document not found!");
+				file.Apply(document);
+				openedFile.MakeDirty();
+			}
+		}
 	}
 	
 	public class SymbolSearchArgs
@@ -225,6 +261,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public CancellationToken CancellationToken {
 			get { return this.ProgressMonitor.CancellationToken; }
 		}
+		
+		/// <summary>
+		/// Specifies whether the symbol search should pass a HighlightedInlineBuilder
+		/// for the matching line to the SearchResultMatch.
+		/// The default value is <c>true</c>.
+		/// </summary>
+		public bool ProvideHighlightedLine { get; set; }
 		
 		public ParseableFileContentFinder ParseableFileContentFinder { get; private set; }
 		
@@ -236,7 +279,21 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("parseableFileContentFinder");
 			this.ProgressMonitor = progressMonitor;
 			this.ParseableFileContentFinder = parseableFileContentFinder;
+			this.ProvideHighlightedLine = true;
 		}
+	}
+	
+	public class SymbolRenameArgs : SymbolSearchArgs
+	{
+		public SymbolRenameArgs(string newName, IProgressMonitor progressMonitor, ParseableFileContentFinder parseableFileContentFinder)
+			: base(progressMonitor, parseableFileContentFinder)
+		{
+			if (newName == null)
+				throw new ArgumentNullException("newName");
+			NewName = newName;
+		}
+		
+		public string NewName { get; private set; }
 	}
 	
 	public interface ISymbolSearch
@@ -244,6 +301,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		double WorkAmount { get; }
 		
 		Task FindReferencesAsync(SymbolSearchArgs searchArguments, Action<SearchedFile> callback);
+		Task RenameAsync(SymbolRenameArgs renameArguments, Action<PatchedFile> callback, Action<Error> errorCallback);
 	}
 	
 	public sealed class CompositeSymbolSearch : ISymbolSearch
@@ -271,6 +329,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public Task FindReferencesAsync(SymbolSearchArgs searchArguments, Action<SearchedFile> callback)
 		{
 			return Task.WhenAll(symbolSearches.Select(s => s.FindReferencesAsync(searchArguments, callback)));
+		}
+		
+		public Task RenameAsync(SymbolRenameArgs renameArguments, Action<PatchedFile> callback, Action<Error> errorCallback)
+		{
+			return Task.WhenAll(symbolSearches.Select(s => s.RenameAsync(renameArguments, callback, errorCallback)));
 		}
 	}
 }

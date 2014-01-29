@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -73,6 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public TypePair(IType fromType, IType toType)
 			{
+				Debug.Assert(fromType != null && toType != null);
 				this.FromType = fromType;
 				this.ToType = toType;
 			}
@@ -84,9 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public bool Equals(TypePair other)
 			{
-				if (this.FromType == null || this.ToType == null || other.FromType == null || other.ToType == null)
-					return false;
-				return this.FromType.Equals(other.FromType) && this.ToType.Equals(other.ToType);
+				return object.Equals(this.FromType, other.FromType) && object.Equals(this.ToType, other.ToType);
 			}
 			
 			public override int GetHashCode()
@@ -970,7 +969,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region AnonymousFunctionConversion
 		Conversion AnonymousFunctionConversion(ResolveResult resolveResult, IType toType)
 		{
-			// C# 4.0 spec §6.5 Anonymous function conversions
+			// C# 5.0 spec §6.5 Anonymous function conversions
 			LambdaResolveResult f = resolveResult as LambdaResolveResult;
 			if (f == null)
 				return Conversion.None;
@@ -1008,7 +1007,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						IParameter pF = f.Parameters[i];
 						if (pD.IsRef != pF.IsRef || pD.IsOut != pF.IsOut)
 							return Conversion.None;
-						if (!dParamTypes[i].Equals(pF.Type))
+						if (!IdentityConversion(dParamTypes[i], pF.Type))
 							return Conversion.None;
 					}
 				}
@@ -1063,13 +1062,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				var thisRR = rr.TargetResult as ThisResolveResult;
 				bool isVirtual = method.IsOverridable && !(thisRR != null && thisRR.CausesNonVirtualInvocation);
 				bool isValid = !or.IsAmbiguous && IsDelegateCompatible(method, invoke, or.IsExtensionMethodInvocation);
+				bool delegateCapturesFirstArgument = or.IsExtensionMethodInvocation || !method.IsStatic;
 				if (isValid)
-					return Conversion.MethodGroupConversion(method, isVirtual);
+					return Conversion.MethodGroupConversion(method, isVirtual, delegateCapturesFirstArgument);
 				else
-					return Conversion.InvalidMethodGroupConversion(method, isVirtual);
+					return Conversion.InvalidMethodGroupConversion(method, isVirtual, delegateCapturesFirstArgument);
 			} else {
 				return Conversion.None;
 			}
+		}
+		
+		/// <summary>
+		/// Gets whether a <paramref name="method"/> is compatible with a delegate type.
+		/// §15.2 Delegate compatibility
+		/// </summary>
+		/// <param name="method">The method to test for compatibility</param>
+		/// <param name="delegateType">The delegate type</param>
+		public bool IsDelegateCompatible(IMethod method, IType delegateType)
+		{
+			if (method == null)
+				throw new ArgumentNullException("method");
+			if (delegateType == null)
+				throw new ArgumentNullException("delegateType");
+			IMethod invoke = delegateType.GetDelegateInvokeMethod();
+			if (invoke == null)
+				return false;
+			return IsDelegateCompatible(method, invoke, false);
 		}
 		
 		/// <summary>
@@ -1128,9 +1146,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				IMethod m2 = t2.GetDelegateInvokeMethod();
 				if (m1 == null || m2 == null)
 					return 0;
-				int r = BetterConversionTarget(t1, t2);
-				if (r != 0)
-					return r;
 				if (m1.Parameters.Count != m2.Parameters.Count)
 					return 0;
 				IType[] parameterTypes = new IType[m1.Parameters.Count];
@@ -1150,7 +1165,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return 1;
 				
 				IType inferredRet = lambda.GetInferredReturnType(parameterTypes);
-				r = BetterConversion(inferredRet, ret1, ret2);
+				int r = BetterConversion(inferredRet, ret1, ret2);
 				if (r == 0 && lambda.IsAsync) {
 					ret1 = UnpackTask(ret1);
 					ret2 = UnpackTask(ret2);

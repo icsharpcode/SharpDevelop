@@ -64,7 +64,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		void ActiveViewContentChanged(object source, EventArgs e)
 		{
-			ReportDesignerView vv = WorkbenchSingleton.Workbench.ActiveViewContent as ReportDesignerView;
+			ReportDesignerView vv = SD.Workbench.ActiveViewContent as ReportDesignerView;
 			if (vv != null) {
 				Console.WriteLine("Explorerpad:ActiveViewContentChanged {0}",vv.TitleName);
 			}
@@ -185,7 +185,7 @@ namespace ICSharpCode.Reports.Addin
 		/// </summary>
 		public override void Dispose()
 		{
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
+			SD.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
 			this.explorerTree.Dispose();
 		}
 		

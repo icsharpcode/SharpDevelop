@@ -57,7 +57,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Designer\MockDesignerGenerator.cs" />
     <Compile Include="Designer\MockOpenedFile.cs" />
-    <Compile Include="Designer\MockReportDesignerDisplayBinding.cs" />
     <Compile Include="Designer\MockViewContend.cs" />
     <Compile Include="Designer\ReportDesignerDisplayBindingTestFixture.cs" />
     <Compile Include="Designer\ReportDesignerLoaderTestFixture.cs" />

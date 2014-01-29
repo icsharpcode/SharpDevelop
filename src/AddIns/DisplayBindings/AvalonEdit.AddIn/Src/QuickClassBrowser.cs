@@ -42,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (resolvedDefinition != null) {
 					var ambience = compilation.GetAmbience();
 					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowDeclaringType;
-					this.text = ambience.ConvertEntity(resolvedDefinition);
+					this.text = ambience.ConvertSymbol(resolvedDefinition);
 				} else {
 					this.text = typeDef.Name;
 				}
@@ -54,7 +54,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.IsInSamePart = true;
 				this.entity = member.UnresolvedMember;
 				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
-				text = ambience.ConvertEntity(member);
+				text = ambience.ConvertSymbol(member);
 				image = CompletionImage.GetImage(member);
 			}
 			
@@ -85,7 +85,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			public int CompareTo(EntityItem other)
 			{
-				int r = this.Entity.EntityType.CompareTo(other.Entity.EntityType);
+				int r = this.Entity.SymbolKind.CompareTo(other.Entity.SymbolKind);
 				if (r != 0)
 					return r;
 				r = string.Compare(text, other.text, StringComparison.OrdinalIgnoreCase);
@@ -255,7 +255,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					foreach (var member in compoundClass.Members) {
 						if (member.IsSynthetic)
 							continue;
-						bool isInSamePart = string.Equals(member.UnresolvedMember.UnresolvedFile.FileName, selectedClass.UnresolvedFile.FileName, StringComparison.OrdinalIgnoreCase);
+						bool isInSamePart = string.Equals(member.Region.FileName, selectedClass.Region.FileName, StringComparison.OrdinalIgnoreCase);
 						memberItems.Add(new EntityItem(member, ambience) { IsInSamePart = isInSamePart });
 					}
 					memberItems.Sort();
@@ -272,7 +272,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			EntityItem item = membersComboBox.SelectedItem as EntityItem;
 			if (item != null) {
-				IMember member = item.Entity as IMember;
+				IUnresolvedMember member = item.Entity as IUnresolvedMember;
 				if (member != null && jumpOnSelectionChange) {
 					SD.AnalyticsMonitor.TrackFeature(GetType(), "JumpToMember");
 					JumpTo(item, member.Region);

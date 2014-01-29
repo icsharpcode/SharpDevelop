@@ -1,25 +1,29 @@
-﻿/*
- * Created by SharpDevelop.
- * User: trecio
- * Date: 2011-10-24
- * Time: 23:11
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.MachineSpecifications
 {
-	/// <summary>
-	/// Description of BehaviorImportedClass.
-	/// </summary>
-	public class BehaviorImportedTestMember : BaseTestMember
+	public class BehaviorImportedTestMember : MSpecTestMember
 	{
-		public BehaviorImportedTestMember(IClass testClass, IMember behaviorMember)
-			: base(testClass, behaviorMember, behaviorMember.Name)
+		IMember parent;
+		
+		public BehaviorImportedTestMember(
+			MSpecTestProject parentProject,
+			IMember parent,
+			IMember behavior)
+			: base(parentProject, behavior)
 		{
+			this.parent = parent;
+		}
+		
+		public override string GetTypeName()
+		{
+			return parent.DeclaringTypeDefinition.FullName;
 		}
 	}
 }

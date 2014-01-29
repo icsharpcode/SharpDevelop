@@ -8,12 +8,15 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using ICSharpCode.AvalonEdit.Snippets;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
@@ -212,15 +215,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return s => s.ToLower();
 			if ("toUpper".Equals(name, StringComparison.OrdinalIgnoreCase))
 				return s => s.ToUpper();
-			#warning Reimplement language-specific name conversion functions
-			/*
+			
 			if ("toFieldName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => context.Language.Properties.CodeGenerator.GetFieldName(s);
+				return s => context.Language.CodeGenerator.GetFieldName(s);
 			if ("toPropertyName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => context.Language.Properties.CodeGenerator.GetPropertyName(s);
+				return s => context.Language.CodeGenerator.GetPropertyName(s);
 			if ("toParameterName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => context.Language.Properties.CodeGenerator.GetParameterName(s);
-				*/
+				return s => context.Language.CodeGenerator.GetParameterName(s);
 			return null;
 		}
 		

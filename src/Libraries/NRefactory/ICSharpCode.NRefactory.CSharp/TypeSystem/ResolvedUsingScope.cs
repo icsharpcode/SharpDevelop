@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -162,8 +162,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				get { return NamespaceDeclaration.BuildQualifiedName(parentNamespace.FullName, name); }
 			}
 			
-			string INamespace.Name {
+			public string Name {
 				get { return name; }
+			}
+			
+			SymbolKind ISymbol.SymbolKind {
+				get { return SymbolKind.Namespace; }
 			}
 			
 			INamespace INamespace.ParentNamespace {

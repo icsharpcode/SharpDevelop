@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.WinForms
@@ -170,6 +171,14 @@ namespace ICSharpCode.SharpDevelop.WinForms
 			} else {
 				contentControl.Content = content;
 			}
+		}
+		
+		public CustomWindowsFormsHost CreateWindowsFormsHost(IServiceProvider serviceProvider = null, bool processShortcutsInWPF = false)
+		{
+			return new SDWindowsFormsHost(processShortcutsInWPF) {
+				ServiceProvider = serviceProvider,
+				DisposeChild = false
+			};
 		}
 	}
 }

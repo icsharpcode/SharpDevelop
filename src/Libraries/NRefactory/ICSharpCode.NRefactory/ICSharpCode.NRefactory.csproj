@@ -45,9 +45,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
+    <OutputPath>..\bin\Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
+    <OutputPath>..\bin\Release\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Debug' ">
     <Optimize>False</Optimize>
@@ -60,6 +62,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <OutputPath>..\bin\net_4_5_Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
     <Optimize>True</Optimize>
@@ -70,6 +73,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_5_Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <OutputPath>..\bin\net_4_5_Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -78,6 +82,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\AbiComparer.cs" />
+    <Compile Include="Analysis\TypeGraph.cs" />
+    <Compile Include="Analysis\TypeGraphNode.cs" />
     <Compile Include="Documentation\DocumentationComment.cs" />
     <Compile Include="Documentation\GetPotentiallyNestedClassTypeReference.cs" />
     <Compile Include="Documentation\IDocumentationProvider.cs" />
@@ -133,12 +140,19 @@
     <Compile Include="TypeSystem\Accessibility.cs" />
     <Compile Include="TypeSystem\AnonymousType.cs" />
     <Compile Include="TypeSystem\ArrayType.cs" />
+    <Compile Include="TypeSystem\AssemblyQualifiedTypeName.cs" />
     <Compile Include="TypeSystem\ByReferenceType.cs" />
-    <Compile Include="TypeSystem\CecilLoader.cs" />
     <Compile Include="TypeSystem\ComHelper.cs" />
     <Compile Include="TypeSystem\DefaultSolutionSnapshot.cs" />
     <Compile Include="TypeSystem\DomRegion.cs" />
     <Compile Include="TypeSystem\EntityType.cs" />
+    <Compile Include="TypeSystem\Implementation\BlobReader.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultVariable.cs" />
+    <Compile Include="TypeSystem\Implementation\ResolvedAttributeBlob.cs" />
+    <Compile Include="TypeSystem\Implementation\UnresolvedAttributeBlob.cs" />
+    <Compile Include="TypeSystem\Implementation\UnresolvedSecurityDeclarationBlob.cs" />
+    <Compile Include="TypeSystem\ISymbol.cs" />
+    <Compile Include="TypeSystem\TaskType.cs" />
     <Compile Include="TypeSystem\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\TypeSystemExtensions.cs" />
     <Compile Include="TypeSystem\FullTypeName.cs" />
@@ -267,17 +281,21 @@
     <Compile Include="Utils\CompositeFormatStringParser\IFormatStringSegment.cs" />
     <Compile Include="Utils\CompositeFormatStringParser\IFormatStringError.cs" />
     <Compile Include="Completion\CompletionExtensionMethods.cs" />
+    <Compile Include="Refactoring\IssueMarker.cs" />
+    <Compile Include="Refactoring\Severity.cs" />
+    <Compile Include="Analysis\SymbolCollector.cs" />
+    <Compile Include="TypeSystem\AssemblyLoader.cs" />
+    <Compile Include="Editor\UnicodeNewline.cs" />
+    <Compile Include="Completion\FrameworkLookup.cs" />
+    <Compile Include="Utils\ComparableList.cs" />
+    <Compile Include="PatternMatching\AnyNodeOrNull.cs" />
+    <Compile Include="Editor\ITextPasteHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
     <Folder Include="TypeSystem\" />
     <Folder Include="Utils\CompositeFormatStringParser\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
+    <Folder Include="Refactoring\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\doc\Pattern Matching.html">

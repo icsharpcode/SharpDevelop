@@ -11,13 +11,18 @@ namespace WixBinding.Tests.Utils
 	/// <summary>
 	/// Mock IViewContent class that implements the ITextEditorProvider interface.
 	/// </summary>
-	public class MockTextEditorViewContent : MockViewContent, ITextEditorProvider
+	public class MockTextEditorViewContent : MockViewContent
 	{		
 		public MockTextEditorViewContent()
 		{
 		}
 		
-		public ITextEditor TextEditor { get; set; }
+		ITextEditor textEditor;
+		
+		public ITextEditor TextEditor {
+			get { return textEditor ?? new MockTextEditor(); }
+			set { textEditor = value; }
+		}
 		
 		public IDocument GetDocumentForFile(OpenedFile file)
 		{

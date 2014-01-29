@@ -10,6 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
+	#pragma warning disable 618
 	public class AbstractOptionPanel : BaseSharpDevelopUserControl, IDialogPanel
 	{
 		bool   wasActivated = false;
@@ -196,20 +197,16 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					startLocation = FileUtility.GetAbsolutePath(startLocation, text);
 				}
 				
-				using (FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog(description, startLocation)) {
-					if (fdiag.ShowDialog() == DialogResult.OK) {
-						string path = fdiag.SelectedPath;
-						if (panel.baseDirectory != null) {
-							path = FileUtility.GetRelativePath(panel.baseDirectory, path);
-						}
-						if (!path.EndsWith("\\") && !path.EndsWith("/"))
-							path += "\\";
-						if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
-							panel.ControlDictionary[target].Text = path;
-						} else {
-							panel.ControlDictionary[target].Text = MSBuildInternals.Escape(path);
-						}
-					}
+				string path = SD.FileService.BrowseForFolder(description, startLocation);
+				if (panel.baseDirectory != null) {
+					path = FileUtility.GetRelativePath(panel.baseDirectory, path);
+				}
+				if (!path.EndsWith("\\", StringComparison.Ordinal) && !path.EndsWith("/", StringComparison.Ordinal))
+					path += "\\";
+				if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
+					panel.ControlDictionary[target].Text = path;
+				} else {
+					panel.ControlDictionary[target].Text = MSBuildInternals.Escape(path);
 				}
 			}
 		}

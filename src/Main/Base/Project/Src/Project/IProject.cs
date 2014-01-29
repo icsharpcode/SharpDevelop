@@ -26,16 +26,21 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// When you implement IProject, you should also implement IProjectItemListProvider and IProjectAllowChangeConfigurations
 	/// </summary>
 	public interface IProject
-		: IBuildable, ISolutionFolder, IDisposable, IMementoCapable
+		: IBuildable, ISolutionItem, IDisposable, IConfigurable
 	{
 		/// <summary>
-		/// Gets the list of items in the project. This member is thread-safe.
-		/// The returned collection is guaranteed not to change - adding new items or removing existing items
-		/// will create a new collection.
+		/// Gets the object used for thread-safe synchronization.
+		/// Thread-safe members lock on this object, but if you manipulate underlying structures
+		/// (such as the MSBuild project for MSBuildBasedProjects) directly, you will have to lock on this object.
 		/// </summary>
-		IReadOnlyCollection<ProjectItem> Items {
-			get;
-		}
+		object SyncRoot { get; }
+		
+		/// <summary>
+		/// Gets the list of items in the project. This member is thread-safe.
+		/// The returned collection is thread-safe; any accesses will synchronize with the project's <see cref="SyncRoot"/>.
+		/// Enumerating the items collection will create a snapshot of the collection.
+		/// </summary>
+		IMutableModelCollection<ProjectItem> Items { get; }
 		
 		/// <summary>
 		/// Gets all items in the project that have the specified item type.
@@ -52,16 +57,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
-		IReadOnlyCollection<ItemType> AvailableFileItemTypes {
-			get;
-		}
+		IReadOnlyCollection<ItemType> AvailableFileItemTypes { get; }
 		
 		/// <summary>
 		/// Gets a list of project sections stored in the solution file for this project.
 		/// </summary>
-		List<ProjectSection> ProjectSections {
-			get;
-		}
+		IMutableModelCollection<SolutionSection> ProjectSections { get; }
 		
 		/// <summary>
 		/// Gets the name of the project file.
@@ -69,10 +70,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// 
 		/// Only the getter is thread-safe.
 		/// </summary>
-		FileName FileName {
-			get;
-			set;
-		}
+		FileName FileName { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the name of the project.
@@ -80,13 +78,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Only the getter is thread-safe.
 		/// </summary>
 		/// <remarks>
-		/// Name already exists in ISolutionFolder, it's repeated here to prevent
-		/// the ambiguity with IBuildable.Name.
+		/// Name already exists in IBuildable; we're adding the setter here.
 		/// </remarks>
-		new string Name {
-			get;
-			set;
-		}
+		new string Name { get; set; }
 		
 		/// <summary>
 		/// Gets the directory of the project file.
@@ -95,9 +89,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// 
 		/// This member is thread-safe.
 		/// </summary>
-		string Directory {
-			get;
-		}
+		DirectoryName Directory { get; }
 		
 		/// <summary>
 		/// <para>
@@ -108,9 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </para>
 		/// <para>This member is thread-safe.</para>
 		/// </summary>
-		bool ReadOnly {
-			get;
-		}
+		bool IsReadOnly { get; }
 		
 		#region MSBuild properties used inside SharpDevelop base
 		/// <summary>
@@ -134,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the full path of the output assembly.
 		/// Returns null when the project does not output any assembly.
 		/// </summary>
-		string OutputAssemblyFullPath {
+		FileName OutputAssemblyFullPath {
 			get;
 		}
 		
@@ -156,42 +146,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		#region Configuration / Platform management
 		/// <summary>
-		/// Gets/Sets the active configuration.
+		/// Gets the configuration mapping.
 		/// </summary>
-		string ActiveConfiguration {
-			get;
-			set;
-		}
-		
-		/// <summary>
-		/// Gets/Sets the active platform.
-		/// </summary>
-		string ActivePlatform {
-			get;
-			set;
-		}
-		/// <summary>
-		/// Gets the list of available configuration names.
-		/// </summary>
-		IReadOnlyCollection<string> ConfigurationNames { get; }
-		
-		/// <summary>
-		/// Gets the list of available platform names.
-		/// </summary>
-		IReadOnlyCollection<string> PlatformNames { get; }
-		
-		/// <summary>
-		/// Is raised after the ActiveConfiguration property has changed.
-		/// </summary>
-		event EventHandler ActiveConfigurationChanged;
-		
-		/// <summary>
-		/// Is raised after the ActivePlatform property has changed.
-		/// </summary>
-		event EventHandler ActivePlatformChanged;
-		#endregion
+		ConfigurationMapping ConfigurationMapping { get; }
 		
 		/// <summary>
 		/// Saves the project using its current file name.
@@ -203,14 +161,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
-		bool IsFileInProject(string fileName);
+		bool IsFileInProject(FileName fileName);
 		
 		/// <summary>
 		/// Returns the project item for a specific file; or null if the file is not found in the project.
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
-		FileProjectItem FindFile(string fileName);
+		FileProjectItem FindFile(FileName fileName);
 		
 		/// <summary>
 		/// Gets if the project can be started.
@@ -221,8 +179,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets project specific properties.
 		/// These are saved in as part of the SharpDevelop configuration in the AppData folder.
 		/// </summary>
-		/// <remarks>This property never returns null.</remarks>
-		Properties ProjectSpecificProperties { get; }
+		/// <remarks>
+		/// This property never returns null.
+		/// 
+		/// Use <see cref="LoadProjectExtensions"/> instead to store settings that are for multiple users.
+		/// </remarks>
+		Properties Preferences { get; }
+		
+		/// <summary>
+		/// Saves the <see cref="Preferences"/> to disk.
+		/// This method is called by SharpDevelop when the solution is closed.
+		/// </summary>
+		void SavePreferences();
 		
 		/// <summary>
 		/// Starts the project.
@@ -238,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the minimum version the solution must have to support this project type.
 		/// </summary>
-		int MinimumSolutionVersion { get; }
+		SolutionFormatVersion MinimumSolutionVersion { get; }
 		
 		/// <summary>
 		/// Resolves assembly references for this project.
@@ -249,19 +217,46 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Notifies the project that it was succesfully created from a project template.
 		/// </summary>
+		/// <remarks>
+		/// TODO This method is currently called before the project is added to the solution;
+		/// but we might change that so that it is called later.
+		/// </remarks>
 		void ProjectCreationComplete();
+		
+		/// <summary>
+		/// Notifies the project that it was loaded in the IDE.
+		/// This method is called after the whole solution has finished loading; and when existing projects are added to the open solution.
+		/// It is not called for newly created projects; and not if the solution was loaded in the background
+		/// (<see cref="IProjectService.LoadSolutionFile"/> vs. <see cref="IProjectService.OpenSolution"/>).
+		/// </summary>
+		void ProjectLoaded();
 		
 		/// <summary>
 		/// Loads the project extension content with the specified name.
 		/// </summary>
+		/// <remarks>
+		/// Project extensions are custom XML elements that are stored within the .csproj file.
+		/// They are intended for settings that are not specific to a user/machine.
+		/// 
+		/// Use <see cref="Preferences"/> instead to store per-user settings.
+		/// </remarks>
 		XElement LoadProjectExtensions(string name);
 		
 		/// <summary>
 		/// Saves the project extension content with the specified name.
 		/// </summary>
+		/// <remarks>
+		/// Project extensions are custom XML elements that are stored within the .csproj file.
+		/// They are intended for settings that are not specific to a user/machine.
+		/// 
+		/// Use <see cref="Preferences"/> instead to store per-user settings.
+		/// </remarks>
 		void SaveProjectExtensions(string name, XElement element);
 		
-		// TODO:
+		/// <summary>
+		/// Determines whether this project has the specified type.
+		/// Projects may have multiple type GUIDs.
+		/// </summary>
 		bool HasProjectType(Guid projectTypeGuid);
 		
 		/// <summary>
@@ -305,9 +300,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		IAmbience GetAmbience();
 		
 		/// <summary>
-		/// Returns the ICodeGenerator implementation for this project.
+		/// Returns the ILanguageBinding implementation for this project.
 		/// </summary>
-		ICodeGenerator CodeGenerator { get; }
+		ILanguageBinding LanguageBinding { get; }
 		
 		/// <summary>
 		/// Prepares searching for references to the specified entity.
@@ -317,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <returns>
 		/// An object that can be used to perform the search; or null if this project does not support symbol searches.
 		/// </returns>
-		Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity);
+		Refactoring.ISymbolSearch PrepareSymbolSearch(ISymbol entity);
 		
 		/// <summary>
 		/// Occurs whenever parse information for this project was updated. This event is raised on the main thread.
@@ -331,57 +326,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		void OnParseInformationUpdated(ParseInformationEventArgs args);
 		
 		/// <summary>
-		/// Gets the models for the top-level type definitions in this project.
-		/// Never returns null, but may return a permanently empty collection if this project does not support such models.
+		/// Gets the assembly model for the project. This property never returns null.
 		/// </summary>
-		ITypeDefinitionModelCollection TypeDefinitionModels { get; }
+		IAssemblyModel AssemblyModel { get; }
 		
 		/// <summary>
-		/// Gets the parent solution.
-		/// This property is thread-safe.
+		/// Gets whether this project was unloaded.
 		/// </summary>
-		Solution ParentSolution { get; }
-	}
-	
-	/// <summary>
-	/// Interface for adding and removing items from a project. Not part of the IProject
-	/// interface because in nearly all cases, ProjectService.Add/RemoveProjectItem should
-	/// be used instead!
-	/// So IProject implementors should implement this interface, but only the SharpDevelop methods
-	/// ProjectService.AddProjectItem and RemoveProjectItem may call the interface members.
-	/// </summary>
-	public interface IProjectItemListProvider
-	{
-		/// <summary>
-		/// Gets a list of items in the project.
-		/// </summary>
-		IReadOnlyCollection<ProjectItem> Items {
-			get;
-		}
+		bool IsDisposed { get; }
 		
-		/// <summary>
-		/// Adds a new entry to the Items-collection
-		/// </summary>
-		void AddProjectItem(ProjectItem item);
-		
-		/// <summary>
-		/// Removes an entry from the Items-collection
-		/// </summary>
-		bool RemoveProjectItem(ProjectItem item);
-	}
-	
-	/// <summary>
-	/// Interface for changing project or solution configuration.
-	/// IProject implementors should implement this interface, but only the SharpDevelop methods
-	/// Solution.RenameProjectPlatform etc. may call the interface members.
-	/// </summary>
-	public interface IProjectAllowChangeConfigurations
-	{
-		bool RenameProjectConfiguration(string oldName, string newName);
-		bool RenameProjectPlatform(string oldName, string newName);
-		bool AddProjectConfiguration(string newName, string copyFrom);
-		bool AddProjectPlatform(string newName, string copyFrom);
-		bool RemoveProjectConfiguration(string name);
-		bool RemoveProjectPlatform(string name);
+		event EventHandler Disposed;
 	}
 }

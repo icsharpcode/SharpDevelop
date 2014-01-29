@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public BuildService()
 		{
-			this.buildModifiedProjectsOnly = new BuildModifiedProjectsOnlyService(this);
+			this.buildModifiedProjectsOnly = new BuildModifiedProjectsOnlyService(this, SD.ProjectService);
 		}
 		
 		public event EventHandler<BuildEventArgs> BuildStarted;
@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 					buildable = buildModifiedProjectsOnly.WrapBuildable(buildable, options.BuildDetection);
 					
-					var sink = new UIBuildFeedbackSink(TaskService.BuildMessageViewCategory, SD.StatusBar);
+					var sink = new UIBuildFeedbackSink(SD.OutputPad.BuildCategory, SD.StatusBar);
 					// Actually run the build:
 					var results = await BuildEngine.BuildAsync(buildable, options, sink, progressMonitor);
 					
@@ -106,12 +106,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				return Task.FromResult(new BuildResults { Result = BuildResultCode.Error });
 		}
 		
-		public Task<BuildResults> BuildAsync(Solution solution, BuildOptions options)
+		public Task<BuildResults> BuildAsync(ISolution solution, BuildOptions options)
 		{
-			if (solution != null)
-				return BuildAsync(solution.Projects, options);
-			else
+			if (solution != null) {
+				var solutionConfiguration = new ConfigurationAndPlatform(options.SolutionConfiguration ?? solution.ActiveConfiguration.Configuration,
+			                                                         options.SolutionPlatform ?? solution.ActiveConfiguration.Platform);
+				return BuildAsync(solution.Projects.Where(p => p.ConfigurationMapping.IsBuildEnabled(solutionConfiguration)), options);
+			} else {
 				return Task.FromResult(new BuildResults { Result = BuildResultCode.Error });
+			}
 		}
 		
 		public Task<BuildResults> BuildInBackgroundAsync(IBuildable buildable, BuildOptions options, IBuildFeedbackSink buildFeedbackSink, IProgressMonitor progressMonitor)

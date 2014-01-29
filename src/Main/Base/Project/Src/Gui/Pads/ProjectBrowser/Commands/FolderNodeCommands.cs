@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
@@ -44,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		int GetFileFilterIndex(IProject project, IReadOnlyList<FileFilterDescriptor> fileFilters)
 		{
 			if (project != null) {
-				ProjectBindingDescriptor projectCodon = ProjectBindingService.GetCodonPerLanguageName(project.Language);
+				ProjectBindingDescriptor projectCodon = SD.ProjectService.ProjectBindings.FirstOrDefault(b => b.Language == project.Language);
 				if (projectCodon != null) {
 					for (int i = 0; i < fileFilters.Count; ++i) {
 						for (int j = 0; j < projectCodon.CodeFileExtensions.Length; ++j) {
@@ -82,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 								LoggingService.Debug("Found file " + virtualFullName);
 								FileProjectItem newItem = new FileProjectItem(node.Project, fileItem.ItemType);
 								if (FileUtility.IsBaseDirectory(directoryName, fileItem.FileName)) {
-									newItem.FileName = FileUtility.RenameBaseDirectory(fileItem.FileName, directoryName, copiedFileName);
+									newItem.FileName = FileName.Create(FileUtility.RenameBaseDirectory(fileItem.FileName, directoryName, copiedFileName));
 								} else {
 									newItem.FileName = fileItem.FileName;
 								}
@@ -348,27 +347,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			node.Expand();
 			node.Expanding();
 			
-			List<FileProjectItem> addedItems = new List<FileProjectItem>();
-			
-			using (NewFileDialog nfd = new NewFileDialog(node.Directory)) {
-				if (nfd.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
-					bool additionalProperties = false;
-					foreach (KeyValuePair<string, FileDescriptionTemplate> createdFile in nfd.CreatedFiles) {
-						FileProjectItem item = node.AddNewFile(createdFile.Key);
-						addedItems.Add(item);
-						
-						if (createdFile.Value.SetProjectItemProperties(item)) {
-							additionalProperties = true;
-						}
-					}
-					if (additionalProperties) {
-						node.Project.Save();
-						node.RecreateSubNodes();
-					}
-				}
+			FileTemplateResult result = SD.UIService.ShowNewFileDialog(node.Project, node.Directory);
+			if (result != null) {
+				node.RecreateSubNodes();
+				return result.NewFiles.Select(node.Project.FindFile).Where(f => f != null).ToArray();
+			} else {
+				return null;
 			}
-			
-			return addedItems.AsReadOnly();
 		}
 	}
 	

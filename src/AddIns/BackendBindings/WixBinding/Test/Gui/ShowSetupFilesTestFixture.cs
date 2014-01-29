@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -18,7 +19,7 @@ namespace WixBinding.Tests.Gui
 		[SetUp]
 		public void Init()
 		{
-			MessageLoopHelper.InitializeForUnitTests();
+			SD.InitializeForUnitTests();
 			
 			workbench = new MockWorkbench();
 			factory = new MockPackageFilesViewFactory();

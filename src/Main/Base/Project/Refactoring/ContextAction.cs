@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
 	/// Base class for implementing one context action.
-	/// Useful for implementing <see cref="IContextActionsProvider" /> that provides just one action - common scenario.
+	/// Useful for implementing <see cref="IContextActionProvider" /> that provides just one action - common scenario.
 	/// </summary>
 	public abstract class ContextAction : IContextActionProvider, IContextAction
 	{
@@ -21,6 +21,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		
 		public abstract string DisplayName { get; }
+		
+		public virtual string GetDisplayName(EditorRefactoringContext context)
+		{
+			return DisplayName;
+		}
 		
 		public virtual string Category {
 			get { return string.Empty; }

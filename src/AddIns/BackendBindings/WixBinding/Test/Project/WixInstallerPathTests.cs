@@ -3,7 +3,6 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
@@ -21,7 +20,6 @@ namespace WixBinding.Tests.Project
 		public void SetUp()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 		}
 		
 		[Test]
@@ -29,7 +27,7 @@ namespace WixBinding.Tests.Project
 		{
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			
-			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\Test.msi", project.GetInstallerFullPath());
+			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\Test.msi", project.GetInstallerFullPath().ToString());
 		}
 		
 		[Test]
@@ -38,7 +36,7 @@ namespace WixBinding.Tests.Project
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			project.SetProperty("OutputName", "ChangedName");
 			
-			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\ChangedName.msi", project.GetInstallerFullPath());
+			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\ChangedName.msi", project.GetInstallerFullPath().ToString());
 		}
 	}
 }

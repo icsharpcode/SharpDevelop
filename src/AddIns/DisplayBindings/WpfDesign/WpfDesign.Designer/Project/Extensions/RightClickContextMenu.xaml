@@ -1,0 +1,10 @@
+﻿<ContextMenu x:Class="ICSharpCode.WpfDesign.Designer.Extensions.RightClickContextMenu"
+             xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Translation="clr-namespace:ICSharpCode.WpfDesign.Designer"
+             >
+	<MenuItem Header="{Binding SendToFrontText, Source={x:Static Translation:Translations.Instance}}" Click="Click_BringToFront" />
+	<MenuItem Header="{Binding SendForward, Source={x:Static Translation:Translations.Instance}}" Click="Click_Forward" />
+	<MenuItem Header="{Binding SendBackward, Source={x:Static Translation:Translations.Instance}}" Click="Click_Backward" />
+	<MenuItem Header="{Binding SendToBack, Source={x:Static Translation:Translations.Instance}}" Click="Click_SendToBack" />
+</ContextMenu>

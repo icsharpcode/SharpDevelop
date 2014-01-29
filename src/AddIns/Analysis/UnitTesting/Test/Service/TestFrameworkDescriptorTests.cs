@@ -68,7 +68,7 @@ namespace UnitTesting.Tests.Service
 		}
 		
 		[Test]
-		public void IsSupportedProject_CSharpAndVisualBasicProjectsSupportedByDescriptor_ReturnsTrueForVBNetProject()
+		public void IsSupportedProject_CSharpAndVisualBasicProjectsSupportedByDescriptor_ReturnsTrueForVBProject()
 		{
 			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".csproj;.vbproj");
 			MockCSharpProject project = CreateVisualBasicProjectSupportedByTestFramework();
@@ -110,7 +110,7 @@ namespace UnitTesting.Tests.Service
 		}
 		
 		[Test]
-		public void IsSupportedProject_SupportedProjectFileExtensionsInDescriptorContainWhitespace_ReturnsTrueForVBNetProject()
+		public void IsSupportedProject_SupportedProjectFileExtensionsInDescriptorContainWhitespace_ReturnsTrueForVBProject()
 		{
 			CreateTestFrameworkDescriptorToSupportProjectFileExtensions("  .csproj;  .vbproj  ");
 			MockCSharpProject project = CreateVisualBasicProjectSupportedByTestFramework();
@@ -132,7 +132,7 @@ namespace UnitTesting.Tests.Service
 		}
 		
 		[Test]
-		public void IsSupportedProject_SupportedProjectFileExtensionInDescriptorAreInUpperCase_ReturnsTrueForVBNetProject()
+		public void IsSupportedProject_SupportedProjectFileExtensionInDescriptorAreInUpperCase_ReturnsTrueForVBProject()
 		{
 			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".CSPROJ;.VBPROJ");
 			MockCSharpProject project = CreateVisualBasicProjectSupportedByTestFramework();
@@ -143,7 +143,7 @@ namespace UnitTesting.Tests.Service
 		}
 		
 		[Test]
-		public void IsSupportedProject_DescriptorSupportsCSharpProjects_ReturnsFalseForVBNetProject()
+		public void IsSupportedProject_DescriptorSupportsCSharpProjects_ReturnsFalseForVBProject()
 		{
 			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".csproj");
 			MockCSharpProject project = CreateVisualBasicProjectSupportedByTestFramework();

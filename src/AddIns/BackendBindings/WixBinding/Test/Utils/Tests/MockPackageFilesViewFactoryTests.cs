@@ -21,7 +21,6 @@ namespace WixBinding.Tests.Utils.Tests
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 			project = WixBindingTestsHelper.CreateEmptyWixProject();
 			factory = new MockPackageFilesViewFactory();
 			workbench = new MockWorkbench();

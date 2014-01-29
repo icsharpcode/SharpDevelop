@@ -13,15 +13,6 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
-	[ViewContentService]
-	public interface ITextEditorProvider : IFileDocumentProvider
-	{
-		[Obsolete("Use viewContent.GetService<ITextEditor>() instead.")]
-		ITextEditor TextEditor {
-			get;
-		}
-	}
-	
 	/// <summary>
 	/// Interface for text editors.
 	/// </summary>
@@ -167,6 +158,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the name of the currently used font.
 		/// </summary>
 		string FontFamily { get; }
+		
+		/// <summary>
+		/// Gets the currently used font size.
+		/// </summary>
+		double FontSize { get; }
 	}
 	
 	/// <summary>

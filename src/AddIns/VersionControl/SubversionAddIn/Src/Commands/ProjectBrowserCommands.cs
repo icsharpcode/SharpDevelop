@@ -119,9 +119,9 @@ namespace ICSharpCode.Svn.Commands
 		protected sealed class ProjectWatcher
 		{
 			List<ProjectEntry> list = new List<ProjectEntry>();
-			Solution solution;
+			ISolution solution;
 			
-			internal ProjectWatcher(Solution solution)
+			internal ProjectWatcher(ISolution solution)
 			{
 				this.solution = solution;
 				if (AddInOptions.AutomaticallyReloadProject && solution != null)
@@ -155,7 +155,7 @@ namespace ICSharpCode.Svn.Commands
 						"${res:ICSharpCode.SharpDevelop.Project.ReloadSolution}", "${res:ICSharpCode.SharpDevelop.Project.KeepOldSolution}")
 					    == 0)
 					{
-						ProjectService.LoadSolution(solution.FileName);
+						SD.ProjectService.OpenSolution(solution.FileName);
 					}
 				}
 			}

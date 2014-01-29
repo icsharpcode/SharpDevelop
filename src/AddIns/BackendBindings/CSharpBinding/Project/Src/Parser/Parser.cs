@@ -68,6 +68,11 @@ namespace CSharpBinding.Parser
 		}
 		 */
 		
+		public ITextSource GetFileContent(FileName fileName)
+		{
+			return SD.FileService.GetFileContent(fileName);
+		}
+		
 		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested,
 		                              IProject parentProject, CancellationToken cancellationToken)
 		{
@@ -104,27 +109,31 @@ namespace CSharpBinding.Parser
 			foreach (var comment in cu.Descendants.OfType<Comment>()) {
 				if (comment.CommentType == CommentType.InactiveCode)
 					continue;
-				int matchLength;
-				int index = comment.Content.IndexOfAny(TaskListTokens, 0, out matchLength);
-				if (index > -1) {
+				string match;
+				if (comment.Content.ContainsAny(TaskListTokens, 0, out match)) {
 					if (document == null)
 						document = new ReadOnlyDocument(fileContent, fileName);
 					int commentSignLength = comment.CommentType == CommentType.Documentation || comment.CommentType == CommentType.MultiLineDocumentation ? 3 : 2;
 					int commentEndSignLength = comment.CommentType == CommentType.MultiLine || comment.CommentType == CommentType.MultiLineDocumentation ? 2 : 0;
 					int commentStartOffset = document.GetOffset(comment.StartLocation) + commentSignLength;
 					int commentEndOffset = document.GetOffset(comment.EndLocation) - commentEndSignLength;
+					int endOffset;
+					int searchOffset = 0;
+					// HACK: workaround for parser bug: uses \n instead of \r\n in comment.Content
+					string commentContent = document.GetText(commentStartOffset, commentEndOffset - commentStartOffset + 1);
 					do {
-						int absoluteOffset = commentStartOffset + index;
+						int start = commentStartOffset + searchOffset;
+						int absoluteOffset = document.IndexOf(match, start, document.TextLength - start, StringComparison.Ordinal);
 						var startLocation = document.GetLocation(absoluteOffset);
-						int endOffset = Math.Min(document.GetLineByNumber(startLocation.Line).EndOffset, commentEndOffset);
+						endOffset = Math.Min(document.GetLineByNumber(startLocation.Line).EndOffset, commentEndOffset);
 						string content = document.GetText(absoluteOffset, endOffset - absoluteOffset);
-						if (content.Length < matchLength) {
+						if (content.Length < match.Length) {
 							// HACK: workaround parser bug with multi-line documentation comments
 							break;
 						}
-						tagComments.Add(new TagComment(content.Substring(0, matchLength), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(matchLength)));
-						index = comment.Content.IndexOfAny(TaskListTokens, endOffset - commentStartOffset, out matchLength);
-					} while (index > -1);
+						tagComments.Add(new TagComment(content.Substring(0, match.Length), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(match.Length)));
+						searchOffset = endOffset - commentStartOffset;
+					} while (commentContent.ContainsAny(TaskListTokens, searchOffset, out match));
 				}
 			}
 		}
@@ -149,7 +158,7 @@ namespace CSharpBinding.Parser
 			return ResolveAtLocation.Resolve(compilation, csParseInfo.UnresolvedFile, csParseInfo.SyntaxTree, location, cancellationToken);
 		}
 		
-		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)
+		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<SearchResultMatch> callback, CancellationToken cancellationToken)
 		{
 			var csParseInfo = parseInfo as CSharpFullParseInformation;
 			if (csParseInfo == null)
@@ -171,7 +180,7 @@ namespace CSharpBinding.Parser
 					int length = document.GetOffset(node.EndLocation) - offset;
 					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
 					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
-					callback(new Reference(region, result, offset, length, builder, defaultTextColor));
+					callback(new SearchResultMatch(parseInfo.FileName, node.StartLocation, node.EndLocation, offset, length, builder, defaultTextColor));
 				}, cancellationToken);
 			
 			if (highlighter != null) {
@@ -186,7 +195,7 @@ namespace CSharpBinding.Parser
 					typeof(Uri).Assembly,
 					typeof(Enumerable).Assembly
 				};
-				return assemblies.Select(asm => new CecilLoader().LoadAssemblyFile(asm.Location)).ToArray();
+				return assemblies.Select(asm => SD.AssemblyParserService.GetAssembly(FileName.Create(asm.Location))).ToArray();
 			});
 		
 		public ICompilation CreateCompilationForSingleFile(FileName fileName, IUnresolvedFile unresolvedFile)

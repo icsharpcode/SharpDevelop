@@ -18,17 +18,29 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				// must be thread-safe because it's used by LoadSolutionProjectsThread,
 				// and by IAssemblyReference.Resolve()
-				return ProjectService.GetProject(Core.FileName.Create(this.FileName));
+				IProject parentProject = this.Project;
+				if (parentProject == null)
+					return null;
+				var fileName = this.FileName;
+				foreach (var project in parentProject.ParentSolution.Projects) {
+					if (project.FileName == fileName)
+						return project;
+				}
+				return null;
 			}
 		}
 		
 		[ReadOnly(true)]
-		public string ProjectGuid {
+		public Guid ProjectGuid {
 			get {
-				return GetEvaluatedMetadata("Project");
+				Guid guid;
+				if (Guid.TryParse(GetEvaluatedMetadata("Project"), out guid))
+					return guid;
+				else
+					return Guid.Empty;
 			}
 			set {
-				SetEvaluatedMetadata("Project", value);
+				SetEvaluatedMetadata("Project", value.ToString("B").ToUpperInvariant());
 			}
 		}
 		

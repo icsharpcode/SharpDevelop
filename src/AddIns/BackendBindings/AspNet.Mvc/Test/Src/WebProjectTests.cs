@@ -10,7 +10,6 @@ using System.Xml.Linq;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -55,7 +54,8 @@ namespace AspNet.Mvc.Tests
 		{
 			var fileContentsBuilder = new StringBuilder();
 			var stringWriter = new StringWriter(fileContentsBuilder);
-			msbuildProject.MSBuildProjectFile.Save(stringWriter);
+			lock (msbuildProject.SyncRoot)
+				msbuildProject.MSBuildProjectFile.Save(stringWriter);
 			
 			return GetProjectExtensions(fileContentsBuilder.ToString());
 		}

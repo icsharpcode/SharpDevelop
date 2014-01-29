@@ -223,8 +223,11 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// Applies the StringParser to the formatstring; and then calls <c>string.Format</c> on the result:
+		/// Applies the StringParser to the formatstring; and then calls <c>string.Format</c> on the result.
+		/// 
+		/// This method is equivalent to:
 		/// <code>return string.Format(StringParser.Parse(formatstring), formatitems);</code>
+		/// but additionally includes error handling.
 		/// </summary>
 		public static string Format(string formatstring, params object[] formatitems)
 		{

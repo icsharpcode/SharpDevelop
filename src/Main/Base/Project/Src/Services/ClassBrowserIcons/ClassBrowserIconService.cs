@@ -66,6 +66,20 @@ namespace ICSharpCode.SharpDevelop
 		{
 			return GetIcon((IEntity)v);
 		}
+		
+		public static IImage GetIcon(IType t)
+		{
+			ITypeDefinition def = t.GetDefinition();
+			if (def != null)
+				return GetIcon(def);
+			else
+				return null;
+		}
+		
+		public static IImage GetIcon(ITypeDefinition t)
+		{
+			return GetIImage(CompletionImage.GetImage(t));
+		}
 		#endregion
 		
 		public static IImage Namespace { get { return GetIImage(CompletionImage.NamespaceImage); } }

@@ -27,9 +27,9 @@ namespace ICSharpCode.AvalonEdit.Search
 	public class SearchPanel : Control
 	{
 		TextArea textArea;
+		SearchInputHandler handler;
 		TextDocument currentDocument;
 		SearchResultBackgroundRenderer renderer;
-		SearchResult currentResult;
 		TextBox searchTextBox;
 		SearchPanelAdorner adorner;
 		
@@ -164,6 +164,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// <summary>
 		/// Creates a new SearchPanel.
 		/// </summary>
+		[Obsolete("Use the Install method instead")]
 		public SearchPanel()
 		{
 		}
@@ -171,20 +172,59 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// <summary>
 		/// Attaches this SearchPanel to a TextArea instance.
 		/// </summary>
+		[Obsolete("Use the Install method instead")]
 		public void Attach(TextArea textArea)
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
+			AttachInternal(textArea);
+		}
+		
+		/// <summary>
+		/// Creates a SearchPanel and installs it to the TextEditor's TextArea.
+		/// </summary>
+		/// <remarks>This is a convenience wrapper.</remarks>
+		public static SearchPanel Install(TextEditor editor)
+		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
+			return Install(editor.TextArea);
+		}
+		
+		/// <summary>
+		/// Creates a SearchPanel and installs it to the TextArea.
+		/// </summary>
+		public static SearchPanel Install(TextArea textArea)
+		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
+			#pragma warning disable 618
+			SearchPanel panel = new SearchPanel();
+			panel.AttachInternal(textArea);
+			panel.handler = new SearchInputHandler(textArea, panel);
+			textArea.DefaultInputHandler.NestedInputHandlers.Add(panel.handler);
+			return panel;
+		}
+		
+		/// <summary>
+		/// Removes the SearchPanel from the TextArea.
+		/// </summary>
+		public void Uninstall()
+		{
+			CloseAndRemove();
+			textArea.DefaultInputHandler.NestedInputHandlers.Remove(handler);
+		}
+		
+		void AttachInternal(TextArea textArea)
+		{
 			this.textArea = textArea;
-			var layer = AdornerLayer.GetAdornerLayer(textArea);
 			adorner = new SearchPanelAdorner(textArea, this);
-			if (layer != null)
-				layer.Add(adorner);
 			DataContext = this;
 			
 			renderer = new SearchResultBackgroundRenderer();
 			currentDocument = textArea.Document;
-			currentDocument.TextChanged += textArea_Document_TextChanged;
+			if (currentDocument != null)
+				currentDocument.TextChanged += textArea_Document_TextChanged;
 			textArea.DocumentChanged += textArea_DocumentChanged;
 			KeyDown += SearchLayerKeyDown;
 			
@@ -251,8 +291,7 @@ namespace ICSharpCode.AvalonEdit.Search
 			if (result == null)
 				result = renderer.CurrentResults.FirstSegment;
 			if (result != null) {
-				currentResult = result;
-				SetResult(result);
+				SelectResult(result);
 			}
 		}
 
@@ -267,8 +306,7 @@ namespace ICSharpCode.AvalonEdit.Search
 			if (result == null)
 				result = renderer.CurrentResults.LastSegment;
 			if (result != null) {
-				currentResult = result;
-				SetResult(result);
+				SelectResult(result);
 			}
 		}
 		
@@ -276,20 +314,20 @@ namespace ICSharpCode.AvalonEdit.Search
 
 		void DoSearch(bool changeSelection)
 		{
+			if (IsClosed)
+				return;
 			renderer.CurrentResults.Clear();
-			currentResult = null;
 			
 			if (!string.IsNullOrEmpty(SearchPattern)) {
 				int offset = textArea.Caret.Offset;
 				if (changeSelection) {
 					textArea.ClearSelection();
 				}
+				// We cast from ISearchResult to SearchResult; this is safe because we always use the built-in strategy
 				foreach (SearchResult result in strategy.FindAll(textArea.Document, 0, textArea.Document.TextLength)) {
-					if (currentResult == null && result.StartOffset >= offset) {
-						currentResult = result;
-						if (changeSelection) {
-							SetResult(result);
-						}
+					if (changeSelection && result.StartOffset >= offset) {
+						SelectResult(result);
+						changeSelection = false;
 					}
 					renderer.CurrentResults.Add(result);
 				}
@@ -303,15 +341,10 @@ namespace ICSharpCode.AvalonEdit.Search
 			textArea.TextView.InvalidateLayer(KnownLayer.Selection);
 		}
 
-		void SetResult(SearchResult result)
+		void SelectResult(SearchResult result)
 		{
-			textArea.Caret.Offset = currentResult.StartOffset;
-			textArea.Selection = Selection.Create(textArea, currentResult.StartOffset, currentResult.EndOffset);
-			var foldingManager = textArea.GetService(typeof(FoldingManager)) as FoldingManager;
-			if (foldingManager != null) {
-				foreach (var folding in foldingManager.GetFoldingsContaining(result.StartOffset))
-					folding.IsFolded = false;
-			}
+			textArea.Caret.Offset = result.StartOffset;
+			textArea.Selection = Selection.Create(textArea, result.StartOffset, result.EndOffset);
 			textArea.Caret.BringCaretToView();
 			// show caret even if the editor does not have the Keyboard Focus
 			textArea.Caret.Show();
@@ -353,18 +386,25 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// </summary>
 		public void Close()
 		{
+			bool hasFocus = this.IsKeyboardFocusWithin;
+			
 			var layer = AdornerLayer.GetAdornerLayer(textArea);
 			if (layer != null)
 				layer.Remove(adorner);
 			messageView.IsOpen = false;
 			textArea.TextView.BackgroundRenderers.Remove(renderer);
-			textArea.Focus();
+			if (hasFocus)
+				textArea.Focus();
 			IsClosed = true;
+			
+			// Clear existing search results so that the segments don't have to be maintained
+			renderer.CurrentResults.Clear();
 		}
 		
 		/// <summary>
 		/// Closes the SearchPanel and removes it.
 		/// </summary>
+		[Obsolete("Use the Uninstall method instead!")]
 		public void CloseAndRemove()
 		{
 			Close();
@@ -384,6 +424,7 @@ namespace ICSharpCode.AvalonEdit.Search
 				layer.Add(adorner);
 			textArea.TextView.BackgroundRenderers.Add(renderer);
 			IsClosed = false;
+			DoSearch(false);
 		}
 		
 		/// <summary>

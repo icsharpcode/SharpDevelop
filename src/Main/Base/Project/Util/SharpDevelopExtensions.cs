@@ -18,9 +18,7 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -262,11 +260,92 @@ namespace ICSharpCode.SharpDevelop
 			return result;
 		}
 		
-		public static IEnumerable<T> DistinctBy<T, K>(this IEnumerable<T> input, Func<T, K> keySelector)
+		public static IEnumerable<T> DistinctBy<T, K>(this IEnumerable<T> source, Func<T, K> keySelector) where K : IEquatable<K>
 		{
-			return input.Distinct(KeyComparer.Create(keySelector));
+			// Don't just use .Distinct(KeyComparer.Create(keySelector)) - that would evaluate the keySelector multiple times.
+			var hashSet = new HashSet<K>();
+			foreach (var element in source) {
+				if (hashSet.Add(keySelector(element))) {
+					yield return element;
+				}
+			}
 		}
 		
+		/// <summary>
+		/// Returns the minimum element.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">The input sequence is empty</exception>
+		public static T MinBy<T, K>(this IEnumerable<T> source, Func<T, K> keySelector) where K : IComparable<K>
+		{
+			return source.MinBy(keySelector, Comparer<K>.Default);
+		}
+
+		/// <summary>
+		/// Returns the minimum element.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">The input sequence is empty</exception>
+		public static T MinBy<T, K>(this IEnumerable<T> source, Func<T, K> keySelector, IComparer<K> keyComparer)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+			if (keySelector == null)
+				throw new ArgumentNullException("selector");
+			if (keyComparer == null)
+				keyComparer = Comparer<K>.Default;
+			using (var enumerator = source.GetEnumerator()) {
+				if (!enumerator.MoveNext())
+					throw new InvalidOperationException("Sequence contains no elements");
+				T minElement = enumerator.Current;
+				K minKey = keySelector(minElement);
+				while (enumerator.MoveNext()) {
+					T element = enumerator.Current;
+					K key = keySelector(element);
+					if (keyComparer.Compare(key, minKey) < 0) {
+						minElement = element;
+						minKey = key;
+					}
+				}
+				return minElement;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the maximum element.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">The input sequence is empty</exception>
+		public static T MaxBy<T, K>(this IEnumerable<T> source, Func<T, K> keySelector) where K : IComparable<K>
+		{
+			return source.MaxBy(keySelector, Comparer<K>.Default);
+		}
+
+		/// <summary>
+		/// Returns the maximum element.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">The input sequence is empty</exception>
+		public static T MaxBy<T, K>(this IEnumerable<T> source, Func<T, K> keySelector, IComparer<K> keyComparer)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+			if (keySelector == null)
+				throw new ArgumentNullException("selector");
+			if (keyComparer == null)
+				keyComparer = Comparer<K>.Default;
+			using (var enumerator = source.GetEnumerator()) {
+				if (!enumerator.MoveNext())
+					throw new InvalidOperationException("Sequence contains no elements");
+				T maxElement = enumerator.Current;
+				K maxKey = keySelector(maxElement);
+				while (enumerator.MoveNext()) {
+					T element = enumerator.Current;
+					K key = keySelector(element);
+					if (keyComparer.Compare(key, maxKey) > 0) {
+						maxElement = element;
+						maxKey = key;
+					}
+				}
+				return maxElement;
+			}
+		}
 		
 		/// <summary>
 		/// Returns the index of the first element for which <paramref name="predicate"/> returns true.
@@ -419,6 +498,28 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// Retrieves the model instance for the given assembly.
+		/// May return null if there is no model for the specified assembly.
+		/// </summary>
+		public static IAssemblyModel GetModel(this IAssembly assembly)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+			
+			IProject project = assembly.GetProject();
+			if (project != null)
+				return project.AssemblyModel;
+			
+			try {
+				return SD.AssemblyParserService.GetAssemblyModel(assembly.GetReferenceAssemblyLocation());
+			} catch (Exception) {
+				// TODO: use the exact exception types that GetAssemblyModel() throws (+document them)
+				// silently ignore errors when loading the assembly
+				return null;
+			}
+		}
+		
+		/// <summary>
 		/// Retrieves the model instance for the given type definition.
 		/// May return null if there is no model for the specified type definition.
 		/// </summary>
@@ -427,9 +528,9 @@ namespace ICSharpCode.SharpDevelop
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
 			
-			IProject project = typeDefinition.ParentAssembly.GetProject();
-			if (project != null)
-				return project.TypeDefinitionModels[typeDefinition.FullTypeName];
+			IAssemblyModel assembly = typeDefinition.ParentAssembly.GetModel();
+			if (assembly != null)
+				return assembly.TopLevelTypeDefinitions[typeDefinition.FullTypeName];
 			else
 				return null;
 		}
@@ -456,7 +557,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			foreach (var memberModel in typeModel.Members) {
 				if (memberModel.Name == member.Name) {
-					if (memberModel.Resolve(snapshot) == member.MemberDefinition) {
+					if (memberModel.Resolve() == member.MemberDefinition) {
 						return memberModel;
 					}
 				}
@@ -474,16 +575,16 @@ namespace ICSharpCode.SharpDevelop
 		public static IEntityModel GetModel(this IUnresolvedEntity entity, IProject project = null)
 		{
 			if (project == null) {
-				if (entity.Region.FileName == null || ProjectService.OpenSolution == null)
+				if (entity.Region.FileName == null)
 					return null;
-				project = ProjectService.OpenSolution.FindProjectContainingFile(entity.Region.FileName);
+				project = SD.ProjectService.FindProjectContainingFile(FileName.Create(entity.Region.FileName));
 				if (project == null)
 					return null;
 			}
 			IUnresolvedTypeDefinition unresolvedTypeDefinition = entity as IUnresolvedTypeDefinition ?? entity.DeclaringTypeDefinition;
 			if (unresolvedTypeDefinition == null)
 				return null;
-			ITypeDefinitionModel typeModel = project.TypeDefinitionModels[unresolvedTypeDefinition.FullTypeName];
+			ITypeDefinitionModel typeModel = project.AssemblyModel.TopLevelTypeDefinitions[unresolvedTypeDefinition.FullTypeName];
 			if (entity is IUnresolvedTypeDefinition || typeModel == null)
 				return typeModel;
 			
@@ -499,7 +600,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			foreach (var memberModel in typeModel.Members) {
 				if (memberModel.Name == unresolvedMember.Name) {
-					if (memberModel.Resolve(snapshot) == member.MemberDefinition) {
+					if (memberModel.Resolve() == member.MemberDefinition) {
 						return memberModel;
 					}
 				}
@@ -687,6 +788,24 @@ namespace ICSharpCode.SharpDevelop
 			return index;
 		}
 		
+		public static bool ContainsAny(this string haystack, IEnumerable<string> needles, int startIndex, out string match)
+		{
+			if (haystack == null)
+				throw new ArgumentNullException("haystack");
+			if (needles == null)
+				throw new ArgumentNullException("needles");
+			int index = -1;
+			match = null;
+			foreach (var needle in needles) {
+				int i = haystack.IndexOf(needle, startIndex, StringComparison.Ordinal);
+				if (i != -1 && (index == -1 || index > i)) {
+					index = i;
+					match = needle;
+				}
+			}
+			return index > -1;
+		}
+		
 		/// <summary>
 		/// Retrieves a hash code for the specified string that is stable across
 		/// multiple runs of SharpDevelop and .NET upgrades.
@@ -702,6 +821,15 @@ namespace ICSharpCode.SharpDevelop
 					h = (h << 5) - h + c;
 				}
 				return h;
+			}
+		}
+		
+		public static async Task CopyToAsync(this TextReader reader, TextWriter writer)
+		{
+			char[] buffer = new char[2048];
+			int read;
+			while ((read = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0) {
+				writer.Write(buffer, 0, read);
 			}
 		}
 		#endregion
@@ -735,6 +863,17 @@ namespace ICSharpCode.SharpDevelop
 			if (service == null)
 				throw new ServiceNotFoundException(serviceType);
 			return service;
+		}
+		#endregion
+		
+		#region Service Extensions
+		public static ICompilation GetCompilationForCurrentProject(this IParserService svc)
+		{
+			if (svc == null)
+				throw new ArgumentNullException("svc");
+			IProject project = SD.ProjectService.CurrentProject;
+			if (project == null) return null;
+			return SD.ParserService.GetCompilation(project);
 		}
 		#endregion
 		

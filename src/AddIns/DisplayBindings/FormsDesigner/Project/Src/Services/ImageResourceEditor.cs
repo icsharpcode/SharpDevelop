@@ -78,7 +78,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var projectResource = dictService.GetValue(ProjectResourceService.ProjectResourceKey + context.PropertyDescriptor.Name) as ProjectResourceInfo;
 			
-			IProject project = prs.ProjectContent.Project as IProject;
+			IProject project = prs.ProjectContent;
 			ImageResourceEditorDialog dialog;
 			
 			if (projectResource != null && Object.ReferenceEquals(projectResource.OriginalValue, value) && prs.DesignerSupportsProjectResources) {

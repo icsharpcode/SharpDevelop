@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// </summary>
 	public enum KnownTypeCode
 	{
-		// Note: DefaultResolvedTypeDefinition uses (KnownTypeCode)-1 as special value for "not yet calculated"
+		// Note: DefaultResolvedTypeDefinition uses (KnownTypeCode)-1 as special value for "not yet calculated".
 		// The order of type codes at the beginning must correspond to those in System.TypeCode.
 		
 		/// <summary>
@@ -107,6 +107,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList,
 		/// <summary><c>System.Collections.Generic.IList{T}</c></summary>
 		IListOfT,
+		/// <summary><c>System.Collections.Generic.IReadOnlyCollection{T}</c></summary>
+		IReadOnlyCollectionOfT,
 		/// <summary><c>System.Collections.Generic.IReadOnlyList{T}</c></summary>
 		IReadOnlyListOfT,
 		/// <summary><c>System.Threading.Tasks.Task</c></summary>
@@ -171,6 +173,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			new KnownTypeReference(KnownTypeCode.IList,          "System.Collections", "IList"),
 			new KnownTypeReference(KnownTypeCode.IListOfT,       "System.Collections.Generic", "IList", 1),
 
+			new KnownTypeReference(KnownTypeCode.IReadOnlyCollectionOfT, "System.Collections.Generic", "IReadOnlyCollection", 1),
 			new KnownTypeReference(KnownTypeCode.IReadOnlyListOfT, "System.Collections.Generic", "IReadOnlyList", 1),
 			new KnownTypeReference(KnownTypeCode.Task,        "System.Threading.Tasks", "Task"),
 			new KnownTypeReference(KnownTypeCode.TaskOfT,     "System.Threading.Tasks", "Task", 1, baseType: KnownTypeCode.Task),
@@ -368,6 +371,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets a type reference pointing to the <c>System.Collections.Generic.IList{T}</c> type.
 		/// </summary>
 		public static readonly KnownTypeReference IListOfT = Get(KnownTypeCode.IListOfT);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>System.Collections.Generic.IReadOnlyCollection{T}</c> type.
+		/// </summary>
+		public static readonly KnownTypeReference IReadOnlyCollectionOfT = Get(KnownTypeCode.IReadOnlyCollectionOfT);
 		
 		/// <summary>
 		/// Gets a type reference pointing to the <c>System.Collections.Generic.IReadOnlyList{T}</c> type.

@@ -2,9 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.SharpDevelop.Editor.Bookmarks;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor.Commands;
 
 namespace ICSharpCode.ILSpyAddIn
@@ -17,7 +16,7 @@ namespace ICSharpCode.ILSpyAddIn
 	{
 		public override void Run(ResolveResult symbol)
 		{
-			var entity = GetEntity(symbol);
+			var entity = GetSymbol(symbol) as IEntity;
 			if (entity != null) {
 				ILSpyController.OpenInILSpy(entity);
 			}

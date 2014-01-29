@@ -9,7 +9,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public abstract class UpdatePackageActions : IUpdatePackageActions
 	{
-		public bool UpdateDependencies { get; set; }		
+		public bool UpdateDependencies { get; set; }
 		public bool AllowPrereleaseVersions { get; set; }
 		public IPackageScriptRunner PackageScriptRunner { get; set; }
 		

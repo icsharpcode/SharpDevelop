@@ -9,9 +9,9 @@ using System.Xml;
 using ICSharpCode.CodeCoverage;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using Rhino.Mocks;
 using UnitTesting.Tests.Utils;
 
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
@@ -61,11 +61,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void OpenCoverSettingsFileName()
 		{
 			MSBuildBasedProject project = new MSBuildBasedProject(
-				new ProjectCreateInformation {
-					Solution = new Solution(new MockProjectChangeWatcher()),
-					OutputProjectFileName = new FileName(@"C:\temp\test.csproj"),
-					ProjectName = "test"
-				});
+				new ProjectCreateInformation(MockSolution.Create(), new FileName(@"C:\temp\test.csproj")));
 			
 			Assert.AreEqual(@"C:\temp\test.OpenCover.Settings", OpenCoverSettings.GetFileName(project));
 		}

@@ -12,7 +12,7 @@ using Microsoft.Win32;
 
 namespace ICSharpCode.MSTest
 {
-	public partial class MSTestOptionsPanel : OptionPanel, INotifyPropertyChanged
+	public partial class MSTestOptionsPanel : OptionPanel
 	{
 		string msTestPath;
 		bool changed;
@@ -40,7 +40,7 @@ namespace ICSharpCode.MSTest
 			set {
 				msTestPath = value;
 				changed = true;
-				OnPropertyChanged("MSTestPath");
+				RaisePropertyChanged("MSTestPath");
 			}
 		}
 		
@@ -50,15 +50,6 @@ namespace ICSharpCode.MSTest
 				MSTestOptions.MSTestPath = msTestPath;
 			}
 			return true;
-		}
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		void OnPropertyChanged(string name)
-		{
-			if (PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(name));
-			}
 		}
 	}
 }

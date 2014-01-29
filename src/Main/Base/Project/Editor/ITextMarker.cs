@@ -99,6 +99,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Normal underline.
 		/// </summary>
 		NormalUnderline = 0x002,
+		/// <summary>
+		/// Dotted underline.
+		/// </summary>
+		DottedUnderline = 0x004,
 		
 		/// <summary>
 		/// Horizontal line in the scroll bar.

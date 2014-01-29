@@ -18,9 +18,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		IContextActionProvider Provider { get; }
 		
 		/// <summary>
-		/// Name displayed in the context actions popup.
+		/// Returns the name displayed in the context action's popup.
 		/// </summary>
-		string DisplayName { get; }
+		/// <param name="context">Refactoring context that can be used by the context action to create the display name.</param>
+		string GetDisplayName(EditorRefactoringContext context);
 		
 		/// <summary>
 		/// Executes this action. Called when this action is selected from the context actions popup.

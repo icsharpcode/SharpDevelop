@@ -13,7 +13,8 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
-	/// File service.
+	/// Manages the list files opened by view contents so that multiple view contents opening the same file can synchronize.
+	/// Also provides events that can be used to listen to file operations performed in the IDE.
 	/// </summary>
 	[SDService("SD.FileService")]
 	public interface IFileService
@@ -48,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </remarks>
 		ITextSource GetFileContent(FileName fileName);
 		
-		/// <inheritdoc cref="GetParseableFileContent(FileName)"/>
+		/// <inheritdoc cref="GetFileContent(FileName)"/>
 		ITextSource GetFileContent(string fileName);
 		
 		/// <summary>
@@ -92,20 +93,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <summary>
 		/// Gets an opened file, or returns null if the file is not opened.
 		/// </summary>
-		OpenedFile GetOpenedFile(string fileName);
+		OpenedFile GetOpenedFile(FileName fileName);
 		
 		/// <summary>
 		/// Gets an opened file, or returns null if the file is not opened.
 		/// </summary>
-		OpenedFile GetOpenedFile(FileName fileName);
-		
-		/// <summary>
-		/// Gets or creates an opened file.
-		/// Warning: the opened file will be a file without any views attached.
-		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile to
-		/// unload the OpenedFile instance if no views were attached to it.
-		/// </summary>
-		OpenedFile GetOrCreateOpenedFile(string fileName);
+		OpenedFile GetOpenedFile(string fileName);
 		
 		/// <summary>
 		/// Gets or creates an opened file.
@@ -114,6 +107,14 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// unload the OpenedFile instance if no views were attached to it.
 		/// </summary>
 		OpenedFile GetOrCreateOpenedFile(FileName fileName);
+		
+		/// <summary>
+		/// Gets or creates an opened file.
+		/// Warning: the opened file will be a file without any views attached.
+		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile to
+		/// unload the OpenedFile instance if no views were attached to it.
+		/// </summary>
+		OpenedFile GetOrCreateOpenedFile(string fileName);
 		
 		/// <summary>
 		/// Creates a new untitled OpenedFile.

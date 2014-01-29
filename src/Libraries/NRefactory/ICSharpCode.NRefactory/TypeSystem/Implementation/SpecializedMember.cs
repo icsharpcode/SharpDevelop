@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -173,6 +173,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return baseMember.IsOverridable; }
 		}
 		
+		public SymbolKind SymbolKind {
+			get { return baseMember.SymbolKind; }
+		}
+		
+		[Obsolete("Use the SymbolKind property instead.")]
 		public EntityType EntityType {
 			get { return baseMember.EntityType; }
 		}
@@ -361,12 +366,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			} else {
 				var parameters = new IParameter[paramDefs.Count];
 				for (int i = 0; i < parameters.Length; i++) {
-					IType newType = paramDefs[i].Type.AcceptVisitor(substitution);
-					if (newType != paramDefs[i].Type) {
-						parameters[i] = new SpecializedParameter(paramDefs[i], newType);
-					} else {
-						parameters[i] = paramDefs[i];
-					}
+					var p = paramDefs[i];
+					IType newType = p.Type.AcceptVisitor(substitution);
+					parameters[i] = new DefaultParameter(
+						newType, p.Name, this,
+						p.Region, p.Attributes, p.IsRef, p.IsOut,
+						p.IsParams, p.IsOptional, p.ConstantValue
+					);
 				}
 				return Array.AsReadOnly(parameters);
 			}
@@ -389,66 +395,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			b.Append(this.ReturnType.ReflectionName);
 			b.Append(']');
 			return b.ToString();
-		}
-		
-		sealed class SpecializedParameter : IParameter
-		{
-			readonly IParameter originalParameter;
-			readonly IType newType;
-			
-			public SpecializedParameter(IParameter originalParameter, IType newType)
-			{
-				if (originalParameter is SpecializedParameter)
-					this.originalParameter = ((SpecializedParameter)originalParameter).originalParameter;
-				else
-					this.originalParameter = originalParameter;
-				this.newType = newType;
-			}
-			
-			public IList<IAttribute> Attributes {
-				get { return originalParameter.Attributes; }
-			}
-			
-			public bool IsRef {
-				get { return originalParameter.IsRef; }
-			}
-			
-			public bool IsOut {
-				get { return originalParameter.IsOut; }
-			}
-			
-			public bool IsParams {
-				get { return originalParameter.IsParams; }
-			}
-			
-			public bool IsOptional {
-				get { return originalParameter.IsOptional; }
-			}
-			
-			public string Name {
-				get { return originalParameter.Name; }
-			}
-			
-			public DomRegion Region {
-				get { return originalParameter.Region; }
-			}
-			
-			public IType Type {
-				get { return newType; }
-			}
-			
-			public bool IsConst {
-				get { return originalParameter.IsConst; }
-			}
-			
-			public object ConstantValue {
-				get { return originalParameter.ConstantValue; }
-			}
-			
-			public override string ToString()
-			{
-				return DefaultParameter.ToString(this);
-			}
 		}
 	}
 }

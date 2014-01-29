@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>{5186325C-DD7F-4246-9BE7-3F384EFBF5A6}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>TextTemplating.Tests</RootNamespace>
     <AssemblyName>TextTemplating.Tests</AssemblyName>
@@ -16,7 +16,7 @@
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -39,6 +39,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="Mono.TextTemplating">
       <HintPath>..\Project\lib\Mono.TextTemplating.dll</HintPath>
     </Reference>
@@ -77,7 +78,6 @@
     <Compile Include="Helpers\FakeTextTemplatingPathResolver.cs" />
     <Compile Include="Helpers\FakeTextTemplatingStringParser.cs" />
     <Compile Include="Helpers\FakeTextTemplatingVariables.cs" />
-    <Compile Include="Helpers\MessageLoopHelper.cs" />
     <Compile Include="Helpers\ProjectHelper.cs" />
     <Compile Include="Helpers\TestableFileProjectItem.cs" />
     <Compile Include="Helpers\TestableProject.cs" />

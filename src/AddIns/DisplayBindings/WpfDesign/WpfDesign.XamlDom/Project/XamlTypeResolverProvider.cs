@@ -29,20 +29,42 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XmlElement ContainingElement{
 			get { return containingObject.XmlElement; }
 		}
+
+		private string GetNamespaceOfPrefix(string prefix)
+		{
+			var ns = ContainingElement.GetNamespaceOfPrefix(prefix);
+			if (!string.IsNullOrEmpty(ns))
+				return ns;
+			var obj = containingObject;
+			while (obj != null)
+			{
+				ns = obj.XmlElement.GetNamespaceOfPrefix(prefix);
+				if (!string.IsNullOrEmpty(ns))
+					return ns;
+				obj = obj.ParentObject;
+			}
+			return null;
+		}
 		
 		public Type Resolve(string typeName)
 		{
 			string typeNamespaceUri;
 			string typeLocalName;
 			if (typeName.Contains(":")) {
-				typeNamespaceUri = ContainingElement.GetNamespaceOfPrefix(typeName.Substring(0, typeName.IndexOf(':')));
+				typeNamespaceUri = GetNamespaceOfPrefix(typeName.Substring(0, typeName.IndexOf(':')));
 				typeLocalName = typeName.Substring(typeName.IndexOf(':') + 1);
 			} else {
-				typeNamespaceUri = ContainingElement.GetNamespaceOfPrefix("");
+				typeNamespaceUri = GetNamespaceOfPrefix("");
 				typeLocalName = typeName;
 			}
-			if (string.IsNullOrEmpty(typeNamespaceUri))
+			if (string.IsNullOrEmpty(typeNamespaceUri)) {
+				var documentResolver = this.document.RootElement.ServiceProvider.Resolver;
+				if (documentResolver != null && documentResolver != this) {
+					return documentResolver.Resolve(typeName);
+				}
+				
 				throw new XamlMarkupExtensionParseException("Unrecognized namespace prefix in type " + typeName);
+			}
 			return document.TypeFinder.GetType(typeNamespaceUri, typeLocalName);
 		}
 		
@@ -93,6 +115,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						return val;
 				}
 				obj = obj.ParentObject;
+			}
+			return null;
+		}
+		
+		public object FindLocalResource(object key)
+		{
+			FrameworkElement el = containingObject.Instance as FrameworkElement;
+			if (el != null) {
+				return el.Resources[key];
 			}
 			return null;
 		}

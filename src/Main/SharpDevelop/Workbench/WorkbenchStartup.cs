@@ -11,6 +11,8 @@ using System.Windows.Interop;
 using System.Windows.Threading;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -43,14 +45,23 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			SD.Services.AddService(typeof(IWorkbench), workbench);
 			
-			LanguageService.ValidateLanguage();
+			UILanguageService.ValidateLanguage();
 			
 			TaskService.Initialize();
 			Project.CustomToolsService.Initialize();
 			
 			workbench.Initialize();
-			workbench.SetMemento(PropertyService.NestedProperties(workbenchMemento));
+			workbench.SetMemento(SD.PropertyService.NestedProperties(workbenchMemento));
 			workbench.WorkbenchLayout = layout;
+			
+			// HACK: eagerly load output pad because pad services cannnot be instanciated from background threads
+			SD.Services.AddService(typeof(IOutputPad), CompilerMessageView.Instance);
+			
+			var dlgMsgService = SD.MessageService as IDialogMessageService;
+			if (dlgMsgService != null) {
+				dlgMsgService.DialogSynchronizeInvoke = SD.MainThread.SynchronizingObject;
+				dlgMsgService.DialogOwner = workbench.MainWin32Window;
+			}
 			
 			var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
 			if (applicationStateInfoService != null) {
@@ -60,7 +71,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			WorkbenchSingleton.OnWorkbenchCreated();
 			
 			// initialize workbench-dependent services:
-			Project.ProjectService.InitializeService();
 			NavigationService.InitializeService();
 			
 			workbench.ActiveContentChanged += delegate {
@@ -92,11 +102,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				LoggingService.Info("Open file " + file);
 				didLoadSolutionOrFile = true;
 				try {
-					string fullFileName = Path.GetFullPath(file);
+					var fullFileName = FileName.Create(Path.GetFullPath(file));
 					
-					IProjectLoader loader = ProjectService.GetProjectLoader(fullFileName);
-					if (loader != null) {
-						loader.Load(fullFileName);
+					if (SD.ProjectService.IsSolutionOrProjectFile(fullFileName)) {
+						SD.ProjectService.OpenSolutionOrProject(fullFileName);
 					} else {
 						SharpDevelop.FileService.OpenFile(fullFileName);
 					}
@@ -106,9 +115,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 			
 			// load previous solution
-			if (!didLoadSolutionOrFile && PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
+			if (!didLoadSolutionOrFile && SD.PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
 				if (SD.FileService.RecentOpen.RecentProjects.Count > 0) {
-					ProjectService.LoadSolution(SD.FileService.RecentOpen.RecentProjects[0]);
+					SD.ProjectService.OpenSolutionOrProject(SD.FileService.RecentOpen.RecentProjects[0]);
 					didLoadSolutionOrFile = true;
 				}
 			}
@@ -133,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			// save the workbench memento in the ide properties
 			try {
-				PropertyService.SetNestedProperties(workbenchMemento, SD.Workbench.CreateMemento());
+				SD.PropertyService.SetNestedProperties(workbenchMemento, ((WpfWorkbench)SD.Workbench).CreateMemento());
 			} catch (Exception e) {
 				MessageService.ShowException(e, "Exception while saving workbench state.");
 			}
@@ -195,13 +204,15 @@ class Test {
 			foreach (var node in cu.Descendants) {
 				resolver.Resolve(node);
 			}
+			// load CSharp.Refactoring.dll
+			new RedundantUsingDirectiveIssue();
 			// warm up AvalonEdit (must be done on main thread)
-			SD.MainThread.InvokeAsync(
+			SD.MainThread.InvokeAsyncAndForget(
 				delegate {
 					object editor;
 					SD.EditorControlService.CreateEditor(out editor);
 					LoggingService.Debug("Preload-Thread finished.");
-				}, DispatcherPriority.Background);
+				}, DispatcherPriority.ApplicationIdle);
 		}
 		#endregion
 	}

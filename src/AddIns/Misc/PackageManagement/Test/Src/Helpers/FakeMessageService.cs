@@ -45,11 +45,11 @@ namespace PackageManagement.Tests.Helpers
 		{
 		}
 		
-		public void InformSaveError(string fileName, string message, string dialogName, Exception exceptionGot)
+		public void InformSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot)
 		{
 		}
 		
-		public ChooseSaveErrorResult ChooseSaveError(string fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled)
+		public ChooseSaveErrorResult ChooseSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled)
 		{
 			return ChooseSaveErrorResult.Ignore;
 		}

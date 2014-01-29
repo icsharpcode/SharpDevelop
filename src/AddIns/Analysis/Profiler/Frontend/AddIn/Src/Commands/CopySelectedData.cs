@@ -6,10 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 
-using ICSharpCode.Core;
-using ICSharpCode.Profiler.AddIn.Views;
 using ICSharpCode.Profiler.Controls;
 
 namespace ICSharpCode.Profiler.AddIn.Commands

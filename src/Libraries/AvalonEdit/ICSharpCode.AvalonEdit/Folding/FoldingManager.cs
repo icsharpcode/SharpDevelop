@@ -23,6 +23,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 		
 		internal readonly List<TextView> textViews = new List<TextView>();
 		readonly TextSegmentCollection<FoldingSection> foldings;
+		bool isFirstUpdate = true;
 		
 		#region Constructor
 		/// <summary>
@@ -81,7 +82,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			foreach (FoldingSection fs in foldings) {
 				if (fs.collapsedSections != null) {
 					Array.Resize(ref fs.collapsedSections, textViews.Count);
-					fs.collapsedSections[fs.collapsedSections.Length - 1] = fs.CollapseSection(textView);
+					fs.ValidateCollapsedLineSections();
 				}
 			}
 		}
@@ -261,7 +262,10 @@ namespace ICSharpCode.AvalonEdit.Folding
 					// no matching current folding; create a new one:
 					section = this.CreateFolding(newFolding.StartOffset, newFolding.EndOffset);
 					// auto-close #regions only when opening the document
-					section.IsFolded = newFolding.DefaultClosed;
+					if (isFirstUpdate) {
+						section.IsFolded = newFolding.DefaultClosed;
+						isFirstUpdate = false;
+					}
 					section.Tag = newFolding;
 				}
 				section.Title = newFolding.Name;

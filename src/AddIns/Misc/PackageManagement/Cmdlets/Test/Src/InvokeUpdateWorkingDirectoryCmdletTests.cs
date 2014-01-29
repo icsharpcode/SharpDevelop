@@ -2,9 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.Design;
 using NUnit.Framework;
 using PackageManagement.Cmdlets.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Cmdlets.Tests
 {
@@ -15,9 +17,9 @@ namespace PackageManagement.Cmdlets.Tests
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementProjectService fakeProjectService;
 		
-		void CreateCmdlet()
+		void CreateCmdlet(string solutionFileName = @"d:\projects\MyProject\MyProject.sln")
 		{
-			cmdlet = new TestableInvokeUpdateWorkingDirectoryCmdlet();
+			cmdlet = new TestableInvokeUpdateWorkingDirectoryCmdlet(solutionFileName);
 			fakeProjectService = cmdlet.FakeProjectService;
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 		}
@@ -30,8 +32,8 @@ namespace PackageManagement.Cmdlets.Tests
 		[Test]
 		public void ProcessRecord_SolutionIsOpen_PowerShellWorkingDirectoryIsSetToSolutionDirectory()
 		{
-			CreateCmdlet();
-			fakeProjectService.OpenSolution.FileName = @"d:\projects\MySolution\MySolution.sln";
+			string solutionFileName = @"d:\projects\MySolution\MySolution.sln";
+			CreateCmdlet(solutionFileName);
 			RunCmdlet();
 			
 			string commandExecuted = cmdlet.ScriptPassedToInvokeScript;

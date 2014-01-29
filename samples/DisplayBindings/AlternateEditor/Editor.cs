@@ -29,14 +29,11 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace AlternateEditor
 {
-	// TODO: implement ITextEditorProvider interface to enable advanced editor features
-	public class Editor : AbstractViewContent // , ITextEditorProvider
+	public class Editor : AbstractViewContent
 	{
 		RichTextBox rtb = new RichTextBox();
 		
@@ -53,17 +50,18 @@ namespace AlternateEditor
 		}
 		
 		public Editor(OpenedFile file)
-		{			
+		{
 			Files.Add(file);
 			OnFileNameChanged(file);
 			file.ForceInitializeView(this);
 
 			rtb.Dock = DockStyle.Fill;
-			rtb.TextChanged += TextChanged;			
+			rtb.TextChanged += TextChanged;
 		}
 		
 		public override void Dispose()
 		{
+			base.Dispose();
 			rtb.Dispose();
 		}
 		
@@ -87,12 +85,6 @@ namespace AlternateEditor
 		}
 		
 		/*
-		public ITextEditor TextEditor { 
-			get {
-				return new TextEditorAdapter(rtb);
-			}
-		}
-		
 		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			if (file == this.PrimaryFile)

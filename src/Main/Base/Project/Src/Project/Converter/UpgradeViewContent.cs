@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	/// </summary>
 	public class UpgradeViewContent : AbstractViewContent
 	{
-		public static void ShowIfRequired(Solution solution)
+		public static void ShowIfRequired(ISolution solution)
 		{
 			var projects = solution.Projects.OfType<IUpgradableProject>().ToList();
 			if (projects.Count > 0 && projects.All(u => u.UpgradeDesired)) {
@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 		
-		public static UpgradeViewContent Show(Solution solution)
+		public static UpgradeViewContent Show(ISolution solution)
 		{
 			foreach (UpgradeViewContent vc in SD.Workbench.ViewContentCollection.OfType<UpgradeViewContent>()) {
 				if (vc.Solution == solution) {
@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		UpgradeView upgradeView;
 		
-		public UpgradeViewContent(Solution solution)
+		public UpgradeViewContent(ISolution solution)
 		{
 			if (solution == null)
 				throw new ArgumentNullException("solution");
@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			upgradeView = new UpgradeView(solution);
 		}
 		
-		public Solution Solution {
+		public ISolution Solution {
 			get { return upgradeView.Solution; }
 		}
 		

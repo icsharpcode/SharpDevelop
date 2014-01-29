@@ -23,7 +23,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly FoldingManager foldingManager;
 		
 		TextArea textArea;
-		bool isFirstUpdate = true;
 		
 		public FoldingManager FoldingManager {
 			get { return foldingManager; }
@@ -54,8 +53,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			IEnumerable<NewFolding> newFoldings = parseInfo.GetFoldings(textArea.Document, out firstErrorOffset);
 			newFoldings = newFoldings.OrderBy(f => f.StartOffset);
 			foldingManager.UpdateFoldings(newFoldings, firstErrorOffset);
-			
-			isFirstUpdate = false;
 		}
 	}
 }

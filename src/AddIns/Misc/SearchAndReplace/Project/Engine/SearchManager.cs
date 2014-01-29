@@ -28,6 +28,14 @@ namespace SearchAndReplace
 	public class SearchManager
 	{
 		#region FindAll
+		/// <summary>
+		/// Prepares a parallel search operation.
+		/// </summary>
+		/// <param name="strategy">The search strategy. Contains the search term and options.</param>
+		/// <param name="location">The location to search in.</param>
+		/// <param name="progressMonitor">The progress monitor used to report progress.
+		/// The parallel search operation will take ownership of this monitor: the monitor is disposed when the search finishes!</param>
+		/// <returns>Observable that starts performing the search when subscribed to. Does not support more than one subscriber!</returns>
 		public static IObservable<SearchedFile> FindAllParallel(ISearchStrategy strategy, SearchLocation location, IProgressMonitor progressMonitor)
 		{
 			currentSearchRegion = null;
@@ -122,7 +130,7 @@ namespace SearchAndReplace
 							observer.OnError(t.Exception);
 						else
 							observer.OnCompleted();
-						this.Dispose();
+						monitor.Dispose();
 					});
 				return this;
 			}
@@ -181,8 +189,9 @@ namespace SearchAndReplace
 			
 			public void Dispose()
 			{
+				// Warning: Dispose() may be called concurrently while the operation is still in progress.
+				// We cannot dispose the progress monitor here because it is still in use by the search operation.
 				cts.Cancel();
-				monitor.Dispose();
 			}
 			
 			SearchedFile SearchFile(FileName fileName)
@@ -509,6 +518,12 @@ namespace SearchAndReplace
 				&& result.Length == editor.SelectionLength;
 		}
 		
+		/// <summary>
+		/// Shows searchs results in the search results pad, and brings that pad to front.
+		/// </summary>
+		/// <param name="pattern">The pattern that is being searched for; used for the title of the search in the list of past searched.</param>
+		/// <param name="results">An observable that represents a background search operation.
+		/// The search results pad will subscribe to this observable in order to receive the search results.</param>
 		public static void ShowSearchResults(string pattern, IObservable<SearchedFile> results)
 		{
 			string title = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",

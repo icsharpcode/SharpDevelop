@@ -15,10 +15,6 @@ namespace ICSharpCode.Reports.Core
 	/// </remarks>
 	public class SortColumn : AbstractColumn {
 		
-		private ListSortDirection sortDirection = ListSortDirection.Ascending;
-		private bool caseSensitive;
-		
-		
 		public SortColumn():this(String.Empty,ListSortDirection.Ascending,typeof(System.String),false)
 		{
 		}

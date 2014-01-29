@@ -8,9 +8,12 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+
 using CSharpBinding.Parser;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
@@ -41,7 +44,7 @@ namespace CSharpBinding
 		int workAmount;
 		double workAmountInverse;
 		
-		public CSharpSymbolSearch(IProject project, IEntity entity)
+		public CSharpSymbolSearch(IProject project, ISymbol entity)
 		{
 			this.project = project;
 			searchScopes = fr.GetSearchScopes(entity);
@@ -75,7 +78,13 @@ namespace CSharpBinding
 								CancellationToken = cancellationToken
 							},
 							delegate (string fileName) {
-								FindReferencesInFile(args, searchScope, FileName.Create(fileName), callback, cancellationToken);
+								try {
+									FindReferencesInFile(args, searchScope, FileName.Create(fileName), callback, cancellationToken);
+								} catch (OperationCanceledException) {
+									throw;
+								} catch (Exception ex) {
+									throw new ApplicationException("Error searching in file '" + fileName + "'", ex);
+								}
 								lock (progressLock)
 									args.ProgressMonitor.Progress += workAmountInverse;
 							});
@@ -99,7 +108,7 @@ namespace CSharpBinding
 				return;
 			ReadOnlyDocument document = null;
 			IHighlighter highlighter = null;
-			List<Reference> results = new List<Reference>();
+			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			
 			// Grab the unresolved file matching the compilation version
 			// (this may differ from the version created by re-parsing the project)
@@ -125,13 +134,111 @@ namespace CSharpBinding
 					int length = document.GetOffset(node.EndLocation) - offset;
 					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
 					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
-					results.Add(new Reference(region, result, offset, length, builder, defaultTextColor));
+					results.Add(new SearchResultMatch(fileName, node.StartLocation, node.EndLocation, offset, length, builder, defaultTextColor));
 				}, cancellationToken);
 			if (highlighter != null) {
 				highlighter.Dispose();
 			}
 			if (results.Count > 0)
 				callback(new SearchedFile(fileName, results));
+		}
+		
+		public Task RenameAsync(SymbolRenameArgs args, Action<PatchedFile> callback, Action<Error> errorCallback)
+		{
+			if (callback == null)
+				throw new ArgumentNullException("callback");
+			var cancellationToken = args.ProgressMonitor.CancellationToken;
+			return Task.Run(
+				() => {
+					bool isNameValid = Mono.CSharp.Tokenizer.IsValidIdentifier(args.NewName);
+					for (int i = 0; i < searchScopes.Count; i++) {
+						IFindReferenceSearchScope searchScope = searchScopes[i];
+						object progressLock = new object();
+						Parallel.ForEach(
+							interestingFileNames[i],
+							new ParallelOptions {
+								MaxDegreeOfParallelism = Environment.ProcessorCount,
+								CancellationToken = cancellationToken
+							},
+							delegate (string fileName) {
+								RenameReferencesInFile(args, searchScope, FileName.Create(fileName), callback, errorCallback, isNameValid, cancellationToken);
+								lock (progressLock)
+									args.ProgressMonitor.Progress += workAmountInverse;
+							});
+					}
+				}, cancellationToken
+			);
+		}
+		
+		void RenameReferencesInFile(SymbolRenameArgs args, IFindReferenceSearchScope searchScope, FileName fileName, Action<PatchedFile> callback, Action<Error> errorCallback, bool isNameValid, CancellationToken cancellationToken)
+		{
+			ITextSource textSource = args.ParseableFileContentFinder.Create(fileName);
+			if (textSource == null)
+				return;
+			if (searchScope.SearchTerm != null) {
+				if (textSource.IndexOf(searchScope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) < 0)
+					return;
+			}
+			
+			var parseInfo = SD.ParserService.Parse(fileName, textSource) as CSharpFullParseInformation;
+			if (parseInfo == null)
+				return;
+			ReadOnlyDocument document = null;
+			IHighlighter highlighter = null;
+			List<RenameResultMatch> results = new List<RenameResultMatch>();
+			
+			// Grab the unresolved file matching the compilation version
+			// (this may differ from the version created by re-parsing the project)
+			CSharpUnresolvedFile unresolvedFile = null;
+			IProjectContent pc = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
+			if (pc != null) {
+				unresolvedFile = pc.GetFile(fileName) as CSharpUnresolvedFile;
+			}
+			
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, parseInfo.SyntaxTree, unresolvedFile);
+			
+			fr.RenameReferencesInFile(
+				new[] { searchScope }, args.NewName, resolver,
+				delegate (RenameCallbackArguments callbackArgs) {
+					var node = callbackArgs.NodeToReplace;
+					string newCode = callbackArgs.NewNode.ToString();
+					if (document == null) {
+						document = new ReadOnlyDocument(textSource, fileName);
+						
+						if (args.ProvideHighlightedLine) {
+							highlighter = SD.EditorControlService.CreateHighlighter(document);
+							highlighter.BeginHighlighting();
+						}
+					}
+					var startLocation = node.StartLocation;
+					var endLocation = node.EndLocation;
+					int offset = document.GetOffset(startLocation);
+					int length = document.GetOffset(endLocation) - offset;
+					if (args.ProvideHighlightedLine) {
+						var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
+						var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
+						results.Add(new RenameResultMatch(fileName, startLocation, endLocation, offset, length, newCode, builder, defaultTextColor));
+					} else {
+						results.Add(new RenameResultMatch(fileName, startLocation, endLocation, offset, length, newCode));
+					}
+				},
+				errorCallback, cancellationToken);
+			if (highlighter != null) {
+				highlighter.Dispose();
+			}
+			if (results.Count > 0) {
+				if (!isNameValid) {
+					errorCallback(new Error(ErrorType.Error, string.Format("The name '{0}' is not valid in the current context!", args.NewName),
+					                        new DomRegion(fileName, results[0].StartLocation)));
+					return;
+				}
+				IDocument changedDocument = new TextDocument(document);
+				var oldVersion = changedDocument.Version;
+				foreach (var result in results.OrderByDescending(m => m.StartOffset)) {
+					changedDocument.Replace(result.StartOffset, result.Length, result.NewCode);
+				}
+				callback(new PatchedFile(fileName, results, oldVersion, changedDocument.Version));
+			}
 		}
 	}
 }

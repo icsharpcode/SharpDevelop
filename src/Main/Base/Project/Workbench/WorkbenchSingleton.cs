@@ -69,12 +69,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		internal static void OnWorkbenchUnloaded()
 		{
-			if (!Project.ProjectService.IsClosingCanceled()) {
-				Project.ProjectService.CloseSolution();
-				NavigationService.Unload();
-				
-				WorkbenchUnloaded(null, EventArgs.Empty);
-			}
+			SD.ProjectService.CloseSolution(allowCancel: false);
+			NavigationService.Unload();
+			
+			WorkbenchUnloaded(null, EventArgs.Empty);
 		}
 		
 		#region Safe Thread Caller

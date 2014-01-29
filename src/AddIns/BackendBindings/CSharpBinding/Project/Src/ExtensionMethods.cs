@@ -3,6 +3,9 @@
 
 using System;
 using System.Threading.Tasks;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using CSharpBinding.Parser;
 using CSharpBinding.Refactoring;
 using ICSharpCode.NRefactory.CSharp;
@@ -48,7 +51,7 @@ namespace CSharpBinding
 					if (parseInfo != null)
 						return parseInfo.GetResolver(compilation);
 					else
-						return new CSharpAstResolver(compilation, new SyntaxTree(), new CSharpUnresolvedFile(ec.FileName));
+						return new CSharpAstResolver(compilation, new SyntaxTree(), new CSharpUnresolvedFile { FileName = ec.FileName });
 				});
 		}
 	}

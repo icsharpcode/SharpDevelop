@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -99,6 +99,22 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			Assert.IsTrue (field.IsConst);
 			Assert.IsNull (field.ConstantValue);
 		}
+
+		[Test, Ignore("mcs bug #12204")]
+		public void AssemblyAndModuleAttributesDoNotAppearOnTypes() 
+		{
+			var parser = new CSharpParser();
+			var cu = parser.Parse("[assembly: My1][module: My2][My3]class C {} public class My1Attribute : System.Attribute {} public class My2Attribute : System.Attribute {} public class My3Attribute : System.Attribute {}", "File.cs");
+
+			var ts = cu.ToTypeSystem();
+			var compilation = new CSharpProjectContent()
+				.AddOrUpdateFiles(ts)
+				.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib })
+				.CreateCompilation();
+			var type = ReflectionHelper.ParseReflectionName("C").Resolve(compilation).GetDefinition();
+			Assert.That(type.Attributes.Select(a => a.AttributeType.FullName).ToList(), Is.EqualTo(new[] { "My3Attribute" }));
+		}
+
 	}
 	
 	[TestFixture]

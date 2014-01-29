@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Debugger.Interop.CorDebug;
 using Debugger.MetaData;
 using System.Runtime.InteropServices;
@@ -61,7 +63,8 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public ICorDebugReferenceValue CorReferenceValue {
 			get {
-				if (IsNull) throw new GetValueException("Value is null");
+				if (IsNull)
+					throw new GetValueException("Value is null");
 				
 				if (!(this.CorValue is ICorDebugReferenceValue))
 					throw new DebuggerException("Reference value expected");
@@ -73,7 +76,8 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public ICorDebugGenericValue CorGenericValue {
 			get {
-				if (IsNull) throw new GetValueException("Value is null");
+				if (IsNull)
+					throw new GetValueException("Value is null");
 				
 				ICorDebugValue corValue = this.CorValue;
 				// Dereference and unbox if necessary
@@ -90,7 +94,8 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public ICorDebugArrayValue CorArrayValue {
 			get {
-				if (IsNull) throw new GetValueException("Value is null");
+				if (IsNull)
+					throw new GetValueException("Value is null");
 				
 				if (this.Type.Kind != TypeKind.Array) throw new DebuggerException("Value is not an array");
 				
@@ -101,7 +106,8 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public ICorDebugObjectValue CorObjectValue {
 			get {
-				if (IsNull) throw new GetValueException("Value is null");
+				if (IsNull)
+					throw new GetValueException("Value is null");
 				
 				ICorDebugValue corValue = this.CorValue;
 				// Dereference and unbox if necessary
@@ -283,9 +289,12 @@ namespace Debugger
 					if (this.IsNull) return null;
 					return ((ICorDebugStringValue)this.CorReferenceValue.Dereference()).GetString();
 				} else {
-					if (!this.Type.IsPrimitiveType())
+					var type = this.Type;
+					if (type.Kind == TypeKind.Enum)
+						type = type.GetDefinition().EnumUnderlyingType;
+					if (!type.IsPrimitiveType())
 						throw new DebuggerException("Value is not a primitive type");
-					return CorGenericValue.GetValue(this.Type.GetDefinition().KnownTypeCode);
+					return CorGenericValue.GetValue(type.GetDefinition().KnownTypeCode);
 				}
 			}
 		}
@@ -392,7 +401,7 @@ namespace Debugger
 					throw new GetValueException("Null reference");
 				// Array.Length can be called
 				if (objectInstance.Type.Kind == TypeKind.Array)
-					return; 
+					return;
 				if (objectInstance.Type.GetDefinition() == null || !objectInstance.Type.GetDefinition().IsDerivedFrom(memberInfo.DeclaringType.GetDefinition()))
 					throw new GetValueException("Object is not of type " + memberInfo.DeclaringType.FullName);
 			}
@@ -416,6 +425,16 @@ namespace Debugger
 				return GetPropertyValue(evalThread, objectInstance, (IProperty)memberInfo, arguments);
 			} else if (memberInfo is IMethod) {
 				return InvokeMethod(evalThread, objectInstance, (IMethod)memberInfo, arguments);
+			} else if (memberInfo is IEvent) {
+				string name = memberInfo.Name;
+				IField f = memberInfo.DeclaringType.GetFields(m => m.Name == name, GetMemberOptions.None).FirstOrDefault();
+				if (f == null) {
+					name += "Event";
+					f = memberInfo.DeclaringType.GetFields(m => m.Name == name, GetMemberOptions.None).FirstOrDefault();
+				}
+				if (f == null)
+					throw new GetValueException("Cannot retrieve event value");
+				return GetFieldValue(evalThread, objectInstance, f);
 			}
 			throw new DebuggerException("Unknown member type: " + memberInfo.GetType());
 		}
@@ -424,7 +443,7 @@ namespace Debugger
 		{
 			Value val = GetFieldValue(evalThread, objectInstance, fieldInfo);
 			if (!newValue.Type.GetDefinition().IsDerivedFrom(fieldInfo.Type.GetDefinition()))
-				throw new GetValueException("Can not assign {0} to {1}", newValue.Type.FullName, fieldInfo.Type.FullName);
+				throw new GetValueException("Cannot assign {0} to {1}", newValue.Type.FullName, fieldInfo.Type.FullName);
 			val.SetValue(evalThread, newValue);
 		}
 		
@@ -540,6 +559,116 @@ namespace Debugger
 			arguments.CopyTo(allParams, 1);
 			
 			return Value.InvokeMethod(evalThread, objectInstance, propertyInfo.Setter, allParams);
+		}
+		
+		/// <summary>
+		/// Formats contents of this value according to format specified by <see cref="System.Diagnostics.DebuggerDisplayAttribute"/>.
+		/// </summary>
+		/// <param name="evalThread"></param>
+		/// <returns>Formatted value or <c>null</c>, if attribute is not set.</cJ></returns>
+		public string FormatByDebuggerDisplayAttribute(Thread evalThread)
+		{
+			if ((this.Type.Kind == TypeKind.Class)
+			    || (this.Type.Kind == TypeKind.Struct)
+			    || (this.Type.Kind == TypeKind.Enum)
+			    || (this.Type.Kind == TypeKind.Delegate)) {
+				
+				// Try to get the attribute
+				ITypeDefinition typeDef = this.type.GetDefinition();
+				if (typeDef != null) {
+					var debuggerDisplayAttribute = typeDef.GetAttribute(new TopLevelTypeName("System.Diagnostics.DebuggerDisplayAttribute"));
+					if (debuggerDisplayAttribute != null) {
+						var formatStringParameter = debuggerDisplayAttribute.PositionalArguments.ElementAtOrDefault(0);
+						if ((formatStringParameter != null) && (formatStringParameter.ConstantValue is string)) {
+							// Create a permanent version of this value
+							Value permanentValue = this.GetPermanentReference(evalThread);
+							return FormatDebugValue(evalThread, permanentValue, (string) formatStringParameter.ConstantValue);
+						}
+					}
+				}
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Formats current Value according to the given format, specified by <see cref="System.Diagnostics.DebuggerDisplayAttribute"/>.
+		/// </summary>
+		/// <param name="debugFormat">Format to use</param>
+		/// <returns>Formatted string.</returns>
+		/// <remarks>
+		/// Not all possible expressions are supported, but only a simple set.
+		/// Otherwise we would have to support any C# expression.
+		/// </remarks>
+		static string FormatDebugValue(Thread evalThread, Value value, string debugFormat)
+		{
+			StringBuilder formattedOutput = new StringBuilder();
+			StringBuilder currentFieldName = new StringBuilder();
+			bool insideFieldName = false;
+			bool ignoringRestOfExpression = false;
+			bool insideMethodBrackets = false;
+			bool isMethodName = false;
+			bool escapeNextChar = false;
+			for (int i = 0; i < debugFormat.Length; i++) {
+				char thisChar = debugFormat[i];
+				
+				if (!escapeNextChar && (thisChar == '{')) {
+					insideFieldName = true;
+				} else if (!escapeNextChar && (thisChar == '}')) {
+					// Insert contents of specified member, if we can find it, otherwise we display "?"
+					string memberValueStr = "?";
+					
+					// Decide if we want a method or field/property
+					Predicate<IUnresolvedMember> isNeededMember;
+					if (isMethodName) {
+						// We only support methods without parameters here!
+						isNeededMember = m => (m.Name == currentFieldName.ToString())
+							&& (m.SymbolKind == SymbolKind.Method)
+							&& (((IUnresolvedMethod) m).Parameters.Count == 0);
+					} else {
+						isNeededMember = m => (m.Name == currentFieldName.ToString())
+							&& ((m.SymbolKind == SymbolKind.Field) || (m.SymbolKind == SymbolKind.Property));
+					}
+					
+					IMember member = value.type.GetMembers(isNeededMember).FirstOrDefault();
+					if (member != null) {
+						Value memberValue = value.GetMemberValue(evalThread, member);
+						memberValueStr = memberValue.InvokeToString(evalThread);
+					}
+					
+					formattedOutput.Append(memberValueStr);
+					
+					insideFieldName = false;
+					ignoringRestOfExpression = false;
+					insideMethodBrackets = false;
+					isMethodName = false;
+					currentFieldName.Clear();
+				} else if (!escapeNextChar && (thisChar == '\\')) {
+					// Next character will be escaped
+					escapeNextChar = true;
+				} else if (insideFieldName && (thisChar == '(')) {
+					insideMethodBrackets = true;
+				} else if ((thisChar == ')') && insideMethodBrackets) {
+					insideMethodBrackets = false;
+					isMethodName = true;
+					
+					// Everything following the brackets will be ignored
+					ignoringRestOfExpression = true;
+				} else if (insideFieldName && !Char.IsDigit(thisChar) && !Char.IsLetter(thisChar)) {
+					// Char seems not to belong to a field name, ignore everything from now on
+					ignoringRestOfExpression = true;
+				} else {
+					if (insideFieldName) {
+						if (!ignoringRestOfExpression)
+							currentFieldName.Append(thisChar);
+					} else {
+						formattedOutput.Append(thisChar);
+					}
+					escapeNextChar = false;
+				}
+			}
+			
+			return formattedOutput.ToString();
 		}
 		
 		/// <summary> Synchronously invoke the method </summary>

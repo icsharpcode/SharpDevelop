@@ -83,16 +83,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			Grid grid = VisualTreeHelper.GetParent(track) as Grid;
 			if (grid != null) {
 				trackBackground = new TrackBackground(this);
+				trackAdorner = new TrackAdorner(this);
 				Grid.SetColumn(trackBackground, Grid.GetColumn(track));
 				Grid.SetRow(trackBackground, Grid.GetRow(track));
 				Grid.SetColumnSpan(trackBackground, Grid.GetColumnSpan(track));
 				Grid.SetRowSpan(trackBackground, Grid.GetRowSpan(track));
+				Grid.SetColumn(trackAdorner, Grid.GetColumn(track));
+				Grid.SetRow(trackAdorner, Grid.GetRow(track));
+				Grid.SetColumnSpan(trackAdorner, Grid.GetColumnSpan(track));
+				Grid.SetRowSpan(trackAdorner, Grid.GetRowSpan(track));
 				Panel.SetZIndex(track, 1);
+				Panel.SetZIndex(trackAdorner, 2);
 				grid.Children.Add(trackBackground);
-			}
-			AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(track);
-			if (adornerLayer != null) {
-				trackAdorner = new TrackAdorner(this, adornerLayer, track);
+				grid.Children.Add(trackAdorner);
 			}
 		}
 		#endregion
@@ -205,24 +208,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#endregion
 		
 		#region TrackAdorner
-		sealed class TrackAdorner : Adorner
+		sealed class TrackAdorner : FrameworkElement
 		{
-			readonly AdornerLayer adornerLayer;
-			readonly TextEditor editor;
-			readonly TextMarkerService textMarkerService;
-			readonly StreamGeometry triangleGeometry;
+			#region TriangleGeometry
+			static readonly StreamGeometry triangleGeometry = CreateTriangleGeometry();
 			
-			public TrackAdorner(EnhancedScrollBar enhanchedScrollBar, AdornerLayer adornerLayer, UIElement adornedElement)
-				: base(adornedElement)
+			static StreamGeometry CreateTriangleGeometry()
 			{
-				this.adornerLayer = adornerLayer;
-				this.editor = enhanchedScrollBar.editor;
-				this.textMarkerService = enhanchedScrollBar.textMarkerService;
-				
-				this.Cursor = Cursors.Hand;
-				this.ToolTip = string.Empty;
-				
-				triangleGeometry = new StreamGeometry();
+				var triangleGeometry = new StreamGeometry();
 				using (var ctx = triangleGeometry.Open()) {
 					const double triangleSize = 6.5;
 					const double right = (triangleSize * 0.866) / 2;
@@ -232,15 +225,30 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					ctx.LineTo(new Point(right, 0), true, false);
 				}
 				triangleGeometry.Freeze();
+				return triangleGeometry;
+			}
+			#endregion
+			
+			readonly TextEditor editor;
+			readonly TextMarkerService textMarkerService;
+			
+			public TrackAdorner(EnhancedScrollBar enhanchedScrollBar)
+			{
+				this.editor = enhanchedScrollBar.editor;
+				this.textMarkerService = enhanchedScrollBar.textMarkerService;
 				
-				adornerLayer.Add(this);
+				this.Cursor = Cursors.Hand;
+				this.ToolTip = string.Empty;
+				
 				textMarkerService.RedrawRequested += textMarkerService_RedrawRequested;
 			}
 			
 			public void Remove()
 			{
 				textMarkerService.RedrawRequested -= textMarkerService_RedrawRequested;
-				adornerLayer.Remove(this);
+
+				Grid grid = (Grid)VisualTreeHelper.GetParent(this);
+				grid.Children.Remove(this);
 			}
 			
 			void textMarkerService_RedrawRequested(object sender, EventArgs e)

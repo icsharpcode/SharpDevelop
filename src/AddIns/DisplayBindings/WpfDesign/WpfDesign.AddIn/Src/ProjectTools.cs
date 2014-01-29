@@ -27,7 +27,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			List<FileProjectItem> resultItems = new List<FileProjectItem>();
 			foreach (string file in fileNames) {
-				FileProjectItem item = project.FindFile(file);
+				FileProjectItem item = project.FindFile(FileName.Create(file));
 				if (item != null)
 					continue; // file already belongs to the project
 				string relFileName = FileUtility.GetRelativePath(project.Directory,file);

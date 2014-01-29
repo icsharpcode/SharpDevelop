@@ -30,7 +30,7 @@
 	</Path>	
 	
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
-		<Directory id = "C++" path = "./Templates" />
+		<TemplateFile id = "C++" resourceNamespace = "ICSharpCode.CppBinding.Templates" />
 	</Path>
 
 	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">
@@ -42,7 +42,6 @@
 		<FileFilter id="C++Project"
 					insertbefore="AllFiles"
 					name="C++ project files (*.vcxproj)"
-					class="ICSharpCode.SharpDevelop.Project.LoadProject"
 					extensions="*.vcxproj" />
 	</Path>
 
@@ -78,7 +77,7 @@
 	<!--
 	<Path name="/SharpDevelop/Parser">
 		<Parser id="C++"
-				supportedextensions=".cpp;.c;.hpp;.h"
+				supportedfilenamepattern="\.(cpp|c|hpp|h)$"
 				projectfileextension="vcxproj"
 				class="ICSharpCode.CppBinding.Parser.CppParser" />
 	</Path>

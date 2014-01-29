@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop
 	/// <summary>
 	/// Represents a thread running a message loop.
 	/// </summary>
-	[SDService("SD.MainThread")]
+	[SDService("SD.MainThread", FallbackImplementation = typeof(FakeMessageLoop))]
 	public interface IMessageLoop
 	{
 		/// <summary>
@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop
 		void InvokeAsyncAndForget(Action callback, DispatcherPriority priority);
 		
 		/// <summary>
-		/// Waits <paramref name="delay"/>, then executed <paramref name="method"/> on the message loop thread.
+		/// Waits <paramref name="delay"/>, then executes <paramref name="method"/> on the message loop thread.
 		/// </summary>
 		void CallLater(TimeSpan delay, Action method);
 	}

@@ -32,6 +32,8 @@ namespace Debugger
 		public event EventHandler<MessageEventArgs> LogMessage;
 		public event EventHandler<ModuleEventArgs> ModuleLoaded;
 		public event EventHandler<ModuleEventArgs> ModuleUnloaded;
+		public event EventHandler<AppDomainEventArgs> AppDomainCreated;
+		public event EventHandler<AppDomainEventArgs> AppDomainDestroyed;
 		public event EventHandler<DebuggerPausedEventArgs> Paused;
 		public event EventHandler<DebuggerEventArgs> Resumed;
 		public event EventHandler<DebuggerEventArgs> Exited;
@@ -85,7 +87,7 @@ namespace Debugger
 		}
 		
 		public string Filename { get; private set; }
-				
+		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string filename, string workingDirectory)
 		{
 			this.debugger = debugger;
@@ -436,8 +438,7 @@ namespace Debugger
 			foreach(var symbolSource in this.Debugger.SymbolSources) {
 				foreach(Module module in this.Modules) {
 					// Note the we might get multiple matches
-					SequencePoint seq = symbolSource.GetSequencePoint(module, fileName, line, column);
-					if (seq != null) {
+					foreach (SequencePoint seq in symbolSource.GetSequencePoints(module, fileName, line, column)) {
 						ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
 						ICorDebugFunctionBreakpoint corBreakpoint = corFunction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
 						corBreakpoint.Activate(1);
@@ -459,11 +460,17 @@ namespace Debugger
 			AsyncContinue(DebuggeeStateAction.Clear);
 		}
 		
-		/// <param name="threadsToRun"> Null to keep current setting </param>
-		/// <param name="newThreadState"> What happens to created threads.  Null to keep current setting </param>
-		internal void AsyncContinue(DebuggeeStateAction action)
+		/// <param name="threadToRun"> Run this thread and freeze all other threads </param>
+		internal void AsyncContinue(DebuggeeStateAction action, Thread threadToRun = null)
 		{
 			AssertPaused();
+			
+			if (threadToRun != null) {
+				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, null);
+				threadToRun.CorThread.SetDebugState(CorDebugThreadState.THREAD_RUN);
+			} else {
+				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_RUN, null);
+			}
 			
 			NotifyResumed(action);
 			corProcess.Continue(0);
@@ -561,7 +568,7 @@ namespace Debugger
 			}
 		}
 		
-		#region Break at begining
+		#region Break at beginning
 		
 		int lastAssignedModuleOrderOfLoading = 0;
 		
@@ -570,21 +577,22 @@ namespace Debugger
 			module.OrderOfLoading = lastAssignedModuleOrderOfLoading++;
 			module.AppDomain.InvalidateCompilation();
 			
-			if (this.BreakInMain) {
-				if (module.SymReader == null) return; // No symbols
-				
+			if (BreakInMain) {
 				try {
 					// create a BP at entry point
-					uint entryPoint = module.SymReader.GetUserEntryPoint();
-					if (entryPoint == 0) return; // no EP
-					var corBreakpoint = module.CorModule.GetFunctionFromToken(entryPoint).CreateBreakpoint();
-					corBreakpoint.Activate(1);
-					this.tempBreakpoints.Add(corBreakpoint);
+					uint entryPoint = module.GetEntryPoint();
+					if (entryPoint != 0) { // no EP
+						var corBreakpoint = module.CorModule
+							.GetFunctionFromToken(entryPoint)
+							.CreateBreakpoint();
+						corBreakpoint.Activate(1);
+						tempBreakpoints.Add(corBreakpoint);
+						
+						BreakInMain = false;
+					}
 				} catch {
 					// the app does not have an entry point - COM exception
 				}
-				
-				this.BreakInMain = false;
 			}
 			
 			if (this.ModuleLoaded != null) {
@@ -602,5 +610,17 @@ namespace Debugger
 		}
 		
 		#endregion
+		
+		internal void OnAppDomainCreated(AppDomain appDomain)
+		{
+			if (AppDomainCreated != null)
+				AppDomainCreated(this, new AppDomainEventArgs(appDomain));
+		}
+		
+		internal void OnAppDomainDestroyed(AppDomain appDomain)
+		{
+			if (AppDomainDestroyed != null)
+				AppDomainDestroyed(this, new AppDomainEventArgs(appDomain));
+		}
 	}
 }

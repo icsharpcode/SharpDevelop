@@ -24,17 +24,17 @@ namespace CSharpBinding.Completion
 	/// </summary>
 	class OverrideCompletionData : EntityCompletionData
 	{
-		readonly int declarationBegin;
-		readonly CSharpTypeResolveContext contextAtCaret;
+		protected readonly int declarationBegin;
+		protected readonly CSharpResolver contextAtCaret;
 		
-		public OverrideCompletionData(int declarationBegin, IMember m, CSharpTypeResolveContext contextAtCaret)
+		public OverrideCompletionData(int declarationBegin, IMember m, CSharpResolver contextAtCaret)
 			: base(m)
 		{
 			this.declarationBegin = declarationBegin;
 			this.contextAtCaret = contextAtCaret;
 			var ambience = new CSharpAmbience();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
-			this.CompletionText = ambience.ConvertEntity(m);
+			this.CompletionText = ambience.ConvertSymbol(m);
 		}
 		
 		public override void Complete(CompletionContext context)
@@ -43,7 +43,8 @@ namespace CSharpBinding.Completion
 				base.Complete(context);
 				return;
 			}
-			TypeSystemAstBuilder b = new TypeSystemAstBuilder(new CSharpResolver(contextAtCaret));
+			
+			TypeSystemAstBuilder b = new TypeSystemAstBuilder(contextAtCaret);
 			b.ShowTypeParameterConstraints = false;
 			b.GenerateBody = true;
 			
@@ -53,7 +54,7 @@ namespace CSharpBinding.Completion
 			
 			if (!this.Entity.IsAbstract) {
 				// modify body to call the base method
-				if (this.Entity.EntityType == EntityType.Method) {
+				if (this.Entity.SymbolKind == SymbolKind.Method) {
 					var baseCall = new BaseReferenceExpression().Invoke(this.Entity.Name, ParametersToExpressions(this.Entity));
 					var body = entityDeclaration.GetChildByRole(Roles.Body);
 					body.Statements.Clear();
@@ -61,9 +62,9 @@ namespace CSharpBinding.Completion
 						body.Statements.Add(new ExpressionStatement(baseCall));
 					else
 						body.Statements.Add(new ReturnStatement(baseCall));
-				} else if (this.Entity.EntityType == EntityType.Indexer || this.Entity.EntityType == EntityType.Property) {
+				} else if (this.Entity.SymbolKind == SymbolKind.Indexer || this.Entity.SymbolKind == SymbolKind.Property) {
 					Expression baseCall;
-					if (this.Entity.EntityType == EntityType.Indexer)
+					if (this.Entity.SymbolKind == SymbolKind.Indexer)
 						baseCall = new BaseReferenceExpression().Indexer(ParametersToExpressions(this.Entity));
 					else
 						baseCall = new BaseReferenceExpression().Member(this.Entity.Name);
@@ -93,7 +94,7 @@ namespace CSharpBinding.Completion
 					var segment = segmentDict[throwStatement];
 					context.Editor.Select(declarationBegin + segment.Offset, segment.Length);
 				}
-				CSharpFormatter.Format(context.Editor, declarationBegin, newText.Length, formattingOptions);
+				CSharpFormatterHelper.Format(context.Editor, declarationBegin, newText.Length, formattingOptions);
 			}
 		}
 		

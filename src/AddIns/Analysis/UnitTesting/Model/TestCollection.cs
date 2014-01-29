@@ -15,7 +15,7 @@ namespace ICSharpCode.UnitTesting
 	/// Collection of tests that monitors the amount of tests for each result type,
 	/// allowing efficient updates of the overall result.
 	/// </summary>
-	public class TestCollection : ObservableCollection<ITest>, IModelCollection<ITest>
+	public class TestCollection : SimpleModelCollection<ITest>, IModelCollection<ITest>, INotifyPropertyChanged
 	{
 		#region Struct TestCounts
 		struct TestCounts
@@ -133,10 +133,13 @@ namespace ICSharpCode.UnitTesting
 				OnPropertyChanged(compositeResultArgs);
 		}
 		
-		// change visibility of PropertyChanged event to public
-		public new event PropertyChangedEventHandler PropertyChanged {
-			add { base.PropertyChanged += value; }
-			remove { base.PropertyChanged -= value; }
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		void OnPropertyChanged(PropertyChangedEventArgs e)
+		{
+			var handler = PropertyChanged;
+			if (handler != null)
+				handler(this, e);
 		}
 		#endregion
 		
@@ -148,53 +151,25 @@ namespace ICSharpCode.UnitTesting
 			RaiseCountChangeEvents(old);
 		}
 		
-		protected override void ClearItems()
+		protected override void ValidateItem(ITest item)
+		{
+			if (item == null)
+				throw new ArgumentNullException("item");
+			base.ValidateItem(item);
+		}
+		
+		protected override void OnCollectionChanged(IReadOnlyCollection<ITest> removedItems, IReadOnlyCollection<ITest> addedItems)
 		{
 			TestCounts old = counts;
-			counts = default(TestCounts);
-			foreach (ITest test in Items) {
+			foreach (ITest test in removedItems) {
 				counts.Remove(test.Result);
 				test.ResultChanged -= item_ResultChanged;
 			}
-			base.ClearItems();
-			RaiseCountChangeEvents(old);
-		}
-		
-		protected override void InsertItem(int index, ITest item)
-		{
-			if (item == null)
-				throw new ArgumentNullException("item");
-			TestCounts old = counts;
-			counts.Add(item.Result);
-			base.InsertItem(index, item);
-			item.ResultChanged += item_ResultChanged;
-			RaiseCountChangeEvents(old);
-		}
-		
-		protected override void RemoveItem(int index)
-		{
-			TestCounts old = counts;
-			ITest oldItem = Items[index];
-			counts.Remove(oldItem.Result);
-			oldItem.ResultChanged -= item_ResultChanged;
-			base.RemoveItem(index);
-			RaiseCountChangeEvents(old);
-		}
-		
-		protected override void SetItem(int index, ITest item)
-		{
-			if (item == null)
-				throw new ArgumentNullException("item");
-			TestCounts old = counts;
-			
-			ITest oldItem = Items[index];
-			counts.Remove(oldItem.Result);
-			oldItem.ResultChanged -= item_ResultChanged;
-			
-			counts.Add(item.Result);
-			item.ResultChanged += item_ResultChanged;
-			
-			base.SetItem(index, item);
+			foreach (ITest test in addedItems) {
+				counts.Add(test.Result);
+				test.ResultChanged += item_ResultChanged;
+			}
+			base.OnCollectionChanged(removedItems, addedItems);
 			RaiseCountChangeEvents(old);
 		}
 	}

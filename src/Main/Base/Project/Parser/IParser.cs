@@ -10,6 +10,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -34,9 +35,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 		bool CanParse(string fileName);
 		
 		/// <summary>
+		/// Returns the content for a given filename.
+		/// </summary>
+		ITextSource GetFileContent(FileName fileName);
+		
+		/// <summary>
 		/// Parses a file.
 		/// </summary>
-		/// <param name="projectContent">The parent project of the file.</param>
 		/// <param name="fileName">The name of the file being parsed.</param>
 		/// <param name="fileContent">The content of the file.</param>
 		/// <param name="fullParseInformationRequested">
@@ -62,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		ResolveResult ResolveSnippet(ParseInformation parseInfo, TextLocation location, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken);
 		
-		void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken);
+		void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<SearchResultMatch> callback, CancellationToken cancellationToken);
 		
 		/// <summary>
 		/// Creates a compilation for a single file that does not belong to any project.

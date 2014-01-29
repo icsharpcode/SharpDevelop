@@ -15,7 +15,7 @@ namespace CSharpBinding.Completion
 	/// <summary>
 	/// Output formatter that creates a dictionary from AST nodes to segments in the output text.
 	/// </summary>
-	public class SegmentTrackingOutputFormatter : TextWriterOutputFormatter
+	public class SegmentTrackingOutputFormatter : TextWriterTokenWriter
 	{
 		Dictionary<AstNode, ISegment> segments = new Dictionary<AstNode, ISegment>();
 		Stack<int> startOffsets = new Stack<int>();

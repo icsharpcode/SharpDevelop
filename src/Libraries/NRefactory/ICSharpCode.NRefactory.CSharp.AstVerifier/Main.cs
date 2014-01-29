@@ -56,13 +56,13 @@ namespace ICSharpCode.NRefactory.CSharp.AstVerifier
 			int failed = 0, passed = 0;
 			Console.WriteLine ("search in " + directory);
 			foreach (var file in Directory.GetFileSystemEntries (directory, "*", SearchOption.AllDirectories)) {
-				if (!file.EndsWith (".cs"))
+				if (!file.EndsWith (".cs", StringComparison.Ordinal))
 					continue;
 				string text = File.ReadAllText (file);
 				var unit = SyntaxTree.Parse (text, file);
 				if (unit == null)
 					continue;
-				string generated = unit.GetText ();
+				string generated = unit.ToString ();
 				int i, j;
 				if (!IsMatch (text, generated, out i, out j)) {
 					if (i > 0 && j > 0 && verboseOutput) {

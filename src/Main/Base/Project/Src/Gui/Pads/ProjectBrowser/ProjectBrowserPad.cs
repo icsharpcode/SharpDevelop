@@ -76,9 +76,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectBrowserPad()
 		{
 			instance = this;
-			ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
-			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
-			ProjectService.SolutionPreferencesSaving += ProjectServiceSolutionPreferencesSaving;
+			SD.ProjectService.SolutionOpened += ProjectServiceSolutionLoaded;
+			SD.ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			
 			SD.Workbench.ActiveContentChanged += ActiveContentChanged;
 			if (ProjectService.OpenSolution != null) {
@@ -92,9 +91,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectBrowserControl.TreeView.StartLabelEdit(node);
 		}
 		
-		void ProjectServiceSolutionPreferencesSaving(object sender, SolutionEventArgs e)
+		void SolutionPreferencesSaving(object sender, EventArgs e)
 		{
-			projectBrowserPanel.StoreViewState(e.Solution.Preferences.Properties);
+			projectBrowserPanel.StoreViewState(((ISolution)sender).Preferences);
 		}
 		
 		void ProjectServiceSolutionLoaded(object sender, SolutionEventArgs e)
@@ -102,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.LoadSolution(e.Solution);
 		}
 		
-		void LoadSolution(Solution solution)
+		void LoadSolution(ISolution solution)
 		{
 			if (!ProjectBrowserControl.TreeView.IsHandleCreated) {
 				LoggingService.Debug("ProjectBrowser: Attempt to load solution " + solution.ToString() + " before handle of ProjectBrowserControl.TreeView created");
@@ -116,12 +115,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				LoggingService.Debug("ProjectBrowser: Loading solution " + solution.ToString() + " into project tree view");
 				this.solutionToLoadWhenHandleIsCreated = null;
 				projectBrowserPanel.ViewSolution(solution);
-				projectBrowserPanel.ReadViewState(solution.Preferences.Properties);
+				projectBrowserPanel.ReadViewState(solution.Preferences);
+				solution.PreferencesSaving += SolutionPreferencesSaving;
 			}
 		}
 		
 		bool treeViewHandleCreatedAttached;
-		Solution solutionToLoadWhenHandleIsCreated;
+		ISolution solutionToLoadWhenHandleIsCreated;
 		
 		void ProjectBrowserTreeViewHandleCreated(object sender, EventArgs e)
 		{
@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			treeView.HandleCreated -= this.ProjectBrowserTreeViewHandleCreated;
 			if (this.solutionToLoadWhenHandleIsCreated != null) {
 				LoggingService.Debug("ProjectBrowser: Tree view handle created, will load " + this.solutionToLoadWhenHandleIsCreated.ToString() + ".");
-				treeView.BeginInvoke(new Action<Solution>(this.LoadSolution), this.solutionToLoadWhenHandleIsCreated);
+				treeView.BeginInvoke(new Action<ISolution>(this.LoadSolution), this.solutionToLoadWhenHandleIsCreated);
 				this.solutionToLoadWhenHandleIsCreated = null;
 			} else {
 				LoggingService.Debug("ProjectBrowser: Tree view handle created, no solution to load.");

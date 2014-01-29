@@ -33,13 +33,16 @@ namespace ICSharpCode.TreeView
 		{
 			switch (e.Key) {
 				case Key.F2:
-//					if (SharpTreeNode.ActiveNodes.Count == 1 && Node.IsEditable) {
-//						Node.IsEditing = true;
-//						e.Handled = true;
-//					}
+					if (Node.IsEditable && ParentTreeView != null && ParentTreeView.SelectedItems.Count == 1 && ParentTreeView.SelectedItems[0] == Node) {
+						Node.IsEditing = true;
+						e.Handled = true;
+					}
 					break;
 				case Key.Escape:
-					Node.IsEditing = false;
+					if (Node.IsEditing) {
+						Node.IsEditing = false;
+						e.Handled = true;
+					}
 					break;
 			}
 		}
@@ -75,9 +78,7 @@ namespace ICSharpCode.TreeView
 				    Math.Abs(currentPoint.Y - startPoint.Y) >= SystemParameters.MinimumVerticalDragDistance) {
 
 					var selection = ParentTreeView.GetTopLevelSelection().ToArray();
-					if (Node.CanDrag(selection)) {
-						Node.StartDrag(this, selection);
-					}
+					Node.StartDrag(this, selection);
 				}
 			}
 		}

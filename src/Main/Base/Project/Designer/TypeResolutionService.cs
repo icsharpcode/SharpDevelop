@@ -3,17 +3,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Documents;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
 
@@ -74,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Designer
 		}
 
 		
-		string formSourceFileName;
+		FileName formSourceFileName;
 		IProject callingProject;
 		/// <summary>
 		/// Dictionary of file name -> hash of loaded assemblies for the currently designed document.
@@ -89,9 +86,7 @@ namespace ICSharpCode.SharpDevelop.Designer
 		public IProject CallingProject {
 			get {
 				if (formSourceFileName != null) {
-					if (ProjectService.OpenSolution != null) {
-						return ProjectService.OpenSolution.FindProjectContainingFile(formSourceFileName);
-					}
+					callingProject = SD.ProjectService.FindProjectContainingFile(formSourceFileName);
 					formSourceFileName = null;
 				}
 				return callingProject;
@@ -102,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Designer
 		{
 		}
 		
-		public TypeResolutionService(string formSourceFileName)
+		public TypeResolutionService(FileName formSourceFileName)
 		{
 			this.formSourceFileName = formSourceFileName;
 		}

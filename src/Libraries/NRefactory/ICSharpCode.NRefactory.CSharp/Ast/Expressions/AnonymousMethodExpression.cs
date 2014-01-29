@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		bool hasParameterList;
 		
 		public bool HasParameterList {
-			get { return hasParameterList; }
+			get { return hasParameterList || Parameters.Any(); }
 			set { ThrowIfFrozen(); hasParameterList = value; }
 		}
 		

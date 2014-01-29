@@ -4,21 +4,37 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	sealed class NestedTypeDefinitionModelCollection : IModelCollection<ITypeDefinitionModel>
 	{
+		readonly ModelCollectionChangedEvent<ITypeDefinitionModel> collectionChangedEvent;
 		readonly IEntityModelContext context;
 		List<TypeDefinitionModel> list = new List<TypeDefinitionModel>();
 		
 		public NestedTypeDefinitionModelCollection(IEntityModelContext context)
 		{
 			this.context = context;
+			collectionChangedEvent = new ModelCollectionChangedEvent<ITypeDefinitionModel>();
 		}
 		
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
+		public event ModelCollectionChangedEventHandler<ITypeDefinitionModel> CollectionChanged
+		{
+			add {
+				collectionChangedEvent.AddHandler(value);
+			}
+			remove {
+				collectionChangedEvent.RemoveHandler(value);
+			}
+		}
+		
+		public IReadOnlyCollection<ITypeDefinitionModel> CreateSnapshot()
+		{
+			return list.ToArray();
+		}
 		
 		public IEnumerator<ITypeDefinitionModel> GetEnumerator()
 		{
@@ -101,13 +117,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			// Raise the event if necessary:
-			if (CollectionChanged != null) {
-				if (oldModels != null && newModels != null)
-					CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newModels, oldModels));
-				else if (oldModels != null)
-					CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldModels));
-				else if (newModels != null)
-					CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newModels));
+			if (collectionChangedEvent.ContainsHandlers && (oldModels != null || newModels != null)) {
+				IReadOnlyCollection<ITypeDefinitionModel> emptyList = EmptyList<ITypeDefinitionModel>.Instance;
+				collectionChangedEvent.Fire(oldModels ?? emptyList, newModels ?? emptyList);
 			}
 		}
 	}

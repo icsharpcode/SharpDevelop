@@ -72,12 +72,8 @@ namespace ICSharpCode.SharpDevelop
 				// trap changes in the secondary tab via the workbench's ActiveViewContentChanged event
 				SD.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 				
-				// ignore files opened as part of loading a solution.
-				ProjectService.SolutionLoading += ProjectService_SolutionLoading;
-				SD.ParserService.LoadSolutionProjectsThread.Finished += LoadSolutionProjectsThreadEnded;
-				
-				FileService.FileRenamed += FileService_FileRenamed;
-				ProjectService.SolutionClosed += ProjectService_SolutionClosed;
+				SD.FileService.FileRenamed += FileService_FileRenamed;
+				SD.ProjectService.SolutionClosed += ProjectService_SolutionClosed;
 				serviceInitialized = true;
 			}
 		}
@@ -365,22 +361,6 @@ namespace ICSharpCode.SharpDevelop
 		#region event trapping
 
 		/// <summary>
-		/// Prepares the NavigationService to load a new solution.
-		/// </summary>
-		static void ProjectService_SolutionLoading(object sender, EventArgs e)
-		{
-			SuspendLogging();
-		}
-
-		/// <summary>
-		/// Prepares the NavigationService for working with a newly loaded solution
-		/// </summary>
-		static void LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
-		{
-			ResumeLogging();
-		}
-		
-		/// <summary>
 		/// Respond to changes in the <see cref="IWorkbench.ActiveViewContent">
 		/// ActiveViewContent</see> by logging the new <see cref="IViewContent"/>.
 		/// </summary>
@@ -452,29 +432,10 @@ namespace ICSharpCode.SharpDevelop
 						return true;
 				}
 				return false;
-			} else {
-				return FileService.JumpToFilePosition(region.FileName, region.BeginLine, region.BeginColumn) != null;
 			}
-		}
-		#endregion
-		
-		#region Navigate to Member
-		/* Part of Eusebiu's debugger/decompiler implementation
-		public static bool NavigateTo(string assemblyFile, string typeName, string entityTag, int lineNumber = 0, bool updateMarker = true)
-		{
-			if (string.IsNullOrEmpty(assemblyFile))
-				throw new ArgumentException("assemblyFile is null or empty");
 			
-			if (string.IsNullOrEmpty(typeName))
-				throw new ArgumentException("typeName is null or empty");
-			
-			foreach (var item in AddInTree.BuildItems<INavigateToMemberService>("/SharpDevelop/Services/NavigateToEntityService", null, false)) {
-				if (item.NavigateToMember(assemblyFile, typeName, entityTag, lineNumber, updateMarker))
-					return true;
-			}
-			return false;
+			return FileService.JumpToFilePosition(region.FileName, region.BeginLine, region.BeginColumn) != null;
 		}
-		*/
 		#endregion
 	}
 	
@@ -488,16 +449,4 @@ namespace ICSharpCode.SharpDevelop
 	{
 		bool NavigateToEntity(IEntity entity);
 	}
-	/* Part of Eusebiu's debugger/decompiler implementation
-	/// <summary>
-	/// Called by <see cref="NavigationService.NavigateTo"/> when the member reference is not defined in source code.
-	/// </summary>
-	/// <remarks>
-	/// Loaded from addin tree path "/SharpDevelop/Services/NavigateToEntityService"
-	/// </remarks>
-	public interface INavigateToMemberService
-	{
-		bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber, bool updateMarker);
-	}
-	*/
 }

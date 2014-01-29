@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -154,7 +154,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					} else {
 						namedArgs = new List<KeyValuePair<IMember, ResolveResult>>();
 						foreach (var pair in unresolved.namedArguments) {
-							IMember member = attributeType.GetMembers(m => (m.EntityType == EntityType.Field || m.EntityType == EntityType.Property) && m.Name == pair.Key).FirstOrDefault();
+							IMember member = attributeType.GetMembers(m => (m.SymbolKind == SymbolKind.Field || m.SymbolKind == SymbolKind.Property) && m.Name == pair.Key).FirstOrDefault();
 							if (member != null) {
 								ResolveResult val = pair.Value.Resolve(context);
 								namedArgs.Add(new KeyValuePair<IMember, ResolveResult>(member, val));

@@ -212,15 +212,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 ", @"class TestClass
 {
 	int member;
-	void NewMethod (int i, ref int j, out int k)
+	int NewMethod (int i, ref int j)
 	{
+		int k;
 		j = i + j;
 		k = j + member;
+		return k;
 	}
 	void TestMethod ()
 	{
 		int i = 5, j = 10, k;
-		NewMethod (i, ref j, out k);
+		k = NewMethod (i, ref j);
 		Console.WriteLine (k + j);
 	}
 }
@@ -278,17 +280,19 @@ class TestClass
 }
 ", @"class TestClass
 {
-	static void NewMethod (out string ret, string x, int y)
+	static string NewMethod (string x, int y)
 	{
+		string ret;
 		string z = ret + y;
 		ret = x + z;
+		return ret;
 	}
 	void TestMethod ()
 	{
 		string ret;
 		string x;
 		int y;
-		NewMethod (out ret, x, y);
+		ret = NewMethod (x, y);
 	}
 }
 ");
@@ -508,6 +512,121 @@ class TestClass
 	{
 		int i;
 		var f = NewMethod (i);
+	}
+}");
+		}
+
+		/// <summary>
+		/// Bug 10858 - Extract Method should use return, not out
+		/// </summary>
+		[Test]
+		public void TestBug10858 ()
+		{
+			Test<ExtractMethodAction> (@"class TestClass
+{
+	public static void TestMethod ()
+	{
+		int i = 5, j, k = 7;
+		
+		<-j = i + k;->
+
+		System.Console.WriteLine (j);
+
+	}
+}", @"class TestClass
+{
+	static int NewMethod (int i, int k)
+	{
+		int j;
+		j = i + k;
+		return j;
+	}
+	public static void TestMethod ()
+	{
+		int i = 5, j, k = 7;
+		
+		j = NewMethod (i, k);
+
+		System.Console.WriteLine (j);
+
+	}
+}");
+		}
+
+		/// <summary>
+		/// Bug 13054 - Extract method creates params on new method for params declared on lambdas in method body
+		/// </summary>
+		[Test]
+		public void TestBug13054 ()
+		{
+			Test<ExtractMethodAction> (@"class TestClass
+{
+	public static void TestMethod ()
+	{
+		<-int i = 0;
+		Action<string> action = (str) =>  {
+			Console.WriteLine (str);
+		};->
+	}
+}", @"class TestClass
+{
+	static void NewMethod ()
+	{
+		int i = 0;
+		Action<string> action = str =>  {
+			Console.WriteLine (str);
+		};
+	}
+	public static void TestMethod ()
+	{
+		NewMethod ();
+	}
+}");
+		}
+
+		/// <summary>
+		/// Bug 13539 - Extracting method where last line is comment leaves comment outside new method
+		/// </summary>
+		[Test]
+		public void TestBug13539 ()
+		{
+			Test<ExtractMethodAction> (@"class TestClass
+{
+	public static void TestMethod ()
+	{
+		<-
+			Foo ();
+			// Comment
+->
+	}
+}", @"class TestClass
+{
+	static void NewMethod ()
+	{
+		Foo ();
+		// Comment
+	}
+	public static void TestMethod ()
+	{
+		NewMethod ();
+	}
+}");
+		}
+
+		/// <summary>
+		/// Bug 11948 - Extract method incorrectly extracts code that contains yield return
+		/// </summary>
+		[Test]
+		public void TestBug11948()
+		{
+			TestWrongContext<ExtractMethodAction>(@"class TestClass
+{
+	int member = 5;
+	IEnumerable<int> TestMethod ()
+	{
+		int i = 5;
+		<-yield return i;->
+		Console.WriteLine (i);
 	}
 }");
 		}

@@ -10,9 +10,11 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using ICSharpCode.WpfDesign.Adorners;
 using NUnit.Framework;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Xaml;
+using Rhino.Mocks;
 
 namespace ICSharpCode.WpfDesign.Tests.Designer
 {
@@ -21,18 +23,25 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 	/// </summary>
 	public class ModelTestHelper
 	{
+		public const string DesignerTestsNamespace = "clr-namespace:ICSharpCode.WpfDesign.Tests.Designer;assembly=ICSharpCode.WpfDesign.Tests";
+		
 		protected StringBuilder log;
 		
 		protected XamlDesignContext CreateContext(string xaml)
 		{
 			log = new StringBuilder();
-			XamlDesignContext context = new XamlDesignContext(new XmlTextReader(new StringReader(xaml)), new XamlLoadSettings());
+			XamlDesignContext context = new XamlDesignContext(new XmlTextReader(new StringReader(xaml)), CreateXamlLoadSettings());
 			/*context.Services.Component.ComponentRegistered += delegate(object sender, DesignItemEventArgs e) {
 				log.AppendLine("Register " + ItemIdentity(e.Item));
 			};
 			context.Services.Component.ComponentUnregistered += delegate(object sender, DesignItemEventArgs e) {
 				log.AppendLine("Unregister " + ItemIdentity(e.Item));
 			};*/
+			
+			// create required service mocks
+			var designPanel = MockRepository.GenerateStub<IDesignPanel>();
+			designPanel.Stub(dp => dp.Adorners).Return(new System.Collections.Generic.List<AdornerPanel>());
+			context.Services.AddService(typeof(IDesignPanel), designPanel);
 			return context;
 		}
 		
@@ -40,7 +49,8 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		{
 			XamlDesignContext context = CreateContext(@"<Canvas
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+  xmlns:t=""" + DesignerTestsNamespace + @""">
   " + xaml + "</Canvas>");
 			Canvas canvas = (Canvas)context.RootItem.Component;
 			DesignItem canvasChild = context.Services.Component.GetDesignItem(canvas.Children[0]);
@@ -49,28 +59,26 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			return canvasChild;
 		}
 		
-		protected void AssertCanvasDesignerOutput(string expectedXaml, DesignContext context)
+		protected void AssertCanvasDesignerOutput(string expectedXaml, DesignContext context, params String[] additionalXmlns)
 		{
+			string canvasStartTag =
+				"<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
+				 "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" " +
+				 "xmlns:t=\"" + DesignerTestsNamespace + "\"";
+
+			
+			foreach(string ns in additionalXmlns) {
+				canvasStartTag += " " + ns;
+			}
+
+			expectedXaml = canvasStartTag + ">\n" + expectedXaml.Trim();
+			
 			expectedXaml =
 				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\n" +
-				("<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
-				 "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">\n" + expectedXaml.Trim())
-				.Replace("\r", "").Replace("\n", "\n  ")
+				expectedXaml.Replace("\r", "").Replace("\n", "\n  ")
 				+ "\n</Canvas>";
 			
-			StringWriter stringWriter = new StringWriter();
-			XmlTextWriter xmlWriter = new XmlTextWriter(stringWriter);
-			xmlWriter.Formatting = Formatting.Indented;
-			context.Save(xmlWriter);
-			
-			string actualXaml = stringWriter.ToString().Replace("\r", "");;
-			if (expectedXaml != actualXaml) {
-				Debug.WriteLine("expected xaml:");
-				Debug.WriteLine(expectedXaml);
-				Debug.WriteLine("actual xaml:");
-				Debug.WriteLine(actualXaml);
-			}
-			Assert.AreEqual(expectedXaml, actualXaml);
+			AssertDesignerOutput(expectedXaml, context);
 		}
 		
 		protected DesignItem CreateGridContext(string xaml)
@@ -87,14 +95,49 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			var surface = new DesignSurface();
 			var xamlWithGrid=@"<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >
             " + xaml + "</Grid>";
-			surface.LoadDesigner(new XmlTextReader(new StringReader(xamlWithGrid)), new XamlLoadSettings());
+			surface.LoadDesigner(new XmlTextReader(new StringReader(xamlWithGrid)), CreateXamlLoadSettings());
 			Assert.IsNotNull(surface.DesignContext.RootItem);
 			return surface.DesignContext.RootItem;
+		}
+		
+		protected void AssertGridDesignerOutput(string expectedXaml, DesignContext context, params String[] additionalXmlns)
+		{
+			string gridStartTag = "<Grid xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"";
+			
+			foreach(string ns in additionalXmlns) {
+				gridStartTag += " " + ns;
+			}
+
+			expectedXaml = gridStartTag + ">\n" + expectedXaml.Trim();
+			
+			expectedXaml =
+				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\n" +
+				expectedXaml.Replace("\r", "").Replace("\n", "\n  ")
+				+ "\n</Grid>";
+			
+			AssertDesignerOutput(expectedXaml, context);
 		}
 		
 		static string ItemIdentity(DesignItem item)
 		{
 			return item.ComponentType.Name + " (" + item.GetHashCode() + ")";
+		}
+		
+		protected void AssertDesignerOutput(string expectedXaml, DesignContext context)
+		{
+			StringWriter stringWriter = new StringWriter();
+			XmlTextWriter xmlWriter = new XmlTextWriter(stringWriter);
+			xmlWriter.Formatting = Formatting.Indented;
+			context.Save(xmlWriter);
+			
+			string actualXaml = stringWriter.ToString().Replace("\r", "");;
+			if (expectedXaml != actualXaml) {
+				Debug.WriteLine("expected xaml:");
+				Debug.WriteLine(expectedXaml);
+				Debug.WriteLine("actual xaml:");
+				Debug.WriteLine(actualXaml);
+			}
+			Assert.AreEqual(expectedXaml, actualXaml);
 		}
 		
 		protected void AssertLog(string expectedLog)
@@ -108,6 +151,11 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 				Debug.WriteLine(actualLog);
 			}
 			Assert.AreEqual(expectedLog, actualLog);
+		}
+		
+		protected virtual XamlLoadSettings CreateXamlLoadSettings()
+		{
+			return new XamlLoadSettings();
 		}
 	}
 }

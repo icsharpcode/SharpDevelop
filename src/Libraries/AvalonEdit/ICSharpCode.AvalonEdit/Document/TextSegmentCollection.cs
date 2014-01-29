@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// </summary>
 	/// <remarks><inheritdoc cref="TextSegment"/></remarks>
 	/// <see cref="TextSegment"/>
-	public sealed class TextSegmentCollection<T> : ICollection<T>, ISegmentTree, IWeakEventListener where T : TextSegment
+	public sealed class TextSegmentCollection<T> : ICollection<T>, IReadOnlyCollection<T>, ISegmentTree, IWeakEventListener where T : TextSegment
 	{
 		// Implementation: this is basically a mixture of an augmented interval tree
 		// and the TextAnchorTree.

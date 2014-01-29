@@ -8,6 +8,6 @@ namespace ICSharpCode.PackageManagement
 {
 	public interface ISolutionPackageRepositoryFactory
 	{
-		ISolutionPackageRepository CreateSolutionPackageRepository(Solution solution);
+		ISolutionPackageRepository CreateSolutionPackageRepository(ISolution solution);
 	}
 }

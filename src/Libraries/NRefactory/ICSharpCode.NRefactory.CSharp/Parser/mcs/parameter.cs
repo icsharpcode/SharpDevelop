@@ -338,7 +338,7 @@ namespace Mono.CSharp {
 				if (HasOptionalExpression) {
 					a.Report.Error (1745, a.Location,
 						"Cannot specify `{0}' attribute on optional parameter `{1}'",
-						TypeManager.CSharpName (a.Type).Replace ("Attribute", ""), Name);
+						a.Type.GetSignatureForError ().Replace ("Attribute", ""), Name);
 				}
 
 				if (a.Type == pa.DefaultParameterValue)
@@ -394,7 +394,7 @@ namespace Mono.CSharp {
 				return null;
 			}
 
-			TypeManager.CheckTypeVariance (parameter_type,
+			VarianceDecl.CheckTypeVariance (parameter_type,
 				(modFlags & Parameter.Modifier.RefOutMask) != 0 ? Variance.None : Variance.Contravariant,
 				rc);
 
@@ -406,7 +406,7 @@ namespace Mono.CSharp {
 
 			if ((modFlags & Modifier.This) != 0 && (parameter_type.IsPointer || parameter_type.BuiltinType == BuiltinTypeSpec.Type.Dynamic)) {
 				rc.Module.Compiler.Report.Error (1103, Location, "The extension method cannot be of type `{0}'",
-					TypeManager.CSharpName (parameter_type));
+					parameter_type.GetSignatureForError ());
 			}
 
 			return parameter_type;
@@ -501,7 +501,7 @@ namespace Mono.CSharp {
 					} else {
 						rc.Report.Error (1909, default_expr.Location,
 							"The DefaultParameterValue attribute is not applicable on parameters of type `{0}'",
-							default_expr.Type.GetSignatureForError ()); ;
+							default_expr.Type.GetSignatureForError ());
 					}
 
 					default_expr = null;
@@ -582,7 +582,7 @@ namespace Mono.CSharp {
 		{
 			string type_name;
 			if (parameter_type != null)
-				type_name = TypeManager.CSharpName (parameter_type);
+				type_name = parameter_type.GetSignatureForError ();
 			else
 				type_name = texpr.GetSignatureForError ();
 
@@ -972,10 +972,18 @@ namespace Mono.CSharp {
 					if (inflated_types[i] == expr.Type)
 						continue;
 
-					if (expr is DefaultValueExpression)
+					var c = expr as Constant;
+					if (c != null) {
+						//
+						// It may fail we are inflating before type validation is done
+						//
+						c = Constant.ExtractConstantFromValue (inflated_types[i], c.GetValue (), expr.Location);
+						if (c == null)
+							expr = new DefaultValueExpression (new TypeExpression (inflated_types[i], expr.Location), expr.Location);
+						else
+							expr = c;
+					} else if (expr is DefaultValueExpression)
 						expr = new DefaultValueExpression (new TypeExpression (inflated_types[i], expr.Location), expr.Location);
-					else if (expr is Constant)
-						expr = Constant.CreateConstantFromValue (inflated_types[i], ((Constant) expr).GetValue (), expr.Location);
 
 					clone.FixedParameters[i] = new ParameterData (fp.Name, fp.ModFlags, expr);
 				}
@@ -989,11 +997,11 @@ namespace Mono.CSharp {
 			if (types == null || types [pos] == null)
 				return ((Parameter)FixedParameters [pos]).GetSignatureForError ();
 
-			string type = TypeManager.CSharpName (types [pos]);
+			string type = types [pos].GetSignatureForError ();
 			if (FixedParameters [pos].HasExtensionMethodModifier)
 				return "this " + type;
 
-			Parameter.Modifier mod = FixedParameters [pos].ModFlags;
+			var mod = FixedParameters[pos].ModFlags & Parameter.Modifier.ModifierMask;
 			if (mod == 0)
 				return type;
 
@@ -1325,11 +1333,6 @@ namespace Mono.CSharp {
 		{
 		}
 
-		protected override Expression DoResolve (ResolveContext rc)
-		{
-			return base.DoResolve (rc);
-		}
-
 		public void Resolve (ResolveContext rc, Parameter p)
 		{
 			var expr = Resolve (rc);
@@ -1378,6 +1381,8 @@ namespace Mono.CSharp {
 			rc.Report.Error (1750, Location,
 				"Optional parameter expression of type `{0}' cannot be converted to parameter type `{1}'",
 				type.GetSignatureForError (), parameter_type.GetSignatureForError ());
+
+			this.expr = ErrorExpression.Instance;
 		}
 		
 		public override object Accept (StructuralVisitor visitor)

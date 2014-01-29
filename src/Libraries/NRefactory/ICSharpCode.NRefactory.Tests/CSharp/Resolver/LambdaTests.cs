@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -634,6 +634,306 @@ class TestClass {
 			var mrr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(mrr.IsError);
 			Assert.AreEqual("System.Int32", mrr.Type.ReflectionName);
+		}
+
+		[Test]
+		public void AsyncLambdaWithAwait()
+		{
+			string program = @"
+using System;
+using System.Threading.Tasks;
+
+class A
+{
+	public Task OpenAsync ()
+	{
+		return null;
+	}
+}
+
+class C
+{
+	async void Foo ()
+	{
+			await $Test (async () => { await new A().OpenAsync (); })$;
+	}
+	
+	T Test<T> (Func<T> func)
+	{
+		return default (T);
+	}
+}
+";
+			var mrr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(mrr.IsError);
+			Assert.AreEqual("System.Threading.Tasks.Task", mrr.Type.ReflectionName);
+		}
+
+		[Test]
+		public void ConversionInExplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Func<int, string> f = $(int i) => null$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
+			Assert.That(((ConversionResolveResult)rr.Body).Conversion.IsNullLiteralConversion);
+			Assert.AreEqual("System.String", rr.ReturnType.ReflectionName);
+			Assert.AreEqual("System.String", rr.Body.Type.ReflectionName);
+		}
+
+		[Test]
+		public void ConversionInImplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Func<int, string> f = $i => null$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
+			Assert.That(((ConversionResolveResult)rr.Body).Conversion.IsNullLiteralConversion);
+			Assert.AreEqual("System.String", rr.ReturnType.ReflectionName);
+			Assert.AreEqual("System.String", rr.Body.Type.ReflectionName);
+		}
+
+		[Test]
+		public void NoConversionInVoidExplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Action<int> f = $(int i) => i++$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<OperatorResolveResult>(rr.Body);
+			Assert.AreEqual("System.Void", rr.ReturnType.ReflectionName);
+			Assert.AreEqual("System.Int32", rr.Body.Type.ReflectionName);
+		}
+
+		[Test]
+		public void NoConversionInVoidImplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Action<int> f = $i => i++$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<OperatorResolveResult>(rr.Body);
+			Assert.AreEqual("System.Void", rr.ReturnType.ReflectionName);
+			Assert.AreEqual("System.Int32", rr.Body.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void NumericConversion()
+		{
+			string program = @"using System;
+class Test {
+	public void M() {
+		Func<int, double> f = $i => i + 1$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
+			var bodyConv = ((ConversionResolveResult)rr.Body).Conversion;
+			Assert.IsTrue(bodyConv.IsValid);
+			Assert.IsTrue(bodyConv.IsNumericConversion);
+			
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsAnonymousFunctionConversion);
+		}
+		
+		[Test]
+		public void InvalidNumericConversion()
+		{
+			string program = @"using System;
+class Test {
+	public void M() {
+		Func<double, int> f = $i => i + 1$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
+			var bodyConv = ((ConversionResolveResult)rr.Body).Conversion;
+			Assert.IsFalse(bodyConv.IsValid);
+			
+			var c = GetConversion(program);
+			Assert.IsFalse(c.IsValid);
+			Assert.IsTrue(c.IsAnonymousFunctionConversion);
+		}
+		
+		[Test]
+		public void ImplicitAsyncLambda()
+		{
+			string program = @"using System;
+using System.Threading.Tasks;
+class Test {
+	public void M() {
+		Func<int, Task<int>> f = $async i => i + 1$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<OperatorResolveResult>(rr.Body);
+			Assert.AreEqual("System.Int32", rr.Body.Type.FullName);
+			
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsAnonymousFunctionConversion);
+		}
+		
+		[Test]
+		public void ImplicitAsyncLambdaWithNumericConversion()
+		{
+			string program = @"using System;
+using System.Threading.Tasks;
+class Test {
+	public void M() {
+		Func<int, Task<double>> f = $async i => i + 1$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
+			Assert.AreEqual("System.Double", rr.Body.Type.FullName);
+			
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsAnonymousFunctionConversion);
+		}
+		
+		[Test]
+		public void ExplicitAsyncLambda()
+		{
+			string program = @"using System;
+using System.Threading.Tasks;
+class Test {
+	public void M() {
+		Func<int, Task<int>> f = $async (int i) => i + 1$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<OperatorResolveResult>(rr.Body);
+			Assert.AreEqual("System.Int32", rr.Body.Type.FullName);
+			
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsAnonymousFunctionConversion);
+		}
+		
+		[Test]
+		public void ExplicitAsyncLambdaWithNumericConversion()
+		{
+			string program = @"using System;
+using System.Threading.Tasks;
+class Test {
+	public void M() {
+		Func<int, Task<double>> f = $async (int i) => i + 1$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
+			Assert.AreEqual("System.Double", rr.Body.Type.FullName);
+			
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsAnonymousFunctionConversion);
+		}
+
+		[Test]
+		public void AnonymousMethodConversionObjectToDynamic() {
+			string program = @"using System;
+class Test {
+	public void M() {
+		Action<dynamic> x = $delegate(object z) { z = null; }$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void AnonymousMethodConversionObjectToDynamicGenericArgument() {
+			string program = @"using System;
+using System.Collections.Generic;
+class Test {
+	public void M() {
+		Action<List<dynamic>> x = $delegate(List<object> z) { z = null; }$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void AnonymousMethodConversionDynamicToObject() {
+			string program = @"using System;
+class Test {
+	public void M() {
+		Action<object> x = $delegate(dynamic z) { z = null; }$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void AnonymousMethodConversionDynamicToObjectGenericArgument() {
+			string program = @"using System;
+using System.Collections.Generic;
+class Test {
+	public void M() {
+		Action<List<object>> x = $delegate(List<dynamic> z) { z = null; }$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+		
+		[Test]
+		public void InvalidConversionToVoid_ImplicitStatementLambda()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		Action a = () => {
+			return $1$;
+		};
+	}
+}";
+			Assert.AreEqual(TypeKind.Void, GetExpectedType(program).Kind);
+			Assert.IsFalse(GetConversion(program).IsValid);
+		}
+		
+		[Test]
+		public void InvalidConversionToVoid_AnonymousMethod()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		Action a = delegate {
+			return $1$;
+		};
+	}
+}";
+			Assert.AreEqual(TypeKind.Void, GetExpectedType(program).Kind);
+			Assert.IsFalse(GetConversion(program).IsValid);
+		}
+		
+		[Test]
+		public void VoidLamda_Uses_Identity_Conversion()
+		{
+			string program = @"using System;
+class TestClass {
+	static int GetInt() { return 4; }
+	static void Main() {
+		Action a = () => $GetInt()$;
+	}
+}";
+			Assert.AreEqual("System.Int32", GetExpectedType(program).FullName);
+			Assert.IsTrue(GetConversion(program).IsValid);
 		}
 	}
 }

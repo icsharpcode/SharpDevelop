@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -19,6 +19,7 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.Documentation
 {
@@ -60,7 +61,11 @@ namespace ICSharpCode.NRefactory.Documentation
 						return typeDef;
 				}
 			}
-			return null;
+			int idx = typeName.LastIndexOf('.');
+			if (idx < 0)
+				return new UnknownType("", typeName, typeParameterCount);
+			// give back a guessed namespace/type name
+			return  new UnknownType(typeName.Substring(0, idx), typeName.Substring(idx + 1), typeParameterCount);
 		}
 	}
 }

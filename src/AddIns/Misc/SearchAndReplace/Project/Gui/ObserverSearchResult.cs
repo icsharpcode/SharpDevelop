@@ -32,9 +32,16 @@ namespace SearchAndReplace
 			SD.MainThread.VerifyAccess();
 			if (resultsTreeViewInstance == null)
 				resultsTreeViewInstance = new ResultsTreeView();
-			rootNode.GroupResultsByFile(ResultsTreeView.GroupResultsByFile);
+			rootNode.GroupResultsBy(ResultsTreeView.GroupingKind);
 			resultsTreeViewInstance.ItemsSource = new object[] { rootNode };
 			return resultsTreeViewInstance;
+		}
+		
+		public override void OnDeactivate()
+		{
+			if (!finished)
+				StopButtonClick(null, null);
+			base.OnDeactivate();
 		}
 		
 		public override IList GetToolbarItems()

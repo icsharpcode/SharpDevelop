@@ -70,10 +70,9 @@ namespace Debugger
 		public void SetBreakpoint(Module module)
 		{
 			foreach(var symbolSource in module.Process.Debugger.SymbolSources) {
-				var seq = symbolSource.GetSequencePoint(module, this.FileName, this.Line, this.Column);
-				if (seq != null) {
-					ICorDebugFunction corFuction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
-					ICorDebugFunctionBreakpoint corBreakpoint = corFuction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
+				foreach (var seq in symbolSource.GetSequencePoints(module, this.FileName, this.Line, this.Column)) {
+					ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
+					ICorDebugFunctionBreakpoint corBreakpoint = corFunction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
 					corBreakpoint.Activate(enabled ? 1 : 0);
 					corBreakpoints.Add(corBreakpoint);
 				}

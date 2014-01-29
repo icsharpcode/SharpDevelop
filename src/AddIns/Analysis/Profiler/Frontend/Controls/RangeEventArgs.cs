@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Windows;
 
 namespace ICSharpCode.Profiler.Controls
 {
@@ -28,7 +27,7 @@ namespace ICSharpCode.Profiler.Controls
 	
 		public int RangeLength
 		{
-			get { return Math.Abs(this.endIndex - this.startIndex); }
+			get { return Math.Abs(endIndex - startIndex); }
 		}
 	}
 }

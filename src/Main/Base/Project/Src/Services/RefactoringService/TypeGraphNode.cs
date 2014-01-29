@@ -22,6 +22,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
+	/*
 	public sealed class TypeGraphNode
 	{
 		internal readonly ITypeDefinition typeDef;
@@ -54,5 +55,5 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			return TreeNode<ITypeDefinition>.FromGraph(this, n => n.derivedTypes, n => n.typeDef);
 		}
-	}
+	}*/
 }

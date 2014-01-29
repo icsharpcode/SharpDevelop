@@ -93,8 +93,115 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"}"
 			);
 		}
-		
-		
+
+
+		[Test]
+		public void TestWrongLocation()
+		{
+			TestWrongContext<RemoveBackingStoreAction> (@"class TestClass
+{
+	string test;
+	public $string Test {
+		get {
+			return test;
+		}
+		set {
+			test = value;
+		}
+	}
+}");
+
+			TestWrongContext<RemoveBackingStoreAction> (@"class TestClass
+{
+	string test;
+	public string $FooBar.Test {
+		get {
+			return test;
+		}
+		set {
+			test = value;
+		}
+	}
+}");
+
+			TestWrongContext<RemoveBackingStoreAction> (@"class TestClass
+{
+	string test;
+	public string Test ${
+		get {
+			return test;
+		}
+		set {
+			test = value;
+		}
+	}
+}");
+		}
+
+		/// <summary>
+		/// Bug 16108 - Convert to autoproperty issues
+		/// </summary>
+		[Test]
+		public void TestBug16108Case1 ()
+		{
+			TestWrongContext<RemoveBackingStoreAction>(@"
+class MyClass
+{
+    [DebuggerHiddenAttribute]
+    int a;
+    int $A {
+        get { return a; }
+        set { a = value; }
+    }
+}
+");
+		}
+
+		/// <summary>
+		/// Bug 16108 - Convert to autoproperty issues
+		/// </summary>
+		[Test]
+		public void TestBug16108Case2 ()
+		{
+			TestWrongContext<RemoveBackingStoreAction>(@"
+class MyClass
+{
+    int a = 4;
+    int $A {
+        get { return a; }
+        set { a = value; }
+    }
+}
+");
+		}
+
+
+		/// <summary>
+		/// Bug 16447 - Convert to Auto Property removes multiple variable if declared inline
+		/// </summary>
+		[Test]
+		public void TestBug16447 ()
+		{
+			Test<RemoveBackingStoreAction>(@"
+public class Foo
+{
+	int _bpm = 120, _index = 1, _count;
+	int $Count {
+		get { return _count; }
+		set { _count = value; }
+	}
+}
+", @"
+public class Foo
+{
+	int _bpm = 120, _index = 1;
+	int Count {
+		get;
+		set;
+	}
+}
+");
+		}
 	}
 }
 

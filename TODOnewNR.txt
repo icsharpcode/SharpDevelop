@@ -142,6 +142,12 @@ Functionality changes:
 		The IUnresolvedFile is stored permanently (both in ParserService and in the IProjectContents).
 
 
+	Solution model:
+		The class 'Solution' has been replaced with the interface 'ISolution'.
+		The static events that report changes to the solution (e.g. project added) no longer exist on IProjectService;
+		instead the ISolution.Projects collection itself has a changed event.
+
+
 	Text editor and document services:
 		In SharpDevelop 4.x it was possible to use IDocument.GetService(typeof(ITextEditor)) to find the
 		editor that presents the document.

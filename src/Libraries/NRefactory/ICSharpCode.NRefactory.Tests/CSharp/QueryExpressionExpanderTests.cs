@@ -1,4 +1,22 @@
-﻿using System;
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 		}
 
 		private void AssertCorrect(AstNode actual, string expected) {
-			Assert.That(Regex.Replace(actual.GetText(), @"\s+", "").Replace("<>", ""), Is.EqualTo(Regex.Replace(expected, @"\s+", "")));
+			Assert.That(Regex.Replace(actual.ToString(), @"\s+", "").Replace("<>", ""), Is.EqualTo(Regex.Replace(expected, @"\s+", "")));
 		}
 
 		private void AssertLookupCorrect<T, U>(IEnumerable<KeyValuePair<T, U>> actual, IList<Tuple<TextLocation, AstNode>> expected) where T : AstNode where U : AstNode {
@@ -246,6 +264,23 @@ namespace ICSharpCode.NRefactory.CSharp {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
 				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode),
 				Tuple.Create(new TextLocation(1, 55), (AstNode)astNode),
+			});
+		}
+
+		[Test]
+		public void JoinWithCast() {
+			var node = ParseUtilCSharp.ParseExpression<QueryExpression>("from i in arr1 join CJ j in arr2 on i.keyi equals j.keyj select i.valuei + j.valuej");
+			var actual = new QueryExpressionExpander().ExpandQueryExpressions(node);
+			AssertCorrect(actual.AstNode, "arr1.Join(arr2.Cast<CJ>(),i=>i.keyi,j=>j.keyj,(i,j)=>i.valuei+j.valuej)");
+			dynamic astNode = actual.AstNode;
+			AssertLookupCorrect(actual.RangeVariables, new[] {
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 0)),
+				Tuple.Create(new TextLocation(1, 24), (AstNode)ElementAt(ElementAt(astNode.Arguments, 2).Parameters, 0)),
+			});
+			AssertLookupCorrect(actual.Expressions, new[] {
+				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
+				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode),
+				Tuple.Create(new TextLocation(1, 58), (AstNode)astNode),
 			});
 		}
 

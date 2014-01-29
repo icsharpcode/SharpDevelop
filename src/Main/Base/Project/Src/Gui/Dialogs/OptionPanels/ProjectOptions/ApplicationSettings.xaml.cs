@@ -1,10 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 01.04.2012
- * Time: 17:16
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -184,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		void project_MinimumSolutionVersionChanged(object sender, EventArgs e)
 		{
 			// embedding manifests requires the project to target MSBuild 3.5 or higher
-			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
+			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2008;
 		}
 		
 		
@@ -313,7 +309,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				FileService.FireFileCreated(manifestFile, false);
 			}
 			
-			if (!base.Project.IsFileInProject(manifestFile)) {
+			if (!base.Project.IsFileInProject(FileName.Create(manifestFile))) {
 				FileProjectItem newItem = new FileProjectItem(base.Project, ItemType.None);
 				newItem.Include = "app.manifest";
 				ProjectService.AddProjectItem(base.Project, newItem);

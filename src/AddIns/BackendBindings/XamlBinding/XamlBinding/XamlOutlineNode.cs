@@ -4,16 +4,16 @@
 using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
 
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.XamlBinding
 {
-	class XamlOutlineNode : SharpTreeNode {
+	class XamlOutlineNode : SharpTreeNode
+	{
 		string elementName, name;
 		
 		public string ElementName {
@@ -36,22 +36,12 @@ namespace ICSharpCode.XamlBinding
 		public ITextAnchor EndMarker { get; set; }
 		public ITextEditor Editor { get; set; }
 		
-		public override bool CanDrag(SharpTreeNode[] nodes)
-		{
-			return false; //nodes.All(node => node.Parent != null);
-		}
-		
-		public override bool CanDrop(DragEventArgs e, int index)
-		{
-			return false;
-		}
-		
 		public string GetMarkupText()
 		{
 			return Editor.Document.GetText(Marker.Offset, EndMarker.Offset - Marker.Offset);
 		}
 		
-		public override IDataObject Copy(SharpTreeNode[] nodes)
+		protected override IDataObject GetDataObject(SharpTreeNode[] nodes)
 		{
 			string[] data = nodes
 				.OfType<XamlOutlineNode>()
@@ -61,11 +51,6 @@ namespace ICSharpCode.XamlBinding
 			dataObject.SetData(typeof(string[]), data);
 			
 			return dataObject;
-		}
-		
-		public override bool CanDelete()
-		{
-			return Parent != null;
 		}
 		
 //		public override void Drop(IDataObject data, int index, DropEffect finalEffect)
@@ -96,18 +81,34 @@ namespace ICSharpCode.XamlBinding
 //			}
 //		}
 		
-		public override void Delete()
+		public override bool CanDelete(SharpTreeNode[] nodes)
 		{
-			DeleteCore();
+			return nodes.OfType<XamlOutlineNode>().All(n => n.Parent != null);
 		}
 		
-		public override void DeleteCore()
+		public override void Delete(SharpTreeNode[] nodes)
+		{
+			DeleteWithoutConfirmation(nodes);
+		}
+		
+		public override void DeleteWithoutConfirmation(SharpTreeNode[] nodes)
+		{
+			foreach (XamlOutlineNode xamlNode in nodes.OfType<XamlOutlineNode>()) {
+				xamlNode.DeleteCore();
+			}
+		}
+		
+		void DeleteCore()
 		{
 			Editor.Document.Remove(Marker.Offset, EndMarker.Offset - Marker.Offset);
 		}
 		
 		public override object Text {
 			get { return (!string.IsNullOrEmpty(Name) ? ElementName + " (" + Name + ")" : ElementName); }
+		}
+		
+		public override object Icon {
+			get { return SD.ResourceService.GetImageSource("Icons.16x16.HtmlElements.Element"); }
 		}
 	}
 }

@@ -45,6 +45,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -53,6 +54,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
@@ -66,16 +68,41 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\Completion\CSharpCompletionContext.cs" />
     <Compile Include="Src\Completion\CSharpInsightItem.cs" />
     <Compile Include="Src\Completion\CSharpMethodInsight.cs" />
+    <Compile Include="Src\Completion\EventCreationCompletionData.cs" />
     <Compile Include="Src\Completion\ImportCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideCompletionData.cs" />
+    <Compile Include="Src\Completion\OverrideEqualsGetHashCodeCompletionData.cs" />
+    <Compile Include="Src\Completion\OverrideToStringCompletionData.cs" />
     <Compile Include="Src\Completion\SegmentTrackingOutputFormatter.cs" />
+    <Compile Include="Src\Completion\TypeCompletionData.cs" />
+    <Compile Include="Src\Completion\XmlDocCompletionData.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
+    <Compile Include="Src\FormsDesigner\CSharpDesignerGenerator.cs" />
+    <Compile Include="Src\FormsDesigner\CSharpDesignerLoader.cs" />
+    <Compile Include="Src\FormsDesigner\CSharpDesignerLoaderProvider.cs" />
+    <Compile Include="Src\FormsDesigner\CSharpEventBindingService.cs" />
+    <Compile Include="Src\FormsDesigner\CSharpFormsDesignerLoaderContext.cs" />
+    <Compile Include="Src\FormsDesigner\ICSharpDesignerLoaderContext.cs" />
+    <Compile Include="Src\FormsDesigner\SecondaryDisplayBinding.cs" />
     <Compile Include="Src\Parser\FoldingVisitor.cs" />
+    <Compile Include="Src\Refactoring\AbstractInlineRefactorDialog.cs" />
+    <Compile Include="Src\Refactoring\ConvertInterfaceToAbstractClassContextAction.cs" />
+    <Compile Include="Src\Refactoring\CreateProperties.cs" />
+    <Compile Include="Src\Refactoring\CreatePropertiesDialog.xaml.cs">
+      <DependentUpon>CreatePropertiesDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Refactoring\CSharpCodeGenerator.cs" />
     <Compile Include="Src\Refactoring\CSharpSyntaxIssue.cs" />
+    <Compile Include="Src\Refactoring\FieldWrapper.cs" />
+    <Compile Include="Src\Refactoring\InlineRefactorSnippetElement.cs" />
+    <Compile Include="Src\Refactoring\InsertCtorDialog.xaml.cs">
+      <DependentUpon>InsertCtorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Refactoring\InsertCtorSnippetRefactoring.cs" />
     <Compile Include="Src\Refactoring\InsertionPoint.cs" />
     <Compile Include="Src\Refactoring\IssueOptions.xaml.cs">
       <DependentUpon>IssueOptions.xaml</DependentUpon>
@@ -85,6 +112,18 @@
     <Compile Include="Src\Refactoring\IssueManager.cs" />
     <Compile Include="Src\Refactoring\IssueOptionsViewModel.cs" />
     <Compile Include="Src\Refactoring\MoveTypeToFileContextAction.cs" />
+    <Compile Include="Src\Refactoring\Options.cs" />
+    <Compile Include="Src\Refactoring\ParamRangeCheckContextAction.cs" />
+    <Compile Include="Src\Refactoring\RefactoringExtensions.cs" />
+    <Compile Include="Src\Refactoring\OverrideEqualsGetHashCodeMethodsDialog.xaml.cs">
+      <DependentUpon>OverrideEqualsGetHashCodeMethodsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Refactoring\OverrideToStringMethodDialog.xaml.cs">
+      <DependentUpon>OverrideToStringMethodDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Refactoring\PropertyOrFieldWrapper.cs" />
+    <Compile Include="Src\Refactoring\RenameFileToMatchTypeNameContextAction.cs" />
+    <Compile Include="Src\Refactoring\SDCodeGenerationService.cs" />
     <Compile Include="Src\Refactoring\SDNamingConventionService.cs" />
     <Compile Include="Src\Refactoring\SDRedundantUsingIssue.cs" />
     <Compile Include="Src\Refactoring\EditorScript.cs" />
@@ -94,7 +133,6 @@
       <SubType>Code</SubType>
     </Compile>
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
-    <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\Completion\CompletionData.cs" />
     <Compile Include="Src\Completion\CSharpCompletionBinding.cs" />
     <Compile Include="Src\Completion\CSharpCompletionDataFactory.cs" />
@@ -133,9 +171,19 @@
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory.CSharp.Refactoring.csproj">
+      <Project>{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp.Refactoring</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
+      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
+      <Name>ICSharpCode.NRefactory.Xml</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -178,11 +226,23 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{9E951B9F-6AC2-4537-9D0B-0AE7C026D5A1}</Project>
+      <Name>FormsDesigner</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Refactoring\CreatePropertiesDialog.xaml" />
+    <Page Include="Src\Refactoring\InsertCtorDialog.xaml" />
     <Page Include="Src\Refactoring\IssueOptions.xaml" />
     <Page Include="Src\OptionPanels\BuildOptions.xaml" />
+    <Page Include="Src\Refactoring\OverrideEqualsGetHashCodeMethodsDialog.xaml" />
+    <Page Include="Src\Refactoring\OverrideToStringMethodDialog.xaml" />
     <Page Include="Src\Refactoring\SearchForIssuesDialog.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\FormsDesigner" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

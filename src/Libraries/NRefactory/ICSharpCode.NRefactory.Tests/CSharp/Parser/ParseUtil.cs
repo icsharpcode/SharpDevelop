@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -20,6 +20,7 @@ using System;
 using System.IO;
 using System.Linq;
 
+using System.Text;
 using ICSharpCode.NRefactory.PatternMatching;
 using NUnit.Framework;
 
@@ -35,11 +36,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			SyntaxTree syntaxTree = parser.Parse(code);
 			
+			StringBuilder errorOutput = new StringBuilder();
 			foreach (var error in parser.Errors)
-				Console.WriteLine (error.Message);
-			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
+				errorOutput.AppendLine (error.Message);
+			Assert.AreEqual(expectErrors, parser.HasErrors, errorOutput.ToString());
 			
-			AstNode node = syntaxTree.Children.Single();
+			AstNode node = syntaxTree.Children.Single(c => c.Role != Roles.NewLine);
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(node.GetType()), String.Format("Parsed node was {0} instead of {1} ({2})", node.GetType(), type, node));
 			return (T)node;
@@ -58,9 +60,10 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			var statements = parser.ParseStatements(stmt);
 			
+			StringBuilder errorOutput = new StringBuilder();
 			foreach (var error in parser.Errors)
-				Console.WriteLine (error.Message);
-			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
+				errorOutput.AppendLine (error.Message);
+			Assert.AreEqual(expectErrors, parser.HasErrors, errorOutput.ToString());
 			
 			AstNode statement = statements.Single();
 			Type type = typeof(T);
@@ -81,9 +84,11 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			AstNode parsedExpression = parser.ParseExpression(expr);
 			
+			StringBuilder errorOutput = new StringBuilder();
 			foreach (var error in parser.Errors)
-				Console.WriteLine (error.Message);
-			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
+				errorOutput.AppendLine (error.Message);
+			Assert.AreEqual(expectErrors, parser.HasErrors, errorOutput.ToString());
+			
 			if (expectErrors && parsedExpression == null)
 				return default (T);
 			Type type = typeof(T);
@@ -103,9 +108,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		{
 			CSharpParser parser = new CSharpParser();
 			var members = parser.ParseTypeMembers(expr);
+
+			StringBuilder errorOutput = new StringBuilder();
 			foreach (var error in parser.Errors)
-				Console.WriteLine (error.Message);
-			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
+				errorOutput.AppendLine (error.Message);
+			Assert.AreEqual(expectErrors, parser.HasErrors, errorOutput.ToString());
+			
 			EntityDeclaration m = members.Single();
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(m.GetType()), String.Format("Parsed member was {0} instead of {1} ({2})", m.GetType(), type, m));
@@ -125,9 +133,11 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			var parsedExpression = parser.ParseDocumentationReference(cref);
 			
+			StringBuilder errorOutput = new StringBuilder();
 			foreach (var error in parser.Errors)
-				Console.WriteLine (error.Message);
-			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
+				errorOutput.AppendLine (error.Message);
+			Assert.AreEqual(expectErrors, parser.HasErrors, errorOutput.ToString());
+			
 			if (expectErrors && parsedExpression == null)
 				return null;
 			return parsedExpression;
@@ -143,7 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		static string ToCSharp(AstNode node)
 		{
-			return node.GetText();
+			return node.ToString();
 		}
 	}
 }

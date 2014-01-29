@@ -32,59 +32,51 @@ namespace ICSharpCode.TreeView.Demo
 
 		public override bool CanCopy(SharpTreeNode[] nodes)
 		{
-			return true;
+			return nodes.All(n => n is FileSystemNode);
 		}
-
-		public override IDataObject Copy(SharpTreeNode[] nodes)
+		
+		protected override IDataObject GetDataObject(SharpTreeNode[] nodes)
 		{
 			var data = new DataObject();
-			var paths = SharpTreeNode.ActiveNodes.Cast<FileSystemNode>().Select(n => n.FullPath).ToArray();
-			data.SetData(typeof(string[]), paths);
+			var paths = nodes.OfType<FileSystemNode>().Select(n => n.FullPath).ToArray();
+			data.SetData(DataFormats.FileDrop, paths);
 			return data;
 		}
-
-		public override bool CanPaste(IDataObject data)
-		{
-			return true;
-		}
-
+		
 		public override bool CanDelete(SharpTreeNode[] nodes)
 		{
-			return nodes.All(n => n.Parent != null);
+			return nodes.All(n => n is FileSystemNode);
 		}
-
+		
 		public override void Delete(SharpTreeNode[] nodes)
 		{
-			if (MessageBox.Show("Sure?", "Delete", MessageBoxButton.OKCancel) == MessageBoxResult.OK) {
-				DeleteCore(nodes);
+			if (MessageBox.Show("Are you sure you want to delete " + nodes.Length + " items?", "Delete", MessageBoxButton.OKCancel) == MessageBoxResult.OK) {
+				DeleteWithoutConfirmation(nodes);
+			}
+		}
+		
+		public override void DeleteWithoutConfirmation(SharpTreeNode[] nodes)
+		{
+			foreach (var node in nodes) {
+				if (node.Parent != null)
+					node.Parent.Children.Remove(node);
 			}
 		}
 
-		public override void DeleteCore(SharpTreeNode[] nodes)
-		{
-			foreach (var node in nodes.ToArray()) {
-				node.Parent.Children.Remove(node);
-			}
-		}
-
-		public override bool CanDrag(SharpTreeNode[] nodes)
-		{
-			return true;
-		}
-
-		ContextMenu menu;
-
-		public override ContextMenu GetContextMenu()
-		{
-			if (menu == null) {
-				menu = new ContextMenu();
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Cut });
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Copy });
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Paste });
-				menu.Items.Add(new Separator());
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Delete });
-			}
-			return menu;
-		}
+		
+//		ContextMenu menu;
+//
+//		public override ContextMenu GetContextMenu()
+//		{
+//			if (menu == null) {
+//				menu = new ContextMenu();
+//				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Cut });
+//				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Copy });
+//				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Paste });
+//				menu.Items.Add(new Separator());
+//				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Delete });
+//			}
+//			return menu;
+//		}
 	}
 }

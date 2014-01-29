@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
 
@@ -12,31 +13,33 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public interface ITypeDefinitionModel : IEntityModel
 	{
+		event EventHandler Updated;
+		
 		FullTypeName FullTypeName { get; }
+		string Namespace { get; }
+		TypeKind TypeKind { get; }
 		IModelCollection<ITypeDefinitionModel> NestedTypes { get; }
 		IModelCollection<IMemberModel> Members { get; }
 		
+		IEnumerable<DomRegion> GetPartRegions();
+		
 		/// <summary>
-		/// Resolves the type definition in the current solution snapshot.
+		/// Resolves the type definition in the current compilation.
 		/// Returns null if the type definition could not be resolved.
 		/// </summary>
 		new ITypeDefinition Resolve();
 		
 		/// <summary>
-		/// Resolves the type definition in the specified solution snapshot.
+		/// Resolves the type definition in the specified compilation.
 		/// Returns null if the type definition could not be resolved.
 		/// </summary>
-		new ITypeDefinition Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot);
+		new ITypeDefinition Resolve(ICompilation compilation);
 		
 		/// <summary>
 		/// Retrieves the nested type with the specified name and additional type parameter count
 		/// </summary>
 		ITypeDefinitionModel GetNestedType(string name, int additionalTypeParameterCount);
 		
-		/// <summary>
-		/// Updates this type definition model by replacing oldPart with newPart.
-		/// Either oldPart or newPart may be null when adding/removed a part.
-		/// </summary>
-		void Update(IUnresolvedTypeDefinition oldPart, IUnresolvedTypeDefinition newPart);
+		bool IsPartial { get; }
 	}
 }

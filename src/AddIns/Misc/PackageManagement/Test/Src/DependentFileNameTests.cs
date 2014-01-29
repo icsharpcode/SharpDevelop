@@ -37,7 +37,6 @@ namespace PackageManagement.Tests
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 		}
 		
 		[Test]

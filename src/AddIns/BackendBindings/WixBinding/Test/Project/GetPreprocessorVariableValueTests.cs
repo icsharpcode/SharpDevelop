@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
@@ -21,7 +22,6 @@ namespace WixBinding.Tests.Project
 		public void SetUp()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 		}
 		
 		[Test]
@@ -62,11 +62,11 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void VariableValueUsingSharpDevelopConstant()
 		{
-			MSBuildEngine.MSBuildProperties.Add("MyAppBinPath", @"C:\Program Files\MyApp\bin");
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
+			// SD.MSBuildEngine.GlobalBuildProperties is stubbed by  
+			((Dictionary<string, string>)SD.MSBuildEngine.GlobalBuildProperties).Add("MyAppBinPath", @"C:\Program Files\MyApp\bin");
 			p.SetProperty("DefineConstants", @" DATADIR = $(MyAppBinPath)\Bitmaps ");
 			string variableValue = p.GetPreprocessorVariableValue("DATADIR");
-			MSBuildEngine.MSBuildProperties.Remove("MyAppBinPath");
 			Assert.AreEqual(@"C:\Program Files\MyApp\bin\Bitmaps", variableValue);
 		}
 	}

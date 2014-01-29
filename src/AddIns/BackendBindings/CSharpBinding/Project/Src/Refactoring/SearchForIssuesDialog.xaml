@@ -9,6 +9,7 @@
         xmlns:local="clr-namespace:CSharpBinding.Refactoring"
         Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
         WindowStartupLocation="CenterOwner"
+        Closing="Window_Closing"
         MinHeight="250" MinWidth="200"
         Height="450" Width="400" Title="Search For Issues">
 	<Grid Margin="6">

@@ -3,9 +3,11 @@
 
 using System;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop.Workbench;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -101,6 +103,21 @@ namespace PackageManagement.Tests
 			packageManagementEvents.OnPackageOperationMessageLogged(MessageLevel.Info, "Test {0}", 1);
 			
 			Assert.AreEqual("Test 1", fakeMessageCategoryView.FirstLineAppended);
+		}
+		
+		[Test]
+		public void OutputCategory_MessageViewCategoryAlreadyCreated_ReturnsOutputCategoryFromMessageViewCategory()
+		{
+			CreateCompilerMessageView();
+			var messageCategoryView = new FakeMessageCategoryView();
+			IOutputCategory expectedCategory = MockRepository.GenerateStub<IOutputCategory>();
+			messageCategoryView.OutputCategory = expectedCategory;
+			fakeCompilerMessageView.GetExistingReturnValue = messageCategoryView;
+			CreateView(fakeCompilerMessageView);
+			
+			IOutputCategory outputCategory = view.OutputCategory;
+			
+			Assert.AreEqual(expectedCategory, outputCategory);
 		}
 	}
 }

@@ -7,7 +7,7 @@
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.WixBinding"/>
-		<!--<Dependency addin = "ICSharpCode.FormsDesigner" requirePreload = "true"/>-->
+		<Dependency addin = "ICSharpCode.FormsDesigner" requirePreload = "true"/>
 		<Dependency addin = "ICSharpCode.XmlEditor" requirePreload = "true"/>
 	</Manifest>
 	
@@ -20,7 +20,6 @@
 		<FileFilter id           = "WixProject"
 		            insertbefore = "AllFiles"
 		            name         = "${res:ICSharpCode.WixBinding.WixProjectFilesFilterName} (*.wixproj)"
-		            class        = "ICSharpCode.SharpDevelop.Project.LoadProject"
 		            extensions   = "*.wixproj"/>
 	</Path>
 	
@@ -40,7 +39,7 @@
 	
 	<!-- WiX project and file templates -->
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
-		<Directory id = "WiX" path = "./Templates" />
+		<TemplateFile id = "WiX" path = "./Templates" />
 	</Path>
 
 	<Path name = "/AddIns/FileTypeRegisterer/FileTypes">
@@ -158,16 +157,16 @@
 		</Condition>
 	</Path>
 	
-	<!--<Path name = "/SharpDevelop/Workbench/Pads">
+	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id              = "WixSetupDialogListPad"
 		     category        = "Setup"
 		     title           = "${res:ICSharpCode.WixBinding.SetupDialogListPad.Title}"
 		     icon            = "Setup.Icons.16x16.SetupDialogsPad"
 		     class           = "ICSharpCode.WixBinding.SetupDialogListPad"
 		     defaultPosition = "Bottom, Hidden" />
-	</Path>-->
+	</Path>
 
-	<!--<Path name = "/SharpDevelop/Pads/WixSetupDialogListPad/ContextMenu">
+	<Path name = "/SharpDevelop/Pads/WixSetupDialogListPad/ContextMenu">
 		<Condition name = "Ownerstate" ownerstate = "ItemSelected" action = "Disable">
 			<MenuItem id = "OpenDialog"
 				icon  = "Icons.16x16.OpenFileIcon"
@@ -178,14 +177,14 @@
 				icon = "Icons.16x16.FormsDesigner.ViewCode"
 				class = "ICSharpCode.WixBinding.ViewDialogXmlCommand"/>
 		</Condition>
-	</Path>-->
+	</Path>
 
-	<!--<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id = "WixDialogDesigner"
 			type  = "Secondary"
 			class = "ICSharpCode.WixBinding.WixDialogDesignerDisplayBinding"
 			fileNamePattern = "\.(wxs|wxi)$"/>
-	</Path>-->
+	</Path>
 
 	<!-- Setup menu items that are created in the View menu -->
 	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
@@ -253,7 +252,7 @@
 				label = "Diff"
 				class = "ICSharpCode.WixBinding.ShowDiffCommand"/>
 		</ComplexCondition>
-		<!--<ComplexCondition action = "Exclude">
+		<ComplexCondition action = "Exclude">
 			<Or>
 				<Condition name = "Ownerstate" ownerstate = "ChildElementsAllowed"/> 
 				<Condition name = "Ownerstate" ownerstate = "NothingSelectedAndChildElementsAllowed"/>
@@ -265,7 +264,7 @@
 					 type = "Builder"
 					 class = "ICSharpCode.WixBinding.AddChildElementsMenuBuilder"/>
 			</MenuItem>
-		</ComplexCondition>-->
+		</ComplexCondition>
 		<ComplexCondition action = "Exclude">
 			<Or>
 				<Condition name = "Ownerstate" ownerstate = "ChildElementsAllowed"/> 

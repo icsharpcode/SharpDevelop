@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -52,9 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
 			// refresh the list box contents when parsing has completed
-			Dispatcher.BeginInvoke(
-				System.Windows.Threading.DispatcherPriority.Background,
-				new Action(delegate { textBoxTextChanged(null, null); }));
+			textBoxTextChanged(null, null);
 		}
 		
 		class GotoEntry : IComparable<GotoEntry>
@@ -109,6 +108,61 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else if (e.Key == Key.PageDown) {
 				e.Handled = true;
 				ChangeIndex((int)Math.Round(+listBox.ActualHeight / 20));
+			} else if (e.Key == Key.Tab) {
+				e.Handled = true;
+				CompleteSelectedEntry();
+			}
+		}
+		
+		private void CompleteSelectedEntry()
+		{
+			if (listBox.SelectedItem == null) {
+				return;
+			}
+			
+			string completed = null;
+			bool partlyComplete = false;
+			
+			object tag = ((GotoEntry) listBox.SelectedItem).Tag;
+			if (tag is IUnresolvedEntity) {
+				IUnresolvedEntity c = tag as IUnresolvedEntity;
+				completed = c.Name;
+				partlyComplete = (tag is IUnresolvedMember);
+			} else if (tag is IEntity) {
+				IEntity m = tag as IEntity;
+				completed = m.Name;
+				partlyComplete = (tag is IMember);
+			} else if (tag is FileLineReference) {
+				FileLineReference flref = tag as FileLineReference;
+				// Only complete if we are not matching with a concrete number
+				if (flref.Line == 0) {
+					completed = Path.GetFileName(flref.FileName);
+				} else {
+					return;
+				}
+			} else {
+				// Unsupported list item, do nothing
+				return;
+			}
+			
+			if (completed != null) {
+				string currentText = textBox.Text;
+				int dotPos = currentText.IndexOf('.');
+				string needle = currentText;
+				string member = null;
+				if (dotPos > 0) {
+					needle = currentText.Substring(0, dotPos).Trim();
+					member = currentText.Substring(dotPos + 1).Trim();
+				}
+				
+				// Replace the text, set caret to end, so user can continue typing
+				if (partlyComplete && (member != null)) {
+					// Only replace the part after the dot
+					textBox.Text = needle + "." + completed;
+				} else {
+					textBox.Text = completed;
+				}
+				textBox.CaretIndex = textBox.Text.Length;
 			}
 		}
 		
@@ -135,6 +189,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (text.Length == 1 && !char.IsDigit(text, 0)) {
 				return;
 			}
+			
+			int dotPos = text.IndexOf('.');
+			string needle = text;
+			string member = null;
+			if (dotPos > 0) {
+				needle = text.Substring(0, dotPos).Trim();
+				member = text.Substring(dotPos + 1).Trim();
+			}
+			
 			int commaPos = text.IndexOf(',');
 			if (commaPos < 0) {
 				// use "File, ##" or "File: ##" syntax for line numbers
@@ -156,8 +219,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				AddSourceFiles(file, lineNr);
 			} else {
 				AddSourceFiles(text, 0);
-				foreach (IUnresolvedTypeDefinition c in SearchClasses(text)) {
-					AddItem(c, GetMatchType(text, c.Name), false);
+				foreach (IUnresolvedTypeDefinition c in SearchClasses(needle)) {
+					if (!String.IsNullOrEmpty(member)) {
+						AddAllMembersMatchingText(c, member, false);
+					} else {
+						AddItem(c, GetMatchType(needle, c.Name), false);
+					}
 				}
 				AddAllMembersMatchingText(text);
 			}
@@ -187,7 +254,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				AddAllMembersMatchingText(innerClass, text, inCurrentFile);
 			}
 			foreach (IUnresolvedMember m in c.Members) {
-				if (m.EntityType != EntityType.Constructor) {
+				if (m.SymbolKind != SymbolKind.Constructor) {
 					AddItemIfMatchText(text, m, ClassBrowserIconService.GetIcon(m), inCurrentFile);
 				}
 			}
@@ -246,7 +313,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						foreach (IUnresolvedTypeDefinition c in projectContent.GetAllTypeDefinitions()) {
 							string className = c.Name;
 							if (className.Length >= text.Length) {
-								if (className.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0) {
+								if (GotoUtils.AutoCompleteWithCamelHumpsMatch(className, text)) {
 									list.Add(c);
 								}
 							}
@@ -256,7 +323,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			return list;
 		}
-		
+
 		const int MatchType_NoMatch = -1;
 		const int MatchType_ContainsMatch_CaseInsensitive = 0;
 		const int MatchType_ContainsMatch = 1;
@@ -270,8 +337,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (itemText.Length < searchText.Length)
 				return MatchType_NoMatch;
 			int indexInsensitive = itemText.IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
-			if (indexInsensitive < 0)
+			if (indexInsensitive < 0) {
+				if (GotoUtils.AutoCompleteWithCamelHumpsMatch(itemText, searchText)) {
+					return MatchType_ContainsMatch_CaseInsensitive;
+				}
 				return MatchType_NoMatch;
+			}
 			// This is a case insensitive match
 			int indexSensitive = itemText.IndexOf(searchText, StringComparison.Ordinal);
 			if (itemText.Length == searchText.Length) {
@@ -372,6 +443,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} finally {
 				Close();
 			}
+		}
+	}
+	
+	public class GotoUtils
+	{
+		public static bool AutoCompleteWithCamelHumpsMatch(string entityName, string entityPartName)
+		{
+			string camelHumpsPrefix = new string(entityName.Where(Char.IsUpper).ToArray());
+			return AutoCompleteMatch(entityName, entityPartName) || AutoCompleteMatch(camelHumpsPrefix, entityPartName);
+		}
+		
+		public static bool AutoCompleteMatch(string entityName, string entityPartName)
+		{
+			return entityName.IndexOf(entityPartName, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 	}
 }

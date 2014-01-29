@@ -8,7 +8,7 @@
 		<Name>${res:Templates.Project.WindowsService.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
-		<Icon>VBNet.Project.ServiceProject</Icon>
+		<Icon>VB.Project.ServiceProject</Icon>
 		<Description>${res:Templates.Project.WindowsService.Description}</Description>
 		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -18,7 +18,7 @@
 		<Open filename = "${ProjectName}.vb"/>
 	</Actions>
 	
-	<Project language="VBNet">
+	<Project language="VB">
 		<PropertyGroup>
 			<OutputType>Exe</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>

@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	/// This is the basic interface to the workspace.
 	/// </summary>
 	[SDService("SD.Workbench")]
-	public interface IWorkbench : IMementoCapable
+	public interface IWorkbench
 	{
 		/// <summary>
 		/// The main window as IWin32Window.
@@ -33,14 +33,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// Gets/Sets whether the window is displayed in full-screen mode.
 		/// </summary>
 		bool FullScreen { get; set; }
-		
-		/// <summary>
-		/// The title shown in the title bar.
-		/// </summary>
-		string Title {
-			get;
-			set;
-		}
 		
 		/// <summary>
 		/// A collection in which all opened view contents (including all secondary view contents) are saved.
@@ -152,7 +144,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <returns>
 		/// 	True if all views were closed properly, false if closing was aborted.
 		/// </returns>
-		bool CloseAllSolutionViews();
+		bool CloseAllSolutionViews(bool force);
 		
 		/// <summary>
 		/// Gets/Sets the name of the current layout configuration.

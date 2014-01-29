@@ -5,12 +5,14 @@ using System;
 using System.IO;
 using System.Text;
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.Scripting
 {
-	public interface IScriptingFileService : IFileSystem
+	public interface IScriptingFileService
 	{
+		bool FileExists(string fileName);
 		string GetTempFileName();
 		TextWriter CreateTextWriter(CreateTextWriterInfo createTextWriterInfo);
 		void DeleteFile(string fileName);

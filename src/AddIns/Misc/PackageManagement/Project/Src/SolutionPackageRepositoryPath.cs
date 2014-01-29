@@ -11,7 +11,7 @@ namespace ICSharpCode.PackageManagement
 	public class SolutionPackageRepositoryPath
 	{
 		string packagesRelativeDirectory;
-		Solution solution;
+		ISolution solution;
 		DefaultPackagePathResolver pathResolver;
 		
 		public SolutionPackageRepositoryPath(IProject project)
@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public SolutionPackageRepositoryPath(Solution solution, PackageManagementOptions options)
+		public SolutionPackageRepositoryPath(ISolution solution, PackageManagementOptions options)
 		{
 			packagesRelativeDirectory = options.PackagesDirectory;
 			this.solution = solution;

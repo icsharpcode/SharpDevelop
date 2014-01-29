@@ -27,13 +27,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			Assert.IsInstanceOf<ReportDesignerView>(this.generator.ViewContent);
 		}
 		
-		[Test]
-		[Ignore]
-		public void FixMoreTests()
-		{
-			Assert.IsNotNull(this.generator.ViewContent);
-			Assert.IsInstanceOf<ReportDesignerView>(this.generator.ViewContent);
-		}
+	
 		[TestFixtureSetUp]
 		public void Init()
 		{

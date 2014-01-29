@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -9,5 +10,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		void AppendLine(string text);
 		void Clear();
+		IOutputCategory OutputCategory { get; }
 	}
 }

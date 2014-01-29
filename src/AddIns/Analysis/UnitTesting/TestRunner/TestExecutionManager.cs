@@ -76,15 +76,15 @@ namespace ICSharpCode.UnitTesting.Frameworks
 			cancellationToken.ThrowIfCancellationRequested();
 			using (IProgressMonitor progressMonitor = statusBarService.CreateProgressMonitor(cancellationToken)) {
 				int projectsLeftToRun = testsByProject.Count;
-				foreach (IGrouping<ITestProject, ITest> g in testsByProject) {
+				foreach (IGrouping<ITestProject, ITest> g in testsByProject.OrderBy(g => g.Key.DisplayName)) {
 					currentProjectBeingTested = g.Key;
 					progressMonitor.TaskName = GetProgressMonitorLabel(currentProjectBeingTested);
 					progressMonitor.Progress = GetProgress(projectsLeftToRun);
 					using (testProgressMonitor = progressMonitor.CreateSubTask(1.0 / testsByProject.Count)) {
 						using (ITestRunner testRunner = currentProjectBeingTested.CreateTestRunner(options)) {
-							testRunner.MessageReceived += testRunner_MessageReceived;
 							testRunner.TestFinished += testRunner_TestFinished;
-							await testRunner.RunAsync(g, testProgressMonitor, testProgressMonitor.CancellationToken);
+							var writer = new MessageViewCategoryTextWriter(testService.UnitTestMessageView);
+							await testRunner.RunAsync(g, testProgressMonitor, writer, testProgressMonitor.CancellationToken);
 						}
 					}
 					projectsLeftToRun--;
@@ -115,9 +115,9 @@ namespace ICSharpCode.UnitTesting.Frameworks
 		
 		void ClearTasks()
 		{
-			taskService.BuildMessageViewCategory.ClearText();
+			taskService.BuildMessageViewCategory.Clear();
 			taskService.ClearExceptCommentTasks();
-			testService.UnitTestMessageView.ClearText();
+			testService.UnitTestMessageView.Clear();
 		}
 		
 		void ShowUnitTestsPad()
@@ -132,7 +132,7 @@ namespace ICSharpCode.UnitTesting.Frameworks
 		
 		void ShowOutputPad()
 		{
-			workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+			testService.UnitTestMessageView.Activate(true);
 		}
 		
 		void ResetTestResults()
@@ -154,11 +154,6 @@ namespace ICSharpCode.UnitTesting.Frameworks
 		{
 			int totalProjectCount = testsByProject.Count;
 			return (double)(totalProjectCount - projectsLeftToRunCount) / totalProjectCount;
-		}
-		
-		void testRunner_MessageReceived(object sender, MessageReceivedEventArgs e)
-		{
-			testService.UnitTestMessageView.AppendLine(e.Message);
 		}
 		
 		void testRunner_TestFinished(object sender, TestFinishedEventArgs e)

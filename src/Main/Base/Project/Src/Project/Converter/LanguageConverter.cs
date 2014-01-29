@@ -12,12 +12,12 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using Microsoft.Build.Construction;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
+	/*
 	/// <summary>
 	/// Converts projects from one language to another, for example C# &lt;-&gt; VB
 	/// </summary>
@@ -27,19 +27,17 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		public abstract string TargetLanguageName { get; }
 		
-		protected virtual IProject CreateProject(string targetProjectDirectory, IProject sourceProject)
+		protected virtual IProject CreateProject(DirectoryName targetProjectDirectory, IProject sourceProject)
 		{
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.Solution = sourceProject.ParentSolution;
-			info.ProjectBasePath = targetProjectDirectory;
-			info.ProjectName = sourceProject.Name + ".Converted";
-			info.RootNamespace = sourceProject.RootNamespace;
-			
 			ProjectBindingDescriptor descriptor = ProjectBindingService.GetCodonPerLanguageName(TargetLanguageName);
 			if (descriptor == null || descriptor.Binding == null)
 				throw new InvalidOperationException("Cannot get Language Binding for " + TargetLanguageName);
 			
-			info.OutputProjectFileName = FileName.Create(Path.Combine(targetProjectDirectory, info.ProjectName + descriptor.ProjectFileExtension));
+			string projectName = sourceProject.Name + ".Converted";
+			FileName fileName = FileName.Create(Path.Combine(targetProjectDirectory, projectName + descriptor.ProjectFileExtension));
+			
+			ProjectCreateInformation info = new ProjectCreateInformation(sourceProject.ParentSolution, fileName);
+			info.RootNamespace = sourceProject.RootNamespace;
 			
 			return descriptor.Binding.CreateProject(info);
 		}
@@ -84,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 						}
 						
 						// use the newly created IdGuid instead of the copied one
-						tp.SetProperty(MSBuildBasedProject.ProjectGuidPropertyName, tp.IdGuid);
+						tp.SetProperty(MSBuildBasedProject.ProjectGuidPropertyName, tp.IdGuid.ToString("B").ToUpperInvariant());
 					}
 				}
 			}
@@ -112,11 +110,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				throw new ArgumentNullException("sourceProject");
 			if (targetProject == null)
 				throw new ArgumentNullException("targetProject");
-			IProjectItemListProvider targetProjectItems = targetProject as IProjectItemListProvider;
-			if (targetProjectItems == null)
-				throw new ArgumentNullException("targetProjectItems");
 			
-			IReadOnlyCollection<ProjectItem> sourceItems = sourceProject.Items;
+			IReadOnlyCollection<ProjectItem> sourceItems = sourceProject.Items.CreateSnapshot();
 			double totalWork = 0;
 			foreach (ProjectItem item in sourceItems) {
 				totalWork += GetRequiredWork(item);
@@ -138,9 +133,9 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 							throw new ConversionException("Error converting " + fileItem.FileName, ex);
 						}
 					}
-					targetProjectItems.AddProjectItem(targetItem);
+					targetProject.Items.Add(targetItem);
 				} else {
-					targetProjectItems.AddProjectItem(item.CloneFor(targetProject));
+					targetProject.Items.Add(item.CloneFor(targetProject));
 				}
 				monitor.CancellationToken.ThrowIfCancellationRequested();
 				monitor.Progress += GetRequiredWork(item) / totalWork;
@@ -158,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			conversionLog.AppendLine();
 			conversionLog.AppendLine();
 			MSBuildBasedProject sourceProject = ProjectService.CurrentProject as MSBuildBasedProject;
-			string targetProjectDirectory = sourceProject.Directory + ".ConvertedTo" + TargetLanguageName;
+			DirectoryName targetProjectDirectory = DirectoryName.Create(sourceProject.Directory + ".ConvertedTo" + TargetLanguageName);
 			if (Directory.Exists(targetProjectDirectory)) {
 				MessageService.ShowMessageFormatted(translatedTitle, "${res:ICSharpCode.SharpDevelop.Commands.Convert.TargetAlreadyExists}", targetProjectDirectory);
 				return;
@@ -175,7 +170,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 		
-		void PerformConversion(string translatedTitle, MSBuildBasedProject sourceProject, string targetProjectDirectory)
+		void PerformConversion(string translatedTitle, MSBuildBasedProject sourceProject, DirectoryName targetProjectDirectory)
 		{
 			IProject targetProject;
 			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog(translatedTitle, "Converting", true)) {
@@ -198,7 +193,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 			while (node != null) {
 				if (node is ISolutionFolderNode) {
-					AddExistingProjectToSolution.AddProject((ISolutionFolderNode)node, targetProject.FileName);
+					var solutionFolderNode = (ISolutionFolderNode)node;
+					solutionFolderNode.Folder.AddExistingProject(targetProject.FileName);
 					ProjectService.SaveSolution();
 					break;
 				}
@@ -211,6 +207,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 	}
+*/
 
 	/*
 	public abstract class NRefactoryLanguageConverter : LanguageConverter
@@ -276,6 +273,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	}
 	*/
 	
+	/*
 	/// <summary>
 	/// Exception used when converting a file fails.
 	/// </summary>
@@ -298,4 +296,5 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		{
 		}
 	}
+	*/
 }

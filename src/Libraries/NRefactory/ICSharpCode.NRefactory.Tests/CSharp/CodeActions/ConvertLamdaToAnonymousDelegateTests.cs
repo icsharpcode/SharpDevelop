@@ -76,6 +76,28 @@ class A
 		}
 
 		[Test]
+		public void NonVoidExpressionTest ()
+		{
+			Test<ConvertLambdaToAnonymousDelegateAction>(@"
+class A
+{
+	void F ()
+	{
+		System.Func<int> = ()$ => 1;
+	}
+}", @"
+class A
+{
+	void F ()
+	{
+		System.Func<int> = delegate {
+			return 1;
+		};
+	}
+}");
+		}
+
+		[Test]
 		public void ParameterLessLambdaTest ()
 		{
 			Test<ConvertLambdaToAnonymousDelegateAction>(@"

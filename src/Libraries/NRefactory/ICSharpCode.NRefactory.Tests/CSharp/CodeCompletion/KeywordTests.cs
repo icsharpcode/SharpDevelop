@@ -92,6 +92,8 @@ class Class
 	}
 }
 ");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNull (provider.Find ("case"), "keyword 'case' found.");
 	}
 		
 		[Test()]
@@ -532,6 +534,85 @@ partial class A
 			
 			var data = provider.Find("FooBar") as CodeCompletionBugTests.TestFactory.OverrideCompletionData;
 			Assert.AreEqual(start.Length, data.DeclarationBegin);
+		}
+
+		[Test]
+		public void IsTypeKeywordTest ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+				@"using System;
+class Test
+{
+public void Method ()
+{
+void TestMe (object o)
+{
+if (o is $s$
+}
+}
+}
+", (provider) => {
+				Assert.IsNotNull (provider, "provider == null");
+				Assert.IsNotNull (provider.Find ("string"), "keyword 'string' not found.");
+			});
+		}
+
+		[Test]
+		public void AsTypeKeywordTest ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+				@"using System;
+class Test
+{
+public void Method ()
+{
+void TestMe (object o)
+{
+if (o as $s$
+}
+}
+}
+", (provider) => {
+				Assert.IsNotNull (provider, "provider == null");
+				Assert.IsNotNull (provider.Find ("string"), "keyword 'string' not found.");
+			});
+		}
+
+		[Test]
+		public void ForeachInKeyword ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+				@"using System;
+class Test
+{
+	public static void Main (string[] args)
+	{
+		$foreach (var foo i$
+	}
+}
+", (provider) => {
+					Assert.IsNotNull (provider, "provider == null");
+					Assert.IsNotNull (provider.Find ("in"), "keyword 'in' not found.");
+				});
+		}
+
+		[Test]
+		public void ForeachInKeyword_NestedCase ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+				@"using System;
+class Test
+{
+	public static void Main (string[] args)
+	{
+		$foreach (var foo in args)
+			foreach (var c i$
+	}
+}
+", (provider) => {
+					Assert.IsNotNull (provider, "provider == null");
+					Assert.IsNotNull (provider.Find ("in"), "keyword 'in' not found.");
+				});
 		}
 	}
 }

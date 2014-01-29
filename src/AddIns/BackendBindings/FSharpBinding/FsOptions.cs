@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 namespace FSharpBinding
 {
+	[Obsolete("TODO: rewrite me in WPF")]
 	public class FsOptions : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()

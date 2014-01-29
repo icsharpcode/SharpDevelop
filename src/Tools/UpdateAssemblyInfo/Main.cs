@@ -22,15 +22,19 @@ namespace UpdateAssemblyInfo
 		const string BaseCommit = "4ba2785f66bebeaa21c68cf4f6733fc19ddb0d9d";
 		const int BaseCommitRev = 0;
 		
-		const string globalAssemblyInfoTemplateFile = "src/Main/GlobalAssemblyInfo.template";
+		const string globalAssemblyInfoTemplateFile = "src/Main/GlobalAssemblyInfo.cs.template";
 		static readonly TemplateFile[] templateFiles = {
 			new TemplateFile {
 				Input = globalAssemblyInfoTemplateFile,
 				Output = "src/Main/GlobalAssemblyInfo.cs"
 			},
 			new TemplateFile {
+				Input = "src/Main/GlobalAssemblyInfo.vb.template",
+				Output = "src/Main/GlobalAssemblyInfo.vb"
+			},
+			new TemplateFile {
 				Input = "src/Main/SharpDevelop/app.template.config",
-				Output = "src/Main/SharpDevelop/SharpDevelop.exe.config"
+				Output = "src/Main/SharpDevelop/app.config"
 			},
 			new TemplateFile {
 				Input = "src/Setup/SharpDevelop.Setup.wixproj.user.template",

@@ -4,82 +4,58 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.ILAst;
+using ICSharpCode.NRefactory.CSharp;
 using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {
-	sealed class DebuggerTextOutput : ITextOutput
+	public sealed class DebugInfoTokenWriterDecorator : DecoratingTokenWriter
 	{
-		readonly ITextOutput output;
+		readonly Stack<MethodDebugSymbols> symbolsStack = new Stack<MethodDebugSymbols>();
 		
 		public readonly Dictionary<string, MethodDebugSymbols> DebugSymbols = new Dictionary<string, MethodDebugSymbols>();
 		public readonly Dictionary<string, ICSharpCode.NRefactory.TextLocation> MemberLocations = new Dictionary<string, ICSharpCode.NRefactory.TextLocation>();
 		
-		public DebuggerTextOutput(ITextOutput output)
+		public DebugInfoTokenWriterDecorator(TokenWriter writer)
+			: base(writer)
 		{
-			this.output = output;
 		}
 		
-		public ICSharpCode.NRefactory.TextLocation Location {
-			get { return output.Location; }
-		}
-		
-		public void Indent()
+		public override void StartNode(AstNode node)
 		{
-			output.Indent();
-		}
-		
-		public void Unindent()
-		{
-			output.Unindent();
-		}
-		
-		public void Write(char ch)
-		{
-			output.Write(ch);
-		}
-		
-		public void Write(string text)
-		{
-			output.Write(text);
-		}
-		
-		public void WriteLine()
-		{
-			output.WriteLine();
-		}
-		
-		public void WriteDefinition(string text, object definition, bool isLocal)
-		{
-			if (definition is MemberReference) {
-				MemberLocations[XmlDocKeyProvider.GetKey((MemberReference)definition)] = Location;
+			base.StartNode(node);
+			if (node.Annotation<MethodDebugSymbols>() != null) {
+				symbolsStack.Push(node.Annotation<MethodDebugSymbols>());
 			}
-			output.WriteDefinition(text, definition, isLocal);
 		}
 		
-		public void WriteReference(string text, object reference, bool isLocal)
+		public override void EndNode(AstNode node)
 		{
-			output.WriteReference(text, reference, isLocal);
-		}
-		
-		public void AddDebugSymbols(MethodDebugSymbols methodDebugSymbols)
-		{
-			var id = XmlDocKeyProvider.GetKey(methodDebugSymbols.CecilMethod);
-			methodDebugSymbols.SequencePoints = methodDebugSymbols.SequencePoints.OrderBy(s => s.ILOffset).ToList();
-			this.DebugSymbols.Add(id, methodDebugSymbols);
-			output.AddDebugSymbols(methodDebugSymbols);
-		}
-		
-		public void MarkFoldStart(string collapsedText, bool defaultCollapsed)
-		{
-			output.MarkFoldStart(collapsedText, defaultCollapsed);
-		}
-		
-		public void MarkFoldEnd()
-		{
-			output.MarkFoldEnd();
+			base.EndNode(node);
+			if (node is EntityDeclaration && node.Annotation<MemberReference>() != null) {
+				MemberLocations[XmlDocKeyProvider.GetKey(node.Annotation<MemberReference>())] = node.StartLocation;
+			}
+			
+			// code mappings
+			var ranges = node.Annotation<List<ILRange>>();
+			if (symbolsStack.Count > 0 && ranges != null && ranges.Count > 0) {
+				symbolsStack.Peek().SequencePoints.Add(
+					new SequencePoint() {
+						ILRanges = ILRange.OrderAndJoin(ranges).ToArray(),
+						StartLocation = node.StartLocation,
+						EndLocation = node.EndLocation
+					});
+			}
+			
+			if (node.Annotation<MethodDebugSymbols>() != null) {
+				var symbols = symbolsStack.Pop();
+				symbols.SequencePoints = symbols.SequencePoints.OrderBy(s => s.ILOffset).ToList();
+				symbols.StartLocation = node.StartLocation;
+				symbols.EndLocation = node.EndLocation;
+				DebugSymbols[XmlDocKeyProvider.GetKey(symbols.CecilMethod)] = symbols;
+			}
 		}
 	}
 }

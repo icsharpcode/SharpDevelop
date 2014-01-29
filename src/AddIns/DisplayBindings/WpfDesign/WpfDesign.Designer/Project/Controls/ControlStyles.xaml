@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls" xmlns:ControlConvertors="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls.Converters" xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls" xmlns:ControlConvertors="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls.Converters" xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters"  xmlns:Widgets="http://icsharpcode.net/sharpdevelop/widgets">
 	<!--
 		This file contains the default styles used by the Controls in ICSharpCode.WpfDesign.Designer.Controls
 	-->
@@ -16,7 +16,35 @@
 	</Style>
 	<Style TargetType="{x:Type Controls:EnumButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
 		<Setter Property="Margin" Value="3 3 0 3" />
-		<Setter Property="MinWidth" Value="50" />
+		<Setter Property="Foreground" Value="#FF000000"/>
+		<Setter Property="Padding" Value="0"/>
+		<Setter Property="BorderThickness" Value="1"/>
+		<Setter Property="BorderBrush" Value="Black"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ToggleButton">
+					<Grid>
+						<Border x:Name="Background" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
+							<Grid Background="{TemplateBinding Background}">
+								<Border Opacity="0"  x:Name="BackgroundAnimation" Background="#FF448DCA" />
+							</Grid>
+						</Border>
+						<ContentPresenter
+							x:Name="contentPresenter"
+							Content="{TemplateBinding Content}"
+							ContentTemplate="{TemplateBinding ContentTemplate}"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+							Margin="{TemplateBinding Padding}"/>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+		<Style.Triggers>
+			<Trigger Property="IsChecked" Value="True">
+				<Setter Property="Background" Value="SkyBlue" />
+			</Trigger>
+		</Style.Triggers>
 	</Style>
 	<Style TargetType="{x:Type Controls:ResizeThumb}">
 		<Setter Property="Template">
@@ -35,6 +63,20 @@
 							<Setter TargetName="thumbRectangle" Property="Visibility" Value="Hidden" />
 						</Trigger>
 					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style TargetType="{x:Type Controls:RotateThumb}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Controls:RotateThumb}">
+					<Grid>
+						<Rectangle VerticalAlignment="Top" Width="2" Height="30" Fill="Black" Margin="0,0,0,0" />
+						<Ellipse VerticalAlignment="Top" StrokeThickness="1" Name="thumbRectangle" SnapsToDevicePixels="True" Stroke="Black"
+						         Width="7" Height="7" Fill="Black">
+						</Ellipse>
+					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
@@ -89,7 +131,7 @@
 								<Label Margin="4,0,0,0" Content="{TemplateBinding Window.Title}" />
 							</DockPanel>
 							<Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-								<Border BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" Background="{TemplateBinding Panel.Background}">
+								<Border ClipToBounds="True" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" Background="{TemplateBinding Panel.Background}">
 									<AdornerDecorator>
 										<ContentPresenter ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" Content="{TemplateBinding ContentControl.Content}" />
 									</AdornerDecorator>
@@ -184,6 +226,45 @@
 							<Setter TargetName="line" Property="Stroke" Value="#D0FFB74F" />
 						</Trigger>
 					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style TargetType="{x:Type Controls:CanvasPositionHandle}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Controls:MarginHandle}">
+					<Grid Height="10" Width="{Binding Path=HandleLength, Converter={x:Static ControlConvertors:HandleLengthWithOffset.Instance}, RelativeSource={RelativeSource Mode=TemplatedParent}}" SnapsToDevicePixels="True">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="8" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<Path Name="startArrow" Fill="{StaticResource HandleBrush}" Stretch="Fill" Stroke="{TemplateBinding Panel.Background}" StrokeThickness="0.5" Margin="0,1,0,1" Data="M0,0 L0,1 1,0.5 z" Grid.Column="0" />
+						<!-- Wrap the handle-line and endArrow in this grid. It's visiblity is subjected to HandleLength  -->
+						<Grid Height="10" Grid.Column="1" Name="lineArrow">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition MaxWidth="20" MinWidth="10" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<Rectangle Fill="Transparent" Height="10" Grid.Column="0" Grid.ColumnSpan="4" />
+							<Path Name="line1" StrokeDashArray="2,2"  Stretch="Fill" Stroke="{StaticResource HandleBrush}" StrokeThickness="1.5" Margin="0 0 0 0" Data="M0,-0.75 L1,-0.75" Grid.Column="0" />
+							<TextBlock Grid.Column="1" Text="{Binding Path=HandleLength, Mode=OneWay, Converter={x:Static Converters:FormatDoubleConverter.Instance }, RelativeSource={RelativeSource Mode=TemplatedParent}}" FontSize="9" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="1,1,1,1">
+								<TextBlock.LayoutTransform>
+									<RotateTransform Angle="{Binding Path=TextTransform, RelativeSource={RelativeSource Mode=TemplatedParent}}" CenterX="0.5" CenterY="0.5">
+									</RotateTransform>
+								</TextBlock.LayoutTransform>
+							</TextBlock>
+							<Path Name="line2" StrokeDashArray="2,2"  Stretch="Fill" Stroke="{StaticResource HandleBrush}" StrokeThickness="1.5" Margin="0 0 0 0" Data="M0,-0.75 L1,-0.75" Grid.Column="2" />
+							<!--<Path Name="arrow2" Margin="0,1,0,1" Fill="{StaticResource HandleBrush}" Stretch="Fill" Stroke="{TemplateBinding Panel.Background}" StrokeThickness="0.5" Data="M0,0 L0,1 1,0.5 z" Grid.Column="3" />-->
+							<!--<Rectangle Width="1.5" Fill="{StaticResource HandleBrush}" Grid.Column="4"/>-->
+						</Grid>
+						<!--  Rotate the handle and angle of rotation being set by the Margin type. See enum HandleOrientation  -->
+						<Grid.LayoutTransform>
+							<RotateTransform Angle="{Binding Path=Angle, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+							</RotateTransform>
+						</Grid.LayoutTransform>
+					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
@@ -285,7 +366,7 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type Controls:InPlaceEditor}">
-					<TextBox Name="editor" SnapsToDevicePixels="True" Padding="{Binding Path=Padding}" FontSize="{Binding Path=FontSize}" FontFamily="{Binding Path=FontFamily}" FontStyle="{Binding Path=FontStyle}" FontStretch="{Binding Path=FontStretch}" FontWeight="{Binding Path=FontWight}" Text="{Binding Path=Bind, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" />
+					<TextBox Name="editor" SnapsToDevicePixels="True" Padding="{Binding Path=Padding}" FontSize="{Binding Path=FontSize}" FontFamily="{Binding Path=FontFamily}" FontStyle="{Binding Path=FontStyle}" FontStretch="{Binding Path=FontStretch}" FontWeight="{Binding Path=FontWeight}" Text="{Binding Path=Bind, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" />
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
@@ -301,6 +382,236 @@
 							</MenuItem.Header>
 						</MenuItem>
 					</Menu>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style TargetType="{x:Type Controls:ZoomControl}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Controls:ZoomControl}">
+					<Grid Background="{TemplateBinding Panel.Background}">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<Widgets:SelfCollapsingPanel Grid.Column="0" Grid.Row="1" CollapseOrientation="Horizontal" CanCollapse="{Binding Path=ComputedZoomButtonCollapsed, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+							<Widgets:ZoomButtons x:Name="zoomButtons" Value="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}" Minimum="{TemplateBinding MinimumZoom}" Maximum="{TemplateBinding MaximumZoom}" />
+						</Widgets:SelfCollapsingPanel>
+						<Rectangle Grid.Column="2" Grid.Row="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+						<ScrollContentPresenter Name="PART_Presenter" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Margin="{TemplateBinding Control.Padding}" Content="{TemplateBinding ContentControl.Content}" ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}">
+							<ScrollContentPresenter.LayoutTransform>
+								<ScaleTransform ScaleX="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}" ScaleY="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+							</ScrollContentPresenter.LayoutTransform>
+						</ScrollContentPresenter>
+						<ContentControl Grid.Column="1" Grid.Row="1" Content="{TemplateBinding AdditionalControls}" />
+						<ScrollBar Name="PART_VerticalScrollBar" Grid.Column="3" Grid.Row="0" Minimum="0" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Value="{TemplateBinding VerticalOffset}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+						<ScrollBar Name="PART_HorizontalScrollBar" Orientation="Horizontal" Grid.Column="2" Grid.Row="1" Minimum="0" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}" Value="{TemplateBinding HorizontalOffset}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style TargetType="{x:Type Button}" x:Key="ClearButtonStyle">
+		<Setter Property="Background" Value="#FFaaaaaa" />
+		<Setter Property="BorderBrush" Value="#FFaaaaaa" />
+		<Setter Property="Foreground" Value="White" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Button">
+					<Grid Width="14" Height="14">
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="FocusStates">
+								<VisualState x:Name="Focused" />
+								<VisualState x:Name="Unfocused" />
+							</VisualStateGroup>
+							<VisualStateGroup x:Name="CommonStates">
+								<VisualStateGroup.Transitions>
+									<VisualTransition GeneratedDuration="00:00:00.2000000" />
+								</VisualStateGroup.Transitions>
+								<VisualState x:Name="Normal" />
+								<VisualState x:Name="MouseOver">
+									<Storyboard>
+										<DoubleAnimation Duration="0"
+										                 Storyboard.TargetName="ellipseHighlight"
+										                 Storyboard.TargetProperty="(UIElement.Opacity)"
+										                 To="1" />
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Pressed">
+									<Storyboard>
+										<DoubleAnimation Duration="0"
+										                 Storyboard.TargetName="ellipseHighlight"
+										                 Storyboard.TargetProperty="(UIElement.Opacity)"
+										                 To="1" />
+										<DoubleAnimation Duration="0"
+										                 Storyboard.TargetName="pathHighlight"
+										                 Storyboard.TargetProperty="(UIElement.Opacity)"
+										                 To="1" />
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Disabled" />
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+						<Ellipse x:Name="ellipse"
+						         Fill="{TemplateBinding Background}"
+						         Stroke="{TemplateBinding BorderBrush}" />
+						<Ellipse x:Name="ellipseHighlight"
+						         Fill="#FFBD7777"
+						         Opacity="0"
+						         Stroke="Red" />
+						<Path x:Name="path"
+						      Margin="4.5"
+						      HorizontalAlignment="Center"
+						      VerticalAlignment="Center"
+						      Data="M0.5,0.5 L8.5,8.5 M8.5000095,0.50000072 L0.50000954,8.500001"
+						      Stretch="Fill"
+						      Stroke="{TemplateBinding Foreground}"
+						      UseLayoutRounding="False" />
+						<Path x:Name="pathHighlight"
+						      Margin="4.5"
+						      HorizontalAlignment="Center"
+						      VerticalAlignment="Center"
+						      Data="M0.5,0.5 L8.5,8.5 M8.5000095,0.50000072 L0.50000954,8.500001"
+						      Opacity="0"
+						      Stretch="Fill"
+						      Stroke="Red"
+						      UseLayoutRounding="False" />
+						<ContentPresenter x:Name="contentPresenter"
+							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							Visibility="Collapsed" />
+						<Rectangle x:Name="DisabledVisualElement"
+						           Fill="#FFFFFFFF"
+						           IsHitTestVisible="false"
+						           Opacity="0"
+						           RadiusX="3"
+						           RadiusY="3" />
+						<Rectangle x:Name="FocusVisualElement"
+						           Margin="1"
+						           IsHitTestVisible="false"
+						           Opacity="0"
+						           RadiusX="2"
+						           RadiusY="2"
+						           Stroke="#FF6DBDD1"
+						           StrokeThickness="1" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style TargetType="{x:Type Controls:ClearableTextBox}">
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
+		<Setter Property="BorderBrush" Value="#888" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="Padding" Value="1,0,0,0" />
+		<Setter Property="AllowDrop" Value="true" />
+		<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+		<Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
+		<Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Controls:ClearableTextBox}">
+					<Grid>
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="TextRemoverStates">
+								<VisualStateGroup.Transitions>
+									<VisualTransition GeneratedDuration="00:00:00.3000000" />
+								</VisualStateGroup.Transitions>
+								<VisualState x:Name="TextRemoverVisible">
+									<Storyboard>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+										</DoubleAnimationUsingKeyFrames>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+										</DoubleAnimationUsingKeyFrames>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.Opacity)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+										</DoubleAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="TextRemoverHidden">
+									<Storyboard>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="0" />
+										</DoubleAnimationUsingKeyFrames>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="0" />
+										</DoubleAnimationUsingKeyFrames>
+										<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+											Duration="00:00:00.0010000"
+											Storyboard.TargetName="TextRemover"
+											Storyboard.TargetProperty="(UIElement.Opacity)">
+											<EasingDoubleKeyFrame KeyTime="00:00:00" Value="0" />
+										</DoubleAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+						<Border x:Name="Border"
+						        Background="{TemplateBinding Background}"
+						        BorderBrush="{TemplateBinding BorderBrush}"
+						        BorderThickness="{TemplateBinding BorderThickness}"
+						        CornerRadius="1" />
+						<ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"
+						              Margin="0,0,18,0"
+						              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+						<Viewbox Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,3,3,3">
+							<Button x:Name="TextRemover"
+							        Width="14"
+							        Height="14"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        IsTabStop="False"
+							        RenderTransformOrigin="0.5,0.5"
+							        Style="{StaticResource ClearButtonStyle}">
+								<Button.RenderTransform>
+									<TransformGroup>
+										<ScaleTransform ScaleX="1" ScaleY="1" />
+										<SkewTransform />
+										<RotateTransform />
+										<TranslateTransform />
+									</TransformGroup>
+								</Button.RenderTransform>
+							</Button>
+						</Viewbox>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style TargetType="{x:Type Controls:RenderTransformOriginThumb}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Controls:RenderTransformOriginThumb}">
+					<Grid Width="10" Height="10" Margin="-5,-5,-5,-5">
+						<Ellipse Width="2" Height="2" Fill="Black"/>
+						<Ellipse Width="10" Height="10" Fill="Transparent" Stroke="Black" StrokeThickness="1" />
+					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>

@@ -3,6 +3,8 @@
 
 using System;
 using System.Text;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -10,8 +12,38 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// This class represents a category with its text content used in the
 	/// output pad (CompilerMessageView).
 	/// </summary>
-	public class MessageViewCategory
+	public class MessageViewCategory : IOutputCategory
 	{
+		#region IOutputCategory implementation
+
+		void IOutputCategory.Activate(bool bringPadToFront)
+		{
+			SD.OutputPad.CurrentCategory = this;
+			if (bringPadToFront)
+				SD.OutputPad.BringToFront();
+		}
+
+		void IOutputCategory.Clear()
+		{
+			ClearText();
+		}
+
+		void IOutputCategory.AppendText(RichText text)
+		{
+			AppendText(text.ToString());
+		}
+
+		void IOutputCategory.AppendLine(RichText text)
+		{
+			AppendLine(text.ToString());
+		}
+
+		string IOutputCategory.DisplayName {
+			get { return displayCategory; }
+		}
+
+		#endregion
+
 		#region Static methods to create MessageViewCategories
 		/// <summary>
 		/// Creates a new MessageViewCategory with the specified category

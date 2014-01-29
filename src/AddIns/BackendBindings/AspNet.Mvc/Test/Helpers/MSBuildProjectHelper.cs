@@ -3,7 +3,6 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using Rhino.Mocks;
 
@@ -13,9 +12,7 @@ namespace AspNet.Mvc.Tests.Helpers
 	{
 		public static MSBuildBasedProject CreateCSharpProject()
 		{
-			var createInfo = new ProjectCreateInformation();
-			createInfo.Solution = new Solution(MockRepository.GenerateStub<IProjectChangeWatcher>());
-			createInfo.OutputProjectFileName = new FileName(@"d:\projects\MyProject\MyProject.csproj");
+			var createInfo = new ProjectCreateInformation(FakeSolution.Create(), new FileName(@"d:\projects\MyProject\MyProject.csproj"));
 			return new MSBuildBasedProject(createInfo);
 		}
 	}

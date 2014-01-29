@@ -14,8 +14,8 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			Solution solution = ProjectService.OpenSolution;
-			return (solution != null && !solution.ReadOnly);
+			ISolution solution = ProjectService.OpenSolution;
+			return (solution != null && !solution.IsReadOnly);
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace AspNet.Mvc.Tests.Folding
 	public class WebFormsLanguageBindingTests
 	{
 		ITextEditorWithParseInformationFolding fakeTextEditorWithParseInformationFolding;
-		WebFormsLanguageBinding languageBinding;
+		WebFormsTextEditorExtension editorExtension;
 		ITextEditor fakeTextEditor;
 		ITextEditorWithParseInformationFoldingFactory fakeTextEditorFactory;
 		IFoldGeneratorFactory fakeFoldGeneratorFactory;
@@ -34,7 +34,7 @@ namespace AspNet.Mvc.Tests.Folding
 		
 		void CreateLanguageBinding()
 		{
-			languageBinding = new WebFormsLanguageBinding(fakeTextEditorFactory, fakeFoldGeneratorFactory);
+			editorExtension = new WebFormsTextEditorExtension(fakeTextEditorFactory, fakeFoldGeneratorFactory);
 		}
 		
 		void CreateFakeFoldGeneratorFactory()
@@ -73,7 +73,7 @@ namespace AspNet.Mvc.Tests.Folding
 		[Test]
 		public void Attach_TextEditor_FoldGeneratorCreated()
 		{
-			languageBinding.Attach(fakeTextEditor);
+			editorExtension.Attach(fakeTextEditor);
 			
 			fakeFoldGeneratorFactory.AssertWasCalled(
 				factory => factory.CreateFoldGenerator(fakeTextEditorWithParseInformationFolding));
@@ -82,8 +82,8 @@ namespace AspNet.Mvc.Tests.Folding
 		[Test]
 		public void Detach_TextEditor_FoldGeneratorDisposed()
 		{
-			languageBinding.Attach(fakeTextEditor);
-			languageBinding.Detach();
+			editorExtension.Attach(fakeTextEditor);
+			editorExtension.Detach();
 			
 			fakeFoldGenerator.AssertWasCalled(generator => generator.Dispose());
 		}

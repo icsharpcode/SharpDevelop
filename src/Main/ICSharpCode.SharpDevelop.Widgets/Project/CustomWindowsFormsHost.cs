@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -84,6 +87,11 @@ namespace ICSharpCode.SharpDevelop.Widgets
 					}
 				}
 				base.WndProc(ref m);
+			}
+			
+			protected override void OnThreadException(Exception e)
+			{
+				System.Windows.Forms.Application.OnThreadException(e);
 			}
 		}
 		

@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -25,6 +27,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Reports a build message.
 		/// This member is thread-safe.
 		/// </summary>
-		void ReportMessage(string message);
+		void ReportMessage(RichText message);
 	}
 }

@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 28.02.2012
- * Time: 20:08
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.ComponentModel.Design.Serialization;
 using ICSharpCode.Core;
@@ -22,7 +17,7 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 		public const string KeepLocalizationModelPropertyName = "FormsDesigner.DesignerOptions.KeepLocalizationModel";
 		
 		const CodeDomLocalizationModel DefaultLocalizationModelDefaultValue = CodeDomLocalizationModel.PropertyReflection;
-		const bool KeepLocalizationModelDefaultValue = false;
+		const bool KeepLocalizationModelDefaultValue = true;
 		
 		public LocalizationModelOptionsPanel()
 		{
@@ -48,11 +43,9 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 		
 		static T GetPropertySafe<T>(string name, T defaultValue)
 		{
-			if (PropertyService.Initialized) {
-				return PropertyService.Get<T>(name, defaultValue);
-			} else {
-				return defaultValue;
-			}
+			// This wrapper is no longer necessary in SD5;
+			// if the actual property service isn't available (in unit tests), a dummy property service is used
+			return PropertyService.Get<T>(name, defaultValue);
 		}
 		
 		public override bool SaveOptions()

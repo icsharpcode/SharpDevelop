@@ -489,44 +489,5 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.Helpers
 			else
 				return GetVisualParentObject(parent, walkThroughPopupRoot, comparePredicate);
 		}
-
-        /// <summary>
-        /// Runs an Action in the current dispatcher.
-        /// </summary>
-        /// <param name="actionToRun"></param>
-        public static void RunInDispatcher(Action actionToRun)
-        {
-            if (Application.Current != null)
-                RunInDispatcher(Application.Current.Dispatcher, actionToRun);
-        }
-
-        /// <summary>
-        /// Runs an Action in a given dispatcher.
-        /// </summary>
-        /// <param name="dispatcher"></param>
-        /// <param name="actionToRun"></param>
-        public static void RunInDispatcher(Dispatcher dispatcher, Action actionToRun)
-        {
-            dispatcher.Invoke(DispatcherPriority.Background, actionToRun);
-        }
-
-		/// <summary>
-		/// Runs through all items in the dispatcher.
-		/// </summary>
-		public static void DoEvents()
-		{
-			if (Application.Current != null)
-				DoEvents(Application.Current.Dispatcher);
-		}
-
-		/// <summary>
-		/// Gives DispatcherFrames of the given Dispatcher priority, if
-		/// their DispatcherPriority is higher than "DispatcherPriority.Background".
-		/// </summary>
-		/// <param name="dispatcherToPause"></param>
-		public static void DoEvents(Dispatcher dispatcherToPause)
-		{
-			dispatcherToPause.Invoke(DispatcherPriority.Background, new System.Action(() => { }));
-		}
 	}
 }

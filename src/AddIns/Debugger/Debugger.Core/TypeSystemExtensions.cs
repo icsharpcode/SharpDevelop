@@ -26,9 +26,10 @@ namespace Debugger
 		#region Module Loading
 		static ConditionalWeakTable<IUnresolvedAssembly, ModuleMetadataInfo> weakTable = new ConditionalWeakTable<IUnresolvedAssembly, ModuleMetadataInfo>();
 		
-		class ModuleMetadataInfo
+		internal class ModuleMetadataInfo
 		{
 			public readonly Module Module;
+			public readonly Mono.Cecil.ModuleDefinition CecilModule;
 			Dictionary<IUnresolvedEntity, uint> metadataTokens = new Dictionary<IUnresolvedEntity, uint>();
 			Dictionary<uint, IUnresolvedMethod> tokenToMethod = new Dictionary<uint, IUnresolvedMethod>();
 			Dictionary<IUnresolvedMember, ITypeReference[]> localVariableTypes = new Dictionary<IUnresolvedMember, ITypeReference[]>();
@@ -38,7 +39,7 @@ namespace Debugger
 			public ModuleMetadataInfo(Module module, Mono.Cecil.ModuleDefinition cecilModule)
 			{
 				this.Module = module;
-				
+				this.CecilModule = cecilModule;
 				typeRefLoader = new CecilLoader();
 				typeRefLoader.SetCurrentModule(cecilModule);
 			}
@@ -137,8 +138,11 @@ namespace Debugger
 		internal static Task<IUnresolvedAssembly> LoadModuleAsync(Module module, ICorDebugModule corModule)
 		{
 			string name = corModule.GetName();
-			if (corModule.IsDynamic() == 1 || corModule.IsInMemory() == 1)
-				return Task.FromResult<IUnresolvedAssembly>(new DefaultUnresolvedAssembly(name));
+			if (corModule.IsDynamic() == 1 || corModule.IsInMemory() == 1) {
+				var defaultUnresolvedAssembly = new DefaultUnresolvedAssembly(name);
+				weakTable.Add(defaultUnresolvedAssembly, new ModuleMetadataInfo(module, null));
+				return Task.FromResult<IUnresolvedAssembly>(defaultUnresolvedAssembly);
+			}
 			
 			//return Task.FromResult(LoadModule(module, name));
 			return Task.Run(() => LoadModule(module, name));
@@ -155,12 +159,12 @@ namespace Debugger
 			loader.LazyLoad = true;
 			loader.OnEntityLoaded = moduleMetadataInfo.AddMember;
 			
-			var asm = loader.LoadAssembly(cecilModule.Assembly);
+			var asm = loader.LoadModule(cecilModule);
 			weakTable.Add(asm, moduleMetadataInfo);
 			return asm;
 		}
 		
-		static ModuleMetadataInfo GetInfo(IAssembly assembly)
+		internal static ModuleMetadataInfo GetInfo(IAssembly assembly)
 		{
 			ModuleMetadataInfo info;
 			if (!weakTable.TryGetValue(assembly.UnresolvedAssembly, out info))
@@ -173,6 +177,16 @@ namespace Debugger
 		public static Module GetModule(this IAssembly assembly)
 		{
 			return GetInfo(assembly).Module;
+		}
+		
+		public static IEnumerable<string> GetReferences(this Module module)
+		{
+			ModuleMetadataInfo info;
+			if (!weakTable.TryGetValue(module.UnresolvedAssembly, out info))
+				throw new ArgumentException("The assembly was not from the debugger type system");
+			if (info.CecilModule == null)
+				return EmptyList<string>.Instance;
+			return info.CecilModule.AssemblyReferences.Select(r => r.FullName);
 		}
 		
 		public static uint GetMetadataToken(this ITypeDefinition typeDefinition)
@@ -237,7 +251,7 @@ namespace Debugger
 							0, elementType);
 					}
 				default:
-					throw new System.Exception("Invalid value for TypeKind");
+					throw new System.Exception("Invalid value for TypeKind: " + type.Kind);
 			}
 		}
 		

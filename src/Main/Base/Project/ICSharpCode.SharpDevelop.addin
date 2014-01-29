@@ -33,20 +33,25 @@
 			<ConditionEvaluator name="IsTextSelected" class="ICSharpCode.SharpDevelop.Editor.TextSelectedCondition"/>
 			<ConditionEvaluator name="ViewInBrowser" class="ICSharpCode.SharpDevelop.ViewInBrowserConditionEvaluator"/>
 			<ConditionEvaluator name="ProjectBehaviorSupported" class="ICSharpCode.SharpDevelop.Project.ProjectBehaviorSupportedConditionEvaluator"/>
+			<ConditionEvaluator name="SymbolTypeAtCaret" class="ICSharpCode.SharpDevelop.Internal.ConditionEvaluators.SymbolTypeAtCaretConditionEvaluator"/>
+			<ConditionEvaluator name="IsAssemblyUnpinned" class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.IsAssemblyUnpinnedConditionEvaluator"/>
 			
 			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
 			<Doozer name="CustomProperty" class="ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer"/>
 			<Doozer name="OptionPanel" class="ICSharpCode.SharpDevelop.OptionPanelDoozer"/>
 			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.Workbench.DisplayBindingDoozer"/>
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
-			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.ProjectBindingDoozer"/>
+			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.Project.ProjectBindingDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
+			<Doozer name="TextEditorExtension" class="ICSharpCode.SharpDevelop.Editor.TextEditorExtensionDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
 			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionBindingDoozer"/>
 			<Doozer name="Debugger" class="ICSharpCode.SharpDevelop.Debugging.DebuggerDoozer"/>
 			<Doozer name="Directory" class="ICSharpCode.SharpDevelop.DirectoryDoozer"/>
 			<Doozer name="TaskBoundAdditionalLogger" class="ICSharpCode.SharpDevelop.Project.TaskBoundAdditionalLoggerDoozer"/>
 			<Doozer name="TaskBoundLoggerFilter" class="ICSharpCode.SharpDevelop.Project.TaskBoundLoggerFilterDoozer"/>
+			<Doozer name="TemplateFile" class="ICSharpCode.SharpDevelop.Templates.TemplateFileDoozer"/>
+			<Doozer name="TemplateCategory" class="ICSharpCode.SharpDevelop.Templates.TemplateCategoryDoozer"/>
 		</Import>
 		<Import assembly=":SharpDevelop">
 			<Doozer name="Parser" class="ICSharpCode.SharpDevelop.Parser.ParserDoozer"/>
@@ -72,11 +77,24 @@
 		         class="ICSharpCode.SharpDevelop.Dom.ModelFactory"/>
 		<Service id="ICSharpCode.SharpDevelop.IClipboard"
 		         class="ICSharpCode.SharpDevelop.ClipboardWrapper"/>
+		<Service id="ICSharpCode.SharpDevelop.IFileSystem"
+		         class="ICSharpCode.SharpDevelop.FileSystem"/>
+		<Service id="ICSharpCode.SharpDevelop.Templates.ITemplateService"
+		         class="ICSharpCode.SharpDevelop.Templates.TemplateService"/>
 		<Service id="ICSharpCode.SharpDevelop.Project.IBuildService"
 		         class="ICSharpCode.SharpDevelop.Project.BuildService"/>
+		<Service id="ICSharpCode.SharpDevelop.Project.IProjectService"
+		         class="ICSharpCode.SharpDevelop.Project.SDProjectService"/>
+		<Service id="ICSharpCode.SharpDevelop.ILanguageService"
+		         class="ICSharpCode.SharpDevelop.SDLanguageService"/>
+		<Service id="ICSharpCode.SharpDevelop.Project.IMSBuildEngine"
+		         class="ICSharpCode.SharpDevelop.Project.MSBuildEngine"/>
 		<Service id="ICSharpCode.SharpDevelop.Editor.Bookmarks.IBookmarkManager"
 		         class="ICSharpCode.SharpDevelop.Editor.Bookmarks.BookmarkManager"/>
-		
+		<Service id="ICSharpCode.SharpDevelop.IUIService"
+		         class="ICSharpCode.SharpDevelop.UIService"/>
+		<Service id="ICSharpCode.SharpDevelop.Dom.ClassBrowser.IClassBrowser"
+		         class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserServiceImpl"/>
 		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsService"
 		         class="ICSharpCode.SharpDevelop.WinForms.WinFormsService"/>
 		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsMenuService"
@@ -114,14 +132,12 @@
 		     class    = "ICSharpCode.SharpDevelop.Project.ProjectBrowserPad"
 		     defaultPosition = "Left" />
 		
-		<!--
 		<Pad id       = "ClassBrowser"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
-		     class    = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad"
+		     class    = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserPad"
 		     defaultPosition = "Right" />
-		-->
 		
 		<Pad id       = "SideBar"
 		     category = "Main"
@@ -151,7 +167,7 @@
 		     class    = "ICSharpCode.SharpDevelop.Gui.TaskListPad"
 		     defaultPosition = "Bottom" />
 		
-		<Pad id       = "CompilerMessageView"
+		<Pad id       = "OutputPad"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.OutputWindow}"
 		     icon     = "PadIcons.Output"
@@ -198,7 +214,6 @@
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id         = "Solution"
 		            name       = "${res:SharpDevelop.FileFilter.SolutionFiles}"
-		            class      = "ICSharpCode.SharpDevelop.Project.LoadSolution"
 		            extensions = "*.sln"/>
 		
 		<FileFilter id         = "AllFiles"
@@ -225,7 +240,7 @@
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
 			<ToolbarItem id = "PropertySeparator" type = "Separator"/>
 			<ToolbarItem id      = "Collapse"
-			             icon    = "Icons.16x16.Assembly"
+			             icon    = "Icons.16x16.Collection"
 			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.CollapseAllProjectBrowser"/>
 		</Condition>
@@ -357,9 +372,6 @@
 			<MenuItem id    = "AddWebReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
-			<MenuItem id    = "ShowServiceInBrowser"
-			          label = "Show Service in Browser"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowServiceInBrowser"/>
 			<MenuItem id = "AddSeparator" type = "Separator"/>
 		</Condition>
 		
@@ -898,7 +910,7 @@
 	
 	<!-- ClassBrowser -->
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/Toolbar">
-		<ToolbarItem id      = "Back"
+		<!--<ToolbarItem id      = "Back"
 		             icon    = "Icons.16x16.BrowserBefore"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.BackButton.ToolTip}"
 		             loadclasslazy = "false"
@@ -909,8 +921,21 @@
 		             loadclasslazy = "false"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserNavigateForward"/>
 		
-		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
-		<ToolbarItem id      = "SelectFilter"
+		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>-->
+		<ToolbarItem id      = "OpenAssembly"
+		             type    = "DropDownButton"
+		             icon    = "Icons.16x16.Assembly"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.OpenAssemblyButton.ToolTip}">
+			<MenuItem id    = "OpenAssemblyFromFile"
+			          icon    = "Icons.16x16.AssemblyFromFile"
+			          label = "${res:MainWindow.Windows.ClassBrowser.OpenAssemblyFromFile}"
+			          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenAssemblyFromFileCommand"/>
+			<MenuItem id    = "OpenAssemblyFromGAC"
+			          icon  = "Icons.16x16.AssemblyFromGAC"
+			          label = "${res:MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC}"
+			          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenAssemblyFromGACCommand"/>
+		</ToolbarItem>
+		<!--<ToolbarItem id      = "SelectFilter"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.FindInFiles"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettingsButton.ToolTip}"
@@ -943,9 +968,9 @@
 		</ToolbarItem>
 		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
 		<ToolbarItem id      = "Collapse"
-		             icon    = "Icons.16x16.Assembly"
+		             icon    = "Icons.16x16.Collection"
 		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserCollapseAll"/>
+		             class   = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserCollapseAll"/>-->
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/Searchbar">
@@ -963,6 +988,45 @@
 		             icon    = "OutputPad.Toolbar.ClearOutputWindow"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ClearSearch.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserCancelSearch"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/AssemblyContextMenu">
+		<Condition name="IsProcessRunning" isdebugging = "False" action = "Exclude">
+			<Condition name="DebuggerSupports" debuggersupports = "Start">
+				<MenuItem id = "RunAssemblyWithDebugger"
+				          label = "${res:XML.MainMenu.RunMenu.Run}"
+				          icon = "Icons.16x16.RunProgramIcon"
+				          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.RunAssemblyWithDebuggerCommand"/>
+				<MenuItem id = "AssemblyContextMenuSeparator" type = "Separator"/>
+			</Condition>
+		</Condition>
+		<Condition name="IsAssemblyUnpinned" action="Exclude">
+			<MenuItem id = "PermanentlyAddToWorkspace"
+			          label = "${res:MainWindow.Windows.ClassBrowser.AddToWorkspace}"
+			          icon = "Icons.16x16.AssemblyFromFile"
+			          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.PermanentlyAddModuleToWorkspaceCommand"/>
+		</Condition>
+		<MenuItem id = "RemoveAssembly"
+		          label = "Remove"
+		          icon = "Icons.16x16.DeleteIcon"
+		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.RemoveAssemblyCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/AssemblyReferencesContextMenu">
+		<MenuItem id    = "AddReference"
+		          label = "${res:ProjectComponent.ContextMenu.AddReference}"
+		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.AddProjectReferenceCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/AssemblyReferenceContextMenu">
+		<MenuItem id = "PermanentlyAddToWorkspace"
+		          label = "${res:MainWindow.Windows.ClassBrowser.AddToWorkspace}"
+		          icon = "Icons.16x16.AssemblyFromFile"
+		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.PermanentlyAddModuleToWorkspaceCommand"/>
+		<MenuItem id    = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.RemoveProjectReferenceCommand"/>
 	</Path>
 	
 	<!-- end ClassBrowser -->
@@ -1248,7 +1312,7 @@
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectCulturePanel"/>
 			<OptionPanel id    = "SelectStyle"
 			             label = "${res:Dialog.Options.IDEOptions.SelectVisualStyle.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>		
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>
 			<OptionPanel id    = "LoadSave"
 			             label = "${res:Dialog.Options.IDEOptions.LoadSaveOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.OptionPanels.LoadSaveOptions"/>
@@ -1282,7 +1346,7 @@
 		
 		<OptionPanel id    = "ToolsOptions"
 		             label = "${res:Dialog.Options.IDEOptions.ToolsOptionsText}">
-		
+			
 			<OptionPanel id    = "ExternalTools"
 			             label = "${res:Dialog.Options.ExternalToolsText}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPanel"/>
@@ -1521,7 +1585,7 @@
 			          type = "Item"
 			          command = "Delete"/>
 			<MenuItem id = "Separator2" type = "Separator"  />
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 				<MenuItem id = "Insert" label = "${res:XML.MainMenu.EditMenu.Insert}" type="Menu">
 					<MenuItem id = "PasteAsComment"
 					          label = "${res:XML.MainMenu.EditMenu.Paste.AsComment}"
@@ -1774,7 +1838,7 @@
 			<MenuItem id = "ToggleBreakpointSeparator" type = "Separator" />
 			<ComplexCondition action="Disable">
 				<And>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider"/>
+					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor"/>
 					<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 				</And>
 				<MenuItem id       = "Toggle Breakpoint"
@@ -1787,7 +1851,7 @@
 		
 		<MenuItem id = "Search" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
 			<MenuItem id = "SearchSeparator" type = "Separator" />
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 				<MenuItem id = "ToggleBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
 				          shortcut = "Control|M"
@@ -1827,6 +1891,13 @@
 			          icon="Icons.16x16.SelectionArrow"
 			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
 			
+			<Condition name="SymbolTypeAtCaret" type="member,type,local" projectonly="true" action="Exclude">
+				<MenuItem id = "Rename"
+				          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
+				          shortcut="Ctrl+R"
+				          class = "ICSharpCode.SharpDevelop.Editor.Commands.RenameSymbolCommand"/>
+			</Condition>
+			
 			<MenuItem id = "GotoBrace"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
 			          shortcut = "Control|B"
@@ -1844,7 +1915,7 @@
 			<Include id = "ToolList" path = "/SharpDevelop/Workbench/Tools" />
 			<MenuItem id = "Separator2" type = "Separator" />
 			
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor">
 				<MenuItem id = "ConvertCode" label = "${res:XML.MainMenu.ToolMenu.ConvertCodeTo}" type="Menu">
 					<Condition name="ActiveContentExtension" activeextension=".vb" action = "Disable">
 						<MenuItem id = "CSharp"
@@ -1852,8 +1923,8 @@
 						          class = "ICSharpCode.SharpDevelop.Commands.CSharpConvertBuffer"/>
 					</Condition>
 					<Condition name="ActiveContentExtension" activeextension=".cs" action = "Disable">
-						<MenuItem id = "VBNet"
-						          label = "VB.NET"
+						<MenuItem id = "VB"
+						          label = "Visual Basic"
 						          class = "ICSharpCode.SharpDevelop.Commands.VBConvertBuffer"/>
 					</Condition>
 				</MenuItem>
@@ -1886,10 +1957,6 @@
 				          shortcut = "Shift|Control|Tab"
 				          class = "ICSharpCode.SharpDevelop.Commands.SelectPrevWindow" />
 				<MenuItem id ="NxtPrvSeparator" type = "Separator" />
-				<MenuItem id = "SplitView"
-				          label = "${res:XML.MainMenu.WindowMenu.Split}"
-				          icon  = "Icons.16x16.SplitWindow"
-				          command = "ICSharpCode.SharpDevelop.SharpDevelopRoutedCommands.SplitView"/>
 				<MenuItem id    = "CloseAll"
 				          label = "${res:XML.MainMenu.FileMenu.CloseAll}"
 				          icon  = "Icons.16x16.CloseAllDocuments"
@@ -1952,9 +2019,22 @@
 	<!-- TEXT EDITOR -->
 	
 	<Path name = "/SharpDevelop/EntityContextMenu">
+		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
+		<Condition name="SymbolTypeAtCaret" type="member,type" action="Exclude">
+			<MenuItem id="OpenInClassBrowser"
+			          icon="ILSpy"
+			          type="Item"
+			          label="${res:MainWindow.Windows.ClassBrowser.OpenInClassBrowser}"
+			          class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenInClassBrowserCommand"/>
+		</Condition>
+		<MenuItem id="Separator1" type="Separator" />
+		
+		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
 		<MenuItem id = "FindReferences"
 		          label = "${res:SharpDevelop.Refactoring.FindReferencesCommand}"
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
+		
+		<MenuItem id="DeclaringTypeContextMenu" type="Builder" class="ICSharpCode.SharpDevelop.Editor.Commands.DeclaringTypeSubMenuBuilder" />
 	</Path>
 	
 	<!--
@@ -1984,6 +2064,11 @@
 	</Path>-->
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
+		<Condition name="SymbolTypeAtCaret" type="member,type,local" action="Exclude">
+			<Include id="EntityContextMenu" path="/SharpDevelop/EntityContextMenu" />
+			<MenuItem id="Separator1" type="Separator" />
+		</Condition>
+		
 		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
 		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
 		<Include id = "Paste" item = "/SharpDevelop/Workbench/MainMenu/Edit/Paste"/>
@@ -2022,7 +2107,7 @@
 	
 	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
 		<ToolbarItem id = "SearchSeparator" type = "Separator"/>
-		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 			<ToolbarItem id = "Comment"
 			             icon = "Icons.16x16.CommentRegion"
 			             tooltip = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
@@ -2114,7 +2199,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 			<ToolbarItem id = "ToggleBookmark"
 			             tooltip = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
 			             icon = "Bookmarks.ToggleMark"
@@ -2163,12 +2248,12 @@
 	<Path name = "/SharpDevelop/Pads/SearchResultPanel/Toolbar">
 		<Condition name = "Ownerstate" ownerstate = "DefaultMode" action = "Exclude">
 			<ToolbarItem id      = "ExpandAll"
-			             icon    = "Icons.16x16.OpenAssembly"
+			             icon    = "Icons.16x16.OpenCollection"
 			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip}"
 			             class   = "SearchAndReplace.ExpandAll"/>
 			
 			<ToolbarItem id      = "CollapseAll"
-			             icon    = "Icons.16x16.Assembly"
+			             icon    = "Icons.16x16.Collection"
 			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 			             class   = "SearchAndReplace.CollapseAll"/>
 			<ToolbarItem id = "ExpandCollapseSeparator" type = "Separator" />
@@ -2260,6 +2345,10 @@
 		       class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.DefaultProjectNodeBuilder"/>
 	</Path>
 	
+	<Path name="/SharpDevelop/TreeNodeFactories">
+		<Class id="ClassBrowserTreeNodesFactory" class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserTreeNodesFactory" />
+	</Path>
+	
 	<Path name = "/SharpDevelop/Views/ClassBrowser/ClassNodeBuilders">
 		<Class id = "DefaultClassBuilder"
 		       class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.DefaultClassNodeBuilder"/>
@@ -2316,6 +2405,10 @@
 		             class   = "ICSharpCode.SharpDevelop.Gui.ToggleConsoleWordWrapCommand"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<TemplateFile path="../data/templates" />
+	</Path>
+	
 	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">
 		<Class id="CheckPortableLibraryInstalled"
 		       class="ICSharpCode.SharpDevelop.Project.PortableLibrary.CheckPortableLibraryInstalled"/>
@@ -2357,7 +2450,7 @@
 				</Not>
 				<Or> <!-- and either a C# or VB project -->
 					<Condition name = "ProjectActive" activeproject="C#" />
-					<Condition name = "ProjectActive" activeproject="VBNet" />
+					<Condition name = "ProjectActive" activeproject="VB" />
 				</Or>
 			</And>
 			<Class id="ConvertToPortableLibraryBehavior" class="ICSharpCode.SharpDevelop.Project.PortableLibrary.ConvertToPortableLibraryProjectBehavior" />

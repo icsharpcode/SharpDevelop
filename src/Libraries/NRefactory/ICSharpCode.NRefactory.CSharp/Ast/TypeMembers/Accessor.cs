@@ -67,8 +67,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return NodeType.Unknown; }
 		}
 		
-		public override EntityType EntityType {
-			get { return EntityType.Method; }
+		public override SymbolKind SymbolKind {
+			get { return SymbolKind.Method; }
+		}
+		
+		/// <summary>
+		/// Gets the 'get'/'set'/'add'/'remove' keyword
+		/// </summary>
+		public CSharpTokenNode Keyword {
+			get {
+				for (AstNode child = this.FirstChild; child != null; child = child.NextSibling) {
+					if (child.Role == PropertyDeclaration.GetKeywordRole || child.Role == PropertyDeclaration.SetKeywordRole
+					    || child.Role == CustomEventDeclaration.AddKeywordRole || child.Role == CustomEventDeclaration.RemoveKeywordRole)
+					{
+						return (CSharpTokenNode)child;
+					}
+				}
+				return CSharpTokenNode.Null;
+			}
 		}
 		
 		public BlockStatement Body {

@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ProjectCustomToolOptions(IProject project)
 		{
-			properties = project.ProjectSpecificProperties.NestedProperties("customTool");
+			properties = project.Preferences.NestedProperties("customTool");
 		}
 		
 		public bool RunCustomToolOnBuild {

@@ -2,224 +2,131 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.Xml;
-using ICSharpCode.SharpDevelop.Parser;
-using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
-	/// <summary>
-	/// Description of XamlResolver.
-	/// </summary>
 	public class XamlResolver
 	{
-		ReadOnlyDocument textDocument;
-		XamlFullParseInformation parseInfo;
-		ICompilation compilation;
-		TextLocation location;
-		int offset;
-		CancellationToken cancellationToken;
+		ITypeResolveContext resolveContext;
 		
-		public XamlResolver()
+		public XamlResolver(ICompilation compilation)
 		{
+			this.resolveContext = new SimpleTypeResolveContext(compilation.MainAssembly);
 		}
 		
-		public ResolveResult Resolve(XamlFullParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
+		public IType ResolveType(string @namespace, string type)
 		{
-			this.cancellationToken = cancellationToken;
-			this.parseInfo = parseInfo;
-			this.location = location;
-			this.compilation = compilation;
-			textDocument = new ReadOnlyDocument(parseInfo.Text, parseInfo.FileName);
-			offset = textDocument.GetOffset(location);
-			
-			AXmlObject innermost = parseInfo.Document.GetChildAtOffset(offset);
-			
-			if (innermost is AXmlText)
-				return ResolveText((AXmlText)innermost);
-			if (innermost is AXmlTag)
-				return ResolveTag((AXmlTag)innermost);
-			if (innermost is AXmlElement)
-				return ResolveElement((AXmlElement)innermost);
-			if (innermost is AXmlAttribute)
-				return ResolveAttribute((AXmlAttribute)innermost);
-			return ErrorResolveResult.UnknownError;
+			return XamlUnresolvedFile.CreateTypeReference(@namespace, type).Resolve(resolveContext);
 		}
 		
-		ResolveResult ResolveText(AXmlText text)
+		public ResolveResult ResolveExpression(string expression, XamlContext context)
 		{
-			return ErrorResolveResult.UnknownError;
-		}
-		
-		ResolveResult ResolveAttribute(AXmlAttribute attribute)
-		{
-			IMember member = null;
-			IType type = null;
-			string namespaceName = string.IsNullOrEmpty(attribute.Namespace) ? attribute.ParentElement.Namespace : attribute.Namespace;
-			string propertyName = attribute.LocalName;
-			
-			if (propertyName.Contains(".")) {
-				string name = propertyName.Substring(0, propertyName.IndexOf('.'));
-				propertyName = propertyName.Substring(propertyName.IndexOf('.') + 1);
-				ITypeReference reference = CreateTypeReference(namespaceName, name);
-				type = reference.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
-				member = FindMember(type, propertyName, true);
-			} else {
-				ITypeReference reference = CreateTypeReference(namespaceName, attribute.ParentElement.LocalName);
-				type = reference.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
-				member = FindMember(type, propertyName, false);
-			}
-			if (member == null)
-				return new UnknownMemberResolveResult(type, propertyName, EmptyList<IType>.Instance);
-			
-			if (attribute.ValueSegment.Contains(offset, 1))
-				return ResolveAttributeValue(member, attribute);
-			return new MemberResolveResult(null, member);
-		}
-		
-		ResolveResult ResolveTag(AXmlTag tag)
-		{
-			if (!tag.IsStartOrEmptyTag && !tag.IsEndTag)
-				return ErrorResolveResult.UnknownError;
-			return ResolveElement(tag.Ancestors.OfType<AXmlElement>().First());
-		}
-
-		ResolveResult ResolveElement(AXmlElement element)
-		{
-			string namespaceName = element.Namespace;
-			string name = element.LocalName;
-
-			if (name.Contains(".")) {
-				string propertyName = name.Substring(name.IndexOf('.') + 1);
-				name = name.Substring(0, name.IndexOf('.'));
-				ITypeReference reference = CreateTypeReference(namespaceName, name);
-				IType type = reference.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
-				IMember member = FindMember(type, propertyName, true);
-				if (member == null)
-					return new UnknownMemberResolveResult(type, propertyName, EmptyList<IType>.Instance);
-				return new MemberResolveResult(null, member);
-			} else {
-				ITypeReference reference = CreateTypeReference(namespaceName, name);
-				IType type = reference.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
-				return new TypeResolveResult(type);
-			}
-		}
-
-		IMember FindMember(IType type, string propertyName, bool allowAttached)
-		{
-			IMember member = type.GetProperties(p => p.Name == propertyName).FirstOrDefault();
-			if (member != null)
-				return member;
-			member = type.GetEvents(e => e.Name == propertyName).FirstOrDefault();
-			if (member != null)
-				return member;
-			
-			if (allowAttached) {
-				IMethod method = type.GetMethods(m => m.IsPublic && m.IsStatic && m.Parameters.Count == 1 && m.Name == "Get" + propertyName).FirstOrDefault();
-				ITypeDefinition td = type.GetDefinition();
-				if (method != null)
-					return new DefaultUnresolvedProperty { Name = propertyName }.CreateResolved(new SimpleTypeResolveContext(td));
-				method = type.GetMethods(m => m.IsPublic && m.IsStatic && m.Parameters.Count == 2 && (m.Name == "Add" + propertyName + "Handler" || m.Name == "Remove" + propertyName + "Handler")).FirstOrDefault();
-				if (method != null)
-					return new DefaultUnresolvedEvent { Name = propertyName }.CreateResolved(new SimpleTypeResolveContext(td));
-			}
-			return null;
-		}
-		
-		ResolveResult ResolveAttributeValue(IMember propertyOrEvent, AXmlAttribute attribute)
-		{
-			IUnresolvedTypeDefinition typeDefinition = parseInfo.UnresolvedFile.GetTopLevelTypeDefinition(location);
-			if (typeDefinition != null) {
-				IType type = typeDefinition.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
-				if (propertyOrEvent is IEvent) {
-					var memberLookup = new MemberLookup(type.GetDefinition(), compilation.MainAssembly);
-					var rr = memberLookup.Lookup(new ThisResolveResult(type), attribute.Value, EmptyList<IType>.Instance, false);
-					if (rr is MethodGroupResolveResult) {
-						Conversion conversion = CSharpConversions.Get(compilation).ImplicitConversion(rr, propertyOrEvent.ReturnType);
-						IMethod method = conversion.Method;
-						if (method == null)
-							method = ((MethodGroupResolveResult)rr).Methods.FirstOrDefault();
-						if (method != null)
-							return new MemberResolveResult(null, method);
-					}
-					return rr;
+			string prefix, memberName;
+			string name = ParseName(expression, out prefix, out memberName);
+			string namespaceUrl = context.ActiveElement.LookupNamespace(prefix);
+			if (string.IsNullOrEmpty(memberName)) {
+				IType type = ResolveType(namespaceUrl, context.ActiveElement.LocalName);
+				IMember member = type.GetMembers(m => m.Name == name).FirstOrDefault();
+				if (member == null) {
+					type = ResolveType(namespaceUrl, name);
+					return new TypeResolveResult(type);
 				} else {
-					if (propertyOrEvent.Name == "Name") {
-						IField field = type.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
-						if (field != null)
-							return new MemberResolveResult(null, field);
-					}
-					if (propertyOrEvent.ReturnType.Kind == TypeKind.Enum) {
-						IField field = propertyOrEvent.ReturnType.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
-						if (field != null)
-							return new MemberResolveResult(null, field);
-					}
+					return new MemberResolveResult(new TypeResolveResult(type), member);
 				}
-				return new UnknownMemberResolveResult(type, attribute.Value, EmptyList<IType>.Instance);
+			} else {
+				IType type = ResolveType(namespaceUrl, name);
+				IMember member = type.GetMembers(m => m.Name == memberName).FirstOrDefault();
+				if (member == null)
+					return new UnknownMemberResolveResult(type, memberName, EmptyList<IType>.Instance);
+				return new MemberResolveResult(new TypeResolveResult(type), member);
 			}
-			return ErrorResolveResult.UnknownError;
 		}
 		
-		ITypeReference CreateTypeReference(string @namespace, string localName)
+		public ResolveResult ResolveAttributeValue(XamlContext context, AttributeValue value)
 		{
-			if (@namespace.StartsWith("clr-namespace:", StringComparison.OrdinalIgnoreCase)) {
-				return CreateClrNamespaceTypeReference(@namespace.Substring("clr-namespace:".Length), localName);
-			}
-			return new XamlTypeReference(@namespace, localName);
+			string typeNameString = value.IsString
+				? value.StringValue
+				: GetTypeNameFromTypeExtension(value.ExtensionValue, context);
+			return ResolveExpression(typeNameString, context);
 		}
 		
-		ITypeReference CreateClrNamespaceTypeReference(string @namespace, string localName)
+		public ResolveResult ResolveAttributeValue(XamlContext context, AttributeValue value, out string typeNameString)
 		{
-			int assemblyNameIndex = @namespace.IndexOf(";assembly=", StringComparison.OrdinalIgnoreCase);
-			IAssemblyReference asm = DefaultAssemblyReference.CurrentAssembly;
-			if (assemblyNameIndex > -1) {
-				asm = new DefaultAssemblyReference(@namespace.Substring(assemblyNameIndex + ";assembly=".Length));
-				@namespace = @namespace.Substring(0, assemblyNameIndex);
-			}
-			return new GetClassTypeReference(asm, @namespace, localName, 0);
-		}
-	}
-
-	public class XamlTypeReference : ITypeReference
-	{
-		string localName;
-		string xmlNamespace;
-		
-		const string XmlnsDefinitionAttribute = "System.Windows.Markup.XmlnsDefinitionAttribute";
-		
-		public XamlTypeReference(string xmlNamespace, string localName)
-		{
-			this.localName = localName;
-			this.xmlNamespace = xmlNamespace;
+			typeNameString = value.IsString
+				? value.StringValue
+				: GetTypeNameFromTypeExtension(value.ExtensionValue, context);
+			return ResolveExpression(typeNameString, context);
 		}
 		
-		public IType Resolve(ITypeResolveContext context)
+		public ResolveResult ResolveAttributeValue(string expression, XamlContext context)
 		{
-			foreach (var asm in context.Compilation.Assemblies) {
-				foreach (var attr in asm.AssemblyAttributes.Where(a => a.AttributeType.FullName == XmlnsDefinitionAttribute
-				                                                  && a.PositionalArguments.Count == 2)) {
-					ConstantResolveResult crr = attr.PositionalArguments[0] as ConstantResolveResult;
-					ConstantResolveResult crr2 = attr.PositionalArguments[1] as ConstantResolveResult;
-					if (crr == null || crr2 == null)
-						continue;
-					string namespaceName = crr2.ConstantValue as string;
-					if (xmlNamespace.Equals(crr.ConstantValue as string, StringComparison.OrdinalIgnoreCase) && namespaceName != null) {
-						ITypeDefinition td = asm.GetTypeDefinition(namespaceName, localName, 0);
-						if (td != null)
-							return td;
-					}
+			if (!context.InAttributeValueOrMarkupExtension)
+				return ErrorResolveResult.UnknownError;
+			if (context.AttributeValue.IsString)
+				return ResolveExpression(expression, context);
+			MarkupExtensionInfo info = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
+			object data = Utils.GetMarkupDataAtPosition(info, context.ValueStartOffset);
+			
+			IType extensionType = ResolveExpression(info.ExtensionType, context).Type;
+			if (extensionType.Kind == TypeKind.Unknown)
+				extensionType = ResolveExpression(info.ExtensionType + "Extension", context).Type;
+			
+			if (data is KeyValuePair<string, AttributeValue>) {
+				var kv = (KeyValuePair<string, AttributeValue>)data;
+				if (kv.Value.StartOffset >= context.ValueStartOffset) {
+					IProperty member = extensionType.GetProperties(p => p.Name == expression).FirstOrDefault();
+					if (member != null)
+						return new MemberResolveResult(new TypeResolveResult(extensionType), member);
+					return new UnknownMemberResolveResult(extensionType, expression, EmptyList<IType>.Instance);
+				} else {
+					
 				}
 			}
 			
-			return new UnknownType(null, localName, 0);
+			return ResolveExpression(expression, context);
+		}
+		
+		string GetTypeNameFromTypeExtension(MarkupExtensionInfo info, XamlContext context)
+		{
+			IType type = ResolveExpression(info.ExtensionType, context).Type;
+			if (type.Kind == TypeKind.Unknown)
+				type = ResolveExpression(info.ExtensionType + "Extension", context).Type;
+			
+			if (type.FullName != "System.Windows.Markup.TypeExtension")
+				return string.Empty;
+			
+			var item = info.PositionalArguments.FirstOrDefault();
+			if (item != null && item.IsString)
+				return item.StringValue;
+			if (info.NamedArguments.TryGetValue("typename", out item)) {
+				if (item.IsString)
+					return item.StringValue;
+			}
+			
+			return string.Empty;
+		}
+		
+		internal static string ParseName(string expression, out string prefix, out string member)
+		{
+			int colonPos = expression.IndexOf(':');
+			if (colonPos > 0)
+				prefix = expression.Substring(0, colonPos);
+			else
+				prefix = "";
+			expression = expression.Remove(0, colonPos + 1);
+			int dotPos = expression.IndexOf('.');
+			if (dotPos >= 0) {
+				member = expression.Substring(dotPos + 1);
+				return expression.Remove(dotPos);
+			} else {
+				member = "";
+				return expression;
+			}
 		}
 	}
 }

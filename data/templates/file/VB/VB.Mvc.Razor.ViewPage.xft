@@ -3,7 +3,7 @@
 
 	<Config
 		name="Razor View Page"
-		icon="VBNet.File.MvcRazorFile"
+		icon="VB.File.MvcRazorFile"
 		category="VB"
 		subcategory="ASP.NET MVC"
 		defaultname="ViewPage${Number}.vbhtml"

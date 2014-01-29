@@ -15,9 +15,10 @@ namespace ICSharpCode.PackageManagement
 			selectedProjectsForInstalledPackages = new SelectedProjectsForInstalledPackages(Solution);
 		}
 		
-		public override PackageViewModel CreatePackageViewModel(IPackageFromRepository package)
+		public override PackageViewModel CreatePackageViewModel(IPackageViewModelParent parent, IPackageFromRepository package)
 		{
 			return new InstalledPackageViewModel(
+				parent,
 				package,
 				selectedProjectsForInstalledPackages,
 				PackageManagementEvents,

@@ -4,7 +4,6 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextTemplating;
@@ -26,7 +25,6 @@ namespace TextTemplating.Tests
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 		}
 		
 		[TearDown]
@@ -110,7 +108,7 @@ namespace TextTemplating.Tests
 			CreateResolver();
 			ReferenceProjectItem reference = AddReferenceToProject("Test");
 			string expectedFileName = @"d:\projects\MyProject\lib\Test.dll";
-			reference.FileName = expectedFileName;
+			reference.FileName = FileName.Create(expectedFileName);
 			
 			string result = resolver.ResolvePath("Test");
 			

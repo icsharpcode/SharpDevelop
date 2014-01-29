@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		int length;
 		TextLocation startLocation;
 		TextLocation endLocation;
-		HighlightedInlineBuilder builder;
+		RichText displayText;
 		HighlightingColor defaultTextColor;
 		
 		public FileName FileName {
@@ -35,10 +35,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public TextLocation EndLocation {
 			get { return endLocation; }
-		}
-		
-		public HighlightedInlineBuilder Builder {
-			get { return builder; }
 		}
 		
 		public HighlightingColor DefaultTextColor {
@@ -62,16 +58,20 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			return pattern;
 		}
 		
-		public SearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor)
+		public SearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, RichText displayText, HighlightingColor defaultTextColor)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
+			if (startLocation.IsEmpty)
+				throw new ArgumentOutOfRangeException("startLocation");
+			if (endLocation.IsEmpty)
+				throw new ArgumentOutOfRangeException("endLocation");
 			this.fileName = fileName;
 			this.startLocation = startLocation;
 			this.endLocation = endLocation;
 			this.offset = offset;
 			this.length = length;
-			this.builder = builder;
+			this.displayText = displayText;
 			this.defaultTextColor = defaultTextColor;
 		}
 		
@@ -90,9 +90,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		/// <summary>
 		/// Gets a special text to display, or null to display the line's content.
 		/// </summary>
-		public virtual string DisplayText {
+		public RichText DisplayText {
 			get {
-				return null;
+				return displayText;
 			}
 		}
 		
@@ -104,29 +104,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		}
 	}
 	
-	public class SimpleSearchResultMatch : SearchResultMatch
-	{
-		string displayText;
-		
-		public override string DisplayText {
-			get {
-				return displayText;
-			}
-		}
-		
-		public SimpleSearchResultMatch(FileName fileName, TextLocation position, int offset, string displayText)
-			: base(fileName, position, position, offset, 0, null, null)
-		{
-			this.displayText = displayText;
-		}
-	}
-	
 	public class AvalonEditSearchResultMatch : SearchResultMatch
 	{
 		ICSharpCode.AvalonEdit.Search.ISearchResult match;
 		
-		public AvalonEditSearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor, ICSharpCode.AvalonEdit.Search.ISearchResult match)
-			: base(fileName, startLocation, endLocation, offset, length, builder, defaultTextColor)
+		public AvalonEditSearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, RichText richText, HighlightingColor defaultTextColor, ICSharpCode.AvalonEdit.Search.ISearchResult match)
+			: base(fileName, startLocation, endLocation, offset, length, richText, defaultTextColor)
 		{
 			this.match = match;
 		}
@@ -135,14 +118,17 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		{
 			return match.ReplaceWith(pattern);
 		}
-
-
-
-
-
-
-
-
+	}
+	
+	public class RenameResultMatch : SearchResultMatch
+	{
+		public readonly string NewCode;
+		
+		public RenameResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, string newCode, RichText richText = null, HighlightingColor defaultTextColor = null)
+			: base(fileName, startLocation, endLocation, offset, length, richText, defaultTextColor)
+		{
+			this.NewCode = newCode;
+		}
 	}
 	
 	public class SearchedFile
@@ -159,6 +145,32 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 				throw new ArgumentNullException("matches");
 			this.FileName = fileName;
 			this.Matches = matches;
+		}
+	}
+	
+	public class PatchedFile : SearchedFile
+	{
+		ITextSourceVersion oldVersion;
+		ITextSourceVersion newVersion;
+		
+		public PatchedFile(FileName fileName, IReadOnlyList<SearchResultMatch> matches, ITextSourceVersion oldVersion, ITextSourceVersion newVersion)
+			: base(fileName, matches)
+		{
+			if (oldVersion == null)
+				throw new ArgumentNullException("oldVersion");
+			if (newVersion == null)
+				throw new ArgumentNullException("newVersion");
+			this.oldVersion = oldVersion;
+			this.newVersion = newVersion;
+		}
+		
+		public void Apply(IDocument document)
+		{
+			using (document.OpenUndoGroup()) {
+				var changes = oldVersion.GetChangesTo(newVersion);
+				foreach (var change in changes)
+					document.Replace(change.Offset, change.RemovalLength, change.InsertedText);
+			}
 		}
 	}
 }

@@ -91,9 +91,9 @@
     <Compile Include="Pad\DatabasesTreeViewUserControl.xaml.cs">
       <DependentUpon>DatabasesTreeViewUserControl.xaml</DependentUpon>
     </Compile>
-    <None Include="Templates\Files\CSharp.EDMX.xft">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <EmbeddedResource Include="Templates\CSharp.EDMX.xft">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Pad\DatabasesTreeViewUserControl.xaml">
@@ -112,7 +112,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Templates" />
-    <Folder Include="Templates\Files" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

@@ -6,7 +6,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace CSharpBinding.Refactoring
 {
-	public class SDRedundantUsingIssue : RedundantUsingIssue
+	public class SDRedundantUsingIssue : RedundantUsingDirectiveIssue
 	{
 		public SDRedundantUsingIssue()
 		{

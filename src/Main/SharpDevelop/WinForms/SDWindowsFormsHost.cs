@@ -94,7 +94,10 @@ namespace ICSharpCode.SharpDevelop.WinForms
 		
 		T GetInterface<T>() where T : class
 		{
-			T instance = this.ServiceProvider.GetService<T>();
+			T instance = null;
+			if (this.ServiceProvider != null) {
+				instance = this.ServiceProvider.GetService<T>();
+			}
 			if (instance == null) {
 				instance = GetServiceWrapper(GetActiveControl()) as T;
 			}

@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -81,14 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			if (targetRR.IsError)
 				return targetRR;
 			IList<IType> typeArgs = typeArguments.Resolve(resolver.CurrentTypeResolveContext);
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					return resolver.ResolveMemberAccess(targetRR, identifier, typeArgs, lookupMode);
-				} else {
-					// This can happen for "class Test : $Test.Base$ { public class Base {} }":
-					return ErrorResolveResult.UnknownError; // don't cache this error
-				}
-			}
+			return resolver.ResolveMemberAccess(targetRR, identifier, typeArgs, lookupMode);
 		}
 		
 		public override IType ResolveType(CSharpResolver resolver)

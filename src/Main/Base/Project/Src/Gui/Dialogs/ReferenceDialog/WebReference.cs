@@ -7,6 +7,7 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 using System.Xml.Schema;
@@ -301,7 +302,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		string GetProxyFileNameExtension(string language)
 		{
-			ProjectBindingDescriptor binding = ProjectBindingService.GetCodonPerLanguageName(language);
+			ProjectBindingDescriptor binding = SD.ProjectService.ProjectBindings.FirstOrDefault(b => b.Language == language);
 			if (binding != null) {
 				string[] extensions = binding.CodeFileExtensions;
 				if (extensions.Length > 0) {

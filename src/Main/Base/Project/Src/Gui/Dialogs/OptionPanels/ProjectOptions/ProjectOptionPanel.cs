@@ -120,17 +120,17 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ApplyTemplate();
 			project = (MSBuildBasedProject)owner;
 			if (configurationComboBox != null) {
-				List<string> configurations = project.ConfigurationNames.Union(new[] { project.ActiveConfiguration }).ToList();
+				List<string> configurations = project.ConfigurationNames.Union(new[] { project.ActiveConfiguration.Configuration }).ToList();
 				configurations.Sort();
 				configurationComboBox.ItemsSource = configurations;
-				configurationComboBox.SelectedItem = project.ActiveConfiguration;
+				configurationComboBox.SelectedItem = project.ActiveConfiguration.Configuration;
 				configurationComboBox.SelectionChanged += comboBox_SelectionChanged;
 			}
 			if (platformComboBox != null) {
-				List<string> platforms = project.PlatformNames.Union(new[] { project.ActivePlatform }).ToList();
+				List<string> platforms = project.PlatformNames.Union(new[] { project.ActiveConfiguration.Platform }).ToList();
 				platforms.Sort();
 				platformComboBox.ItemsSource = platforms;
-				platformComboBox.SelectedItem = project.ActivePlatform;
+				platformComboBox.SelectedItem = project.ActiveConfiguration.Platform;
 				platformComboBox.SelectionChanged += comboBox_SelectionChanged;
 			}
 			Initialize();
@@ -170,12 +170,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (configurationComboBox != null)
 				activeConfiguration = (string)configurationComboBox.SelectedItem;
 			else
-				activeConfiguration = project.ActiveConfiguration;
+				activeConfiguration = project.ActiveConfiguration.Configuration;
 			
 			if (platformComboBox != null)
 				activePlatform = (string)platformComboBox.SelectedItem;
 			else
-				activePlatform = project.ActivePlatform;
+				activePlatform = project.ActiveConfiguration.Platform;
 			
 			isLoaded = true;
 			Load(project, activeConfiguration, activePlatform);

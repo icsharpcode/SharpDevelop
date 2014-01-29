@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				undoGroup.Dispose();
 		}
 		
-		public override void Remove(AstNode node, bool removeEmptyLine)
+		public override void Remove(AstNode node, bool removeEmptyLine = true)
 		{
 			var segment = GetSegment (node);
 			int startOffset = segment.Offset;
@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public override void FormatText(IEnumerable<AstNode> nodes)
 		{
 			var syntaxTree = SyntaxTree.Parse(currentDocument, "dummy.cs");
-			var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, Options);
+			var formatter = new CSharpFormatter(FormattingOptions, Options);
 			var segments = new List<ISegment>();
 			foreach (var node in nodes.OrderByDescending (n => n.StartLocation)) {
 				var segment = GetSegment(node);
@@ -112,9 +112,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					));
 				segments.Add(segment);
 			}
-			syntaxTree.AcceptVisitor(formatter);
+			if (segments.Count == 0)
+				return;
+			var changes = formatter.AnalyzeFormatting (currentDocument, syntaxTree);
 			foreach (var segment in segments) {
-				formatter.ApplyChanges(segment.Offset, segment.Length);
+				changes.ApplyChanges(segment.Offset, segment.Length - 1);
 			}
 		}
 		

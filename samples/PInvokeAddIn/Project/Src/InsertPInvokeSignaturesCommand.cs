@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PInvokeAddIn
@@ -20,7 +21,7 @@ namespace ICSharpCode.PInvokeAddIn
 		{
 			// Show PInvoke dialog.
 			using(InsertPInvokeSignaturesForm form = new InsertPInvokeSignaturesForm()) {
-				form.ShowDialog(WorkbenchSingleton.MainWin32Window);
+				form.ShowDialog(SD.WinForms.MainWin32Window);
 			}
 		}
 	}

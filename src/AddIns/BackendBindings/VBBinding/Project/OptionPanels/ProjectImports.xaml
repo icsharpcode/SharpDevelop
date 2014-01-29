@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optionpanels:ProjectOptionPanel
+	x:Class="ProjectImports"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	
+	<ScrollViewer VerticalScrollBarVisibility="Auto"
+	              HorizontalScrollBarVisibility="Auto" >
+		<GroupBox
+			Header="{core:Localize Dialog.ProjectOptions.ProjectImports.Title}"
+			HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="2*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				
+				<ListBox Margin="8"
+					HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+					ItemsSource="{Binding ProjectItems}"
+					SelectedItem="{Binding SelectedProjectItem}">
+				</ListBox>
+				
+				<Grid Grid.Column="1" Grid.ColumnSpan="2" Margin="3,0,3,0"
+				      HorizontalAlignment="Stretch">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition></ColumnDefinition>
+						<ColumnDefinition></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+					</Grid.RowDefinitions>
+					
+					<Label Grid.ColumnSpan="2"
+					       HorizontalAlignment="Left" VerticalAlignment="Center"
+					       Content="{core:Localize Dialog.ProjectOptions.ProjectImports.Namespace}" />
+					
+					<ComboBox Grid.Row="1" Grid.ColumnSpan="2"
+					          VerticalAlignment="Center"
+					          ItemsSource="{Binding NameSpaceItems}"
+					          SelectedItem="{Binding SelectedNameSpace}"
+					></ComboBox>
+					
+					<Button Grid.Row="2"
+					        Content="{core:Localize Dialog.ProjectOptions.ProjectImports.AddImport}"
+					        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					        IsEnabled="{Binding AddButtonEnable}"
+					        HorizontalAlignment="Stretch"
+					        VerticalAlignment="Center"
+					        Click="AddButton_Click">
+					</Button>
+					
+					<Button Grid.Row="3"
+					        Content="{core:Localize Dialog.ProjectOptions.ProjectImports.RemoveImport}"
+					        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					        IsEnabled="{Binding RemoveButtonEnable}"
+					        HorizontalAlignment="Stretch"
+					        VerticalAlignment="Center"
+					        Click="RemoveButton_Click"></Button>
+				</Grid>
+			</Grid>
+		</GroupBox>
+	</ScrollViewer>
+</optionpanels:ProjectOptionPanel>

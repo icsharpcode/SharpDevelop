@@ -72,9 +72,27 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						SD.ParserService.ParseFileAsync(FileName.Create(webReference.WebProxyFileName), parentProject: url.Project).FireAndForget();
 					}
 				} catch (WebException ex) {
-					MessageService.ShowException(ex, String.Format(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.RefreshWebReference.ReadServiceDescriptionError}"), url.UpdateFromURL));
+					LoggingService.Debug(ex);
+					MessageService.ShowError(GetRefreshWebReferenceErrorMessage(ex, url.UpdateFromURL));
 				}
 			}
+		}
+		
+		string GetRefreshWebReferenceErrorMessage(WebException ex, string updateFromURL)
+		{
+			return String.Format(
+				"{0}\r\n\r\n{1}\r\n{2}",
+				String.Format(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.RefreshWebReference.ReadServiceDescriptionError}"), updateFromURL),
+				ex.Message,
+				GetInnerExceptionMessage(ex));
+		}
+		
+		string GetInnerExceptionMessage(WebException ex)
+		{
+			if (ex.InnerException != null) {
+				return ex.InnerException.Message;
+			}
+			return String.Empty;
 		}
 		
 		DiscoveryClientProtocol DiscoverWebServices(string url)
@@ -180,69 +198,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}	
 	
-	public class ShowServiceInBrowser : AbstractMenuCommand
-	{
-		static string NodePath = "//system.serviceModel//client//endpoint";
-		
-		public override void Run()
-		{
-			XmlDocument appConfig = LoadAppConfig();
-			if (appConfig != null) {
-				string endpointAddress = FindEndPointAddress(appConfig);
-				if (endpointAddress != null) {
-					StartInternetExplorer(endpointAddress);
-				} else {
-					MessageService.ShowError("No service found.");
-				}
-			} else {
-				MessageService.ShowError("No app.config file found.");
-			}
-		}
-		
-		XmlDocument LoadAppConfig()
-		{
-			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
-			FileName appConfigFileName = CompilableProject.GetAppConfigFile(node.Project, false);
-			if (!String.IsNullOrEmpty(appConfigFileName)) {				
-				return LoadAppConfig(appConfigFileName);
-			}
-			return null;
-		}
-		
-		static XmlDocument LoadAppConfig(string fileName)
-		{
-			try {
-				var doc = new XmlDocument();
-				doc.Load(fileName);
-				return doc;
-			} catch (FileNotFoundException ex) {
-				LoggingService.Debug("LoadConfigDocument: " + fileName + ": " + ex.Message);
-			}
-			return null;
-		}
-		
-		string FindEndPointAddress(XmlDocument appConfig)
-		{
-			XmlNode endPoint = appConfig.SelectSingleNode(NodePath);
-			if (endPoint != null) {
-				XmlAttribute addressAttribute = endPoint.Attributes["address"];
-				if (addressAttribute != null) {
-					return addressAttribute.Value;
-				}
-			}
-			return null;
-		}
-		
-		void StartInternetExplorer(string arguments)
-		{
-			var startInfo = new ProcessStartInfo("IExplore.exe") {
-				WindowStyle = ProcessWindowStyle.Normal,
-				Arguments = arguments
-			};
-			Process.Start(startInfo);
-		}
-	}
-	
 	public class AddServiceReferenceToProject : AbstractMenuCommand
 	{
 		public override void Run()
@@ -271,9 +226,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node != null) {
 				ReferenceProjectItem item = node.ReferenceProjectItem;
 				if (item != null) {
-					#warning Reimplement RefreshReference
-					throw new NotImplementedException();
-					//AssemblyParserService.RefreshProjectContentForReference(item);
+					SD.AssemblyParserService.RefreshAssembly(item.FileName);
 				}
 			}
 		}

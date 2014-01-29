@@ -15,28 +15,36 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<PackageOperationEventArgs> PackageInstalled;
 		event EventHandler<PackageOperationEventArgs> PackageUninstalled;
 		event EventHandler<PackageOperationEventArgs> PackageReferenceAdded;
-		event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
+		event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
 		
 		string Name { get; }
 		ILogger Logger { get; set; }
 		IPackageRepository SourceRepository { get; }
 		
-		//Project ConvertToDTEProject();
+		Project ConvertToDTEProject();
 		
 		bool IsPackageInstalled(IPackage package);
 		bool IsPackageInstalled(string packageId);
+		bool HasOlderPackageInstalled(IPackage package);
 		
 		IQueryable<IPackage> GetPackages();
 		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		
 		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
+		IEnumerable<PackageOperation> GetUpdatePackagesOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings);
 		
 		void InstallPackage(IPackage package, InstallPackageAction installAction);
 		void UpdatePackage(IPackage package, UpdatePackageAction updateAction);
 		void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction);
+		void UpdatePackages(UpdatePackagesAction action);
+		
+		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings);
 		
 		InstallPackageAction CreateInstallPackageAction();
 		UninstallPackageAction CreateUninstallPackageAction();
 		UpdatePackageAction CreateUpdatePackageAction();
+		UpdatePackagesAction CreateUpdatePackagesAction();
+		
+		void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations);
 	}
 }

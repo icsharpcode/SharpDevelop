@@ -14,6 +14,8 @@ namespace ICSharpCode.PackageManagement
 		PackageManagementSelectedProjects selectedProjects;
 		UpdatedPackages updatedPackages;
 		string errorMessage = String.Empty;
+		ILogger logger;
+		IPackageManagementEvents packageManagementEvents;
 		
 		public UpdatedPackagesViewModel(
 			IPackageManagementSolution solution,
@@ -26,7 +28,24 @@ namespace ICSharpCode.PackageManagement
 				taskFactory)
 		{
 			this.selectedProjects = new PackageManagementSelectedProjects(solution);
+			this.logger = packageViewModelFactory.Logger;
+			this.packageManagementEvents = packageViewModelFactory.PackageManagementEvents;
+			
+			packageManagementEvents.ParentPackagesUpdated += PackagesUpdated;
+			
 			ShowPackageSources = true;
+			ShowUpdateAllPackages = true;
+			ShowPrerelease = true;
+		}
+		
+		void PackagesUpdated(object sender, EventArgs e)
+		{
+			ReadPackages();
+		}
+		
+		protected override void OnDispose()
+		{
+			packageManagementEvents.ParentPackagesUpdated -= PackagesUpdated;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
@@ -60,7 +79,27 @@ namespace ICSharpCode.PackageManagement
 		
 		IQueryable<IPackage> GetUpdatedPackages()
 		{
-			return updatedPackages.GetUpdatedPackages().AsQueryable();
+			return updatedPackages.GetUpdatedPackages(IncludePrerelease).AsQueryable();
+		}
+		
+		protected override void TryUpdatingAllPackages()
+		{
+			List<IPackageFromRepository> packages = GetPackagesFromViewModels().ToList();
+			using (IDisposable operation = StartUpdateOperation(packages.First())) {
+				var factory = new UpdatePackagesActionFactory(logger, packageManagementEvents);
+				IUpdatePackagesAction action = factory.CreateAction(selectedProjects, packages);
+				ActionRunner.Run(action);
+			}
+		}
+		
+		IDisposable StartUpdateOperation(IPackageFromRepository package)
+		{
+			return package.Repository.StartUpdateOperation();
+		}
+		
+		IEnumerable<IPackageFromRepository> GetPackagesFromViewModels()
+		{
+			return PackageViewModels.Select(viewModel => viewModel.GetPackage() as IPackageFromRepository);
 		}
 	}
 }

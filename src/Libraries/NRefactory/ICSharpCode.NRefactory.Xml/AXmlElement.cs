@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2009-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -20,13 +20,14 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Xml;
 
 namespace ICSharpCode.NRefactory.Xml
 {
 	/// <summary>
 	/// XML element.
 	/// </summary>
-	public class AXmlElement : AXmlObject
+	public class AXmlElement : AXmlObject, IXmlNamespaceResolver
 	{
 		internal AXmlElement(AXmlObject parent, int startOffset, InternalElement internalObject)
 			: base(parent, startOffset, internalObject)
@@ -90,7 +91,7 @@ namespace ICSharpCode.NRefactory.Xml
 		/// <summary> The part of name before ":" </summary>
 		/// <returns> Empty string if not found </returns>
 		public string Prefix {
-	 		get { return ((InternalElement)internalObject).Prefix; }
+			get { return ((InternalElement)internalObject).Prefix; }
 		}
 		
 		/// <summary> The part of name after ":" </summary>
@@ -104,26 +105,37 @@ namespace ICSharpCode.NRefactory.Xml
 		public string Namespace {
 			get {
 				string prefix = this.Prefix;
-				return ResolvePrefix(prefix);
+				return LookupNamespace(prefix);
 			}
 		}
 		
-		/// <summary> Find the defualt namespace for this context </summary>
+		/// <summary> Find the default namespace for this context </summary>
+		[Obsolete("Use LookupNamespace(string.Empty) instead")]
 		public string FindDefaultNamespace()
 		{
-			return ResolvePrefix(string.Empty);
+			return LookupNamespace(string.Empty) ?? NoNamespace;
 		}
 		
 		/// <summary>
 		/// Recursively resolve given prefix in this context.  Prefix must have some value.
 		/// </summary>
 		/// <returns> Empty string if prefix is not found </returns>
+		[Obsolete("Use LookupNamespace() instead")]
 		public string ResolvePrefix(string prefix)
+		{
+			return LookupNamespace(prefix) ?? NoNamespace;
+		}
+		
+		/// <summary>
+		/// Recursively resolve given prefix in this context.
+		/// </summary>
+		/// <returns><c>null</c> if prefix is not found</returns>
+		public string LookupNamespace(string prefix)
 		{
 			if (prefix == null)
 				throw new ArgumentNullException("prefix");
 			
-			// Implicit namesapces
+			// Implicit namespaces
 			if (prefix == "xml") return XmlNamespace;
 			if (prefix == "xmlns") return XmlnsNamespace;
 			
@@ -134,7 +146,60 @@ namespace ICSharpCode.NRefactory.Xml
 						return attr.Value;
 				}
 			}
-			return NoNamespace; // Can not find prefix
+			return null; // Can not find prefix
+		}
+		
+		/// <summary>
+		/// Gets the prefix that is mapped to the specified namespace URI.
+		/// </summary>
+		/// <returns>The prefix that is mapped to the namespace URI; null if the namespace URI is not mapped to a prefix.</returns>
+		public string LookupPrefix(string namespaceName)
+		{
+			if (namespaceName == null)
+				throw new ArgumentNullException("namespaceName");
+			
+			if (namespaceName == XmlNamespace)
+				return "xml";
+			if (namespaceName == XmlnsNamespace)
+				return "xmlns";
+			for (AXmlElement current = this; current != null; current = current.Parent as AXmlElement) {
+				foreach (var attr in current.Attributes) {
+					if (attr.Value == namespaceName) {
+						if (attr.Name.StartsWith("xmlns:", StringComparison.Ordinal))
+							return attr.LocalName;
+						else if (attr.Name == "xmlns")
+							return string.Empty;
+					}
+				}
+			}
+			return null; // Can not find prefix
+		}
+		
+		/// <summary>
+		/// Gets a collection of defined prefix-namespace mappings that are currently in scope.
+		/// </summary>
+		public IDictionary<string, string> GetNamespacesInScope(XmlNamespaceScope scope)
+		{
+			var result = new Dictionary<string, string>();
+			if (scope == XmlNamespaceScope.All) {
+				result["xml"] = XmlNamespace;
+				//result["xmlns"] = XmlnsNamespace; xmlns should not be included in GetNamespacesInScope() results
+			}
+			for (AXmlElement current = this; current != null; current = current.Parent as AXmlElement) {
+				foreach (var attr in current.Attributes) {
+					if (attr.Name.StartsWith("xmlns:", StringComparison.Ordinal)) {
+						string prefix = attr.LocalName;
+						if (!result.ContainsKey(prefix)) {
+							result.Add(prefix, attr.Value);
+						}
+					} else if (attr.Name == "xmlns" && !result.ContainsKey(string.Empty)) {
+						result.Add(string.Empty, attr.Value);
+					}
+				}
+				if (scope == XmlNamespaceScope.Local)
+					break;
+			}
+			return result;
 		}
 		
 		/// <summary>
@@ -144,7 +209,7 @@ namespace ICSharpCode.NRefactory.Xml
 		/// <returns>Null if not found</returns>
 		public string GetAttributeValue(string localName)
 		{
-			return GetAttributeValue(NoNamespace, localName);
+			return GetAttributeValue(string.Empty, localName);
 		}
 		
 		/// <summary>

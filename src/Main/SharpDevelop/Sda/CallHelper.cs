@@ -38,7 +38,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public void InitSharpDevelopCore(SharpDevelopHost.CallbackHelper callback, StartupSettings properties)
 		{
 			// Initialize the most important services:
-			var container = new SharpDevelopServiceContainer(ServiceSingleton.FallbackServiceProvider);
+			var container = new SharpDevelopServiceContainer();
+			container.AddFallbackProvider(ServiceSingleton.FallbackServiceProvider);
 			container.AddService(typeof(IMessageService), new SDMessageService());
 			container.AddService(typeof(ILoggingService), new log4netLoggingService());
 			ServiceSingleton.ServiceProvider = container;
@@ -50,17 +51,28 @@ namespace ICSharpCode.SharpDevelop.Sda
 				this.useSharpDevelopErrorHandler = true;
 				ExceptionBox.RegisterExceptionBoxForUnhandledExceptions();
 			}
-			startup.ConfigDirectory = properties.ConfigDirectory;
-			startup.DataDirectory = properties.DataDirectory;
+			string configDirectory = properties.ConfigDirectory;
+			string dataDirectory = properties.DataDirectory;
+			string propertiesName;
 			if (properties.PropertiesName != null) {
-				startup.PropertiesName = properties.PropertiesName;
+				propertiesName = properties.PropertiesName;
+			} else {
+				propertiesName = properties.ApplicationName + "Properties";
 			}
 			
 			if (properties.ApplicationRootPath != null) {
 				FileUtility.ApplicationRootPath = properties.ApplicationRootPath;
 			}
 			
-			startup.StartCoreServices();
+			if (configDirectory == null)
+				configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				                               properties.ApplicationName);
+			var propertyService = new PropertyService(
+				DirectoryName.Create(configDirectory),
+				DirectoryName.Create(dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data")),
+				propertiesName);
+			
+			startup.StartCoreServices(propertyService);
 			Assembly exe = Assembly.Load(properties.ResourceAssemblyName);
 			SD.ResourceService.RegisterNeutralStrings(new ResourceManager("ICSharpCode.SharpDevelop.Resources.StringResources", exe));
 			SD.ResourceService.RegisterNeutralImages(new ResourceManager("ICSharpCode.SharpDevelop.Resources.BitmapResources", exe));
@@ -80,11 +92,11 @@ namespace ICSharpCode.SharpDevelop.Sda
 			}
 			
 			if (properties.AllowAddInConfigurationAndExternalAddIns) {
-				startup.ConfigureExternalAddIns(Path.Combine(PropertyService.ConfigDirectory, "AddIns.xml"));
+				startup.ConfigureExternalAddIns(Path.Combine(configDirectory, "AddIns.xml"));
 			}
 			if (properties.AllowUserAddIns) {
-				startup.ConfigureUserAddIns(Path.Combine(PropertyService.ConfigDirectory, "AddInInstallTemp"),
-				                            Path.Combine(PropertyService.ConfigDirectory, "AddIns"));
+				startup.ConfigureUserAddIns(Path.Combine(configDirectory, "AddInInstallTemp"),
+					Path.Combine(configDirectory, "AddIns"));
 			}
 			
 			LoggingService.Info("Loading AddInTree...");
@@ -97,7 +109,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 			Project.ProjectService.BuildFinished  += delegate { this.callback.EndBuild(); };
 			Project.ProjectService.SolutionLoaded += delegate { this.callback.SolutionLoaded(); };
 			Project.ProjectService.SolutionClosed += delegate { this.callback.SolutionClosed(); };
-			Project.ProjectService.SolutionConfigurationChanged += delegate { this.callback.SolutionConfigurationChanged(); };
 			FileUtility.FileLoaded += delegate(object sender, FileNameEventArgs e) { this.callback.FileLoaded(e.FileName); };
 			FileUtility.FileSaved  += delegate(object sender, FileNameEventArgs e) { this.callback.FileSaved(e.FileName); };
 			
@@ -218,13 +229,12 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		public void OpenProject(string fileName)
 		{
-			SD.MainThread.InvokeIfRequired(() => Project.ProjectService.LoadSolutionOrProject(fileName));
+			SD.MainThread.InvokeIfRequired(() => SD.ProjectService.OpenSolutionOrProject(FileName.Create(fileName)));
 		}
 		
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsSolutionOrProject(string fileName)
 		{
-			return Project.ProjectService.HasProjectLoader(fileName);
+			return SD.ProjectService.IsSolutionOrProjectFile(FileName.Create(fileName));
 		}
 		
 		public bool CloseWorkbench(bool force)

@@ -26,11 +26,11 @@ namespace ICSharpCode.Core
 			get { return Service.MainPropertiesContainer; }
 		}
 		
-		public static string ConfigDirectory {
+		public static DirectoryName ConfigDirectory {
 			get { return Service.ConfigDirectory; }
 		}
 		
-		public static string DataDirectory {
+		public static DirectoryName DataDirectory {
 			get { return Service.DataDirectory; }
 		}
 		

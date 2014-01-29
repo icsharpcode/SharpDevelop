@@ -18,5 +18,6 @@ Namespace EnvDTE
 		Sub Delete()
 		Sub Remove()
 		Function Open(viewKind As String) As Global.EnvDTE.Window
+		Sub Save(Optional fileName As String = Nothing)
 	End Interface
 End Namespace

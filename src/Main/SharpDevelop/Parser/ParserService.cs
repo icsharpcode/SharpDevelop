@@ -15,6 +15,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -66,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				SD.MainThread.VerifyAccess();
 				if (!value.SequenceEqual(taskListTokens)) {
 					taskListTokens = value.ToArray();
-					PropertyService.SetList("SharpDevelop.TaskListTokens", taskListTokens);
+					SD.PropertyService.SetList("SharpDevelop.TaskListTokens", taskListTokens);
 					// TODO: trigger reparse?
 				}
 			}
@@ -74,8 +75,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		static IReadOnlyList<string> LoadTaskListTokens()
 		{
-			if (PropertyService.Contains("SharpDevelop.TaskListTokens"))
-				return PropertyService.GetList<string>("SharpDevelop.TaskListTokens").ToArray();
+			if (SD.PropertyService.Contains("SharpDevelop.TaskListTokens"))
+				return SD.PropertyService.GetList<string>("SharpDevelop.TaskListTokens");
 			else
 				return new string[] { "HACK", "TODO", "UNDONE", "FIXME" };
 		}
@@ -89,8 +90,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		public ICompilation GetCompilationForFile(FileName fileName)
 		{
-			Solution solution = ProjectService.OpenSolution;
-			IProject project = solution != null ? solution.FindProjectContainingFile(fileName) : null;
+			IProject project = SD.ProjectService.FindProjectContainingFile(fileName);
 			if (project != null)
 				return GetCompilation(project);
 			
@@ -194,6 +194,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
+			//SD.Log.Debug("Add " + fileName + " to " + project);
 			var entry = GetFileEntry(fileName, true);
 			entry.AddOwnerProject(project, isLinkedFile);
 			if (startAsyncParse)
@@ -204,6 +205,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
+			//SD.Log.Debug("Remove " + fileName + " from " + project);
 			var entry = GetFileEntry(fileName, false);
 			if (entry != null)
 				entry.RemoveOwnerProject(project);
@@ -309,13 +311,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}, cancellationToken);
 		}
 		
-		public async Task FindLocalReferencesAsync(FileName fileName, IVariable variable, Action<Reference> callback, ITextSource fileContent, ICompilation compilation, CancellationToken cancellationToken)
+		public async Task FindLocalReferencesAsync(FileName fileName, IVariable variable, Action<SearchResultMatch> callback, ITextSource fileContent, ICompilation compilation, CancellationToken cancellationToken)
 		{
 			var entry = GetFileEntry(fileName, true);
 			if (entry.parser == null)
 				return;
 			if (fileContent == null)
-				fileContent = SD.FileService.GetFileContent(fileName);
+				fileContent = entry.parser.GetFileContent(fileName);
 			if (compilation == null)
 				compilation = GetCompilationForFile(fileName);
 			var parseInfo = await entry.ParseAsync(fileContent, compilation.GetProject(), cancellationToken).ConfigureAwait(false);

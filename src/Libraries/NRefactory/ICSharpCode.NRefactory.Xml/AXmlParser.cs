@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2009-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -132,6 +132,16 @@ namespace ICSharpCode.NRefactory.Xml
 			var internalObjects = InternalParseIncremental(oldParserState, newTextSource, out newParserState, true, cancellationToken);
 			var heuristic = new TagMatchingHeuristics(newTextSource);
 			return new AXmlDocument(null, 0, heuristic.CreateDocument(internalObjects, cancellationToken));
+		}
+		
+		/// <summary>
+		/// Checks whether the given name is a valid XML name.
+		/// </summary>
+		public static bool IsValidXmlName(string name)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+				throw new ArgumentException("The XML name cannot be null, empty or consist solely of white space", "name");
+			return TagReader.IsValidName(name);
 		}
 	}
 }

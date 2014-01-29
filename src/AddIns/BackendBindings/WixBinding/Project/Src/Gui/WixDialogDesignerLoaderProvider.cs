@@ -1,35 +1,26 @@
-﻿//// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-//// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//
-//using System;
-//using System.ComponentModel.Design.Serialization;
-//using ICSharpCode.FormsDesigner;
-//
-//namespace ICSharpCode.WixBinding
-//{
-//	public class WixDialogDesignerLoaderProvider : IDesignerLoaderProvider
-//	{
-//		IWixDialogDesigner designer;
-//		
-//		public WixDialogDesignerLoaderProvider()
-//		{
-//		}
-//		
-//		public DesignerLoader CreateLoader(IDesignerGenerator generator)
-//		{
-//			return new WixDialogDesignerLoader(designer, generator as IWixDialogDesignerGenerator);
-//		}
-//		
-//		/// <summary>
-//		/// Gets or sets the designer that the loader provider should use.
-//		/// </summary>
-//		public IWixDialogDesigner Designer {
-//			get {
-//				return designer;
-//			}
-//			set {
-//				designer = value;
-//			}
-//		}
-//	}
-//}
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
+using ICSharpCode.FormsDesigner;
+using ICSharpCode.SharpDevelop.Workbench;
+
+namespace ICSharpCode.WixBinding
+{
+	public class WixDialogDesignerLoaderProvider : IDesignerLoaderProvider
+	{
+		public DesignerLoader CreateLoader(FormsDesignerViewContent viewContent)
+		{
+			return new WixDialogDesignerLoader((IWixDialogDesigner)viewContent);
+		}
+
+		public IReadOnlyList<OpenedFile> GetSourceFiles(FormsDesignerViewContent viewContent, out OpenedFile designerCodeFile)
+		{
+			designerCodeFile = viewContent.PrimaryFile;
+			return new[] { viewContent.PrimaryFile };
+		}
+	}
+}

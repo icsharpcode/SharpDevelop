@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -18,6 +19,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	sealed class TypeDefinitionModel : ITypeDefinitionModel
 	{
+		public event EventHandler Updated;
+		
 		readonly IEntityModelContext context;
 		readonly FullTypeName fullTypeName;
 		List<IUnresolvedTypeDefinition> parts = new List<IUnresolvedTypeDefinition>();
@@ -41,6 +44,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return context.Project; }
 		}
 		
+		public SymbolKind SymbolKind {
+			get { return SymbolKind.TypeDefinition; }
+		}
+		
+		public TypeKind TypeKind {
+			get { return parts[0].Kind; }
+		}
+		
+		public Accessibility Accessibility {
+			get {
+				var td = Resolve();
+				if (td != null)
+					return td.Accessibility;
+				else
+					return Accessibility.None;
+			}
+		}
+		
 		public FullTypeName FullTypeName {
 			get { return fullTypeName; }
 		}
@@ -53,16 +74,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return fullTypeName.Name; }
 		}
 		
+		public string Namespace {
+			get { return fullTypeName.TopLevelTypeName.Namespace; }
+		}
+		
 		#region Resolve
 		public ITypeDefinition Resolve()
 		{
-			var compilation = context.GetCompilation(null);
+			var compilation = context.GetCompilation();
 			return compilation.MainAssembly.GetTypeDefinition(fullTypeName);
 		}
 		
-		public ITypeDefinition Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		public ITypeDefinition Resolve(ICompilation compilation)
 		{
-			var compilation = context.GetCompilation(solutionSnapshot);
 			return compilation.MainAssembly.GetTypeDefinition(fullTypeName);
 		}
 		
@@ -71,9 +95,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return Resolve();
 		}
 		
-		IEntity IEntityModel.Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		IEntity IEntityModel.Resolve(ICompilation compilation)
 		{
-			return Resolve(solutionSnapshot);
+			return Resolve(compilation);
 		}
 		#endregion
 		
@@ -82,12 +106,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region Members collection
 		sealed class MemberCollection : IModelCollection<MemberModel>
 		{
+			readonly ModelCollectionChangedEvent<MemberModel> collectionChangedEvent;
 			readonly TypeDefinitionModel parent;
 			List<List<MemberModel>> lists = new List<List<MemberModel>>();
 			
 			public MemberCollection(TypeDefinitionModel parent)
 			{
 				this.parent = parent;
+				collectionChangedEvent = new ModelCollectionChangedEvent<MemberModel>();
 			}
 			
 			public void InsertPart(int partIndex, IUnresolvedTypeDefinition newPart)
@@ -97,16 +123,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 					newItems.Add(new MemberModel(parent.context, newMember) { strongParentCollectionReference = this });
 				}
 				lists.Insert(partIndex, newItems);
-				if (collectionChanged != null)
-					collectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems, GetCount(partIndex)));
+				collectionChangedEvent.Fire(EmptyList<MemberModel>.Instance, newItems);
 			}
 			
 			public void RemovePart(int partIndex)
 			{
 				var oldItems = lists[partIndex];
 				lists.RemoveAt(partIndex);
-				if (collectionChanged != null)
-					collectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems, GetCount(partIndex)));
+				collectionChangedEvent.Fire(oldItems, EmptyList<MemberModel>.Instance);
 			}
 			
 			public void UpdatePart(int partIndex, IUnresolvedTypeDefinition newPart)
@@ -135,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// We might try to be clever here and find a LCS so that we only update the members that were actually changed,
 				// or we might consider moving members around (INotifyCollectionChanged supports moves)
 				// However, the easiest solution by far is to just remove + readd the whole middle portion.
-				var oldItems = collectionChanged != null ? list.GetRange(startPos, endPosOld - startPos) : null;
+				var oldItems = collectionChangedEvent.ContainsHandlers ? list.GetRange(startPos, endPosOld - startPos) : null;
 				list.RemoveRange(startPos, endPosOld - startPos);
 				var newItems = new MemberModel[endPosNew - startPos];
 				for (int i = 0; i < newItems.Length; i++) {
@@ -143,27 +167,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 					newItems[i].strongParentCollectionReference = this;
 				}
 				list.InsertRange(startPos, newItems);
-				if (collectionChanged != null)
-					collectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems, GetCount(partIndex) + startPos));
+				if (collectionChangedEvent.ContainsHandlers && (oldItems.Count > 0 || newItems.Length > 0)) {
+					collectionChangedEvent.Fire(oldItems, newItems);
+				}
 			}
 			
 			static bool IsMatch(MemberModel memberModel, IUnresolvedMember newMember)
 			{
-				return memberModel.EntityType == newMember.EntityType && memberModel.Name == newMember.Name;
+				return memberModel.SymbolKind == newMember.SymbolKind && memberModel.Name == newMember.Name;
 			}
 			
-			NotifyCollectionChangedEventHandler collectionChanged;
-			
-			public event NotifyCollectionChangedEventHandler CollectionChanged {
+			public event ModelCollectionChangedEventHandler<MemberModel> CollectionChanged {
 				add {
-					collectionChanged += value;
+					collectionChangedEvent.AddHandler(value);
 					// Set strong reference to collection while there are event listeners
-					if (collectionChanged != null)
+					if (collectionChangedEvent.ContainsHandlers)
 						parent.membersStrongReference = this;
 				}
 				remove {
-					collectionChanged -= value;
-					if (collectionChanged == null)
+					collectionChangedEvent.RemoveHandler(value);
+					if (!collectionChangedEvent.ContainsHandlers)
 						parent.membersStrongReference = null;
 				}
 			}
@@ -179,6 +202,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			public int Count {
 				get { return GetCount(lists.Count); }
+			}
+			
+			public IReadOnlyCollection<MemberModel> CreateSnapshot()
+			{
+				return this.ToArray();
 			}
 			
 			public IEnumerator<MemberModel> GetEnumerator()
@@ -245,6 +273,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 		
 		#region Update
+		/// <summary>
+		/// Updates this type definition model by replacing oldPart with newPart.
+		/// Either oldPart or newPart may be null when adding/removed a part.
+		/// </summary>
 		public void Update(IUnresolvedTypeDefinition oldPart, IUnresolvedTypeDefinition newPart)
 		{
 			SD.MainThread.VerifyAccess();
@@ -281,7 +313,37 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (nestedTypes != null) {
 				nestedTypes.Update(oldPart != null ? oldPart.NestedTypes : null, newPart != null ? newPart.NestedTypes : null);
 			}
+			if (Updated != null) {
+				Updated(this, new EventArgs());
+			}
 		}
 		#endregion
+		
+		public bool IsPartial {
+			get {
+				return parts.Count > 1; // TODO: check for partial modifier on single part
+			}
+		}
+		
+		public bool IsAbstract {
+			get { return parts.Any(p => p.IsAbstract); }
+		}
+		
+		public bool IsStatic {
+			get { return parts.Any(p => p.IsStatic); }
+		}
+		
+		public bool IsSealed {
+			get { return parts.Any(p => p.IsSealed); }
+		}
+		
+		public bool IsShadowing {
+			get { return parts.Any(p => p.IsShadowing); }
+		}
+		
+		public IEnumerable<DomRegion> GetPartRegions()
+		{
+			return parts.Select(p => p.Region);
+		}
 	}
 }

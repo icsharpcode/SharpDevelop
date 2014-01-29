@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2009-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -19,6 +19,7 @@
 using System;
 using System.Globalization;
 using System.Xml;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.Xml
 {
@@ -32,16 +33,9 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 		}
 		
-		/// <inheritdoc/>
-		public override XmlReader CreateReader()
+		internal override ObjectIterator CreateIteratorForReader()
 		{
-			return new AXmlReader(internalObject.NestedObjects);
-		}
-		
-		/// <inheritdoc/>
-		public override XmlReader CreateReader(Func<int, TextLocation> offsetToTextLocation)
-		{
-			return new AXmlReader(internalObject.NestedObjects, startOffset, offsetToTextLocation);
+			return new ObjectIterator(internalObject.NestedObjects, startOffset);
 		}
 		
 		/// <inheritdoc/>

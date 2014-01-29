@@ -80,5 +80,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public void SetDefaultRunspace()
 		{
 		}
+		
+		public IConsoleHostFileConflictResolver CreateFileConflictResolver(FileConflictAction fileConflictAction)
+		{
+			return null;
+		}
 	}
 }

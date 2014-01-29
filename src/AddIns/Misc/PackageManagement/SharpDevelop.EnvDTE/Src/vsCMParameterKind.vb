@@ -2,6 +2,7 @@
 ' This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 Namespace EnvDTE
+	<Flags>
 	Public Enum vsCMParameterKind
 		vsCMParameterKindNone       = 0
 		vsCMParameterKindIn         = 1

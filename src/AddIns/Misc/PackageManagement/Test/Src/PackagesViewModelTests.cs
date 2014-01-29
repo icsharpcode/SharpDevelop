@@ -1297,5 +1297,69 @@ namespace PackageManagement.Tests
 			
 			Assert.IsFalse(viewModel.IsDisposed);
 		}
+		
+		[Test]
+		public void IncludePrerelease_ChangedToTrue_PackagesAreReadAgain()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = false;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			
+			viewModel.IncludePrerelease = true;
+			
+			Assert.IsTrue(viewModel.IsReadingPackages);
+		}
+		
+		[Test]
+		public void IncludePrerelease_ChangedToFalse_PackagesAreReadAgain()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = true;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			
+			viewModel.IncludePrerelease = false;
+			
+			Assert.IsTrue(viewModel.IsReadingPackages);
+		}
+		
+		[Test]
+		public void IncludePrerelease_ChangedToTrue_PropertyChangedEventIsFired()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = false;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			PropertyChangedEventArgs propertyChangedEvent = null;
+			viewModel.PropertyChanged += (sender, e) => propertyChangedEvent = e;
+			
+			viewModel.IncludePrerelease = true;
+			
+			Assert.IsNull(propertyChangedEvent.PropertyName);
+		}
+		
+		[Test]
+		public void IncludePrerelease_SetToTrueWhenAlreadyTrue_PropertyChangedEventIsNotFired()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = true;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			bool fired = false;
+			viewModel.PropertyChanged += (sender, e) => fired = true;
+			
+			viewModel.IncludePrerelease = true;
+			
+			Assert.IsFalse(fired);
+		}
 	}
 }

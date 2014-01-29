@@ -47,11 +47,23 @@ namespace CSharpBinding
 			//this.defaultTextColor = ???;
 			this.referenceTypeColor = highlighting.GetNamedColor("ReferenceTypes");
 			this.valueTypeColor = highlighting.GetNamedColor("ValueTypes");
-			this.methodCallColor = highlighting.GetNamedColor("MethodCall");
-			this.fieldAccessColor = highlighting.GetNamedColor("FieldAccess");
+			this.interfaceTypeColor = this.referenceTypeColor;
+			this.enumerationTypeColor = this.valueKeywordColor;
+			this.typeParameterTypeColor = this.referenceTypeColor;
+			this.delegateTypeColor = this.referenceTypeColor;
+			
+			this.methodDeclarationColor = this.methodCallColor = highlighting.GetNamedColor("MethodCall");
+			//this.eventDeclarationColor = this.eventAccessColor = defaultTextColor;
+			//this.propertyDeclarationColor = this.propertyAccessColor = defaultTextColor;
+			this.fieldDeclarationColor = this.fieldAccessColor = highlighting.GetNamedColor("FieldAccess");
+			//this.variableDeclarationColor = this.variableAccessColor = defaultTextColor;
+			//this.parameterDeclarationColor = this.parameterAccessColor = defaultTextColor;
 			this.valueKeywordColor = highlighting.GetNamedColor("NullOrValueKeywords");
+			//this.externAliasKeywordColor = ...;
+			
 			this.parameterModifierColor = highlighting.GetNamedColor("ParameterModifiers");
 			this.inactiveCodeColor = highlighting.GetNamedColor("InactiveCode");
+			this.syntaxErrorColor = highlighting.GetNamedColor("SemanticError");
 			
 			if (document is TextDocument && SD.MainThread.CheckAccess()) {
 				// Use the cache only for the live AvalonEdit document
@@ -214,6 +226,9 @@ namespace CSharpBinding
 				
 				if (cachedLine != null && cachedLine.IsValid && newVersion.CompareAge(cachedLine.OldVersion) == 0) {
 					// the file hasn't changed since the cache was created, so just reuse the old highlighted line
+					#if DEBUG
+					cachedLine.HighlightedLine.ValidateInvariants();
+					#endif
 					return cachedLine.HighlightedLine;
 				}
 			}
@@ -244,13 +259,16 @@ namespace CSharpBinding
 			if (parseInfo == null) {
 				if (invalidLines != null && !invalidLines.Contains(documentLine)) {
 					invalidLines.Add(documentLine);
-					Debug.WriteLine("Semantic highlighting for line {0} - marking as invalid", lineNumber);
+					//Debug.WriteLine("Semantic highlighting for line {0} - marking as invalid", lineNumber);
 				}
 				
 				if (cachedLine != null) {
 					// If there's a cached version, adjust it to the latest document changes and return it.
 					// This avoids flickering when changing a line that contains semantic highlighting.
 					cachedLine.Update(newVersion);
+					#if DEBUG
+					cachedLine.HighlightedLine.ValidateInvariants();
+					#endif
 					return cachedLine.HighlightedLine;
 				} else {
 					return null;
@@ -282,6 +300,14 @@ namespace CSharpBinding
 			}
 			return line;
 		}
+		
+		#if DEBUG
+		public override void VisitSyntaxTree(ICSharpCode.NRefactory.CSharp.SyntaxTree syntaxTree)
+		{
+			base.VisitSyntaxTree(syntaxTree);
+			line.ValidateInvariants();
+		}
+		#endif
 		
 		HighlightingColor IHighlighter.DefaultTextColor {
 			get {
@@ -324,12 +350,22 @@ namespace CSharpBinding
 				return;
 			if (start.Line <= lineNumber && end.Line >= lineNumber) {
 				int lineStartOffset = line.DocumentLine.Offset;
+				int lineEndOffset = lineStartOffset + line.DocumentLine.Length;
 				int startOffset = lineStartOffset + (start.Line == lineNumber ? start.Column - 1 : 0);
 				int endOffset = lineStartOffset + (end.Line == lineNumber ? end.Column - 1 : line.DocumentLine.Length);
+				// For some parser errors, the mcs parser produces grossly wrong locations (e.g. miscounting the number of newlines),
+				// so we need to coerce the offsets to valid values within the line
+				startOffset = startOffset.CoerceValue(lineStartOffset, lineEndOffset);
+				endOffset = endOffset.CoerceValue(lineStartOffset, lineEndOffset);
 				if (line.Sections.Count > 0) {
 					HighlightedSection prevSection = line.Sections.Last();
-					if (startOffset < prevSection.Offset + prevSection.Length)
-						throw new InvalidOperationException("Cannot create unordered highlighting section");
+					if (startOffset < prevSection.Offset + prevSection.Length) {
+						// The mcs parser sometimes creates strange ASTs with duplicate nodes
+						// when there are syntax errors (e.g. "int A() public static void Main() {}"),
+						// so we'll silently ignore duplicate colorization.
+						return;
+						//throw new InvalidOperationException("Cannot create unordered highlighting section");
+					}
 				}
 				line.Sections.Add(new HighlightedSection {
 				                  	Offset = startOffset,

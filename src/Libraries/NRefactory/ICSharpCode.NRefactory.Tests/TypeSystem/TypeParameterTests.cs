@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -32,9 +32,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			// class C<T, U> where T : class where U : T
 			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
-			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "T") { HasReferenceTypeConstraint = true });
-			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 1, "U") {
-			                     	Constraints = { new TypeParameterReference(EntityType.TypeDefinition, 0) }
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "T") { HasReferenceTypeConstraint = true });
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 1, "U") {
+			                     	Constraints = { new TypeParameterReference(SymbolKind.TypeDefinition, 0) }
 			                     });
 			
 			ITypeDefinition resolvedC = TypeSystemHelper.CreateCompilationAndResolve(c);
@@ -49,10 +49,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			// class C<T, U> where T : class where U : struct, T
 			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
-			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "T") { HasReferenceTypeConstraint = true });
-			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 1, "U") {
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "T") { HasReferenceTypeConstraint = true });
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 1, "U") {
 			                     	HasValueTypeConstraint = true,
-			                     	Constraints = { new TypeParameterReference(EntityType.TypeDefinition, 0) }
+			                     	Constraints = { new TypeParameterReference(SymbolKind.TypeDefinition, 0) }
 			                     });
 			
 			ITypeDefinition resolvedC = TypeSystemHelper.CreateCompilationAndResolve(c);
@@ -67,11 +67,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			// class C<T, U> where T : List<string> where U : T
 			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
-			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "T") {
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "T") {
 			                     	Constraints = { typeof(List<string>).ToTypeReference() }
 			                     });
-			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 1, "U") {
-			                     	Constraints = { new TypeParameterReference(EntityType.TypeDefinition, 0) }
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 1, "U") {
+			                     	Constraints = { new TypeParameterReference(SymbolKind.TypeDefinition, 0) }
 			                     });
 			
 			ITypeDefinition resolvedC = TypeSystemHelper.CreateCompilationAndResolve(c);
@@ -87,10 +87,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			// class C<T, U> { void M<X>() {} }
 			
 			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
-			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "T"));
-			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 1, "U"));
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "T"));
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 1, "U"));
 			var m = new DefaultUnresolvedMethod(c, "M");
-			m.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.Method, 0, "X"));
+			m.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.Method, 0, "X"));
 			c.Members.Add(m);
 			
 			var resolvedC1 = TypeSystemHelper.CreateCompilationAndResolve(c);

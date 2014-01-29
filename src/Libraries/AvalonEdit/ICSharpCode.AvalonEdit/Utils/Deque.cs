@@ -12,7 +12,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	[Serializable]
-	public sealed class Deque<T> : ICollection<T>
+	public sealed class Deque<T> : ICollection<T>, IReadOnlyCollection<T>
 	{
 		T[] arr = Empty<T>.Array;
 		int size, head, tail;

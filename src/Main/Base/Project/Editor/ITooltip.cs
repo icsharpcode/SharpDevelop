@@ -9,6 +9,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 	public interface ITooltip
 	{
 		/// <summary> Should the tooltip close when the mouse moves away? </summary>
-		bool CloseOnHoverEnd { get; }
+		bool CloseWhenMouseMovesAway { get; }
 	}
 }

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -14,7 +15,7 @@ namespace ICSharpCode.UnitTesting
 			TaskService.ClearExceptCommentTasks();
 		}
 		
-		public MessageViewCategory BuildMessageViewCategory {
+		public IOutputCategory BuildMessageViewCategory {
 			get { return TaskService.BuildMessageViewCategory; }
 		}
 		

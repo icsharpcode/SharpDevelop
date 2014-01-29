@@ -12,7 +12,7 @@ using Debugger.Interop.CorSym;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace Debugger
-{	
+{
 	public class SequencePoint
 	{
 		public uint MethodDefToken { get; set; }
@@ -72,9 +72,9 @@ namespace Debugger
 		/// <summary> Find sequence point by IL offset </summary>
 		SequencePoint GetSequencePoint(IMethod method, int iloffset);
 		
-		/// <summary> Find sequence point by source code location </summary>
+		/// <summary> Find sequence points by source code location. Might find multiple methods at one location (lambda expressions, etc.) </summary>
 		/// <remarks> Only source files corresponding to the given module are searched </remarks>
-		SequencePoint GetSequencePoint(Module module, string filename, int line, int column);
+		IEnumerable<SequencePoint> GetSequencePoints(Module module, string filename, int line, int column);
 		
 		/// <summary> Get IL ranges that should be always stepped over by the debugger </summary>
 		/// <remarks> This is used for compiler generated code </remarks>
@@ -88,7 +88,9 @@ namespace Debugger
 	{
 		public bool Handles(IMethod method)
 		{
-			return method.ParentAssembly.GetModule().SymReader != null;
+			return method.ParentAssembly.GetModule().HasSymbols
+				&& !IsCompilerGenerated(method)
+				&& GetSequencePoint(method, 0) != null;
 		}
 		
 		public bool IsCompilerGenerated(IMethod method)
@@ -119,7 +121,7 @@ namespace Debugger
 		static IEnumerable<string> RelocatePath(string basePath, string origPath)
 		{
 			if (!string.IsNullOrEmpty(origPath)) {
-				if (Path.IsPathRooted(origPath)) {				
+				if (Path.IsPathRooted(origPath)) {
 					// Try without relocating
 					yield return origPath;
 					
@@ -169,59 +171,63 @@ namespace Debugger
 			
 			// Find point for which (ilstart <= iloffset < ilend) or fallback to the next valid sequence point
 			var sequencePoint = realSeqPoints.FirstOrDefault(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To)) ??
-			                    realSeqPoints.FirstOrDefault(p => iloffset <= p.ILOffset);
-			
-			// VB.NET sometimes produces temporary files which it then deletes
-			// (eg 17d14f5c-a337-4978-8281-53493378c1071.vb)
-			string name = Path.GetFileName(sequencePoint.Filename);
-			if (name.Length == 40 && name.EndsWith(".vb")) {
-				if (name.Substring(0, name.Length - 3).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F') || (c == '-'))) {
-					return null;
-				}
-			}
+				realSeqPoints.FirstOrDefault(p => iloffset <= p.ILOffset);
 			
 			if (sequencePoint != null) {
+				// VB.NET sometimes produces temporary files which it then deletes
+				// (eg 17d14f5c-a337-4978-8281-53493378c1071.vb)
+				string name = Path.GetFileName(sequencePoint.Filename);
+				if (name.Length == 40 && name.EndsWith(".vb")) {
+					if (name.Substring(0, name.Length - 3).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F') || (c == '-'))) {
+						return null;
+					}
+				}
+				
+
 				sequencePoint.Filename = GetSourceCodePath(method.ParentAssembly.GetModule().Process, sequencePoint.Filename);
 			}
 			
 			return sequencePoint;
 		}
 		
-		public SequencePoint GetSequencePoint(Module module, string filename, int line, int column)
+		public IEnumerable<SequencePoint> GetSequencePoints(Module module, string filename, int line, int column)
 		{
 			// Do not use ISymUnmanagedReader.GetDocument!  It is broken if two files have the same name
 			// Do not use ISymUnmanagedMethod.GetOffset!  It sometimes returns negative offset
 			
 			ISymUnmanagedReader symReader = module.SymReader;
 			if (symReader == null)
-				return null; // No symbols
-		
+				yield break; // No symbols
+			
 			// Find ISymUnmanagedDocument which excactly matches the filename.
 			var symDoc = module.SymDocuments.FirstOrDefault(d => string.Equals(filename, d.GetURL(), StringComparison.OrdinalIgnoreCase));
 			
 			// Find the file even if the symbol is relative or if the file was moved
 			var symDocs = module.SymDocuments.Where(d => string.Equals(Path.GetFileName(filename), Path.GetFileName(d.GetURL()), StringComparison.OrdinalIgnoreCase));
 			symDoc = symDoc ?? symDocs.FirstOrDefault(d => string.Equals(GetSourceCodePath(module.Process, d.GetURL()), filename, StringComparison.OrdinalIgnoreCase));
-			if (symDoc == null) return null; // Document not found
+			if (symDoc == null) yield break; // Document not found
 			
-			ISymUnmanagedMethod symMethod;
+			ISymUnmanagedMethod[] symMethods;
 			try {
 				uint validLine = symDoc.FindClosestLine((uint)line);
-				symMethod = symReader.GetMethodFromDocumentPosition(symDoc, (uint)validLine, (uint)column);
+				symMethods = symReader.GetMethodsFromDocumentPosition(symDoc, validLine, (uint)column);
 			} catch {
-				return null; //Not found
+				yield break; //Not found
 			}
 			
-			var corFunction = module.CorModule.GetFunctionFromToken(symMethod.GetToken());
-			int codesize = (int)corFunction.GetILCode().GetSize();
-			var seqPoints = symMethod.GetSequencePoints(codesize).Where(s => s.StartLine != 0xFEEFEE);
-			SequencePoint seqPoint = null;
-			if (column != 0) {
-				seqPoint = seqPoints.FirstOrDefault(s => (s.StartLine < line || (s.StartLine == line && s.StartColumn <= column)) &&
-				                                         (line < s.EndLine || (line == s.EndLine && column <= s.EndColumn)));
+			foreach (ISymUnmanagedMethod symMethod in symMethods) {
+				var corFunction = module.CorModule.GetFunctionFromToken(symMethod.GetToken());
+				int codesize = (int)corFunction.GetILCode().GetSize();
+				var seqPoints = symMethod.GetSequencePoints(codesize).Where(s => s.StartLine != 0xFEEFEE);
+				SequencePoint seqPoint = null;
+				if (column != 0) {
+					seqPoint = seqPoints.FirstOrDefault(s => (s.StartLine < line || (s.StartLine == line && s.StartColumn <= column)) &&
+					                                    (line < s.EndLine || (line == s.EndLine && column <= s.EndColumn)));
+				}
+				seqPoint = seqPoint ?? seqPoints.FirstOrDefault(s => line <= s.StartLine);
+				if (seqPoint != null)
+					yield return seqPoint;
 			}
-			seqPoint = seqPoint ?? seqPoints.FirstOrDefault(s => line <= s.StartLine);
-			return seqPoint;
 		}
 		
 		public IEnumerable<ILRange> GetIgnoredILRanges(IMethod method)
@@ -252,7 +258,7 @@ namespace Debugger
 					         	Type = method.GetLocalVariableType(index),
 					         	Name = symVar.GetName(),
 					         	IsCompilerGenerated = (symVar.GetAttributes() & 1) == 1,
-								// symVar also has Get*Offset methods, but the are not implemented
+					         	// symVar also has Get*Offset methods, but the are not implemented
 					         	ILRanges = new [] { new ILRange() { From = (int)scope.GetStartOffset(), To = (int)scope.GetEndOffset() } }
 					         });
 				}

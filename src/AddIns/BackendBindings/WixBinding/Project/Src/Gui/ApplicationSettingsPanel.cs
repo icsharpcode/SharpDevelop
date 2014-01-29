@@ -10,6 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.WixBinding
 {
+	[Obsolete("TODO: rewrite me in WPF")]
 	public class ApplicationSettingsPanel : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()

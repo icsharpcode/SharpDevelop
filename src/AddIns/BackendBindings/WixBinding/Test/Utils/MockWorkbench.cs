@@ -103,7 +103,7 @@ namespace WixBinding.Tests.Utils
 		
 		public PadDescriptor GetPad(Type type)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		public void CloseAllViews()
@@ -175,7 +175,7 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public bool CloseAllSolutionViews()
+		public bool CloseAllSolutionViews(bool force)
 		{
 			throw new NotImplementedException();
 		}

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -26,5 +27,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			IsClearCalled = true;
 		}
+		
+		public IOutputCategory OutputCategory { get; set; }
 	}
 }

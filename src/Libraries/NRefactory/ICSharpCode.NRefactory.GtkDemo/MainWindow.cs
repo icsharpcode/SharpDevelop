@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.GtkDemo
 
 		void CSharpGenerateCodeButtonClick(object sender, EventArgs e)
 		{
-			this.textview1.Buffer.Text = unit.GetText();
+			this.textview1.Buffer.Text = unit.ToString();
 		}
 		
 		void SelectionChanged (object sender, EventArgs e)
@@ -120,6 +120,8 @@ namespace ICSharpCode.NRefactory.GtkDemo
 			if (node == null)
 				return;
 			this.textview1.MoveCursor -= HandleMoveCursor;
+			if (node.StartLocation.IsEmpty || node.EndLocation.IsEmpty)
+				return;
 			var textIter = this.textview1.Buffer.GetIterAtLineOffset (node.StartLocation.Line - 1, node.StartLocation.Column - 1);
 			this.textview1.ScrollToIter (textIter, 0, false, 0, 0);
 			this.textview1.Buffer.PlaceCursor (textIter);
@@ -212,6 +214,7 @@ namespace ICSharpCode.NRefactory.GtkDemo
 			}
 			if (hasProperties)
 				b.Append(")");
+			b.Append (node.StartLocation + "-" + node.EndLocation);
 //			b.Append(" Start " + node.StartLocation);
 //			b.Append(" End " + node.EndLocation);
 			return b.ToString();
@@ -249,8 +252,8 @@ namespace ICSharpCode.NRefactory.GtkDemo
 				Parallel.For(
 					0, assemblies.Length,
 					delegate (int i) {
-						Stopwatch w = Stopwatch.StartNew();
-						CecilLoader loader = new CecilLoader();
+//						Stopwatch w = Stopwatch.StartNew();
+						AssemblyLoader loader = AssemblyLoader.Create();
 						projectContents[i] = loader.LoadAssemblyFile(assemblies[i].Location);
 					});
 				return projectContents;

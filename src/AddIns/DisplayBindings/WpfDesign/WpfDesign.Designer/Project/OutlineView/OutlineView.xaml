@@ -98,21 +98,39 @@
 				<ControlTemplate TargetType="{x:Type Default:DragTreeViewItem}">
 					
 					<DockPanel Background="White">
-						<DockPanel x:Name="bg"
+						<Grid x:Name="bg"
+						           Margin="{TemplateBinding Level, Converter={StaticResource LevelConverter}}"
 						           DockPanel.Dock="Top"
 						           Background="{TemplateBinding Background}">
-							<ToggleButton x:Name="expandButton"
+							<ToggleButton HorizontalAlignment="Left" x:Name="expandButton"
 							              Style="{StaticResource ExpandButtonStyle}"
-							              DockPanel.Dock="Left"
-							              Margin="{TemplateBinding Level, Converter={StaticResource LevelConverter}}"
 							              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" />
 							<Border x:Name="contentBorder"
-							        HorizontalAlignment="Left">
+							        Margin="11,0,0,0"
+							        HorizontalAlignment="Stretch">
 								<ContentPresenter x:Name="PART_Header"
 									ContentSource="Header" />
 							</Border>
-						</DockPanel>
+						</Grid>
 						<ItemsPresenter x:Name="itemsHost" />
+					<DockPanel.ContextMenu>
+					<ContextMenu>
+						<MenuItem Command="ApplicationCommands.Cut" />
+						<MenuItem Command="ApplicationCommands.Copy" />
+						<MenuItem Command="ApplicationCommands.Paste" />
+						<Separator />
+						<MenuItem Command="ApplicationCommands.Delete" />
+					</ContextMenu>
+					</DockPanel.ContextMenu>
+						<DockPanel.ToolTip>
+							<ToolTip Background="White">
+								<Rectangle Width="50" Height="50">
+									<Rectangle.Fill>
+										<VisualBrush Stretch="Uniform" Visual="{Binding DesignItem.View}" />
+									</Rectangle.Fill>
+								</Rectangle>
+							</ToolTip>
+						</DockPanel.ToolTip>
 					</DockPanel>
 					
 					<ControlTemplate.Triggers>
@@ -126,7 +144,7 @@
 						         Value="False">
 							<Setter TargetName="expandButton"
 							        Property="Visibility"
-							        Value="Hidden" />
+							        Value="Collapsed" />
 						</Trigger>
 						<Trigger Property="IsSelected"
 						         Value="True">

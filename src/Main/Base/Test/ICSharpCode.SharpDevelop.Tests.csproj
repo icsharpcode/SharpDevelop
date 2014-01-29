@@ -22,18 +22,24 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DebugType>Full</DebugType>
     <RegisterForComInterop>False</RegisterForComInterop>
-    <PlatformTarget>x86</PlatformTarget>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DebugSymbols>true</DebugSymbols>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
     <FileAlignment>4096</FileAlignment>
+    <Prefer32Bit>False</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
@@ -74,34 +80,32 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractEntityIsOverridableTestFixture.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="CheckAssemblyFlags.cs" />
     <Compile Include="CodeConverterTests.cs" />
-    <Compile Include="Dom\CSharpModelTests.cs" />
+    <Compile Include="Dom\AssemblyModelNamespaceTests.cs" />
+    <Compile Include="Dom\CSharpModelTestBase.cs" />
     <Compile Include="Dom\ProjectEntityModelContextTests.cs" />
+    <Compile Include="Dom\TopLevelTypeModelsTests.cs" />
     <Compile Include="Dom\TreeNodeFactoryServiceTests.cs" />
-    <Compile Include="ExceptionClassOverridesTestFixture.cs" />
-    <Compile Include="GenerateOverrideMethodTests.cs" />
-    <Compile Include="GetElementByReflectionNameTests.cs" />
     <Compile Include="Highlighting\SyntaxDoozerAddsHighlightingToHighlightingManagerTestFixture.cs" />
     <Compile Include="MimeDetectionTests.cs" />
-    <Compile Include="CollectionClassOverridesTestFixture.cs" />
     <Compile Include="OutputTextLineParserTests.cs" />
-    <Compile Include="OverridableMethodsTestFixture.cs" />
-    <Compile Include="OverridablePropertiesTestFixture.cs" />
+    <Compile Include="ProcessRunner\CancelLongRunningAppTestFixture.cs" />
+    <Compile Include="ProcessRunner\ConsoleAppTestFixtureBase.cs" />
+    <Compile Include="ProcessRunner\ExitCodeTestFixture.cs" />
+    <Compile Include="ProcessRunner\NoSuchExecutableTestFixture.cs" />
+    <Compile Include="ProcessRunner\ProcessExitedTestFixture.cs" />
+    <Compile Include="ProcessRunner\ProcessRunnerNotStartedTestFixture.cs" />
+    <Compile Include="ProcessRunner\StandardOutputFromProcessTestFixture.cs" />
+    <Compile Include="Project\AddExistingProjectTests.cs" />
     <Compile Include="Project\BeforeBuildCustomToolProjectItemsTests.cs" />
+    <Compile Include="Project\MockSolution.cs" />
     <Compile Include="Project\ProjectCustomToolOptionsTests.cs" />
+    <Compile Include="Project\SolutionLoaderTests.cs" />
+    <Compile Include="Project\SolutionTests.cs" />
+    <Compile Include="Project\SolutionWriterTests.cs" />
     <Compile Include="PropertyPadSortingTests.cs" />
-    <Compile Include="ReadOnlyDocumentTests.cs" />
-    <Compile Include="ReflectionLayerTests.cs" />
-    <Compile Include="GenericResolverTests.cs" />
-    <Compile Include="InnerClassesResolverTests.cs" />
-    <Compile Include="RefactoringTests.cs" />
     <Compile Include="SDTestFixtureBase.cs" />
-    <Compile Include="SearchClassTests.cs" />
-    <Compile Include="OverloadFinding.cs" />
-    <Compile Include="SearchGenericClassTests.cs" />
     <Compile Include="ServiceReferences\DirectoryNodeFactoryTests.cs" />
     <Compile Include="ServiceReferences\ItemTypeTests.cs" />
     <Compile Include="ServiceReferences\MSBuildBasedProjectTests.cs" />
@@ -114,12 +118,10 @@
     <Compile Include="ServiceReferences\ServiceReferenceNodeTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesFolderNodeTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesProjectItemTests.cs" />
-    <Compile Include="SolutionTests.cs" />
-    <Compile Include="StringTagProvider\MockProjectForTagProvider.cs" />
+    <Compile Include="SharpDevelopAddInTests.cs" />
     <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />
     <Compile Include="StringTagProvider\ProjectTagsTestFixture.cs" />
     <Compile Include="Utils\AssemblyLoader.cs" />
-    <Compile Include="Utils\FakeMessageLoop.cs" />
     <Compile Include="Utils\MockAssembly.cs" />
     <Compile Include="Utils\MockComponent.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
@@ -129,12 +131,13 @@
     <Compile Include="Utils\ModelCollectionEventCheck.cs" />
     <Compile Include="Utils\ProjectHelper.cs" />
     <Compile Include="Utils\TestExtensions.cs" />
+    <Compile Include="Utils\Tests\CamelHumpsMatchTests.cs" />
     <Compile Include="Utils\Tests\MockAssemblyTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
     <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />
     <Compile Include="WebReferences\WebReferenceTests.cs" />
     <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
-    <Compile Include="WebReferences\VBNetWebReferenceTest.cs" />
+    <Compile Include="WebReferences\VBWebReferenceTest.cs" />
     <Compile Include="WebReferences\WebReferenceTestHelper.cs" />
     <Compile Include="WebReferences\UnsupportedLanguageTest.cs" />
     <Compile Include="WebReferences\WebReferenceFolderAlreadyExistsTest.cs" />
@@ -146,18 +149,7 @@
     <Compile Include="WebReferences\WebServicesReferenceExistsTests.cs" />
     <Compile Include="WebReferences\ProjectWebReferenceItemsTests.cs" />
     <Compile Include="WebReferences\WebReferenceChangesTest.cs" />
-    <Compile Include="Templates\ProjectTemplateCategoryComparerTests.cs" />
-    <Compile Include="Templates\CategorySortOrderTests.cs" />
-    <Compile Include="Templates\FileTemplateCategoryComparerTests.cs" />
     <Compile Include="WebReferences\HttpAuthenticationHeaderTests.cs" />
-    <Compile Include="StandardOutputFromProcessTestFixture.cs" />
-    <Compile Include="CancelLongRunningAppTestFixture.cs" />
-    <Compile Include="ExitCodeTestFixture.cs" />
-    <Compile Include="LineReceivedFromProcessTestFixture.cs" />
-    <Compile Include="NoSuchExecutableTestFixture.cs" />
-    <Compile Include="ProcessExitedTestFixture.cs" />
-    <Compile Include="ProcessRunnerNotStartedTestFixture.cs" />
-    <Compile Include="ConsoleAppTestFixtureBase.cs" />
     <Compile Include="NavigationServiceTests\INavigationPointTextFixture.cs" />
     <Compile Include="NavigationServiceTests\TestNavigationPoint.cs" />
     <Compile Include="NavigationServiceTests\NavigationServiceTestFixture.cs" />
@@ -166,6 +158,10 @@
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
+      <Project>{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}</Project>
+      <Name>ICSharpCode.NRefactory.Cecil</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
@@ -195,6 +191,12 @@
   <ItemGroup>
     <EmbeddedResource Include="mime_utf-16_be_test.txt" />
     <EmbeddedResource Include="mime_utf-16_le_test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ProcessRunner" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="mime_bug1.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

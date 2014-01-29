@@ -2,11 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using Rhino.Mocks;
 using ICSharpCode.SharpDevelop.Tests.Utils;
 
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
@@ -27,11 +27,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			bool readOnly = false;
 			
 			public TestProject(string languageName)
-				: base(new ProjectCreateInformation {
-				       	Solution = new Solution(new MockProjectChangeWatcher()),
-				       	ProjectName = "TestProject",
-				       	OutputProjectFileName = FileName.Create("c:\\temp\\TestProject.csproj")
-				       })
+				: base(new ProjectCreateInformation(MockSolution.Create(), FileName.Create("c:\\temp\\TestProject.csproj")))
 			{
 				this.languageName = languageName;
 			}
@@ -40,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 				get { return languageName; }
 			}
 			
-			public override bool ReadOnly {
+			public override bool IsReadOnly {
 				get { return readOnly; }
 			}
 			
@@ -52,20 +48,14 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		
 		public static void InitializeProjectBindings()
 		{
-			Properties prop = new Properties();
-			prop["id"] = "C#";
-			prop["supportedextensions"] = ".cs";
-			prop["projectfileextension"] = ".csproj";
-			Codon codon1 = new Codon(null, "ProjectBinding", prop, new Condition[0]);
-			prop = new Properties();
-			prop["id"] = "VBNet";
-			prop["supportedextensions"] = ".vb";
-			prop["projectfileextension"] = ".vbproj";
-			Codon codon2 = new Codon(null, "ProjectBinding", prop, new Condition[0]);
-			ProjectBindingService.SetBindings(new ProjectBindingDescriptor[] {
-			                                   	new ProjectBindingDescriptor(codon1),
-			                                   	new ProjectBindingDescriptor(codon2)
-			                                   });
+			SD.Services.AddStrictMockService<IProjectService>();
+			var projectBinding = MockRepository.GenerateStrictMock<IProjectBinding>();
+			
+			ProjectBindingDescriptor[] descriptors = {
+				new ProjectBindingDescriptor(projectBinding, "C#", ".csproj", ProjectTypeGuids.CSharp, new[] { ".cs" }),
+				new ProjectBindingDescriptor(projectBinding, "VB", ".vbproj", ProjectTypeGuids.VB, new[] { ".vb" }),
+			};
+			SD.ProjectService.Stub(p => p.ProjectBindings).Return(descriptors);
 		}
 		
 		public static ProjectItem GetProjectItem(List<ProjectItem> items, string include, ItemType itemType) {

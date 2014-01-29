@@ -4,7 +4,6 @@
 using System;
 using System.CodeDom.Compiler;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.CSharp;
 

@@ -10,7 +10,7 @@
 		<Name>WCF Service</Name>
 		<Category>VB</Category>
 		<Subcategory>WCF</Subcategory>
-		<Icon>VBNet.Project.WCFServiceProject</Icon>
+		<Icon>VB.Project.WCFServiceProject</Icon>
 		<Description>WCF Service</Description>
 		<SupportedTargetFrameworks>v3.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -20,7 +20,7 @@
 		<Open filename="Service.svc.vb"/>
 	</Actions>
 
-	<Project language="VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.ServiceModel" />

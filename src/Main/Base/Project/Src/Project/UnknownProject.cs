@@ -27,20 +27,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			MessageService.ShowError("Error loading " + this.FileName + ":\n" + warningText);
 		}
 		
-		public UnknownProject(FileName fileName, string title, string warningText, bool displayWarningToUser)
-			: this(fileName, title)
+		public UnknownProject(ProjectLoadInformation information, string warningText)
+			: this(information)
 		{
 			this.warningText = warningText;
-			if (displayWarningToUser) {
-				ShowWarningMessageBox();
-			}
 		}
 		
-		public UnknownProject(FileName fileName, string title)
+		public UnknownProject(ProjectLoadInformation information)
+			: base(information)
 		{
-			Name     = title;
-			FileName = fileName;
-			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
 		
 		protected override ProjectBehavior GetOrCreateBehavior()
@@ -55,6 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool HasProjectType(Guid projectTypeGuid)
 		{
+			// Don't report true for this.TypeGuid
 			return false;
 		}
 	}

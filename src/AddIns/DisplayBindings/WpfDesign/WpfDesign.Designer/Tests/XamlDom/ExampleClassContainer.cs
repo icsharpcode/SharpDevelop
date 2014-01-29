@@ -7,6 +7,14 @@ using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
+	public class ExampleClassList : List<ExampleClass>
+	{
+	}
+	
+	public class ExampleClassDictionary : Dictionary<string, ExampleClass>
+	{
+	}
+	
 	[ContentProperty("List")]
 	public class ExampleClassContainer : ExampleClass
 	{
@@ -16,6 +24,32 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 			get {
 				TestHelperLog.Log("List.get " + Identity);
 				return list;
+			}
+		}
+		
+		ExampleClassList otherList = new ExampleClassList();
+		
+		public ExampleClassList OtherList {
+			get {
+				TestHelperLog.Log("OtherList.get " + Identity);
+				return otherList;
+			}
+			set {
+				TestHelperLog.Log("OtherList.set " + Identity);
+				otherList = value;
+			}
+		}
+		
+		ExampleClassDictionary dictionary = new ExampleClassDictionary();
+		
+		public ExampleClassDictionary Dictionary {
+			get {
+				TestHelperLog.Log("Dictionary.get " + Identity);
+				return dictionary;
+			}
+			set {
+				TestHelperLog.Log("Dictionary.set " + Identity);
+				dictionary = value;
 			}
 		}
 	}

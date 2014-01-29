@@ -10,8 +10,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 	/// <summary>
 	/// Creates ParserDescriptor objects for the parsing service.
 	/// </summary>
-	/// <attribute name="supportedextensions">
-	/// Semicolon-separated list of file extensions for which the parser is used. (e.g. ".boo")
+	/// <attribute name="supportedfilenamepattern">
+	/// filename pattern (regex) for which the parser is used. (e.g. "\.(c|cpp|h|hpp)$")
 	/// </attribute>
 	/// <attribute name="class">
 	/// Name of the IParser class.

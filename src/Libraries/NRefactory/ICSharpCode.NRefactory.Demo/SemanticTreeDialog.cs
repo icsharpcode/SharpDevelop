@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -32,14 +32,17 @@ namespace ICSharpCode.NRefactory.Demo
 	/// </summary>
 	public partial class SemanticTreeDialog : Form
 	{
-		public SemanticTreeDialog(ResolveResult rr)
+		public SemanticTreeDialog()
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			
-			var rootNode = MakeObjectNode("Resolve() = ", rr);
+		}
+		
+		public void AddRoot(string prefix, object obj)
+		{
+			var rootNode = MakeObjectNode(prefix, obj);
 			rootNode.Expand();
 			treeView.Nodes.Add(rootNode);
 		}
@@ -48,7 +51,7 @@ namespace ICSharpCode.NRefactory.Demo
 		{
 			if (obj == null)
 				return new TreeNode(prefix + "null");
-			if (obj is ResolveResult) {
+			if (obj is ResolveResult || (obj is Conversion && UseNodeForConversion((Conversion)obj))) {
 				TreeNode t = new TreeNode(prefix + obj.GetType().Name);
 				t.Tag = obj;
 				foreach (PropertyInfo p in obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)) {
@@ -67,6 +70,11 @@ namespace ICSharpCode.NRefactory.Demo
 			} else {
 				return new TreeNode(prefix + obj.ToString());
 			}
+		}
+		
+		bool UseNodeForConversion(Conversion conversion)
+		{
+			return conversion.IsMethodGroupConversion || conversion.IsUserDefined;
 		}
 		
 		TreeNode MakePropertyNode(string propertyName, Type propertyType, object propertyValue)

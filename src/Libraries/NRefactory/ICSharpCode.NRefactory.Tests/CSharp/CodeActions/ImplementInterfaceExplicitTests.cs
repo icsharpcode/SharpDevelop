@@ -78,6 +78,44 @@ class TargetClass : TestClass<string>.INestedInterface
 }
 ");
 		}
+
+
+		[Test]
+		public void TestConstraints()
+		{
+			Test<ImplementInterfaceExplicitAction>(@"class NSObject
+{
+}
+
+interface A
+{
+	void Foo<T, U> () where T : NSObject, U where U : NSObject;
+}
+
+class B : $A
+{
+}
+", @"class NSObject
+{
+}
+
+interface A
+{
+	void Foo<T, U> () where T : NSObject, U where U : NSObject;
+}
+
+class B : A
+{
+	#region A implementation
+	void A.Foo<T, U> ()
+	{
+		throw new System.NotImplementedException ();
+	}
+	#endregion
+}
+");
+		}
+
 	}
 }
 

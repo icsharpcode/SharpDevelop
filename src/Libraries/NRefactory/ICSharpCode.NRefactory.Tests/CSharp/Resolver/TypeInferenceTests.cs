@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void ArrayToEnumerable()
 		{
-			ITypeParameter tp = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
+			ITypeParameter tp = new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "T");
 			IType stringType = compilation.FindType(KnownTypeCode.String);
 			ITypeDefinition enumerableType = compilation.FindType(KnownTypeCode.IEnumerableOfT).GetDefinition();
 			
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void ArrayToReadOnlyList()
 		{
-			ITypeParameter tp = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
+			ITypeParameter tp = new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "T");
 			IType stringType = compilation.FindType(KnownTypeCode.String);
 			ITypeDefinition readOnlyListType = compilation.FindType(KnownTypeCode.IReadOnlyListOfT).GetDefinition();
 			if (readOnlyListType == null)
@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void EnumerableToArrayInContravariantType()
 		{
-			ITypeParameter tp = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
+			ITypeParameter tp = new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "T");
 			IType stringType = compilation.FindType(KnownTypeCode.String);
 			ITypeDefinition enumerableType = compilation.FindType(typeof(IEnumerable<>)).GetDefinition();
 			ITypeDefinition comparerType = compilation.FindType(typeof(IComparer<>)).GetDefinition();
@@ -113,7 +113,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void InferFromObjectAndFromNullLiteral()
 		{
 			// M<T>(T a, T b);
-			ITypeParameter tp = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
+			ITypeParameter tp = new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "T");
 			
 			// M(new object(), null);
 			bool success;
@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void ArrayToListWithArrayCovariance()
 		{
-			ITypeParameter tp = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
+			ITypeParameter tp = new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "T");
 			IType objectType = compilation.FindType(KnownTypeCode.Object);
 			IType stringType = compilation.FindType(KnownTypeCode.String);
 			ITypeDefinition listType = compilation.FindType(KnownTypeCode.IListOfT).GetDefinition();
@@ -151,7 +151,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void IEnumerableCovarianceWithDynamic()
 		{
-			ITypeParameter tp = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
+			ITypeParameter tp = new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "T");
 			var ienumerableOfT = new ParameterizedType(compilation.FindType(typeof(IEnumerable<>)).GetDefinition(), new[] { tp });
 			var ienumerableOfString = compilation.FindType(typeof(IEnumerable<string>));
 			var ienumerableOfDynamic = compilation.FindType(typeof(IEnumerable<ReflectionHelper.Dynamic>));
@@ -179,8 +179,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// static void M<A, B>(Func<A, B> f) {}
 			// M(int.Parse); // type inference fails
-			var A = new DefaultTypeParameter(compilation, EntityType.Method, 0, "A");
-			var B = new DefaultTypeParameter(compilation, EntityType.Method, 1, "B");
+			var A = new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "A");
+			var B = new DefaultTypeParameter(compilation, SymbolKind.Method, 1, "B");
 			
 			IType declType = compilation.FindType(typeof(int));
 			var methods = new MethodListWithDeclaringType(declType, declType.GetMethods(m => m.Name == "Parse"));
@@ -199,7 +199,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// static void M<T>(Func<T> f) {}
 			// M(Console.ReadKey); // type inference produces ConsoleKeyInfo
 			
-			var T = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
+			var T = new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "T");
 			
 			IType declType = compilation.FindType(typeof(Console));
 			var methods = new MethodListWithDeclaringType(declType, declType.GetMethods(m => m.Name == "ReadKey"));
@@ -264,6 +264,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { throw new NotImplementedException(); }
 			}
 			
+			public override IType ReturnType {
+				get { throw new NotImplementedException(); }
+			}
+			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
 			{
 				Assert.AreEqual(expectedParameterTypes, parameterTypes, "Parameters types passed to " + this);
@@ -281,9 +285,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void TestLambdaInference()
 		{
 			ITypeParameter[] typeParameters = {
-				new DefaultTypeParameter(compilation, EntityType.Method, 0, "X"),
-				new DefaultTypeParameter(compilation, EntityType.Method, 1, "Y"),
-				new DefaultTypeParameter(compilation, EntityType.Method, 2, "Z")
+				new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "X"),
+				new DefaultTypeParameter(compilation, SymbolKind.Method, 1, "Y"),
+				new DefaultTypeParameter(compilation, SymbolKind.Method, 2, "Z")
 			};
 			IType[] parameterTypes = {
 				typeParameters[0],
@@ -311,8 +315,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void ConvertAllLambdaInference()
 		{
-			ITypeParameter[] classTypeParameters  = { new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T") };
-			ITypeParameter[] methodTypeParameters = { new DefaultTypeParameter(compilation, EntityType.Method, 0, "R") };
+			ITypeParameter[] classTypeParameters  = { new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T") };
+			ITypeParameter[] methodTypeParameters = { new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "R") };
 			
 			IType[] parameterTypes = {
 				new ParameterizedType(compilation.FindType(typeof(Converter<,>)).GetDefinition(),
@@ -332,6 +336,52 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(
 				new [] { compilation.FindType(KnownTypeCode.Int32) },
 				ti.InferTypeArguments(methodTypeParameters, arguments, parameterTypes, out success, classTypeArguments));
+		}
+		
+		[Test]
+		public void InferFromImplicitAsyncLambda()
+		{
+			string program = @"using System;
+using System.Threading.Tasks;
+
+class Test
+{
+	static T M<T>(Func<int, Task<T>> f)
+	{
+		return f(0);
+	}
+	public static void Test()
+	{
+		$M(async x => x + 1)$;
+	}
+}
+";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("System.Int32", ((IMethod)rr.Member).TypeArguments[0].FullName);
+		}
+		
+		[Test]
+		public void InferFromExplicitAsyncLambda()
+		{
+			string program = @"using System;
+using System.Threading.Tasks;
+
+class Test
+{
+	static T M<T>(Func<int, Task<T>> f)
+	{
+		return f(0);
+	}
+	public static void Test()
+	{
+		$M(async (int x) => x + 1)$;
+	}
+}
+";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("System.Int32", ((IMethod)rr.Member).TypeArguments[0].FullName);
 		}
 		#endregion
 		
@@ -551,6 +601,48 @@ class C : I<string>
 			var mrr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("System.String", mrr.Type.FullName);
 			Assert.IsFalse(mrr.IsError);
+		}
+
+		[Test]
+		public void GenericArgumentImplicitlyConvertibleToAndFromAnotherTypeList() {
+			string program = @"
+using System.Collections.Generic;
+public class MyConvertible {
+	public static implicit operator MyConvertible(int number) { return null; }
+	public static implicit operator int(MyConvertible obj) { return 0; }
+}
+
+class C {
+	public static void F<K>(IList<K> a, K b) {
+	}
+	void M() {
+		$F(new List<MyConvertible>(), 1)$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.That(rr.Member, Is.InstanceOf<SpecializedMethod>());
+			Assert.That(((SpecializedMethod)rr.Member).TypeArguments.Select(ta => ta.FullName), Is.EqualTo(new[] { "MyConvertible" }));
+		}
+
+		[Test]
+		public void GenericArgumentImplicitlyConvertibleToAndFromAnotherTypeIEnumerable() {
+			string program = @"
+using System.Collections.Generic;
+public class MyConvertible {
+	public static implicit operator MyConvertible(int number) { return null; }
+	public static implicit operator int(MyConvertible obj) { return 0; }
+}
+
+class C {
+	public static void F<K>(IEnumerable<K> a, K b) {
+	}
+	void M() {
+		$F(new List<MyConvertible>(), 1)$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsTrue(rr.IsError);
 		}
 	}
 }

@@ -104,7 +104,7 @@ class TestClass
 	public void F()
 	{
 		IEnumerable<int> ints;
-		ints = GetIn$ts ();
+		$ints = GetInts ();
 	}
 }", @"
 using System.Collections.Generic;
@@ -147,7 +147,7 @@ class TestClass
 		foreach (var c in s as IEnumerable<char>) {
 		}
 	}
-}", 0, true);
+}", 0, false);
 		}
 
 		[Test]
@@ -159,7 +159,7 @@ class TestClass
 {
 	public void F()
 	{
-		var items$ = new List<TestClass> ();
+		var $items = new List<TestClass> ();
 	}
 }", @"
 using System.Collections.Generic;
@@ -281,7 +281,7 @@ class TestClass
 {
 	public void F()
 	{
-		using (int[] i = new $int[] {}) {
+		using (int[] $i = new int[] {}) {
 		}
 	}
 }",@"
@@ -305,14 +305,14 @@ class TestClass
 {
 	public void F()
 	{
-		using (int[] i = new $int[] {});
+		using (int[] $i = new int[] {});
 	}
 }",@"
 class TestClass
 {
 	public void F()
 	{
-		using (int[] i = new int[] {}) {
+		using (int[] i = new int[] { }) {
 			foreach (var j in i) {
 			}
 		}

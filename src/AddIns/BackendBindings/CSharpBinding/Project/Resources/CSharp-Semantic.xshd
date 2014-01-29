@@ -36,6 +36,9 @@
 	<Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" exampleText="o.#{#ToString#}#();"/>
 	<Color name="FieldAccess" fontStyle="italic" exampleText="return this.#{#name#}#;"/>
 	<Color name="InactiveCode" foreground="Gray" exampleText="#{#Deactivated by #if#}#"/>
+	<Color name="SemanticError" foreground="DarkRed" exampleText="o.#{#MissingMethod#}#()"/>
+	
+	<Property name="DocCommentMarker" value="///" />
 	
 	<RuleSet name="CommentMarkerSet">
 		<Keywords fontWeight="bold" foreground="Red">
@@ -152,7 +155,6 @@
 			<Word>while</Word>
 			<Word>lock</Word>
 			<Word>global</Word>
-			<Word>var</Word>
 			<Word>dynamic</Word>
 			<Word>await</Word>
 			<Word>where</Word>

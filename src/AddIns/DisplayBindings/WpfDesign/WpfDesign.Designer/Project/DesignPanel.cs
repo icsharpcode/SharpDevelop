@@ -13,10 +13,11 @@ using System.Windows.Threading;
 
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
-	sealed class DesignPanel : Decorator, IDesignPanel
+	public sealed class DesignPanel : Decorator, IDesignPanel, INotifyPropertyChanged
 	{
 		#region Hit Testing
 		/// <summary>
@@ -35,20 +36,29 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
-		static void RunHitTest(Visual reference, Point point, HitTestFilterCallback filterCallback, HitTestResultCallback resultCallback)
+		void RunHitTest(Visual reference, Point point, HitTestFilterCallback filterCallback, HitTestResultCallback resultCallback)
 		{
 			VisualTreeHelper.HitTest(reference, filterCallback, resultCallback,
 			                         new PointHitTestParameters(point));
 		}
 		
-		static HitTestFilterBehavior FilterHitTestInvisibleElements(DependencyObject potentialHitTestTarget)
+		HitTestFilterBehavior FilterHitTestInvisibleElements(DependencyObject potentialHitTestTarget)
 		{
 			UIElement element = potentialHitTestTarget as UIElement;
+						
 			if (element != null) {
 				if (!(element.IsHitTestVisible && element.Visibility == Visibility.Visible)) {
 					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
 				}
+				
+				var designItem = Context.Services.Component.GetDesignItem(element) as XamlDesignItem;
+			
+				if (designItem != null && designItem.IsDesignTimeLocked) {
+					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
 			}
+			
+			}
+						
 			return HitTestFilterBehavior.Continue;
 		}
 		
@@ -103,7 +113,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			if (continueHitTest && testDesignSurface) {
 				RunHitTest(
-					this.Child, mousePosition, delegate { return HitTestFilterBehavior.Continue; },
+					this.Child, mousePosition, FilterHitTestInvisibleElements,
 					delegate(HitTestResult result) {
 						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
 							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);
@@ -147,6 +157,9 @@ namespace ICSharpCode.WpfDesign.Designer
 			};
 			_eatAllHitTestRequests.AllowDrop = true;
 			_adornerLayer = new AdornerLayer(this);
+			
+			this.PreviewKeyUp += DesignPanel_KeyUp;
+			this.PreviewKeyDown += DesignPanel_KeyDown;
 		}
 		#endregion
 		
@@ -180,6 +193,48 @@ namespace ICSharpCode.WpfDesign.Designer
 		public bool IsAdornerLayerHitTestVisible {
 			get { return _adornerLayer.IsHitTestVisible; }
 			set { _adornerLayer.IsHitTestVisible = value; }
+		}
+		
+		/// <summary>
+		/// Enables / Disables the Snapline Placement
+		/// </summary>
+		private bool _useSnaplinePlacement = true;
+		public bool UseSnaplinePlacement {
+			get { return _useSnaplinePlacement; }
+			set {
+				if (_useSnaplinePlacement != value) {
+					_useSnaplinePlacement = value;
+					OnPropertyChanged("UseSnaplinePlacement");
+				}
+			}
+		}
+
+		/// <summary>
+		/// Enables / Disables the Raster Placement
+		/// </summary>
+		private bool _useRasterPlacement = false;
+		public bool UseRasterPlacement {
+			get { return _useRasterPlacement; }
+			set {
+				if (_useRasterPlacement != value) {
+					_useRasterPlacement = value;
+					OnPropertyChanged("UseRasterPlacement");
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Sets the with of the Raster when using Raster Placement
+		/// </summary>
+		private int _rasterWidth = 5;
+		public int RasterWidth {
+			get { return _rasterWidth; }
+			set {
+				if (_rasterWidth != value) {
+					_rasterWidth = value;
+					OnPropertyChanged("RasterWidth");
+				}
+			}
 		}
 		
 		#endregion
@@ -249,6 +304,49 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 		#endregion
 		
+		private void DesignPanel_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
+			{
+				e.Handled = true;
+			}
+		}
+		
+		void DesignPanel_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
+			{
+				e.Handled = true;
+
+				var placementOp = PlacementOperation.Start(Context.Services.Selection.SelectedItems, PlacementType.Move);
+
+
+				var dx1 = (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
+				var dy1 = (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
+				var dx2 = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
+				var dy2 = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
+				foreach (PlacementInformation info in placementOp.PlacedItems)
+				{
+					if (!Keyboard.IsKeyDown(Key.LeftCtrl))
+					{
+						info.Bounds = new Rect(info.OriginalBounds.Left + dx1 + dx2,
+						                       info.OriginalBounds.Top + dy1 + dy2,
+						                       info.OriginalBounds.Width,
+						                       info.OriginalBounds.Height);
+					}
+					else
+					{
+						info.Bounds = new Rect(info.OriginalBounds.Left,
+						                       info.OriginalBounds.Top,
+						                       info.OriginalBounds.Width + dx1 + dx2,
+						                       info.OriginalBounds.Height + dy1 + dy2);
+					}
+
+					placementOp.CurrentContainerBehavior.SetPosition(info);
+				}
+			}
+		}
+		
 		protected override void OnQueryCursor(QueryCursorEventArgs e)
 		{
 			base.OnQueryCursor(e);
@@ -259,6 +357,13 @@ namespace ICSharpCode.WpfDesign.Designer
 					e.Handled = true;
 				}
 			}
+		}
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		private void OnPropertyChanged(string propertyName)
+		{
+			PropertyChangedEventHandler handler = PropertyChanged;
+			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

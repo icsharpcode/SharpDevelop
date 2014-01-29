@@ -7,9 +7,7 @@
 
 using System;
 using System.IO;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.ILAsmBinding
 {
@@ -28,10 +26,6 @@ namespace ICSharpCode.ILAsmBinding
 		
 		public override string Language {
 			get { return ILAsmProjectBinding.LanguageName; }
-		}
-		
-		public override LanguageProperties LanguageProperties {
-			get { return LanguageProperties.None; }
 		}
 		
 		public override ItemType GetDefaultItemType(string fileName)

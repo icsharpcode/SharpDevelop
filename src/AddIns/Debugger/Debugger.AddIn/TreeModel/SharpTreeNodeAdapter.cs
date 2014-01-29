@@ -35,14 +35,16 @@ namespace Debugger.AddIn.Pads.Controls
 			get { return this.Node.GetChildren != null; }
 		}
 		
-		public override bool CanDelete()
+		public override bool CanDelete(SharpTreeNode[] nodes)
 		{
-			return this.Node.CanDelete;
+			return nodes.All(n => n is SharpTreeNodeAdapter)
+				&& nodes.Cast<SharpTreeNodeAdapter>().All(n => n.Node.CanDelete);
 		}
 		
-		public override void Delete()
+		public override void Delete(SharpTreeNode[] nodes)
 		{
-			Parent.Children.Remove(this);
+			foreach (var node in nodes)
+				node.Parent.Children.Remove(this);
 		}
 		
 		protected override void LoadChildren()
@@ -52,35 +54,5 @@ namespace Debugger.AddIn.Pads.Controls
 				process.EnqueueWork(Dispatcher.CurrentDispatcher, () => Children.AddRange(this.Node.GetChildren().Select(node => node.ToSharpTreeNode())));
 			}
 		}
-		
-		/*
-		public override bool CanDrop(System.Windows.DragEventArgs e, int index)
-		{
-			e.Effects = DragDropEffects.None;
-			if (e.Data.GetDataPresent(DataFormats.StringFormat)) {
-				e.Effects = DragDropEffects.Copy;
-				return true;
-			}
-			return false;
-		}
-		
-		public override void Drop(DragEventArgs e, int index)
-		{
-			if (ProjectService.CurrentProject == null) return;
-			if (e.Data == null) return;
-			if (!e.Data.GetDataPresent(DataFormats.StringFormat)) return;
-			if (string.IsNullOrEmpty(e.Data.GetData(DataFormats.StringFormat).ToString())) return;
-			
-			string language = ProjectService.CurrentProject.Language;
-			
-			var text = new TreeNode(e.Data.GetData(DataFormats.StringFormat).ToString(), null);
-
-			var node = text.ToSharpTreeNode();
-			if (!WatchPad.Instance.WatchList.WatchItems.Any(n => text.Name == ((SharpTreeNodeAdapter)n).Node.Name))
-				WatchPad.Instance.WatchList.WatchItems.Add(node);
-			
-			WindowsDebugger.RefreshPads();
-		}
-		*/
 	}
 }

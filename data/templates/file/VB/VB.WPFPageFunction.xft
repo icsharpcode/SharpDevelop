@@ -3,7 +3,7 @@
 	
 	<Config
 		  name        = "${res:Templates.File.WinFXPageFunction.Name}"
-		  icon        = "VBNet.File.WPFPageFunction"
+		  icon        = "VB.File.WPFPageFunction"
 		  category    = "VB"
 		  subcategory = "WPF"
 		  defaultname = "PageFunction${Number}.xaml"

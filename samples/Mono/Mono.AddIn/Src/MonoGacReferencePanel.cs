@@ -25,12 +25,14 @@
 // IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-using ICSharpCode.SharpDevelop.Dom;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Mono.Build.Tasks;
+
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
+using Mono.Build.Tasks;
 
 namespace Mono.AddIn
 {

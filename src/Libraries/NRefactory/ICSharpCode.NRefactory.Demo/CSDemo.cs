@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -125,7 +125,7 @@ namespace ICSharpCode.NRefactory.Demo
 			int selectionEnd = selectionStart + csharpCodeTextBox.SelectionLength;
 			foreach (TreeNode t in c) {
 				AstNode node = t.Tag as AstNode;
-				if (node != null
+				if (node != null && !node.StartLocation.IsEmpty && !node.EndLocation.IsEmpty
 				    && selectionStart >= GetOffset(csharpCodeTextBox, node.StartLocation)
 				    && selectionEnd <= GetOffset(csharpCodeTextBox, node.EndLocation))
 				{
@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.Demo
 		
 		void CSharpGenerateCodeButtonClick(object sender, EventArgs e)
 		{
-			csharpCodeTextBox.Text = syntaxTree.GetText();
+			csharpCodeTextBox.Text = syntaxTree.ToString();
 		}
 		
 		int GetOffset(TextBox textBox, TextLocation location)
@@ -195,7 +195,7 @@ namespace ICSharpCode.NRefactory.Demo
 					0, assemblies.Length,
 					delegate (int i) {
 						Stopwatch w = Stopwatch.StartNew();
-						CecilLoader loader = new CecilLoader();
+						AssemblyLoader loader = AssemblyLoader.Create();
 						projectContents[i] = loader.LoadAssemblyFile(assemblies[i].Location);
 						Debug.WriteLine(Path.GetFileName(assemblies[i].Location) + ": " + w.Elapsed);
 					});
@@ -213,11 +213,18 @@ namespace ICSharpCode.NRefactory.Demo
 			ICompilation compilation = project.CreateCompilation();
 			
 			ResolveResult result;
+			IType expectedType = null;
+			Conversion conversion = null;
 			if (csharpTreeView.SelectedNode != null) {
 				var selectedNode = (AstNode)csharpTreeView.SelectedNode.Tag;
 				CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, unresolvedFile);
 				result = resolver.Resolve(selectedNode);
 				// CSharpAstResolver.Resolve() never returns null
+				Expression expr = selectedNode as Expression;
+				if (expr != null) {
+					expectedType = resolver.GetExpectedType(expr);
+					conversion = resolver.GetConversion(expr);
+				}
 			} else {
 				TextLocation location = GetTextLocation(csharpCodeTextBox, csharpCodeTextBox.SelectionStart);
 				result = ResolveAtLocation.Resolve(compilation, unresolvedFile, syntaxTree, location);
@@ -226,8 +233,14 @@ namespace ICSharpCode.NRefactory.Demo
 					return;
 				}
 			}
-			using (var dlg = new SemanticTreeDialog(result))
+			using (var dlg = new SemanticTreeDialog()) {
+				dlg.AddRoot("Resolve() = ", result);
+				if (expectedType != null)
+					dlg.AddRoot("GetExpectedType() = ", expectedType);
+				if (conversion != null)
+					dlg.AddRoot("GetConversion() = ", conversion);
 				dlg.ShowDialog();
+			}
 		}
 		
 		void CSharpCodeTextBoxKeyDown(object sender, KeyEventArgs e)

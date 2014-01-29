@@ -60,18 +60,37 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static Bitmap GetBitmap(string name)
 		{
-			Bitmap bmp;
+			Bitmap bmp = null;
 			try {
-				bmp = SD.ResourceService.GetBitmap(name);
+				bmp = FileIconService.GetBitmap(name);
+				if (bmp == null) {
+					bmp = SD.ResourceService.GetBitmap(name);
+				}
 			} catch (ResourceNotFoundException ex) {
 				LoggingService.Warn(ex);
-				bmp = null;
+			} catch (FileNotFoundException ex) {
+				LoggingService.Warn(ex);
 			}
 			if (bmp != null) {
 				return bmp;
 			}
-			
 			return SD.ResourceService.GetBitmap("Icons.16x16.MiscFiles");
+		}
+		
+		public static System.Windows.Media.ImageSource GetImageSource(string name)
+		{
+			System.Windows.Media.ImageSource img;
+			try {
+				img = SD.ResourceService.GetImageSource(name);
+			} catch (ResourceNotFoundException ex) {
+				LoggingService.Warn(ex);
+				img = null;
+			}
+			if (img != null) {
+				return img;
+			}
+			
+			return SD.ResourceService.GetImageSource("Icons.16x16.MiscFiles");
 		}
 		
 		public static string GetImageForProjectType(string projectType)
@@ -90,6 +109,12 @@ namespace ICSharpCode.SharpDevelop
 				return extensionHashtable[extension];
 			}
 			return "Icons.16x16.MiscFiles";
+		}
+		
+		public static bool HasImageForFile(string fileName)
+		{
+			string extension = Path.GetExtension(fileName).ToUpperInvariant();
+			return extensionHashtable.ContainsKey(extension);
 		}
 		
 		static void InitializeIcons(AddInTreeNode treeNode)

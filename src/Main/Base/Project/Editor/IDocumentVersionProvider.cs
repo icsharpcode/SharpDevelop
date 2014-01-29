@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -21,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Provides the BASE-Version for a file. This can be either the file saved
 		/// to disk or a base version provided by any VCS.
 		/// </summary>
-		Stream OpenBaseVersion(string fileName);
+		Task<Stream> OpenBaseVersionAsync(FileName fileName);
 		
 		/// <summary>
 		/// Starts watching for changes to the BASE-version of the specified file.
@@ -30,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <returns>Returns a disposable that can be used to stop watching for changes.
 		/// You must dispose the disposable to prevent a memory leak, the GC will
 		/// not help out in this case!</returns>
-		IDisposable WatchBaseVersionChanges(string fileName, EventHandler callback);
+		IDisposable WatchBaseVersionChanges(FileName fileName, EventHandler callback);
 	}
 	
 	public class VersioningServices

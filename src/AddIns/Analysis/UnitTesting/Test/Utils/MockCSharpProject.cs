@@ -6,8 +6,8 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using Rhino.Mocks;
 
 namespace UnitTesting.Tests.Utils
 {
@@ -17,17 +17,15 @@ namespace UnitTesting.Tests.Utils
 		IProjectContent projectContent;
 		
 		public MockCSharpProject()
-			: this(new Solution(new MockProjectChangeWatcher()), "MyTests")
+			: this(MockSolution.Create(), "MyTests")
 		{
 		}
 		
-		public MockCSharpProject(Solution solution, string name)
-			: base(new ProjectCreateInformation {
-			       	Solution = solution,
+		public MockCSharpProject(ISolution solution, string name)
+			: base(new ProjectCreateInformation(solution, FileName.Create("c:\\projects\\" + name + "\\" + name + ".csproj")) {
 			       	ProjectName = name,
-			       	Platform = "x86",
+			       	ActiveProjectConfiguration = new ConfigurationAndPlatform("Debug", "x86"),
 			       	TargetFramework = TargetFramework.Net40Client,
-			       	OutputProjectFileName = FileName.Create("c:\\projects\\" + name + "\\" + name + ".csproj")
 			       })
 		{
 			OutputType = OutputType.Library;

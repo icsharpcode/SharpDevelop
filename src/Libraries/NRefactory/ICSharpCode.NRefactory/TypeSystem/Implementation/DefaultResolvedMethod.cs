@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -224,7 +224,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return null; }
 		}
 
-		public IMember AccessorOwner {
+		public virtual IMember AccessorOwner {
 			get {
 				var reference = ((IUnresolvedMethod)unresolved).AccessorOwner;
 				if (reference != null)
@@ -241,28 +241,34 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToMemberReference());
 			} else {
 				return new DefaultMemberReference(
-					this.EntityType, declTypeRef, this.Name, this.TypeParameters.Count,
+					this.SymbolKind, declTypeRef, this.Name, this.TypeParameters.Count,
 					this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 			}
 		}
 		
 		public override IMember Specialize(TypeParameterSubstitution substitution)
 		{
+			if (TypeParameterSubstitution.Identity.Equals(substitution))
+				return this;
 			return new SpecializedMethod(this, substitution);
 		}
 		
 		IMethod IMethod.Specialize(TypeParameterSubstitution substitution)
 		{
+			if (TypeParameterSubstitution.Identity.Equals(substitution))
+				return this;
 			return new SpecializedMethod(this, substitution);
 		}
 		
 		public override string ToString()
 		{
 			StringBuilder b = new StringBuilder("[");
-			b.Append(this.EntityType);
+			b.Append(this.SymbolKind);
 			b.Append(' ');
-			b.Append(this.DeclaringType.ReflectionName);
-			b.Append('.');
+			if (this.DeclaringType.Kind != TypeKind.Unknown) {
+				b.Append(this.DeclaringType.ReflectionName);
+				b.Append('.');
+			}
 			b.Append(this.Name);
 			if (this.TypeParameters.Count > 0) {
 				b.Append("``");

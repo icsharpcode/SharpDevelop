@@ -31,16 +31,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Updates the collection when the parse information has changed.
 		/// </summary>
-		void Update(IUnresolvedFile oldFile, IUnresolvedFile newFile);
+		void Update(IList<IUnresolvedTypeDefinition> oldFile, IList<IUnresolvedTypeDefinition> newFile);
 	}
 	
 	public sealed class EmptyTypeDefinitionModelCollection : ITypeDefinitionModelCollection
 	{
 		public static readonly EmptyTypeDefinitionModelCollection Instance = new EmptyTypeDefinitionModelCollection();
 		
-		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged {
+		event ModelCollectionChangedEventHandler<ITypeDefinitionModel> IModelCollection<ITypeDefinitionModel>.CollectionChanged {
 			add { }
 			remove { }
+		}
+		
+		IReadOnlyCollection<ITypeDefinitionModel> IModelCollection<ITypeDefinitionModel>.CreateSnapshot()
+		{
+			return this; // already immutable
 		}
 		
 		ITypeDefinitionModel ITypeDefinitionModelCollection.this[FullTypeName name] {
@@ -65,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return Enumerable.Empty<ITypeDefinitionModel>().GetEnumerator();
 		}
 		
-		void ITypeDefinitionModelCollection.Update(IUnresolvedFile oldFile, IUnresolvedFile newFile)
+		void ITypeDefinitionModelCollection.Update(IList<IUnresolvedTypeDefinition> oldFile, IList<IUnresolvedTypeDefinition> newFile)
 		{
 			throw new NotSupportedException();
 		}

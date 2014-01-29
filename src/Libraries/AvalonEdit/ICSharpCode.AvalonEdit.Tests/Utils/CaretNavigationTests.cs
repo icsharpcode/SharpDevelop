@@ -83,5 +83,59 @@ namespace ICSharpCode.AvalonEdit.Utils
 			Assert.AreEqual(0, GetPrevCaretStop("txt ", 5, CaretPositioningMode.WordStart));
 			Assert.AreEqual(3, GetPrevCaretStop("txt ", 5, CaretPositioningMode.WordBorder));
 		}
+		
+		[Test]
+		public void SingleCharacterOutsideBMP()
+		{
+			string c = "\U0001D49E";
+			Assert.AreEqual(2, GetNextCaretStop(c, 0, CaretPositioningMode.Normal));
+			Assert.AreEqual(0, GetPrevCaretStop(c, 2, CaretPositioningMode.Normal));
+		}
+		
+		[Test]
+		public void DetectWordBordersOutsideBMP()
+		{
+			string c = " a\U0001D49Eb ";
+			Assert.AreEqual(1, GetNextCaretStop(c, 0, CaretPositioningMode.WordBorder));
+			Assert.AreEqual(5, GetNextCaretStop(c, 1, CaretPositioningMode.WordBorder));
+			
+			Assert.AreEqual(5, GetPrevCaretStop(c, 6, CaretPositioningMode.WordBorder));
+			Assert.AreEqual(1, GetPrevCaretStop(c, 5, CaretPositioningMode.WordBorder));
+		}
+		
+		[Test]
+		public void DetectWordBordersOutsideBMP2()
+		{
+			string c = " \U0001D49E\U0001D4AA ";
+			Assert.AreEqual(1, GetNextCaretStop(c, 0, CaretPositioningMode.WordBorder));
+			Assert.AreEqual(5, GetNextCaretStop(c, 1, CaretPositioningMode.WordBorder));
+			
+			Assert.AreEqual(5, GetPrevCaretStop(c, 6, CaretPositioningMode.WordBorder));
+			Assert.AreEqual(1, GetPrevCaretStop(c, 5, CaretPositioningMode.WordBorder));
+		}
+		
+		[Test]
+		public void CombiningMark()
+		{
+			string str = " x͆ ";
+			Assert.AreEqual(3, GetNextCaretStop(str, 1, CaretPositioningMode.Normal));
+			Assert.AreEqual(1, GetPrevCaretStop(str, 3, CaretPositioningMode.Normal));
+		}
+		
+		[Test]
+		public void StackedCombiningMark()
+		{
+			string str = " x͆͆͆͆ ";
+			Assert.AreEqual(6, GetNextCaretStop(str, 1, CaretPositioningMode.Normal));
+			Assert.AreEqual(1, GetPrevCaretStop(str, 6, CaretPositioningMode.Normal));
+		}
+		
+		[Test]
+		public void SingleClosingBraceAtLineEnd()
+		{
+			string str = "\t\t}";
+			Assert.AreEqual(2, GetNextCaretStop(str, 1, CaretPositioningMode.WordStart));
+			Assert.AreEqual(-1, GetPrevCaretStop(str, 1, CaretPositioningMode.WordStart));
+		}
 	}
 }

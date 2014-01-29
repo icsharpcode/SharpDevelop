@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor.ContextActions;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
@@ -19,15 +20,21 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			var ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.ShowDeclaringType | ConversionFlags.ShowTypeParameterList;
 			return new ContextActionViewModel {
-				Action = new GoToEntityAction(entity, ambience.ConvertEntity(entity)),
+				Action = new GoToEntityAction(entity, ambience.ConvertSymbol(entity)),
 				Image = CompletionImage.GetImage(entity),
 				Comment = string.Format("(in {0})", entity.Namespace),
 				ChildActions = childActions
 			};
 		}
-		
+
 		public string DisplayName { get; private set; }
+		
 		public IEntity Entity { get; private set; }
+		
+		public string GetDisplayName(EditorRefactoringContext context)
+		{
+			return DisplayName;
+		}
 		
 		public GoToEntityAction(IEntity entity, string displayName)
 		{

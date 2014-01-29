@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.FormsDesigner.Gui;
 
 namespace ICSharpCode.FormsDesigner
@@ -13,7 +14,7 @@ namespace ICSharpCode.FormsDesigner
 		public override void Run()		
 		{
 			using (ConfigureSideBarDialog configureSideBarDialog = new ConfigureSideBarDialog()) {
-				if (configureSideBarDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (configureSideBarDialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					ToolboxProvider.ReloadSideTabs(true);
 				}
 			}

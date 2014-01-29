@@ -8,11 +8,12 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Reports.Addin
 {
-	public class UIService : IUIService
+	public class UIService : System.Windows.Forms.Design.IUIService
 	{
 		IDictionary styles = new Hashtable();
 		
@@ -48,7 +49,7 @@ namespace ICSharpCode.Reports.Addin
 		#region Dialog functions
 		public IWin32Window GetDialogOwnerWindow()
 		{
-			return WorkbenchSingleton.MainWin32Window;
+			return SD.WinForms.MainWin32Window;
 		}
 		
 		public DialogResult ShowDialog(Form form)

@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -257,9 +257,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void UnconstrainedTypeParameter()
 		{
-			ITypeParameter t = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T");
-			ITypeParameter t2 = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 1, "T2");
-			ITypeParameter tm = new DefaultTypeParameter(compilation, EntityType.Method, 0, "TM");
+			ITypeParameter t = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T");
+			ITypeParameter t2 = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 1, "T2");
+			ITypeParameter tm = new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "TM");
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SpecialType.NullType, t));
 			Assert.AreEqual(C.BoxingConversion, conversions.ImplicitConversion(t, compilation.FindType(KnownTypeCode.Object)));
@@ -276,7 +276,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithReferenceTypeConstraint()
 		{
-			ITypeParameter t = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T", hasReferenceTypeConstraint: true);
+			ITypeParameter t = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T", hasReferenceTypeConstraint: true);
 			
 			Assert.AreEqual(C.NullLiteralConversion, conversions.ImplicitConversion(SpecialType.NullType, t));
 			Assert.AreEqual(C.ImplicitReferenceConversion, conversions.ImplicitConversion(t, compilation.FindType(KnownTypeCode.Object)));
@@ -287,7 +287,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithValueTypeConstraint()
 		{
-			ITypeParameter t = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T", hasValueTypeConstraint: true);
+			ITypeParameter t = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T", hasValueTypeConstraint: true);
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SpecialType.NullType, t));
 			Assert.AreEqual(C.BoxingConversion, conversions.ImplicitConversion(t, compilation.FindType(KnownTypeCode.Object)));
@@ -298,7 +298,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithClassConstraint()
 		{
-			ITypeParameter t = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T",
+			ITypeParameter t = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T",
 			                                            constraints: new[] { compilation.FindType(typeof(StringComparer)) });
 			
 			Assert.AreEqual(C.NullLiteralConversion,
@@ -320,7 +320,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithInterfaceConstraint()
 		{
-			ITypeParameter t = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T",
+			ITypeParameter t = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T",
 			                                            constraints: new [] { compilation.FindType(typeof(IList)) });
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SpecialType.NullType, t));
@@ -500,13 +500,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var b = new DefaultUnresolvedTypeDefinition(string.Empty, "B");
 			// interface A<in U>
 			a.Kind = TypeKind.Interface;
-			a.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "U") { Variance = VarianceModifier.Contravariant });
+			a.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "U") { Variance = VarianceModifier.Contravariant });
 			// interface B<X> : A<A<B<X>>> { }
-			b.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "X"));
+			b.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "X"));
 			b.BaseTypes.Add(new ParameterizedTypeReference(
 				a, new[] { new ParameterizedTypeReference(
 					a, new [] { new ParameterizedTypeReference(
-						b, new [] { new TypeParameterReference(EntityType.TypeDefinition, 0) }
+						b, new [] { new TypeParameterReference(SymbolKind.TypeDefinition, 0) }
 					) } ) }));
 			
 			ICompilation compilation = TypeSystemHelper.CreateCompilation(a, b);
@@ -615,6 +615,25 @@ class Test {
 			var c = GetConversion(program);
 			Assert.IsTrue(c.IsValid);
 			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.IsFalse(c.DelegateCapturesFirstArgument);
+			Assert.IsNotNull(c.Method);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_Void_InstanceMethod()
+		{
+			string program = @"using System;
+delegate void D();
+class Test {
+	D d;
+	public void M() {
+		d = $M$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.IsTrue(c.DelegateCapturesFirstArgument);
 			Assert.IsNotNull(c.Method);
 		}
 		
@@ -830,6 +849,125 @@ class Test {
 			Assert.IsTrue(c.IsValid);
 			Assert.IsTrue(c.IsMethodGroupConversion);
 			Assert.AreEqual("System.Object", c.Method.Parameters.Single().Type.FullName);
+		}
+
+		[Test]
+		public void MethodGroupConversion_ExtensionMethod()
+		{
+			string program = @"using System;
+static class Ext {
+	public static void M(this string s, int x) {}
+}
+class Test {
+	delegate void D(int a);
+	void F() {
+		string s = """";
+		D d = $s.M$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.IsTrue(c.DelegateCapturesFirstArgument);
+		}
+
+		[Test]
+		public void MethodGroupConversion_ExtensionMethodUsedAsStaticMethod()
+		{
+			string program = @"using System;
+static class Ext {
+	public static void M(this string s, int x) {}
+}
+class Test {
+	delegate void D(string s, int a);
+	void F() {
+		D d = $Ext.M$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.IsFalse(c.DelegateCapturesFirstArgument);
+		}
+
+		[Test]
+		public void MethodGroupConversion_ObjectToDynamic() {
+			string program = @"using System;
+class Test {
+	public void F(object o) {}
+	public void M() {
+		Action<dynamic> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void MethodGroupConversion_ObjectToDynamicGenericArgument() {
+			string program = @"using System;
+using System.Collections.Generic;
+class Test {
+	public void F(List<object> l) {}
+	public void M() {
+		Action<List<dynamic>> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void MethodGroupConversion_ObjectToDynamicReturnValue() {
+			string program = @"using System;
+class Test {
+	public object F() {}
+	public void M() {
+		Func<dynamic> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void MethodGroupConversion_DynamicToObject() {
+			string program = @"using System;
+class Test {
+	public void F(dynamic o) {}
+	public void M() {
+		Action<object> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void MethodGroupConversion_DynamicToObjectGenericArgument() {
+			string program = @"using System;
+using System.Collections.Generic;
+class Test {
+	public void F(List<dynamic> l) {}
+	public void M() {
+		Action<List<object>> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+
+		[Test]
+		public void MethodGroupConversion_DynamicToObjectReturnValue() {
+			string program = @"using System;
+class Test {
+	public dynamic F() {}
+	public void M() {
+		Func<object> x = $F$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
 		}
 
 		[Test]
@@ -1289,6 +1427,29 @@ class Test {
 			Assert.IsTrue(c.ConversionAfterUserDefinedOperator.IsImplicit);
 			Assert.IsTrue(c.ConversionAfterUserDefinedOperator.IsNumericConversion);
 			Assert.IsTrue(c.ConversionAfterUserDefinedOperator.IsValid);
+		}
+		
+		[Test]
+		public void UserDefinedImplicitConversion_IsImplicit()
+		{
+			// Bug icsharpcode/NRefactory#183: conversions from constant expressions were incorrectly marked as explicit
+			string program = @"using System;
+	class Test {
+		void Hello(JsNumber3 x) {
+			Hello($7$);
+		}
+	}
+	public class JsNumber3 {
+		public static implicit operator JsNumber3(int d) {
+			return null;
+		}
+	}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsImplicit);
+			Assert.IsFalse(c.IsExplicit);
+			Assert.AreEqual(Conversion.IdentityConversion, c.ConversionBeforeUserDefinedOperator);
+			Assert.AreEqual(Conversion.IdentityConversion, c.ConversionAfterUserDefinedOperator);
 		}
 	}
 }

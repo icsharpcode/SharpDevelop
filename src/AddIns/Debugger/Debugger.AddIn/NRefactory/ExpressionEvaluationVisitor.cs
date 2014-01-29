@@ -20,8 +20,7 @@ namespace Debugger.AddIn
 {
 	public enum SupportedLanguage
 	{
-		CSharp,
-		VBNet
+		CSharp
 	}
 	
 	public static class Extensions
@@ -115,11 +114,16 @@ namespace Debugger.AddIn
 				throw new GetValueException("Member not found!");
 			Value target = null;
 			if (!importedMember.IsStatic) {
-				if (result.TargetResult == null)
+				if (importedMember.DeclaringType.Equals(context.MethodInfo.DeclaringType) && result.TargetResult == null)
+					target = context.GetThisValue(true);
+				else if (result.TargetResult == null)
 					throw new GetValueException("An object reference is required for the non-static field, method, or property '" + importedMember.FullName + "'");
-				target = Convert(result.TargetResult);
+				else
+					target = Convert(result.TargetResult);
 			}
-			Value val = Value.GetMemberValue(evalThread, target, importedMember);
+			if (!allowMethodInvoke && (importedMember is IMethod))
+				throw new InvalidOperationException("Method invocation not allowed in the current context!");
+			Value val = Value.GetMemberValue(evalThread, target, importedMember.Specialize(context.MethodInfo.Substitution));
 			if (val == null)
 				throw new GetValueException("Member not found!");
 			return val;
@@ -267,7 +271,7 @@ namespace Debugger.AddIn
 			return Convert(val);
 		}
 		
-		/// <remark
+		/// <remarks>
 		/// See $7.10.10 of C# 4 Spec for details.
 		/// </remarks>
 		Value Visit(TypeIsResolveResult result)
@@ -290,22 +294,25 @@ namespace Debugger.AddIn
 		
 		Value Visit(TypeOfResolveResult result)
 		{
-			return Eval.NewObjectNoConstructor(evalThread, debuggerTypeSystem.Import(result.ReferencedType));
+			var type = debuggerTypeSystem.Import(result.ReferencedType);
+			if (type == null)
+				throw new GetValueException("Error: cannot find '{0}'.", result.ReferencedType.FullName);
+			return Eval.TypeOf(evalThread, type);
 		}
 		
 		Value Visit(TypeResolveResult result)
 		{
-			throw new GetValueException("Types not supported!");
+			throw new GetValueException("Error: Types not supported.");
 		}
 		
 		Value Visit(UnknownMemberResolveResult result)
 		{
-			throw new GetValueException("Member not found!");
+			throw new GetValueException("Error: Member '{0}' not found.", result.MemberName);
 		}
 		
 		Value Visit(UnknownIdentifierResolveResult result)
 		{
-			throw new GetValueException("Identifier not found!");
+			throw new GetValueException("Error: Identifier '{0}' not declared.", result.Identifier);
 		}
 		
 		Value Visit(ArrayAccessResolveResult result)
@@ -321,19 +328,22 @@ namespace Debugger.AddIn
 		
 		Value Visit(ConversionResolveResult result)
 		{
+			if (result.IsError)
+				throw new GetValueException("Cannot convert from '{0}' to '{1}'.", new CSharpAmbience().ConvertType(result.Input.Type), new CSharpAmbience().ConvertType(result.Type));
 			var val = Convert(result.Input);
 			if (result.Conversion.IsBoxingConversion)
 				return val;
-			else if (result.Conversion.IsIdentityConversion)
+			if (result.Conversion.IsIdentityConversion)
 				return val;
-			else if (result.Conversion.IsNumericConversion) {
+			if (result.Conversion.IsNumericConversion) {
 				var convVal = CSharpPrimitiveCast.Cast(ReflectionHelper.GetTypeCode(result.Type), val.PrimitiveValue, false);
 				return Eval.CreateValue(evalThread, convVal);
-			} else if (result.Conversion.IsUserDefined)
+			}
+			if (result.Conversion.IsUserDefined)
 				return InvokeMethod(null, result.Conversion.Method, val);
-			else if (result.Conversion.IsReferenceConversion && result.Conversion.IsImplicit)
+			if (result.Conversion.IsReferenceConversion && result.Conversion.IsImplicit)
 				return val;
-			throw new NotImplementedException();
+			throw new NotImplementedException(string.Format("conversion '{0}' not implemented!", result.Conversion));
 		}
 		
 		Value Visit(LocalResolveResult result)
@@ -390,7 +400,7 @@ namespace Debugger.AddIn
 				return "null";
 			} else if (val.Type.Kind == TypeKind.Array) {
 				StringBuilder sb = new StringBuilder();
-				sb.Append(val.Type.Name);
+				sb.Append(new CSharpAmbience().ConvertType(val.Type));
 				sb.Append(" {");
 				bool first = true;
 				int size = val.ArrayLength;
@@ -403,7 +413,7 @@ namespace Debugger.AddIn
 				return sb.ToString();
 			} else if (val.Type.GetAllBaseTypeDefinitions().Any(def => def.IsKnownType(KnownTypeCode.ICollection))) {
 				StringBuilder sb = new StringBuilder();
-				sb.Append(val.Type.Name);
+				sb.Append(new CSharpAmbience().ConvertType(val.Type));
 				sb.Append(" {");
 				val = val.GetPermanentReference(evalThread);
 				var countProp = val.Type.GetProperties(p => p.Name == "Count" && !p.IsExplicitInterfaceImplementation).Single();
@@ -417,11 +427,11 @@ namespace Debugger.AddIn
 				sb.Append("}");
 				return sb.ToString();
 			} else if (val.Type.IsKnownType(KnownTypeCode.Char)) {
-				return "'" + CSharpOutputVisitor.ConvertChar((char)val.PrimitiveValue) + "'";
+				return "'" + TextWriterTokenWriter.ConvertChar((char)val.PrimitiveValue) + "'";
 			} else if (val.Type.IsKnownType(KnownTypeCode.String)) {
-				return "\"" + CSharpOutputVisitor.ConvertString((string)val.PrimitiveValue) + "\"";
+				return "\"" + TextWriterTokenWriter.ConvertString((string)val.PrimitiveValue) + "\"";
 			} else if (val.Type.IsPrimitiveType()) {
-				return CSharpOutputVisitor.PrintPrimitiveValue(val.PrimitiveValue);
+				return TextWriterTokenWriter.PrintPrimitiveValue(val.PrimitiveValue);
 			} else {
 				return val.InvokeToString(evalThread);
 			}
@@ -462,7 +472,10 @@ namespace Debugger.AddIn
 		
 		string Visit(MemberResolveResult result)
 		{
-			return Print(result.TargetResult) + "." + result.Member.Name;
+			string text = Print(result.TargetResult);
+			if (!string.IsNullOrWhiteSpace(text))
+				text += ".";
+			return text + result.Member.Name;
 		}
 		
 		string Visit(OperatorResolveResult result)
@@ -482,7 +495,7 @@ namespace Debugger.AddIn
 		
 		string Visit(TypeResolveResult result)
 		{
-			throw new NotImplementedException();
+			return new CSharpAmbience().ConvertType(result.Type);
 		}
 		
 		string Visit(UnknownMemberResolveResult result)

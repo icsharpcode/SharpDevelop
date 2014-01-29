@@ -36,7 +36,6 @@ namespace XmlEditor.Tests.Tree
 		public void SetUp()
 		{
 			SD.InitializeForUnitTests();
-			SD.Services.AddService(typeof(IMessageLoop), MockRepository.GenerateStub<IMessageLoop>());
 			
 			MockOpenedFile openedFile = new MockOpenedFile("test.xml");
 			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();

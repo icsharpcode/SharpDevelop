@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -38,56 +39,39 @@ namespace ICSharpCode.GitAddIn
 			return null;
 		}
 		
-		public static void Add(string fileName, Action<int> callback)
+		public static Task AddAsync(string fileName)
 		{
 			string wcRoot = FindWorkingCopyRoot(fileName);
 			if (wcRoot == null)
-				return;
-			RunGit(wcRoot, "add " + AdaptFileName(wcRoot, fileName), callback);
+				return Task.FromResult(false);
+			return RunGitAsync(wcRoot, "add", AdaptFileName(wcRoot, fileName));
 		}
 		
-		public static void Remove(string fileName, bool indexOnly, Action<int> callback)
+		public static Task RemoveAsync(string fileName, bool indexOnly)
 		{
 			string wcRoot = FindWorkingCopyRoot(fileName);
 			if (wcRoot == null)
-				return;
+				return Task.FromResult(false);
 			if (indexOnly)
-				RunGit(wcRoot, "rm --cached " + AdaptFileName(wcRoot, fileName), callback);
+				return RunGitAsync(wcRoot, "rm", "--cached", AdaptFileName(wcRoot, fileName));
 			else
-				RunGit(wcRoot, "rm " + AdaptFileName(wcRoot, fileName), callback);
+				return RunGitAsync(wcRoot, "rm", AdaptFileName(wcRoot, fileName));
 		}
 		
 		public static string AdaptFileName(string wcRoot, string fileName)
-		{
-			return '"' + AdaptFileNameNoQuotes(wcRoot, fileName) + '"';
-		}
-		
-		public static string AdaptFileNameNoQuotes(string wcRoot, string fileName)
 		{
 			string relFileName = FileUtility.GetRelativePath(wcRoot, fileName);
 			return relFileName.Replace('\\', '/');
 		}
 		
-		public static void RunGit(string workingDir, string arguments, Action<int> finished)
+		public static Task<int> RunGitAsync(string workingDir, params string[] arguments)
 		{
-			GitMessageView.AppendLine(workingDir + "> git " + arguments);
 			string git = FindGit();
-			if (git == null) {
-				GitMessageView.AppendLine("Could not find git.exe");
-				return;
-			}
-			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = workingDir;
-			runner.LogStandardOutputAndError = false;
-			runner.OutputLineReceived += (sender, e) => GitMessageView.AppendLine(e.Line);
-			runner.ErrorLineReceived  += (sender, e) => GitMessageView.AppendLine(e.Line);
-			runner.ProcessExited += delegate {
-				GitMessageView.AppendLine("Done. (exit code " + runner.ExitCode + ")");
-				
-				if (finished != null)
-					finished(runner.ExitCode);
-			};
-			runner.Start(git, arguments);
+			if (git == null)
+				return Task.FromResult(9009);
+			ProcessRunner p = new ProcessRunner();
+			p.WorkingDirectory = workingDir;
+			return p.RunInOutputPadAsync(GitMessageView.Category, git, arguments);
 		}
 		
 		/// <summary>
@@ -111,7 +95,8 @@ namespace ICSharpCode.GitAddIn
 					// ignore invalid entries in PATH
 				}
 			}
-			string gitExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86, Environment.SpecialFolderOption.DoNotVerify), "bin\\git.exe");
+			string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86, Environment.SpecialFolderOption.DoNotVerify);
+			string gitExe = Path.Combine(programFiles, @"git\bin\git.exe");
 			if (File.Exists(gitExe))
 				return gitExe;
 			return null;

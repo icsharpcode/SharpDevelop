@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -148,12 +148,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public override IType VisitTypeParameter(ITypeParameter type)
 		{
 			int index = type.Index;
-			if (classTypeArguments != null && type.OwnerType == EntityType.TypeDefinition) {
+			if (classTypeArguments != null && type.OwnerType == SymbolKind.TypeDefinition) {
 				if (index >= 0 && index < classTypeArguments.Count)
 					return classTypeArguments[index];
 				else
 					return SpecialType.UnknownType;
-			} else if (methodTypeArguments != null && type.OwnerType == EntityType.Method) {
+			} else if (methodTypeArguments != null && type.OwnerType == SymbolKind.Method) {
 				if (index >= 0 && index < methodTypeArguments.Count)
 					return methodTypeArguments[index];
 				else

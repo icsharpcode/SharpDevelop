@@ -8,6 +8,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace CSharpBinding.Refactoring
@@ -15,11 +16,10 @@ namespace CSharpBinding.Refactoring
 	[IssueDescription("C# syntax error",
 	                  Description = "Displays syntax errors",
 	                  Category = IssueCategories.CompilerErrors,
-	                  Severity = Severity.Error,
-	                  IssueMarker = IssueMarker.Underline)]
-	public class CSharpSyntaxIssue : ICodeIssueProvider
+	                  Severity = Severity.Error)]
+	public class CSharpSyntaxIssue : CodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
+		public override IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context, string subIssue = null)
 		{
 			var refactoringContext = context as SDRefactoringContext;
 			if (refactoringContext == null)
@@ -49,7 +49,7 @@ namespace CSharpBinding.Refactoring
 			}
 			
 			TextLocation end = document.GetLocation(offset + length);
-			return new CodeIssue(error.Message, begin, end);
+			return new CodeIssue(begin, end, error.Message);
 		}
 	}
 }

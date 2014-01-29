@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -84,7 +84,7 @@ public class Form1 {
 			Assert.IsTrue(attr.GetChildByRole(Roles.RPar).IsNull);
 		}
 		
-		[Test, Ignore("Parser bug - parenthesis are missing")]
+		[Test]
 		public void AttributeWithEmptyParenthesis()
 		{
 			string program = @"[Attr()] class Test {}";
@@ -233,7 +233,6 @@ public class Form1 {
 					}});
 		}
 		
-		[Ignore("Fixme!")]
 		[Test]
 		public void AssemblyAttributeBeforeNamespace()
 		{
@@ -246,7 +245,6 @@ public class Form1 {
 				}, syntaxTree.Children.Select(c => c.GetType()).ToArray());
 		}
 		
-		[Ignore("Fixme!")]
 		[Test]
 		public void AssemblyAttributeBeforeClass()
 		{
@@ -258,6 +256,21 @@ public class Form1 {
 					typeof(TypeDeclaration)
 				}, syntaxTree.Children.Select(c => c.GetType()).ToArray());
 			Assert.That(((TypeDeclaration)syntaxTree.LastChild).Attributes, Is.Empty);
+		}
+		
+		[Test, Ignore("parser bug; see https://github.com/icsharpcode/NRefactory/pull/73")]
+		public void AssemblyAndModuleAttributeBeforeClass()
+		{
+			// See also: TypeSystemConvertVisitorTests.AssemblyAndModuleAttributesDoNotAppearOnTypes
+			var syntaxTree = SyntaxTree.Parse("[assembly: My1][module: My2][My3]class C {}");
+			Assert.AreEqual(
+				new Type[] {
+					typeof(AttributeSection),
+					typeof(AttributeSection),
+					typeof(TypeDeclaration)
+				}, syntaxTree.Children.Select(c => c.GetType()).ToArray());
+			var td = (TypeDeclaration)syntaxTree.LastChild;
+			Assert.AreEqual(1, td.Attributes.Count);
 		}
 	}
 }

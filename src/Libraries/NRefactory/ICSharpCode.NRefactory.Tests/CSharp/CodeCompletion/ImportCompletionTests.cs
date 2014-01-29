@@ -72,12 +72,12 @@ class Test
 }
 ");
 			
-			var data = provider.Find ("AppDomain") as CodeCompletionBugTests.TestFactory.ImportCompletionData;
+			var data = provider.Find ("AppDomain", true) as CodeCompletionBugTests.TestFactory.ImportCompletionData;
 			Assert.NotNull(data);
 			Assert.AreEqual("System", data.Type.Namespace);
 			Assert.False(data.UseFullName);
 
-			data = provider.Find ("File") as CodeCompletionBugTests.TestFactory.ImportCompletionData;
+			data = provider.Find ("File", true) as CodeCompletionBugTests.TestFactory.ImportCompletionData;
 			Assert.NotNull(data);
 			Assert.AreEqual("System.IO", data.Type.Namespace);
 			Assert.False(data.UseFullName);
@@ -96,10 +96,10 @@ class Test
 }
 ");
 			
-			var data = provider.Find ("AppDomain") as CodeCompletionBugTests.TestFactory.ImportCompletionData;
+			var data = provider.Find ("AppDomain", true) as CodeCompletionBugTests.TestFactory.ImportCompletionData;
 			Assert.IsNull(data);
 			
-			data = provider.Find ("File") as CodeCompletionBugTests.TestFactory.ImportCompletionData;
+			data = provider.Find ("File", true) as CodeCompletionBugTests.TestFactory.ImportCompletionData;
 			Assert.NotNull(data);
 			Assert.AreEqual("System.IO", data.Type.Namespace);
 			Assert.False(data.UseFullName);
@@ -123,9 +123,80 @@ class Test
 }
 ");
 			
-			var data = provider.Find ("AppDomain") as CodeCompletionBugTests.TestFactory.ImportCompletionData;
+			var data = provider.Find ("AppDomain", true) as CodeCompletionBugTests.TestFactory.ImportCompletionData;
 			Assert.NotNull(data);
 			Assert.True(data.UseFullName);
+		}
+
+
+		[Test]
+		public void TestAutomaticImport ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider(@"class Test
+{
+	public static void Main (string[] args)
+	{
+		$c$
+	}
+}");
+			var data = provider.Find ("Console", true) as CodeCompletionBugTests.TestFactory.ImportCompletionData;
+			Assert.NotNull(data);
+			Assert.False(data.UseFullName);
+
+		}
+
+		[Test]
+		public void TestAutomaticImportClash1 ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider(@"class Console {}
+
+class Test
+{
+	public static void Main (string[] args)
+	{
+		$c$
+	}
+}");
+			var data = provider.Data.OfType<CodeCompletionBugTests.TestFactory.ImportCompletionData>().Single(d => d.DisplayText == "Console");
+			Assert.NotNull(data);
+			Assert.True(data.UseFullName);
+
+		}
+
+		[Ignore("Too slow atm :(")]
+		[Test]
+		public void TestAutomaticImportLocalClash ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider(@"
+class Test
+{
+	public static void Main (string[] args)
+	{
+		int Console = 12;
+		$c$
+	}
+}");
+			var data = provider.Data.OfType<CodeCompletionBugTests.TestFactory.ImportCompletionData>().Single(d => d.DisplayText == "Console");
+			Assert.NotNull(data);
+			Assert.True(data.UseFullName);
+
+		}
+
+		[Test]
+		public void TestAutomaticHiding ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider(@"using System.Collections.Generic;
+
+class Test
+{
+	public static void Main (string[] args)
+	{
+		$D$
+	}
+}");
+			var data = provider.Data.OfType<CodeCompletionBugTests.TestFactory.ImportCompletionData>().FirstOrDefault(d => d.DisplayText == "Dictionary");
+			Assert.IsNull(data);
+
 		}
 	}
 }

@@ -11,6 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 {
 	public abstract class TestBase
 	{
+
 		/*public static string ApplyChanges (string text, List<TextReplaceAction> changes)
 		{
 			changes.Sort ((x, y) => y.Offset.CompareTo (x.Offset));
@@ -28,30 +29,74 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			return b.ToString();
 		}*/
 		
-		protected static IDocument GetResult(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive)
+		static TextEditorOptions GetActualOptions(TextEditorOptions options)
 		{
+			if (options == null) {
+				options = new TextEditorOptions();
+				options.EolMarker = "\n";
+				options.WrapLineLength = 80;
+			}
+			return options;
+		}
+
+		protected static FormattingChanges GetChanges(CSharpFormattingOptions policy, string input, out StringBuilderDocument document, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
+		{
+			options = GetActualOptions(options);
 			input = NormalizeNewlines(input);
-			var document = new StringBuilderDocument(input);
-			var options = new TextEditorOptions();
-			options.EolMarker = "\n";
-			options.WrapLineLength = 80;
-			var visitor = new AstFormattingVisitor (policy, document, options);
+
+			document = new StringBuilderDocument(input);
+			var visitor = new CSharpFormatter(policy, options);
 			visitor.FormattingMode = mode;
-			var syntaxTree = new CSharpParser ().Parse (document, "test.cs");
-			syntaxTree.AcceptVisitor (visitor);
-			visitor.ApplyChanges();
+			var syntaxTree = new CSharpParser().Parse(document, "test.cs");
+
+			return visitor.AnalyzeFormatting(document, syntaxTree);
+		}
+
+		protected static IDocument GetResult(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
+		{
+			StringBuilderDocument document;
+			var changes = GetChanges(policy, input, out document, mode, options);
+			
+			changes.ApplyChanges();
 			return document;
 		}
+
+		protected static FormattingChanges GetChanges(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
+		{
+			StringBuilderDocument document;
+			return GetChanges(policy, input, out document, mode, options);
+		}
+
+		protected static void TestNoUnnecessaryChanges(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
+		{
+			var formatted = GetResult(policy, input, mode, options).Text;
+			var changes = GetChanges(policy, formatted, mode, options);
+			Assert.AreEqual(0, changes.Count, "Wrong amount of changes");
+		}
 		
-		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput, FormattingMode mode = FormattingMode.Intrusive)
+		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
 		{
 			expectedOutput = NormalizeNewlines(expectedOutput);
-			IDocument doc = GetResult(policy, input, mode);
+
+			IDocument doc = GetResult(policy, input, mode, options);
 			if (expectedOutput != doc.Text) {
 				Console.WriteLine ("expected:");
 				Console.WriteLine (expectedOutput);
 				Console.WriteLine ("got:");
 				Console.WriteLine (doc.Text);
+				for (int i = 0; i < expectedOutput.Length && i < doc.TextLength; i++) {
+					if (expectedOutput [i] != doc.GetCharAt(i)) {
+						Console.WriteLine (
+							"i:"+i+" differ:"+ 
+							expectedOutput[i].ToString ().Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t") +
+							" !=" + 
+							doc.GetCharAt(i).ToString ().Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t")
+						);
+						Console.WriteLine(">"+expectedOutput.Substring (i).Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t"));
+						Console.WriteLine(">"+doc.Text.Substring (i).Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t"));
+						break;
+					}
+				}
 			}
 			Assert.AreEqual (expectedOutput, doc.Text);
 			return doc;
@@ -67,14 +112,14 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			expectedOutput = NormalizeNewlines (expectedOutput);
 			var options = new TextEditorOptions ();
 			options.EolMarker = "\n";
-			var visitior = new AstFormattingVisitor (policy, document, options);
-			visitior.FormattingMode = formattingMode;
-			var syntaxTree = new CSharpParser ().Parse (document, "test.cs");
-			syntaxTree.AcceptVisitor (visitior);
-			visitior.ApplyChanges();
-			string newText = document.Text;
+			var formatter = new CSharpFormatter (policy, options);
+			formatter.FormattingMode = formattingMode;
+			string newText = formatter.Format (document);
 			if (expectedOutput != newText) {
-				Console.WriteLine (newText);
+				Console.WriteLine("expected:");
+				Console.WriteLine(expectedOutput);
+				Console.WriteLine("got:");
+				Console.WriteLine(newText);
 			}
 			Assert.AreEqual (expectedOutput, newText);
 		}

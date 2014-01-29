@@ -111,13 +111,8 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public NUnitTestMethod FindTestMethodWithShortName(string name)
 		{
-			// Go backwards because base class tests come first
-			for (int i = this.NestedTestCollection.Count - 1; i >= 0; i--) {
-				var method = this.NestedTestCollection[i] as NUnitTestMethod;
-				if (method != null && method.MethodName == name)
-					return method;
-			}
-			return null;
+			// Use last match because base class tests come first
+			return this.NestedTestCollection.OfType<NUnitTestMethod>().LastOrDefault(method => method.MethodName == name);
 		}
 		
 		/// <summary>
@@ -179,7 +174,7 @@ namespace ICSharpCode.UnitTesting
 					newOrUpdatedNestedTests.Add(nestedTestClass);
 				}
 				// Get methods (not operators etc.)
-				foreach (IMethod method in typeDefinition.GetMethods(m => m.EntityType == EntityType.Method)) {
+				foreach (IMethod method in typeDefinition.GetMethods(m => m.SymbolKind == SymbolKind.Method)) {
 					if (!NUnitTestFramework.IsTestMethod(method))
 						continue;
 					
@@ -227,5 +222,6 @@ namespace ICSharpCode.UnitTesting
 			}
 			base.OnNestedTestsInitialized();
 		}
+		
 	}
 }

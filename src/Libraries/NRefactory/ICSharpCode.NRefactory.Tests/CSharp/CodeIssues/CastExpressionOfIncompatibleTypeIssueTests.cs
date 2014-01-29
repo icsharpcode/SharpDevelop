@@ -94,5 +94,20 @@ class TestClass
 
 			Test<CastExpressionOfIncompatibleTypeIssue> (input, 0);
 		}
+
+		[Test]
+		public void CheckTemplates ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod<T> (TestClass t)
+	{
+		var o = t as T;
+	}
+}";
+
+			Test<CastExpressionOfIncompatibleTypeIssue> (input, 0);
+		}
 	}
 }

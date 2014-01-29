@@ -7,20 +7,21 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.Utils;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace ICSharpCode.SharpDevelop.Tests.Project
+namespace ICSharpCode.SharpDevelop.Project
 {
 	[TestFixture]
 	public class BeforeBuildCustomToolProjectItemsTests
 	{
 		ProjectHelper projectHelper;
 		BeforeBuildCustomToolProjectItems beforeBuildCustomToolProjectItems;
-		Solution solution;
+		ISolution solution;
 		
 		IProject CreateProject(string fileName = @"d:\MyProject\MyProject.csproj")
 		{
@@ -30,9 +31,8 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 		
 		void CreateSolution(params IProject[] projects)
 		{
-			IProjectChangeWatcher watcher = MockRepository.GenerateStub<IProjectChangeWatcher>();
-			solution = new Solution(watcher);
-			projects.ForEach(p => solution.Folders.Add(p));
+			solution = MockRepository.GenerateStrictMock<ISolution>();
+			solution.Stub(s => s.Projects).Return(new SimpleModelCollection<IProject>(projects));
 		}
 		
 		void ConfigureCustomToolFileNamesForProject(string fileNames)
@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 		FileProjectItem AddFileToProject(string include)
 		{
 			var projectItem = new FileProjectItem(projectHelper.Project, ItemType.Compile, include);
-			projectHelper.AddProjectItem(projectItem);
+			projectHelper.Project.Items.Add(projectItem);
 			return projectItem;
 		}
 		

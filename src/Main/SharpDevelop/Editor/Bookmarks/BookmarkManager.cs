@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 	{
 		public BookmarkManager()
 		{
-			Project.ProjectService.SolutionClosing += delegate { Clear(); };
+			Project.ProjectService.SolutionClosed += delegate { Clear(); };
 		}
 		
 		List<SDBookmark> bookmarks = new List<SDBookmark>();
@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		public void AddMark(SDBookmark bookmark, IDocument document, int line)
 		{
 			int lineStartOffset = document.GetLineByNumber(line).Offset;
-			int column = 1 + DocumentUtilitites.GetWhitespaceAfter(document, lineStartOffset).Length;
+			int column = 1 + DocumentUtilities.GetWhitespaceAfter(document, lineStartOffset).Length;
 			bookmark.Location = new TextLocation(line, column);
 			bookmark.FileName = FileName.Create(document.FileName);
 			AddMark(bookmark);

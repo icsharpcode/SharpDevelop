@@ -19,7 +19,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public MSBuildBasedProject FindProject(string name)
 		{
-			foreach (IProject project in projectService.GetOpenProjects()) {
+			foreach (IProject project in projectService.AllProjects) {
 				if (IsProjectNameMatch(project, name)) {
 					return project as MSBuildBasedProject;
 				}

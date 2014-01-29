@@ -64,8 +64,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttachedMemberResolveResult.cs" />
+    <Compile Include="CompletionDataGenerator.cs" />
+    <Compile Include="XamlAstResolver.cs" />
+    <Compile Include="XamlCodeCompletionBinding.cs" />
+    <Compile Include="XamlCompletionItem.cs" />
+    <Compile Include="XamlConst.cs" />
+    <Compile Include="XamlContextResolver.cs" />
     <Compile Include="XamlFullParseInformation.cs" />
-    <Compile Include="XamlParsedFile.cs" />
+    <Compile Include="XamlTypeReference.cs" />
+    <Compile Include="XamlUnresolvedFile.cs" />
     <Compile Include="XamlResolver.cs" />
     <Compile Include="XamlSymbolSearch.cs" />
     <None Include="XamlBinding.addin">
@@ -83,7 +91,6 @@
     </Compile>
     <Compile Include="MarkupExtensionTokenKind.cs">
     </Compile>
-    <Compile Include="NodeWrapper.cs" />
     <Compile Include="Options\CodeCompletion.xaml.cs">
       <DependentUpon>CodeCompletion.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -92,17 +99,13 @@
     <Compile Include="PropertyPathParser.cs" />
     <Compile Include="PropertyPathSegment.cs" />
     <Compile Include="PropertyPathTokenizer.cs" />
-    <Compile Include="QualifiedNameWithLocation.cs" />
     <Compile Include="SegmentKind.cs" />
     <Compile Include="Utils.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XamlBehavior.cs" />
-    <Compile Include="XamlCodeCompletionBinding.cs" />
     <Compile Include="XamlCompletionItemList.cs" />
-    <Compile Include="XamlCompletionSettings.cs" />
     <Compile Include="XamlContext.cs" />
-    <Compile Include="XamlExpressionContext.cs" />
     <Compile Include="MarkupExtensionParseException.cs">
     </Compile>
     <Compile Include="XamlLanguageBinding.cs" />

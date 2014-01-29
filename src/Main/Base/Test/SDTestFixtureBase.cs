@@ -17,7 +17,6 @@ namespace ICSharpCode.SharpDevelop
 		public virtual void FixtureSetUp()
 		{
 			SD.InitializeForUnitTests();
-			SD.Services.AddService(typeof(IMessageLoop), new FakeMessageLoop());
 		}
 		
 		[TestFixtureTearDown]

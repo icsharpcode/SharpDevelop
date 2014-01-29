@@ -96,13 +96,13 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Show a message informing the user about a save error.
 		/// </summary>
-		void InformSaveError(string fileName, string message, string dialogName, Exception exceptionGot);
+		void InformSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot);
 		
 		/// <summary>
 		/// Show a message informing the user about a save error,
 		/// and allow him to retry/save under alternative name.
 		/// </summary>
-		ChooseSaveErrorResult ChooseSaveError(string fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled);
+		ChooseSaveErrorResult ChooseSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled);
 	}
 	
 	sealed class FallbackMessageService : TextWriterMessageService
@@ -115,7 +115,7 @@ namespace ICSharpCode.Core
 		public bool IsRetry { get; private set; }
 		public bool IsIgnore { get; private set; }
 		public bool IsSaveAlternative { get { return AlternativeFileName != null; } }
-		public string AlternativeFileName { get; private set; }
+		public FileName AlternativeFileName { get; private set; }
 		
 		private ChooseSaveErrorResult() {}
 		
@@ -124,7 +124,7 @@ namespace ICSharpCode.Core
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification="ChooseSaveErrorResult is immutable")]
 		public readonly static ChooseSaveErrorResult Ignore = new ChooseSaveErrorResult { IsIgnore = true };
 		
-		public static ChooseSaveErrorResult SaveAlternative(string alternativeFileName)
+		public static ChooseSaveErrorResult SaveAlternative(FileName alternativeFileName)
 		{
 			if (alternativeFileName == null)
 				throw new ArgumentNullException("alternativeFileName");

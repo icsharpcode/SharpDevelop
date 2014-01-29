@@ -398,12 +398,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void FileSelected(object sender, EventArgs e)
 		{
 			foreach (FileList.FileListItem item in filelister.SelectedItems) {
-				IProjectLoader loader = ProjectService.GetProjectLoader(item.FullName);
-				if (loader != null) {
-					loader.Load(item.FullName);
-				} else {
-					FileService.OpenFile(item.FullName);
-				}
+				var fileName = FileName.Create(item.FullName);
+				if (SD.ProjectService.IsSolutionOrProjectFile(fileName))
+					SD.ProjectService.OpenSolutionOrProject(fileName);
+				else
+					FileService.OpenFile(fileName);
 			}
 		}
 	}

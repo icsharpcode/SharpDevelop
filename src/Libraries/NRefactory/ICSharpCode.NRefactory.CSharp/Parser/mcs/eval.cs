@@ -129,6 +129,12 @@ namespace Mono.CSharp
 		}
 
 		/// <summary>
+		/// When set evaluator will automatically wait on Task of async methods. When not
+		/// set it's called responsibility to handle Task execution
+		/// </summary>
+		public bool WaitOnTask { get; set; }
+
+		/// <summary>
 		///   If true, turns type expressions into valid expressions
 		///   and calls the describe method on it
 		/// </summary>
@@ -223,9 +229,16 @@ namespace Mono.CSharp
 
 				bool partial_input;
 				CSharpParser parser = ParseString (ParseMode.Silent, input, out partial_input);
+
+				// Terse mode, try to provide the trailing semicolon automatically.
 				if (parser == null && Terse && partial_input){
 					bool ignore;
-					parser = ParseString (ParseMode.Silent, input + ";", out ignore);
+
+					// check if the source would compile with a block, if so, we should not
+					// add the semicolon.
+					var needs_block = ParseString (ParseMode.Silent, input + "{}", out ignore) != null;
+					if (!needs_block)
+						parser = ParseString (ParseMode.Silent, input + ";", out ignore);
 				}
 				if (parser == null){
 					compiled = null;
@@ -354,8 +367,14 @@ namespace Mono.CSharp
 				if (parser == null){
 					return null;
 				}
-				
-				Class parser_result = parser.InteractiveResult;
+
+				Class host = parser.InteractiveResult;
+
+				var base_class_imported = importer.ImportType (base_class);
+				var baseclass_list = new List<FullNamedExpression> (1) {
+					new TypeExpression (base_class_imported, host.Location)
+				};
+				host.SetBaseTypes (baseclass_list);
 
 #if NET_4_0
 				var access = AssemblyBuilderAccess.RunAndCollect;
@@ -367,13 +386,15 @@ namespace Mono.CSharp
 				module.SetDeclaringAssembly (a);
 
 				// Need to setup MemberCache
-				parser_result.CreateContainer ();
+				host.CreateContainer ();
+				// Need to setup base type
+				host.DefineContainer ();
 
-				var method = parser_result.Members[0] as Method;
+				var method = host.Members[0] as Method;
 				BlockContext bc = new BlockContext (method, method.Block, ctx.BuiltinTypes.Void);
 
 				try {
-					method.Block.Resolve (null, bc, method);
+					method.Block.Resolve (bc, method);
 				} catch (CompletionResult cr) {
 					prefix = cr.BaseText;
 					return cr.Result;
@@ -419,7 +440,7 @@ namespace Mono.CSharp
 				throw new ArgumentException ("Syntax error on input: partial input");
 			
 			if (result_set == false)
-				throw new ArgumentException ("The expression did not set a result");
+				throw new ArgumentException ("The expression failed to resolve");
 
 			return result;
 		}
@@ -443,8 +464,11 @@ namespace Mono.CSharp
 		//
 		InputKind ToplevelOrStatement (SeekableStreamReader seekable)
 		{
-			Tokenizer tokenizer = new Tokenizer (seekable, source_file, new ParserSession ());
+			Tokenizer tokenizer = new Tokenizer (seekable, source_file, new ParserSession (), ctx.Report);
 			
+			// Prefer contextual block keywords over identifiers
+			tokenizer.parsing_block++;
+
 			int t = tokenizer.token ();
 			switch (t){
 			case Token.EOF:
@@ -576,6 +600,7 @@ namespace Mono.CSharp
 
 			if (kind == InputKind.StatementOrExpression){
 				parser.Lexer.putback_char = Tokenizer.EvalStatementParserCharacter;
+				parser.Lexer.parsing_block++;
 				ctx.Settings.StatementMode = true;
 			} else {
 				parser.Lexer.putback_char = Tokenizer.EvalCompilationUnitParserCharacter;
@@ -641,13 +666,49 @@ namespace Mono.CSharp
 					new TypeExpression (base_class_imported, host.Location)
 				};
 
-				host.AddBasesForPart (baseclass_list);
-
-				host.CreateContainer ();
-				host.DefineContainer ();
-				host.Define ();
+				host.SetBaseTypes (baseclass_list);
 
 				expression_method = (Method) host.Members[0];
+
+				if ((expression_method.ModFlags & Modifiers.ASYNC) != 0) {
+					//
+					// Host method is async. When WaitOnTask is set we wrap it with wait
+					//
+					// void AsyncWait (ref object $retval) {
+					//	$retval = Host();
+					//	((Task)$retval).Wait();  // When WaitOnTask is set
+					// }
+					//
+					var p = new ParametersCompiled (
+						new Parameter (new TypeExpression (module.Compiler.BuiltinTypes.Object, Location.Null), "$retval", Parameter.Modifier.REF, null, Location.Null)
+					);
+
+					var method = new Method(host, new TypeExpression(module.Compiler.BuiltinTypes.Void, Location.Null),
+						Modifiers.PUBLIC | Modifiers.STATIC, new MemberName("AsyncWait"), p, null);
+
+					method.Block = new ToplevelBlock(method.Compiler, p, Location.Null);
+					method.Block.AddStatement(new StatementExpression (new SimpleAssign(
+						new SimpleName(p [0].Name, Location.Null),
+						new Invocation(new SimpleName(expression_method.MemberName.Name, Location.Null), new Arguments(0)),
+						Location.Null), Location.Null));
+
+					if (WaitOnTask) {
+						var task = new Cast (expression_method.TypeExpression, new SimpleName (p [0].Name, Location.Null), Location.Null);
+
+						method.Block.AddStatement (new StatementExpression (new Invocation (
+								new MemberAccess (task, "Wait", Location.Null),
+							new Arguments (0)), Location.Null));
+					}
+
+					host.AddMember(method);
+
+					expression_method = method;
+				}
+
+				host.CreateContainer();
+				host.DefineContainer();
+				host.Define();
+
 			} else {
 				expression_method = null;
 			}
@@ -668,6 +729,7 @@ namespace Mono.CSharp
 			}
 
 			if (host != null){
+				host.PrepareEmit ();
 				host.EmitContainer ();
 			}
 			
@@ -981,9 +1043,7 @@ namespace Mono.CSharp
 		static public string help {
 			get {
 				return "Static methods:\n" +
-#if !NET_2_1
 					"  Describe (object);       - Describes the object's type\n" +
-#endif
 					"  LoadPackage (package);   - Loads the given Package (like -pkg:FILE)\n" +
 					"  LoadAssembly (assembly); - Loads the given assembly (like -r:ASSEMBLY)\n" +
 					"  ShowVars ();             - Shows defined local variables.\n" +
@@ -1041,6 +1101,27 @@ namespace Mono.CSharp
 #endif
 	}
 
+	class InteractiveMethod : Method
+	{
+		public InteractiveMethod(TypeDefinition parent, FullNamedExpression returnType, Modifiers mod, ParametersCompiled parameters)
+			: base(parent, returnType, mod, new MemberName("Host"), parameters, null)
+		{
+		}
+
+		public void ChangeToAsync ()
+		{
+			ModFlags |= Modifiers.ASYNC;
+			ModFlags &= ~Modifiers.UNSAFE;
+			type_expr = new TypeExpression(Module.PredefinedTypes.Task.TypeSpec, Location);
+			parameters = ParametersCompiled.EmptyReadOnlyParameters;
+		}
+
+		public override string GetSignatureForError()
+		{
+			return "InteractiveHost";
+		}
+	}
+
 	class HoistedEvaluatorVariable : HoistedVariable
 	{
 		public HoistedEvaluatorVariable (Field field)
@@ -1061,9 +1142,15 @@ namespace Mono.CSharp
 	///    the return value for an invocation.
 	/// </summary>
 	class OptionalAssign : SimpleAssign {
-		public OptionalAssign (Expression t, Expression s, Location loc)
-			: base (t, s, loc)
+		public OptionalAssign (Expression s, Location loc)
+			: base (null, s, loc)
 		{
+		}
+
+		public override Location StartLocation {
+			get {
+				return Location.Null;
+			}
 		}
 
 		protected override Expression DoResolve (ResolveContext ec)
@@ -1078,7 +1165,7 @@ namespace Mono.CSharp
 			// A useful feature for the REPL: if we can resolve the expression
 			// as a type, Describe the type;
 			//
-			if (ec.Module.Evaluator.DescribeTypeExpressions){
+			if (ec.Module.Evaluator.DescribeTypeExpressions && !(ec.CurrentAnonymousMethod is AsyncInitializer)) {
 				var old_printer = ec.Report.SetPrinter (new SessionReportPrinter ());
 				Expression tclone;
 				try {
@@ -1104,17 +1191,34 @@ namespace Mono.CSharp
 			}
 
 			source = clone;
+
+			var host = (Method) ec.MemberContext.CurrentMemberDefinition;
+
+			if (host.ParameterInfo.IsEmpty) {
+				eclass = ExprClass.Value;
+				type = InternalType.FakeInternalType;
+				return this;
+			}
+
+			target = new SimpleName (host.ParameterInfo[0].Name, Location);
+
 			return base.DoResolve (ec);
+		}
+
+		public override void EmitStatement(EmitContext ec)
+		{
+			if (target == null) {
+				source.Emit (ec);
+				return;
+			}
+
+			base.EmitStatement(ec);
 		}
 	}
 
 	public class Undo
 	{
 		List<Action> undo_actions;
-		
-		public Undo ()
-		{
-		}
 
 		public void AddTypeContainer (TypeContainer current_container, TypeDefinition tc)
 		{

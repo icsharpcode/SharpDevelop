@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT license (for details please see \doc\license.txt)
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -323,7 +338,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		AstType ConvertNamespace(string ns)
+		public AstType ConvertNamespace(string namespaceName)
 		{
 			if (resolver != null) {
 				// Look if there's an alias to the target namespace
@@ -331,27 +346,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					for (ResolvedUsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
 						foreach (var pair in usingScope.UsingAliases) {
 							NamespaceResolveResult nrr = pair.Value as NamespaceResolveResult;
-							if (nrr != null && nrr.NamespaceName == ns)
+							if (nrr != null && nrr.NamespaceName == namespaceName)
 								return new SimpleType(pair.Key);
 						}
 					}
 				}
 			}
 			
-			int pos = ns.LastIndexOf('.');
+			int pos = namespaceName.LastIndexOf('.');
 			if (pos < 0) {
-				if (IsValidNamespace(ns)) {
-					return new SimpleType(ns);
+				if (IsValidNamespace(namespaceName)) {
+					return new SimpleType(namespaceName);
 				} else {
 					return new MemberType {
 						Target = new SimpleType("global"),
 						IsDoubleColon = true,
-						MemberName = ns
+						MemberName = namespaceName
 					};
 				}
 			} else {
-				string parentNamespace = ns.Substring(0, pos);
-				string localNamespace = ns.Substring(pos + 1);
+				string parentNamespace = namespaceName.Substring(0, pos);
+				string localNamespace = namespaceName.Substring(pos + 1);
 				return new MemberType {
 					Target = ConvertNamespace(parentNamespace),
 					MemberName = localNamespace
@@ -395,8 +410,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (rr == null)
 				throw new ArgumentNullException("rr");
+			if (rr is ConversionResolveResult) {
+				// unpack ConversionResolveResult if necessary
+				// (e.g. a boxing conversion or string->object reference conversion)
+				rr = ((ConversionResolveResult)rr).Input;
+			}
+			
 			if (rr is TypeOfResolveResult) {
-				return new TypeOfExpression(ConvertType(((TypeOfResolveResult)rr).Type));
+				return new TypeOfExpression(ConvertType(rr.Type));
 			} else if (rr is ArrayCreateResolveResult) {
 				ArrayCreateResolveResult acrr = (ArrayCreateResolveResult)rr;
 				ArrayCreateExpression ace = new ArrayCreateExpression();
@@ -421,7 +442,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			} else if (rr.IsCompileTimeConstant) {
 				return ConvertConstantValue(rr.Type, rr.ConstantValue);
 			} else {
-				return new EmptyExpression();
+				return new ErrorExpression();
 			}
 		}
 		
@@ -435,11 +456,82 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				else
 					return new DefaultValueExpression(ConvertType(type));
 			} else if (type.Kind == TypeKind.Enum) {
-				return new CastExpression(ConvertType(type), ConvertConstantValue(type.GetDefinition().EnumUnderlyingType, constantValue));
+				return ConvertEnumValue(type, (long)CSharpPrimitiveCast.Cast(TypeCode.Int64, constantValue, false));
 			} else {
 				return new PrimitiveExpression(constantValue);
 			}
 		}
+		
+		bool IsFlagsEnum(ITypeDefinition type)
+		{
+			IType flagsAttributeType = type.Compilation.FindType(typeof(System.FlagsAttribute));
+			return type.GetAttribute(flagsAttributeType) != null;
+		}
+		
+		Expression ConvertEnumValue(IType type, long val)
+		{
+			ITypeDefinition enumDefinition = type.GetDefinition();
+			TypeCode enumBaseTypeCode = ReflectionHelper.GetTypeCode(enumDefinition.EnumUnderlyingType);
+			foreach (IField field in enumDefinition.Fields) {
+				if (field.IsConst && object.Equals(CSharpPrimitiveCast.Cast(TypeCode.Int64, field.ConstantValue, false), val))
+					return ConvertType(type).Member(field.Name);
+			}
+			if (IsFlagsEnum(enumDefinition)) {
+				long enumValue = val;
+				Expression expr = null;
+				long negatedEnumValue = ~val;
+				// limit negatedEnumValue to the appropriate range
+				switch (enumBaseTypeCode) {
+					case TypeCode.Byte:
+					case TypeCode.SByte:
+						negatedEnumValue &= byte.MaxValue;
+						break;
+					case TypeCode.Int16:
+					case TypeCode.UInt16:
+						negatedEnumValue &= ushort.MaxValue;
+						break;
+					case TypeCode.Int32:
+					case TypeCode.UInt32:
+						negatedEnumValue &= uint.MaxValue;
+						break;
+				}
+				Expression negatedExpr = null;
+				foreach (IField field in enumDefinition.Fields.Where(fld => fld.IsConst)) {
+					long fieldValue = (long)CSharpPrimitiveCast.Cast(TypeCode.Int64, field.ConstantValue, false);
+					if (fieldValue == 0)
+						continue;	// skip None enum value
+
+					if ((fieldValue & enumValue) == fieldValue) {
+						var fieldExpression = ConvertType(type).Member(field.Name);
+						if (expr == null)
+							expr = fieldExpression;
+						else
+							expr = new BinaryOperatorExpression(expr, BinaryOperatorType.BitwiseOr, fieldExpression);
+
+						enumValue &= ~fieldValue;
+					}
+					if ((fieldValue & negatedEnumValue) == fieldValue) {
+						var fieldExpression = ConvertType(type).Member(field.Name);
+						if (negatedExpr == null)
+							negatedExpr = fieldExpression;
+						else
+							negatedExpr = new BinaryOperatorExpression(negatedExpr, BinaryOperatorType.BitwiseOr, fieldExpression);
+
+						negatedEnumValue &= ~fieldValue;
+					}
+				}
+				if (enumValue == 0 && expr != null) {
+					if (!(negatedEnumValue == 0 && negatedExpr != null && negatedExpr.Descendants.Count() < expr.Descendants.Count())) {
+						return expr;
+					}
+				}
+				if (negatedEnumValue == 0 && negatedExpr != null) {
+					return new UnaryOperatorExpression(UnaryOperatorType.BitNot, negatedExpr);
+				}
+			}
+			return new PrimitiveExpression(CSharpPrimitiveCast.Cast(enumBaseTypeCode, val, false)).CastTo(ConvertType(type));
+		}
+		
 		#endregion
 		
 		#region Convert Parameter
@@ -467,31 +559,55 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Convert Entity
+		public AstNode ConvertSymbol(ISymbol symbol)
+		{
+			if (symbol == null)
+				throw new ArgumentNullException("symbol");
+			switch (symbol.SymbolKind) {
+				case SymbolKind.Namespace:
+					return ConvertNamespaceDeclaration((INamespace)symbol);
+				case SymbolKind.Variable:
+					return ConvertVariable((IVariable)symbol);
+				case SymbolKind.Parameter:
+					return ConvertParameter((IParameter)symbol);
+				case SymbolKind.TypeParameter:
+					return ConvertTypeParameter((ITypeParameter)symbol);
+				default:
+					IEntity entity = symbol as IEntity;
+					if (entity != null)
+						return ConvertEntity(entity);
+					throw new ArgumentException("Invalid value for SymbolKind: " + symbol.SymbolKind);
+			}
+		}
+		
 		public EntityDeclaration ConvertEntity(IEntity entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
-			switch (entity.EntityType) {
-				case EntityType.TypeDefinition:
+			switch (entity.SymbolKind) {
+				case SymbolKind.TypeDefinition:
 					return ConvertTypeDefinition((ITypeDefinition)entity);
-				case EntityType.Field:
+				case SymbolKind.Field:
 					return ConvertField((IField)entity);
-				case EntityType.Property:
+				case SymbolKind.Property:
 					return ConvertProperty((IProperty)entity);
-				case EntityType.Indexer:
+				case SymbolKind.Indexer:
 					return ConvertIndexer((IProperty)entity);
-				case EntityType.Event:
+				case SymbolKind.Event:
 					return ConvertEvent((IEvent)entity);
-				case EntityType.Method:
+				case SymbolKind.Method:
 					return ConvertMethod((IMethod)entity);
-				case EntityType.Operator:
+				case SymbolKind.Operator:
 					return ConvertOperator((IMethod)entity);
-				case EntityType.Constructor:
+				case SymbolKind.Constructor:
 					return ConvertConstructor((IMethod)entity);
-				case EntityType.Destructor:
+				case SymbolKind.Destructor:
 					return ConvertDestructor((IMethod)entity);
+				case SymbolKind.Accessor:
+					IMethod accessor = (IMethod)entity;
+					return ConvertAccessor(accessor, accessor.AccessorOwner != null ? accessor.AccessorOwner.Accessibility : Accessibility.None);
 				default:
-					throw new ArgumentException("Invalid value for EntityType: " + entity.EntityType);
+					throw new ArgumentException("Invalid value for SymbolKind: " + entity.SymbolKind);
 			}
 		}
 		
@@ -702,7 +818,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			foreach (IParameter p in method.Parameters) {
 				decl.Parameters.Add(ConvertParameter(p));
 			}
-			if (method.IsExtensionMethod && decl.Parameters.Any() && decl.Parameters.First().ParameterModifier == ParameterModifier.None)
+			if (method.IsExtensionMethod && method.ReducedFrom == null && decl.Parameters.Any() && decl.Parameters.First().ParameterModifier == ParameterModifier.None)
 				decl.Parameters.First().ParameterModifier = ParameterModifier.This;
 			
 			if (this.ShowTypeParameters && this.ShowTypeParameterConstraints && !method.IsOverride && !method.IsExplicitInterfaceImplementation) {
@@ -755,7 +871,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Convert Modifiers
-		static Modifiers ModifierFromAccessibility(Accessibility accessibility)
+		public static Modifiers ModifierFromAccessibility(Accessibility accessibility)
 		{
 			switch (accessibility) {
 				case Accessibility.Private:
@@ -852,5 +968,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return decl;
 		}
 		#endregion
+		
+		NamespaceDeclaration ConvertNamespaceDeclaration(INamespace ns)
+		{
+			return new NamespaceDeclaration(ns.FullName);
+		}
 	}
 }

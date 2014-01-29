@@ -45,14 +45,14 @@ namespace ICSharpCode.WpfDesign.AddIn
 		public bool CanAttachTo(IViewContent content)
 		{
 			if (Path.GetExtension(content.PrimaryFileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase)) {
-				IEditable editable = content as IEditable;
+				IEditable editable = content.GetService<IEditable>();
 				if (editable != null) {
 					try {
 						XmlTextReader r = new XmlTextReader(editable.CreateSnapshot().CreateReader());
 						r.XmlResolver = null;
 						r.WhitespaceHandling = WhitespaceHandling.None;
 						while (r.NodeType != XmlNodeType.Element && r.Read());
-						if (r.LocalName == "ResourceDictionary" || r.LocalName == "Activity")
+						if (r.LocalName == "ResourceDictionary" || r.LocalName == "Application" || r.LocalName == "Activity")
 							return false;
 					} catch (XmlException) {
 						return true;

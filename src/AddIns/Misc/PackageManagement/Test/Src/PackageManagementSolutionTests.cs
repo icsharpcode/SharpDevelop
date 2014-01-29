@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
@@ -61,7 +63,7 @@ namespace PackageManagement.Tests
 		TestableProject AddProjectToOpenProjects(string projectName)
 		{
 			TestableProject project = ProjectHelper.CreateTestProject(projectName);
-			fakeProjectService.FakeOpenProjects.Add(project);
+			fakeProjectService.AddProject(project);
 			return project;
 		}
 		
@@ -306,7 +308,7 @@ namespace PackageManagement.Tests
 			AddProjectToOpenProjects("B");
 			
 			IEnumerable<IProject> projects = solution.GetMSBuildProjects();
-			List<IProject> expectedProjects = fakeProjectService.FakeOpenProjects;
+			IEnumerable<IProject> expectedProjects = fakeProjectService.AllProjects;
 			
 			CollectionAssert.AreEqual(expectedProjects, projects);
 		}
@@ -326,7 +328,7 @@ namespace PackageManagement.Tests
 		public void IsOpen_SolutionIsOpen_ReturnsTrue()
 		{
 			CreateSolution();
-			fakeProjectService.OpenSolution = new Solution(new MockProjectChangeWatcher());
+			fakeProjectService.OpenSolution = MockRepository.GenerateStrictMock<ISolution>();
 			
 			bool open = solution.IsOpen;
 			
@@ -349,7 +351,7 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution();
 			TestableProject project = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project);
+			fakeProjectService.AddProject(project);
 			
 			bool hasMultipleProjects = solution.HasMultipleProjects();
 			
@@ -361,9 +363,9 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution();
 			TestableProject project1 = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project1);
+			fakeProjectService.AddProject(project1);
 			TestableProject project2 = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project2);
+			fakeProjectService.AddProject(project2);
 			
 			bool hasMultipleProjects = solution.HasMultipleProjects();
 			
@@ -374,12 +376,12 @@ namespace PackageManagement.Tests
 		public void FileName_SolutionHasFileName_ReturnsSolutionFileName()
 		{
 			CreateSolution();
-			var solution = new Solution(new MockProjectChangeWatcher());
+			var solution = MockRepository.GenerateStrictMock<ISolution>();
 			string expectedFileName = @"d:\projects\myproject\Project.sln";
-			solution.FileName = expectedFileName;
+			solution.Stub(s => s.FileName).Return(FileName.Create(expectedFileName));
 			fakeProjectService.OpenSolution = solution;
 			
-			string fileName = solution.FileName;
+			string fileName = this.solution.FileName;
 			
 			Assert.AreEqual(expectedFileName, fileName);
 		}
@@ -415,8 +417,8 @@ namespace PackageManagement.Tests
 			
 			solution.IsPackageInstalled(package);
 			
-			Solution expectedSolution = fakeProjectService.OpenSolution;
-			Solution solutionUsedToCreateSolutionPackageRepository = 
+			ISolution expectedSolution = fakeProjectService.OpenSolution;
+			ISolution solutionUsedToCreateSolutionPackageRepository = 
 				fakeSolutionPackageRepositoryFactory.SolutionPassedToCreateSolutionPackageRepository;
 			
 			Assert.AreEqual(expectedSolution, solutionUsedToCreateSolutionPackageRepository);
@@ -452,13 +454,18 @@ namespace PackageManagement.Tests
 			fakeProjectService.CurrentProject = null;
 			FakePackage package = FakePackage.CreatePackageWithVersion("Test", "1.3.4.5");
 			fakeSolutionPackageRepository.FakeSharedRepository.FakePackages.Add(package);
+			TestableProject testProject = AddProjectToOpenProjects("Test");
+			var project = new FakePackageManagementProject();
+			fakeProjectFactory.CreatePackageManagementProject = (repository, msbuildProject) => {
+				return project;
+			};
+			project.FakePackages.Add(package);
 			
 			IQueryable<IPackage> packages = solution.GetPackages();
 			
 			var expectedPackages = new FakePackage[] {
 				package
 			};
-			
 			PackageCollectionAssert.AreEqual(expectedPackages, packages);
 		}
 		
@@ -552,6 +559,45 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedInstallPath, installPath);
 			Assert.AreEqual(package, fakeSolutionPackageRepository.PackagePassedToGetInstallPath);
+		}
+		
+		[Test]
+		public void GetPackages_OnePackageInstalledIntoOneProjectButTwoPackagesInSolutionRepository_ReturnsOnlyPackageInstalled()
+		{
+			CreateSolution();
+			fakeProjectService.CurrentProject = null;
+			TestableProject testProject = AddProjectToOpenProjects("Test");
+			var project = new FakePackageManagementProject();
+			fakeProjectFactory.CreatePackageManagementProject = (repository, msbuildProject) => {
+				return project;
+			};
+			FakePackage notInstalledPackage = FakePackage.CreatePackageWithVersion("NotInstalled", "1.0.0.0");
+			fakeSolutionPackageRepository.FakeSharedRepository.FakePackages.Add(notInstalledPackage);
+			FakePackage installedPackage = FakePackage.CreatePackageWithVersion("Installed", "1.0.0.0");
+			fakeSolutionPackageRepository.FakeSharedRepository.FakePackages.Add(installedPackage);
+			project.FakePackages.Add(installedPackage);
+			
+			IQueryable<IPackage> packages = solution.GetPackages();
+			
+			var expectedPackages = new FakePackage[] {
+				installedPackage
+			};
+		}
+		
+		[Test]
+		public void GetPackages_TwoProjectsButNoPackagesInstalled_PackageProjectsCreatedUsingActiveRepository()
+		{
+			CreateSolution();
+			fakeProjectService.CurrentProject = null;
+			TestableProject testProject1 = AddProjectToOpenProjects("Test1");
+			TestableProject testProject2 = AddProjectToOpenProjects("Test2");
+			
+			IQueryable<IPackage> packages = solution.GetPackages();
+			
+			Assert.AreEqual(testProject1, fakeProjectFactory.ProjectsPassedToCreateProject[0]);
+			Assert.AreEqual(testProject2, fakeProjectFactory.ProjectsPassedToCreateProject[1]);
+			Assert.AreEqual(fakeRegisteredPackageRepositories.ActiveRepository, fakeProjectFactory.RepositoriesPassedToCreateProject[0]);
+			Assert.AreEqual(fakeRegisteredPackageRepositories.ActiveRepository, fakeProjectFactory.RepositoriesPassedToCreateProject[1]);
 		}
 	}
 }

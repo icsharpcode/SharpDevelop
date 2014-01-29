@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -168,6 +168,19 @@ class Test { }");
 #endregion
 class Test { }");
 			Assert.AreEqual("<summary/>", typeDefinition.Documentation.ToString());
+		}
+		
+		[Test]
+		public void CDATAInDocumentation()
+		{
+			Init(@"using System;
+/// <summary>before<![CDATA[<xml/>]]>after</summary>
+class Test { }
+");
+			var element = XmlDocumentationElement.Get(typeDefinition);
+			Assert.AreEqual(1, element.Children.Count());
+			Assert.AreEqual("summary", element.Children[0].Name);
+			Assert.AreEqual("before<xml/>after", element.Children[0].TextContent);
 		}
 	}
 }

@@ -89,7 +89,7 @@ namespace Debugger.MetaData
 					context => context.GetThisValue(false),
 					method.DeclaringType
 				);
-				// Get dispaly classes from fields
+				// Get display classes from fields
 				foreach(IField fieldInfo in method.DeclaringType.GetFields(f => f.Name.StartsWith("CS$"), GetMemberOptions.None)) {
 					IField fieldInfoCopy = fieldInfo;
 					AddCapturedLocalVariables(

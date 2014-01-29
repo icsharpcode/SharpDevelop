@@ -106,7 +106,6 @@ namespace ICSharpCode.WpfDesign.Designer
         /// <summary>
         /// Checks if focus navigation should be for down-the-tree be done.
         /// </summary>
-        /// <param name="surface">Design Surface</param>        
         bool CanMoveFocusForward()
         {
             var designSurface = _surface;
@@ -158,7 +157,6 @@ namespace ICSharpCode.WpfDesign.Designer
         /// <summary>
         /// Checks if focus navigation for the up-the-tree should be done.
         /// </summary>
-        /// <param name="surface">Design Surface</param>        
         bool CanMoveFocusBack()
         {
             var designSurface = _surface;

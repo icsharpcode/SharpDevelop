@@ -58,7 +58,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 			if (other == null)
 				return false;
 			
-			return other.lastId == this.lastId && object.Equals(other.previous, this.previous);
+			return other.lastId == lastId && object.Equals(other.previous, previous);
 		}
 		
 		/// <inheritdoc/>

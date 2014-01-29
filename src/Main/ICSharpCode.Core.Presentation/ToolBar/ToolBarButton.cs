@@ -42,7 +42,7 @@ namespace ICSharpCode.Core.Presentation
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
 				MenuCommand.AddGestureToInputBindingOwner(inputBindingOwner, kg, this.Command, GetFeatureName());
-				this.inputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+				this.inputGestureText = MenuService.GetDisplayStringForShortcut(kg);
 			}
 			UpdateText();
 			

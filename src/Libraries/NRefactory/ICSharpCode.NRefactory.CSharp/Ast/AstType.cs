@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -123,6 +123,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		public new AstType Clone()
 		{
 			return (AstType)base.Clone();
+		}
+		
+		/// <summary>
+		/// Gets whether this type is a SimpleType "var".
+		/// </summary>
+		public bool IsVar()
+		{
+			SimpleType st = this as SimpleType;
+			return st != null && st.Identifier == "var" && st.TypeArguments.Count == 0;
 		}
 		
 		/// <summary>

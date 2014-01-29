@@ -3,6 +3,8 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.Svn.Commands;
 using SharpSvn;
@@ -11,16 +13,18 @@ namespace ICSharpCode.Svn
 {
 	public class SvnVersionProvider : IDocumentVersionProvider
 	{
-		public Stream OpenBaseVersion(string fileName)
+		public Task<Stream> OpenBaseVersionAsync(FileName fileName)
 		{
-			if (!SvnClientWrapper.IsInSourceControl(fileName))
-				return null;
-			
-			using (SvnClientWrapper client = new SvnClientWrapper())
-				return client.OpenBaseVersion(fileName);
+			return Task.Run(() => {
+				if (!SvnClientWrapper.IsInSourceControl(fileName))
+					return null;
+				
+				using (SvnClientWrapper client = new SvnClientWrapper())
+					return client.OpenBaseVersion(fileName);
+			});
 		}
 		
-		public IDisposable WatchBaseVersionChanges(string fileName, EventHandler callback)
+		public IDisposable WatchBaseVersionChanges(FileName fileName, EventHandler callback)
 		{
 			return null;
 		}

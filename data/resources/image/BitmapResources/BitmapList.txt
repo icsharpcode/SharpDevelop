@@ -23,7 +23,7 @@ BitmapResources-data\Icons.16x16.AdjustColor.png
 BitmapResources-data\Icons.16x16.ArrowDown.png
 BitmapResources-data\Icons.16x16.ArrowLeftRight.png
 BitmapResources-data\Icons.16x16.ArrowUp.png
-BitmapResources-data\Icons.16x16.Assembly.png
+BitmapResources-data\Icons.16x16.Collection.png
 BitmapResources-data\Icons.16x16.BoldText.png
 BitmapResources-data\Icons.16x16.BrowserAfter.png
 BitmapResources-data\Icons.16x16.BrowserBefore.png
@@ -85,7 +85,7 @@ BitmapResources-data\Icons.16x16.LowerToUpperCase.png
 BitmapResources-data\Icons.16x16.MyComputer.png
 BitmapResources-data\Icons.16x16.NETWORK.png
 BitmapResources-data\Icons.16x16.OK.png
-BitmapResources-data\Icons.16x16.OpenAssembly.png
+BitmapResources-data\Icons.16x16.OpenCollection.png
 BitmapResources-data\Icons.16x16.OutDent.png
 BitmapResources-data\Icons.16x16.PasteIcon.png
 BitmapResources-data\Icons.16x16.PersonalFiles.png
@@ -140,7 +140,9 @@ SharpQueryIcons\Icons.16x16.SharpQuery.Column.png
 SharpQueryIcons\Icons.16x16.SharpQuery.NodeError.png
 SharpQueryIcons\Icons.16x16.SharpQuery.Remove.png
 SharpQueryIcons\Icons.16x16.SharpQuery.Table.png
-
+ClassBrowserIcons\Icons.16x16.Workspace.png
+ClassBrowserIcons\Icons.16x16.Assembly.png
+ClassBrowserIcons\Icons.16x16.AssemblyError.png
 
 -------------------------------------------------------------------------------
 Copied from the Fugue Icon Library and modified or mashed up with other Fugue 
@@ -239,6 +241,11 @@ CodeCoverageIcons\CodeCoverage.Icons.16x16.Pad.png
 CodeCoverageIcons\CodeCoverage.Icons.16x16.Run.png
 DebuggerIcons\Icons.16x16.Debug.Start.png
 DebuggerIcons\Icons.16x16.Debug.StartWithoutDebugging.png
+DebuggerIcons\Icons.16x16.Debug.Assembly.png
+ClassBrowserIcons\Icons.16x16.Module.png
+ClassBrowserIcons\Icons.16x16.ModuleError.png
+ClassBrowserIcons\Icons.16x16.AssemblyFromFile.png
+ClassBrowserIcons\Icons.16x16.AssemblyFromGAC.png
 NavigationIcons\Icons.16x16.NavigateBack.disabled.png
 NavigationIcons\Icons.16x16.NavigateBack.png
 NavigationIcons\Icons.16x16.NavigateForward.png
@@ -265,6 +272,7 @@ PadIcons\Parallel.png
 PadIcons\ProjectBrowser.png
 PadIcons\TaskList.png
 PadIcons\Toolbar.png
+PadIcons\WatchPad.png
 PadIcons\memory.png
 PadIcons\nextmemory.png
 PadIcons\previousmemory.png
@@ -319,7 +327,9 @@ SubversionIcons\Svn.CreatePatch.png
 SubversionIcons\Svn.Export.png
 SubversionIcons\Svn.Import.png
 SubversionIcons\Svn.Update.png
-
+WatchIcons\WatchAdd.png
+WatchIcons\WatchDelete.png
+WatchIcons\WatchesDelete.png
 
 -------------------------------------------------------------------------------
 Copied from the Fugue Icon Library and modified or mashed up with other Fugue 
@@ -417,41 +427,41 @@ backendicons\Ruby\Ruby.Template.EmptyFile.png
 backendicons\Ruby\Ruby.Template.Form.png
 backendicons\Ruby\Ruby.Template.LibraryProject.png
 backendicons\Ruby\Ruby.Template.WinFormsProject.png
-backendicons\VBNet.\file\Interface.png
-backendicons\VBNet\SmallFile.png
-backendicons\VBNet\SmallProject.png
-backendicons\VBNet\file\EmptyFile.png
-backendicons\VBNet\file\Form.png
-backendicons\VBNet\file\FullFile.png
-backendicons\VBNet\file\NewClass.png
-backendicons\VBNet\file\MvcRazorFile.png
-backendicons\VBNet\file\MvcRazorFile.Small.png
-backendicons\VBNet\file\WPFCustomControl.png
-backendicons\VBNet\file\WPFFlowDocument.png
-backendicons\VBNet\file\WPFPage.png
-backendicons\VBNet\file\WPFPageFunction.png
-backendicons\VBNet\file\WPFResourceDictionary.png
-backendicons\VBNet\file\WPFUserControl.png
-backendicons\VBNet\file\WPFWindow.png
-backendicons\VBNet\file\WebFile.png
-backendicons\VBNet\project\ASPProject.png
-backendicons\VBNet\project\ControlLibrary.png
-backendicons\VBNet\project\DOSProject.png
-backendicons\VBNet\project\EmptyProject.png
-backendicons\VBNet\project\Form.png
-backendicons\VBNet\project\FullProject.png
-backendicons\VBNet\project\Library.png
-backendicons\VBNet\project\MvcRazorProject.png
-backendicons\VBNet\project\ServiceProject.png
-backendicons\VBNet\project\UserControl.png
-backendicons\VBNet\project\WCFServiceProject.png
-backendicons\VBNet\project\WPFBrowserProject.png
-backendicons\VBNet\project\WPFCustomControlLibrary.png
-backendicons\VBNet\project\WPFNavigationProject.png
-backendicons\VBNet\project\WPFProject.png
-backendicons\VBNet\project\WPFUserControlLibrary.png
-backendicons\VBNet\project\WebProject.png
-backendicons\VBNet\project\WebService.png
+backendicons\VB\file\Interface.png
+backendicons\VB\SmallFile.png
+backendicons\VB\SmallProject.png
+backendicons\VB\file\EmptyFile.png
+backendicons\VB\file\Form.png
+backendicons\VB\file\FullFile.png
+backendicons\VB\file\NewClass.png
+backendicons\VB\file\MvcRazorFile.png
+backendicons\VB\file\MvcRazorFile.Small.png
+backendicons\VB\file\WPFCustomControl.png
+backendicons\VB\file\WPFFlowDocument.png
+backendicons\VB\file\WPFPage.png
+backendicons\VB\file\WPFPageFunction.png
+backendicons\VB\file\WPFResourceDictionary.png
+backendicons\VB\file\WPFUserControl.png
+backendicons\VB\file\WPFWindow.png
+backendicons\VB\file\WebFile.png
+backendicons\VB\project\ASPProject.png
+backendicons\VB\project\ControlLibrary.png
+backendicons\VB\project\DOSProject.png
+backendicons\VB\project\EmptyProject.png
+backendicons\VB\project\Form.png
+backendicons\VB\project\FullProject.png
+backendicons\VB\project\Library.png
+backendicons\VB\project\MvcRazorProject.png
+backendicons\VB\project\ServiceProject.png
+backendicons\VB\project\UserControl.png
+backendicons\VB\project\WCFServiceProject.png
+backendicons\VB\project\WPFBrowserProject.png
+backendicons\VB\project\WPFCustomControlLibrary.png
+backendicons\VB\project\WPFNavigationProject.png
+backendicons\VB\project\WPFProject.png
+backendicons\VB\project\WPFUserControlLibrary.png
+backendicons\VB\project\WebProject.png
+backendicons\VB\project\WebService.png
 backendicons\boo\Boo.File.EmptyFile.png
 backendicons\boo\Boo.File.Form.png
 backendicons\boo\Boo.FileIcon.png
@@ -555,7 +565,6 @@ ClassBrowserIcons\Icons.16x16.NameSpace.png
 ClassBrowserIcons\Icons.16x16.Operator.png
 ClassBrowserIcons\Icons.16x16.Parameter.png
 ClassBrowserIcons\Icons.16x16.Struct.png
-
 
 -------------------------------------------------------------------------------
 Left original (other source than Fugue Iconlibrary)

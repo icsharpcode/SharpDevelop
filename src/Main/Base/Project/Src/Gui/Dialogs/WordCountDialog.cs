@@ -16,7 +16,9 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class WordCountDialog : BaseSharpDevelopForm
+	// TODO: rewrite without XMLForms
+	#pragma warning disable 618
+	class WordCountDialog : BaseSharpDevelopForm
 	{
 		List<Report> items;
 		Report total;
@@ -147,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			UpdateList(0);
 		}
 		
-		void CountSolution(Solution solution, ref Report all)
+		void CountSolution(ISolution solution, ref Report all)
 		{
 			foreach (IProject project in solution.Projects) {
 				CountProject(project, ref all);

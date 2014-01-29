@@ -37,6 +37,7 @@ namespace ICSharpCode.Core
 				// Use ServiceCreatorCallback to lazily create the service
 				container.AddService(
 					interfaceType, delegate {
+						// This callback runs within the service container's lock
 						if (serviceLoading)
 							throw new InvalidOperationException("Found cyclic dependency when initializating " + className);
 						serviceLoading = true;

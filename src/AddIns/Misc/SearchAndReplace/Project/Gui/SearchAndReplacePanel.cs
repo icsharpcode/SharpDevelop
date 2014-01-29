@@ -19,7 +19,9 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace SearchAndReplace
 {
-	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
+	// TODO: remove XmlForms
+	#pragma warning disable 618
+	class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
 		SearchAndReplaceMode searchAndReplaceMode;
 		
@@ -73,11 +75,10 @@ namespace SearchAndReplace
 		void LookInBrowseButtonClicked(object sender, EventArgs e)
 		{
 			ComboBox lookinComboBox = Get<ComboBox>("lookIn");
-			using (FolderBrowserDialog dlg = FileService.CreateFolderBrowserDialog("${res:Dialog.NewProject.SearchReplace.LookIn.SelectDirectory}", lookinComboBox.Text)) {
-				if (dlg.ShowDialog() == DialogResult.OK) {
-					lookinComboBox.SelectedIndex = customDirectoryIndex;
-					lookinComboBox.Text = dlg.SelectedPath;
-				}
+			string path = SD.FileService.BrowseForFolder("${res:Dialog.NewProject.SearchReplace.LookIn.SelectDirectory}", lookinComboBox.Text);
+			if (path != null) {
+				lookinComboBox.SelectedIndex = customDirectoryIndex;
+				lookinComboBox.Text = path;
 			}
 		}
 		

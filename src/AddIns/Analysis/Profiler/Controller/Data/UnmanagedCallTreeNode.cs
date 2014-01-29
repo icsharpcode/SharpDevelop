@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace ICSharpCode.Profiler.Controller.Data
@@ -25,7 +24,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			this.parent = parent;
 		}
 		
-		public override System.Linq.IQueryable<CallTreeNode> Children {
+		public override IQueryable<CallTreeNode> Children {
 			get {
 				dataSet.VerifyAccess();
 				
@@ -47,35 +46,35 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		public override NameMapping NameMapping {
 			get {
-				return this.dataSet.GetMapping(this.data->Id);
+				return dataSet.GetMapping(data->Id);
 			}
 		}
 
 		public override int RawCallCount {
 			get {
 				dataSet.VerifyAccess(); // need to verify before deferencing data
-				return this.data->CallCount;
+				return data->CallCount;
 			}
 		}
 
 		public int Index {
 			get {
 				dataSet.VerifyAccess(); // need to verify before deferencing data
-				return (int)(this.data->TimeSpent >> 56);
+				return (int)(data->TimeSpent >> 56);
 			}
 		}
 
 		public override bool IsActiveAtStart {
 			get	{
 				dataSet.VerifyAccess(); // need to verify before deferencing data
-				return (this.data->TimeSpent & ((ulong)1 << 55)) != 0;
+				return (data->TimeSpent & ((ulong)1 << 55)) != 0;
 			}
 		}
 
 		public override long CpuCyclesSpent {
 			get	{
 				dataSet.VerifyAccess(); // need to verify before deferencing data
-				return (long)(this.data->TimeSpent & CpuCycleMask);
+				return (long)(data->TimeSpent & CpuCycleMask);
 			}
 		}
 		
@@ -83,7 +82,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			get {
 				dataSet.VerifyAccess();
 				
-				long result = (long)(this.data->TimeSpent & CpuCycleMask);
+				long result = (long)(data->TimeSpent & CpuCycleMask);
 				
 				TargetProcessPointer32* childrenPtr = FunctionInfo.GetChildren32(data);
 				for (int i = 0; i <= data->LastChildIndex; i++)
@@ -99,19 +98,19 @@ namespace ICSharpCode.Profiler.Controller.Data
 
 		public override CallTreeNode Parent {
 			get {
-				return this.parent;
+				return parent;
 			}
 		}
 		
 		public override double TimeSpent {
 			get {
-				return this.CpuCyclesSpent / (1000.0 * this.dataSet.ProcessorFrequency);
+				return CpuCyclesSpent / (1000.0 * dataSet.ProcessorFrequency);
 			}
 		}
 		
 		public override double TimeSpentSelf {
 			get {
-				return this.CpuCyclesSpentSelf / (1000.0 * this.dataSet.ProcessorFrequency);
+				return CpuCyclesSpentSelf / (1000.0 * dataSet.ProcessorFrequency);
 			}
 		}
 
@@ -135,7 +134,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			UnmanagedCallTreeNode32 node = other as UnmanagedCallTreeNode32;
 			if (node != null) {
-				return node.data == this.data;
+				return node.data == data;
 			}
 			
 			return false;

@@ -3,8 +3,8 @@
 
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
@@ -23,17 +23,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 
 		public string Language { get; private set; }
 
-		public string[] Supportedextensions { get; private set; }
+		public Regex SupportedFilenamePattern { get; private set; }
 
 		public bool CanParse(FileName fileName)
 		{
-			string fileExtension = Path.GetExtension(fileName);
-			foreach (string ext in Supportedextensions) {
-				if (string.Equals(fileExtension, ext, StringComparison.OrdinalIgnoreCase)) {
-					return true;
-				}
-			}
-			return false;
+			return SupportedFilenamePattern.IsMatch(fileName);
 		}
 
 		public ParserDescriptor(Codon codon)
@@ -42,20 +36,20 @@ namespace ICSharpCode.SharpDevelop.Parser
 				throw new ArgumentNullException("codon");
 			this.codon = codon;
 			this.Language = codon.Id;
-			this.Supportedextensions = codon.Properties["supportedextensions"].Split(';');
+			this.SupportedFilenamePattern = new Regex(codon.Properties["supportedfilenamepattern"], RegexOptions.IgnoreCase);
 		}
 		
-		public ParserDescriptor(Type parserType, string language, string[] supportedExtensions)
+		public ParserDescriptor(Type parserType, string language, Regex supportedFilenamePattern)
 		{
 			if (parserType == null)
 				throw new ArgumentNullException("parserType");
 			if (language == null)
 				throw new ArgumentNullException("language");
-			if (supportedExtensions == null)
-				throw new ArgumentNullException("supportedExtensions");
+			if (supportedFilenamePattern == null)
+				throw new ArgumentNullException("supportedFilenamePattern");
 			this.parserType = parserType;
 			this.Language = language;
-			this.Supportedextensions = supportedExtensions;
+			this.SupportedFilenamePattern = supportedFilenamePattern;
 		}
 	}
 }

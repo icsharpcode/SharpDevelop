@@ -2,12 +2,20 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Windows;
 using System.Windows.Forms;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
+using ICSharpCode.SharpDevelop.Workbench;
 using WPF = System.Windows.Controls;
 
 namespace ICSharpCode.WpfDesign.AddIn
@@ -48,6 +56,51 @@ namespace ICSharpCode.WpfDesign.AddIn
 			sideBar.ActiveTab = sideTab;
 		}
 		
+		static bool IsControl(Type t)
+		{
+			return !t.IsAbstract && !t.IsGenericTypeDefinition && t.IsSubclassOf(typeof(FrameworkElement));
+		}
+
+		static HashSet<string> addedAssemblys = new HashSet<string>();
+		public void AddProjectDlls(OpenedFile file)
+		{
+			var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+			foreach (var reference in compilation.ReferencedAssemblies) {
+				string f = reference.GetReferenceAssemblyLocation();
+				
+				if (f != null && !addedAssemblys.Contains(f)) {
+					try {
+						// DO NOT USE Assembly.LoadFrom!!!
+						// see http://community.sharpdevelop.net/forums/t/19968.aspx
+						// TODO : reimplement this!
+//						var assembly = Assembly.LoadFrom(f);
+//
+//						SideTab sideTab = new SideTab(sideBar, assembly.FullName.Split(new[] {','})[0]);
+//						sideTab.DisplayName = StringParser.Parse(sideTab.Name);
+//						sideTab.CanBeDeleted = false;
+//						sideTab.ChoosedItemChanged += OnChoosedItemChanged;
+//
+//						sideTab.Items.Add(new WpfSideTabItem());
+//
+//						foreach (var t in assembly.GetExportedTypes())
+//						{
+//							if (IsControl(t))
+//							{
+//								sideTab.Items.Add(new WpfSideTabItem(t));
+//							}
+//						}
+//
+//						if (sideTab.Items.Count > 1)
+//							sideBar.Tabs.Add(sideTab);
+//
+//						addedAssemblys.Add(f);
+					} catch (Exception ex) {
+						WpfViewContent.DllLoadErrors.Add(new SDTask(new BuildError(f, ex.Message)));
+					}
+				}
+			}
+		}
+
 		void OnChoosedItemChanged(object sender, EventArgs e)
 		{
 			if (toolService != null) {
@@ -117,7 +170,13 @@ namespace ICSharpCode.WpfDesign.AddIn
 				if (this.ActiveTab.ChoosedItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
 					this.ActiveTab.ChoosedItem = draggedItem;
 				}
-				return new System.Windows.DataObject(draggedItem.Tag);
+				
+				if (draggedItem.Tag != null) {
+					return new System.Windows.DataObject(draggedItem.Tag);
+				}
+				else {
+					return new System.Windows.DataObject();
+				}
 			}
 		}
 	}

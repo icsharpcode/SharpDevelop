@@ -190,7 +190,7 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Sets a single element in this Properties-container.
-		/// The element will be serialized using a TypeConverter if possible, or DataContractSerializer otherwise.
+		/// The element will be serialized using a TypeConverter if possible, or XAML serializer otherwise.
 		/// </summary>
 		/// <remarks>Setting a key to <c>null</c> has the same effect as calling <see cref="Remove"/>.</remarks>
 		public void Set<T>(string key, T value)
@@ -255,7 +255,7 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Sets a list of elements in this Properties-container.
-		/// The elements will be serialized using a TypeConverter if possible, or DataContractSerializer otherwise.
+		/// The elements will be serialized using a TypeConverter if possible, or XAML serializer otherwise.
 		/// </summary>
 		/// <remarks>Passing <c>null</c> or an empty list as value has the same effect as calling <see cref="Remove"/>.</remarks>
 		public void SetList<T>(string key, IEnumerable<T> value)
@@ -527,7 +527,7 @@ namespace ICSharpCode.Core
 		#endregion
 		
 		#region Load/Save
-		public static Properties Load(string fileName)
+		public static Properties Load(FileName fileName)
 		{
 			return Load(XDocument.Load(fileName).Root);
 		}
@@ -583,7 +583,7 @@ namespace ICSharpCode.Core
 			return result.ToArray();
 		}
 		
-		public void Save(string fileName)
+		public void Save(FileName fileName)
 		{
 			new XDocument(Save()).Save(fileName);
 		}

@@ -8,14 +8,14 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageActionsToRun
 	{
-		ConcurrentQueue<ProcessPackageAction> actions = new ConcurrentQueue<ProcessPackageAction>();
+		ConcurrentQueue<IPackageAction> actions = new ConcurrentQueue<IPackageAction>();
 		
-		public bool GetNextAction(out ProcessPackageAction action)
+		public bool GetNextAction(out IPackageAction action)
 		{
 			return actions.TryDequeue(out action);
 		}
 		
-		public void AddAction(ProcessPackageAction action)
+		public void AddAction(IPackageAction action)
 		{
 			actions.Enqueue(action);
 		}

@@ -130,14 +130,14 @@ namespace ICSharpCode.SharpDevelop.Project
 					additionalExtension = "";
 				}
 			}
-			if (!newExtension.StartsWith(".")) {
+			if (!newExtension.StartsWith(".", StringComparison.Ordinal)) {
 				newExtension = "." + newExtension;
 			}
 			
 			string newFileName = Path.ChangeExtension(baseItem.FileName, additionalExtension + newExtension);
 			int retryIndex = 0;
 			while (true) {
-				FileProjectItem item = project.FindFile(newFileName);
+				FileProjectItem item = project.FindFile(FileName.Create(newFileName));
 				// If the file does not exist in the project, we can use that name.
 				if (item == null)
 					return newFileName;
@@ -170,10 +170,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					baseItem.SetEvaluatedMetadata("LastGenOutput", Path.GetFileName(outputFileName));
 				}
 			}
-			FileProjectItem outputItem = project.FindFile(outputFileName);
+			FileProjectItem outputItem = project.FindFile(FileName.Create(outputFileName));
 			if (outputItem == null) {
 				outputItem = new FileProjectItem(project, ItemType.Compile);
-				outputItem.FileName = outputFileName;
+				outputItem.FileName = FileName.Create(outputFileName);
 				outputItem.DependentUpon = Path.GetFileName(baseItem.FileName);
 				outputItem.SetEvaluatedMetadata("AutoGen", "True");
 				ProjectService.AddProjectItem(project, outputItem);
@@ -196,10 +196,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				codeOutput = writer.ToString();
 			}
 			
-			FileUtility.ObservedSave(delegate(string fileName) {
+			FileUtility.ObservedSave(delegate(FileName fileName) {
 			                         	File.WriteAllText(fileName, codeOutput, Encoding.UTF8);
 			                         },
-			                         outputFileName, FileErrorPolicy.Inform);
+			                         FileName.Create(outputFileName), FileErrorPolicy.Inform);
 			EnsureOutputFileIsInProject(baseItem, outputFileName);
 			SD.ParserService.ParseAsync(FileName.Create(outputFileName), new StringTextSource(codeOutput)).FireAndForget();
 		}
@@ -360,9 +360,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void OnFileSaved(object sender, FileNameEventArgs e)
 		{
-			Solution solution = ProjectService.OpenSolution;
-			if (solution == null) return;
-			IProject project = solution.FindProjectContainingFile(e.FileName);
+			IProject project = SD.ProjectService.FindProjectContainingFile(e.FileName);
 			if (project == null) return;
 			FileProjectItem item = project.FindFile(e.FileName);
 			if (item == null) return;

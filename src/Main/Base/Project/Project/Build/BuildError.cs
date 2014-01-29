@@ -3,6 +3,9 @@
 
 using System;
 using System.Globalization;
+using System.IO;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -49,6 +52,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		string contextMenuAddInTreeEntry;
 		string subcategory;
 		string helpKeyword;
+		IProject parentProject;
 		
 		public string HelpKeyword {
 			get { return helpKeyword; }
@@ -116,6 +120,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
+		/// The project that contains this error. This property can be null.
+		/// </summary>
+		public IProject ParentProject {
+			get { return parentProject; }
+			set { parentProject = value; }
+		}
+		
+		/// <summary>
 		/// Allows to store any object with this error. An object might be attached by a custom
 		/// MSBuild logger and later read by the context menu command.
 		/// </summary>
@@ -154,6 +166,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				                     StringParser.Parse(this.IsWarning ? "${res:Global.WarningText}" : "${res:Global.ErrorText}"),
 				                     this.ErrorCode, this.ErrorText);
 			}
+		}
+		
+		public RichText ToRichText()
+		{
+			// TODO: add some color
+			return new RichText(ToString());
 		}
 	}
 }

@@ -18,7 +18,6 @@ namespace WixBinding.Tests.Project
 		void CreateProject()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 			project = WixBindingTestsHelper.CreateEmptyWixProject();
 		}
 		

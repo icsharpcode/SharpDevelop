@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Refactoring;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace CSharpBinding.Refactoring

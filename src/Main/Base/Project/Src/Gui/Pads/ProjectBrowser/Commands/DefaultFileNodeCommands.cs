@@ -159,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				fileName = Path.GetDirectoryName(fileName);
 			else if (!Directory.Exists(fileName))
 				return;
-			Process.Start("cmd.exe", "/k cd \"" + fileName + "\"");
+			Process.Start(new ProcessStartInfo("cmd.exe") { WorkingDirectory = fileName });
 		}
 	}
 	
@@ -180,7 +180,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public static void OpenFolderInExplorer(string directory)
 		{
 			if (directory != null && Directory.Exists(directory)) {
-				Process.Start(directory);
+				// don't just Process.Start the directory; that causes problems when an .exe with the same name as the directory exists
+				Process.Start("explorer.exe", "\"" + directory + "\"");
 			}
 		}
 	}

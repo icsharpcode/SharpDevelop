@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -84,7 +84,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					.Where(m => m.DeclaringTypeDefinition != null && m.DeclaringTypeDefinition.Kind == TypeKind.Interface)
 					.ToArray();
 
-				result = result.Where(item => !DeclaringTypeDefinition.Members.Any(m => m.IsExplicitInterfaceImplementation && m.ImplementedInterfaceMembers.Contains(item))).ToArray();
+				IEnumerable<IMember> otherMembers = DeclaringTypeDefinition.Members;
+				if (SymbolKind == SymbolKind.Accessor)
+					otherMembers = DeclaringTypeDefinition.GetAccessors(options: GetMemberOptions.IgnoreInheritedMembers);
+				result = result.Where(item => !otherMembers.Any(m => m.IsExplicitInterfaceImplementation && m.ImplementedInterfaceMembers.Contains(item))).ToArray();
 
 				return result;
 			}
@@ -130,7 +133,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (IsExplicitInterfaceImplementation && ImplementedInterfaceMembers.Count == 1) {
 				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToMemberReference());
 			} else {
-				return new DefaultMemberReference(this.EntityType, declTypeRef, this.Name);
+				return new DefaultMemberReference(this.SymbolKind, declTypeRef, this.Name);
 			}
 		}
 		
@@ -142,8 +145,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (result != null) {
 				return result;
 			} else {
-				return LazyInit.GetOrSet(ref accessorField, (IMethod)unresolvedAccessor.CreateResolved(context));
+				return LazyInit.GetOrSet(ref accessorField, CreateResolvedAccessor(unresolvedAccessor));
 			}
+		}
+		
+		protected virtual IMethod CreateResolvedAccessor(IUnresolvedMethod unresolvedAccessor)
+		{
+			return (IMethod)unresolvedAccessor.CreateResolved(context);
 		}
 	}
 }

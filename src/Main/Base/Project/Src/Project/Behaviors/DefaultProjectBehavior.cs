@@ -66,11 +66,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			return new UnknownProjectItem(Project, item);
 		}
 		
-		public override void ProjectCreationComplete()
-		{
-			
-		}
-		
 		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
 			return Enumerable.Empty<CompilerVersion>();
@@ -81,54 +76,44 @@ namespace ICSharpCode.SharpDevelop.Project
 			throw new NotSupportedException();
 		}
 		
-		
-		/// <summary>
-		/// Saves project preferences (currently opened files, bookmarks etc.) to the
-		/// a property container.
-		/// </summary>
-		public override Properties CreateMemento()
+		public override void SavePreferences(Properties preferences)
 		{
 			SD.MainThread.VerifyAccess();
 			
 			// breakpoints and files
-			Properties properties = new Properties();
-			properties.SetList("bookmarks", SD.BookmarkManager.GetProjectBookmarks(Project));
+			preferences.SetList("bookmarks", SD.BookmarkManager.GetProjectBookmarks(Project));
 			List<string> files = new List<string>();
-			foreach (string fileName in FileService.GetOpenFiles()) {
+			foreach (var fileName in FileService.GetOpenFiles()) {
 				if (fileName != null && Project.IsFileInProject(fileName)) {
 					files.Add(fileName);
 				}
 			}
-			properties.SetList("files", files);
-			
-			// other project data
-			properties.SetNestedProperties("projectSavedData", Project.ProjectSpecificProperties.Clone());
-			
-			return properties;
+			preferences.SetList("openFiles", files);
 		}
 		
-		public override void SetMemento(Properties memento)
+		public override void ProjectLoaded()
 		{
 			SD.MainThread.VerifyAccess();
 			
+			var memento = Project.Preferences;
 			foreach (var mark in memento.GetList<ICSharpCode.SharpDevelop.Editor.Bookmarks.SDBookmark>("bookmarks")) {
 				SD.BookmarkManager.AddMark(mark);
 			}
 			List<string> filesToOpen = new List<string>();
-			foreach (string fileName in memento.GetList<string>("files")) {
+			foreach (string fileName in memento.GetList<string>("openFiles")) {
 				if (File.Exists(fileName)) {
 					filesToOpen.Add(fileName);
 				}
 			}
 			System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
-				System.Windows.Threading.DispatcherPriority.Background,
+				System.Windows.Threading.DispatcherPriority.Loaded,
 				new Action(
 					delegate {
+						NavigationService.SuspendLogging();
 						foreach (string file in filesToOpen)
 							FileService.OpenFile(file);
+						NavigationService.ResumeLogging();
 					}));
-			
-			base.SetMemento(memento);
 		}
 	}
 }

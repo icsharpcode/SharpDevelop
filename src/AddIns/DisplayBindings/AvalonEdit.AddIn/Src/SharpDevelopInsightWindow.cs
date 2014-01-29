@@ -37,6 +37,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				OnPropertyChanged("CurrentHeader");
 				OnPropertyChanged("CurrentContent");
 				OnPropertyChanged("CurrentIndexText");
+				insightWindow.OnSelectedItemChanged(EventArgs.Empty);
 			}
 			
 			public event PropertyChangedEventHandler PropertyChanged;
@@ -78,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 			
-			void OnPropertyChanged(string propertyName)
+			internal void OnPropertyChanged(string propertyName)
 			{
 				if (PropertyChanged != null) {
 					PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
@@ -119,6 +120,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		TextDocument document;
 		Caret caret;
+		IInsightItem oldSelectedItem;
 		
 		void AttachEvents()
 		{
@@ -157,8 +159,27 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected virtual void OnSelectedItemChanged(EventArgs e)
 		{
+			if (oldSelectedItem != null)
+				oldSelectedItem.PropertyChanged -= SelectedItemPropertyChanged;
+			oldSelectedItem = SelectedItem;
+			if (oldSelectedItem != null)
+				oldSelectedItem.PropertyChanged += SelectedItemPropertyChanged;
 			if (SelectedItemChanged != null) {
 				SelectedItemChanged(this, e);
+			}
+		}
+		
+		void SelectedItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var provider = Provider as SDItemProvider;
+			if (provider == null) return;
+			switch (e.PropertyName) {
+				case "Header":
+					provider.OnPropertyChanged("CurrentHeader");
+					break;
+				case "Content":
+					provider.OnPropertyChanged("CurrentContent");
+					break;
 			}
 		}
 		

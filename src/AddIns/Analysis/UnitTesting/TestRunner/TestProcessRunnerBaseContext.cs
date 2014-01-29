@@ -10,22 +10,22 @@ namespace ICSharpCode.UnitTesting
 	public class TestProcessRunnerBaseContext
 	{
 		TestExecutionOptions executionOptions;
-		IUnitTestProcessRunner processRunner;
+		IProcessRunner processRunner;
 		ITestResultsReader testResultsReader;
 		IFileSystem fileSystem;
 		IMessageService messageService;
 		
 		public TestProcessRunnerBaseContext(TestExecutionOptions executionOptions)
 			: this(executionOptions,
-				new UnitTestProcessRunner(),
+				executionOptions.ProcessRunner ?? new ProcessRunner(),
 				new TestResultsReader(),
-				new UnitTestFileService(),
+				SD.FileSystem,
 				SD.MessageService)
 		{
 		}
 		
 		public TestProcessRunnerBaseContext(TestExecutionOptions executionOptions,
-			IUnitTestProcessRunner processRunner,
+			IProcessRunner processRunner,
 			ITestResultsReader testResultsMonitor,
 			IFileSystem fileSystem,
 			IMessageService messageService)
@@ -41,7 +41,7 @@ namespace ICSharpCode.UnitTesting
 			get { return executionOptions; }
 		}
 		
-		public IUnitTestProcessRunner TestProcessRunner {
+		public IProcessRunner TestProcessRunner {
 			get { return processRunner; }
 		}
 		

@@ -1,0 +1,13 @@
+﻿<AddIn name="AddInManager Test"
+       author ="Andreas Weizel"
+       description="Allows to test the AddIn that allows installing and updating SharpDevelop AddIns.">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.AddInManager2Test" version="1.1.0.0" />
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="ICSharpCode.AddInManager2Test.dll"/>
+		<Import assembly="ICSharpCode.AddInManager2.dll"/>
+	</Runtime>
+</AddIn>

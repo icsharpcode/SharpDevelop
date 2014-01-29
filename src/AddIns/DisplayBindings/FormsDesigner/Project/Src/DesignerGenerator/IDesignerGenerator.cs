@@ -10,9 +10,11 @@ using System.ComponentModel;
 using System.Reflection;
 
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.FormsDesigner
 {
+	/*
 	public interface IDesignerGenerator
 	{
 		CodeDomProvider CodeDomProvider {
@@ -34,4 +36,5 @@ namespace ICSharpCode.FormsDesigner
 		ICollection GetCompatibleMethods(EventDescriptor edesc);
 		void NotifyComponentRenamed(object component, string newName, string oldName);
 	}
+	*/
 }

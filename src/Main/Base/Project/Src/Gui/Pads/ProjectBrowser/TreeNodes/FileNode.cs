@@ -187,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(FileNode))) {
 				// Dragging a file onto another creates a dependency.
 				// If we are in the same directory, allow moving only.
-				if (this.Project.ReadOnly)
+				if (this.Project.IsReadOnly)
 					return DragDropEffects.None;
 				FileNode other = (FileNode)dataObject.GetData(typeof(FileNode));
 				if (other == this || !(other.ProjectItem is FileProjectItem) || !(this.ProjectItem is FileProjectItem))

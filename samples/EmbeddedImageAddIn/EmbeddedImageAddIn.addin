@@ -11,7 +11,7 @@
 	</Runtime>
 	
 	<Path name="/SharpDevelop/Workbench/LanguageBindings">
-		<Class id="EmbeddedImage" class="EmbeddedImageAddIn.EmbeddedImageLanguageBinding"/>
+		<Class id="EmbeddedImage" class="EmbeddedImageAddIn.EmbeddedImageTextEditorExtension"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/MainMenu/Edit/Insert">

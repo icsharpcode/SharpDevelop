@@ -87,6 +87,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				next.ProjectCreationComplete();
 		}
 		
+		public virtual void ProjectLoaded()
+		{
+			if (this.next != null)
+				next.ProjectLoaded();
+		}
+		
 		public virtual IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
 			if (this.next != null)
@@ -123,20 +129,17 @@ namespace ICSharpCode.SharpDevelop.Project
 				next.UpgradeProject(newVersion, newFramework);
 		}
 		
-		public virtual Properties CreateMemento()
+		/// <summary>
+		/// Saves project preferences (currently opened files, bookmarks etc.) to the
+		/// a property container.
+		/// </summary>
+		public virtual void SavePreferences(Properties preferences)
 		{
 			if (this.next != null)
-				return next.CreateMemento();
-			throw new InvalidOperationException();
+				next.SavePreferences(preferences);
 		}
 		
-		public virtual void SetMemento(Properties memento)
-		{
-			if (this.next != null)
-				next.SetMemento(memento);
-		}
-		
-		public virtual Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		public virtual Refactoring.ISymbolSearch PrepareSymbolSearch(ISymbol entity)
 		{
 			if (this.next != null)
 				return this.next.PrepareSymbolSearch(entity);

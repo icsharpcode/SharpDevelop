@@ -28,7 +28,6 @@ namespace WixBinding.Tests.PackageFiles
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			p.Name = "MySetup";
 			FileProjectItem item = new FileProjectItem(p, ItemType.Compile);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -466,12 +466,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if ((candidate.Errors & OverloadResolutionErrors.TypeInferenceFailed) != 0)
 				return OverloadResolutionErrors.None;
 			
-			IMethod method = candidate.Member as IMethod;
-			if (method == null || method.TypeParameters.Count == 0)
+			if (candidate.TypeParameters == null || candidate.TypeParameters.Count == 0)
 				return OverloadResolutionErrors.None; // the method isn't generic
 			var substitution = GetSubstitution(candidate);
-			for (int i = 0; i < method.TypeParameters.Count; i++) {
-				if (!ValidateConstraints(method.TypeParameters[i], substitution.MethodTypeArguments[i], substitution))
+			for (int i = 0; i < candidate.TypeParameters.Count; i++) {
+				if (!ValidateConstraints(candidate.TypeParameters[i], substitution.MethodTypeArguments[i], substitution))
 					return OverloadResolutionErrors.MethodConstraintsNotSatisfied;
 			}
 			return OverloadResolutionErrors.None;
@@ -887,7 +886,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// Wrap argument in ConversionResolveResult
 					IType parameterType = bestCandidate.ParameterTypes[parameterIndex];
 					if (parameterType.Kind != TypeKind.Unknown) {
-						if (arguments[i].IsCompileTimeConstant && conversions[i] != Conversion.None) {
+						if (arguments[i].IsCompileTimeConstant && conversions[i].IsValid && !conversions[i].IsUserDefined) {
 							argument = new CSharpResolver(compilation).WithCheckForOverflow(CheckForOverflow).ResolveCast(parameterType, argument);
 						} else {
 							argument = new ConversionResolveResult(parameterType, argument, conversions[i], CheckForOverflow);
@@ -937,7 +936,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <see cref="InvocationResolveResult.InitializerStatements"/>
 		/// <param name="returnTypeOverride">
 		/// If not null, use this instead of the ReturnType of the member as the type of the created resolve result.
-		/// </param>
 		/// </param>
 		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult, IList<ResolveResult> initializerStatements = null, IType returnTypeOverride = null)
 		{

@@ -66,16 +66,32 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			}
 		}
 		
+		private static string[] hiddenPropertiesOnWindow = new[] {"ClipToBounds"};
+		
 		/// <summary>
 		/// Gets available properties for an object, includes attached properties also.
-		/// </summary>		
+		/// </summary>
 		public static IEnumerable<PropertyDescriptor> GetAvailableProperties(object element)
 		{
-			foreach(PropertyDescriptor p in TypeDescriptor.GetProperties(element)){
-				if (!p.IsBrowsable) continue;
-				if (p.IsReadOnly) continue;
-				if (p.Attributes.OfType<ObsoleteAttribute>().Count()!=0) continue;
-				yield return p;
+			if (element.GetType().FullName == "ICSharpCode.WpfDesign.Designer.Controls.WindowClone")
+			{
+				foreach (PropertyDescriptor p in TypeDescriptor.GetProperties(element))
+				{
+					if (!p.IsBrowsable) continue;
+					if (p.IsReadOnly) continue;
+					if (hiddenPropertiesOnWindow.Contains(p.Name)) continue;
+					if (p.Attributes.OfType<ObsoleteAttribute>().Count() != 0) continue;
+					yield return p;
+				}
+			}
+			else
+			{
+				foreach(PropertyDescriptor p in TypeDescriptor.GetProperties(element)){
+					if (!p.IsBrowsable) continue;
+					if (p.IsReadOnly) continue;
+					if (p.Attributes.OfType<ObsoleteAttribute>().Count()!=0) continue;
+					yield return p;
+				}
 			}
 		}
 		
@@ -98,11 +114,11 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 						
 						/* Check if it is attached property.*/
 						if(pd1.Name.Contains(".") && pd2.Name.Contains(".")){
-						   	if(pd1.Name==pd2.Name){
-						   		typeOk=true;
-						   		break;
-						   	}		
-						   }
+							if(pd1.Name==pd2.Name){
+								typeOk=true;
+								break;
+							}
+						}
 					}
 					if (!typeOk) {
 						propertyOk = false;

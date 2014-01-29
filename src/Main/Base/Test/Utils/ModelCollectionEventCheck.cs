@@ -28,34 +28,13 @@ namespace ICSharpCode.SharpDevelop.Utils
 			modelCollection.CollectionChanged += OnCollectionChanged;
 		}
 		
-		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnCollectionChanged(IReadOnlyCollection<T> removedItems, IReadOnlyCollection<T> addedItems)
 		{
-			switch (e.Action) {
-				case NotifyCollectionChangedAction.Add:
-					list.InsertRange(e.NewStartingIndex, e.NewItems.Cast<T>());
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					Assert.AreEqual(list.GetRange(e.OldStartingIndex, e.OldItems.Count), e.OldItems);
-					list.RemoveRange(e.OldStartingIndex, e.OldItems.Count);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					Assert.AreEqual(e.OldStartingIndex, e.NewStartingIndex, "Old and new starting index must be identical for replace action");
-					Assert.AreEqual(list.GetRange(e.OldStartingIndex, e.OldItems.Count), e.OldItems);
-					list.RemoveRange(e.OldStartingIndex, e.OldItems.Count);
-					list.InsertRange(e.NewStartingIndex, e.NewItems.Cast<T>());
-					break;
-				case NotifyCollectionChangedAction.Move:
-					Assert.AreEqual(e.OldItems, e.NewItems);
-					Assert.AreEqual(list.GetRange(e.OldStartingIndex, e.OldItems.Count), e.OldItems);
-					list.RemoveRange(e.OldStartingIndex, e.OldItems.Count);
-					list.InsertRange(e.NewStartingIndex, e.NewItems.Cast<T>());
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					list.Clear();
-					list.AddRange(modelCollection);
-					break;
-				default:
-					throw new Exception("Invalid value for NotifyCollectionChangedAction");
+			foreach (T removed in removedItems) {
+				list.Remove(removed);
+			}
+			foreach (T added in addedItems) {
+				list.Add(added);
 			}
 			Verify();
 		}

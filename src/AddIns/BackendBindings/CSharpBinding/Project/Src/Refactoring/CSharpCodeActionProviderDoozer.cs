@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ICSharpCode.SharpDevelop;
 using CSharpBinding.Parser;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
@@ -37,8 +38,8 @@ namespace CSharpBinding.Refactoring
 				LoggingService.Error("[ContextAction] attribute is missing on " + providerType.FullName);
 				return null;
 			}
-			if (!typeof(ICodeActionProvider).IsAssignableFrom(providerType)) {
-				LoggingService.Error(providerType.FullName + " does nto implement ICodeActionProvider");
+			if (!typeof(CodeActionProvider).IsAssignableFrom(providerType)) {
+				LoggingService.Error(providerType.FullName + " does not implement CodeActionProvider");
 				return null;
 			}
 			return new CSharpContextActionProviderWrapper((ContextActionAttribute)attributes[0], providerType);
@@ -55,13 +56,13 @@ namespace CSharpBinding.Refactoring
 				this.type = type;
 			}
 			
-			ICodeActionProvider codeActionProvider;
+			CodeActionProvider codeActionProvider;
 			
 			bool CreateCodeActionProvider()
 			{
 				lock (this) {
 					if (codeActionProvider == null) {
-						codeActionProvider = (ICodeActionProvider)Activator.CreateInstance(type);
+						codeActionProvider = (CodeActionProvider)Activator.CreateInstance(type);
 					}
 					return true;
 				}
@@ -93,11 +94,17 @@ namespace CSharpBinding.Refactoring
 				int selectionLength = editor.SelectionLength;
 				return Task.Run(
 					async delegate {
-						if (!CreateCodeActionProvider())
+						try {
+							if (!CreateCodeActionProvider())
+								return new IContextAction[0];
+							CSharpAstResolver resolver = await context.GetAstResolverAsync().ConfigureAwait(false);
+							var refactoringContext = new SDRefactoringContext(context.TextSource, resolver, context.CaretLocation, selectionStart, selectionLength, cancellationToken);
+							return codeActionProvider.GetActions(refactoringContext).Select(Wrap).ToArray();
+						} catch (Exception ex) {
+							SD.Log.WarnFormatted("CSharpContextActionProviderWrapper crashed: {0}", ex);
+							SD.AnalyticsMonitor.TrackException(ex);
 							return new IContextAction[0];
-						CSharpAstResolver resolver = await context.GetAstResolverAsync().ConfigureAwait(false);
-						var refactoringContext = new SDRefactoringContext(context.TextSource, resolver, context.CaretLocation, selectionStart, selectionLength, cancellationToken);
-						return codeActionProvider.GetActions(refactoringContext).Select(Wrap).ToArray();
+						}
 					}, cancellationToken);
 			}
 			

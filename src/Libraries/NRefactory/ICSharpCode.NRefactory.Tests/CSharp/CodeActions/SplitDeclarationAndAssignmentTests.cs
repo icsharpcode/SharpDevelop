@@ -4,7 +4,7 @@
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2012 Xamarin Inc.
+// Copyright (c) 2012-2013 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class SplitDeclarationAndAssignmentTests : ContextActionTestBase
 	{
-		[Test()]
+		[Test]
 		public void TestSimpleExpression ()
 		{
 			string result = RunContextAction (
@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"}", result);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestVarType ()
 		{
 			string result = RunContextAction (
@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"}", result);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestForStatement ()
 		{
 			string result = RunContextAction (
@@ -104,6 +104,90 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"		}" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
+		}
+	
+	
+		[Test]
+		public void TestPopupAtAssign ()
+		{
+			Test<SplitDeclarationAndAssignmentAction>(@"class Test
+{
+	public static void Main (string[] args)
+	{
+		var foo $= 5;
+	}
+}", @"class Test
+{
+	public static void Main (string[] args)
+	{
+		int foo;
+		foo = 5;
+	}
+}");
+		}
+
+		[Test]
+		public void TestPopupAtBeginningOfExpression ()
+		{
+			Test<SplitDeclarationAndAssignmentAction>(@"class Test
+{
+	public static void Main (string[] args)
+	{
+		var foo = $5;
+	}
+}", @"class Test
+{
+	public static void Main (string[] args)
+	{
+		int foo;
+		foo = 5;
+	}
+}");
+		}
+
+		[Test]
+		public void TestMultipleInitializers ()
+		{
+			Test<SplitDeclarationAndAssignmentAction>(@"class Test
+{
+	public static void Main (string[] args)
+	{
+		int a, b, $foo = 5 + 12, c;
+		Console.WriteLine(foo);
+	}
+}", @"class Test
+{
+	public static void Main (string[] args)
+	{
+		int a, b, foo, c;
+		foo = 5 + 12;
+		Console.WriteLine(foo);
+	}
+}");
+		}
+
+		[Test]
+		public void TestHideInExpression ()
+		{
+			TestWrongContext<SplitDeclarationAndAssignmentAction>(@"class Test
+{
+	public static void Main (string[] args)
+	{
+		var foo = 5 $+ 5;
+	}
+}");
+		}
+
+		[Test]
+		public void TestLocalConstants ()
+		{
+			TestWrongContext<SplitDeclarationAndAssignmentAction>(@"class Test
+{
+	public static void Main (string[] args)
+	{
+		const int foo $= 5;
+	}
+}");
 		}
 	}
 }

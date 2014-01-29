@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="Build">
 	<PropertyGroup>
 		<LanguageResourcePath>..\..\data\resources\</LanguageResourcePath>
 	</PropertyGroup>
@@ -71,8 +71,8 @@
 		<CleanupDirectories Include="..\..\bin\setup\help"/>
 		<CleanupDirectories Include="..\..\AddIns"/>
 		<CleanupDirectories Include="..\setup\bin"/>
-		<CleanupDirectories Include="..\AddIns\Misc\Profiler\bin"/>
-		<CleanupDirectories Include="..\AddIns\Misc\Profiler\Hook\obj"/>
+		<CleanupDirectories Include="..\AddIns\Analysis\Profiler\bin"/>
+		<CleanupDirectories Include="..\AddIns\Analysis\Profiler\Hook\obj"/>
 	</ItemGroup>
 	
 	<Target Name="Clean">

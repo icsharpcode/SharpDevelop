@@ -12,7 +12,7 @@ namespace CSharpBinding.Completion
 {
 	class CompletionData : ICompletionData, ICompletionItem, IFancyCompletionItem
 	{
-		public CompletionData(string text = "") 
+		public CompletionData(string text = "")
 		{
 			this.DisplayText = text;
 			this.CompletionText = text;
@@ -29,6 +29,23 @@ namespace CSharpBinding.Completion
 			set { displayFlags = value; }
 		}
 		
+//		List<ICompletionData> overloads;
+//
+//		public virtual void AddOverload(ICompletionData data)
+//		{
+//			if (overloads == null)
+//				overloads = new List<ICompletionData>();
+//			overloads.Add(data);
+//		}
+//
+//		public virtual bool HasOverloads {
+//			get { return overloads != null && overloads.Count > 0; }
+//		}
+//
+//		public virtual IEnumerable<ICompletionData> OverloadedData {
+//			get { return overloads ?? EmptyList<ICompletionData>.Instance; }
+//		}
+		
 		public virtual bool HasOverloads { get { return false; } }
 		
 		public virtual IEnumerable<ICompletionData> OverloadedData {
@@ -37,7 +54,6 @@ namespace CSharpBinding.Completion
 		
 		public virtual void AddOverload(ICompletionData data)
 		{
-			//throw new InvalidOperationException();
 		}
 		
 		string ICompletionItem.Text {
@@ -60,8 +76,20 @@ namespace CSharpBinding.Completion
 			get { return this.DisplayText; }
 		}
 		
+		object fancyDescription;
+		
 		object IFancyCompletionItem.Description {
-			get { return this.Description; }
+			get {
+				if (fancyDescription == null) {
+					fancyDescription = CreateFancyDescription();
+				}
+				return fancyDescription;
+			}
+		}
+		
+		protected virtual object CreateFancyDescription()
+		{
+			return Description;
 		}
 	}
 }

@@ -105,10 +105,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			UpdateFlowDirection();
 			
-			foreach (PadDescriptor content in AddInTree.BuildItems<PadDescriptor>(viewContentPath, this, false)) {
-				if (content != null) {
-					ShowPad(content);
-				}
+			var padDescriptors = AddInTree.BuildItems<PadDescriptor>(viewContentPath, this, false);
+			((SharpDevelopServiceContainer)SD.Services).AddFallbackProvider(new PadServiceProvider(padDescriptors));
+			foreach (PadDescriptor content in padDescriptors) {
+				ShowPad(content);
 			}
 			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath, activationMethod: "MainMenu", immediatelyExpandMenuBuildersForShortcuts: true);
@@ -121,6 +121,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			DockPanel.SetDock(statusBar, Dock.Bottom);
 			dockPanel.Children.Insert(dockPanel.Children.Count - 2, statusBar);
 			
+			Core.WinForms.MenuService.ExecuteCommand = ExecuteCommand;
 			UpdateMenu();
 			
 			AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(OnRequestNavigate));
@@ -138,6 +139,21 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			SD.ResourceService.LanguageChanged += OnLanguageChanged;
 			
 			SD.StatusBar.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
+		}
+		
+		void ExecuteCommand(ICommand command, object caller)
+		{
+			ServiceSingleton.GetRequiredService<IAnalyticsMonitor>()
+				.TrackFeature(command.GetType().FullName, "Menu");
+			var routedCommand = command as System.Windows.Input.RoutedCommand;
+			if (routedCommand != null) {
+				var target = System.Windows.Input.FocusManager.GetFocusedElement(this);
+				if (routedCommand.CanExecute(caller, target))
+					routedCommand.Execute(caller, target);
+			} else {
+				if (command.CanExecute(caller))
+					command.Execute(caller);
+			}
 		}
 		
 		// keep a reference to the event handler to prevent it from being garbage collected
@@ -222,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void UpdateFlowDirection()
 		{
-			Language language = LanguageService.GetLanguage(ResourceService.Language);
+			UILanguage language = UILanguageService.GetLanguage(ResourceService.Language);
 			Core.WinForms.RightToLeftConverter.IsRightToLeft = language.IsRightToLeft;
 			this.FlowDirection = language.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
 			App.Current.Resources[GlobalStyles.FlowDirectionKey] = this.FlowDirection;
@@ -443,23 +459,23 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
-		public bool CloseAllSolutionViews()
+		public bool CloseAllSolutionViews(bool force)
 		{
 			bool result = true;
 			foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
 				if (window.ActiveViewContent != null && window.ActiveViewContent.CloseWithSolution)
-					result &= window.CloseWindow(false);
+					result &= window.CloseWindow(force);
 			}
 			return result;
 		}
 		
 		#region ViewContent Memento Handling
-		string viewContentMementosFileName;
+		FileName viewContentMementosFileName;
 		
-		string ViewContentMementosFileName {
+		FileName ViewContentMementosFileName {
 			get {
 				if (viewContentMementosFileName == null) {
-					viewContentMementosFileName = Path.Combine(PropertyService.ConfigDirectory, "LastViewStates.xml");
+					viewContentMementosFileName = SD.PropertyService.ConfigDirectory.CombineFile("LastViewStates.xml");
 				}
 				return viewContentMementosFileName;
 			}
@@ -481,8 +497,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		}
 		
 		public static bool LoadDocumentProperties {
-			get { return PropertyService.Get("SharpDevelop.LoadDocumentProperties", true); }
-			set { PropertyService.Set("SharpDevelop.LoadDocumentProperties", value); }
+			get { return SD.PropertyService.Get("SharpDevelop.LoadDocumentProperties", true); }
+			set { SD.PropertyService.Set("SharpDevelop.LoadDocumentProperties", value); }
 		}
 		
 		/// <summary>
@@ -563,36 +579,25 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				
 				var shutdownService = (ShutdownService)SD.ShutdownService;
 				if (shutdownService.CurrentReasonPreventingShutdown != null) {
-					MessageService.ShowMessage(StringParser.Parse(shutdownService.CurrentReasonPreventingShutdown));
+					MessageService.ShowMessage(shutdownService.CurrentReasonPreventingShutdown);
 					e.Cancel = true;
 					return;
 				}
 				
-				if (!Project.ProjectService.IsClosingCanceled()) {
-					// save preferences
-					Project.ProjectService.SaveSolutionPreferences();
-					
-					while (SD.Workbench.WorkbenchWindowCollection.Count > 0) {
-						IWorkbenchWindow window = SD.Workbench.WorkbenchWindowCollection [0];
-						if (!window.CloseWindow(false)) {
-							e.Cancel = true;
-							return;
-						}
-					}
-					
-					Project.ProjectService.CloseSolution();
-					((ParserService)SD.ParserService).StopParserThread();
-					
-					restoreBoundsBeforeClosing = this.RestoreBounds;
-					
-					this.WorkbenchLayout = null;
-					
-					shutdownService.SignalShutdownToken();
-					foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
-						padDescriptor.Dispose();
-					}
-				} else {
+				if (!SD.ProjectService.CloseSolution()) {
 					e.Cancel = true;
+					return;
+				}
+				
+				((ParserService)SD.ParserService).StopParserThread();
+				((WpfWorkbench)SD.Workbench).WorkbenchLayout.StoreConfiguration();
+				restoreBoundsBeforeClosing = this.RestoreBounds;
+				
+				this.WorkbenchLayout = null;
+				
+				shutdownService.SignalShutdownToken();
+				foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
+					padDescriptor.Dispose();
 				}
 			}
 		}
@@ -653,11 +658,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 						return;
 					foreach (string file in files) {
 						if (File.Exists(file)) {
-							Project.IProjectLoader loader = Project.ProjectService.GetProjectLoader(file);
-							if (loader != null) {
-								FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
+							var fileName = FileName.Create(file);
+							if (SD.ProjectService.IsSolutionOrProjectFile(fileName)) {
+								SD.ProjectService.OpenSolutionOrProject(fileName);
 							} else {
-								SharpDevelop.FileService.OpenFile(file);
+								SD.FileService.OpenFile(fileName);
 							}
 						}
 					}

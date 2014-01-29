@@ -65,6 +65,25 @@ namespace Debugger
 		}
 		
 		[Debugger.Tests.Ignore]
+		public uint GetEntryPoint()
+		{
+			try {
+				if (symReader != null)
+					return symReader.GetUserEntryPoint();
+				var info = TypeSystemExtensions.GetInfo(Assembly);
+				var cecilModule = info.CecilModule;
+				if (cecilModule == null)
+					return 0;
+				var ep = cecilModule.EntryPoint;
+				if (ep != null)
+					return ep.MetadataToken.ToUInt32();
+				return 0;
+			} catch {
+				return 0;
+			}
+		}
+		
+		[Debugger.Tests.Ignore]
 		public ISymUnmanagedReader SymReader {
 			get {
 				return symReader;

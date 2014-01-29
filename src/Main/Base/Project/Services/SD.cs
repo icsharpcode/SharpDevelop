@@ -5,14 +5,17 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Templates;
 using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -41,7 +44,8 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void InitializeForUnitTests()
 		{
-			var container = new SharpDevelopServiceContainer(ServiceSingleton.FallbackServiceProvider);
+			var container = new SharpDevelopServiceContainer();
+			container.AddFallbackProvider(ServiceSingleton.FallbackServiceProvider);
 			container.AddService(typeof(IPropertyService), new PropertyServiceImpl());
 			container.AddService(typeof(IAddInTree), new AddInTreeImpl(null));
 			ServiceSingleton.ServiceProvider = container;
@@ -53,6 +57,9 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void TearDownForUnitTests()
 		{
+			var disposableServiceContainer = ServiceSingleton.ServiceProvider as IDisposable;
+			if (disposableServiceContainer != null)
+				disposableServiceContainer.Dispose();
 			ServiceSingleton.ServiceProvider = ServiceSingleton.FallbackServiceProvider;
 		}
 		
@@ -70,6 +77,20 @@ namespace ICSharpCode.SharpDevelop
 		public static T GetRequiredService<T>() where T : class
 		{
 			return ServiceSingleton.ServiceProvider.GetRequiredService<T>();
+		}
+		
+		/// <summary>
+		/// Returns a task that gets completed when the service is initialized.
+		/// 
+		/// This method does not try to initialize the service -- if no other code forces the service
+		/// to be initialized, the task will never complete.
+		/// </summary>
+		/// <remarks>
+		/// This method can be used to solve cyclic dependencies in service initialization.
+		/// </remarks>
+		public static Task<T> GetFutureService<T>() where T : class
+		{
+			return GetRequiredService<SharpDevelopServiceContainer>().GetFutureService<T>();
 		}
 		
 		/// <summary>
@@ -204,6 +225,46 @@ namespace ICSharpCode.SharpDevelop
 		/// <inheritdoc see="IDisplayBindingService"/>
 		public static IDisplayBindingService DisplayBindingService {
 			get { return GetRequiredService<IDisplayBindingService>(); }
+		}
+		
+		/// <inheritdoc see="IProjectService"/>
+		public static IProjectService ProjectService {
+			get { return GetRequiredService<IProjectService>(); }
+		}
+		
+		/// <inheritdoc see="ILanguageService"/>
+		public static ILanguageService LanguageService {
+			get { return GetRequiredService<ILanguageService>(); }
+		}
+		
+		/// <inheritdoc see="IUIService"/>
+		public static IUIService UIService {
+			get { return GetRequiredService<IUIService>(); }
+		}
+		
+		/// <inheritdoc see="IMSBuildEngine"/>
+		public static IMSBuildEngine MSBuildEngine {
+			get { return GetRequiredService<IMSBuildEngine>(); }
+		}
+		
+		/// <inheritdoc see="ITemplateService"/>
+		public static ITemplateService Templates {
+			get { return GetRequiredService<ITemplateService>(); }
+		}
+		
+		/// <inheritdoc see="IFileSystem"/>
+		public static IFileSystem FileSystem {
+			get { return GetRequiredService<IFileSystem>(); }
+		}
+		
+		/// <inheritdoc see="IOutputPad"/>
+		public static IOutputPad OutputPad {
+			get { return GetRequiredService<IOutputPad>(); }
+		}
+		
+		/// <inheritdoc see="IClassBrowser"/>
+		public static IClassBrowser ClassBrowser {
+			get { return GetRequiredService<IClassBrowser>(); }
 		}
 	}
 }

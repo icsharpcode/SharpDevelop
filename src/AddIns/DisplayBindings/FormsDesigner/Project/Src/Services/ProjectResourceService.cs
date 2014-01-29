@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -37,14 +38,14 @@ namespace ICSharpCode.FormsDesigner.Services
 			set {
 				if (value == null)
 					throw new ArgumentNullException("value");
-				if (this.projectContent != value) {
-					this.projectContent = value;
+				if (this.project != value) {
+					this.project = value;
 					this.stringLiteralDelimiter = null;
 				}
 			}
 		}
 		
-		public bool DesignerSupportsProjectResources { 
+		public bool DesignerSupportsProjectResources {
 			get { return designerSupportsProjectResources; }
 			set { designerSupportsProjectResources = value; }
 		}
@@ -57,7 +58,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			get {
 				if (stringLiteralDelimiter == null) {
 					const string TestString = "A";
-					string testCode = this.projectContent.Language.CodeGenerator.GenerateCode(new NRefactory.Ast.PrimitiveExpression(TestString, TestString), String.Empty);
+					string testCode = project.GetAmbience().ConvertConstantValue(TestString);
 					stringLiteralDelimiter = testCode.Substring(0, testCode.IndexOf(TestString, StringComparison.Ordinal));
 				}
 				return stringLiteralDelimiter;
@@ -75,6 +76,8 @@ namespace ICSharpCode.FormsDesigner.Services
 				return null;
 			}
 			
+			throw new NotImplementedException();
+			/*
 			// Get the (generated) class where the resource is defined.
 			IClass resourceClass = this.projectContent.GetClassByReflectionName(typeRef.Type.BaseType, true);
 			if (resourceClass == null) {
@@ -121,8 +124,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			// It would be better if we could use a real code parser for this, but
 			// that is not possible without getting dependent on the programming language.
 			
-			IDocument doc = new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditDocumentAdapter();
-			doc.Text = ParserService.GetParseableFileContent(resourceClass.CompilationUnit.FileName).Text;
+			IDocument doc = new ReadOnlyDocument(SD.FileService.GetFileContent(resourceClass.CompilationUnit.FileName));
 			
 			int startOffset = doc.PositionToOffset(prop.GetterRegion.BeginLine, prop.GetterRegion.BeginColumn);
 			int endOffset   = doc.PositionToOffset(prop.GetterRegion.EndLine, prop.GetterRegion.EndColumn);
@@ -153,7 +155,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			string resourceKey = code.Substring(index, endIndex - index);
 			LoggingService.Debug("-> Decoded resource: In: " + resourceFileName + ". Key: " + resourceKey);
 			
-			return new ProjectResourceInfo(resourceFileName, resourceKey);
+			return new ProjectResourceInfo(resourceFileName, resourceKey);*/
 		}
 		
 		/// <summary>
@@ -162,18 +164,10 @@ namespace ICSharpCode.FormsDesigner.Services
 		/// </summary>
 		public static bool IsGeneratedResourceClass(ITypeDefinition @class)
 		{
-			IClass generatedCodeAttributeClass = @class.ProjectContent.GetClass("System.CodeDom.Compiler.GeneratedCodeAttribute", 0);
-			if (generatedCodeAttributeClass == null) {
-				LoggingService.Info("Could not find the class for 'System.CodeDom.Compiler.GeneratedCodeAttribute'.");
-				return false;
-			}
-			IReturnType generatedCodeAttribute = generatedCodeAttributeClass.DefaultReturnType;
-			return @class.Attributes.Any(
-				att =>
-				att.AttributeType.Equals(generatedCodeAttribute) &&
+			IAttribute att = @class.GetAttribute(new TopLevelTypeName("System.CodeDom.Compiler", "GeneratedCodeAttribute"), false);
+			return att != null &&
 				att.PositionalArguments.Count == 2 &&
-				String.Equals("System.Resources.Tools.StronglyTypedResourceBuilder", att.PositionalArguments[0] as string, StringComparison.Ordinal)
-			);
+				String.Equals("System.Resources.Tools.StronglyTypedResourceBuilder", att.PositionalArguments[0].ConstantValue as string, StringComparison.Ordinal);
 		}
 	}
 }

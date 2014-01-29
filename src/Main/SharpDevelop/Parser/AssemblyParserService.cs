@@ -5,14 +5,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
+using ICSharpCode.SharpDevelop.Project;
 using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Parser
@@ -23,15 +29,23 @@ namespace ICSharpCode.SharpDevelop.Parser
 	sealed class AssemblyParserService : IAssemblyParserService
 	{
 		#region Get Assembly By File Name
+		[Serializable]
+		[FastSerializerVersion(1)]
 		sealed class LoadedAssembly
 		{
-			public readonly Task<IUnresolvedAssembly> ProjectContent;
+			public readonly IUnresolvedAssembly ProjectContent;
 			public readonly DateTime AssemblyFileLastWriteTime;
+			public readonly bool HasInternalMembers;
+			public readonly IReadOnlyList<DomAssemblyName> References;
+			[NonSerialized]
+			public IAssemblyModel Model;
 			
-			public LoadedAssembly(Task<IUnresolvedAssembly> projectContent, DateTime assemblyFileLastWriteTime)
+			public LoadedAssembly(IUnresolvedAssembly projectContent, DateTime assemblyFileLastWriteTime, bool hasInternalMembers, IEnumerable<DomAssemblyName> references)
 			{
 				this.ProjectContent = projectContent;
 				this.AssemblyFileLastWriteTime = assemblyFileLastWriteTime;
+				this.HasInternalMembers = hasInternalMembers;
+				this.References = references.ToArray();
 			}
 		}
 		
@@ -40,26 +54,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		[ThreadStatic] static Dictionary<FileName, LoadedAssembly> up2dateProjectContents;
 		
-		public IUnresolvedAssembly GetAssembly(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
+		public IUnresolvedAssembly GetAssembly(FileName fileName, bool includeInternalMembers = false, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			// We currently do not support cancelling the load operation itself, because another GetAssembly() call
 			// with a different cancellation token might request the same assembly.
-			bool isNewTask;
-			LoadedAssembly asm = GetLoadedAssembly(fileName, out isNewTask);
-			if (isNewTask)
-				asm.ProjectContent.RunSynchronously();
-			else
-				asm.ProjectContent.Wait(cancellationToken);
-			return asm.ProjectContent.Result;
-		}
-		
-		public Task<IUnresolvedAssembly> GetAssemblyAsync(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			bool isNewTask;
-			LoadedAssembly asm = GetLoadedAssembly(fileName, out isNewTask);
-			if (isNewTask)
-				asm.ProjectContent.Start();
-			return asm.ProjectContent;
+			return GetLoadedAssembly(fileName, includeInternalMembers).ProjectContent;
 		}
 		
 		/// <summary>
@@ -86,19 +85,18 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		void CleanWeakDictionary()
 		{
-			Debug.Assert(Monitor.IsEntered(projectContentDictionary));
-			List<FileName> removed = new List<FileName>();
-			foreach (var pair in projectContentDictionary) {
-				//if (!pair.Value.IsAlive)
-				//	removed.Add(pair.Key);
-			}
-			foreach (var key in removed)
-				projectContentDictionary.Remove(key);
+//			Debug.Assert(Monitor.IsEntered(projectContentDictionary));
+//			List<FileName> removed = new List<FileName>();
+//			foreach (var pair in projectContentDictionary) {
+//				if (!pair.Value.IsAlive)
+//					removed.Add(pair.Key);
+//			}
+//			foreach (var key in removed)
+//				projectContentDictionary.Remove(key);
 		}
 		
-		LoadedAssembly GetLoadedAssembly(FileName fileName, out bool isNewTask)
+		LoadedAssembly GetLoadedAssembly(FileName fileName, bool includeInternalMembers)
 		{
-			isNewTask = false;
 			LoadedAssembly asm;
 			var up2dateProjectContents = AssemblyParserService.up2dateProjectContents;
 			if (up2dateProjectContents != null) {
@@ -109,15 +107,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 			lock (projectContentDictionary) {
 				if (projectContentDictionary.TryGetValue(fileName, out asm)) {
 					if (asm.AssemblyFileLastWriteTime == lastWriteTime) {
-						return asm;
+						if (!includeInternalMembers || includeInternalMembers == asm.HasInternalMembers)
+							return asm;
 					}
 				} else {
 					asm = null;
 				}
-				var task = new Task<IUnresolvedAssembly>(() => LoadAssembly(fileName, CancellationToken.None));
-				isNewTask = true;
-				asm = new LoadedAssembly(task, lastWriteTime);
-				
+				asm = LoadAssembly(fileName, CancellationToken.None, includeInternalMembers);
 				if (up2dateProjectContents == null)
 					CleanWeakDictionary();
 				// The assembly might already be in the dictionary if we had loaded it before,
@@ -130,22 +126,25 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#endregion
 		
 		#region Load Assembly
-		IUnresolvedAssembly LoadAssembly(FileName fileName, CancellationToken cancellationToken)
+		LoadedAssembly LoadAssembly(FileName fileName, CancellationToken cancellationToken, bool includeInternalMembers)
 		{
 			DateTime lastWriteTime = File.GetLastWriteTimeUtc(fileName);
 			string cacheFileName = GetCacheFileName(fileName);
-			IUnresolvedAssembly pc = TryReadFromCache(cacheFileName, lastWriteTime);
-			if (pc != null)
-				return pc;
+			LoadedAssembly pc = TryReadFromCache(cacheFileName, lastWriteTime);
+			if (pc != null) {
+				if (!includeInternalMembers || includeInternalMembers == pc.HasInternalMembers)
+					return pc;
+			}
 			
 			//LoggingService.Debug("Loading " + fileName);
 			cancellationToken.ThrowIfCancellationRequested();
 			var param = new ReaderParameters();
 			param.AssemblyResolver = new DummyAssemblyResolver();
-			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
+			ModuleDefinition module = ModuleDefinition.ReadModule(fileName, param);
 			
 			CecilLoader l = new CecilLoader();
-			string xmlDocFile = FindXmlDocumentation(fileName, asm.MainModule.Runtime);
+			l.IncludeInternalMembers = includeInternalMembers;
+			string xmlDocFile = FindXmlDocumentation(fileName, module.Runtime);
 			if (xmlDocFile != null) {
 				try {
 					l.DocumentationProvider = new XmlDocumentationProvider(xmlDocFile);
@@ -158,7 +157,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			l.CancellationToken = cancellationToken;
-			pc = l.LoadAssembly(asm);
+			var references = module.AssemblyReferences
+				.Select(anr => new DomAssemblyName(anr.FullName));
+			pc = new LoadedAssembly(l.LoadModule(module), lastWriteTime, includeInternalMembers, references);
 			SaveToCacheAsync(cacheFileName, lastWriteTime, pc).FireAndForget();
 			//SaveToCache(cacheFileName, lastWriteTime, pc);
 			return pc;
@@ -193,29 +194,39 @@ namespace ICSharpCode.SharpDevelop.Parser
 		static readonly string referenceAssembliesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Reference Assemblies\Microsoft\\Framework");
 		static readonly string frameworkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework");
 		
-		static string FindXmlDocumentation(string assemblyFileName, TargetRuntime runtime)
+		static string FindXmlDocumentation(FileName assemblyFileName, TargetRuntime runtime)
 		{
-			string fileName;
+			// First, look in the same directory as the assembly.
+			// This usually works for .NET reference assembies and 3rd party libraries
+			string xmlFileName = LookupLocalizedXmlDoc(assemblyFileName);
+			if (xmlFileName != null)
+				return xmlFileName;
+			// Otherwise, assume the assembly is part of .NET and try looking
+			// in the framework directory.
+			// (if the assembly is not part of .NET, we won't find anything there)
+			string name = assemblyFileName.GetFileName();
 			switch (runtime) {
 				case TargetRuntime.Net_1_0:
-					fileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v1.0.3705", assemblyFileName));
+					xmlFileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v1.0.3705", name));
 					break;
 				case TargetRuntime.Net_1_1:
-					fileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v1.1.4322", assemblyFileName));
+					xmlFileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v1.1.4322", name));
 					break;
 				case TargetRuntime.Net_2_0:
-					fileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v2.0.50727", assemblyFileName))
-						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, "v3.5"))
-						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, "v3.0"))
-						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v3.5\Profile\Client"));
+					xmlFileName = LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, "v3.5", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v3.5\Profile\Client", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, "v3.0", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v2.0.50727", name));
 					break;
 				case TargetRuntime.Net_4_0:
 				default:
-					fileName = LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.0", assemblyFileName))
-						?? LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v4.0.30319", assemblyFileName));
+					xmlFileName = LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.5.1", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.5", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.0", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v4.0.30319", name));
 					break;
 			}
-			return fileName;
+			return xmlFileName;
 		}
 		
 		static string LookupLocalizedXmlDoc(string fileName)
@@ -241,7 +252,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return cacheFileName;
 		}
 		
-		static IUnresolvedAssembly TryReadFromCache(string cacheFileName, DateTime lastWriteTime)
+		static LoadedAssembly TryReadFromCache(string cacheFileName, DateTime lastWriteTime)
 		{
 			if (cacheFileName == null || !File.Exists(cacheFileName))
 				return null;
@@ -254,7 +265,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 							return null;
 						}
 						FastSerializer s = new FastSerializer();
-						return (IUnresolvedAssembly)s.Deserialize(reader);
+						return s.Deserialize(reader) as LoadedAssembly;
 					}
 				}
 			} catch (IOException ex) {
@@ -269,19 +280,19 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		
-		Task SaveToCacheAsync(string cacheFileName, DateTime lastWriteTime, IUnresolvedAssembly pc)
+		Task SaveToCacheAsync(string cacheFileName, DateTime lastWriteTime, LoadedAssembly asm)
 		{
 			if (cacheFileName == null)
 				return Task.FromResult<object>(null);
 			
 			// Call SaveToCache on a background task:
 			var shutdownService = SD.ShutdownService;
-			var task = IOTaskScheduler.Factory.StartNew(delegate { SaveToCache(cacheFileName, lastWriteTime, pc); }, shutdownService.ShutdownToken);
+			var task = IOTaskScheduler.Factory.StartNew(delegate { SaveToCache(cacheFileName, lastWriteTime, asm); }, shutdownService.ShutdownToken);
 			shutdownService.AddBackgroundTask(task);
 			return task;
 		}
 		
-		void SaveToCache(string cacheFileName, DateTime lastWriteTime, IUnresolvedAssembly pc)
+		void SaveToCache(string cacheFileName, DateTime lastWriteTime, LoadedAssembly asm)
 		{
 			if (cacheFileName == null)
 				return;
@@ -292,7 +303,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					using (BinaryWriter writer = new BinaryWriterWith7BitEncodedInts(fs)) {
 						writer.Write(lastWriteTime.Ticks);
 						FastSerializer s = new FastSerializer();
-						s.Serialize(writer, pc);
+						s.Serialize(writer, asm);
 					}
 				}
 			} catch (IOException ex) {
@@ -305,5 +316,70 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		#endregion
+		
+		#region Refresh
+		public event EventHandler<RefreshAssemblyEventArgs> AssemblyRefreshed;
+		
+		public void RefreshAssembly(FileName fileName)
+		{
+			LoadedAssembly asm;
+			lock (projectContentDictionary) {
+				if (!projectContentDictionary.TryGetValue(fileName, out asm)) {
+					// Assembly is not loaded; nothing to refresh
+					return;
+				}
+			}
+			var oldAssembly = asm.ProjectContent;
+			var newAssembly = GetAssembly(fileName);
+			if (oldAssembly != newAssembly) {
+				var handler = AssemblyRefreshed;
+				if (handler != null)
+					handler(this, new RefreshAssemblyEventArgs(fileName, oldAssembly, newAssembly));
+			}
+		}
+		#endregion
+		
+		public IAssemblyModel GetAssemblyModel(FileName fileName, bool includeInternalMembers = false)
+		{
+			LoadedAssembly assembly = GetLoadedAssembly(fileName, includeInternalMembers);
+			if (assembly.Model == null) {
+				// Get references
+				DefaultAssemblySearcher assemblySearcher = new DefaultAssemblySearcher(fileName);
+				var referencedAssemblies = new List<IUnresolvedAssembly>();
+				foreach (var referencedAssemblyName in assembly.References) {
+					var assemblyFileName = assemblySearcher.FindAssembly(referencedAssemblyName);
+					if (assemblyFileName != null) {
+						var loadedRefAssembly = GetLoadedAssembly(assemblyFileName, includeInternalMembers);
+						if (loadedRefAssembly != null) {
+							referencedAssemblies.Add(loadedRefAssembly.ProjectContent);
+						}
+					}
+				}
+				
+				IEntityModelContext context = new AssemblyEntityModelContext(assembly.ProjectContent, referencedAssemblies.ToArray());
+				IUpdateableAssemblyModel model = SD.GetService<IModelFactory>().CreateAssemblyModel(context);
+				
+				model.Update(EmptyList<IUnresolvedTypeDefinition>.Instance, assembly.ProjectContent.TopLevelTypeDefinitions.ToList());
+				model.AssemblyName = assembly.ProjectContent.AssemblyName;
+				model.FullAssemblyName = assembly.ProjectContent.FullAssemblyName;
+				model.UpdateReferences(assembly.References);
+				assembly.Model = model;
+			}
+			
+			return assembly.Model;
+		}
+		
+		public IAssemblyModel GetAssemblyModelSafe(FileName fileName, bool includeInternalMembers = false)
+		{
+			try {
+				return GetAssemblyModel(fileName, includeInternalMembers);
+			} catch (BadImageFormatException) {
+				SD.MessageService.ShowWarningFormatted("${res:ICSharpCode.SharpDevelop.Dom.AssemblyInvalid}", Path.GetFileName(fileName));
+			} catch (FileNotFoundException) {
+				SD.MessageService.ShowWarningFormatted("${res:ICSharpCode.SharpDevelop.Dom.AssemblyNotAccessible}", fileName);
+			}
+			
+			return null;
+		}
 	}
 }

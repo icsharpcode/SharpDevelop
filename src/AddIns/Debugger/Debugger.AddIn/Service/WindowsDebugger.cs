@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Debugger;
+using ICSharpCode.SharpDevelop.Gui.Pads;
 using Debugger.AddIn;
 using Debugger.AddIn.Tooltips;
 using Debugger.AddIn.TreeModel;
@@ -232,6 +233,7 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void Detach()
 		{
+			ClassBrowserSupport.Detach(CurrentProcess);
 			CurrentDebugger.Detach();
 		}
 		
@@ -438,6 +440,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			CurrentProcess.Paused         += debuggedProcess_DebuggingPaused;
 			CurrentProcess.Resumed        += debuggedProcess_DebuggingResumed;
 			CurrentProcess.Exited         += (s, e) => debugger_ProcessExited();
+			ClassBrowserSupport.Attach(CurrentProcess);
 			
 			UpdateBreakpointIcons();
 		}
@@ -448,6 +451,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				DebugStopped(this, EventArgs.Empty);
 			}
 			
+			ClassBrowserSupport.Detach(CurrentProcess);
 			CurrentProcess = null;
 			CurrentThread = null;
 			CurrentStackFrame = null;
@@ -462,7 +466,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			CurrentProcess = e.Process;
 			CurrentThread = e.Thread;
-			CurrentStackFrame = CurrentThread != null ? CurrentThread.MostRecentUserStackFrame : null;
+			CurrentStackFrame = CurrentThread != null ? CurrentThread.MostRecentStackFrame : null;
 			
 			// We can have several events happening at the same time
 			bool breakProcess = e.Break;
@@ -577,14 +581,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			RefreshPads();
 		}
 		
-		public static Value Evaluate(string code)
+		public static Value Evaluate(string code, bool allowMethodInvoke = true, bool allowSetValue = false)
 		{
 			if (CurrentStackFrame == null || CurrentStackFrame.NextStatement == null)
 				throw new GetValueException("no stackframe available!");
 			var location = CurrentStackFrame.NextStatement;
 			var fileName = new FileName(location.Filename);
 			var rr = SD.ParserService.ResolveSnippet(fileName, new TextLocation(location.StartLine, location.StartColumn), new ParseableFileContentFinder().Create(fileName), code, null, System.Threading.CancellationToken.None);
-			return new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation).Convert(rr);
+			return new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation, allowMethodInvoke, allowSetValue).Convert(rr);
 		}
 
 		public void JumpToCurrentLine()
@@ -622,14 +626,17 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (!(IsDebugging && CurrentProcess.IsPaused))
 				return;
-			var resolveResult = e.ResolveResult;
+			if (CurrentStackFrame == null)
+				return;
+			var resolveResult = SD.ParserService.Resolve(e.Editor, e.LogicalPosition, CurrentStackFrame.AppDomain.Compilation);
 			if (resolveResult == null)
 				return;
-			if (resolveResult is LocalResolveResult || resolveResult is MemberResolveResult || resolveResult is InvocationResolveResult) {
+			if (resolveResult is LocalResolveResult || resolveResult is MemberResolveResult) {
 				string text = string.Empty;
 				try {
 					text = new ResolveResultPrettyPrinter().Print(resolveResult);
-				} catch (NotImplementedException) {
+				} catch (NotImplementedException ex) {
+					SD.Log.Warn(ex);
 				}
 				Func<Value> getValue = delegate {
 					ExpressionEvaluationVisitor eval = new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation);
@@ -638,7 +645,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				try {
 					var rootNode = new ValueNode(ClassBrowserIconService.LocalVariable, text, getValue);
 					e.SetToolTip(new DebuggerTooltipControl(rootNode));
-				} catch (InvalidOperationException) {
+				} catch (InvalidOperationException ex) {
+					SD.Log.Warn(ex);
 				}
 			}
 		}

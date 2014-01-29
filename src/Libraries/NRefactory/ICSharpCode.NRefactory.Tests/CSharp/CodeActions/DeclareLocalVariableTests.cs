@@ -298,5 +298,29 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }");
 		}
 
+
+		[Test]
+		public void TestCollectionInitializer ()
+		{
+			Test<DeclareLocalVariableAction> (@"using System.Collections.Generic;
+
+class TestClass
+{
+	void Test (string str)
+	{
+		var list = new List<int> { 1, <-str.Length->, 2 };
+	}
+}", @"using System.Collections.Generic;
+
+class TestClass
+{
+	void Test (string str)
+	{
+		var length = str.Length;
+		var list = new List<int> { 1, length, 2 };
+	}
+}");
+		}
+
 	}
 }

@@ -53,6 +53,7 @@ interface TargetInterface
 ";
 		
 		MockTextEditor textEditor;
+		IProject project;
 		CSharpCodeGenerator gen;
 		
 		static readonly IUnresolvedAssembly Corlib = new CecilLoader().LoadAssemblyFile(typeof(object).Assembly.Location);
@@ -64,7 +65,7 @@ interface TargetInterface
 			textEditor = new MockTextEditor();
 			textEditor.Document.Text = program;
 			var parseInfo = textEditor.CreateParseInformation();
-			IProject project = MockRepository.GenerateStrictMock<IProject>();
+			this.project = MockRepository.GenerateStrictMock<IProject>();
 			var pc = new CSharpProjectContent().AddOrUpdateFiles(parseInfo.UnresolvedFile);
 			pc = pc.AddAssemblyReferences(new[] { Corlib });
 			var compilation = pc.CreateCompilation();
@@ -82,7 +83,7 @@ interface TargetInterface
 			IViewContent view = MockRepository.GenerateStrictMock<IViewContent>();
 			view.Stub(v => v.GetService(typeof(ITextEditor))).Return(textEditor);
 			SD.FileService.Stub(f => f.OpenFile(textEditor.FileName, false)).Return(view);
-			gen = new CSharpCodeGenerator(project);
+			gen = new CSharpCodeGenerator();
 		}
 		
 		[TearDown]
@@ -283,7 +284,7 @@ interface TargetInterface
 		{
 			var compilation = SD.ParserService.GetCompilationForFile(textEditor.FileName);
 			var attribute = compilation.FindType(new FullTypeName("MySimpleAttribute"));
-			gen.AddAssemblyAttribute(new DefaultAttribute(attribute));
+			gen.AddAssemblyAttribute(project, new DefaultAttribute(attribute));
 			
 			Assert.AreEqual(@"using System;
 using System.Reflection;

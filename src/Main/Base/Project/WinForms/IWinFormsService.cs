@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.SharpDevelop.WinForms
 {
@@ -113,5 +114,18 @@ namespace ICSharpCode.SharpDevelop.WinForms
 		/// inside the host isn't)
 		/// </summary>
 		void SetContent(System.Windows.Controls.ContentPresenter contentControl, object content, IServiceProvider serviceProvider = null);
+		
+		/// <summary>
+		/// Creates a new SDWindowsFormsHost instance.
+		/// </summary>
+		/// <param name="serviceProvider">The service provider that provides the IClipboardHandler, IUndoHandler etc. implementations.</param>
+		/// <param name="processShortcutsInWPF">
+		/// Determines whether the shortcuts for the default actions (Cut,Copy,Paste,Undo, etc.)
+		/// are processed by the WPF command system.
+		/// The default value is false. Pass true only if WinForms does not handle those shortcuts by itself.
+		/// See SD-1671 and SD-1737.
+		/// </param>
+		/// <returns>SDWindowsFormsHost instance</returns>
+		CustomWindowsFormsHost CreateWindowsFormsHost(IServiceProvider serviceProvider = null, bool processShortcutsInWPF = false);
 	}
 }

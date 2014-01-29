@@ -32,10 +32,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		IProject FindProjectContainingFile()
 		{
-			if (ProjectService.OpenSolution != null) {
-				return ProjectService.OpenSolution.FindProjectContainingFile(viewContent.PrimaryFileName);
-			}
-			return null;
+			return SD.ProjectService.FindProjectContainingFile(viewContent.PrimaryFileName);
 		}
 		
 		protected IType GetDesignedClass(ICompilation compilation)
@@ -78,7 +75,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			if (p != null && c != null) {
 				var e = FindEventDeclaration(c.Compilation, eventProperty.DeclaringType, eventProperty.Name);
-				p.CodeGenerator.InsertEventHandler(c, handlerName, e, true);
+				p.LanguageBinding.CodeGenerator.InsertEventHandler(c, handlerName, e, true);
 			}
 		}
 		

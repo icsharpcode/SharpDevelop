@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	public class RedundantAssignmentIssueTests : InspectionActionTestBase
 	{
 		[Test]
-		public void TestVariableInitializerNotUsed ()
+		public void TestVariableInitializerNotUsed()
 		{
 			var input = @"
 class TestClass
@@ -48,14 +48,34 @@ class TestClass
 {
 	void TestMethod ()
 	{
-		int i;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 1, output);
+			Test<RedundantAssignmentIssue>(input, 1, output);
 		}
 
 		[Test]
-		public void TestVariableAssignmentNotUsed ()
+		public void TestVariableInitializerNotUsedVar()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		var i = 1;
+	}
+}";
+			var output = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+	}
+}";
+			Test<RedundantAssignmentIssue>(input, 1, output);
+		}
+
+		[Test]
+		public void TestVariableAssignmentNotUsed()
 		{
 			var input = @"
 class TestClass
@@ -78,11 +98,11 @@ class TestClass
 		return j;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 1, output);
+			Test<RedundantAssignmentIssue>(input, 1, output);
 		}
 
 		[Test]
-		public void TestParameterAssignmentNotUsed ()
+		public void TestParameterAssignmentNotUsed()
 		{
 			var input = @"
 class TestClass
@@ -103,11 +123,11 @@ class TestClass
 		return j;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 1, output);
+			Test<RedundantAssignmentIssue>(input, 1, output);
 		}
 
 		[Test]
-		public void TestAssignmentInExpression ()
+		public void TestAssignmentInExpression()
 		{
 			var input = @"
 class TestClass
@@ -127,11 +147,11 @@ class TestClass
 		return j;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 1, output);
+			Test<RedundantAssignmentIssue>(input, 1, output);
 		}
 
 		[Test]
-		public void TestOutArgument ()
+		public void TestOutArgument()
 		{
 			var input = @"
 class TestClass
@@ -161,11 +181,11 @@ class TestClass
 		return i;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 1, output);
+			Test<RedundantAssignmentIssue>(input, 1, output);
 		}
 
 		[Test]
-		public void TestOutArgument2 ()
+		public void TestOutArgument2()
 		{
 			var input = @"
 class TestClass
@@ -182,11 +202,11 @@ class TestClass
 		return i;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
 		[Test]
-		public void TestRefArgument ()
+		public void TestRefArgument()
 		{
 			var input = @"
 class TestClass
@@ -196,11 +216,11 @@ class TestClass
 		i = 0;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
 		[Test]
-		public void TestAssignmentOperator ()
+		public void TestAssignmentOperator()
 		{
 			var input = @"
 class TestClass
@@ -212,11 +232,11 @@ class TestClass
 		return i;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
 		[Test]
-		public void TestIf ()
+		public void TestIf()
 		{
 			var input = @"
 class TestClass
@@ -231,11 +251,11 @@ class TestClass
 		return i;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
 		[Test]
-		public void TestConditionalExpression ()
+		public void TestConditionalExpression()
 		{
 			var input = @"
 class TestClass
@@ -246,11 +266,11 @@ class TestClass
 		return j > 0 ? i : 0;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
 		[Test]
-		public void TestLoop ()
+		public void TestLoop()
 		{
 			var input = @"
 class TestClass
@@ -268,11 +288,11 @@ class TestClass
 		if (x > 1) ;
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
 		[Test]
-		public void TestForeach ()
+		public void TestForeach()
 		{
 			var input = @"
 class TestClass
@@ -288,13 +308,11 @@ class TestClass
 		}
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
-
-		
 		[Test]
-		public void TestAssignmentInTryCatch ()
+		public void TestAssignmentInTryCatch()
 		{
 			var input = @"using System;
 class TestClass
@@ -311,11 +329,11 @@ class TestClass
 		}
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
 		[Test]
-		public void TestAssignmentInTryCatchFinally ()
+		public void TestAssignmentInTryCatchFinally()
 		{
 			var input = @"
 class TestClass
@@ -332,11 +350,11 @@ class TestClass
 		}
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
 		[Test]
-		public void TestAssignmentInCatch ()
+		public void TestAssignmentInCatch()
 		{
 			var input = @"using System;
 class TestClass
@@ -353,11 +371,11 @@ class TestClass
         Test (a);
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
 		[Test]
-		public void TestAssignmentBeforeTry ()
+		public void TestAssignmentBeforeTry()
 		{
 			var input = @"using System;
 class TestClass
@@ -374,12 +392,11 @@ class TestClass
         Test (a);
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
 		}
 
-		
 		[Test]
-		public void TestAssignmentInUsing ()
+		public void TestAssignmentInUsing()
 		{
 			var input = @"using System;
 class TestClass
@@ -391,7 +408,142 @@ class TestClass
 		}
 	}
 }";
-			Test<RedundantAssignmentIssue> (input, 0);
+			Test<RedundantAssignmentIssue>(input, 0);
+		}
+
+		[Test]
+		public void TestAssignmentWithFunction()
+		{
+			var input = @"using System;
+class TestClass
+{
+	TestClass  Func () { return null; }
+	void TestMethod ()
+	{
+		var a = Func ();
+	}
+}";
+			var output = @"using System;
+class TestClass
+{
+	TestClass  Func () { return null; }
+	void TestMethod ()
+	{
+		Func ();
+	}
+}";
+			Test<RedundantAssignmentIssue>(input, output);
+		}
+
+        [Test]
+        public void TestAssignmentWithFunctionUsedLater()
+        {
+            var input = @"using System;
+class TestClass
+{
+	TestClass  Func () { return null; }
+	void TestMethod ()
+	{
+		var a = Func ();
+        a = 2;
+	}
+}";
+            var output = @"using System;
+class TestClass
+{
+	TestClass  Func () { return null; }
+	void TestMethod ()
+	{
+		TestClass a;
+		Func ();
+        a = 2;
+	}
+}";
+            Test<RedundantAssignmentIssue>(input, 2, output, 0);
+        }
+
+
+		/// <summary>
+		/// Bug 11795 - Use of regex in linq statement not being recognized. 
+		/// </summary>
+		[Test]
+		public void TestBug11795 ()
+		{
+			TestWrongContext<RedundantAssignmentIssue>(@"
+using System;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Linq;
+
+public class Test
+{
+	public void Demo ()
+	{
+		Regex pattern = new Regex (@""^.*\.(jpg|png)$"", RegexOptions.IgnoreCase);
+		string path = Path.Combine (""/"", ""speakers"");
+
+		Console.WriteLine (
+			from file in Directory.GetFiles (path)
+			where pattern.IsMatch (file)
+			select file
+			);
+	}
+
+}");
+
+		}
+
+
+		/// <summary>
+		/// Bug 14929 - Assignment greyed out (meaning "redundant") when it should not be
+		/// </summary>
+		[Test]
+		public void TestBug14929 ()
+		{
+			TestWrongContext<RedundantAssignmentIssue>(@"
+using system;
+
+public class Test
+{
+	public void Demo ()
+	{
+		bool save = true;
+		try {
+			throw new Exception ();
+		} catch (Exception) {
+			save = false;
+			throw;
+		} finally {
+			System.Console.WriteLine (save);
+		}
+	}
+
+}");
+
+		}
+
+		[Test]
+		public void TestMultipleVariableInitializers()
+		{
+			Test<RedundantAssignmentIssue>(@"using System;
+public class MyClass
+{
+	public static void Main ()
+	{
+		string outputFile = null, inputFile = null;
+		Console.WriteLine (outputFile);
+	}
+}
+", 1, @"using System;
+public class MyClass
+{
+	public static void Main ()
+	{
+		string outputFile = null, inputFile;
+		Console.WriteLine (outputFile);
+	}
+}
+", 0);
 		}
 	}
 }

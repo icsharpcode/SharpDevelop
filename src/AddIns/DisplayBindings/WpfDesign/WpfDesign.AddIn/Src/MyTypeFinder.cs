@@ -25,6 +25,18 @@ namespace ICSharpCode.WpfDesign.AddIn
 			MyTypeFinder f = new MyTypeFinder();
 			f.file = file;
 			f.ImportFrom(CreateWpfTypeFinder());
+			
+			// TODO : reimplement this!
+			// DO NOT USE Assembly.LoadFrom
+//			var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+//			foreach (var referencedAssembly in compilation.ReferencedAssemblies) {
+//				try {
+//					var assembly = Assembly.LoadFrom(referencedAssembly.GetReferenceAssemblyLocation());
+//					f.RegisterAssembly(assembly);
+//				} catch (Exceptions ex) {
+//					ICSharpCode.Core.LoggingService.Warn("Error loading Assembly : " + referencedAssembly.FullAssemblyName, ex);
+//				}
+//			}
 			return f;
 		}
 		
@@ -74,10 +86,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		internal static IProject GetProject(OpenedFile file)
 		{
-			if (ProjectService.OpenSolution != null && file != null) {
-				return ProjectService.OpenSolution.FindProjectContainingFile(file.FileName);
-			}
-			return null;
+			return SD.ProjectService.FindProjectContainingFile(file.FileName);
 		}
 	}
 }

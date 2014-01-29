@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Returns the solution in which this node belongs to. This assumes that
 		/// any node is child of a solution.
 		/// </summary>
-		public virtual Solution Solution {
+		public virtual ISolution Solution {
 			get {
 				AbstractProjectBrowserTreeNode parent = Parent as AbstractProjectBrowserTreeNode;
 				if (parent != null) {

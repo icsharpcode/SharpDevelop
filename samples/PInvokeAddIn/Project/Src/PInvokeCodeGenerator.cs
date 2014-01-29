@@ -21,7 +21,7 @@ namespace ICSharpCode.PInvokeAddIn
 		{
 			using (editor.Document.OpenUndoGroup()) {
 				int startLine = editor.Document.GetLineByOffset(editor.SelectionStart).LineNumber;
-				editor.SelectedText = DocumentUtilitites.NormalizeNewLines(signature, editor.Document, startLine);
+				editor.SelectedText = DocumentUtilities.NormalizeNewLines(signature, editor.Document, startLine);
 				int endLine = editor.Document.GetLineByOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
 				editor.Language.FormattingStrategy.IndentLines(editor, startLine, endLine);
 			}

@@ -1,165 +1,76 @@
-﻿//// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-//// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//
-//using System;
-//using System.Collections.Generic;
-//using ICSharpCode.PackageManagement;
-//using ICSharpCode.PackageManagement.EnvDTE;
-//using ICSharpCode.SharpDevelop.Dom;
-//using NUnit.Framework;
-//using PackageManagement.Tests.Helpers;
-//using Rhino.Mocks;
-//
-//namespace PackageManagement.Tests.EnvDTE
-//{
-//	[TestFixture]
-//	public class CodeClass2Tests
-//	{
-//		CodeClass2 codeClass;
-//		ClassHelper helper;
-//		IClassKindUpdater classKindUpdater;
-//		
-//		void CreateProjectContent()
-//		{
-//			helper = new ClassHelper();
-//		}
-//		
-//		void CreateClass(string name)
-//		{
-//			helper.CreateClass(name);
-//			CreateClass();
-//		}
-//		
-//		void CreatePublicClass(string name)
-//		{
-//			helper.CreatePublicClass(name);
-//			CreateClass();
-//		}
-//		
-//		void CreatePrivateClass(string name)
-//		{
-//			helper.CreatePrivateClass(name);
-//			CreateClass();
-//		}
-//		
-//		void CreateClass()
-//		{
-//			classKindUpdater = MockRepository.GenerateStub<IClassKindUpdater>();
-//			codeClass = new CodeClass2(helper.ProjectContentHelper.ProjectContent, helper.Class, classKindUpdater);
-//		}
-//		
-//		void AddInterfaceToProjectContent(string fullName)
-//		{
-//			helper.ProjectContentHelper.AddInterfaceToProjectContent(fullName);
-//		}
-//		
-//		void AddClassToProjectContent(string fullName)
-//		{
-//			helper.CreateClass(fullName);
-//		}
-//		
-//		void AddInterfaceToClassBaseTypes(string fullName, string dotNetName)
-//		{
-//			helper.AddInterfaceToClassBaseTypes(fullName, dotNetName);
-//		}
-//		
-//		void AddClassToClassBaseTypes(string fullName)
-//		{
-//			helper.AddClassToClassBaseTypes(fullName);
-//		}
-//		
-//		void AddBaseTypeToClass(string fullName)
-//		{
-//			helper.AddBaseTypeToClass(fullName);
-//		}
-//		
-//		void AddMethodToClass(string fullyQualifiedName)
-//		{
-//			helper.AddMethodToClass(fullyQualifiedName);
-//		}
-//		
-//		void AddPropertyToClass(string fullyQualifiedName)
-//		{
-//			helper.AddPropertyToClass(fullyQualifiedName);
-//		}
-//		
-//		void AddFieldToClass(string fullyQualifiedName)
-//		{
-//			helper.AddFieldToClass(fullyQualifiedName);
-//		}
-//		
-//		void ClassIsAbstract()
-//		{
-//			helper.MakeClassAbstract();
-//		}
-//		
-//		void ClassIsPartial()
-//		{
-//			helper.MakeClassPartial();
-//		}
-//		
-//		void ClassIsGeneric()
-//		{
-//			helper.SetDotNetName("MyClass`1");
-//		}
-//		
-//		void ClassIsNotGeneric()
-//		{
-//			helper.SetDotNetName("MyClass");
-//		}
-//		
-//		[Test]
-//		public void Language_CSharpProject_ReturnsCSharpModelLanguage()
-//		{
-//			CreateProjectContent();
-//			helper.ProjectContentHelper.ProjectContentIsForCSharpProject();
-//			CreateClass("MyClass");
-//			
-//			string language = codeClass.Language;
-//			
-//			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageCSharp, language);
-//		}
-//		
-//		[Test]
-//		public void Language_VisualBasicProject_ReturnsVisualBasicModelLanguage()
-//		{
-//			CreateProjectContent();
-//			helper.ProjectContentHelper.ProjectContentIsForVisualBasicProject();
-//			CreateClass("MyClass");
-//			
-//			string language = codeClass.Language;
-//			
-//			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageVB, language);
-//		}
-//		
-//		[Test]
-//		public void Access_PublicClass_ReturnsPublic()
-//		{
-//			CreateProjectContent();
-//			CreatePublicClass("MyClass");
-//			
-//			global::EnvDTE.vsCMAccess access = codeClass.Access;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
-//		}
-//		
-//		[Test]
-//		public void Access_PrivateClass_ReturnsPrivate()
-//		{
-//			CreateProjectContent();
-//			CreatePrivateClass("MyClass");
-//			
-//			global::EnvDTE.vsCMAccess access = codeClass.Access;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
-//		}
-//		
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.EnvDTE;
+using ICSharpCode.SharpDevelop.Dom;
+using NUnit.Framework;
+using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
+
+namespace PackageManagement.Tests.EnvDTE
+{
+	[TestFixture]
+	public class CodeClass2Tests : CodeModelTestBase
+	{
+		CodeClass2 codeClass;
+		
+		void CreateClass(string code)
+		{
+			AddCodeFile("class.cs", code);
+			ITypeDefinitionModel typeModel = assemblyModel.TopLevelTypeDefinitions.Single();
+			codeClass = new CodeClass2(codeModelContext, typeModel);
+		}
+		
+		[Test]
+		public void Language_CSharpProject_ReturnsCSharpModelLanguage()
+		{
+			CreateClass("class MyClass {}");
+			
+			string language = codeClass.Language;
+			
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageCSharp, language);
+		}
+		
+		[Test]
+		public void Language_VisualBasicProject_ReturnsVisualBasicModelLanguage()
+		{
+			projectLanguage = "VB";
+			CreateClass("class MyClass {}");
+			
+			string language = codeClass.Language;
+			
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageVB, language);
+		}
+		
+		[Test]
+		public void Access_PublicClass_ReturnsPublic()
+		{
+			CreateClass("public class MyClass {}");
+			
+			global::EnvDTE.vsCMAccess access = codeClass.Access;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
+		}
+		
+		[Test]
+		public void Access_InternalClass_ReturnsPrivate()
+		{
+			CreateClass("class MyClass {}");
+			
+			global::EnvDTE.vsCMAccess access = codeClass.Access;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
+		}
+		
 //		[Test]
 //		public void ImplementedInterfaces_ClassImplementsGenericICollectionOfString_ReturnsCodeInterfaceForICollection()
 //		{
-//			CreateProjectContent();
-//			CreatePublicClass("MyClass");
-//			AddInterfaceToClassBaseTypes("System.Collections.Generic.ICollection", "System.Collections.Generic.ICollection{System.String}");
+//			CreateClass("using System.Collection.Generic;" +
+//			            "class MyClass : ICollection<string> {}");
 //			
 //			global::EnvDTE.CodeElements codeElements = codeClass.ImplementedInterfaces;
 //			CodeInterface codeInterface = codeElements.FirstCodeInterfaceOrDefault();
@@ -404,5 +315,5 @@
 //			
 //			Assert.Throws<NotImplementedException>(() => codeClass.ClassKind = global::EnvDTE.vsCMClassKind.vsCMClassKindMainClass);
 //		}
-//	}
-//}
+	}
+}

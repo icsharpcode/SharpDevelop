@@ -1027,7 +1027,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (heightTree.GetIsCollapsed(documentLine.LineNumber))
 				throw new InvalidOperationException("Trying to build visual line from collapsed line");
 			
-			Debug.WriteLine("Building line " + documentLine.LineNumber);
+			//Debug.WriteLine("Building line " + documentLine.LineNumber);
 			
 			VisualLine visualLine = new VisualLine(this, documentLine);
 			VisualLineTextSource textSource = new VisualLineTextSource(visualLine) {
@@ -1041,7 +1041,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (visualLine.FirstDocumentLine != visualLine.LastDocumentLine) {
 				// Check whether the lines are collapsed correctly:
 				double firstLinePos = heightTree.GetVisualPosition(visualLine.FirstDocumentLine.NextLine);
-				double lastLinePos = heightTree.GetVisualPosition(visualLine.LastDocumentLine);
+				double lastLinePos = heightTree.GetVisualPosition(visualLine.LastDocumentLine.NextLine ?? visualLine.LastDocumentLine);
 				if (!firstLinePos.IsClose(lastLinePos)) {
 					for (int i = visualLine.FirstDocumentLine.LineNumber + 1; i <= visualLine.LastDocumentLine.LineNumber; i++) {
 						if (!heightTree.GetIsCollapsed(i))
@@ -1166,7 +1166,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					}
 				}
 			}
-			InvalidateCursor();
+			InvalidateCursorIfMouseWithinTextView();
 			
 			return finalSize;
 		}
@@ -1621,20 +1621,29 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		[ThreadStatic] static bool invalidCursor;
 		
 		/// <summary>
-		/// Updates the mouse cursor by calling <see cref="Mouse.UpdateCursor"/>, but with input priority.
+		/// Updates the mouse cursor by calling <see cref="Mouse.UpdateCursor"/>, but with background priority.
 		/// </summary>
 		public static void InvalidateCursor()
 		{
 			if (!invalidCursor) {
 				invalidCursor = true;
 				Dispatcher.CurrentDispatcher.BeginInvoke(
-					DispatcherPriority.Input,
+					DispatcherPriority.Background, // fixes issue #288
 					new Action(
 						delegate {
 							invalidCursor = false;
 							Mouse.UpdateCursor();
 						}));
 			}
+		}
+		
+		internal void InvalidateCursorIfMouseWithinTextView()
+		{
+			// Don't unnecessarily call Mouse.UpdateCursor() if the mouse is outside the text view.
+			// Unnecessary updates may cause the mouse pointer to flicker
+			// (e.g. if it is over a window border, it blinks between Resize and Normal)
+			if (this.IsMouseOver)
+				InvalidateCursor();
 		}
 		
 		/// <inheritdoc/>
@@ -1740,7 +1749,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				int offset = documentLine.Offset + position.Column - 1;
 				visualColumn = visualLine.GetVisualColumn(offset - visualLine.FirstDocumentLine.Offset);
 			}
-			return visualLine.GetVisualPosition(visualColumn, yPositionMode);
+			return visualLine.GetVisualPosition(visualColumn, position.IsAtEndOfLine, yPositionMode);
 		}
 		
 		/// <summary>
@@ -1758,9 +1767,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			VisualLine line = GetVisualLineFromVisualTop(visualPosition.Y);
 			if (line == null)
 				return null;
-			int visualColumn = line.GetVisualColumn(visualPosition);
-			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
-			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
+			return line.GetTextViewPosition(visualPosition, Options.EnableVirtualSpace);
 		}
 		
 		/// <summary>
@@ -1778,9 +1785,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			VisualLine line = GetVisualLineFromVisualTop(visualPosition.Y);
 			if (line == null)
 				return null;
-			int visualColumn = line.GetVisualColumnFloor(visualPosition);
-			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
-			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
+			return line.GetTextViewPositionFloor(visualPosition, Options.EnableVirtualSpace);
 		}
 		#endregion
 		

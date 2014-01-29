@@ -26,6 +26,7 @@
 using System;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
@@ -62,7 +63,7 @@ class TestClass
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void TestNestedCreateClass()
 		{
 			Test<CreateClassDeclarationAction>(
@@ -92,7 +93,7 @@ class TestClass
 ", 1);
 		}
 
-		[Test()]
+		[Test]
 		public void TestEmptyConstructor ()
 		{
 			Test<CreateClassDeclarationAction> (
@@ -118,7 +119,7 @@ class TestClass
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void TestCreatePublicEventArgs ()
 		{
 			Test<CreateClassDeclarationAction> (
@@ -138,7 +139,7 @@ class TestClass
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void TestCreateInternalEventArgs ()
 		{
 			Test<CreateClassDeclarationAction> (
@@ -158,7 +159,7 @@ class TestClass
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void TestCreateAttribute ()
 		{
 			Test<CreateClassDeclarationAction> (
@@ -178,7 +179,7 @@ class TestClass
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void TestCreateAttributeCase2 ()
 		{
 			Test<CreateClassDeclarationAction> (
@@ -198,7 +199,7 @@ class TestClass
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void TestCreateException ()
 		{
 			Test<CreateClassDeclarationAction> (
@@ -285,6 +286,7 @@ class Foo : FooBar
 	public override int MoreFoo {
 		get;
 	}
+
 	protected override void SomeFoo ()
 	{
 		throw new System.NotImplementedException ();
@@ -347,6 +349,203 @@ class TestClass
 }
 ");
 		}
+
+
+		/// <summary>
+		/// Bug 10671 - Auto-Fix of Base Class is wrong (generates invalid code) 
+		/// </summary>
+		[Test]
+		public void TestBug10671 ()
+		{
+			var input = @"
+namespace TestConsole
+{
+    public class Test : $BaseMissing
+    {
+    }
+}
+";
+			// action allowed to create a nested class
+			var context = TestRefactoringContext.Create (input, false);
+			var actions = new CreateClassDeclarationAction().GetActions (context);
+			Assert.AreEqual (1, actions.Count ());
+		}
+
+		
+		[Test]
+		public void TestCreateInterface ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+class TestClass
+{
+	private readonly $IFoo _foo;
+}
+", @"
+interface IFoo
+{
+}
+class TestClass
+{
+	private readonly IFoo _foo;
+}
+");
+		}
+
+		/// <summary>
+		/// Bug 10672 - Auto-Fix of Generate Class to fill Generic params does not take in account constraints
+		/// </summary>
+		[Test]
+		public void TestBug10672 ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+namespace TestConsole
+{
+    public interface IBase
+    {
+    }
+    public class Test 
+    {
+        public void Generate<S, T>() where T:IBase, new()
+        {
+
+        }
+    }
+    class MainClass
+    {
+        public static void Main (string[] args)
+        {
+            var testConsole = new Test ();
+            testConsole.Generate<int, $Data> ();
+        }
+    }
+}
+", @"
+public class Data : IBase
+{
+	public Data ()
+	{
+	}
+}
+namespace TestConsole
+{
+    public interface IBase
+    {
+    }
+    public class Test 
+    {
+        public void Generate<S, T>() where T:IBase, new()
+        {
+
+        }
+    }
+    class MainClass
+    {
+        public static void Main (string[] args)
+        {
+            var testConsole = new Test ();
+            testConsole.Generate<int, Data> ();
+        }
+    }
+}
+");
+		}
+		
+		[Test]
+		public void TestStructConstraint ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+public class Test 
+{
+	public void Generate<T> () where T : struct
+	{
+	}
+
+	public void FooBar ()
+	{
+		Generate<$Data> ();
+	}
+}
+", @"
+public struct Data
+{
+}
+public class Test 
+{
+	public void Generate<T> () where T : struct
+	{
+	}
+
+	public void FooBar ()
+	{
+		Generate<Data> ();
+	}
+}
+");
+		}
+
+		[Test]
+		public void TestClassTypeParameter ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+public class Test 
+{
+	public class Generate<T> where T : struct {}
+
+	public void FooBar ()
+	{
+		Generate<$Data> foo;
+	}
+}
+", @"
+public struct Data
+{
+}
+public class Test 
+{
+	public class Generate<T> where T : struct {}
+
+	public void FooBar ()
+	{
+		Generate<Data> foo;
+	}
+}
+");
+		}
+		[Test]
+		public void TestClassTypeParameterCase2 ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+public class Test 
+{
+	public class Generate<T> where T : struct {}
+
+	public void FooBar ()
+	{
+		new Generate<$Data> ();
+	}
+}
+", @"
+public struct Data
+{
+}
+public class Test 
+{
+	public class Generate<T> where T : struct {}
+
+	public void FooBar ()
+	{
+		new Generate<Data> ();
+	}
+}
+");
+		}
+
+
 
 	}
 }

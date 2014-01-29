@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Construction;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -27,6 +27,20 @@ namespace PackageManagement.Tests.Helpers
 		public TestableProject(ProjectCreateInformation createInfo)
 			: base(createInfo)
 		{
+		}
+		
+		public override string Language {
+			get {
+				// HACK: unit tests only provide the file extension, but we now need the language
+				switch (this.FileName.GetExtension().ToLowerInvariant()) {
+					case ".csproj":
+						return "C#";
+					case ".vbproj":
+						return "VB";
+					default:
+						return string.Empty;
+				}
+			}
 		}
 		
 		public override bool IsStartable {
@@ -60,6 +74,7 @@ namespace PackageManagement.Tests.Helpers
 		public ProjectReferenceProjectItem AddProjectReference(IProject referencedProject)
 		{
 			var referenceProjectItem = new ProjectReferenceProjectItem(this, referencedProject);
+			referenceProjectItem.FileName = referencedProject.FileName;
 			ProjectService.AddProjectItem(this, referenceProjectItem);
 			return referenceProjectItem;
 		}
@@ -93,6 +108,27 @@ namespace PackageManagement.Tests.Helpers
 			FileProjectItem dependentFile = AddFile(include);
 			dependentFile.DependentUpon = dependentUpon;
 			return dependentFile;
+		}
+		
+		public ProjectImportElement GetLastMSBuildChildElement()
+		{
+			lock (SyncRoot) {
+				return MSBuildProjectFile.LastChild as ProjectImportElement;
+			}
+		}
+		
+		public ProjectImportElement GetFirstMSBuildChildElement()
+		{
+			lock (SyncRoot) {
+				return MSBuildProjectFile.FirstChild as ProjectImportElement;
+			}
+		}
+		
+		public ICollection<ProjectImportElement> GetImports()
+		{
+			lock (SyncRoot) {
+				return MSBuildProjectFile.Imports;
+			}
 		}
 	}
 }

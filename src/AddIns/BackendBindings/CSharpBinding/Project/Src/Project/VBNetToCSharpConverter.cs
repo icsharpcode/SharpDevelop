@@ -15,7 +15,7 @@ using ICSharpCode.SharpDevelop.Project.Converter;
 
 namespace CSharpBinding
 {
-	public class VBNetToCSharpConverter : NRefactoryLanguageConverter
+	public class VBToCSharpConverter : NRefactoryLanguageConverter
 	{
 		public override string TargetLanguageName {
 			get {

@@ -41,13 +41,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		BannerStyle
 	}
 
-	public enum BraceForcement
-	{
-		DoNotChange,
-		RemoveBraces,
-		AddBraces
-	}
-
 	public enum PropertyFormatting
 	{
 		AllowOneLine,
@@ -71,6 +64,12 @@ namespace ICSharpCode.NRefactory.CSharp
 	public enum UsingPlacement {
 		TopOfFile,
 		InsideNamespace
+	}
+
+	public enum EmptyLineFormatting {
+		DoNotChange,
+		Indent,
+		DoNotIndent
 	}
 
 	public class CSharpFormattingOptions
@@ -161,11 +160,37 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public PropertyFormatting PropertyFormatting { // tested
+		public bool AlignElseInIfStatements {
 			get;
 			set;
 		}
 
+
+
+		public PropertyFormatting AutoPropertyFormatting { // tested
+			get;
+			set;
+		}
+
+		public PropertyFormatting SimplePropertyFormatting { // tested
+			get;
+			set;
+		}
+
+		public EmptyLineFormatting EmptyLineFormatting {
+			get;
+			set;
+		}
+
+		public bool IndentPreprocessorDirectives { // tested
+			get;
+			set;
+		}
+
+		public bool AlignToMemberReferenceDot { // TODO!
+			get;
+			set;
+		}
 		#endregion
 		
 		#region Braces
@@ -229,12 +254,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool AllowPropertyGetBlockInline { // tested
+		public PropertyFormatting SimpleGetBlockFormatting { // tested
 			get;
 			set;
 		}
 
-		public bool AllowPropertySetBlockInline { // tested
+		public PropertyFormatting SimpleSetBlockFormatting { // tested
 			get;
 			set;
 		}
@@ -274,41 +299,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
+		bool allowOneLinedArrayInitialziers = true;
+		public bool AllowOneLinedArrayInitialziers {
+			get {
+				return allowOneLinedArrayInitialziers;
+			}
+			set {
+				allowOneLinedArrayInitialziers = value;
+			}
+		}
 		#endregion
-		
-		#region Force Braces
-		public BraceForcement IfElseBraceForcement { // tested
-			get;
-			set;
-		}
 
-		public BraceForcement ForBraceForcement { // tested
-			get;
-			set;
-		}
-
-		public BraceForcement ForEachBraceForcement { // tested
-			get;
-			set;
-		}
-
-		public BraceForcement WhileBraceForcement { // tested
-			get;
-			set;
-		}
-
-		public BraceForcement UsingBraceForcement { // tested
-			get;
-			set;
-		}
-
-		public BraceForcement FixedBraceForcement { // tested
-			get;
-			set;
-		}
-
-		#endregion
-		
 		#region NewLines
 		public NewLinePlacement ElseNewLinePlacement { // tested
 			get;
@@ -333,6 +334,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		public NewLinePlacement WhileNewLinePlacement { // tested
 			get;
 			set;
+		}
+
+		NewLinePlacement embeddedStatementPlacement = NewLinePlacement.NewLine;
+		public NewLinePlacement EmbeddedStatementPlacement {
+			get {
+				return embeddedStatementPlacement;
+			}
+			set {
+				embeddedStatementPlacement = value;
+			}
 		}
 		#endregion
 		
@@ -573,7 +584,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool SpaceAroundNullCoalescingOperator {
+		public bool SpaceAroundNullCoalescingOperator { // Tested
+			get;
+			set;
+		}
+
+		public bool SpaceAfterUnsafeAddressOfOperator { // Tested
+			get;
+			set;
+		}
+
+		public bool SpaceAfterUnsafeAsteriskOfOperator { // Tested
+			get;
+			set;
+		}
+
+		public bool SpaceAroundUnsafeArrowOperator { // Tested
 			get;
 			set;
 		}
@@ -738,6 +764,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 			set;
 		}
+
+		public bool RemoveEndOfLineWhiteSpace {
+			get;
+			set;
+		}
 		#endregion
 		
 		#region Blank Lines
@@ -776,6 +807,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
+		public int BlankLinesAroundRegion {
+			get;
+			set;
+		}
+
+		public int BlankLinesInsideRegion {
+			get;
+			set;
+		}
+
 		#endregion
 
 
@@ -808,12 +849,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool NewLineAferMethodCallOpenParentheses {
+		public NewLinePlacement NewLineAferMethodCallOpenParentheses {
 			get;
 			set;
 		}
 
-		public bool MethodCallClosingParenthesesOnNewLine {
+		public NewLinePlacement MethodCallClosingParenthesesOnNewLine {
 			get;
 			set;
 		}
@@ -823,12 +864,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool NewLineAferIndexerOpenBracket {
+		public NewLinePlacement NewLineAferIndexerOpenBracket {
 			get;
 			set;
 		}
 
-		public bool IndexerClosingBracketOnNewLine {
+		public NewLinePlacement IndexerClosingBracketOnNewLine {
 			get;
 			set;
 		}
@@ -838,12 +879,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool NewLineAferMethodDeclarationOpenParentheses {
+		public NewLinePlacement NewLineAferMethodDeclarationOpenParentheses {
 			get;
 			set;
 		}
 
-		public bool MethodDeclarationClosingParenthesesOnNewLine {
+		public NewLinePlacement MethodDeclarationClosingParenthesesOnNewLine {
 			get;
 			set;
 		}
@@ -853,15 +894,41 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool NewLineAferIndexerDeclarationOpenBracket {
+		public NewLinePlacement NewLineAferIndexerDeclarationOpenBracket {
 			get;
 			set;
 		}
 
-		public bool IndexerDeclarationClosingBracketOnNewLine {
+		public NewLinePlacement IndexerDeclarationClosingBracketOnNewLine {
 			get;
 			set;
 		}
+
+		public bool AlignToFirstIndexerArgument {
+			get;
+			set;
+		}
+
+		public bool AlignToFirstIndexerDeclarationParameter {
+			get;
+			set;
+		}
+
+		public bool AlignToFirstMethodCallArgument {
+			get;
+			set;
+		}
+
+		public bool AlignToFirstMethodDeclarationParameter {
+			get;
+			set;
+		}
+
+		public NewLinePlacement NewLineBeforeNewQueryClause {
+			get;
+			set;
+		}
+
 		#endregion
 
 		#region Using Declarations

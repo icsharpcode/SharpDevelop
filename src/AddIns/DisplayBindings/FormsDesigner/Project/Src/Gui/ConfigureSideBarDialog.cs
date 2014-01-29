@@ -13,6 +13,7 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
+	#pragma warning disable 618
 	public class ConfigureSideBarDialog : BaseSharpDevelopForm
 	{
 		ArrayList oldComponents;

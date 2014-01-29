@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -241,8 +241,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 	{
 		readonly ITypeReference targetType;
 		readonly ConstantExpression expression;
+		readonly bool allowNullableConstants;
 		
-		public ConstantCast(ITypeReference targetType, ConstantExpression expression)
+		public ConstantCast(ITypeReference targetType, ConstantExpression expression, bool allowNullableConstants)
 		{
 			if (targetType == null)
 				throw new ArgumentNullException("targetType");
@@ -250,11 +251,19 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 				throw new ArgumentNullException("expression");
 			this.targetType = targetType;
 			this.expression = expression;
+			this.allowNullableConstants = allowNullableConstants;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			return resolver.ResolveCast(targetType.Resolve(resolver.CurrentTypeResolveContext), expression.Resolve(resolver));
+			var type = targetType.Resolve(resolver.CurrentTypeResolveContext);
+			var resolveResult = expression.Resolve(resolver);
+			if (allowNullableConstants && NullableType.IsNullable(type)) {
+				resolveResult = resolver.ResolveCast(NullableType.GetUnderlyingType(type), resolveResult);
+				if (resolveResult.IsCompileTimeConstant)
+					return new ConstantResolveResult(type, resolveResult.ConstantValue);
+			}
+			return resolver.ResolveCast(type, resolveResult);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()
@@ -268,7 +277,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		{
 			ConstantCast cast = other as ConstantCast;
 			return cast != null
-				&& this.targetType == cast.targetType && this.expression == cast.expression;
+				&& this.targetType == cast.targetType && this.expression == cast.expression && this.allowNullableConstants == cast.allowNullableConstants;
 		}
 	}
 	

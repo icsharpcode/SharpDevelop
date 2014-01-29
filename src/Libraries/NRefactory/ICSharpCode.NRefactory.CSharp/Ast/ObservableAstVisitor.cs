@@ -842,13 +842,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			Visit(EnterNamedExpression, LeaveNamedExpression, namedExpression);
 		}
 		
-		public event Action<EmptyExpression> EnterEmptyExpression, LeaveEmptyExpression;
-		
-		void IAstVisitor.VisitEmptyExpression(EmptyExpression emptyExpression)
-		{
-			Visit(EnterEmptyExpression, LeaveEmptyExpression, emptyExpression);
-		}
-		
 		void IAstVisitor.VisitPatternPlaceholder(AstNode placeholder, PatternMatching.Pattern pattern)
 		{
 		}

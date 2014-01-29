@@ -35,6 +35,10 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			if (rope == null)
 				throw new ArgumentNullException("rope");
+			#if DEBUG
+			if (length < 0)
+				throw new ArgumentOutOfRangeException("length", length, "Value must be >= 0");
+			#endif
 			if (length == 0)
 				return string.Empty;
 			char[] buffer = new char[length];

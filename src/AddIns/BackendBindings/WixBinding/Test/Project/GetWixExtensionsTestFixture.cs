@@ -22,7 +22,6 @@ namespace WixBinding.Tests.Project
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			
 			WixExtensionProjectItem compilerItem = new WixExtensionProjectItem(p);

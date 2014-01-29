@@ -2,14 +2,19 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+
 using ICSharpCode.WpfDesign;
-using System.Collections.ObjectModel;
-using System.Collections;
 using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.OutlineView
@@ -41,6 +46,17 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			DesignItem = designItem;
 			UpdateChildren();
 
+			var hidden = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).ValueOnInstance;
+			if (hidden != null && (bool) hidden == true) {
+				this._isDesignTimeVisible = false;
+				((FrameworkElement) this.DesignItem.Component).Visibility = Visibility.Hidden;
+			}
+
+			var locked = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
+			if (locked != null && (bool) locked == true) {
+				this._isDesignTimeLocked = true;
+			}
+			
 			//TODO
 			DesignItem.NameChanged += new EventHandler(DesignItem_NameChanged);
 			DesignItem.PropertyChanged += new PropertyChangedEventHandler(DesignItem_PropertyChanged);
@@ -80,7 +96,48 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 				}
 			}
 		}
+		
+		bool _isDesignTimeVisible = true;
 
+		public bool IsDesignTimeVisible
+		{
+			get {
+				return _isDesignTimeVisible;
+			}
+			set {
+				_isDesignTimeVisible = value;
+				var ctl = DesignItem.Component as UIElement;
+				ctl.Visibility = _isDesignTimeVisible ? Visibility.Visible : Visibility.Hidden;
+
+				RaisePropertyChanged("IsDesignTimeVisible");
+
+				if (!value)
+					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).SetValue(true);
+				else
+					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).Reset();
+			}
+		}
+
+		bool _isDesignTimeLocked = false;
+		
+		public bool IsDesignTimeLocked
+		{
+			get {
+				return _isDesignTimeLocked;
+			}
+			set {
+				_isDesignTimeLocked = value;
+				((XamlDesignItem)DesignItem).IsDesignTimeLocked = _isDesignTimeLocked;
+				
+				RaisePropertyChanged("IsDesignTimeLocked");
+
+//				if (value)
+//					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).SetValue(true);
+//				else
+//					DesignItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).Reset();
+			}
+		}
+		
 		ObservableCollection<OutlineNode> children = new ObservableCollection<OutlineNode>();
 
 		public ObservableCollection<OutlineNode> Children  {
@@ -137,6 +194,21 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 					var node = OutlineNode.Create(item);
 					Children.Add(node);
 				}
+				else
+				{
+					var content = item.ContentProperty;
+					if (content != null)
+					{
+						if (content.IsCollection) {
+							UpdateChildrenCore(content.CollectionElements);
+						}
+						else {
+							if (content.Value != null) {
+								UpdateChildrenCore(new[] { content.Value });
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -147,7 +219,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 				return false;
 			var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
 			if (operation != null) {
-				bool canEnter = placementBehavior.CanEnterContainer(operation);
+				bool canEnter = placementBehavior.CanEnterContainer(operation, true);
 				operation.Abort();
 				return canEnter;
 			}

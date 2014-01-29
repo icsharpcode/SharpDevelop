@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.AspNet.Mvc
 {
@@ -21,7 +22,7 @@ namespace ICSharpCode.AspNet.Mvc
 		}
 		
 		public MvcTextTemplateRepository(string mvcAddInPath)
-			: this(mvcAddInPath, new FileSystem())
+			: this(mvcAddInPath, SD.FileSystem)
 		{
 		}
 		
@@ -91,10 +92,10 @@ namespace ICSharpCode.AspNet.Mvc
 			}
 		}
 		
-		IEnumerable<string> GetMvcViewTemplateFileNamesInFolder(MvcTextTemplateCriteria templateCriteria)
+		IEnumerable<FileName> GetMvcViewTemplateFileNamesInFolder(MvcTextTemplateCriteria templateCriteria)
 		{
 			string templatePath = GetMvcViewTemplatePath(templateCriteria);
-			return fileSystem.GetFiles(templatePath, "*.tt");
+			return fileSystem.GetFiles(DirectoryName.Create(templatePath), "*.tt");
 		}
 		
 		string GetMvcViewTemplatePath(MvcTextTemplateCriteria templateCriteria)

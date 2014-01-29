@@ -8,14 +8,13 @@ using System.Linq;
 using System.Windows;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
 {
-	public class UnitTestNode : SharpTreeNode
+	public class UnitTestNode : ModelCollectionTreeNode
 	{
-		protected static readonly IComparer<SharpTreeNode> NodeTextComparer = KeyComparer.Create((SharpTreeNode n) => n.Text.ToString(), StringComparer.OrdinalIgnoreCase, StringComparer.OrdinalIgnoreCase);
-		
 		readonly ITest test;
 		
 		public UnitTestNode(ITest test)
@@ -28,19 +27,25 @@ namespace ICSharpCode.UnitTesting
 			LazyLoading = true;
 		}
 		
-		void DetachEventHandlers()
+		protected override void DetachEventHandlers()
 		{
 			// TODO: figure out when we can call this method
 			test.DisplayNameChanged -= test_NameChanged;
 			test.ResultChanged -= test_ResultChanged;
-			// If children loaded, also detach the collection change event handler
-			if (!LazyLoading) {
-				test.NestedTests.CollectionChanged -= test_NestedTests_CollectionChanged;
-			}
+			
+			base.DetachEventHandlers();
 		}
 		
 		public new ITest Model {
 			get { return test; }
+		}
+		
+		protected override IModelCollection<object> ModelChildren {
+			get { return test.NestedTests; }
+		}
+		
+		protected override IComparer<SharpTreeNode> NodeComparer {
+			get { return NodeTextComparer; }
 		}
 		
 		protected override object GetModel()
@@ -50,61 +55,13 @@ namespace ICSharpCode.UnitTesting
 		
 		public override void ActivateItem(RoutedEventArgs e)
 		{
-			test.GoToDefinition.Execute(e);
+			if (test.GoToDefinition.CanExecute(e))
+				test.GoToDefinition.Execute(e);
 		}
 		
 		#region Manage Children
 		public override bool ShowExpander {
 			get { return test.CanExpandNestedTests && base.ShowExpander; }
-		}
-		
-		protected override void LoadChildren()
-		{
-			Children.Clear();
-			InsertNestedTests(test.NestedTests);
-			test.NestedTests.CollectionChanged += test_NestedTests_CollectionChanged;
-		}
-		
-		void InsertNestedTests(IEnumerable<ITest> nestedTests)
-		{
-			foreach (var nestedTest in nestedTests) {
-				var treeNode = SD.TreeNodeFactory.CreateTreeNode(nestedTest);
-				if (treeNode != null)
-					Children.OrderedInsert(treeNode, NodeTextComparer);
-			}
-		}
-		
-		void test_NestedTests_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			if (!IsVisible) {
-				SwitchBackToLazyLoading();
-				return;
-			}
-			switch (e.Action) {
-				case NotifyCollectionChangedAction.Add:
-					InsertNestedTests(e.NewItems.Cast<ITest>());
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					Children.RemoveAll(n => e.OldItems.Contains(n.Model));
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					if (IsExpanded) {
-						Children.Clear();
-						InsertNestedTests(test.NestedTests);
-					} else {
-						SwitchBackToLazyLoading();
-					}
-					break;
-				default:
-					throw new NotSupportedException("Invalid value for NotifyCollectionChangedAction");
-			}
-		}
-		
-		void SwitchBackToLazyLoading()
-		{
-			test.NestedTests.CollectionChanged -= test_NestedTests_CollectionChanged;
-			Children.Clear();
-			LazyLoading = true;
 		}
 		#endregion
 		

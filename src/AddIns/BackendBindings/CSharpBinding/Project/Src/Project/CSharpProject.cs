@@ -8,10 +8,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -56,7 +56,8 @@ namespace CSharpBinding
 			: base(loadInformation)
 		{
 			Init();
-			InitializeProjectContent(new CSharpProjectContent());
+			if (loadInformation.InitializeTypeSystem)
+				InitializeProjectContent(new CSharpProjectContent());
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildToolsPath)\Microsoft.CSharp.targets";
@@ -84,11 +85,10 @@ namespace CSharpBinding
 		
 		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
-			if (this.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
-				return MSBuildEngine.BuildAsync(
+			if (this.MinimumSolutionVersion == SolutionFormatVersion.VS2005) {
+				return SD.MSBuildEngine.BuildAsync(
 					this, options, feedbackSink, progressMonitor.CancellationToken,
-					MSBuildEngine.AdditionalTargetFiles.Concat(
-						new [] { Path.Combine(MSBuildEngine.SharpDevelopBinPath, "SharpDevelop.CheckMSBuild35Features.targets") }));
+					new [] { Path.Combine(FileUtility.ApplicationRootPath, @"bin\SharpDevelop.CheckMSBuild35Features.targets") });
 			} else {
 				return base.BuildAsync(options, feedbackSink, progressMonitor);
 			}
@@ -143,13 +143,13 @@ namespace CSharpBinding
 			return new CSharpCodeProvider();
 		}
 		
-		Refactoring.CSharpCodeGenerator generator;
+		ILanguageBinding language;
 		
-		public override ICSharpCode.SharpDevelop.Refactoring.ICodeGenerator CodeGenerator {
+		public override ILanguageBinding LanguageBinding {
 			get {
-				if (generator == null)
-					generator = new Refactoring.CSharpCodeGenerator(this);
-				return generator;
+				if (language == null)
+					language = SD.LanguageService.GetLanguageByName("CSharp");
+				return language;
 			}
 		}
 	}
@@ -177,12 +177,12 @@ namespace CSharpBinding
 		public override CompilerVersion CurrentCompilerVersion {
 			get {
 				switch (Project.MinimumSolutionVersion) {
-					case Solution.SolutionVersionVS2005:
+					case SolutionFormatVersion.VS2005:
 						return msbuild20;
-					case Solution.SolutionVersionVS2008:
+					case SolutionFormatVersion.VS2008:
 						return msbuild35;
-					case Solution.SolutionVersionVS2010:
-					case Solution.SolutionVersionVS2012:
+					case SolutionFormatVersion.VS2010:
+					case SolutionFormatVersion.VS2012:
 						return msbuild40;
 					default:
 						throw new NotSupportedException();
@@ -201,7 +201,7 @@ namespace CSharpBinding
 			return versions;
 		}
 		
-		public override ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		public override ISymbolSearch PrepareSymbolSearch(ISymbol entity)
 		{
 			return CompositeSymbolSearch.Create(new CSharpSymbolSearch(Project, entity), base.PrepareSymbolSearch(entity));
 		}

@@ -67,20 +67,21 @@ namespace SearchAndReplace
 					if (ProjectService.CurrentProject == null)
 						break;
 					foreach (FileProjectItem item in ProjectService.CurrentProject.Items.OfType<FileProjectItem>())
-						files.Add(new FileName(item.FileName));
+						files.Add(item.FileName);
 					break;
 				case SearchTarget.WholeSolution:
 					if (ProjectService.OpenSolution == null)
 						break;
-					foreach (var item in ProjectService.OpenSolution.SolutionFolderContainers.Select(f => f.SolutionItems).SelectMany(si => si.Items))
-						files.Add(new FileName(Path.Combine(ProjectService.OpenSolution.Directory, item.Location)));
+					foreach (var item in ProjectService.OpenSolution.AllItems.OfType<ISolutionFileItem>())
+						files.Add(item.FileName);
 					foreach (var item in ProjectService.OpenSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>())
-						files.Add(new FileName(item.FileName));
+						files.Add(item.FileName);
 					break;
 				case SearchTarget.Directory:
 					if (!Directory.Exists(BaseDirectory))
 						break;
-					return FileUtility.LazySearchDirectory(BaseDirectory, Filter, SearchSubdirs);
+					var options = SearchSubdirs ? DirectorySearchOptions.IncludeSubdirectories : DirectorySearchOptions.None;
+					return SD.FileSystem.GetFiles(DirectoryName.Create(BaseDirectory), Filter, options);
 				default:
 					throw new Exception("Invalid value for FileListType");
 			}

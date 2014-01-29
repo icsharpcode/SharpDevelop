@@ -12,12 +12,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			Solution solution = ProjectService.OpenSolution;
 			IProject project = ProjectService.CurrentProject;
-			if (solution == null || project == null)
+			if (project == null)
 				return;
 			if (project.IsStartable) {
-				solution.Preferences.StartupProject = project;
+				project.ParentSolution.StartupProject = project;
 			} else {
 				MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
 			}

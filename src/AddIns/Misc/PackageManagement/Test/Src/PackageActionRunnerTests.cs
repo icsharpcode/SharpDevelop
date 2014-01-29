@@ -42,14 +42,8 @@ namespace PackageManagement.Tests
 		{
 			CreateInstallActionWithNoPowerShellScripts();
 			
-			var package = new FakePackage();
-			package.AddFile(@"tools\init.ps1");
-			
-			var operation = new PackageOperation(package, PackageAction.Install);
-			var operations = new List<PackageOperation>();
-			operations.Add(operation);
-			
-			fakeAction.Operations = operations;
+			fakeAction.Operations =
+				PackageOperationHelper.CreateListWithOneInstallOperationWithFile(@"tools\init.ps1");
 			fakeActions.Add(fakeAction);
 		}
 		
@@ -76,7 +70,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		[Ignore("Disabled")]
 		public void Run_InstallActionHasOnePowerShellScript_ActionIsPassedToConsoleToRun()
 		{
 			CreateRunner();
@@ -84,13 +77,12 @@ namespace PackageManagement.Tests
 			powerShellDetection.IsPowerShell2InstalledReturnValue = true;
 			Run();
 			
-			ProcessPackageAction action = fakeConsoleActionRunner.ActionPassedToRun;
+			IPackageAction action = fakeConsoleActionRunner.ActionPassedToRun;
 			
 			Assert.AreEqual(fakeAction, action);
 		}
 		
 		[Test]
-		[Ignore("Disabled")]
 		public void Run_InstallActionHasOnePowerShellScript_ActionIsNotExecutedDirectly()
 		{
 			CreateRunner();
@@ -118,7 +110,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		[Ignore("Disabled")]
 		public void Run_InstallActionHasOnePowerShellScriptAndPowerShellIsNotInstalled_MessageIsReportedThatPowerShellScriptsCannotBeRun()
 		{
 			CreateRunner();
@@ -150,7 +141,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		[Ignore("Disabled")]
 		public void Run_TwoInstallActionsAndSecondHasOnePowerShellScript_AllActionsPassedToConsoleToRun()
 		{
 			CreateRunner();
@@ -159,7 +149,7 @@ namespace PackageManagement.Tests
 			powerShellDetection.IsPowerShell2InstalledReturnValue = true;
 			RunMultipleActions();
 			
-			IEnumerable<ProcessPackageAction> actions = fakeConsoleActionRunner.ActionsRunInOneCall;
+			IEnumerable<IPackageAction> actions = fakeConsoleActionRunner.ActionsRunInOneCall;
 			
 			CollectionAssert.AreEqual(fakeActions, actions);
 		}

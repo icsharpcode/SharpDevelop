@@ -3,18 +3,19 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <see cref="IFileService.RecentOpen"/>
 	public interface IRecentOpen
 	{
-		IReadOnlyList<string> RecentFiles { get; }
-		IReadOnlyList<string> RecentProjects { get; }
+		IReadOnlyList<FileName> RecentFiles { get; }
+		IReadOnlyList<FileName> RecentProjects { get; }
 		
 		void ClearRecentFiles();
 		void ClearRecentProjects();
-		void AddRecentFile(string fileName);
-		void AddRecentProject(string fileName);
+		void AddRecentFile(FileName fileName);
+		void AddRecentProject(FileName fileName);
 	}
 }

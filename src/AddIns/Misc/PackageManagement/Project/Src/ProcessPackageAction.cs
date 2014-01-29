@@ -8,7 +8,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public abstract class ProcessPackageAction
+	public abstract class ProcessPackageAction : IPackageAction
 	{
 		IPackageManagementEvents packageManagementEvents;
 		
@@ -45,12 +45,24 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Execute()
 		{
-			BeforeExecute();
-			//if (PackageScriptRunner != null) {
-			//	ExecuteWithScriptRunner();
-			//} else {
-				ExecuteCore();
-			//}
+			RunWithExceptionReporting(() => {
+				BeforeExecute();
+				if (PackageScriptRunner != null) {
+					ExecuteWithScriptRunner();
+				} else {
+					ExecuteCore();
+				}
+			});
+		}
+		
+		void RunWithExceptionReporting(Action action)
+		{
+			try {
+				action();
+			} catch (Exception ex) {
+				packageManagementEvents.OnPackageOperationError(ex);
+				throw;
+			}
 		}
 		
 		protected virtual void BeforeExecute()
@@ -59,25 +71,25 @@ namespace ICSharpCode.PackageManagement
 			ConfigureProjectLogger();
 			GetPackageIfMissing();
 		}
-//		
-//		void ExecuteWithScriptRunner()
-//		{
-//			using (RunPackageScriptsAction runScriptsAction = CreateRunPackageScriptsAction()) {
-//				ExecuteCore();
-//			}
-//		}
-//		
-//		RunPackageScriptsAction CreateRunPackageScriptsAction()
-//		{
-//			return CreateRunPackageScriptsAction(PackageScriptRunner, Project);
-//		}
-//		
-//		protected virtual RunPackageScriptsAction CreateRunPackageScriptsAction(
-//			IPackageScriptRunner scriptRunner,
-//			IPackageManagementProject project)
-//		{
-//			return new RunPackageScriptsAction(scriptRunner, project);
-//		}
+		
+		void ExecuteWithScriptRunner()
+		{
+			using (RunPackageScriptsAction runScriptsAction = CreateRunPackageScriptsAction()) {
+				ExecuteCore();
+			}
+		}
+		
+		RunPackageScriptsAction CreateRunPackageScriptsAction()
+		{
+			return CreateRunPackageScriptsAction(PackageScriptRunner, Project);
+		}
+		
+		protected virtual RunPackageScriptsAction CreateRunPackageScriptsAction(
+			IPackageScriptRunner scriptRunner,
+			IPackageManagementProject project)
+		{
+			return new RunPackageScriptsAction(scriptRunner, project);
+		}
 		
 		protected virtual void ExecuteCore()
 		{
@@ -107,7 +119,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void FindPackage()
 		{
-			Package =Project
+			Package = Project
 				.SourceRepository
 				.FindPackage(PackageId, PackageVersion, AllowPrereleaseVersions, allowUnlisted: true);
 		}

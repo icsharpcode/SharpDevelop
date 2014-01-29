@@ -22,6 +22,7 @@ namespace UnitTesting.Tests.NUnit
 		{
 			base.FixtureSetUp();
 			SD.Services.AddService(typeof(IBookmarkManager), MockRepository.GenerateStub<IBookmarkManager>());
+			SD.Services.AddService(typeof(IProjectService), MockRepository.GenerateStub<IProjectService>());
 			project = MockRepository.GenerateStub<IProject>();
 			testProject = new NUnitTestProject(project);
 		}

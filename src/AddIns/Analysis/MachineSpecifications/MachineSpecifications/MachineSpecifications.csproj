@@ -19,6 +19,7 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
     <FileAlignment>4096</FileAlignment>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
@@ -98,13 +99,23 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="src\BehaviorImportedTestMember.cs" />
     <Compile Include="src\ClassFilterBuilder.cs" />
+    <Compile Include="src\ITestWithAssociatedType.cs" />
     <Compile Include="src\MSpecApplication.cs" />
+    <Compile Include="src\MSpecTestClass.cs" />
     <Compile Include="src\MSpecTestDebugger.cs" />
+    <Compile Include="src\MSpecTestMember.cs" />
     <Compile Include="src\MSpecTestFramework.cs" />
+    <Compile Include="src\MSpecTestProcessRunnerContext.cs" />
+    <Compile Include="src\MSpecTestProject.cs" />
     <Compile Include="src\MspecTestRunner.cs" />
     <Compile Include="src\MSpecUnitTestMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -115,9 +126,9 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\UnitTesting\UnitTesting.csproj">

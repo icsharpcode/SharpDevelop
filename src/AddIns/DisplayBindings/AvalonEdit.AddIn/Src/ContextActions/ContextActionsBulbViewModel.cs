@@ -7,13 +7,14 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using ICSharpCode.SharpDevelop.Editor.ContextActions;
 
 namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	/// <summary>
 	/// Description of ContextActionsHiddenViewModel.
 	/// </summary>
-	public class ContextActionsBulbViewModel : ContextActionsViewModel, INotifyPropertyChanged
+	public class ContextActionsBulbViewModel : ContextActionsPopupViewModel, INotifyPropertyChanged
 	{
 		public EditorActionsProvider Model { get; private set; }
 		

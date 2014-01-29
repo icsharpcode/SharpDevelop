@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -158,8 +158,8 @@ namespace System.Collections.Generic {
 		{
 			// class C<X> : C<C<X>> {}
 			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
-			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "X"));
-			c.BaseTypes.Add(new ParameterizedTypeReference(c, new [] { new ParameterizedTypeReference(c, new [] { new TypeParameterReference(EntityType.TypeDefinition, 0) }) }));
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "X"));
+			c.BaseTypes.Add(new ParameterizedTypeReference(c, new [] { new ParameterizedTypeReference(c, new [] { new TypeParameterReference(SymbolKind.TypeDefinition, 0) }) }));
 			compilation = TypeSystemHelper.CreateCompilation(c);
 			ITypeDefinition resolvedC = Resolve(c);
 			Assert.AreEqual(new [] { resolvedC }, resolvedC.GetAllBaseTypes().ToArray());

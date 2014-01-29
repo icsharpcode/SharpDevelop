@@ -33,10 +33,20 @@ namespace CSharpBinding.Refactoring
 		
 		public static SDRefactoringContext Create(ITextEditor editor, CancellationToken cancellationToken)
 		{
-			return Create(editor.FileName, editor.Document, editor.Caret.Location, cancellationToken);
+			var parseInfo = SD.ParserService.Parse(editor.FileName, editor.Document, cancellationToken: cancellationToken) as CSharpFullParseInformation;
+			var compilation = SD.ParserService.GetCompilationForFile(editor.FileName);
+			CSharpAstResolver resolver;
+			if (parseInfo != null) {
+				resolver = parseInfo.GetResolver(compilation);
+			} else {
+				// create dummy refactoring context
+				resolver = new CSharpAstResolver(compilation, new SyntaxTree());
+			}
+			var context = new SDRefactoringContext(editor, resolver, editor.Caret.Location, cancellationToken);
+			return context;
 		}
 		
-		public static SDRefactoringContext Create(FileName fileName, ITextSource textSource, TextLocation location, CancellationToken cancellationToken)
+		public static SDRefactoringContext Create(FileName fileName, ITextSource textSource, TextLocation location = default(TextLocation), CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var parseInfo = SD.ParserService.Parse(fileName, textSource, cancellationToken: cancellationToken) as CSharpFullParseInformation;
 			var compilation = SD.ParserService.GetCompilationForFile(fileName);
@@ -63,8 +73,8 @@ namespace CSharpBinding.Refactoring
 			InitializeServices();
 		}
 		
-		public SDRefactoringContext(ITextEditor editor, CSharpAstResolver resolver, TextLocation location)
-			: base(resolver, CancellationToken.None)
+		public SDRefactoringContext(ITextEditor editor, CSharpAstResolver resolver, TextLocation location, CancellationToken cancellationToken = default(CancellationToken))
+			: base(resolver, cancellationToken)
 		{
 			this.resolver = resolver;
 			this.editor = editor;
@@ -80,6 +90,7 @@ namespace CSharpBinding.Refactoring
 		{
 			this.Services = new ServiceContainer(SD.Services);
 			this.Services.AddService(typeof(NamingConventionService), new SDNamingConventionService());
+			this.Services.AddService(typeof(CodeGenerationService), new SDCodeGenerationService());
 		}
 		
 		public override bool Supports(Version version)
@@ -133,6 +144,12 @@ namespace CSharpBinding.Refactoring
 		public override bool IsSomethingSelected {
 			get {
 				return selectionLength > 0;
+			}
+		}
+		
+		public override string DefaultNamespace {
+			get {
+				return string.Empty; // TODO: get namespace from current project
 			}
 		}
 		

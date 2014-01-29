@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using ICSharpCode.NRefactory.CSharp.CodeActions;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -115,6 +116,55 @@ class Foo<T>
 			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
+
+		[Test]
+		public void TestMicrosoftSuppressMessage()
+		{
+			var input = @"using System.Diagnostics.CodeAnalysis;
+
+class Foo<T>
+{
+	[SuppressMessage(""Microsoft.Design"", ""CA1000:DoNotDeclareStaticMembersOnGenericTypes"")]
+	static string Data;
+
+	static string OtherData;
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+		}
+
+		[Test]
+		public void TestAssemblyMicrosoftSuppressMessage()
+		{
+			var input = @"using System.Diagnostics.CodeAnalysis;
+
+[assembly:SuppressMessage(""Microsoft.Design"", ""CA1000:DoNotDeclareStaticMembersOnGenericTypes"")]
+
+class Foo<T>
+{
+	static string Data;
+
+	static string OtherData;
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+        [Test]
+        public void TestDisable()
+        {
+            var input = @"using System.Diagnostics.CodeAnalysis;
+
+class Foo<T>
+{
+    // ReSharper disable once StaticFieldInGenericType
+	static string Data;
+}";
+            TestWrongContext<StaticFieldInGenericTypeIssue>(input);
+        }
+
 	}
 }
 

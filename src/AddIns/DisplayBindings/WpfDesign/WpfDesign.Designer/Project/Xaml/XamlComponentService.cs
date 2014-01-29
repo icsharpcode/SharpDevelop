@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Windows.Markup;
+using System.Windows;
 
 using ICSharpCode.WpfDesign.XamlDom;
 
@@ -86,6 +87,41 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			_sites.Add(site.Component, site);
 			if (ComponentRegistered != null) {
 				ComponentRegistered(this, new DesignItemEventArgs(site));
+			}
+			
+			if (_context.RootItem != null && !string.IsNullOrEmpty(site.Name)) {
+				var nameScope = NameScopeHelper.GetNameScopeFromObject(_context.RootItem.Component);
+
+				if (nameScope != null) {
+					// The object will be a part of the RootItem namescope, remove local namescope if set
+					NameScopeHelper.ClearNameScopeProperty(obj.Instance);
+					
+					string newName = site.Name;
+					if (nameScope.FindName(newName) != null) {
+						int copyIndex = newName.LastIndexOf("_Copy", StringComparison.Ordinal);
+						if (copyIndex < 0) {
+							newName += "_Copy";
+						}
+						else if (!newName.EndsWith("_Copy", StringComparison.Ordinal)) {
+							string copyEnd = newName.Substring(copyIndex + "_Copy".Length);
+							int copyEndValue;
+							if (Int32.TryParse(copyEnd, out copyEndValue))
+								newName = newName.Remove(copyIndex + "_Copy".Length);
+							else
+								newName += "_Copy";
+						}
+						
+						int i = 1;
+						string newNameTemplate = newName;
+						while (nameScope.FindName(newName) != null) {
+							newName = newNameTemplate + i++;
+						}
+						
+						site.Name = newName;
+					}
+
+					nameScope.RegisterName(newName, obj.Instance);
+				}
 			}
 			return site;
 		}

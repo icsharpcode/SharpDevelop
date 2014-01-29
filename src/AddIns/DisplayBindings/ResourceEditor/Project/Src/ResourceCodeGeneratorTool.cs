@@ -8,6 +8,7 @@ using System.Resources.Tools;
 using System.IO;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -29,12 +30,17 @@ namespace ResourceEditor
 			// Ensure that the generated code will not conflict with an
 			// existing class.
 			if (context.Project != null) {
-				IProjectContent pc = ParserService.GetProjectContent(context.Project);
+				ICompilation pc = SD.ParserService.GetCompilation(context.Project);
 				if (pc != null) {
-					IClass existingClass = pc.GetClass(context.OutputNamespace + "." + StronglyTypedResourceBuilder.VerifyResourceName(Path.GetFileNameWithoutExtension(inputFilePath), pc.Language.CodeDomProvider), 0);
+					var codeDomProvider = context.Project.LanguageBinding.CodeDomProvider;
+					string resourceName = Path.GetFileNameWithoutExtension(inputFilePath);
+					if (codeDomProvider != null) {
+						resourceName = StronglyTypedResourceBuilder.VerifyResourceName(resourceName, codeDomProvider);
+					}
+					var existingClass = pc.FindType(new FullTypeName(context.OutputNamespace + "." + resourceName)).GetDefinition();
 					if (existingClass != null) {
 						if (!IsGeneratedResourceClass(existingClass)) {
-							context.MessageView.AppendLine(String.Format(System.Globalization.CultureInfo.CurrentCulture, ResourceService.GetString("ResourceEditor.ResourceCodeGeneratorTool.ClassConflict"), inputFilePath, existingClass.FullyQualifiedName));
+							context.MessageView.AppendLine(String.Format(System.Globalization.CultureInfo.CurrentCulture, ResourceService.GetString("ResourceEditor.ResourceCodeGeneratorTool.ClassConflict"), inputFilePath, existingClass.FullName));
 							return;
 						}
 					}
@@ -66,7 +72,7 @@ namespace ResourceEditor
 					Path.GetFileNameWithoutExtension(inputFilePath), // baseName
 					generatedCodeNamespace, // generatedCodeNamespace
 					context.OutputNamespace, // resourcesNamespace
-					context.Project.LanguageProperties.CodeDomProvider, // codeProvider
+					context.Project.LanguageBinding.CodeDomProvider, // codeProvider
 					createInternalClass,             // internal class
 					out unmatchable
 				));
@@ -80,20 +86,19 @@ namespace ResourceEditor
 		/// Determines whether the specified class is a generated resource
 		/// class, based on the attached attributes.
 		/// </summary>
-		static bool IsGeneratedResourceClass(IClass @class)
+		static bool IsGeneratedResourceClass(ITypeDefinition type)
 		{
-			IClass generatedCodeAttributeClass = @class.ProjectContent.GetClass("System.CodeDom.Compiler.GeneratedCodeAttribute", 0);
-			if (generatedCodeAttributeClass == null) {
+			var generatedCodeAttributeType = type.Compilation.FindType(typeof(System.CodeDom.Compiler.GeneratedCodeAttribute));
+			if (generatedCodeAttributeType.Kind == TypeKind.Unknown) {
 				LoggingService.Info("Could not find the class for 'System.CodeDom.Compiler.GeneratedCodeAttribute'.");
 				return false;
 			}
-			IReturnType generatedCodeAttribute = generatedCodeAttributeClass.DefaultReturnType;
 			
-			foreach (IAttribute att in @class.Attributes) {
-				if (att.AttributeType.Equals(generatedCodeAttribute) &&
-				    att.PositionalArguments.Count == 2 &&
-				    String.Equals("System.Resources.Tools.StronglyTypedResourceBuilder", att.PositionalArguments[0] as string, StringComparison.Ordinal)) {
-					return true;
+			foreach (IAttribute att in type.Attributes) {
+				if (att.AttributeType.Equals(generatedCodeAttributeType) && att.PositionalArguments.Count == 2) {
+					var firstArg = att.PositionalArguments[0].ConstantValue as string;
+					if (string.Equals(typeof(StronglyTypedResourceBuilder).FullName, firstArg, StringComparison.Ordinal))
+						return true;
 				}
 			}
 			return false;

@@ -18,8 +18,11 @@ namespace PackageManagement.Tests.Helpers
 		public ILogger LoggerUsedWhenCreatingPackageResolver;
 		public FakePackageActionRunner FakeActionRunner;
 		
-		public TestableUpdatedPackageViewModel(FakePackageManagementSolution solution)
+		public TestableUpdatedPackageViewModel(
+			IPackageViewModelParent parent,
+			FakePackageManagementSolution solution)
 			: this(
+				parent,
 				new FakePackage(),
 				new SelectedProjectsForUpdatedPackages(solution),
 				new FakePackageManagementEvents(),
@@ -30,12 +33,14 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public TestableUpdatedPackageViewModel(
+			IPackageViewModelParent parent,
 			FakePackage package,
 			SelectedProjectsForUpdatedPackages selectedProjects,
 			FakePackageManagementEvents packageManagementEvents,
 			FakePackageActionRunner actionRunner,
 			FakeLogger logger)
 			: base(
+				parent,
 				package,
 				selectedProjects,
 				packageManagementEvents,

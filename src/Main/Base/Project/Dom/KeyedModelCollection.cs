@@ -1,50 +1,54 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)using System;
 
 using System;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	/// <summary>
-	/// Observable KeyedCollection.
-	/// </summary>
-	public abstract class KeyedModelCollection<TKey, TItem> : KeyedCollection<TKey, TItem>, IModelCollection<TItem>
+	public class KeyedModelCollection<TKey, TValue> : SimpleModelCollection<TValue>
 	{
-		// TODO: do we still need this class? maybe we should remove it?
-		// It's less useful than I initially thought because the indexer throws exceptions and there's no TryGetValue
+		Func<TValue, TKey> getKeyForValue;
+		Dictionary<TKey, TValue> dict;
 		
-		protected override void ClearItems()
+		public KeyedModelCollection(Func<TValue, TKey> getKeyForValue, IEqualityComparer<TKey> comparer = null)
 		{
-			base.ClearItems();
-			if (CollectionChanged != null)
-				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+			if (getKeyForValue == null)
+				throw new ArgumentNullException("getKeyForValue");
+			this.getKeyForValue = getKeyForValue;
+			this.dict = new Dictionary<TKey, TValue>(comparer ?? EqualityComparer<TKey>.Default);
 		}
 		
-		protected override void InsertItem(int index, TItem item)
+		protected override void OnAdd(TValue item)
 		{
-			base.InsertItem(index, item);
-			if (CollectionChanged != null)
-				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+			base.OnAdd(item);
+			dict.Add(getKeyForValue(item), item);
 		}
 		
-		protected override void RemoveItem(int index)
+		protected override void OnRemove(TValue item)
 		{
-			var oldItem = Items[index];
-			base.RemoveItem(index);
-			if (CollectionChanged != null)
-				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItem, index));
+			base.OnRemove(item);
+			dict.Remove(getKeyForValue(item));
 		}
 		
-		protected override void SetItem(int index, TItem item)
+		protected override void ValidateItem(TValue item)
 		{
-			var oldItem = Items[index];
-			base.SetItem(index, item);
-			if (CollectionChanged != null)
-				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItem, index));
+			base.ValidateItem(item);
+			if (dict.ContainsKey(getKeyForValue(item)))
+				throw new ArgumentException("An item with the same key has already been added to the collection.");
 		}
 		
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
+		public TValue this[TKey key] {
+			get { return dict[key]; }
+		}
+		
+		public bool TryGetValue(TKey key, out TValue value)
+		{
+			return dict.TryGetValue(key, out value);
+		}
 	}
 }
+
+
+

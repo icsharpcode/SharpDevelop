@@ -48,9 +48,25 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			get { return _xamlObject.ElementType; }
 		}
 		
+		void SetNameInternal(string newName)
+		{
+			_xamlObject.Name = newName;
+		}
+		
 		public override string Name {
-			get { return (string)this.Properties["Name"].ValueOnInstance; }
-			set { this.Properties["Name"].SetValue(value); }
+			get { return _xamlObject.Name; }
+			set {
+				UndoService undoService = this.Services.GetService<UndoService>();
+				if (undoService != null)
+					undoService.Execute(new SetNameAction(this, value));
+				else
+					SetNameInternal(value);
+			}
+		}
+		
+		public override string Key {
+			get { return XamlObject.GetXamlAttribute("Key"); }
+			set { XamlObject.SetXamlAttribute("Key", value); }
 		}
 		
 		#if EventHandlerDebugging
@@ -65,13 +81,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				#if EventHandlerDebugging
 				Debug.WriteLine("Add event handler to " + this.ComponentType.Name + " (handler count=" + (++totalEventHandlerCount) + ")");
 				#endif
-				this.Properties["Name"].ValueChanged += value;
+				_xamlObject.NameChanged += value;
 			}
 			remove {
 				#if EventHandlerDebugging
 				Debug.WriteLine("Remove event handler from " + this.ComponentType.Name + " (handler count=" + (--totalEventHandlerCount) + ")");
 				#endif
-				this.Properties["Name"].ValueChanged -= value;
+				_xamlObject.NameChanged -= value;
 			}
 		}
 		
@@ -140,9 +156,81 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
+		/// <summary>
+		/// Item is Locked at Design Time
+		/// </summary>
+		public bool IsDesignTimeLocked { 
+			get {
+				var locked = Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
+				return (locked != null && (bool) locked == true);
+			}
+			set {
+				if (value)
+					Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).SetValue(true);
+				else
+					Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).Reset();
+			}
+				
+		}
+		
 		public override DesignItem Clone()
 		{
-			throw new NotImplementedException();
+			DesignItem item = null;
+		    var xaml = XamlStaticTools.GetXaml(this.XamlObject);
+		    XamlDesignItem rootItem = Context.RootItem as XamlDesignItem;
+		    var obj = XamlParser.ParseSnippet(rootItem.XamlObject, xaml, ((XamlDesignContext) Context).ParserSettings);
+		    if (obj != null)
+		    {
+                item = ((XamlDesignContext)Context)._componentService.RegisterXamlComponentRecursive(obj);
+		    }
+		    return item;
+		}
+		
+		sealed class SetNameAction : ITransactionItem
+		{
+			XamlDesignItem designItem;
+			string oldName;
+			string newName;
+			
+			public SetNameAction(XamlDesignItem designItem, string newName)
+			{
+				this.designItem = designItem;
+				this.newName = newName;
+				
+				oldName = designItem.Name;
+			}
+			
+			public string Title {
+				get {
+					return "Set name";
+				}
+			}
+			
+			public void Do()
+			{
+				designItem.SetNameInternal(newName);
+			}
+			
+			public void Undo()
+			{
+				designItem.SetNameInternal(oldName);
+			}
+			
+			public System.Collections.Generic.ICollection<DesignItem> AffectedElements {
+				get {
+					return new DesignItem[] { designItem };
+				}
+			}
+
+			public bool MergeWith(ITransactionItem other)
+			{
+				SetNameAction o = other as SetNameAction;
+				if (o != null && designItem == o.designItem) {
+					newName = o.newName;
+					return true;
+				}
+				return false;
+			}
 		}
 	}
 }

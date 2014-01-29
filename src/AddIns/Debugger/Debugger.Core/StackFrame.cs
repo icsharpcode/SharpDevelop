@@ -198,21 +198,22 @@ namespace Debugger
 			this.Process.AssertPaused();
 			
 			foreach(var symbolSource in this.Process.Debugger.SymbolSources) {
-				var seq = symbolSource.GetSequencePoint(this.Module, filename, line, column);
-				if (seq != null && seq.MethodDefToken == this.MethodInfo.GetMetadataToken()) {
-					try {
-						if (dryRun) {
-							CorILFrame.CanSetIP((uint)seq.ILOffset);
-						} else {
-							CorILFrame.SetIP((uint)seq.ILOffset);
-							// Invalidates all frames and chains for the current thread
-							this.Process.NotifyResumed(DebuggeeStateAction.Keep);
-							this.Process.NotifyPaused();
+				foreach (var seq in symbolSource.GetSequencePoints(this.Module, filename, line, column)) {
+					if (seq.MethodDefToken == this.MethodInfo.GetMetadataToken()) {
+						try {
+							if (dryRun) {
+								CorILFrame.CanSetIP((uint)seq.ILOffset);
+							} else {
+								CorILFrame.SetIP((uint)seq.ILOffset);
+								// Invalidates all frames and chains for the current thread
+								this.Process.NotifyResumed(DebuggeeStateAction.Keep);
+								this.Process.NotifyPaused();
+							}
+						} catch {
+							return false;
 						}
-					} catch {
-						return false;
+						return true;
 					}
-					return true;
 				}
 			}
 			return false;
@@ -270,6 +271,9 @@ namespace Debugger
 		{
 			for (int i = 0; i < this.MethodInfo.Parameters.Count; i++) {
 				if (this.MethodInfo.Parameters[i].Name == name) {
+					LocalVariable capturedVar;
+					if (HasCapturedVariable(name, out capturedVar))
+						return capturedVar.GetValue(this);
 					return GetArgumentValue(i);
 				}
 			}
@@ -280,6 +284,10 @@ namespace Debugger
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgumentValue(int index)
 		{
+			var param = this.MethodInfo.Parameters[index];
+			LocalVariable capturedVariable;
+			if (HasCapturedVariable(param.Name, out capturedVariable))
+				return capturedVariable.GetValue(this);
 			return new Value(this.AppDomain, GetArgumentCorValue(index));
 		}
 		
@@ -310,6 +318,13 @@ namespace Debugger
 				}
 			}
 			return corValue;
+		}
+		
+		/// <summary> Gets whether a captured variable with the <paramref name="name"/> exists. </summary>
+		public bool HasCapturedVariable(string name, out LocalVariable variable)
+		{
+			variable = GetLocalVariables(this.IP).FirstOrDefault(v => v.IsCaptured && v.Name == name);
+			return variable != null;
 		}
 		
 		/// <summary> Get all local variables </summary>

@@ -88,7 +88,7 @@ class A
 	int i = 2;
 	while (true) {
 			int j = 3;
-		}
+	}
 ");
 		}
 		
@@ -112,11 +112,11 @@ class A
 			TestStatements(@"
 	while (true) {
 		int i = 2;
-		int j$ = i;
+		int $j = i;
 	}
 ", @"
 		int j;
-		while (true) {
+	while (true) {
 		int i = 2;
 		j = i;
 	}
@@ -128,7 +128,7 @@ class A
 		{
 			TestStatements(@"
 	var action = new Action<int>(i => {
-		int j$ = 2;
+		int $j = 2;
 	});
 ", @"
 		int j = 2;

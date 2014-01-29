@@ -37,13 +37,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.member = member;
 		}
 		
-		public event PropertyChangedEventHandler PropertyChanged { add {} remove {} }
+		public event PropertyChangedEventHandler PropertyChanged;
 		
+		/// <summary>
+		/// Updates the member model with the specified new member.
+		/// </summary>
 		public void Update(IUnresolvedMember newMember)
 		{
 			if (newMember == null)
 				throw new ArgumentNullException("newMember");
 			this.member = newMember;
+			RaisePropertyChanged();
+		}
+		
+		private void RaisePropertyChanged()
+		{
+			if (this.PropertyChanged != null) {
+				this.PropertyChanged(this, new PropertyChangedEventArgs(null));
+			}
 		}
 		
 		public IProject ParentProject {
@@ -54,8 +65,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return member; }
 		}
 		
-		public EntityType EntityType {
-			get { return member.EntityType; }
+		public SymbolKind SymbolKind {
+			get { return member.SymbolKind; }
+		}
+		
+		public Accessibility Accessibility {
+			get { return member.Accessibility; }
 		}
 		
 		public DomRegion Region {
@@ -69,13 +84,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region Resolve
 		public IMember Resolve()
 		{
-			var compilation = context.GetCompilation(null);
+			var compilation = context.GetCompilation();
 			return member.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 		}
 		
-		public IMember Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		public IMember Resolve(ICompilation compilation)
 		{
-			var compilation = context.GetCompilation(solutionSnapshot);
 			return member.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 		}
 		
@@ -84,10 +98,38 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return Resolve();
 		}
 		
-		IEntity IEntityModel.Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		IEntity IEntityModel.Resolve(ICompilation compilation)
 		{
-			return Resolve(solutionSnapshot);
+			return Resolve(compilation);
 		}
 		#endregion
+		
+		public bool IsStatic {
+			get { return member.IsStatic; }
+		}
+		
+		public bool IsAbstract {
+			get { return member.IsAbstract; }
+		}
+		
+		public bool IsSealed {
+			get { return member.IsSealed; }
+		}
+		
+		public bool IsShadowing {
+			get { return member.IsShadowing; }
+		}
+		
+		public bool IsVirtual {
+			get { return member.IsVirtual; }
+		}
+		
+		public bool IsOverride {
+			get { return member.IsOverride; }
+		}
+		
+		public bool IsOverridable {
+			get { return member.IsOverridable; }
+		}
 	}
 }

@@ -66,15 +66,18 @@ namespace ICSharpCode.PackageManagement
 		
 		public void InstallPackage(IPackage package, InstallPackageAction installAction)
 		{
-			foreach (PackageOperation operation in installAction.Operations) {
-				Execute(operation);
-			}
+			RunPackageOperations(installAction.Operations);
 			AddPackageReference(package, installAction.IgnoreDependencies, installAction.AllowPrereleaseVersions);
 		}
 		
 		void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
-			ProjectManager.AddPackageReference(package.Id, package.Version, ignoreDependencies, allowPrereleaseVersions);			
+			var monitor = new RemovedPackageReferenceMonitor(ProjectManager);
+			using (monitor) {
+				ProjectManager.AddPackageReference(package.Id, package.Version, ignoreDependencies, allowPrereleaseVersions);
+			}
+			
+			monitor.PackagesRemoved.ForEach(packageRemoved => UninstallPackageFromSolutionRepository(packageRemoved));
 		}
 		
 		public override void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
@@ -93,6 +96,13 @@ namespace ICSharpCode.PackageManagement
 			ProjectManager.RemovePackageReference(package.Id, forceRemove, removeDependencies);
 			if (!IsPackageReferencedByOtherProjects(package)) {
 				base.UninstallPackage(package, forceRemove, removeDependencies);
+			}
+		}
+		
+		public void UninstallPackageFromSolutionRepository(IPackage package)
+		{
+			if (!IsPackageReferencedByOtherProjects(package)) {
+				ExecuteUninstall(package);
 			}
 		}
 		
@@ -119,15 +129,58 @@ namespace ICSharpCode.PackageManagement
 		
 		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
 		{
-			foreach (PackageOperation operation in updateAction.Operations) {
-				Execute(operation);
-			}
+			RunPackageOperations(updateAction.Operations);
 			UpdatePackageReference(package, updateAction);
 		}
 		
-		void UpdatePackageReference(IPackage package, UpdatePackageAction updateAction)
+		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
 		{
-			ProjectManager.UpdatePackageReference(package.Id, package.Version, updateAction.UpdateDependencies, updateAction.AllowPrereleaseVersions);		
+			UpdatePackageReference(package, settings.UpdateDependencies, settings.AllowPrereleaseVersions);
+		}
+		
+		void UpdatePackageReference(IPackage package, bool updateDependencies, bool allowPrereleaseVersions)
+		{
+			var monitor = new RemovedPackageReferenceMonitor(ProjectManager);
+			using (monitor) {
+				ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies, allowPrereleaseVersions);
+			}
+			
+			monitor.PackagesRemoved.ForEach(packageRemoved => UninstallPackageFromSolutionRepository(packageRemoved));
+		}
+		
+		public void UpdatePackages(UpdatePackagesAction updateAction)
+		{
+			RunPackageOperations(updateAction.Operations);
+			foreach (IPackage package in updateAction.Packages) {
+				UpdatePackageReference(package, updateAction);
+			}
+		}
+		
+		public IEnumerable<PackageOperation> GetUpdatePackageOperations(
+			IEnumerable<IPackage> packages,
+			IUpdatePackageSettings settings)
+		{
+			IPackageOperationResolver resolver = CreateUpdatePackageOperationResolver(settings);
+			
+			var reducedOperations = new ReducedPackageOperations(resolver, packages);
+			reducedOperations.Reduce();
+			return reducedOperations.Operations;
+		}
+		
+		IPackageOperationResolver CreateUpdatePackageOperationResolver(IUpdatePackageSettings settings)
+		{
+			return packageOperationResolverFactory.CreateUpdatePackageOperationResolver(
+				LocalRepository,
+				SourceRepository,
+				Logger,
+				settings);
+		}
+		
+		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
+		{
+			foreach (PackageOperation operation in operations) {
+				Execute(operation);
+			}
 		}
 	}
 }

@@ -8,6 +8,7 @@ using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
@@ -34,6 +35,7 @@ namespace PackageManagement.Tests
 		void CreateTestProject()
 		{
 			testProject = ProjectHelper.CreateTestProject();
+			testProject.ParentSolution.Stub(s => s.Directory).Return(DirectoryName.Create(@"c:\projects\MyProject\"));
 		}
 		
 		void CreatePackageManager()
@@ -58,7 +60,6 @@ namespace PackageManagement.Tests
 		{
 			CreateFactory();
 			CreateTestProject();
-			testProject.ParentSolution.FileName = @"c:\projects\MyProject\MySolution.sln";
 			options.PackagesDirectory = "MyPackages";
 			CreatePackageManager();
 			
@@ -72,7 +73,6 @@ namespace PackageManagement.Tests
 		{
 			CreateFactory();
 			CreateTestProject();
-			testProject.ParentSolution.FileName = @"c:\projects\MyProject\MySolution.sln";
 			options.PackagesDirectory = "MyPackages";
 			CreatePackageManager();
 			
@@ -102,7 +102,6 @@ namespace PackageManagement.Tests
 		{
 			CreateFactory();
 			CreateTestProject();
-			testProject.ParentSolution.FileName = @"c:\projects\MyProject\MySolution.sln";
 			options.PackagesDirectory = "packages";
 			CreatePackageManager();
 			

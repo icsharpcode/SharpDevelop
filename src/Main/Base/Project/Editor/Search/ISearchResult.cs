@@ -27,6 +27,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		object GetControl();
 		
 		/// <summary>
+		/// Notifies the search that it is no longer active (another search result will be activated in the search results pad).
+		/// GetControl() will be called if the search result is activated again.
+		/// </summary>
+		void OnDeactivate();
+		
+		/// <summary>
 		/// Gets the items for the toolbar that are visible only for this search result.
 		/// </summary>
 		IList GetToolbarItems();

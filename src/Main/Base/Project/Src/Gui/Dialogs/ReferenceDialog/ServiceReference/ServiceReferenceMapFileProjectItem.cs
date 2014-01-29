@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
@@ -13,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			string fileName)
 			: base(project, ItemType.None)
 		{
-			this.FileName = fileName;
+			this.FileName = FileName.Create(fileName);
 			AddMetadata();
 		}
 		

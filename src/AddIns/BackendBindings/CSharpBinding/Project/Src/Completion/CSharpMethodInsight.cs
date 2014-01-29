@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.SharpDevelop;
@@ -18,17 +19,14 @@ namespace CSharpBinding.Completion
 	{
 		readonly int startOffset;
 		internal readonly IReadOnlyList<CSharpInsightItem> items;
-		readonly CSharpCompletionBinding binding;
 		readonly ITextEditor editor;
 		IInsightWindow window;
 		CSharpInsightItem initiallySelectedItem;
 		
-		public CSharpMethodInsight(CSharpCompletionBinding binding, ITextEditor editor, int startOffset, IEnumerable<CSharpInsightItem> items)
+		public CSharpMethodInsight(ITextEditor editor, int startOffset, IEnumerable<CSharpInsightItem> items)
 		{
-			Debug.Assert(binding != null);
 			Debug.Assert(editor != null);
 			Debug.Assert(items != null);
-			this.binding = binding;
 			this.editor = editor;
 			this.startOffset = startOffset;
 			this.items = items.ToList();
@@ -52,7 +50,7 @@ namespace CSharpBinding.Completion
 				window.Close();
 				return;
 			}
-			var completionFactory = new CSharpCompletionDataFactory(binding, editor, completionContext.TypeResolveContextAtCaret);
+			var completionFactory = new CSharpCompletionDataFactory(completionContext, new CSharpResolver(completionContext.TypeResolveContextAtCaret));
 			var pce = new CSharpParameterCompletionEngine(
 				editor.Document,
 				completionContext.CompletionContextProvider,

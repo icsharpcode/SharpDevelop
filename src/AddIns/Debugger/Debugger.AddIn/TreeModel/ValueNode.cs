@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using Debugger.AddIn.Visualizers;
 using Debugger.MetaData;
 using ICSharpCode.Core;
@@ -41,7 +43,7 @@ namespace Debugger.AddIn.TreeModel
 		long cachedValueDebuggeeState;
 		
 		string fullValue;
-		GetValueException error;
+		internal GetValueException error;
 		
 		public string FullText {
 			get { return this.Value; }
@@ -55,6 +57,7 @@ namespace Debugger.AddIn.TreeModel
 			
 			this.getValue = getValue;
 			this.setValue = setValue;
+			this.ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ValueNode";
 			
 			GetValueAndUpdateUI();
 		}
@@ -104,6 +107,14 @@ namespace Debugger.AddIn.TreeModel
 				// Do not keep permanent reference
 				Value val = this.getValue();
 				
+				if (val == null) {
+					Value = string.Empty;
+					Type  = string.Empty;
+					GetChildren = null;
+					VisualizerCommands = null;
+					return;
+				}
+				
 				// Note that the child collections are lazy-evaluated
 				if (val.IsNull) {
 					this.GetChildren = null;
@@ -147,12 +158,20 @@ namespace Debugger.AddIn.TreeModel
 					}
 				} else if (val.Type.Kind == TypeKind.Pointer) {
 					fullValue = String.Format("0x{0:X}", val.PointerAddress);
-				} else if (val.Type.FullName == typeof(string).FullName) {
+				} else if (val.Type.IsKnownType(KnownTypeCode.String)) {
 					fullValue = '"' + val.InvokeToString(WindowsDebugger.EvalThread).Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + '"';
-				} else if (val.Type.FullName == typeof(char).FullName) {
+				} else if (val.Type.IsKnownType(KnownTypeCode.Char)) {
 					fullValue = "'" + val.InvokeToString(WindowsDebugger.EvalThread).Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + "'";
 				} else if ((val.Type.Kind == TypeKind.Class || val.Type.Kind == TypeKind.Struct)) {
-					fullValue = val.InvokeToString(WindowsDebugger.EvalThread);
+					fullValue = val.FormatByDebuggerDisplayAttribute(WindowsDebugger.EvalThread);
+					if (fullValue == null)
+						fullValue = val.InvokeToString(WindowsDebugger.EvalThread);
+				} else if (val.Type.Kind == TypeKind.Enum) {
+					var primitiveValue = val.PrimitiveValue;
+					var builder = new TypeSystemAstBuilder();
+					builder.AlwaysUseShortTypeNames = true;
+					AstNode node = builder.ConvertConstantValue(val.Type, primitiveValue);
+					fullValue = node + "=" + primitiveValue;
 				} else {
 					fullValue = val.AsString();
 				}
@@ -176,55 +195,12 @@ namespace Debugger.AddIn.TreeModel
 				this.Type  = string.Empty;
 				this.GetChildren = null;
 				this.VisualizerCommands = null;
+			} finally {
+				if (error == null)
+					ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ValueNode";
+				else
+					ContextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/ErrorNode";
 			}
-		}
-		
-//		public ContextMenuStrip GetContextMenu()
-//		{
-//			if (this.Error != null) return GetErrorContextMenu();
-//
-//			ContextMenuStrip menu = new ContextMenuStrip();
-//
-//			ToolStripMenuItem copyItem;
-//			copyItem = new ToolStripMenuItem();
-//			copyItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CopyToClipboard");
-//			copyItem.Checked = false;
-//			copyItem.Click += delegate {
-//				ClipboardWrapper.SetText(fullText);
-//			};
-		
-//			ToolStripMenuItem hexView;
-//			hexView = new ToolStripMenuItem();
-//			hexView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
-//			hexView.Checked = DebuggingOptions.Instance.ShowValuesInHexadecimal;
-//			hexView.Click += delegate {
-//				// refresh all pads that use ValueNode for display
-//				DebuggingOptions.Instance.ShowValuesInHexadecimal = !DebuggingOptions.Instance.ShowValuesInHexadecimal;
-//				// always check if instance is null, might be null if pad is not opened
-//				if (LocalVarPad.Instance != null)
-//					LocalVarPad.Instance.RefreshPad();
-//				if (WatchPad.Instance != null)
-//					WatchPad.Instance.RefreshPad();
-//			};
-		
-//			menu.Items.AddRange(new ToolStripItem[] {
-//			                    	copyItem,
-//			                    	//hexView
-//			                    });
-//
-//			return menu;
-//		}
-		
-		ContextMenuStrip GetErrorContextMenu()
-		{
-			ContextMenuStrip menu = new ContextMenuStrip();
-			
-			ToolStripMenuItem showError = new ToolStripMenuItem();
-			showError.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.ShowFullError}");
-			showError.Click += delegate { MessageService.ShowException(error, null); };
-			menu.Items.Add(showError);
-			
-			return menu;
 		}
 		
 		/// <summary>
@@ -245,13 +221,25 @@ namespace Debugger.AddIn.TreeModel
 		public static IEnumerable<TreeNode> GetLocalVariables()
 		{
 			var stackFrame = GetCurrentStackFrame();
+			var localVars = stackFrame.GetLocalVariables(stackFrame.IP).ToList();
 			foreach(var par in stackFrame.MethodInfo.Parameters.Select((p, i) => new { Param = p, Index = i})) {
 				var parCopy = par;
-				yield return new ValueNode(ClassBrowserIconService.Parameter, par.Param.Name, () => GetCurrentStackFrame().GetArgumentValue(par.Index));
+				// do not display parameters that have been copied to captured variables twice. (see SD-1912)
+				// display only the value of the captured instance (the value of the parameter still has the original value)
+				var localVar = localVars.FirstOrDefault(v => string.Equals(v.Name, parCopy.Param.Name, StringComparison.Ordinal));
+				if (localVar == null)
+					yield return new ValueNode(ClassBrowserIconService.Parameter, par.Param.Name,
+					                           () => stackFrame.GetArgumentValue(par.Index));
+				else {
+					yield return new ValueNode(ClassBrowserIconService.Parameter, localVar.Name,
+					                           () => localVar.GetValue(stackFrame));
+					localVars.Remove(localVar);
+				}
 			}
-			foreach(LocalVariable locVar in stackFrame.GetLocalVariables(stackFrame.IP)) {
+			foreach(LocalVariable locVar in localVars) {
 				var locVarCopy = locVar;
-				yield return new ValueNode(ClassBrowserIconService.LocalVariable, locVar.Name, () => locVarCopy.GetValue(GetCurrentStackFrame()));
+				yield return new ValueNode(ClassBrowserIconService.LocalVariable, locVar.Name,
+				                           () => locVarCopy.GetValue(stackFrame));
 			}
 		}
 		
@@ -272,7 +260,7 @@ namespace Debugger.AddIn.TreeModel
 					ClassBrowserIconService.Class,
 					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}"),
 					baseType.Name,
-					baseType.FullName,
+					string.Empty,
 					baseType.FullName == "System.Object" ? (Func<IEnumerable<TreeNode>>) null : () => GetObjectChildren(baseType)
 				);
 			}
@@ -346,7 +334,7 @@ namespace Debugger.AddIn.TreeModel
 			int count = 0;
 			try {
 				Value list = getValue();
-				IType iListType = list.Type.GetAllBaseTypeDefinitions().Where(t => t.FullName == typeof(IList).FullName).FirstOrDefault();
+				IType iListType = list.Type.GetAllBaseTypeDefinitions().FirstOrDefault(t => t.FullName == typeof(IList).FullName);
 				itemProp = iListType.GetProperties(p => p.Name == "Item").Single();
 				// Do not get string representation since it can be printed in hex
 				count = (int)list.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperties(p => p.Name == "Count").Single()).PrimitiveValue;

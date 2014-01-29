@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				policy = FormattingOptionsFactory.CreateMono();
 			StringWriter w = new StringWriter();
 			w.NewLine = "\n";
-			node.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "$" }, policy));
+			node.AcceptVisitor(new CSharpOutputVisitor(new TextWriterTokenWriter(w) { IndentationString = "$" }, policy));
 			Assert.AreEqual(expected.Replace("\r", ""), w.ToString());
 		}
 		
@@ -146,6 +146,50 @@ namespace ICSharpCode.NRefactory.CSharp
 			AssertOutput("-0.0", new PrimitiveExpression(-0.0));
 			AssertOutput("0f", new PrimitiveExpression(0f));
 			AssertOutput("-0f", new PrimitiveExpression(-0f));
+		}
+
+		[Test]
+		public void BlankLinesBetweenMembers()
+		{
+			var code = @"class Test
+{
+	Test() {}
+	void Foo() {}
+	int P { get; set; }
+}
+";
+			var unit = SyntaxTree.Parse(code);
+			var options = FormattingOptionsFactory.CreateMono();
+			options.BlankLinesBetweenMembers = 2;
+			AssertOutput("class Test\n{\n$Test ()\n${\n$}\n\n\n$void Foo ()\n${\n$}\n\n\n$int P {\n$$get;\n$$set;\n$}\n}\n", unit, options);
+		}
+
+		[Test]
+		public void BlankLinesAfterUsings() {
+			var code = @"using System;
+using System.Collections;
+using List = System.Collections.List;
+namespace NS
+{
+	using System.Collections.Generic;
+	using Collection = System.Collections.Collection;
+	using System.Xml;
+	class C {}
+}
+";
+			var unit = SyntaxTree.Parse(code);
+			var options = FormattingOptionsFactory.CreateMono();
+			options.BlankLinesAfterUsings = 2;
+			AssertOutput("using System;\nusing System.Collections;\nusing List = System.Collections.List;\n\n\nnamespace NS\n{\n$using System.Collections.Generic;\n$using Collection = System.Collections.Collection;\n$using System.Xml;\n\n\n$class C\n${\n$}\n}\n", unit, options);
+		}
+		
+		[Test, Ignore("#pragma warning not implemented in output visitor - issue #188")]
+		public void PragmaWarning()
+		{
+			var code = @"#pragma warning disable 414";
+			var unit = SyntaxTree.Parse(code);
+			var options = FormattingOptionsFactory.CreateMono();
+			AssertOutput("#pragma warning disable 414\n", unit, options);
 		}
 	}
 }

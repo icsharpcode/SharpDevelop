@@ -9,6 +9,7 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -66,8 +67,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		
-		GroupBox groupBox;
+		IOverlayUIElement groupBox;
 		Button normalizeButton, cancelButton;
 		RadioButton windows, unix;
 		
@@ -75,16 +75,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (editor.Document == null)
 				return; // editor was disposed
-			
-			groupBox = new GroupBox();
-			groupBox.Background = SystemColors.WindowBrush;
-			groupBox.Foreground = SystemColors.WindowTextBrush;
-			groupBox.Header = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Header");
-			groupBox.HorizontalAlignment = HorizontalAlignment.Right;
-			groupBox.VerticalAlignment = VerticalAlignment.Bottom;
-			groupBox.MaxWidth = 300;
-			groupBox.Margin = new Thickness(0, 0, 20, 20);
-			Grid.SetRow(groupBox, 1);
 			
 			windows = new RadioButton {
 				IsChecked = !preferUnixNewLines,
@@ -99,7 +89,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			normalizeButton = new Button { Content = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Normalize") };
 			cancelButton = new Button { Content = ResourceService.GetString("Global.CancelButtonText") };
 			
-			groupBox.Content = new StackPanel {
+			var content = new StackPanel {
 				Children = {
 					new TextBlock {
 						Text = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Description"),
@@ -114,13 +104,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					}
 				}
 			};
-			editor.Children.Add(groupBox);
+			
+			groupBox = editor.GetService<IEditorUIService>().CreateOverlayUIElement(content);
+			groupBox.Title = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Header");
 			
 			var featureUse = SD.AnalyticsMonitor.TrackFeature(typeof(NewLineConsistencyCheck));
 			
 			EventHandler removeWarning = null;
 			removeWarning = delegate {
-				editor.Children.Remove(groupBox);
+				groupBox.Remove();
 				editor.PrimaryTextEditor.TextArea.Focus();
 				editor.LoadedFileContent -= removeWarning;
 				

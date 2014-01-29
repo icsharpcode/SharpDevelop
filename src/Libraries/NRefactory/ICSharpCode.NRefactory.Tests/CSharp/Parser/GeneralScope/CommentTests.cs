@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -96,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(CommentType.MultiLine, c.CommentType);
 			Assert.AreEqual("", c.Content);
 		}
-		
+
 		[Test]
 		public void MultilineCommentWith3Stars()
 		{
@@ -107,6 +107,25 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			var c = ns.GetChildrenByRole(Roles.Comment).Single();
 			Assert.AreEqual(CommentType.MultiLine, c.CommentType);
 			Assert.AreEqual("** Comment ", c.Content);
+		}
+
+		[Test]
+		public void NoEmptyComments()
+		{
+			string program = @"#if foo
+#undef a
+#endif";
+			var parser = new CSharpParser();
+			var syntaxTree = parser.Parse(program);
+			Assert.IsFalse(parser.HasErrors, string.Join(Environment.NewLine, parser.Errors.Select(e => string.Format("{0}: {1}", e.Region.BeginLine, e.Message))));
+			var roles = syntaxTree.Children.Select(c => c.Role).ToArray();
+			Assert.AreEqual(new Role[] {
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				Roles.PreProcessorDirective,
+				Roles.NewLine,
+				Roles.PreProcessorDirective
+			}, roles);
 		}
 	}
 }

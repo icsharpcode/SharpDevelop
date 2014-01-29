@@ -49,7 +49,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		CheckBox chooseSpecificVersionCheckBox;
 		TextBox filterTextBox;
 		ToolTip toolTip = new ToolTip();
-		ToolTip filterTextboxToolTip = new ToolTip();
 		ISelectReferenceDialog selectDialog;
 		ColumnSorter sorter;
 		BackgroundWorker worker;
@@ -97,7 +96,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			};
 			
 			filterTextBox = new TextBox { Width = 150, Dock = DockStyle.Right };
-			filterTextboxToolTip.SetToolTip(filterTextBox, "Search by type name");
 			filterTextBox.TextChanged += delegate { Search(); };
 			
 			IButtonControl defaultButton = null;
@@ -272,7 +270,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			});
 			
-			MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
+			SD.MSBuildEngine.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
 			
 			SD.MainThread.InvokeAsyncAndForget(delegate {
 				if (IsDisposed) {
@@ -317,7 +315,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						}
 					});
 				
-				MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
+				SD.MSBuildEngine.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
 				foreach (ReferenceProjectItem rpi in referenceItems) {
 					if (string.IsNullOrEmpty(rpi.Redist)) continue;
 					if (!redistNameToRequiredFramework.ContainsKey(rpi.Redist)) {

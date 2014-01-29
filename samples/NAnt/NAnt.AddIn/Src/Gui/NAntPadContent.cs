@@ -26,12 +26,16 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Linq;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.NAnt.Gui
 {
@@ -77,8 +81,8 @@ namespace ICSharpCode.NAnt.Gui
 			ProjectService.SolutionClosed += SolutionClosed;
 			ProjectService.ProjectItemRemoved += ProjectItemRemoved;
 			ProjectService.ProjectItemAdded += ProjectItemAdded;
-			WorkbenchSingleton.Workbench.ViewOpened += WorkbenchViewOpened;
-			WorkbenchSingleton.Workbench.ViewClosed += WorkbenchViewClosed;
+			SD.Workbench.ViewOpened += WorkbenchViewOpened;
+			SD.Workbench.ViewClosed += WorkbenchViewClosed;
 			FileService.FileRenamed += FileRenamed;
 			FileService.FileRemoved += FileRemoved;
 			FileUtility.FileSaved += FileSaved;
@@ -103,7 +107,7 @@ namespace ICSharpCode.NAnt.Gui
 		
 		public static NAntPadContent Instance {
 			get {
-				PadDescriptor descriptor = WorkbenchSingleton.Workbench.GetPad(typeof(NAntPadContent));
+				PadDescriptor descriptor = SD.Workbench.GetPad(typeof(NAntPadContent));
 				return (NAntPadContent)descriptor.PadContent;
 			}
 		}
@@ -115,11 +119,11 @@ namespace ICSharpCode.NAnt.Gui
 		{
 			treeView.Clear();
 			
-			Solution solution = ProjectService.OpenSolution;
+			ISolution solution = ProjectService.OpenSolution;
 			if (solution != null) {
 				treeView.AddSolution(solution);
 			}
-			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (IViewContent view in SD.Workbench.ViewContentCollection) {
 				if (IsStandaloneNAntBuildFile(view.PrimaryFileName)) {
 					treeView.AddBuildFile(String.Empty, view.PrimaryFileName);
 				}
@@ -172,8 +176,8 @@ namespace ICSharpCode.NAnt.Gui
 				ProjectService.SolutionClosed -= SolutionClosed;
 				ProjectService.ProjectItemRemoved -= ProjectItemRemoved;
 				ProjectService.ProjectItemAdded -= ProjectItemAdded;
-				WorkbenchSingleton.Workbench.ViewOpened -= WorkbenchViewOpened;
-				WorkbenchSingleton.Workbench.ViewClosed -= WorkbenchViewClosed;
+				SD.Workbench.ViewOpened -= WorkbenchViewOpened;
+				SD.Workbench.ViewClosed -= WorkbenchViewClosed;
 				FileService.FileRenamed -= FileRenamed;
 				FileService.FileRemoved -= FileRemoved;
 				FileUtility.FileSaved -= FileSaved;
@@ -200,7 +204,7 @@ namespace ICSharpCode.NAnt.Gui
 			AddSolutionToPad(e.Solution);
 		}
 		
-		void AddSolutionToPad(Solution solution)
+		void AddSolutionToPad(ISolution solution)
 		{
 			if (solution != null) {
 				treeView.AddSolution(solution);
@@ -230,7 +234,12 @@ namespace ICSharpCode.NAnt.Gui
 		void AddBuildFile(string fileName)
 		{
 			if (ProjectService.OpenSolution == null) return;
-			IProject project = ProjectService.OpenSolution.FindProjectContainingFile(fileName);
+			
+			IProject project = ProjectService
+				.OpenSolution
+				.Projects
+				.FirstOrDefault(p => p.IsFileInProject(new FileName(fileName)));
+			
 			if (project != null) {
 				treeView.AddBuildFile(project.Name, fileName);
 			}
@@ -280,10 +289,10 @@ namespace ICSharpCode.NAnt.Gui
 		
 		bool IsInProject(string fileName)
 		{
-			Solution solution = ProjectService.OpenSolution;
+			ISolution solution = ProjectService.OpenSolution;
 			if (solution != null) {
 				foreach (IProject project in solution.Projects) {
-					if (project.IsFileInProject(fileName)) {
+					if (project.IsFileInProject(new FileName(fileName))) {
 						return true;
 					}
 				}
@@ -319,7 +328,7 @@ namespace ICSharpCode.NAnt.Gui
 		
 		void NAntExited(object sender, NAntExitEventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(UpdateToolbar);
+			SD.MainThread.InvokeAsyncAndForget(UpdateToolbar);
 		}
 	}
 }

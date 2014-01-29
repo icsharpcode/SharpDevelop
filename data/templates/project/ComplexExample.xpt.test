@@ -35,7 +35,7 @@
 			<!-- Solution folders can contain: nested solution folders and projects -->
 			<SolutionFolder name = "Nested Sub Folder"/>
 			
-			<Project name = "VBNetProject" directory = "VBNetSubProject" language="VBNet" defaultPlatform="x86">
+			<Project name = "VBNetProject" directory = "VBNetSubProject" language="VB" defaultPlatform="x86">
 				<!-- Actions that get executed before the project is created. ICommand.Owner will be the ProjectCreateInformation. -->
 				<PreCreateActions>
 					<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/CheckPortableLibraryInstalled"/>

@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		}
 		
 		#region Secondary view content support
-		sealed class SecondaryViewContentCollection : ICollection<IViewContent>
+		sealed class SecondaryViewContentCollection : ICollection<IViewContent>, IReadOnlyCollection<IViewContent>
 		{
 			readonly AbstractViewContent parent;
 			readonly List<IViewContent> list = new List<IViewContent>();
@@ -625,7 +625,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			get {
 				var fileName = this.PrimaryFileName;
 				return fileName == null
-					|| Project.ProjectService.OpenSolution.FindProjectContainingFile(fileName) != null;
+					|| SD.ProjectService.FindProjectContainingFile(fileName) != null;
 			}
 		}
 	}

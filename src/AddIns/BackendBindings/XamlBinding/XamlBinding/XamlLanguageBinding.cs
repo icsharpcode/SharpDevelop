@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -11,10 +10,9 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.XamlBinding
 {
 	/// <summary>
-	/// Description of XamlLanguageBinding.
+	/// Description of XamlTextEditorExtension.
 	/// </summary>
-	[TextEditorService]
-	public class XamlLanguageBinding : XmlEditor.XmlLanguageBinding
+	public class XamlTextEditorExtension : XmlEditor.XmlTextEditorExtension
 	{
 //		XamlColorizer colorizer;
 		TextView textView;
@@ -42,7 +40,7 @@ namespace ICSharpCode.XamlBinding
 					textView.Services.AddService(typeof(IOutlineContentHost), contentHost);
 				}
 				// add ILanguageBinding
-				textView.Services.AddService(typeof(XamlLanguageBinding), this);
+				textView.Services.AddService(typeof(XamlTextEditorExtension), this);
 			}
 		}
 
@@ -61,8 +59,13 @@ namespace ICSharpCode.XamlBinding
 					textView.Services.RemoveService(typeof(IOutlineContentHost));
 					contentHost.Dispose();
 				}
-				textView.Services.RemoveService(typeof(XamlLanguageBinding));
+				textView.Services.RemoveService(typeof(XamlTextEditorExtension));
 			}
 		}
+	}
+	
+	public class XamlLanguageBinding : XmlEditor.XmlLanguageBinding
+	{
+		
 	}
 }

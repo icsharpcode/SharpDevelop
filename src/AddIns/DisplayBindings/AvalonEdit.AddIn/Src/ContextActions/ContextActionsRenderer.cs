@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -119,6 +120,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			if (!delayMoveTimer.IsEnabled)
 				return;
 			ClosePopup();
+			
+			// Don't show the context action popup when the caret is outside the editor boundaries
+			var textView = this.editorView.TextArea.TextView;
+			Rect editorRect = new Rect((Point)textView.ScrollOffset, textView.RenderSize);
+			Rect caretRect = this.editorView.TextArea.Caret.CalculateCaretRectangle();
+			if (!editorRect.Contains(caretRect))
+				return;
+			
+			// Don't show the context action popup when the text editor is invisible, i.e., the Forms Designer is active.
+			if (PresentationSource.FromVisual(textView) == null) return;
 			
 			ContextActionsBulbViewModel popupVM = BuildPopupViewModel();
 			this.cancellationTokenSourceForPopupBeingOpened = new CancellationTokenSource();

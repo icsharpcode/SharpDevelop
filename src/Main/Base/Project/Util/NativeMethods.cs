@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.Win32.SafeHandles;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -26,6 +27,18 @@ namespace ICSharpCode.SharpDevelop
 		
 		[DllImport("user32.dll")]
 		public static extern IntPtr SetForegroundWindow(IntPtr hWnd);
+		
+		[DllImport("kernel32", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		internal static extern bool CloseHandle(IntPtr hObject);
+		
+		[DllImport("kernel32.dll")]
+		internal static extern IntPtr GetCurrentProcess();
+		
+		[DllImport("kernel32.dll", BestFitMapping = false, CharSet = CharSet.Ansi)]
+		internal static extern bool DuplicateHandle(HandleRef hSourceProcessHandle, SafeHandle hSourceHandle, HandleRef hTargetProcess, out SafeWaitHandle targetHandle, int dwDesiredAccess, bool bInheritHandle, int dwOptions);
+		
+		internal const int DUPLICATE_SAME_ACCESS = 2;
 		
 		#region SHFileOperation
 		enum FO_FUNC : uint
@@ -94,6 +107,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
+		#region Get OEM Encoding
 		[DllImport("kernel32.dll")]
 		static extern int GetOEMCP();
 		
@@ -108,5 +122,6 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 		}
+		#endregion
 	}
 }

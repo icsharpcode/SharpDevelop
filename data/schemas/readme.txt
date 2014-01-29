@@ -20,13 +20,6 @@ Schema for .manifest files.
 Created by Matt Ward
 GNU General Public License.
 
-NAnt.xsd
---------
-
-NAnt 0.85 schema.
-http://nant.sourceforge.net/release/0.85/nant.xsd
-GNU General Public License.
-
 nuspec.xsd
 ----------
 

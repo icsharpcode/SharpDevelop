@@ -29,6 +29,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		readonly CompressingTreeList<bool> isValid = new CompressingTreeList<bool>((a, b) => a == b);
 		readonly IDocument document;
 		readonly IHighlightingDefinition definition;
+		readonly HighlightingEngine engine;
 		readonly WeakLineTracker weakLineTracker;
 		bool isHighlighting;
 		bool isInHighlightingGroup;
@@ -52,6 +53,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				throw new ArgumentNullException("definition");
 			this.document = document;
 			this.definition = definition;
+			this.engine = new HighlightingEngine(definition.MainRuleSet);
 			document.VerifyAccess();
 			weakLineTracker = WeakLineTracker.Register(document, this);
 			InvalidateHighlighting();
@@ -68,6 +70,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				throw new ArgumentNullException("definition");
 			this.document = document;
 			this.definition = definition;
+			this.engine = new HighlightingEngine(definition.MainRuleSet);
 			InvalidateHighlighting();
 		}
 		
@@ -131,10 +134,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		public ImmutableStack<HighlightingSpan> InitialSpanStack {
 			get { return initialSpanStack; }
 			set {
-				if (value == null)
-					initialSpanStack = SpanStack.Empty;
-				else
-					initialSpanStack = value;
+				initialSpanStack = value ?? SpanStack.Empty;
 				InvalidateHighlighting();
 			}
 		}
@@ -167,11 +167,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			try {
 				HighlightUpTo(lineNumber - 1);
 				IDocumentLine line = document.GetLineByNumber(lineNumber);
-				highlightedLine = new HighlightedLine(document, line);
-				HighlightLineAndUpdateTreeList(line, lineNumber);
-				return highlightedLine;
+				HighlightedLine result = engine.HighlightLine(document, line);
+				UpdateTreeList(lineNumber);
+				return result;
 			} finally {
-				highlightedLine = null;
 				isHighlighting = false;
 			}
 		}
@@ -221,23 +220,39 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			}
 		}
 		
+		/// <summary>
+		/// Sets the engine's CurrentSpanStack to the end of the target line.
+		/// Updates the span stack for all lines up to (and including) the target line, if necessary.
+		/// </summary>
 		void HighlightUpTo(int targetLineNumber)
 		{
-			Debug.Assert(highlightedLine == null); // ensure this method is only outside the actual highlighting logic
-			while (firstInvalidLine <= targetLineNumber) {
-				HighlightLineAndUpdateTreeList(document.GetLineByNumber(firstInvalidLine), firstInvalidLine);
+			for (int currentLine = 0; currentLine <= targetLineNumber; currentLine++) {
+				if (firstInvalidLine > currentLine) {
+					// (this branch is always taken on the first loop iteration, as firstInvalidLine > 0)
+					
+					if (firstInvalidLine <= targetLineNumber) {
+						// Skip valid lines to next invalid line:
+						engine.CurrentSpanStack = storedSpanStacks[firstInvalidLine - 1];
+						currentLine = firstInvalidLine;
+					} else {
+						// Skip valid lines to target line:
+						engine.CurrentSpanStack = storedSpanStacks[targetLineNumber];
+						break;
+					}
+				}
+				Debug.Assert(EqualSpanStacks(engine.CurrentSpanStack, storedSpanStacks[currentLine - 1]));
+				engine.ScanLine(document, document.GetLineByNumber(currentLine));
+				UpdateTreeList(currentLine);
 			}
+			Debug.Assert(EqualSpanStacks(engine.CurrentSpanStack, storedSpanStacks[targetLineNumber]));
 		}
 		
-		void HighlightLineAndUpdateTreeList(IDocumentLine line, int lineNumber)
+		void UpdateTreeList(int lineNumber)
 		{
-			//Debug.WriteLine("Highlight line " + lineNumber + (highlightedLine != null ? "" : " (span stack only)"));
-			spanStack = storedSpanStacks[lineNumber - 1];
-			HighlightLineInternal(line);
-			if (!EqualSpanStacks(spanStack, storedSpanStacks[lineNumber])) {
+			if (!EqualSpanStacks(engine.CurrentSpanStack, storedSpanStacks[lineNumber])) {
 				isValid[lineNumber] = true;
 				//Debug.WriteLine("Span stack in line " + lineNumber + " changed from " + storedSpanStacks[lineNumber] + " to " + spanStack);
-				storedSpanStacks[lineNumber] = spanStack;
+				storedSpanStacks[lineNumber] = engine.CurrentSpanStack;
 				if (lineNumber + 1 < isValid.Count) {
 					isValid[lineNumber + 1] = false;
 					firstInvalidLine = lineNumber + 1;
@@ -287,231 +302,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (HighlightingStateChanged != null)
 				HighlightingStateChanged(fromLineNumber, toLineNumber);
 		}
-		
-		#region Highlighting Engine
-		SpanStack spanStack;
-		
-		// local variables from HighlightLineInternal (are member because they are accessed by HighlighLine helper methods)
-		string lineText;
-		int lineStartOffset;
-		int position;
-		
-		/// <summary>
-		/// the HighlightedLine where highlighting output is being written to.
-		/// if this variable is null, nothing is highlighted and only the span state is updated
-		/// </summary>
-		HighlightedLine highlightedLine;
-		
-		void HighlightLineInternal(IDocumentLine line)
-		{
-			lineStartOffset = line.Offset;
-			lineText = document.GetText(lineStartOffset, line.Length);
-			position = 0;
-			ResetColorStack();
-			HighlightingRuleSet currentRuleSet = this.CurrentRuleSet;
-			Stack<Match[]> storedMatchArrays = new Stack<Match[]>();
-			Match[] matches = AllocateMatchArray(currentRuleSet.Spans.Count);
-			Match endSpanMatch = null;
-			
-			while (true) {
-				for (int i = 0; i < matches.Length; i++) {
-					if (matches[i] == null || (matches[i].Success && matches[i].Index < position))
-						matches[i] = currentRuleSet.Spans[i].StartExpression.Match(lineText, position);
-				}
-				if (endSpanMatch == null && !spanStack.IsEmpty)
-					endSpanMatch = spanStack.Peek().EndExpression.Match(lineText, position);
-				
-				Match firstMatch = Minimum(matches, endSpanMatch);
-				if (firstMatch == null)
-					break;
-				
-				HighlightNonSpans(firstMatch.Index);
-				
-				Debug.Assert(position == firstMatch.Index);
-				
-				if (firstMatch == endSpanMatch) {
-					HighlightingSpan poppedSpan = spanStack.Peek();
-					if (!poppedSpan.SpanColorIncludesEnd)
-						PopColor(); // pop SpanColor
-					PushColor(poppedSpan.EndColor);
-					position = firstMatch.Index + firstMatch.Length;
-					PopColor(); // pop EndColor
-					if (poppedSpan.SpanColorIncludesEnd)
-						PopColor(); // pop SpanColor
-					spanStack = spanStack.Pop();
-					currentRuleSet = this.CurrentRuleSet;
-					//FreeMatchArray(matches);
-					if (storedMatchArrays.Count > 0) {
-						matches = storedMatchArrays.Pop();
-						int index = currentRuleSet.Spans.IndexOf(poppedSpan);
-						Debug.Assert(index >= 0 && index < matches.Length);
-						if (matches[index].Index == position) {
-							throw new InvalidOperationException(
-								"A highlighting span matched 0 characters, which would cause an endless loop.\n" +
-								"Change the highlighting definition so that either the start or the end regex matches at least one character.\n" +
-								"Start regex: " + poppedSpan.StartExpression + "\n" +
-								"End regex: " + poppedSpan.EndExpression);
-						}
-					} else {
-						matches = AllocateMatchArray(currentRuleSet.Spans.Count);
-					}
-				} else {
-					int index = Array.IndexOf(matches, firstMatch);
-					Debug.Assert(index >= 0);
-					HighlightingSpan newSpan = currentRuleSet.Spans[index];
-					spanStack = spanStack.Push(newSpan);
-					currentRuleSet = this.CurrentRuleSet;
-					storedMatchArrays.Push(matches);
-					matches = AllocateMatchArray(currentRuleSet.Spans.Count);
-					if (newSpan.SpanColorIncludesStart)
-						PushColor(newSpan.SpanColor);
-					PushColor(newSpan.StartColor);
-					position = firstMatch.Index + firstMatch.Length;
-					PopColor();
-					if (!newSpan.SpanColorIncludesStart)
-						PushColor(newSpan.SpanColor);
-				}
-				endSpanMatch = null;
-			}
-			HighlightNonSpans(line.Length);
-			
-			PopAllColors();
-		}
-		
-		void HighlightNonSpans(int until)
-		{
-			Debug.Assert(position <= until);
-			if (position == until)
-				return;
-			if (highlightedLine != null) {
-				IList<HighlightingRule> rules = CurrentRuleSet.Rules;
-				Match[] matches = AllocateMatchArray(rules.Count);
-				while (true) {
-					for (int i = 0; i < matches.Length; i++) {
-						if (matches[i] == null || (matches[i].Success && matches[i].Index < position))
-							matches[i] = rules[i].Regex.Match(lineText, position, until - position);
-					}
-					Match firstMatch = Minimum(matches, null);
-					if (firstMatch == null)
-						break;
-					
-					position = firstMatch.Index;
-					int ruleIndex = Array.IndexOf(matches, firstMatch);
-					if (firstMatch.Length == 0) {
-						throw new InvalidOperationException(
-							"A highlighting rule matched 0 characters, which would cause an endless loop.\n" +
-							"Change the highlighting definition so that the rule matches at least one character.\n" +
-							"Regex: " + rules[ruleIndex].Regex);
-					}
-					PushColor(rules[ruleIndex].Color);
-					position = firstMatch.Index + firstMatch.Length;
-					PopColor();
-				}
-				//FreeMatchArray(matches);
-			}
-			position = until;
-		}
-		
-		static readonly HighlightingRuleSet emptyRuleSet = new HighlightingRuleSet() { Name = "EmptyRuleSet" };
-		
-		HighlightingRuleSet CurrentRuleSet {
-			get {
-				if (spanStack.IsEmpty)
-					return definition.MainRuleSet;
-				else
-					return spanStack.Peek().RuleSet ?? emptyRuleSet;
-			}
-		}
-		#endregion
-		
-		#region Color Stack Management
-		Stack<HighlightedSection> highlightedSectionStack;
-		HighlightedSection lastPoppedSection;
-		
-		void ResetColorStack()
-		{
-			Debug.Assert(position == 0);
-			lastPoppedSection = null;
-			if (highlightedLine == null) {
-				highlightedSectionStack = null;
-			} else {
-				highlightedSectionStack = new Stack<HighlightedSection>();
-				foreach (HighlightingSpan span in spanStack.Reverse()) {
-					PushColor(span.SpanColor);
-				}
-			}
-		}
-		
-		void PushColor(HighlightingColor color)
-		{
-			if (highlightedLine == null)
-				return;
-			if (color == null) {
-				highlightedSectionStack.Push(null);
-			} else if (lastPoppedSection != null && lastPoppedSection.Color == color
-			           && lastPoppedSection.Offset + lastPoppedSection.Length == position + lineStartOffset)
-			{
-				highlightedSectionStack.Push(lastPoppedSection);
-				lastPoppedSection = null;
-			} else {
-				HighlightedSection hs = new HighlightedSection {
-					Offset = position + lineStartOffset,
-					Color = color
-				};
-				highlightedLine.Sections.Add(hs);
-				highlightedSectionStack.Push(hs);
-				lastPoppedSection = null;
-			}
-		}
-		
-		void PopColor()
-		{
-			if (highlightedLine == null)
-				return;
-			HighlightedSection s = highlightedSectionStack.Pop();
-			if (s != null) {
-				s.Length = (position + lineStartOffset) - s.Offset;
-				if (s.Length == 0)
-					highlightedLine.Sections.Remove(s);
-				else
-					lastPoppedSection = s;
-			}
-		}
-		
-		void PopAllColors()
-		{
-			if (highlightedSectionStack != null) {
-				while (highlightedSectionStack.Count > 0)
-					PopColor();
-			}
-		}
-		#endregion
-		
-		#region Match helpers
-		/// <summary>
-		/// Returns the first match from the array or endSpanMatch.
-		/// </summary>
-		static Match Minimum(Match[] arr, Match endSpanMatch)
-		{
-			Match min = null;
-			foreach (Match v in arr) {
-				if (v.Success && (min == null || v.Index < min.Index))
-					min = v;
-			}
-			if (endSpanMatch != null && endSpanMatch.Success && (min == null || endSpanMatch.Index < min.Index))
-				return endSpanMatch;
-			else
-				return min;
-		}
-		
-		static Match[] AllocateMatchArray(int count)
-		{
-			if (count == 0)
-				return Empty<Match>.Array;
-			else
-				return new Match[count];
-		}
-		#endregion
 		
 		/// <inheritdoc/>
 		public HighlightingColor DefaultTextColor {

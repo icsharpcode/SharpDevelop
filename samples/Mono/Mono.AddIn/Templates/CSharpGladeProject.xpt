@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Matt Ward"
           created      = "01/10/2001"
-          lastModified = "14/01/2006">
+          lastModified = "28/06/2013">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -20,7 +20,7 @@
 	<Project language = "C#">
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
-			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+			<MonoTargetFrameworkVersion>v4.0</MonoTargetFrameworkVersion>
 		</PropertyGroup>
 		
 		<Imports clear="True">

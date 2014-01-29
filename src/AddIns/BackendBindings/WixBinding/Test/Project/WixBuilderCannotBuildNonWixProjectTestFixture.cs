@@ -4,7 +4,6 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
@@ -25,16 +24,11 @@ namespace WixBinding.Tests.Project
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 			wixNodeBuilder = new WixProjectNodeBuilder();
 			project = new MSBuildBasedProject(
-				new ProjectCreateInformation {
-					OutputProjectFileName = new FileName(@"C:\Projects\Test\test.csproj"),
-					Solution = new Solution(new MockProjectChangeWatcher()),
-					ProjectName = "test"
-				}
+				new ProjectCreateInformation(MockSolution.Create(), new FileName(@"C:\Projects\Test\test.csproj"))
 			);
-			project.IdGuid = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
+			project.IdGuid = Guid.Parse("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
 		}
 		
 		[Test]

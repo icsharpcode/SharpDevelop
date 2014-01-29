@@ -3,19 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 
-using System.Windows.Documents;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.CodeAnalysis
@@ -24,12 +18,12 @@ namespace ICSharpCode.CodeAnalysis
 	{
 		public override void Run()
 		{
-			TaskView view = (TaskView)Owner;
-			foreach (SDTask t in view.SelectedTasks.ToList()) {
+			var view = (System.Windows.Controls.ListView)Owner;
+			foreach (var t in view.SelectedItems.OfType<SDTask>().ToArray()) {
 				FxCopTaskTag tag = t.Tag as FxCopTaskTag;
 				if (tag == null)
 					continue;
-				ICodeGenerator gen = tag.Project.CodeGenerator;
+				CodeGenerator gen = tag.Project.LanguageBinding.CodeGenerator;
 				ICompilation compilation;
 				if (t.FileName != null)
 					compilation = SD.ParserService.GetCompilationForFile(t.FileName);
@@ -38,7 +32,7 @@ namespace ICSharpCode.CodeAnalysis
 				IAttribute attribute = CreateSuppressAttribute(compilation, tag);
 				
 				if (tag.MemberName == null)
-					gen.AddAssemblyAttribute(attribute);
+					gen.AddAssemblyAttribute(tag.Project, attribute);
 				else
 					gen.AddAttribute(GetEntity(compilation, tag.TypeName, tag.MemberName), attribute);
 			}

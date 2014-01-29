@@ -18,8 +18,7 @@ namespace MSHelpSystem.Core
 		
 		public static bool IsHelp3ProtocolRegistered
 		{
-			get
-			{
+			get {
 				try {
 					RegistryKey hkcr = RegistryKey.OpenBaseKey(RegistryHive.ClassesRoot, RegistryView.Registry64).OpenSubKey(@"MS-XHelp\shell\open\command", false);
 					string helpLibAgent = (string)hkcr.GetValue("", string.Empty);
@@ -27,7 +26,7 @@ namespace MSHelpSystem.Core
 					return (!string.IsNullOrEmpty(helpLibAgent));
 				}
 				catch (Exception ex) {
-					LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+					LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 				}
 				return false;
 			}
@@ -35,8 +34,7 @@ namespace MSHelpSystem.Core
 
 		public static bool IsLocalStoreInitialized
 		{
-			get
-			{
+			get {
 				string localStore = LocalStore;
 				return (!string.IsNullOrEmpty(localStore) && Directory.Exists(localStore));
 			}
@@ -44,8 +42,7 @@ namespace MSHelpSystem.Core
 
 		public static string LocalStore
 		{
-			get
-			{
+			get {
 				try {
 					RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\Microsoft\Help\v1.0", false);
 					string localStore = (string)hklm.GetValue("LocalStore", string.Empty);
@@ -53,7 +50,7 @@ namespace MSHelpSystem.Core
 					return localStore;
 				}
 				catch (Exception ex) {
-					LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+					LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 				}
 				return string.Empty;
 			}
@@ -66,8 +63,7 @@ namespace MSHelpSystem.Core
 
 		public static string AppRoot
 		{
-			get
-			{
+			get {
 				try {
 					RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\Microsoft\Help\v1.0", false);
 					string appRoot = (string)hklm.GetValue("AppRoot", string.Empty);
@@ -75,7 +71,7 @@ namespace MSHelpSystem.Core
 					return appRoot;
 				}
 				catch (Exception ex) {
-					LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+					LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 				}
 				return string.Empty;
 			}
@@ -83,8 +79,7 @@ namespace MSHelpSystem.Core
 
 		public static string ManifestFolder
 		{
-			get
-			{
+			get {
 				string manifestFolder = LocalStore;
 				if (string.IsNullOrEmpty(manifestFolder)) return string.Empty;
 				manifestFolder = System.IO.Path.Combine(manifestFolder, "manifest");
@@ -95,7 +90,7 @@ namespace MSHelpSystem.Core
 
 		public static bool IsLocalHelp
 		{
-			get { 	return HelpClientWatcher.IsLocalHelp; }
+			get { return HelpClientWatcher.IsLocalHelp; }
 		}
 		
 		public static string GetHttpFromMsXHelp(string helpUrl)

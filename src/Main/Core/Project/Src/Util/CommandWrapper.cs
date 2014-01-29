@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
 
@@ -108,6 +109,7 @@ namespace ICSharpCode.Core
 				throw new ArgumentNullException("conditions");
 			this.codon = codon;
 			this.conditions = conditions;
+			this.canExecuteChangedHandlersToRegisterOnCommand = new WeakCollection<EventHandler>();
 		}
 		
 		private CommandWrapper(ICommand command, IReadOnlyCollection<ICondition> conditions)
@@ -125,16 +127,20 @@ namespace ICSharpCode.Core
 				commandCreated = true;
 				addInCommand = CreateCommand(codon);
 				if (canExecuteChangedHandlersToRegisterOnCommand != null) {
-					// Creating the command potentially changes the CanExecute state
-					canExecuteChangedHandlersToRegisterOnCommand(this, EventArgs.Empty);
-					
-					addInCommand.CanExecuteChanged += canExecuteChangedHandlersToRegisterOnCommand;
+					var handlers = canExecuteChangedHandlersToRegisterOnCommand.ToArray();
 					canExecuteChangedHandlersToRegisterOnCommand = null;
+					
+					foreach (var handler in handlers) {
+						addInCommand.CanExecuteChanged += handler;
+						// Creating the command potentially changes the CanExecute state, so we should raise the event handlers once:
+						handler(this, EventArgs.Empty);
+					}
 				}
 			}
 		}
 		
-		EventHandler canExecuteChangedHandlersToRegisterOnCommand;
+		// maintain weak reference semantics for CanExecuteChanged
+		WeakCollection<EventHandler> canExecuteChangedHandlersToRegisterOnCommand;
 		
 		public event EventHandler CanExecuteChanged {
 			add {
@@ -143,8 +149,8 @@ namespace ICSharpCode.Core
 				
 				if (addInCommand != null)
 					addInCommand.CanExecuteChanged += value;
-				else
-					canExecuteChangedHandlersToRegisterOnCommand += value;
+				else if (canExecuteChangedHandlersToRegisterOnCommand != null)
+					canExecuteChangedHandlersToRegisterOnCommand.Add(value);
 			}
 			remove {
 				if (conditions.Count > 0 && UnregisterConditionRequerySuggestedHandler != null)
@@ -152,8 +158,8 @@ namespace ICSharpCode.Core
 				
 				if (addInCommand != null)
 					addInCommand.CanExecuteChanged -= value;
-				else
-					canExecuteChangedHandlersToRegisterOnCommand -= value;
+				else if (canExecuteChangedHandlersToRegisterOnCommand != null)
+					canExecuteChangedHandlersToRegisterOnCommand.Remove(value);
 			}
 		}
 		

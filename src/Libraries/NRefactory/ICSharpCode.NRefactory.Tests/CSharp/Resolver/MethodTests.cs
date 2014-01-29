@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -56,13 +56,13 @@ class TestClass {
 			var resolver = prep.Item1;
 			var method = (IMethod)((MemberResolveResult)resolver.Resolve(md)).Member;
 			IVariable i1 = method.Parameters.Single(p => p.Name == "i");
-			IVariable j1 = method.Parameters.Single(p => p.Name == "j");
+//			IVariable j1 = method.Parameters.Single(p => p.Name == "j");
 
 			var returnExpr = (BinaryOperatorExpression)md.Body.Children.OfType<ReturnStatement>().Single().Expression;
 			var returnRR = (OperatorResolveResult)resolver.Resolve(returnExpr);
 
 			IVariable i2 = ((LocalResolveResult)returnRR.Operands[0]).Variable;
-			IVariable j2 = ((LocalResolveResult)returnRR.Operands[1]).Variable;
+//			IVariable j2 = ((LocalResolveResult)returnRR.Operands[1]).Variable;
 
 			Assert.IsTrue(ReferenceEquals(i1, i2));
 			Assert.IsTrue(ReferenceEquals(i1, i2));

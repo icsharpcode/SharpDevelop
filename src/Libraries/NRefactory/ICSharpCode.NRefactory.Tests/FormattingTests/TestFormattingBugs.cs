@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		/// <summary>
 		/// Bug 325187 - Bug in smart indent
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug325187()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
@@ -59,7 +59,7 @@ Console.WriteLine (""Bad indent"");",
 		/// <summary>
 		/// Bug 415469 - return ternary in a switch is not tabbed properly
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug415469 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -83,7 +83,7 @@ case CONDITION2:
 		/// <summary>
 		/// Bug 540043 - Format option for alignment of using-statements
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug540043 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -102,7 +102,7 @@ using (IDisposable b = null) {
 		/// <summary>
 		/// Bug 655635 - Auto format document doesn't indent comments as well
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug655635 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -142,7 +142,7 @@ using (IDisposable b = null) {
 		/// <summary>
 		///  Bug 659675 - on-the-fly code formatting breaks @-prefixed identifiers
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug659675 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -152,7 +152,7 @@ using (IDisposable b = null) {
 		/// <summary>
 		/// Bug 670213 - Document formatter deletes valid text!
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug670213 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -164,18 +164,31 @@ using (IDisposable b = null) {
 	{
 	}
 }",
-@"class Test
+			      @"class Test
 {
 	Test MyMethod () { // Comment
 	}
 }");
-		}
+		Test (policy, @"class Test
+{
+	Test MyMethod() // Comment
+	{
+		Foo ();
+	}
+}",
+		      @"class Test
+{
+	Test MyMethod () { // Comment
+		Foo ();
+	}
+}");
+	}
 		
 		
 		/// <summary>
 		/// Bug 677261 - Format Document with constructor with over-indented opening curly brace
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug677261 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -197,7 +210,7 @@ using (IDisposable b = null) {
 		/// <summary>
 		/// Bug 3586 -Format code is removing try { code blocks
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug3586 ()
 		{
 			var policy = FormattingOptionsFactory.CreateMono ();
@@ -305,6 +318,184 @@ foo ();
 	}
 }");
         }
+
+
+		/// <summary>
+		/// Bug 11601 - Formatting document moves "{" into the #endif line 
+		/// </summary>
+		[Test]
+		public void TestBug11601 ()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			policy.MethodBraceStyle = BraceStyle.EndOfLine;
+
+			Test (policy, @"class Test
+{
+	#if true
+	Test MyMethod () 
+	#else
+	Test MyMethod2 () 
+	#endif	
+	{
+	}
+}",
+@"class Test
+{
+	#if true
+	Test MyMethod () 
+	#else
+	Test MyMethod2 () 
+	#endif	
+	{
+	}
+}");
+		}
+	
+
+		/// <summary>
+		/// Bug 12270 - Code formatter breaks new() constraints
+		/// </summary>
+		[Test]
+		public void TestBug12270()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy,
+@"class C
+{
+	public void Test<T> () where T : new  ()
+	{
+	}
+}",
+@"class C
+{
+	public void Test<T> () where T : new()
+	{
+	}
+}");
+		}
+
+		/// <summary>
+		/// Bug 14324 - System.ArgumentOutOfRangeException while formatting C# code
+		/// </summary>
+		[Test]
+		public void TestBug14324()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy,
+			     @"class C
+{
+	public void Test ()
+	{
+		if
+(true ||
+false) {
+}
+	}
+}",
+			     @"class C
+{
+	public void Test ()
+	{
+		if (true ||
+		false) {
+		}
+	}
+}");
+		}
+
+
+
+		/// <summary>
+		/// Bug 14957 - System.InvalidOperationException: Sequence contains no elements
+		/// </summary>
+		[Test]
+		public void TestBug14957()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.SimplePropertyFormatting = PropertyFormatting.ForceOneLine;
+			Test(policy,
+				@"class X
+{
+	public int Foo { get {
+	} }
+}", @"class X
+{
+	public int Foo { get { } }
+}");
+		}
+
+		/// <summary>
+		/// Bug 15218 - Saving causing a crash
+		/// </summary>
+		[Test]
+		public void TestBug15218()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.SimplePropertyFormatting = PropertyFormatting.ForceOneLine;
+			Test(policy,
+				@"class Foo
+{
+	void Bar ()
+	{
+		foo += delegate(object s, EventArgs a)
+		{
+			var myDelegate = delegate()
+			{
+					
+			};
+		};  
+	}
+}
+", @"class Foo
+{
+	void Bar ()
+	{
+		foo += delegate(object s, EventArgs a) {
+			var myDelegate = delegate() {
+					
+			};
+		};  
+	}
+}
+");
+		}
+
+
+		/// <summary>
+		/// Bug 17047 - Smart indent failure
+		/// </summary>
+		[Test]
+		public void TestBug17047()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.ChainedMethodCallWrapping = Wrapping.WrapAlways;
+			Test(policy,
+				@"class Foo
+{
+	void Bar ()
+	{
+		Observable.Merge (shotStats, touchStats)
+			.GroupBy (e => e.Type)
+			.Subscribe (statGroup => {
+				Stats.Add (new StatItemViewModel (statGroup));
+			});
+	}
+}
+", @"class Foo
+{
+	void Bar ()
+	{
+		Observable.Merge (shotStats, touchStats)
+			.GroupBy (e => e.Type)
+			.Subscribe (statGroup => {
+				Stats.Add (new StatItemViewModel (statGroup));
+			});
+	}
+}
+");
+		}
 	}
 }
 

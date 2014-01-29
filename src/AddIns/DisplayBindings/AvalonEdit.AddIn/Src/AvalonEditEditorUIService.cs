@@ -8,6 +8,8 @@ using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.ContextActions;
+using ICSharpCode.AvalonEdit.AddIn.ContextActions;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -33,11 +35,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		/// <inheritdoc />
+		public IOverlayUIElement CreateOverlayUIElement(UIElement element)
+		{
+			if (element == null)
+				throw new ArgumentNullException("element");
+			CodeEditor codeEditor = textView.GetService<CodeEditor>();
+			if (codeEditor == null)
+				throw new NotSupportedException("This feature is not supported!");
+			var groupBox = new OverlayUIElementContainer(codeEditor);
+			groupBox.Content = element;
+			codeEditor.Children.Add(groupBox);
+			System.Windows.Controls.Grid.SetRow(groupBox, 1);
+			return groupBox;
+		}
+		
+		/// <inheritdoc />
 		public Point GetScreenPosition(int line, int column)
 		{
 			var positionInPixels = textView.PointToScreen(
 				textView.GetVisualPosition(new TextViewPosition(line, column), VisualYPosition.LineBottom) - textView.ScrollOffset);
 			return positionInPixels.TransformFromDevice(textView);
+		}
+		
+		/// <inheritdoc />
+		public void ShowContextActionsPopup(ContextActionsPopupViewModel viewModel)
+		{
+			new ContextActionsPopup { Actions = viewModel }.OpenAtCursorAndFocus();
 		}
 	}
 }

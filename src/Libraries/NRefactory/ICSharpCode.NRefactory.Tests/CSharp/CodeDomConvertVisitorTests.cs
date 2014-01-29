@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -30,6 +30,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	#if !__MonoCS__
 	[TestFixture]
 	public class CodeDomConvertVisitorTests : ResolverTestBase
 	{
@@ -39,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void SetUp()
 		{
 			base.SetUp();
-			unresolvedFile = new CSharpUnresolvedFile("test.cs");
+			unresolvedFile = new CSharpUnresolvedFile();
 			unresolvedFile.RootUsingScope.Usings.Add(MakeReference("System"));
 			unresolvedFile.RootUsingScope.Usings.Add(MakeReference("System.Collections.Generic"));
 			unresolvedFile.RootUsingScope.Usings.Add(MakeReference("System.Linq"));
@@ -119,6 +120,23 @@ namespace ICSharpCode.NRefactory.CSharp
 			var syntaxTree = parser.Parse(code, "program.cs");
 			Assert.IsFalse(parser.HasErrors);
 			return ConvertTypeDeclaration((EntityDeclaration)syntaxTree.Children.Single());
+		}
+		
+		string ConvertSyntaxTree(SyntaxTree syntaxTree)
+		{
+			return ConvertHelper(syntaxTree, (p,obj,w,opt) => p.GenerateCodeFromCompileUnit((CodeCompileUnit)obj, w, opt));
+		}
+		
+		string ConvertSyntaxTree(string code)
+		{
+			CSharpParser parser = new CSharpParser();
+			var syntaxTree = parser.Parse(code, "program.cs");
+			Assert.IsFalse(parser.HasErrors);
+			var result = ConvertSyntaxTree(syntaxTree);
+			var idx = result.IndexOf("namespace", StringComparison.Ordinal);
+			if (idx > 0)
+				result = result.Substring (idx);
+			return result;
 		}
 		#endregion
 		
@@ -454,5 +472,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			                ConvertMember("public class X { protected event EventHandler A, B; }"));
 		}
 		#endregion
+		
+		#region SyntaxTrees
+		[Test]
+		public void TestGlobalNamespaceFix ()
+		{
+			Assert.AreEqual("namespace A { using System; public class AClass { } } namespace B { using System.IO; using System; public class AClass { } }",
+			                ConvertSyntaxTree("using System; namespace A { public class AClass {} } namespace B { using System.IO; public class AClass {} }"));
+		}
+		#endregion
 	}
+#endif
 }

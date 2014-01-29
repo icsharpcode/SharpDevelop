@@ -76,5 +76,23 @@ namespace ICSharpCode.SharpDevelop
 				return SD.ResourceService.GetIcon(resourceName);
 			}
 		}
+		
+		public override bool Equals(object obj)
+		{
+			ResourceServiceImage other = obj as ResourceServiceImage;
+			if (other == null)
+				return false;
+			return this.resourceName == other.resourceName;
+		}
+		
+		public override int GetHashCode()
+		{
+			return resourceName.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[ResourceServiceImage {0}]", resourceName);
+		}
 	}
 }

@@ -22,7 +22,7 @@
     <OutputPath>..\..\..\..\..\AddIns\DisplayBindings\FormsDesigner\</OutputPath>
     <BaseAddress>108003328</BaseAddress>
     <FileAlignment>4096</FileAlignment>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\Main\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
@@ -78,6 +78,7 @@
     <Compile Include="Src\DesignerGenerator\CSharpDesignerGenerator.cs" />
     <Compile Include="Src\DesignerGenerator\IDesignerGenerator.cs" />
     <Compile Include="Src\DesignerLoader\AbstractCodeDomDesignerLoader.cs" />
+    <Compile Include="Src\DesignerLoader\CodeDOMVerboseOutputGenerator.cs" />
     <Compile Include="Src\DesignerLoader\NRefactoryDesignerLoader.cs" />
     <Compile Include="Src\DesignerSourceCodeStorage.cs" />
     <Compile Include="Src\Gui\ImageResourceEditorDialog.cs" />
@@ -96,7 +97,6 @@
       <DependentUpon>LocalizationModelOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\SecondaryDisplayBinding.cs" />
     <Compile Include="Src\DesignerViewContent.cs" />
     <Compile Include="Src\FormKeyHandler.cs" />
     <Compile Include="Src\Gui\AddComponentsDialog.cs">
@@ -128,7 +128,6 @@
     <Compile Include="Src\Services\ResourceStore.cs" />
     <Compile Include="Src\Services\SharpDevelopSerializationProvider.cs" />
     <Compile Include="Src\Services\ToolboxService.cs" />
-    <Compile Include="Src\Services\TypeResolutionService.cs" />
     <Compile Include="Src\Services\UIService.cs" />
     <Compile Include="Src\Services\XmlDesignerNameCreationService.cs" />
     <Compile Include="Src\ToolboxProvider.cs" />
@@ -174,6 +173,7 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>

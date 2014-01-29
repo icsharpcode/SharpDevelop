@@ -15,11 +15,13 @@ using System.Windows.Markup;
 using System.Xml;
 
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.WpfDesign.Designer;
@@ -37,10 +39,24 @@ namespace ICSharpCode.WpfDesign.AddIn
 	{
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
+			SharpDevelopTranslations.Init();
+			
 			BasicMetadata.Register();
+			
+			// TODO Move this Initialization to LoadInternal
+//			WpfToolbox.Instance.AddProjectDlls(file);
+
+			ProjectService.ProjectItemAdded += ProjectService_ProjectItemAdded;
 			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
+		}
+
+		void ProjectService_ProjectItemAdded(object sender, ProjectItemEventArgs e)
+		{
+			// TODO reimplement this!
+//			if (e.ProjectItem is ReferenceProjectItem)
+//				WpfToolbox.Instance.AddProjectDlls(this.Files[0]);
 		}
 		
 		static WpfViewContent()
@@ -134,6 +150,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			}
 		}
 		
+		public static List<SDTask> DllLoadErrors = new List<SDTask>();
 		void UpdateTasks(XamlErrorService xamlErrorService)
 		{
 			Debug.Assert(xamlErrorService != null);
@@ -144,10 +161,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 			tasks.Clear();
 			
 			foreach (XamlError error in xamlErrorService.Errors) {
-				var task = new SDTask(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line - 1, TaskType.Error);
+				var task = new SDTask(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line, SharpDevelop.TaskType.Error);
 				tasks.Add(task);
 				TaskService.Add(task);
 			}
+			
+			TaskService.AddRange(DllLoadErrors);
 			
 			if (xamlErrorService.Errors.Count != 0) {
 				SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
@@ -178,24 +197,41 @@ namespace ICSharpCode.WpfDesign.AddIn
 
 		void OnPropertyGridPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (propertyGridView.PropertyGrid.ReloadActive) return;
 			if (e.PropertyName == "Name") {
 				if (!propertyGridView.PropertyGrid.IsNameCorrect) return;
 				
 				// get the XAML file
-				OpenedFile fileName = this.Files.FirstOrDefault(f => f.FileName.ToString().EndsWith(".xaml", StringComparison.OrdinalIgnoreCase));
-				if (fileName == null) return;
+				OpenedFile file = this.Files.FirstOrDefault(f => f.FileName.ToString().EndsWith(".xaml", StringComparison.OrdinalIgnoreCase));
+				if (file == null) return;
 				
 				// parse the XAML file
-				ParseInformation info = SD.ParserService.Parse(fileName.FileName);
+				ParseInformation info = SD.ParserService.Parse(file.FileName);
 				if (info == null) return;
+				ICompilation compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+				var designerClass = info.UnresolvedFile.TopLevelTypeDefinitions[0]
+					.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly))
+					.GetDefinition();
+				if (designerClass == null) return;
+				var reparseFileNameList = designerClass.Parts.Select(p => new ICSharpCode.Core.FileName(p.UnresolvedFile.FileName)).ToArray();
 				
 				// rename the member
-				#warning reimplement rename!
-				/*
-				IMember member = info.CompilationUnit.Classes [0].AllMembers.FirstOrDefault(m => m.Name == propertyGridView.PropertyGrid.OldName);
-				if (member != null) {
-					FindReferencesAndRenameHelper.RenameMember(member, propertyGridView.PropertyGrid.Name);
-				}*/
+				ISymbol controlSymbol = designerClass.GetFields(f => f.Name == propertyGridView.PropertyGrid.OldName, GetMemberOptions.IgnoreInheritedMembers)
+					.SingleOrDefault();
+				if (controlSymbol != null) {
+					FindReferenceService.RenameSymbol(controlSymbol, propertyGridView.PropertyGrid.Name, new DummyProgressMonitor())
+						.ObserveOnUIThread()
+						.Subscribe(error => SD.MessageService.ShowError(error.Message), // onNext
+						           ex => SD.MessageService.ShowException(ex), // onError
+						           // onCompleted
+						           () => {
+						           	foreach (var fileName in reparseFileNameList) {
+						           		SD.ParserService.ParseAsync(fileName).FireAndForget();
+						           	}
+						           }
+						          );
+
+				}
 			}
 		}
 		
@@ -226,6 +262,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public override void Dispose()
 		{
+			ProjectService.ProjectItemAdded -= ProjectService_ProjectItemAdded;
+
 			propertyContainer.Clear();
 			base.Dispose();
 		}

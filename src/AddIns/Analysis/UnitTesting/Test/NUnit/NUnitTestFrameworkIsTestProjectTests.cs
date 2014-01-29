@@ -23,9 +23,7 @@ namespace UnitTesting.Tests.NUnit
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			SD.Services.AddService(typeof(IMessageLoop), MockRepository.GenerateStrictMock<IMessageLoop>());
 			SD.Services.AddService(typeof(IParserService), MockRepository.GenerateStrictMock<IParserService>());
-			SD.MainThread.Stub(m => m.VerifyAccess());
 			testFramework = new NUnitTestFramework();
 		}
 		

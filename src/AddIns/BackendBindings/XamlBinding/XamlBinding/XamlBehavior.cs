@@ -6,10 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -17,11 +14,6 @@ namespace ICSharpCode.XamlBinding
 {
 	public class XamlBehavior : ProjectBehavior
 	{
-		/// <summary>
-		/// value: http://schemas.microsoft.com/winfx/2006/xaml
-		/// </summary>
-		public const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
-		
 		public override ItemType GetDefaultItemType(string fileName)
 		{
 			if (".xaml".Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase))
@@ -30,7 +22,7 @@ namespace ICSharpCode.XamlBinding
 			return base.GetDefaultItemType(fileName);
 		}
 		
-		public override ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		public override ISymbolSearch PrepareSymbolSearch(ISymbol entity)
 		{
 			return CompositeSymbolSearch.Create(new XamlSymbolSearch(Project, entity), base.PrepareSymbolSearch(entity));
 		}

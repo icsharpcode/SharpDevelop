@@ -114,10 +114,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (fx != null)
 				UpdateAppConfig(fx);
 			if (Project.OutputType != OutputType.Library) {
-				if (DotnetDetection.IsDotnet45Installed()) {
-					Project.SetProperty(null, Project.ActivePlatform, "Prefer32Bit", "True", PropertyStorageLocations.PlatformSpecific, true);
+				if (fx != null && DotnetDetection.IsDotnet45Installed() && fx.IsBasedOn(TargetFramework.Net45)) {
+					Project.SetProperty(null, Project.ActiveConfiguration.Platform, "Prefer32Bit", "True", PropertyStorageLocations.PlatformSpecific, true);
 				} else {
-					Project.SetProperty(null, Project.ActivePlatform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, true);
+					Project.SetProperty(null, Project.ActiveConfiguration.Platform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, true);
 				}
 			}
 			base.ProjectCreationComplete();
@@ -136,12 +136,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override CompilerVersion CurrentCompilerVersion {
 			get {
 				switch (Project.MinimumSolutionVersion) {
-					case Solution.SolutionVersionVS2005:
+					case SolutionFormatVersion.VS2005:
 						return CompilerVersion.MSBuild20;
-					case Solution.SolutionVersionVS2008:
+					case SolutionFormatVersion.VS2008:
 						return CompilerVersion.MSBuild35;
-					case Solution.SolutionVersionVS2010:
-					case Solution.SolutionVersionVS2012:
+					case SolutionFormatVersion.VS2010:
+					case SolutionFormatVersion.VS2012:
 						return CompilerVersion.MSBuild40;
 					default:
 						throw new NotSupportedException();
@@ -184,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
-			if (!Project.ReadOnly) {
+			if (!Project.IsReadOnly) {
 				lock (Project.SyncRoot) {
 					TargetFramework oldFramework = Project.CurrentTargetFramework;
 					if (newVersion != null && GetAvailableCompilerVersions().Contains(newVersion)) {

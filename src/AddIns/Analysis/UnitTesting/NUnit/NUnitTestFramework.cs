@@ -38,7 +38,7 @@ namespace ICSharpCode.UnitTesting
 		
 		public static bool IsTestMethod(IMethod method)
 		{
-			if (method == null || method.EntityType != EntityType.Method)
+			if (method == null || method.SymbolKind != SymbolKind.Method)
 				return false;
 			var testAttribute = testAttributeRef.Resolve(method.Compilation);
 			var testCaseAttribute = testCaseAttributeRef.Resolve(method.Compilation);

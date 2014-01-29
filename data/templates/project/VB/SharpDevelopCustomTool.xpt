@@ -6,7 +6,7 @@
 		<Name>Custom Tool</Name>
 		<Category>VB</Category>
 		<Subcategory>SharpDevelop</Subcategory>
-		<Icon>VBNet.Project.ControlLibrary</Icon>
+		<Icon>VB.Project.ControlLibrary</Icon>
 		<Description>A custom tool that implements a code generator transforming a source file into an output file whenever the source is changed inside SharpDevelop</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -17,7 +17,7 @@
 		<Open filename = "AddInWritingHelp.txt"/>
 	</Actions>
 	
-	<Project language="VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

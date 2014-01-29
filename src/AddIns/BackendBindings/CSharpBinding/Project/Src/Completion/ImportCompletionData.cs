@@ -24,13 +24,13 @@ namespace CSharpBinding.Completion
 		string insertUsing;
 		string insertionText;
 		
-		public ImportCompletionData(ITypeDefinition typeDef, CSharpTypeResolveContext contextAtCaret, bool useFullName)
+		public ImportCompletionData(ITypeDefinition typeDef, CSharpResolver contextAtCaret, bool useFullName)
 			: base(typeDef)
 		{
 			this.Description = "using " + typeDef.Namespace + ";";
 			if (useFullName) {
-				var astBuilder = new TypeSystemAstBuilder(new CSharpResolver(contextAtCaret));
-				insertionText = astBuilder.ConvertType(typeDef).GetText();
+				var astBuilder = new TypeSystemAstBuilder(contextAtCaret);
+				insertionText = astBuilder.ConvertType(typeDef).ToString();
 			} else {
 				insertionText = typeDef.Name;
 				insertUsing = typeDef.Namespace;

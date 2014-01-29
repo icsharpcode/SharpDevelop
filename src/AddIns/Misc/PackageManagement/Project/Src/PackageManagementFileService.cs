@@ -48,6 +48,17 @@ namespace ICSharpCode.PackageManagement
 			InvokeIfRequired(() => FileService.CopyFile(oldFileName, newFileName, isDirectory: false, overwrite: false));
 		}
 		
+		public void SaveFile(IViewContent view)
+		{
+			if (SD.MainThread.InvokeRequired) {
+				SD.MainThread.InvokeIfRequired(() => SaveFile(view));
+			} else {
+				if (view.IsDirty) {
+					view.Files.ForEach(ICSharpCode.SharpDevelop.Commands.SaveFile.Save);
+				}
+			}
+		}
+		
 		public bool FileExists(string fileName)
 		{
 			return InvokeIfRequired(() => File.Exists(fileName));
@@ -65,8 +76,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void ParseFile(string fileName)
 		{
-			throw new NotImplementedException();
-			//SD.ParserService.ParseFile(fileName);
+			SD.ParserService.ParseFile(new FileName(fileName));
 		}
 		
 		public ICompilation GetCompilationUnit(string fileName)

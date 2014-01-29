@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public void AddNamedFieldArgument(string fieldName, IConstantValue value)
 		{
 			this.NamedArguments.Add(new KeyValuePair<IMemberReference, IConstantValue>(
-				new DefaultMemberReference(EntityType.Field, attributeType, fieldName),
+				new DefaultMemberReference(SymbolKind.Field, attributeType, fieldName),
 				value
 			));
 		}
@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public void AddNamedPropertyArgument(string propertyName, IConstantValue value)
 		{
 			this.NamedArguments.Add(new KeyValuePair<IMemberReference, IConstantValue>(
-				new DefaultMemberReference(EntityType.Property, attributeType, propertyName),
+				new DefaultMemberReference(SymbolKind.Property, attributeType, propertyName),
 				value
 			));
 		}

@@ -31,11 +31,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		}
 		
 		protected abstract void Run(ITextEditor editor, string clipboardText);
-		
-		protected string GetIndentation(IDocument document, int line)
-		{
-			return DocumentUtilitites.GetWhitespaceAfter(document, document.GetLineByNumber(line).Offset);
-		}
 	}
 	
 	/// <summary>
@@ -52,11 +47,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void Run(ITextEditor editor, string clipboardText)
 		{
-			string indentation = GetIndentation(editor.Document, editor.Caret.Line);
+			string indentation = DocumentUtilities.GetIndentation(editor.Document, editor.Caret.Line);
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			int maxLineLength = editor.Options.VerticalRulerColumn - VisualIndentationLength(editor, indentation);
 			StringWriter insertedText = new StringWriter();
-			insertedText.NewLine = DocumentUtilitites.GetLineTerminator(editor.Document, editor.Caret.Line);
+			insertedText.NewLine = DocumentUtilities.GetLineTerminator(editor.Document, editor.Caret.Line);
 			using (StringReader reader = new StringReader(clipboardText)) {
 				string line;
 				while ((line = reader.ReadLine()) != null) {
@@ -154,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			if (expression == null)
 				return;
-			string indentation = GetIndentation(editor.Document, editor.Caret.Line);
+			string indentation = DocumentUtilities.GetIndentation(editor.Document, editor.Caret.Line);
 			CodeGeneratorOptions options = new CodeGeneratorOptions();
 			options.IndentString = editor.Options.IndentationString;
 			StringWriter writer = new StringWriter();

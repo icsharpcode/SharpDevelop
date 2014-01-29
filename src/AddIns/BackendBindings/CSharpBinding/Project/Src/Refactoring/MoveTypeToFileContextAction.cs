@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
@@ -40,7 +41,30 @@ namespace CSharpBinding.Refactoring
 				return false;
 			return identifier.Parent is TypeDeclaration || identifier.Parent is DelegateDeclaration;
 		}
-
+		
+		public override string DisplayName
+		{
+			get {
+				return "Move type to file";
+			}
+		}
+		
+		public override string GetDisplayName(EditorRefactoringContext context)
+		{
+			CSharpFullParseInformation parseInformation = context.GetParseInformation() as CSharpFullParseInformation;
+			if (parseInformation != null) {
+				SyntaxTree st = parseInformation.SyntaxTree;
+				Identifier identifier = (Identifier) st.GetNodeAt(context.CaretLocation, node => node.Role == Roles.Identifier);
+				if (identifier == null)
+					return DisplayName;
+				
+				return StringParser.Parse("${res:SharpDevelop.Refactoring.MoveClassToFile}",
+				                          new StringTagPair("FileName", MakeValidFileName(identifier.Name)));
+			}
+			
+			return DisplayName;
+		}
+		
 		public override async void Execute(EditorRefactoringContext context)
 		{
 			SyntaxTree st = await context.GetSyntaxTreeAsync().ConfigureAwait(false);
@@ -49,7 +73,7 @@ namespace CSharpBinding.Refactoring
 			EntityDeclaration node = (EntityDeclaration)st.GetNodeAt(context.CaretLocation, n => n is TypeDeclaration || n is DelegateDeclaration);
 			IDocument document = context.Editor.Document;
 			
-			string newFileName = Path.Combine(Path.GetDirectoryName(context.FileName), MakeValidFileName(node.Name));
+			FileName newFileName = FileName.Create(Path.Combine(Path.GetDirectoryName(context.FileName), MakeValidFileName(node.Name)));
 			string header = CopyFileHeader(document, info);
 			string footer = CopyFileEnd(document, info);
 			
@@ -80,7 +104,7 @@ namespace CSharpBinding.Refactoring
 			IViewContent viewContent = FileService.NewFile(newFileName, newCode.ToString());
 			viewContent.PrimaryFile.SaveToDisk(newFileName);
 			// now that the code is saved in the other file, remove it from the original document
-			RemoveExtractedNode();
+			RemoveExtractedNode(context, node);
 			
 			IProject project = (IProject)compilation.GetProject();
 			if (project != null) {
@@ -93,9 +117,12 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		void RemoveExtractedNode()
+		void RemoveExtractedNode(EditorRefactoringContext context, EntityDeclaration node)
 		{
-			//throw new NotImplementedException();
+			IDocument document = context.Editor.Document;
+			int start = document.GetOffset(node.StartLocation);
+			int end   = document.GetOffset(node.EndLocation);
+			document.Remove(start, end - start);
 		}
 		
 		string CopyFileHeader(IDocument document, CSharpFullParseInformation info)
@@ -126,10 +153,6 @@ namespace CSharpBinding.Refactoring
 			if (name.IndexOfAny(Path.GetInvalidFileNameChars()) > -1)
 				return name.RemoveAny(Path.GetInvalidFileNameChars()) + ".cs";
 			return name + ".cs";
-		}
-
-		public override string DisplayName {
-			get { return "Move type to file"; }
 		}
 	}
 }

@@ -43,33 +43,33 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public IRecentOpen RecentOpen {
 			get {
 				return LazyInitializer.EnsureInitialized(
-					ref recentOpen, () => new RecentOpen(PropertyService.NestedProperties("RecentOpen")));
+					ref recentOpen, () => new RecentOpen(SD.PropertyService.NestedProperties("RecentOpen")));
 			}
 		}
 		
 		public bool DeleteToRecycleBin {
 			get {
-				return PropertyService.Get("SharpDevelop.DeleteToRecycleBin", true);
+				return SD.PropertyService.Get("SharpDevelop.DeleteToRecycleBin", true);
 			}
 			set {
-				PropertyService.Set("SharpDevelop.DeleteToRecycleBin", value);
+				SD.PropertyService.Set("SharpDevelop.DeleteToRecycleBin", value);
 			}
 		}
 		
 		public bool SaveUsingTemporaryFile {
 			get {
-				return PropertyService.Get("SharpDevelop.SaveUsingTemporaryFile", true);
+				return SD.PropertyService.Get("SharpDevelop.SaveUsingTemporaryFile", true);
 			}
 			set {
-				PropertyService.Set("SharpDevelop.SaveUsingTemporaryFile", value);
+				SD.PropertyService.Set("SharpDevelop.SaveUsingTemporaryFile", value);
 			}
 		}
 		#endregion
 		
 		#region DefaultFileEncoding
 		public int DefaultFileEncodingCodePage {
-			get { return PropertyService.Get("SharpDevelop.DefaultFileEncoding", 65001); }
-			set { PropertyService.Set("SharpDevelop.DefaultFileEncoding", value); }
+			get { return SD.PropertyService.Get("SharpDevelop.DefaultFileEncoding", 65001); }
+			set { SD.PropertyService.Set("SharpDevelop.DefaultFileEncoding", value); }
 		}
 		
 		public Encoding DefaultFileEncoding {
@@ -332,9 +332,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				this.switchToOpenedView = switchToOpenedView;
 			}
 			
-			public void Invoke(string fileName)
+			public void Invoke(FileName fileName)
 			{
-				OpenedFile file = SD.FileService.GetOrCreateOpenedFile(FileName.Create(fileName));
+				OpenedFile file = SD.FileService.GetOrCreateOpenedFile(fileName);
 				try {
 					IViewContent newContent = binding.CreateContentForFile(file);
 					if (newContent != null) {
@@ -454,12 +454,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			try {
 				IViewContent content = OpenFile(fileName);
-				if (content is IPositionable) {
-					// TODO: enable jumping to a particular view
+				IPositionable positionable = content != null ? content.GetService<IPositionable>() : null;
+				if (positionable != null) {
 					content.WorkbenchWindow.ActiveViewContent = content;
 					NavigationService.ResumeLogging();
 					loggingResumed = true;
-					((IPositionable)content).JumpTo(Math.Max(1, line), Math.Max(1, column));
+					positionable.JumpTo(Math.Max(1, line), Math.Max(1, column));
 				} else {
 					NavigationService.ResumeLogging();
 					loggingResumed = true;

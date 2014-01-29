@@ -39,18 +39,18 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		void CreateProjectWithVisualBasicMSBuildProject()
 		{
-			msbuildProject = WebReferenceTestHelper.CreateTestProject("VBNet");
+			msbuildProject = WebReferenceTestHelper.CreateTestProject("VB");
 			project = new ProjectWithServiceReferences(msbuildProject);			
 		}
 		
 		void SetProjectDirectory(string directory)
 		{
-			fakeProject.Stub(p => p.Directory).Return(directory);			
+			fakeProject.Stub(p => p.Directory).Return(DirectoryName.Create(directory));
 		}
 		
 		ProjectItem GetFirstServiceReferenceFileInMSBuildProject(ServiceReferenceFileName fileName)
 		{
-			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName.Path);
+			return msbuildProject.Items.SingleOrDefault(item => item.FileName == FileName.Create(fileName.Path));
 		}
 		
 		ServiceReferencesProjectItem GetFirstWCFMetadataItemInMSBuildProject()
@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		ProjectItem GetFileProjectItemInMSBuildProject(string fileName)
 		{
-			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName);
+			return msbuildProject.Items.SingleOrDefault(item => item.FileName == FileName.Create(fileName));
 		}
 		
 		ServiceReferenceProjectItem GetFirstWCFMetadataStorageItemInMSBuildProject()
@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		FileProjectItem GetFileFromMSBuildProject(string fileName)
 		{
-			return msbuildProject.Items.Single(item => item.FileName == fileName) as FileProjectItem;
+			return msbuildProject.Items.Single(item => item.FileName == FileName.Create(fileName)) as FileProjectItem;
 		}
 		
 		ReferenceProjectItem GetReferenceFromMSBuildProject(string name)
@@ -311,7 +311,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		{
 			CreateProjectWithVisualBasicMSBuildProject();
 			
-			Assert.AreEqual("VBNet", project.Language);
+			Assert.AreEqual("VB", project.Language);
 		}
 		
 		[Test]

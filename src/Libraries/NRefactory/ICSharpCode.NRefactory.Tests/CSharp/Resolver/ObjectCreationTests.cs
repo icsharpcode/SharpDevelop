@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -286,13 +286,10 @@ class C {
 }";
 			var rr = Resolve<ConversionResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
-			Assert.IsTrue(rr.Conversion.IsIdentityConversion);
-			var rr2 = (ConversionResolveResult)rr.Input;
-			Assert.IsFalse(rr2.IsError);
-			Assert.IsTrue(rr2.Conversion.IsMethodGroupConversion);
+			Assert.IsTrue(rr.Conversion.IsMethodGroupConversion);
 			
-			Assert.AreEqual("C.M", rr2.Conversion.Method.FullName);
-			var mgrr = (MethodGroupResolveResult)rr2.Input;
+			Assert.AreEqual("C.M", rr.Conversion.Method.FullName);
+			var mgrr = (MethodGroupResolveResult)rr.Input;
 			Assert.IsInstanceOf<ThisResolveResult>(mgrr.TargetResult);
 		}
 		

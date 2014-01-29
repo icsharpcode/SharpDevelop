@@ -6,12 +6,9 @@ using System.Globalization;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Dialogs;
 using ICSharpCode.Reports.Core.Globals;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.Commands
@@ -40,12 +37,12 @@ namespace ICSharpCode.Reports.Addin.Commands
 	
 	public class CollectParametersCommand :AbstractCommand
 	{
-		ReportSettings reportSettings;
+		readonly ReportSettings reportSettings;
 		
 		public CollectParametersCommand (ReportSettings reportSettings)
 		{
 			if (reportSettings == null) {
-				throw new ArgumentNullException("ReportSettings");
+				throw new ArgumentNullException("reportSettings");
 			}
 			this.reportSettings = reportSettings;
 		}
@@ -54,7 +51,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 		public override void Run()
 		{
 			if (reportSettings.SqlParameters.Count > 0) {
-				using (ParameterDialog paramDialog = new ParameterDialog(reportSettings.SqlParameters))
+				using (var paramDialog = new ParameterDialog(reportSettings.SqlParameters))
 				{
 					paramDialog.ShowDialog();
 					if (paramDialog.DialogResult == System.Windows.Forms.DialogResult.OK) {

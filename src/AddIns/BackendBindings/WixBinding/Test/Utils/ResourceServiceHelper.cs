@@ -11,7 +11,6 @@ namespace WixBinding.Tests.Utils
 	{
 		public static void InitializeForUnitTests()
 		{
-			SD.Services.RemoveService(typeof(IResourceService));
 			var propertyService = SD.Services.GetService(typeof(IPropertyService)) as IPropertyService;
 			SD.Services.AddService(typeof(IResourceService), new ResourceServiceImpl("", propertyService));
 		}

@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -82,17 +82,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			// class A<X> { class B<Y> { } }
 			DefaultUnresolvedTypeDefinition a = new DefaultUnresolvedTypeDefinition(string.Empty, "A");
-			a.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "X"));
+			a.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "X"));
 			
 			DefaultUnresolvedTypeDefinition b = new DefaultUnresolvedTypeDefinition(a, "B");
 			b.TypeParameters.Add(a.TypeParameters[0]);
-			b.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 1, "Y"));
+			b.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 1, "Y"));
 			
 			a.NestedTypes.Add(b);
 			
 			var compilation = TypeSystemHelper.CreateCompilation(a, b);
 			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a.FullTypeName);
-			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b.FullTypeName);
+//			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b.FullTypeName);
 			
 			// A<> gets self-parameterized, B<> stays unbound
 			Assert.AreEqual("A`1+B`1[[`0],[]]", resolvedA.GetNestedTypes().Single().ReflectionName);

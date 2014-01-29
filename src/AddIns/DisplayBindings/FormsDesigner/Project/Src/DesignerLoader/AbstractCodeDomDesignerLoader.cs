@@ -22,7 +22,6 @@ namespace ICSharpCode.FormsDesigner
 		bool loading;
 		IDesignerLoaderHost designerLoaderHost = null;
 		ITypeResolutionService typeResolutionService = null;
-		readonly IDesignerGenerator generator;
 		
 		public override bool Loading {
 			get { return base.Loading || loading; }
@@ -34,22 +33,6 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected IDesignerLoaderHost DesignerLoaderHost {
 			get { return this.designerLoaderHost; }
-		}
-		
-		protected override CodeDomProvider CodeDomProvider {
-			get { return this.generator.CodeDomProvider; }
-		}
-		
-		protected IDesignerGenerator Generator {
-			get { return this.generator; }
-		}
-		
-		protected AbstractCodeDomDesignerLoader(IDesignerGenerator generator)
-		{
-			if (generator == null) {
-				throw new ArgumentNullException("generator", "Generator cannot be null");
-			}
-			this.generator = generator;
 		}
 		
 		public override void Dispose()

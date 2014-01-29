@@ -17,7 +17,7 @@ namespace CSharpBinding.Parser
 {
 	public class CSharpFullParseInformation : ParseInformation
 	{
-		readonly SyntaxTree compilationUnit;
+		readonly SyntaxTree syntaxTree;
 		internal List<NewFolding> newFoldings;
 		
 		public CSharpFullParseInformation(CSharpUnresolvedFile unresolvedFile, ITextSourceVersion parsedVersion, SyntaxTree compilationUnit)
@@ -27,7 +27,7 @@ namespace CSharpBinding.Parser
 				throw new ArgumentNullException("unresolvedFile");
 			if (compilationUnit == null)
 				throw new ArgumentNullException("compilationUnit");
-			this.compilationUnit = compilationUnit;
+			this.syntaxTree = compilationUnit;
 		}
 		
 		public new CSharpUnresolvedFile UnresolvedFile {
@@ -35,14 +35,25 @@ namespace CSharpBinding.Parser
 		}
 		
 		public SyntaxTree SyntaxTree {
-			get { return compilationUnit; }
+			get { return syntaxTree; }
 		}
+		
+		static readonly object ResolverCacheKey = new object();
 		
 		public CSharpAstResolver GetResolver(ICompilation compilation)
 		{
-			return (CSharpAstResolver)compilation.CacheManager.GetOrAddShared(
-				this, _ => new CSharpAstResolver(compilation, compilationUnit, UnresolvedFile)
-			);
+			// Cache the resolver within the compilation.
+			// (caching in the parse information could prevent the compilation from being garbage-collected)
+			
+			// Also, don't cache CSharpAstResolvers for every file - doing so would require too much memory,
+			// and we usually only need to access the same file several times.
+			// So we use a static key to get the resolver, and verify that it belongs to this parse information.
+			var resolver = compilation.CacheManager.GetShared(ResolverCacheKey) as CSharpAstResolver;
+			if (resolver == null || resolver.RootNode != syntaxTree || resolver.UnresolvedFile != UnresolvedFile) {
+				resolver = new CSharpAstResolver(compilation, syntaxTree, UnresolvedFile);
+				compilation.CacheManager.SetShared(ResolverCacheKey, resolver);
+			}
+			return resolver;
 		}
 		
 		public override IEnumerable<NewFolding> GetFoldings(IDocument document, out int firstErrorOffset)

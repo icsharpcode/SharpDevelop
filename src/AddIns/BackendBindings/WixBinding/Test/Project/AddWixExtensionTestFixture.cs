@@ -4,7 +4,6 @@
 using System;
 using System.Linq;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
@@ -25,7 +24,6 @@ namespace WixBinding.Tests.Project
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 			string fileName1 = @"C:\Projects\Test\wixext\test.dll";
 			string fileName2 = @"C:\Projects\Test\mainext\main.dll";
 			project = WixBindingTestsHelper.CreateEmptyWixProject();

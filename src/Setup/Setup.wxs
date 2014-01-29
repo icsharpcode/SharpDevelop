@@ -54,18 +54,21 @@
  			and then run the msi to uninstall SharpDevelop. Without the 
 			"Installed OR" this would not be allowed.
 		-->
+		
+		<!-- SharpDevelop 5 doesn't support Win XP and below. -->
+		<Condition Message="SharpDevelop $(var.PRODUCTDISPLAYVERSION) can only be installed on Windows Vista and higher.">
+			Installed OR (VersionNT >= 600)
+		</Condition>
+		
 		<!--
-			Check for .NET 4.0 RTM Full
+			Check for .NET 4.5 RTM
 		-->
-		<Property Id="NETFRAMEWORK40FULL" Secure="yes">
-			<RegistrySearch Id="NetFramework40Full" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Install" Type="raw" />
+		<!-- we could check NETFRAMEWORK45 optionally if we want to force the user to install a specific version -->
+		<Property Id="NETFRAMEWORK45" Secure="yes">
+			<RegistrySearch Id="NetFramework45" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Release" Type="raw" />
 		</Property>
-		<Property Id="NETFRAMEWORK40FULLVERSION" Secure="yes">
-			<RegistrySearch Id="NetFramework40FullVersion" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Version" Type="raw" />
-		</Property>
-		<!-- we could check NETFRAMEWORK40FULLVERSION optionally if we want to force the user to install a specific version -->
-		<Condition Message="This setup requires the .NET 4.0 Full Framework to be installed.">
-			Installed OR NETFRAMEWORK40FULL
+		<Condition Message="This setup requires the .NET Framework 4.5 to be installed.">
+			Installed OR NETFRAMEWORK45
 		</Condition>
 		
 		<!--
@@ -176,6 +179,7 @@
 				<ComponentRef Id="SharpDevelopExe"/>
 				<ComponentRef Id="SharpDevelopExeFiles"/>
 				<ComponentRef Id="SharpDevelopDocFiles"/>
+				<ComponentRef Id="DependenciesHtml"/>
 				<ComponentRef Id="ICSharpCodeBuildTasksDll"/>
 				<ComponentRef Id="BuildTasksTargetFiles"/>
 				<ComponentRef Id="ICSharpCodeCoreDll"/>
@@ -183,6 +187,8 @@
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryCSharpDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryXmlDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryCecilDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryCSharpRefactoringDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopWidgets"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditDll"/>
@@ -239,11 +245,15 @@
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>
-				<ComponentRef Id="EmptyCSharpMvcWebProjectTemplate"/>
-				<ComponentRef Id="CSharpMvcWebProjectTemplate"/>
+				<ComponentRef Id="EmptyCSharpMvc3WebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc3WebProjectTemplate"/>
+				<ComponentRef Id="EmptyCSharpMvc4WebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc4WebProjectTemplate"/>
 				<ComponentRef Id="VBFileTemplates"/>
-				<ComponentRef Id="EmptyVBMvcWebProjectTemplate"/>
-				<ComponentRef Id="VBMvcWebProjectTemplate"/>
+				<ComponentRef Id="EmptyVBMvc3WebProjectTemplate"/>
+				<ComponentRef Id="VBMvc3WebProjectTemplate"/>
+				<ComponentRef Id="EmptyVBMvc4WebProjectTemplate"/>
+				<ComponentRef Id="VBMvc4WebProjectTemplate"/>
 				<ComponentRef Id="CSharpMvcControllerFileTemplate"/>
 				<ComponentRef Id="CSharpMvcViewPageFileTemplate"/>
 				<ComponentRef Id="CSharpMvcViewContentPageFileTemplate"/>
@@ -283,16 +293,15 @@
 				<ComponentRef Id="ExampleProjectTemplate"/>
 				<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
 				<ComponentRef Id="CSharpBindingFiles"/>
-				<!--
-				<ComponentRef Id="VBNetBindingFiles"/>-->
+				<ComponentRef Id="VBBindingFiles"/>
 				<ComponentRef Id="WixBindingFiles"/>
 				<ComponentRef Id="WixUIMondoProjectTemplate"/>
 				<ComponentRef Id="WixUIMinimalProjectTemplate"/>
 				<ComponentRef Id="WixUIInstallDirProjectTemplate"/>
 				<ComponentRef Id="WixUIFeatureTreeProjectTemplate"/>
-				<!--<ComponentRef Id="FormsDesignerFiles"/>-->
+				<ComponentRef Id="FormsDesignerFiles"/>
 				<ComponentRef Id="IconEditorFiles"/>
-				<!--<ComponentRef Id="ResourceEditorFiles"/>-->
+				<ComponentRef Id="ResourceEditorFiles"/>
 				<ComponentRef Id="SettingsEditorFiles"/>
 				<!--<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
@@ -306,8 +315,11 @@
 				<ComponentRef Id="WorkflowDesignerDll"/>-->
 				
 				<ComponentRef Id="XmlEditorFiles"/>
-				<ComponentRef Id="AddInManagerFiles"/>
-				<ComponentRef Id="AddInManagerSharpZipLibDll"/>
+				<ComponentRef Id="AddInManager2Addin"/>
+				<ComponentRef Id="ICSharpCodeAddInManager2Dll"/>
+				<ComponentRef Id="AddInManager2ICSharpCodeSharpZipLibDll"/>
+				<ComponentRef Id="AddInManager2NuGetCoreDll"/>
+				<ComponentRef Id="AddInManager2MSWebXmlTransformDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
 				<!--<ComponentRef Id="CodeQualityFiles"/>-->
@@ -333,8 +345,8 @@
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
 				
-				<!--
 				<ComponentRef Id="ICSharpCodeScriptingDll"/>
+				<!--
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>
 				<ComponentRef Id="PythonEmptyClassTemplate"/>
 				<ComponentRef Id="PythonEmptyFormTemplate"/>
@@ -395,8 +407,6 @@
 				
 				<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	
-				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
-				<ComponentRef Id="FSharpEmptyClassTemplate"/>
 				
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
 				<ComponentRef Id="SourceAnalysisAddin"/>
@@ -408,18 +418,17 @@
 				<ComponentRef Id="AvalonEditAddInAddin"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditAddInDll"/>
 				
-				<!--<ComponentRef Id="Hook32Dll"/>
+				<ComponentRef Id="Hook32Dll"/>
 				<ComponentRef Id="Hook64Dll"/>
 				<ComponentRef Id="ICSharpCodeProfilerAddInAddin"/>
 				<ComponentRef Id="ICSharpCodeProfilerAddInDll"/>
 				<ComponentRef Id="ICSharpCodeProfilerControllerDll"/>
 				<ComponentRef Id="ICSharpCodeProfilerControlsDll"/>
 				<ComponentRef Id="SystemDataSQLiteDll"/>
-				<ComponentRef Id="IQToolkitDll"/>-->
+				<ComponentRef Id="IQToolkitDll"/>
 				
 				<ComponentRef Id="CppBindingAddin"/>
 				<ComponentRef Id="CppBindingDll"/>
-				<ComponentRef Id="CppBindingTemplates"/>
 				
 				<ComponentRef Id="ICSharpCodeWpfDesignAddInDll"/>
 				<ComponentRef Id="ICSharpCodeWpfDesignDesignerDll"/>
@@ -434,32 +443,33 @@
 				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreDll"/>
 				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreUIDll"/>
 				<ComponentRef Id="ICSharpCodeDataSQLServerDll"/>
-				<ComponentRef Id="CSharpEDMXXft"/>
 				
 				<ComponentRef Id="UDCSystemDataSQLiteDll"/>
 				<ComponentRef Id="UsageDataCollectorAddin"/>
 				<ComponentRef Id="UsageDataCollectorDll"/>
 				
-				<!--<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
+<!--				<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
 				<ComponentRef Id="ICSharpCodeReportDesignerAddin"/>
 				<ComponentRef Id="ICSharpCodeReportsAddinDll"/>
 				<ComponentRef Id="ICSharpCodeReportsCoreDll"/>
 				<ComponentRef Id="IronyDll"/>
 				<ComponentRef Id="ITextSharpDll"/>-->
 			
-				<!--<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
-				<ComponentRef Id="NuGetConsoleTypesDll"/>-->
+				<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
+				<ComponentRef Id="NuGetConsoleTypesDll"/>
 				<ComponentRef Id="NuGetCoreDll"/>
+				<ComponentRef Id="NuGetExe"/>
 				<ComponentRef Id="NuGetNuspecSchema"/>
 				<ComponentRef Id="NuGetLicenseTxt"/>
-				<!--<ComponentRef Id="PackageFormatPs1Xml"/>-->
+				<ComponentRef Id="PackageFormatPs1Xml"/>
 				<ComponentRef Id="PackageManagementAddin"/>
-				<!--<ComponentRef Id="PackageManagementCmdletsDll"/>
-				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>-->
+				<ComponentRef Id="PackageManagementCmdletsDll"/>
+				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>
 				<ComponentRef Id="PackageManagementDll"/>
-				<!--<ComponentRef Id="SharpDevelopEnvDteDll"/>-->
-				<!--<ComponentRef Id="PackageManagementPowerShellDll"/>
-				<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>-->
+				<ComponentRef Id="SharpDevelopEnvDteDll"/>
+				<ComponentRef Id="PackageManagementPowerShellDll"/>
+				<!--<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>-->
+				<ComponentRef Id="MicrosoftWebXmlTransformDll"/>
 				<ComponentRef Id="JQuery172NuGetPackage"/>
 				<ComponentRef Id="Modernizr253NuGetPackage"/>
 			
@@ -469,7 +479,6 @@
 				<ComponentRef Id="CSharpTextTemplateFileTemplate"/>
 				<ComponentRef Id="VBTextTemplateFileTemplate"/>
 			
-				<!--
 				<ComponentRef Id="MachineSpecificationsAddIn"/>
 				<ComponentRef Id="MachineSpecificationsCommandLineDll"/>
 				<ComponentRef Id="MachineSpecificationsDll"/>
@@ -481,7 +490,6 @@
 				<ComponentRef Id="Mspec_x86_clr4Exe"/>
 				<ComponentRef Id="Mspec_x86Exe"/>
 				<ComponentRef Id="MspecExe"/>
-				-->
 				
 				<ComponentRef Id="AspNetMvcAddin"/>
 				<ComponentRef Id="AspNetMvcDll"/>
@@ -520,8 +528,10 @@
 				<ComponentRef Id="VBMvcRazorLayoutPageFileTemplate"/>
 				<ComponentRef Id="VBMvcRazorPartialPageFileTemplate"/>
 				<ComponentRef Id="VBMvcRazorViewPageFileTemplate"/>
-				<ComponentRef Id="CSharpMvcRazorProjectTemplate"/>
-				<ComponentRef Id="VBMvcRazorProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc3RazorProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc4RazorProjectTemplate"/>
+				<ComponentRef Id="VBMvc3RazorProjectTemplate"/>
+				<ComponentRef Id="VBMvc4RazorProjectTemplate"/>
 
 				<!--<ComponentRef Id="JavaScriptBindingDll"/>
 				<ComponentRef Id="JavaScriptBindingAddin"/>
@@ -543,7 +553,7 @@
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
 			         AllowAdvertise="no"
-				     InstallDefault="local"
+			         InstallDefault="local"
 			         Title="File Associations"
 			         Description="Registers file associations with SharpDevelop.">
 				<!-- 
@@ -653,7 +663,24 @@
 		
 		<!-- Using WixUI -->
 		<Property Id="WIXUI_INSTALLDIR">INSTALLDIR</Property>
-		<UIRef Id="WixUI_FeatureTree"/>
+		<UI>
+			<UIRef Id="WixUI_FeatureTree" />
+			<Publish
+				Dialog="ExitDialog"
+				Control="Finish"
+				Event="DoAction"
+				Value="ShowReadme">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+		</UI>
+		
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Learn about dependencies you should install" />
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1"/>
+		
+		<Property Id="WixShellExecTarget" Value="[#Dependencies.html]" />
+		<CustomAction
+			Id="ShowReadme"
+			BinaryKey="WixCA"
+			DllEntry="WixShellExec"
+			Impersonate="yes" />
 		
 		<!--
 			If a newer version of SharpDevelop is installed, show an error message.

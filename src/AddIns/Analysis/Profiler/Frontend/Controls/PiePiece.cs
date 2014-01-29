@@ -2,11 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Shapes;
-using System.Windows.Media;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace ICSharpCode.Profiler.Controls
 {
@@ -99,7 +97,7 @@ namespace ICSharpCode.Profiler.Controls
 		/// <summary>
 		/// Draws the pie piece
 		/// </summary>
-		private void DrawGeometry(StreamGeometryContext context)
+		void DrawGeometry(StreamGeometryContext context)
 		{
 			double centreX = Radius;
 			double centreY = Radius;

@@ -649,7 +649,6 @@ class C : S
 		/// <summary>
 		/// Bug 9910 - Completion not working in object initializer
 		/// </summary>
-		[Ignore("FIX ME !")]
 		[Test]
 		public void TestBug9910()
 		{
@@ -746,6 +745,25 @@ class C : S
 				Assert.IsNotNull(provider.Find("args"), "'args' not found.");
 			});
 			
+		}
+		
+		[Test]
+		public void TestUnfinishedDictionaryInitializer()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+@"class Test
+{
+	public static void Main(string [] args)
+	{
+		var dict = new Dictionary<char, char> {
+			{ a$
+		}
+	}
+}
+",
+				provider => {
+					Assert.IsNotNull(provider.Find("args"), "'args' not found.");
+				});
 		}
 	}
 }

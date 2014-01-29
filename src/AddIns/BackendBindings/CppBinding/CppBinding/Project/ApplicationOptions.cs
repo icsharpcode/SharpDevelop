@@ -37,7 +37,7 @@ namespace ICSharpCode.CppBinding.Project
 	
 		void SetOutputTypeCombo()
 		{
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration, base.Project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration);
 			string subsystem = group.GetElementMetadata("Link", "SubSystem");
 			string configurationType = base.Project.GetEvaluatedProperty("ConfigurationType");
 			OutputType validOutputType = ConfigurationTypeToOutputType(configurationType, subsystem);
@@ -61,7 +61,7 @@ namespace ICSharpCode.CppBinding.Project
 		void project_MinimumSolutionVersionChanged(object sender, EventArgs e)
 		{
 			// embedding manifests requires the project to target MSBuild 3.5 or higher
-			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
+			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2008;
 		}
 		
 		
@@ -171,8 +171,7 @@ namespace ICSharpCode.CppBinding.Project
 			OutputType outputType = values[this.outputTypeComboBox.SelectedIndex];
 			
 			string subsystem = OutputTypeToSubsystem(outputType);
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project,
-			                                                                  base.Project.ActiveConfiguration, base.Project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration);
 			group.SetElementMetadata("Link", "SubSystem", subsystem);
 			
 			return OutputTypeToConfigurationType(outputType);
@@ -330,7 +329,7 @@ namespace ICSharpCode.CppBinding.Project
 			string fileName = Path.Combine(project.Directory, rcFileName);
 			FileProjectItem rcFileItem = new FileProjectItem(project, project.GetDefaultItemType(fileName));
 			rcFileItem.Include = FileUtility.GetRelativePath(project.Directory, fileName);
-			((IProjectItemListProvider)project).AddProjectItem(rcFileItem);
+			ProjectService.AddProjectItem(project, rcFileItem);
 			return fileName;
 		}
 		
@@ -414,7 +413,7 @@ namespace ICSharpCode.CppBinding.Project
 				FileService.FireFileCreated(manifestFile, false);
 			}
 			
-			if (!base.Project.IsFileInProject(manifestFile)) {
+			if (!base.Project.IsFileInProject(FileName.Create(manifestFile))) {
 				FileProjectItem newItem = new FileProjectItem(base.Project, ItemType.None);
 				newItem.Include = "app.manifest";
 				ProjectService.AddProjectItem(base.Project, newItem);
