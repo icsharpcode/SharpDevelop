@@ -427,11 +427,6 @@
 		<MenuItem id    = "SetAsStartupProject"
 		          label = "${res:ProjectComponent.ContextMenu.SetAsStartupProject}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
-		<MenuItem id = "Convert"
-		          label = "${res:ICSharpCode.SharpDevelop.Commands.Convert}"
-		          type  = "Menu">
-			<!-- elements are added by backend bindings -->
-		</MenuItem>
 		<MenuItem id = "GenerateDocumentation"
 		          label = "${res:ProjectComponent.ContextMenu.GenerateDocumentation}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.GenerateProjectDocumentation"/>
@@ -1914,21 +1909,6 @@
 			<MenuItem id = "Separator1" type = "Separator" />
 			<Include id = "ToolList" path = "/SharpDevelop/Workbench/Tools" />
 			<MenuItem id = "Separator2" type = "Separator" />
-			
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor">
-				<MenuItem id = "ConvertCode" label = "${res:XML.MainMenu.ToolMenu.ConvertCodeTo}" type="Menu">
-					<Condition name="ActiveContentExtension" activeextension=".vb" action = "Disable">
-						<MenuItem id = "CSharp"
-						          label = "C#"
-						          class = "ICSharpCode.SharpDevelop.Commands.CSharpConvertBuffer"/>
-					</Condition>
-					<Condition name="ActiveContentExtension" activeextension=".cs" action = "Disable">
-						<MenuItem id = "VB"
-						          label = "Visual Basic"
-						          class = "ICSharpCode.SharpDevelop.Commands.VBConvertBuffer"/>
-					</Condition>
-				</MenuItem>
-			</Condition>
 			
 			<Condition name = "SolutionOpen" action="Disable">
 				<MenuItem id = "Upgrade"

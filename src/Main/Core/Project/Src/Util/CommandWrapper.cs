@@ -146,7 +146,8 @@ namespace ICSharpCode.Core
 					canExecuteChangedHandlersToRegisterOnCommand = null;
 					
 					foreach (var handler in handlers) {
-						addInCommand.CanExecuteChanged += handler;
+						if (addInCommand != null)
+							addInCommand.CanExecuteChanged += handler;
 						// Creating the command potentially changes the CanExecute state, so we should raise the event handlers once:
 						handler(this, EventArgs.Empty);
 					}
