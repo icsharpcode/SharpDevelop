@@ -76,8 +76,6 @@
     <Compile Include="src\Expressions\IntegrationTests\ParametersFixture.cs" />
     <Compile Include="src\Expressions\IronyGeneral.cs" />
     <Compile Include="src\MeasureArrange\ContainerArrangeStrategyFixture.cs" />
-    <Compile Include="src\Model\ReportModelFixture.cs" />
-    <Compile Include="src\Model\ReportSettingsFixture.cs" />
     <Compile Include="src\Model\Report_FromListFixture.cs" />
     <Compile Include="src\Model\Report_TwoItemsFixture.cs" />
     <Compile Include="src\PageBuilder\BaseConvertFixture.cs" />
