@@ -28,7 +28,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 	{
 		public bool IsGacAssembly(string fileName)
 		{
-			throw new NotImplementedException();
+			if (FileUtility.IsBaseDirectory(Fusion.GetGacPath(false), fileName))
+				return true;
+			if (FileUtility.IsBaseDirectory(Fusion.GetGacPath(true), fileName))
+				return true;
+			return false;
 		}
 		
 		public IEnumerable<DomAssemblyName> Assemblies {
