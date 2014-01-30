@@ -14,7 +14,6 @@
 		<ArtefactPrefix>SharpDevelop_</ArtefactPrefix>
 		<NUnitToolPath>$(MSBuildProjectDirectory)\Tools\NUnit</NUnitToolPath>
 		<NUnitTempToolPath>$(SharpDevelopBin)\Tools\x86NUnit</NUnitTempToolPath>
-		<ProfilerSrc>$(SharpDevelopSrc)\AddIns\Misc\Profiler</ProfilerSrc>
 		<SamplesSrc>$(ProjectDir)\samples</SamplesSrc>
 		
 		<!-- we cannot use <MSBuild> to build a solution because -->
@@ -75,8 +74,6 @@
 		
 		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.sln $(BuildProperties)"/>
-		<!--<Exec WorkingDirectory="$(ProfilerSrc)"
-		      Command="$(MSBuildExecutable) AutomatedBuild.proj $(BuildProperties)"/>-->
 	</Target>
 	
 	<Target Name="buildunittests">
@@ -179,16 +176,12 @@
 		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
 		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln /t:Clean $(BuildProperties)"/>
-		<!--<Exec WorkingDirectory="$(ProfilerSrc)"
-		      Command="$(MSBuildExecutable) AutomatedBuild.proj /t:Clean $(BuildProperties)"/>-->
 	</Target>
 	<Target Name="clean2">
 		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
 		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln /t:Clean $(BuildProperties)"/>
-		<!--<Exec WorkingDirectory="$(ProfilerSrc)"
-		      Command="$(MSBuildExecutable) AutomatedBuild.proj /t:Clean $(BuildProperties)"/>-->
 	</Target>
 	
 	<Target Name="createsetup">

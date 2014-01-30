@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		IncludeHidden = 1,
 		/// <summary>
-		/// Perform a recurive search into subdirectories.
+		/// Perform a recursive search into subdirectories.
 		/// </summary>
 		IncludeSubdirectories = 2
 	}
