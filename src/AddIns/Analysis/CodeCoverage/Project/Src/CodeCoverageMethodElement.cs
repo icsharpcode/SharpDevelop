@@ -126,9 +126,52 @@ namespace ICSharpCode.CodeCoverage
 
                 sps.Add(sp);
             }
+
+            // SP's are originaly ordered by CIL offset
+            // but ccrewrite can move offset of
+            //   Contract.Requires before method signature SP (xxx{) and
+            //   Contract.Ensures after method closing SP (})
+            // So sort SP's back by line/column
+            sps.OrderBy(item => item.Line).OrderBy(item => item.Column);
             return sps;
         }
     
+        // Find method-body start SequencePoint "xxxx {"
+        public static CodeCoverageSequencePoint getBodyStartSP(IEnumerable<CodeCoverageSequencePoint> sPoints) {
+            CodeCoverageSequencePoint startSeqPoint = null;
+            bool startFound = false;
+            foreach (CodeCoverageSequencePoint sPoint in sPoints) {
+                if ( sPoint.Content == "{") {
+                    if (startSeqPoint == null) startSeqPoint = sPoint;
+                    startFound = true;
+                    break;
+                }
+                startSeqPoint = sPoint;
+            }
+            return startFound == true? startSeqPoint : null;
+        }
+
+        // Find method-body final SequencePoint "}"
+        public static CodeCoverageSequencePoint getBodyFinalSP(IEnumerable<CodeCoverageSequencePoint> sps) {
+            CodeCoverageSequencePoint finalSeqPoint = null;
+            foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(sps)) {
+                if ( sp.Content == "}") {
+                    if (finalSeqPoint == null) {
+                        finalSeqPoint = sp;
+                    }
+                    // check for ccrewrite duplicate
+                    else if (sp.Line == finalSeqPoint.Line &&
+                             sp.Column == finalSeqPoint.Column &&
+                             sp.EndLine == finalSeqPoint.EndLine &&
+                             sp.EndColumn == finalSeqPoint.EndColumn &&
+                             sp.Offset < finalSeqPoint.Offset) {
+                        finalSeqPoint = sp;
+                    }
+                }
+            }
+            return finalSeqPoint;
+        }
+        
         List<CodeCoverageSequencePoint> FilterSequencePoints(List<CodeCoverageSequencePoint> sps) {
 
             List<CodeCoverageSequencePoint> returnList = sps;
@@ -166,12 +209,6 @@ namespace ICSharpCode.CodeCoverage
                     }
                 }
 
-                // SP's are originaly ordered by CIL offset
-                // but ccrewrite can move offset of
-                //   Contract.Requires before method signature SP (xxx{) and
-                //   Contract.Ensures after method closing SP (})
-                // So sort SP's back by line/column
-                selected.OrderBy(item => item.Line).OrderBy(item => item.Column);
                 returnList = selected;
             }
 
@@ -204,42 +241,6 @@ namespace ICSharpCode.CodeCoverage
                 bps.Add(bp);
             }
             return bps;
-        }
-        
-        // Find method-body start SequencePoint "xxxx {"
-        public static CodeCoverageSequencePoint getBodyStartSP(IEnumerable<CodeCoverageSequencePoint> sPoints) {
-            CodeCoverageSequencePoint startSeqPoint = null;
-            bool startFound = false;
-            foreach (CodeCoverageSequencePoint sPoint in sPoints) {
-                if ( sPoint.Content == "{") {
-                    if (startSeqPoint == null) startSeqPoint = sPoint;
-                    startFound = true;
-                    break;
-                }
-                startSeqPoint = sPoint;
-            }
-            return startFound == true? startSeqPoint : null;
-        }
-
-        // Find method-body final SequencePoint "}"
-        public static CodeCoverageSequencePoint getBodyFinalSP(IEnumerable<CodeCoverageSequencePoint> sps) {
-            CodeCoverageSequencePoint finalSeqPoint = null;
-            foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(sps)) {
-                if ( sp.Content == "}") {
-                    if (finalSeqPoint == null) {
-                        finalSeqPoint = sp;
-                    }
-                    // check for ccrewrite duplicate
-                    else if (sp.Line == finalSeqPoint.Line &&
-                             sp.Column == finalSeqPoint.Column &&
-                             sp.EndLine == finalSeqPoint.EndLine &&
-                             sp.EndColumn == finalSeqPoint.EndColumn &&
-                             sp.Offset < finalSeqPoint.Offset) {
-                        finalSeqPoint = sp;
-                    }
-                }
-            }
-            return finalSeqPoint;
         }
         
         Tuple<int,int> GetBranchRatio () {
