@@ -118,9 +118,7 @@ namespace CheckFileHeaders
 			string content = GetFileContent(file);
 			int lastLine;
 			int headerType = AnalyzeHeader(content, out lastLine);
-			if (headerType == 8 || headerType == 9)
-				return;
-			if (headerType != 7)
+			if (headerType == 0 || headerType == 8 || headerType == 9)
 				return;
 			if (headerType == 4) {
 				Console.WriteLine("unknown file: " + file);
