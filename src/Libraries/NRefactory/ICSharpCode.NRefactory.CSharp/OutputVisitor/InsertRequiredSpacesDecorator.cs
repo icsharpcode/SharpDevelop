@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override void WriteIdentifier(Identifier identifier)
 		{
-			if (identifier.IsVerbatim) {
+			if (identifier.IsVerbatim || CSharpOutputVisitor.IsKeyword(identifier.Name, identifier)) {
 				if (lastWritten == LastWritten.KeywordOrIdentifier) {
 					// this space is not strictly required, so we call Space()
 					Space();

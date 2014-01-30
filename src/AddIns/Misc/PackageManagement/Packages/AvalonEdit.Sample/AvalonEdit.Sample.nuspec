@@ -5,7 +5,7 @@
     <version>4.3.1.9430</version>
     <authors>Daniel Grunwald</authors>
     <owners>SharpDevelop</owners>
-    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <projectUrl>http://www.avalonedit.net</projectUrl>
     <iconUrl>http://community.sharpdevelop.net/blogs/mattward/SharpDevelop.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

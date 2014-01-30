@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Diagnostics;
@@ -203,78 +218,78 @@ namespace Debugger.Tests {
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_Stepping.exe (Has symbols)</ModuleLoaded>
-    <Paused>ControlFlow_Stepping.cs:98,4-98,40</Paused>
+    <Paused>ControlFlow_Stepping.cs:113,4-113,40</Paused>
     <Log>Starting run with JMC=True</Log>
-    <Paused>ControlFlow_Stepping.cs:100,4-100,15</Paused>
-    <Paused>ControlFlow_Stepping.cs:23,27-23,28</Paused>
-    <Paused>ControlFlow_Stepping.cs:100,4-100,15</Paused>
-    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
-    <Paused>ControlFlow_Stepping.cs:26,25-26,26</Paused>
-    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
-    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
-    <Paused>ControlFlow_Stepping.cs:30,8-30,9</Paused>
-    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
-    <Paused>ControlFlow_Stepping.cs:103,4-103,26</Paused>
-    <Paused>ControlFlow_Stepping.cs:104,4-104,21</Paused>
-    <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:115,4-115,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:38,27-38,28</Paused>
+    <Paused>ControlFlow_Stepping.cs:115,4-115,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:41,25-41,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:45,8-45,9</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:118,4-118,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:119,4-119,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:120,4-120,14</Paused>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <Paused>ControlFlow_Stepping.cs:58,3-58,4</Paused>
-    <Paused>ControlFlow_Stepping.cs:59,4-59,46</Paused>
+    <Paused>ControlFlow_Stepping.cs:73,3-73,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:74,4-74,46</Paused>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>ZigZag2</LogMessage>
-    <Paused>ControlFlow_Stepping.cs:60,4-60,14</Paused>
-    <Paused>ControlFlow_Stepping.cs:58,3-58,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:75,4-75,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:73,3-73,4</Paused>
     <LogMessage>ZigZag2</LogMessage>
-    <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
-    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
-    <Paused>ControlFlow_Stepping.cs:87,50-87,51</Paused>
-    <Paused>ControlFlow_Stepping.cs:90,50-90,51</Paused>
-    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
-    <Paused>ControlFlow_Stepping.cs:107,3-107,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:120,4-120,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,50-102,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:105,50-105,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:122,3-122,4</Paused>
     <Log>Starting run with JMC=True</Log>
-    <Paused>ControlFlow_Stepping.cs:100,4-100,15</Paused>
-    <Paused>ControlFlow_Stepping.cs:23,27-23,28</Paused>
-    <Paused>ControlFlow_Stepping.cs:100,4-100,15</Paused>
-    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
-    <Paused>ControlFlow_Stepping.cs:26,25-26,26</Paused>
-    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
-    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
-    <Paused>ControlFlow_Stepping.cs:30,8-30,9</Paused>
-    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
-    <Paused>ControlFlow_Stepping.cs:103,4-103,26</Paused>
-    <Paused>ControlFlow_Stepping.cs:104,4-104,21</Paused>
-    <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
-    <Paused>ControlFlow_Stepping.cs:58,3-58,4</Paused>
-    <Paused>ControlFlow_Stepping.cs:59,4-59,46</Paused>
+    <Paused>ControlFlow_Stepping.cs:115,4-115,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:38,27-38,28</Paused>
+    <Paused>ControlFlow_Stepping.cs:115,4-115,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:41,25-41,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:45,8-45,9</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:118,4-118,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:119,4-119,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:120,4-120,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:73,3-73,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:74,4-74,46</Paused>
     <LogMessage>ZigZag2</LogMessage>
-    <Paused>ControlFlow_Stepping.cs:60,4-60,14</Paused>
-    <Paused>ControlFlow_Stepping.cs:58,3-58,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:75,4-75,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:73,3-73,4</Paused>
     <LogMessage>ZigZag2</LogMessage>
-    <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
-    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
-    <Paused>ControlFlow_Stepping.cs:87,50-87,51</Paused>
-    <Paused>ControlFlow_Stepping.cs:90,50-90,51</Paused>
-    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
-    <Paused>ControlFlow_Stepping.cs:107,3-107,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:120,4-120,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,50-102,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:105,50-105,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:122,3-122,4</Paused>
     <Log>Starting run with JMC=False</Log>
-    <Paused>ControlFlow_Stepping.cs:100,4-100,15</Paused>
-    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
-    <Paused>ControlFlow_Stepping.cs:26,25-26,26</Paused>
-    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
-    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
-    <Paused>ControlFlow_Stepping.cs:30,8-30,9</Paused>
-    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
-    <Paused>ControlFlow_Stepping.cs:103,4-103,26</Paused>
-    <Paused>ControlFlow_Stepping.cs:104,4-104,21</Paused>
-    <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:115,4-115,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:41,25-41,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:45,8-45,9</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:118,4-118,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:119,4-119,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:120,4-120,14</Paused>
     <LogMessage>ZigZag2</LogMessage>
     <LogMessage>ZigZag2</LogMessage>
-    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
-    <Paused>ControlFlow_Stepping.cs:87,50-87,51</Paused>
-    <Paused>ControlFlow_Stepping.cs:90,50-90,51</Paused>
-    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
-    <Paused>ControlFlow_Stepping.cs:107,3-107,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,50-102,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:105,50-105,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:122,3-122,4</Paused>
     <Exited />
   </Test>
 </DebuggerTests>

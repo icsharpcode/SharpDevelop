@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -137,14 +152,16 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				}
 				targetFrameworkComboBox.Items.AddRange(
 					availableTargetFrameworks.Where(fx => fx.DisplayName != null && fx.IsAvailable())
-					.OrderBy(fx => fx.Name).ToArray());
+					.OrderBy(fx => fx.TargetFrameworkVersion).ToArray());
 			}
 			if (targetFrameworkComboBox.Items.Count > 0) {
 				targetFrameworkComboBox.Visible = true;
 				targetFrameworkComboBox.SelectedIndex = 0;
-				string lastUsedTargetFramework = PropertyService.Get("Dialogs.NewProjectDialog.TargetFramework", TargetFramework.DefaultTargetFramework.Name);
+				string lastUsedTargetFramework = PropertyService.Get("Dialogs.NewProjectDialog.TargetFramework", TargetFramework.DefaultTargetFrameworkVersion);
+				string lastUsedTargetFrameworkProfile = PropertyService.Get("Dialogs.NewProjectDialog.TargetFrameworkProfile", TargetFramework.DefaultTargetFrameworkProfile);
 				for (int i = 0; i < targetFrameworkComboBox.Items.Count; i++) {
-					if (((TargetFramework)targetFrameworkComboBox.Items[i]).Name == lastUsedTargetFramework) {
+					var targetFramework = (TargetFramework)targetFrameworkComboBox.Items[i];
+					if (targetFramework.TargetFrameworkVersion == lastUsedTargetFramework && targetFramework.TargetFrameworkProfile == lastUsedTargetFrameworkProfile) {
 						targetFrameworkComboBox.SelectedIndex = i;
 						break;
 					}
@@ -305,7 +322,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				
 				if (item.Template.SupportedTargetFrameworks.Any()) {
 					cinfo.TargetFramework = (TargetFramework)targetFrameworkComboBox.SelectedItem;
-					PropertyService.Set("Dialogs.NewProjectDialog.TargetFramework", cinfo.TargetFramework.Name);
+					PropertyService.Set("Dialogs.NewProjectDialog.TargetFramework", cinfo.TargetFramework.TargetFrameworkVersion);
 				}
 				
 				cinfo.ProjectBasePath = DirectoryName.Create(NewProjectDirectory);

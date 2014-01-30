@@ -3,12 +3,12 @@ Website: http://www.icsharpcode.net/OpenSource/SD/Default.aspx
 Forums: http://community.sharpdevelop.net/forums/
 Nightly builds: http://build.sharpdevelop.net/BuildArtefacts
 
-Copyright 2012 AlphaSierraPapa for the SharpDevelop team
-License: SharpDevelop is distributed under the LGPL.
+Copyright 2014 AlphaSierraPapa for the SharpDevelop team.
+SharpDevelop is distributed under the MIT license.
 
 The #develop project started on September 11th, 2000. The project was initiated
 by Mike Krüger. In the course of the project, several contributors joined in.
-If you want to contribute see http://wiki.sharpdevelop.net/JoiningTheTeam.ashx.
+If you want to contribute see <https://github.com/icsharpcode/SharpDevelop/wiki/Joining-the-Team>.
 
 Overview
 #develop (short for SharpDevelop) is a free Integrated Development Environment
@@ -46,13 +46,12 @@ Libraries and integrated tools:
 	WPFToolkit
 
 Integrated Tools (shipping with SharpDevelop):
-	Boo
 	IronPython
 	IronRuby
 	NuGet
 	NUnit
 	PartCover
-	Wix
+	WiX
 
 Reusable Libraries (developed as part of SharpDevelop):
 	AvalonEdit
@@ -66,9 +65,10 @@ Reusable Libraries (developed as part of SharpDevelop):
 SharpDevelop Contributors:
 	Mike Krüger (Project Founder)
 	Daniel Grunwald (Technical Lead)
+	Andreas Weizel
 	Matt Ward
 	David Srbecky (Debugger)
 	Siegfried Pammer
-	Peter Forstmeier (SharpDevelop Reports)
+	Peter Forstmeier (SharpDevelop Reports)	
 	
 	(for a full list see https://github.com/icsharpcode/SharpDevelop/wiki/Contributors)

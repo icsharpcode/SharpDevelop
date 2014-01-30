@@ -101,12 +101,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 
 			public string PublicKeyToken {
-				get {
-					StringBuilder s = new StringBuilder();
-					foreach (byte b in r.PublicKeyToken)
-						s.Append(b.ToString("x2"));
-					return s.ToString();
-				}
+				get { return r.PublicKeyToken; }
 			}
 
 			public override string ToString()
