@@ -329,6 +329,10 @@ namespace CSharpBinding.Refactoring
 				this.layer = layer;
 				AddBinding(EditingCommands.MoveDownByLine, ModifierKeys.None, Key.Down, MoveMarker(false));
 				AddBinding(EditingCommands.MoveUpByLine, ModifierKeys.None, Key.Up, MoveMarker(true));
+				AddBinding(EditingCommands.MoveDownByPage, ModifierKeys.None, Key.PageDown, MoveMarkerPage(false));
+				AddBinding(EditingCommands.MoveUpByPage, ModifierKeys.None, Key.PageUp, MoveMarkerPage(true));
+				AddBinding(EditingCommands.MoveToLineStart, ModifierKeys.None, Key.Home, MoveMarkerFull(true));
+				AddBinding(EditingCommands.MoveToLineEnd, ModifierKeys.None, Key.End, MoveMarkerFull(false));
 				AddBinding(EditingCommands.EnterParagraphBreak, ModifierKeys.None, Key.Enter, layer.InsertCode);
 				AddBinding(ExitCommand, ModifierKeys.None, Key.Escape, layer.Cancel);
 			}
@@ -340,6 +344,49 @@ namespace CSharpBinding.Refactoring
 						layer.CurrentInsertionPoint = Math.Max(0, layer.CurrentInsertionPoint - 1);
 					else
 						layer.CurrentInsertionPoint = Math.Min(layer.insertionPoints.Length - 1, layer.CurrentInsertionPoint + 1);
+					layer.InvalidateVisual();
+					layer.ScrollToInsertionPoint();
+				};
+			}
+			
+			ExecutedRoutedEventHandler MoveMarkerPage(bool up)
+			{
+				return (sender, e) => {
+					TextLocation current = layer.insertionPoints[layer.CurrentInsertionPoint].Location;
+					double currentVPos = layer.editor.TextView.GetVisualTopByDocumentLine(current.Line);
+					
+					int newIndex = layer.CurrentInsertionPoint;
+					
+					double newVPos;
+					do {
+						if (up) {
+							newIndex--;
+							if (newIndex < 0) {
+								newIndex = 0;
+								break;
+							}
+						} else {
+							newIndex++;
+							if (newIndex >= layer.insertionPoints.Length) {
+								newIndex = layer.insertionPoints.Length - 1;
+								break;
+							}
+						}
+						newVPos = layer.editor.TextView.GetVisualTopByDocumentLine(layer.insertionPoints[newIndex].Location.Line);
+					} while (Math.Abs(currentVPos - newVPos) < layer.editor.ActualHeight);
+					layer.CurrentInsertionPoint = newIndex;
+					layer.InvalidateVisual();
+					layer.ScrollToInsertionPoint();
+				};
+			}
+			
+			ExecutedRoutedEventHandler MoveMarkerFull(bool up)
+			{
+				return (sender, e) => {
+					if (up)
+						layer.CurrentInsertionPoint = 0;
+					else
+						layer.CurrentInsertionPoint = layer.insertionPoints.Length - 1;
 					layer.InvalidateVisual();
 					layer.ScrollToInsertionPoint();
 				};
