@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -19,6 +34,7 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Rendering
 {
@@ -1026,7 +1042,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (heightTree.GetIsCollapsed(documentLine.LineNumber))
 				throw new InvalidOperationException("Trying to build visual line from collapsed line");
 			
-			Debug.WriteLine("Building line " + documentLine.LineNumber);
+			//Debug.WriteLine("Building line " + documentLine.LineNumber);
 			
 			VisualLine visualLine = new VisualLine(this, documentLine);
 			VisualLineTextSource textSource = new VisualLineTextSource(visualLine) {
@@ -1620,14 +1636,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		[ThreadStatic] static bool invalidCursor;
 		
 		/// <summary>
-		/// Updates the mouse cursor by calling <see cref="Mouse.UpdateCursor"/>, but with input priority.
+		/// Updates the mouse cursor by calling <see cref="Mouse.UpdateCursor"/>, but with background priority.
 		/// </summary>
 		public static void InvalidateCursor()
 		{
 			if (!invalidCursor) {
 				invalidCursor = true;
 				Dispatcher.CurrentDispatcher.BeginInvoke(
-					DispatcherPriority.Input,
+					DispatcherPriority.Background, // fixes issue #288
 					new Action(
 						delegate {
 							invalidCursor = false;
@@ -1794,13 +1810,27 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Gets a service container used to associate services with the text view.
 		/// </summary>
+		/// <remarks>
+		/// This container does not provide document services -
+		/// use <c>TextView.GetService()</c> instead of <c>TextView.Services.GetService()</c> to ensure
+		/// that document services can be found as well.
+		/// </remarks>
 		public ServiceContainer Services {
 			get { return services; }
 		}
 		
-		object IServiceProvider.GetService(Type serviceType)
+		/// <summary>
+		/// Retrieves a service from the text view.
+		/// If the service is not found in the <see cref="Services"/> container,
+		/// this method will also look for it in the current document's service provider.
+		/// </summary>
+		public virtual object GetService(Type serviceType)
 		{
-			return services.GetService(serviceType);
+			object instance = services.GetService(serviceType);
+			if (instance == null && document != null) {
+				instance = document.ServiceProvider.GetService(serviceType);
+			}
+			return instance;
 		}
 		
 		void ConnectToTextView(object obj)

@@ -1,0 +1,52 @@
+﻿<gui:AbstractInlineRefactorDialog x:Class="CSharpBinding.Refactoring.CreatePropertiesDialog"
+	Header="{sd:Localize AddIns.SharpRefactoring.CreateProperties.Title}"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:gui="clr-namespace:CSharpBinding.Refactoring"
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid Cursor="Arrow" KeyboardNavigation.TabNavigation="Cycle">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<TextBlock Margin="3"
+		           Text="{sd:Localize AddIns.SharpRefactoring.CreateProperties.Description}"
+		           TextWrapping="Wrap" />
+		<CheckBox x:Name="implementInterface" Margin="3" Grid.Row="1" Content="{sd:Localize AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged}" />
+		<ListView x:Name="listBox" Grid.Row="2" SelectionMode="Multiple" KeyboardNavigation.TabNavigation="Cycle" MaxHeight="300">
+			<ListView.View>
+				<GridView>
+					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.VariableLabel}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<CheckBox Grid.Column="0" IsChecked="{Binding IsIncluded}" VerticalAlignment="Center" Margin="0,0,3,0" />
+									<TextBlock Grid.Column="1" Text="{Binding Text}" />
+								</Grid>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.CreateProperties.AddSetterLabel}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<CheckBox IsChecked="{Binding AddSetter, Mode=TwoWay}" IsEnabled="{Binding IsSetable}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+				</GridView>
+			</ListView.View>
+		</ListView>
+		<widgets:UniformGridWithSpacing Columns="3" Margin="3" Grid.Row="3" HorizontalAlignment="Center">
+			<Button Content="{sd:Localize Global.OKButtonText}" Click="OKButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+			<Button Content="{sd:Localize Global.CancelButtonText}" Click="CancelButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+			<ToggleButton x:Name="selectAll" Content="{sd:Localize Global.SelectAllButtonText}" IsChecked="{Binding AllSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gui:CreatePropertiesDialog}}, Mode=TwoWay}" Checked="SelectAllChecked" Unchecked="SelectAllUnchecked" />
+		</widgets:UniformGridWithSpacing>
+	</Grid>
+</gui:AbstractInlineRefactorDialog>

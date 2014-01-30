@@ -1,12 +1,30 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using ICSharpCode.SharpDevelop.Util;
+
+using System.Threading.Tasks;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.GitAddIn
 {
@@ -42,7 +60,7 @@ namespace ICSharpCode.GitAddIn
 			if (wcroot == null)
 				return GitStatus.None;
 			GitStatusSet gss = GetStatusSet(wcroot);
-			return gss.GetStatus(Git.AdaptFileNameNoQuotes(wcroot, fileName));
+			return gss.GetStatus(Git.AdaptFileName(wcroot, fileName));
 		}
 		
 		public static GitStatusSet GetStatusSet(string wcRoot)
@@ -75,26 +93,40 @@ namespace ICSharpCode.GitAddIn
 			if (git == null)
 				return;
 			
-			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = wcRoot;
-			runner.LogStandardOutputAndError = false;
-			runner.OutputLineReceived += delegate(object sender, LineReceivedEventArgs e) {
-				if (!string.IsNullOrEmpty(e.Line)) {
-					statusSet.AddEntry(e.Line, GitStatus.OK);
+			using (ProcessRunner runner = new ProcessRunner()) {
+				runner.WorkingDirectory = DirectoryName.Create(wcRoot);
+				runner.RedirectStandardOutput = true;
+				runner.RedirectStandardError = true;
+				runner.Start(git, "ls-files");
+				
+				// process stderr in background
+				var errorTask = DisplayErrorStreamAsync(runner, GitMessageView.Category);
+				// process stderr on current thread:
+				using (var reader = runner.OpenStandardOutputReader()) {
+					string line;
+					while ((line = reader.ReadLine()) != null) {
+						if (line.Length > 0) {
+							statusSet.AddEntry(line, GitStatus.OK);
+						}
+					}
 				}
-			};
-			
-			string command = "ls-files";
-			bool hasErrors = false;
-			runner.ErrorLineReceived += delegate(object sender, LineReceivedEventArgs e) {
-				if (!hasErrors) {
-					hasErrors = true;
-					GitMessageView.AppendLine(runner.WorkingDirectory + "> git " + command);
+				errorTask.Wait();
+			}
+		}
+		
+		static async Task DisplayErrorStreamAsync(ProcessRunner runner, MessageViewCategory category)
+		{
+			using (var reader = runner.OpenStandardErrorReader()) {
+				bool hasErrors = false;
+				string line;
+				while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) != null) {
+					if (!hasErrors) {
+						hasErrors = true;
+						GitMessageView.AppendLine(runner.WorkingDirectory + "> " + runner.CommandLine);
+					}
+					GitMessageView.AppendLine(line);
 				}
-				GitMessageView.AppendLine(e.Line);
-			};
-			runner.Start(git, command);
-			runner.WaitForExit();
+			}
 		}
 		
 		static void GitGetStatus(string wcRoot, GitStatusSet statusSet)
@@ -103,36 +135,28 @@ namespace ICSharpCode.GitAddIn
 			if (git == null)
 				return;
 			
-			string command = "status --porcelain --untracked-files=no";
-			bool hasErrors = false;
-			
 			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = wcRoot;
-			runner.LogStandardOutputAndError = false;
-			runner.OutputLineReceived += delegate(object sender, LineReceivedEventArgs e) {
-				if (!string.IsNullOrEmpty(e.Line)) {
-					Match m = statusParseRegex.Match(e.Line);
-					if (m.Success) {
-						statusSet.AddEntry(m.Groups[2].Value, StatusFromText(m.Groups[1].Value));
-					} else {
-						if (!hasErrors) {
-							// in front of first output line, print the command line we invoked
-							hasErrors = true;
-							GitMessageView.AppendLine(runner.WorkingDirectory + "> git " + command);
+			runner.WorkingDirectory = DirectoryName.Create(wcRoot);
+			runner.RedirectStandardOutput = true;
+			runner.RedirectStandardError = true;
+			runner.Start(git, "status", "--porcelain", "--untracked-files=no");
+			// process stderr in background
+			var errorTask = DisplayErrorStreamAsync(runner, GitMessageView.Category);
+			// process stderr on current thread:
+			using (var reader = runner.OpenStandardOutputReader()) {
+				string line;
+				while ((line = reader.ReadLine()) != null) {
+					if (line.Length > 0) {
+						Match m = statusParseRegex.Match(line);
+						if (m.Success) {
+							statusSet.AddEntry(m.Groups[2].Value, StatusFromText(m.Groups[1].Value));
+						} else {
+							GitMessageView.AppendLine("unknown git status output: " + line);
 						}
-						GitMessageView.AppendLine("unknown output: " + e.Line);
 					}
 				}
-			};
-			runner.ErrorLineReceived += delegate(object sender, LineReceivedEventArgs e) {
-				if (!hasErrors) {
-					hasErrors = true;
-					GitMessageView.AppendLine(runner.WorkingDirectory + "> git " + command);
-				}
-				GitMessageView.AppendLine(e.Line);
-			};
-			runner.Start(git, command);
-			runner.WaitForExit();
+			}
+			errorTask.Wait();
 		}
 		
 		static GitStatus StatusFromText(string text)

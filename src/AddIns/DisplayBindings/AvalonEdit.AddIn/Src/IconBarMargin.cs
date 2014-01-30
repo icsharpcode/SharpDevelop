@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -10,11 +25,9 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
-using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using Mono.Cecil;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -166,7 +179,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			dragDropBookmark = bm;
 			dragDropStartPoint = dragDropCurrentPoint = e.GetPosition(this).Y;
 			if (TextView != null) {
-				TextArea area = TextView.Services.GetService(typeof(TextArea)) as TextArea;
+				TextArea area = TextView.GetService(typeof(TextArea)) as TextArea;
 				if (area != null)
 					area.PreviewKeyDown += TextArea_PreviewKeyDown;
 			}
@@ -178,7 +191,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				dragDropBookmark = null;
 				dragStarted = false;
 				if (TextView != null) {
-					TextArea area = TextView.Services.GetService(typeof(TextArea)) as TextArea;
+					TextArea area = TextView.GetService(typeof(TextArea)) as TextArea;
 					if (area != null)
 						area.PreviewKeyDown -= TextArea_PreviewKeyDown;
 				}
@@ -238,20 +251,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				if (e.ChangedButton == MouseButton.Left && TextView != null) {
 					// no bookmark on the line: create a new breakpoint
-					ITextEditor textEditor = TextView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+					ITextEditor textEditor = TextView.GetService(typeof(ITextEditor)) as ITextEditor;
 					if (textEditor != null) {
-						DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(BreakpointBookmark));
+						DebuggerService.ToggleBreakpointAt(textEditor, line);
 						return;
-					}
-					
-					// create breakpoint for the other posible active contents
-					var viewContent = WorkbenchSingleton.Workbench.ActiveContent as AbstractViewContentWithoutFile;
-					if (viewContent != null) {
-						textEditor = viewContent.Services.GetService(typeof(ITextEditor)) as ITextEditor;
-						if (textEditor != null) {
-							DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(DecompiledBreakpointBookmark));
-							return;
-						}
 					}
 				}
 			}

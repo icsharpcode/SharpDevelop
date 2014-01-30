@@ -1,10 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -17,7 +32,7 @@ namespace WixBinding.Tests.Gui
 		IDocument document;
 		MockTextEditor textEditor;
 		string originalXml;
-		string initialDocumentRegionText;		
+		string initialDocumentRegionText;
 		
 		[SetUp]
 		public void Init()
@@ -51,7 +66,7 @@ namespace WixBinding.Tests.Gui
 			// End column is the column containing the '>' of the </child> element.
 			int endColumn = 9;
 			
-			DomRegion region = new DomRegion(line, column, endLine, endColumn);
+			var region = new DomRegion(line, column, endLine, endColumn);
 			
 			WixDocumentLineSegment lineSegment = WixDocumentLineSegment.ConvertRegionToSegment(textEditor.Document, region);
 			initialDocumentRegionText = textEditor.Document.GetText(lineSegment.Offset, lineSegment.Length);
@@ -76,7 +91,7 @@ namespace WixBinding.Tests.Gui
 		{
 			int column = 1;
 			int line = 2;
-			Location expectedLocation = new Location(column, line);
+			var expectedLocation = new TextLocation(column, line);
 			Assert.AreEqual(expectedLocation, textEditor.LocationJumpedTo);
 		}
 		

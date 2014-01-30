@@ -12,7 +12,6 @@
 	<Runtime>
 		<Import assembly = "FSharpBinding.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
-		<Import assembly = ":ICSharpCode.SharpDevelop.Dom"/>
 		<Import assembly = "$ICSharpCode.CSharpBinding/CSharpBinding.dll"/>
 	</Runtime>
  	
@@ -29,7 +28,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
-		<Directory id = "fsc" path = "./Templates" />
+		<TemplateFile id = "fsc" resourceNamespace = "FSharpBinding.Templates" />
 	</Path>
 
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
@@ -44,7 +43,6 @@
 		<FileFilter id         = "FSharpProject"
 		            insertbefore="AllFiles"
 		            name       = "F# Project Files (*.fsproj)"
-		            class      = "ICSharpCode.SharpDevelop.Project.LoadProject"
 		            extensions = "*.fsproj"/>
 	</Path>
 	

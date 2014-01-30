@@ -1,9 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
-
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -12,53 +27,34 @@ using UnitTesting.Tests.Utils;
 namespace UnitTesting.Tests.Project
 {
 	[TestFixture]
-	public class TestClassWithTwoMethodsTestFixture
+	public class TestClassWithTwoMethodsTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestProject testProject;
-		TestClass testClass;
-		TestMember testMethod1;
-		TestMember testMethod2;
-		MockClass mockClass;
-		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
+		NUnitTestClass testClass;
+		NUnitTestMethod testMethod1;
+		NUnitTestMethod testMethod2;
 		
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
-			IProject project = new MockCSharpProject();
-			project.Name = "TestProject";
-			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
-			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
-			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
-
-			MockProjectContent projectContent = new MockProjectContent();
-			projectContent.Language = LanguageProperties.None;
-			
-			mockClass = new MockClass(projectContent, "RootNamespace.Tests.MyTestFixture");
-			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
-			projectContent.Classes.Add(mockClass);
-			
-			// Add a method to the test class
-			MockMethod mockMethod = new MockMethod(mockClass, "TestMethod1");
-			mockMethod.Attributes.Add(new MockAttribute("Test"));
-			mockClass.Methods.Add(mockMethod);
-			
-			mockMethod = new MockMethod(mockClass, "TestMethod2");
-			mockMethod.Attributes.Add(new MockAttribute("Test"));
-			mockClass.Methods.Add(mockMethod);
-			
-			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
-			testProject = new TestProject(project, projectContent, testFrameworks);
-			testClass = testProject.TestClasses[0];
-			testMethod1 = testClass.TestMembers[0];
-			testMethod2 = testClass.TestMembers[1];
+			base.SetUp();
+			AddCodeFile("test.cs", @"using NUnit.Framework;
+namespace RootNamespace.Tests {
+	[TestFixture]
+	class MyTestFixture {
+		[Test] public void TestMethod1() {}
+		[Test] public void TestMethod2() {}
+	}
+}");
+			testClass = testProject.GetTestClass(new FullTypeName("RootNamespace.Tests.MyTestFixture"));
+			testMethod1 = testClass.FindTestMethod("TestMethod1");
+			testMethod2 = testClass.FindTestMethod("TestMethod2");
 		}
 		
 		[Test]
 		public void TwoMethods()
 		{
-			Assert.AreEqual(2, testClass.TestMembers.Count);
+			Assert.AreEqual(2, testClass.NestedTests.Count);
 		}
-			
+		
 		[Test]
 		public void TestMethod1Failed()
 		{
@@ -154,53 +150,53 @@ namespace UnitTesting.Tests.Project
 			Assert.AreEqual(TestResultType.Failure, testClass.Result);
 		}
 		
-		[Test]
+		/*[Test]
 		public void FindTestMethod()
 		{
-			TestMember method = testProject.TestClasses.GetTestMember("RootNamespace.Tests.MyTestFixture.TestMethod1");
+			TestMember method = testProject.GetTestMember("RootNamespace.Tests.MyTestFixture.TestMethod1");
 			Assert.AreSame(testMethod1, method);
 		}
 		
 		[Test]
 		public void FindTestMethodFromUnknownTestMethod()
 		{
-			Assert.IsNull(testProject.TestClasses.GetTestMember("RootNamespace.Tests.MyTestFixture.UnknownTestMethod"));
+			Assert.IsNull(testProject.GetTestMember("RootNamespace.Tests.MyTestFixture.UnknownTestMethod"));
 		}
 		
 		[Test]
 		public void FindTestMethodFromUnknownTestClass()
 		{
-			Assert.IsNull(testProject.TestClasses.GetTestMember("RootNamespace.Tests.UnknownTestFixture.TestMethod1"));
+			Assert.IsNull(testProject.GetTestMember("RootNamespace.Tests.UnknownTestFixture.TestMethod1"));
 		}
 		
 		[Test]
 		public void FindTestMethodFromInvalidTestMethodName()
 		{
-			Assert.IsNull(testProject.TestClasses.GetTestMember(String.Empty));
-		}
+			Assert.IsNull(testProject.GetTestMember(String.Empty));
+		}*/
 		
 		/// <summary>
-		/// SD2-1278. Tests that the method is updated in the TestClass. 
+		/// SD2-1278. Tests that the method is updated in the TestClass.
 		/// This ensures that the method's location is up to date.
 		/// </summary>
 		[Test]
 		public void TestMethodShouldBeUpdatedInClass()
 		{
-			MockMethod mockMethod = new MockMethod(mockClass, "TestMethod1");
-			mockMethod.Attributes.Add(new MockAttribute("Test"));
+			Assert.AreEqual(5, testMethod1.Region.BeginLine);
 			
-			// Remove the existing TestMethod1 in the class.
-			mockClass.Methods.RemoveAt(0);
-
-			// Add our newly created test method object.
-			mockClass.Methods.Insert(0, mockMethod);
+			UpdateCodeFile("test.cs", @"using NUnit.Framework;
+namespace RootNamespace.Tests {
+	[TestFixture]
+	class MyTestFixture {
+		// New line
+		[Test] public void TestMethod1() {}
+		[Test] public void TestMethod2() {}
+	}
+}");
 			
-			TestClass testClass = testProject.TestClasses["RootNamespace.Tests.MyTestFixture"];
-			testClass.UpdateClass(mockClass);
-			
-			// Ensure that the TestClass now uses the new method object.
-			TestMember method = testClass.GetTestMember("TestMethod1");
-			Assert.AreSame(mockMethod, method.Member);
+			Assert.AreSame(testClass, testProject.GetTestClass(new FullTypeName("RootNamespace.Tests.MyTestFixture")));
+			Assert.AreSame(testMethod1, testClass.NestedTests.Single(m => m.DisplayName == "TestMethod1"));
+			Assert.AreEqual(6, testMethod1.Region.BeginLine);
 		}
 	}
 }

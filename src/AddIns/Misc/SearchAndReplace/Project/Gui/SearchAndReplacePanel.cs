@@ -1,25 +1,42 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Search;
-using ICSharpCode.SharpDevelop.Editor;
-using System;
 using System.Windows.Forms;
+
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace SearchAndReplace
 {
-	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
+	// TODO: remove XmlForms
+	#pragma warning disable 618
+	class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
 		SearchAndReplaceMode searchAndReplaceMode;
 		
@@ -73,11 +90,10 @@ namespace SearchAndReplace
 		void LookInBrowseButtonClicked(object sender, EventArgs e)
 		{
 			ComboBox lookinComboBox = Get<ComboBox>("lookIn");
-			using (FolderBrowserDialog dlg = FileService.CreateFolderBrowserDialog("${res:Dialog.NewProject.SearchReplace.LookIn.SelectDirectory}", lookinComboBox.Text)) {
-				if (dlg.ShowDialog() == DialogResult.OK) {
-					lookinComboBox.SelectedIndex = customDirectoryIndex;
-					lookinComboBox.Text = dlg.SelectedPath;
-				}
+			string path = SD.FileService.BrowseForFolder("${res:Dialog.NewProject.SearchReplace.LookIn.SelectDirectory}", lookinComboBox.Text);
+			if (path != null) {
+				lookinComboBox.SelectedIndex = customDirectoryIndex;
+				lookinComboBox.Text = path;
 			}
 		}
 		
@@ -109,7 +125,7 @@ namespace SearchAndReplace
 				return;
 			}
 			// No using block for the monitor; it is disposed when the asynchronous search finishes
-			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			var monitor = SD.StatusBar.CreateProgressMonitor();
 			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 			var results = SearchManager.FindAllParallel(strategy, location, monitor);
 			SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
@@ -127,7 +143,7 @@ namespace SearchAndReplace
 				return;
 			}
 			// No using block for the monitor; it is disposed when the asynchronous search finishes
-			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			var monitor = SD.StatusBar.CreateProgressMonitor();
 			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 			var results = SearchManager.FindAllParallel(strategy, location, monitor);
 			SearchManager.MarkAll(results);

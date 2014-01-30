@@ -13,7 +13,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SourceAnalysisOverrideSettingsFile>C:\Users\Daniel\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
@@ -64,84 +64,48 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttachedMemberResolveResult.cs" />
+    <Compile Include="CompletionDataGenerator.cs" />
+    <Compile Include="XamlAstResolver.cs" />
+    <Compile Include="XamlCodeCompletionBinding.cs" />
+    <Compile Include="XamlCompletionItem.cs" />
+    <Compile Include="XamlConst.cs" />
+    <Compile Include="XamlContextResolver.cs" />
+    <Compile Include="XamlFullParseInformation.cs" />
+    <Compile Include="XamlTypeReference.cs" />
+    <Compile Include="XamlUnresolvedFile.cs" />
+    <Compile Include="XamlResolver.cs" />
+    <Compile Include="XamlSymbolSearch.cs" />
     <None Include="XamlBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CompilationUnitCreatorVisitor.cs" />
     <Compile Include="Comparers.cs" />
     <Compile Include="MarkupExtensionInfo.cs" />
     <Compile Include="MarkupExtensionParser.cs" />
-    <Compile Include="CompletionDataHelper.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="MarkupExtensionTokenizer.cs" />
     <Compile Include="MarkupExtensionToken.cs">
     </Compile>
     <Compile Include="MarkupExtensionTokenKind.cs">
     </Compile>
-    <Compile Include="NodeWrapper.cs" />
     <Compile Include="Options\CodeCompletion.xaml.cs">
       <DependentUpon>CodeCompletion.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Options\XamlBindingOptions.cs" />
-    <Compile Include="PowerToys\Commands\CreateBusinessFormCommand.cs" />
-    <Compile Include="PowerToys\Commands\CreateBusinessFormFromClassCommand.cs" />
-    <Compile Include="PowerToys\Commands\EditGridColumnsAndRowsCommand.cs" />
-    <Compile Include="PowerToys\Commands\ExtractPropertiesAsStyleCommand.cs" />
-    <Compile Include="PowerToys\Commands\GroupIntoRefactorings.cs" />
-    <Compile Include="PowerToys\Commands\PropertyEntry.cs" />
-    <Compile Include="PowerToys\Commands\RemoveMarginCommand.cs" />
-    <Compile Include="PowerToys\Commands\RemoveUnnecessaryAttributesCommand.cs" />
-    <Compile Include="PowerToys\Dialogs\DragDropMarkerAdorner.cs" />
-    <Compile Include="PowerToys\Dialogs\EditGridColumnsAndRowsDialog.xaml.cs">
-      <DependentUpon>EditGridColumnsAndRowsDialog.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml.cs">
-      <DependentUpon>ExtractPropertiesAsStyleDialog.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\FieldEditor.xaml.cs">
-      <DependentUpon>FieldEditor.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\GridLengthEditor.xaml.cs">
-      <DependentUpon>GridLengthEditor.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\SelectSourceClassDialog.xaml.cs">
-      <DependentUpon>SelectSourceClassDialog.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\SourceClassFormEditor.xaml.cs">
-      <DependentUpon>SourceClassFormEditor.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\UndoStep.cs" />
-    <Compile Include="PowerToys\XamlMenuCommand.cs" />
     <Compile Include="PropertyPathParser.cs" />
     <Compile Include="PropertyPathSegment.cs" />
     <Compile Include="PropertyPathTokenizer.cs" />
-    <Compile Include="QualifiedNameWithLocation.cs" />
     <Compile Include="SegmentKind.cs" />
     <Compile Include="Utils.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XamlBehavior.cs" />
-    <Compile Include="XamlClassReturnType.cs" />
-    <Compile Include="XamlCodeCompletionBinding.cs" />
-    <Compile Include="XamlCompilationUnit.cs" />
-    <Compile Include="XamlCompletionItem.cs" />
     <Compile Include="XamlCompletionItemList.cs" />
-    <Compile Include="XamlCompletionSettings.cs" />
     <Compile Include="XamlContext.cs" />
-    <Compile Include="XamlExpressionContext.cs" />
-    <Compile Include="XamlExpressionFinder.cs">
-    </Compile>
-    <Compile Include="XamlColorizer.cs" />
     <Compile Include="MarkupExtensionParseException.cs">
     </Compile>
     <Compile Include="XamlLanguageBinding.cs" />
@@ -151,10 +115,19 @@
     </Compile>
     <Compile Include="XamlOutlineNode.cs" />
     <Compile Include="XamlParser.cs" />
-    <Compile Include="XamlResolver.cs" />
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
+      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
+      <Name>ICSharpCode.NRefactory.Xml</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
@@ -175,11 +148,6 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
@@ -204,19 +172,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="PowerToys" />
     <Folder Include="Options" />
-    <Folder Include="PowerToys\Commands" />
-    <Folder Include="PowerToys\Dialogs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Options\CodeCompletion.xaml" />
-    <Page Include="PowerToys\Dialogs\EditGridColumnsAndRowsDialog.xaml" />
-    <Page Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml" />
-    <Page Include="PowerToys\Dialogs\FieldEditor.xaml" />
-    <Page Include="PowerToys\Dialogs\GridLengthEditor.xaml" />
-    <Page Include="PowerToys\Dialogs\SelectSourceClassDialog.xaml" />
-    <Page Include="PowerToys\Dialogs\SourceClassFormEditor.xaml" />
     <Page Include="XamlOutlineContentHost.xaml" />
   </ItemGroup>
 </Project>

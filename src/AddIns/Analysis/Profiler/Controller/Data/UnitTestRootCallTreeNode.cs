@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -12,7 +27,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 	/// </summary>
 	public class UnitTestRootCallTreeNode : CallTreeNode
 	{
-		List<CallTreeNode> unitTests = null;
+		List<CallTreeNode> unitTests;
 		
 		/// <summary>
 		/// Creates a new UnitTestRootCallTreeNode.
@@ -40,7 +55,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override bool IsActiveAtStart {
 			get {
-				return (this.unitTests == null) ? false : this.unitTests.Any(test => test.IsActiveAtStart);
+				return (unitTests == null) ? false : unitTests.Any(test => test.IsActiveAtStart);
 			}
 		}
 		
@@ -66,7 +81,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		/// <inheritdoc/>
-		public override CallTreeNode Merge(System.Collections.Generic.IEnumerable<CallTreeNode> nodes)
+		public override CallTreeNode Merge(IEnumerable<CallTreeNode> nodes)
 		{
 			// throw new ShouldNeverHappenException();
 			throw new NotSupportedException("Cannot merge a UnitTestRootCallTreeNode (should never be possible)");
@@ -75,7 +90,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
-			return (this.unitTests == null) ? 0 : this.unitTests.Aggregate(0, (sum, item) => sum ^= item.GetHashCode());
+			return (unitTests == null) ? 0 : unitTests.Aggregate(0, (sum, item) => sum ^= item.GetHashCode());
 		}
 		
 		/// <inheritdoc/>

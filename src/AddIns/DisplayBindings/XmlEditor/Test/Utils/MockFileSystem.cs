@@ -1,9 +1,28 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 
 namespace XmlEditor.Tests.Utils
@@ -17,8 +36,8 @@ namespace XmlEditor.Tests.Utils
 		List<string> createdFolders = new List<string>();
 		List<string> deletedFiles = new List<string>();
 		List<string> filesCheckedThatTheyExist = new List<string>();
-		Dictionary<string, bool> existingFiles = new Dictionary<string, bool>();
-		Dictionary<string, string[]> directoryFiles = new Dictionary<string, string[]>();
+		Dictionary<FileName, bool> existingFiles = new Dictionary<FileName, bool>();
+		MultiDictionary<DirectoryName, FileName> directoryFiles = new MultiDictionary<DirectoryName, FileName>();
 		NameValueCollection copiedFileLocations = new NameValueCollection();
 		Exception exceptionToThrowWhenCopyFileCalled;
 
@@ -28,19 +47,16 @@ namespace XmlEditor.Tests.Utils
 		
 		public void AddDirectoryFiles(string folder, string[] files)
 		{
-			directoryFiles.Add(folder, files);
+			foreach (var file in files)
+				directoryFiles.Add(DirectoryName.Create(folder), FileName.Create(file));
 		}
 		
-		public string[] GetFilesInDirectory(string folder, string extension)
+		public IEnumerable<FileName> GetFiles(DirectoryName folder, string extension, DirectorySearchOptions searchOptions = DirectorySearchOptions.None)
 		{
 			searchedFolders.Add(folder);
 			searchedForFileExtensions.Add(extension);
 			
-			string[] files;
-			if (directoryFiles.TryGetValue(folder, out files)) {
-				return files;
-			}
-			return new string[0];
+			return directoryFiles[folder];
 		}
 		
 		public string[] SearchedFolders {
@@ -63,8 +79,10 @@ namespace XmlEditor.Tests.Utils
 			foldersThatExist.Add(folder);
 		}
 		
-		public bool DirectoryExists(string folder)
+		public bool DirectoryExists(DirectoryName folder)
 		{
+			if (folder == null)
+				return false;
 			foldersCheckedThatTheyExist.Add(folder);
 			return foldersThatExist.Contains(folder);
 		}
@@ -77,7 +95,7 @@ namespace XmlEditor.Tests.Utils
 			get { return copiedFileLocations; }
 		}
 		
-		public void CopyFile(string source, string destination)
+		public void CopyFile(FileName source, FileName destination, bool overwrite = false)
 		{
 			copiedFileLocations.Add(source, destination);
 			
@@ -95,7 +113,7 @@ namespace XmlEditor.Tests.Utils
 			get { return createdFolders; }
 		}
 		
-		public void CreateDirectory(string folder)
+		public void CreateDirectory(DirectoryName folder)
 		{
 			createdFolders.Add(folder);
 		}
@@ -104,7 +122,7 @@ namespace XmlEditor.Tests.Utils
 			get { return deletedFiles.ToArray(); }
 		}
 		
-		public void DeleteFile(string fileName)
+		public void Delete(FileName fileName)
 		{
 			deletedFiles.Add(fileName);
 		}
@@ -113,8 +131,10 @@ namespace XmlEditor.Tests.Utils
 			get { return filesCheckedThatTheyExist.ToArray(); }
 		}
 		
-		public bool FileExists(string fileName)
+		public bool FileExists(FileName fileName)
 		{
+			if (fileName == null)
+				return false;
 			filesCheckedThatTheyExist.Add(fileName);
 			bool fileExists;
 			if (existingFiles.TryGetValue(fileName, out fileExists)) {
@@ -125,7 +145,22 @@ namespace XmlEditor.Tests.Utils
 		
 		public void AddExistingFile(string fileName, bool exists)
 		{
-			existingFiles.Add(fileName, exists);
+			existingFiles.Add(FileName.Create(fileName), exists);
 		}		
+		
+		Stream IFileSystem.OpenWrite(FileName fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		Stream IReadOnlyFileSystem.OpenRead(FileName fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		TextReader IReadOnlyFileSystem.OpenText(FileName fileName)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

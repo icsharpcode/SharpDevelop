@@ -1,10 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using Rhino.Mocks;
 
@@ -13,29 +29,16 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 	public class ProjectHelper
 	{
 		public IProject Project = MockRepository.GenerateMock<IProject, IBuildable>();
-		public List<ProjectItem> ProjectItems = new List<ProjectItem>();
-		public Properties ProjectSpecificProperties = new Properties();
 		
 		public ProjectHelper(string fileName)
 		{
-			Project.Stub(p => p.FileName).Return(fileName);
+			Project.Stub(p => p.FileName).Return(FileName.Create(fileName));
 			
-			Project
-				.Stub(p => p.Items)
-				.Return(null)
-				.WhenCalled(mi => mi.ReturnValue = new ReadOnlyCollection<ProjectItem>(ProjectItems));
+			Project.Stub(p => p.Items).Return(new SimpleModelCollection<ProjectItem>());
+			
+			Project.Stub(p => p.Preferences).Return(new Properties());
 			
 			Project.Stub(p => p.SyncRoot).Return(new Object());
-		}
-		
-		public void AddProjectSpecificProperties()
-		{
-			Project.Stub(p => p.ProjectSpecificProperties).Return(ProjectSpecificProperties);
-		}
-		
-		public void AddProjectItem(ProjectItem projectItem)
-		{
-			ProjectItems.Add(projectItem);
 		}
 	}
 }

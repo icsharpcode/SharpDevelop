@@ -3,16 +3,27 @@
   <PropertyGroup>
     <ProjectGuid>{0B12A079-B2DB-42B9-8A8E-AA5CBC2B3225}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>AspNet.Mvc.Tests</RootNamespace>
     <AssemblyName>AspNet.Mvc.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>True</DebugSymbols>
@@ -20,6 +31,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>False</DebugSymbols>
@@ -66,8 +78,6 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\FakeAddMvcItemToProjectView.cs" />
-    <Compile Include="Helpers\FakeClass.cs" />
-    <Compile Include="Helpers\FakeFileSystem.cs" />
     <Compile Include="Helpers\FakeMvcModelClassLocator.cs" />
     <Compile Include="Helpers\FakeMvcClass.cs" />
     <Compile Include="Helpers\FakeMvcControllerFileGenerator.cs" />
@@ -83,6 +93,7 @@
     <Compile Include="Helpers\FakeMvcViewFileGenerator.cs" />
     <Compile Include="Helpers\FakeSelectedFolderNodeInProjectsView.cs" />
     <Compile Include="Helpers\FakeSelectedMvcFolder.cs" />
+    <Compile Include="Helpers\FakeSolution.cs" />
     <Compile Include="Helpers\MSBuildProjectHelper.cs" />
     <Compile Include="Helpers\MvcControllerTextTemplateCollectionAssert.cs" />
     <Compile Include="Helpers\MvcProjectFileAssert.cs" />
@@ -92,7 +103,6 @@
     <Compile Include="Helpers\TestableAddMvcViewToProjectCommand.cs" />
     <Compile Include="Helpers\TestableMvcTextTemplateHost.cs" />
     <Compile Include="Helpers\TestableProject.cs" />
-    <Compile Include="Helpers\TestableProjectContent.cs" />
     <Compile Include="Helpers\TestableSelectedMvcViewFolder.cs" />
     <Compile Include="Src\AddMvcControllerToProjectCommandTests.cs" />
     <Compile Include="Src\AddMvcControllerToProjectViewModelTests.cs" />
@@ -144,6 +154,7 @@
     <Compile Include="Src\MvcModelClassViewModelTests.cs" />
     <Compile Include="Src\MvcProjectRazorFileTests.cs" />
     <Compile Include="Src\MvcProjectTests.cs" />
+    <Compile Include="Src\MvcTestsBase.cs" />
     <Compile Include="Src\MvcTextTemplateAssemblyResolverTests.cs" />
     <Compile Include="Src\MvcTextTemplateHostTests.cs" />
     <Compile Include="Src\MvcTextTemplateRepositoryTests.cs" />
@@ -160,6 +171,10 @@
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -167,10 +182,6 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
       <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>

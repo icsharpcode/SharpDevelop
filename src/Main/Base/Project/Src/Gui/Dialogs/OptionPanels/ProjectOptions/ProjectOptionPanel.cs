@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -120,17 +135,17 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ApplyTemplate();
 			project = (MSBuildBasedProject)owner;
 			if (configurationComboBox != null) {
-				List<string> configurations = project.ConfigurationNames.Union(new[] { project.ActiveConfiguration }).ToList();
+				List<string> configurations = project.ConfigurationNames.Union(new[] { project.ActiveConfiguration.Configuration }).ToList();
 				configurations.Sort();
 				configurationComboBox.ItemsSource = configurations;
-				configurationComboBox.SelectedItem = project.ActiveConfiguration;
+				configurationComboBox.SelectedItem = project.ActiveConfiguration.Configuration;
 				configurationComboBox.SelectionChanged += comboBox_SelectionChanged;
 			}
 			if (platformComboBox != null) {
-				List<string> platforms = project.PlatformNames.Union(new[] { project.ActivePlatform }).ToList();
+				List<string> platforms = project.PlatformNames.Union(new[] { project.ActiveConfiguration.Platform }).ToList();
 				platforms.Sort();
 				platformComboBox.ItemsSource = platforms;
-				platformComboBox.SelectedItem = project.ActivePlatform;
+				platformComboBox.SelectedItem = project.ActiveConfiguration.Platform;
 				platformComboBox.SelectionChanged += comboBox_SelectionChanged;
 			}
 			Initialize();
@@ -170,12 +185,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (configurationComboBox != null)
 				activeConfiguration = (string)configurationComboBox.SelectedItem;
 			else
-				activeConfiguration = project.ActiveConfiguration;
+				activeConfiguration = project.ActiveConfiguration.Configuration;
 			
 			if (platformComboBox != null)
 				activePlatform = (string)platformComboBox.SelectedItem;
 			else
-				activePlatform = project.ActivePlatform;
+				activePlatform = project.ActiveConfiguration.Platform;
 			
 			isLoaded = true;
 			Load(project, activeConfiguration, activePlatform);
@@ -399,9 +414,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		/// </summary>
 		public void BrowseForFolder(ProjectProperty<string> property, string description)
 		{
-			string newValue = BrowseForFolder(description, BaseDirectory, property.TextBoxEditMode);
-			if (newValue != null)
-				property.Value = newValue;
+			string path = BrowseForFolder(description, BaseDirectory, property.TextBoxEditMode);
+			if (!String.IsNullOrEmpty(path)) {
+				property.Value = path;
+			}	
 		}
 		
 		/// <summary>
@@ -411,26 +427,24 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		/// <param name="startLocation">Start location, relative to the <see cref="BaseDirectory"/></param>
 		/// <param name="textBoxEditMode">The TextBoxEditMode used for the text box containing the file name</param>
 		/// <returns>Returns the location of the folder; or null if the dialog was cancelled.</returns>
-		protected string BrowseForFolder(string description, string startLocation, TextBoxEditMode textBoxEditMode)
+		private string BrowseForFolder(string description, string startLocation, TextBoxEditMode textBoxEditMode)
 		{
 			string startAt = GetInitialDirectory(startLocation, textBoxEditMode, false);
-			using (var fdiag = FileService.CreateFolderBrowserDialog(description, startAt))
-			{
-				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-					string path = fdiag.SelectedPath;
-					if (!String.IsNullOrEmpty(startLocation)) {
-						path = FileUtility.GetRelativePath(startLocation, path);
-					}
-					if (!path.EndsWith("\\", StringComparison.Ordinal) && !path.EndsWith("/", StringComparison.Ordinal))
-						path += "\\";
-					if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
-						return path;
-					} else {
-						return MSBuildInternals.Escape(path);
-					}
+			string path = SD.FileService.BrowseForFolder(description,startAt);
+			if (String.IsNullOrEmpty(path)) {
+				return null;
+			} else {
+				if (!String.IsNullOrEmpty(startLocation)) {
+					path = FileUtility.GetRelativePath(startLocation, path);
+				}
+				if (!path.EndsWith("\\", StringComparison.Ordinal) && !path.EndsWith("/", StringComparison.Ordinal))
+					path += "\\";
+				if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
+					return path;
+				} else {
+					return MSBuildInternals.Escape(path);
 				}
 			}
-			return null;
 		}
 		
 		/// <summary>

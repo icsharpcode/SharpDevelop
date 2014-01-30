@@ -3,7 +3,7 @@
 
 	<Config
 		name        = "${res:Templates.File.WebService.Name}"
-		icon        = "VBNet.File.WebFile"
+		icon        = "VB.File.WebFile"
 		category    = "VB"
 		subcategory = "ASP.NET"
 		defaultname = "WebService${Number}.asmx"

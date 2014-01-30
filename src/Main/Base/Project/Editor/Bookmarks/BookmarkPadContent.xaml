@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Grid
+	x:Class="ICSharpCode.SharpDevelop.Editor.Bookmarks.BookmarkPadContent"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	>
+	<Grid.RowDefinitions>
+		<RowDefinition Height="Auto" />
+		<RowDefinition />
+	</Grid.RowDefinitions>
+	<ListView
+		Grid.Row="1"
+		Name="listView"
+		x:FieldModifier="public">
+		<ListView.View>
+			<GridView>
+				<GridViewColumn Header="{core:Localize MainWindow.Windows.BookmarkPad.LocationText}" Width="Auto">
+					<GridViewColumn.CellTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<Image Source="{Binding ImageSource}" Margin="1, 1, 5, 1" />
+								<TextBlock Text="{Binding FileNameAndLineNumber}" />
+							</StackPanel>
+						</DataTemplate>
+					</GridViewColumn.CellTemplate>
+				</GridViewColumn>
+			</GridView>
+		</ListView.View>
+	</ListView>
+</Grid>

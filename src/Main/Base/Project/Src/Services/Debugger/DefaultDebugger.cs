@@ -1,9 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Diagnostics;
-using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -72,8 +88,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			attachedProcess.Exited -= new EventHandler(AttachedProcessExited);
 			attachedProcess.Dispose();
 			attachedProcess = null;
-			WorkbenchSingleton.SafeThreadAsyncCall(new Action<EventArgs>(OnDebugStopped),
-			                                       EventArgs.Empty);
+			SD.MainThread.InvokeAsyncAndForget(() => new Action<EventArgs>(OnDebugStopped)(EventArgs.Empty));
 		}
 		
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
@@ -120,29 +135,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			throw new NotSupportedException();
 		}
 		
-		/// <summary>
-		/// Gets the current value of the variable as string that can be displayed in tooltips.
-		/// </summary>
-		public string GetValueAsString(string variable)
+		public void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
-			return null;
 		}
 		
-		/// <summary>
-		/// Gets the tooltip control that shows the value of given variable.
-		/// Return null if no tooltip is available.
-		/// </summary>
-		public object GetTooltipControl(Location logicalPosition, string variable)
-		{
-			return null;
-		}
-		
-		public bool CanSetInstructionPointer(string filename, int line, int column)
-		{
-			return false;
-		}
-		
-		public bool SetInstructionPointer(string filename, int line, int column)
+		public bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
 		{
 			return false;
 		}

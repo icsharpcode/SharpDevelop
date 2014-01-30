@@ -1,50 +1,56 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Drawing;
+using System.Resources;
 using System.Windows.Forms;
 
 namespace ResourceEditor
 {
 	public class ResourceItem
 	{
-		string name;
-		object resourceValue;
-		
 		public ResourceItem(string name, object resourceValue)
 		{
-			this.name = name;
-			this.resourceValue = resourceValue;
+			this.Name = name;
+			this.ResourceValue = resourceValue;
 		}
 		
-		public string Name
+		public ResourceItem(string name, object resourceValue, string comment)
 		{
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+			this.Name = name;
+			this.ResourceValue = resourceValue;
+			this.Comment = comment;
 		}
 		
-		public object ResourceValue
-		{
-			get {
-				return resourceValue;
-			}
-			set {
-				resourceValue = value;
-			}
-		}
+		public string Name { get; set; }
+		
+		public object ResourceValue { get; set; }
+		
+		public string Comment { get; set; }
 		
 		public int ImageIndex
 		{
 			get {
-				if (this.resourceValue == null) {
+				if (this.ResourceValue == null) {
 					return -1;
 				}
-				switch(this.resourceValue.GetType().ToString()) {
+				switch(this.ResourceValue.GetType().ToString()) {
 					case "System.String":
 						return 0;
 					case "System.Drawing.Bitmap":
@@ -97,6 +103,14 @@ namespace ResourceEditor
 					break;
 			}
 			return tmp;
+		}
+		
+		public ResXDataNode ToResXDataNode(Func<Type, string> typeNameConverter = null)
+		{
+			var node = new ResXDataNode(Name, ResourceValue, typeNameConverter) {
+				Comment = Comment
+			};
+			return node;
 		}
 	}
 }

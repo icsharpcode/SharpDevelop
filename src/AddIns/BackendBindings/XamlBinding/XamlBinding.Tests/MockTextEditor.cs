@@ -1,17 +1,31 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using System.Diagnostics;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.XamlBinding.Tests
 {
@@ -23,52 +37,23 @@ namespace ICSharpCode.XamlBinding.Tests
 	/// </summary>
 	public class MockTextEditor : AvalonEditTextEditorAdapter
 	{
-		DefaultProjectContent pc;
+		XamlTextEditorExtension extension;
 		
 		public MockTextEditor()
 			: base(new TextEditor())
 		{
-			PropertyService.InitializeServiceForUnitTests();
-			pc = new DefaultProjectContent();
-			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
-			
-			Dictionary<string, string> referencedAssemblies = new Dictionary<string, string>() {
-				{ "System", typeof(Uri).Assembly.Location },
-				{ "System.Xml", typeof(System.Xml.XmlDocument).Assembly.Location },
-				{ "System.Xaml", typeof(System.Xaml.XamlReader).Assembly.Location },
-				{ "WindowsBase", typeof(System.Windows.Media.Matrix).Assembly.Location },
-				{ "System.Core", typeof(System.Linq.Enumerable).Assembly.Location },
-				{ "PresentationCore", typeof(System.Windows.Media.Brush).Assembly.Location },
-				{ "PresentationFramework", typeof(System.Windows.EventSetter).Assembly.Location }
-			};
-			foreach (var assembly in referencedAssemblies) {
-				IProjectContent referenceProjectContent = AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference(assembly.Key, assembly.Value ?? assembly.Key);
-				if (referenceProjectContent == null)
-					throw new Exception("Error loading " + assembly.Key);
-				pc.ReferencedContents.Add(referenceProjectContent);
-				if (referenceProjectContent is ReflectionProjectContent) {
-					(referenceProjectContent as ReflectionProjectContent).InitializeReferences();
-				}
-			}
-			
-//			this.TextEditor.TextArea.TextView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(this.TextEditor));
-			this.TextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("XML");
-			
-			new XamlLanguageBinding().Attach(this);
+			this.extension = new XamlTextEditorExtension();
+			this.TextEditor.TextArea.TextView.Services.AddService(typeof(XamlTextEditorExtension), extension);
 		}
 		
 		public override FileName FileName {
 			get { return new FileName("mockFileName.xaml"); }
 		}
 		
-		public void CreateParseInformation()
+		public ParseInformation CreateParseInformation()
 		{
-			ParserService.RegisterAvailableParsers(new ParserDescriptor(typeof(XamlParser), "XAML", new string[] { ".xaml" }));
-			var parser = new XamlBinding.XamlParser();
-			parser.LexerTags = new string[0];
-			var cu = parser.Parse(pc, this.FileName, this.Document);
-			ParserService.RegisterParseInformation(this.FileName, cu);
-			pc.UpdateCompilationUnit(null, cu, this.FileName);
+			var parser = new XamlParser();
+			return parser.Parse(this.FileName, this.Document, true, null, CancellationToken.None);
 		}
 		
 		ICompletionItemList lastCompletionItemList;
@@ -83,17 +68,12 @@ namespace ICSharpCode.XamlBinding.Tests
 			return null;
 		}
 		
-		IEnumerable<IInsightItem> lastInsightItems;
-		
-		public IEnumerable<IInsightItem> LastInsightItems {
-			get { return lastInsightItems; }
-		}
+		IList<IInsightItem> lastInsightItemList = null;
 		
 		public override IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
 		{
-			this.lastInsightItems = items;
+			this.lastInsightItemList = items.ToList();
 			return null;
 		}
 	}
-
 }

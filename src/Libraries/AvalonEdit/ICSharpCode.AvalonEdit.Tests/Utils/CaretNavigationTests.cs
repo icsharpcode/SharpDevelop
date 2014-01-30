@@ -1,9 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Windows.Documents;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory.Editor;
 using NUnit.Framework;
 
 namespace ICSharpCode.AvalonEdit.Utils
@@ -111,6 +127,30 @@ namespace ICSharpCode.AvalonEdit.Utils
 			
 			Assert.AreEqual(5, GetPrevCaretStop(c, 6, CaretPositioningMode.WordBorder));
 			Assert.AreEqual(1, GetPrevCaretStop(c, 5, CaretPositioningMode.WordBorder));
+		}
+		
+		[Test]
+		public void CombiningMark()
+		{
+			string str = " x͆ ";
+			Assert.AreEqual(3, GetNextCaretStop(str, 1, CaretPositioningMode.Normal));
+			Assert.AreEqual(1, GetPrevCaretStop(str, 3, CaretPositioningMode.Normal));
+		}
+		
+		[Test]
+		public void StackedCombiningMark()
+		{
+			string str = " x͆͆͆͆ ";
+			Assert.AreEqual(6, GetNextCaretStop(str, 1, CaretPositioningMode.Normal));
+			Assert.AreEqual(1, GetPrevCaretStop(str, 6, CaretPositioningMode.Normal));
+		}
+		
+		[Test]
+		public void SingleClosingBraceAtLineEnd()
+		{
+			string str = "\t\t}";
+			Assert.AreEqual(2, GetNextCaretStop(str, 1, CaretPositioningMode.WordStart));
+			Assert.AreEqual(-1, GetPrevCaretStop(str, 1, CaretPositioningMode.WordStart));
 		}
 	}
 }

@@ -1,12 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
-using System.Windows.Media;
 
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -15,140 +28,132 @@ namespace Debugger.AddIn.TreeModel
 {
 	/// <summary>
 	/// A node in the variable tree.
-	/// The node is immutable.
 	/// </summary>
-	public class TreeNode : ITreeNode
+	public class TreeNode : INotifyPropertyChanged
 	{
-		IImage iconImage = null;
-		string name  = string.Empty;
-		string imageName = string.Empty;
-		string text  = string.Empty;
-		string type  = string.Empty;
-		protected IEnumerable<TreeNode> childNodes = null;
+		public event EventHandler<PropertyEventArgs> PropertyRead;
+		public event PropertyChangedEventHandler PropertyChanged;
 		
-		/// <summary>
-		/// The image displayed for this node.
-		/// </summary>
-		public IImage IconImage {
-			get { return iconImage; }
-			protected set { iconImage = value; }
-		} 
+		IImage image;
+		string name;
+		string value;
+		string type;
 		
-		/// <summary>
-		/// System.Windows.Media.ImageSource version of <see cref="IconImage"/>.
-		/// </summary>
-		public ImageSource ImageSource {
-			get { 
-				return iconImage == null ? null : iconImage.ImageSource;
+		public bool CanDelete { get; set; }
+		
+		public IImage Image {
+			get {
+				OnPropertyRead("Image");
+				return this.image;
 			}
-		}
-		
-		/// <summary>
-		/// System.Drawing.Image version of <see cref="IconImage"/>.
-		/// </summary>
-		public Image Image {
-			get { 
-				return iconImage == null ? null : iconImage.Bitmap;
+			set {
+				if (this.image != value) {
+					this.image = value;
+					OnPropertyChanged("Image");
+				}
 			}
 		}
 		
 		public string Name {
-			get { return name; }
-			set { name = value; }
-		}
-		
-		public string ImageName {
-			get { return imageName; }
-			set { imageName = value; }
-		} 
-		
-		public virtual string FullName { 
-			get { return name; }
-			set { name = value; }
-		}
-		
-		public virtual string Text
-		{
-			get { return text; }
-			set { text = value; }
-		}
-		
-		public virtual string Type {
-			get { return type; }
-			protected set { type = value; }
-		}
-		
-		public virtual TreeNode Parent { get; protected set; }
-		
-		public virtual IEnumerable<TreeNode> ChildNodes {
-			get { return childNodes; }
-		}
-		
-		IEnumerable<ITreeNode> ITreeNode.ChildNodes {
-			get { return childNodes; }
-		}
-		
-		public virtual bool HasChildNodes {
-			get { return childNodes != null; }
-		}
-		
-		public virtual bool CanSetText { 
-			get { return false; }
-		}
-		
-		public virtual IEnumerable<IVisualizerCommand> VisualizerCommands {
 			get {
-				return null;
+				OnPropertyRead("Name");
+				return this.name;
+			}
+			set {
+				if (this.name != value) {
+					this.name = value;
+					OnPropertyChanged("Name");
+				}
 			}
 		}
 		
-		public virtual bool HasVisualizerCommands {
+		public bool CanSetName { get; set; }
+		
+		public string Value {
 			get {
-				return (VisualizerCommands != null) && (VisualizerCommands.Count() > 0);
+				OnPropertyRead("Value");
+				return this.value;
+			}
+			set {
+				if (this.value != value) {
+					this.value = value;
+					OnPropertyChanged("Value");
+				}
 			}
 		}
 		
-		public bool IsPinned { get; set; }
+		public bool CanSetValue { get; set; }
 		
-		public TreeNode(TreeNode parent)
-		{
-			this.Parent = parent;
-		}
-		
-		public TreeNode(IImage iconImage, string name, string text, string type, TreeNode parent, Func<TreeNode, IEnumerable<TreeNode>> childNodes)
-			: this(parent)
-		{
-			if (childNodes == null)
-				throw new ArgumentNullException("childNodes");
-			this.iconImage = iconImage;
-			this.name = name;
-			this.text = text;
-			this.type = type;
-			this.childNodes = childNodes(this);
+		public string Type {
+			get {
+				OnPropertyRead("Type");
+				return this.type;
+			}
+			set {
+				if (this.type != value) {
+					this.type = value;
+					OnPropertyChanged("Type");
+				}
+			}
 		}
 		
-		#region Equals and GetHashCode implementation
-		public override bool Equals(object obj)
-		{
-			TreeNode other = obj as TreeNode;
-			if (other == null)
-				return false;
-			return this.FullName == other.FullName;
+		string contextMenuAddInTreeEntry = "/AddIns/Debugger/Tooltips/ContextMenu/TreeNode";
+		public string ContextMenuAddInTreeEntry {
+			get { return contextMenuAddInTreeEntry; }
+			set {
+				if (this.contextMenuAddInTreeEntry != value) {
+					contextMenuAddInTreeEntry = value;
+					OnPropertyChanged("ContextMenuAddInTreeEntry");
+				}
+			}
 		}
 		
-		public override int GetHashCode()
-		{
-			return this.FullName.GetHashCode();
-		}
-		#endregion
-
-		public int CompareTo(ITreeNode other)
-		{
-			return this.FullName.CompareTo(other.FullName);
+		public Func<IEnumerable<TreeNode>> GetChildren { get; protected set; }
+		
+		public bool HasChildren {
+			get { return GetChildren != null; }
 		}
 		
-		public virtual bool SetText(string newValue) { 
-			return false;
+		public IEnumerable<IVisualizerCommand> VisualizerCommands { get; protected set; }
+		
+		public bool HasVisualizerCommands {
+			get {
+				return (VisualizerCommands != null) && VisualizerCommands.Any();
+			}
 		}
+		
+		public TreeNode(string name, Func<IEnumerable<TreeNode>> getChildren)
+		{
+			this.Name = name;
+			this.GetChildren = getChildren;
+		}
+		
+		public TreeNode(IImage image, string name, string value, string type, Func<IEnumerable<TreeNode>> getChildren)
+		{
+			this.Image = image;
+			this.Name = name;
+			this.Value = value;
+			this.Type = type;
+			this.GetChildren = getChildren;
+		}
+		
+		protected virtual void OnPropertyRead(string name)
+		{
+			if (PropertyRead != null) {
+				PropertyRead(this, new PropertyEventArgs() { Name = name });
+			}
+		}
+		
+		protected virtual void OnPropertyChanged(string name)
+		{
+			if (PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(name));
+			}
+		}
+	}
+	
+	public class PropertyEventArgs: EventArgs
+	{
+		public string Name { get; set; }
 	}
 }

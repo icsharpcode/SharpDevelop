@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +24,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Media;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.UsageDataCollector.Contracts;
 
@@ -18,7 +32,7 @@ namespace ICSharpCode.UsageDataCollector
 	/// <summary>
 	/// Main singleton class of the analytics. This class is thread-safe.
 	/// </summary>
-	public sealed partial class AnalyticsMonitor : IAnalyticsMonitor
+	public sealed partial class AnalyticsMonitor : IAnalyticsMonitor, IDisposable
 	{
 		const string UploadUrl = "http://usagedatacollector.sharpdevelop.net/upload/UploadUsageData.svc";
 		const string ProductName = "sharpdevelop";
@@ -28,7 +42,7 @@ namespace ICSharpCode.UsageDataCollector
 		
 		public static bool EnabledIsUndecided {
 			get {
-				return string.IsNullOrEmpty(PropertyService.Get("ICSharpCode.UsageDataCollector.Enabled"));
+				return !PropertyService.Contains("ICSharpCode.UsageDataCollector.Enabled");
 			}
 		}
 		
@@ -37,10 +51,10 @@ namespace ICSharpCode.UsageDataCollector
 		/// </summary>
 		public static bool Enabled {
 			get {
-				return string.Equals(PropertyService.Get("ICSharpCode.UsageDataCollector.Enabled"), bool.TrueString, StringComparison.OrdinalIgnoreCase);
+				return PropertyService.Get("ICSharpCode.UsageDataCollector.Enabled", false);
 			}
 			set {
-				PropertyService.Set("ICSharpCode.UsageDataCollector.Enabled", value.ToString());
+				PropertyService.Set("ICSharpCode.UsageDataCollector.Enabled", value);
 				// Initially opening the session takes some time; which is bad for the startpage
 				// because the animation would start with a delay. We solve this by calling Open/CloseSession
 				// on a background thread.
@@ -66,11 +80,13 @@ namespace ICSharpCode.UsageDataCollector
 		
 		private AnalyticsMonitor()
 		{
-			var container = ServiceManager.Instance.GetRequiredService<ThreadSafeServiceContainer>();
-			container.TryAddService(typeof(IAnalyticsMonitor), this);
+			SD.Services.AddService(typeof(IAnalyticsMonitor), this);
 			dbFileName = Path.Combine(PropertyService.ConfigDirectory, "usageData.dat");
-			
-			SharpDevelop.Gui.WorkbenchSingleton.WorkbenchUnloaded += delegate { CloseSession(); };
+		}
+		
+		void IDisposable.Dispose()
+		{
+			CloseSession();
 		}
 		
 		static Guid FindUserId()
@@ -131,7 +147,7 @@ namespace ICSharpCode.UsageDataCollector
 					}
 					
 					if (session != null) {
-						session.OnException = MessageService.ShowException;
+						session.OnException = ex => MessageService.ShowException(ex);
 						session.AddEnvironmentData(appEnvironmentProperties);
 						
 						sessionOpened = true;
@@ -151,7 +167,7 @@ namespace ICSharpCode.UsageDataCollector
 				new UsageDataEnvironmentProperty { Name = "appVersion", Value = RevisionClass.Major + "." + RevisionClass.Minor + "." + RevisionClass.Build + "." + RevisionClass.Revision },
 				new UsageDataEnvironmentProperty { Name = "language", Value = ResourceService.Language },
 				new UsageDataEnvironmentProperty { Name = "culture", Value = CultureInfo.CurrentCulture.Name },
-				new UsageDataEnvironmentProperty { Name = "userAddInCount", Value = AddInTree.AddIns.Count(a => !a.IsPreinstalled).ToString() },
+				new UsageDataEnvironmentProperty { Name = "userAddInCount", Value = SD.AddInTree.AddIns.Count(a => !a.IsPreinstalled).ToString() },
 				new UsageDataEnvironmentProperty { Name = "branch", Value = BranchName },
 				new UsageDataEnvironmentProperty { Name = "commit", Value = CommitHash },
 				new UsageDataEnvironmentProperty { Name = "renderingTier", Value = (RenderCapability.Tier >> 16).ToString() }
@@ -215,6 +231,16 @@ namespace ICSharpCode.UsageDataCollector
 					session.AddException(exception);
 				}
 			}
+		}
+		
+		public IAnalyticsMonitorTrackedFeature TrackFeature(Type featureClass, string featureName = null, string activationMethod = null)
+		{
+			if (featureClass == null)
+				throw new ArgumentNullException("featureClass");
+			if (featureName != null)
+				return TrackFeature(featureClass.FullName + "/" + featureName, activationMethod);
+			else
+				return TrackFeature(featureClass.FullName, activationMethod);
 		}
 		
 		public IAnalyticsMonitorTrackedFeature TrackFeature(string featureName, string activationMethod)

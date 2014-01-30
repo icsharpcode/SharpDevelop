@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -9,11 +24,16 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class WordCountDialog : BaseSharpDevelopForm
+	// TODO: rewrite without XMLForms
+	#pragma warning disable 618
+	class WordCountDialog : BaseSharpDevelopForm
 	{
 		List<Report> items;
 		Report total;
@@ -53,7 +73,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (!File.Exists(filename)) return null;
 			
-			return GetReport(filename, ParserService.GetParseableFileContent(filename).CreateReader());
+			using (var reader = SD.FileService.GetFileContent(filename).CreateReader()) {
+				return GetReport(filename, reader);
+			}
 		}
 		
 		Report GetReport(IViewContent content, TextReader reader)
@@ -91,9 +113,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			switch (((ComboBox)ControlDictionary["locationComboBox"]).SelectedIndex) {
 					case 0: {// current file
-						IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+						IViewContent viewContent = SD.Workbench.ActiveViewContent;
 						if (viewContent != null) {
-							IEditable editable = viewContent as IEditable;
+							IEditable editable = viewContent.GetService<IEditable>();
 							if (editable == null) {
 								MessageService.ShowWarning("${res:Dialog.WordCountDialog.IsNotTextFile}");
 							} else {
@@ -104,10 +126,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 						break;
 					}
 					case 1: {// all open files
-						if (WorkbenchSingleton.Workbench.ViewContentCollection.Count > 0) {
+						if (SD.Workbench.ViewContentCollection.Count > 0) {
 							total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
-							foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-								IEditable editable = content as IEditable;
+							foreach (IViewContent content in SD.Workbench.ViewContentCollection) {
+								IEditable editable = content.GetService<IEditable>();
 								if (editable != null) {
 									Report r = GetReport(content, editable.CreateSnapshot().CreateReader());
 									if (r != null) {
@@ -121,32 +143,42 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 					case 2: {// whole project
 						
-						
+						if (ProjectService.CurrentProject == null) {
+							MessageService.ShowError("${res:Dialog.WordCountDialog.MustBeInProtectedModeWarning}");
+							break;
+						}
+						total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
+						CountProject(ProjectService.CurrentProject, ref total);
+						break;
+					}
+					case 3: { // whole solution
 						if (ProjectService.OpenSolution == null) {
 							MessageService.ShowError("${res:Dialog.WordCountDialog.MustBeInProtectedModeWarning}");
 							break;
 						}
 						total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
 						CountSolution(ProjectService.OpenSolution, ref total);
-						// ((ListView)ControlDictionary["resultListView"]).Items.Add(new ListViewItem(""));
-						// ((ListView)ControlDictionary["resultListView"]).Items.Add(all.ToListItem());
 						break;
 					}
 			}
 			UpdateList(0);
 		}
 		
-		void CountSolution(Solution solution, ref Report all)
+		void CountSolution(ISolution solution, ref Report all)
 		{
 			foreach (IProject project in solution.Projects) {
-				foreach (ProjectItem item in project.Items) {
-					if (item.ItemType == ItemType.Compile) {
-						Report r = GetReport(item.FileName);
-						if (r != null) {
-							all += r;
-							items.Add(r);
-							// ((ListView)ControlDictionary["resultListView"]).Items.Add(r.ToListItem());
-						}
+				CountProject(project, ref all);
+			}
+		}
+		
+		void CountProject(IProject project, ref Report all)
+		{
+			foreach (ProjectItem item in project.Items) {
+				if (item.ItemType == ItemType.Compile) {
+					Report r = GetReport(item.FileName);
+					if (r != null) {
+						all += r;
+						items.Add(r);
 					}
 				}
 			}
@@ -221,16 +253,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void InitializeComponents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.WordCountDialog.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.WordCountDialog.xfrm"));
 			
 			((Button)ControlDictionary["startButton"]).Click += new System.EventHandler(startEvent);
 			((ListView)ControlDictionary["resultListView"]).ColumnClick += new ColumnClickEventHandler(SortEvt);
 			
-			Icon  = IconService.GetIcon("Icons.16x16.FindIcon");
+			Icon = SD.ResourceService.GetIcon("Icons.16x16.FindIcon");
 			
-			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Global.Location.currentfile}"));
-			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Global.Location.allopenfiles}"));
-			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Global.Location.wholeproject}"));
+			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.LookIn.CurrentDocument536D2AC6-E704-40BD-9790-0EB02ED6D8A9}"));
+			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.LookIn.AllOpenDocuments}"));
+			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.LookIn.WholeProject}"));
+			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.LookIn.WholeSolution}"));
 			((ComboBox)ControlDictionary["locationComboBox"]).SelectedIndex = 0;
 		}
 	}

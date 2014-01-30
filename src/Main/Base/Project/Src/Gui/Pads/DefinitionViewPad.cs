@@ -1,16 +1,35 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
-using ICSharpCode.AvalonEdit;
+
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -20,14 +39,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public class DefinitionViewPad : AbstractPadContent
 	{
 		AvalonEdit.TextEditor ctl;
+		DispatcherTimer timer;
 		
 		/// <summary>
 		/// The control representing the pad
 		/// </summary>
 		public override object Control {
-			get {
-				return ctl;
-			}
+			get { return ctl; }
 		}
 		
 		/// <summary>
@@ -35,10 +53,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public DefinitionViewPad()
 		{
-			ctl = Editor.AvalonEdit.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
+			ctl = Editor.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
 			ctl.IsReadOnly = true;
 			ctl.MouseDoubleClick += OnDoubleClick;
-			ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
+			SD.ParserService.ParseInformationUpdated += OnParserUpdateStep;
+			SD.ParserService.LoadSolutionProjectsThread.Finished += LoadThreadFinished;
+			timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(2) };
+			timer.Tick += delegate { UpdateTick(null); };
+			timer.IsEnabled = !SD.ParserService.LoadSolutionProjectsThread.IsRunning;
 			ctl.IsVisibleChanged += delegate { UpdateTick(null); };
 		}
 		
@@ -47,87 +69,80 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public override void Dispose()
 		{
-			ParserService.ParserUpdateStepFinished -= OnParserUpdateStep;
+			SD.ParserService.ParseInformationUpdated -= OnParserUpdateStep;
+			SD.ParserService.LoadSolutionProjectsThread.Finished -= LoadThreadFinished;
 			ctl.Document = null;
 			base.Dispose();
 		}
 		
 		void OnDoubleClick(object sender, EventArgs e)
 		{
-			string fileName = currentFileName;
+			FileName fileName = currentFileName;
 			if (fileName != null) {
 				var caret = ctl.TextArea.Caret;
-				FileService.JumpToFilePosition(fileName, caret.Line, caret.Column);
+				SD.FileService.JumpToFilePosition(fileName, caret.Line, caret.Column);
 				
 				// refresh DefinitionView to show the definition of the expression that was double-clicked
 				UpdateTick(null);
 			}
 		}
 		
-		void OnParserUpdateStep(object sender, ParserUpdateStepEventArgs e)
+		void LoadThreadFinished(object sender, EventArgs e)
+		{
+			timer.IsEnabled = true;
+			UpdateTick(null);
+		}
+		
+		void OnParserUpdateStep(object sender, ParseInformationEventArgs e)
 		{
 			UpdateTick(e);
 		}
 		
-		void UpdateTick(ParserUpdateStepEventArgs e)
+		async void UpdateTick(ParseInformationEventArgs e)
 		{
-			if (!ctl.IsVisible) return;
+			bool isActive = ctl.IsVisible && !SD.ParserService.LoadSolutionProjectsThread.IsRunning;
+			timer.IsEnabled = isActive;
+			if (!isActive) return;
 			LoggingService.Debug("DefinitionViewPad.Update");
 			
-			ResolveResult res = ResolveAtCaret(e);
+			ResolveResult res = await ResolveAtCaretAsync(e);
 			if (res == null) return;
-			FilePosition pos = res.GetDefinitionPosition();
-			if (pos.IsEmpty) return;
+			var pos = res.GetDefinitionRegion();
+			if (pos.IsEmpty) return; // TODO : try to decompile?
 			OpenFile(pos);
 		}
 		
-		bool disableDefinitionView;
-		
-		ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)
+		Task<ResolveResult> ResolveAtCaretAsync(ParseInformationEventArgs e)
 		{
-			if (disableDefinitionView)
-				return null;
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window == null) return null;
-			ITextEditorProvider provider = window.ActiveViewContent as ITextEditorProvider;
-			if (provider == null) return null;
-			ITextEditor editor = provider.TextEditor;
+			IWorkbenchWindow window = SD.Workbench.ActiveWorkbenchWindow;
+			if (window == null)
+				return Task.FromResult<ResolveResult>(null);
+			IViewContent viewContent = window.ActiveViewContent;
+			if (viewContent == null)
+				return Task.FromResult<ResolveResult>(null);
+			ITextEditor editor = viewContent.GetService<ITextEditor>();
+			if (editor == null)
+				return Task.FromResult<ResolveResult>(null);
 			
 			// e might be null when this is a manually triggered update
 			// don't resolve when an unrelated file was changed
-			if (e != null && editor.FileName != e.FileName) return null;
+			if (e != null && editor.FileName != e.FileName)
+				return Task.FromResult<ResolveResult>(null);
 			
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(editor.FileName);
-			if (expressionFinder == null) return null;
-			ITextEditorCaret caret = editor.Caret;
-			string content = (e == null) ? editor.Document.Text : e.Content.Text;
-			if (caret.Offset > content.Length) {
-				LoggingService.Debug("caret.Offset = " + caret.Offset + ", content.Length=" + content.Length);
-				return null;
-			}
-			try {
-				ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
-				if (expr.Expression == null) return null;
-				return ParserService.Resolve(expr, caret.Line, caret.Column, editor.FileName, content);
-			} catch (Exception ex) {
-				disableDefinitionView = true;
-				ctl.Visibility = Visibility.Collapsed;
-				MessageService.ShowException(ex, "Error resolving at " + caret.Line + "/" + caret.Column
-				                             + ". DefinitionViewPad is disabled until you restart SharpDevelop.");
-				return null;
-			}
+			return SD.ParserService.ResolveAsync(editor.FileName, editor.Caret.Location, editor.Document);
 		}
 		
-		FilePosition oldPosition;
-		string currentFileName;
+		DomRegion oldPosition;
+		FileName currentFileName;
 		
-		void OpenFile(FilePosition pos)
+		void OpenFile(DomRegion pos)
 		{
 			if (pos.Equals(oldPosition)) return;
 			oldPosition = pos;
-			if (pos.FileName != currentFileName)
-				LoadFile(pos.FileName);
-			ctl.TextArea.Caret.Location = new ICSharpCode.AvalonEdit.Document.TextLocation(pos.Line, pos.Column);
+			var fileName = new FileName(pos.FileName);
+			if (fileName != currentFileName)
+				LoadFile(fileName);
+			ctl.TextArea.Caret.Location = pos.Begin;
 			Rect r = ctl.TextArea.Caret.CalculateCaretRectangle();
 			if (!r.IsEmpty) {
 				ctl.ScrollToVerticalOffset(r.Top - 4);
@@ -138,21 +153,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Loads the file from the corresponding text editor window if it is
 		/// open otherwise the file is loaded from the file system.
 		/// </summary>
-		void LoadFile(string fileName)
+		void LoadFile(FileName fileName)
 		{
-			// Get currently open text editor that matches the filename.
-			ITextEditor openTextEditor = null;
-			ITextEditorProvider provider = FileService.GetOpenFile(fileName) as ITextEditorProvider;
-			if (provider != null) {
-				openTextEditor = provider.TextEditor;
-			}
-			
 			// Load the text into the definition view's text editor.
-			if (openTextEditor != null) {
-				ctl.Text = openTextEditor.Document.Text;
-			} else {
-				ctl.Load(fileName);
-			}
+			ctl.Document = new TextDocument(SD.FileService.GetFileContent(fileName));
+			ctl.Document.FileName = fileName;
 			currentFileName = fileName;
 			ctl.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 		}

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
@@ -145,19 +160,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			public IAsyncResult BeginInvoke(Delegate method, object[] args)
 			{
 				ISynchronizeInvoke si = targetSynchronizeInvoke;
-				if (si != null)
-					return si.BeginInvoke(method, args);
-				else {
-					// When target is not available, invoke method on current thread, but use a lock
-					// to ensure we don't run multiple methods concurrently.
-					lock (this) {
-						method.DynamicInvoke(args);
-						return null;
-					}
-					// yes this is morally questionable - maybe it would be better to enqueue all invocations and run them later?
-					// ProgressCollector would have to avoid enqueuing stuff multiple times for all kinds of updates
-					// (currently it does this only with updates to the Progress property)
+				if (si != null) {
+					var winForm = si as System.Windows.Forms.Form;
+					if ((winForm == null) || !winForm.IsDisposed)
+						return si.BeginInvoke(method, args);
 				}
+				
+				// When target is not available, invoke method on current thread, but use a lock
+				// to ensure we don't run multiple methods concurrently.
+				lock (this) {
+					method.DynamicInvoke(args);
+					return null;
+				}
+				// yes this is morally questionable - maybe it would be better to enqueue all invocations and run them later?
+				// ProgressCollector would have to avoid enqueuing stuff multiple times for all kinds of updates
+				// (currently it does this only with updates to the Progress property)
 			}
 			
 			public void SetTarget(ISynchronizeInvoke targetSynchronizeInvoke)
@@ -288,6 +305,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set { collector.ProgressMonitor.Progress = value; }
 		}
 		
+		void IProgress<double>.Report(double value)
+		{
+			this.Progress = value;
+		}
+		
 		/// <inheritdoc/>
 		public bool ShowingDialog {
 			get { return collector.ProgressMonitor.ShowingDialog; }
@@ -309,6 +331,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public IProgressMonitor CreateSubTask(double workAmount)
 		{
 			return collector.ProgressMonitor.CreateSubTask(workAmount);
+		}
+		
+		/// <inheritdoc/>
+		public IProgressMonitor CreateSubTask(double workAmount, CancellationToken cancellationToken)
+		{
+			return collector.ProgressMonitor.CreateSubTask(workAmount, cancellationToken);
 		}
 		
 		public void Dispose()

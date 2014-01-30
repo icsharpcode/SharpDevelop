@@ -1,15 +1,29 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.Profiler.Controller.Data;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Microsoft.CSharp;
+using ICSharpCode.Profiler.Controller.Data;
 
 namespace ICSharpCode.Profiler.Controller.Queries
 {
@@ -69,11 +83,11 @@ namespace ICSharpCode.Profiler.Controller.Queries
 		/// <returns>true, if successful, otherwise false.</returns>
 		public bool Compile()
 		{
-			if (string.IsNullOrEmpty(this.currentQuery))
+			if (string.IsNullOrEmpty(currentQuery))
 				return false;
 			
 			lock (queryCache) {
-				if (!queryCache.ContainsKey(this.currentQuery)) {
+				if (!queryCache.ContainsKey(currentQuery)) {
 					string code = text + PreprocessString(currentQuery) + textEnd;
 					CompilerResults results = csc.CompileAssemblyFromSource(GetParameters(), code);
 					report(results.Errors.Cast<CompilerError>());
@@ -81,7 +95,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 					if (results.Errors.Count > 0)
 						return false;
 					
-					queryCache.Add(this.currentQuery, results.CompiledAssembly);
+					queryCache.Add(currentQuery, results.CompiledAssembly);
 				} else {
 					report(new List<CompilerError>().AsEnumerable()); // clear errors list
 				}
@@ -101,7 +115,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 			
 			Assembly assembly;
 			lock (queryCache)
-				assembly = queryCache[this.currentQuery];
+				assembly = queryCache[currentQuery];
 			QueryBase queryContainer = assembly.CreateInstance("Query") as QueryBase;
 			
 			queryContainer.Provider = provider;
@@ -130,7 +144,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 			cp.OutputAssembly = Path.GetTempFileName();
 			cp.ReferencedAssemblies.Add("System.dll");
 			cp.ReferencedAssemblies.Add("System.Core.dll");
-			cp.ReferencedAssemblies.Add(this.GetType().Assembly.Location);
+			cp.ReferencedAssemblies.Add(GetType().Assembly.Location);
 
 			cp.WarningLevel = 4;
 			cp.TreatWarningsAsErrors = true;

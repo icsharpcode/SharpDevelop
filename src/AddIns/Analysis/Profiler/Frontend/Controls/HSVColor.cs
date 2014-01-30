@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Windows.Media;
@@ -13,14 +28,14 @@ namespace ICSharpCode.Profiler.Controls
 		
 		public float Hue {
 			get { return hue; }
-			set { this.hue = value; }
+			set { hue = value; }
 		}
 		
 		float saturation;
 		
 		public float Saturation {
 			get { return saturation; }
-			set { this.saturation = value; }
+			set { saturation = value; }
 		}
 		
 		float value;
@@ -74,34 +89,34 @@ namespace ICSharpCode.Profiler.Controls
 	
 		public Color ToColor()
 		{
-			if (!InInterval(this.hue, 0, 360))
+			if (!InInterval(hue, 0, 360))
 				throw new ArgumentException("Hue is not between 0 and 360 degrees!");
-			if (!InInterval(this.saturation, 0, 1))
+			if (!InInterval(saturation, 0, 1))
 				throw new ArgumentException("Saturation is not between 0 and 1!");
-			if (!InInterval(this.value, 0, 1))
+			if (!InInterval(value, 0, 1))
 				throw new ArgumentException("Value is not between 0 and 1!");
 	
-			int hi = (int)Math.Floor(this.hue / 60.0f);
-			float f = this.hue / 60.0f - hi;
+			int hi = (int)Math.Floor(hue / 60.0f);
+			float f = hue / 60.0f - hi;
 			
-			float p = this.value * (1 - this.saturation);
-			float q = this.value * (1 - this.saturation * f);
-			float t = this.value * (1 - this.saturation * (1 - f));
+			float p = value * (1 - saturation);
+			float q = value * (1 - saturation * f);
+			float t = value * (1 - saturation * (1 - f));
 			
 			switch (hi)
 			{
 				case 0:
-					return Color.FromRgb((byte)(this.value * 255.0f), (byte)(t * 255.0f), (byte)(p * 255.0f));
+					return Color.FromRgb((byte)(value * 255.0f), (byte)(t * 255.0f), (byte)(p * 255.0f));
 				case 1:
-					return Color.FromRgb((byte)(q * 255.0f), (byte)(this.value * 255.0f), (byte)(p * 255.0f));
+					return Color.FromRgb((byte)(q * 255.0f), (byte)(value * 255.0f), (byte)(p * 255.0f));
 				case 2:
-					return Color.FromRgb((byte)(p * 255.0f), (byte)(this.value * 255.0f), (byte)(t * 255.0f));
+					return Color.FromRgb((byte)(p * 255.0f), (byte)(value * 255.0f), (byte)(t * 255.0f));
 				case 3:
-					return Color.FromRgb((byte)(p * 255.0f), (byte)(q * 255.0f), (byte)(this.value * 255.0f));
+					return Color.FromRgb((byte)(p * 255.0f), (byte)(q * 255.0f), (byte)(value * 255.0f));
 				case 4:
-					return Color.FromRgb((byte)(t * 255.0f), (byte)(p * 255.0f), (byte)(this.value * 255.0f));
+					return Color.FromRgb((byte)(t * 255.0f), (byte)(p * 255.0f), (byte)(value * 255.0f));
 				case 5:
-					return Color.FromRgb((byte)(this.value * 255.0f), (byte)(p * 255.0f), (byte)(q * 255.0f));
+					return Color.FromRgb((byte)(value * 255.0f), (byte)(p * 255.0f), (byte)(q * 255.0f));
 			}
 			
 			return Colors.Black;

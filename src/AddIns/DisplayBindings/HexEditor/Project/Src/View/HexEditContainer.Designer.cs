@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 namespace HexEditor.View
 {
@@ -36,7 +51,7 @@ namespace HexEditor.View
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HexEditContainer));
             this.tbSizeToFit = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.tCBViewMode = new System.Windows.Forms.DomainUpDown();
+            this.tCBViewMode = new System.Windows.Forms.ToolStripComboBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tSTBCharsPerLine = new System.Windows.Forms.NumericUpDown();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
@@ -69,7 +84,8 @@ namespace HexEditor.View
             "Decimal"});
             this.tCBViewMode.Name = "tCBViewMode";
             this.tCBViewMode.Size = new System.Drawing.Size(121, 25);
-            this.tCBViewMode.SelectedItemChanged += new System.EventHandler(this.TCBViewModeSelectedIndexChanged);
+            this.tCBViewMode.SelectedIndexChanged += new System.EventHandler(this.TCBViewModeSelectedIndexChanged);
+            this.tCBViewMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             // 
             // toolStrip1
             // 
@@ -129,7 +145,7 @@ namespace HexEditor.View
         }
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         internal HexEditor.Editor hexEditControl;
-        private System.Windows.Forms.DomainUpDown tCBViewMode;
+        private System.Windows.Forms.ToolStripComboBox tCBViewMode;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tbSizeToFit;
         private System.Windows.Forms.ToolStrip toolStrip1;

@@ -1,15 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
+using System.Threading.Tasks;
+using System.Linq;
 using Debugger.Interop;
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.CorSym;
 using Debugger.Interop.MetaData;
 using Debugger.MetaData;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace Debugger
 {
@@ -27,12 +44,15 @@ namespace Debugger
 		ISymUnmanagedReader symReader;
 		MetaDataImport metaData;
 		
-		internal Dictionary<string, DebugType> LoadedDebugTypes = new Dictionary<string, DebugType>();
+		Task<IUnresolvedAssembly> unresolvedAssembly;
 		
-		/// <summary>
-		/// Occurs when symbols are loaded or unloaded (for memory modules)
-		/// </summary>
-		public event EventHandler<ModuleEventArgs> SymbolsUpdated;
+		public IUnresolvedAssembly UnresolvedAssembly {
+			get { return unresolvedAssembly.Result; }
+		}
+		
+		public IAssembly Assembly {
+			get { return this.UnresolvedAssembly.Resolve(appDomain.Compilation.TypeResolveContext); }
+		}
 		
 		public AppDomain AppDomain {
 			get { return appDomain; }
@@ -56,6 +76,25 @@ namespace Debugger
 		public bool Unloaded {
 			get {
 				return unloaded;
+			}
+		}
+		
+		[Debugger.Tests.Ignore]
+		public uint GetEntryPoint()
+		{
+			try {
+				if (symReader != null)
+					return symReader.GetUserEntryPoint();
+				var info = TypeSystemExtensions.GetInfo(Assembly);
+				var cecilModule = info.CecilModule;
+				if (cecilModule == null)
+					return 0;
+				var ep = cecilModule.EntryPoint;
+				if (ep != null)
+					return ep.MetadataToken.ToUInt32();
+				return 0;
+			} catch {
+				return 0;
 			}
 		}
 		
@@ -161,35 +200,13 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Returns all non-generic types defined in the module </summary>
-		/// <remarks> Generic types can not be returned, because we do not know how to instanciate them </remarks>
-		public List<DebugType> GetDefinedTypes()
-		{
-			List<DebugType> types = new List<DebugType>();
-			foreach(TypeDefProps typeDef in this.MetaData.EnumTypeDefProps()) {
-				if (this.MetaData.EnumGenericParams(typeDef.Token).Length == 0) {
-					types.Add(DebugType.CreateFromTypeDefOrRef(this, null, typeDef.Token, null));
-				}
-			}
-			return types;
-		}
-		
-		/// <summary> Get names of all generic and non-generic types defined in this module </summary>
-		public List<string> GetNamesOfDefinedTypes()
-		{
-			List<string> names = new List<string>();
-			foreach(TypeDefProps typeProps in this.MetaData.EnumTypeDefProps()) {
-				names.Add(typeProps.Name);
-			}
-			return names;
-		}
-		
 		internal Module(AppDomain appDomain, ICorDebugModule corModule)
 		{
 			this.appDomain = appDomain;
 			this.process = appDomain.Process;
 			this.corModule = corModule;
 			
+			unresolvedAssembly = TypeSystemExtensions.LoadModuleAsync(this, corModule);
 			metaData = new MetaDataImport(corModule);
 			
 			if (IsDynamic || IsInMemory) {
@@ -202,7 +219,7 @@ namespace Debugger
 			SetJITCompilerFlags();
 			
 			LoadSymbolsFromDisk(process.Options.SymbolsSearchPaths);
-			ResetJustMyCodeStatus();
+			ResetJustMyCode();
 			LoadSymbolsDynamic();
 		}
 		
@@ -222,11 +239,11 @@ namespace Debugger
 		/// <summary>
 		/// Load symblos for on-disk module
 		/// </summary>
-		public void LoadSymbolsFromDisk(string[] searchPath)
+		public void LoadSymbolsFromDisk(IEnumerable<string> symbolsSearchPaths)
 		{
 			if (!IsDynamic && !IsInMemory) {
 				if (symReader == null) {
-					symReader = metaData.GetSymReader(fullPath, string.Join("; ", searchPath ?? new string[0]));
+					symReader = metaData.GetSymReader(fullPath, string.Join("; ", symbolsSearchPaths ?? new string[0]));
 					if (symReader != null) {
 						process.TraceMessage("Loaded symbols from disk for " + this.Name);
 						OnSymbolsUpdated();
@@ -280,72 +297,53 @@ namespace Debugger
 		
 		void OnSymbolsUpdated()
 		{
-			SetBreakpoints();
-			ResetJustMyCodeStatus();
-			if (SymbolsUpdated != null) {
-				SymbolsUpdated(this, new ModuleEventArgs(this));
+			foreach (Breakpoint b in this.Debugger.Breakpoints) {
+				b.SetBreakpoint(this);
 			}
-		}
-		
-		void SetBreakpoints()
-		{
-			if (this.HasSymbols) {
-				// This is in case that the client modifies the collection as a response to set breakpoint
-				// NB: If client adds new breakpoint, it will be set directly as a result of his call, not here (because module is already loaded)
-				List<Breakpoint> collection = new List<Breakpoint>();
-				collection.AddRange(this.Debugger.Breakpoints);
-				
-				var currentModuleTypes = this.GetNamesOfDefinedTypes();
-				foreach (Breakpoint b in collection) {
-					if (b is ILBreakpoint) {
-						// set the breakpoint only if the module contains the type
-						if (!currentModuleTypes.Contains(b.TypeName))
-							continue;
-					}
-					b.SetBreakpoint(this);
-				}
-			}
+			ResetJustMyCode();
 		}
 		
 		void SetJITCompilerFlags()
 		{
-			if (Process.DebugMode != DebugModeFlag.Default) {
-				// translate DebugModeFlags to JITCompilerFlags
-				CorDebugJITCompilerFlags jcf = MapDebugModeToJITCompilerFlags(Process.DebugMode);
-
-				try
-				{
-					this.JITCompilerFlags = jcf;
-
-					// Flags may succeed but not set all bits, so requery.
-					CorDebugJITCompilerFlags jcfActual = this.JITCompilerFlags;
-					
-					#if DEBUG
-					if (jcf != jcfActual)
-						Console.WriteLine("Couldn't set all flags. Actual flags:" + jcfActual.ToString());
-					else
-						Console.WriteLine("Actual flags:" + jcfActual.ToString());
-					#endif
-				}
-				catch (COMException ex)
-				{
-					// we'll ignore the error if we cannot set the jit flags
-					Console.WriteLine(string.Format("Failed to set flags with hr=0x{0:x}", ex.ErrorCode));
-				}
+			CorDebugJITCompilerFlags flags;
+			if (this.Process.Options.EnableEditAndContinue) {
+				flags = CorDebugJITCompilerFlags.CORDEBUG_JIT_ENABLE_ENC;
+			} else if (this.Process.Options.SuppressJITOptimization) {
+				flags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+			} else {
+				flags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DEFAULT;
 			}
+
+			try
+			{
+				this.JITCompilerFlags = flags;
+			}
+			catch (COMException ex)
+			{
+				Console.WriteLine(string.Format("Failed to set flags with hr=0x{0:x}", ex.ErrorCode));
+			}
+			
+			CorDebugJITCompilerFlags actual = this.JITCompilerFlags;
+			if (flags != actual)
+				this.Process.TraceMessage("Couldn't set JIT flags to {0}. Actual flags: {1}", flags, actual);
+			else
+				this.Process.TraceMessage("JIT flags: {0}", actual);
 		}
 		
-		/// <summary> Sets all code as being 'my code'.  The code will be gradually
-		/// set to not-user-code as encountered according to stepping options </summary>
-		public void ResetJustMyCodeStatus()
+		/// <summary>
+		/// Sets all code as being 'my code'.  The code will be gradually switch
+		/// to not-user-code as encountered according to stepping options.
+		/// </summary>
+		public void ResetJustMyCode()
 		{
 			uint unused = 0;
-			if (process.Options.StepOverNoSymbols && !this.HasSymbols) {
+			if (this.Process.Debugger.SymbolSources.All(s => s is PdbSymbolSource) && this.SymReader == null) {
 				// Optimization - set the code as non-user right away
 				this.CorModule2.SetJMCStatus(0, 0, ref unused);
 				return;
 			}
 			try {
+				// Reqires the process to be synchronized!
 				this.CorModule2.SetJMCStatus(process.Options.EnableJustMyCode ? 1 : 0, 0, ref unused);
 			} catch (COMException e) {
 				// Cannot use JMC on this code (likely wrong JIT settings).
@@ -371,46 +369,6 @@ namespace Debugger
 		public override string ToString()
 		{
 			return string.Format("{0}", this.Name);
-		}
-		
-		public static CorDebugJITCompilerFlags MapDebugModeToJITCompilerFlags(DebugModeFlag debugMode)
-		{
-			CorDebugJITCompilerFlags jcf;
-			switch (debugMode)
-			{
-				case DebugModeFlag.Optimized:
-					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_DEFAULT; // DEFAULT really means force optimized.
-					break;
-				case DebugModeFlag.Debug:
-					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
-					break;
-				case DebugModeFlag.Enc:
-					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_ENABLE_ENC;
-					break;
-				default:
-					// we don't have mapping from default to "default",
-					// therefore we'll use DISABLE_OPTIMIZATION.
-					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
-					break;
-			}
-			return jcf;
-		}
-	}
-	
-	[Serializable]
-	public class ModuleEventArgs : ProcessEventArgs
-	{
-		Module module;
-		
-		public Module Module {
-			get {
-				return module;
-			}
-		}
-		
-		public ModuleEventArgs(Module module): base(module.Process)
-		{
-			this.module = module;
 		}
 	}
 }

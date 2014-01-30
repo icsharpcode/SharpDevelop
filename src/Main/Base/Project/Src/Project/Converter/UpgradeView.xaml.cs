@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +23,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -16,10 +32,10 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	/// </summary>
 	internal partial class UpgradeView : UserControl
 	{
-		readonly Solution solution;
+		readonly ISolution solution;
 		readonly List<Entry> entries;
 		
-		public UpgradeView(Solution solution)
+		public UpgradeView(ISolution solution)
 		{
 			if (solution == null)
 				throw new ArgumentNullException("solution");
@@ -38,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			set { upgradeDescription.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
 		}
 		
-		public Solution Solution {
+		public ISolution Solution {
 			get { return solution; }
 		}
 		
@@ -130,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			HashSet<TargetFramework> availableFrameworkSet = null;
 			foreach (Entry entry in listView.SelectedItems) {
 				var entryFrameworks = entry.Project.GetAvailableTargetFrameworks()
-					.Where(fx => fx.IsCompatibleWith(selectedCompiler ?? entry.CompilerVersion));
+					.Where(fx => (selectedCompiler ?? entry.CompilerVersion).CanTarget(fx));
 				if (availableFrameworkSet == null)
 					availableFrameworkSet = new HashSet<TargetFramework>(entryFrameworks);
 				else
@@ -215,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		void convertButton_Click(object sender, RoutedEventArgs e)
 		{
-			Core.AnalyticsMonitorService.TrackFeature(GetType(), "convertButton_Click");
+			SD.AnalyticsMonitor.TrackFeature(GetType(), "convertButton_Click");
 			
 			CompilerVersion selectedCompiler = newVersionComboBox.SelectedValue as CompilerVersion;
 			TargetFramework selectedFramework = newFrameworkComboBox.SelectedValue as TargetFramework;
@@ -260,8 +276,22 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		sealed class UnchangedTargetFramework : TargetFramework
 		{
-			public UnchangedTargetFramework() : base(string.Empty, Core.StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange}"))
-			{
+			public override string TargetFrameworkVersion {
+				get { return string.Empty; }
+			}
+			
+			public override string DisplayName {
+				get {
+					return Core.StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange}");
+				}
+			}
+			
+			public override Version Version {
+				get { return null; }
+			}
+			
+			public override Version MinimumMSBuildVersion {
+				get { return null; }
 			}
 			
 			public override TargetFramework PickFramework(IEnumerable<IUpgradableProject> selectedProjects)

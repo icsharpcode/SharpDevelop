@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -112,6 +127,10 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static AddInTreeImpl AddInTree {
+			get { return (AddInTreeImpl)ServiceSingleton.GetRequiredService<IAddInTree>(); }
+		}
+		
 		/// <summary>
 		/// Installs the AddIns from AddInInstallTemp to the UserAddInPath.
 		/// In case of installation errors, a error message is displayed to the user
@@ -184,9 +203,10 @@ namespace ICSharpCode.Core
 					Directory.Delete(targetDir, true);
 				} catch (Exception ex) {
 					disabled.Add(addInName);
-					MessageService.ShowError("Error removing " + addInName + ":\n" +
+					var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
+					messageService.ShowError("Error removing " + addInName + ":\n" +
 					                         ex.Message + "\nThe AddIn will be " +
-					                         "removed on the next start of " + MessageService.ProductName +
+					                         "removed on the next start of " + messageService.ProductName +
 					                         " and is disabled for now.");
 					return false;
 				}
@@ -260,7 +280,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		/// <param name="addIns">
 		/// The list of AddIns to add. (use <see cref="AddIn"/> instances
-		/// created by <see cref="AddIn.Load(TextReader,string,XmlNameTable)"/>).
+		/// created by <see cref="AddIn.Load(IAddInTree,TextReader,string,XmlNameTable)"/>).
 		/// </param>
 		public static void AddExternalAddIns(IList<AddIn> addIns)
 		{
@@ -284,7 +304,7 @@ namespace ICSharpCode.Core
 		/// AddIns.
 		/// </summary>
 		/// The list of AddIns to remove.
-		/// (use external AddIns from the <see cref="AddInTree.AddIns"/> collection).
+		/// (use external AddIns from the <see cref="IAddInTree.AddIns"/> collection).
 		public static void RemoveExternalAddIns(IList<AddIn> addIns)
 		{
 			List<string> addInFiles = new List<string>();

@@ -3,19 +3,20 @@
   <PropertyGroup>
     <ProjectGuid>{5186325C-DD7F-4246-9BE7-3F384EFBF5A6}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>TextTemplating.Tests</RootNamespace>
     <AssemblyName>TextTemplating.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -38,6 +39,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="Mono.TextTemplating">
       <HintPath>..\Project\lib\Mono.TextTemplating.dll</HintPath>
     </Reference>
@@ -62,8 +64,6 @@
     <Compile Include="Helpers\FakeAddInRuntime.cs" />
     <Compile Include="Helpers\FakeAddInTree.cs" />
     <Compile Include="Helpers\FakeAppDomain.cs" />
-    <Compile Include="Helpers\FakeAssemblyParserService.cs" />
-    <Compile Include="Helpers\FakeReflectionProjectContent.cs" />
     <Compile Include="Helpers\FakeServiceProvider.cs" />
     <Compile Include="Helpers\FakeTextTemplatingAppDomain.cs" />
     <Compile Include="Helpers\FakeTextTemplatingAppDomainFactory.cs" />
@@ -99,7 +99,6 @@
     <Compile Include="Src\TextTemplatingHostTests.cs" />
     <Compile Include="Src\TextTemplatingPathResolverTests.cs" />
     <Compile Include="Src\TextTemplatingPreprocessorTests.cs" />
-    <Compile Include="Src\TextTemplatingReflectionProjectContentTests.cs" />
     <Compile Include="Src\TextTemplatingServiceProviderTests.cs" />
     <Compile Include="Src\TextTemplatingVariableLocationTests.cs" />
     <Compile Include="Src\TextTemplatingVariablesTests.cs" />
@@ -110,6 +109,11 @@
     <Folder Include="Helpers" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -117,11 +121,6 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Project\TextTemplating.csproj">
       <Project>{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}</Project>

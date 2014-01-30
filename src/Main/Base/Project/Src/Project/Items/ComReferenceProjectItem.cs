@@ -1,9 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
 using System.IO;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -93,12 +109,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the file name of the COM interop assembly.
 		/// </summary>
-		public override string FileName {
+		public override FileName FileName {
 			get {
 				try {
 					if (Project != null && Project.OutputAssemblyFullPath != null) {
-						string outputFolder = Path.GetDirectoryName(Project.OutputAssemblyFullPath);
-						string interopFileName = Path.Combine(outputFolder, String.Concat("Interop.", Include, ".dll"));
+						DirectoryName outputFolder = Project.OutputAssemblyFullPath.GetParentDirectory();
+						FileName interopFileName = outputFolder.CombineFile("Interop." + Include + ".dll");
 						if (File.Exists(interopFileName)) {
 							return interopFileName;
 						}
@@ -111,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						// look in obj\Debug:
 						if (Project is CompilableProject) {
 							outputFolder = (Project as CompilableProject).IntermediateOutputFullPath;
-							interopFileName = Path.Combine(outputFolder, String.Concat("Interop.", Include, ".dll"));
+							interopFileName = outputFolder.CombineFile("Interop." + Include + ".dll");
 							if (File.Exists(interopFileName)) {
 								return interopFileName;
 							}
@@ -124,16 +140,16 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 				catch (Exception) { }
-				return Include;
+				return FileName.Create(Include);
 			}
 			set {
 			}
 		}
 		
-		static string GetActiveXInteropFileName(string outputFolder, string include)
+		static FileName GetActiveXInteropFileName(DirectoryName outputFolder, string include)
 		{
-			if (include.ToLowerInvariant().StartsWith("ax")) {
-				return Path.Combine(outputFolder, String.Concat("AxInterop.", include.Substring(2), ".dll"));
+			if (include.StartsWith("ax", StringComparison.OrdinalIgnoreCase)) {
+				return outputFolder.CombineFile(String.Concat("AxInterop.", include.Substring(2), ".dll"));
 			}
 			return null;
 		}

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -11,6 +26,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Options
 {
@@ -129,15 +145,32 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		
 		public void ShowExample(TextArea exampleTextArea)
 		{
-			exampleTextArea.Document.Text = StringParser.Parse(color.ExampleText, GetXshdProperties().ToArray());
+			string exampleText = StringParser.Parse(color.ExampleText, GetXshdProperties().ToArray());
+			int semanticHighlightStart = exampleText.IndexOf("#{#", StringComparison.OrdinalIgnoreCase);
+			int semanticHighlightEnd = exampleText.IndexOf("#}#", StringComparison.OrdinalIgnoreCase);
+			if (semanticHighlightStart > -1 && semanticHighlightEnd >= semanticHighlightStart + 3) {
+				semanticHighlightEnd -= 3;
+				exampleText = exampleText.Remove(semanticHighlightStart, 3).Remove(semanticHighlightEnd, 3);
+				ITextMarkerService svc = exampleTextArea.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+				exampleTextArea.Document.Text = exampleText;
+				if (svc != null) {
+					ITextMarker m = svc.Create(semanticHighlightStart, semanticHighlightEnd - semanticHighlightStart);
+					m.Tag = (Action<IHighlightingItem, ITextMarker>)(
+						(IHighlightingItem item, ITextMarker marker) => {
+							marker.BackgroundColor = item.Background;
+							marker.ForegroundColor = item.Foreground;
+							marker.FontStyle = item.Italic ? FontStyles.Italic : FontStyles.Normal;
+							marker.FontWeight = item.Bold ? FontWeights.Bold : FontWeights.Normal;
+						});
+				}
+			} else {
+				exampleTextArea.Document.Text = exampleText;
+			}
 		}
 		
 		IEnumerable<StringTagPair> GetXshdProperties()
 		{
-			IHighlightingDefinition2 def = ParentDefinition as IHighlightingDefinition2;
-			if (def == null)
-				yield break;
-			foreach (var p in def.Properties)
+			foreach (var p in ParentDefinition.Properties)
 				yield return new StringTagPair(p.Key, p.Value);
 		}
 		

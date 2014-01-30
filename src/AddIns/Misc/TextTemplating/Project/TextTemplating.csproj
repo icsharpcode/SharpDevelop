@@ -3,23 +3,27 @@
   <PropertyGroup>
     <ProjectGuid>{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.TextTemplating</RootNamespace>
     <AssemblyName>TextTemplating</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\AddIns\Misc\TextTemplating\</OutputPath>
+    <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
     <FileAlignment>4096</FileAlignment>
+    <Prefer32Bit>False</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,6 +32,7 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <StartAction>Project</StartAction>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>false</DebugSymbols>
@@ -58,8 +63,6 @@
     <Compile Include="Src\IAddInRuntime.cs" />
     <Compile Include="Src\IAddInTree.cs" />
     <Compile Include="Src\IAppDomain.cs" />
-    <Compile Include="Src\IAssemblyParserService.cs" />
-    <Compile Include="Src\IReflectionProjectContent.cs" />
     <Compile Include="Src\ITextTemplatingAppDomain.cs" />
     <Compile Include="Src\ITextTemplatingAppDomainFactory.cs" />
     <Compile Include="Src\ITextTemplatingAssemblyPathResolver.cs" />
@@ -80,7 +83,6 @@
     <Compile Include="Src\TextTemplatingAddInTree.cs" />
     <Compile Include="Src\TextTemplatingAppDomain.cs" />
     <Compile Include="Src\TextTemplatingAppDomainFactory.cs" />
-    <Compile Include="Src\TextTemplatingAssemblyParserService.cs" />
     <Compile Include="Src\TextTemplatingAssemblyPathResolver.cs" />
     <Compile Include="Src\TextTemplatingAssemblyResolver.cs" />
     <Compile Include="Src\TextTemplatingCustomTool.cs" />
@@ -98,7 +100,6 @@
     <Compile Include="Src\TextTemplatingHostAppDomainAssemblyResolver.cs" />
     <Compile Include="Src\TextTemplatingHostContext.cs" />
     <Compile Include="Src\TextTemplatingPathResolver.cs" />
-    <Compile Include="Src\TextTemplatingReflectionProjectContent.cs" />
     <Compile Include="Src\TextTemplatingServiceProvider.cs" />
     <Compile Include="Src\TextTemplatingStringParser.cs" />
     <Compile Include="Src\TextTemplatingVariableLocation.cs" />
@@ -118,6 +119,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -126,11 +132,6 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

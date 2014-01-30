@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -11,8 +26,11 @@ using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -88,9 +106,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			//LoggingService.Debug("UpdatePropertyGridReplacementControl");
 			if (container.PropertyGridReplacementContent != null) {
-				instance.contentControl.SetContent(container.PropertyGridReplacementContent);
+				SD.WinForms.SetContent(instance.contentControl, container.PropertyGridReplacementContent);
 			} else {
-				instance.contentControl.SetContent(instance.panel);
+				SD.WinForms.SetContent(instance.contentControl, instance.panel);
 			}
 		}
 		
@@ -126,13 +144,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
-			IHasPropertyContainer c = WorkbenchSingleton.Workbench.ActiveContent as IHasPropertyContainer;
+			var activeViewOrPad = SD.Workbench.ActiveContent;
+			IHasPropertyContainer c = activeViewOrPad != null ? activeViewOrPad.GetService<IHasPropertyContainer>() : null;
 			if (c == null) {
 				if (previousContent == null) {
-					c = WorkbenchSingleton.Workbench.ActiveViewContent as IHasPropertyContainer;
+					c = SD.GetActiveViewContentService<IHasPropertyContainer>();
 				} else {
 					// if the previous content is no longer visible, we have to remove the active container
-					if (previousContent is IViewContent && previousContent != WorkbenchSingleton.Workbench.ActiveViewContent) {
+					if (previousContent is IViewContent && previousContent != SD.Workbench.ActiveViewContent) {
 						c = null;
 					} else {
 						c = previousContent;
@@ -178,19 +197,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			panel.Controls.Add(grid);
 			panel.Controls.Add(comboBox);
-			contentControl.SetContent(panel);
+			SD.WinForms.SetContent(contentControl, panel);
 			
-			ProjectService.SolutionClosed += SolutionClosedEvent;
+			SD.ProjectService.SolutionClosed += SolutionClosedEvent;
 			
 			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
-			grid.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
+			grid.ContextMenuStrip = SD.WinForms.MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
 			
 			LoggingService.Debug("PropertyPad created");
-			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
+			SD.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
 			// it is possible that ActiveContent changes fires before ActiveViewContent.
 			// if the new content is not a IHasPropertyContainer and we listen only to ActiveContentChanged,
 			// we might display the PropertyPad of a no longer active view content
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
+			SD.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
 		
@@ -387,7 +406,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.Dispose();
 			if (grid != null) {
 				this.ideContainer.Disconnect();
-				ProjectService.SolutionClosed -= SolutionClosedEvent;
+				SD.ProjectService.SolutionClosed -= SolutionClosedEvent;
 				try {
 					grid.SelectedObjects = null;
 				} catch {}
@@ -418,7 +437,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void RefreshItem(object obj)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (instance != null && instance.grid.SelectedObjects.Contains(obj)) {
 				instance.inUpdate = true;
 				instance.grid.SelectedObjects = instance.grid.SelectedObjects;
@@ -467,16 +486,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (gridItem != null) {
 				Type component = gridItem.PropertyDescriptor.ComponentType;
 				if (component != null) {
-					ICSharpCode.SharpDevelop.Dom.IClass c = ParserService.CurrentProjectContent.GetClass(component.FullName, 0);
-					if (c != null) {
-						foreach (ICSharpCode.SharpDevelop.Dom.IProperty p in c.DefaultReturnType.GetProperties()) {
-							if (gridItem.PropertyDescriptor.Name == p.Name) {
-								HelpProvider.ShowHelp(p);
-								return;
-							}
-						}
-						HelpProvider.ShowHelp(c);
-					}
+					ICompilation compilation = SD.ParserService.GetCompilation(ProjectService.CurrentProject);
+					IType componentType = compilation.FindType(component);
+					IProperty property = componentType.GetProperties(p => p.Name == gridItem.PropertyDescriptor.Name).FirstOrDefault();
+					if (property != null)
+						HelpProvider.ShowHelp(property);
+					else if (componentType.GetDefinition() != null)
+						HelpProvider.ShowHelp(componentType.GetDefinition());
 				}
 			}
 		}

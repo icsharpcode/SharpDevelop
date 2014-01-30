@@ -16,7 +16,7 @@ namespace ICSharpCode.NAnt.Tests
 			
 			Assert.AreEqual(1, tasks.Count, "Should be one task.");
 		
-			Task task = tasks[0];
+			SDTask task = tasks[0];
 			
 			Assert.AreEqual("C:\\Projects\\dotnet\\Corsavy\\SharpDevelop\\src\\StandardAddIn.include", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be a warning task.");

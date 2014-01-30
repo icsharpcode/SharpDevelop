@@ -327,6 +327,9 @@ Als u het niet eens bent met de licentie voorwaarden, klik dan de "Ik weiger" kn
   <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
     <value>Voeg toe</value>
   </data>
+  <data name="AddInManager2.OptionPanel.AutoCheckForUpdates" xml:space="preserve">
+    <value>Automatisch controleren van updates</value>
+  </data>
   <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
     <value>Naar beneden</value>
   </data>
@@ -344,6 +347,9 @@ Als u het niet eens bent met de licentie voorwaarden, klik dan de "Ik weiger" kn
   </data>
   <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
     <value>AddIns</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.General" xml:space="preserve">
+    <value>Algemeen</value>
   </data>
   <data name="AddInManager2.OptionPanel.Tree.Repositories" xml:space="preserve">
     <value>Repositories</value>
@@ -413,10 +419,13 @@ Deze stoppen met werken nadat deze AddIn wordt  verwijderd. Weet u zeker dat u w
     <value>Help Bibliotheek</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
-    <value>Help modus</value>
+    <value>Help voorkeur instellen</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
     <value>Help Library Manager kan niet starten omdat geen help catalogus is geïnstalleerd/geselecteerd. Controleer aub de help instellingen (Zie Extra &gt; Opties &gt; Extra's &gt; Microsoft Help Viewer)</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotAvailableDownloadWinSDK" xml:space="preserve">
+    <value>De Help Bibliotheek Manager niet gevonden. Teneinde de SharpDevelop's help te kunnen gebruiken, dient u Microsoft Windows SDK 7.1 te downloaden en te installeren.</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>De Help-bibliotheek Manager werd niet gevonden. Ga alst7ublieft na of deze wel korrekt geïnstalleerd werd.</value>
@@ -446,7 +455,7 @@ Deze stoppen met werken nadat deze AddIn wordt  verwijderd. Weet u zeker dat u w
     <value>Help tonen</value>
   </data>
   <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
-    <value>Externe help gebruiken</value>
+    <value>Externe help viewer gebruiken</value>
   </data>
   <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
     <value>Ik kies voor gebruik van plaatselijke help</value>

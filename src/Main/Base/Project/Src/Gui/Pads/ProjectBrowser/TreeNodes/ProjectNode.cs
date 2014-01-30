@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Drawing;
@@ -7,7 +22,6 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -32,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return "";
 			}
 		}
-		public override string Directory {
+		public override DirectoryName Directory {
 			get {
 				return project.Directory;
 			}
@@ -51,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.project = project;
 			
 			Text = project.Name;
-			if (project.ReadOnly) {
+			if (project.IsReadOnly) {
 				Text += StringParser.Parse(" (${res:Global.ReadOnly})");
 			}
 			
@@ -69,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			Tag = project;
 			
 			if (project.ParentSolution != null) {
-				project.ParentSolution.Preferences.StartupProjectChanged += OnStartupProjectChanged;
+				project.ParentSolution.StartupProjectChanged += OnStartupProjectChanged;
 				OnStartupProjectChanged(null, null);
 			}
 		}
@@ -78,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			base.Dispose();
 			if (project.ParentSolution != null) {
-				project.ParentSolution.Preferences.StartupProjectChanged -= OnStartupProjectChanged;
+				project.ParentSolution.StartupProjectChanged -= OnStartupProjectChanged;
 			}
 		}
 		
@@ -86,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void OnStartupProjectChanged(object sender, EventArgs e)
 		{
-			bool newIsStartupProject = (this.project == project.ParentSolution.Preferences.StartupProject);
+			bool newIsStartupProject = (this.project == project.ParentSolution.StartupProject);
 			if (newIsStartupProject != isStartupProject) {
 				isStartupProject = newIsStartupProject;
 				drawDefault = !isStartupProject;
@@ -141,8 +155,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			ProjectService.RemoveSolutionFolder(Project.IdGuid);
-			ProjectService.SaveSolution();
+			var parentFolder = ((ISolutionFolderNode)Parent).Folder;
+			parentFolder.Items.Remove(project);
+			base.Remove();
+			parentFolder.ParentSolution.Save();
 		}
 		
 		public override bool EnableCopy {
@@ -167,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), project.IdGuid));
+			SD.Clipboard.SetDataObject(new DataObject(typeof(ISolutionItem).ToString(), project.IdGuid));
 		}
 		// Paste is inherited from DirectoryNode.
 		
@@ -221,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
-			project.FileName = newFileName;
+			project.FileName = FileName.Create(newFileName);
 			project.Name = newName;
 			ProjectService.SaveSolution();
 		}

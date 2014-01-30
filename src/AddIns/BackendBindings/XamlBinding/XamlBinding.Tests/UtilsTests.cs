@@ -1,11 +1,23 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.NRefactory;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+using ICSharpCode.NRefactory;
 using NUnit.Framework;
 
 namespace ICSharpCode.XamlBinding.Tests
@@ -128,7 +140,7 @@ libraries for compilation. But when you compile a project
 inside SharpDevelop, there's more going on than a
 simple call to MSBuild.";
 			
-			Location location = Utils.GetLocationInfoFromOffset(text, 0);
+			TextLocation location = Utils.GetLocationInfoFromOffset(text, 0);
 			
 			Assert.AreEqual(1, location.Line);
 			Assert.AreEqual(1, location.Column);
@@ -144,7 +156,7 @@ simple call to MSBuild.";
 			
 			int offset = "SharpDevelop".Length;
 			
-			Location location = Utils.GetLocationInfoFromOffset(text, offset);
+			TextLocation location = Utils.GetLocationInfoFromOffset(text, offset);
 			
 			Assert.AreEqual(1, location.Line);
 			Assert.AreEqual(13, location.Column);
@@ -161,7 +173,7 @@ simple call to MSBuild.";
 			int offset = @"SharpDevelop uses the MSBuild
 ".Length;
 			
-			Location location = Utils.GetLocationInfoFromOffset(text, offset);
+			TextLocation location = Utils.GetLocationInfoFromOffset(text, offset);
 			
 			Assert.AreEqual(2, location.Line);
 			Assert.AreEqual(1, location.Column);
@@ -178,7 +190,7 @@ simple call to MSBuild.";
 			int offset = @"SharpDevelop uses the MSBuild
 libraries".Length;
 			
-			Location location = Utils.GetLocationInfoFromOffset(text, offset);
+			TextLocation location = Utils.GetLocationInfoFromOffset(text, offset);
 			
 			Assert.AreEqual(2, location.Line);
 			Assert.AreEqual(10, location.Column);
@@ -194,10 +206,30 @@ simple call to MSBuild.";
 			
 			int offset = @"SharpDevelop uses the MSBuild".Length;
 			
-			Location location = Utils.GetLocationInfoFromOffset(text, offset);
+			TextLocation location = Utils.GetLocationInfoFromOffset(text, offset);
 			
 			Assert.AreEqual(1, location.Line);
 			Assert.AreEqual(30, location.Column);
+		}
+		
+		
+		static object[] ParseNameCases = {
+			new[] { "Name", "", "Name", "" },
+			new[] { "x:Name", "x", "Name", "" },
+			new[] { "x:Name.Member", "x", "Name", "Member" },
+			new[] { "x:N.M", "x", "N", "M" },
+			new[] { "N.M", "", "N", "M" }
+		};
+		
+		[Test, TestCaseSource("ParseNameCases")]
+		public void ParseNameTest(string input, string expectedPrefix, string expectedName, string expectedMember)
+		{
+			string outputPrefix, outputMember;
+			string outputName = XamlResolver.ParseName(input, out outputPrefix, out outputMember);
+			
+			Assert.AreEqual(expectedPrefix, outputPrefix);
+			Assert.AreEqual(expectedMember, outputMember);
+			Assert.AreEqual(expectedName, outputName);
 		}
 	}
 }

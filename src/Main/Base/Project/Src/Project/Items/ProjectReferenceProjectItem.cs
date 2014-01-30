@@ -1,34 +1,61 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
 using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public class ProjectReferenceProjectItem : ReferenceProjectItem
+	public class ProjectReferenceProjectItem : ReferenceProjectItem, IAssemblyReference
 	{
-		IProject referencedProject;
-		
 		[Browsable(false)]
 		public IProject ReferencedProject {
 			get {
-				if (referencedProject == null)
-					referencedProject = ProjectService.GetProject(this.FileName);
-				return referencedProject;
+				// must be thread-safe because it's used by LoadSolutionProjectsThread,
+				// and by IAssemblyReference.Resolve()
+				IProject parentProject = this.Project;
+				if (parentProject == null)
+					return null;
+				var fileName = this.FileName;
+				foreach (var project in parentProject.ParentSolution.Projects) {
+					if (project.FileName == fileName)
+						return project;
+				}
+				return null;
 			}
 		}
 		
 		[ReadOnly(true)]
-		public string ProjectGuid {
+		public Guid ProjectGuid {
 			get {
-				return GetEvaluatedMetadata("Project");
+				Guid guid;
+				if (Guid.TryParse(GetEvaluatedMetadata("Project"), out guid))
+					return guid;
+				else
+					return Guid.Empty;
 			}
 			set {
-				SetEvaluatedMetadata("Project", value);
+				SetEvaluatedMetadata("Project", value.ToString("B").ToUpperInvariant());
 			}
 		}
 		
@@ -95,8 +122,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.Include = FileUtility.GetRelativePath(project.Directory, referenceTo.FileName);
 			ProjectGuid = referenceTo.IdGuid;
 			ProjectName = referenceTo.Name;
-			this.referencedProject = referenceTo;
 			this.DefaultCopyLocalValue = true;
+		}
+		
+		IAssembly IAssemblyReference.Resolve(ITypeResolveContext context)
+		{
+			IProject p = this.ReferencedProject;
+			if (p == null)
+				return null;
+			var snapshot = context.Compilation.SolutionSnapshot as ISolutionSnapshotWithProjectMapping;
+			IProjectContent pc = (snapshot != null) ? snapshot.GetProjectContent(p) : p.ProjectContent;
+			return (pc != null) ? pc.Resolve(context) : null;
 		}
 	}
 }

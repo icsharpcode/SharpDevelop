@@ -1,13 +1,30 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -61,12 +78,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// don't allow mac-style newlines; accept either unix or windows-style newlines but avoid mixing them
 			bool isConsistent = (numCR == 0) && (numLF == 0 || numCRLF == 0);
 			if (!isConsistent) {
-				SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(ShowInconsistentWarning, numLF > numCRLF);
+				SD.MainThread.InvokeAsyncAndForget(() => ShowInconsistentWarning(numLF > numCRLF));
 			}
 		}
 		
-		
-		GroupBox groupBox;
+		IOverlayUIElement groupBox;
 		Button normalizeButton, cancelButton;
 		RadioButton windows, unix;
 		
@@ -74,16 +90,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (editor.Document == null)
 				return; // editor was disposed
-			
-			groupBox = new GroupBox();
-			groupBox.Background = SystemColors.WindowBrush;
-			groupBox.Foreground = SystemColors.WindowTextBrush;
-			groupBox.Header = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Header");
-			groupBox.HorizontalAlignment = HorizontalAlignment.Right;
-			groupBox.VerticalAlignment = VerticalAlignment.Bottom;
-			groupBox.MaxWidth = 300;
-			groupBox.Margin = new Thickness(0, 0, 20, 20);
-			Grid.SetRow(groupBox, 1);
 			
 			windows = new RadioButton {
 				IsChecked = !preferUnixNewLines,
@@ -98,7 +104,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			normalizeButton = new Button { Content = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Normalize") };
 			cancelButton = new Button { Content = ResourceService.GetString("Global.CancelButtonText") };
 			
-			groupBox.Content = new StackPanel {
+			var content = new StackPanel {
 				Children = {
 					new TextBlock {
 						Text = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Description"),
@@ -113,13 +119,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					}
 				}
 			};
-			editor.Children.Add(groupBox);
 			
-			var featureUse = AnalyticsMonitorService.TrackFeature(typeof(NewLineConsistencyCheck));
+			groupBox = editor.GetService<IEditorUIService>().CreateOverlayUIElement(content);
+			groupBox.Title = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Header");
+			
+			var featureUse = SD.AnalyticsMonitor.TrackFeature(typeof(NewLineConsistencyCheck));
 			
 			EventHandler removeWarning = null;
 			removeWarning = delegate {
-				editor.Children.Remove(groupBox);
+				groupBox.Remove();
 				editor.PrimaryTextEditor.TextArea.Focus();
 				editor.LoadedFileContent -= removeWarning;
 				
@@ -128,11 +136,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			editor.LoadedFileContent += removeWarning;
 			cancelButton.Click += delegate {
-				AnalyticsMonitorService.TrackFeature(typeof(NewLineConsistencyCheck), "cancelButton");
+				SD.AnalyticsMonitor.TrackFeature(typeof(NewLineConsistencyCheck), "cancelButton");
 				removeWarning(null, null);
 			};
 			normalizeButton.Click += delegate {
-				AnalyticsMonitorService.TrackFeature(typeof(NewLineConsistencyCheck), "normalizeButton");
+				SD.AnalyticsMonitor.TrackFeature(typeof(NewLineConsistencyCheck), "normalizeButton");
 				removeWarning(null, null);
 				
 				TextDocument document = editor.Document;

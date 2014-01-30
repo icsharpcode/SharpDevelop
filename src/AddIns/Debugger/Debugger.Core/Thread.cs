@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -11,6 +26,14 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
+	public enum ExceptionType
+	{
+		FirstChance = 1,
+		UserFirstChance = 2,
+		CatchHandlerFound = 3,
+		Unhandled = 4,
+	}
+		
 	public class Thread: DebuggerObject
 	{
 		// AppDomain for thread can be changing
@@ -22,18 +45,12 @@ namespace Debugger
 		
 		Stepper currentStepIn;
 		
-		StackFrame selectedStackFrame;
-		
-		Exception     currentException;
-		DebuggeeState currentException_DebuggeeState;
-		ExceptionType currentExceptionType;
-		bool          currentExceptionIsUnhandled;
-
-		public event EventHandler<ThreadEventArgs> NameChanged;
-		public event EventHandler<ThreadEventArgs> Exited;
-		
 		public Process Process {
 			get { return process; }
+		}
+		
+		public AppDomain AppDomain {
+			get { return process.GetAppDomain(this.corThread.GetAppDomain()); }
 		}
 
 		[Debugger.Tests.Ignore]
@@ -49,6 +66,16 @@ namespace Debugger
 		internal Stepper CurrentStepIn {
 			get { return currentStepIn; }
 			set { currentStepIn = value; }
+		}
+		
+		[Debugger.Tests.Ignore]
+		public ExceptionType CurrentExceptionType { get; set; }
+		
+		[Debugger.Tests.Ignore]
+		public Value CurrentException {
+			get {
+				return new Value(this.AppDomain, this.CorThread.GetCurrentException());
+			}
 		}
 		
 		/// <summary> From time to time the thread may be in invalid state. </summary>
@@ -89,20 +116,9 @@ namespace Debugger
 			if (this.HasExited) throw new DebuggerException("Already exited");
 			
 			process.TraceMessage("Thread " + this.ID + " exited");
-			if (process.SelectedThread == this) {
-				process.SelectedThread = null;
-			}
 			
 			this.HasExited = true;
-			OnExited(new ThreadEventArgs(this));
-			process.Threads.Remove(this);
-		}
-		
-		protected virtual void OnExited(ThreadEventArgs e)
-		{
-			if (Exited != null) {
-				Exited(this, e);
-			}
+			process.threads.Remove(this);
 		}
 		
 		/// <summary> If the thread is not at safe point, it is not posible to evaluate
@@ -118,7 +134,18 @@ namespace Debugger
 			}
 		}
 		
-		public bool Suspended { get; set; }
+		public bool Suspended {
+			get {
+				process.AssertPaused();
+				
+				if (!IsInValidState) return false;
+				
+				return (CorThread.GetDebugState() == CorDebugThreadState.THREAD_SUSPEND);
+			}
+			set {
+				CorThread.SetDebugState(value ? CorDebugThreadState.THREAD_SUSPEND : CorDebugThreadState.THREAD_RUN);
+			}
+		}
 		
 		/// <remarks> Returns Normal if the thread is in invalid state </remarks>
 		public ThreadPriority Priority {
@@ -129,7 +156,7 @@ namespace Debugger
 
 				Value runTimeValue = RuntimeValue;
 				if (runTimeValue.IsNull) return ThreadPriority.Normal;
-				return (ThreadPriority)(int)runTimeValue.GetMemberValue("m_Priority").PrimitiveValue;
+				return (ThreadPriority)(int)runTimeValue.GetFieldValue("m_Priority").PrimitiveValue;
 			}
 		}
 		
@@ -142,7 +169,7 @@ namespace Debugger
 				process.AssertPaused();
 				
 				ICorDebugValue corValue = this.CorThread.GetObject();
-				return new Value(process.AppDomains[this.CorThread.GetAppDomain()], corValue);
+				return new Value(process.GetAppDomain(this.CorThread.GetAppDomain()), corValue);
 			}
 		}
 		
@@ -154,55 +181,15 @@ namespace Debugger
 				if (!IsInValidState) return string.Empty;
 				Value runtimeValue = RuntimeValue;
 				if (runtimeValue.IsNull) return string.Empty;
-				Value runtimeName = runtimeValue.GetMemberValue("m_Name");
+				Value runtimeName = runtimeValue.GetFieldValue("m_Name");
 				if (runtimeName.IsNull) return string.Empty;
 				return runtimeName.AsString(100);
 			}
 		}
 		
-		protected virtual void OnNameChanged(ThreadEventArgs e)
-		{
-			if (NameChanged != null) {
-				NameChanged(this, e);
-			}
-		}
-		
-		internal void NotifyNameChanged()
-		{
-			OnNameChanged(new ThreadEventArgs(this));
-		}
-		
-		public Exception CurrentException {
-			get {
-				if (currentException_DebuggeeState == process.DebuggeeState) {
-					return currentException;
-				} else {
-					return null;
-				}
-			}
-			internal set { currentException = value; }
-		}
-		
-		internal DebuggeeState CurrentException_DebuggeeState {
-			get { return currentException_DebuggeeState; }
-			set { currentException_DebuggeeState = value; }
-		}
-		
-		public ExceptionType CurrentExceptionType {
-			get { return currentExceptionType; }
-			internal set { currentExceptionType = value; }
-		}
-		
-		public bool CurrentExceptionIsUnhandled {
-			get { return currentExceptionIsUnhandled; }
-			internal set { currentExceptionIsUnhandled = value; }
-		}
-		
-		/// <summary> Tryies to intercept the current exception.
-		/// The intercepted expression stays available through the CurrentException property. </summary>
-		/// <returns> False, if the exception was already intercepted or 
-		/// if it can not be intercepted. </returns>
-		public bool InterceptException(Exception exception)
+		/// <summary> Tryies to intercept the current exception. </summary>
+		/// <returns> False, if the exception can not be intercepted. </returns>
+		public bool InterceptException()
 		{
 			if (!(this.CorThread is ICorDebugThread2)) return false; // Is the debuggee .NET 2.0?
 			if (this.CorThread.GetCurrentException() == null) return false; // Is there any exception
@@ -213,19 +200,14 @@ namespace Debugger
 			// eg. Convert.ToInt64(ulong.MaxValue) causes such freeze
 			StackFrame mostRecentUnoptimized = null;
 			foreach(StackFrame sf in this.Callstack) {
-				if (sf.MethodInfo.DebugModule.CorModule2.GetJITCompilerFlags() != 1) { // CORDEBUG_JIT_DEFAULT 
+				if (sf.Module.CorModule2.GetJITCompilerFlags() != 1) { // CORDEBUG_JIT_DEFAULT 
 					mostRecentUnoptimized = sf;
 					break;
 				}
 			}
 			if (mostRecentUnoptimized == null) return false;
 			
-			if (exception == null)
-				exception = currentException;
-			
 			try {
-				// Interception will expire the CorValue so keep permanent reference
-				exception.MakeValuePermanent();
 				((ICorDebugThread2)this.CorThread).InterceptCurrentException(mostRecentUnoptimized.CorILFrame);
 			} catch (COMException e) {
 				// 0x80131C02: Cannot intercept this exception
@@ -243,7 +225,7 @@ namespace Debugger
 				// May happen in release code with does not have any symbols
 				return false;
 			}
-			process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { this /* needed */ }, null);
+			process.AsyncContinue(DebuggeeStateAction.Keep);
 			process.WaitForPause();
 			return true;
 		}
@@ -333,7 +315,7 @@ namespace Debugger
 		{
 			StringBuilder stackTrace = new StringBuilder();
 			foreach(StackFrame stackFrame in this.GetCallstack(100)) {
-				SourcecodeSegment loc = stackFrame.NextStatement;
+				SequencePoint loc = stackFrame.NextStatement;
 				stackTrace.Append("   ");
 				if (loc != null) {
 					stackTrace.AppendFormat(formatSymbols, stackFrame.MethodInfo.FullName, loc.Filename, loc.StartLine);
@@ -345,25 +327,26 @@ namespace Debugger
 			return stackTrace.ToString();
 		}
 		
-		public StackFrame SelectedStackFrame {
-			get {
-				if (selectedStackFrame != null && selectedStackFrame.IsInvalid) return null;
-				if (process.IsRunning) return null;
-				return selectedStackFrame;
-			}
-			set {
-				selectedStackFrame = value;
-			}
-		}
-		
 		/// <summary>
 		/// Returns the most recent stack frame (the one that is currently executing).
 		/// Returns null if callstack is empty.
 		/// </summary>
 		public StackFrame MostRecentStackFrame {
 			get {
-				foreach(StackFrame stackFrame in Callstack) {
+				foreach(StackFrame stackFrame in this.Callstack) {
 					return stackFrame;
+				}
+				return null;
+			}
+		}
+		
+		[Debugger.Tests.Ignore]
+		public StackFrame MostRecentUserStackFrame {
+			get {
+				foreach (StackFrame stackFrame in this.Callstack) {
+					if (!stackFrame.IsNonUserCode) {
+						return stackFrame;
+					}
 				}
 				return null;
 			}
@@ -378,23 +361,6 @@ namespace Debugger
 					return false;
 				}
 			}
-		}
-	}
-	
-	[Serializable]
-	public class ThreadEventArgs : ProcessEventArgs
-	{
-		Thread thread;
-		
-		public Thread Thread {
-			get {
-				return thread;
-			}
-		}
-		
-		public ThreadEventArgs(Thread thread): base(thread.Process)
-		{
-			this.thread = thread;
 		}
 	}
 }

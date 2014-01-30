@@ -1,21 +1,34 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
-using System.Text;
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.Scripting.Tests.Utils
 {
 	public class FakeDocument : IDocument
-	{		
+	{
 		#pragma warning disable 0067
-		public event EventHandler<TextChangeEventArgs> Changing;
-		public event EventHandler<TextChangeEventArgs> Changed;		
+		public event EventHandler<TextChangeEventArgs> TextChanging;
 		public event EventHandler TextChanged;
+		public event EventHandler ChangeCompleted;
+		public event EventHandler FileNameChanged;
 		#pragma warning restore 0067
 		
 		public FakeDocumentLine DocumentLineToReturnFromGetLine;
@@ -23,13 +36,34 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		
 		public string Text { get; set; }
 		
-		public int TotalNumberOfLines {
+		public IDocumentLine GetLineByNumber(int lineNumber)
+		{
+			LineNumberPassedToGetLine = lineNumber;
+			return DocumentLineToReturnFromGetLine;
+		}
+		
+		event EventHandler<TextChangeEventArgs> IDocument.TextChanged {
+			add {
+				throw new NotImplementedException();
+			}
+			remove {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public int LineCount {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public ITextBufferVersion Version {
+		public string FileName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public ITextSourceVersion Version {
 			get {
 				throw new NotImplementedException();
 			}
@@ -41,33 +75,47 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public IDocumentLine GetLine(int lineNumber)
-		{
-			LineNumberPassedToGetLine = lineNumber;
-			return DocumentLineToReturnFromGetLine;
-		}
-		
-		public IDocumentLine GetLineForOffset(int offset)
+		public IDocument CreateDocumentSnapshot()
 		{
 			throw new NotImplementedException();
 		}
 		
-		public int PositionToOffset(int line, int column)
+		public IDocumentLine GetLineByOffset(int offset)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public Location OffsetToPosition(int offset)
+		public int GetOffset(int line, int column)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int GetOffset(ICSharpCode.NRefactory.TextLocation location)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public ICSharpCode.NRefactory.TextLocation GetLocation(int offset)
 		{
 			throw new NotImplementedException();
 		}
 		
 		public void Insert(int offset, string text)
 		{
-			throw new NotImplementedException();			
+			throw new NotImplementedException();
+		}
+		
+		public void Insert(int offset, ITextSource text)
+		{
+			throw new NotImplementedException();
 		}
 		
 		public void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Insert(int offset, ITextSource text, AnchorMovementType defaultAnchorMovementType)
 		{
 			throw new NotImplementedException();
 		}
@@ -78,6 +126,11 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		}
 		
 		public void Replace(int offset, int length, string newText)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Replace(int offset, int length, ITextSource newText)
 		{
 			throw new NotImplementedException();
 		}
@@ -102,12 +155,12 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public ITextBuffer CreateSnapshot()
+		public ITextSource CreateSnapshot()
 		{
 			throw new NotImplementedException();
 		}
 		
-		public ITextBuffer CreateSnapshot(int offset, int length)
+		public ITextSource CreateSnapshot(int offset, int length)
 		{
 			throw new NotImplementedException();
 		}
@@ -129,7 +182,47 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		
 		public string GetText(int offset, int length)
 		{
-			return Text.Substring(offset, length);
+			throw new NotImplementedException();
+		}
+		
+		public string GetText(ISegment segment)
+		{
+			return ((FakeDocumentLine)segment).Text;
+		}
+		
+		public void WriteTextTo(TextWriter writer)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void WriteTextTo(TextWriter writer, int offset, int length)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int IndexOf(char c, int startIndex, int count)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int IndexOfAny(char[] anyOf, int startIndex, int count)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int LastIndexOf(char c, int startIndex, int count)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			throw new NotImplementedException();
 		}
 		
 		public object GetService(Type serviceType)

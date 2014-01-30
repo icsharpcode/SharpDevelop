@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Core.Presentation</RootNamespace>
     <AssemblyName>ICSharpCode.Core.Presentation</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
     <OutputPath>..\..\..\bin\</OutputPath>
@@ -21,7 +21,8 @@
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Performance#CA1810</CodeAnalysisRules>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,8 +71,8 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ExtendedPopup.cs" />
     <Compile Include="GlobalStyles.cs" />
+    <Compile Include="GridViewColumnAutoSize.cs" />
     <Compile Include="Menu\MenuCheckBox.cs" />
     <Compile Include="NotBoolConverter.cs" />
     <Compile Include="RestrictDesiredSize.cs" />
@@ -82,11 +83,8 @@
     <Compile Include="GetBitmapExtension.cs" />
     <Compile Include="IOptionBindingContainer.cs" />
     <Compile Include="IStatusUpdate.cs" />
-    <Compile Include="LanguageChangeWeakEventManager.cs">
-      <DependentUpon>IStatusUpdate.cs</DependentUpon>
-    </Compile>
+    <Compile Include="LanguageChangeWeakEventManager.cs" />
     <Compile Include="LocalizeExtension.cs" />
-    <Compile Include="Menu\IMenuItemBuilder.cs" />
     <Compile Include="Menu\MenuCommand.cs" />
     <Compile Include="Menu\MenuService.cs" />
     <Compile Include="Menu\CoreMenuItem.cs" />
@@ -98,7 +96,6 @@
     <Compile Include="StringParseExtension.cs" />
     <Compile Include="ToolBar\ToolBarButton.cs" />
     <Compile Include="ToolBar\ToolBarCheckBox.cs" />
-    <Compile Include="ToolBar\ToolBarComboBox.cs" />
     <Compile Include="ToolBar\ToolBarDropDownButton.cs" />
     <Compile Include="ToolBar\ToolBarService.cs" />
     <Compile Include="ToolBar\ToolBarSplitButton.cs" />

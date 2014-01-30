@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -7,6 +22,8 @@ using System.IO;
 using System.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -40,11 +57,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			
 			CreateProperties();
 			Object = new ProjectObject(this);
-			ProjectItems = new ProjectItems(this, this, fileService);
+			ProjectItems = new ProjectItems(this, this);
 		}
 		
 		public Project()
 		{
+		}
+		
+		internal IPackageManagementFileService FileService {
+			get { return fileService; }
 		}
 		
 		void CreateProperties()
@@ -93,7 +114,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetProjectType()
 		{
-			return new ProjectType(this).Type;
+			return ProjectType.GetProjectType(MSBuildProject);
 		}
 		
 		public virtual string Kind {
@@ -169,7 +190,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal ProjectItem AddFileProjectItemWithDependentUsingFullPath(string path, string dependentUpon)
 		{
 			FileProjectItem fileProjectItem = CreateFileProjectItemUsingFullPath(path);
-			fileProjectItem.FileName = path;
+			fileProjectItem.FileName = ICSharpCode.Core.FileName.Create(path);
 			fileProjectItem.DependentUpon = dependentUpon;
 			AddProjectItemToMSBuildProject(fileProjectItem);
 			return new ProjectItem(this, fileProjectItem);
@@ -222,7 +243,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual global::EnvDTE.CodeModel CodeModel {
-			get { return new CodeModel(projectService.GetProjectContent(MSBuildProject) ); }
+			get { throw new NotImplementedException(); }
+			//get { return new CodeModel(projectService.GetProjectContent(MSBuildProject) ); }
 		}
 		
 		public virtual global::EnvDTE.ConfigurationManager ConfigurationManager {
@@ -271,7 +293,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		FileProjectItem CreateMSBuildProjectItemForDirectory(string directory)
 		{
 			return new FileProjectItem(MSBuildProject, ItemType.Folder) {
-				FileName = directory
+				FileName = ICSharpCode.Core.FileName.Create(directory)
 			};
 		}
 		
@@ -285,7 +307,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return projectService.CreateProjectBrowserUpdater();
 		}
 		
-		internal ICompilationUnit GetCompilationUnit(string fileName)
+		internal ICompilation GetCompilationUnit(string fileName)
 		{
 			return fileService.GetCompilationUnit(fileName);
 		}
@@ -297,7 +319,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal ProjectItem FindProjectItem(string fileName)
 		{
-			SD.FileProjectItem item = MSBuildProject.FindFile(fileName);
+			SD.FileProjectItem item = MSBuildProject.FindFile(new FileName(fileName));
 			if (item != null) {
 				return new ProjectItem(this, item);
 			}

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -7,9 +22,9 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -34,20 +49,20 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.performMove = performMove;
 		}
 		
-		public static IDataObject CreateDataObject(FileNode node, bool performMove)
+		public static System.Windows.IDataObject CreateDataObject(FileNode node, bool performMove)
 		{
-			return new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(node.FileName, performMove));
+			return new System.Windows.DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(node.FileName, performMove));
 		}
 		
-		public static IDataObject CreateDataObject(SolutionItemNode node, bool performMove)
+		public static System.Windows.IDataObject CreateDataObject(SolutionItemNode node, bool performMove)
 		{
-			return new DataObject(typeof(SolutionItemNode).ToString(),
+			return new System.Windows.DataObject(typeof(SolutionItemNode).ToString(),
 			                      new FileOperationClipboardObject(node.FileName, performMove));
 		}
 		
-		public static IDataObject CreateDataObject(DirectoryNode node, bool performMove)
+		public static System.Windows.IDataObject CreateDataObject(DirectoryNode node, bool performMove)
 		{
-			return new DataObject(typeof(DirectoryNode).ToString(),
+			return new System.Windows.DataObject(typeof(DirectoryNode).ToString(),
 			                      new FileOperationClipboardObject(node.Directory, performMove));
 		}
 	}
@@ -188,8 +203,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		string directory = String.Empty;
-		public virtual string Directory {
+		DirectoryName directory;
+		public virtual DirectoryName Directory {
 			get {
 				return directory;
 			}
@@ -233,7 +248,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			sortOrder = 1;
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode";
-			this.Directory = directory.Trim('\\', '/');
+			this.Directory = DirectoryName.Create(directory);
 			this.fileNodeStatus = fileNodeStatus;
 			this.ProjectItem = projectItem;
 			
@@ -493,7 +508,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				}
 				
-				this.directory = newPath;
+				this.directory = DirectoryName.Create(newPath);
 				Project.Save();
 			}
 		}
@@ -524,11 +539,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnablePaste {
 			get {
-				IDataObject dataObject = ClipboardWrapper.GetDataObject();
+				System.Windows.IDataObject dataObject = SD.Clipboard.GetDataObject();
 				if (dataObject == null) {
 					return false;
 				}
-				if (dataObject.GetDataPresent(DataFormats.FileDrop)) {
+				if (dataObject.GetDataPresent(System.Windows.DataFormats.FileDrop)) {
 					return true;
 				}
 				if (dataObject.GetDataPresent(typeof(FileNode))) {
@@ -550,7 +565,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Paste()
 		{
-			IDataObject dataObject = ClipboardWrapper.GetDataObject();
+			System.Windows.IDataObject dataObject = SD.Clipboard.GetDataObject();
 			if (dataObject == null)
 				return;
 			
@@ -645,7 +660,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			FileProjectItem newItem = AddExistingItemsToProject.CopyFile(fileName, this, true);
-			IProject sourceProject = Solution.FindProjectContainingFile(fileName);
+			IProject sourceProject = SD.ProjectService.FindProjectContainingFile(FileName.Create(fileName));
 			if (sourceProject != null) {
 				string sourceDirectory = Path.GetDirectoryName(fileName);
 				bool dependendElementsCopied = false;
@@ -674,7 +689,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					RecreateSubNodes();
 			}
 			if (performMove) {
-				foreach (OpenedFile file in FileService.OpenedFiles) {
+				foreach (OpenedFile file in SD.FileService.OpenedFiles) {
 					if (file.FileName != null &&
 					    FileUtility.IsEqualFileName(file.FileName, fileName))
 					{
@@ -729,7 +744,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		public override void Copy()
 		{
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
 		}
 		
 		public override bool EnableCut {
@@ -744,7 +759,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
 		}
 		#endregion
 		

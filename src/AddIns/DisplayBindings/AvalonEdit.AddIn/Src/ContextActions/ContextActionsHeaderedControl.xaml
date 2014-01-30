@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="ICSharpCode.AvalonEdit.AddIn.ContextActions.ContextActionsHeaderedControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.ContextActions"
+             xmlns:aero="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
+	
+	<UserControl.Resources>
+		<SolidColorBrush x:Key="OuterBorderBrush" Color="#436C82"></SolidColorBrush>
+	</UserControl.Resources>
+	
+	<Grid Background="Transparent">
+		<Grid.RowDefinitions>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		
+		<!-- Header -->
+		<Border x:Name="Header" Grid.Row="0" Grid.Column="0" Padding="4" BorderThickness="1 1 1 0"
+		        BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Left">
+			<Border.Background>
+				<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+					<GradientStop Color="#D6E9FF" Offset="0"/>
+					<GradientStop Color="#A3CEFF" Offset="0.5"/>
+				</LinearGradientBrush>
+			</Border.Background>
+			<StackPanel Orientation="Horizontal">
+				<Image Source="{Binding Image}"></Image>
+				<TextBlock Text="{Binding Title}"></TextBlock>
+			</StackPanel>
+		</Border>
+		
+		<Border Padding="0 0 8 8" Grid.Row="1" Grid.Column="0">
+			<aero:SystemDropShadowChrome>
+				<Border BorderThickness="1" BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Stretch">
+					<!-- Content - TreeView -->
+					<local:ContextActionsControl x:Name="ActionsTreeView" DataContext="{Binding Actions}">
+						<local:ContextActionsControl.ItemTemplate>
+							<HierarchicalDataTemplate ItemsSource="{Binding ChildActions}">
+								<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+									<Image Source="{Binding Image}" Margin="3 2 4 2" DockPanel.Dock="Left" />
+									<TextBlock Text="{Binding Comment}" Foreground="Gray" TextAlignment="Right" DockPanel.Dock="Right"/>
+									<TextBlock Text="{Binding Name}" Margin="0 2 20 2" />
+								</DockPanel>
+							</HierarchicalDataTemplate>
+						</local:ContextActionsControl.ItemTemplate>
+					</local:ContextActionsControl>
+				</Border>
+			</aero:SystemDropShadowChrome>
+		</Border>
+	</Grid>
+</UserControl>

@@ -1,14 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.Profiler.Controller.Data.Linq;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.SQLite;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using ICSharpCode.Profiler.Controller.Data.Linq;
 
 namespace ICSharpCode.Profiler.Controller.Data
 {
@@ -44,15 +56,15 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		internal int[] IdList {
 			get {
-				int[] tmp = this.ids;
+				int[] tmp = ids;
 				if (tmp == null) {
 					tmp = provider.LoadIDListForFunction(nameId);
-					this.ids = tmp;
+					ids = tmp;
 				}
 				return tmp;
 			}
 			set {
-				this.ids = value;
+				ids = value;
 			}
 		}
 
@@ -64,14 +76,14 @@ namespace ICSharpCode.Profiler.Controller.Data
 				if (nameId == 0)
 					return new NameMapping(0, null, "Merged node", null);
 				
-				return this.provider.GetMapping(nameId);
+				return provider.GetMapping(nameId);
 			}
 		}
 
 		/// <inheritdoc/>
 		public override int RawCallCount {
 			get {
-				return this.callCount;
+				return callCount;
 			}
 		}
 
@@ -80,12 +92,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public override long CpuCyclesSpent {
 			get{
-				return this.cpuCyclesSpent;
+				return cpuCyclesSpent;
 			}
 		}
 		
 		public override long CpuCyclesSpentSelf {
-			get { return this.cpuCyclesSpentSelf; }
+			get { return cpuCyclesSpentSelf; }
 		}
 
 		/// <summary>
@@ -93,7 +105,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public override CallTreeNode Parent {
 			get {
-				return this.parent;
+				return parent;
 			}
 		}
 		
@@ -110,7 +122,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				if (!hasChildren)
 					return EmptyQueryable;
 				
-				List<int> ids = this.IdList.ToList();
+				List<int> ids = IdList.ToList();
 				Expression<Func<SingleCall, bool>> filterLambda = c => ids.Contains(c.ParentID);
 				return provider.CreateQuery(new MergeByName(new Filter(AllCalls.Instance, filterLambda)));
 			}
@@ -121,13 +133,13 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public override double TimeSpent {
 			get {
-				return CpuCyclesSpent / (1000.0 * this.provider.ProcessorFrequency);
+				return CpuCyclesSpent / (1000.0 * provider.ProcessorFrequency);
 			}
 		}
 		
 		public override double TimeSpentSelf {
 			get {
-				return CpuCyclesSpentSelf / (1000.0 * this.provider.ProcessorFrequency);
+				return CpuCyclesSpentSelf / (1000.0 * provider.ProcessorFrequency);
 			}
 		}
 		
@@ -151,7 +163,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <returns>A new CallTreeNode.</returns>
 		public override CallTreeNode Merge(IEnumerable<CallTreeNode> nodes)
 		{
-			SQLiteCallTreeNode mergedNode = new SQLiteCallTreeNode(0, null, this.provider);
+			SQLiteCallTreeNode mergedNode = new SQLiteCallTreeNode(0, null, provider);
 			List<int> mergedIds = new List<int>();
 			bool initialised = false;
 			
@@ -179,12 +191,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 			get {
 				// parent is not null => this node was created by a
 				// 'Children' call => all our IDs come from that parent
-				if (this.parent != null)
-					return (new CallTreeNode[] { this.parent }).AsQueryable();
+				if (parent != null)
+					return (new CallTreeNode[] { parent }).AsQueryable();
 				
 				List<int> parentIDList = provider.RunSQLIDList(
 					"SELECT parentid FROM Calls "
-					+ "WHERE id IN(" + string.Join(",", this.IdList.Select(s => s.ToString()).ToArray()) + @")");
+					+ "WHERE id IN(" + string.Join(",", IdList.Select(s => s.ToString()).ToArray()) + @")");
 				
 				Expression<Func<SingleCall, bool>> filterLambda = c => parentIDList.Contains(c.ID);
 				return provider.CreateQuery(new MergeByName(new Filter(AllCalls.Instance, filterLambda)));
@@ -196,7 +208,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			SQLiteCallTreeNode node = other as SQLiteCallTreeNode;
 			if (node != null) {
 				
-				int[] a = this.IdList;
+				int[] a = IdList;
 				int[] b = node.IdList;
 				if (a.Length != b.Length)
 					return false;
@@ -219,7 +231,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			int hash = 0;
 			
 			unchecked {
-				foreach (int i in this.IdList) {
+				foreach (int i in IdList) {
 					hash = hash * hashPrime + i;
 				}
 			}
@@ -228,7 +240,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		public override bool HasChildren {
-			get { return this.hasChildren; }
+			get { return hasChildren; }
 		}
 	}
 }

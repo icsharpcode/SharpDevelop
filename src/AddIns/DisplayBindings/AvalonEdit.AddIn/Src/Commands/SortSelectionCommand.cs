@@ -1,12 +1,30 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Collections.Generic;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Commands
 {
@@ -15,7 +33,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		public override void Run()
 		{
 			SortOptionsDialog dlg = new SortOptionsDialog();
-			dlg.Owner = WorkbenchSingleton.MainWindow;
+			dlg.Owner = SD.Workbench.MainWindow;
 			if (dlg.ShowDialog() == true) {
 				StringComparer comparer = SortOptions.CaseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase;
 				if (SortOptions.IgnoreTrailingWhitespaces)
@@ -23,15 +41,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 				if (SortOptions.SortDirection == SortDirection.Descending)
 					comparer = new DescendingStringComparer(comparer);
 				
-				ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-				if (provider != null) {
-					ITextEditor editor = provider.TextEditor;
+				ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+				if (editor != null) {
 					if (editor.SelectionLength > 0) {
-						int start = editor.Document.GetLineForOffset(editor.SelectionStart).LineNumber;
-						int end = editor.Document.GetLineForOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
+						int start = editor.Document.GetLineByOffset(editor.SelectionStart).LineNumber;
+						int end = editor.Document.GetLineByOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
 						SortLines(editor.Document, start, end, comparer, SortOptions.RemoveDuplicates);
 					} else {
-						SortLines(editor.Document, 1, editor.Document.TotalNumberOfLines, comparer, SortOptions.RemoveDuplicates);
+						SortLines(editor.Document, 1, editor.Document.LineCount, comparer, SortOptions.RemoveDuplicates);
 					}
 				}
 			}
@@ -41,7 +58,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		{
 			List<string> lines = new List<string>();
 			for (int i = startLine; i <= endLine; ++i) {
-				IDocumentLine line = document.GetLine(i);
+				IDocumentLine line = document.GetLineByNumber(i);
 				lines.Add(document.GetText(line.Offset, line.Length));
 			}
 			
@@ -53,13 +70,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 			
 			using (document.OpenUndoGroup()) {
 				for (int i = 0; i < lines.Count; ++i) {
-					IDocumentLine line = document.GetLine(startLine + i);
+					IDocumentLine line = document.GetLineByNumber(startLine + i);
 					document.Replace(line.Offset, line.Length, lines[i]);
 				}
 				
 				// remove removed duplicate lines
 				for (int i = startLine + lines.Count; i <= endLine; ++i) {
-					IDocumentLine line = document.GetLine(startLine + lines.Count);
+					IDocumentLine line = document.GetLineByNumber(startLine + lines.Count);
 					document.Remove(line.Offset, line.TotalLength);
 				}
 			}

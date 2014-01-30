@@ -1,74 +1,51 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace ICSharpCode.SharpDevelop.Widgets
 {
 	/// <summary>
-	/// Description of ViewModelBase.
+	/// Base class for view models; implements INotifyPropertyChanged.
 	/// </summary>
-	public class ViewModelBase:INotifyPropertyChanged
+	public class ViewModelBase : INotifyPropertyChanged
 	{
-		public ViewModelBase()
-		{
-		}
-		
-		
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
-		protected virtual void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			var handler = this.PropertyChanged;
-			if (handler != null)
-			{
-				handler(this, e);
+			if (handler != null) {
+				handler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 		
-		
-		protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpresssion)
+		protected void SetAndNotifyPropertyChanged<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
 		{
-			var propertyName = ExtractPropertyName(propertyExpresssion);
-			this.RaisePropertyChanged(propertyName);
-		}
-
-		
-		protected void RaisePropertyChanged(String propertyName)
-		{
-			OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
-		}
-		
-		
-		private static String ExtractPropertyName<T>(Expression<Func<T>> propertyExpresssion)
-		{
-			if (propertyExpresssion == null)
-			{
-				throw new ArgumentNullException("propertyExpresssion");
+			if (!EqualityComparer<T>.Default.Equals(field, newValue)) {
+				field = newValue;
+				OnPropertyChanged(propertyName);
 			}
-
-			var memberExpression = propertyExpresssion.Body as MemberExpression;
-			if (memberExpression == null)
-			{
-				throw new ArgumentException("The expression is not a member access expression.", "propertyExpresssion");
-			}
-
-			var property = memberExpression.Member as PropertyInfo;
-			if (property == null)
-			{
-				throw new ArgumentException("The member access expression does not access a property.", "propertyExpresssion");
-			}
-
-			var getMethod = property.GetGetMethod(true);
-			if (getMethod.IsStatic)
-			{
-				throw new ArgumentException("The referenced property is a static property.", "propertyExpresssion");
-			}
-
-			return memberExpression.Member.Name;
 		}
 	}
 }

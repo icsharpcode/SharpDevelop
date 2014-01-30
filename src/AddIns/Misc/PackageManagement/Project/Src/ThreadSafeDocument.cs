@@ -1,11 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
@@ -20,9 +35,10 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		#pragma warning disable 0067
-		public event EventHandler<TextChangeEventArgs> Changing;
-		public event EventHandler<TextChangeEventArgs> Changed;
-		public event EventHandler TextChanged;
+		public event EventHandler<TextChangeEventArgs> TextChanging;
+		public event EventHandler<TextChangeEventArgs> TextChanged;
+		public event EventHandler ChangeCompleted;
+		public event EventHandler FileNameChanged;
 		#pragma warning restore 0067
 		
 		public string Text {
@@ -34,86 +50,68 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public int TotalNumberOfLines {
-			get {
-				if (WorkbenchSingleton.InvokeRequired) {
-					return WorkbenchSingleton.SafeThreadFunction(() => TotalNumberOfLines);
-				}
-				return document.TotalNumberOfLines;
-			}
+		void InvokeIfRequired(Action action)
+		{
+			SD.MainThread.InvokeIfRequired(action);
 		}
 		
-		public ITextBufferVersion Version {
+		T InvokeIfRequired<T>(Func<T> callback)
+		{
+			return SD.MainThread.InvokeIfRequired(callback);
+		}
+		
+		public int LineCount {
+			get { return InvokeIfRequired(() => document.LineCount); }
+		}
+		
+		public ITextSourceVersion Version {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
 		public int TextLength {
-			get {
-				if (WorkbenchSingleton.InvokeRequired) {
-					return WorkbenchSingleton.SafeThreadFunction(() => TextLength);
-				}
-				return document.TextLength;
-			}
+			get { return InvokeIfRequired(() => document.TextLength); }
 		}
 		
-		public IDocumentLine GetLine(int lineNumber)
+		public IDocumentLine GetLineByNumber(int lineNumber)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				return WorkbenchSingleton.SafeThreadFunction(() => GetLine(lineNumber));
-			}
-			return new ThreadSafeDocumentLine(document.GetLine(lineNumber));
+			return InvokeIfRequired(() => new ThreadSafeDocumentLine(document.GetLine(lineNumber)));
 		}
 		
-		public IDocumentLine GetLineForOffset(int offset)
+		public IDocumentLine GetLineByOffset(int offset)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public int PositionToOffset(int line, int column)
+		public int GetOffset(int line, int column)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				return WorkbenchSingleton.SafeThreadFunction(() => PositionToOffset(line, column));
-			}
-			return document.PositionToOffset(line, column);
+			return InvokeIfRequired(() => document.PositionToOffset(line, column));
 		}
 		
-		public Location OffsetToPosition(int offset)
+		public TextLocation GetLocation(int offset)
 		{
 			throw new NotImplementedException();
 		}
 		
 		public void Insert(int offset, string text)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadAsyncCall(() => Insert(offset, text));
-			} else {
-				document.Insert(offset, text);
-			}
+			InvokeIfRequired(() => document.Insert(offset, text));
 		}
 		
-		public void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
+		public void Insert(int offset, ITextSource text, AnchorMovementType defaultAnchorMovementType)
 		{
 			throw new NotImplementedException();
 		}
 		
 		public void Remove(int offset, int length)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadAsyncCall(() => Remove(offset, length));
-			} else {
-				document.Remove(offset, length);
-			}
+			InvokeIfRequired(() => document.Remove(offset, length));
 		}
 		
-		public void Replace(int offset, int length, string newText)
+		public void Replace(int offset, int length, string text)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadAsyncCall(() => Replace(offset, length, newText));
-			} else {
-				document.Replace(offset, length, newText);
-			}
+			InvokeIfRequired(() => document.Replace(offset, length, text));
 		}
 		
 		public void StartUndoableAction()
@@ -136,12 +134,12 @@ namespace ICSharpCode.PackageManagement
 			throw new NotImplementedException();
 		}
 		
-		public ICSharpCode.SharpDevelop.ITextBuffer CreateSnapshot()
+		public ITextSource CreateSnapshot()
 		{
 			throw new NotImplementedException();
 		}
 		
-		public ICSharpCode.SharpDevelop.ITextBuffer CreateSnapshot(int offset, int length)
+		public ITextSource CreateSnapshot(int offset, int length)
 		{
 			throw new NotImplementedException();
 		}
@@ -167,6 +165,77 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public object GetService(Type serviceType)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public string FileName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IDocument CreateDocumentSnapshot()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int GetOffset(TextLocation location)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Replace(int offset, int length, ITextSource newText)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public string GetText(ISegment segment)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void WriteTextTo(TextWriter writer)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void WriteTextTo(TextWriter writer, int offset, int length)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int IndexOf(char c, int startIndex, int count)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int IndexOfAny(char[] anyOf, int startIndex, int count)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int LastIndexOf(char c, int startIndex, int count)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Insert(int offset, ITextSource text)
 		{
 			throw new NotImplementedException();
 		}

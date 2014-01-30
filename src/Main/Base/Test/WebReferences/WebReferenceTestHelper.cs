@@ -1,11 +1,27 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.NRefactory.TypeSystem;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using Rhino.Mocks;
 using ICSharpCode.SharpDevelop.Tests.Utils;
 
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
@@ -26,11 +42,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			bool readOnly = false;
 			
 			public TestProject(string languageName)
-				: base(new ProjectCreateInformation {
-				       	Solution = new Solution(new MockProjectChangeWatcher()),
-				       	ProjectName = "TestProject",
-				       	OutputProjectFileName = "c:\\temp\\TestProject.csproj"
-				       })
+				: base(new ProjectCreateInformation(MockSolution.Create(), FileName.Create("c:\\temp\\TestProject.csproj")))
 			{
 				this.languageName = languageName;
 			}
@@ -39,12 +51,8 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 				get { return languageName; }
 			}
 			
-			public override bool ReadOnly {
+			public override bool IsReadOnly {
 				get { return readOnly; }
-			}
-			
-			public override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
-				get { return ICSharpCode.SharpDevelop.Dom.LanguageProperties.CSharp; }
 			}
 			
 			protected override ProjectBehavior CreateDefaultBehavior()
@@ -55,20 +63,14 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		
 		public static void InitializeProjectBindings()
 		{
-			Properties prop = new Properties();
-			prop["id"] = "C#";
-			prop["supportedextensions"] = ".cs";
-			prop["projectfileextension"] = ".csproj";
-			Codon codon1 = new Codon(null, "ProjectBinding", prop, new Condition[0]);
-			prop = new Properties();
-			prop["id"] = "VBNet";
-			prop["supportedextensions"] = ".vb";
-			prop["projectfileextension"] = ".vbproj";
-			Codon codon2 = new Codon(null, "ProjectBinding", prop, new Condition[0]);
-			ProjectBindingService.SetBindings(new ProjectBindingDescriptor[] {
-			                                   	new ProjectBindingDescriptor(codon1),
-			                                   	new ProjectBindingDescriptor(codon2)
-			                                   });
+			SD.Services.AddStrictMockService<IProjectService>();
+			var projectBinding = MockRepository.GenerateStrictMock<IProjectBinding>();
+			
+			ProjectBindingDescriptor[] descriptors = {
+				new ProjectBindingDescriptor(projectBinding, "C#", ".csproj", ProjectTypeGuids.CSharp, new[] { ".cs" }),
+				new ProjectBindingDescriptor(projectBinding, "VB", ".vbproj", ProjectTypeGuids.VB, new[] { ".vb" }),
+			};
+			SD.ProjectService.Stub(p => p.ProjectBindings).Return(descriptors);
 		}
 		
 		public static ProjectItem GetProjectItem(List<ProjectItem> items, string include, ItemType itemType) {

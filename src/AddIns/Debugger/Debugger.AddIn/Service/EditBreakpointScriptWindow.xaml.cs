@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using ICSharpCode.SharpDevelop.Project;
 using System;
@@ -17,7 +32,7 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 
-namespace Debugger.AddIn.Service
+namespace Debugger.AddIn
 {
 	/// <summary>
 	/// Interaction logic for EditBreakpointScriptWindow.xaml
@@ -26,51 +41,29 @@ namespace Debugger.AddIn.Service
 	{
 		BreakpointBookmark data;
 		
-		public BreakpointBookmark Data {
-			get { return data; }
-		}
-		
 		public EditBreakpointScriptWindow(BreakpointBookmark data)
 		{
 			InitializeComponent();
 			
 			this.data = data;
-			this.data.Action = BreakpointAction.Condition;
 			
-			foreach (var name in Enum.GetNames(typeof(SupportedLanguage)))
-				cmbLanguage.Items.Add(name);
-			
-			string language = "CSharp";
-			
-			if (ProjectService.CurrentProject != null)
-				language = ProjectService.CurrentProject.Language.Replace("#", "Sharp");
-			
-			this.cmbLanguage.SelectedIndex = 
-				(!string.IsNullOrEmpty(data.ScriptLanguage)) ? 
-				this.cmbLanguage.Items.IndexOf(data.ScriptLanguage) :
-				this.cmbLanguage.Items.IndexOf(language);
-			
-			this.codeEditor.Document.Text = data.Condition;
-			
-			UpdateHighlighting();
-		}
-		
-		void UpdateHighlighting()
-		{
-			codeEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(this.cmbLanguage.SelectedItem.ToString().Replace("Sharp", "#"));
+			string language = ProjectService.CurrentProject != null ? ProjectService.CurrentProject.Language : "C#";
+			this.codeEditor.Document.Text = data.Condition ?? string.Empty;
+			this.codeEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(language);
 		}
 		
 		bool CheckSyntax()
 		{
-			SupportedLanguage language = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), this.cmbLanguage.SelectedItem.ToString(), true);
-			using (var parser = ParserFactory.CreateParser(language, new StringReader(this.codeEditor.Document.Text))) {
-				parser.ParseExpression();
-				if (parser.Errors.Count > 0) {
-					MessageService.ShowError(parser.Errors.ErrorOutput);
-					return false;
-				}
-			}
-			
+			#warning reimplement this!
+//			SupportedLanguage language = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), this.cmbLanguage.SelectedItem.ToString(), true);
+//			using (var parser = ParserFactory.CreateParser(language, new StringReader(this.codeEditor.Document.Text))) {
+//				parser.ParseExpression();
+//				if (parser.Errors.Count > 0) {
+//					MessageService.ShowError(parser.Errors.ErrorOutput);
+//					return false;
+//				}
+//			}
+//			
 			return true;
 		}
 		
@@ -78,6 +71,7 @@ namespace Debugger.AddIn.Service
 		{
 			if (!this.CheckSyntax())
 				return;
+			
 			this.data.Condition = this.codeEditor.Document.Text;
 			DialogResult = true;
 		}
@@ -85,17 +79,6 @@ namespace Debugger.AddIn.Service
 		void BtnCancelClick(object sender, RoutedEventArgs e)
 		{
 			DialogResult = false;
-		}
-		
-		void CmbLanguageSelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			this.data.ScriptLanguage = this.cmbLanguage.SelectedValue.ToString();
-			UpdateHighlighting();
-		}
-		
-		void BtnCheckSyntaxClick(object sender, RoutedEventArgs e)
-		{
-			CheckSyntax();
 		}
 	}
 }

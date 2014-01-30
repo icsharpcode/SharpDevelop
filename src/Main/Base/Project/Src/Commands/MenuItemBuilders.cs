@@ -1,11 +1,28 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -14,7 +31,7 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Util;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -101,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			return items;
 		}
 
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			if (NavigationService.CanNavigateBack || NavigationService.CanNavigateForwards) {
 				ICollection<INavigationPoint> points = NavigationService.Points;
@@ -134,16 +151,16 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class RecentFilesMenuBuilder : IMenuItemBuilder
 	{
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
-			RecentOpen recentOpen = FileService.RecentOpen;
+			IRecentOpen recentOpen = SD.FileService.RecentOpen;
 			
-			if (recentOpen.RecentFile.Count > 0) {
-				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentFile.Count];
+			if (recentOpen.RecentFiles.Count > 0) {
+				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentFiles.Count];
 				
-				for (int i = 0; i < recentOpen.RecentFile.Count; ++i) {
+				for (int i = 0; i < recentOpen.RecentFiles.Count; ++i) {
 					// variable inside loop, so that anonymous method refers to correct recent file
-					string recentFile = recentOpen.RecentFile[i];
+					string recentFile = recentOpen.RecentFiles[i];
 					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10) + " " : "";
 					items[i] = new System.Windows.Controls.MenuItem() {
 						Header = accelaratorKeyPrefix + recentFile
@@ -164,22 +181,22 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class RecentProjectsMenuBuilder : IMenuItemBuilder
 	{
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
-			RecentOpen recentOpen = FileService.RecentOpen;
+			IRecentOpen recentOpen = SD.FileService.RecentOpen;
 			
-			if (recentOpen.RecentProject.Count > 0) {
-				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentProject.Count];
+			if (recentOpen.RecentProjects.Count > 0) {
+				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentProjects.Count];
 				
-				for (int i = 0; i < recentOpen.RecentProject.Count; ++i) {
+				for (int i = 0; i < recentOpen.RecentProjects.Count; ++i) {
 					// variable inside loop, so that anonymous method refers to correct recent file
-					string recentProject = recentOpen.RecentProject[i];
+					FileName recentProject = recentOpen.RecentProjects[i];
 					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10) + " " : "";
 					items[i] = new System.Windows.Controls.MenuItem() {
 						Header = accelaratorKeyPrefix + recentProject
 					};
 					items[i].Click += delegate {
-						ProjectService.LoadSolution(recentProject);
+						SD.ProjectService.OpenSolutionOrProject(recentProject);
 					};
 				}
 				return items;
@@ -194,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class ToolMenuBuilder : IMenuItemBuilder
 	{
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			var items = new System.Windows.Controls.MenuItem[ToolLoader.Tool.Count];
 			for (int i = 0; i < ToolLoader.Tool.Count; ++i) {
@@ -229,66 +246,39 @@ namespace ICSharpCode.SharpDevelop.Commands
 					return;
 			}
 			
+			if (string.IsNullOrEmpty(args) || args.Trim('"', ' ').Length == 0) {
+				args = "";
+			}
+			
 			try {
+				ProcessRunner processRunner = new ProcessRunner();
+				processRunner.WorkingDirectory = DirectoryName.Create(StringParser.Parse(tool.InitialDirectory));
 				if (tool.UseOutputPad) {
-					ProcessRunner processRunner = new ProcessRunner();
-					processRunner.LogStandardOutputAndError = false;
-					processRunner.ProcessExited += ProcessExitEvent;
-					processRunner.OutputLineReceived += process_OutputLineReceived;
-					processRunner.ErrorLineReceived += process_OutputLineReceived;
-					processRunner.WorkingDirectory = StringParser.Parse(tool.InitialDirectory);
-					if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
-						processRunner.Start(command);
-					} else {
-						processRunner.Start(command, args);
-					}
+					processRunner.RunInOutputPadAsync(TaskService.BuildMessageViewCategory, command, ProcessRunner.CommandLineToArgumentArray(args)).FireAndForget();
 				} else {
-					ProcessStartInfo startinfo;
-					if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
-						startinfo = new ProcessStartInfo(command);
-					} else {
-						startinfo = new ProcessStartInfo(command, args);
-					}
-					startinfo.WorkingDirectory = StringParser.Parse(tool.InitialDirectory);
-					Process process = new Process();
-					process.StartInfo = startinfo;
-					process.Start();
+					processRunner.CreationFlags = ProcessCreationFlags.CreateNewConsole;
+					processRunner.Start(command, ProcessRunner.CommandLineToArgumentArray(args));
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError("${res:XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed} '" + command + " " + args + "'\n" + ex.Message);
 			}
 		}
-
-		void ProcessExitEvent(object sender, EventArgs e)
-		{
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					ProcessRunner p = (ProcessRunner)sender;
-					TaskService.BuildMessageViewCategory.AppendLine(StringParser.Parse("${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode));
-					p.Dispose();
-				});
-		}
-		
-		void process_OutputLineReceived(object sender, LineReceivedEventArgs e)
-		{
-			TaskService.BuildMessageViewCategory.AppendLine(e.Line);
-		}
 	}
 	
 	public class OpenContentsMenuBuilder : IMenuItemBuilder
 	{
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
-			int windowCount = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count;
+			int windowCount = SD.Workbench.WorkbenchWindowCollection.Count;
 			if (windowCount == 0) {
 				return new object[] {};
 			}
 			var items = new object[windowCount + 1];
 			items[0] = new System.Windows.Controls.Separator();
 			for (int i = 0; i < windowCount; ++i) {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[i];
+				IWorkbenchWindow window = SD.Workbench.WorkbenchWindowCollection [i];
 				var item = new System.Windows.Controls.MenuItem() {
-					IsChecked = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == window,
+					IsChecked = SD.Workbench.ActiveWorkbenchWindow == window,
 					IsCheckable = true,
 					Header = StringParser.Parse(window.Title).Replace("_", "__")
 				};
@@ -451,23 +441,23 @@ namespace ICSharpCode.SharpDevelop.Commands
 			get;
 		}
 		
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
-			ArrayList list = new ArrayList();
-			foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
+			List<object> list = new List<object>();
+			foreach (PadDescriptor padContent in SD.Workbench.PadContentCollection) {
 				if (padContent.Category == Category) {
 					var item = new System.Windows.Controls.MenuItem();
 					item.Header = ICSharpCode.Core.Presentation.MenuService.ConvertLabel(StringParser.Parse(padContent.Title));
 					if (!string.IsNullOrEmpty(padContent.Icon)) {
-						item.Icon = PresentationResourceService.GetImage(padContent.Icon);
+						item.Icon = SD.ResourceService.GetImage(padContent.Icon).CreateImage();
 					}
 					item.Command = new BringPadToFrontCommand(padContent);
 					if (!string.IsNullOrEmpty(padContent.Shortcut)) {
 						var kg = Core.Presentation.MenuService.ParseShortcut(padContent.Shortcut);
-						WorkbenchSingleton.MainWindow.InputBindings.Add(
+						SD.Workbench.MainWindow.InputBindings.Add(
 							new System.Windows.Input.InputBinding(item.Command, kg)
 						);
-						item.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+						item.InputGestureText = MenuService.GetDisplayStringForShortcut(kg);
 					}
 					
 					list.Add(item);

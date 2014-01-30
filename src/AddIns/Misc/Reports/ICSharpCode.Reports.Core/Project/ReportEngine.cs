@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -10,7 +25,6 @@ using System.Windows.Forms;
 using System.Xml;
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.Exporter;
-using ICSharpCode.Reports.Core.Factories;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 
@@ -38,6 +52,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		public ReportEngine()
 		{
+			Console.WriteLine("reportEngine");
 		}
 		
 		#endregion
@@ -96,6 +111,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		internal static void CheckForParameters (IReportModel model,ReportParameters reportParameters)
 		{
+			Console.WriteLine("ReportEngine:CheckforParameters");
 			if (reportParameters != null) {
 				
 				if (reportParameters.SortColumnCollection.Count > 0) {
@@ -117,6 +133,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		private static void SetReportParam (IReportModel model,BasicParameter param)
 		{
+			Console.WriteLine("ReportEngine:SetReportParameters");
 			var p = model.ReportSettings.ParameterCollection.Find(param.ParameterName);
 			if (p != null) {
 				p.ParameterValue = param.ParameterValue;
@@ -126,6 +143,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		private static void SetSqlParam (IReportModel model,SqlParameter param)
 		{
+			Console.WriteLine("ReportEngine:SetSqlparameters");
 			var p = model.ReportSettings.SqlParameters.Find(param.ParameterName);
 			if (p != null) {
 				p.ParameterValue = param.ParameterValue;
@@ -162,8 +180,9 @@ namespace ICSharpCode.Reports.Core {
 		/// <returns></returns>
 		
 		
-		protected AbstractRenderer SetupStandardRenderer (IReportModel model,ReportParameters parameters) {
-
+		protected AbstractRenderer SetupStandardRenderer (IReportModel model,ReportParameters parameters)
+		{
+			Console.WriteLine("ReportEngine:SetupStandardRenderer");
 			AbstractRenderer abstr = null;
 			try {
 				switch (model.ReportSettings.ReportType) {
@@ -190,8 +209,9 @@ namespace ICSharpCode.Reports.Core {
 		
 		
 		protected AbstractRenderer SetupPushDataRenderer (IReportModel model,
-		                                                  IList list) {
-			
+		                                                  IList list)
+		{
+			Console.WriteLine("ReportEngine:SetupPushDataRenderer_1");
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}
@@ -215,7 +235,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		protected AbstractRenderer SetupPushDataRenderer (IReportModel model,
 		                                                  DataTable dataTable) {
-			
+			Console.WriteLine("ReportEngine:SetupPushRenderer_2");
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}
@@ -249,6 +269,7 @@ namespace ICSharpCode.Reports.Core {
 		///  with <see cref="SqlParameters">
 		/// this is an easy way to ask the report for desired paramaters</see></summary>
 		public static ReportParameters LoadParameters (string fileName) {
+			Console.WriteLine("ReportEngine:LoadParameters");
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
@@ -274,6 +295,7 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="fileName"></param>
 		/// <returns><see cref="ReportModel"></see></returns>
 		public static ReportModel LoadReportModel (string fileName) {
+			Console.WriteLine("ReportEngine:LoadReportModel_1");
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
@@ -291,6 +313,7 @@ namespace ICSharpCode.Reports.Core {
 			if (stream == null) {
 				throw new ArgumentNullException("stream");
 			}
+			Console.WriteLine("ReportEngine:LoadReportModel_2");
 			var doc = new XmlDocument();
 			doc.Load(stream);
 			return LoadModel(doc);
@@ -299,6 +322,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		static ReportModel LoadModel(XmlDocument doc)
 		{
+			Console.WriteLine("ReportEngine:LoadModel");
 			BaseItemLoader loader = new BaseItemLoader();
 			object root = loader.Load(doc.DocumentElement);
 
@@ -316,6 +340,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		public void PreviewStandardReport (string fileName,ReportParameters reportParameters)
 		{
+			Console.WriteLine("ReportEngine:PreviewStandardReport");
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
@@ -336,6 +361,7 @@ namespace ICSharpCode.Reports.Core {
 
 		public void PreviewPushDataReport (string fileName,DataTable dataTable,ReportParameters reportParameters)
 		{
+			Console.WriteLine("ReportEngine:PreviewPushDataReport_1");
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
@@ -358,6 +384,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		public void PreviewPushDataReport (string fileName,IList list,ReportParameters reportParameters)
 		{
+			Console.WriteLine("ReportEngine:PreviewPushDataReport_2");
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
@@ -392,6 +419,7 @@ namespace ICSharpCode.Reports.Core {
 		public static IReportCreator CreatePageBuilder (string fileName,
 		                                                ReportParameters reportParameters)
 		{
+			Console.WriteLine("ReportEngine:CreatePageBuilder_1");
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
@@ -437,6 +465,7 @@ namespace ICSharpCode.Reports.Core {
 		                                                DataSet dataSet,
 		                                                ReportParameters reportParameter)
 		{
+				Console.WriteLine("ReportEngine:CreatePageBuilder_2");
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
@@ -460,6 +489,7 @@ namespace ICSharpCode.Reports.Core {
 		                                                DataTable dataTable,
 		                                                ReportParameters reportParameters)
 		{
+				Console.WriteLine("ReportEngine:CreatePageBuilder_3");
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
@@ -488,6 +518,7 @@ namespace ICSharpCode.Reports.Core {
 		                                                 IList list,
 		                                                 ReportParameters reportParameters)
 		{
+				Console.WriteLine("ReportEngine:CreatePageBuilder_4");
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
@@ -510,6 +541,7 @@ namespace ICSharpCode.Reports.Core {
 		#region Printing
 		
 		private static void ReportToPrinter (AbstractRenderer renderer,IReportModel model) {
+				Console.WriteLine("ReportEngine:reportToPrinter");
 			if (renderer == null) {
 				throw new ArgumentNullException("renderer");
 			}
@@ -550,6 +582,7 @@ namespace ICSharpCode.Reports.Core {
 //
 		
 		public void PrintStandardReport (string fileName,ReportParameters reportParameters) {
+				Console.WriteLine("ReportEngine:PrintStandardReport");
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
@@ -579,6 +612,7 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="dataTable"></param>
 		
 		public void PrintPushDataReport (string fileName,DataTable dataTable) {
+				Console.WriteLine("ReportEngine:PrintPushDataReport_1");
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
@@ -597,6 +631,7 @@ namespace ICSharpCode.Reports.Core {
 		public void PrintPushDataReport (string fileName,DataTable dataTable,
 		                                 ReportParameters reportParameters)
 		{
+			Console.WriteLine("ReportEngine:PrintPushDataReport_2");
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}

@@ -1,9 +1,23 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Text;
-using ICSharpCode.Core.Services;
 
 namespace ICSharpCode.Core
 {
@@ -14,12 +28,8 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static class MessageService
 	{
-		/// <summary>
-		/// Shows an exception error.
-		/// </summary>
-		public static void ShowException(Exception ex)
-		{
-			ShowException(ex, null);
+		static IMessageService Service {
+			get { return ServiceSingleton.GetRequiredService<IMessageService>(); }
 		}
 		
 		/// <summary>
@@ -27,8 +37,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static void ShowError(string message)
 		{
-			LoggingService.Error(message);
-			ServiceManager.Instance.MessageService.ShowError(message);
+			Service.ShowError(message);
 		}
 		
 		/// <summary>
@@ -39,44 +48,15 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static void ShowErrorFormatted(string formatstring, params object[] formatitems)
 		{
-			ShowError(Format(formatstring, formatitems));
+			Service.ShowErrorFormatted(formatstring, formatitems);
 		}
 		
 		/// <summary>
 		/// Shows an exception.
 		/// </summary>
-		public static void ShowException(Exception ex, string message)
+		public static void ShowException(Exception ex, string message = null)
 		{
-			LoggingService.Error(message, ex);
-			LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
-			ServiceManager.Instance.MessageService.ShowException(ex, message);
-		}
-		
-		/// <summary>
-		/// Shows an exception.
-		/// </summary>
-		public static void ShowHandledException(Exception ex)
-		{
-			ShowHandledException(ex, null);
-		}
-
-		/// <summary>
-		/// Shows an exception.
-		/// </summary>
-		public static void ShowHandledException(Exception ex, string message)
-		{
-			LoggingService.Error(message, ex);
-			LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
-			message = GetMessage(message, ex);
-			ServiceManager.Instance.MessageService.ShowError(message);
-		}
-		
-		static string GetMessage(string message, Exception ex)
-		{
-			if (message == null) {
-				return ex.Message;
-			}
-			return message + "\r\n\r\n" + ex.Message;
+			Service.ShowException(ex, message);
 		}
 		
 		/// <summary>
@@ -84,8 +64,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static void ShowWarning(string message)
 		{
-			LoggingService.Warn(message);
-			ServiceManager.Instance.MessageService.ShowWarning(message);
+			Service.ShowWarning(message);
 		}
 		
 		/// <summary>
@@ -96,35 +75,26 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static void ShowWarningFormatted(string formatstring, params object[] formatitems)
 		{
-			ShowWarning(Format(formatstring, formatitems));
+			Service.ShowWarningFormatted(formatstring, formatitems);
 		}
 		
 		/// <summary>
 		/// Asks the user a Yes/No question, using "Yes" as the default button.
 		/// Returns <c>true</c> if yes was clicked, <c>false</c> if no was clicked.
 		/// </summary>
-		public static bool AskQuestion(string question, string caption)
+		public static bool AskQuestion(string question, string caption = null)
 		{
-			return ServiceManager.Instance.MessageService.AskQuestion(question, caption);
+			return Service.AskQuestion(question, caption);
 		}
 		
 		public static bool AskQuestionFormatted(string caption, string formatstring, params object[] formatitems)
 		{
-			return AskQuestion(Format(formatstring, formatitems), caption);
+			return Service.AskQuestion(StringParser.Format(formatstring, formatitems), caption);
 		}
 		
 		public static bool AskQuestionFormatted(string formatstring, params object[] formatitems)
 		{
-			return AskQuestion(Format(formatstring, formatitems));
-		}
-		
-		/// <summary>
-		/// Asks the user a Yes/No question, using "Yes" as the default button.
-		/// Returns <c>true</c> if yes was clicked, <c>false</c> if no was clicked.
-		/// </summary>
-		public static bool AskQuestion(string question)
-		{
-			return AskQuestion(question, StringParser.Parse("${res:Global.QuestionText}"));
+			return Service.AskQuestion(StringParser.Format(formatstring, formatitems));
 		}
 		
 		/// <summary>
@@ -144,7 +114,7 @@ namespace ICSharpCode.Core
 		/// <returns>The number of the button that was clicked, or -1 if the dialog was closed  without clicking a button.</returns>
 		public static int ShowCustomDialog(string caption, string dialogText, int acceptButtonIndex, int cancelButtonIndex, params string[] buttontexts)
 		{
-			return ServiceManager.Instance.MessageService.ShowCustomDialog(caption, dialogText, acceptButtonIndex, cancelButtonIndex, buttontexts);
+			return Service.ShowCustomDialog(caption, dialogText, acceptButtonIndex, cancelButtonIndex, buttontexts);
 		}
 		
 		/// <summary>
@@ -161,19 +131,15 @@ namespace ICSharpCode.Core
 		
 		public static string ShowInputBox(string caption, string dialogText, string defaultValue)
 		{
-			return ServiceManager.Instance.MessageService.ShowInputBox(caption, dialogText, defaultValue);
+			return Service.ShowInputBox(caption, dialogText, defaultValue);
 		}
-		
-		static string defaultMessageBoxTitle = "MessageBox";
-		static string productName = "Application Name";
 		
 		/// <summary>
 		/// Gets/Sets the name of the product using ICSharpCode.Core.
 		/// Is used by the string parser as replacement for ${ProductName}.
 		/// </summary>
 		public static string ProductName {
-			get { return productName; }
-			set { productName = value; }
+			get { return Service.ProductName; }
 		}
 		
 		/// <summary>
@@ -181,45 +147,27 @@ namespace ICSharpCode.Core
 		/// by the message service.
 		/// </summary>
 		public static string DefaultMessageBoxTitle {
-			get { return defaultMessageBoxTitle; }
-			set { defaultMessageBoxTitle = value; }
-		}
-		
-		public static void ShowMessage(string message)
-		{
-			ShowMessage(message, DefaultMessageBoxTitle);
+			get { return Service.DefaultMessageBoxTitle; }
 		}
 		
 		public static void ShowMessageFormatted(string formatstring, params object[] formatitems)
 		{
-			ShowMessage(Format(formatstring, formatitems));
+			Service.ShowMessageFormatted(formatstring, null, formatitems);
 		}
 		
 		public static void ShowMessageFormatted(string caption, string formatstring, params object[] formatitems)
 		{
-			ShowMessage(Format(formatstring, formatitems), caption);
+			Service.ShowMessageFormatted(formatstring, caption, formatitems);
 		}
 		
-		public static void ShowMessage(string message, string caption)
+		public static void ShowMessage(string message, string caption = null)
 		{
-			LoggingService.Info(message);
-			ServiceManager.Instance.MessageService.ShowMessage(message, caption);
+			Service.ShowMessage(message, caption);
 		}
 		
-		static string Format(string formatstring, object[] formatitems)
+		public static void ShowHandledException(Exception ex, string message = null)
 		{
-			try {
-				return String.Format(StringParser.Parse(formatstring), formatitems);
-			} catch (FormatException ex) {
-				LoggingService.Warn(ex);
-				
-				StringBuilder b = new StringBuilder(StringParser.Parse(formatstring));
-				foreach(object formatitem in formatitems) {
-					b.Append("\nItem: ");
-					b.Append(formatitem);
-				}
-				return b.ToString();
-			}
+			Service.ShowHandledException(ex, message);
 		}
 	}
 }

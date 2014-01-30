@@ -1,11 +1,28 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -20,7 +37,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		static CodeCoverageService()
 		{
-			WorkbenchSingleton.Workbench.ViewOpened += ViewOpened;
+			SD.Workbench.ViewOpened += ViewOpened;
 			ProjectService.SolutionLoaded += SolutionLoaded;
 		}
 		
@@ -110,17 +127,17 @@ namespace ICSharpCode.CodeCoverage
 		static void ShowCodeCoverage()
 		{
 			// Highlight any open files.
-			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (IViewContent view in SD.Workbench.ViewContentCollection) {
 				ShowCodeCoverage(view);
 			}
 		}
 		
 		static void HideCodeCoverage()
 		{
-			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				ITextEditorProvider editorProvider = view as ITextEditorProvider;
-				if (editorProvider != null) {
-					codeCoverageHighlighter.RemoveMarkers(editorProvider.TextEditor.Document);
+			foreach (IViewContent view in SD.Workbench.ViewContentCollection) {
+				ITextEditor textEditor = view.GetService<ITextEditor>();
+				if (textEditor != null) {
+					codeCoverageHighlighter.RemoveMarkers(textEditor.Document);
 				}
 			}
 		}
@@ -134,9 +151,9 @@ namespace ICSharpCode.CodeCoverage
 		
 		static void ShowCodeCoverage(IViewContent view)
 		{
-			ITextEditorProvider editorProvider = view as ITextEditorProvider;
-			if (editorProvider != null && view.PrimaryFileName != null) {
-				ShowCodeCoverage(editorProvider.TextEditor, view.PrimaryFileName);
+			ITextEditor textEditor = view.GetService<ITextEditor>();
+			if (textEditor != null && view.PrimaryFileName != null) {
+				ShowCodeCoverage(textEditor, view.PrimaryFileName);
 			}
 		}
 		

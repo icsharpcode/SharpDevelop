@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="Build">
 	<PropertyGroup>
 		<LanguageResourcePath>..\..\data\resources\</LanguageResourcePath>
 	</PropertyGroup>
@@ -57,6 +57,11 @@
 		<Exec Command="UpdateAssemblyInfo.exe --REVISION" WorkingDirectory = "UpdateAssemblyInfo\bin\Debug" Timeout = "60000" Condition = " '$(BranchName)' == '' "/>
 	</Target>
 	
+	<Target Name="PrepareXcopyZip">
+		<MSBuild Projects="ZipFromMsi\ZipFromMsi.csproj" Targets="Build" Properties="Configuration=Debug"/>
+		<Exec Command="ZipFromMsi.exe" WorkingDirectory = "ZipFromMsi\bin\Debug" Timeout = "60000" />
+	</Target>
+	
 	<ItemGroup>
 		<CleanupFiles Include="..\..\bin\*"/>
 		<CleanupFiles Include="..\Main\GlobalAssemblyInfo.cs"/>
@@ -66,8 +71,8 @@
 		<CleanupDirectories Include="..\..\bin\setup\help"/>
 		<CleanupDirectories Include="..\..\AddIns"/>
 		<CleanupDirectories Include="..\setup\bin"/>
-		<CleanupDirectories Include="..\AddIns\Misc\Profiler\bin"/>
-		<CleanupDirectories Include="..\AddIns\Misc\Profiler\Hook\obj"/>
+		<CleanupDirectories Include="..\AddIns\Analysis\Profiler\bin"/>
+		<CleanupDirectories Include="..\AddIns\Analysis\Profiler\Hook\obj"/>
 	</ItemGroup>
 	
 	<Target Name="Clean">

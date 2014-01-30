@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -16,13 +31,15 @@ using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Addin.SecondaryViews;
+
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
-using ICSharpCode.Reports.Core.Factories;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -49,9 +66,9 @@ namespace ICSharpCode.Reports.Addin
 		private ReportDesignerUndoEngine undoEngine;
 		
 		private XmlView xmlView;
-		private ReportPreview preview;
+		private ReportPreview reportPreview;
 		private ReportViewerSecondaryView reportViewer;
-
+//		private TestWPFReportPreview testView;
 		
 		#region Constructor
 		
@@ -67,6 +84,7 @@ namespace ICSharpCode.Reports.Addin
 			if (generator == null) {
 				throw new ArgumentNullException("generator");
 			}
+			Console.WriteLine("ReportDesignerView");
 			this.generator = generator;
 			this.generator.Attach(this);
 			base.TabPageText = ResourceService.GetString("SharpReport.Design");
@@ -86,15 +104,22 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void SetupSecondaryView ()
 		{
+			Console.WriteLine("SetupSecondaryView ()");
+			
 			xmlView = new XmlView(generator,this);
 			SecondaryViewContents.Add(xmlView);
-			preview = new ReportPreview(loader,this);
-			SecondaryViewContents.Add(preview);
+			
+			reportPreview = new ReportPreview(loader,this);
+			SecondaryViewContents.Add(reportPreview);
+			
 			reportViewer = new ReportViewerSecondaryView(loader,this);
 			SecondaryViewContents.Add(reportViewer);
 			
-			var p = new WPFReportPreview(loader,this);
-			SecondaryViewContents.Add(p);
+//			var wpfViewer = new WPFReportPreview(loader,this);
+//			SecondaryViewContents.Add(wpfViewer);
+			
+//			testView = new TestWPFReportPreview(loader,this);
+//			SecondaryViewContents.Add(testView);
 			
 		}
 		
@@ -104,6 +129,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void LoadDesigner(Stream stream)
 		{
+			Console.WriteLine("LoadDesigner(Stream stream)");
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
 			CreatePanel();
 			defaultServiceContainer = new DefaultServiceContainer();
@@ -245,6 +271,7 @@ namespace ICSharpCode.Reports.Addin
 
 		private void MergeFormChanges()
 		{
+			LoggingService.Info("MergeFormChanges()");
 			System.Diagnostics.Trace.WriteLine("View:MergeFormChanges()");
 			this.designSurface.Flush();
 			generator.MergeFormChanges(null);
@@ -266,8 +293,9 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void StartReportExplorer ()
 		{
+			LoggingService.Info("StartReportExplorer ()");
 			ReportExplorerPad explorerPad = CheckReportExplorer();
-			WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorerPad)).BringPadToFront();
+			SD.Workbench.GetPad(typeof(ReportExplorerPad)).BringPadToFront();
 			explorerPad.AddContent(this.loader.ReportModel);
 			explorerPad.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(ReportExplorer_PropertyChanged);
 		}
@@ -275,6 +303,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void ReportExplorer_PropertyChanged (object sender,System.ComponentModel.PropertyChangedEventArgs e)
 		{
+			Console.WriteLine("ReportExplorer_PropertyChanged");
 			this.MakeDirty();
 			ReportExplorerPad explorerPad = CheckReportExplorer();
 			IComponentChangeService change = Host.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
@@ -286,7 +315,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 			ReportExplorerPad p = ReportExplorerPad.Instance;
 			if (p == null) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorerPad)).CreatePad();
+				SD.Workbench.GetPad(typeof(ReportExplorerPad)).CreatePad();
 			}
 			return ReportExplorerPad.Instance;
 		}
@@ -318,7 +347,8 @@ namespace ICSharpCode.Reports.Addin
 			if (shouldUpdateSelectableObjects) {
 				// update the property pad after the transaction is *really* finished
 				// (including updating the selection)
-				WorkbenchSingleton.SafeThreadAsyncCall(UpdatePropertyPad);
+//				WorkbenchSingleton.SafeThreadAsyncCall(UpdatePropertyPad);
+				SD.MainThread.InvokeAsync(null).FireAndForget();
 				shouldUpdateSelectableObjects = false;
 			}
 		}
@@ -367,6 +397,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void UpdatePropertyPad()
 		{
+			Console.WriteLine("UpdatePropertyPad()");
 			if (IsFormsDesignerVisible && Host != null) {
 				propertyContainer.Host = Host;
 				propertyContainer.SelectableObjects = Host.Container.Components;
@@ -391,10 +422,14 @@ namespace ICSharpCode.Reports.Addin
 		
 		#region IHasPropertyContainer impementation
 		
-		PropertyContainer propertyContainer = new PropertyContainer();
+//		PropertyContainer propertyContainer = new PropertyContainer();
+		PropertyContainer propertyContainer;
 		
 		public PropertyContainer PropertyContainer {
 			get {
+				if (propertyContainer == null) {
+					propertyContainer = new PropertyContainer();
+				}
 				return propertyContainer;
 			}
 		}
@@ -544,9 +579,12 @@ namespace ICSharpCode.Reports.Addin
 		public PrintDocument PrintDocument
 		{
 			get {
+				Console.WriteLine("");
+				Console.WriteLine("----ReportdesignerView:PrintDocument------");
+				Console.WriteLine("");
 				ReportModel model = loader.CreateRenderableModel();
 				IReportCreator reportCreator = null;
-				var  paramCmd = new CollectParametersCommand(model);
+				var  paramCmd = new CollectParametersCommand(model.ReportSettings);
 				paramCmd.Run();
 				switch (model.DataModel) {
 						case GlobalEnums.PushPullModel.FormSheet :
@@ -665,7 +703,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		public override void Save(ICSharpCode.SharpDevelop.OpenedFile file,Stream stream)
+		public override void Save(OpenedFile file,Stream stream)
 		{
 			LoggingService.Debug("ReportDesigner: Save to: " + file.FileName);
 			
@@ -714,8 +752,8 @@ namespace ICSharpCode.Reports.Addin
 				if (this.xmlView != null) {
 					this.xmlView.Dispose();
 				}
-				if (this.preview != null) {
-					this.preview.Dispose();
+				if (this.reportPreview != null) {
+					this.reportPreview.Dispose();
 				}
 				if (this.reportViewer != null) {
 					this.reportViewer.Dispose();

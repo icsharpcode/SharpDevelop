@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.CodeDom;
@@ -10,10 +25,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -118,8 +133,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			string newExtension = null;
-			if (project.LanguageProperties.CodeDomProvider != null) {
-				newExtension = project.LanguageProperties.CodeDomProvider.FileExtension;
+			var codeDomProvider = project.CreateCodeDomProvider();
+			if (codeDomProvider != null) {
+				newExtension = codeDomProvider.FileExtension;
 			}
 			if (string.IsNullOrEmpty(newExtension)) {
 				if (string.IsNullOrEmpty(additionalExtension)) {
@@ -129,14 +145,14 @@ namespace ICSharpCode.SharpDevelop.Project
 					additionalExtension = "";
 				}
 			}
-			if (!newExtension.StartsWith(".")) {
+			if (!newExtension.StartsWith(".", StringComparison.Ordinal)) {
 				newExtension = "." + newExtension;
 			}
 			
 			string newFileName = Path.ChangeExtension(baseItem.FileName, additionalExtension + newExtension);
 			int retryIndex = 0;
 			while (true) {
-				FileProjectItem item = project.FindFile(newFileName);
+				FileProjectItem item = project.FindFile(FileName.Create(newFileName));
 				// If the file does not exist in the project, we can use that name.
 				if (item == null)
 					return newFileName;
@@ -161,7 +177,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (baseItem.Project != project)
 				throw new ArgumentException("baseItem is not from project this CustomToolContext belongs to");
 			
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			bool saveProject = false;
 			if (isPrimaryOutput) {
 				if (baseItem.GetEvaluatedMetadata("LastGenOutput") != Path.GetFileName(outputFileName)) {
@@ -169,10 +185,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					baseItem.SetEvaluatedMetadata("LastGenOutput", Path.GetFileName(outputFileName));
 				}
 			}
-			FileProjectItem outputItem = project.FindFile(outputFileName);
+			FileProjectItem outputItem = project.FindFile(FileName.Create(outputFileName));
 			if (outputItem == null) {
 				outputItem = new FileProjectItem(project, ItemType.Compile);
-				outputItem.FileName = outputFileName;
+				outputItem.FileName = FileName.Create(outputFileName);
 				outputItem.DependentUpon = Path.GetFileName(baseItem.FileName);
 				outputItem.SetEvaluatedMetadata("AutoGen", "True");
 				ProjectService.AddProjectItem(project, outputItem);
@@ -187,44 +203,27 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void WriteCodeDomToFile(FileProjectItem baseItem, string outputFileName, CodeCompileUnit ccu)
 		{
-			WorkbenchSingleton.AssertMainThread();
-			CodeDomProvider provider = project.LanguageProperties.CodeDomProvider;
-			CodeGeneratorOptions options = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
-			
-			if (project.LanguageProperties == LanguageProperties.VBNet) {
-				// the root namespace is implicit in VB
-				foreach (CodeNamespace ns in ccu.Namespaces) {
-					if (string.Equals(ns.Name, project.RootNamespace, StringComparison.OrdinalIgnoreCase)) {
-						ns.Name = string.Empty;
-					} else if (ns.Name.StartsWith(project.RootNamespace + ".", StringComparison.OrdinalIgnoreCase)) {
-						ns.Name = ns.Name.Substring(project.RootNamespace.Length + 1);
-					}
-				}
-			}
+			SD.MainThread.VerifyAccess();
 			
 			string codeOutput;
 			using (StringWriter writer = new StringWriter()) {
-				if (provider == null) {
-					writer.WriteLine("No CodeDom provider was found for this language.");
-				} else {
-					provider.GenerateCodeFromCompileUnit(ccu, writer, options);
-				}
+				project.GenerateCodeFromCodeDom(ccu, writer);
 				codeOutput = writer.ToString();
 			}
 			
-			FileUtility.ObservedSave(delegate(string fileName) {
+			FileUtility.ObservedSave(delegate(FileName fileName) {
 			                         	File.WriteAllText(fileName, codeOutput, Encoding.UTF8);
 			                         },
-			                         outputFileName, FileErrorPolicy.Inform);
+			                         FileName.Create(outputFileName), FileErrorPolicy.Inform);
 			EnsureOutputFileIsInProject(baseItem, outputFileName);
-			ParserService.BeginParse(outputFileName, new StringTextBuffer(codeOutput));
+			SD.ParserService.ParseAsync(FileName.Create(outputFileName), new StringTextSource(codeOutput)).FireAndForget();
 		}
 		
 		public void GenerateCodeDomAsync(FileProjectItem baseItem, string outputFileName, Func<CodeCompileUnit> func)
 		{
 			RunAsync(delegate {
 			         	CodeCompileUnit ccu = func();
-			         	WorkbenchSingleton.SafeThreadAsyncCall(WriteCodeDomToFile, baseItem, outputFileName, ccu);
+			         	SD.MainThread.InvokeAsyncAndForget(() => WriteCodeDomToFile(baseItem, outputFileName, ccu));
 			         });
 		}
 		
@@ -376,9 +375,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void OnFileSaved(object sender, FileNameEventArgs e)
 		{
-			Solution solution = ProjectService.OpenSolution;
-			if (solution == null) return;
-			IProject project = solution.FindProjectContainingFile(e.FileName);
+			IProject project = SD.ProjectService.FindProjectContainingFile(e.FileName);
 			if (project == null) return;
 			FileProjectItem item = project.FindFile(e.FileName);
 			if (item == null) return;
@@ -449,7 +446,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("baseItem");
 			if (customTool == null)
 				throw new ArgumentNullException("customTool");
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			string fileName = baseItem.FileName;
 			if (toolRuns.Any(run => FileUtility.IsEqualFileName(run.file, fileName)))
@@ -474,26 +471,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("project");
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			
-			if (project.LanguageProperties == Dom.LanguageProperties.VBNet) {
-				return project.RootNamespace;
-			} else {
-				string relPath = FileUtility.GetRelativePath(project.Directory, Path.GetDirectoryName(fileName));
-				string[] subdirs = relPath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-				StringBuilder standardNameSpace = new StringBuilder(project.RootNamespace);
-				foreach(string subdir in subdirs) {
-					if (subdir == "." || subdir == ".." || subdir.Length == 0)
-						continue;
-					if (subdir.Equals("src", StringComparison.OrdinalIgnoreCase))
-						continue;
-					if (subdir.Equals("source", StringComparison.OrdinalIgnoreCase))
-						continue;
-					if (standardNameSpace.Length > 0)
-						standardNameSpace.Append('.');
-					standardNameSpace.Append(NewFileDialog.GenerateValidClassOrNamespaceName(subdir, true));
-				}
-				return standardNameSpace.ToString();
-			}
+		
+			return project.GetDefaultNamespace(fileName);
 		}
 		
 		static void RunCustomTool(CustomToolRun run)
@@ -519,16 +498,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		internal static void NotifyAsyncFinish(CustomToolContext context)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					activeToolRun = null;
-					if(toolRuns.Count > 0) {
-						CustomToolRun nextRun = toolRuns.Dequeue();
-						if(nextRun != null) {
-							RunCustomTool(nextRun);
-						}
+			SD.MainThread.InvokeAsyncAndForget(delegate {
+				activeToolRun = null;
+				if (toolRuns.Count > 0) {
+					CustomToolRun nextRun = toolRuns.Dequeue();
+					if (nextRun != null) {
+						RunCustomTool(nextRun);
 					}
-				});
+				}
+			});
 		}
 	}
 	#endregion

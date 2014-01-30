@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 
@@ -33,11 +48,11 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
-			process.SelectedStackFrame.StepOut();
-			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
-			process.SelectedStackFrame.StepOut();
-			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
+			ObjectDump("Callstack", this.CurrentThread.GetCallstack());
+			this.CurrentStackFrame.StepOut();
+			ObjectDump("Callstack", this.CurrentThread.GetCallstack());
+			this.CurrentStackFrame.StepOut();
+			ObjectDump("Callstack", this.CurrentThread.GetCallstack());
 			
 			EndTest();
 		}
@@ -50,70 +65,64 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="StackFrame_Callstack.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_Callstack.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break StackFrame_Callstack.cs:22,4-22,40</DebuggingPaused>
+    <Paused>StackFrame_Callstack.cs:37,4-37,40</Paused>
     <Callstack>
       <Item>
         <StackFrame
           ChainIndex="1"
           FrameIndex="2"
-          HasSymbols="True"
-          MethodInfo="static System.Void Debugger.Tests.StackFrame_Callstack.Sub2()"
-          NextStatement="StackFrame_Callstack.cs:22,4-22,40"
+          MethodInfo="[Method Debugger.Tests.StackFrame_Callstack.Sub2():System.Void]"
+          NextStatement="StackFrame_Callstack.cs:37,4-37,40"
           Thread="Thread Name =  Suspended = False" />
       </Item>
       <Item>
         <StackFrame
           ChainIndex="1"
           FrameIndex="1"
-          HasSymbols="True"
-          MethodInfo="static System.Void Debugger.Tests.StackFrame_Callstack.Sub1()"
-          NextStatement="StackFrame_Callstack.cs:17,4-17,11"
+          MethodInfo="[Method Debugger.Tests.StackFrame_Callstack.Sub1():System.Void]"
+          NextStatement="StackFrame_Callstack.cs:32,4-32,11"
           Thread="Thread Name =  Suspended = False" />
       </Item>
       <Item>
         <StackFrame
           ChainIndex="1"
-          HasSymbols="True"
-          MethodInfo="static System.Void Debugger.Tests.StackFrame_Callstack.Main()"
-          NextStatement="StackFrame_Callstack.cs:12,4-12,11"
+          MethodInfo="[Method Debugger.Tests.StackFrame_Callstack.Main():System.Void]"
+          NextStatement="StackFrame_Callstack.cs:27,4-27,11"
           Thread="Thread Name =  Suspended = False" />
       </Item>
     </Callstack>
-    <DebuggingPaused>StepComplete StackFrame_Callstack.cs:17,4-17,11</DebuggingPaused>
+    <Paused>StackFrame_Callstack.cs:32,4-32,11</Paused>
     <Callstack>
       <Item>
         <StackFrame
           ChainIndex="1"
           FrameIndex="1"
-          HasSymbols="True"
-          MethodInfo="static System.Void Debugger.Tests.StackFrame_Callstack.Sub1()"
-          NextStatement="StackFrame_Callstack.cs:17,4-17,11"
+          MethodInfo="[Method Debugger.Tests.StackFrame_Callstack.Sub1():System.Void]"
+          NextStatement="StackFrame_Callstack.cs:32,4-32,11"
           Thread="Thread Name =  Suspended = False" />
       </Item>
       <Item>
         <StackFrame
           ChainIndex="1"
-          HasSymbols="True"
-          MethodInfo="static System.Void Debugger.Tests.StackFrame_Callstack.Main()"
-          NextStatement="StackFrame_Callstack.cs:12,4-12,11"
+          MethodInfo="[Method Debugger.Tests.StackFrame_Callstack.Main():System.Void]"
+          NextStatement="StackFrame_Callstack.cs:27,4-27,11"
           Thread="Thread Name =  Suspended = False" />
       </Item>
     </Callstack>
-    <DebuggingPaused>StepComplete StackFrame_Callstack.cs:12,4-12,11</DebuggingPaused>
+    <Paused>StackFrame_Callstack.cs:27,4-27,11</Paused>
     <Callstack>
       <Item>
         <StackFrame
           ChainIndex="1"
-          HasSymbols="True"
-          MethodInfo="static System.Void Debugger.Tests.StackFrame_Callstack.Main()"
-          NextStatement="StackFrame_Callstack.cs:12,4-12,11"
+          MethodInfo="[Method Debugger.Tests.StackFrame_Callstack.Main():System.Void]"
+          NextStatement="StackFrame_Callstack.cs:27,4-27,11"
           Thread="Thread Name =  Suspended = False" />
       </Item>
     </Callstack>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

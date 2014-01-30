@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -70,21 +85,21 @@ namespace FSharpBinding
 					lock (outputQueue) {
 						outputQueue.Enqueue(e.Data);
 					}
-					WorkbenchSingleton.SafeThreadAsyncCall(ReadAll);
+					SD.MainThread.InvokeAsyncAndForget(ReadAll);
 				};
 				fsiProcess.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
 					lock (outputQueue) {
 						outputQueue.Enqueue(e.Data);
 					}
-					WorkbenchSingleton.SafeThreadAsyncCall(ReadAll);
+					SD.MainThread.InvokeAsyncAndForget(ReadAll);
 				};
 				fsiProcess.Exited += delegate(object sender, EventArgs e) {
 					lock (outputQueue) {
 						outputQueue.Enqueue("fsi.exe died");
 						outputQueue.Enqueue("restarting ...");
 					}
-					WorkbenchSingleton.SafeThreadAsyncCall(ReadAll);
-					WorkbenchSingleton.SafeThreadAsyncCall(StartFSharp);
+					SD.MainThread.InvokeAsyncAndForget(ReadAll);
+					SD.MainThread.InvokeAsyncAndForget(StartFSharp);
 				};
 				StartFSharp();
 			}
@@ -153,18 +168,17 @@ namespace FSharpBinding
 	{
 		public override void Run()
 		{
-			PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(FSharpInteractive));
+			PadDescriptor pad = SD.Workbench.GetPad(typeof(FSharpInteractive));
 			pad.BringPadToFront();
 			FSharpInteractive fsharpInteractive = (FSharpInteractive)pad.PadContent;
 			if (fsharpInteractive.foundCompiler) {
-				ITextEditorProvider editorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-				if (editorProvider != null) {
-					var textEditor = editorProvider.TextEditor;
+				ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
+				if (textEditor != null) {
 					if (textEditor.SelectionLength > 0) {
 						fsharpInteractive.fsiProcess.StandardInput.WriteLine(textEditor.SelectedText);
 					} else {
-						var line = textEditor.Document.GetLine(textEditor.Caret.Line);
-						fsharpInteractive.fsiProcess.StandardInput.WriteLine(line.Text);
+						var line = textEditor.Document.GetLineByNumber(textEditor.Caret.Line);
+						fsharpInteractive.fsiProcess.StandardInput.WriteLine(textEditor.Document.GetText(line));
 					}
 					fsharpInteractive.fsiProcess.StandardInput.WriteLine(";;");
 				}

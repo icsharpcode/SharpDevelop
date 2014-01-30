@@ -7,13 +7,14 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.MSTest</RootNamespace>
     <AssemblyName>MSTest.SharpDevelop</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <OutputPath>..\..\..\AddIns\Samples\MSTest</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -45,12 +46,12 @@
       <HintPath>..\..\..\bin\ICSharpCode.Core.Presentation.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop">
-      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop.Dom">
-      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
+    <Reference Include="ICSharpCode.SharpDevelop">
+      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop.Widgets">
@@ -74,15 +75,20 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MSTestClass.cs" />
     <Compile Include="MSTestApplication.cs" />
     <Compile Include="MSTestApplicationCommandLine.cs" />
     <Compile Include="MSTestDebugger.cs" />
     <Compile Include="MSTestFramework.cs" />
+    <Compile Include="MSTestMember.cs" />
+    <Compile Include="MSTestMonitor.cs" />
     <Compile Include="MSTestOptions.cs" />
     <Compile Include="MSTestOptionsPanel.xaml.cs">
       <DependentUpon>MSTestOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MSTestProcessRunnerContext.cs" />
+    <Compile Include="MSTestProject.cs" />
     <Compile Include="MSTestQualifiedClassName.cs" />
     <Compile Include="MSTestResult.cs" />
     <Compile Include="MSTestResults.cs" />

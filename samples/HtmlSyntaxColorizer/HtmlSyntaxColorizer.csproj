@@ -7,7 +7,8 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>HtmlSyntaxColorizer</RootNamespace>
     <AssemblyName>HtmlSyntaxColorizer</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -28,6 +29,9 @@
     <Reference Include="ICSharpCode.AvalonEdit">
       <HintPath>..\..\bin\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -46,5 +50,8 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="HtmlWriter.cs" />
     <Compile Include="Main.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
 </Project>

@@ -1,11 +1,21 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 13.02.2013
- * Time: 19:48
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Globalization;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
@@ -19,8 +29,6 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		private const string stringType  = "System.String";
 		private const string dateTimetype = "System.DateTime";
 		private const string nullValue ="NullValue";
-		
-		
 		[Test]
 		public void String_Is_Not_Formatted()
 		{
@@ -89,27 +97,6 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 			Assert.That(result,Is.EqualTo("05:50:10"));
 		}
 
-		
-		[Test]
-		public void NegativeTimeSpan_HH_mm_ss ()
-		{
-			string toFormat = "-5:50:10";
-			string format = "H:mm:ss";
-			var result = StandardFormatter.FormatOutput(toFormat,format,dateTimetype,nullValue);
-			Assert.That(result,Is.EqualTo("-5:50:10"));
-		}
-		
-		
-		[Test]
-		public void TimeSpan_HH_mm ()
-		{
-			string toFormat = "5:50:10";
-			string format = "HH:mm";
-			var result = StandardFormatter.FormatOutput(toFormat,format,dateTimetype,nullValue);
-			Assert.That(result,Is.EqualTo("05:50"));
-		}
-		
-		
 		[Test]
 		public void TimeSpan_H_mm_ss ()
 		{
@@ -117,6 +104,22 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 			string format = "H:mm:ss";
 			var result = StandardFormatter.FormatOutput(toFormat,format,dateTimetype,nullValue);
 			Assert.That(result,Is.EqualTo("5:50:10"));
+		}
+		
+		
+		[Test]
+		public void NegativeTimeSpan_HH_mm_ss ()
+		{
+			TimeSpan time;
+			string toFormat = "-5:50:10";
+			string format = "H:mm:ss";
+			var result = StandardFormatter.FormatOutput(toFormat,format,dateTimetype,nullValue);
+			Assert.That(result,Is.EqualTo("-5:50:10"));
+			bool valid = TimeSpan.TryParseExact(result,
+			                                    "c",
+			                                    CultureInfo.CurrentCulture,
+			                                    out time);
+			Assert.That(valid,Is.True);
 		}
 		
 		

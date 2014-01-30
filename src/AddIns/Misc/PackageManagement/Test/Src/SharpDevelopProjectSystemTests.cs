@@ -1,17 +1,35 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 using Microsoft.Build.Construction;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -23,6 +41,8 @@ namespace PackageManagement.Tests
 		
 		void CreateProjectSystem(MSBuildBasedProject project)
 		{
+			SD.Services.AddService(typeof(IWorkbench), MockRepository.GenerateStub<IWorkbench>());
+			SD.Services.AddService(typeof(IMessageLoop), MockRepository.GenerateStub<IMessageLoop>());
 			projectSystem = new TestableSharpDevelopProjectSystem(project);
 		}
 		
@@ -44,7 +64,7 @@ namespace PackageManagement.Tests
 		void CreateTestProject(string fileName)
 		{
 			CreateTestProject();
-			project.FileName = fileName;
+			project.FileName = new FileName(fileName);
 		}
 		
 		void AddFileToProject(string fileName)
@@ -371,7 +391,7 @@ namespace PackageManagement.Tests
 		public void AddReference_ReferenceFileNameIsRelativePath_ReferenceAddedToProject()
 		{
 			CreateTestProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			project.FileName = new FileName(@"d:\projects\MyProject\MyProject.csproj");
 			CreateProjectSystem(project);
 			project.IsSaved = false;
 			
@@ -503,7 +523,7 @@ namespace PackageManagement.Tests
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
-			expectedFileItem.FileName = fileName;
+			expectedFileItem.FileName = FileName.Create(fileName);
 			
 			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
 		}
@@ -520,7 +540,7 @@ namespace PackageManagement.Tests
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.EmbeddedResource);
-			expectedFileItem.FileName = fileName;
+			expectedFileItem.FileName = FileName.Create(fileName);
 			
 			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
 		}
@@ -538,7 +558,7 @@ namespace PackageManagement.Tests
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
-			expectedFileItem.FileName = fileName;
+			expectedFileItem.FileName = FileName.Create(fileName);
 			
 			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
 		}
@@ -556,7 +576,7 @@ namespace PackageManagement.Tests
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
-			expectedFileItem.FileName = fileName;
+			expectedFileItem.FileName = FileName.Create(fileName);
 			
 			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
 		}
@@ -1063,7 +1083,7 @@ namespace PackageManagement.Tests
 			
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
-			expectedFileItem.FileName = fileName;
+			expectedFileItem.FileName = new FileName(fileName);
 			
 			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
 		}

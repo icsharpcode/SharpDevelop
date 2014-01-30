@@ -1,12 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+
 using System.Windows.Input;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -61,18 +81,14 @@ namespace ICSharpCode.SharpDevelop
 		public static void InitializeService()
 		{
 			if (!serviceInitialized) {
-				if (WorkbenchSingleton.Workbench == null) {
+				if (SD.Workbench == null) {
 					throw new InvalidOperationException("Initializing the NavigationService requires that the WorkbenchSingleton has already created a Workbench.");
 				}
 				// trap changes in the secondary tab via the workbench's ActiveViewContentChanged event
-				WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
+				SD.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 				
-				// ignore files opened as part of loading a solution.
-				ProjectService.SolutionLoading += ProjectService_SolutionLoading;
-				ParserService.LoadSolutionProjectsThreadEnded += LoadSolutionProjectsThreadEnded;
-				
-				FileService.FileRenamed += FileService_FileRenamed;
-				ProjectService.SolutionClosed += ProjectService_SolutionClosed;
+				SD.FileService.FileRenamed += FileService_FileRenamed;
+				SD.ProjectService.SolutionClosed += ProjectService_SolutionClosed;
 				serviceInitialized = true;
 			}
 		}
@@ -214,20 +230,6 @@ namespace ICSharpCode.SharpDevelop
 			OnHistoryChanged();
 		}
 		
-		// Unit test covered but the test does not yet verify the results.
-		public static INavigationPoint Log()
-		{
-			if (WorkbenchSingleton.Workbench == null) {
-				return null;
-			}
-			IViewContent view = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (view == null) {
-				return null;
-			}
-
-			return view.BuildNavPoint();
-		}
-
 		/// <summary>
 		/// Gets a <see cref="List{T}"/> of the <see cref="INavigationPoint">INavigationPoints</see> that
 		/// are currently in the collection.
@@ -374,28 +376,12 @@ namespace ICSharpCode.SharpDevelop
 		#region event trapping
 
 		/// <summary>
-		/// Prepares the NavigationService to load a new solution.
-		/// </summary>
-		static void ProjectService_SolutionLoading(object sender, EventArgs e)
-		{
-			SuspendLogging();
-		}
-
-		/// <summary>
-		/// Prepares the NavigationService for working with a newly loaded solution
-		/// </summary>
-		static void LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
-		{
-			ResumeLogging();
-		}
-		
-		/// <summary>
 		/// Respond to changes in the <see cref="IWorkbench.ActiveViewContent">
 		/// ActiveViewContent</see> by logging the new <see cref="IViewContent"/>.
 		/// </summary>
 		static void ActiveViewContentChanged(object sender, EventArgs e)
 		{
-			IViewContent vc = WorkbenchSingleton.Workbench.ActiveViewContent;
+			IViewContent vc = SD.Workbench.ActiveViewContent;
 			if (vc == null) return;
 			LoggingService.DebugFormatted("NavigationService\n\tActiveViewContent: {0}\n\t          Subview: {1}",
 			                              vc.TitleName,
@@ -449,48 +435,22 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 		
 		#region Navigate To Entity
-		public static bool NavigateTo(Dom.IEntity entity)
+		public static bool NavigateTo(IEntity entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
-			var cu = entity.CompilationUnit;
-			Dom.DomRegion region;
-			if (entity is Dom.IClass)
-				region = ((Dom.IClass)entity).Region;
-			else if (entity is Dom.IMember)
-				region = ((Dom.IMember)entity).Region;
-			else
-				region = Dom.DomRegion.Empty;
+			var region = entity.Region;
 			
-			if (cu == null || string.IsNullOrEmpty(cu.FileName) || region.IsEmpty) {
+			if (region.IsEmpty || string.IsNullOrEmpty(region.FileName)) {
 				foreach (var item in AddInTree.BuildItems<INavigateToEntityService>("/SharpDevelop/Services/NavigateToEntityService", null, false)) {
 					if (item.NavigateToEntity(entity))
 						return true;
 				}
 				return false;
-			} else {
-				return FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn) != null;
 			}
-		}
-		#endregion
-		
-		#region Navigate to Member
-		
-		public static bool NavigateTo(string assemblyFile, string typeName, string entityTag, int lineNumber = 0, bool updateMarker = true)
-		{
-			if (string.IsNullOrEmpty(assemblyFile))
-				throw new ArgumentException("assemblyFile is null or empty");
 			
-			if (string.IsNullOrEmpty(typeName))
-				throw new ArgumentException("typeName is null or empty");
-			
-			foreach (var item in AddInTree.BuildItems<INavigateToMemberService>("/SharpDevelop/Services/NavigateToEntityService", null, false)) {
-				if (item.NavigateToMember(assemblyFile, typeName, entityTag, lineNumber, updateMarker))
-					return true;
-			}
-			return false;
+			return FileService.JumpToFilePosition(region.FileName, region.BeginLine, region.BeginColumn) != null;
 		}
-		
 		#endregion
 	}
 	
@@ -502,17 +462,6 @@ namespace ICSharpCode.SharpDevelop
 	/// </remarks>
 	public interface INavigateToEntityService
 	{
-		bool NavigateToEntity(Dom.IEntity entity);
-	}
-	
-	/// <summary>
-	/// Called by <see cref="NavigationService.NavigateTo"/> when the member reference is not defined in source code.
-	/// </summary>
-	/// <remarks>
-	/// Loaded from addin tree path "/SharpDevelop/Services/NavigateToEntityService"
-	/// </remarks>
-	public interface INavigateToMemberService
-	{
-		bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber, bool updateMarker);
+		bool NavigateToEntity(IEntity entity);
 	}
 }

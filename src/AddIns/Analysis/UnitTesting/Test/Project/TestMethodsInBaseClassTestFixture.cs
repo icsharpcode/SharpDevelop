@@ -1,7 +1,22 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -14,7 +29,7 @@ namespace UnitTesting.Tests.Project
 	/// If a test fixture's base class has test attributes then
 	/// NUnit includes the base class test methods by prefixing
 	/// the base class name to them. In NUnit 2.2 this was true for
-	/// both the GUI and the test result information. In 
+	/// both the GUI and the test result information. In
 	/// NUnit 2.4 the GUI prefixes the base class to the method
 	/// name but the test result does not prefix the base class
 	/// to the name of the method.
@@ -31,93 +46,62 @@ namespace UnitTesting.Tests.Project
 	/// RootNamespace.DerivedClass.BaseClassMethod
 	/// </summary>
 	[TestFixture]
-	public class TestMethodsInBaseClassTestFixture
+	public class TestMethodsInBaseClassTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestClass testClass;
-		MockClass c;
-		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
+		NUnitTestClass testClass;
 		
-		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
-			MockProjectContent projectContent = new MockProjectContent();
+			base.SetUp();
 			
-			// Create the base test class.
-			MockClass baseClass = new MockClass(projectContent, "RootNamespace.TestFixtureBase");
-			baseClass.Attributes.Add(new MockAttribute("TestFixture"));
-			MockMethod baseMethod = new MockMethod(baseClass, "BaseMethod");
-			baseMethod.Attributes.Add(new MockAttribute("Test"));
-			baseClass.Methods.Add(baseMethod);
-			
-			// Create the derived test class.
-			c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
-			c.Attributes.Add(new MockAttribute("TestFixture"));
-			MockMethod method = new MockMethod(c, "DerivedMethod");
-			method.Attributes.Add(new MockAttribute("Test"));
-			c.Methods.Add(method);
-			projectContent.Classes.Add(c);
-
-			// Set derived class's base class.
-			c.AddBaseClass(baseClass);
-			
-			// Create TestClass.
-			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
-			testClass = new TestClass(c, testFrameworks);
+			AddCodeFileInNamespace("base.cs", @"
+[TestFixture] class TestFixtureBase {
+	[Test] public void BaseMethod() {}
+}");
+			AddCodeFileInNamespace("derived.cs", @"
+[TestFixture] class MyTestFixture : TestFixtureBase {
+	[Test] public void DerivedMethod() {}
+}");
+			testClass = testProject.GetTestClass(new FullTypeName("RootNamespace.MyTestFixture"));
+			testClass.EnsureNestedTestsInitialized();
 		}
 		
 		[Test]
 		public void TwoTestMethods()
 		{
-			Assert.AreEqual(2, testClass.TestMembers.Count);
+			Assert.AreEqual(2, testClass.NestedTests.Count);
 		}
 		
 		[Test]
 		public void DerivedMethod()
 		{
-			Assert.IsTrue(testClass.TestMembers.Contains("DerivedMethod"));
+			Assert.IsNotNull(testClass.FindTestMethod("DerivedMethod"));
 		}
 		
 		[Test]
 		public void BaseMethod()
 		{
-			Assert.IsTrue(testClass.TestMembers.Contains("TestFixtureBase.BaseMethod"));
+			Assert.IsNotNull(testClass.FindTestMethod("TestFixtureBase.BaseMethod"));
 		}
 		
-		/// <summary>
-		/// The TestMethod.Method property should return an IMethod 
-		/// that returns the derived class from the DeclaringType property
-		/// and not the base class. This ensures that the correct
-		/// test is run when selected in the unit test tree.
-		/// </summary>
 		[Test]
-		public void BaseMethodDeclaringTypeIsDerivedClass()
+		public void FindTestMethodDoesNotReturnBaseMethodIfUsingShortName()
 		{
-			TestMember method = testClass.TestMembers["TestFixtureBase.BaseMethod"];
-			Assert.AreEqual(c, method.Member.DeclaringType);
+			Assert.IsNull(testClass.FindTestMethod("BaseMethod"));
+		}
+		
+		[Test]
+		public void FindTestMethodWithShortNameCanFindBaseMethod()
+		{
+			Assert.IsNotNull(testClass.FindTestMethodWithShortName("BaseMethod"));
 		}
 		
 		[Test]
 		public void UpdateTestResultUsingPrefixBaseClassName()
 		{
-			TestClassCollection testClasses = new TestClassCollection();
-			testClasses.Add(testClass);
-
 			TestResult testResult = new TestResult("RootNamespace.MyTestFixture.TestFixtureBase.BaseMethod");
 			testResult.ResultType = TestResultType.Failure;
-			testClasses.UpdateTestResult(testResult);
-			
-			Assert.AreEqual(TestResultType.Failure, testClass.Result);
-		}
-		
-		[Test]
-		public void UpdateTestResult()
-		{
-			TestClassCollection testClasses = new TestClassCollection();
-			testClasses.Add(testClass);
-
-			TestResult testResult = new TestResult("RootNamespace.MyTestFixture.BaseMethod");
-			testResult.ResultType = TestResultType.Failure;
-			testClasses.UpdateTestResult(testResult);
+			testProject.UpdateTestResult(testResult);
 			
 			Assert.AreEqual(TestResultType.Failure, testClass.Result);
 		}

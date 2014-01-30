@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +30,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
+using ICSharpCode.SharpDevelop.Workbench;
 using WPF = System.Windows.Controls;
 
 namespace ICSharpCode.WpfDesign.AddIn
@@ -28,7 +44,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public static WpfToolbox Instance {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (instance == null) {
 					instance = new WpfToolbox();
 				}
@@ -60,55 +76,41 @@ namespace ICSharpCode.WpfDesign.AddIn
 			return !t.IsAbstract && !t.IsGenericTypeDefinition && t.IsSubclassOf(typeof(FrameworkElement));
 		}
 
-
-		private static HashSet<string> addedAssemblys = new HashSet<string>();
+		static HashSet<string> addedAssemblys = new HashSet<string>();
 		public void AddProjectDlls(OpenedFile file)
 		{
-			var pc = MyTypeFinder.GetProjectContent(file);
-			foreach (var referencedProjectContent in pc.ThreadSafeGetReferencedContents())
-			{
-				string f = null;
-				if (referencedProjectContent is ParseProjectContent)
-				{
-					var prj = ((ParseProjectContent)referencedProjectContent).Project as AbstractProject;
-					if (prj != null)
-						f = prj.OutputAssemblyFullPath;
-				}
-				else if (referencedProjectContent is ReflectionProjectContent)
-				{
-					f = ((ReflectionProjectContent) referencedProjectContent).AssemblyLocation;
-				}
+			var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+			foreach (var reference in compilation.ReferencedAssemblies) {
+				string f = reference.GetReferenceAssemblyLocation();
 				
-				if (f != null && !addedAssemblys.Contains(f))
-				{
-					try
-					{
-						var assembly = Assembly.LoadFrom(f);
-
-						SideTab sideTab = new SideTab(sideBar, assembly.FullName.Split(new[] {','})[0]);
-						sideTab.DisplayName = StringParser.Parse(sideTab.Name);
-						sideTab.CanBeDeleted = false;
-						sideTab.ChoosedItemChanged += OnChoosedItemChanged;
-
-						sideTab.Items.Add(new WpfSideTabItem());
-
-						foreach (var t in assembly.GetExportedTypes())
-						{
-							if (IsControl(t))
-							{
-								sideTab.Items.Add(new WpfSideTabItem(t));
-							}
-						}
-
-						if (sideTab.Items.Count > 1)
-							sideBar.Tabs.Add(sideTab);
-
-						addedAssemblys.Add(f);
-					}
-					catch (Exception ex)
-					{
-						WpfViewContent.DllLoadErrors.Add(
-							new Task(new BuildError(f, ex.Message)));
+				if (f != null && !addedAssemblys.Contains(f)) {
+					try {
+						// DO NOT USE Assembly.LoadFrom!!!
+						// see http://community.sharpdevelop.net/forums/t/19968.aspx
+						// TODO : reimplement this!
+//						var assembly = Assembly.LoadFrom(f);
+//
+//						SideTab sideTab = new SideTab(sideBar, assembly.FullName.Split(new[] {','})[0]);
+//						sideTab.DisplayName = StringParser.Parse(sideTab.Name);
+//						sideTab.CanBeDeleted = false;
+//						sideTab.ChoosedItemChanged += OnChoosedItemChanged;
+//
+//						sideTab.Items.Add(new WpfSideTabItem());
+//
+//						foreach (var t in assembly.GetExportedTypes())
+//						{
+//							if (IsControl(t))
+//							{
+//								sideTab.Items.Add(new WpfSideTabItem(t));
+//							}
+//						}
+//
+//						if (sideTab.Items.Count > 1)
+//							sideBar.Tabs.Add(sideTab);
+//
+//						addedAssemblys.Add(f);
+					} catch (Exception ex) {
+						WpfViewContent.DllLoadErrors.Add(new SDTask(new BuildError(f, ex.Message)));
 					}
 				}
 			}

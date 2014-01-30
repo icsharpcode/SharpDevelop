@@ -1,13 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
-using TypeResolutionService = ICSharpCode.FormsDesigner.Services.TypeResolutionService;
+using TypeResolutionService = ICSharpCode.SharpDevelop.Designer.TypeResolutionService;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -22,36 +41,26 @@ namespace ICSharpCode.WpfDesign.AddIn
 			f.file = file;
 			f.ImportFrom(CreateWpfTypeFinder());
 			
-			var pc = MyTypeFinder.GetProjectContent(file);
-			foreach (var referencedProjectContent in pc.ThreadSafeGetReferencedContents()) {
-				string fileName = null;
-				try{
-					if (referencedProjectContent is ParseProjectContent)
-					{
-						var prj = ((ParseProjectContent)referencedProjectContent).Project as AbstractProject;
-						if (prj != null)
-							fileName = prj.OutputAssemblyFullPath;
-					}
-					else if (referencedProjectContent is ReflectionProjectContent)
-					{
-						fileName = ((ReflectionProjectContent) referencedProjectContent).AssemblyLocation;
-					}
-					var assembly = Assembly.LoadFrom(fileName);
-					f.RegisterAssembly(assembly);
-				}
-				catch (Exception ex) {
-					ICSharpCode.Core.LoggingService.Warn("Error loading Assembly : "+ (fileName ?? ""), ex);
-				}
-			}
+			// TODO : reimplement this!
+			// DO NOT USE Assembly.LoadFrom
+//			var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+//			foreach (var referencedAssembly in compilation.ReferencedAssemblies) {
+//				try {
+//					var assembly = Assembly.LoadFrom(referencedAssembly.GetReferenceAssemblyLocation());
+//					f.RegisterAssembly(assembly);
+//				} catch (Exceptions ex) {
+//					ICSharpCode.Core.LoggingService.Warn("Error loading Assembly : " + referencedAssembly.FullAssemblyName, ex);
+//				}
+//			}
 			return f;
 		}
 		
 		public override Assembly LoadAssembly(string name)
 		{
 			if (string.IsNullOrEmpty(name)) {
-				IProjectContent pc = GetProjectContent(file);
+				IProject pc = GetProject(file);
 				if (pc != null) {
-					return this.typeResolutionService.LoadAssembly(pc);
+					return typeResolutionService.LoadAssembly(pc);
 				}
 				return null;
 			} else {
@@ -65,19 +74,19 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		Assembly FindAssemblyInProjectReferences(string name)
 		{
-			IProjectContent pc = GetProjectContent(file);
+			IProject pc = GetProject(file);
 			if (pc != null) {
 				return FindAssemblyInProjectReferences(pc, name);
 			}
 			return null;
 		}
 		
-		Assembly FindAssemblyInProjectReferences(IProjectContent pc, string name)
+		Assembly FindAssemblyInProjectReferences(IProject pc, string name)
 		{
-			foreach (IProjectContent referencedProjectContent in pc.ThreadSafeGetReferencedContents()) {
-				if (name == referencedProjectContent.AssemblyName) {
-					return this.typeResolutionService.LoadAssembly(referencedProjectContent);
-				}
+			ICompilation compilation = SD.ParserService.GetCompilation(pc);
+			IAssembly assembly = compilation.ReferencedAssemblies.FirstOrDefault(asm => asm.AssemblyName == name);
+			if (assembly != null) {
+				return typeResolutionService.LoadAssembly(assembly);
 			}
 			return null;
 		}
@@ -90,15 +99,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 			return copy;
 		}
 		
-		internal static IProjectContent GetProjectContent(OpenedFile file)
+		internal static IProject GetProject(OpenedFile file)
 		{
-			if (ProjectService.OpenSolution != null && file != null) {
-				IProject p = ProjectService.OpenSolution.FindProjectContainingFile(file.FileName);
-				if (p != null) {
-					return ParserService.GetProjectContent(p);
-				}
-			}
-			return ParserService.DefaultProjectContent;
+			return SD.ProjectService.FindProjectContainingFile(file.FileName);
 		}
 	}
 }

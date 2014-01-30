@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -22,7 +37,7 @@ namespace ICSharpCode.CodeQuality.Engine
 	/// </summary>
 	public class AssemblyAnalyzer
 	{
-		CecilLoader loader = new CecilLoader(true) { IncludeInternalMembers = true };
+		Dictionary<object, object> unresolvedTypeSystemToCecilDict = new Dictionary<object, object>();
 		ICompilation compilation;
 		internal Dictionary<IAssembly, AssemblyNode> assemblyMappings;
 		internal Dictionary<string, NamespaceNode> namespaceMappings;
@@ -73,7 +88,7 @@ namespace ICSharpCode.CodeQuality.Engine
 		
 		public ReadOnlyCollection<AssemblyNode> Analyze()
 		{
-			IUnresolvedAssembly[] loadedAssemblies = LoadAssemblies().ToArray();
+			var loadedAssemblies = LoadAssemblies();
 			compilation = new SimpleCompilation(loadedAssemblies.First(), loadedAssemblies.Skip(1));
 			
 			assemblyMappings = new Dictionary<IAssembly, AssemblyNode>();
@@ -92,7 +107,7 @@ namespace ICSharpCode.CodeQuality.Engine
 				foreach (var field in type.Fields) {
 					var node = new FieldNode(field);
 					fieldMappings.Add(field, node);
-					var cecilObj = loader.GetCecilObject((IUnresolvedField)field.UnresolvedMember);
+					var cecilObj = GetCecilObject((IUnresolvedField)field.UnresolvedMember);
 					if (cecilObj != null)
 						cecilMappings[cecilObj] = field;
 					tn.AddChild(node);
@@ -101,7 +116,7 @@ namespace ICSharpCode.CodeQuality.Engine
 				foreach (var method in type.Methods) {
 					var node = new MethodNode(method);
 					methodMappings.Add(method, node);
-					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)method.UnresolvedMember);
+					var cecilObj = GetCecilObject((IUnresolvedMethod)method.UnresolvedMember);
 					if (cecilObj != null)
 						cecilMappings[cecilObj] = method;
 					tn.AddChild(node);
@@ -110,16 +125,16 @@ namespace ICSharpCode.CodeQuality.Engine
 				foreach (var property in type.Properties) {
 					var node = new PropertyNode(property);
 					propertyMappings.Add(property, node);
-					var cecilPropObj = loader.GetCecilObject((IUnresolvedProperty)property.UnresolvedMember);
+					var cecilPropObj = GetCecilObject((IUnresolvedProperty)property.UnresolvedMember);
 					if (cecilPropObj != null)
 						cecilMappings[cecilPropObj] = property;
 					if (property.CanGet) {
-						var cecilMethodObj = loader.GetCecilObject((IUnresolvedMethod)property.Getter.UnresolvedMember);
+						var cecilMethodObj = GetCecilObject((IUnresolvedMethod)property.Getter.UnresolvedMember);
 						if (cecilMethodObj != null)
 							cecilMappings[cecilMethodObj] = property;
 					}
 					if (property.CanSet) {
-						var cecilMethodObj = loader.GetCecilObject((IUnresolvedMethod)property.Setter.UnresolvedMember);
+						var cecilMethodObj = GetCecilObject((IUnresolvedMethod)property.Setter.UnresolvedMember);
 						if (cecilMethodObj != null)
 							cecilMappings[cecilMethodObj] = property;
 					}
@@ -129,21 +144,21 @@ namespace ICSharpCode.CodeQuality.Engine
 				foreach (var @event in type.Events) {
 					var node = new EventNode(@event);
 					eventMappings.Add(@event, node);
-					var cecilObj = loader.GetCecilObject((IUnresolvedEvent)@event.UnresolvedMember);
+					var cecilObj = GetCecilObject((IUnresolvedEvent)@event.UnresolvedMember);
 					if (cecilObj != null)
 						cecilMappings[cecilObj] = @event;
 					if (@event.CanAdd) {
-						var cecilMethodObj = loader.GetCecilObject((IUnresolvedMethod)@event.AddAccessor.UnresolvedMember);
+						var cecilMethodObj = GetCecilObject((IUnresolvedMethod)@event.AddAccessor.UnresolvedMember);
 						if (cecilMethodObj != null)
 							cecilMappings[cecilMethodObj] = @event;
 					}
 					if (@event.CanInvoke) {
-						var cecilMethodObj = loader.GetCecilObject((IUnresolvedMethod)@event.InvokeAccessor.UnresolvedMember);
+						var cecilMethodObj = GetCecilObject((IUnresolvedMethod)@event.InvokeAccessor.UnresolvedMember);
 						if (cecilMethodObj != null)
 							cecilMappings[cecilMethodObj] = @event;
 					}
 					if (@event.CanRemove) {
-						var cecilMethodObj = loader.GetCecilObject((IUnresolvedMethod)@event.RemoveAccessor.UnresolvedMember);
+						var cecilMethodObj = GetCecilObject((IUnresolvedMethod)@event.RemoveAccessor.UnresolvedMember);
 						if (cecilMethodObj != null)
 							cecilMappings[cecilMethodObj] = @event;
 					}
@@ -151,7 +166,7 @@ namespace ICSharpCode.CodeQuality.Engine
 				}
 			}
 			
-			ILAnalyzer analyzer = new ILAnalyzer(loadedAssemblies.Select(asm => loader.GetCecilObject(asm)).ToArray(), this);
+			ILAnalyzer analyzer = new ILAnalyzer(loadedAssemblies.Select(asm => GetCecilObject(asm)).ToArray(), this);
 			int count = typeMappings.Count + methodMappings.Count + fieldMappings.Count + propertyMappings.Count;
 			int i  = 0;
 			
@@ -164,7 +179,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			
 			foreach (var element in methodMappings) {
 				ReportProgress(++i / (double)count);
-				var cecilObj = loader.GetCecilObject((IUnresolvedMethod)element.Key.UnresolvedMember);
+				var cecilObj = GetCecilObject((IUnresolvedMethod)element.Key.UnresolvedMember);
 				if (cecilObj != null)
 					analyzer.Analyze(cecilObj.Body, element.Value);
 				var node = element.Value;
@@ -194,12 +209,12 @@ namespace ICSharpCode.CodeQuality.Engine
 				var node = element.Value;
 				var property = element.Key;
 				if (property.CanGet) {
-					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)element.Key.Getter.UnresolvedMember);
+					var cecilObj = GetCecilObject((IUnresolvedMethod)element.Key.Getter.UnresolvedMember);
 					if (cecilObj != null)
 						analyzer.Analyze(cecilObj.Body, node);
 				}
 				if (property.CanSet) {
-					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)element.Key.Setter.UnresolvedMember);
+					var cecilObj = GetCecilObject((IUnresolvedMethod)element.Key.Setter.UnresolvedMember);
 					if (cecilObj != null)
 						analyzer.Analyze(cecilObj.Body, node);
 				}
@@ -213,17 +228,17 @@ namespace ICSharpCode.CodeQuality.Engine
 				var node = element.Value;
 				var @event = element.Key;
 				if (@event.CanAdd) {
-					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)@event.AddAccessor.UnresolvedMember);
+					var cecilObj = GetCecilObject((IUnresolvedMethod)@event.AddAccessor.UnresolvedMember);
 					if (cecilObj != null)
 						analyzer.Analyze(cecilObj.Body, node);
 				}
 				if (@event.CanInvoke) {
-					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)@event.InvokeAccessor.UnresolvedMember);
+					var cecilObj = GetCecilObject((IUnresolvedMethod)@event.InvokeAccessor.UnresolvedMember);
 					if (cecilObj != null)
 						analyzer.Analyze(cecilObj.Body, node);
 				}
 				if (@event.CanRemove) {
-					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)@event.RemoveAccessor.UnresolvedMember);
+					var cecilObj = GetCecilObject((IUnresolvedMethod)@event.RemoveAccessor.UnresolvedMember);
 					if (cecilObj != null)
 						analyzer.Analyze(cecilObj.Body, node);
 				}
@@ -295,7 +310,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			}
 		}
 		
-		IEnumerable<IUnresolvedAssembly> LoadAssemblies()
+		IList<IUnresolvedAssembly> LoadAssemblies()
 		{
 			var resolver = new AssemblyResolver();
 			foreach (var path in fileNames.Select(f => Path.GetDirectoryName(f)).Distinct(StringComparer.OrdinalIgnoreCase))
@@ -305,13 +320,54 @@ namespace ICSharpCode.CodeQuality.Engine
 				assemblies.Add(resolver.LoadAssemblyFile(file));
 			foreach (var asm in assemblies.ToArray())
 				assemblies.AddRange(asm.Modules.SelectMany(m => m.AssemblyReferences).Select(r => resolver.TryResolve(r)).Where(r => r != null));
-			return assemblies.Distinct().Select(asm => loader.LoadAssembly(asm));
+			CecilLoader loader = new CecilLoader { IncludeInternalMembers = true };
+			// Emulate the old CecilLoader.GetCecilObject() API: 
+			loader.OnEntityLoaded = delegate(IUnresolvedEntity entity, MemberReference cecilObj) {
+				unresolvedTypeSystemToCecilDict[entity] = cecilObj;
+			};
+			var loadedAssemblies = new List<IUnresolvedAssembly>();
+			foreach (var asm in assemblies.Distinct()) {
+				var loadedAssembly = loader.LoadAssembly(asm);
+				loadedAssemblies.Add(loadedAssembly);
+				unresolvedTypeSystemToCecilDict[loadedAssembly] = asm;
+			}
+			return loadedAssemblies;
+		}
+		
+		AssemblyDefinition GetCecilObject(IUnresolvedAssembly assembly)
+		{
+			object cecilObj;
+			if (unresolvedTypeSystemToCecilDict.TryGetValue(assembly, out cecilObj)) {
+				return cecilObj as AssemblyDefinition;
+			} else {
+				return null;
+			}
+		}
+		
+		MemberReference GetCecilObject(IUnresolvedEntity entity)
+		{
+			object cecilObj;
+			if (unresolvedTypeSystemToCecilDict.TryGetValue(entity, out cecilObj)) {
+				return cecilObj as MemberReference;
+			} else {
+				return null;
+			}
+		}
+		
+		MethodDefinition GetCecilObject(IUnresolvedMethod method)
+		{
+			object cecilObj;
+			if (unresolvedTypeSystemToCecilDict.TryGetValue(method, out cecilObj)) {
+				return cecilObj as MethodDefinition;
+			} else {
+				return null;
+			}
 		}
 		
 		NamespaceNode GetOrCreateNamespace(AssemblyNode assembly, string namespaceName)
 		{
 			NamespaceNode result;
-			var asmDef = loader.GetCecilObject(assembly.AssemblyInfo.UnresolvedAssembly);
+			var asmDef = GetCecilObject(assembly.AssemblyInfo.UnresolvedAssembly);
 			if (!namespaceMappings.TryGetValue(namespaceName + "," + asmDef.FullName, out result)) {
 				result = new NamespaceNode(namespaceName);
 				assembly.AddChild(result);
@@ -343,7 +399,7 @@ namespace ICSharpCode.CodeQuality.Engine
 					throw new Exception("TypeNode not found: " + type.DeclaringTypeDefinition.FullName);
 			} else
 				ns.AddChild(node);
-			cecilMappings[loader.GetCecilObject(type.Parts.First())] = type;
+			cecilMappings[GetCecilObject(type.Parts.First())] = type;
 			typeMappings.Add(type, node);
 			return node;
 		}
@@ -363,7 +419,7 @@ namespace ICSharpCode.CodeQuality.Engine
 					return Resolve(reference);
 				} catch (AssemblyResolutionException are) {
 					LoggingService.DebugFormatted("CQA: Skipping assembly reference: {0}\r\nException:\r\n{1}", reference, are);
-					TaskService.Add(new Task(null, are.Message, 0, 0, TaskType.Warning));
+					TaskService.Add(new SDTask(null, are.Message, 0, 0, SharpDevelop.TaskType.Warning));
 					return null;
 				}
 			}

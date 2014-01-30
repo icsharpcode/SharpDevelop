@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -8,11 +23,11 @@ using System.ComponentModel.Design;
 using System.Drawing.Design;
 using System.Linq;
 using System.Reflection;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Designer;
 using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
@@ -62,9 +77,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 		/// <summary>
 		/// Gets the list of project contents of all open projects plus the referenced project contents.
 		/// </summary>
-		static IEnumerable<IProjectContent> AllProjectContentsWithReferences {
+		static IEnumerable<IAssembly> AllCustomAssemblies {
 			get {
-				return Enumerable.Union(ParserService.AllProjectContents, AssemblyParserService.DefaultProjectContentRegistry.GetLoadedProjectContents());
+				return SD.ProjectService.AllProjects
+					.Select(SD.ParserService.GetCompilation)
+					.SelectMany(c => c.Assemblies)
+					.DistinctBy(asm => asm.AssemblyName) // if an assembly is referenced in multiple projects, only load scan it once
+					.Where(asm => !asm.IsGacAssembly()); // exclude GAC assemblies (non-custom assemblies)
 			}
 		}
 		
@@ -72,46 +91,28 @@ namespace ICSharpCode.FormsDesigner.Gui
 		{
 			// custom user controls don't need custom images
 			loadImages = false;
-			foreach (IProjectContent pc in AllProjectContentsWithReferences) {
-				if (pc.Project == null) {
-					ReflectionProjectContent rpc = pc as ReflectionProjectContent;
-					if (rpc == null)
+			foreach (IAssembly asm in AllCustomAssemblies) {
+				ITypeDefinition componentType = asm.Compilation.FindType(typeof(IComponent)).GetDefinition();
+				ITypeDefinition toolBoxItemAttributeType = asm.Compilation.FindType(typeof(ToolboxItemAttribute)).GetDefinition();
+				if (componentType == null && toolBoxItemAttributeType == null)
+					continue; // assembly cannot contain any components
+				foreach (var c in asm.GetAllTypeDefinitions()) {
+					if (c.Kind != TypeKind.Class || c.TypeParameterCount != 0)
 						continue;
-					if (rpc.IsGacAssembly)
-						continue;
-				}
-				foreach (IClass c in pc.Classes) {
-					var ctors = c.Methods.Where(method => method.IsConstructor);
-					if (ctors.Any() && !ctors.Any(
-						(IMethod method) => method.IsPublic && method.Parameters.Count == 0
-					)) {
+					if (!c.GetConstructors(ctor => ctor.IsPublic && ctor.Parameters.Count == 0).Any()) {
 						// do not include classes that don't have a public parameterless constructor
 						continue;
 					}
-					foreach (IClass subClass in c.ClassInheritanceTree) {
-						if (subClass.FullyQualifiedName == "System.Windows.Forms.Form") {
-							break; // is not a design component
-						}
-						if (subClass.FullyQualifiedName == "System.ComponentModel.IComponent") {
-							goto isDesignComponent;
-						}
-						foreach (IAttribute attr in subClass.Attributes) {
-							if (attr.AttributeType.FullyQualifiedName == "System.ComponentModel.DesignTimeVisibleAttribute")
-							{
-								if (attr.PositionalArguments.Count == 1 && attr.PositionalArguments[0] is bool) {
-									if ((bool)attr.PositionalArguments[0]) {
-										goto isDesignComponent;
-									}
-								} else {
-									goto isDesignComponent;
-								}
-							}
-						}
+					bool? isToolboxItem = null;
+					IAttribute attr = c.GetAttribute(toolBoxItemAttributeType);
+					if (attr != null) {
+						if (attr.PositionalArguments.Count == 1)
+							isToolboxItem = attr.PositionalArguments[0].ConstantValue as bool?;
+						else
+							isToolboxItem = true;
 					}
-					// is not a design component
-					continue;
-				isDesignComponent:
-					this.Items.Add(new SideTabItemDesigner(c.Name, new CustomComponentToolBoxItem(c)));
+					if (isToolboxItem ?? c.IsDerivedFrom(componentType))
+						this.Items.Add(new SideTabItemDesigner(c.Name, new CustomComponentToolBoxItem(c)));
 				}
 			}
 		}
@@ -120,13 +121,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 	public class CustomComponentToolBoxItem : ToolboxItem
 	{
 		string className;
-		IProjectContent assemblyLocation;
+		IProject assemblyLocation;
 		Assembly usedAssembly = null;
 		
-		public CustomComponentToolBoxItem(IClass c)
+		public CustomComponentToolBoxItem(ITypeDefinition c)
 		{
-			className = c.FullyQualifiedName;
-			assemblyLocation = c.ProjectContent;
+			className = c.ReflectionName;
+			assemblyLocation = c.ParentAssembly.GetProject();
 			this.Bitmap = new ToolboxItem(typeof(Component)).Bitmap;
 			this.IsTransient = true;
 		}
@@ -136,7 +137,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			LoggingService.Debug("Initializing MyToolBoxItem: " + className);
 			if (host == null) throw new ArgumentNullException("host");
 			if (assemblyLocation != null) {
-				TypeResolutionService typeResolutionService = host.GetService(typeof(ITypeResolutionService)) as TypeResolutionService;
+				var typeResolutionService = host.GetService(typeof(ITypeResolutionService)) as IDesignerTypeResolutionService;
 				if (typeResolutionService == null) {
 					throw new InvalidOperationException("Cannot initialize CustomComponentToolBoxItem because the designer host does not provide a SharpDevelop TypeResolutionService.");
 				}

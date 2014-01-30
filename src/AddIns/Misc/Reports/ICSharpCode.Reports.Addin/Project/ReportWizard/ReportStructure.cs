@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Data;
@@ -25,11 +40,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private ReportItemCollection reportItemCollection;
 		private AvailableFieldsCollection availableFieldsCollection;
 		
-		private ParameterCollection queryParameters;
-		
 		
 		public ReportStructure()
 		{
+			SqlQueryParameters = new SqlParameterCollection();
 		}
 		
 		public ReportModel CreateAndFillReportModel ()
@@ -66,7 +80,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (!String.IsNullOrEmpty(this.Grouping))
 			{
 				string s = "=[" + this.Grouping + "]";
-				//GroupColumn g = new GroupColumn(this.Grouping,1,System.ComponentModel.ListSortDirection.Ascending);
 				GroupColumn g = new GroupColumn(s,1,System.ComponentModel.ListSortDirection.Ascending);
 				settings.GroupColumnsCollection.Add(g);
 			}
@@ -103,15 +116,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 		public IDatabaseObjectBase IDatabaseObjectBase {get;set;}
 		
-		public ParameterCollection SqlQueryParameters {
-			get {
-				if (this.queryParameters == null) {
-					this.queryParameters = new ParameterCollection();
-				}
-				return queryParameters;
-			}
-		}
-		
+
+		public SqlParameterCollection SqlQueryParameters {get;set;}
 		
 		#endregion
 		
@@ -138,11 +144,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		#endregion
 		
+		public GlobalEnums.ReportLayout ReportLayout {get;set;}
+		
 		#region Grouping
 		
 		public string Grouping {get;set;}
 		
 		#endregion
+		
 		
 		#region IDisposable
 		public void Dispose(){
@@ -164,9 +173,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					this.availableFieldsCollection.Clear();
 					this.availableFieldsCollection = null;
 				}
-				if (this.queryParameters != null) {
-					this.queryParameters.Clear();
-					this.queryParameters = null;
+				if (this.SqlQueryParameters != null) {
+					this.SqlQueryParameters.Clear();
+					this.SqlQueryParameters = null;
 					
 				}
 			}

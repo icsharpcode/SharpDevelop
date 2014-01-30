@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
@@ -31,25 +46,64 @@ namespace ICSharpCode.SharpDevelop
 		
 		public object BuildItem(BuildItemArgs args)
 		{
-			ITextEditor editor = (ITextEditor)args.Caller;
-			string[] extensions = args.Codon["extensions"].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-			if (CanAttach(extensions, editor.FileName)) {
-				return args.AddIn.CreateObject(args.Codon["class"]);
-			} else {
-				return null;
+			return new LanguageBindingDescriptor(args.Codon);
+		}
+	}
+	
+	class LanguageBindingDescriptor
+	{
+		ILanguageBinding binding = null;
+		Codon codon;
+		
+		public ILanguageBinding Binding {
+			get {
+				if (binding == null) {
+					binding = (ILanguageBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
+				}
+				return binding;
 			}
 		}
 		
-		static bool CanAttach(string[] extensions, string fileName)
+		public Codon Codon {
+			get {
+				return codon;
+			}
+		}
+		
+		public LanguageBindingDescriptor(Codon codon)
+		{
+			this.codon = codon;
+		}
+		
+		string[] extensions;
+		
+		public string[] Extensions {
+			get {
+				if (extensions == null) {
+					if (codon.Properties["extensions"].Length == 0)
+						extensions = new string[0];
+					else
+						extensions = codon.Properties["extensions"].ToLowerInvariant().Split(';');
+				}
+				return extensions;
+			}
+		}
+		
+		public string Name {
+			get {
+				return codon.Properties["id"];
+			}
+		}
+		
+		public bool CanAttach(string extension)
 		{
 			// always attach when no extensions were given
-			if (extensions.Length == 0)
+			if (Extensions.Length == 0)
 				return true;
-			if (string.IsNullOrEmpty(fileName))
+			if (string.IsNullOrEmpty(extension))
 				return false;
-			string fileExtension = Path.GetExtension(fileName);
-			foreach (string ext in extensions) {
-				if (string.Equals(ext, fileExtension, StringComparison.OrdinalIgnoreCase))
+			foreach (string ext in Extensions) {
+				if (string.Equals(ext, extension, StringComparison.OrdinalIgnoreCase))
 					return true;
 			}
 			return false;

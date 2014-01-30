@@ -1,10 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
-
 using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
@@ -13,7 +28,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		Solution solution;
 		const string ExtensibilityGlobalsSectionName = "ExtensibilityGlobals";
-		List<SD.SolutionItem> nonPersistedSolutionItems = new List<SD.SolutionItem>();
+		List<SolutionSectionItem> nonPersistedSolutionItems = new List<SolutionSectionItem>();
 		
 		public SolutionExtensibilityGlobals(Solution solution)
 		{
@@ -22,11 +37,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public object this[string name] {
 			get {
-				SD.SolutionItem item = GetItemFromSolutionOrNonPersistedItems(name);
+				SolutionSectionItem item = GetItemFromSolutionOrNonPersistedItems(name);
 				if (item == null) {
 					ThrowNoVariableExistsException(name);
 				}
-				return item.Location;
+				return item.Value;
 			}
 			set {
 				UpdateOrCreateSolutionItem(name, value as string);
@@ -43,37 +58,46 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return GetItemFromSolutionOrNonPersistedItems(name) != null;
 		}
 		
-		SD.SolutionItem GetItemFromSolutionOrNonPersistedItems(string name)
+		SolutionSectionItem GetItemFromSolutionOrNonPersistedItems(string name)
 		{
-			SD.SolutionItem item = GetNonPersistedSolutionItem(name);
+			SolutionSectionItem item = GetNonPersistedSolutionItem(name);
 			if (item != null) {
 				return item;
 			}
 			return GetItemFromSolution(name);
 		}
 		
-		SD.SolutionItem GetNonPersistedSolutionItem(string name)
+		SolutionSectionItem GetNonPersistedSolutionItem(string name)
 		{
 			return GetMatchingSolutionItem(nonPersistedSolutionItems, name);
 		}
 		
-		SD.SolutionItem GetMatchingSolutionItem(List<SD.SolutionItem> items, string name)
+		SolutionSectionItem GetMatchingSolutionItem(List<SolutionSectionItem> items, string name)
 		{
-			return items.SingleOrDefault(item => IsMatchIgnoringCase(item.Name, name));
+			return items.SingleOrDefault(item => IsMatchIgnoringCase(item.Name,name));
 		}
 		
-		SD.SolutionItem GetItemFromSolution(string name)
+		SolutionSectionItem GetMatchingSolutionItem(SD.SolutionSection section, string name)
 		{
-			SD.ProjectSection section = GetExtensibilityGlobalsSection();
-			if (section != null) {
-				return GetMatchingSolutionItem(section.Items, name);
+			string matchedName = section.Keys.SingleOrDefault(key => IsMatchIgnoringCase(key, name));
+			if (matchedName != null) {
+				return new SolutionSectionItem(section, matchedName);
 			}
 			return null;
 		}
 		
-		SD.ProjectSection GetExtensibilityGlobalsSection()
+		SolutionSectionItem GetItemFromSolution(string name)
 		{
-			return solution.Sections.SingleOrDefault(section => section.Name == ExtensibilityGlobalsSectionName);
+			SD.SolutionSection section = GetExtensibilityGlobalsSection();
+			if (section != null) {
+				return GetMatchingSolutionItem(section, name);
+			}
+			return null;
+		}
+		
+		SD.SolutionSection GetExtensibilityGlobalsSection()
+		{
+			return solution.Sections.SingleOrDefault(section => section.SectionName == ExtensibilityGlobalsSectionName);
 		}
 		
 		bool IsMatchIgnoringCase(string a, string b)
@@ -92,9 +116,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		bool UpdateItemInSolution(string name, string value)
 		{
-			SD.SolutionItem item = GetItemFromSolution(name);
+			SolutionSectionItem item = GetItemFromSolution(name);
 			if (item != null) {
-				item.Location = value;
+				item.Value = value;
 				solution.Save();
 				return true;
 			}
@@ -103,9 +127,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void UpdateOrCreateNonPersistedSolutionItem(string name, string value)
 		{
-			SD.SolutionItem item = GetNonPersistedSolutionItem(name);
+			SolutionSectionItem item = GetNonPersistedSolutionItem(name);
 			if (item != null) {
-				item.Location = value;
+				item.Value = value;
 			} else {
 				CreateNonPersistedSolutionItem(name, value);
 			}
@@ -113,7 +137,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void CreateNonPersistedSolutionItem(string name, string value)
 		{
-			var item = new SD.SolutionItem(name, value);
+			var item = new SolutionSectionItem(name, value);
 			nonPersistedSolutionItems.Add(item);
 		}
 		
@@ -128,36 +152,36 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return;
 			}
 			
-			SD.SolutionItem item = GetNonPersistedSolutionItem(name);
+			SolutionSectionItem item = GetNonPersistedSolutionItem(name);
 			nonPersistedSolutionItems.Remove(item);
-			SD.ProjectSection section = GetOrCreateExtensibilityGlobalsSection();
-			section.Items.Add(item);
+			SD.SolutionSection section = GetOrCreateExtensibilityGlobalsSection();
+			section.Add(item.Name, item.Value);
 			solution.Save();
 		}
 		
-		SD.ProjectSection GetOrCreateExtensibilityGlobalsSection()
+		SD.SolutionSection GetOrCreateExtensibilityGlobalsSection()
 		{
-			SD.ProjectSection section = GetExtensibilityGlobalsSection();
+			SD.SolutionSection section = GetExtensibilityGlobalsSection();
 			if (section != null) {
 				return section;
 			}
-			var newSection = new SD.ProjectSection(ExtensibilityGlobalsSectionName, "postSolution");
+			var newSection = new SD.SolutionSection(ExtensibilityGlobalsSectionName, "postSolution");
 			solution.Sections.Add(newSection);
 			return newSection;
 		}
 		
 		internal void RemoveItemFromSolution(string name)
 		{
-			SD.SolutionItem item = GetItemFromSolution(name);
+			SolutionSectionItem item = GetItemFromSolution(name);
 			if (item != null) {
 				RemoveItemFromSolution(item);
 			}
 		}
 			
-		void RemoveItemFromSolution(SD.SolutionItem item)
+		void RemoveItemFromSolution(SolutionSectionItem item)
 		{
-			SD.ProjectSection section = GetExtensibilityGlobalsSection();
-			section.Items.Remove(item);
+			SD.SolutionSection section = GetExtensibilityGlobalsSection();
+			section.Remove(item.Name);
 			nonPersistedSolutionItems.Add(item);
 			solution.Save();
 		}

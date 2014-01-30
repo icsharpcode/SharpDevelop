@@ -1,7 +1,21 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.Profiler.Controller.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,6 +26,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using ICSharpCode.Profiler.Controller;
+using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.Profiler.Controller.Queries;
 
 namespace ICSharpCode.Profiler.Controls
@@ -40,7 +55,7 @@ namespace ICSharpCode.Profiler.Controls
 			get { return isQueryModifiable; }
 			set {
 				isQueryModifiable = value;
-				this.txtQuery.IsReadOnly = !isQueryModifiable;
+				txtQuery.IsReadOnly = !isQueryModifiable;
 			}
 		}
 		
@@ -59,9 +74,9 @@ namespace ICSharpCode.Profiler.Controls
 		
 		public IEnumerable<CallTreeNodeViewModel> SelectedItems {
 			get {
-				if (this.list == null)
+				if (list == null)
 					return new List<CallTreeNodeViewModel>().AsEnumerable();
-				return from i in this.list where i.IsSelected select i;
+				return from i in list where i.IsSelected select i;
 			}
 		}
 		
@@ -87,9 +102,9 @@ namespace ICSharpCode.Profiler.Controls
 			if (!string.IsNullOrEmpty(txtSearch.Text) && list.Count > 0) {
 				searchTask.Cancel();
 				string text = txtSearch.Text;
-				int start = this.RangeStart;
-				int end = this.RangeEnd;
-				var provider = this.Provider;
+				int start = RangeStart;
+				int end = RangeEnd;
+				var provider = Provider;
 				
 				AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
 				OverlayAdorner ad = new OverlayAdorner(this);
@@ -199,10 +214,10 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0) {
 				double adjustedNameColumnWidth = nameColumn.Width + e.NewSize.Width - e.PreviousSize.Width;
-				double matchingNameColumnWidth = e.NewSize.Width - this.callCountColumn.Width
-					- this.percentColumn.Width - this.timeSpentColumn.Width
-					- this.timeSpentSelfColumn.Width - this.timeSpentPerCallColumn.Width
-					- this.timeSpentSelfPerCallColumn.Width - 25;
+				double matchingNameColumnWidth = e.NewSize.Width - callCountColumn.Width
+					- percentColumn.Width - timeSpentColumn.Width
+					- timeSpentSelfColumn.Width - timeSpentPerCallColumn.Width
+					- timeSpentSelfPerCallColumn.Width - 25;
 				
 				// always keep name column at least 75 pixels wide
 				if (matchingNameColumnWidth < 75)
@@ -222,25 +237,25 @@ namespace ICSharpCode.Profiler.Controls
 		
 		public void SetRange(int start, int end)
 		{
-			if (this.Provider == null)
+			if (Provider == null)
 				return;
 			
-			this.RangeStart = start;
-			this.RangeEnd = end;
-			this.Invalidate();
-			this.InvalidateArrange();
+			RangeStart = start;
+			RangeEnd = end;
+			Invalidate();
+			InvalidateArrange();
 		}
 		
 		public void Invalidate()
 		{
-			this.isDirty = true;
-			if (this.IsVisible)
+			isDirty = true;
+			if (IsVisible)
 				ExecuteQuery();
 		}
 		
 		void ExecuteQuery()
 		{
-			if (!this.isDirty || this.Provider == null)
+			if (!isDirty || Provider == null)
 				return;
 			
 			if (Provider.DataSets.Count == 0)
@@ -254,7 +269,7 @@ namespace ICSharpCode.Profiler.Controls
 			LoadData();
 			watch.Stop();
 			Debug.Print("update finished in {0}ms", watch.ElapsedMilliseconds);
-			this.isDirty = false;
+			isDirty = false;
 		}
 		
 		void LoadData()
@@ -266,7 +281,7 @@ namespace ICSharpCode.Profiler.Controls
 			layer.Add(ad);
 			int rangeStart = RangeStart;
 			int rangeEnd = RangeEnd;
-			string query = this.CurrentQuery;
+			string query = CurrentQuery;
 			
 			ProfilingDataProvider provider = Provider;
 			QueryCompiler compiler = new QueryCompiler(Reporter, query);
@@ -308,22 +323,22 @@ namespace ICSharpCode.Profiler.Controls
 				
 				foreach (var item in list) {
 					var currentItem = item;
-					currentItem.RequestBringIntoView += (sender, e) => this.treeView.ScrollIntoView(e.Node);
+					currentItem.RequestBringIntoView += (sender, e) => treeView.ScrollIntoView(e.Node);
 				}
 			}
 		}
 		
 		public string CurrentQuery {
-			get { return this.txtQuery.Text; }
+			get { return txtQuery.Text; }
 			set {
 				if (IsQueryModifiable)
-					this.txtQuery.Text = value;
+					txtQuery.Text = value;
 			}
 		}
 
 		void txtQueryTextChanged(object sender, TextChangedEventArgs e)
 		{
-			this.CurrentQuery = this.txtQuery.Text;
+			CurrentQuery = txtQuery.Text;
 		}
 		
 		void txtQueryKeyDown(object sender, KeyEventArgs e)
@@ -335,12 +350,12 @@ namespace ICSharpCode.Profiler.Controls
 		void btnExecuteQueryClick(object sender, RoutedEventArgs e)
 		{
 			OnCurrentQueryChanged(EventArgs.Empty);
-			this.Invalidate();
+			Invalidate();
 		}
 		
 		void BtnExpandHotPathSubtreeClick(object sender, RoutedEventArgs e)
 		{
-			foreach (CallTreeNodeViewModel node in this.SelectedItems.ToArray()) {
+			foreach (CallTreeNodeViewModel node in SelectedItems.ToArray()) {
 				ExpandHotPathItems(node, node);
 			}
 		}
@@ -356,8 +371,8 @@ namespace ICSharpCode.Profiler.Controls
 		}
 		
 		public ContextMenu TreeViewContextMenu {
-			get { return this.treeView.ContextMenu; }
-			set { this.treeView.ContextMenu = this.ringDiagram.ContextMenu = value; }
+			get { return treeView.ContextMenu; }
+			set { treeView.ContextMenu = ringDiagram.ContextMenu = value; }
 		}
 	}
 }

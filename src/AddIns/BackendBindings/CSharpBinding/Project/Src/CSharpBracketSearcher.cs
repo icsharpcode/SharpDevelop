@@ -1,11 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding
@@ -31,12 +46,39 @@ namespace CSharpBinding
 				if (index > -1)
 					otherOffset = SearchBracketBackward(document, offset - 2, openingBrackets[index], closingBrackets[index]);
 				
-				if (otherOffset > -1)
-					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1,
-					                               Math.Max(offset - 1, otherOffset), 1);
+				if (otherOffset > -1) {
+					var result = new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1,
+					                                     Math.Max(offset - 1, otherOffset), 1);
+					SearchDefinition(document, result);
+					return result;
+				}
 			}
 			
 			return null;
+		}
+		
+		void SearchDefinition(IDocument document, BracketSearchResult result)
+		{
+			if (document.GetCharAt(result.OpeningBracketOffset) != '{')
+				return;
+			// get line
+			var documentLine = document.GetLineByOffset(result.OpeningBracketOffset);
+			while (documentLine != null && IsBracketOnly(document, documentLine))
+				documentLine = documentLine.PreviousLine;
+			if (documentLine != null) {
+				result.DefinitionHeaderOffset = documentLine.Offset;
+				result.DefinitionHeaderLength = documentLine.Length;
+			}
+		}
+		
+		bool IsBracketOnly(IDocument document, IDocumentLine documentLine)
+		{
+			string lineText = document.GetText(documentLine).Trim();
+			return lineText == "{" || string.IsNullOrEmpty(lineText)
+				|| lineText.StartsWith("//", StringComparison.Ordinal)
+				|| lineText.StartsWith("/*", StringComparison.Ordinal)
+				|| lineText.StartsWith("*", StringComparison.Ordinal)
+				|| lineText.StartsWith("'", StringComparison.Ordinal);
 		}
 		
 		#region SearchBracket helper functions

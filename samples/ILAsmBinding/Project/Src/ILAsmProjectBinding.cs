@@ -7,7 +7,6 @@
 
 using System;
 using System.Xml;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.ILAsmBinding

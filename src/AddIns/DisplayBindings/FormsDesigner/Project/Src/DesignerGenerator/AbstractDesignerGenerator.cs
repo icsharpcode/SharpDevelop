@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.CodeDom;
@@ -10,25 +25,29 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ReflectionLayer = ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.FormsDesigner
 {
+	/*
 	public abstract class AbstractDesignerGenerator : IDesignerGenerator
 	{
 		/// <summary>The currently open part of the class being designed.</summary>
-		IClass currentClassPart;
+		IUnresolvedTypeDefinition currentClassPart;
 		/// <summary>The complete class being designed.</summary>
-		IClass  completeClass;
+		//ITypeDefinition completeClass;
 		/// <summary>The class part containing the designer code.</summary>
-		IClass  formClass;
-		IMethod initializeComponents;
+		IUnresolvedTypeDefinition formClass;
+		IUnresolvedMethod initializeComponents;
 		
 		FormsDesignerViewContent viewContent;
 		CodeDomProvider provider;
@@ -51,7 +70,7 @@ namespace ICSharpCode.FormsDesigner
 		/// <summary>
 		/// Gets the part of the designed class that is open in the source code editor which the designer view is attached to.
 		/// </summary>
-		protected IClass CurrentClassPart {
+		protected IUnresolvedTypeDefinition CurrentClassPart {
 			get { return this.currentClassPart; }
 			set { this.currentClassPart = value; }
 		}
@@ -69,27 +88,22 @@ namespace ICSharpCode.FormsDesigner
 		public IEnumerable<OpenedFile> GetSourceFiles(out OpenedFile designerCodeFile)
 		{
 			// get new initialize components
-			ParseInformation info = ParserService.ParseFile(this.viewContent.PrimaryFileName, this.viewContent.PrimaryFileContent);
-			ICompilationUnit cu = info.CompilationUnit;
-			foreach (IClass c in cu.Classes) {
-				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
-					this.currentClassPart = c;
-					this.initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
-					if (this.initializeComponents != null) {
-						string designerFileName = this.initializeComponents.DeclaringType.CompilationUnit.FileName;
+			var fileName = this.viewContent.PrimaryFileName;
+			var parsedFile = SD.ParserService.ParseFile(fileName, this.viewContent.PrimaryFileContent);
+			var compilation = SD.ParserService.GetCompilationForFile(fileName);
+			foreach (var utd in parsedFile.TopLevelTypeDefinitions) {
+				var td = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(td)) {
+					this.currentClassPart = utd;
+					var initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(td);
+					if (initializeComponents != null) {
+						this.initializeComponents = (IUnresolvedMethod)initializeComponents.UnresolvedMember;
+						string designerFileName = this.initializeComponents.UnresolvedFile.FileName;
 						if (designerFileName != null) {
-							
-							designerCodeFile = FileService.GetOrCreateOpenedFile(designerFileName);
-							
-							CompoundClass compound = c.GetCompoundClass() as CompoundClass;
-							if (compound == null) {
-								return new [] {designerCodeFile};
-							} else {
-								return compound.Parts
-									.Select(cl => FileService.GetOrCreateOpenedFile(cl.CompilationUnit.FileName))
-									.Distinct();
-							}
-							
+							designerCodeFile = SD.FileService.GetOrCreateOpenedFile(designerFileName);
+							return td.Parts
+								.Select(p => SD.FileService.GetOrCreateOpenedFile(p.UnresolvedFile.FileName))
+								.Distinct();
 						}
 					}
 				}
@@ -105,13 +119,13 @@ namespace ICSharpCode.FormsDesigner
 		{
 			try {
 				LoggingService.Info("Remove field declaration: "+fieldName);
-				Reparse();
+				var completeClass = Reparse();
 				
 				IField field = GetField(completeClass, fieldName);
 				if (field != null) {
-					string fileName = field.DeclaringType.CompilationUnit.FileName;
+					string fileName = field.Region.FileName;
 					LoggingService.Debug("-> Field is declared in file '" + fileName + "', Region: " + field.Region.ToString());
-					OpenedFile file = FileService.GetOpenedFile(fileName);
+					OpenedFile file = SD.FileService.GetOpenedFile(fileName);
 					if (file == null) throw new InvalidOperationException("The file where the field is declared is not open, although it belongs to the class.");
 					IDocument doc = this.ViewContent.GetDocumentForFile(file);
 					if (doc == null) throw new InvalidOperationException("Could not get document for file '" + file.FileName + "'.");
@@ -148,12 +162,12 @@ namespace ICSharpCode.FormsDesigner
 		void AddOrReplaceField(CodeDOMGenerator domGenerator, CodeMemberField newField)
 		{
 			try {
-				Reparse();
+				var completeClass = Reparse();
 				IField oldField = GetField(completeClass, newField.Name);
 				if (oldField != null) {
-					string fileName = oldField.DeclaringType.CompilationUnit.FileName;
+					string fileName = oldField.Region.FileName;
 					LoggingService.Debug("-> Old field is declared in file '" + fileName + "', Region: " + oldField.Region.ToString());
-					OpenedFile file = FileService.GetOpenedFile(fileName);
+					OpenedFile file = SD.FileService.GetOpenedFile(fileName);
 					if (file == null) throw new InvalidOperationException("The file where the field is declared is not open, although it belongs to the class.");
 					IDocument doc = this.ViewContent.GetDocumentForFile(file);
 					if (doc == null) throw new InvalidOperationException("Could not get document for file '" + file.FileName + "'.");
@@ -170,7 +184,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected abstract System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider();
 		
-		protected abstract DomRegion GetReplaceRegion(IDocument document, IMethod method);
+		protected abstract DomRegion GetReplaceRegion(IDocument document, IUnresolvedMethod method);
 		
 		/// <summary>
 		/// Removes a field declaration from the source code document.
@@ -202,7 +216,7 @@ namespace ICSharpCode.FormsDesigner
 			document.Replace(startOffset, endOffset - startOffset, tabs + newFieldDeclaration + Environment.NewLine);
 		}
 		
-		protected virtual void FixGeneratedCode(IClass formClass, CodeMemberMethod code)
+		protected virtual void FixGeneratedCode(IUnresolvedTypeDefinition formClass, CodeMemberMethod code)
 		{
 		}
 		
@@ -233,7 +247,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		public virtual void MergeFormChanges(CodeCompileUnit unit)
 		{
-			Reparse();
+			var oldCompleteClass = Reparse();
 			
 			// find InitializeComponent method and the class it is declared in
 			CodeTypeDeclaration formClass = null;
@@ -253,7 +267,7 @@ namespace ICSharpCode.FormsDesigner
 			if (formClass == null || initializeComponent == null) {
 				throw new InvalidOperationException("InitializeComponent method not found in framework-generated CodeDom.");
 			}
-			if (this.formClass == null) {
+			if (oldCompleteClass == null || this.formClass == null) {
 				MessageService.ShowMessage("Cannot save form: InitializeComponent method does not exist anymore. You should not modify the Designer.cs file while editing a form.");
 				return;
 			}
@@ -264,7 +278,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			// generate file and get initialize components string
 			StringWriter writer = new StringWriter();
-			string indentation = tabs + EditorControlService.GlobalOptions.IndentationString;
+			string indentation = tabs + SD.EditorControlService.GlobalOptions.IndentationString;
 			CodeDOMGenerator domGenerator = new CodeDOMGenerator(this.CodeDomProvider, indentation);
 			domGenerator.ConvertContentDefinition(initializeComponent, writer);
 			
@@ -284,7 +298,7 @@ namespace ICSharpCode.FormsDesigner
 			foreach (CodeTypeMember m in formClass.Members) {
 				if (m is CodeMemberField) {
 					CodeMemberField newField = (CodeMemberField)m;
-					IField oldField = GetField(completeClass, newField.Name);
+					IField oldField = GetField(oldCompleteClass, newField.Name);
 					if (oldField == null || FieldChanged(oldField, newField)) {
 						AddOrReplaceField(domGenerator, newField);
 					}
@@ -292,8 +306,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			// second loop looks for removed fields
-			List<string> removedFields = new List<string>();
-			foreach (IField field in completeClass.Fields) {
+			foreach (IField field in oldCompleteClass.Fields) {
 				bool found = false;
 				foreach (CodeTypeMember m in formClass.Members) {
 					if (m is CodeMemberField && m.Name == field.Name) {
@@ -302,14 +315,11 @@ namespace ICSharpCode.FormsDesigner
 					}
 				}
 				if (!found) {
-					removedFields.Add(field.Name);
+					RemoveField(field.Name);
 				}
 			}
-			// removing fields is done in two steps because
-			// we must not modify the c.Fields collection while it is enumerated
-			removedFields.ForEach(RemoveField);
 			
-			ParserService.BeginParse(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument);
+			SD.ParserService.ParseFileAsync(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument).FireAndForget();
 		}
 		
 		/// <summary>
@@ -321,8 +331,9 @@ namespace ICSharpCode.FormsDesigner
 		/// <remarks>When adding new workarounds make sure that the code does not remove too much code!</remarks>
 		void RemoveUnsupportedCode(CodeTypeDeclaration formClass, CodeMemberMethod initializeComponent)
 		{
-			if (this.formClass.ProjectContent.Project is MSBuildBasedProject) {
-				MSBuildBasedProject p = (MSBuildBasedProject)this.formClass.ProjectContent.Project;
+			ICompilation compilation = null;
+			if (compilation.GetProject() is MSBuildBasedProject) {
+				MSBuildBasedProject p = (MSBuildBasedProject)compilation.GetProject();
 				string v = (p.GetEvaluatedProperty("TargetFrameworkVersion") ?? "").Trim('v');
 				Version version;
 				if (!Version.TryParse(v, out version) || version.Major >= 4)
@@ -330,7 +341,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			List<CodeStatement> stmtsToRemove = new List<CodeStatement>();
-			IClass iSupportInitializeInterface = this.formClass.ProjectContent.GetClass("System.ComponentModel.ISupportInitialize", 0);
+			var iSupportInitializeInterface = compilation.FindType(typeof(ISupportInitialize)).GetDefinition();
 			
 			if (iSupportInitializeInterface == null)
 				return;
@@ -341,10 +352,10 @@ namespace ICSharpCode.FormsDesigner
 				if (expr != null) {
 					if (expr.TargetType.BaseType != "System.ComponentModel.ISupportInitialize")
 						continue;
-					var fieldType = GetTypeOfControl(expr.Expression, initializeComponent, formClass);
+					var fieldType = GetTypeOfControl(compilation, expr.Expression, initializeComponent, formClass).GetDefinition();
 					if (fieldType == null)
 						continue;
-					if (!fieldType.IsTypeInInheritanceTree(iSupportInitializeInterface))
+					if (!fieldType.IsDerivedFrom(iSupportInitializeInterface))
 						stmtsToRemove.Add(stmt);
 				}
 			}
@@ -357,24 +368,24 @@ namespace ICSharpCode.FormsDesigner
 		/// <summary>
 		/// Tries to find the type of the expression.
 		/// </summary>
-		IClass GetTypeOfControl(CodeExpression expression, CodeMemberMethod initializeComponentMethod, CodeTypeDeclaration formTypeDeclaration)
+		IType GetTypeOfControl(ICompilation compilation, CodeExpression expression, CodeMemberMethod initializeComponentMethod, CodeTypeDeclaration formTypeDeclaration)
 		{
-			StringComparer comparer = formClass.ProjectContent.Language.NameComparer;
+			StringComparer comparer = compilation.NameComparer;
 			if (expression is CodeVariableReferenceExpression) {
 				string name = ((CodeVariableReferenceExpression)expression).VariableName;
 				var decl = initializeComponentMethod.Statements.OfType<CodeVariableDeclarationStatement>().Single(v => comparer.Equals(v.Name, name));
-				return formClass.ProjectContent.GetClass(decl.Type.BaseType, 0);
+				return ReflectionHelper.ParseReflectionName(decl.Type.BaseType).Resolve(compilation);
 			}
 			if (expression is CodeFieldReferenceExpression && ((CodeFieldReferenceExpression)expression).TargetObject is CodeThisReferenceExpression) {
 				string name = ((CodeFieldReferenceExpression)expression).FieldName;
 				var decl = formTypeDeclaration.Members.OfType<CodeMemberField>().FirstOrDefault(f => comparer.Equals(name, f.Name));
 				if (decl != null)
-					return formClass.ProjectContent.GetClass(decl.Type.BaseType, 0);
-				var field = formClass.DefaultReturnType.GetFields()
-					.First(f => comparer.Equals(f.Name, name));
-				if (field.ReturnType == null)
+					return ReflectionHelper.ParseReflectionName(decl.Type.BaseType).Resolve(compilation);
+				var formType = formClass.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+				var field = formType.GetFields(f => comparer.Equals(f.Name, name)).LastOrDefault();
+				if (field == null)
 					return null;
-				return field.ReturnType.GetUnderlyingClass();
+				return field.ReturnType;
 			}
 			return null;
 		}
@@ -389,25 +400,25 @@ namespace ICSharpCode.FormsDesigner
 			// compare types
 			if (oldField.ReturnType != null && newField.Type != null) {
 				if (AreTypesDifferent(oldField.ReturnType, newField.Type)) {
-					LoggingService.Debug("FieldChanged (type): "+oldField.Name+", "+oldField.ReturnType.FullyQualifiedName+" -> "+newField.Type.BaseType);
+					LoggingService.Debug("FieldChanged (type): "+oldField.Name+", "+oldField.ReturnType.FullName+" -> "+newField.Type.BaseType);
 					return true;
 				}
 			}
 			
-			// compare modifiers
-			ModifierEnum oldModifiers = oldField.Modifiers & ModifierEnum.VisibilityMask;
+			// compare accessibility modifiers
+			Accessibility oldModifiers = oldField.Accessibility;
 			MemberAttributes newModifiers = newField.Attributes & MemberAttributes.AccessMask;
 			
 			// SharpDevelop.Dom always adds Private modifier, even if not specified
 			// CodeDom omits Private modifier if not present (although it is the default)
-			if (oldModifiers == ModifierEnum.Private) {
+			if (oldModifiers == Accessibility.Private) {
 				if (newModifiers != 0 && newModifiers != MemberAttributes.Private) {
 					return true;
 				}
 			}
 			
-			ModifierEnum[] sdModifiers = new ModifierEnum[] {ModifierEnum.Protected, ModifierEnum.ProtectedAndInternal, ModifierEnum.Internal, ModifierEnum.Public};
-			MemberAttributes[] cdModifiers = new MemberAttributes[] {MemberAttributes.Family, MemberAttributes.FamilyOrAssembly, MemberAttributes.Assembly, MemberAttributes.Public};
+			Accessibility[] sdModifiers = {Accessibility.Protected, Accessibility.ProtectedAndInternal, Accessibility.Internal, Accessibility.Public};
+			MemberAttributes[] cdModifiers = {MemberAttributes.Family, MemberAttributes.FamilyOrAssembly, MemberAttributes.Assembly, MemberAttributes.Public};
 			for (int i = 0; i < sdModifiers.Length; i++) {
 				if ((oldModifiers  == sdModifiers[i]) ^ (newModifiers  == cdModifiers[i])) {
 					return true;
@@ -417,11 +428,11 @@ namespace ICSharpCode.FormsDesigner
 			return false;
 		}
 		
-		static bool AreTypesDifferent(IReturnType oldType, CodeTypeReference newType)
+		static bool AreTypesDifferent(IType oldType, CodeTypeReference newType)
 		{
-			IClass oldClass = oldType.GetUnderlyingClass();
+			IType oldClass = oldType.GetDefinition();
 			if (oldClass == null) {
-				// ignore type changes to untyped VB fields
+				// ignore type changes to fields with unresolved type
 				return false;
 			}
 			if (newType.BaseType == "System.Void") {
@@ -431,51 +442,28 @@ namespace ICSharpCode.FormsDesigner
 				return false;
 			}
 			
-			ArrayReturnType oldArray = oldType.IsArrayReturnType ? oldType.CastToArrayReturnType() : null;
-			if (oldArray == null ^ newType.ArrayRank < 1)
-			{
-				return true;
-			}
-			
-			if (oldArray == null) {
-				
-				if (oldClass.DotNetName != newType.BaseType) {
-					return true;
-				}
-				
-			} else {
-				
-				if (oldArray.ArrayDimensions != newType.ArrayRank) {
-					return true;
-				}
-				if (AreTypesDifferent(oldArray.ArrayElementType, newType.ArrayElementType)) {
-					return true;
-				}
-				
-			}
-			
-			return false;
+			return oldType.ReflectionName == newType.BaseType;
 		}
 		
-		protected void Reparse()
+		protected ITypeDefinition Reparse()
 		{
 			Dictionary<OpenedFile, ParseInformation> parsings = new Dictionary<OpenedFile, ParseInformation>();
 			ParseInformation info;
-			ICompilationUnit cu;
 			
 			// Reparse all source files for the designed form
 			foreach (KeyValuePair<OpenedFile, IDocument> entry in this.ViewContent.SourceFiles) {
-				parsings.Add(entry.Key, ParserService.ParseFile(entry.Key.FileName, entry.Value));
+				parsings.Add(entry.Key, SD.ParserService.Parse(entry.Key.FileName, entry.Value, project));
 			}
+			ICompilation compilation = SD.ParserService.GetCompilation(project);
 			
 			// Update currentClassPart from PrimaryFile
 			this.currentClassPart = null;
 			if (this.ViewContent.PrimaryFile != null && parsings.TryGetValue(this.ViewContent.PrimaryFile, out info)) {
-				cu = info.CompilationUnit;
-				foreach (IClass c in cu.Classes) {
-					if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
-						if (FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c) != null) {
-							this.currentClassPart = c;
+				foreach (var utd in info.UnresolvedFile.TopLevelTypeDefinitions) {
+					var td = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+					if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(td)) {
+						if (FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(td) != null) {
+							this.currentClassPart = utd;
 							break;
 						}
 					}
@@ -489,23 +477,22 @@ namespace ICSharpCode.FormsDesigner
 			
 			// Update initializeComponents, completeClass and formClass
 			// from designer code file
-			this.completeClass = null;
+			ITypeDefinition completeClass = null;
 			this.formClass = null;
 			this.initializeComponents = null;
 			if (this.ViewContent.DesignerCodeFile == null ||
 			    !parsings.TryGetValue(this.ViewContent.DesignerCodeFile, out info)) {
 				LoggingService.Warn("AbstractDesignerGenerator.Reparse: Designer source code file is unavailable");
-				if (this.currentClassPart != null) {
-					this.completeClass = this.currentClassPart.GetCompoundClass();
-				}
-				return;
+				return null;
 			}
 			
-			cu = info.CompilationUnit;
-			foreach (IClass c in cu.Classes) {
-				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
-					this.initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
-					if (this.initializeComponents != null) {
+			var cu = info.UnresolvedFile;
+			foreach (var utd in cu.TopLevelTypeDefinitions) {
+				var td = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(td)) {
+					var initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(td);
+					if (initializeComponents != null) {
+						this.initializeComponents = (IUnresolvedMethod)initializeComponents.UnresolvedMember;
 						using (StringReader r = new StringReader(this.ViewContent.DesignerCodeFileContent)) {
 							int count = this.initializeComponents.Region.BeginLine;
 							for (int i = 1; i < count; i++)
@@ -513,16 +500,17 @@ namespace ICSharpCode.FormsDesigner
 							string line = r.ReadLine();
 							tabs = GetIndentation(line);
 						}
-						this.completeClass = c.GetCompoundClass();
-						this.formClass = this.initializeComponents.DeclaringType;
+						completeClass = td;
+						this.formClass = this.initializeComponents.DeclaringTypeDefinition;
 						break;
 					}
 				}
 			}
 			
-			if (this.completeClass == null || this.formClass == null) {
+			if (completeClass == null || this.formClass == null) {
 				LoggingService.Warn("AbstractDesignerGenerator.Reparse: Could not find InitializeComponents in designer source code file '" + this.ViewContent.DesignerCodeFile.FileName + "'");
 			}
+			return completeClass;
 		}
 		
 		protected static string GetIndentation(string line)
@@ -552,14 +540,14 @@ namespace ICSharpCode.FormsDesigner
 		{
 			if (edesc == null)
 				throw new ArgumentNullException("edesc");
-			Reparse();
+			var completeClass = Reparse();
 			
 			LoggingService.Debug("Forms designer: AbstractDesignerGenerator.InsertComponentEvent: eventMethodName=" + eventMethodName);
 			
 			foreach (IMethod method in completeClass.Methods) {
 				if (CompareMethodNames(method.Name, eventMethodName)) {
-					file = method.DeclaringType.CompilationUnit.FileName;
-					OpenedFile openedFile = FileService.GetOpenedFile(file);
+					file = method.Region.FileName;
+					OpenedFile openedFile = SD.FileService.GetOpenedFile(file);
 					IDocument doc;
 					if (openedFile != null && (doc = this.ViewContent.GetDocumentForFile(openedFile)) != null) {
 						position = GetCursorLine(doc, method);
@@ -576,13 +564,13 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			viewContent.MergeFormChanges();
-			Reparse();
+			completeClass = Reparse();
 			
-			file = currentClassPart.CompilationUnit.FileName;
+			file = currentClassPart.ParsedFile.FileName;
 			int line = GetEventHandlerInsertionLine(currentClassPart);
 			LoggingService.Debug("-> Inserting new event handler at line " + line.ToString(System.Globalization.CultureInfo.InvariantCulture));
 			
-			if (line - 1 == this.viewContent.PrimaryFileDocument.TotalNumberOfLines) {
+			if (line - 1 == this.viewContent.PrimaryFileDocument.LineCount) {
 				// insert a newline at the end of file if necessary (can happen in Boo if there is no newline at the end of the document)
 				this.viewContent.PrimaryFileDocument.Insert(this.viewContent.PrimaryFileDocument.TextLength, Environment.NewLine);
 			}
@@ -604,7 +592,7 @@ namespace ICSharpCode.FormsDesigner
 		/// <summary>
 		/// Gets a method implementing the signature specified by the event descriptor
 		/// </summary>
-		protected static IMethod ConvertEventInvokeMethodToDom(IClass declaringType, Type eventType, string methodName)
+		protected static IUnresolvedMethod ConvertEventInvokeMethodToDom(Type eventType, string methodName)
 		{
 			MethodInfo mInfo = eventType.GetMethod("Invoke");
 			DefaultMethod m = new DefaultMethod(declaringType, methodName);
@@ -630,23 +618,24 @@ namespace ICSharpCode.FormsDesigner
 			) as ICSharpCode.NRefactory.Ast.MethodDeclaration;
 		}
 		
-		protected virtual int GetEventHandlerInsertionLine(IClass c)
+		protected virtual int GetEventHandlerInsertionLine(IUnresolvedTypeDefinition c)
 		{
 			return c.Region.EndLine;
 		}
 		
 		public virtual ICollection GetCompatibleMethods(EventDescriptor edesc)
 		{
-			Reparse();
+			var completeClass = Reparse();
 			ArrayList compatibleMethods = new ArrayList();
 			MethodInfo methodInfo = edesc.EventType.GetMethod("Invoke");
+			var methodInfoParameters = methodInfo.GetParameters();
 			foreach (IMethod method in completeClass.Methods) {
-				if (method.Parameters.Count == methodInfo.GetParameters().Length) {
+				if (method.Parameters.Count == methodInfoParameters.Length) {
 					bool found = true;
-					for (int i = 0; i < methodInfo.GetParameters().Length; ++i) {
-						ParameterInfo pInfo = methodInfo.GetParameters()[i];
+					for (int i = 0; i < methodInfoParameters.Length; ++i) {
+						ParameterInfo pInfo = methodInfoParameters[i];
 						IParameter p = method.Parameters[i];
-						if (p.ReturnType.FullyQualifiedName != pInfo.ParameterType.ToString()) {
+						if (p.Type.ReflectionName != pInfo.ParameterType.ToString()) {
 							found = false;
 							break;
 						}
@@ -660,8 +649,10 @@ namespace ICSharpCode.FormsDesigner
 			return compatibleMethods;
 		}
 		
-		protected IField GetField(IClass c, string name)
+		protected IField GetField(ITypeDefinition c, string name)
 		{
+			if (c == null)
+				return null;
 			foreach (IField field in c.Fields) {
 				if (field.Name == name) {
 					return field;
@@ -669,5 +660,5 @@ namespace ICSharpCode.FormsDesigner
 			}
 			return null;
 		}
-	}
+	}*/
 }

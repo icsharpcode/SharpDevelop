@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -7,9 +22,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -83,7 +98,7 @@ namespace ICSharpCode.GitAddIn
 			// sleep a tiny bit to give main thread time to add more jobs to the queue
 			Thread.Sleep(100);
 			while (true) {
-				if (ICSharpCode.SharpDevelop.ParserService.LoadSolutionProjectsThreadRunning) {
+				if (SD.ParserService.LoadSolutionProjectsThread.IsRunning) {
 					// Run OverlayIconManager much more slowly while solution is being loaded.
 					// This prevents the disk from seeking too much
 					Thread.Sleep(100);
@@ -130,16 +145,16 @@ namespace ICSharpCode.GitAddIn
 				}
 			}
 			
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					Image image = GetImage(status);
-					if (image != null) {
-						node.Overlay = image;
-					} else if (node.Overlay != null && (node.Overlay.Tag as Type) == typeof(GitAddIn.OverlayIconManager)) {
-						// reset overlay to null only if the old overlay belongs to the OverlayIconManager
-						node.Overlay = null;
-					}
-				});
+			SD.MainThread.InvokeAsyncAndForget(delegate {
+				Image image = GetImage(status);
+				if (image != null) {
+					node.Overlay = image;
+				} else
+		if (node.Overlay != null && (node.Overlay.Tag as Type) == typeof(GitAddIn.OverlayIconManager)) {
+					// reset overlay to null only if the old overlay belongs to the OverlayIconManager
+					node.Overlay = null;
+				}
+			});
 		}
 		
 		public static Image GetImage(GitStatus status)

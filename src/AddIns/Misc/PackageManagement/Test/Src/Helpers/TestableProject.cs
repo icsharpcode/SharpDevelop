@@ -1,12 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 
@@ -24,11 +37,25 @@ namespace PackageManagement.Tests.Helpers
 			set { TestableProjectBehaviour.ItemTypeToReturnFromGetDefaultItemType = value; }
 		}
 		
-		public ReadOnlyCollection<ProjectItem> ItemsWhenSaved;
+		public IReadOnlyCollection<ProjectItem> ItemsWhenSaved;
 		
 		public TestableProject(ProjectCreateInformation createInfo)
 			: base(createInfo)
 		{
+		}
+		
+		public override string Language {
+			get {
+				// HACK: unit tests only provide the file extension, but we now need the language
+				switch (this.FileName.GetExtension().ToLowerInvariant()) {
+					case ".csproj":
+						return "C#";
+					case ".vbproj":
+						return "VB";
+					default:
+						return string.Empty;
+				}
+			}
 		}
 		
 		public override bool IsStartable {
@@ -62,6 +89,7 @@ namespace PackageManagement.Tests.Helpers
 		public ProjectReferenceProjectItem AddProjectReference(IProject referencedProject)
 		{
 			var referenceProjectItem = new ProjectReferenceProjectItem(this, referencedProject);
+			referenceProjectItem.FileName = referencedProject.FileName;
 			ProjectService.AddProjectItem(this, referenceProjectItem);
 			return referenceProjectItem;
 		}
@@ -99,17 +127,23 @@ namespace PackageManagement.Tests.Helpers
 		
 		public ProjectImportElement GetLastMSBuildChildElement()
 		{
-			return MSBuildProjectFile.LastChild as ProjectImportElement;
+			lock (SyncRoot) {
+				return MSBuildProjectFile.LastChild as ProjectImportElement;
+			}
 		}
 		
 		public ProjectImportElement GetFirstMSBuildChildElement()
 		{
-			return MSBuildProjectFile.FirstChild as ProjectImportElement;
+			lock (SyncRoot) {
+				return MSBuildProjectFile.FirstChild as ProjectImportElement;
+			}
 		}
 		
 		public ICollection<ProjectImportElement> GetImports()
 		{
-			return MSBuildProjectFile.Imports;
+			lock (SyncRoot) {
+				return MSBuildProjectFile.Imports;
+			}
 		}
 	}
 }

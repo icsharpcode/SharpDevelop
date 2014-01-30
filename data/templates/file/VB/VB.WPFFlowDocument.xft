@@ -3,7 +3,7 @@
 	
 	<Config
 		  name        = "${res:Templates.File.WinFXFlowDocument.Name}"
-		  icon        = "VBNet.File.WPFFlowDocument"
+		  icon        = "VB.File.WPFFlowDocument"
 		  category    = "VB"
 		  subcategory = "WPF"
 		  defaultname = "FlowDocument${Number}.xaml"

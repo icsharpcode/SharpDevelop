@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Windows.Controls;
@@ -10,32 +25,28 @@ using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class ShowOutputFromComboBox : AbstractComboBoxCommand
+	public class ShowOutputFromComboBox : ComboBox
 	{
-		ComboBox comboBox;
-		
-		protected override void OnOwnerChanged(EventArgs e)
+		public ShowOutputFromComboBox()
 		{
-			base.OnOwnerChanged(e);
-			comboBox = (ComboBox)base.ComboBox;
 			SetItems();
-			CompilerMessageView.Instance.MessageCategoryAdded         += new EventHandler(CompilerMessageViewMessageCategoryAdded);
-			CompilerMessageView.Instance.SelectedCategoryIndexChanged += new EventHandler(CompilerMessageViewSelectedCategoryIndexChanged);
-			comboBox.SelectedIndex = 0;
-			comboBox.SelectionChanged += new SelectionChangedEventHandler(ComboBoxSelectionChanged);
+			CompilerMessageView.Instance.MessageCategoryAdded         += CompilerMessageViewMessageCategoryAdded;
+			CompilerMessageView.Instance.SelectedCategoryIndexChanged += CompilerMessageViewSelectedCategoryIndexChanged;
+			this.SelectedIndex = 0;
 		}
 
 		void CompilerMessageViewSelectedCategoryIndexChanged(object sender, EventArgs e)
 		{
-			if (comboBox.SelectedIndex != CompilerMessageView.Instance.SelectedCategoryIndex) {
-				comboBox.SelectedIndex = CompilerMessageView.Instance.SelectedCategoryIndex;
+			if (this.SelectedIndex != CompilerMessageView.Instance.SelectedCategoryIndex) {
+				this.SelectedIndex = CompilerMessageView.Instance.SelectedCategoryIndex;
 			}
 		}
 		
-		void ComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+		protected override void OnSelectionChanged(SelectionChangedEventArgs e)
 		{
-			if (comboBox.SelectedIndex != CompilerMessageView.Instance.SelectedCategoryIndex) {
-				CompilerMessageView.Instance.SelectedCategoryIndex = comboBox.SelectedIndex;
+			base.OnSelectionChanged(e);
+			if (this.SelectedIndex != CompilerMessageView.Instance.SelectedCategoryIndex) {
+				CompilerMessageView.Instance.SelectedCategoryIndex = this.SelectedIndex;
 			}
 		}
 		
@@ -46,15 +57,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void SetItems()
 		{
-			comboBox.Items.Clear();
+			this.Items.Clear();
 			foreach (MessageViewCategory category in CompilerMessageView.Instance.MessageCategories) {
-				comboBox.Items.Add(StringParser.Parse(category.DisplayCategory));
+				this.Items.Add(StringParser.Parse(category.DisplayCategory));
 			}
-			comboBox.SelectedIndex = 0;
-		}
-		
-		public override void Run()
-		{
+			this.SelectedIndex = 0;
 		}
 	}
 	

@@ -1,17 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
 using System.Linq;
-
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.ILSpyAddIn
 {
-	public class NavigateToDecompiledEntityService : INavigateToEntityService, INavigateToMemberService
+	public class NavigateToDecompiledEntityService : INavigateToEntityService
 	{
 		public bool NavigateToEntity(IEntity entity)
 		{
@@ -19,81 +34,43 @@ namespace ICSharpCode.ILSpyAddIn
 				throw new ArgumentNullException("entity");
 			
 			// Get the underlying entity for generic instance members
-			while ((entity is IMember) && ((IMember)entity).GenericMember != null)
-				entity = ((IMember)entity).GenericMember;
+			if (entity is IMember)
+				entity = ((IMember)entity).MemberDefinition;
 			
-			IClass declaringType = (entity as IClass) ?? entity.DeclaringType;
+			ITypeDefinition declaringType = (entity as ITypeDefinition) ?? entity.DeclaringTypeDefinition;
 			if (declaringType == null)
 				return false;
 			// get the top-level type
-			while (declaringType.DeclaringType != null)
-				declaringType = declaringType.DeclaringType;
+			while (declaringType.DeclaringTypeDefinition != null)
+				declaringType = declaringType.DeclaringTypeDefinition;
 			
-			ReflectionProjectContent rpc = entity.ProjectContent as ReflectionProjectContent;
-			if (rpc != null) {
-				string assemblyLocation = ILSpyController.GetAssemblyLocation(rpc);
-				if (!string.IsNullOrEmpty(assemblyLocation) && File.Exists(assemblyLocation)) {
-					NavigateTo(assemblyLocation, declaringType.DotNetName, ((AbstractEntity)entity).DocumentationTag);
-					return true;
-				}
+			FileName assemblyLocation = declaringType.ParentAssembly.GetRuntimeAssemblyLocation();
+			if (assemblyLocation != null && File.Exists(assemblyLocation)) {
+				NavigateTo(assemblyLocation, declaringType.ReflectionName, IdStringProvider.GetIdString(entity));
+				return true;
 			}
 			return false;
 		}
 		
-		public static void NavigateTo(string assemblyFile, string typeName, string entityTag)
+		public static void NavigateTo(FileName assemblyFile, string typeName, string entityIdString)
 		{
-			if (string.IsNullOrEmpty(assemblyFile))
-				throw new ArgumentException("assemblyFile is null or empty");
-			
+			if (assemblyFile == null)
+				throw new ArgumentNullException("assemblyFile");
 			if (string.IsNullOrEmpty(typeName))
 				throw new ArgumentException("typeName is null or empty");
 			
-			foreach (var viewContent in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				if (string.Equals(viewContent.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == viewContent.FullTypeName) {
+			var type = new TopLevelTypeName(typeName);
+			var target = new DecompiledTypeReference(assemblyFile, type);
+			
+			foreach (var viewContent in SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
+				var viewContentName = viewContent.DecompiledTypeName;
+				if (viewContentName.AssemblyFile == assemblyFile && type == viewContentName.Type) {
 					viewContent.WorkbenchWindow.SelectWindow();
-					viewContent.JumpToEntity(entityTag);
+					viewContent.JumpToEntity(entityIdString);
 					return;
 				}
 			}
-			WorkbenchSingleton.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityTag));
-		}
-		
-		public bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber, bool updateMarker)
-		{
-			if (string.IsNullOrEmpty(assemblyFile))
-				throw new ArgumentException("assemblyFile is null or empty");
-			
-			if (string.IsNullOrEmpty(typeName))
-				throw new ArgumentException("typeName is null or empty");
-			
-			// jump to line number if the decompiled view content exists - no need for a new decompilation
-			foreach (var viewContent in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				if (string.Equals(viewContent.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == viewContent.FullTypeName) {
-					if (updateMarker) {
-						viewContent.UpdateDebuggingUI();
-					}
-					if (lineNumber > 0)
-						viewContent.JumpToLineNumber(lineNumber);
-					else
-						viewContent.JumpToEntity(entityTag);
-					viewContent.WorkbenchWindow.SelectWindow();
-					return true;
-				}
-			}
-			
-			// create a new decompiled view
-			var decompiledView = new DecompiledViewContent(assemblyFile, typeName, entityTag);
-			decompiledView.DecompilationFinished += delegate {
-				if (updateMarker) {
-					decompiledView.UpdateDebuggingUI();
-				}
-				if (lineNumber > 0)
-					decompiledView.JumpToLineNumber(lineNumber);
-				else
-					decompiledView.JumpToEntity(entityTag);
-			};
-			WorkbenchSingleton.Workbench.ShowView(decompiledView);
-			return true;
+			SD.Workbench.ShowView(new DecompiledViewContent(target, entityIdString));
 		}
 	}
 }

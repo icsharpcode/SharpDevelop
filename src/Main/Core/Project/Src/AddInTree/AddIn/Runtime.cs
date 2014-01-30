@@ -1,9 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
@@ -16,10 +32,10 @@ namespace ICSharpCode.Core
 		string   assembly;
 		Assembly loadedAssembly = null;
 		
-		IList<LazyLoadDoozer> definedDoozers = new List<LazyLoadDoozer>();
-		IList<LazyConditionEvaluator> definedConditionEvaluators = new List<LazyConditionEvaluator>();
+		List<LazyLoadDoozer> definedDoozers = new List<LazyLoadDoozer>();
+		List<LazyConditionEvaluator> definedConditionEvaluators = new List<LazyConditionEvaluator>();
 		ICondition[] conditions;
-		IList<AddIn> addIns;
+		IAddInTree addInTree;
 		bool isActive = true;
 		bool isAssemblyLoaded;
 		readonly object lockObj = new object(); // used to protect mutable parts of runtime
@@ -36,20 +52,26 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public Runtime(string assembly, string hintPath)
-			: this(assembly, hintPath, AddInTree.AddIns)
+		public Runtime(IAddInTree addInTree, string assembly, string hintPath)
 		{
-		}
-		
-		public Runtime(string assembly, string hintPath, IList<AddIn> addIns)
-		{
+			if (addInTree == null)
+				throw new ArgumentNullException("addInTree");
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+			this.addInTree = addInTree;
 			this.assembly = assembly;
 			this.hintPath = hintPath;
-			this.addIns = addIns;
 		}
 		
 		public string Assembly {
 			get { return assembly; }
+		}
+		
+		/// <summary>
+		/// Gets whether the assembly belongs to the host application (':' prefix).
+		/// </summary>
+		public bool IsHostApplicationAssembly {
+			get { return !string.IsNullOrEmpty(assembly) && assembly[0] == ':'; }
 		}
 		
 		/// <summary>
@@ -72,7 +94,7 @@ namespace ICSharpCode.Core
 							if (pos < 0)
 								throw new CoreException("Expected '/' in path beginning with '$'!");
 							string referencedAddIn = assembly.Substring(1, pos - 1);
-							foreach (AddIn addIn in addIns) {
+							foreach (var addIn in addInTree.AddIns) {
 								if (addIn.Enabled && addIn.Manifest.Identities.ContainsKey(referencedAddIn)) {
 									string assemblyFile = Path.Combine(Path.GetDirectoryName(addIn.FileName),
 									                                   assembly.Substring(pos + 1));
@@ -111,15 +133,15 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public IList<LazyLoadDoozer> DefinedDoozers {
+		public IEnumerable<KeyValuePair<string, IDoozer>> DefinedDoozers {
 			get {
-				return definedDoozers;
+				return definedDoozers.Select(d => new KeyValuePair<string, IDoozer>(d.Name, d));
 			}
 		}
 		
-		public IList<LazyConditionEvaluator> DefinedConditionEvaluators {
+		public IEnumerable<KeyValuePair<string, IConditionEvaluator>> DefinedConditionEvaluators {
 			get {
-				return definedConditionEvaluators;
+				return definedConditionEvaluators.Select(c => new KeyValuePair<string, IConditionEvaluator>(c.Name, c));
 			}
 		}
 		
@@ -131,8 +153,9 @@ namespace ICSharpCode.Core
 			return asm.GetType(className);
 		}
 		
-		internal static void ReadSection(XmlReader reader, AddIn addIn, string hintPath)
+		internal static List<Runtime> ReadSection(XmlReader reader, AddIn addIn, string hintPath)
 		{
+			List<Runtime> runtimes = new List<Runtime>();
 			Stack<ICondition> conditionStack = new Stack<ICondition>();
 			while (reader.Read()) {
 				switch (reader.NodeType) {
@@ -140,19 +163,19 @@ namespace ICSharpCode.Core
 						if (reader.LocalName == "Condition" || reader.LocalName == "ComplexCondition") {
 							conditionStack.Pop();
 						} else if (reader.LocalName == "Runtime") {
-							return;
+							return runtimes;
 						}
 						break;
 					case XmlNodeType.Element:
 						switch (reader.LocalName) {
 							case "Condition":
-								conditionStack.Push(Condition.Read(reader));
+								conditionStack.Push(Condition.Read(reader, addIn));
 								break;
 							case "ComplexCondition":
-								conditionStack.Push(Condition.ReadComplexCondition(reader));
+								conditionStack.Push(Condition.ReadComplexCondition(reader, addIn));
 								break;
 							case "Import":
-								addIn.Runtimes.Add(Runtime.Read(addIn, reader, hintPath, conditionStack));
+								runtimes.Add(Runtime.Read(addIn, reader, hintPath, conditionStack));
 								break;
 							case "DisableAddIn":
 								if (Condition.GetFailedAction(conditionStack, addIn) == ConditionFailedAction.Nothing) {
@@ -166,6 +189,7 @@ namespace ICSharpCode.Core
 						break;
 				}
 			}
+			return runtimes;
 		}
 		
 		internal static Runtime Read(AddIn addIn, XmlReader reader, string hintPath, Stack<ICondition> conditionStack)
@@ -173,7 +197,7 @@ namespace ICSharpCode.Core
 			if (reader.AttributeCount != 1) {
 				throw new AddInLoadException("Import node requires ONE attribute.");
 			}
-			Runtime	runtime = new Runtime(reader.GetAttribute(0), hintPath);
+			Runtime	runtime = new Runtime(addIn.AddInTree, reader.GetAttribute(0), hintPath);
 			if (conditionStack.Count > 0) {
 				runtime.conditions = conditionStack.ToArray();
 			}
@@ -208,8 +232,6 @@ namespace ICSharpCode.Core
 					}
 				}
 			}
-			runtime.definedDoozers             = (runtime.definedDoozers as List<LazyLoadDoozer>).AsReadOnly();
-			runtime.definedConditionEvaluators = (runtime.definedConditionEvaluators as List<LazyConditionEvaluator>).AsReadOnly();
 			return runtime;
 		}
 		
@@ -225,7 +247,7 @@ namespace ICSharpCode.Core
 		
 		protected virtual void ShowError(string message)
 		{
-			MessageService.ShowError(message);
+			ServiceSingleton.GetRequiredService<IMessageService>().ShowError(message);
 		}
 	}
 }

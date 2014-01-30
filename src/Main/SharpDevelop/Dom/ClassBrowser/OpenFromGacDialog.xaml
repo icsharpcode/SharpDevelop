@@ -1,0 +1,47 @@
+﻿<Window
+	x:Class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenFromGacDialog"
+	x:ClassModifier="internal"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	Title="Open From GAC"
+	Style = "{x:Static core:GlobalStyles.DialogWindowStyle}"
+	WindowStartupLocation="CenterOwner"
+	ResizeMode="CanResizeWithGrip"
+	MinWidth="200"
+	MinHeight="150"
+	Height="350"
+	Width="750"
+	FocusManager.FocusedElement="{Binding ElementName=filterTextBox}">
+	<Grid
+		Margin="12,8">
+		<Grid.RowDefinitions>
+			<RowDefinition
+				Height="Auto" />
+			<RowDefinition
+				Height="1*" />
+			<RowDefinition
+				Height="Auto" />
+		</Grid.RowDefinitions>
+		<DockPanel>
+			<Label DockPanel.Dock="Left" Target="{Binding ElementName=filterTextBox}">_Search:</Label>
+			<TextBox Name="filterTextBox" TextChanged="FilterTextBox_TextChanged" />
+		</DockPanel>
+		<ListView Name="listView" Grid.Row="1" Margin="0, 8" core:SortableGridViewColumn.SortMode="Automatic" SelectionChanged="ListView_SelectionChanged" MouseDoubleClick="ListView_MouseDoubleClick">
+			<ListView.View>
+				<GridView>
+					<core:SortableGridViewColumn x:Name="nameColumn" Width="300" Header="Reference Name" DisplayMemberBinding="{Binding ShortName}" />
+					<core:SortableGridViewColumn Width="75" Header="Version" DisplayMemberBinding="{Binding Version}" />
+					<core:SortableGridViewColumn Width="65" Header="Culture" DisplayMemberBinding="{Binding Culture}" />
+					<core:SortableGridViewColumn Width="115" Header="Public Key Token" DisplayMemberBinding="{Binding PublicKeyToken}" />
+					<core:SortableGridViewColumn Width="1000" Header="Location" DisplayMemberBinding="{Binding FileName}" />
+				</GridView>
+			</ListView.View>
+		</ListView>
+		<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button IsDefault="True" Margin="2,0" Height="23" MinWidth="75" IsEnabled="False" Name="okButton" Click="OKButton_Click">Open</Button>
+			<Button IsCancel="True" Margin="2,0" Height="23" MinWidth="75">Cancel</Button>
+		</StackPanel>
+		<ProgressBar Grid.Row="1" Height="10" HorizontalAlignment="Stretch" Name="gacReadingProgressBar" VerticalAlignment="Bottom" Visibility="Hidden" />
+	</Grid>
+</Window>

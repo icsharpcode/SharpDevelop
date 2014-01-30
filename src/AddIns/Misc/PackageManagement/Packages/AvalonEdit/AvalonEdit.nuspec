@@ -5,10 +5,10 @@
 		<version>4.3.1.9430</version>
 		<authors>Daniel Grunwald</authors>
 		<owners>SharpDevelop</owners>
-		<licenseUrl>http://www.opensource.org/licenses/lgpl-2.1.php</licenseUrl>
+		<licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
 		<projectUrl>http://www.avalonedit.net</projectUrl>
 		<iconUrl>http://community.sharpdevelop.net/blogs/mattward/SharpDevelop.png</iconUrl>
-		<requireLicenseAcceptance>true</requireLicenseAcceptance>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>AvalonEdit is the WPF-based text editor used in SharpDevelop. There are two builds of AvalonEdit included in this package. One that targets .NET 4.0 and  one that targets .NET 3.5.</description>
 		<summary>AvalonEdit is the WPF-based text editor used in SharpDevelop</summary>
 		<releaseNotes>AvalonEdit 4.3 adds support for input method editors (IME); and fixes a major bug that sometimes caused "InvalidOperationException: Trying to build visual line from collapsed line" when updating existing foldings.

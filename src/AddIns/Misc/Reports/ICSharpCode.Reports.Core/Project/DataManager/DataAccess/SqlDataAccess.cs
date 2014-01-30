@@ -1,11 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 
-using ICSharpCode.Reports.Core.Factories;
 using ICSharpCode.Reports.Core.Project.Interfaces;
 
 namespace ICSharpCode.Reports.Core.DataAccess
@@ -17,85 +32,43 @@ namespace ICSharpCode.Reports.Core.DataAccess
 	
 	public class SqlDataAccessStrategy:IDataAccessStrategy
 	{
-		private ConnectionObject  connectionObject;
 		private ReportSettings reportSettings;
 		
-		public SqlDataAccessStrategy(ReportSettings reportSettings,ConnectionObject connectionObject)
+		public SqlDataAccessStrategy(ReportSettings reportSettings)
 		{
 			if (reportSettings == null) {
 				throw new ArgumentNullException("reportSettings");
 			}
 			this.reportSettings = reportSettings;
-			if (connectionObject == null) {
-				this.connectionObject = ConnectionObjectFactory.BuildConnectionObject(reportSettings);
-			} else {
-				this.connectionObject = connectionObject;
-			}
 		}
 		
 		
-		public bool OpenConnection ()
+		public DataSet ReadData ()
 		{
-			CheckConnection();
-			return true;
-		}
-		
-		
-		private void CheckConnection()
-		{
-			if (this.connectionObject.Connection.State == ConnectionState.Open) {
-				this.connectionObject.Connection.Close();
-			}
-			this.connectionObject.Connection.Open();
-		}
-		
-		
-		public DataSet ReadData()
-		{
-			try {
-				if (this.connectionObject.Connection.State == ConnectionState.Closed) {
-					this.connectionObject.Connection.Open();
-				}
+			using (SqlConnection connection = new SqlConnection(this.reportSettings.ConnectionString)){
+				connection.Open();
 				
-				IDbCommand command = this.connectionObject.Connection.CreateCommand();
-				
-				if (String.IsNullOrEmpty(this.connectionObject.QueryString)) {
+				using (SqlCommand command = connection.CreateCommand()) {
 					command.CommandText = reportSettings.CommandText;
-				} else {
-					command.CommandText = this.connectionObject.QueryString;
-				}
-				
-				command.CommandType = reportSettings.CommandType;
-				// We have to check if there are parameters for this Query, if so
-				// add them to the command
-				
-				BuildQueryParameters(command,reportSettings.SqlParameters);
-				IDbDataAdapter adapter = connectionObject.CreateDataAdapter(command);
-				DataSet ds = new DataSet();
-				ds.Locale = CultureInfo.CurrentCulture;
-				adapter.Fill (ds);
-				return ds;
-				
-			} finally {
-				if (this.connectionObject.Connection.State == ConnectionState.Open) {
-					this.connectionObject.Connection.Close();
+					command.CommandType = reportSettings.CommandType;
+					BuildQueryParameters(command,reportSettings.SqlParameters);
+					using (SqlDataAdapter adapter = new SqlDataAdapter(command)){
+						DataSet ds = new DataSet();
+						ds.Locale = CultureInfo.CurrentCulture;
+						adapter.Fill (ds);
+						return ds;
+					}
 				}
 			}
 		}
 		
 		
-		private static void BuildQueryParameters (IDbCommand cmd,
-		                                         SqlParameterCollection parameterCollection)
-		{
+		private static void BuildQueryParameters (IDbCommand cmd,SqlParameterCollection parameterCollection){
+		                                         
 			if (parameterCollection != null && parameterCollection.Count > 0) {
-				
-				IDbDataParameter cmdPar = null;
-
 				foreach (SqlParameter par in  parameterCollection) {
-					cmdPar = cmd.CreateParameter();
+					var cmdPar = cmd.CreateParameter();
 					cmdPar.ParameterName = par.ParameterName;
-					Console.WriteLine("");
-					Console.WriteLine("BuildQueryParameters {0} - {1}",par.ParameterName,par.ParameterValue);
 					if (par.DataType != System.Data.DbType.Binary) {
 						cmdPar.DbType = par.DataType;
 						cmdPar.Value = par.ParameterValue;

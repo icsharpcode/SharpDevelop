@@ -1,9 +1,23 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace ICSharpCode.Profiler.Controller.Data
@@ -25,7 +39,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			this.parent = parent;
 		}
 		
-		public override System.Linq.IQueryable<CallTreeNode> Children {
+		public override IQueryable<CallTreeNode> Children {
 			get {
 				dataSet.VerifyAccess();
 				
@@ -47,35 +61,35 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		public override NameMapping NameMapping {
 			get {
-				return this.dataSet.GetMapping(this.data->Id);
+				return dataSet.GetMapping(data->Id);
 			}
 		}
 
 		public override int RawCallCount {
 			get {
 				dataSet.VerifyAccess(); // need to verify before deferencing data
-				return this.data->CallCount;
+				return data->CallCount;
 			}
 		}
 
 		public int Index {
 			get {
 				dataSet.VerifyAccess(); // need to verify before deferencing data
-				return (int)(this.data->TimeSpent >> 56);
+				return (int)(data->TimeSpent >> 56);
 			}
 		}
 
 		public override bool IsActiveAtStart {
 			get	{
 				dataSet.VerifyAccess(); // need to verify before deferencing data
-				return (this.data->TimeSpent & ((ulong)1 << 55)) != 0;
+				return (data->TimeSpent & ((ulong)1 << 55)) != 0;
 			}
 		}
 
 		public override long CpuCyclesSpent {
 			get	{
 				dataSet.VerifyAccess(); // need to verify before deferencing data
-				return (long)(this.data->TimeSpent & CpuCycleMask);
+				return (long)(data->TimeSpent & CpuCycleMask);
 			}
 		}
 		
@@ -83,7 +97,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			get {
 				dataSet.VerifyAccess();
 				
-				long result = (long)(this.data->TimeSpent & CpuCycleMask);
+				long result = (long)(data->TimeSpent & CpuCycleMask);
 				
 				TargetProcessPointer32* childrenPtr = FunctionInfo.GetChildren32(data);
 				for (int i = 0; i <= data->LastChildIndex; i++)
@@ -99,19 +113,19 @@ namespace ICSharpCode.Profiler.Controller.Data
 
 		public override CallTreeNode Parent {
 			get {
-				return this.parent;
+				return parent;
 			}
 		}
 		
 		public override double TimeSpent {
 			get {
-				return this.CpuCyclesSpent / (1000.0 * this.dataSet.ProcessorFrequency);
+				return CpuCyclesSpent / (1000.0 * dataSet.ProcessorFrequency);
 			}
 		}
 		
 		public override double TimeSpentSelf {
 			get {
-				return this.CpuCyclesSpentSelf / (1000.0 * this.dataSet.ProcessorFrequency);
+				return CpuCyclesSpentSelf / (1000.0 * dataSet.ProcessorFrequency);
 			}
 		}
 
@@ -135,7 +149,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			UnmanagedCallTreeNode32 node = other as UnmanagedCallTreeNode32;
 			if (node != null) {
-				return node.data == this.data;
+				return node.data == data;
 			}
 			
 			return false;

@@ -1,0 +1,24 @@
+<wb:FullScreenEnabledWindow
+	x:Class = "ICSharpCode.SharpDevelop.Workbench.WpfWorkbench"
+	x:ClassModifier = "internal"
+	xmlns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x = "http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:core = "http://icsharpcode.net/sharpdevelop/core"
+	xmlns:wb = "clr-namespace:ICSharpCode.SharpDevelop.Workbench"
+	Title = "{core:Localize MainWindow.DialogName}"
+	WindowStartupLocation = "Manual"
+	Background = "{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+	AllowDrop = "True"
+	Style = "{x:Static core:GlobalStyles.WindowStyle}"
+>
+	<Window.TaskbarItemInfo>
+		<TaskbarItemInfo />
+	</Window.TaskbarItemInfo>
+	
+	<DockPanel Name="dockPanel">
+		<Menu Name="mainMenu" DockPanel.Dock="Top"/>
+		<!-- Toolbars will be inserted here (index: 1) -->
+		<!-- Statusbar will be inserted here (index: Count-2) -->
+		<ContentPresenter Name="mainContent" />
+	</DockPanel>
+</wb:FullScreenEnabledWindow>

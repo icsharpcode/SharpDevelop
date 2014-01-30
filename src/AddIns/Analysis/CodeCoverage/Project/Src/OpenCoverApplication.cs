@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Specialized;
@@ -15,27 +30,36 @@ namespace ICSharpCode.CodeCoverage
 	public class OpenCoverApplication
 	{
 		string fileName = String.Empty;
-		NUnitConsoleApplication nunitConsoleApp;
+		ProcessStartInfo targetProcessStartInfo;
 		OpenCoverSettings settings;
 		StringBuilder arguments;
+		IProject project;
 		
-		public OpenCoverApplication(string fileName, NUnitConsoleApplication nunitConsoleApp, OpenCoverSettings settings)
+		public OpenCoverApplication(
+			string fileName,
+			ProcessStartInfo targetProcessStartInfo,
+			OpenCoverSettings settings,
+			IProject project)
 		{
 			this.fileName = fileName;
-			this.nunitConsoleApp = nunitConsoleApp;
+			this.targetProcessStartInfo = targetProcessStartInfo;
 			this.settings = settings;
+			this.project = project;
 			
 			if (String.IsNullOrEmpty(fileName)) {
-				GetPartCoverApplicationFileName();
+				GetOpenCoverApplicationFileName();
 			}
 		}
 		
-		public OpenCoverApplication(NUnitConsoleApplication nunitConsoleApp, OpenCoverSettings settings)
-			: this(null, nunitConsoleApp, settings)
+		public OpenCoverApplication(
+			ProcessStartInfo targetProcessStartInfo,
+			OpenCoverSettings settings,
+			IProject project)
+			: this(null, targetProcessStartInfo, settings, project)
 		{
 		}
 		
-		void GetPartCoverApplicationFileName()
+		void GetOpenCoverApplicationFileName()
 		{
 			fileName = Path.Combine(FileUtility.ApplicationRootPath, @"bin\Tools\OpenCover\OpenCover.Console.exe");
 			fileName = Path.GetFullPath(fileName);
@@ -51,26 +75,27 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public string Target {
-			get { return nunitConsoleApp.FileName; }
+			get { return targetProcessStartInfo.FileName; }
 		}
 		
 		public string GetTargetArguments()
 		{
-			return nunitConsoleApp.GetArguments();
+			return targetProcessStartInfo.Arguments;
 		}
 		
 		public string GetTargetWorkingDirectory()
 		{
-			return Path.GetDirectoryName(nunitConsoleApp.Assemblies[0]);
+			return Path.GetDirectoryName(project.OutputAssemblyFullPath);
 		}
 		
 		public string CodeCoverageResultsFileName {
-			get { return new ProjectCodeCoverageResultsFileName(nunitConsoleApp.Project).FileName; }
+			get { return new ProjectCodeCoverageResultsFileName(project).FileName; }
 		}
 		
 		public ProcessStartInfo GetProcessStartInfo()
 		{
 			ProcessStartInfo processStartInfo = new ProcessStartInfo();
+			processStartInfo.EnvironmentVariables.Add("COMPLUS_ProfAPI_ProfilerCompatibilitySetting", "EnableV2Profiler");
 			processStartInfo.FileName = FileName;
 			processStartInfo.Arguments = GetArguments();
 			return processStartInfo;

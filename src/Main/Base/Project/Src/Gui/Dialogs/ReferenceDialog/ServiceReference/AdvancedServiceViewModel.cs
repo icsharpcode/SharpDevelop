@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.ObjectModel;
@@ -119,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			set {
 				selectedModifier = value;
 				UpdateClassGenerationModifier();
-				base.RaisePropertyChanged(() => SelectedModifier);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -132,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return options.GenerateAsyncOperations; }
 			set {
 				options.GenerateAsyncOperations = value;
-				base.RaisePropertyChanged(() => GenerateAsyncOperations);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -140,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return options.GenerateMessageContract; }
 			set {
 				options.GenerateMessageContract = value;
-				base.RaisePropertyChanged(() => GenerateMessageContract);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -148,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return options.ArrayCollectionType; }
 			set {
 				options.ArrayCollectionType = value;
-				base.RaisePropertyChanged(() => CollectionType);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -156,7 +171,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return options.DictionaryCollectionType; }
 			set {
 				options.DictionaryCollectionType = value;
-				base.RaisePropertyChanged(() => DictionaryCollectionType);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -169,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				ReuseTypes = useReferencedAssemblies;
 				if (!useReferencedAssemblies)
 					ReuseReferencedTypes = false;
-				base.RaisePropertyChanged(() => UseReferencedAssemblies);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -177,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return options.UseTypesInProjectReferences; }
 			set {
 				options.UseTypesInProjectReferences = value;
-				base.RaisePropertyChanged(() => ReuseTypes);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -186,7 +201,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			set { 
 				options.UseTypesInSpecifiedAssemblies = value;
 				ListViewEnable = value;
-				base.RaisePropertyChanged(() => ReuseReferencedTypes);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -196,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return listViewEnable; }
 			set {
 				listViewEnable = value;
-				base.RaisePropertyChanged(() => ListViewEnable);
+				OnPropertyChanged();
 			}
 		}
 		

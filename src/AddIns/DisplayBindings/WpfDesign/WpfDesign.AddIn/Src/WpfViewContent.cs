@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -8,18 +23,22 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xml;
 
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid;
@@ -39,7 +58,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			BasicMetadata.Register();
 			
-			WpfToolbox.Instance.AddProjectDlls(file);
+			// TODO Move this Initialization to LoadInternal
+//			WpfToolbox.Instance.AddProjectDlls(file);
 
 			ProjectService.ProjectItemAdded += ProjectService_ProjectItemAdded;
 			
@@ -49,8 +69,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 
 		void ProjectService_ProjectItemAdded(object sender, ProjectItemEventArgs e)
 		{
-			if (e.ProjectItem is ReferenceProjectItem)
-				WpfToolbox.Instance.AddProjectDlls(this.Files[0]);
+			// TODO reimplement this!
+//			if (e.ProjectItem is ReferenceProjectItem)
+//				WpfToolbox.Instance.AddProjectDlls(this.Files[0]);
 		}
 		
 		static WpfViewContent()
@@ -61,7 +82,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		}
 		
 		DesignSurface designer;
-		List<Task> tasks = new List<Task>();
+		List<SDTask> tasks = new List<SDTask>();
 		
 		public DesignSurface DesignSurface {
 			get { return designer; }
@@ -97,7 +118,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 					delegate(XamlDesignContext context) {
 						context.Services.AddService(typeof(IUriContext), new FileUriContext(this.PrimaryFile));
 						context.Services.AddService(typeof(IPropertyDescriptionService), new PropertyDescriptionService(this.PrimaryFile));
-						context.Services.AddService(typeof(IEventHandlerService), new CSharpEventHandlerService(this));
+						context.Services.AddService(typeof(IEventHandlerService), new SharpDevelopEventHandlerService(this));
 						context.Services.AddService(typeof(ITopLevelWindowService), new WpfAndWinFormsTopLevelWindowService());
 						context.Services.AddService(typeof(ChooseClassServiceBase), new IdeChooseClassService());
 					});
@@ -129,9 +150,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 			if (wasChangedInDesigner && designer.DesignContext != null) {
 				XmlWriterSettings settings = new XmlWriterSettings();
 				settings.Indent = true;
-				settings.IndentChars = EditorControlService.GlobalOptions.IndentationString;
+				settings.IndentChars = SD.EditorControlService.GlobalOptions.IndentationString;
 				settings.NewLineOnAttributes = true;
-				using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
+				using (XmlWriter xmlWriter = XmlWriter.Create(stream, settings)) {
 					designer.SaveDesigner(xmlWriter);
 				}
 			} else {
@@ -144,18 +165,18 @@ namespace ICSharpCode.WpfDesign.AddIn
 			}
 		}
 		
-		public static List<Task> DllLoadErrors = new List<Task>();
+		public static List<SDTask> DllLoadErrors = new List<SDTask>();
 		void UpdateTasks(XamlErrorService xamlErrorService)
 		{
 			Debug.Assert(xamlErrorService != null);
-			foreach (Task task in tasks) {
+			foreach (SDTask task in tasks) {
 				TaskService.Remove(task);
 			}
 			
 			tasks.Clear();
 			
 			foreach (XamlError error in xamlErrorService.Errors) {
-				var task = new Task(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line, TaskType.Error);
+				var task = new SDTask(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line, SharpDevelop.TaskType.Error);
 				tasks.Add(task);
 				TaskService.Add(task);
 			}
@@ -163,7 +184,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			TaskService.AddRange(DllLoadErrors);
 			
 			if (xamlErrorService.Errors.Count != 0) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}
 		
@@ -191,22 +212,40 @@ namespace ICSharpCode.WpfDesign.AddIn
 
 		void OnPropertyGridPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (propertyGridView.PropertyGrid.ReloadActive) return;
 			if (e.PropertyName == "Name") {
 				if (!propertyGridView.PropertyGrid.IsNameCorrect) return;
 				
 				// get the XAML file
-				OpenedFile fileName = this.Files.FirstOrDefault(f => f.FileName.ToString().EndsWith(".xaml"));
-				if (fileName == null) return;
+				OpenedFile file = this.Files.FirstOrDefault(f => f.FileName.ToString().EndsWith(".xaml", StringComparison.OrdinalIgnoreCase));
+				if (file == null) return;
 				
 				// parse the XAML file
-				ParseInformation info = ParserService.ParseFile(fileName.FileName.ToString());
-				if (info == null || info.CompilationUnit == null) return;
-				if (info.CompilationUnit.Classes.Count != 1) return;
+				ParseInformation info = SD.ParserService.Parse(file.FileName);
+				if (info == null) return;
+				ICompilation compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+				var designerClass = info.UnresolvedFile.TopLevelTypeDefinitions[0]
+					.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly))
+					.GetDefinition();
+				if (designerClass == null) return;
+				var reparseFileNameList = designerClass.Parts.Select(p => new ICSharpCode.Core.FileName(p.UnresolvedFile.FileName)).ToArray();
 				
 				// rename the member
-				IMember member = info.CompilationUnit.Classes [0].AllMembers.FirstOrDefault(m => m.Name == propertyGridView.PropertyGrid.OldName);
-				if (member != null) {
-					FindReferencesAndRenameHelper.RenameMember(member, propertyGridView.PropertyGrid.Name);
+				ISymbol controlSymbol = designerClass.GetFields(f => f.Name == propertyGridView.PropertyGrid.OldName, GetMemberOptions.IgnoreInheritedMembers)
+					.SingleOrDefault();
+				if (controlSymbol != null) {
+					FindReferenceService.RenameSymbol(controlSymbol, propertyGridView.PropertyGrid.Name, new DummyProgressMonitor())
+						.ObserveOnUIThread()
+						.Subscribe(error => SD.MessageService.ShowError(error.Message), // onNext
+						           ex => SD.MessageService.ShowException(ex), // onError
+						           // onCompleted
+						           () => {
+						           	foreach (var fileName in reparseFileNameList) {
+						           		SD.ParserService.ParseAsync(fileName).FireAndForget();
+						           	}
+						           }
+						          );
+
 				}
 			}
 		}

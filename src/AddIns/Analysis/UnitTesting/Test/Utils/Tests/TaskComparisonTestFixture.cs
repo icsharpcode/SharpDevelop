@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using ICSharpCode.Core;
@@ -13,8 +28,8 @@ namespace UnitTesting.Tests.Utils.Tests
 	public class TaskComparisonTestFixture
 	{
 		TaskComparison taskComparison;
-		Task lhs;
-		Task rhs;
+		SDTask lhs;
+		SDTask rhs;
 		int column = 20;
 		int line = 5;
 		string myTestFileName = @"c:\projects\tests\mytest.cs";
@@ -24,8 +39,8 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void Init()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			lhs = new Task(fileName, description, column, line, TaskType.Error);
-			rhs = new Task(fileName, description, column, line, TaskType.Error);
+			lhs = new SDTask(fileName, description, column, line, TaskType.Error);
+			rhs = new SDTask(fileName, description, column, line, TaskType.Error);
 		}
 		
 		[Test]
@@ -44,7 +59,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsMatchReturnsFalseWhenTaskTypesAreDifferent()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			lhs = new Task(fileName, description, column, line, TaskType.Warning);
+			lhs = new SDTask(fileName, description, column, line, TaskType.Warning);
 			CreateTaskComparison();
 			Assert.IsFalse(taskComparison.IsMatch);
 		}
@@ -66,7 +81,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsMatchReturnsFalseWhenFileNamesAreDifferent()
 		{
 			FileName fileName = new FileName(@"temp.cs");
-			lhs = new Task(fileName, rhs.Description, rhs.Column, rhs.Line, rhs.TaskType);
+			lhs = new SDTask(fileName, rhs.Description, rhs.Column, rhs.Line, rhs.TaskType);
 			CreateTaskComparison();
 			Assert.IsFalse(taskComparison.IsMatch);
 		}
@@ -142,7 +157,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsMatchReturnsFalseWhenDescriptionsAreDifferent()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			rhs = new Task(fileName, "different", column, line, TaskType.Error);
+			rhs = new SDTask(fileName, "different", column, line, TaskType.Error);
 			CreateTaskComparison();
 			Assert.IsFalse(taskComparison.IsMatch);
 		}
@@ -164,7 +179,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsMatchReturnsFalseWhenColumnsAreDifferent()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			rhs = new Task(fileName, description, 500, line, TaskType.Error);
+			rhs = new SDTask(fileName, description, 500, line, TaskType.Error);
 			CreateTaskComparison();
 			Assert.IsFalse(taskComparison.IsMatch);
 		}
@@ -186,7 +201,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsMatchReturnsFalseWhenLinesAreDifferent()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			rhs = new Task(fileName, description, column, 66, TaskType.Error);
+			rhs = new SDTask(fileName, description, column, 66, TaskType.Error);
 			CreateTaskComparison();
 			Assert.IsFalse(taskComparison.IsMatch);
 		}

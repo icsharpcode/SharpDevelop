@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -8,21 +23,23 @@ using System.Collections.Generic;
 namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
-	/// IList&lt;T&gt; with data vitualization - the indexer is lazy, uses IListValuesProvider to obtain values when needed.
+	/// IList&lt;T&gt; with data vitualization - the indexer is lazy, uses lamda function to obtain values when needed.
 	/// </summary>
 	public class VirtualizingCollection<T> : IList<T>, IList
 	{
-		private IListValuesProvider<T> valueProvider;
-		private Dictionary<int, T> itemCache = new Dictionary<int, T>();
+		int count;
+		Func<int, T> getItem;
+		Dictionary<int, T> itemCache = new Dictionary<int, T>();
 
-		public VirtualizingCollection(IListValuesProvider<T> valueProvider)
+		public VirtualizingCollection(int count, Func<int, T> getItem)
 		{
-			this.valueProvider = valueProvider;
+			this.count = count;
+			this.getItem  = getItem;
 		}
 
 		public int Count
 		{
-			get { return this.valueProvider.GetCount(); }
+			get { return count; }
 		}
 
 		public T this[int index]
@@ -32,7 +49,7 @@ namespace Debugger.AddIn.Visualizers
 				T cachedItem;
 				if (!itemCache.TryGetValue(index, out cachedItem))
 				{
-					cachedItem = this.valueProvider.GetItemAt(index);
+					cachedItem = getItem(index);
 					this.itemCache[index] = cachedItem;
 				}
 				return cachedItem;

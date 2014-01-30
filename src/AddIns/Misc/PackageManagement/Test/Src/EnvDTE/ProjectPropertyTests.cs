@@ -1,11 +1,27 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -15,7 +31,7 @@ namespace PackageManagement.Tests.EnvDTE
 	[TestFixture]
 	public class ProjectPropertyTests
 	{
-		Properties properties;
+		ICSharpCode.PackageManagement.EnvDTE.Properties properties;
 		TestableDTEProject project;
 		TestableProject msbuildProject;
 		
@@ -24,7 +40,7 @@ namespace PackageManagement.Tests.EnvDTE
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
 			var factory = new ProjectPropertyFactory(project);
-			properties = new Properties(factory);
+			properties = new ICSharpCode.PackageManagement.EnvDTE.Properties(factory);
 		}
 		
 		void AssertContainsProperty(string propertyName, IEnumerable items)
@@ -145,7 +161,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Value_GetFullPathProperty_ReturnsProjectDirectory()
 		{
 			CreateProperties();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.FileName = new ICSharpCode.Core.FileName(@"d:\projects\MyProject\MyProject.csproj");
 			
 			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FullPath");
 			string fullPath = fullPathProperty.Value as string;
@@ -158,7 +174,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Value_GetFullPathPropertyWithUpperCaseCharacters_ReturnsProjectDirectory()
 		{
 			CreateProperties();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.FileName = new ICSharpCode.Core.FileName(@"d:\projects\MyProject\MyProject.csproj");
 			
 			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FULLPATH");
 			string fullPath = fullPathProperty.Value as string;
@@ -252,7 +268,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Value_GetLocalPathProperty_ReturnsProjectDirectory()
 		{
 			CreateProperties();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			
 			global::EnvDTE.Property localPathProperty = project.Properties.Item("LocalPath");
 			string localPath = localPathProperty.Value as string;
@@ -265,7 +281,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void GetEnumerator_LocalPathProperty_ExistsInEnumeratedProperties()
 		{
 			CreateProperties();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			
 			var enumerable = project.Properties as IEnumerable;
 			
@@ -276,7 +292,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Value_GetLocalPathPropertyWithUpperCaseCharacters_ReturnsProjectDirectory()
 		{
 			CreateProperties();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			
 			global::EnvDTE.Property fullPathProperty = project.Properties.Item("LOCALPATH");
 			string fullPath = fullPathProperty.Value as string;

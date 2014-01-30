@@ -6,7 +6,6 @@
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.Debugger"/>
-		<Dependency addin="ICSharpCode.ILSpyAddIn" />
 	</Manifest>
 	
 	<Runtime>
@@ -15,14 +14,7 @@
 			<ConditionEvaluator name = "IsBreakpointActive" class="Debugger.AddIn.IsActiveBreakpointCondition" />
 		</Import>
 		<Import assembly="Debugger.Core.dll"/>
-	</Runtime>	
-		
-	<Path name="/SharpDevelop/Workbench/LanguageBindings">
-        <LanguageBinding
-            id="Pin"
-            class="Debugger.AddIn.Tooltips.PinningBinding"
-            extensions="" />
-    </Path>
+	</Runtime>
 	
 	<Path name="/SharpDevelop/Services/DebuggerService/Debugger">
 		<Debugger id="DefaultDebugger"
@@ -40,13 +32,13 @@
 				          insertbefore = "Refactoring"
 				          label = "${res:MainWindow.Windows.Debug.SetCurrentStatement}"
 				          icon = "Icons.16x16.Debug.StepInto"
-				          class = "ICSharpCode.SharpDevelop.Services.SetCurrentStatementCommand"/>
+				          class = "Debugger.AddIn.SetCurrentStatementCommand"/>
 			</Condition>
 			<MenuItem id = "DebuggerRunToCursor"
 			          insertbefore = "Refactoring"
 			          label = "${res:MainWindow.Windows.Debug.RunToCursor}"
 			          icon = "Icons.16x16.Debug.Continue"
-			          class = "ICSharpCode.SharpDevelop.Services.RunToCursorCommand"/>
+			          class = "Debugger.AddIn.RunToCursorCommand"/>
 			<MenuItem id = "DebuggerSeparator"
 			          insertbefore = "Refactoring"
 			          type = "Separator"/>
@@ -69,10 +61,39 @@
 					          class="Debugger.AddIn.EnableBreakpointMenuCommand"
 					          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint}" />
 				</ComplexCondition>
-				<MenuItem id="BreakpointSeparator" type = "Separator" />
-				<MenuItem id="MenuBuilder" type="Builder" class="Debugger.AddIn.BreakpointChangeMenuBuilder" />
+				<MenuItem id="EditCondition"
+				          class="Debugger.AddIn.EditBreakpointMenuCommand"
+				          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EditCondition}" />
 			</Condition>
 		</MenuItem>
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/MainMenu/Debug">
+		<Condition name = "IsProcessRunning" isdebugging="False" action="Disable">
+			<MenuItem id = "DebugExecutable"
+			          insertbefore = "ExecutionControlSeparator"
+			          label = "${res:MainWindow.Windows.Debug.DebugExecutable}"
+			          class = "Debugger.AddIn.DebugExecutableMenuCommand"/>
+		</Condition>
+<!--		<MenuItem id="AddExpressionBreakpoint"
+		          insertafter="Toggle Breakpoint"
+		          label = "${res:MainWindow.Windows.Debug.AddExpressionBreakpoint}"
+		          shortcut="Shift|F7"
+		          class = "Debugger.AddIn.AddExpressionBreakpointCommand"/>-->
+		<MenuItem id="AddWatchExpression"
+		          insertafter="AddExpressionBreakpoint"
+		          label = "${res:MainWindow.Windows.Debug.AddWatchExpression}"
+		          shortcut="Ctrl|F7"
+		          class = "Debugger.AddIn.AddWatchExpressionCommand"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/ClassBrowser/Toolbar">
+		<Condition name = "IsProcessRunning" isdebugging="False" action="Disable">
+			<ToolbarItem id = "DebugExecutable"
+			             icon    = "Icons.16x16.Debug.Assembly"
+			             tooltip = "${res:MainWindow.Windows.Debug.DebugExecutable}"
+			             class = "Debugger.AddIn.DebugExecutableMenuCommand"/>
+		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
@@ -97,11 +118,11 @@
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LoadedModulesPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
-		<Pad id    = "RunningThreadsPad"
+		<Pad id    = "ThreadsPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Threads}"
 		     icon     = "PadIcons.Threads"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ThreadsPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id    = "LocalVarPad"
@@ -118,48 +139,12 @@
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ConsolePad"
 		     defaultPosition = "Bottom, Hidden" />
 		
-		<Pad id    = "MemoryPad"
-		     category = "Debugger"
-		     title    = "${res:MainWindow.Windows.Debug.MemoryPad}"
-		     icon     = "MemoryPad.Icon"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.MemoryPad"
-		     defaultPosition = "Bottom, Hidden" />
-		
 		<Pad id    = "WatchPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Watch}"
-		     icon     = "PadIcons.LocalVariables"
+		     icon     = "PadIcons.Watches"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.WatchPad"
 		     defaultPosition = "Bottom, Hidden" />
-		
-		<Pad id    = "ObjectGraphPad"
-		     category = "Debugger"
-		     title    = "${res:MainWindow.Windows.Debug.ObjectGraph}"
-		     icon     = "PadIcons.LocalVariables"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ObjectGraphPad"
-		     defaultPosition = "Bottom, Hidden" />
-	
-		<Pad id    = "ParallelStacksPad"
-		     category = "Debugger"
-		     title    = "${res:MainWindow.Windows.Debug.ParallelStack}"
-		     icon     = "PadIcons.Parallel"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ParallelStackPad"
-		     defaultPosition = "Bottom, Hidden" />
-	</Path>
-	
-	<Path name ="/SharpDevelop/Pads/WatchPad/ContextMenu">
-		<MenuItem id="AddWatch" label="${res:MainWindow.Windows.Debug.Watch.AddWatch}" class="Debugger.AddIn.AddWatchCommand" />
-		<MenuItem id="RemoveWatch" label="${res:MainWindow.Windows.Debug.Watch.RemoveWatch}" class="Debugger.AddIn.RemoveWatchCommand" />
-		<MenuItem id="ClearWatches" label="${res:MainWindow.Windows.Debug.Watch.RemoveAll}" class="Debugger.AddIn.ClearWatchesCommand" />
-		
-		<Condition name = "IsProcessRunning" isdebugging="True">
-			<Condition name = "IsProcessRunning" isdebugging="True" isprocessrunning="False">
-				<MenuItem id="Separator1" type="Separator" />
-				<MenuItem id="RefreshWatches" label="${res:MainWindow.Windows.Debug.Watch.Refresh}" class="Debugger.AddIn.RefreshWatchesCommand" />
-			</Condition>
-		</Condition>
-		<MenuItem id="Separator2" type="Separator" />
-		<MenuItem id="CopyToClipboard" label="${res:MainWindow.Windows.Debug.LocalVariables.CopyToClipboard}" class="Debugger.AddIn.CopyToClipboardCommand"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
@@ -169,6 +154,7 @@
 			<OptionPanel id    = "General"
 			             label = "${res:Dialog.Options.IDEOptions.General}"
 			             class = "Debugger.AddIn.Options.DebuggingOptionsPanel"/>
+			
 			<OptionPanel id    = "Symbols"
 			             label = "${res:Dialog.Options.IDEOptions.Debugging.Symbols}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingSymbolsPanel"/>
@@ -177,64 +163,6 @@
 	
 	<Path name="/SharpDevelop/Pads/ConsolePad/ToolBar">
 		<Include id="StandardCommands" path="/SharpDevelop/Pads/CommonConsole/ToolBar" />
-		<ToolbarItem class="ICSharpCode.SharpDevelop.Gui.Pads.SelectLanguageCommand"
-		             type="ComboBox" id="SelectLanguageCommand" />
-	</Path>
-	
-	<Path name="/SharpDevelop/Pads/ParallelStacksPad/ToolBar">
-		<ToolbarItem id="View" type="ComboBox" class="ICSharpCode.SharpDevelop.Gui.Pads.ParallelStacksViewCommand"/>
-		<ToolbarItem id="Separator" type="Separator"/>
-		<ToolbarItem 
-			id="MethodView"
-			type="CheckBox" 
-			tooltip="${res:MainWindow.Windows.Debug.ToggleMethodView}"
-			icon="ParallelStacks.MethodView"
-			class="ICSharpCode.SharpDevelop.Gui.Pads.ToggleMethodViewCommand"/>
-		<ToolbarItem 
-			id="ZoomControl"
-			type="CheckBox" 
-			tooltip="${res:MainWindow.Windows.Debug.HideZoomControl}"
-			icon="ParallelStacks.ZoomControl"
-			class="ICSharpCode.SharpDevelop.Gui.Pads.ShowZoomControlCommand"/>
-		/>
-	</Path>
-	
-	<Path name="/SharpDevelop/Pads/MemoryPad/ToolBar">
-		<ToolbarItem id="PreviousAddressLabel" 
-		             type="Item"
-		             icon="MemoryPad.PreviousMemoryIcon"
-		             tooltip="${res:MainWindow.Windows.Debug.MemoryPad.PreviousAddress}" 
-		             class="ICSharpCode.SharpDevelop.Gui.Pads.PreviousAddressCommand"/>
-		<ToolbarItem id="NextAddressLabel" 
-		             type="Item"
-		             icon="MemoryPad.NextMemoryIcon"
-		             tooltip="${res:MainWindow.Windows.Debug.MemoryPad.NextAddress}" 
-		             class="ICSharpCode.SharpDevelop.Gui.Pads.NextAddressCommand"/>
-		<ToolbarItem id="Separator1" 
-		             type="Separator"/>
-		<ToolbarItem id="JumpToAddressLabel" 
-		             type="Item" 
-		             label="${res:MainWindow.Windows.Debug.MemoryPad.JumpTo}" 
-		             class="ICSharpCode.SharpDevelop.Gui.Pads.JumpToAddressCommand"/>
-		<ToolbarItem id="JumpToAddressCombo" 
-		             type="ComboBox" 
-		             class="ICSharpCode.SharpDevelop.Gui.Pads.JumpToAddressCommand"/>
-		<ToolbarItem id="Separator2" 
-		             type="Separator"/>
-		<ToolbarItem id="RefreshMemory" 
-		             type="Item"
-		             icon="Icons.16x16.Refresh"
-		             tooltip="${res:MainWindow.Windows.Debug.MemoryPad.Refresh}"
-		             class="ICSharpCode.SharpDevelop.Gui.Pads.RefreshAddressCommand"/>
-		<ToolbarItem id="Separator3" 
-		             type="Separator"/>
-		<ToolbarItem id="ByteSizeLabel" 
-		             type="Item" 
-		             label="${res:MainWindow.Windows.Debug.MemoryPad.ByteSize}" 
-		             class="ICSharpCode.SharpDevelop.Gui.Pads.DisplayByteSizeCommand"/>
-		<ToolbarItem id="ByteSizeCombo" 
-		             type="ComboBox" 
-		             class="ICSharpCode.SharpDevelop.Gui.Pads.DisplayByteSizeCommand"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Services/DebuggerService/Visualizers">
@@ -242,5 +170,52 @@
 		<Class class="Debugger.AddIn.Visualizers.XmlVisualizerDescriptor" />
 		<Class class="Debugger.AddIn.Visualizers.ObjectGraphVisualizerDescriptor" />
 		<Class class="Debugger.AddIn.Visualizers.GridVisualizerDescriptor" />
+	</Path>
+	
+	<Path name="/SharpDevelop/TreeNodeFactories">
+		<Class id="DebuggerTreeNodesFactory"
+		       class="ICSharpCode.SharpDevelop.Gui.Pads.DebuggerTreeNodesFactory" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Services/DebuggerService/ModuleContextMenu">
+		<MenuItem id = "AddModuleToWorkspace"
+		          label = "${res:MainWindow.Windows.ClassBrowser.AddToWorkspace}"
+		          icon = "Icons.16x16.AssemblyFromFile"
+		          class = "ICSharpCode.SharpDevelop.Gui.Pads.AddModuleToWorkspaceCommand"/>
+	</Path>
+	
+	<Path name="/AddIns/Debugger/Tooltips/ContextMenu/TreeNode">
+		<MenuItem id="Copy"
+		          label="${res:MainWindow.Windows.Debug.LocalVariables.CopyToClipboard}"
+		          icon="Icons.16x16.CopyIcon"
+		          class="Debugger.AddIn.TreeModel.CopyCommand" />
+	</Path>
+	
+	<Path name="/AddIns/Debugger/Tooltips/ContextMenu/ErrorNode">
+		<MenuItem id="ShowFullError"
+		          label="${res:MainWindow.Windows.Debug.LocalVariables.ShowFullError}"
+		          class="Debugger.AddIn.TreeModel.ShowFullErrorCommand" />
+		<Include path="/AddIns/Debugger/Tooltips/ContextMenu/TreeNode" />
+	</Path>
+	
+	<Path name="/AddIns/Debugger/Tooltips/ContextMenu/ValueNode">
+		<Include path="/AddIns/Debugger/Tooltips/ContextMenu/TreeNode" />
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/WatchPad/ToolBar">
+		<ToolbarItem id="AddWatch"
+		             icon="Icons.16x16.WatchAdd"
+		             tooltip="${res:MainWindow.Windows.Debug.Watch.AddWatch}"
+		             class="Debugger.AddIn.AddWatchCommand" />
+		<ToolbarItem id="RemoveWatch"
+		             icon="Icons.16x16.WatchDelete"
+		             tooltip="${res:MainWindow.Windows.Debug.Watch.RemoveWatch}"
+		             class="Debugger.AddIn.RemoveWatchCommand" />
+		<ToolbarItem type="Separator" />
+		<ToolbarItem id="ClearWatches"
+		             icon="Icons.16x16.WatchesDelete"
+		             tooltip="${res:MainWindow.Windows.Debug.Watch.RemoveAll}"
+		             class="Debugger.AddIn.ClearWatchesCommand" />
+		<ToolbarItem type="Separator" />
 	</Path>
 </AddIn>

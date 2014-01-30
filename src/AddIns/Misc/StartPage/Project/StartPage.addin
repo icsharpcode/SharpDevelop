@@ -24,7 +24,7 @@
 				  type = "Separator"/>
 	</Path>
 	
-	<Path name = "/Workspace/AutostartNothingLoaded">
+	<Path name = "/SharpDevelop/Workbench/AutostartNothingLoaded">
 		<Class id = "ShowStartPageCommand"
 		       class = "ICSharpCode.StartPage.ShowStartPageCommand"/>
 	</Path>

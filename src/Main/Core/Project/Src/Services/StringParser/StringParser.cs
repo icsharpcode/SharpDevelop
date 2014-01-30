@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Concurrent;
@@ -54,17 +69,6 @@ namespace ICSharpCode.Core
 		public static string Parse(string input)
 		{
 			return Parse(input, (StringTagPair[])null);
-		}
-		
-		/// <summary>
-		/// Parses an array and replaces the elements in the existing array.
-		/// </summary>
-		[Obsolete("Call Parse(string) in a loop / consider using LINQ Select instead")]
-		public static void Parse(string[] inputs)
-		{
-			for (int i = 0; i < inputs.Length; ++i) {
-				inputs[i] = Parse(inputs[i]);
-			}
 		}
 		
 		public static void RegisterStringTagProvider(IStringTagProvider tagProvider)
@@ -140,23 +144,6 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// For new code, please use the overload taking StringTagPair[]!
-		/// </summary>
-		[Obsolete("Please use the overload taking StringTagPair[]!")]
-		public static string Parse(string input, string[,] customTags)
-		{
-			if (customTags == null)
-				return Parse(input);
-			if (customTags.GetLength(1) != 2)
-				throw new ArgumentException("incorrect dimension");
-			StringTagPair[] pairs = new StringTagPair[customTags.GetLength(0)];
-			for (int i = 0; i < pairs.Length; i++) {
-				pairs[i] = new StringTagPair(customTags[i, 0], customTags[i, 1]);
-			}
-			return Parse(input, pairs);
-		}
-		
-		/// <summary>
 		/// Evaluates a property using the StringParser. Equivalent to StringParser.Parse("${" + propertyName + "}");
 		/// </summary>
 		public static string GetValue(string propertyName, params StringTagPair[] customTags)
@@ -183,7 +170,7 @@ namespace ICSharpCode.Core
 				if (propertyName.Equals("TIME", StringComparison.OrdinalIgnoreCase))
 					return DateTime.Now.ToShortTimeString();
 				if (propertyName.Equals("ProductName", StringComparison.OrdinalIgnoreCase))
-					return MessageService.ProductName;
+					return ServiceSingleton.GetRequiredService<IMessageService>().ProductName;
 				if (propertyName.Equals("GUID", StringComparison.OrdinalIgnoreCase))
 					return Guid.NewGuid().ToString().ToUpperInvariant();
 				if (propertyName.Equals("USER", StringComparison.OrdinalIgnoreCase))
@@ -191,7 +178,7 @@ namespace ICSharpCode.Core
 				if (propertyName.Equals("Version", StringComparison.OrdinalIgnoreCase))
 					return RevisionClass.FullVersion;
 				if (propertyName.Equals("CONFIGDIRECTORY", StringComparison.OrdinalIgnoreCase))
-					return PropertyService.ConfigDirectory;
+					return ServiceSingleton.GetRequiredService<IPropertyService>().ConfigDirectory;
 				
 				foreach (IStringTagProvider provider in stringTagProviders) {
 					string result = provider.ProvideString(propertyName, customTags);
@@ -208,8 +195,11 @@ namespace ICSharpCode.Core
 				// before allocaing the prefix/propertyName strings
 				// All other prefixed properties {prefix:Key} shoulg get handled in the switch below.
 				if (propertyName.StartsWith("res:", StringComparison.OrdinalIgnoreCase)) {
+					var resourceService = (IResourceService)ServiceSingleton.ServiceProvider.GetService(typeof(IResourceService));
+					if (resourceService == null)
+						return null;
 					try {
-						return Parse(ResourceService.GetString(propertyName.Substring(4)), customTags);
+						return Parse(resourceService.GetString(propertyName.Substring(4)), customTags);
 					} catch (ResourceNotFoundException) {
 						return null;
 					}
@@ -221,7 +211,7 @@ namespace ICSharpCode.Core
 					case "SDKTOOLPATH":
 						return FileUtility.GetSdkPath(propertyName);
 					case "ADDINPATH":
-						foreach (AddIn addIn in AddInTree.AddIns) {
+						foreach (var addIn in ServiceSingleton.GetRequiredService<IAddInTree>().AddIns) {
 							if (addIn.Manifest.Identities.ContainsKey(propertyName)) {
 								return System.IO.Path.GetDirectoryName(addIn.FileName);
 							}
@@ -248,6 +238,29 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
+		/// Applies the StringParser to the formatstring; and then calls <c>string.Format</c> on the result.
+		/// 
+		/// This method is equivalent to:
+		/// <code>return string.Format(StringParser.Parse(formatstring), formatitems);</code>
+		/// but additionally includes error handling.
+		/// </summary>
+		public static string Format(string formatstring, params object[] formatitems)
+		{
+			try {
+				return String.Format(StringParser.Parse(formatstring), formatitems);
+			} catch (FormatException ex) {
+				LoggingService.Warn(ex);
+				
+				StringBuilder b = new StringBuilder(StringParser.Parse(formatstring));
+				foreach(object formatitem in formatitems) {
+					b.Append("\nItem: ");
+					b.Append(formatitem);
+				}
+				return b.ToString();
+			}
+		}
+		
+		/// <summary>
 		/// Allow special syntax to retrieve property values:
 		/// ${property:PropertyName}
 		/// ${property:PropertyName??DefaultValue}
@@ -264,19 +277,14 @@ namespace ICSharpCode.Core
 				defaultValue = propertyName.Substring(pos + 2);
 				propertyName = propertyName.Substring(0, pos);
 			}
+			Properties properties = ServiceSingleton.GetRequiredService<IPropertyService>().MainPropertiesContainer;
 			pos = propertyName.IndexOf('/');
-			if (pos >= 0) {
-				Properties properties = PropertyService.Get(propertyName.Substring(0, pos), new Properties());
+			while (pos >= 0) {
+				properties = properties.NestedProperties(propertyName.Substring(0, pos));
 				propertyName = propertyName.Substring(pos + 1);
 				pos = propertyName.IndexOf('/');
-				while (pos >= 0) {
-					properties = properties.Get(propertyName.Substring(0, pos), new Properties());
-					propertyName = propertyName.Substring(pos + 1);
-				}
-				return properties.Get(propertyName, defaultValue);
-			} else {
-				return PropertyService.Get(propertyName, defaultValue);
 			}
+			return properties.Get(propertyName, defaultValue);
 		}
 	}
 	

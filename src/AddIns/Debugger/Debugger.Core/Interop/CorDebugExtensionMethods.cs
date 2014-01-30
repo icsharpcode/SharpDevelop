@@ -1,9 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace Debugger.Interop.CorDebug
 {
@@ -123,54 +139,54 @@ namespace Debugger.Interop.CorDebug
 				corGenVal.SetValue(new IntPtr(pValue));
 		}
 		
-		public static unsafe object GetValue(this ICorDebugGenericValue corGenVal, Type type)
+		public static unsafe object GetValue(this ICorDebugGenericValue corGenVal, KnownTypeCode type)
 		{
 			object retValue;
 			byte[] value = new byte[(int)corGenVal.GetSize()];
 			fixed(byte* pValue = value) {
 				corGenVal.GetValue(new IntPtr(pValue));
-				switch(type.FullName) {
-					case "System.Boolean": retValue = *((System.Boolean*)pValue); break;
-					case "System.Char":    retValue = *((System.Char*)   pValue); break;
-					case "System.SByte":   retValue = *((System.SByte*)  pValue); break;
-					case "System.Byte":    retValue = *((System.Byte*)   pValue); break;
-					case "System.Int16":   retValue = *((System.Int16*)  pValue); break;
-					case "System.UInt16":  retValue = *((System.UInt16*) pValue); break;
-					case "System.Int32":   retValue = *((System.Int32*)  pValue); break;
-					case "System.UInt32":  retValue = *((System.UInt32*) pValue); break;
-					case "System.Int64":   retValue = *((System.Int64*)  pValue); break;
-					case "System.UInt64":  retValue = *((System.UInt64*) pValue); break;
-					case "System.Single":  retValue = *((System.Single*) pValue); break;
-					case "System.Double":  retValue = *((System.Double*) pValue); break;
-					case "System.IntPtr":  retValue = *((System.IntPtr*) pValue); break;
-					case "System.UIntPtr": retValue = *((System.UIntPtr*)pValue); break;
+				switch (type) {
+					case KnownTypeCode.Boolean: retValue = *((System.Boolean*)pValue); break;
+					case KnownTypeCode.Char:    retValue = *((System.Char*)   pValue); break;
+					case KnownTypeCode.SByte:   retValue = *((System.SByte*)  pValue); break;
+					case KnownTypeCode.Byte:    retValue = *((System.Byte*)   pValue); break;
+					case KnownTypeCode.Int16:   retValue = *((System.Int16*)  pValue); break;
+					case KnownTypeCode.UInt16:  retValue = *((System.UInt16*) pValue); break;
+					case KnownTypeCode.Int32:   retValue = *((System.Int32*)  pValue); break;
+					case KnownTypeCode.UInt32:  retValue = *((System.UInt32*) pValue); break;
+					case KnownTypeCode.Int64:   retValue = *((System.Int64*)  pValue); break;
+					case KnownTypeCode.UInt64:  retValue = *((System.UInt64*) pValue); break;
+					case KnownTypeCode.Single:  retValue = *((System.Single*) pValue); break;
+					case KnownTypeCode.Double:  retValue = *((System.Double*) pValue); break;
+					case KnownTypeCode.IntPtr:  retValue = *((System.IntPtr*) pValue); break;
+					case KnownTypeCode.UIntPtr: retValue = *((System.UIntPtr*)pValue); break;
 					default: throw new NotSupportedException();
 				}
 			}
 			return retValue;
 		}
 		
-		public static unsafe void SetValue(this ICorDebugGenericValue corGenVal, object value)
+		public static unsafe void SetValue(this ICorDebugGenericValue corGenVal, KnownTypeCode type, object value)
 		{
 			if (value == null)
 				throw new ArgumentNullException("value");
 			byte[] val = new byte[(int)corGenVal.GetSize()];
 			fixed(byte* pValue = val) {
-				switch(value.GetType().FullName) {
-					case "System.Boolean": *((System.Boolean*)pValue) = (System.Boolean)value; break;
-					case "System.Char":    *((System.Char*)   pValue) = (System.Char)   value; break;
-					case "System.SByte":   *((System.SByte*)  pValue) = (System.SByte)  value; break;
-					case "System.Byte":    *((System.Byte*)   pValue) = (System.Byte)   value; break;
-					case "System.Int16":   *((System.Int16*)  pValue) = (System.Int16)  value; break;
-					case "System.UInt16":  *((System.UInt16*) pValue) = (System.UInt16) value; break;
-					case "System.Int32":   *((System.Int32*)  pValue) = (System.Int32)  value; break;
-					case "System.UInt32":  *((System.UInt32*) pValue) = (System.UInt32) value; break;
-					case "System.Int64":   *((System.Int64*)  pValue) = (System.Int64)  value; break;
-					case "System.UInt64":  *((System.UInt64*) pValue) = (System.UInt64) value; break;
-					case "System.Single":  *((System.Single*) pValue) = (System.Single) value; break;
-					case "System.Double":  *((System.Double*) pValue) = (System.Double) value; break;
-					case "System.IntPtr":  *((System.IntPtr*) pValue) = (System.IntPtr) value; break;
-					case "System.UIntPtr": *((System.UIntPtr*)pValue) = (System.UIntPtr)value; break;
+				switch(type) {
+					case KnownTypeCode.Boolean: *((System.Boolean*)pValue) = (System.Boolean)value; break;
+					case KnownTypeCode.Char:    *((System.Char*)   pValue) = (System.Char)   value; break;
+					case KnownTypeCode.SByte:   *((System.SByte*)  pValue) = (System.SByte)  value; break;
+					case KnownTypeCode.Byte:    *((System.Byte*)   pValue) = (System.Byte)   value; break;
+					case KnownTypeCode.Int16:   *((System.Int16*)  pValue) = (System.Int16)  value; break;
+					case KnownTypeCode.UInt16:  *((System.UInt16*) pValue) = (System.UInt16) value; break;
+					case KnownTypeCode.Int32:   *((System.Int32*)  pValue) = (System.Int32)  value; break;
+					case KnownTypeCode.UInt32:  *((System.UInt32*) pValue) = (System.UInt32) value; break;
+					case KnownTypeCode.Int64:   *((System.Int64*)  pValue) = (System.Int64)  value; break;
+					case KnownTypeCode.UInt64:  *((System.UInt64*) pValue) = (System.UInt64) value; break;
+					case KnownTypeCode.Single:  *((System.Single*) pValue) = (System.Single) value; break;
+					case KnownTypeCode.Double:  *((System.Double*) pValue) = (System.Double) value; break;
+					case KnownTypeCode.IntPtr:  *((System.IntPtr*) pValue) = (System.IntPtr) value; break;
+					case KnownTypeCode.UIntPtr: *((System.UIntPtr*)pValue) = (System.UIntPtr)value; break;
 					default: throw new NotSupportedException();
 				}
 				corGenVal.SetValue(new IntPtr(pValue));

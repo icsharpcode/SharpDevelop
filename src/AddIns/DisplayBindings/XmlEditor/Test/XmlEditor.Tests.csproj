@@ -20,8 +20,9 @@
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DebugSymbols>true</DebugSymbols>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
@@ -42,6 +43,9 @@
     </Reference>
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -240,7 +244,6 @@
     <Compile Include="Utils\FakeXmlFoldParser.cs" />
     <Compile Include="Utils\MockTextEditorProviderViewContent.cs" />
     <Compile Include="Utils\MockViewContent.cs" />
-    <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\NewFoldingHelper.cs" />
     <Compile Include="Utils\Tests\DerivedXmlSchemaObjectLocationTests.cs" />
     <Compile Include="Utils\Tests\NewFoldingHelperTests.cs" />
@@ -253,14 +256,10 @@
     <Compile Include="Utils\ExceptionErrorMessage.cs" />
     <Compile Include="Utils\FormattedErrorMessage.cs" />
     <Compile Include="Utils\MockAddXmlNodeDialog.cs" />
-    <Compile Include="Utils\MockCaret.cs" />
     <Compile Include="Utils\MockCompletionListWindow.cs" />
     <Compile Include="Utils\MockDocument.cs" />
-    <Compile Include="Utils\MockDocumentLine.cs" />
     <Compile Include="Utils\MockFileSystem.cs" />
-    <Compile Include="Utils\MockParserService.cs" />
     <Compile Include="Utils\MockSelectXmlSchemaWindow.cs" />
-    <Compile Include="Utils\MockTextBuffer.cs" />
     <Compile Include="Utils\MockTextEditor.cs" />
     <Compile Include="Utils\MockTextEditorOptions.cs" />
     <Compile Include="Utils\MockXmlSchemaCompletionDataFactory.cs" />
@@ -271,11 +270,8 @@
     <Compile Include="Utils\SchemaIncludeTestFixtureHelper.cs" />
     <Compile Include="Utils\Tests\ExceptionErrorMessageAreEqualTests.cs" />
     <Compile Include="Utils\Tests\FormattedErrorMessageAreEqualTests.cs" />
-    <Compile Include="Utils\Tests\MockCaretTests.cs" />
-    <Compile Include="Utils\Tests\MockDocumentLineTests.cs" />
     <Compile Include="Utils\Tests\MockDocumentTests.cs" />
     <Compile Include="Utils\Tests\MockFileSystemTests.cs" />
-    <Compile Include="Utils\Tests\MockParserServiceTests.cs" />
     <Compile Include="Utils\Tests\MockSelectXmlSchemaWindowTests.cs" />
     <Compile Include="Utils\Tests\MockTextBufferTests.cs" />
     <Compile Include="Utils\Tests\MockTextEditorOptionsTests.cs" />
@@ -352,9 +348,9 @@
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Test\ICSharpCode.SharpDevelop.Tests.csproj">
       <Project>{4980B743-B32F-4aba-AABD-45E2CAD3568D}</Project>
@@ -364,10 +360,6 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\XmlEditor.csproj">
       <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>

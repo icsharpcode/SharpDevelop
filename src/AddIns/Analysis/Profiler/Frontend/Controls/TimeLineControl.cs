@@ -1,12 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -55,8 +69,8 @@ namespace ICSharpCode.Profiler.Controls
 			get { return selectedEndIndex; }
 			set {
 				selectedEndIndex = value;
-				this.InvalidateMeasure();
-				this.InvalidateVisual();
+				InvalidateMeasure();
+				InvalidateVisual();
 				OnRangeChanged(new RangeEventArgs(selectedStartIndex, selectedEndIndex));
 			}
 		}
@@ -66,8 +80,8 @@ namespace ICSharpCode.Profiler.Controls
 			get { return selectedStartIndex; }
 			set {
 				selectedStartIndex = value;
-				this.InvalidateMeasure();
-				this.InvalidateVisual();
+				InvalidateMeasure();
+				InvalidateVisual();
 				OnRangeChanged(new RangeEventArgs(selectedStartIndex, selectedEndIndex));
 			}
 		}
@@ -85,9 +99,9 @@ namespace ICSharpCode.Profiler.Controls
 
 		protected override Size MeasureOverride(Size availableSize)
 		{
-			this.pieceWidth = 25;
+			pieceWidth = 25;
 			Size calculatedSize = base.MeasureOverride(availableSize);
-			return new Size(Math.Max(this.pieceWidth * this.valuesList.Count + 1, calculatedSize.Width), calculatedSize.Height + 10);
+			return new Size(Math.Max(pieceWidth * valuesList.Count + 1, calculatedSize.Width), calculatedSize.Height + 10);
 		}
 		
 		const int offset = 0;
@@ -97,26 +111,26 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			base.OnRender(drawingContext);
 
-			if (this.valuesList.Count == 0)
+			if (valuesList.Count == 0)
 				return;
 			
-			double oldX = offsetFromTop, oldY = this.RenderSize.Height;
+			double oldX = offsetFromTop, oldY = RenderSize.Height;
 
 			StreamGeometry geometry = new StreamGeometry();
 
 			using (StreamGeometryContext ctx = geometry.Open())
 			{
-				ctx.BeginFigure(new Point(0, this.RenderSize.Height), true, true);
+				ctx.BeginFigure(new Point(0, RenderSize.Height), true, true);
 
 				List<Point> points = new List<Point>();
 				
-				double maxHeight = this.RenderSize.Height - offsetFromTop;
+				double maxHeight = RenderSize.Height - offsetFromTop;
 
-				for (int i = 0; i < this.valuesList.Count; i++)
+				for (int i = 0; i < valuesList.Count; i++)
 				{
-					double x = this.pieceWidth / 2.0 + this.pieceWidth * i;
+					double x = pieceWidth / 2.0 + pieceWidth * i;
 					// TODO : support MinValues other than 0
-					double y = offsetFromTop + (maxHeight - maxHeight * (this.valuesList[i].Value / this.MaxValue));
+					double y = offsetFromTop + (maxHeight - maxHeight * (valuesList[i].Value / MaxValue));
 
 					points.Add(new Point(x, y));
 
@@ -124,7 +138,7 @@ namespace ICSharpCode.Profiler.Controls
 					oldY = y;
 				}
 
-				points.Add(new Point(oldX, offsetFromTop + this.RenderSize.Height));
+				points.Add(new Point(oldX, offsetFromTop + RenderSize.Height));
 
 				ctx.PolyLineTo(points, true, true);
 			}
@@ -133,7 +147,7 @@ namespace ICSharpCode.Profiler.Controls
 
 			Brush b = new LinearGradientBrush(Colors.Red, Colors.Orange, 90);
 
-			drawingContext.DrawRectangle(Brushes.White, new Pen(Brushes.White, 1), new Rect(new Point(0, 0), this.RenderSize));
+			drawingContext.DrawRectangle(Brushes.White, new Pen(Brushes.White, 1), new Rect(new Point(0, 0), RenderSize));
 			
 			var p = new Pen(Brushes.DarkRed, 2);
 			
@@ -141,10 +155,10 @@ namespace ICSharpCode.Profiler.Controls
 			
 			DateTime time = new DateTime(1,1,1,0,0,0,0);
 			
-			for (int i = 0; i < this.valuesList.Count; i++) {
-				if (this.valuesList[i].DisplayMarker)
+			for (int i = 0; i < valuesList.Count; i++) {
+				if (valuesList[i].DisplayMarker)
 					drawingContext.DrawLine(p, new Point(pieceWidth * i, offsetFromTop),
-					                        new Point(pieceWidth * i, this.RenderSize.Height));
+					                        new Point(pieceWidth * i, RenderSize.Height));
 				
 				if (i % 3 == 0) {
 					FormattedText textFormat = new FormattedText(
@@ -156,7 +170,7 @@ namespace ICSharpCode.Profiler.Controls
 					drawingContext.DrawText(textFormat, new Point(pieceWidth * i, 0));
 				}
 				
-				var events = this.valuesList[i].Events;
+				var events = valuesList[i].Events;
 				
 				if (events != null && events.Length > 0) {
 					foreach (EventDataEntry @event in events) {
@@ -178,43 +192,43 @@ namespace ICSharpCode.Profiler.Controls
 				new SolidColorBrush(Color.FromArgb(64, Colors.Blue.R, Colors.Blue.G, Colors.Blue.B)),
 				new Pen(Brushes.Blue, 1),
 				new Rect(
-					new Point(Math.Min(this.selectedStartIndex, this.selectedEndIndex) * pieceWidth + offset, offsetFromTop),
-					new Point(Math.Max(this.selectedStartIndex, this.selectedEndIndex) * pieceWidth + offset + pieceWidth, this.RenderSize.Height)
+					new Point(Math.Min(selectedStartIndex, selectedEndIndex) * pieceWidth + offset, offsetFromTop),
+					new Point(Math.Max(selectedStartIndex, selectedEndIndex) * pieceWidth + offset + pieceWidth, RenderSize.Height)
 				)
 			);
 		}
 
-		protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+		protected override void OnMouseUp(MouseButtonEventArgs e)
 		{
 			bool valid;
 			Point pos = e.GetPosition(this);
 			int index = TransformToIndex(pos, out valid);
 			
 			if (pos.Y >= 40) {
-				if (index < this.selectedStartIndex) {
-					this.selectedEndIndex = this.selectedStartIndex;
-					this.selectedStartIndex = index;
+				if (index < selectedStartIndex) {
+					selectedEndIndex = selectedStartIndex;
+					selectedStartIndex = index;
 				} else
-					this.selectedEndIndex = index;
+					selectedEndIndex = index;
 			}
 						
-			this.InvalidateMeasure();
-			this.InvalidateVisual();
-			this.ReleaseMouseCapture();
+			InvalidateMeasure();
+			InvalidateVisual();
+			ReleaseMouseCapture();
 		}
 
-		protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+		protected override void OnMouseDown(MouseButtonEventArgs e)
 		{
-			this.CaptureMouse();
+			CaptureMouse();
 			Point pos = e.GetPosition(this);
 			bool valid;
 			int index = TransformToIndex(pos, out valid);
 			
 			if (pos.Y >= 40)
-				this.selectedStartIndex = this.selectedEndIndex = index;
+				selectedStartIndex = selectedEndIndex = index;
 			
-			this.InvalidateMeasure();
-			this.InvalidateVisual();
+			InvalidateMeasure();
+			InvalidateVisual();
 		}
 
 		ToolTip tooltip;
@@ -226,9 +240,9 @@ namespace ICSharpCode.Profiler.Controls
 			int index = TransformToIndex(pos, out valid);
 			
 			if (e.LeftButton == MouseButtonState.Pressed) {
-				this.selectedEndIndex = index;
-				this.InvalidateMeasure();
-				this.InvalidateVisual();
+				selectedEndIndex = index;
+				InvalidateMeasure();
+				InvalidateVisual();
 			} else if (tooltip == null && valid) {
 				tooltip = new ToolTip();
 				if (pos.Y < 20)
@@ -236,14 +250,14 @@ namespace ICSharpCode.Profiler.Controls
 				else if (pos.Y < 40)
 					tooltip.Content = CreateTooltipForEvents(index);
 				else
-					tooltip.Content = "Value: " + this.valuesList[index].Value.ToString(this.Format) + " " + this.Unit;
+					tooltip.Content = "Value: " + valuesList[index].Value.ToString(Format) + " " + Unit;
 				tooltip	.IsOpen = tooltip.Content != null;
 			}
 		}
 		
 		object CreateTooltipForEvents(int index)
 		{
-			EventDataEntry[] events = this.ValuesList[index].Events;
+			EventDataEntry[] events = ValuesList[index].Events;
 			
 			TextBlock block = events.Any() ? new TextBlock() : null;
 			
@@ -281,14 +295,14 @@ namespace ICSharpCode.Profiler.Controls
 		protected override void OnLostMouseCapture(MouseEventArgs e)
 		{
 			base.OnLostMouseCapture(e);
-			OnRangeChanged(new RangeEventArgs(this.selectedStartIndex, this.selectedEndIndex));
+			OnRangeChanged(new RangeEventArgs(selectedStartIndex, selectedEndIndex));
 		}
 
 		int TransformToIndex(Point point, out bool valid)
 		{
-			int value = (int)Math.Floor(point.X / this.pieceWidth);
-			valid = (0 >= value && value <= this.valuesList.Count - 1);
-			return Math.Min(Math.Max(0, value), this.valuesList.Count - 1);
+			int value = (int)Math.Floor(point.X / pieceWidth);
+			valid = (0 >= value && value <= valuesList.Count - 1);
+			return Math.Min(Math.Max(0, value), valuesList.Count - 1);
 		}
 		
 		#region MouseHover
@@ -339,7 +353,7 @@ namespace ICSharpCode.Profiler.Controls
 				mouseHoverStartPoint = newPosition;
 				mouseHoverLastEventArgs = e;
 				mouseHoverTimer = new DispatcherTimer(SystemParameters.MouseHoverTime, DispatcherPriority.Background,
-				                                      OnMouseHoverTimerElapsed, this.Dispatcher);
+				                                      OnMouseHoverTimerElapsed, Dispatcher);
 				mouseHoverTimer.Start();
 			}
 			
@@ -362,9 +376,9 @@ namespace ICSharpCode.Profiler.Controls
 				mouseHoverTimer = null;
 			}
 			
-			if (this.tooltip != null) {
-				this.tooltip.IsOpen = false;
-				this.tooltip = null;
+			if (tooltip != null) {
+				tooltip.IsOpen = false;
+				tooltip = null;
 			}
 		}
 		

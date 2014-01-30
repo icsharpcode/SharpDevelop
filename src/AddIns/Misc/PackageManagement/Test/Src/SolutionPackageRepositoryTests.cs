@@ -1,15 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
@@ -19,14 +36,15 @@ namespace PackageManagement.Tests
 	{
 		SolutionPackageRepository repository;
 		TestablePackageManagementOptions options;
-		Solution solution;
+		ISolution solution;
 		FakePackageRepositoryFactory fakeRepositoryFactory;
 		FakeSharedPackageRepository fakeSharedRepository;
 		
 		void CreateSolution(string fileName)
 		{
-			solution = new Solution(new MockProjectChangeWatcher());
-			solution.FileName = fileName;
+			solution = MockRepository.GenerateStrictMock<ISolution>();
+			solution.Stub(s => s.FileName).Return(FileName.Create(fileName));
+			solution.Stub(s => s.Directory).Return(DirectoryName.Create(System.IO.Path.GetDirectoryName(fileName)));
 		}
 		
 		void CreateFakeRepositoryFactory()
@@ -40,13 +58,13 @@ namespace PackageManagement.Tests
 			options = new TestablePackageManagementOptions();
 		}
 		
-		void CreateRepository(Solution solution, TestablePackageManagementOptions options)
+		void CreateRepository(ISolution solution, TestablePackageManagementOptions options)
 		{
 			CreateFakeRepositoryFactory();
 			repository = new SolutionPackageRepository(solution, fakeRepositoryFactory, options);
 		}
 		
-		void CreateRepository(Solution solution)
+		void CreateRepository(ISolution solution)
 		{
 			CreateOptions();
 			CreateRepository(solution, options);
@@ -54,8 +72,7 @@ namespace PackageManagement.Tests
 		
 		void CreateRepository()
 		{
-			solution = new Solution(new MockProjectChangeWatcher());
-			solution.FileName = @"d:\projects\test\myproject\myproject.sln";
+			CreateSolution(@"d:\projects\test\myproject\myproject.sln");
 			CreateRepository(solution);
 		}
 		

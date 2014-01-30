@@ -1,15 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
@@ -61,7 +78,7 @@ namespace PackageManagement.Tests
 		TestableProject AddProjectToOpenProjects(string projectName)
 		{
 			TestableProject project = ProjectHelper.CreateTestProject(projectName);
-			fakeProjectService.FakeOpenProjects.Add(project);
+			fakeProjectService.AddProject(project);
 			return project;
 		}
 		
@@ -306,7 +323,7 @@ namespace PackageManagement.Tests
 			AddProjectToOpenProjects("B");
 			
 			IEnumerable<IProject> projects = solution.GetMSBuildProjects();
-			List<IProject> expectedProjects = fakeProjectService.FakeOpenProjects;
+			IEnumerable<IProject> expectedProjects = fakeProjectService.AllProjects;
 			
 			CollectionAssert.AreEqual(expectedProjects, projects);
 		}
@@ -326,7 +343,7 @@ namespace PackageManagement.Tests
 		public void IsOpen_SolutionIsOpen_ReturnsTrue()
 		{
 			CreateSolution();
-			fakeProjectService.OpenSolution = new Solution(new MockProjectChangeWatcher());
+			fakeProjectService.OpenSolution = MockRepository.GenerateStrictMock<ISolution>();
 			
 			bool open = solution.IsOpen;
 			
@@ -349,7 +366,7 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution();
 			TestableProject project = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project);
+			fakeProjectService.AddProject(project);
 			
 			bool hasMultipleProjects = solution.HasMultipleProjects();
 			
@@ -361,9 +378,9 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution();
 			TestableProject project1 = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project1);
+			fakeProjectService.AddProject(project1);
 			TestableProject project2 = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project2);
+			fakeProjectService.AddProject(project2);
 			
 			bool hasMultipleProjects = solution.HasMultipleProjects();
 			
@@ -374,12 +391,12 @@ namespace PackageManagement.Tests
 		public void FileName_SolutionHasFileName_ReturnsSolutionFileName()
 		{
 			CreateSolution();
-			var solution = new Solution(new MockProjectChangeWatcher());
+			var solution = MockRepository.GenerateStrictMock<ISolution>();
 			string expectedFileName = @"d:\projects\myproject\Project.sln";
-			solution.FileName = expectedFileName;
+			solution.Stub(s => s.FileName).Return(FileName.Create(expectedFileName));
 			fakeProjectService.OpenSolution = solution;
 			
-			string fileName = solution.FileName;
+			string fileName = this.solution.FileName;
 			
 			Assert.AreEqual(expectedFileName, fileName);
 		}
@@ -415,8 +432,8 @@ namespace PackageManagement.Tests
 			
 			solution.IsPackageInstalled(package);
 			
-			Solution expectedSolution = fakeProjectService.OpenSolution;
-			Solution solutionUsedToCreateSolutionPackageRepository = 
+			ISolution expectedSolution = fakeProjectService.OpenSolution;
+			ISolution solutionUsedToCreateSolutionPackageRepository = 
 				fakeSolutionPackageRepositoryFactory.SolutionPassedToCreateSolutionPackageRepository;
 			
 			Assert.AreEqual(expectedSolution, solutionUsedToCreateSolutionPackageRepository);

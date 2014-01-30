@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -111,7 +126,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void SaveNamespaces(Properties properties)
 		{
-			properties.Set(NamespacesProperty, GetNamespaceStringArray());
+			properties.SetList(NamespacesProperty, GetNamespaceStringArray());
 		}
 		
 		void SaveNamespaceDataGridColumnWidths(Properties properties)
@@ -128,7 +143,7 @@ namespace ICSharpCode.XmlEditor
 		void SaveXPathQueryHistory(Properties properties)
 		{
 			properties.Set(XPathComboBoxTextProperty, XPathComboBox.Text);
-			properties.Set(XPathComboBoxItemsProperty, GetXPathHistory());
+			properties.SetList(XPathComboBoxItemsProperty, GetXPathHistory());
 		}
 		
 		/// <summary>
@@ -150,7 +165,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void LoadNamespaces(Properties properties)
 		{
-			string[] namespaces = properties.Get(NamespacesProperty, new string[0]);
+			var namespaces = properties.GetList<string>(NamespacesProperty);
 			foreach (string ns in namespaces) {
 				XmlNamespace xmlNamespace = XmlNamespace.FromString(ns);
 				AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
@@ -171,7 +186,7 @@ namespace ICSharpCode.XmlEditor
 		void LoadXPathQueryHistory(Properties properties)
 		{
 			XPathComboBox.Text = properties.Get(XPathComboBoxTextProperty, string.Empty);
-			string[] xpaths = properties.Get(XPathComboBoxItemsProperty, new string[0]);
+			var xpaths = properties.GetList<string>(XPathComboBoxItemsProperty);
 			foreach (string xpath in xpaths) {
 				xpathComboBox.Items.Add(xpath);
 			}
@@ -428,14 +443,14 @@ namespace ICSharpCode.XmlEditor
 				
 				// Clear previous XPath results.
 				ClearResults();
-				XPathNodeTextMarker marker = new XPathNodeTextMarker(xmlView.TextEditor.Document);
-				marker.RemoveMarkers();
+				XPathNodeTextMarker.RemoveMarkers(xmlView.TextEditor.Document);
 				
 				// Run XPath query.
 				XPathQuery query = new XPathQuery(xmlView.TextEditor, GetNamespaces());
 				XPathNodeMatch[] nodes = query.FindNodes(xpathComboBox.Text);
 				if (nodes.Length > 0) {
 					AddXPathResults(nodes);
+					XPathNodeTextMarker marker = new XPathNodeTextMarker(xmlView.TextEditor.Document);
 					marker.AddMarkers(nodes);
 				} else {
 					AddNoXPathResult();
@@ -594,9 +609,9 @@ namespace ICSharpCode.XmlEditor
 			if (view != null) {
 				ITextEditor editor = view.TextEditor;
 				if (editor == null) return;
-				int corLine = Math.Min(line + 1, editor.Document.TotalNumberOfLines - 1);
+				int corLine = Math.Min(line + 1, editor.Document.LineCount - 1);
 				editor.JumpTo(corLine, column + 1);
-				if (length > 0 && line < editor.Document.TotalNumberOfLines) {
+				if (length > 0 && line < editor.Document.LineCount) {
 					int offset = editor.Document.PositionToOffset(line + 1, column + 1);
 					editor.Select(offset, length);
 				}

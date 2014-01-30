@@ -6,7 +6,7 @@
 		<Name>${res:Templates.Project.WebPage.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>ASP.NET</Subcategory>
-		<Icon>VBNet.Project.WebProject</Icon>
+		<Icon>VB.Project.WebProject</Icon>
 		<Description>${res:Templates.Project.WebPage.Description}</Description>
 		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -17,7 +17,7 @@
 		<Open filename = ".\Default.aspx.vb"/>
 	</Actions>
 
-	<Project language="VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

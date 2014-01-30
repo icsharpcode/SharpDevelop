@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Linq;
@@ -69,10 +84,10 @@ namespace ICSharpCode.Profiler.Controller
 		public int ProcessorFrequency
 		{
 			get {
-				if (this.is64Bit)
-					return this.memHeader64->ProcessorFrequency;
+				if (is64Bit)
+					return memHeader64->ProcessorFrequency;
 				else
-					return this.memHeader32->ProcessorFrequency;
+					return memHeader32->ProcessorFrequency;
 			}
 		}
 
@@ -202,7 +217,7 @@ namespace ICSharpCode.Profiler.Controller
 		/// </summary>
 		public void EnableDataCollection()
 		{
-			this.enableDC = true;
+			enableDC = true;
 		}
 		
 		/// <summary>
@@ -210,8 +225,8 @@ namespace ICSharpCode.Profiler.Controller
 		/// </summary>
 		public void DisableDataCollection()
 		{
-			this.enableDC = false;
-			this.isFirstDC = true;
+			enableDC = false;
+			isFirstDC = true;
 		}
 		
 		/// <summary>
@@ -321,16 +336,16 @@ namespace ICSharpCode.Profiler.Controller
 		void DataCollection()
 		{
 			while (!stopDC) {
-				this.Pause();
-				this.threadListMutex.WaitOne();
+				Pause();
+				threadListMutex.WaitOne();
 
-				if (this.is64Bit)
+				if (is64Bit)
 					CollectData64();
 				else
 					CollectData32();
 
-				this.threadListMutex.ReleaseMutex();
-				this.Continue();
+				threadListMutex.ReleaseMutex();
+				Continue();
 				Thread.Sleep(500);
 			}
 		}
@@ -342,7 +357,7 @@ namespace ICSharpCode.Profiler.Controller
 
 			ulong now = GetRdtsc();
 
-			ThreadLocalData32* item = (ThreadLocalData32*)TranslatePointer(this.memHeader32->LastThreadListItem);
+			ThreadLocalData32* item = (ThreadLocalData32*)TranslatePointer(memHeader32->LastThreadListItem);
 
 			List<Stack<int>> stackList = new List<Stack<int>>();
 
@@ -363,8 +378,8 @@ namespace ICSharpCode.Profiler.Controller
 				item = (ThreadLocalData32*)TranslatePointer(item->Predecessor);
 			}
 			
-			if (this.enableDC) {
-				this.AddDataset(fullView.Pointer,
+			if (enableDC) {
+				AddDataset(fullView.Pointer,
 				                memHeader32->NativeAddress + memHeader32->HeapOffset,
 				                memHeader32->Allocator.startPos - memHeader32->NativeAddress,
 				                memHeader32->Allocator.pos - memHeader32->Allocator.startPos,
@@ -381,7 +396,7 @@ namespace ICSharpCode.Profiler.Controller
 
 			memHeader32->RootFuncInfoAddress = TranslatePointerBack32(root);
 
-			item = (ThreadLocalData32*)TranslatePointer(this.memHeader32->LastThreadListItem);
+			item = (ThreadLocalData32*)TranslatePointer(memHeader32->LastThreadListItem);
 
 			now = GetRdtsc();
 
@@ -415,8 +430,8 @@ namespace ICSharpCode.Profiler.Controller
 		unsafe void AddDataset(byte *ptr, TargetProcessPointer nativeStartPosition, long offset, long length, bool isFirst, TargetProcessPointer nativeRootFuncInfoPosition)
 		{
 			using (DataSet dataSet = new DataSet(this, ptr + offset, length, nativeStartPosition, nativeRootFuncInfoPosition, isFirst, is64Bit)) {
-				lock (this.dataWriter) {
-					this.dataWriter.WriteDataSet(dataSet);
+				lock (dataWriter) {
+					dataWriter.WriteDataSet(dataSet);
 					
 					if (usePerformanceCounters) {
 						if (performanceCounterInstanceName == null)
@@ -487,7 +502,7 @@ namespace ICSharpCode.Profiler.Controller
 			while (readString != null) {
 				readString = ReadString(stream);
 				if (readString != null && !ProcessCommand(readString))
-					this.LogString(readString);
+					LogString(readString);
 			}
 		}
 		
@@ -526,23 +541,23 @@ namespace ICSharpCode.Profiler.Controller
 				LogString("Using 64-bit hook.");
 			LogString("Starting process, waiting for profiler hook...");
 
-			this.profilee = new Process();
+			profilee = new Process();
 
-			this.profilee.EnableRaisingEvents = true;
-			this.profilee.StartInfo = this.psi;
-			this.profilee.Exited += new EventHandler(ProfileeExited);
+			profilee.EnableRaisingEvents = true;
+			profilee.StartInfo = psi;
+			profilee.Exited += new EventHandler(ProfileeExited);
 			
-			this.enableDC = this.profilerOptions.EnableDCAtStart;
-			this.isFirstDC = true;
+			enableDC = profilerOptions.EnableDCAtStart;
+			isFirstDC = true;
 			
-			Debug.WriteLine("Launching profiler for " + this.psi.FileName + "...");
-			this.profilee.Start();
+			Debug.WriteLine("Launching profiler for " + psi.FileName + "...");
+			profilee.Start();
 			
-			this.logger.Start(nativeToManagedBuffer.CreateReadingStream());
+			logger.Start(nativeToManagedBuffer.CreateReadingStream());
 
 			// GC references currentSession
-			if (this.profilerOptions.EnableDC) {
-				this.dataCollector.Start();
+			if (profilerOptions.EnableDC) {
+				dataCollector.Start();
 			}
 
 			OnSessionStarted(EventArgs.Empty);
@@ -554,11 +569,11 @@ namespace ICSharpCode.Profiler.Controller
 		/// </summary>
 		void Pause()
 		{
-			this.accessEventHandle.Reset();
+			accessEventHandle.Reset();
 			if (is64Bit)
-				this.memHeader64->ExclusiveAccess = 1;
+				memHeader64->ExclusiveAccess = 1;
 			else
-				this.memHeader32->ExclusiveAccess = 1;
+				memHeader32->ExclusiveAccess = 1;
 			Thread.MemoryBarrier();
 			if (is64Bit)
 				while (!AllThreadsWait64()) ;
@@ -569,7 +584,7 @@ namespace ICSharpCode.Profiler.Controller
 		bool AllThreadsWait32()
 		{
 			try {
-				this.threadListMutex.WaitOne();
+				threadListMutex.WaitOne();
 			} catch (AbandonedMutexException) {
 				// profilee crashed while holding the thread list mutex
 				return true;
@@ -577,7 +592,7 @@ namespace ICSharpCode.Profiler.Controller
 
 			bool isWaiting = true;
 
-			ThreadLocalData32* item = (ThreadLocalData32*)TranslatePointer(this.memHeader32->LastThreadListItem);
+			ThreadLocalData32* item = (ThreadLocalData32*)TranslatePointer(memHeader32->LastThreadListItem);
 
 			while (item != null) {
 				if (item->InLock == 1)
@@ -586,7 +601,7 @@ namespace ICSharpCode.Profiler.Controller
 				item = (ThreadLocalData32*)TranslatePointer(item->Predecessor);
 			}
 
-			this.threadListMutex.ReleaseMutex();
+			threadListMutex.ReleaseMutex();
 
 			return isWaiting;
 		}
@@ -597,10 +612,10 @@ namespace ICSharpCode.Profiler.Controller
 		void Continue()
 		{
 			if (is64Bit)
-				this.memHeader64->ExclusiveAccess = 0;
+				memHeader64->ExclusiveAccess = 0;
 			else
-				this.memHeader32->ExclusiveAccess = 0;
-			this.accessEventHandle.Set();
+				memHeader32->ExclusiveAccess = 0;
+			accessEventHandle.Set();
 		}
 
 		unsafe void ProfileeExited(object sender, EventArgs e)
@@ -610,34 +625,34 @@ namespace ICSharpCode.Profiler.Controller
 
 			DeregisterProfiler();
 
-			this.stopDC = true;
+			stopDC = true;
 
 			Debug.WriteLine("Closing native to managed buffer");
 			nativeToManagedBuffer.Close(true);
 
 			Debug.WriteLine("Joining logger thread...");
-			this.logger.Join();
+			logger.Join();
 			Debug.WriteLine("Logger thread joined!");
-			if (this.profilerOptions.EnableDC)
-				this.dataCollector.Join();
+			if (profilerOptions.EnableDC)
+				dataCollector.Join();
 			
 			// Do last data collection
-			if (this.is64Bit)
+			if (is64Bit)
 				CollectData64();
 			else
 				CollectData32();
 			
 			isRunning = false;
 			
-			this.dataWriter.WritePerformanceCounterData(performanceCounters);
-			this.dataWriter.Close();
+			dataWriter.WritePerformanceCounterData(performanceCounters);
+			dataWriter.Close();
 			
 			OnSessionEnded(EventArgs.Empty);
 		}
 
 		internal void LogString(string text)
 		{
-			this.profilerOutput.AppendLine(text);
+			profilerOutput.AppendLine(text);
 			OnOutputUpdated(EventArgs.Empty);
 		}
 
@@ -654,7 +669,7 @@ namespace ICSharpCode.Profiler.Controller
 
 		internal unsafe void* TranslatePointer(TargetProcessPointer ptr)
 		{
-			if (this.is64Bit)
+			if (is64Bit)
 				return TranslatePointer64(ptr.To64());
 			else
 				return TranslatePointer32(ptr.To32());
@@ -698,8 +713,8 @@ namespace ICSharpCode.Profiler.Controller
 				string returnType = parts[3];
 				IList<string> parameters = parts.Skip(5).ToList();
 
-				lock (this.dataWriter) {
-					this.dataWriter.WriteMappings(new NameMapping[] {new NameMapping(id, returnType, name, parameters)});
+				lock (dataWriter) {
+					dataWriter.WriteMappings(new NameMapping[] {new NameMapping(id, returnType, name, parameters)});
 				}
 
 				return true;
@@ -712,8 +727,8 @@ namespace ICSharpCode.Profiler.Controller
 				int id = int.Parse(parts[1], CultureInfo.InvariantCulture);
 				string name = parts[3] + ((string.IsNullOrEmpty(parts[4])) ? "" : " - " + parts[4]);
 				
-				lock (this.dataWriter) {
-					this.dataWriter.WriteMappings(new[] {new NameMapping(id, null, name, null)});
+				lock (dataWriter) {
+					dataWriter.WriteMappings(new[] {new NameMapping(id, null, name, null)});
 				}
 
 				return true;
@@ -726,8 +741,8 @@ namespace ICSharpCode.Profiler.Controller
 				int name = int.Parse(parts[2], CultureInfo.InvariantCulture);
 				string data = parts[3];
 				
-				lock (this.dataWriter) {
-					this.dataWriter.WriteEventData(new[] { new EventDataEntry() { DataSetId = this.dataWriter.DataSetCount, NameId = name, Type = (EventType)type, Data = data } });
+				lock (dataWriter) {
+					dataWriter.WriteEventData(new[] { new EventDataEntry() { DataSetId = dataWriter.DataSetCount, NameId = name, Type = (EventType)type, Data = data } });
 				}
 				return true;
 			} else {
@@ -820,27 +835,27 @@ namespace ICSharpCode.Profiler.Controller
 				stopDC = true;
 				nativeToManagedBuffer.Close(true);
 				try {
-					this.profilee.Kill();
+					profilee.Kill();
 				} catch (InvalidOperationException) {
 					// can happen if profilee has already exited
 				}
 				if (logger != null && logger.IsAlive) {
-					this.logger.Join();
+					logger.Join();
 				}
 
 				if (dataCollector != null && dataCollector.IsAlive) {
-					this.dataCollector.Join();
+					dataCollector.Join();
 				}
 
-				this.fullView.Dispose();
-				this.file.Close();
+				fullView.Dispose();
+				file.Close();
 				
-				this.threadListMutex.Close();
-				this.accessEventHandle.Close();
+				threadListMutex.Close();
+				accessEventHandle.Close();
 				
-				this.dataWriter.Close();
+				dataWriter.Close();
 
-				this.profilee.Dispose();
+				profilee.Dispose();
 			}
 		}
 
@@ -865,13 +880,13 @@ namespace ICSharpCode.Profiler.Controller
 			
 			public override int ProcessorFrequency {
 				get {
-					return this.profiler.ProcessorFrequency;
+					return profiler.ProcessorFrequency;
 				}
 			}
 			
 			internal unsafe override void* TranslatePointer(TargetProcessPointer ptr)
 			{
-				return this.profiler.TranslatePointer(ptr);
+				return profiler.TranslatePointer(ptr);
 			}
 		}
 		#endregion

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Drawing;
@@ -15,12 +30,14 @@ namespace ICSharpCode.SharpDevelop.Services
 	internal sealed partial class DebuggeeExceptionForm
 	{
 		Process process;
-		bool isUnhandled;
-		public Debugger.Exception Exception { get; private set; }
+		
+		public bool Break { get; set; }
 		
 		DebuggeeExceptionForm(Process process)
 		{
 			InitializeComponent();
+			
+			this.Break = true;
 			
 			this.process = process;
 			
@@ -58,18 +75,20 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.process.Resumed -= ProcessHandler;
 		}
 		
-		public static void Show(Process process, string title, string message, string stacktrace, Bitmap icon, bool isUnhandled, Debugger.Exception exception)
+		public static bool Show(Process process, string title, string type, string stacktrace, Bitmap icon, bool isUnhandled)
 		{
 			DebuggeeExceptionForm form = new DebuggeeExceptionForm(process);
 			form.Text = title;
 			form.pictureBox.Image = icon;
-			form.lblExceptionText.Text = message;
+			form.lblExceptionText.Text = type;
 			form.exceptionView.Text = stacktrace;
-			form.isUnhandled = isUnhandled;
 			form.btnContinue.Enabled = !isUnhandled;
-			form.Exception = exception;
 			
-			form.Show(WorkbenchSingleton.MainWin32Window);
+			// Showing the form as dialg seems like a resonable thing in the presence of potentially multiple
+			// concurent debugger evetns
+			form.ShowDialog(SD.WinForms.MainWin32Window);
+			
+			return form.Break;
 		}
 		
 		void ExceptionViewDoubleClick(object sender, EventArgs e)
@@ -106,10 +125,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void BtnBreakClick(object sender, EventArgs e)
 		{
-			if (this.process.SelectedThread.CurrentExceptionIsUnhandled)
-				Close();
-			else if (((WindowsDebugger)DebuggerService.CurrentDebugger).BreakAndInterceptHandledException(Exception))
-				Close();
+			this.Break = true;
+			Close();
 		}
 		
 		void BtnStopClick(object sender, EventArgs e)
@@ -120,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void BtnContinueClick(object sender, EventArgs e)
 		{
-			this.process.AsyncContinue();
+			this.Break = false;
 			Close();
 		}
 	}

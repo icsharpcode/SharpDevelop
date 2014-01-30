@@ -1,15 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	using TreeView = System.Windows.Forms.TreeView;
+	
 	public class ExtTreeNode : TreeNode, IDisposable, IClipboardHandler
 	{
 		string contextmenuAddinTreePath = null;
@@ -318,19 +335,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static Font RegularMonospacedFont {
 			get {
-				return WinFormsResourceService.DefaultMonospacedFont;
+				return SD.WinForms.DefaultMonospacedFont;
 			}
 		}
 		public static Font BoldMonospacedFont {
 			get {
 				return boldMonospacedFont
-					?? (boldMonospacedFont = WinFormsResourceService.LoadDefaultMonospacedFont(FontStyle.Bold));
+					?? (boldMonospacedFont = SD.WinForms.LoadDefaultMonospacedFont(FontStyle.Bold));
 			}
 		}
 		public static Font ItalicMonospacedFont {
 			get {
 				return italicMonospacedFont
-					?? (italicMonospacedFont = WinFormsResourceService.LoadDefaultMonospacedFont(FontStyle.Italic));
+					?? (italicMonospacedFont = SD.WinForms.LoadDefaultMonospacedFont(FontStyle.Italic));
 			}
 		}
 		
@@ -343,35 +360,35 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static Font BoldDefaultFont {
 			get {
 				return boldDefaultFont
-					?? (boldDefaultFont = WinFormsResourceService.LoadFont(RegularDefaultFont, FontStyle.Bold));
+					?? (boldDefaultFont = SD.WinForms.LoadFont(RegularDefaultFont, FontStyle.Bold));
 			}
 		}
 		
 		public static Font ItalicDefaultFont {
 			get {
 				return italicDefaultFont
-					?? (italicDefaultFont = WinFormsResourceService.LoadFont(RegularDefaultFont, FontStyle.Italic));
+					?? (italicDefaultFont = SD.WinForms.LoadFont(RegularDefaultFont, FontStyle.Italic));
 			}
 		}
 		
 		public static Font RegularBigFont {
 			get {
 				return regularBigFont
-					?? (regularBigFont = WinFormsResourceService.LoadFont("Tahoma", 9));
+					?? (regularBigFont = SD.WinForms.LoadFont("Tahoma", 9));
 			}
 		}
 		
 		public static Font BoldBigFont {
 			get {
 				return boldBigFont
-					?? (boldBigFont = WinFormsResourceService.LoadFont("Tahoma", 9, FontStyle.Bold));
+					?? (boldBigFont = SD.WinForms.LoadFont("Tahoma", 9, FontStyle.Bold));
 			}
 		}
 		
 		public static Font ItalicBigFont {
 			get {
 				return italicBigFont
-					?? (italicBigFont = WinFormsResourceService.LoadFont("Tahoma", 9, FontStyle.Italic));
+					?? (italicBigFont = SD.WinForms.LoadFont("Tahoma", 9, FontStyle.Italic));
 			}
 		}
 		#endregion

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -9,6 +24,7 @@ using System.Windows.Controls;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -28,12 +44,19 @@ namespace SearchAndReplace
 		
 		public override object GetControl()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (resultsTreeViewInstance == null)
 				resultsTreeViewInstance = new ResultsTreeView();
-			rootNode.GroupResultsByFile(ResultsTreeView.GroupResultsByFile);
+			rootNode.GroupResultsBy(ResultsTreeView.GroupingKind);
 			resultsTreeViewInstance.ItemsSource = new object[] { rootNode };
 			return resultsTreeViewInstance;
+		}
+		
+		public override void OnDeactivate()
+		{
+			if (!finished)
+				StopButtonClick(null, null);
+			base.OnDeactivate();
 		}
 		
 		public override IList GetToolbarItems()
@@ -49,7 +72,7 @@ namespace SearchAndReplace
 			
 			return items;
 		}
-	
+		
 		void StopButtonClick(object sender, RoutedEventArgs e)
 		{
 			try {
@@ -68,13 +91,15 @@ namespace SearchAndReplace
 		
 		void IObserver<SearchedFile>.OnError(Exception error)
 		{
+			if (error == null)
+				throw new ArgumentNullException("error");
 			// flatten AggregateException and
 			// filter OperationCanceledException
 			try {
 				if (error is AggregateException)
 					((AggregateException)error).Flatten().Handle(ex => ex is OperationCanceledException);
 				else if (!(error is OperationCanceledException))
-					throw error;
+					MessageService.ShowException(error);
 			} catch (Exception ex) {
 				MessageService.ShowException(ex);
 			}

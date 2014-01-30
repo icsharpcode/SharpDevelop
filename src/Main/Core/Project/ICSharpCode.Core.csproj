@@ -18,29 +18,16 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SourceAnalysisOverrideSettingsFile>C:\Users\daniel\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <Optimize>False</Optimize>
-    <DebugType>Full</DebugType>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
     <DocumentationFile>..\..\..\..\bin\ICSharpCode.Core.xml</DocumentationFile>
+    <WarningLevel>4</WarningLevel>
     <NoWarn>1591</NoWarn>
-    <DefineConstants>DEBUG</DefineConstants>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\bin\</OutputPath>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>False</DebugSymbols>
-    <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\bin\</OutputPath>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -50,13 +37,31 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <StartAction>Program</StartAction>
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>PdbOnly</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
@@ -67,6 +72,10 @@
     <Compile Include="Src\AddInTree\AddIn\Codon.cs" />
     <Compile Include="Src\AddInTree\AddIn\ComplexCondition.cs" />
     <Compile Include="Src\AddInTree\AddIn\Condition.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ICheckableMenuCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\IMenuItemBuilder.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ServiceDoozer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\StaticDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\ExtensionPath.cs" />
     <Compile Include="Src\AddInTree\AddIn\IConditionEvaluator.cs" />
     <Compile Include="Src\AddInTree\AddIn\ICondition.cs" />
@@ -80,23 +89,23 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconDescriptor.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\LazyDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractCheckableMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ICheckableMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\IMenuCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuItemDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractComboBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\IComboBoxCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ToolBarItemDoozer.cs" />
     <Compile Include="Src\AddInTree\AddInTree.cs" />
     <Compile Include="Src\AddInTree\AddInTreeNode.cs" />
+    <Compile Include="Src\AddInTree\IAddInTree.cs" />
     <Compile Include="Src\AddInTree\TopologicalSort.cs" />
     <Compile Include="Src\AddInTree\TreePathNotFoundException.cs" />
     <Compile Include="Src\CoreException.cs" />
     <Compile Include="Src\ExtensionMethods.cs" />
-    <Compile Include="Src\Services\AnalyticsMonitor\AnalyticsMonitorService.cs" />
-    <Compile Include="Src\Services\AnalyticsMonitor\IAnalyticsMonitor.cs" />
+    <Compile Include="Src\Services\AnalyticsMonitorService.cs" />
     <Compile Include="Src\Services\ApplicationStateInfoService.cs" />
+    <Compile Include="Src\Services\FileUtility\DirectoryName.cs" />
+    <Compile Include="Src\Services\FileUtility\PathName.cs" />
+    <Compile Include="Src\Services\PropertyService\IPropertyService.cs" />
+    <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
+    <Compile Include="Src\Services\PropertyService\PropertyServiceImpl.cs" />
+    <Compile Include="Src\Services\SDServiceAttribute.cs" />
     <Compile Include="Src\Services\FileUtility\FileName.cs" />
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
@@ -107,20 +116,18 @@
     <Compile Include="Src\Services\MessageService\IMessageService.cs" />
     <Compile Include="Src\Services\MessageService\MessageService.cs" />
     <Compile Include="Src\Services\PropertyService\Properties.cs" />
-    <Compile Include="Src\Services\PropertyService\PropertyChangedEvent.cs" />
-    <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
-    <Compile Include="Src\Services\RegistryService\RegistryService.cs" />
+    <Compile Include="Src\Services\ResourceService\IResourceService.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceNotFoundException.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceService.cs" />
-    <Compile Include="Src\Services\ServiceManager.cs" />
+    <Compile Include="Src\Services\ServiceSingleton.cs" />
     <Compile Include="Src\Services\ServiceNotFoundException.cs" />
     <Compile Include="Src\Services\StringParser\IStringTagProvider.cs" />
     <Compile Include="Src\Services\StringParser\PropertyObjectTagProvider.cs" />
     <Compile Include="Src\Services\StringParser\StringParser.cs" />
     <Compile Include="Src\Util\AbstractCommand.cs" />
     <Compile Include="Src\Util\CallbackOnDispose.cs" />
-    <Compile Include="Src\Util\DebugTextWriter.cs" />
-    <Compile Include="Src\Util\ICommand.cs" />
+    <Compile Include="Src\Util\CommandWrapper.cs" />
+    <Compile Include="Src\Util\TraceTextWriter.cs" />
     <Compile Include="Src\AddInTree\AddIn\IBuildItemsModifier.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeDoozer.cs" />
     <Compile Include="Src\Services\LoggingService\LoggingService.cs" />
@@ -132,13 +139,10 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractTextBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ITextBoxCommand.cs" />
+    <Compile Include="Src\Util\WeakCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />
-    <Folder Include="Src\Services\AnalyticsMonitor" />
-    <Folder Include="Src\Services\RegistryService" />
     <Folder Include="Src\Services\ResourceService" />
     <Content Include="..\..\..\..\data\schemas\AddIn.xsd">
       <Link>Src\AddInTree\AddIn\AddIn.xsd</Link>

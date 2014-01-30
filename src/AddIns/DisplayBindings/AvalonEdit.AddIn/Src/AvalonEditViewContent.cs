@@ -1,38 +1,57 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	public interface ICodeEditorProvider : ITextEditorProvider
-	{
-		CodeEditor CodeEditor { get; }
-	}
-	
 	public class AvalonEditViewContent
-		: AbstractViewContent, IEditable, IMementoCapable, ICodeEditorProvider, IPositionable, IToolsHost
+		: AbstractViewContent, IMementoCapable, IToolsHost
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		IAnalyticsMonitorTrackedFeature trackedFeature;
 		
 		public AvalonEditViewContent(OpenedFile file, Encoding fixedEncodingForLoading = null)
 		{
+			// Use common service container for view content and primary text editor.
+			// This makes all text editor services available as view content services and vice versa.
+			// (with the exception of the interfaces implemented directly by this class,
+			// those are available as view-content services only)
+			this.Services = codeEditor.PrimaryTextEditor.GetRequiredService<IServiceContainer>();
 			if (fixedEncodingForLoading != null) {
 				codeEditor.UseFixedEncoding = true;
 				codeEditor.PrimaryTextEditor.Encoding = fixedEncodingForLoading;
@@ -43,7 +62,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				string filetype = Path.GetExtension(file.FileName);
 				if (!IsKnownFileExtension(filetype))
 					filetype = ".?";
-				trackedFeature = AnalyticsMonitorService.TrackFeature(typeof(AvalonEditViewContent), "open" + filetype.ToLowerInvariant());
+				trackedFeature = SD.AnalyticsMonitor.TrackFeature(typeof(AvalonEditViewContent), "open" + filetype.ToLowerInvariant());
 			}
 			
 			this.Files.Add(file);
@@ -51,8 +70,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			file.IsDirtyChanged += PrimaryFile_IsDirtyChanged;
 			codeEditor.Document.UndoStack.PropertyChanged += codeEditor_Document_UndoStack_PropertyChanged;
-			codeEditor.CaretPositionChanged += CaretChanged;
-			codeEditor.TextCopied += codeEditor_TextCopied;
 		}
 		
 		bool IsKnownFileExtension(string filetype)
@@ -80,16 +97,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 		}
-		
-		void codeEditor_TextCopied(object sender, ICSharpCode.AvalonEdit.Editing.TextEventArgs e)
-		{
-			TextEditorSideBar.Instance.PutInClipboardRing(e.Text);
-		}
-		
-		public CodeEditor CodeEditor {
-			get { return codeEditor; }
-		}
-		
+
 		public override object Control {
 			get { return codeEditor; }
 		}
@@ -141,9 +149,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			isLoading = true;
 			try {
-//				BookmarksDetach();
-				UpdateSyntaxHighlighting(file.FileName);
-				
 				if (!file.IsUntitled) {
 					codeEditor.PrimaryTextEditor.IsReadOnly = (File.GetAttributes(file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
 				}
@@ -155,17 +160,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				
 				// we set the file name after loading because this will place the fold markers etc.
-				codeEditor.FileName = FileName.Create(file.FileName);
+				codeEditor.FileName = file.FileName;
 				BookmarksAttach();
 			} finally {
 				isLoading = false;
 			}
-		}
-		
-		void UpdateSyntaxHighlighting(FileName fileName)
-		{
-			codeEditor.SyntaxHighlighting =
-				HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 		}
 		
 		protected override void OnFileNameChanged(OpenedFile file)
@@ -173,10 +172,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			base.OnFileNameChanged(file);
 			if (file == PrimaryFile) {
 				FileName oldFileName = codeEditor.FileName;
-				FileName newFileName = FileName.Create(file.FileName);
+				FileName newFileName = file.FileName;
 				
 				if (!string.IsNullOrEmpty(oldFileName))
-					ParserService.ClearParseInformation(oldFileName);
+					SD.ParserService.ClearParseInformation(oldFileName);
 				
 				
 				BookmarksNotifyNameChange(oldFileName, newFileName);
@@ -185,33 +184,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				// processes the file name change
 				
 				codeEditor.FileName = newFileName;
-				UpdateSyntaxHighlighting(newFileName);
 				
-				ParserService.BeginParse(file.FileName, codeEditor.DocumentAdapter);
+				SD.ParserService.ParseAsync(file.FileName, codeEditor.Document).FireAndForget();
 			}
 		}
 		
 		public override INavigationPoint BuildNavPoint()
 		{
-			int lineNumber = this.Line;
-			string txt = codeEditor.Document.GetText(codeEditor.Document.GetLineByNumber(lineNumber));
-			return new TextNavigationPoint(this.PrimaryFileName, lineNumber, this.Column, txt);
-		}
-		
-		void CaretChanged(object sender, EventArgs e)
-		{
-			NavigationService.Log(this.BuildNavPoint());
-			var document = codeEditor.Document;
-			int lineOffset = document.GetLineByNumber(this.Line).Offset;
-			int chOffset = this.Column;
-			int col = 1;
-			for (int i = 1; i < chOffset; i++) {
-				if (document.GetCharAt(lineOffset + i - 1) == '\t')
-					col += CodeEditorOptions.Instance.IndentationSize;
-				else
-					col += 1;
-			}
-			WorkbenchSingleton.StatusBar.SetCaretPosition(col, this.Line, chOffset);
+			return codeEditor.BuildNavPoint();
 		}
 		
 		public override bool IsReadOnly {
@@ -225,26 +205,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (bookmarksAttached) return;
 			bookmarksAttached = true;
-			foreach (SDBookmark bookmark in BookmarkManager.GetBookmarks(codeEditor.FileName)) {
-				bookmark.Document = codeEditor.DocumentAdapter;
+			foreach (SDBookmark bookmark in SD.BookmarkManager.GetBookmarks(codeEditor.FileName)) {
+				bookmark.Document = codeEditor.Document;
 				codeEditor.IconBarManager.Bookmarks.Add(bookmark);
 			}
-			BookmarkManager.Added += BookmarkManager_Added;
-			BookmarkManager.Removed += BookmarkManager_Removed;
+			SD.BookmarkManager.BookmarkAdded += BookmarkManager_Added;
+			SD.BookmarkManager.BookmarkRemoved += BookmarkManager_Removed;
 			
-			PermanentAnchorService.AttachDocument(codeEditor.FileName, codeEditor.DocumentAdapter);
+			PermanentAnchorService.AttachDocument(codeEditor.FileName, codeEditor.Document);
 		}
 
 		void BookmarksDetach()
 		{
 			if (codeEditor.FileName != null) {
-				PermanentAnchorService.DetachDocument(codeEditor.FileName, codeEditor.DocumentAdapter);
+				PermanentAnchorService.DetachDocument(codeEditor.FileName, codeEditor.Document);
 			}
 			
-			BookmarkManager.Added -= BookmarkManager_Added;
-			BookmarkManager.Removed -= BookmarkManager_Removed;
+			SD.BookmarkManager.BookmarkAdded -= BookmarkManager_Added;
+			SD.BookmarkManager.BookmarkRemoved -= BookmarkManager_Removed;
 			foreach (SDBookmark bookmark in codeEditor.IconBarManager.Bookmarks.OfType<SDBookmark>()) {
-				if (bookmark.Document == codeEditor.DocumentAdapter) {
+				if (bookmark.Document == codeEditor.Document) {
 					bookmark.Document = null;
 				}
 			}
@@ -254,7 +234,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void BookmarkManager_Removed(object sender, BookmarkEventArgs e)
 		{
 			codeEditor.IconBarManager.Bookmarks.Remove(e.Bookmark);
-			if (e.Bookmark.Document == codeEditor.DocumentAdapter) {
+			if (e.Bookmark.Document == codeEditor.Document) {
 				e.Bookmark.Document = null;
 			}
 		}
@@ -263,13 +243,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (FileUtility.IsEqualFileName(this.PrimaryFileName, e.Bookmark.FileName)) {
 				codeEditor.IconBarManager.Bookmarks.Add(e.Bookmark);
-				e.Bookmark.Document = codeEditor.DocumentAdapter;
+				e.Bookmark.Document = codeEditor.Document;
 			}
 		}
 		
 		void BookmarksNotifyNameChange(FileName oldFileName, FileName newFileName)
 		{
-			PermanentAnchorService.RenameDocument(oldFileName, newFileName, codeEditor.DocumentAdapter);
+			PermanentAnchorService.RenameDocument(oldFileName, newFileName, codeEditor.Document);
 			
 			foreach (SDBookmark bookmark in codeEditor.IconBarManager.Bookmarks.OfType<SDBookmark>()) {
 				bookmark.FileName = newFileName;
@@ -293,22 +273,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return "[" + GetType().Name + " " + this.PrimaryFileName + "]";
 		}
 		
-		#region IEditable
-		public ITextBuffer CreateSnapshot()
-		{
-			return codeEditor.DocumentAdapter.CreateSnapshot();
-		}
-		
-		/// <summary>
-		/// Gets the document text.
-		/// </summary>
-		public string Text {
-			get {
-				return codeEditor.Document.Text;
-			}
-		}
-		#endregion
-		
 		#region IMementoCapable
 		public Properties CreateMemento()
 		{
@@ -326,35 +290,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			} catch (ArgumentOutOfRangeException) {
 				// ignore caret out of range - maybe file was changed externally?
 			}
-		}
-		#endregion
-		
-		#region ITextEditorProvider
-		public ITextEditor TextEditor {
-			get { return codeEditor.ActiveTextEditorAdapter; }
-		}
-		
-		public IDocument GetDocumentForFile(OpenedFile file)
-		{
-			if (file == this.PrimaryFile)
-				return codeEditor.DocumentAdapter;
-			else
-				return null;
-		}
-		#endregion
-		
-		#region IPositionable
-		public int Line {
-			get { return this.TextEditor.Caret.Line; }
-		}
-		
-		public int Column {
-			get { return this.TextEditor.Caret.Column; }
-		}
-		
-		public void JumpTo(int line, int column)
-		{
-			codeEditor.ActiveTextEditor.JumpTo(line, column);
 		}
 		#endregion
 		

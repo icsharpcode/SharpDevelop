@@ -33,13 +33,13 @@
 		            mimeType = "text/xml"/>
 	</Path>
 	
-	<Path name = "/Workspace/Parser">
+	<Path name = "/SharpDevelop/Parser">
 		<Parser id    = "XAML"
-		        supportedextensions  = ".xaml"
+		        supportedfilenamepattern = "\.(xaml)$"
 		        class = "ICSharpCode.XamlBinding.XamlParser"/>
 	</Path>
 	
-	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding id = "XAML" extensions = ".xaml" class = "ICSharpCode.XamlBinding.XamlCodeCompletionBinding"/>
 	</Path>
 	
@@ -47,6 +47,13 @@
 		<LanguageBinding
 			id="XAML"
 			class="ICSharpCode.XamlBinding.XamlLanguageBinding"
+			extensions=".xaml" />
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/TextEditor/Extensions">
+		<TextEditorExtension
+			id="XAML"
+			class="ICSharpCode.XamlBinding.XamlTextEditorExtension"
 			extensions=".xaml" />
 	</Path>
 	
@@ -65,19 +72,20 @@
 		             class = "ICSharpCode.XamlBinding.Options.CodeCompletion" />
 	</Path>
 	
+	<!-- TODO reimplement as context actions
 	<Path name="/SharpDevelop/Workbench/MainMenu">
 		<ComplexCondition>
 			<And>
 				<Condition name="ActiveContentExtension" activeextension=".xaml" />
-				<Condition name="WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" />
+				<Condition name="WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" />
 			</And>
 			<MenuItem id="XamlRefactoring" insertafter="Refactor" insertbefore="Project" label="${res:XML.MainMenu.RefactorMenu}" type="Menu">
 				<MenuItem id="RemoveMargin"
 				          class="ICSharpCode.XamlBinding.PowerToys.Commands.RemoveMarginCommand"
 				          label="${res:AddIns.XamlBinding.Menu.RemoveMargin}" />
-				<!--				<MenuItem id="RemoveUnnecessaryAttributes"
+								<MenuItem id="RemoveUnnecessaryAttributes"
 						   class="ICSharpCode.XamlBinding.PowerToys.Commands.RemoveUnnecessaryAttributesCommand"
-						   label="${res:AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes}" />-->
+						   label="${res:AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes}" />
 				<MenuItem type="Separator" />
 				<MenuItem id="ExtractPropertiesAsStyle"
 				          class="ICSharpCode.XamlBinding.PowerToys.Commands.ExtractPropertiesAsStyleCommand"
@@ -131,10 +139,11 @@
 				<MenuItem id="EditGridColumnsAndRows"
 				          class="ICSharpCode.XamlBinding.PowerToys.Commands.EditGridColumnsAndRowsCommand"
 				          label="${res:AddIns.XamlBinding.Menu.EditGridColumnsAndRows}" />
-				<!--				<MenuItem id="CreateBusinessForm"
+								<MenuItem id="CreateBusinessForm"
 						   class="ICSharpCode.XamlBinding.PowerToys.Commands.CreateBusinessFormFromClassCommand"
-						   label="${res:AddIns.XamlBinding.Menu.CreateBusinessFormFromClass}" />-->
+						   label="${res:AddIns.XamlBinding.Menu.CreateBusinessFormFromClass}" />
 			</MenuItem>
 		</ComplexCondition>
 	</Path>
+	-->
 </AddIn>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="ICSharpCode.AddInManager2.View.LicenseAcceptanceView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:aimvm="clr-namespace:ICSharpCode.AddInManager2.ViewModel"
+	mc:Ignorable="d"
+	WindowStartupLocation="CenterOwner"
+	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+	Title="{core:Localize AddInManager2.LicenseAcceptance.Title}"
+	Height="300"
+	Width="480"
+	MinHeight="300"
+	MinWidth="300">
+    <Window.Resources>
+        <Style
+			TargetType="Button"
+			BasedOn="{x:Static core:GlobalStyles.ButtonStyle}" />
+        <BooleanToVisibilityConverter
+			x:Key="BoolToVisibility" />
+        <aimvm:OpenHyperlinkCommand
+			x:Key="OpenHyperlinkCommand" />
+        <DataTemplate
+			x:Key="ListBoxItemTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+						Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel
+					Margin="4">
+                    <TextBlock
+						FontWeight="Bold"
+						Text="{Binding Id}" />
+                    <TextBlock>
+						<Hyperlink
+							Command="{StaticResource OpenHyperlinkCommand}"
+							CommandParameter="{Binding Path=LicenseUrl}">
+							<TextBlock
+								Text="{core:Localize AddInManager2.Details.ViewLicenseTerms}" />
+						</Hyperlink>
+					</TextBlock>
+                </StackPanel>
+                <TextBlock
+					Grid.Column="1"
+					Margin="4"
+					TextTrimming="CharacterEllipsis"
+					TextWrapping="Wrap"
+					MaxHeight="40"
+					Text="{Binding Summary}" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition
+				Height="Auto" />
+            <RowDefinition />
+            <RowDefinition
+				Height="Auto" />
+            <RowDefinition
+				Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel
+			Margin="4, 2">
+            <TextBlock
+				Visibility="{Binding Path=HasMultiplePackages, Converter={StaticResource BoolToVisibility}}"
+				TextWrapping="Wrap"
+				Text="{core:Localize AddInManager2.LicenseAcceptance.Introduction.Packages}" />
+            <TextBlock
+				Visibility="{Binding Path=HasOnePackage, Converter={StaticResource BoolToVisibility}}"
+				TextWrapping="Wrap"
+				Text="{core:Localize AddInManager2.LicenseAcceptance.Introduction.Package}" />
+        </StackPanel>
+        <Border
+			Grid.Row="1"
+			BorderThickness="1"
+			BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+            <ScrollViewer
+				VerticalScrollBarVisibility="Auto"
+				HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl
+					Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
+					ItemTemplate="{StaticResource ListBoxItemTemplate}"
+					ItemsSource="{Binding Path=Packages}" />
+            </ScrollViewer>
+        </Border>
+        <StackPanel
+			Grid.Row="2"
+			Margin="4">
+            <TextBlock
+				Visibility="{Binding Path=HasMultiplePackages, Converter={StaticResource BoolToVisibility}}"
+				TextWrapping="Wrap">
+                <TextBlock.Text>
+                    <core:LocalizeExtension Key="AddInManager2.LicenseAcceptance.Explanation.Packages" />
+                </TextBlock.Text>
+            </TextBlock>
+            <TextBlock
+				Visibility="{Binding Path=HasOnePackage, Converter={StaticResource BoolToVisibility}}"
+				TextWrapping="Wrap">
+                <TextBlock.Text>
+                    <core:LocalizeExtension Key="AddInManager2.LicenseAcceptance.Explanation.Package" />
+                </TextBlock.Text>
+            </TextBlock>
+        </StackPanel>
+        <StackPanel
+			Grid.Row="3"
+			Margin="4"
+			Orientation="Horizontal"
+			HorizontalAlignment="Right">
+            <Button
+				Content="{core:Localize Key=AddInManager2.LicenseAcceptance.DeclineButton, UsesAccessors=True}"
+				IsCancel="True"
+				Margin="0,0,4,0"/>
+            <Button
+				Content="{core:Localize Key=AddInManager2.LicenseAcceptance.AcceptButton, UsesAccessors=True}"
+				Click="AcceptButtonClick"/>
+        </StackPanel>
+    </Grid>
+</Window>

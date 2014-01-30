@@ -1,9 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
 
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.XamlDom;
@@ -14,6 +31,15 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 	[TestFixture]
 	public class EditOperationTests : ModelTestHelper
 	{
+		protected override XamlLoadSettings CreateXamlLoadSettings()
+		{
+			var settings = base.CreateXamlLoadSettings();
+			
+			settings.TypeFinder.RegisterAssembly(typeof(NamespaceTests).Assembly);
+			
+			return settings;
+		}
+		
 		Mutex mutex;
 		
 		[TestFixtureSetUp]
@@ -204,5 +230,108 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			Assert.IsNotNull(nameScope.FindName(_name + "_Copy3"));
 			Assert.IsNull(nameScope.FindName(_name + "_Copy4"));
 		}
+		
+		[Test]
+		public void PasteCustomControlUsingMixedTypes()
+		{
+			DesignItem grid = CreateGridContextWithDesignSurface("<Button/>");
+			DesignItem myButton = grid.Services.Component.RegisterComponentForDesigner(new ICSharpCode.WpfDesign.Tests.Controls.CustomButton());
+			grid.Properties["Children"].CollectionElements.Add(myButton);
+			
+			DesignItem extensionItem = grid.Services.Component.RegisterComponentForDesigner(new MyExtension());
+			extensionItem.Properties["MyProperty1"].SetValue(new Button());
+			myButton.Properties[ICSharpCode.WpfDesign.Tests.Controls.CustomButton.TagProperty].SetValue(extensionItem);
+			
+			var xamlContext = grid.Context as XamlDesignContext;
+			Assert.IsNotNull(xamlContext);
+			xamlContext.XamlEditAction.Copy(new[] {myButton});
+			
+			grid = CreateGridContextWithDesignSurface("<Button/>");
+			xamlContext = grid.Context as XamlDesignContext;
+			Assert.IsNotNull(xamlContext);
+			var selection = grid.Services.Selection;
+			selection.SetSelectedComponents(new[] {grid});
+			xamlContext.XamlEditAction.Paste();
+
+			string expectedXaml = "<Button />\n" +
+								  "<sdtcontrols:CustomButton>\n" +
+								  "  <sdtcontrols:CustomButton.Tag>\n" +
+								  "    <Controls0:MyExtension>\n" +
+								  "      <Controls0:MyExtension.MyProperty1>\n" +
+								  "        <Button />\n" +
+								  "      </Controls0:MyExtension.MyProperty1>\n" +
+								  "    </Controls0:MyExtension>\n" +
+								  "  </sdtcontrols:CustomButton.Tag>\n" +
+								  "</sdtcontrols:CustomButton>\n";
+			
+			AssertGridDesignerOutput(expectedXaml, grid.Context,
+			                         "xmlns:Controls0=\"clr-namespace:ICSharpCode.WpfDesign.Tests.Designer;assembly=ICSharpCode.WpfDesign.Tests\"",
+			                         "xmlns:sdtcontrols=\"http://sharpdevelop.net/WpfDesign/Tests/Controls\"");
+		}
+		
+		[Test]
+		public void PasteCustomControlUsingStaticResource()
+		{
+			DesignItem grid = CreateGridContextWithDesignSurface("<Button/>");
+
+			DesignItemProperty resProp = grid.Properties.GetProperty("Resources");
+			Assert.IsTrue(resProp.IsCollection);
+			DesignItem exampleClassItem = grid.Services.Component.RegisterComponentForDesigner(new ExampleClass());
+			exampleClassItem.Key = "res1";
+			resProp.CollectionElements.Add(exampleClassItem);
+
+			DesignItem myButton = grid.Services.Component.RegisterComponentForDesigner(new ICSharpCode.WpfDesign.Tests.Controls.CustomButton());
+			grid.Properties["Children"].CollectionElements.Add(myButton);
+			
+			myButton.Properties[TextBox.TagProperty].SetValue(new StaticResourceExtension());
+			myButton.Properties[TextBox.TagProperty].Value.Properties["ResourceKey"].SetValue("res1");
+			
+			// Verify xaml document to be copied
+			string expectedXaml = "<Grid.Resources>\n" +
+								  "  <Controls0:ExampleClass x:Key=\"res1\" />\n" +
+								  "</Grid.Resources>\n" +
+								  "<Button />\n" +
+								  "<sdtcontrols:CustomButton Tag=\"{StaticResource ResourceKey=res1}\" />\n";
+			
+			AssertGridDesignerOutput(expectedXaml, grid.Context,
+			                         "xmlns:Controls0=\"clr-namespace:ICSharpCode.WpfDesign.Tests.Designer;assembly=ICSharpCode.WpfDesign.Tests\"",
+			                         "xmlns:sdtcontrols=\"http://sharpdevelop.net/WpfDesign/Tests/Controls\"");
+			
+			var xamlContext = grid.Context as XamlDesignContext;
+			Assert.IsNotNull(xamlContext);
+			xamlContext.XamlEditAction.Copy(new[] {myButton});
+			
+			grid = CreateGridContextWithDesignSurface("<Button/>");
+
+			resProp = grid.Properties.GetProperty("Resources");
+			Assert.IsTrue(resProp.IsCollection);
+			exampleClassItem = grid.Services.Component.RegisterComponentForDesigner(new ExampleClass());
+			exampleClassItem.Key = "res1";
+			resProp.CollectionElements.Add(exampleClassItem);
+			
+			xamlContext = grid.Context as XamlDesignContext;
+			Assert.IsNotNull(xamlContext);
+			var selection = grid.Services.Selection;
+			selection.SetSelectedComponents(new[] {grid});
+			xamlContext.XamlEditAction.Paste();
+			
+			AssertGridDesignerOutput(expectedXaml, grid.Context,
+			                         "xmlns:Controls0=\"clr-namespace:ICSharpCode.WpfDesign.Tests.Designer;assembly=ICSharpCode.WpfDesign.Tests\"",
+			                         "xmlns:sdtcontrols=\"http://sharpdevelop.net/WpfDesign/Tests/Controls\"");
+		}
+	}
+	
+	public class MyExtension : MarkupExtension
+	{
+		public MyExtension()
+		{
+		}
+
+		public override object ProvideValue(IServiceProvider serviceProvider)
+		{
+			return null;
+		}
+		
+		public object MyProperty1 { get; set; }
 	}
 }

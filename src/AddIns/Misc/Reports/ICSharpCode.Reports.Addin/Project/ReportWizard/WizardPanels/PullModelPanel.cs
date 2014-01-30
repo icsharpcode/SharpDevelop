@@ -1,8 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Reflection;
 using System.Windows.Forms;
@@ -12,7 +28,6 @@ using ICSharpCode.Core;
 using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Data.Core.UI.UserControls;
 using ICSharpCode.SharpDevelop;
-
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -29,7 +44,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private bool firstDrag;
 		private string connectionString;
 		private ReportStructure reportStructure;
-		private Properties customizer;		
 		private IDatabaseObjectBase currentNode;
         private ElementHost databasesTreeHost;
         private DatabasesTreeView databasesTree;
@@ -76,13 +90,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)
 		{
-			if (customizer == null) {
-				customizer = (Properties)base.CustomizationObject;
-				reportStructure = (ReportStructure)customizer.Get("Generator");
-			}
 			
+			this.reportStructure = (ReportStructure)base.CustomizationObject;
+
 			if (message == DialogMessage.Next) {
-				customizer.Set("SqlString", this.txtSqlString.Text.Trim());
 				reportStructure.SqlString = this.txtSqlString.Text.Trim();
 				reportStructure.ConnectionString = connectionString;
 				base.EnableFinish = true;
@@ -211,53 +222,52 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 
 
-        private void databasesTree_SelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
-        {
-        	if (e.NewValue is IDatabaseObjectBase)
-            {
-                IDatabase parentDatabase = e.NewValue as IDatabase;
+		private void databasesTree_SelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
+		{
+			if (e.NewValue is IDatabaseObjectBase)
+			{
+				IDatabase parentDatabase = e.NewValue as IDatabase;
 
-                if (parentDatabase == null)
-                {
-                    IDatabaseObjectBase currentDatabaseObject = e.NewValue as IDatabaseObjectBase;
+				if (parentDatabase == null)
+				{
+					IDatabaseObjectBase currentDatabaseObject = e.NewValue as IDatabaseObjectBase;
 
-                    while (parentDatabase == null)
-                    {
-                        if (currentDatabaseObject.Parent == null)
-                            break;
-                        else if (currentDatabaseObject.Parent is IDatabase)
-                        {
-                            parentDatabase = currentDatabaseObject.Parent as IDatabase;
-                            break;
-                        }
-                        else
-                            currentDatabaseObject = currentDatabaseObject.Parent;                        
-                    }
-                }
+					while (parentDatabase == null)
+					{
+						if (currentDatabaseObject.Parent == null)
+							break;
+						else if (currentDatabaseObject.Parent is IDatabase)
+						{
+							parentDatabase = currentDatabaseObject.Parent as IDatabase;
+							break;
+						}
+						else
+							currentDatabaseObject = currentDatabaseObject.Parent;
+					}
+				}
 
+				if (parentDatabase != null)
+					this.currentNode = parentDatabase;
 
-                if (parentDatabase != null)
-                    this.currentNode = parentDatabase;
+				if (this.currentNode is IDatabase)
+				{
+					if (parentDatabase != null)
+					{
+						this.connectionString =  parentDatabase.ConnectionString;
+						this.txtSqlString.Enabled = true;
 
-                if (this.currentNode is IDatabase)
-                {
-                	if (parentDatabase != null)
-                	{
-                		this.connectionString = "Provider=" + parentDatabase.Datasource.DatabaseDriver.ODBCProviderName + ";" + parentDatabase.ConnectionString;
-                		this.txtSqlString.Enabled = true;
-
-                		if (this.firstDrag)
-                			this.txtSqlString.Text = string.Empty;
-                		
-                		firstDrag = false;
-                	}
-                }
-                else
-                {
-                    this.EnableNext = false;
-                }
-            }
-        }
+						if (this.firstDrag)
+							this.txtSqlString.Text = string.Empty;
+						
+						firstDrag = false;
+					}
+				}
+				else
+				{
+					this.EnableNext = false;
+				}
+			}
+		}
 		
 		// check witch type of node we dragg
 		private static NodeType CheckCurrentNode (IDatabaseObjectBase node) {

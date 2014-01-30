@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -24,9 +39,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		RenderTransformOriginThumb renderTransformOriginThumb;
 		/// <summary>An array containing this.ExtendedItem as only element</summary>
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
-		IPlacementBehavior resizeBehavior;
-		PlacementOperation operation;
-		ChangeGroup changeGroup;
+//		IPlacementBehavior resizeBehavior;
+//		PlacementOperation operation;
+//		ChangeGroup changeGroup;
 		
 		public RenderTransformOriginExtension()
 		{
@@ -52,18 +67,19 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		void renderTransformOriginThumb_DragCompleted(object sender, DragCompletedEventArgs e)
 		{
-			this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(Math.Round(renderTransformOrigin.X, 4), Math.Round(renderTransformOrigin.Y, 4)));
+			ExtendedItem.Properties.GetProperty(UIElement.RenderTransformOriginProperty).SetValue(new Point(Math.Round(renderTransformOrigin.X, 4), Math.Round(renderTransformOrigin.Y, 4)));
 		}
 		
 		void renderTransformOriginThumb_DragDelta(object sender, DragDeltaEventArgs e)
 		{
 			var p = AdornerPanel.GetPlacement(renderTransformOriginThumb) as RelativePlacement;
+			if (p == null) return;
 			var pointAbs = adornerPanel.RelativeToAbsolute(new Vector(p.XRelativeToContentWidth, p.YRelativeToContentHeight));
 			var pointAbsNew = pointAbs + new Vector(e.HorizontalChange, e.VerticalChange);
 			var pRel = adornerPanel.AbsoluteToRelative(pointAbsNew);
 			renderTransformOrigin = new Point(pRel.X, pRel.Y);
 			
-			this.ExtendedItem.View.SetValue(FrameworkElement.RenderTransformOriginProperty, renderTransformOrigin);
+			this.ExtendedItem.View.SetValue(UIElement.RenderTransformOriginProperty, renderTransformOrigin);
 			//this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(Math.Round(pRel.X, 4), Math.Round(pRel.Y, 4)));
 		}
 		

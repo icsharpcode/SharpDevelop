@@ -30,7 +30,7 @@
 	</Path>	
 	
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
-		<Directory id = "C++" path = "./Templates" />
+		<TemplateFile id = "C++" resourceNamespace = "ICSharpCode.CppBinding.Templates" />
 	</Path>
 
 	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">
@@ -38,16 +38,10 @@
 		       class="ICSharpCode.CppBinding.Project.SpecifyCliRuntimeLibraryCommand"/>
 	</Path>
 
-	<Path name = "/SharpDevelop/Workbench/Ambiences">
-		<Class id    = "C++"
-		       class = "ICSharpCode.CppBinding.CppAmbience"/>
-	</Path>
-
 	<Path name="/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id="C++Project"
 					insertbefore="AllFiles"
 					name="C++ project files (*.vcxproj)"
-					class="ICSharpCode.SharpDevelop.Project.LoadProject"
 					extensions="*.vcxproj" />
 	</Path>
 
@@ -81,9 +75,9 @@
 	</Path>
 
 	<!--
-	<Path name="/Workspace/Parser">
+	<Path name="/SharpDevelop/Parser">
 		<Parser id="C++"
-				supportedextensions=".cpp;.c;.hpp;.h"
+				supportedfilenamepattern="\.(cpp|c|hpp|h)$"
 				projectfileextension="vcxproj"
 				class="ICSharpCode.CppBinding.Parser.CppParser" />
 	</Path>

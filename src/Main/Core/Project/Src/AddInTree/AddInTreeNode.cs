@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -64,14 +79,14 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Builds the child items in this path. Ensures that all items have the type T.
 		/// </summary>
-		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="parameter">A parameter that gets passed into the doozer and condition evaluators.</param>
 		/// <param name="additionalConditions">Additional conditions applied to the node.</param>
-		public List<T> BuildChildItems<T>(object caller, IEnumerable<ICondition> additionalConditions = null)
+		public List<T> BuildChildItems<T>(object parameter, IEnumerable<ICondition> additionalConditions = null)
 		{
 			var codons = this.Codons;
 			List<T> items = new List<T>(codons.Count);
 			foreach (Codon codon in codons) {
-				object result = BuildChildItem(codon, caller, additionalConditions);
+				object result = BuildChildItem(codon, parameter, additionalConditions);
 				if (result == null)
 					continue;
 				IBuildItemsModifier mod = result as IBuildItemsModifier;
@@ -88,7 +103,7 @@ namespace ICSharpCode.Core
 			return items;
 		}
 		
-		public object BuildChildItem(Codon codon, object caller, IEnumerable<ICondition> additionalConditions = null)
+		public object BuildChildItem(Codon codon, object parameter, IEnumerable<ICondition> additionalConditions = null)
 		{
 			if (codon == null)
 				throw new ArgumentNullException("codon");
@@ -96,25 +111,15 @@ namespace ICSharpCode.Core
 			AddInTreeNode subItemNode;
 			childNodes.TryGetValue(codon.Id, out subItemNode);
 			
-			IEnumerable<ICondition> conditions;
+			IReadOnlyCollection<ICondition> conditions;
 			if (additionalConditions == null)
 				conditions = codon.Conditions;
-			else if (codon.Conditions.Length == 0)
-				conditions = additionalConditions;
+			else if (codon.Conditions == null)
+				conditions = additionalConditions.ToList();
 			else
-				conditions = additionalConditions.Concat(codon.Conditions);
+				conditions = additionalConditions.Concat(codon.Conditions).ToList();
 			
-			return codon.BuildItem(new BuildItemArgs(caller, codon, conditions, subItemNode));
-		}
-		
-		/// <summary>
-		/// Builds the child items in this path.
-		/// </summary>
-		/// <param name="caller">The owner used to create the objects.</param>
-		[Obsolete("Use the generic BuildChildItems version instead")]
-		public ArrayList BuildChildItems(object caller)
-		{
-			return new ArrayList(this.BuildChildItems<object>(caller));
+			return codon.BuildItem(new BuildItemArgs(parameter, codon, conditions, subItemNode));
 		}
 		
 		/// <summary>
@@ -123,16 +128,16 @@ namespace ICSharpCode.Core
 		/// <param name="childItemID">
 		/// The ID of the child item to build.
 		/// </param>
-		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="parameter">The owner used to create the objects.</param>
 		/// <param name="additionalConditions">Additional conditions applied to the created object</param>
 		/// <exception cref="TreePathNotFoundException">
 		/// Occurs when <paramref name="childItemID"/> does not exist in this path.
 		/// </exception>
-		public object BuildChildItem(string childItemID, object caller, IEnumerable<ICondition> additionalConditions = null)
+		public object BuildChildItem(string childItemID, object parameter, IEnumerable<ICondition> additionalConditions = null)
 		{
 			foreach (Codon codon in this.Codons) {
 				if (codon.Id == childItemID) {
-					return BuildChildItem(codon, caller, additionalConditions);
+					return BuildChildItem(codon, parameter, additionalConditions);
 				}
 			}
 			throw new TreePathNotFoundException(childItemID);

@@ -1,27 +1,43 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	public static class FindReferencesAndRenameHelper
 	{
 		#region Extract Interface
+		/* Reimplement extract interface and put the code somewhere else - this isn't the place for C#-specific refactorings
 		public static void ExtractInterface(IClass c)
 		{
 			ExtractInterfaceOptions extractInterface = new ExtractInterfaceOptions(c);
@@ -32,18 +48,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 				
 				// do rename
-				/*
-				 MessageService.ShowMessageFormatted("Extracting interface",
-				                                    @"Extracting {0} [{1}] from {2} into {3}",
-				                                    extractInterface.NewInterfaceName,
-				                                    extractInterface.FullyQualifiedName,
-				                                    extractInterface.ClassEntity.Name,
-				                                    extractInterface.NewFileName
-				                                   );
-`				*/
+//				 MessageService.ShowMessageFormatted("Extracting interface",
+//				                                    @"Extracting {0} [{1}] from {2} into {3}",
+//				                                    extractInterface.NewInterfaceName,
+//				                                    extractInterface.FullyQualifiedName,
+//				                                    extractInterface.ClassEntity.Name,
+//				                                    extractInterface.NewFileName
+//				                                   );
 			}
 			
-			string newInterfaceFileName = Path.Combine(Path.GetDirectoryName(c.CompilationUnit.FileName),
+			string newInterfaceFileName = Path.Combine(Path.GetDirectoryName(c.SyntaxTree.FileName),
 			                                           extractInterface.NewFileName);
 			if (File.Exists(newInterfaceFileName)) {
 				int confirmReplace = MessageService.ShowCustomDialog("Extract Interface",
@@ -58,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			
 			LanguageProperties language = c.ProjectContent.Language;
-			string classFileName = c.CompilationUnit.FileName;
+			string classFileName = c.SyntaxTree.FileName;
 			string existingClassCode = ParserService.GetParseableFileContent(classFileName).Text;
 			
 			// build the new interface...
@@ -94,8 +108,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			
-			ICompilationUnit newCompilationUnit = ParserService.ParseFile(newInterfaceFileName).CompilationUnit;
-			IClass newInterfaceDef = newCompilationUnit.Classes[0];
+			ISyntaxTree newSyntaxTree = ParserService.ParseFile(newInterfaceFileName).SyntaxTree;
+			IClass newInterfaceDef = newSyntaxTree.Classes[0];
 			
 			// finally, add the interface to the base types of the class that we're extracting from
 			if (extractInterface.AddInterfaceToClass) {
@@ -113,10 +127,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				editable.TextEditor.Document.Text = modifiedClassCode;
 			}
 		}
+		 */
 		#endregion
 		
+		/*
 		#region Rename Class
-		public static void RenameClass(IClass c)
+		public static void RenameClass(ITypeDefinition c)
 		{
 			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameClassText}", c.Name);
 			if (!FindReferencesAndRenameHelper.CheckName(newName, c.Name)) return;
@@ -127,40 +143,30 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		public static void RenameClass(IClass c, string newName)
+		public static void RenameClass(ITypeDefinition c, string newName)
 		{
 			if (c == null)
 				throw new ArgumentNullException("c");
 			if (newName == null)
 				throw new ArgumentNullException("newName");
-			c = c.GetCompoundClass(); // get compound class if class is partial
+			c = c.GetDefinition(); // get compound class if class is partial
 			
 			List<Reference> list = RefactoringService.FindReferences(c, null);
 			if (list == null) return;
 			
 			// Add the class declaration(s)
-			foreach (IClass part in GetClassParts(c)) {
-				AddDeclarationAsReference(list, part.CompilationUnit.FileName, part.Region, part.Name);
+			foreach (ITypeDefinition part in c.GetParts()) {
+				AddDeclarationAsReference(list, part.SyntaxTree.FileName, part.Region, part.Name);
 			}
 			
 			// Add the constructors
 			foreach (IMethod m in c.Methods) {
 				if (m.IsConstructor || (m.Name == "#dtor")) {
-					AddDeclarationAsReference(list, m.DeclaringType.CompilationUnit.FileName, m.Region, c.Name);
+					AddDeclarationAsReference(list, m.DeclaringType.SyntaxTree.FileName, m.Region, c.Name);
 				}
 			}
 			
 			FindReferencesAndRenameHelper.RenameReferences(list, newName);
-		}
-		
-		static IList<IClass> GetClassParts(IClass c)
-		{
-			CompoundClass cc = c as CompoundClass;
-			if (cc != null) {
-				return cc.Parts;
-			} else {
-				return new IClass[] {c};
-			}
 		}
 		
 		static void AddDeclarationAsReference(List<Reference> list, string fileName, DomRegion region, string name)
@@ -240,51 +246,25 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return foundProperty;
 		}
 		#endregion
+		 */
 		
 		#region Common helper functions
-		public static ProvidedDocumentInformation GetDocumentInformation(string fileName)
+		public static bool IsReadOnly(ITypeDefinition c)
 		{
-			OpenedFile file = FileService.GetOpenedFile(fileName);
-			if (file != null) {
-				IFileDocumentProvider documentProvider = file.CurrentView as IFileDocumentProvider;
-				if (documentProvider != null) {
-					IDocument document = documentProvider.GetDocumentForFile(file);
-					if (document != null) {
-						return new ProvidedDocumentInformation(document, fileName, 0);
-					}
-				}
-			}
-			ITextBuffer fileContent = ParserService.GetParseableFileContent(fileName);
-			return new ProvidedDocumentInformation(fileContent, fileName, 0);
+			return c.IsSynthetic || c.Parts.All(p => p.UnresolvedFile == null);
 		}
 		
-		public static bool IsReadOnly(IClass c)
+		[Obsolete("Use NavigationService.NavigateTo() instead")]
+		public static void JumpToDefinition(IMember member)
 		{
-			return c.CompilationUnit.FileName == null || c.GetCompoundClass().IsSynthetic;
+			NavigationService.NavigateTo(member);
 		}
 		
-		public static ITextEditor JumpToDefinition(IMember member)
-		{
-			IViewContent viewContent = null;
-			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
-			if (cu != null) {
-				string fileName = cu.FileName;
-				if (fileName != null) {
-					if (!member.Region.IsEmpty) {
-						viewContent = FileService.JumpToFilePosition(fileName, member.Region.BeginLine, member.Region.BeginColumn);
-					} else {
-						FileService.OpenFile(fileName);
-					}
-				}
-			}
-			ITextEditorProvider tecp = viewContent as ITextEditorProvider;
-			return (tecp == null) ? null : tecp.TextEditor;
-		}
-		
+		/*
 		public static ITextEditor OpenDefinitionFile(IMember member, bool switchTo)
 		{
 			IViewContent viewContent = null;
-			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
+			ISyntaxTree cu = member.DeclaringType.SyntaxTree;
 			if (cu != null) {
 				string fileName = cu.FileName;
 				if (fileName != null) {
@@ -298,7 +278,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static ITextEditor JumpBehindDefinition(IMember member)
 		{
 			IViewContent viewContent = null;
-			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
+			ISyntaxTree cu = member.DeclaringType.SyntaxTree;
 			if (cu != null) {
 				string fileName = cu.FileName;
 				if (fileName != null) {
@@ -369,93 +349,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 		}
-		
-		public static void ShowAsSearchResults(string title, List<Reference> list)
-		{
-			if (list == null) return;
-			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
-			TextDocument document = null;
-			ITextBuffer buffer = null;
-			FileName fileName = null;
-			ISyntaxHighlighter highlighter = null;
-			foreach (Reference r in list) {
-				var f = new FileName(r.FileName);
-				if (document == null || !f.Equals(fileName)) {
-					buffer = ParserService.GetParseableFileContent(r.FileName);
-					document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
-					fileName = new FileName(r.FileName);
-					highlighter = EditorControlService.Instance.CreateHighlighter(new AvalonEditDocumentAdapter(document, null), fileName);
-				}
-				var start = document.GetLocation(r.Offset).ToLocation();
-				var end = document.GetLocation(r.Offset + r.Length).ToLocation();
-				var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
-				var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
-				SearchResultMatch res = new SearchResultMatch(fileName, start, end, r.Offset, r.Length, builder, defaultTextColor);
-				results.Add(res);
-			}
-			SearchResultsPad.Instance.ShowSearchResults(title, results);
-			SearchResultsPad.Instance.BringToFront();
-		}
-		
-		sealed class FileView {
-			public IViewContent ViewContent;
-			public OpenedFile OpenedFile;
-		}
-		
-		public static void RenameReferences(List<Reference> list, string newName)
-		{
-			Dictionary<IDocument, FileView> modifiedDocuments = new Dictionary<IDocument, FileView>();
-			List<Modification> modifications = new List<Modification>();
-			foreach (Reference r in list) {
-				IDocument document = null;
-				IViewContent viewContent = null;
-				
-				OpenedFile file = FileService.GetOpenedFile(r.FileName);
-				if (file != null) {
-					viewContent = file.CurrentView;
-					IFileDocumentProvider p = viewContent as IFileDocumentProvider;
-					if (p != null) {
-						document = p.GetDocumentForFile(file);
-					}
-				}
-				
-				if (document == null) {
-					viewContent = FileService.OpenFile(r.FileName, false);
-					IFileDocumentProvider p = viewContent as IFileDocumentProvider;
-					if (p != null) {
-						file = FileService.GetOpenedFile(r.FileName);
-						System.Diagnostics.Debug.Assert(file != null, "OpenedFile not found after opening the file.");
-						document = p.GetDocumentForFile(file);
-					}
-				}
-				
-				if (document == null) {
-					LoggingService.Warn("RenameReferences: Could not get document for file '" + r.FileName + "'");
-					continue;
-				}
-				
-				if (!modifiedDocuments.ContainsKey(document)) {
-					modifiedDocuments.Add(document, new FileView() {ViewContent = viewContent, OpenedFile = file});
-					document.StartUndoableAction();
-				}
-				
-				ModifyDocument(modifications, document, r.Offset, r.Length, newName);
-			}
-			foreach (KeyValuePair<IDocument, FileView> entry in modifiedDocuments) {
-				entry.Key.EndUndoableAction();
-				entry.Value.OpenedFile.MakeDirty();
-				if (entry.Value.ViewContent is IEditable) {
-					ParserService.ParseViewContent(entry.Value.ViewContent);
-				} else {
-					ParserService.ParseFile(entry.Value.OpenedFile.FileName, entry.Key);
-				}
-			}
-		}
+		 */
 
+		/* TODO: these are refactorings and don't belong here
 		public static void MoveClassToFile(IClass c, string newFileName)
 		{
 			LanguageProperties language = c.ProjectContent.Language;
-			string existingCode = ParserService.GetParseableFileContent(c.CompilationUnit.FileName).Text;
+			string existingCode = ParserService.GetParseableFileContent(c.SyntaxTree.FileName).Text;
 			DomRegion fullRegion = language.RefactoringProvider.GetFullCodeRangeForType(existingCode, c);
 			if (fullRegion.IsEmpty) return;
 			
@@ -531,52 +431,38 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (c is CompoundClass)
 				throw new ArgumentException("Cannot get document from compound class - must pass a specific class part");
 			
-			ITextEditorProvider tecp = FileService.OpenFile(c.CompilationUnit.FileName) as ITextEditorProvider;
+			ITextEditorProvider tecp = FileService.OpenFile(c.SyntaxTree.FileName) as ITextEditorProvider;
 			if (tecp == null) return null;
 			return tecp.TextEditor.Document;
 		}
-		
+		 */
 		#endregion
 		
 		
 		#region Find references
-		public static void RunFindReferences(IMember member)
+		public static void RunFindReferences(IEntity entity)
 		{
-			string memberName = member.DeclaringType.Name + "." + member.Name;
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}", true)) {
-				FindReferencesAndRenameHelper.ShowAsSearchResults(
-					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-					                   new StringTagPair("Name", memberName)),
-					RefactoringService.FindReferences(member, monitor));
-			}
-		}
-		
-		public static void RunFindReferences(IClass c)
-		{
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}", true)) {
-				FindReferencesAndRenameHelper.ShowAsSearchResults(
-					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-					                   new StringTagPair("Name", c.Name)),
-					RefactoringService.FindReferences(c, monitor)
-				);
-			}
+			string entityName = (entity.DeclaringTypeDefinition != null ? entity.DeclaringTypeDefinition.Name + "." + entity.Name : entity.Name);
+			var monitor = SD.StatusBar.CreateProgressMonitor();
+			var results = FindReferenceService.FindReferences(entity, monitor);
+			SearchResultsPad.Instance.ShowSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}", new StringTagPair("Name", entityName)), results);
+			SearchResultsPad.Instance.BringToFront();
 		}
 		
 		public static void RunFindReferences(LocalResolveResult local)
 		{
-			FindReferencesAndRenameHelper.ShowAsSearchResults(
-				StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-				                   new StringTagPair("Name", local.VariableName)),
-				RefactoringService.FindReferences(local, null)
-			);
+			var monitor = SD.StatusBar.CreateProgressMonitor();
+			var results = FindReferenceService.FindLocalReferences(local.Variable, monitor);
+			SearchResultsPad.Instance.ShowSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}", new StringTagPair("Name", local.Variable.Name)), results);
+			SearchResultsPad.Instance.BringToFront();
 		}
 		
-		public static ICSharpCode.Core.WinForms.MenuCommand MakeFindReferencesMenuCommand(EventHandler handler)
-		{
-			return new ICSharpCode.Core.WinForms.MenuCommand("${res:SharpDevelop.Refactoring.FindReferencesCommand}", handler) {
-				ShortcutKeys = System.Windows.Forms.Keys.F12
-			};
-		}
+//		public static ICSharpCode.Core.WinForms.MenuCommand MakeFindReferencesMenuCommand(EventHandler handler)
+//		{
+//			return new ICSharpCode.Core.WinForms.MenuCommand("${res:SharpDevelop.Refactoring.FindReferencesCommand}", handler) {
+//				ShortcutKeys = System.Windows.Forms.Keys.F12
+//			};
+//		}
 		#endregion
 	}
 }

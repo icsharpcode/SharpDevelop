@@ -6,7 +6,7 @@
 		<Name>${res:Templates.Project.WinFXApplication.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>WPF</Subcategory>
-		<Icon>VBNet.Project.WPFProject</Icon>
+		<Icon>VB.Project.WPFProject</Icon>
 		<Description>${res:Templates.Project.WinFXApplication.Description}</Description>
 		<SupportedTargetFrameworks>v3.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -16,7 +16,7 @@
 		<Open filename = "MainWindow.xaml"/>
 	</Actions>
 	
-	<Project language = "VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

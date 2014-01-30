@@ -4,28 +4,21 @@ AddIn.xsd
 SharpDevelop schema for .addin files.  
 Created by Ivo Kovacka.
 Doozers automatically updated by "BuildAddinDocumentation".
-GNU General Public License.
+MIT License.
 
 appconfig.xsd
 -------------
 
 Schema for app.config and web.config files.
 Created by Matt Ward
-GNU General Public License.
+MIT License.
 
 manifest.xsd
 -------------
 
 Schema for .manifest files.
 Created by Matt Ward
-GNU General Public License.
-
-NAnt.xsd
---------
-
-NAnt 0.85 schema.
-http://nant.sourceforge.net/release/0.85/nant.xsd
-GNU General Public License.
+MIT License.
 
 nuspec.xsd
 ----------

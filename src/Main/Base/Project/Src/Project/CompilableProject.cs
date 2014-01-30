@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -7,11 +22,15 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Xml.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project.Converter;
-using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -61,26 +80,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		protected readonly ISet<string> reparseCodeSensitiveProperties = new SortedSet<string>();
 		
-		protected CompilableProject(ICSharpCode.SharpDevelop.Internal.Templates.ProjectCreateInformation information)
+		protected CompilableProject(ProjectCreateInformation information)
 			: base(information)
 		{
 			this.OutputType = OutputType.Exe;
-			this.RootNamespace = information.RootNamespace;
-			this.AssemblyName = information.ProjectName;
+			SetProperty("RootNamespace", information.RootNamespace);
+			SetProperty("AssemblyName", information.ProjectName);
 			
-			ClientProfileTargetFramework clientProfile = information.TargetFramework as ClientProfileTargetFramework;
-			if (clientProfile != null) {
-				SetProperty(null, null, "TargetFrameworkVersion", clientProfile.FullFramework.Name, PropertyStorageLocations.Base, true);
-				SetProperty(null, null, "TargetFrameworkProfile", "Client", PropertyStorageLocations.Base, true);
-			} else if (information.TargetFramework != null) {
-				SetProperty(null, null, "TargetFrameworkVersion", information.TargetFramework.Name, PropertyStorageLocations.Base, true);
+			if (information.TargetFramework != null) {
+				SetProperty(null, null, "TargetFrameworkVersion", information.TargetFramework.TargetFrameworkVersion, PropertyStorageLocations.Base, true);
+				if (!string.IsNullOrEmpty(information.TargetFramework.TargetFrameworkProfile)) {
+					SetProperty(null, null, "TargetFrameworkProfile", information.TargetFramework.TargetFrameworkProfile, PropertyStorageLocations.Base, true);
+				}
 			}
 			
 			SetProperty("Debug", null, "OutputPath", @"bin\Debug\",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
 			SetProperty("Release", null, "OutputPath", @"bin\Release\",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
-			InvalidateConfigurationPlatformNames();
+			LoadConfigurationPlatformNamesFromMSBuild();
 			
 			SetProperty("Debug", null, "DebugSymbols", "True",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
@@ -107,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the path where temporary files are written to during compilation.
 		/// </summary>
 		[Browsable(false)]
-		public string IntermediateOutputFullPath {
+		public DirectoryName IntermediateOutputFullPath {
 			get {
 				string outputPath = GetEvaluatedProperty("IntermediateOutputPath");
 				if (string.IsNullOrEmpty(outputPath)) {
@@ -115,9 +133,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (string.IsNullOrEmpty(outputPath)) {
 						outputPath = "obj";
 					}
-					outputPath = Path.Combine(outputPath, this.ActiveConfiguration);
+					outputPath = Path.Combine(outputPath, this.ActiveConfiguration.Configuration);
 				}
-				return Path.Combine(Directory, outputPath);
+				return Directory.CombineDirectory(outputPath);
 			}
 		}
 		
@@ -138,10 +156,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		// Make Language abstract again to ensure backend-binding implementers don't forget
 		// to set it.
 		public abstract override string Language {
-			get;
-		}
-		
-		public abstract override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
 			get;
 		}
 		
@@ -170,22 +184,22 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// The full path of the assembly generated by the project.
 		/// </summary>
-		public override string OutputAssemblyFullPath {
+		public override FileName OutputAssemblyFullPath {
 			get {
 				string outputPath = GetEvaluatedProperty("OutputPath") ?? "";
-				return FileUtility.NormalizePath(Path.Combine(Path.Combine(Directory, outputPath), AssemblyName + GetExtension(OutputType)));
+				return Directory.CombineDirectory(outputPath).CombineFile(AssemblyName + GetExtension(OutputType));
 			}
 		}
 		
 		/// <summary>
 		/// The full path of the folder where the project's primary output files go.
 		/// </summary>
-		public string OutputFullPath {
+		public DirectoryName OutputFullPath {
 			get {
 				string outputPath = GetEvaluatedProperty("OutputPath");
-				// FileUtility.NormalizePath() cleans up any back references.
+				// CombineDirectory() cleans up any back references.
 				// e.g. C:\windows\system32\..\system becomes C:\windows\system
-				return FileUtility.NormalizePath(Path.Combine(Directory, outputPath));
+				return Directory.CombineDirectory(outputPath);
 			}
 		}
 		
@@ -203,25 +217,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		protected override ParseProjectContent CreateProjectContent()
-		{
-			ParseProjectContent newProjectContent = new ParseProjectContent(this);
-			return newProjectContent;
-		}
-		
 		protected override void OnActiveConfigurationChanged(EventArgs e)
 		{
 			base.OnActiveConfigurationChanged(e);
 			if (!isLoading) {
-				ParserService.Reparse(this, true, true);
-			}
-		}
-		
-		protected override void OnActivePlatformChanged(EventArgs e)
-		{
-			base.OnActivePlatformChanged(e);
-			if (!isLoading) {
-				ParserService.Reparse(this, true, true);
+				Reparse(true, true);
 			}
 		}
 		
@@ -231,22 +231,26 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (e.PropertyName == "TargetFrameworkVersion")
 				CreateItemsListFromMSBuild();
 			if (!isLoading) {
-				if (reparseReferencesSensitiveProperties.Contains(e.PropertyName)) {
-					ParserService.Reparse(this, true, false);
-				}
-				if (reparseCodeSensitiveProperties.Contains(e.PropertyName)) {
-					ParserService.Reparse(this, false, true);
-				}
+				bool reparseReferences = reparseReferencesSensitiveProperties.Contains(e.PropertyName);
+				bool reparseCode = reparseCodeSensitiveProperties.Contains(e.PropertyName);
+				Reparse(reparseReferences, reparseCode);
 			}
 		}
 		
-		[Browsable(false)]
-		public override string TypeGuid {
-			get {
-				return ProjectBindingService.GetCodonPerLanguageName(Language).Guid;
-			}
-			set {
-				throw new NotSupportedException();
+		void Reparse(bool references, bool code)
+		{
+			lock (SyncRoot) {
+				if (projectContentContainer == null)
+					return; // parsing hasn't started yet; no need to re-parse
+				projectContentContainer.SetAssemblyName(this.AssemblyName);
+				projectContentContainer.SetLocation(this.OutputAssemblyFullPath);
+				if (references) {
+					projectContentContainer.ReparseReferences();
+				}
+				if (code) {
+					projectContentContainer.SetCompilerSettings(CreateCompilerSettings());
+					projectContentContainer.ReparseCode();
+				}
 			}
 		}
 		
@@ -268,11 +272,33 @@ namespace ICSharpCode.SharpDevelop.Project
 			return new DotNetStartBehavior(this, base.CreateDefaultBehavior());
 		}
 		
+		
+		public override void Dispose()
+		{
+			lock (SyncRoot) {
+				if (projectContentContainer != null)
+					projectContentContainer.Dispose();
+			}
+			base.Dispose();
+		}
+		
+		public override SolutionFormatVersion MinimumSolutionVersion {
+			get {
+				SolutionFormatVersion v = base.MinimumSolutionVersion;
+				var fx = this.CurrentTargetFramework;
+				// Check if the current target framework has higher requirements than the ToolsVersion:
+				if (fx != null && fx.MinimumSolutionVersion > v) {
+					v = fx.MinimumSolutionVersion;
+				}
+				return v;
+			}
+		}
+		
 		#region IUpgradableProject
 		[Browsable(false)]
 		public virtual bool UpgradeDesired {
 			get {
-				return MinimumSolutionVersion < Solution.SolutionVersionVS2010;
+				return MinimumSolutionVersion < SolutionFormatVersion.VS2010;
 			}
 		}
 		
@@ -296,7 +322,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
-			if (!ReadOnly)
+			if (!IsReadOnly)
 				GetOrCreateBehavior().UpgradeProject(newVersion, newFramework);
 		}
 		
@@ -323,6 +349,55 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return appConfigFileName;
 		}
+		#endregion
+		
+		#region Type System
+		volatile ProjectContentContainer projectContentContainer;
+		IUpdateableAssemblyModel assemblyModel;
+		
+		protected void InitializeProjectContent(IProjectContent initialProjectContent)
+		{
+			lock (SyncRoot) {
+				if (projectContentContainer != null)
+					throw new InvalidOperationException("Already initialized.");
+				projectContentContainer = new ProjectContentContainer(this, initialProjectContent);
+				projectContentContainer.SetCompilerSettings(CreateCompilerSettings());
+			}
+		}
+		
+		protected virtual object CreateCompilerSettings()
+		{
+			return null;
+		}
+		
+		public override IProjectContent ProjectContent {
+			get {
+				var c = projectContentContainer;
+				return c != null ? c.ProjectContent : null;
+			}
+		}
+		
+		public override IAssemblyModel AssemblyModel {
+			get {
+				SD.MainThread.VerifyAccess();
+				if (assemblyModel == null) {
+					assemblyModel = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(new ProjectEntityModelContext(this, ".cs"));
+				}
+				return assemblyModel;
+			}
+		}
+		
+		public override void OnParseInformationUpdated(ParseInformationEventArgs args)
+		{
+			var c = projectContentContainer;
+			if (c != null)
+				c.ParseInformationUpdated(args.OldUnresolvedFile, args.NewUnresolvedFile);
+			// OnParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
+			// To ensure events are raised in the same order, we always invoke on the main thread.
+			SD.MainThread.InvokeAsyncAndForget(delegate { ParseInformationUpdated(null, args); });
+		}
+		
+		public override event EventHandler<ParseInformationEventArgs> ParseInformationUpdated = delegate {};
 		#endregion
 	}
 }

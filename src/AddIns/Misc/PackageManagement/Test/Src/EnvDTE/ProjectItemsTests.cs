@@ -1,12 +1,27 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
@@ -26,10 +41,11 @@ namespace PackageManagement.Tests.EnvDTE
 		TestableProject msbuildProject;
 		FakeFileService fakeFileService;
 		
-		void CreateProjectItems()
+		void CreateProjectItems(string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
+			msbuildProject.FileName = new FileName(fileName);
 			projectItems = (ProjectItems)project.ProjectItems;
 			fakeFileService = project.FakeFileService;
 		}
@@ -37,7 +53,7 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateProjectItemsFromProjectSubFolder(string projectFileName, string folderName)
 		{
 			CreateProjectItems();
-			msbuildProject.FileName = projectFileName;
+			msbuildProject.FileName = new FileName(projectFileName);
 			msbuildProject.AddDirectory(folderName);
 			projectItems = (ProjectItems)project.ProjectItems.Item(folderName).ProjectItems;
 		}
@@ -79,13 +95,12 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFileCopy_AddFileNameOutsideProjectFolder_FileIsIncludedInProjectInProjectFolder()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
 			
 			projectItems.AddFromFileCopy(fileName);
 			
-			var fileItem = msbuildProject.Items[0] as FileProjectItem;
+			var fileItem = msbuildProject.Items.First() as FileProjectItem;
 			
 			Assert.AreEqual("test.cs", fileItem.Include);
 		}
@@ -93,14 +108,13 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFileCopy_AddFileNameOutsideProjectFolder_FileItemTypeTakenFromProject()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
 			
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
 			projectItems.AddFromFileCopy(fileName);
 			
-			var fileItem = msbuildProject.Items[0] as FileProjectItem;
+			var fileItem = msbuildProject.Items.First() as FileProjectItem;
 			
 			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
 		}
@@ -108,8 +122,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFileCopy_AddFileNameOutsideProjectFolder_FileNamePassedToDetermineFileItemType()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
 			
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
@@ -121,8 +134,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFileCopy_AddFileNameOutsideProjectFolder_ProjectIsSaved()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
 			
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
@@ -136,8 +148,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFileCopy_AddFileNameOutsideProjectFolder_FileIsCopied()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
 			
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
@@ -166,7 +177,7 @@ namespace PackageManagement.Tests.EnvDTE
 			projectItems.AddFromFileCopy(fileName);
 			
 			string addedFileName = @"d:\projects\myproject\myproject\SubFolder\test.cs";
-			FileProjectItem fileItem = msbuildProject.FindFile(addedFileName);
+			FileProjectItem fileItem = msbuildProject.FindFile(new FileName(addedFileName));
 			
 			Assert.AreEqual(@"SubFolder\test.cs", fileItem.Include);
 		}
@@ -393,8 +404,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFileFromCopy_FileAlreadyExistsOnFileSystem_ThrowsException()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
 			
 			string existingFile = @"d:\projects\myproject\myproject\test.cs";
@@ -457,17 +467,16 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFile_FullFileNameIsInsideProject_FileIsAddedToProject()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\tools\test.cs";
 			
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
 			projectItems.AddFromFile(fileName);
 			
-			var fileItem = msbuildProject.Items[0] as FileProjectItem;
+			var fileItem = msbuildProject.Items.First() as FileProjectItem;
 			
 			Assert.AreEqual(@"tools\test.cs", fileItem.Include);
-			Assert.AreEqual(@"d:\projects\myproject\tools\test.cs", fileItem.FileName);
+			Assert.AreEqual(@"d:\projects\myproject\tools\test.cs", fileItem.FileName.ToString());
 			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
 			Assert.AreEqual(msbuildProject, fileItem.Project);
 		}
@@ -475,8 +484,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFile_FullFileNameIsInsideProject_ProjectIsSaved()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
 			
 			projectItems.AddFromFile(fileName);
@@ -489,8 +497,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFile_FullFileNameIsInsideProject_FileIsParsed()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
 			
 			projectItems.AddFromFile(fileName);
@@ -503,8 +510,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFile_FullFileNameIsInsideProject_ProjectItemReturned()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\tools\test.cs";
 			
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
@@ -519,8 +525,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFile_FullFileNameIsInsideProject_FileNameUsedToDetermineProjectItemType()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\tools\test.cs";
 			
 			projectItems.AddFromFile(fileName);
@@ -531,8 +536,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromDirectory_EmptyDirectoryInsideProject_ProjectIsSaved()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string directory = @"d:\projects\myproject\tools";
 			
 			projectItems.AddFromDirectory(directory);
@@ -545,8 +549,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromDirectory_EmptyDirectoryInsideProject_ProjectItemIsReturnedForNewDirectory()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string directory = @"d:\projects\myproject\tools";
 			
 			global::EnvDTE.ProjectItem item = projectItems.AddFromDirectory(directory);
@@ -560,13 +563,12 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromDirectory_EmptyDirectoryInsideProject_FolderProjectItemAddedToProject()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string directory = @"d:\projects\myproject\tools";
 			
 			projectItems.AddFromDirectory(directory);
 			
-			var item = msbuildProject.Items[0] as FileProjectItem;
+			var item = msbuildProject.Items.First() as FileProjectItem;
 			
 			Assert.AreEqual("tools", item.Include);
 			Assert.AreEqual(ItemType.Folder, item.ItemType);
@@ -575,13 +577,12 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromDirectory_EmptyDirectoryIsTwoLevelsInsideProject_FolderProjectItemAddedToProject()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string directory = @"d:\projects\myproject\tools\packages";
 			
 			projectItems.AddFromDirectory(directory);
 			
-			var item = msbuildProject.Items[0] as FileProjectItem;
+			var item = msbuildProject.Items.First() as FileProjectItem;
 			
 			Assert.AreEqual(@"tools\packages", item.Include);
 			Assert.AreEqual(ItemType.Folder, item.ItemType);
@@ -590,27 +591,25 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromDirectory_DirectoryContainsOneFile_FileAddedToMSBuildProjectButNoFolder()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string directory = @"d:\projects\myproject\tools";
 			AddFileToFakeFileSystem(directory, "a.txt");
 			project.TestableProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.None;
 			
 			projectItems.AddFromDirectory(directory);
 			
-			var item = msbuildProject.Items[0] as FileProjectItem;
+			var item = msbuildProject.Items.First() as FileProjectItem;
 			
 			Assert.AreEqual(@"tools\a.txt", item.Include);
 			Assert.AreEqual(ItemType.None, item.ItemType);
-			Assert.AreEqual(@"d:\projects\myproject\tools\a.txt", item.FileName);
+			Assert.AreEqual(@"d:\projects\myproject\tools\a.txt", item.FileName.ToString());
 			Assert.AreEqual(1, msbuildProject.Items.Count);
 		}
 		
 		[Test]
 		public void AddFromDirectory_DirectoryContainsOneFile_ProjectItemReturnedHasDirectoryName()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string directory = @"d:\projects\myproject\tools";
 			AddFileToFakeFileSystem(directory, "a.txt");
 			
@@ -625,8 +624,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromDirectory_DirectoryContainsChildDirectoryWithNoFiles_DirectoryProjectItemReturnedForParentDirectory()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string parentDirectory = @"d:\projects\myproject\tools";
 			AddDirectoryToFakeFileSystem(parentDirectory, "packages");
 			
@@ -645,26 +643,24 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromDirectory_DirectoryContainsChildDirectoryWithNoFiles_MSBuildProjectItemAddedForChildDirectoryButNotParent()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string parentDirectory = @"d:\projects\myproject\tools";
 			AddDirectoryToFakeFileSystem(parentDirectory, "packages");
 			
 			projectItems.AddFromDirectory(parentDirectory);
 			
-			var item = msbuildProject.Items[0] as FileProjectItem;
+			var item = msbuildProject.Items.First() as FileProjectItem;
 			
 			Assert.AreEqual(@"tools\packages", item.Include);
 			Assert.AreEqual(ItemType.Folder, item.ItemType);
-			Assert.AreEqual(@"d:\projects\myproject\tools\packages", item.FileName);
+			Assert.AreEqual(@"d:\projects\myproject\tools\packages", item.FileName.ToString());
 			Assert.AreEqual(1, msbuildProject.Items.Count);
 		}
 		
 		[Test]
 		public void AddFromDirectory_DirectoryContainsChildDirectoryWithOneFile_MSBuildProjectItemAddedForFileButNotForParentNorChildDirectory()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string parentDirectory = @"d:\projects\myproject\tools";
 			string childDirectory = @"d:\projects\myproject\tools\packages";
 			AddDirectoryToFakeFileSystem(parentDirectory, "packages");
@@ -673,11 +669,11 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			projectItems.AddFromDirectory(parentDirectory);
 			
-			var item = msbuildProject.Items[0] as FileProjectItem;
+			var item = msbuildProject.Items.First() as FileProjectItem;
 			
 			Assert.AreEqual(@"tools\packages\a.txt", item.Include);
 			Assert.AreEqual(ItemType.None, item.ItemType);
-			Assert.AreEqual(@"d:\projects\myproject\tools\packages\a.txt", item.FileName);
+			Assert.AreEqual(@"d:\projects\myproject\tools\packages\a.txt", item.FileName.ToString());
 			Assert.AreEqual(1, msbuildProject.Items.Count);
 		}
 		
@@ -686,7 +682,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProjectItems();
 			IProjectBrowserUpdater projectBrowserUpdater = CreateProjectBrowserUpdater();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			msbuildProject.FileName = new FileName(@"d:\projects\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\tools\test.cs";
 			
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
@@ -698,9 +694,8 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromDirectory_EmptyDirectoryInsideProject_ProjectBrowserUpdaterIsDisposed()
 		{
-			CreateProjectItems();
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			IProjectBrowserUpdater projectBrowserUpdater = CreateProjectBrowserUpdater();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
 			string directory = @"d:\projects\myproject\tools";
 			
 			projectItems.AddFromDirectory(directory);
@@ -713,8 +708,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void GetEnumerator_ProjectHasOneFileInFolderTwoLevelsDeep_FolderTwoLevelsDeepFullPathIsFullDirectoryName()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateProjectItems(@"d:\projects\MyProject\myproject.csproj");
 			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\Program.cs");
 			
 			DTE.ProjectItem codeTemplatesFolderItem = GetChildItem(projectItems, "CodeTemplates");
@@ -729,8 +723,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void GetEnumerator_ProjectHasOneFileInFolderThreeLevelsDeep_FileReturnedInProjectItems()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\jQueryPlugin\jQueryPlugin.ps1");
 			DTE.ProjectItem codeTemplatesFolderItem = GetChildItem(projectItems, "CodeTemplates");
 			DTE.ProjectItem scaffolderFolderItem = GetChildItem(codeTemplatesFolderItem.ProjectItems, "Scaffolders");
@@ -744,8 +737,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void Item_GetFileProjectItemByNameWhenProjectHasOneFileInFolderThreeLevelsDeep_ReturnsFileProjectItem()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateProjectItems( @"d:\projects\MyProject\MyProject.csproj");
 			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\jQueryPlugin\jQueryPlugin.ps1");
 			DTE.ProjectItem codeTemplatesFolderItem = GetChildItem(projectItems, "CodeTemplates");
 			DTE.ProjectItem scaffolderFolderItem = GetChildItem(codeTemplatesFolderItem.ProjectItems, "Scaffolders");
@@ -759,8 +751,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void GetEnumerator_ProjectHasTwoFilesInFolderTwoLevelsDeep_TopLevelFolderOnlyHasOneProjectItemForChildFolder()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateProjectItems(@"d:\projects\MyProject\MyProject.csproj");
 			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\File1.cs");
 			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\File2.cs");
 			
@@ -775,8 +766,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void GetEnumerator_ProjectHasTwoFilesInFolderTwoLevelsDeepAndProjectItemsForChildFolderCalledTwice_TopLevelFolderOnlyHasOneProjectItemForChildFolder()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateProjectItems(@"d:\projects\MyProject\MyProject.csproj");
 			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\File1.cs");
 			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\File2.cs");
 			
@@ -793,8 +783,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void GetEnumerator_ProjectHasTwoDuplicateFileNamesInFolderTwoLevelsDeep_FolderTwoLevelsDownOnlyReturnsOneFileProjectItem()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateProjectItems(@"d:\projects\MyProject\MyProject.csproj");
 			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\duplicate.cs");
 			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\duplicate.cs");
 			
@@ -810,8 +799,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void GetEnumerator_ProjectHasTwoFilesInFolderTwoLevelsDeepButParentFolderHasDifferentCase_TopLevelFolderOnlyHasOneProjectItemForChildFolder()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateProjectItems(@"d:\projects\MyProject\MyProject.csproj");
 			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\File1.cs");
 			msbuildProject.AddFile(@"CodeTemplates\SCAFFOLDERS\File2.cs");
 			
@@ -826,18 +814,17 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFile_FullFileNameIsOutsideProjectPath_FileIsAddedToProjectAsLink()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string fileName = @"d:\projects\anotherproject\test.cs";
 			
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
 			projectItems.AddFromFile(fileName);
 			
-			var fileItem = msbuildProject.Items[0] as FileProjectItem;
+			var fileItem = msbuildProject.Items.First() as FileProjectItem;
 			string linkName = fileItem.GetEvaluatedMetadata("Link");
 			
 			Assert.AreEqual(@"..\anotherproject\test.cs", fileItem.Include);
-			Assert.AreEqual(fileName, fileItem.FileName);
+			Assert.AreEqual(fileName, fileItem.FileName.ToString());
 			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
 			Assert.IsTrue(fileItem.IsLink);
 			Assert.AreEqual("test.cs", linkName);
@@ -846,8 +833,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void Item_GetItemFromControllersFolderProjectItemsWhenProjectHasTwoFilesOneInRootAndOneInControllersFolder_ReturnsFileFromControllersFolder()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateProjectItems(@"d:\projects\MyProject\MyProject.csproj");
 			msbuildProject.AddFile(@"AccountController.generated.cs");
 			msbuildProject.AddFile(@"Controllers\AccountController.cs");
 			
@@ -871,8 +857,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFile_AddFromFileFromProjectItemsBelongingToFile_FileIsAddedAsDependentFile()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			msbuildProject.AddFile("MainForm.cs");
 			string fileName = @"d:\projects\myproject\MainForm.Designer.cs";
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
@@ -880,10 +865,10 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			projectItems.AddFromFile(fileName);
 			
-			FileProjectItem fileItem = msbuildProject.FindFile(fileName);
+			FileProjectItem fileItem = msbuildProject.FindFile(new FileName(fileName));
 			
 			Assert.AreEqual("MainForm.Designer.cs", fileItem.Include);
-			Assert.AreEqual(fileName, fileItem.FileName);
+			Assert.AreEqual(fileName, fileItem.FileName.ToString());
 			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
 			Assert.AreEqual(msbuildProject, fileItem.Project);
 			Assert.AreEqual("MainForm.cs", fileItem.DependentUpon);
@@ -892,24 +877,22 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFileCopy_AddExistingFileNameInsideProjectFolder_FileIsAddedToProject()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\test.cs";
 			fakeFileService.ExistingFileNames.Add(fileName);
 			
 			projectItems.AddFromFileCopy(fileName);
 			
 			string addedFileName = @"d:\projects\myproject\test.cs";
-			FileProjectItem fileItem = msbuildProject.FindFile(addedFileName);
+			FileProjectItem fileItem = msbuildProject.FindFile(new FileName(addedFileName));
 			Assert.AreEqual("test.cs", fileItem.Include);
 		}
 		
 		[Test]
 		public void AddFromFileCopy_AddExistingFileNameInsideProjectFolder_ProjectUpdaterIsDisposed()
 		{
-			CreateProjectItems();
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			IProjectBrowserUpdater projectBrowserUpdater = CreateProjectBrowserUpdater();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
 			string fileName = @"d:\projects\myproject\test.cs";
 			fakeFileService.ExistingFileNames.Add(fileName);
 			
@@ -921,8 +904,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFileCopy_AddNonExistentFileNameInsideProjectFolder_MissingFileExceptionThrown()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			string fileName = @"d:\projects\myproject\test.cs";
 			
 			FileNotFoundException ex = Assert.Throws<FileNotFoundException>(() => projectItems.AddFromFileCopy(fileName));
@@ -934,15 +916,14 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFileCopy_AddResxFileWhenParentFileExistsInProject_FileIsAddedToProjectAsDependentFile()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			msbuildProject.AddFile("MainForm.cs");
 			string fileToAdd = @"d:\projects\myproject\MainForm.resx";
 			fakeFileService.ExistingFileNames.Add(fileToAdd);
 			
 			projectItems.AddFromFileCopy(fileToAdd);
 			
-			FileProjectItem fileItem = msbuildProject.FindFile(fileToAdd);
+			FileProjectItem fileItem = msbuildProject.FindFile(new FileName(fileToAdd));
 			Assert.AreEqual("MainForm.resx", fileItem.Include);
 			Assert.AreEqual("MainForm.cs", fileItem.DependentUpon);
 		}
@@ -950,15 +931,14 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFromFileCopy_AddDesignerFileInProjectSubFolderWhenParentFileExistsInProject_FileIsAddedToProjectAsDependentFile()
 		{
-			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			CreateProjectItems(@"d:\projects\myproject\myproject.csproj");
 			msbuildProject.AddFile(@"UI\MainForm.cs");
 			string fileToAdd = @"d:\projects\myproject\UI\MainForm.Designer.cs";
 			fakeFileService.ExistingFileNames.Add(fileToAdd);
 			
 			projectItems.AddFromFileCopy(fileToAdd);
 			
-			FileProjectItem fileItem = msbuildProject.FindFile(fileToAdd);
+			FileProjectItem fileItem = msbuildProject.FindFile(new FileName(fileToAdd));
 			Assert.AreEqual(@"UI\MainForm.Designer.cs", fileItem.Include);
 			Assert.AreEqual("MainForm.cs", fileItem.DependentUpon);
 		}

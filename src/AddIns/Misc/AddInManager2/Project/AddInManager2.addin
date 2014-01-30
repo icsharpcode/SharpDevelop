@@ -1,0 +1,47 @@
+﻿<AddIn name="AddInManager 2nd Generation"
+       author ="Andreas Weizel"
+       description="Allows installing and updating SharpDevelop AddIns."
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.AddInManager2" version="@ICSharpCode.AddInManager2.dll" />
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="ICSharpCode.AddInManager2.dll"/>
+		<Import assembly="NuGet.Core.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Tools">
+		<MenuItem id="ShowAddInManager2"
+		          label="${res:AddInManager.Title}"
+		          class="ICSharpCode.AddInManager2.ShowAddInManagerCommand"/>
+	</Path>
+	
+	<!-- Option dialog -->
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog">
+		<OptionPanel
+			id="AddInManager2"
+			label="${res:AddInManager2.OptionPanel.Tree.AddIns}"
+			insertafter="ToolsOptions">
+			<OptionPanel
+				id="AddInGeneralOptions"
+				label="${res:AddInManager2.OptionPanel.Tree.General}"
+				class="ICSharpCode.AddInManager2.View.PackageOptionsView"/>
+			<OptionPanel
+				id="AddInRepositories"
+				label="${res:AddInManager2.OptionPanel.Tree.Repositories}"
+				class="ICSharpCode.AddInManager2.View.PackageRepositoriesView"/>
+		</OptionPanel>
+	</Path>
+	
+	<!-- Autostart commands for initialization -->
+	<Path name = "/SharpDevelop/Autostart">
+		<Class id    = "AddInManagerInitialization"
+		       class = "ICSharpCode.AddInManager2.AddInManagerInitializationCommand"/>
+	</Path>
+	<Path name = "/SharpDevelop/Workbench/AutostartAfterWorkbenchInitialized">
+		<Class id    = "AddInManagerVisualInitialization"
+		       class = "ICSharpCode.AddInManager2.AddInManagerVisualInitializationCommand"/>
+	</Path>
+</AddIn>

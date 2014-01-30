@@ -6,7 +6,7 @@
     <ProductVersion>8.0.40607</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4980B743-B32F-4aba-AABD-45E2CAD3568D}</ProjectGuid>
-    <RootNamespace>ICSharpCode.SharpDevelop.Tests</RootNamespace>
+    <RootNamespace>ICSharpCode.SharpDevelop</RootNamespace>
     <AssemblyName>ICSharpCode.SharpDevelop.Tests</AssemblyName>
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
@@ -22,15 +22,24 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DebugType>Full</DebugType>
     <RegisterForComInterop>False</RegisterForComInterop>
-    <PlatformTarget>x86</PlatformTarget>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DebugSymbols>true</DebugSymbols>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
     <FileAlignment>4096</FileAlignment>
+    <Prefer32Bit>False</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
@@ -71,34 +80,32 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractEntityIsOverridableTestFixture.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="CheckAssemblyFlags.cs" />
     <Compile Include="CodeConverterTests.cs" />
-    <Compile Include="CSharpExpressionFinderTests.cs" />
-    <Compile Include="ExceptionClassOverridesTestFixture.cs" />
-    <Compile Include="GenerateOverrideMethodTests.cs" />
-    <Compile Include="GetElementByReflectionNameTests.cs" />
-    <Compile Include="Highlighting\AddInHighlightingResourceTests.cs" />
+    <Compile Include="Dom\AssemblyModelNamespaceTests.cs" />
+    <Compile Include="Dom\CSharpModelTestBase.cs" />
+    <Compile Include="Dom\ProjectEntityModelContextTests.cs" />
+    <Compile Include="Dom\TopLevelTypeModelsTests.cs" />
+    <Compile Include="Dom\TreeNodeFactoryServiceTests.cs" />
     <Compile Include="Highlighting\SyntaxDoozerAddsHighlightingToHighlightingManagerTestFixture.cs" />
     <Compile Include="MimeDetectionTests.cs" />
-    <Compile Include="NRefactoryResolverTests.cs" />
-    <Compile Include="CollectionClassOverridesTestFixture.cs" />
     <Compile Include="OutputTextLineParserTests.cs" />
-    <Compile Include="OverridableMethodsTestFixture.cs" />
-    <Compile Include="OverridablePropertiesTestFixture.cs" />
+    <Compile Include="ProcessRunner\CancelLongRunningAppTestFixture.cs" />
+    <Compile Include="ProcessRunner\ConsoleAppTestFixtureBase.cs" />
+    <Compile Include="ProcessRunner\ExitCodeTestFixture.cs" />
+    <Compile Include="ProcessRunner\NoSuchExecutableTestFixture.cs" />
+    <Compile Include="ProcessRunner\ProcessExitedTestFixture.cs" />
+    <Compile Include="ProcessRunner\ProcessRunnerNotStartedTestFixture.cs" />
+    <Compile Include="ProcessRunner\StandardOutputFromProcessTestFixture.cs" />
+    <Compile Include="Project\AddExistingProjectTests.cs" />
     <Compile Include="Project\BeforeBuildCustomToolProjectItemsTests.cs" />
+    <Compile Include="Project\MockSolution.cs" />
     <Compile Include="Project\ProjectCustomToolOptionsTests.cs" />
+    <Compile Include="Project\SolutionLoaderTests.cs" />
+    <Compile Include="Project\SolutionTests.cs" />
+    <Compile Include="Project\SolutionWriterTests.cs" />
     <Compile Include="PropertyPadSortingTests.cs" />
-    <Compile Include="ReadOnlyDocumentTests.cs" />
-    <Compile Include="ReflectionLayerTests.cs" />
-    <Compile Include="GenericResolverTests.cs" />
-    <Compile Include="InnerClassesResolverTests.cs" />
-    <Compile Include="RefactoringTests.cs" />
-    <Compile Include="SearchClassTests.cs" />
-    <Compile Include="OverloadFinding.cs" />
-    <Compile Include="SearchGenericClassTests.cs" />
-    <Compile Include="MemberLookupHelperTests.cs" />
+    <Compile Include="SDTestFixtureBase.cs" />
     <Compile Include="ServiceReferences\DirectoryNodeFactoryTests.cs" />
     <Compile Include="ServiceReferences\ItemTypeTests.cs" />
     <Compile Include="ServiceReferences\MSBuildBasedProjectTests.cs" />
@@ -111,32 +118,26 @@
     <Compile Include="ServiceReferences\ServiceReferenceNodeTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesFolderNodeTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesProjectItemTests.cs" />
-    <Compile Include="SolutionTests.cs" />
-    <Compile Include="StringTagProvider\MockProjectForTagProvider.cs" />
+    <Compile Include="SharpDevelopAddInTests.cs" />
     <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />
     <Compile Include="StringTagProvider\ProjectTagsTestFixture.cs" />
-    <Compile Include="Utils\MockAmbience.cs" />
+    <Compile Include="Utils\AssemblyLoader.cs" />
     <Compile Include="Utils\MockAssembly.cs" />
-    <Compile Include="Utils\MockClass.cs" />
     <Compile Include="Utils\MockComponent.cs" />
-    <Compile Include="Utils\MockEntity.cs" />
-    <Compile Include="Utils\MockDefaultReturnType.cs" />
-    <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
-    <Compile Include="Utils\MockProject.cs" />
-    <Compile Include="Utils\MockProperty.cs" />
     <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockTextMarker.cs" />
     <Compile Include="Utils\MockTextMarkerService.cs" />
+    <Compile Include="Utils\ModelCollectionEventCheck.cs" />
     <Compile Include="Utils\ProjectHelper.cs" />
+    <Compile Include="Utils\TestExtensions.cs" />
     <Compile Include="Utils\Tests\CamelHumpsMatchTests.cs" />
     <Compile Include="Utils\Tests\MockAssemblyTests.cs" />
-    <Compile Include="VBExpressionFinderTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
     <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />
     <Compile Include="WebReferences\WebReferenceTests.cs" />
     <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
-    <Compile Include="WebReferences\VBNetWebReferenceTest.cs" />
+    <Compile Include="WebReferences\VBWebReferenceTest.cs" />
     <Compile Include="WebReferences\WebReferenceTestHelper.cs" />
     <Compile Include="WebReferences\UnsupportedLanguageTest.cs" />
     <Compile Include="WebReferences\WebReferenceFolderAlreadyExistsTest.cs" />
@@ -148,61 +149,51 @@
     <Compile Include="WebReferences\WebServicesReferenceExistsTests.cs" />
     <Compile Include="WebReferences\ProjectWebReferenceItemsTests.cs" />
     <Compile Include="WebReferences\WebReferenceChangesTest.cs" />
-    <Compile Include="Templates\ProjectTemplateCategoryComparerTests.cs" />
-    <Compile Include="Templates\CategorySortOrderTests.cs" />
-    <Compile Include="Templates\FileTemplateCategoryComparerTests.cs" />
     <Compile Include="WebReferences\HttpAuthenticationHeaderTests.cs" />
-    <Compile Include="StandardOutputFromProcessTestFixture.cs" />
-    <Compile Include="CancelLongRunningAppTestFixture.cs" />
-    <Compile Include="ExitCodeTestFixture.cs" />
-    <Compile Include="LineReceivedFromProcessTestFixture.cs" />
-    <Compile Include="NoSuchExecutableTestFixture.cs" />
-    <Compile Include="ProcessExitedTestFixture.cs" />
-    <Compile Include="ProcessRunnerNotStartedTestFixture.cs" />
-    <Compile Include="ConsoleAppTestFixtureBase.cs" />
     <Compile Include="NavigationServiceTests\INavigationPointTextFixture.cs" />
     <Compile Include="NavigationServiceTests\TestNavigationPoint.cs" />
     <Compile Include="NavigationServiceTests\NavigationServiceTestFixture.cs" />
-    <Compile Include="SharpDevelopColorDialogTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Test\ICSharpCode.Core.Tests.csproj">
-      <Project>{AD6FAA08-D6F5-4DBA-AF85-F4DA9F40C3B5}</Project>
-      <Name>ICSharpCode.Core.Tests</Name>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
+      <Project>{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}</Project>
+      <Name>ICSharpCode.NRefactory.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SharpDevelop\SharpDevelop.csproj">
+      <Project>{1152B71B-3C05-4598-B20D-823B5D40559E}</Project>
+      <Name>SharpDevelop</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
-    <Folder Include="Highlighting" />
-    <Folder Include="Project" />
-    <Folder Include="ServiceReferences" />
-    <Folder Include="StringTagProvider" />
-    <Folder Include="Utils" />
-    <Folder Include="Utils\Tests" />
-    <Folder Include="WebReferences" />
-    <Folder Include="Templates" />
-    <Folder Include="NavigationServiceTests" />
-    <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="mime_utf-16_be_test.txt" />
     <EmbeddedResource Include="mime_utf-16_le_test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ProcessRunner" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="mime_bug1.txt" />

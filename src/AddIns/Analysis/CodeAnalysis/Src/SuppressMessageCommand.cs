@@ -1,19 +1,31 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
-using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.CodeAnalysis
 {
@@ -21,143 +33,74 @@ namespace ICSharpCode.CodeAnalysis
 	{
 		public override void Run()
 		{
-			TaskView view = (TaskView)Owner;
-			foreach (Task t in new List<Task>(view.SelectedTasks)) {
+			var view = (System.Windows.Controls.ListView)Owner;
+			foreach (var t in view.SelectedItems.OfType<SDTask>().ToArray()) {
 				FxCopTaskTag tag = t.Tag as FxCopTaskTag;
 				if (tag == null)
 					continue;
-				CodeGenerator codegen = tag.ProjectContent.Language.CodeGenerator;
-				if (codegen == null)
-					continue;
-				FilePosition p;
-				if (tag.MemberName == null)
-					p = GetAssemblyAttributeInsertionPosition(tag.ProjectContent);
+				CodeGenerator gen = tag.Project.LanguageBinding.CodeGenerator;
+				ICompilation compilation;
+				if (t.FileName != null)
+					compilation = SD.ParserService.GetCompilationForFile(t.FileName);
 				else
-					p = GetPosition(tag.ProjectContent, tag.TypeName, tag.MemberName);
-				if (p.CompilationUnit == null || p.FileName == null || p.Line <= 0)
-					continue;
-				IViewContent viewContent = FileService.OpenFile(p.FileName);
-				ITextEditorProvider provider = viewContent as ITextEditorProvider;
-				if (provider == null)
-					continue;
-				IDocument document = provider.TextEditor.Document;
-				if (p.Line >= document.TotalNumberOfLines)
-					continue;
-				IDocumentLine line = document.GetLine(p.Line);
-				StringBuilder indentation = new StringBuilder();
-				for (int i = line.Offset; i < document.TextLength; i++) {
-					char c = document.GetCharAt(i);
-					if (c == ' ' || c == '\t')
-						indentation.Append(c);
-					else
-						break;
-				}
-				string code = codegen.GenerateCode(CreateSuppressAttribute(p.CompilationUnit, tag), indentation.ToString());
-				if (!code.EndsWith("\n")) code += Environment.NewLine;
-				document.Insert(line.Offset, code);
-				provider.TextEditor.JumpTo(p.Line, p.Column);
-				TaskService.Remove(t);
-				ParserService.ParseViewContent(viewContent);
+					compilation = SD.ParserService.GetCompilation(tag.Project);
+				IAttribute attribute = CreateSuppressAttribute(compilation, tag);
+				
+				if (tag.MemberName == null)
+					gen.AddAssemblyAttribute(tag.Project, attribute);
+				else
+					gen.AddAttribute(GetEntity(compilation, tag.TypeName, tag.MemberName), attribute);
 			}
 		}
 		
-		internal static FilePosition GetPosition(IProjectContent pc, string className, string memberName)
+		internal static DomRegion GetPosition(ICompilation compilation, string className, string memberName)
 		{
-			IClass c = pc.GetClassByReflectionName(className, false);
-			if (string.IsNullOrEmpty(memberName))
-				return pc.GetPosition(c);
-			if (c != null) {
-				IMember m = DefaultProjectContent.GetMemberByReflectionName(c, memberName);
+			IEntity entity = GetEntity(compilation, className, memberName);
+			return entity == null ? DomRegion.Empty : entity.Region;
+		}
+		
+		static IEntity GetEntity(ICompilation compilation, string className, string memberName)
+		{
+			var typeName = new TopLevelTypeName(className);
+			ITypeDefinition type = compilation.MainAssembly.GetTypeDefinition(typeName);
+			if (type != null) {
+				if (string.IsNullOrEmpty(memberName))
+					return type;
+				
+				IMember m = GetMember(type, memberName);
 				if (m != null)
-					return pc.GetPosition(m);
+					return m;
+				
+				return type;
 			}
-			return FilePosition.Empty;
+			return null;
 		}
 		
-		FilePosition GetAssemblyAttributeInsertionPosition(IProjectContent pc)
+		static IMember GetMember(ITypeDefinition type, string memberName)
 		{
-			FilePosition best = FilePosition.Empty;
-			foreach (IAttribute attrib in pc.GetAssemblyAttributes()) {
-				ICompilationUnit cu = attrib.CompilationUnit;
-				if (cu != null && !attrib.Region.IsEmpty) {
-					var newPos = new FilePosition(cu, attrib.Region.BeginLine, attrib.Region.BeginColumn);
-					if (IsBetterAssemblyAttributeInsertionPosition(newPos, best)) {
-						best = newPos;
-					}
-				}
-			}
-			return best;
+			string fullName = type.ReflectionName + "." + memberName;
+			return type.GetMembers(m => m.ReflectionName == fullName).FirstOrDefault();
 		}
 		
-		bool IsBetterAssemblyAttributeInsertionPosition(FilePosition a, FilePosition b)
-		{
-			if (b.IsEmpty)
-				return true;
-			
-			bool aIsAssemblyInfo = "AssemblyInfo".Equals(Path.GetFileNameWithoutExtension(a.FileName), StringComparison.OrdinalIgnoreCase);
-			bool bIsAssemblyInfo = "AssemblyInfo".Equals(Path.GetFileNameWithoutExtension(b.FileName), StringComparison.OrdinalIgnoreCase);
-			if (aIsAssemblyInfo && !bIsAssemblyInfo)
-				return true;
-			if (!aIsAssemblyInfo && bIsAssemblyInfo)
-				return false;
-			
-			return a.Line > b.Line;
-		}
+		const string FullAttributeName = "System.Diagnostics.CodeAnalysis.SuppressMessageAttribute";
 		
-		const string NamespaceName = "System.Diagnostics.CodeAnalysis";
-		const string AttributeName = "SuppressMessage";
-		
-		static Ast.AbstractNode CreateSuppressAttribute(ICompilationUnit cu, FxCopTaskTag tag)
+		static IAttribute CreateSuppressAttribute(ICompilation compilation, FxCopTaskTag tag)
 		{
-			//System.Diagnostics.CodeAnalysis.SuppressMessageAttribute
-			bool importedCodeAnalysis = CheckImports(cu);
-			
 			// [SuppressMessage("Microsoft.Performance", "CA1801:ReviewUnusedParameters", MessageId:="fileIdentifier"]
-			Ast.Attribute a = new Ast.Attribute {
-				Name = importedCodeAnalysis ? AttributeName : NamespaceName + "." + AttributeName,
-				PositionalArguments = {
-					new Ast.PrimitiveExpression(tag.Category, tag.Category),
-					new Ast.PrimitiveExpression(tag.CheckID, tag.CheckID)
-				}
-			};
+			IType attributeType = compilation.FindType(new FullTypeName(FullAttributeName));
+			IType stringType = compilation.FindType(KnownTypeCode.String);
+			
+			KeyValuePair<IMember, ResolveResult>[] namedArgs = null;
 			if (tag.MessageID != null) {
-				a.NamedArguments.Add(new Ast.NamedArgumentExpression("MessageId",
-				                                                     new Ast.PrimitiveExpression(tag.MessageID, tag.MessageID)));
+				IMember messageId = attributeType.GetProperties(p => p.Name == "MessageId").FirstOrDefault();
+				namedArgs = new[] { new KeyValuePair<IMember, ResolveResult>(messageId, new ConstantResolveResult(stringType, tag.MessageID)) };
 			}
 			
-			return new Ast.AttributeSection {
-				AttributeTarget = tag.MemberName == null ? "assembly" : null,
-				Attributes = { a }
-			};
-		}
-		
-		static bool CheckImports(ICompilationUnit cu)
-		{
-			if (CheckImports(cu.ProjectContent.DefaultImports))
-				return true;
-			return CheckImports(cu.UsingScope);
-		}
-		
-		static bool CheckImports(IUsingScope scope)
-		{
-			foreach (IUsing u in scope.Usings) {
-				if (CheckImports(u)) {
-					return true;
-				}
-			}
-			foreach (IUsingScope childscope in scope.ChildScopes) {
-				if (CheckImports(childscope))
-					return true;
-			}
-			return false;
-		}
-		
-		static bool CheckImports(IUsing u)
-		{
-			if (u == null)
-				return false;
-			else
-				return u.Usings.Contains(NamespaceName);
+			return new DefaultAttribute(
+				attributeType, new[] {
+					new ConstantResolveResult(stringType, tag.Category),
+					new ConstantResolveResult(stringType, tag.CheckID)
+				}, namedArgs);
 		}
 	}
 }

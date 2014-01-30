@@ -1,82 +1,79 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Globalization;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Dialogs;
 using ICSharpCode.Reports.Core.Globals;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.Commands
 {
 	/// <summary>
 	/// Description of StartView
 	/// </summary>
-	public class StartViewCommand : AbstractMenuCommand
+	public class CreateDesignViewCommand : AbstractMenuCommand
 	{
+		readonly OpenedFile openedFile;
 		
-		public override void Run()
-		{
-			WorkbenchSingleton.Workbench.ShowView(SetupDesigner());
+		public CreateDesignViewCommand (OpenedFile openedFile) {
+			if (openedFile == null)
+				throw new ArgumentNullException("openedFile");
+			this.openedFile = openedFile;
 		}
 		
-		public static ReportDesignerView SetupDesigner ()
-		{
-			
-			ReportModel model = ReportModel.Create();
-			Properties customizer = new Properties();
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model,customizer);
-			generator.GenerateReport();
-			
-			OpenedFile file = FileService.CreateUntitledOpenedFile(GlobalValues.PlainFileName,new byte[0]);
-			file.SetData(generator.Generated.ToArray());
-			return SetupDesigner(file);
+		public override void Run(){
+			var generator = new ReportDesignerGenerator();
+			DesignerView =  new ReportDesignerView(openedFile, generator);
 		}
 		
-		
-		public static ReportDesignerView SetupDesigner (OpenedFile file)
-		{
-			if (file == null) {
-				throw new ArgumentNullException("file");
-			}
-			IDesignerGenerator generator = new ReportDesignerGenerator();
-			return new ReportDesignerView(file, generator);
-		}
-		
+		public ReportDesignerView DesignerView {get; private set;}
 	}
 	
 	
 	
 	public class CollectParametersCommand :AbstractCommand
 	{
-		ReportModel model;
+		readonly ReportSettings reportSettings;
 		
-		public CollectParametersCommand (ReportModel model)
+		public CollectParametersCommand (ReportSettings reportSettings)
 		{
-			if (model == null) {
-				throw new ArgumentNullException("model");
+			if (reportSettings == null) {
+				throw new ArgumentNullException("reportSettings");
 			}
-			this.model = model;
+			this.reportSettings = reportSettings;
 		}
 		
 		
 		public override void Run()
 		{
-			if (model.ReportSettings.SqlParameters.Count > 0) {
-				using (ParameterDialog paramDialog = new ParameterDialog(model.ReportSettings.SqlParameters))
+			if (reportSettings.SqlParameters.Count > 0) {
+				using (var paramDialog = new ParameterDialog(reportSettings.SqlParameters))
 				{
 					paramDialog.ShowDialog();
 					if (paramDialog.DialogResult == System.Windows.Forms.DialogResult.OK) {
 						foreach (SqlParameter bp in paramDialog.SqlParameterCollection)
 						{
-							var p = model.ReportSettings.SqlParameters.Find (bp.ParameterName);
+							var p = reportSettings.SqlParameters.Find (bp.ParameterName);
 							p.ParameterValue = bp.ParameterValue;
 						}
 					}

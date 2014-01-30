@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel.Design;
@@ -42,9 +57,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 		private RadioButton radioStandardLayout;
 		private RadioButton radioLandscape;
 		
-		ReportStructure generator;
-		Properties customizer;
-	
+		ReportStructure reportStructure;
 		bool initDone;
 	
 		public BaseSettingsPanel(){
@@ -157,36 +170,35 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 		
 		private void UpdateGenerator ()
 		{
-			if (customizer == null) {
-				customizer = (Properties)base.CustomizationObject;
-				generator = (ReportStructure)customizer.Get("Generator");
-			}
 
-			generator.ReportName = txtReportName.Text;
+			reportStructure = (ReportStructure)base.CustomizationObject;
+
+
+			reportStructure.ReportName = txtReportName.Text;
 			if (!this.txtFileName.Text.EndsWith(GlobalValues.ReportExtension,StringComparison.OrdinalIgnoreCase)){
-				generator.FileName = txtFileName.Text + GlobalValues.ReportExtension;
+				reportStructure.FileName = txtFileName.Text + GlobalValues.ReportExtension;
 			} else {
-				generator.FileName = txtFileName.Text;
+				reportStructure.FileName = txtFileName.Text;
 			}
-			generator.Path = this.txtPath.Text;
-			generator.GraphicsUnit = (GraphicsUnit)Enum.Parse(typeof(GraphicsUnit),
+			reportStructure.Path = this.txtPath.Text;
+			reportStructure.GraphicsUnit = (GraphicsUnit)Enum.Parse(typeof(GraphicsUnit),
 			                                                  this.cboGraphicsUnit.Text);
 
 			if (this.radioPullModell.Checked == true) {
 				base.NextWizardPanelID = "PullModel";
-				generator.DataModel = GlobalEnums.PushPullModel.PullData;
+				reportStructure.DataModel = GlobalEnums.PushPullModel.PullData;
 				GoOn();
 			} else if (this.radioPushModell.Checked == true){
 				base.NextWizardPanelID = "PushModel";
-				generator.DataModel = GlobalEnums.PushPullModel.PushData;
+				reportStructure.DataModel = GlobalEnums.PushPullModel.PushData;
 				GoOn();
 			} else if (this.radioFormSheet.Checked == true){
-				generator.DataModel = GlobalEnums.PushPullModel.FormSheet;
+				reportStructure.DataModel = GlobalEnums.PushPullModel.FormSheet;
 				base.EnableNext = false;
 				base.IsLastPanel = true;
 			}
 			
-			generator.Landscape = this.radioLandscape.Checked;
+			reportStructure.Landscape = this.radioLandscape.Checked;
 		}
 		
 		
@@ -196,11 +208,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 				
 				if (this.radioPullModell.Checked == true) {
 					base.NextWizardPanelID = "PullModel";	
-					generator.DataModel = GlobalEnums.PushPullModel.PullData;
+					reportStructure.DataModel = GlobalEnums.PushPullModel.PullData;
 					GoOn();
 				} else if (this.radioPushModell.Checked == true){
 					base.NextWizardPanelID = "PushModel";
-					generator.DataModel = GlobalEnums.PushPullModel.PushData;
+					reportStructure.DataModel = GlobalEnums.PushPullModel.PushData;
 					GoOn();
 				} else if (this.radioFormSheet.Checked == true){
 //					generator.DataModel = GlobalEnums.PushPullModel.FormSheet;
@@ -208,10 +220,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 					base.IsLastPanel = true;
 				} else if(this.radioStandardLayout.Checked == true) {
 					
-					generator.Landscape = false;
+					reportStructure.Landscape = false;
 					
 				} else if(this.radioLandscape.Checked == true) {
-					generator.Landscape = true;
+					reportStructure.Landscape = true;
 				}
 					
 				base.EnableFinish = true;
@@ -227,15 +239,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 		
 		private void OnSelectFolder(object sender, System.EventArgs e)
 		{
-			using (FolderBrowserDialog fd = FileService.CreateFolderBrowserDialog("")) {
-				if (fd.ShowDialog() == DialogResult.OK) {
-					if (!String.IsNullOrEmpty(fd.SelectedPath)) {
-						if (!fd.SelectedPath.EndsWith(@"\",StringComparison.OrdinalIgnoreCase)){
-							this.txtPath.Text = fd.SelectedPath + @"\";
-						} else {
-							this.txtPath.Text = fd.SelectedPath;
-						}
-					}
+			string selectedPath = SD.FileService.BrowseForFolder("");
+			if (!String.IsNullOrEmpty(selectedPath)) {
+				if (!selectedPath.EndsWith(@"\",StringComparison.OrdinalIgnoreCase)){
+					this.txtPath.Text = selectedPath + @"\";
+				} else {
+					this.txtPath.Text = selectedPath;
 				}
 			}
 		}

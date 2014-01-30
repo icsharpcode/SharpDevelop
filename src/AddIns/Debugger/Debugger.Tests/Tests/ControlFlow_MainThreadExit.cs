@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Threading;
@@ -34,8 +49,6 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ControlFlow_MainThreadExit()
 		{
-			if (IsDotnet45Installed())
-				NUnit.Framework.Assert.Ignore("Does not yet work on .NET 4.5!");
 			StartTest();
 			ObjectDump("ThreadsBeforeExit", process.Threads);
 			process.AsyncContinue();
@@ -55,62 +68,56 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="ControlFlow_MainThreadExit.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_MainThreadExit.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ControlFlow_MainThreadExit.cs:20,4-20,40</DebuggingPaused>
+    <Paused>ControlFlow_MainThreadExit.cs:35,4-35,40</Paused>
     <ThreadsBeforeExit
-      Count="2"
-      Selected="Thread Name =  Suspended = False">
+      Capacity="4"
+      Count="2">
       <Item>
         <Thread
-          Callstack="{static System.Void Debugger.Tests.ControlFlow_MainThreadExit.Main()}"
-          CurrentExceptionType="0"
+          Callstack="{[Method Debugger.Tests.ControlFlow_MainThreadExit.Main():System.Void]}"
           IsAtSafePoint="True"
           IsInValidState="True"
-          MostRecentStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.Main()"
+          MostRecentStackFrame="[Method Debugger.Tests.ControlFlow_MainThreadExit.Main():System.Void]"
           Name=""
           Priority="Normal"
-          RuntimeValue="{System.Threading.Thread}"
-          SelectedStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.Main()" />
+          RuntimeValue="{System.Threading.Thread}" />
       </Item>
       <Item>
         <Thread
-          Callstack="{static Boolean System.Threading.WaitHandle.InternalWaitOne(System.Runtime.InteropServices.SafeHandle waitableSafeHandle, System.Int64 millisecondsTimeout, System.Boolean hasThreadAffinity, System.Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(System.Int32 millisecondsTimeout, System.Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(), static System.Void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime(), static System.Void System.Threading.ThreadHelper.ThreadStart_Context(System.Object state), static System.Void System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state, System.Boolean ignoreSyncCtx), static System.Void System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state), System.Void System.Threading.ThreadHelper.ThreadStart()}"
-          CurrentExceptionType="0"
+          Callstack="{[Method System.Threading.WaitHandle.InternalWaitOne(waitableSafeHandle:System.Runtime.InteropServices.SafeHandle, millisecondsTimeout:System.Int64, hasThreadAffinity:System.Boolean, exitContext:System.Boolean):System.Boolean], [Method System.Threading.WaitHandle.WaitOne(millisecondsTimeout:System.Int32, exitContext:System.Boolean):System.Boolean], [Method System.Threading.WaitHandle.WaitOne():System.Boolean], [Method Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime():System.Void], [Method System.Threading.ThreadHelper.ThreadStart_Context(state:System.Object):System.Void], [Method System.Threading.ExecutionContext.RunInternal(executionContext:System.Threading.ExecutionContext, callback:System.Threading.ContextCallback, state:System.Object, preserveSyncCtx:System.Boolean):System.Void], [Method System.Threading.ExecutionContext.Run(executionContext:System.Threading.ExecutionContext, callback:System.Threading.ContextCallback, state:System.Object, preserveSyncCtx:System.Boolean):System.Void], [Method System.Threading.ExecutionContext.Run(executionContext:System.Threading.ExecutionContext, callback:System.Threading.ContextCallback, state:System.Object):System.Void], [Method System.Threading.ThreadHelper.ThreadStart():System.Void]}"
           IsAtSafePoint="True"
           IsInValidState="True"
-          MostRecentStackFrame="static Boolean System.Threading.WaitHandle.InternalWaitOne(System.Runtime.InteropServices.SafeHandle waitableSafeHandle, System.Int64 millisecondsTimeout, System.Boolean hasThreadAffinity, System.Boolean exitContext)"
+          MostRecentStackFrame="[Method System.Threading.WaitHandle.InternalWaitOne(waitableSafeHandle:System.Runtime.InteropServices.SafeHandle, millisecondsTimeout:System.Int64, hasThreadAffinity:System.Boolean, exitContext:System.Boolean):System.Boolean]"
           Name="Worker thread"
           Priority="Normal"
           RuntimeValue="{System.Threading.Thread}" />
       </Item>
     </ThreadsBeforeExit>
-    <DebuggingPaused>ForcedBreak ControlFlow_MainThreadExit.cs:25,4-25,26</DebuggingPaused>
+    <Paused></Paused>
     <ThreadsAfterExit
-      Count="2"
-      Selected="Thread Name = Worker thread Suspended = False">
+      Capacity="4"
+      Count="2">
       <Item>
         <Thread
-          CurrentExceptionType="0"
           Name=""
           Priority="Normal"
           RuntimeValue="{Exception: The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)}" />
       </Item>
       <Item>
         <Thread
-          Callstack="{static Boolean System.Threading.WaitHandle.InternalWaitOne(System.Runtime.InteropServices.SafeHandle waitableSafeHandle, System.Int64 millisecondsTimeout, System.Boolean hasThreadAffinity, System.Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(System.Int32 millisecondsTimeout, System.Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(), static System.Void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime(), static System.Void System.Threading.ThreadHelper.ThreadStart_Context(System.Object state), static System.Void System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state, System.Boolean ignoreSyncCtx), static System.Void System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state), System.Void System.Threading.ThreadHelper.ThreadStart()}"
-          CurrentExceptionType="0"
+          Callstack="{[Method System.Threading.WaitHandle.InternalWaitOne(waitableSafeHandle:System.Runtime.InteropServices.SafeHandle, millisecondsTimeout:System.Int64, hasThreadAffinity:System.Boolean, exitContext:System.Boolean):System.Boolean], [Method System.Threading.WaitHandle.WaitOne(millisecondsTimeout:System.Int32, exitContext:System.Boolean):System.Boolean], [Method System.Threading.WaitHandle.WaitOne():System.Boolean], [Method Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime():System.Void], [Method System.Threading.ThreadHelper.ThreadStart_Context(state:System.Object):System.Void], [Method System.Threading.ExecutionContext.RunInternal(executionContext:System.Threading.ExecutionContext, callback:System.Threading.ContextCallback, state:System.Object, preserveSyncCtx:System.Boolean):System.Void], [Method System.Threading.ExecutionContext.Run(executionContext:System.Threading.ExecutionContext, callback:System.Threading.ContextCallback, state:System.Object, preserveSyncCtx:System.Boolean):System.Void], [Method System.Threading.ExecutionContext.Run(executionContext:System.Threading.ExecutionContext, callback:System.Threading.ContextCallback, state:System.Object):System.Void], [Method System.Threading.ThreadHelper.ThreadStart():System.Void]}"
           IsAtSafePoint="True"
           IsInValidState="True"
-          MostRecentStackFrame="static Boolean System.Threading.WaitHandle.InternalWaitOne(System.Runtime.InteropServices.SafeHandle waitableSafeHandle, System.Int64 millisecondsTimeout, System.Boolean hasThreadAffinity, System.Boolean exitContext)"
+          MostRecentStackFrame="[Method System.Threading.WaitHandle.InternalWaitOne(waitableSafeHandle:System.Runtime.InteropServices.SafeHandle, millisecondsTimeout:System.Int64, hasThreadAffinity:System.Boolean, exitContext:System.Boolean):System.Boolean]"
           Name="Worker thread"
           Priority="Normal"
-          RuntimeValue="{System.Threading.Thread}"
-          SelectedStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime()" />
+          RuntimeValue="{System.Threading.Thread}" />
       </Item>
     </ThreadsAfterExit>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

@@ -1,12 +1,27 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.WebReferences;
@@ -17,7 +32,7 @@ using Rhino.Mocks;
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
-	public class ProjectWithServiceReferencesTests
+	public class ProjectWithServiceReferencesTests : SDTestFixtureBase
 	{
 		IProject fakeProject;
 		ProjectWithServiceReferences project;
@@ -39,23 +54,18 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		void CreateProjectWithVisualBasicMSBuildProject()
 		{
-			msbuildProject = WebReferenceTestHelper.CreateTestProject("VBNet");
+			msbuildProject = WebReferenceTestHelper.CreateTestProject("VB");
 			project = new ProjectWithServiceReferences(msbuildProject);			
 		}
 		
 		void SetProjectDirectory(string directory)
 		{
-			fakeProject.Stub(p => p.Directory).Return(directory);			
-		}
-		
-		void SetProjectCodeDomProvider(LanguageProperties languageProperties)
-		{
-			fakeProject.Stub(p => p.LanguageProperties).Return(languageProperties);
+			fakeProject.Stub(p => p.Directory).Return(DirectoryName.Create(directory));
 		}
 		
 		ProjectItem GetFirstServiceReferenceFileInMSBuildProject(ServiceReferenceFileName fileName)
 		{
-			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName.Path);
+			return msbuildProject.Items.SingleOrDefault(item => item.FileName == FileName.Create(fileName.Path));
 		}
 		
 		ServiceReferencesProjectItem GetFirstWCFMetadataItemInMSBuildProject()
@@ -70,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		ProjectItem GetFileProjectItemInMSBuildProject(string fileName)
 		{
-			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName);
+			return msbuildProject.Items.SingleOrDefault(item => item.FileName == FileName.Create(fileName));
 		}
 		
 		ServiceReferenceProjectItem GetFirstWCFMetadataStorageItemInMSBuildProject()
@@ -80,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		FileProjectItem GetFileFromMSBuildProject(string fileName)
 		{
-			return msbuildProject.Items.Single(item => item.FileName == fileName) as FileProjectItem;
+			return msbuildProject.Items.Single(item => item.FileName == FileName.Create(fileName)) as FileProjectItem;
 		}
 		
 		ReferenceProjectItem GetReferenceFromMSBuildProject(string name)
@@ -316,7 +326,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		{
 			CreateProjectWithVisualBasicMSBuildProject();
 			
-			Assert.AreEqual("VBNet", project.Language);
+			Assert.AreEqual("VB", project.Language);
 		}
 		
 		[Test]
@@ -341,7 +351,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void AddAppConfigFile_ProjectHasNoAppConfig_ProjectItemAddedToProjectForAppConfig()
 		{
 			CreateProjectWithMSBuildProject();
-			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\myproject.csproj");
 			
 			project.AddAppConfigFile();
 			
@@ -397,7 +407,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void GetAppConfigFileName_ProjectHasNoAppConfig_DefaultAppConfigFileNameReturned()
 		{
 			CreateProjectWithMSBuildProject();
-			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\myproject.csproj");
 			
 			string fileName = project.GetAppConfigFileName();
 			
@@ -408,7 +418,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void GetAppConfigFileName_ProjectHasAppConfigInSubFolder_AppConfigFileNameReturned()
 		{
 			CreateProjectWithMSBuildProject();
-			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\myproject.csproj");
 			AddFileToMSBuildProject(@"SubFolder\app.config");
 			string fileName = project.GetAppConfigFileName();
 			

@@ -1,12 +1,31 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests.EnvDTE
 {
@@ -26,6 +45,8 @@ namespace PackageManagement.Tests.EnvDTE
 			referenceProjectItem = msbuildProject.AddReference(name);
 			fakeProjectService = project.FakeProjectService;
 			CreateReference(project, referenceProjectItem);
+			IWorkbench workbench = MockRepository.GenerateStub<IWorkbench>();
+			ICSharpCode.SharpDevelop.SD.Services.AddService(typeof(IWorkbench), workbench);
 		}
 		
 		void CreateReference(Project project, ReferenceProjectItem referenceProjectItem)
@@ -33,11 +54,16 @@ namespace PackageManagement.Tests.EnvDTE
 			reference = new Reference3(project, referenceProjectItem);
 		}
 		
-		TestableProject CreateProjectReference()
+		TestableProject CreateProjectReference(string parentProjectFileName, string referencedProjectFileName)
 		{
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
+			msbuildProject.FileName = new FileName(parentProjectFileName);
 			TestableProject referencedProject = ProjectHelper.CreateTestProject();
+			referencedProject.FileName = new FileName(referencedProjectFileName);
+			((ICollection<IProject>)msbuildProject.ParentSolution.Projects).Add(referencedProject);
+			IWorkbench workbench = MockRepository.GenerateStub<IWorkbench>();
+			ICSharpCode.SharpDevelop.SD.Services.AddService(typeof(IWorkbench), workbench);
 			ProjectReferenceProjectItem referenceProjectItem = msbuildProject.AddProjectReference(referencedProject);
 			fakeProjectService = project.FakeProjectService;
 			CreateReference(project, referenceProjectItem);
@@ -90,8 +116,9 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void SourceProject_ReferenceIsProjectReference_ReturnsReferencedProject()
 		{
-			TestableProject referencedProject = CreateProjectReference();
-			referencedProject.FileName = @"d:\projects\referencedproject.csproj";
+			string parentProjectFileName = @"d:\projects\project.csproj";
+			string referencedProjectFileName = @"d:\projects\referencedproject.csproj";
+			TestableProject referencedProject = CreateProjectReference(parentProjectFileName, referencedProjectFileName);
 			
 			global::EnvDTE.Project project = reference.SourceProject;
 			
@@ -112,7 +139,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Path_SystemXmlReferenceInProjectReferences_ReturnsFullPathToSystemXml()
 		{
 			CreateReference("System.Xml");
-			referenceProjectItem.FileName = @"c:\Program Files\Microsoft\Reference Assemblies\v4\System.Xml.dll";
+			referenceProjectItem.FileName = FileName.Create(@"c:\Program Files\Microsoft\Reference Assemblies\v4\System.Xml.dll");
 			
 			string path = reference.Path;
 			

@@ -1,37 +1,57 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Forms;
 
-using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class TaskListPad : AbstractPadContent, IClipboardHandler
+	public class TaskListPad : AbstractPadContent
 	{
 		public const string DefaultContextMenuAddInTreeEntry = "/SharpDevelop/Pads/TaskList/TaskContextMenu";
 		
 		static TaskListPad instance;
 		Dictionary<string, bool> displayedTokens;
-		IClass oldClass;
+		readonly ObservableCollection<SDTask> tasks;
+		IUnresolvedTypeDefinition oldClass;
 		int selectedScopeIndex = 0;
-		bool isInitialized = false;
+		bool isInitialized;
 		
 		public bool IsInitialized {
 			get { return isInitialized; }
 		}
 		
-		ToolStrip toolStrip;
-		Panel contentPanel = new Panel();
+		ToolBar toolBar;
+		DockPanel contentPanel = new DockPanel();
 		
-		TaskView taskView = new TaskView() { DefaultContextMenuAddInTreeEntry = TaskListPad.DefaultContextMenuAddInTreeEntry };
+		ListView taskView = new ListView();
 		
 		public Dictionary<string, bool> DisplayedTokens {
 			get { return displayedTokens; }
@@ -59,32 +79,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			instance = this;
 			this.displayedTokens = new Dictionary<string, bool>();
+			TaskService.Cleared += TaskServiceCleared;
+			TaskService.Added   += TaskServiceAdded;
+			TaskService.Removed += TaskServiceRemoved;
+			TaskService.InUpdateChanged += TaskServiceInUpdateChanged;
 			
-			RedrawContent();
-			ResourceService.LanguageChanged += delegate { RedrawContent(); };
+			this.tasks = new ObservableCollection<SDTask>(TaskService.CommentTasks);
 			
-			InitializeToolStrip();
-
-			TaskService.Cleared += new EventHandler(TaskServiceCleared);
-			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
-			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
-			TaskService.InUpdateChanged += new EventHandler(TaskServiceInUpdateChanged);
+			InitializePadContent();
 			
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += new EventHandler(WorkbenchActiveViewContentChanged);
+			SD.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
 			
-			if (WorkbenchSingleton.Workbench.ActiveViewContent != null) {
+			if (SD.Workbench.ActiveViewContent != null) {
 				UpdateItems();
 				WorkbenchActiveViewContentChanged(null, null);
 			}
 			
-			ProjectService.SolutionLoaded += OnSolutionOpen;
-			ProjectService.SolutionClosed += OnSolutionClosed;
-			ProjectService.CurrentProjectChanged += ProjectServiceCurrentProjectChanged;
+			SD.ProjectService.SolutionOpened += OnSolutionOpen;
+			SD.ProjectService.SolutionClosed += OnSolutionClosed;
+			SD.ProjectService.CurrentProjectChanged += ProjectServiceCurrentProjectChanged;
 			
 			this.isInitialized = true;
 		}
 
-		void ProjectServiceCurrentProjectChanged(object sender, ProjectEventArgs e)
+		void ProjectServiceCurrentProjectChanged(object sender, EventArgs e)
 		{
 			if (isInitialized)
 				UpdateItems();
@@ -95,12 +113,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (isInitialized)
 				UpdateItems();
 			
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			
-			if (provider != null) {
+			if (editor != null) {
 				// ensure we don't attach multiple times to the same editor
-				provider.TextEditor.Caret.PositionChanged -= CaretPositionChanged;
-				provider.TextEditor.Caret.PositionChanged += CaretPositionChanged;
+				editor.Caret.LocationChanged -= CaretPositionChanged;
+				editor.Caret.LocationChanged += CaretPositionChanged;
 			}
 		}
 
@@ -108,11 +126,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (this.selectedScopeIndex > 2)
 			{
-				IClass current = GetCurrentClass();
+				var current = GetCurrentClass();
 				
 				if (oldClass == null) oldClass = current;
 				
-				if ((current != null) && (current.FullyQualifiedName != oldClass.FullyQualifiedName))
+				if ((current != null) && (current.ReflectionName != oldClass.ReflectionName))
 					UpdateItems();
 			}
 		}
@@ -123,72 +141,74 @@ namespace ICSharpCode.SharpDevelop.Gui
 				UpdateItems();
 		}
 		
-		void InitializeToolStrip()
+		void InitializePadContent()
 		{
-			taskView.CreateControl();
+			IReadOnlyList<string> tokens = SD.ParserService.TaskListTokens;
 			
-			contentPanel.Controls.Add(taskView);
-			
-			string[] tokens = ParserService.TaskListTokens;
-			
-			foreach (string token in tokens)
-			{
+			foreach (string token in tokens) {
 				if (!this.displayedTokens.ContainsKey(token)) {
 					this.displayedTokens.Add(token, true);
 				}
 			}
 			
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/TaskList/Toolbar");
-			ShowTaskListTokenButton[] buttons = TaskListTokensBuilder.BuildItems(tokens);
+			toolBar = ToolBarService.CreateToolBar(contentPanel, this, "/SharpDevelop/Pads/TaskList/Toolbar");
+			var items = (IList)toolBar.ItemsSource;
 			
-			foreach (ShowTaskListTokenButton button in buttons) {
-				toolStrip.Items.Add(new ToolBarSeparator());
-				toolStrip.Items.Add((ToolStripItem)button.Owner);
+			foreach (string token in tokens) {
+				items.Add(new Separator());
+				items.Add(new TaskListTokensToolbarCheckBox(token));
 			}
 			
-			toolStrip.Stretch   = true;
-			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			contentPanel.Children.Add(toolBar);
+			toolBar.SetValue(DockPanel.DockProperty, Dock.Top);
+			contentPanel.Children.Add(taskView);
+			taskView.ItemsSource = tasks;
+			taskView.MouseDoubleClick += TaskViewMouseDoubleClick;
+			taskView.Style = (Style)new TaskViewResources()["TaskListView"];
+			taskView.ContextMenu = MenuService.CreateContextMenu(taskView, DefaultContextMenuAddInTreeEntry);
 			
-			contentPanel.Controls.Add(toolStrip);
+			taskView.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, ExecuteCopy, CanExecuteCopy));
+			taskView.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
 		}
 		
-		void RedrawContent()
+		void TaskViewMouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
-			taskView.RefreshColumnNames();
+			SDTask task = taskView.SelectedItem as SDTask;
+			var item = taskView.ItemContainerGenerator.ContainerFromItem(task) as ListViewItem;
+			UIElement element = e.MouseDevice.DirectlyOver as UIElement;
+			if (task != null && task.FileName != null && element != null && item != null
+			    && element.IsDescendantOf(item)) {
+				SD.FileService.JumpToFilePosition(task.FileName, task.Line, task.Column);
+			}
 		}
 		
 		public void UpdateItems()
 		{
-			this.taskView.BeginUpdate();
+			tasks.Clear();
 			
-			this.taskView.ClearTasks();
-			
-			foreach (Task t in TaskService.CommentTasks) {
-				this.AddItem(t);
+			foreach (SDTask t in TaskService.CommentTasks) {
+				AddItem(t);
 			}
-			
-			RedrawContent();
-			this.taskView.EndUpdate();
 		}
 		
-		void AddItem(Task item)
+		void AddItem(SDTask item)
 		{
 			foreach (KeyValuePair<string, bool> pair in displayedTokens) {
-				if (item.Description.StartsWith(pair.Key) && pair.Value && IsInScope(item))
-					this.taskView.AddTask(item);
+				if (item.Description.StartsWith(pair.Key, StringComparison.Ordinal) && pair.Value && IsInScope(item))
+					tasks.Add(item);
 			}
 		}
 		
-		bool IsInScope(Task item)
+		bool IsInScope(SDTask item)
 		{
-			IClass current = GetCurrentClass();
-			IClass itemClass = GetCurrentClass(item);
+			var current = GetCurrentClass();
+			var itemClass = GetCurrentClass(item);
 			
 			switch (this.selectedScopeIndex) {
 				case 0:
 					// Solution
 					if (ProjectService.OpenSolution != null) {
-						foreach (AbstractProject proj in ProjectService.OpenSolution.Projects) {
+						foreach (IProject proj in ProjectService.OpenSolution.Projects) {
 							if (proj.FindFile(item.FileName) != null)
 								return true;
 						}
@@ -198,11 +218,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 					// Project
 					return ProjectService.CurrentProject != null && ProjectService.CurrentProject.FindFile(item.FileName) != null;
 				case 2:
-					// All open documents
-					return WorkbenchSingleton.Workbench.ViewContentCollection.OfType<ITextEditorProvider>().Any(provider => item.FileName == provider.TextEditor.FileName);
+					// All open files
+					return SD.Workbench.ViewContentCollection.Select(vc => vc.GetService<ITextEditor>()).Any(editor => editor != null && item.FileName == editor.FileName);
 				case 3:
-					// Document
-					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == FileName.Create(item.FileName);
+					// File
+					return SD.Workbench.ActiveViewContent != null && SD.Workbench.ActiveViewContent.PrimaryFileName == item.FileName;
 				case 4:
 					// Namespace
 					return current != null && itemClass != null && current.Namespace == itemClass.Namespace;
@@ -214,16 +234,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		IClass GetCurrentClass()
+		IUnresolvedTypeDefinition GetCurrentClass()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
+			if (SD.Workbench.ActiveViewContent == null || SD.Workbench.ActiveViewContent.PrimaryFileName == null)
 				return null;
 			
-			ParseInformation parseInfo = ParserService.GetParseInformation(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
+			IUnresolvedFile parseInfo = SD.ParserService.GetExistingUnresolvedFile(SD.Workbench.ActiveViewContent.PrimaryFileName);
 			if (parseInfo != null) {
-				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
+				IPositionable positionable = SD.Workbench.ActiveViewContent.GetService<IPositionable>();
 				if (positionable != null) {
-					IClass c = parseInfo.CompilationUnit.GetInnermostClass(positionable.Line, positionable.Column);
+					var c = parseInfo.GetInnermostTypeDefinition(positionable.Line, positionable.Column);
 					if (c != null) return c;
 				}
 			}
@@ -231,14 +251,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		IClass GetCurrentClass(Task item)
+		IUnresolvedTypeDefinition GetCurrentClass(SDTask item)
 		{
 			// Tasks are created by parsing, so the parse information for item.FileName should already be present.
 			// If they aren't, that's because the file might have been deleted/renamed in the meantime.
 			// We use GetExistingParseInformation to avoid trying to parse a file that might have been deleted/renamed.
-			ParseInformation parseInfo = ParserService.GetExistingParseInformation(item.FileName);
+			IUnresolvedFile parseInfo = SD.ParserService.GetExistingUnresolvedFile(item.FileName);
 			if (parseInfo != null) {
-				IClass c = parseInfo.CompilationUnit.GetInnermostClass(item.Line, item.Column);
+				var c = parseInfo.GetInnermostTypeDefinition(item.Line, item.Column);
 				if (c != null) return c;
 			}
 			
@@ -247,79 +267,52 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OnSolutionOpen(object sender, SolutionEventArgs e)
 		{
-			taskView.ClearTasks();
+			tasks.Clear();
 		}
 		
 		void OnSolutionClosed(object sender, EventArgs e)
 		{
-			taskView.ClearTasks();
+			tasks.Clear();
 		}
 		
 		void TaskServiceCleared(object sender, EventArgs e)
 		{
-			taskView.ClearTasks();
+			tasks.Clear();
 		}
 		
 		void TaskServiceAdded(object sender, TaskEventArgs e)
 		{
-			this.taskView.BeginUpdate();
-
 			if (e.Task.TaskType == TaskType.Comment) {
 				AddItem(e.Task);
 			}
-			
-			RedrawContent();
-			
-			this.taskView.EndUpdate();
 		}
 		
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
 		{
-			this.taskView.BeginUpdate();
-			
 			if (e.Task.TaskType == TaskType.Comment) {
-				foreach (ListViewItem item in this.taskView.Items) {
-					if (item.Tag == e.Task) {
-						this.taskView.Items.Remove(item);
-						break;
-					}
-				}
+				tasks.Remove(e.Task);
 			}
-			
-			RedrawContent();
-			this.taskView.EndUpdate();
 		}
 		
-		#region IClipboardHandler interface implementation
-		public bool EnableCut {
-			get { return false; }
-		}
-		public bool EnableCopy {
-			get { return taskView.TaskIsSelected; }
-		}
-		public bool EnablePaste {
-			get { return false; }
-		}
-		public bool EnableDelete {
-			get { return false; }
-		}
-		public bool EnableSelectAll {
-			get { return true; }
-		}
-		
-		public void Cut() {}
-		public void Paste() {}
-		public void Delete() {}
-		
-		public void Copy()
+		void CanExecuteCopy(object sender, CanExecuteRoutedEventArgs e)
 		{
-			taskView.CopySelectionToClipboard();
+			e.CanExecute = taskView.SelectedItem != null;
 		}
-		public void SelectAll()
+		
+		void ExecuteCopy(object sender, ExecutedRoutedEventArgs e)
+		{
+			TaskViewResources.CopySelectionToClipboard(taskView);
+		}
+		
+		void CanExecuteSelectAll(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+		
+		void ExecuteSelectAll(object sender, ExecutedRoutedEventArgs e)
 		{
 			taskView.SelectAll();
 		}
-		#endregion
 	}
 
 }

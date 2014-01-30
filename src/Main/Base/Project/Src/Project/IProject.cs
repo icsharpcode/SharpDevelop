@@ -1,16 +1,36 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -21,16 +41,21 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// When you implement IProject, you should also implement IProjectItemListProvider and IProjectAllowChangeConfigurations
 	/// </summary>
 	public interface IProject
-		: IBuildable, ISolutionFolder, IDisposable, IMementoCapable
+		: IBuildable, ISolutionItem, IDisposable, IConfigurable
 	{
 		/// <summary>
-		/// Gets the list of items in the project. This member is thread-safe.
-		/// The returned collection is guaranteed not to change - adding new items or removing existing items
-		/// will create a new collection.
+		/// Gets the object used for thread-safe synchronization.
+		/// Thread-safe members lock on this object, but if you manipulate underlying structures
+		/// (such as the MSBuild project for MSBuildBasedProjects) directly, you will have to lock on this object.
 		/// </summary>
-		ReadOnlyCollection<ProjectItem> Items {
-			get;
-		}
+		object SyncRoot { get; }
+		
+		/// <summary>
+		/// Gets the list of items in the project. This member is thread-safe.
+		/// The returned collection is thread-safe; any accesses will synchronize with the project's <see cref="SyncRoot"/>.
+		/// Enumerating the items collection will create a snapshot of the collection.
+		/// </summary>
+		IMutableModelCollection<ProjectItem> Items { get; }
 		
 		/// <summary>
 		/// Gets all items in the project that have the specified item type.
@@ -47,29 +72,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
-		ICollection<ItemType> AvailableFileItemTypes {
-			get;
-		}
+		IReadOnlyCollection<ItemType> AvailableFileItemTypes { get; }
 		
 		/// <summary>
 		/// Gets a list of project sections stored in the solution file for this project.
 		/// </summary>
-		List<ProjectSection> ProjectSections {
-			get;
-		}
-		
-		/// <summary>
-		/// Gets the language properties used for this project. This member is thread-safe.
-		/// </summary>
-		ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
-			get;
-		}
-		
-		/// <summary>
-		/// Gets the ambience used for the project. This member is thread-safe.
-		/// Because the IAmbience interface is not thread-safe, every call returns a new instance.
-		/// </summary>
-		ICSharpCode.SharpDevelop.Dom.IAmbience GetAmbience();
+		IMutableModelCollection<SolutionSection> ProjectSections { get; }
 		
 		/// <summary>
 		/// Gets the name of the project file.
@@ -77,10 +85,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// 
 		/// Only the getter is thread-safe.
 		/// </summary>
-		string FileName {
-			get;
-			set;
-		}
+		FileName FileName { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the name of the project.
@@ -88,13 +93,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Only the getter is thread-safe.
 		/// </summary>
 		/// <remarks>
-		/// Name already exists in ISolutionFolder, it's repeated here to prevent
-		/// the ambiguity with IBuildable.Name.
+		/// Name already exists in IBuildable; we're adding the setter here.
 		/// </remarks>
-		new string Name {
-			get;
-			set;
-		}
+		new string Name { get; set; }
 		
 		/// <summary>
 		/// Gets the directory of the project file.
@@ -103,9 +104,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// 
 		/// This member is thread-safe.
 		/// </summary>
-		string Directory {
-			get;
-		}
+		DirectoryName Directory { get; }
 		
 		/// <summary>
 		/// <para>
@@ -116,9 +115,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </para>
 		/// <para>This member is thread-safe.</para>
 		/// </summary>
-		bool ReadOnly {
-			get;
-		}
+		bool IsReadOnly { get; }
 		
 		#region MSBuild properties used inside SharpDevelop base
 		/// <summary>
@@ -142,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the full path of the output assembly.
 		/// Returns null when the project does not output any assembly.
 		/// </summary>
-		string OutputAssemblyFullPath {
+		FileName OutputAssemblyFullPath {
 			get;
 		}
 		
@@ -164,61 +161,29 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		#region Configuration / Platform management
 		/// <summary>
-		/// Gets/Sets the active configuration.
+		/// Gets the configuration mapping.
 		/// </summary>
-		string ActiveConfiguration {
-			get;
-			set;
-		}
+		ConfigurationMapping ConfigurationMapping { get; }
 		
 		/// <summary>
-		/// Gets/Sets the active platform.
-		/// </summary>
-		string ActivePlatform {
-			get;
-			set;
-		}
-		/// <summary>
-		/// Gets the list of available configuration names.
-		/// </summary>
-		ICollection<string> ConfigurationNames { get; }
-		
-		/// <summary>
-		/// Gets the list of available platform names.
-		/// </summary>
-		ICollection<string> PlatformNames { get; }
-		
-		/// <summary>
-		/// Is raised after the ActiveConfiguration property has changed.
-		/// </summary>
-		event EventHandler ActiveConfigurationChanged;
-		
-		/// <summary>
-		/// Is raised after the ActivePlatform property has changed.
-		/// </summary>
-		event EventHandler ActivePlatformChanged;
-		#endregion
-		
-		/// <summary>
-		/// Saves the project using it's current file name.
+		/// Saves the project using its current file name.
 		/// </summary>
 		void Save();
 		
 		/// <summary>
-		/// Returns true, if a specific file (given by it's name) is inside this project.
+		/// Returns true, if a specific file (given by its name) is inside this project.
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
-		bool IsFileInProject(string fileName);
+		bool IsFileInProject(FileName fileName);
 		
 		/// <summary>
 		/// Returns the project item for a specific file; or null if the file is not found in the project.
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
-		FileProjectItem FindFile(string fileName);
+		FileProjectItem FindFile(FileName fileName);
 		
 		/// <summary>
 		/// Gets if the project can be started.
@@ -227,21 +192,26 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets project specific properties.
+		/// These are saved in as part of the SharpDevelop configuration in the AppData folder.
 		/// </summary>
-		Properties ProjectSpecificProperties { get; }
+		/// <remarks>
+		/// This property never returns null.
+		/// 
+		/// Use <see cref="LoadProjectExtensions"/> instead to store settings that are for multiple users.
+		/// </remarks>
+		Properties Preferences { get; }
+		
+		/// <summary>
+		/// Saves the <see cref="Preferences"/> to disk.
+		/// This method is called by SharpDevelop when the solution is closed.
+		/// </summary>
+		void SavePreferences();
 		
 		/// <summary>
 		/// Starts the project.
 		/// </summary>
 		/// <param name="withDebugging">True, if a debugger should be used for the project.</param>
 		void Start(bool withDebugging);
-		
-		/// <summary>
-		/// Creates a new project content for this project.
-		/// This method should only be called by ParserService.LoadSolutionProjectsInternal()!
-		/// Return null if you don't want to create any project content.
-		/// </summary>
-		ParseProjectContent CreateProjectContent();
 		
 		/// <summary>
 		/// Creates a new ProjectItem for the passed MSBuild item.
@@ -251,114 +221,135 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the minimum version the solution must have to support this project type.
 		/// </summary>
-		int MinimumSolutionVersion { get; }
+		SolutionFormatVersion MinimumSolutionVersion { get; }
 		
 		/// <summary>
-		/// Retrieve the fully qualified assembly names and file location of referenced assemblies.
-		/// This method is thread safe.
+		/// Resolves assembly references for this project.
+		/// The resulting list of resolved references will include project references.
 		/// </summary>
-		void ResolveAssemblyReferences();
+		IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken);
 		
 		/// <summary>
 		/// Notifies the project that it was succesfully created from a project template.
 		/// </summary>
+		/// <remarks>
+		/// TODO This method is currently called before the project is added to the solution;
+		/// but we might change that so that it is called later.
+		/// </remarks>
 		void ProjectCreationComplete();
+		
+		/// <summary>
+		/// Notifies the project that it was loaded in the IDE.
+		/// This method is called after the whole solution has finished loading; and when existing projects are added to the open solution.
+		/// It is not called for newly created projects; and not if the solution was loaded in the background
+		/// (<see cref="IProjectService.LoadSolutionFile"/> vs. <see cref="IProjectService.OpenSolution"/>).
+		/// </summary>
+		void ProjectLoaded();
 		
 		/// <summary>
 		/// Loads the project extension content with the specified name.
 		/// </summary>
+		/// <remarks>
+		/// Project extensions are custom XML elements that are stored within the .csproj file.
+		/// They are intended for settings that are not specific to a user/machine.
+		/// 
+		/// Use <see cref="Preferences"/> instead to store per-user settings.
+		/// </remarks>
 		XElement LoadProjectExtensions(string name);
 		
 		/// <summary>
 		/// Saves the project extension content with the specified name.
 		/// </summary>
+		/// <remarks>
+		/// Project extensions are custom XML elements that are stored within the .csproj file.
+		/// They are intended for settings that are not specific to a user/machine.
+		/// 
+		/// Use <see cref="Preferences"/> instead to store per-user settings.
+		/// </remarks>
 		void SaveProjectExtensions(string name, XElement element);
 		
-		// TODO:
-		// bool HasProjectType(Guid projectTypeGuid);
-	}
-	
-	/// <summary>
-	/// A project or solution.
-	/// The IBuildable interface members are thread-safe.
-	/// </summary>
-	public interface IBuildable
-	{
 		/// <summary>
-		/// Gets the list of projects on which this project depends.
-		/// This method is thread-safe.
+		/// Determines whether this project has the specified type.
+		/// Projects may have multiple type GUIDs.
 		/// </summary>
-		ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions);
+		bool HasProjectType(Guid projectTypeGuid);
 		
 		/// <summary>
-		/// Starts building the project using the specified options.
-		/// This member must be implemented thread-safe.
+		/// Gets the project content associated with this project.
 		/// </summary>
-		void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink);
+		/// <remarks>
+		/// This property must always return the same value for the same project.
+		/// This property may return null.
+		/// 
+		/// This member is thread-safe.
+		/// </remarks>
+		IProjectContent ProjectContent { get; }
 		
 		/// <summary>
-		/// Gets the name of the buildable item.
-		/// This property is thread-safe.
+		/// Gets the default namespace to use for a file with the specified name.
 		/// </summary>
-		string Name { get; }
+		/// <param name="fileName">Full file name for a new file being added to the project.</param>
+		/// <returns>Namespace name to use for the new file</returns>
+		string GetDefaultNamespace(string fileName);
 		
 		/// <summary>
-		/// Gets the parent solution.
-		/// This property is thread-safe.
+		/// Creates a CodeDomProvider for this project's language.
+		/// Returns null when no CodeDomProvider is available for the language.
 		/// </summary>
-		Solution ParentSolution { get; }
+		System.CodeDom.Compiler.CodeDomProvider CreateCodeDomProvider();
 		
 		/// <summary>
-		/// Creates the project-specific build options.
-		/// This member must be implemented thread-safe.
+		/// Generates code for a CodeDom compile unit.
+		/// This method is used by CustomToolContext.WriteCodeDomToFile.
 		/// </summary>
-		/// <param name="options">The global build options.</param>
-		/// <param name="isRootBuildable">Specifies whether this project is the main buildable item.
-		/// The root buildable is the buildable for which <see cref="BuildOptions.ProjectTarget"/> and <see cref="BuildOptions.ProjectAdditionalProperties"/> apply.
-		/// The dependencies of that root buildable are the non-root buildables.</param>
-		/// <returns>The project-specific build options.</returns>
-		ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable);
-	}
-	
-	/// <summary>
-	/// Interface for adding and removing items from a project. Not part of the IProject
-	/// interface because in nearly all cases, ProjectService.Add/RemoveProjectItem should
-	/// be used instead!
-	/// So IProject implementors should implement this interface, but only the SharpDevelop methods
-	/// ProjectService.AddProjectItem and RemoveProjectItem may call the interface members.
-	/// </summary>
-	public interface IProjectItemListProvider
-	{
-		/// <summary>
-		/// Gets a list of items in the project.
-		/// </summary>
-		ReadOnlyCollection<ProjectItem> Items {
-			get;
-		}
+		void GenerateCodeFromCodeDom(System.CodeDom.CodeCompileUnit compileUnit, TextWriter writer);
 		
 		/// <summary>
-		/// Adds a new entry to the Items-collection
+		/// Creates a new ambience for this project.
 		/// </summary>
-		void AddProjectItem(ProjectItem item);
+		/// <remarks>
+		/// This member is thread-safe.
+		/// As ambiences are not thread-safe, this method always returns a new ambience instance.
+		/// Never returns null.
+		/// </remarks>
+		IAmbience GetAmbience();
 		
 		/// <summary>
-		/// Removes an entry from the Items-collection
+		/// Returns the ILanguageBinding implementation for this project.
 		/// </summary>
-		bool RemoveProjectItem(ProjectItem item);
-	}
-	
-	/// <summary>
-	/// Interface for changing project or solution configuration.
-	/// IProject implementors should implement this interface, but only the SharpDevelop methods
-	/// Solution.RenameProjectPlatform etc. may call the interface members.
-	/// </summary>
-	public interface IProjectAllowChangeConfigurations
-	{
-		bool RenameProjectConfiguration(string oldName, string newName);
-		bool RenameProjectPlatform(string oldName, string newName);
-		bool AddProjectConfiguration(string newName, string copyFrom);
-		bool AddProjectPlatform(string newName, string copyFrom);
-		bool RemoveProjectConfiguration(string name);
-		bool RemoveProjectPlatform(string name);
+		ILanguageBinding LanguageBinding { get; }
+		
+		/// <summary>
+		/// Prepares searching for references to the specified entity.
+		/// This method should calculate the amount of work to be done (e.g. using the number of files to search through),
+		/// it should not perform the actual search.
+		/// </summary>
+		/// <returns>
+		/// An object that can be used to perform the search; or null if this project does not support symbol searches.
+		/// </returns>
+		Refactoring.ISymbolSearch PrepareSymbolSearch(ISymbol entity);
+		
+		/// <summary>
+		/// Occurs whenever parse information for this project was updated. This event is raised on the main thread.
+		/// </summary>
+		event EventHandler<ParseInformationEventArgs> ParseInformationUpdated;
+		
+		/// <summary>
+		/// Notifies the project that the parse information was updated.
+		/// This method is called by the parser service <b>within a per-file lock</b>.
+		/// </summary>
+		void OnParseInformationUpdated(ParseInformationEventArgs args);
+		
+		/// <summary>
+		/// Gets the assembly model for the project. This property never returns null.
+		/// </summary>
+		IAssemblyModel AssemblyModel { get; }
+		
+		/// <summary>
+		/// Gets whether this project was unloaded.
+		/// </summary>
+		bool IsDisposed { get; }
+		
+		event EventHandler Disposed;
 	}
 }

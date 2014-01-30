@@ -1,6 +1,6 @@
 ﻿<SyntaxDefinition
 	xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"
-	name="VBNET/Razor"
+	name="VB/Razor"
 	extensions=".vbhtml">
 	
 	<Color name="CommentBlockStartEndTags" foreground="Black" background="Yellow" />

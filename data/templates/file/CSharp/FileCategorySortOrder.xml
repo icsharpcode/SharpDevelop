@@ -1,5 +1,0 @@
-<Categories>
-	<Category Name="C#">
-		<Category Name="${res:Templates.File.Categories.WindowsApplications}" SortOrder="10"/>
-	</Category>
-</Categories>

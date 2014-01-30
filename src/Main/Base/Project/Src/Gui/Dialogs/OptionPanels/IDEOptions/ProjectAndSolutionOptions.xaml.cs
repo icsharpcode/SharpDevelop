@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
@@ -17,13 +32,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			InitializeComponent();
 			
-			FillComboBoxWithEnumValues(typeof(Project.BuildOnExecuteSetting), onExecuteComboBox);
+			FillComboBoxWithEnumValues(typeof(Project.BuildDetection), onExecuteComboBox);
 			FillComboBoxWithEnumValues(typeof(Project.BuildOutputVerbosity), verbosityComboBox);
 		}
-	
+		
 		void FillComboBoxWithEnumValues(Type type, ComboBox comboBox)
 		{
-			foreach (Project.BuildOnExecuteSetting element in Enum.GetValues(type)) {
+			foreach (Project.BuildDetection element in Enum.GetValues(type)) {
 				object[] attr = type.GetField(Enum.GetName(type, element)).GetCustomAttributes(typeof(DescriptionAttribute), false);
 				string description;
 				if (attr.Length > 0) {
@@ -37,18 +52,18 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void defaultProjectLocationButtonClick(object sender, RoutedEventArgs e)
 		{
-			using (var fdiag = FileService.CreateFolderBrowserDialog("${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SelectDefaultProjectLocationDialog.Title}", defaultProjectLocationTextBox.Text)) {
-				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-					defaultProjectLocationTextBox.Text = fdiag.SelectedPath;
-				}
-			}
+			string path = SD.FileService.BrowseForFolder(
+				"${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SelectDefaultProjectLocationDialog.Title}",
+				defaultProjectLocationTextBox.Text);
+			if (path != null)
+				defaultProjectLocationTextBox.Text = path;
 		}
 		
 		public override void LoadOptions()
 		{
 			base.LoadOptions();
 			parallelBuildCount.Value = Project.BuildOptions.DefaultParallelProjectCount;
-			onExecuteComboBox.SelectedIndex = (int)Project.BuildModifiedProjectsOnlyService.Setting;
+			onExecuteComboBox.SelectedIndex = (int)Project.BuildOptions.BuildOnExecute;
 			verbosityComboBox.SelectedIndex = (int)Project.BuildOptions.DefaultBuildOutputVerbosity;
 		}
 		
@@ -63,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			}
 			Project.BuildOptions.DefaultParallelProjectCount = (int)parallelBuildCount.Value;
-			Project.BuildModifiedProjectsOnlyService.Setting = (Project.BuildOnExecuteSetting)onExecuteComboBox.SelectedIndex;
+			Project.BuildOptions.BuildOnExecute = (Project.BuildDetection)onExecuteComboBox.SelectedIndex;
 			Project.BuildOptions.DefaultBuildOutputVerbosity = (Project.BuildOutputVerbosity)verbosityComboBox.SelectedIndex;
 			return base.SaveOptions();
 		}

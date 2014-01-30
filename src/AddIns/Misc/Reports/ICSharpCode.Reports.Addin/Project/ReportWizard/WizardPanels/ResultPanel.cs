@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
@@ -19,6 +34,7 @@ using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.DataAccess;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Project.BaseClasses;
+using ICSharpCode.Reports.Core.Project.Interfaces;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -34,11 +50,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox txtSqlString;
-		
 		private ReportStructure reportStructure;
-		private Properties customizer;
 		private ReportModel model;
-		private ConnectionObject connectionObject;
 		private DataSet resultDataSet;
 		
 		
@@ -67,15 +80,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			DataSet dataSet = ResultPanel.CreateDataSet ();
 			
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
+			
+			var dataAccess = new SqlDataAccessStrategy(model.ReportSettings);
+			
 			switch (model.ReportSettings.CommandType) {
 				case CommandType.Text:
-						this.connectionObject = CreateConnection ();
-						var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
-						dataSet = dataAccess.ReadData();
-						dataSet.Tables[0].TableName = CreateTableName (reportStructure);
+					dataSet = DataSetFromSqlText(dataAccess);	
 					break;
 				case CommandType.StoredProcedure:
-					dataSet = DatasetFromStoredProcedure();
+					dataSet = DataSetFromStoredProcedure(dataAccess);
 					break;
 				case CommandType.TableDirect:
 					MessageService.ShowError("TableDirect is not suppurted at the moment");
@@ -84,17 +97,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					throw new Exception("Invalid value for CommandType");
 			}
 			return dataSet;
-		}
-		
-		
-		ConnectionObject CreateConnection()
-		{
-			
-			var conobj = ConnectionObject.CreateInstance(this.model.ReportSettings.ConnectionString,
-			                                             System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb"));
-			conobj.QueryString = model.ReportSettings.CommandText;
-			return conobj;
-			
 		}
 		
 		
@@ -114,43 +116,45 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		DataSet DatasetFromStoredProcedure()
+		private DataSet DataSetFromSqlText(IDataAccessStrategy dataAccess)
 		{
-			this.connectionObject = CreateConnection();
-			DataSet dataSet = ResultPanel.CreateDataSet();
-			IProcedure procedure = reportStructure.IDatabaseObjectBase as IProcedure;
-			
-			var paramCollection = CheckParameters(procedure);
-			
-			
-			if (paramCollection.Count > 0) {
-				FillParameters(paramCollection);
-				reportStructure.SqlQueryParameters.AddRange(paramCollection);
-			}
-			
-			var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
-			dataSet = dataAccess.ReadData();
-			dataSet.Tables[0].TableName = procedure.Name;
-			
+			var dataSet = dataAccess.ReadData();
+			dataSet.Tables[0].TableName = CreateTableName (reportStructure);
 			return dataSet;
 		}
 		
 		
-		
-		void FillParameters(ParameterCollection paramCollection)
+		private DataSet DataSetFromStoredProcedure(IDataAccessStrategy dataAccess)
 		{
-			model.ReportSettings.ParameterCollection.AddRange(paramCollection);
-			CollectParametersCommand p = new CollectParametersCommand(model);
+			DataSet dataSet = ResultPanel.CreateDataSet();
+			
+			IProcedure procedure = reportStructure.IDatabaseObjectBase as IProcedure;
+			var sqlParamCollection = CreateSqlParameters(procedure);
+			
+			if (sqlParamCollection.Count > 0) {
+				reportStructure.SqlQueryParameters.AddRange(sqlParamCollection);
+				model.ReportSettings.SqlParameters.AddRange(sqlParamCollection);
+				CollectParamValues(model.ReportSettings);
+
+			}
+			dataSet = dataAccess.ReadData();
+			dataSet.Tables[0].TableName = procedure.Name;
+			return dataSet;
+		}
+		
+		
+		void CollectParamValues(ReportSettings reportSettings){
+
+			CollectParametersCommand p = new CollectParametersCommand(reportSettings);
 			p.Run();
 		}
 		
 		
-		ParameterCollection CheckParameters(IProcedure procedure)
+		SqlParameterCollection CreateSqlParameters(IProcedure procedure)
 		{
-			ParameterCollection col = new ParameterCollection();
+			SqlParameterCollection col = new SqlParameterCollection();
 			SqlParameter par = null;
 			foreach (var element in procedure.Items) {
-			
 				DbType dbType = TypeHelpers.DbTypeFromStringRepresenation(element.DataType);
 				par	 = new SqlParameter(element.Name,dbType,"",ParameterDirection.Input);
 				
@@ -158,9 +162,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					par.ParameterDirection = ParameterDirection.Input;
 					
 				} else if (element.ParameterMode == ParameterMode. InOut){
-				par.ParameterDirection = ParameterDirection.InputOutput;
+					par.ParameterDirection = ParameterDirection.InputOutput;
 				}
-				col.Add(par);		
+				col.Add(par);
 			}
 			return col;
 		}
@@ -232,10 +236,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)
 		{
-			if (customizer == null) {
-				customizer = (Properties)base.CustomizationObject;
-				reportStructure = (ReportStructure)customizer.Get("Generator");
-			}
+			reportStructure = (ReportStructure)base.CustomizationObject;
 			if (message == DialogMessage.Activated) 
 			{
 				ShowData();

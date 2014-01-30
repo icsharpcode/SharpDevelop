@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.ILSpyAddIn</RootNamespace>
     <AssemblyName>ILSpyAddIn</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <OutputPath>..\..\..\..\AddIns\DisplayBindings\Decompiler\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -52,6 +52,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Linq" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -64,19 +65,24 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DebuggerDecompilerService.cs" />
     <Compile Include="DebuggerTextOutput.cs" />
-    <Compile Include="LaunchILSpy\ILSpyAssemblyResolver.cs" />
+    <Compile Include="DecompiledViewContent.cs" />
+    <Compile Include="ILSpyDecompilerService.cs" />
+    <Compile Include="ILSpyDisplayBinding.cs" />
+    <Compile Include="ILSpyFullParseInformation.cs" />
+    <Compile Include="ILSpyParser.cs" />
+    <Compile Include="ILSpySymbolSource.cs" />
+    <Compile Include="ILSpyUnresolvedFile.cs" />
     <Compile Include="NavigateToDecompiledEntityService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LaunchILSpy\ILSpyController.cs" />
-    <Compile Include="LaunchILSpy\SetILSpyPathDialog.cs" />
+    <Compile Include="LaunchILSpy\SetILSpyPathDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="LaunchILSpy\SetILSpyPathDialog.Designer.cs">
       <DependentUpon>SetILSpyPathDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="LaunchILSpy\TextEditorContextMenuCommand.cs" />
-    <Compile Include="ViewContent\CodeView.cs" />
-    <Compile Include="ViewContent\DecompiledViewContent.cs" />
+    <Compile Include="LaunchILSpy\OpenInILSpyCommand.cs" />
     <EmbeddedResource Include="LaunchILSpy\SetILSpyPathDialog.resx">
       <DependentUpon>SetILSpyPathDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -94,22 +100,24 @@
       <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
       <Name>ICSharpCode.Decompiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\Mono.Cecil\Mono.Cecil.csproj">
+    <ProjectReference Include="..\..\..\Libraries\cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\NewNRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
+      <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
+      <Name>ICSharpCode.NRefactory.Cecil</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\NewNRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -122,9 +130,9 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    <ProjectReference Include="..\..\Debugger\Debugger.Core\Debugger.Core.csproj">
+      <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>
+      <Name>Debugger.Core</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
@@ -133,8 +141,5 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="LaunchILSpy" />
-    <Folder Include="ViewContent" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

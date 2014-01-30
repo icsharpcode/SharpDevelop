@@ -1,64 +1,53 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
+using System.Threading.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.Utils;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace ICSharpCode.SharpDevelop.Tests.Project
+namespace ICSharpCode.SharpDevelop.Project
 {
 	[TestFixture]
 	public class BeforeBuildCustomToolProjectItemsTests
 	{
 		ProjectHelper projectHelper;
 		BeforeBuildCustomToolProjectItems beforeBuildCustomToolProjectItems;
-		Solution solution;
-		
-		class UnknownBuildable : IBuildable
-		{
-			public string Name { get; set; }
-			
-			public Solution ParentSolution { get; set; }
-			
-			public ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
-			{
-				return new IBuildable[0];
-			}
-			
-			public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
-			{
-			}
-			
-			public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
-			{
-				return new ProjectBuildOptions(BuildTarget.Build);
-			}
-		}
+		ISolution solution;
 		
 		IProject CreateProject(string fileName = @"d:\MyProject\MyProject.csproj")
 		{
-			CreateProjectWithNoProjectSpecifiedProperties(fileName);
-			projectHelper.AddProjectSpecificProperties();
-			return projectHelper.Project;
-		}
-		
-		void CreateProjectWithNoProjectSpecifiedProperties(string fileName)
-		{
 			projectHelper = new ProjectHelper(fileName);
+			return projectHelper.Project;
 		}
 		
 		void CreateSolution(params IProject[] projects)
 		{
-			IProjectChangeWatcher watcher = MockRepository.GenerateStub<IProjectChangeWatcher>();
-			solution = new Solution(watcher);
-			projects.ForEach(p => solution.Folders.Add(p));
+			solution = MockRepository.GenerateStrictMock<ISolution>();
+			solution.Stub(s => s.Projects).Return(new SimpleModelCollection<IProject>(projects));
 		}
 		
 		void ConfigureCustomToolFileNamesForProject(string fileNames)
@@ -90,30 +79,24 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 		
 		void CreateBeforeBuildCustomToolProjectItems()
 		{
-			CreateBeforeBuildCustomToolProjectItems(projectHelper.Project as IBuildable);
+			CreateBeforeBuildCustomToolProjectItems(new[] { projectHelper.Project });
 		}
 		
-		void CreateBeforeBuildCustomToolProjectItems(IBuildable buildable)
+		void CreateBeforeBuildCustomToolProjectItems(IReadOnlyList<IProject> projects)
 		{
-			beforeBuildCustomToolProjectItems = new BeforeBuildCustomToolProjectItems(buildable);
+			beforeBuildCustomToolProjectItems = new BeforeBuildCustomToolProjectItems(projects);
 		}
 		
 		void CreateBeforeBuildCustomToolProjectItemsUsingSolution()
 		{
-			CreateBeforeBuildCustomToolProjectItems(solution as IBuildable);
+			CreateBeforeBuildCustomToolProjectItems(solution.Projects.ToList());
 		}
 		
 		FileProjectItem AddFileToProject(string include)
 		{
 			var projectItem = new FileProjectItem(projectHelper.Project, ItemType.Compile, include);
-			projectHelper.AddProjectItem(projectItem);
+			projectHelper.Project.Items.Add(projectItem);
 			return projectItem;
-		}
-		
-		void CreateBeforeBuildCustomToolProjectItemsWithUnknownIBuildableDerivedClass()
-		{
-			var unknownBuildable = new UnknownBuildable();
-			CreateBeforeBuildCustomToolProjectItems(unknownBuildable);
 		}
 		
 		[Test]
@@ -295,27 +278,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 				projectItem
 			};
 			CollectionAssert.AreEqual(expectedProjectItems, projectItems);
-		}
-		
-		[Test]
-		public void GetProjectItems_ProjectSpecificPropertiesIsNull_NoProjectItemsReturnedAndNoNullReferenceExceptionThrown()
-		{
-			CreateProjectWithNoProjectSpecifiedProperties(@"d:\MyProject\FirstProject.csproj");
-			CreateBeforeBuildCustomToolProjectItems();
-			
-			List<FileProjectItem> projectItems = GetProjectItems();
-			
-			Assert.AreEqual(0, projectItems.Count);
-		}
-		
-		[Test]
-		public void GetProjectItems_UnknownIBuildableDerivedClass_NullReferenceExceptionIsNotThrown()
-		{
-			CreateBeforeBuildCustomToolProjectItemsWithUnknownIBuildableDerivedClass();
-			
-			List<FileProjectItem> projectItems = GetProjectItems();
-			
-			Assert.AreEqual(0, projectItems.Count);
 		}
 	}
 }

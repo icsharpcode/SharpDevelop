@@ -1,11 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-
-using ICSharpCode.Core.Services;
 
 namespace ICSharpCode.Core.WinForms
 {
@@ -25,6 +38,15 @@ namespace ICSharpCode.Core.WinForms
 		/// Gets/Sets the object used to synchronize message boxes shown on other threads.
 		/// </summary>
 		public ISynchronizeInvoke DialogSynchronizeInvoke { get; set; }
+		
+		public string DefaultMessageBoxTitle { get; set; }
+		
+		public string ProductName { get; set; }
+		
+		public WinFormsMessageService()
+		{
+			this.DefaultMessageBoxTitle = this.ProductName = "SharpDevelop";
+		}
 		
 		void BeginInvoke(MethodInvoker method)
 		{
@@ -46,38 +68,60 @@ namespace ICSharpCode.Core.WinForms
 		
 		public virtual void ShowException(Exception ex, string message)
 		{
+			LoggingService.Error(message, ex);
+			LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
+			message = StringParser.Parse(message);
 			if (ex != null) {
 				message += "\n\nException occurred: " + ex.ToString();
 			}
-			ShowError(message);
+			DoShowMessage(message, StringParser.Parse("${res:Global.ErrorText}"), MessageBoxIcon.Error);
+		}
+		
+		void DoShowMessage(string message, string caption, MessageBoxIcon icon)
+		{
+			BeginInvoke(
+				delegate {
+					MessageBox.Show(DialogOwner,
+					                message, caption ?? DefaultMessageBoxTitle,
+					                MessageBoxButtons.OK, MessageBoxIcon.Warning,
+					                MessageBoxDefaultButton.Button1, GetOptions(message, caption));
+				});
 		}
 		
 		public void ShowError(string message)
 		{
-			message = StringParser.Parse(message);
-			
-			string caption = StringParser.Parse("${res:Global.ErrorText}");
-			BeginInvoke(
-				delegate {
-					MessageBox.Show(DialogOwner,
-					                message, caption,
-					                MessageBoxButtons.OK, MessageBoxIcon.Warning,
-					                MessageBoxDefaultButton.Button1, GetOptions(message, caption));
-				});
+			LoggingService.Error(message);
+			DoShowMessage(StringParser.Parse(message), StringParser.Parse("${res:Global.ErrorText}"), MessageBoxIcon.Error);
 		}
 		
 		public void ShowWarning(string message)
 		{
-			message = StringParser.Parse(message);
-			
-			string caption = StringParser.Parse("${res:Global.WarningText}");
-			BeginInvoke(
-				delegate {
-					MessageBox.Show(DialogOwner,
-					                message, caption,
-					                MessageBoxButtons.OK, MessageBoxIcon.Warning,
-					                MessageBoxDefaultButton.Button1, GetOptions(message, caption));
-				});
+			LoggingService.Warn(message);
+			DoShowMessage(StringParser.Parse(message), StringParser.Parse("${res:Global.WarningText}"), MessageBoxIcon.Warning);
+		}
+		
+		public void ShowMessage(string message, string caption)
+		{
+			LoggingService.Info(message);
+			DoShowMessage(StringParser.Parse(message), StringParser.Parse(caption), MessageBoxIcon.Information);
+		}
+		
+		public void ShowErrorFormatted(string formatstring, params object[] formatitems)
+		{
+			LoggingService.Error(formatstring);
+			DoShowMessage(StringParser.Format(formatstring, formatitems), StringParser.Parse("${res:Global.ErrorText}"), MessageBoxIcon.Error);
+		}
+		
+		public void ShowWarningFormatted(string formatstring, params object[] formatitems)
+		{
+			LoggingService.Warn(formatstring);
+			DoShowMessage(StringParser.Format(formatstring, formatitems), StringParser.Parse("${res:Global.WarningText}"), MessageBoxIcon.Warning);
+		}
+		
+		public void ShowMessageFormatted(string formatstring, string caption, params object[] formatitems)
+		{
+			LoggingService.Info(formatstring);
+			DoShowMessage(StringParser.Format(formatstring, formatitems), StringParser.Parse(caption), MessageBoxIcon.Information);
 		}
 		
 		public bool AskQuestion(string question, string caption)
@@ -87,7 +131,7 @@ namespace ICSharpCode.Core.WinForms
 				delegate {
 					result = MessageBox.Show(DialogOwner,
 					                         StringParser.Parse(question),
-					                         StringParser.Parse(caption),
+					                         StringParser.Parse(caption ?? "${res:Global.QuestionText}"),
 					                         MessageBoxButtons.YesNo,
 					                         MessageBoxIcon.Question,
 					                         MessageBoxDefaultButton.Button1,
@@ -138,22 +182,7 @@ namespace ICSharpCode.Core.WinForms
 			return result;
 		}
 		
-		public void ShowMessage(string message, string caption)
-		{
-			message = StringParser.Parse(message);
-			BeginInvoke(
-				delegate {
-					MessageBox.Show(DialogOwner,
-					                message,
-					                StringParser.Parse(caption),
-					                MessageBoxButtons.OK,
-					                MessageBoxIcon.Information,
-					                MessageBoxDefaultButton.Button1,
-					                GetOptions(message, caption));
-				});
-		}
-		
-		public void InformSaveError(string fileName, string message, string dialogName, Exception exceptionGot)
+		public void InformSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot)
 		{
 			BeginInvoke(
 				delegate {
@@ -163,7 +192,7 @@ namespace ICSharpCode.Core.WinForms
 				});
 		}
 		
-		public ChooseSaveErrorResult ChooseSaveError(string fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled)
+		public ChooseSaveErrorResult ChooseSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled)
 		{
 			ChooseSaveErrorResult r = ChooseSaveErrorResult.Ignore;
 			Invoke(
@@ -181,7 +210,7 @@ namespace ICSharpCode.Core.WinForms
 									fdiag.Title           = "Choose alternate file name";
 									fdiag.FileName        = fileName;
 									if (fdiag.ShowDialog() == DialogResult.OK) {
-										r = ChooseSaveErrorResult.SaveAlternative(fdiag.FileName);
+										r = ChooseSaveErrorResult.SaveAlternative(FileName.Create(fdiag.FileName));
 										break;
 									} else {
 										goto restartlabel;
@@ -197,6 +226,18 @@ namespace ICSharpCode.Core.WinForms
 					}
 				});
 			return r;
+		}
+		
+		public void ShowHandledException(Exception ex, string message = null)
+		{
+			LoggingService.Error(message, ex);
+			LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
+			if (message == null) {
+				message = ex.Message;
+			} else {
+				message = StringParser.Parse(message) + "\r\n\r\n" + ex.Message;
+			}
+			DoShowMessage(message, StringParser.Parse("${res:Global.ErrorText}"), MessageBoxIcon.Error);
 		}
 	}
 }

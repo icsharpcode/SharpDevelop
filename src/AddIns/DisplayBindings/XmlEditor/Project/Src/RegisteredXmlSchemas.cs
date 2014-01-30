@@ -1,12 +1,28 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -15,8 +31,8 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class RegisteredXmlSchemas : IXmlSchemaCompletionDataFactory
 	{
-		List<string> readOnlySchemaFolders = new List<string>();
-		string userDefinedSchemaFolder;
+		List<DirectoryName> readOnlySchemaFolders = new List<DirectoryName>();
+		DirectoryName userDefinedSchemaFolder;
 		XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
 		IFileSystem fileSystem;
 		IXmlSchemaCompletionDataFactory factory;
@@ -30,8 +46,8 @@ namespace ICSharpCode.XmlEditor
 			IFileSystem fileSystem, 
 			IXmlSchemaCompletionDataFactory factory)
 		{
-			this.readOnlySchemaFolders.AddRange(readOnlySchemaFolders);
-			this.userDefinedSchemaFolder = userDefinedSchemaFolder;
+			this.readOnlySchemaFolders.AddRange(readOnlySchemaFolders.Select(DirectoryName.Create));
+			this.userDefinedSchemaFolder = DirectoryName.Create(userDefinedSchemaFolder);
 			this.fileSystem = fileSystem;
 			this.factory = factory;
 		}
@@ -56,7 +72,7 @@ namespace ICSharpCode.XmlEditor
 			XmlSchemaCompletion schema = schemas[namespaceUri];
 			if (schema != null) {
 				if (fileSystem.FileExists(schema.FileName)) {
-					fileSystem.DeleteFile(schema.FileName);
+					fileSystem.Delete(schema.FileName);
 				}
 				schemas.Remove(schema);
 				OnUserDefinedSchemaRemoved();
@@ -72,11 +88,9 @@ namespace ICSharpCode.XmlEditor
 				
 		public void AddUserSchema(XmlSchemaCompletion schema)
 		{
-			if (!fileSystem.DirectoryExists(userDefinedSchemaFolder)) {
-				fileSystem.CreateDirectory(userDefinedSchemaFolder);
-			}
+			fileSystem.CreateDirectory(userDefinedSchemaFolder);
 			
-			string newSchemaDestinationFileName = GetUserDefinedSchemaDestination(schema);
+			FileName newSchemaDestinationFileName = GetUserDefinedSchemaDestination(schema);
 			fileSystem.CopyFile(schema.FileName, newSchemaDestinationFileName);			
 			
 			schema.FileName = newSchemaDestinationFileName;
@@ -85,10 +99,10 @@ namespace ICSharpCode.XmlEditor
 			OnUserDefinedSchemaAdded();
 		}		
 
-		string GetUserDefinedSchemaDestination(XmlSchemaCompletion schema)
+		FileName GetUserDefinedSchemaDestination(XmlSchemaCompletion schema)
 		{
 			string fileName = Path.GetFileName(schema.FileName);
-			return Path.Combine(userDefinedSchemaFolder, fileName);
+			return FileName.Create(Path.Combine(userDefinedSchemaFolder, fileName ?? string.Empty));
 		}
 				
 		void OnUserDefinedSchemaAdded()
@@ -105,16 +119,16 @@ namespace ICSharpCode.XmlEditor
 		
 		public void ReadSchemas()
 		{
-			foreach (string folder in readOnlySchemaFolders) {
+			foreach (DirectoryName folder in readOnlySchemaFolders) {
 				ReadSchemas(folder, "*.xsd", true);
 			}
 			ReadSchemas(userDefinedSchemaFolder, "*.*", false);
 		}
 		
-		void ReadSchemas(string directory, string searchPattern, bool readOnly)
+		void ReadSchemas(DirectoryName directory, string searchPattern, bool readOnly)
 		{
 			if (fileSystem.DirectoryExists(directory)) {
-				foreach (string fileName in fileSystem.GetFilesInDirectory(directory, searchPattern)) {
+				foreach (string fileName in fileSystem.GetFiles(directory, searchPattern)) {
 					XmlSchemaCompletion schema = ReadSchema(fileName, readOnly);
 					if (schema != null) {
 						AddSchema(schema);
@@ -128,7 +142,7 @@ namespace ICSharpCode.XmlEditor
 			try {
 				string baseUri = XmlSchemaCompletion.GetUri(fileName);
 				XmlSchemaCompletion schema = factory.CreateXmlSchemaCompletionData(baseUri, fileName);
-				schema.FileName = fileName;
+				schema.FileName = FileName.Create(fileName);
 				schema.IsReadOnly = readOnly;
 				return schema;
 			} catch (Exception ex) {

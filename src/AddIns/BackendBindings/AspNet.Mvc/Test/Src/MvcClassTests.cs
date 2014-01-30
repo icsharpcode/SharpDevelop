@@ -1,20 +1,39 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class MvcClassTests
+	public class MvcClassTests : MvcTestsBase
 	{
 		MvcClass mvcClass;
 		FakeMvcProject fakeProject;
-		FakeClass fakeClass;
+		ITypeDefinition fakeTypeDefinition;
+		List<IType> baseTypes;
 		
 		void CreateCSharpProject()
 		{
@@ -41,8 +60,17 @@ namespace AspNet.Mvc.Tests
 		
 		void CreateClass(string name, FakeMvcProject fakeProject)
 		{
-			fakeClass = new FakeClass(name);
-			mvcClass = new MvcClass(fakeClass, fakeProject);
+			fakeTypeDefinition = CreateFakeTypeDefinition(name);
+			mvcClass = new MvcClass(fakeTypeDefinition, fakeProject);
+		}
+		
+		ITypeDefinition CreateFakeTypeDefinition(string name)
+		{
+			var typeDefinition = MockRepository.GenerateStub<ITypeDefinition>();
+			typeDefinition.Stub(t => t.FullName).Return(name);
+			baseTypes = new List<IType>();
+			typeDefinition.Stub(t => t.DirectBaseTypes).Return(baseTypes);
+			return typeDefinition;
 		}
 		
 		void CreateClassWithVisualBasicProject(string name)
@@ -53,7 +81,10 @@ namespace AspNet.Mvc.Tests
 		
 		void AddBaseClass(string name)
 		{
-			fakeClass.AddBaseClass(name);
+			IType type = MockRepository.GenerateStub<IType>();
+			type.Stub(t => t.FullName).Return(name);
+			type.Stub(t => t.Kind).Return(TypeKind.Class);
+			baseTypes.Add(type);
 		}
 		
 		[Test]
@@ -69,6 +100,7 @@ namespace AspNet.Mvc.Tests
 		public void Namespace_ClassIsICSharpCodeTestClass_ReturnsICSharpCode()
 		{
 			CreateClass("ICSharpCode.TestClass");
+			fakeTypeDefinition.Stub(t => t.Namespace).Return("ICSharpCode");
 			string @namespace = mvcClass.Namespace;
 			
 			Assert.AreEqual("ICSharpCode", @namespace);
@@ -78,6 +110,7 @@ namespace AspNet.Mvc.Tests
 		public void Name_ClassIsICSharpCodeTestClass_ReturnsTestClass()
 		{
 			CreateClass("ICSharpCode.TestClass");
+			fakeTypeDefinition.Stub(t => t.Name).Return("TestClass");
 			string name = mvcClass.Name;
 			
 			Assert.AreEqual("TestClass", name);
@@ -107,7 +140,7 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateClass("ICSharpCode.TestClass");
 			string expectedOutputAssemblyLocation = @"d:\test\bin\debug\test.dll";
-			fakeClass.TestableProject.SetOutputAssemblyFullPath(expectedOutputAssemblyLocation);
+			fakeProject.OutputAssemblyFullPath = expectedOutputAssemblyLocation;
 			
 			string assemblyLocation = mvcClass.AssemblyLocation;
 			

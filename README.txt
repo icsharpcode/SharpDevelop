@@ -3,12 +3,12 @@ Website: http://www.icsharpcode.net/OpenSource/SD/Default.aspx
 Forums: http://community.sharpdevelop.net/forums/
 Nightly builds: http://build.sharpdevelop.net/BuildArtefacts
 
-Copyright 2012 AlphaSierraPapa for the SharpDevelop team
-License: SharpDevelop is distributed under the LGPL.
+Copyright 2014 AlphaSierraPapa for the SharpDevelop team.
+SharpDevelop is distributed under the MIT license.
 
 The #develop project started on September 11th, 2000. The project was initiated
 by Mike Krüger. In the course of the project, several contributors joined in.
-If you want to contribute see http://wiki.sharpdevelop.net/JoiningTheTeam.ashx.
+If you want to contribute see <https://github.com/icsharpcode/SharpDevelop/wiki/Joining-the-Team>.
 
 Overview
 #develop (short for SharpDevelop) is a free Integrated Development Environment
@@ -20,16 +20,14 @@ How To Compile
 SharpDevelop can be compiled using the supplied .bat files, or in SharpDevelop itself.
 
 System Requirements (running SharpDevelop)
- - Windows XP SP2 or higher.
- - .NET 4 prerequisites (might be already installed, e.g. by Windows Update):
-   - Windows Installer 3.1: http://www.microsoft.com/downloads/details.aspx?familyid=889482FC-5F56-4A38-B838-DE776FD4138C&displaylang=en
-   - Windows Imaging Component: http://www.microsoft.com/downloads/details.aspx?FamilyId=8E011506-6307-445B-B950-215DEF45DDD8&displaylang=en#filelist
- - .NET 4.0 Full (Extended, the "Client" portion is not sufficient)
+ - Windows Vista or higher.
+ - .NET 4.5
  - Visual C++ 2008 SP1 Runtime (http://www.microsoft.com/downloads/details.aspx?familyid=A5C84275-3B97-4AB7-A40D-3802B2AF5FC2&displaylang=en)
- 
+
 Extended Requirements (building SharpDevelop)
  - .NET 3.5 SP1
- - Windows SDK 7.1
+ - .NET 4.5 SDK (part of Windows SDK 8.0)
+ - Windows SDK 7.1 (?? not sure if this still is necessary...)
  - Windows SDK 7.0 (optional; C++ compiler needed for profiler)
  - Windows PowerShell
  - if you have cloned the SD git repository: git must be available on your PATH
@@ -48,13 +46,12 @@ Libraries and integrated tools:
 	WPFToolkit
 
 Integrated Tools (shipping with SharpDevelop):
-	Boo
 	IronPython
 	IronRuby
 	NuGet
 	NUnit
 	PartCover
-	Wix
+	WiX
 
 Reusable Libraries (developed as part of SharpDevelop):
 	AvalonEdit
@@ -68,9 +65,10 @@ Reusable Libraries (developed as part of SharpDevelop):
 SharpDevelop Contributors:
 	Mike Krüger (Project Founder)
 	Daniel Grunwald (Technical Lead)
+	Andreas Weizel
 	Matt Ward
 	David Srbecky (Debugger)
 	Siegfried Pammer
-	Peter Forstmeier (SharpDevelop Reports)
+	Peter Forstmeier (SharpDevelop Reports)	
 	
-	(for a full list see http://wiki.sharpdevelop.net/Contributors.ashx)
+	(for a full list see https://github.com/icsharpcode/SharpDevelop/wiki/Contributors)

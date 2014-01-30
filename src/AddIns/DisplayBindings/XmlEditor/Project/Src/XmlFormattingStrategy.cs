@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -11,6 +26,8 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
@@ -140,7 +157,7 @@ namespace ICSharpCode.XmlEditor
 						}
 						// set indentation of 'nextLine'
 						IDocumentLine line = document.GetLine(nextLine);
-						string lineText = line.Text;
+						string lineText = document.GetText(line);
 						
 						string newText;
 						// special case: opening tag has closing bracket on extra line: remove one indentation level
@@ -159,7 +176,7 @@ namespace ICSharpCode.XmlEditor
 					if (r.NodeType == XmlNodeType.Element) {
 						tagStack.Push(currentIndentation);
 						if (r.LineNumber < begin)
-							currentIndentation = DocumentUtilitites.GetWhitespaceAfter(editor.Document, editor.Document.PositionToOffset(r.LineNumber, 1));
+							currentIndentation = DocumentUtilities.GetIndentation(editor.Document, r.LineNumber);
 						if (r.Name.Length < 16)
 							attribIndent = currentIndentation + new string(' ', 2 + r.Name.Length);
 						else
@@ -177,7 +194,7 @@ namespace ICSharpCode.XmlEditor
 							if (nextLine > end) break;
 							// set indentation of 'nextLine'
 							IDocumentLine line = document.GetLine(nextLine);
-							string newText = attribIndent + line.Text.Trim();
+							string newText = attribIndent + document.GetText(line).Trim();
 							document.SmartReplaceLine(line, newText);
 							nextLine++;
 						}

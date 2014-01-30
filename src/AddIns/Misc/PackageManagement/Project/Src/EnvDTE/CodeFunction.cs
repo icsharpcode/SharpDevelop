@@ -1,76 +1,88 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeFunction : CodeElement, global::EnvDTE.CodeFunction
 	{
-		IDocumentLoader documentLoader;
-		IVirtualMethodUpdater methodUpdater;
+		protected readonly IMethodModel methodModel;
 		
-		public CodeFunction(IMethod method)
-			: this(method, new DocumentLoader(), new VirtualMethodUpdater(method))
+		public CodeFunction(CodeModelContext context, IMethodModel methodModel)
+			: base(context, methodModel)
 		{
-		}
-		
-		public CodeFunction(IMethod method, IDocumentLoader documentLoader, IVirtualMethodUpdater methodUpdater)
-			: base(method)
-		{
-			this.Method = method;
-			this.documentLoader = documentLoader;
-			this.methodUpdater = methodUpdater;
 		}
 		
 		public CodeFunction()
 		{
 		}
 		
-		public CodeFunction(IProperty property)
-			: base(property)
-		{
-		}
-		
-		protected IMethodOrProperty Method { get; private set; }
-		
 		public override global::EnvDTE.vsCMElement Kind {
 			get { return global::EnvDTE.vsCMElement.vsCMElementFunction; }
 		}
 		
 		public virtual global::EnvDTE.vsCMAccess Access {
-			get { return GetAccess(); }
-			set { }
-		}
-		
-		public override global::EnvDTE.TextPoint GetStartPoint()
-		{
-			return new TextPoint(Method.GetStartPosition(), documentLoader);
-		}
-		
-		public override global::EnvDTE.TextPoint GetEndPoint()
-		{
-			return new TextPoint(Method.GetEndPosition(), documentLoader);
+			get { return methodModel.Accessibility.ToAccess(); }
+			set {
+				var method = methodModel.Resolve();
+				if (method == null)
+					throw new NotSupportedException();
+				context.CodeGenerator.ChangeAccessibility(method, value.ToAccessibility());
+			}
 		}
 		
 		public virtual global::EnvDTE.CodeElements Parameters {
-			get { return new CodeParameters(Method.ProjectContent, Method.Parameters); }
+			get {
+				var list = new CodeElementsList<CodeParameter2>();
+				var method = (IParameterizedMember)methodModel.Resolve();
+				if (method != null) {
+					foreach (var p in method.Parameters) {
+						list.Add(new CodeParameter2(context, p));
+					}
+				}
+				return list;
+			}
 		}
 		
 		public virtual global::EnvDTE.CodeTypeRef2 Type {
-			get { return new CodeTypeRef2(Method.ProjectContent, this, Method.ReturnType); }
+			get {
+				var method = methodModel.Resolve();
+				if (method == null)
+					return null;
+				return new CodeTypeRef2(context, this, method.ReturnType);
+			}
 		}
 		
 		public virtual global::EnvDTE.CodeElements Attributes {
-			get { return new CodeAttributes(Method); }
+			get { return GetAttributes(methodModel); }
 		}
 		
 		public virtual bool CanOverride {
-			get { return Method.IsOverridable; }
+			get { return methodModel.IsOverridable; }
 			set {
-				if (value) {
-					methodUpdater.MakeMethodVirtual();
+				if (value && !methodModel.IsOverridable) {
+					var method = methodModel.Resolve();
+					if (method != null) {
+						context.CodeGenerator.MakeVirtual(method);
+					}
 				}
 			}
 		}
@@ -81,18 +93,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		global::EnvDTE.vsCMFunction GetFunctionKind()
 		{
-			if (Method.IsConstructor()) {
-				return global::EnvDTE.vsCMFunction.vsCMFunctionConstructor;
+			switch (methodModel.SymbolKind) {
+				case SymbolKind.Constructor:
+					return global::EnvDTE.vsCMFunction.vsCMFunctionConstructor;
+				//case SymbolKind.Destructor:
+				//case SymbolKind.Accessor:
+				//case SymbolKind.Operator:
+				default:
+					return global::EnvDTE.vsCMFunction.vsCMFunctionFunction;
 			}
-			return global::EnvDTE.vsCMFunction.vsCMFunctionFunction;
 		}
 		
 		public virtual bool IsShared {
-			get { return Method.IsStatic; }
+			get { return methodModel.IsStatic; }
 		}
 		
 		public virtual bool MustImplement {
-			get { return Method.IsAbstract; }
+			get { return methodModel.IsAbstract; }
 		}
 	}
 }

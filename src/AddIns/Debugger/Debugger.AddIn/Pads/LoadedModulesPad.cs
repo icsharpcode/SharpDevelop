@@ -1,117 +1,93 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+
 using Debugger;
+using ICSharpCode.Core.Presentation;
 using Debugger.AddIn.Pads.Controls;
-using Debugger.AddIn.Pads.ParallelPad;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class LoadedModulesPad : DebuggerPad
+	public class LoadedModulesPad : AbstractPadContent
 	{
-		ListView loadedModulesList;
-		Process debuggedProcess;
-		ObservableCollection<ModuleModel> loadedModules;
+		ListView listView;
 		
-		protected override void InitializeComponents()
-		{
-			loadedModulesList = new ListView();
-			loadedModules = new ObservableCollection<ModuleModel>();
-			loadedModulesList.ItemsSource = loadedModules;
-			loadedModulesList.View = new GridView();
-			panel.Children.Add(loadedModulesList);
-			RedrawContent();
-			ResourceService.LanguageChanged += delegate { RedrawContent(); };
+		public override object Control {
+			get { return listView; }
 		}
 		
-		public void RedrawContent()
+		public LoadedModulesPad()
 		{
-			loadedModulesList.ClearColumns();
-			loadedModulesList.AddColumn(StringParser.Parse("${res:Global.Name}"),
-			                            new Binding { Path = new PropertyPath("Name") }, 250);
-			loadedModulesList.AddColumn(StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.AddressColumn}"),
-			                            new Binding { Path = new PropertyPath("Address") }, 100);
-			loadedModulesList.AddColumn(StringParser.Parse("${res:Global.Path}"),
-			                            new Binding { Path = new PropertyPath("Path") }, 250);
-			loadedModulesList.AddColumn(StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.OrderColumn}"),
-			                            new Binding { Path = new PropertyPath("Order") }, 80);
-			loadedModulesList.AddColumn(StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.SymbolsColumn}"),
-			                            new Binding { Path = new PropertyPath("Symbols") }, 130);
+			var res = new CommonResources();
+			res.InitializeComponent();
+			
+			listView = new ListView();
+			listView.View = (GridView)res["loadedModulesGridView"];
+			listView.SetValue(GridViewColumnAutoSize.AutoWidthProperty, "50%;70;50%;35;120");
+			
+			WindowsDebugger.RefreshingPads += RefreshPad;
+			RefreshPad();
 		}
 		
-		protected override void SelectProcess(Process process)
+		void RefreshPad()
 		{
-			if (debuggedProcess != null) {
-				debuggedProcess.Modules.Added -= debuggedProcess_ModuleLoaded;
-				debuggedProcess.Modules.Removed -= debuggedProcess_ModuleUnloaded;
-			}
-			debuggedProcess = process;
-			if (debuggedProcess != null) {
-				debuggedProcess.Modules.Added += debuggedProcess_ModuleLoaded;
-				debuggedProcess.Modules.Removed += debuggedProcess_ModuleUnloaded;
-			}
-			InvalidatePad();
-		}
-		
-		void debuggedProcess_ModuleLoaded(object sender, CollectionItemEventArgs<Module> e)
-		{
-			AddModule(e.Item);
-		}
-		
-		void debuggedProcess_ModuleUnloaded(object sender, CollectionItemEventArgs<Module> e)
-		{
-			RemoveModule(e.Item);
-		}
-		
-		protected override void RefreshPad()
-		{
-			loadedModules.Clear();
-			if (debuggedProcess != null) {
-				foreach(Module module in debuggedProcess.Modules) {
-					AddModule(module);
+			Process process = WindowsDebugger.CurrentProcess;
+			List<ModuleItem> loadedModules = new List<ModuleItem>();
+			if (process != null) {
+				foreach(Module module in process.Modules) {
+					loadedModules.Add(new ModuleItem(module));
 				}
 			}
-		}
-		
-		void AddModule(Module module)
-		{
-			loadedModules.Add(new ModuleModel(module));
-		}
-
-		void RemoveModule(Module module)
-		{
-			loadedModules.RemoveWhere(model => model.Module == module);
+			listView.ItemsSource = loadedModules;
 		}
 	}
 	
-	static class ListViewExtensions
+	public class ModuleItem
 	{
-		public static void ClearColumns(this ListView view)
-		{
-			if (view == null)
-				throw new ArgumentNullException("view");
-			if (view.View is GridView)
-				((GridView)view.View).Columns.Clear();
-		}
+		public string Name { get; private set; }
+		public string Address { get; private set; }
+		public string Path { get; private set; }
+		public string Order { get; private set; }
+		public string Symbols { get; private set; }
 		
-		public static void AddColumn(this ListView view, string header, Binding binding, double width)
+		public ModuleItem(Module module)
 		{
-			if (view == null)
-				throw new ArgumentNullException("view");
-			if (view.View is GridView) {
-				GridViewColumn column = new GridViewColumn {
-					Width = width,
-					DisplayMemberBinding = binding,
-					Header = header };
-				((GridView)view.View).Columns.Add(column);
+			this.Name = module.Name;
+			this.Address = string.Format("{0:X8}", module.BaseAdress);
+			if (module.IsDynamic) {
+				this.Path = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.DynamicModule}");
+			} else if (module.IsInMemory) {
+				this.Path = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.InMemoryModule}");
+			} else {
+				this.Path = module.FullPath;
 			}
+			this.Order = module.OrderOfLoading.ToString();
+			this.Symbols = module.HasSymbols ? StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.HasSymbols}") : StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.HasNoSymbols}");
 		}
 	}
 }

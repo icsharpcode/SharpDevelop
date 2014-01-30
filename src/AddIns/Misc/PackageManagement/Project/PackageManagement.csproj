@@ -7,12 +7,16 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.PackageManagement</RootNamespace>
     <AssemblyName>PackageManagement</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\AddIns\Misc\PackageManagement\</OutputPath>
+    <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -27,6 +31,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>false</DebugSymbols>
@@ -85,37 +90,28 @@
     <Compile Include="Src\Design\FakeProjectBuilder.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />
     <Compile Include="Src\DocumentLoader.cs" />
-    <Compile Include="Src\DocumentNamespaceCreator.cs" />
     <Compile Include="Src\DomRegionExtensions.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributeArgument.cs" />
-    <Compile Include="Src\EnvDTE\CodeAttributeArguments.cs" />
-    <Compile Include="Src\EnvDTE\CodeAttributes.cs" />
     <Compile Include="Src\EnvDTE\CodeClass.cs" />
     <Compile Include="Src\EnvDTE\CodeClass2.cs" />
     <Compile Include="Src\EnvDTE\CodeDelegate.cs" />
     <Compile Include="Src\EnvDTE\CodeElement.cs" />
-    <Compile Include="Src\EnvDTE\CodeElementsInNamespace.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsList.cs" />
     <Compile Include="Src\EnvDTE\CodeFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeFunction2.cs" />
-    <Compile Include="Src\EnvDTE\CodeGetterFunction.cs" />
-    <Compile Include="Src\EnvDTE\CodeGetterOrSetterFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeImport.cs" />
     <Compile Include="Src\EnvDTE\CodeInterface.cs" />
+    <Compile Include="Src\EnvDTE\CodeModelContext.cs" />
     <Compile Include="Src\EnvDTE\CodeParameter2.cs" />
-    <Compile Include="Src\EnvDTE\CodeParameters.cs" />
     <Compile Include="Src\EnvDTE\CodeModel.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespace.cs" />
     <Compile Include="Src\EnvDTE\CodeParameter.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty2.cs" />
-    <Compile Include="Src\EnvDTE\CodeSetterFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeStruct.cs" />
     <Compile Include="Src\EnvDTE\CodeType.cs" />
-    <Compile Include="Src\EnvDTE\CodeTypeBaseTypes.cs" />
-    <Compile Include="Src\EnvDTE\CodeTypeMembers.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeRef.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeRef2.cs" />
     <Compile Include="Src\EnvDTE\CodeVariable.cs" />
@@ -127,15 +123,11 @@
     <Compile Include="Src\EnvDTE\FileCodeModel2.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModelCodeElements.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModelCodeNamespace.cs" />
-    <Compile Include="Src\EnvDTE\FileCodeModelCodeNamespaceMembers.cs" />
     <Compile Include="Src\EnvDTE\FileProjectItemExtensions.cs" />
     <Compile Include="Src\EnvDTE\FileProjectItems.cs" />
-    <Compile Include="Src\EnvDTE\IClassExtensions.cs" />
     <Compile Include="Src\EnvDTE\ImplementedInterfacesOnClass.cs" />
     <Compile Include="Src\EnvDTE\IParameterExtensions.cs" />
     <Compile Include="Src\EnvDTE\IReturnTypeExtensions.cs" />
-    <Compile Include="Src\EnvDTE\NamespaceName.cs" />
-    <Compile Include="Src\EnvDTE\PartialClasses.cs" />
     <Compile Include="Src\EnvDTE\ProjectKind.cs" />
     <Compile Include="Src\EnvDTE\Projects.cs" />
     <Compile Include="Src\EnvDTE\Reference3.cs" />
@@ -146,6 +138,7 @@
     <Compile Include="Src\EnvDTE\SolutionGlobals.cs" />
     <Compile Include="Src\EnvDTE\SolutionProperty.cs" />
     <Compile Include="Src\EnvDTE\SolutionPropertyFactory.cs" />
+    <Compile Include="Src\EnvDTE\SolutionSectionItem.cs" />
     <Compile Include="Src\EnvDTE\SourceControl.cs" />
     <Compile Include="Src\EnvDTE\TextDocument.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
@@ -157,7 +150,6 @@
     </Compile>
     <Compile Include="Src\FileConflictViewModel.cs" />
     <Compile Include="Src\IClassKindUpdater.cs" />
-    <Compile Include="Src\IDocumentNamespaceCreator.cs" />
     <Compile Include="Src\IPackageRepositoryFactoryEvents.cs" />
     <Compile Include="Src\IPackageViewModelParent.cs" />
     <Compile Include="Src\IUpdatePackagesAction.cs" />
@@ -267,8 +259,6 @@
     <Compile Include="Src\UpdatePackagesActionFactory.cs" />
     <Compile Include="Src\UpdateSolutionPackagesAction.cs" />
     <Compile Include="Src\UserAgentGeneratorForRepositoryRequests.cs" />
-    <Compile Include="Src\VirtualMethodUpdater.cs" />
-    <Compile Include="Src\NewProjectsCreated.cs" />
     <Compile Include="Src\OpenMSBuildProjects.cs" />
     <Compile Include="Src\PackageActionRunner.cs" />
     <Compile Include="Src\PackageActionsToRun.cs" />
@@ -539,9 +529,14 @@
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -558,10 +553,6 @@
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\BackendBindings\Scripting\Project\ICSharpCode.Scripting.csproj">
       <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
