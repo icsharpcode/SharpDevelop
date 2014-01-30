@@ -30,6 +30,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		string Name { get; }
 		bool CanInsert(IEnumerable<IOutlineNode> nodes, IOutlineNode after, bool copy);
 		void Insert(IEnumerable<IOutlineNode> nodes, IOutlineNode after, bool copy);
+		ObservableCollection<IOutlineNode> Children{ get; }
 	}
 	
 

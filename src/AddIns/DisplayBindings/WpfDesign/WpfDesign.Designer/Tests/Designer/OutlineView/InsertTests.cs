@@ -11,15 +11,15 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 	public class CollectionElementsInsertTests : ModelTestHelper
 	{
 		private DesignItem _grid;
-		private OutlineNode _outline;
+		private IOutlineNode _outline;
 
 		private DesignItem _gridButton;
 		private DesignItem _stackPanel;
 		private DesignItem _stackPanelButton;
 
-		private OutlineNode _gridButtonNode;
-		private OutlineNode _stackPanelNode;
-		private OutlineNode _stackPanelButtonNode;
+		private IOutlineNode _gridButtonNode;
+		private IOutlineNode _stackPanelNode;
+		private IOutlineNode _stackPanelButtonNode;
 
 		[SetUp]
 		public void Intialize()
@@ -147,15 +147,15 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 	public class ContentControlInsertTests : ModelTestHelper
 	{
 		private DesignItem _grid;
-		private OutlineNode _outline;
+		private IOutlineNode _outline;
 
 		private DesignItem _gridButton;
 		private DesignItem _stackPanel;
 		private DesignItem _stackPanelImage;
 
-		private OutlineNode _gridButtonNode;
-		private OutlineNode _stackPanelNode;
-		private OutlineNode _stackPanelImageNode;
+		private IOutlineNode _gridButtonNode;
+		private IOutlineNode _stackPanelNode;
+		private IOutlineNode _stackPanelImageNode;
 
 		[SetUp]
 		public void Intialize()
