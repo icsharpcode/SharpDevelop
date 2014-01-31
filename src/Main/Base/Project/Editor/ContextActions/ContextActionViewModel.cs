@@ -99,6 +99,11 @@ namespace ICSharpCode.SharpDevelop.Editor.ContextActions
 			remove { }
 		}
 		
+		public IContextAction ContextAction
+		{
+			get { return action; }
+		}
+		
 		public void Execute(object parameter)
 		{
 			if (action.Provider != null)

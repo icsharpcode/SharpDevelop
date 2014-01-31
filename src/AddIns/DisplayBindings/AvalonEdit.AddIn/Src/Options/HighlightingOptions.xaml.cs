@@ -366,6 +366,21 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			bracketHighlight.PropertyChanged += item_PropertyChanged;
 			items.Add(bracketHighlight);
 			
+			// Create entry for "Current Line highlight"
+			IHighlightingItem currentLineHighlight = new SimpleHighlightingItem(
+				CustomizingHighlighter.CurrentLineHighlighter,
+				ta => {
+					ta.Document.Text = "example text line";
+					ta.TextView.Options.HighlightCurrentLine = true;
+				})
+			{
+				Foreground = Color.FromArgb(52, 0, 255, 110),
+				Background = Color.FromArgb(22, 20, 220, 224)
+			};
+			currentLineHighlight = new CustomizedHighlightingItem(customizationList, currentLineHighlight, language, canSetFont: false);
+			currentLineHighlight.PropertyChanged += item_PropertyChanged;
+			items.Add(currentLineHighlight);
+			
 			// Create entry for "Folding controls"
 			IHighlightingItem foldingControls = new SimpleHighlightingItem(
 				FoldingControls,

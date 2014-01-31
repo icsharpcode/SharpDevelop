@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
@@ -25,7 +26,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 	/// Interaction logic for ContextActionsHeaderedControl.xaml
 	/// </summary>
 	public partial class ContextActionsHeaderedControl : UserControl
-	{
+	{		
 		public ContextActionsHeaderedControl()
 		{
 			InitializeComponent();
@@ -35,6 +36,18 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		{
 			add { this.ActionsTreeView.ActionExecuted += value; }
 			remove { this.ActionsTreeView.ActionExecuted -= value; }
+		}
+		
+		public event RoutedEventHandler ActionSelected 
+		{
+			add { this.ActionsTreeView.ActionSelected += value; }
+			remove { this.ActionsTreeView.ActionSelected -= value; }
+		}
+		
+		public event RoutedEventHandler ActionUnselected
+		{
+			add { this.ActionsTreeView.ActionUnselected += value; }
+			remove { this.ActionsTreeView.ActionUnselected -= value; }
 		}
 		
 		public new void Focus()

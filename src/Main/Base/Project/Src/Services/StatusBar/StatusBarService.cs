@@ -41,6 +41,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		//void SetInsertMode(bool insertMode);
 		
 		/// <summary>
+		/// Sets the selection lenght in the status bar.
+		/// </summary>
+		/// <param name="lenght">selection lenght</param>
+		void SetSelectionSingle(int lenght);
+		
+		/// <summary>
+		/// Sets rect selection size in the status bar.
+		/// </summary>
+		/// <param name="rows">vertical size of selecion</param>
+		/// <param name="cols">horizontal size of selection</param>
+		void SetSelectionMulti(int rows, int cols);
+		
+		/// <summary>
 		/// Sets the message shown in the left-most pane in the status bar.
 		/// </summary>
 		/// <param name="message">The message text.</param>

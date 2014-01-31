@@ -160,6 +160,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 		}
+		
 		#endregion
 		
 		#region Custom Tab command (code snippet expansion)

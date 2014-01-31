@@ -84,6 +84,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			caret = new Caret(this);
 			caret.PositionChanged += (sender, e) => RequestSelectionValidation();
+			caret.PositionChanged += CaretPositionChanged;
+			AttachTypingEvents();
 			ime = new ImeSupport(this);
 			
 			leftMargins.CollectionChanged += leftMargins_CollectionChanged;
@@ -574,6 +576,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 			get { return caret; }
 		}
 		
+		void CaretPositionChanged(object sender, EventArgs e) 
+		{
+			if (textView == null)
+				return;
+			
+			this.textView.HighlightedLine = this.Caret.Line;			
+		}
+		
 		ObservableCollection<UIElement> leftMargins = new ObservableCollection<UIElement>();
 		
 		/// <summary>
@@ -871,8 +881,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (!e.Handled) {
 				if (e.Text == "\n" || e.Text == "\r" || e.Text == "\r\n")
 					ReplaceSelectionWithNewLine();
-				else
+				else {
+					if (overstrikeMode && Selection.IsEmpty && Document.GetLineByNumber(Caret.Line).EndOffset > Caret.Offset)
+						Selection = Selection.Create(this, Caret.Offset, Caret.Offset+e.Text.Length);
 					ReplaceSelectionWithText(e.Text);
+				}
 				OnTextEntered(e);
 				caret.BringCaretToView();
 			}
@@ -957,6 +970,17 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected override void OnPreviewKeyDown(KeyEventArgs e)
 		{
 			base.OnPreviewKeyDown(e);
+			
+			if (!this.Options.AllowOverstrikeMode) {
+				this.overstrikeMode = false;
+			} else if (!e.Handled && e.Key == Key.Insert) {
+				this.overstrikeMode = !this.overstrikeMode;
+				this.caret.Show();
+				e.Handled = true;
+				return;
+			}
+			
+			HideMouseCursor();
 			foreach (TextAreaStackedInputHandler h in stackedInputHandlers) {
 				if (e.Handled)
 					break;
@@ -980,6 +1004,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
+			HideMouseCursor();
 			TextView.InvalidateCursorIfMouseWithinTextView();
 		}
 		
@@ -989,6 +1014,46 @@ namespace ICSharpCode.AvalonEdit.Editing
 			base.OnKeyUp(e);
 			TextView.InvalidateCursorIfMouseWithinTextView();
 		}
+		#endregion
+		
+		#region Hide Mouse Cursor While Typing
+		
+		bool isMouseCursorHidden;
+		
+		void AttachTypingEvents() {
+			this.MouseEnter += delegate { ShowMouseCursor(); };
+			this.MouseLeave += delegate { ShowMouseCursor(); };
+			this.MouseMove += delegate { ShowMouseCursor(); };
+			this.TouchEnter += delegate { ShowMouseCursor(); };
+			this.TouchLeave += delegate { ShowMouseCursor(); };
+			this.TouchMove += delegate { ShowMouseCursor(); };
+		}
+		
+		void ShowMouseCursor() {
+			if (this.isMouseCursorHidden) {
+				System.Windows.Forms.Cursor.Show();
+				this.isMouseCursorHidden = false;
+			}
+		}
+		
+		void HideMouseCursor() {
+			if (Options.HideCursorWhileTyping && !this.isMouseCursorHidden && this.IsMouseOver) {	
+				this.isMouseCursorHidden = true;
+				System.Windows.Forms.Cursor.Hide();
+			}
+		}
+		
+		#endregion
+		
+		#region Overstrike mode
+		
+		bool overstrikeMode = false;
+		
+		public bool OverstrikeMode
+		{
+			get { return this.overstrikeMode; }
+		}
+		
 		#endregion
 		
 		/// <inheritdoc/>

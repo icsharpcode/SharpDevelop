@@ -47,7 +47,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.textView = textArea.TextView;
 			position = new TextViewPosition(1, 1, 0);
 			
-			caretAdorner = new CaretLayer(textView);
+			caretAdorner = new CaretLayer(textArea);
 			textView.InsertLayer(caretAdorner, KnownLayer.Caret, LayerInsertionPosition.Replace);
 			textView.VisualLinesChanged += TextView_VisualLinesChanged;
 			textView.ScrollOffsetChanged += TextView_ScrollOffsetChanged;
@@ -382,6 +382,29 @@ namespace ICSharpCode.AvalonEdit.Editing
 			                lineBottom - lineTop);
 		}
 		
+		Rect CalcCaretOverstrikeRectangle(VisualLine visualLine)
+		{
+			if (!visualColumnValid) {
+				RevalidateVisualColumn(visualLine);
+			}
+			
+			TextLine textLine = visualLine.GetTextLine(position.VisualColumn, position.IsAtEndOfLine);
+			double xPos = visualLine.GetTextLineVisualXPosition(textLine, position.VisualColumn);
+			double lineTop = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
+			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextBottom);
+			
+			int currentPos = position.VisualColumn;
+			int nextPos = visualLine.GetNextCaretPosition(currentPos, LogicalDirection.Forward, CaretPositioningMode.Normal, true);
+			double charSize = Math.Abs(
+				visualLine.GetTextLineVisualXPosition(textLine, currentPos) -
+				visualLine.GetTextLineVisualXPosition(textLine, nextPos) );
+			
+			return new Rect(xPos,
+			                lineTop,
+			                charSize,
+			                lineBottom - lineTop);
+		}
+		
 		/// <summary>
 		/// Returns the caret rectangle. The coordinate system is in device-independent pixels from the top of the document.
 		/// </summary>
@@ -389,7 +412,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (textView != null && textView.Document != null) {
 				VisualLine visualLine = textView.GetOrConstructVisualLine(textView.Document.GetLineByNumber(position.Line));
-				return CalcCaretRectangle(visualLine);
+				return (this.textView.Options.AllowOverstrikeMode && this.textArea.OverstrikeMode)
+					? CalcCaretOverstrikeRectangle(visualLine) : CalcCaretRectangle(visualLine);
 			} else {
 				return Rect.Empty;
 			}
@@ -444,7 +468,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (caretAdorner != null && textView != null) {
 				VisualLine visualLine = textView.GetVisualLine(position.Line);
 				if (visualLine != null) {
-					Rect caretRect = CalcCaretRectangle(visualLine);
+					Rect caretRect;
+					if (this.textView.Options.AllowOverstrikeMode && this.textArea.OverstrikeMode) {
+						caretRect = CalcCaretOverstrikeRectangle(visualLine);
+					} else {
+						caretRect = CalcCaretRectangle(visualLine);
+					}
 					// Create Win32 caret so that Windows knows where our managed caret is. This is necessary for
 					// features like 'Follow text editing' in the Windows Magnifier.
 					if (!hasWin32Caret) {

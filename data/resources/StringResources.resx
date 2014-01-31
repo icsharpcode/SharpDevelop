@@ -2397,6 +2397,12 @@ system. I don't think that it needs translation.</comment>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.MouseWheelZoomCheckBoxCheckBox" xml:space="preserve">
     <value>M&amp;ouse wheel zooming</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.HideCursorWhileTypingCheckBoxCheckBox" xml:space="preserve">
+    <value>Hide cursor while typing</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.AllowOverstrikeModeCheckBox" xml:space="preserve">
+    <value>Allow overstrike mode</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.ShowQuickClassBrowserCheckBox" xml:space="preserve">
     <value>Show &amp;Quick ClassBrowser Panel</value>
   </data>
@@ -2425,8 +2431,11 @@ system. I don't think that it needs translation.</comment>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
     <value>Highlight symbols</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
     <value>Highlight &amp;matching bracket</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightCurrentLineCheckBox" xml:space="preserve">
+    <value>Highlight current line</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HorizontalRulerCheckBox" xml:space="preserve">
     <value>Show &amp;horizontal ruler</value>
@@ -6434,6 +6443,15 @@ Removed the end part of the original message ", reason '${Message}'" since this 
     <value>Classes deriving from ${Name}</value>
     <comment>Title for search results for derived classes</comment>
   </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRing" xml:space="preserve">
+    <value>Clipboard ring</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingEmpty" xml:space="preserve">
+    <value>Clipboard ring is empty</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
+    <value>From clipboard ring</value>
+  </data>
   <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
     <value>Convert to automatic property</value>
   </data>
@@ -6928,6 +6946,12 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>ln ${Line} col ${Column} ch ${Character}</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextSingle" xml:space="preserve">
+    <value>len ${Lenght}</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextMulti" xml:space="preserve">
+    <value>len ${Rows} * ${Cols} (${Total})</value>
   </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Misc</value>
