@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Globalization;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -102,15 +103,8 @@ namespace ICSharpCode.Reporting.Globals
 		{
 			string str = String.Empty;
 			if (CheckValue (toFormat)) {
-				try {
-					int number = Int32.Parse (toFormat,
-					                          System.Globalization.NumberStyles.Any,
-					                          CultureInfo.CurrentCulture.NumberFormat);
-					
-					str = number.ToString (format,CultureInfo.CurrentCulture);
-				} catch (FormatException e) {
-					throw ;
-				}
+				int number = Int32.Parse(toFormat, System.Globalization.NumberStyles.Any, CultureInfo.CurrentCulture.NumberFormat);
+				str = number.ToString(format, CultureInfo.CurrentCulture);
 				return str;
 			} else {
 				str = (0.0M).ToString(CultureInfo.CurrentCulture);

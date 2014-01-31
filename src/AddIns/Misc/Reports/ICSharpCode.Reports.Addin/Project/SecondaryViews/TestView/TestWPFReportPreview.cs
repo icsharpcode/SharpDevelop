@@ -70,7 +70,7 @@ namespace ICSharpCode.Reports.Addin.SecondaryViews
 		
 		protected override void LoadFromPrimary()
 		{
-			throw new NotImplementedException();
+//			throw new NotImplementedException();
 			Pages.Clear();
 			var xmDoc = designerLoader.CreateXmlModel();
 			var modulLoader = new ModelLoader();
