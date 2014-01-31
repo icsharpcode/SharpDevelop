@@ -282,6 +282,7 @@ namespace CSharpBinding.Refactoring
 		readonly TextArea editor;
 		
 		public int CurrentInsertionPoint { get; set; }
+		int insertionPointNextToMouse = -1;
 		
 		public event EventHandler<InsertionCursorEventArgs> Exited;
 		
@@ -305,14 +306,70 @@ namespace CSharpBinding.Refactoring
 		}
 		
 		static readonly Pen markerPen = new Pen(Brushes.Blue, 1);
+		static readonly Pen tempMarkerPen = new Pen(Brushes.Gray, 1);
 		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			var currentInsertionPoint = insertionPoints[CurrentInsertionPoint];
+			DrawLineForInserionPoint(CurrentInsertionPoint, markerPen, drawingContext);
+			if (insertionPointNextToMouse > -1 && insertionPointNextToMouse != CurrentInsertionPoint)
+				DrawLineForInserionPoint(insertionPointNextToMouse, tempMarkerPen, drawingContext);
+			
+			SetGroupBoxPosition(); // HACK
+		}
+
+		void DrawLineForInserionPoint(int index, Pen pen, DrawingContext drawingContext)
+		{
+			var currentInsertionPoint = insertionPoints[index];
 			var pos = editor.TextView.GetVisualPosition(new TextViewPosition(currentInsertionPoint.Location), VisualYPosition.LineMiddle);
 			var endPos = new Point(pos.X + editor.TextView.ActualWidth * 0.6, pos.Y);
-			drawingContext.DrawLine(markerPen, pos - editor.TextView.ScrollOffset, endPos - editor.TextView.ScrollOffset);
-			SetGroupBoxPosition(); // HACK
+			drawingContext.DrawLine(pen, pos - editor.TextView.ScrollOffset, endPos - editor.TextView.ScrollOffset);
+		}
+		
+		protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
+		{
+			return new PointHitTestResult(this, hitTestParameters.HitPoint);
+		}
+		
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			insertionPointNextToMouse = FindNextInsertionPoint(e.GetPosition(this));
+			e.Handled = true;
+			InvalidateVisual();
+			base.OnMouseMove(e);
+		}
+		
+		protected override void OnMouseDown(MouseButtonEventArgs e)
+		{
+			if (e.LeftButton == MouseButtonState.Pressed) {
+				if (e.ClickCount > 1) {
+					FireExited(true);
+				} else {
+					CurrentInsertionPoint = insertionPointNextToMouse;
+					InvalidateVisual();
+				}
+				e.Handled = true;
+			}
+			base.OnMouseDown(e);
+		}
+
+		int FindNextInsertionPoint(Point point)
+		{
+			var position = editor.TextView.GetPosition(point + editor.TextView.ScrollOffset);
+			if (position == null) return -1;
+			
+			int insertionPoint = CurrentInsertionPoint;
+			int mouseLocationLine = position.Value.Location.Line;
+			int currentLocationLine = insertionPoints[insertionPoint].Location.Line;
+			
+			for (int i = 0; i < insertionPoints.Length; i++) {
+				var line = insertionPoints[i].Location.Line;
+				var diff = Math.Abs(line - mouseLocationLine);
+				if (Math.Abs(currentLocationLine - mouseLocationLine) > diff && diff < 2) {
+					insertionPoint = i;
+					currentLocationLine = line;
+				}
+			}
+			return insertionPoint;
 		}
 		
 		void TextViewScrollOffsetChanged(object sender, EventArgs e)
@@ -422,14 +479,6 @@ namespace CSharpBinding.Refactoring
 		}
 		
 		void Cancel(object sender, ExecutedRoutedEventArgs e)
-		{
-			FireExited(false);
-		}
-		
-		/// <summary>
-		/// call this somewhere useful, please... :)
-		/// </summary>
-		public void EndMode()
 		{
 			FireExited(false);
 		}
