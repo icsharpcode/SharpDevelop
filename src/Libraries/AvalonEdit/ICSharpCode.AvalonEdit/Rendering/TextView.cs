@@ -2074,7 +2074,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Gets/Sets highlighted line number.
 		/// </summary>
-		public int HighlightedLine {
+		internal int HighlightedLine { // TODO: move this logic out of the TextView
 			get { return this.currentLineHighlighRenderer.Line; }
 			set { this.currentLineHighlighRenderer.Line = value; }
 		}
