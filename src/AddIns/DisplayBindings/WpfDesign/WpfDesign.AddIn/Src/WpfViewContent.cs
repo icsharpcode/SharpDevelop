@@ -234,7 +234,10 @@ namespace ICSharpCode.WpfDesign.AddIn
 				ISymbol controlSymbol = designerClass.GetFields(f => f.Name == propertyGridView.PropertyGrid.OldName, GetMemberOptions.IgnoreInheritedMembers)
 					.SingleOrDefault();
 				if (controlSymbol != null) {
-					FindReferenceService.RenameSymbol(controlSymbol, propertyGridView.PropertyGrid.Name, new DummyProgressMonitor())
+					AsynchronousWaitDialog.ShowWaitDialogForAsyncOperation(
+						"${res:SharpDevelop.Refactoring.Rename}",
+						progressMonitor =>
+						FindReferenceService.RenameSymbol(controlSymbol, propertyGridView.PropertyGrid.Name, progressMonitor)
 						.ObserveOnUIThread()
 						.Subscribe(error => SD.MessageService.ShowError(error.Message), // onNext
 						           ex => SD.MessageService.ShowException(ex), // onError
@@ -244,7 +247,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 						           		SD.ParserService.ParseAsync(fileName).FireAndForget();
 						           	}
 						           }
-						          );
+						          )
+					);
 
 				}
 			}

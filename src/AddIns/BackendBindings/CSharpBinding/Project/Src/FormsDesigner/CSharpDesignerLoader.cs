@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 using Microsoft.CSharp;
 using CSharpBinding.Parser;
@@ -239,14 +240,18 @@ namespace CSharpBinding.FormsDesigner
 					controlSymbol = designerClass.GetFields(f => f.Name == oldName, GetMemberOptions.IgnoreInheritedMembers)
 						.SingleOrDefault();
 				if (controlSymbol != null) {
-					FindReferenceService.RenameSymbol(controlSymbol, newName, new DummyProgressMonitor())
+					AsynchronousWaitDialog.ShowWaitDialogForAsyncOperation(
+						"${res:SharpDevelop.Refactoring.Rename}",
+						progressMonitor =>
+						FindReferenceService.RenameSymbol(controlSymbol, newName, progressMonitor)
 						.ObserveOnUIThread()
 						.Subscribe(error => SD.MessageService.ShowError(error.Message), // onNext
 						           ex => SD.MessageService.ShowException(ex), // onError
 						           // onCompleted - force refresh of the DesignerCodeFile's parse info, because the code generator
 						           // seems to work with an outdated version, when the document is saved.
 						           () => SD.ParserService.Parse(new FileName(context.DesignerCodeFileDocument.FileName), context.DesignerCodeFileDocument)
-						          );
+						          )
+					);
 
 				}
 			}

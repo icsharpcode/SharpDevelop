@@ -65,10 +65,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 						NewSymbolName = entity.Name
 					};
 					if ((bool) renameDialog.ShowDialog()) {
-						using (IProgressMonitor progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
+//						using (IProgressMonitor progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
+						
+						AsynchronousWaitDialog.ShowWaitDialogForAsyncOperation(
+							"${res:SharpDevelop.Refactoring.Rename}",
+							progressMonitor =>
 							FindReferenceService.RenameSymbol(entity, renameDialog.NewSymbolName, progressMonitor)
-								.ObserveOnUIThread()
-								.Subscribe(error => SD.MessageService.ShowError(error.Message), ex => SD.MessageService.ShowException(ex), () => {});
+							.ObserveOnUIThread()
+							.Subscribe(error => SD.MessageService.ShowError(error.Message), ex => SD.MessageService.ShowException(ex), () => {}));
 					}
 				}
 			}
