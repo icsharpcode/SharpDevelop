@@ -149,13 +149,16 @@ namespace CSharpBinding.Refactoring
 						    args.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count > 1) {
 							args.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
 						}
-						foreach (var node in nodes.Reverse ()) {
-							int indentLevel = currentScript.GetIndentLevelAt(target.GetOffset(args.InsertionPoint.Location));
+
+						int offset = currentScript.GetCurrentOffset(args.InsertionPoint.Location);
+						int indentLevel = currentScript.GetIndentLevelAt(offset);
+						
+						foreach (var node in nodes.Reverse()) {
 							var output = currentScript.OutputNode(indentLevel, node);
-							var offset = target.GetOffset(args.InsertionPoint.Location);
-							var delta = args.InsertionPoint.Insert(target, output.Text);
+							int delta = args.InsertionPoint.Insert(target, output.Text);
 							output.RegisterTrackedSegments(currentScript, delta + offset);
 						}
+						currentScript.FormatText(nodes);
 						tcs.SetResult(currentScript);
 					}
 					layer.Dispose();
@@ -310,14 +313,14 @@ namespace CSharpBinding.Refactoring
 		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			DrawLineForInserionPoint(CurrentInsertionPoint, markerPen, drawingContext);
+			DrawLineForInsertionPoint(CurrentInsertionPoint, markerPen, drawingContext);
 			if (insertionPointNextToMouse > -1 && insertionPointNextToMouse != CurrentInsertionPoint)
-				DrawLineForInserionPoint(insertionPointNextToMouse, tempMarkerPen, drawingContext);
+				DrawLineForInsertionPoint(insertionPointNextToMouse, tempMarkerPen, drawingContext);
 			
 			SetGroupBoxPosition(); // HACK
 		}
 
-		void DrawLineForInserionPoint(int index, Pen pen, DrawingContext drawingContext)
+		void DrawLineForInsertionPoint(int index, Pen pen, DrawingContext drawingContext)
 		{
 			var currentInsertionPoint = insertionPoints[index];
 			var pos = editor.TextView.GetVisualPosition(new TextViewPosition(currentInsertionPoint.Location), VisualYPosition.LineMiddle);

@@ -91,11 +91,12 @@ namespace CSharpBinding.Refactoring
 				int insertionOffset = line.Offset + Location.Column - 1;
 				offset = insertionOffset;
 				InsertNewLine (document, LineBefore, ref offset);
+				int result = offset - insertionOffset;
 				
 				document.Insert (offset, text);
 				offset += text.Length;
 				InsertNewLine (document, LineAfter, ref offset);
-				return offset;
+				return result;
 			}
 		}
 		
