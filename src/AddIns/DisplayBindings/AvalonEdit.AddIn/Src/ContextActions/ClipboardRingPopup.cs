@@ -10,18 +10,21 @@ using ICSharpCode.SharpDevelop.Editor.ContextActions;
 
 namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
+	/// <summary>
+	/// 'Paste from clipboard ring' command
+	/// </summary>
 	public class ClipboardRingPopup : ContextActionsPopup
 	{
 		ToolTip toolTip;
 		
 		public ClipboardRingPopup() : base()
-		{			
+		{
 			this.toolTip = new ToolTip();
 			this.toolTip.PlacementTarget = this.ActionsControl;
 			this.toolTip.Placement = PlacementMode.Right;
 			this.toolTip.Closed += new RoutedEventHandler(ClipboardRingPopup_Closed);
 			
-			this.ActionsControl.ActionExecuted += delegate 
+			this.ActionsControl.ActionExecuted += delegate
 			{
 				if(this.toolTip != null)
 					this.toolTip.IsOpen = false;

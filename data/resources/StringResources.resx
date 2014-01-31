@@ -6437,11 +6437,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
     <value>Classes deriving from ${Name}</value>
     <comment>Title for search results for derived classes</comment>
   </data>
-  <data name="SharpDevelop.Refactoring.ClipboardRing" xml:space="preserve">
-    <value>Clipboard ring</value>
-  </data>
   <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
-    <value>From clipboard ring</value>
+    <value>Paste from clipboard ring...</value>
+    <comment>'Paste previous' command in Edit &gt; Insert menu</comment>
   </data>
   <data name="SharpDevelop.Refactoring.ClipboardRingEmpty" xml:space="preserve">
     <value>Clipboard ring is empty</value>

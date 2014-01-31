@@ -389,17 +389,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 			
 			TextLine textLine = visualLine.GetTextLine(position.VisualColumn, position.IsAtEndOfLine);
-			double xPos = visualLine.GetTextLineVisualXPosition(textLine, position.VisualColumn);
 			double lineTop = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
 			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextBottom);
 			
 			int currentPos = position.VisualColumn;
+			double xPos = visualLine.GetTextLineVisualXPosition(textLine, currentPos);
+			// The text being overwritten in overstrike mode is everything up to the next normal caret stop
 			int nextPos = visualLine.GetNextCaretPosition(currentPos, LogicalDirection.Forward, CaretPositioningMode.Normal, true);
-			double charSize = Math.Abs(
-				visualLine.GetTextLineVisualXPosition(textLine, currentPos) -
-				visualLine.GetTextLineVisualXPosition(textLine, nextPos) );
+			double nextXPos = visualLine.GetTextLineVisualXPosition(textLine, nextPos);
+			// Use Math.Abs (and Math.Min below) in case of right-to-left text
+			// Use a minimum width of SystemParameters.CaretWidth in case of extremely thin characters (e.g. zero-width space)
+			double charSize = Math.Max(Math.Abs(xPos - nextXPos), SystemParameters.CaretWidth);
 			
-			return new Rect(xPos,
+			return new Rect(Math.Min(xPos, nextXPos),
 			                lineTop,
 			                charSize,
 			                lineBottom - lineTop);

@@ -464,10 +464,10 @@ namespace ICSharpCode.AvalonEdit
 		
 		bool hideCursorWhileTyping = true;
 		
-		[DefaultValue(true)]
 		/// <summary>
-		/// Gets/Sets if mouse cursor should be shown when user is typing
+		/// Gets/Sets if mouse cursor should be hidden while user is typing.
 		/// </summary>
+		[DefaultValue(true)]
 		public bool HideCursorWhileTyping {
 			get { return hideCursorWhileTyping; }
 			set {
@@ -480,10 +480,10 @@ namespace ICSharpCode.AvalonEdit
 		
 		bool allowOverstrikeMode = false;
 		
-		[DefaultValue(false)]
 		/// <summary>
-		/// Gets/Sets if overstrike mode is enabled to use
+		/// Gets/Sets if the user is allowed to switch to overstrike mode.
 		/// </summary>
+		[DefaultValue(false)]
 		public bool AllowOverstrikeMode {
 			get { return allowOverstrikeMode; }
 			set {
