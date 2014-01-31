@@ -86,6 +86,12 @@ namespace ICSharpCode.CodeCoverage
             this.IsStatic = this.GetBooleanAttributeValue("isStatic");
             if ( !String.IsNullOrEmpty( this.FileID ) ) {
                 this.SequencePoints = this.GetSequencePoints();
+                // SP's are originaly ordered by CIL offset
+                // but ccrewrite can move offset of
+                //   Contract.Requires before method signature SP { and
+                //   Contract.Ensures after method closing SP }
+                // So sort SP's back by line/column
+                this.SequencePoints.OrderBy(item => item.Line).OrderBy(item => item.Column);
                 this.BodyStartSP = getBodyStartSP(this.SequencePoints);
                 this.BodyFinalSP = getBodyFinalSP(this.SequencePoints);
                 this.SequencePoints = this.FilterSequencePoints(this.SequencePoints);
@@ -126,32 +132,26 @@ namespace ICSharpCode.CodeCoverage
 
                 sps.Add(sp);
             }
-
-            // SP's are originaly ordered by CIL offset
-            // but ccrewrite can move offset of
-            //   Contract.Requires before method signature SP (xxx{) and
-            //   Contract.Ensures after method closing SP (})
-            // So sort SP's back by line/column
-            sps.OrderBy(item => item.Line).OrderBy(item => item.Column);
             return sps;
         }
     
-        // Find method-body start SequencePoint "xxxx {"
+        // Find method-body start SequencePoint "{"
+        // Sequence points are ordered by Line/Column
+        // Cannot just get first one because of ccrewrite&ContractClassFor
+        // For same reason must abandon constructor method signature SP
         public static CodeCoverageSequencePoint getBodyStartSP(IEnumerable<CodeCoverageSequencePoint> sPoints) {
             CodeCoverageSequencePoint startSeqPoint = null;
-            bool startFound = false;
             foreach (CodeCoverageSequencePoint sPoint in sPoints) {
                 if ( sPoint.Content == "{") {
-                    if (startSeqPoint == null) startSeqPoint = sPoint;
-                    startFound = true;
+                    startSeqPoint = sPoint;
                     break;
                 }
-                startSeqPoint = sPoint;
             }
-            return startFound == true? startSeqPoint : null;
+            return startSeqPoint;
         }
 
         // Find method-body final SequencePoint "}"
+        // Sequence points are ordered by Line/Column
         public static CodeCoverageSequencePoint getBodyFinalSP(IEnumerable<CodeCoverageSequencePoint> sps) {
             CodeCoverageSequencePoint finalSeqPoint = null;
             foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(sps)) {
@@ -166,6 +166,9 @@ namespace ICSharpCode.CodeCoverage
                              sp.EndColumn == finalSeqPoint.EndColumn &&
                              sp.Offset < finalSeqPoint.Offset) {
                         finalSeqPoint = sp;
+                    }
+                    else if (sp.Line < finalSeqPoint.Line) {
+                    	break;
                     }
                 }
             }
@@ -186,7 +189,7 @@ namespace ICSharpCode.CodeCoverage
                 //
                 // To remove alien sequence points, all sequence points on lines
                 // before method signature and after end-brackets xxx{} are removed
-                // If ContractClassFor is in another file but matches this method lines
+                // If ContractClassFor is in another file but interleaves this method lines
                 // then, afaik, not much can be done to remove inserted alien SP's
                 List<CodeCoverageSequencePoint> selected = new List<CodeCoverageSequencePoint>();
 
