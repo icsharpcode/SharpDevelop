@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Editor.ContextActions
 	}
 	
 	/// <summary>
-	/// Just wraps <see cref="IContextAction"></see> inside a WPF Command to be used in XAML.
+	/// Just wraps <see cref="IContextAction"/> inside a WPF Command to be used in XAML.
 	/// </summary>
 	public class ContextActionCommand : ICommand
 	{

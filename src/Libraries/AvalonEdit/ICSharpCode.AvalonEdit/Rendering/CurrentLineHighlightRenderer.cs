@@ -2,12 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.AvalonEdit.Rendering
@@ -75,24 +72,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			
 			BackgroundGeometryBuilder builder = new BackgroundGeometryBuilder();
 			
-			builder.CornerRadius = 1;
-			builder.AlignToMiddleOfPixels = true;
-	
 			var visualLine = this.textView.GetVisualLine(line);
-			if(visualLine == null) return;
+			if (visualLine == null) return;
 			
-			var textViewPos = visualLine.GetTextViewPosition(0);
-			if(textViewPos == null) return;
+			var linePosY = visualLine.VisualTop - this.textView.ScrollOffset.Y;
 			
-			var position = this.textView.GetVisualPosition(textViewPos, VisualYPosition.LineTop);
-			if(position == null) return;
-			
-			var lineWidth = this.textView.ActualWidth;
-			var lineHeigth = visualLine.Height;
-			var linePosX = position.X;
-			var linePosY = position.Y - this.textView.ScrollOffset.Y;
-			
-			builder.AddRectangle(textView, new Rect(linePosX, linePosY, lineWidth, lineHeigth));
+			builder.AddRectangle(textView, new Rect(0, linePosY, textView.ActualWidth, visualLine.Height));
 			
 			Geometry geometry = builder.CreateGeometry();
 			if (geometry != null) {
