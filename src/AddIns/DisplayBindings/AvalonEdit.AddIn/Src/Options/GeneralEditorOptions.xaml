@@ -29,7 +29,7 @@
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox}" />
 				<CheckBox 
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.AllowOverstrikeMode}" 
-					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.AllowOverstrikeModeCheckBox}" />
+					Content="Allow Overstrike mode" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 	</StackPanel>

@@ -35,7 +35,7 @@
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.MouseWheelZoomCheckBoxCheckBox}" />
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.HideCursorWhileTyping}"
-					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.HideCursorWhileTypingCheckBoxCheckBox}" />
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox}" />
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.CutCopyWholeLine}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine}" />

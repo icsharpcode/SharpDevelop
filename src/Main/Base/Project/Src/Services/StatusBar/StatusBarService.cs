@@ -41,10 +41,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		//void SetInsertMode(bool insertMode);
 		
 		/// <summary>
-		/// Sets the selection lenght in the status bar.
+		/// Sets the selection length in the status bar.
 		/// </summary>
-		/// <param name="lenght">selection lenght</param>
-		void SetSelectionSingle(int lenght);
+		/// <param name="length">selection length</param>
+		void SetSelectionSingle(int length);
 		
 		/// <summary>
 		/// Sets rect selection size in the status bar.

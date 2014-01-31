@@ -57,12 +57,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			);
 		}
 		
-		public void SetSelectionSingle(int lenght)
+		public void SetSelectionSingle(int length)
 		{
-			if (lenght > 0) {
+			if (length > 0) {
 				statusBar.SelectionStatusBarPanel.Content = StringParser.Parse(
 					"${res:StatusBarService.SelectionStatusBarPanelTextSingle}",
-					new StringTagPair("Lenght", String.Format("{0,-10}", lenght)));
+					new StringTagPair("Length", String.Format("{0,-10}", length)));
 			} else {
 				statusBar.SelectionStatusBarPanel.Content = null;
 			}
