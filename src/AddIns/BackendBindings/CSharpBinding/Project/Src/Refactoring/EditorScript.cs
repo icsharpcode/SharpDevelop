@@ -275,13 +275,14 @@ namespace CSharpBinding.Refactoring
 		}
 	}
 	
-	class InsertionCursorLayer : UIElement, IDisposable
+	class InsertionCursorLayer : Canvas, IDisposable
 	{
-		string operation;
-		InsertionPoint[] insertionPoints;
+		readonly string operation;
+		readonly InsertionPoint[] insertionPoints;
 		readonly TextArea editor;
 		
 		public int CurrentInsertionPoint { get; set; }
+		int insertionPointNextToMouse = -1;
 		
 		public event EventHandler<InsertionCursorEventArgs> Exited;
 		
@@ -300,18 +301,75 @@ namespace CSharpBinding.Refactoring
 			this.editor.ActiveInputHandler = new InputHandler(this);
 			this.editor.TextView.InsertLayer(this, KnownLayer.Text, LayerInsertionPosition.Above);
 			this.editor.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
+			AddGroupBox();
 			ScrollToInsertionPoint();
-			AttachToCodeEditor();
 		}
 		
 		static readonly Pen markerPen = new Pen(Brushes.Blue, 1);
+		static readonly Pen tempMarkerPen = new Pen(Brushes.Gray, 1);
 		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			var currentInsertionPoint = insertionPoints[CurrentInsertionPoint];
+			DrawLineForInserionPoint(CurrentInsertionPoint, markerPen, drawingContext);
+			if (insertionPointNextToMouse > -1 && insertionPointNextToMouse != CurrentInsertionPoint)
+				DrawLineForInserionPoint(insertionPointNextToMouse, tempMarkerPen, drawingContext);
+			
+			SetGroupBoxPosition(); // HACK
+		}
+
+		void DrawLineForInserionPoint(int index, Pen pen, DrawingContext drawingContext)
+		{
+			var currentInsertionPoint = insertionPoints[index];
 			var pos = editor.TextView.GetVisualPosition(new TextViewPosition(currentInsertionPoint.Location), VisualYPosition.LineMiddle);
 			var endPos = new Point(pos.X + editor.TextView.ActualWidth * 0.6, pos.Y);
-			drawingContext.DrawLine(markerPen, pos - editor.TextView.ScrollOffset, endPos - editor.TextView.ScrollOffset);
+			drawingContext.DrawLine(pen, pos - editor.TextView.ScrollOffset, endPos - editor.TextView.ScrollOffset);
+		}
+		
+		protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
+		{
+			return new PointHitTestResult(this, hitTestParameters.HitPoint);
+		}
+		
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			insertionPointNextToMouse = FindNextInsertionPoint(e.GetPosition(this));
+			e.Handled = true;
+			InvalidateVisual();
+			base.OnMouseMove(e);
+		}
+		
+		protected override void OnMouseDown(MouseButtonEventArgs e)
+		{
+			if (e.LeftButton == MouseButtonState.Pressed) {
+				if (e.ClickCount > 1) {
+					FireExited(true);
+				} else {
+					CurrentInsertionPoint = insertionPointNextToMouse;
+					InvalidateVisual();
+				}
+				e.Handled = true;
+			}
+			base.OnMouseDown(e);
+		}
+
+		int FindNextInsertionPoint(Point point)
+		{
+			var position = editor.TextView.GetPosition(point + editor.TextView.ScrollOffset);
+			if (position == null) return -1;
+			
+			int insertionPoint = CurrentInsertionPoint;
+			int mouseLocationLine = position.Value.Location.Line;
+			int currentLocationLine = insertionPoints[insertionPoint].Location.Line;
+			
+			for (int i = 0; i < insertionPoints.Length; i++) {
+				var line = insertionPoints[i].Location.Line;
+				var diff = Math.Abs(line - mouseLocationLine);
+				if (Math.Abs(currentLocationLine - mouseLocationLine) > diff && diff < 2) {
+					insertionPoint = i;
+					currentLocationLine = line;
+				}
+			}
+			return insertionPoint;
 		}
 		
 		void TextViewScrollOffsetChanged(object sender, EventArgs e)
@@ -395,7 +453,6 @@ namespace CSharpBinding.Refactoring
 		
 		public void Dispose()
 		{
-			groupBox.Remove();
 			editor.TextView.Layers.Remove(this);
 			editor.ActiveInputHandler = editor.DefaultInputHandler;
 			editor.TextView.ScrollOffsetChanged -= TextViewScrollOffsetChanged;
@@ -410,17 +467,18 @@ namespace CSharpBinding.Refactoring
 		{
 			var location = insertionPoints[CurrentInsertionPoint].Location;
 			editor.GetService<TextEditor>().ScrollTo(location.Line, location.Column);
+			SetGroupBoxPosition();
 		}
 
-		void Cancel(object sender, ExecutedRoutedEventArgs e)
+		void SetGroupBoxPosition()
 		{
-			FireExited(false);
+			var location = insertionPoints[CurrentInsertionPoint].Location;
+			var boxPosition = editor.TextView.GetVisualPosition(new TextViewPosition(location), VisualYPosition.LineMiddle) - editor.TextView.ScrollOffset + new Vector(editor.TextView.ActualWidth * 0.6 - 5, -groupBox.ActualHeight / 2.0);
+			Canvas.SetTop(groupBox, boxPosition.Y);
+			Canvas.SetLeft(groupBox, boxPosition.X);
 		}
 		
-		/// <summary>
-		/// call this somewhere useful, please... :)
-		/// </summary>
-		public void EndMode()
+		void Cancel(object sender, ExecutedRoutedEventArgs e)
 		{
 			FireExited(false);
 		}
@@ -432,13 +490,10 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		IOverlayUIElement groupBox;
+		GroupBox groupBox;
 		
-		void AttachToCodeEditor()
+		void AddGroupBox()
 		{
-			if (editor.Document == null)
-				return; // editor was disposed
-			
 			var content = new StackPanel {
 				Children = {
 					new TextBlock {
@@ -449,9 +504,15 @@ namespace CSharpBinding.Refactoring
 				}
 			};
 			
-			groupBox = editor.GetService<IEditorUIService>().CreateOverlayUIElement(content);
+			groupBox = new GroupBox {
+				Background = Brushes.White,
+				BorderBrush = Brushes.Blue,
+				BorderThickness = new Thickness(1),
+				Header = operation,
+				Content = content
+			};
 			
-			groupBox.Title = operation;
+			Children.Add(groupBox);
 		}
 	}
 	
