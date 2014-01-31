@@ -275,10 +275,10 @@ namespace CSharpBinding.Refactoring
 		}
 	}
 	
-	class InsertionCursorLayer : UIElement, IDisposable
+	class InsertionCursorLayer : Canvas, IDisposable
 	{
-		string operation;
-		InsertionPoint[] insertionPoints;
+		readonly string operation;
+		readonly InsertionPoint[] insertionPoints;
 		readonly TextArea editor;
 		
 		public int CurrentInsertionPoint { get; set; }
@@ -300,8 +300,8 @@ namespace CSharpBinding.Refactoring
 			this.editor.ActiveInputHandler = new InputHandler(this);
 			this.editor.TextView.InsertLayer(this, KnownLayer.Text, LayerInsertionPosition.Above);
 			this.editor.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
+			AddGroupBox();
 			ScrollToInsertionPoint();
-			AttachToCodeEditor();
 		}
 		
 		static readonly Pen markerPen = new Pen(Brushes.Blue, 1);
@@ -312,6 +312,7 @@ namespace CSharpBinding.Refactoring
 			var pos = editor.TextView.GetVisualPosition(new TextViewPosition(currentInsertionPoint.Location), VisualYPosition.LineMiddle);
 			var endPos = new Point(pos.X + editor.TextView.ActualWidth * 0.6, pos.Y);
 			drawingContext.DrawLine(markerPen, pos - editor.TextView.ScrollOffset, endPos - editor.TextView.ScrollOffset);
+			SetGroupBoxPosition(); // HACK
 		}
 		
 		void TextViewScrollOffsetChanged(object sender, EventArgs e)
@@ -395,7 +396,6 @@ namespace CSharpBinding.Refactoring
 		
 		public void Dispose()
 		{
-			groupBox.Remove();
 			editor.TextView.Layers.Remove(this);
 			editor.ActiveInputHandler = editor.DefaultInputHandler;
 			editor.TextView.ScrollOffsetChanged -= TextViewScrollOffsetChanged;
@@ -410,8 +410,17 @@ namespace CSharpBinding.Refactoring
 		{
 			var location = insertionPoints[CurrentInsertionPoint].Location;
 			editor.GetService<TextEditor>().ScrollTo(location.Line, location.Column);
+			SetGroupBoxPosition();
 		}
 
+		void SetGroupBoxPosition()
+		{
+			var location = insertionPoints[CurrentInsertionPoint].Location;
+			var boxPosition = editor.TextView.GetVisualPosition(new TextViewPosition(location), VisualYPosition.LineMiddle) - editor.TextView.ScrollOffset + new Vector(editor.TextView.ActualWidth * 0.6 - 5, -groupBox.ActualHeight / 2.0);
+			Canvas.SetTop(groupBox, boxPosition.Y);
+			Canvas.SetLeft(groupBox, boxPosition.X);
+		}
+		
 		void Cancel(object sender, ExecutedRoutedEventArgs e)
 		{
 			FireExited(false);
@@ -432,13 +441,10 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		IOverlayUIElement groupBox;
+		GroupBox groupBox;
 		
-		void AttachToCodeEditor()
+		void AddGroupBox()
 		{
-			if (editor.Document == null)
-				return; // editor was disposed
-			
 			var content = new StackPanel {
 				Children = {
 					new TextBlock {
@@ -449,9 +455,15 @@ namespace CSharpBinding.Refactoring
 				}
 			};
 			
-			groupBox = editor.GetService<IEditorUIService>().CreateOverlayUIElement(content);
+			groupBox = new GroupBox {
+				Background = Brushes.White,
+				BorderBrush = Brushes.Blue,
+				BorderThickness = new Thickness(1),
+				Header = operation,
+				Content = content
+			};
 			
-			groupBox.Title = operation;
+			Children.Add(groupBox);
 		}
 	}
 	
