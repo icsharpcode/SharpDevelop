@@ -478,18 +478,18 @@ namespace ICSharpCode.AvalonEdit
 			}
 		}
 		
-		bool allowOverstrikeMode = false;
+		bool allowToggleOverstrikeMode = false;
 		
 		/// <summary>
-		/// Gets/Sets if the user is allowed to switch to overstrike mode.
+		/// Gets/Sets if the user is allowed to enable/disable overstrike mode.
 		/// </summary>
 		[DefaultValue(false)]
-		public bool AllowOverstrikeMode {
-			get { return allowOverstrikeMode; }
+		public bool AllowToggleOverstrikeMode {
+			get { return allowToggleOverstrikeMode; }
 			set {
-				if (allowOverstrikeMode != value) {
-					allowOverstrikeMode = value;
-					OnPropertyChanged("AllowOverstrikeMode");
+				if (allowToggleOverstrikeMode != value) {
+					allowToggleOverstrikeMode = value;
+					OnPropertyChanged("AllowToggleOverstrikeMode");
 				}
 			}
 		}

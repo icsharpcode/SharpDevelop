@@ -25,6 +25,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -882,8 +883,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (e.Text == "\n" || e.Text == "\r" || e.Text == "\r\n")
 					ReplaceSelectionWithNewLine();
 				else {
-					if (overstrikeMode && Selection.IsEmpty && Document.GetLineByNumber(Caret.Line).EndOffset > Caret.Offset)
-						Selection = Selection.Create(this, Caret.Offset, Caret.Offset+e.Text.Length);
+					if (OverstrikeMode && Selection.IsEmpty && Document.GetLineByNumber(Caret.Line).EndOffset > Caret.Offset)
+						EditingCommands.SelectRightByCharacter.Execute(null, this);
 					ReplaceSelectionWithText(e.Text);
 				}
 				OnTextEntered(e);
@@ -971,11 +972,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			base.OnPreviewKeyDown(e);
 			
-			if (!this.Options.AllowOverstrikeMode) {
-				this.overstrikeMode = false;
-			} else if (!e.Handled && e.Key == Key.Insert) {
-				this.overstrikeMode = !this.overstrikeMode;
-				this.caret.Show();
+			if (!e.Handled && e.Key == Key.Insert && this.Options.AllowToggleOverstrikeMode) {
+				this.OverstrikeMode = !this.OverstrikeMode;
 				e.Handled = true;
 				return;
 			}
@@ -1047,11 +1045,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		#region Overstrike mode
 		
-		bool overstrikeMode = false;
+		/// <summary>
+		/// The <see cref="OverstrikeMode"/> dependency property.
+		/// </summary>
+		public static readonly DependencyProperty OverstrikeModeProperty =
+			DependencyProperty.Register("OverstrikeMode", typeof(bool), typeof(TextArea),
+			                            new FrameworkPropertyMetadata(Boxes.False));
 		
-		public bool OverstrikeMode
-		{
-			get { return this.overstrikeMode; }
+		/// <summary>
+		/// Gets/Sets whether overstrike mode is active.
+		/// </summary>
+		public bool OverstrikeMode {
+			get { return (bool)GetValue(OverstrikeModeProperty); }
+			set { SetValue(OverstrikeModeProperty, value); }
 		}
 		
 		#endregion
@@ -1073,6 +1079,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			    || e.Property == SelectionCornerRadiusProperty)
 			{
 				textView.Redraw();
+			} else if (e.Property == OverstrikeModeProperty) {
+				caret.UpdateIfVisible();
 			}
 		}
 		

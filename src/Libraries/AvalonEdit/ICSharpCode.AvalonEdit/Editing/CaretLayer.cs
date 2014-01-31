@@ -94,12 +94,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (caretBrush == null)
 					caretBrush = (Brush)textView.GetValue(TextBlock.ForegroundProperty);
 				
-				if (this.textArea.Options.AllowOverstrikeMode && this.textArea.OverstrikeMode) {
+				if (this.textArea.OverstrikeMode) {
 					SolidColorBrush scBrush = caretBrush as SolidColorBrush;
 					if (scBrush != null) {
 						Color brushColor = scBrush.Color;
 						Color newColor = Color.FromArgb(100, brushColor.R, brushColor.G, brushColor.B);
 						caretBrush = new SolidColorBrush(newColor);
+						caretBrush.Freeze();
 					}
 				}
 				
