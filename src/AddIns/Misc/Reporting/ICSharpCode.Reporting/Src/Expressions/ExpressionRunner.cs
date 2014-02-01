@@ -48,7 +48,7 @@ namespace ICSharpCode.Reporting.Expressions
 		
 		public  void Run()
 		{
-			Visitor = new ExpressionVisitor (reportSettings);
+//			Visitor = new ExpressionVisitor (reportSettings);
 			if (dataSource != null) {
 				if (dataSource.SortedList != null) {
 					Visitor.SetCurrentDataSource(dataSource.SortedList);

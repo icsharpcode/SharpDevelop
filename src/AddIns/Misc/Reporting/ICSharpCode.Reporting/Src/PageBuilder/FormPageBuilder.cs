@@ -18,8 +18,6 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.Reporting.Exporter;
-using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Interfaces;
 
 namespace ICSharpCode.Reporting.PageBuilder

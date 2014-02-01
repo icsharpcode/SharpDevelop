@@ -21,27 +21,13 @@ using System.Collections.ObjectModel;
 using System.Xml;
 
 using ICSharpCode.Reporting;
-using ICSharpCode.Reporting.BaseClasses;
-using ICSharpCode.Reporting.Exporter;
-using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using ICSharpCode.Reporting.WpfReportViewer;
 using ICSharpCode.Reporting.Xml;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
-
-//using ICSharpCode.Reports.Addin.Commands;
-//using ICSharpCode.Reports.Core;
-//using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
-//using ICSharpCode.Reports.Core.Globals;
-//using ICSharpCode.Reports.Core.WpfReportViewer;
-
-
-
 
 namespace ICSharpCode.Reports.Addin.SecondaryViews
 {
@@ -50,9 +36,9 @@ namespace ICSharpCode.Reports.Addin.SecondaryViews
 	/// </summary>
 	public class TestWPFReportPreview: AbstractSecondaryViewContent
 	{
-		ReportDesignerLoader designerLoader;
+		readonly ReportDesignerLoader designerLoader;
 		
-		ICSharpCode.Reporting.WpfReportViewer.IWpfReportViewer viewer;
+		IWpfReportViewer viewer;
 		
 //		IExportRunner exportRunner = new ExportRunner();
 		
@@ -70,13 +56,17 @@ namespace ICSharpCode.Reports.Addin.SecondaryViews
 		
 		protected override void LoadFromPrimary()
 		{
-//			throw new NotImplementedException();
 			Pages.Clear();
 			var xmDoc = designerLoader.CreateXmlModel();
 			var modulLoader = new ModelLoader();
-			ReportModel model = (ReportModel)modulLoader.Load(xmDoc.DocumentElement);
+			var reportModel = (ReportModel)modulLoader.Load(xmDoc.DocumentElement);
 			
 			var reportingFactory = new ReportingFactory();
+			var reportCreator = reportingFactory.ReportCreator(reportModel);
+			var previewViewModel = new PreviewViewModel (reportModel.ReportSettings,reportCreator.Pages);
+	reportCreator.BuildExportList();		
+			var p = new PreviewViewModel (reportModel.ReportSettings,reportCreator.Pages);
+			viewer.SetBinding(previewViewModel);
 			//Missing
 //			var reportCreator = reportingFactory.ReportCreator(model);
 //			if (reportCreator == null){

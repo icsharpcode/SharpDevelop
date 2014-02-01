@@ -56,13 +56,22 @@ namespace ICSharpCode.Reporting
 		public IReportCreator ReportCreator (Stream stream)
 		{
 			ReportModel = LoadReportModel (stream);
-			IReportCreator builder = null;
+//			IReportCreator builder = null;
 //			builder = ReportCreatorFactory.ExporterFactory(ReportModel);
-			builder = new FormPageBuilder(ReportModel);
+			var builder = new FormPageBuilder(ReportModel);
 			return builder;
 		}
 		
 
+		public IReportCreator ReportCreator (ReportModel reportModel) {
+			ReportModel = reportModel;
+//			IReportCreator builder = null;
+//			builder = ReportCreatorFactory.ExporterFactory(ReportModel);
+			var builder = new FormPageBuilder(ReportModel);
+			return builder;
+		}
+		
+		
 		internal ReportModel LoadReportModel (Stream stream)
 		{
 			var doc = new XmlDocument();

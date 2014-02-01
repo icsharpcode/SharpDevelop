@@ -64,7 +64,7 @@ namespace ICSharpCode.Reports.Addin
 		XmlView xmlView;
 		ReportPreview reportPreview;
 		ReportViewerSecondaryView reportViewer;
-		TestWPFReportPreview testView;
+//		TestWPFReportPreview testView;
 		
 		#region Constructor
 		
@@ -115,8 +115,8 @@ namespace ICSharpCode.Reports.Addin
 			var wpfViewer = new WPFReportPreview(loader,this);
 			SecondaryViewContents.Add(wpfViewer);
 			
-			testView = new TestWPFReportPreview(loader,this);
-			SecondaryViewContents.Add(testView);
+//			testView = new TestWPFReportPreview(loader,this);
+//			SecondaryViewContents.Add(testView);
 			
 		}
 		
