@@ -30,6 +30,7 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Snippets;
 using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
@@ -82,12 +83,31 @@ namespace CSharpBinding.Refactoring
 			editor.Select(startOffset, endOffset - startOffset);
 		}
 		
-		static readonly Task completedTask = Task.FromResult<object>(null);
-		
 		public override Task Link(params AstNode[] nodes)
 		{
-			// TODO
-			return completedTask;
+			var segs = nodes.Select(node => GetSegment(node)).ToArray();
+			InsertionContext c = new InsertionContext(editor.GetRequiredService<TextArea>(), segs.Min(seg => seg.Offset));
+			c.InsertionPosition = segs.Max(seg => seg.EndOffset);
+			
+			var tcs = new TaskCompletionSource<bool>();
+			c.Deactivated += (sender, e) => tcs.SetResult(true);
+			
+			if (segs.Length > 0) {
+				// try to use node in identifier context to avoid the code completion popup.
+				var identifier = nodes.OfType<Identifier>().FirstOrDefault();
+				ISegment first;
+				if (identifier == null)
+					first = segs[0];
+				else
+					first = GetSegment(identifier);
+				c.Link(first, segs.Except(new[]{first}).ToArray());
+				c.RaiseInsertionCompleted(EventArgs.Empty);
+			} else {
+				c.RaiseInsertionCompleted(EventArgs.Empty);
+				c.Deactivate(new SnippetEventArgs(DeactivateReason.NoActiveElements));
+			}
+			
+			return tcs.Task;
 		}
 		
 		public override Task<Script> InsertWithCursor(string operation, InsertPosition defaultPosition, IList<AstNode> nodes)
