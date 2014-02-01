@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
-			SideTabItem item = sideBar.ActiveTab.ChoosedItem;
+			SideTabItem item = sideBar.ActiveTab.ChosenItem;
 			if (item != null) {
 				sideBar.StartRenamingOf(item);
 			}
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
-			SideTabItem item = sideBar.ActiveTab.ChoosedItem;
+			SideTabItem item = sideBar.ActiveTab.ChosenItem;
 			if (item != null) {
 				if (MessageBox.Show(StringParser.Parse(
 					"${res:SideBarComponent.ContextMenu.DeleteTabItemQuestion}", new StringTagPair("TabItem", item.Name)),
@@ -162,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
-			int index = sideBar.ActiveTab.Items.IndexOf(sideBar.ActiveTab.ChoosedItem);
+			int index = sideBar.ActiveTab.Items.IndexOf(sideBar.ActiveTab.ChosenItem);
 			if (index > 0) {
 				sideBar.ActiveTab.Exchange(index -1, index);
 				sideBar.Refresh();
@@ -175,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
-			int index = sideBar.ActiveTab.Items.IndexOf(sideBar.ActiveTab.ChoosedItem);
+			int index = sideBar.ActiveTab.Items.IndexOf(sideBar.ActiveTab.ChosenItem);
 			if (index >= 0 && index < sideBar.ActiveTab.Items.Count - 1) {
 				sideBar.ActiveTab.Exchange(index, index + 1);
 				sideBar.Refresh();

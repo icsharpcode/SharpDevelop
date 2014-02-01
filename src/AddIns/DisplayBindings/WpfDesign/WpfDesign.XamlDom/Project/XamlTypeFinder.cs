@@ -216,7 +216,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <summary>
 		/// Register the Namspaces not found in any Assembly, but used by VS and Expression Blend
 		/// </summary>
-		public void RegisterFixNamespaces()
+		public void RegisterDesignerNamespaces()
 		{
 			var ns = namespaces[XamlConstants.DesignTimeNamespace] = new XamlNamespace("d", XamlConstants.DesignTimeNamespace);
 			AddMappingToNamespace(ns, new AssemblyNamespaceMapping(typeof(DesignTimeProperties).Assembly, typeof(DesignTimeProperties).Namespace));
@@ -281,7 +281,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			static WpfTypeFinder()
 			{
 				Instance = new XamlTypeFinder();
-				Instance.RegisterFixNamespaces();
+				Instance.RegisterDesignerNamespaces();
 				Instance.RegisterAssembly(typeof(MarkupExtension).Assembly); // WindowsBase
 				Instance.RegisterAssembly(typeof(IAddChild).Assembly); // PresentationCore
 				Instance.RegisterAssembly(typeof(XamlReader).Assembly); // PresentationFramework

@@ -223,8 +223,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override object StartItemDrag(SideTabItem draggedItem)
 		{
-			if (this.ActiveTab.ChoosedItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
-				this.ActiveTab.ChoosedItem = draggedItem;
+			if (this.ActiveTab.ChosenItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
+				this.ActiveTab.ChosenItem = draggedItem;
 			}
 			var dataObject = new System.Windows.DataObject();
 			dataObject.SetText(draggedItem.Tag.ToString());
