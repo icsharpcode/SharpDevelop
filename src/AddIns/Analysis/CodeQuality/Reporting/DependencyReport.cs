@@ -21,8 +21,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
+using ICSharpCode.Reporting;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.CodeQuality.Engine.Dom;
-using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.CodeQuality.Reporting
 {
@@ -38,16 +39,17 @@ namespace ICSharpCode.CodeQuality.Reporting
 		}
 		
 		public IReportCreator Run(ReadOnlyCollection<AssemblyNode> list)
-		{			
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.DependencyReport.srd");
-			var model = ReportEngine.LoadReportModel(stream);
-			ReportSettings = model.ReportSettings;
+		{
 			var newList = MakeList (list);
 			
-			IReportCreator creator = ReportEngine.CreatePageBuilder(model,newList,null);
-			creator.BuildExportList();
-			return creator;
+			Assembly asm = Assembly.GetExecutingAssembly();
+			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.DependencyReport.srd");
+			
+			var rf = new ReportingFactory();
+			var reportCreator = rf.ReportCreator (stream,newList);
+			ReportSettings = rf.ReportModel.ReportSettings;
+			reportCreator.BuildExportList();
+			return reportCreator;
 		}
 		
 		

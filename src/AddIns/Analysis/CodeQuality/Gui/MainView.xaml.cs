@@ -19,18 +19,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
+using ICSharpCode.Reporting.WpfReportViewer;
 using ICSharpCode.CodeQuality.Engine;
 using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.CodeQuality.Reporting;
-using ICSharpCode.Reports.Core.WpfReportViewer;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
@@ -102,11 +97,13 @@ namespace ICSharpCode.CodeQuality.Gui
 		
 		void DependecyReport_Click(object sender, RoutedEventArgs e)
 		{
+		
 			var dependencyReport = new DependencyReport(fileNames);
 			var reportCreator = dependencyReport.Run(list);
 			var previewViewModel = new PreviewViewModel(dependencyReport.ReportSettings,reportCreator.Pages);
 			viewer.SetBinding(previewViewModel);
 			ActivateReportTab();
+			
 		}
 		
 		void ActivateReportTab()

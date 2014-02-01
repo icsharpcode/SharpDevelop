@@ -148,11 +148,15 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		
 		IEnumerable<IGrouping<object, object>> GroupInternal () {
-			var property = listProperties.Find(reportSettings.GroupColumnsCollection[0].ColumnName,true);
+			var groupProperty = listProperties.Find(reportSettings.GroupColumnsCollection[0].ColumnName,true);
 			var sortProperty = listProperties.Find("Randomint",true);
-
-			var groupedList = baseList.OrderBy(o => o.GetType().GetProperty(sortProperty.Name).GetValue(o, null) )
-				.GroupBy(a => a.GetType().GetProperty(property.Name).GetValue(a, null)).OrderBy(c => c.Key);
+			IEnumerable<IGrouping<object, object>> groupedList;
+			if (sortProperty == null) {
+				groupedList = baseList.GroupBy(a => a.GetType().GetProperty(groupProperty.Name).GetValue(a, null)).OrderBy(c => c.Key);
+			} else {
+				groupedList = baseList.OrderBy(o => o.GetType().GetProperty(sortProperty.Name).GetValue(o, null) )
+					.GroupBy(a => a.GetType().GetProperty(groupProperty.Name).GetValue(a, null)).OrderBy(c => c.Key);
+			}
 			return groupedList;
 		}
 		

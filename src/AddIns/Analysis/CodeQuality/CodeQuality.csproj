@@ -111,6 +111,7 @@
     <EmbeddedResource Include="Reporting\Overviewreport.srd">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Reporting\DependencyReport - Kopie.srd" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Engine\Dom" />
@@ -172,10 +173,9 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\Misc\Reports\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj">
-      <Project>{7C3579BC-2A64-4108-82B5-3D07ADA079E7}</Project>
-      <Name>ICSharpCode.Reports.Core</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\..\Misc\Reporting\ICSharpCode.Reporting\ICSharpCode.Reporting.csproj">
+      <Project>{40CA84D4-ACFC-4646-9CDD-B87262D34093}</Project>
+      <Name>ICSharpCode.Reporting</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

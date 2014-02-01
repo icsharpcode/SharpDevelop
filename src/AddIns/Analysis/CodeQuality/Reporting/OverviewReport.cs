@@ -19,13 +19,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
-using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.NRefactory.Utils;
-using ICSharpCode.Reports.Core;
+using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.CodeQuality.Engine.Dom;
 
 namespace ICSharpCode.CodeQuality.Reporting
 {
@@ -42,6 +41,7 @@ namespace ICSharpCode.CodeQuality.Reporting
 		
 		public IReportCreator Run(ReadOnlyCollection<AssemblyNode> list)
 		{
+			/*
 			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
 			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.Overviewreport.srd");
 			var model = ReportEngine.LoadReportModel(stream);
@@ -57,6 +57,8 @@ namespace ICSharpCode.CodeQuality.Reporting
 			IReportCreator creator = ReportEngine.CreatePageBuilder(model,r.ToList(),p);
 			creator.BuildExportList();
 			return creator;
+			*/
+			return null;
 		}
 		
 	}
