@@ -19,6 +19,8 @@
 using System;
 using System.Linq;
 using System.Threading;
+using ICSharpCode.SharpDevelop;
+using CSharpBinding.Parser;
 using CSharpBinding.Refactoring;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -92,13 +94,18 @@ namespace CSharpBinding.Completion
 			
 			// begin insertion
 			using (context.Editor.Document.OpenUndoGroup()) {
-				context.Editor.Document.Replace(context.StartOffset, context.Length, handlerName);
+				context.Editor.Document.Replace(context.StartOffset, context.Length, handlerName + ";");
 				context.EndOffset = context.StartOffset + handlerName.Length;
+				var loc = context.Editor.Document.GetLocation(context.StartOffset + handlerName.Length / 2 + 1);
+				
+				var parseInfo = SD.ParserService.Parse(context.Editor.FileName, context.Editor.Document) as CSharpFullParseInformation;
+				if (parseInfo == null) return;
 				
 				using (var script = refactoringContext.StartScript()) {
+					var node = parseInfo.SyntaxTree.GetNodeAt(loc, n => n is Identifier || n is IdentifierExpression);
+					if (node == null) return;
 					script.InsertWithCursor(this.DisplayText, Script.InsertPosition.Before, decl)
-						// TODO : replace with Link, once that is implemented
-						.ContinueScript(() => script.Select(throwStatement));
+						.ContinueScript(() => script.Link(decl.NameToken, node).ContinueScript(() => script.Select(throwStatement)));
 				}
 			}
 		}
