@@ -171,8 +171,8 @@ namespace CSharpBinding.Parser
 				throw new ArgumentException("Parse info does not have SyntaxTree");
 			
 			CSharpUnresolvedFile unresolvedFile = csParseInfo.UnresolvedFile;
-			IProject project = SD.ProjectService.FindProjectContainingFile(new FileName(unresolvedFile.FileName));
-			if (project == null || compilation.Assemblies.All(asm => asm.GetProject() != project))
+			var projectContents = compilation.Assemblies.Select(asm => asm.UnresolvedAssembly).OfType<IProjectContent>().ToList();
+			if (projectContents.All(pc => pc.GetFile(unresolvedFile.FileName) != unresolvedFile))
 				unresolvedFile = null;
 			return ResolveAtLocation.Resolve(compilation, unresolvedFile, csParseInfo.SyntaxTree, location, cancellationToken);
 		}
