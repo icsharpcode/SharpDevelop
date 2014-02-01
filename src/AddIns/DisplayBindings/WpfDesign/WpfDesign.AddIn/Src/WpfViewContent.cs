@@ -58,20 +58,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			BasicMetadata.Register();
 			
-			// TODO Move this Initialization to LoadInternal
-//			WpfToolbox.Instance.AddProjectDlls(file);
-
-			ProjectService.ProjectItemAdded += ProjectService_ProjectItemAdded;
-			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
-		}
-
-		void ProjectService_ProjectItemAdded(object sender, ProjectItemEventArgs e)
-		{
-			// TODO reimplement this!
-//			if (e.ProjectItem is ReferenceProjectItem)
-//				WpfToolbox.Instance.AddProjectDlls(this.Files[0]);
 		}
 		
 		static WpfViewContent()
@@ -106,6 +94,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				designer = new DesignSurface();
 				this.UserContent = designer;
 				InitPropertyEditor();
+				InitWpfToolbox();
 			}
 			this.UserContent = designer;
 			if (outline != null) {
@@ -204,6 +193,19 @@ namespace ICSharpCode.WpfDesign.AddIn
 			propertyContainer.PropertyGridReplacementContent = propertyGridView;
 			propertyGridView.PropertyGrid.PropertyChanged += OnPropertyGridPropertyChanged;
 		}
+
+		void InitWpfToolbox()
+		{
+			WpfToolbox.Instance.AddProjectDlls(Files[0]);
+			SD.ProjectService.ProjectItemAdded += OnReferenceAdded;
+		}
+		
+		void OnReferenceAdded(object sender, ProjectItemEventArgs e)
+		{
+			if (!(e.ProjectItem is ReferenceProjectItem)) return;
+			if (e.Project != SD.ProjectService.FindProjectContainingFile(Files[0].FileName)) return;
+			WpfToolbox.Instance.AddProjectDlls(Files[0]);
+		}
 		
 		void OnSelectionChanged(object sender, DesignItemCollectionEventArgs e)
 		{
@@ -281,7 +283,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public override void Dispose()
 		{
-			ProjectService.ProjectItemAdded -= ProjectService_ProjectItemAdded;
+			SD.ProjectService.ProjectItemAdded -= OnReferenceAdded;
 
 			propertyContainer.Clear();
 			base.Dispose();
