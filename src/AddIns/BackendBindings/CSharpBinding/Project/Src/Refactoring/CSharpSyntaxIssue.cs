@@ -53,7 +53,8 @@ namespace CSharpBinding.Refactoring
 			IDocument document = context.Document;
 			TextLocation begin = error.Region.Begin;
 			
-			int offset = document.GetOffset(begin.Line, begin.Column);
+			// Columns seem to be zero-based, SD expects 1-based columns
+			int offset = document.GetOffset(begin.Line, begin.Column + 1);
 			int endOffset = TextUtilities.GetNextCaretPosition(document, offset, System.Windows.Documents.LogicalDirection.Forward, CaretPositioningMode.WordBorderOrSymbol);
 			if (endOffset < 0) endOffset = document.TextLength;
 			int length = endOffset - offset;
@@ -64,8 +65,9 @@ namespace CSharpBinding.Refactoring
 				length = Math.Min(2, document.TextLength - offset);
 			}
 			
+			TextLocation start = document.GetLocation(offset);
 			TextLocation end = document.GetLocation(offset + length);
-			return new CodeIssue(begin, end, error.Message);
+			return new CodeIssue(start, end, error.Message);
 		}
 	}
 }
