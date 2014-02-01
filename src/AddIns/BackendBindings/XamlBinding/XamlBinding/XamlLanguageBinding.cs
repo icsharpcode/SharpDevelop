@@ -86,6 +86,7 @@ namespace ICSharpCode.XamlBinding
 
 		void ParseInformationUpdated(object sender, ICSharpCode.SharpDevelop.Parser.ParseInformationEventArgs e)
 		{
+			if (!e.FileName.Equals(textView.Document.FileName)) return;
 			ITextMarkerService markerService = textView.GetService<ITextMarkerService>();
 			if (markerService == null) return;
 			markerService.RemoveAll(m => m.Tag is Error);
