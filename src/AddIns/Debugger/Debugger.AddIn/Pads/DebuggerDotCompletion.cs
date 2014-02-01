@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -31,6 +32,13 @@ namespace Debugger.AddIn.Pads.Controls
 {
 	static class DebuggerDotCompletion
 	{
+		public static bool CheckSyntax(string expression)
+		{
+			var p = new CSharpParser();
+			p.ParseExpression(expression);
+			return !p.Errors.Any();
+		}
+		
 		public static ICodeCompletionBinding PrepareDotCompletion(string expressionToComplete, StackFrame context)
 		{
 			var seq = context.NextStatement;
@@ -42,6 +50,7 @@ namespace Debugger.AddIn.Pads.Controls
 			string content = GeneratePartialClassContextStub(fileName, currentLocation, context);
 			const string caretPoint = "$__Caret_Point__$;";
 			int caretOffset = content.IndexOf(caretPoint, StringComparison.Ordinal) + expressionToComplete.Length;
+			SD.Log.DebugFormatted("context used for dot completion: {0}", content.Replace(caretPoint, "$" + expressionToComplete + "|$"));
 			var doc = new ReadOnlyDocument(content.Replace(caretPoint, expressionToComplete));
 			return lang.CreateCompletionBinding(fileName, doc.GetLocation(caretOffset), doc.CreateSnapshot());
 		}
