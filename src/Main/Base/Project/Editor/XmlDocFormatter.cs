@@ -75,5 +75,17 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 			return b.CreateFlowDocument();
 		}
+		
+		public static FlowDocument CreateTooltip(ISymbol symbol)
+		{
+			var ambience = AmbienceService.GetCurrentAmbience();
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
+			string header = ambience.ConvertSymbol(symbol);
+			
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			DocumentationUIBuilder b = new DocumentationUIBuilder(ambience);
+			b.AddCodeBlock(header, keepLargeMargin: true);
+			return b.CreateFlowDocument();
+		}
 	}
 }

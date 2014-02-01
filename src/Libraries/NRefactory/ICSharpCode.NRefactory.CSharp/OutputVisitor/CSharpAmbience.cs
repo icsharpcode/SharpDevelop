@@ -96,6 +96,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				} else if (node is NamespaceDeclaration) {
 					writer.WriteKeyword(Roles.NamespaceKeyword, "namespace");
 					writer.Space();
+				} else  if (symbol is IParameter) {
+					writer.WriteKeyword(Roles.NamespaceKeyword, "parameter");
+					writer.Space();
+				} else if (symbol is IVariable) {
+					writer.WriteKeyword(Roles.NamespaceKeyword, "local variable");
+					writer.Space();
 				}
 			}
 			
