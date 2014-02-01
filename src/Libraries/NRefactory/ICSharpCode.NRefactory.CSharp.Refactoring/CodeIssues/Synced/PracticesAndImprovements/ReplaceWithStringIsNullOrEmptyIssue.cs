@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				new Choice {
 					PatternHelper.CommutativeOperatorWithOptionalParentheses (new Backreference ("str"), BinaryOperatorType.Equality, new PrimitiveExpression ("")),
 					PatternHelper.CommutativeOperatorWithOptionalParentheses (new Backreference ("str"), BinaryOperatorType.Equality,
-				                                       new MemberReferenceExpression(new PrimitiveType("string"), "Empty")),
+				                                       new PrimitiveType("string").Member("Empty")),
 					PatternHelper.CommutativeOperatorWithOptionalParentheses (
 						new MemberReferenceExpression (new Backreference ("str"), "Length"),
 						BinaryOperatorType.Equality,
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				new Choice {
 					PatternHelper.CommutativeOperatorWithOptionalParentheses (new AnyNode ("str"), BinaryOperatorType.Equality, new PrimitiveExpression ("")),
 					PatternHelper.CommutativeOperatorWithOptionalParentheses (new AnyNode ("str"), BinaryOperatorType.Equality,
-				                                       new MemberReferenceExpression(new PrimitiveType("string"), "Empty"))
+				                                       new PrimitiveType("string").Member("Empty"))
 				},
 				BinaryOperatorType.ConditionalOr,
 				PatternHelper.CommutativeOperator(new Backreference ("str"), BinaryOperatorType.Equality, new NullReferenceExpression ())
@@ -80,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				new Choice {
 					PatternHelper.CommutativeOperatorWithOptionalParentheses (new Backreference ("str"), BinaryOperatorType.InEquality, new PrimitiveExpression ("")),
 					PatternHelper.CommutativeOperatorWithOptionalParentheses (new Backreference ("str"), BinaryOperatorType.InEquality,
-				                                   	   new MemberReferenceExpression(new PrimitiveType("string"), "Empty")),
+				                                   	   new PrimitiveType("string").Member("Empty")),
 					PatternHelper.CommutativeOperatorWithOptionalParentheses (
 						new MemberReferenceExpression (new Backreference ("str"), "Length"),
 						BinaryOperatorType.InEquality,
@@ -98,7 +98,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				new Choice {
 					PatternHelper.CommutativeOperatorWithOptionalParentheses (new AnyNode ("str"), BinaryOperatorType.InEquality, new PrimitiveExpression ("")),
 					PatternHelper.CommutativeOperatorWithOptionalParentheses (new AnyNode ("str"), BinaryOperatorType.Equality,
-				                                   	   new MemberReferenceExpression(new PrimitiveType("string"), "Empty"))
+				                                   	   new PrimitiveType("string").Member("Empty"))
 				},
 				BinaryOperatorType.ConditionalAnd,
 				PatternHelper.CommutativeOperatorWithOptionalParentheses(new Backreference ("str"), BinaryOperatorType.InEquality, new NullReferenceExpression ())

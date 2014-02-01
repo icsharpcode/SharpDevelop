@@ -27,14 +27,14 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ImageViewer
 {
 	public class ImageViewerDisplayBinding : IDisplayBinding
 	{
-		public bool CanCreateContentForFile(string fileName) {
+		public bool CanCreateContentForFile(FileName fileName) {
 			return true;
 		}
 		
@@ -43,12 +43,12 @@ namespace ImageViewer
 			return vc;
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return true;
 		}
 		
-		public double AutoDetectFileContent(string fileName, System.IO.Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, System.IO.Stream fileContent, string detectedMimeType)
 		{
 			return 0;
 		}

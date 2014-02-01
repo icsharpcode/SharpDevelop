@@ -32,14 +32,17 @@ namespace ICSharpCode.NRefactory.Demo
 	/// </summary>
 	public partial class SemanticTreeDialog : Form
 	{
-		public SemanticTreeDialog(ResolveResult rr)
+		public SemanticTreeDialog()
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			
-			var rootNode = MakeObjectNode("Resolve() = ", rr);
+		}
+		
+		public void AddRoot(string prefix, object obj)
+		{
+			var rootNode = MakeObjectNode(prefix, obj);
 			rootNode.Expand();
 			treeView.Nodes.Add(rootNode);
 		}

@@ -389,13 +389,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return null;
 		}
 
-		internal static readonly string[] FormatItemMethods = {
-			"System.String.Format",
-			"System.Console.Write",
-			"System.Console.WriteLine",
-			"System.IO.StringWriter.Write",
-			"System.IO.StringWriter.WriteLine"
-		};
 		static readonly DateTime curDate = DateTime.Now;
 
 		IEnumerable<ICompletionData> GenerateNumberFormatitems(bool isFloatingPoint)
@@ -553,11 +546,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return Enumerable.Empty<ICompletionData>();
 
 			var resolveResult = ResolveExpression(new ExpressionResult(invoke, unit));
-			var invokeResult = resolveResult.Result as InvocationResolveResult;
+			var invokeResult = resolveResult.Result as CSharpInvocationResolveResult;
 			if (invokeResult == null)
 				return Enumerable.Empty<ICompletionData>();
 
-			if (FormatItemMethods.Contains(invokeResult.Member.FullName)) {
+			Expression fmtArgumets;
+			IList<Expression> args;
+			if (FormatStringHelper.TryGetFormattingParameters(invokeResult, invoke, out fmtArgumets, out args, null)) {
 				return GenerateNumberFormatitems(false)
 					.Concat(GenerateDateTimeFormatitems())
 					.Concat(GenerateTimeSpanFormatitems())
@@ -1016,6 +1011,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (identifierStart.Node is AstType && identifierStart.Node.Parent is CatchClause) {
 							return HandleCatchClauseType(identifierStart);
 						}
+
+						var pDecl = identifierStart.Node as ParameterDeclaration;
+						if (pDecl != null && pDecl.Parent is LambdaExpression) {
+							return null;
+						}
 					}
 
 
@@ -1072,13 +1072,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					// Handle foreach (type name _
 					if (n is IdentifierExpression) {
 						var prev = n.GetPrevNode() as ForeachStatement;
+						while (prev != null && prev.EmbeddedStatement is ForeachStatement)
+							prev = (ForeachStatement)prev.EmbeddedStatement;
 						if (prev != null && prev.InExpression.IsNull) {
-							if (controlSpace) {
-								if (IncludeKeywordsInCompletionList)
-									contextList.AddCustom("in");
-								return contextList.Result;
-							}
-							return null;
+							if (IncludeKeywordsInCompletionList)
+								contextList.AddCustom("in");
+							return contextList.Result;
 						}
 					}
 					// Handle object/enumerable initialzer expressions: "new O () { P$"
@@ -1540,7 +1539,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			ifvisitor.End();
 			if (!ifvisitor.IsValid)
 				return null;
-
 			// namespace name case
 			var ns = node as NamespaceDeclaration;
 			if (ns != null) {
@@ -2611,7 +2609,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return true;
 		}
 
-		string AddDelegateHandlers(CompletionDataWrapper completionList, IType delegateType, bool addSemicolon = true, bool addDefault = true)
+		string AddDelegateHandlers(CompletionDataWrapper completionList, IType delegateType, bool addSemicolon = true, bool addDefault = true, string optDelegateName = null)
 		{
 			IMethod delegateMethod = delegateType.GetDelegateInvokeMethod();
 			PossibleDelegates.Add(delegateMethod);
@@ -2642,6 +2640,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var builder = new TypeSystemAstBuilder(state);
 
 			for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
+
 				if (k > 0) {
 					sb.Append(", ");
 					sbWithoutTypes.Append(", ");
@@ -2702,6 +2701,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 
 			}
+
+			string varName = "Handle" + delegateType.Name + optDelegateName;
+			completionList.Add(factory.CreateEventCreationCompletionData(varName, delegateType, null, signature, currentMember, currentType));
+
+
 			/*			 TODO:Make factory method out of it.
 			// It's  needed to temporarly disable inserting auto matching bracket because the anonymous delegates are selectable with '('
 			// otherwise we would end up with () => )
@@ -2867,9 +2871,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolvedType.Kind == TypeKind.Delegate) {
 				if (addedDelegates.Contains(resolvedType.ReflectionName))
 					return;
-				string parameterDefinition = AddDelegateHandlers(result, resolvedType, false);
-				string varName = "Handle" + method.Parameters [parameter].Type.Name + method.Parameters [parameter].Name;
-				result.Result.Add(factory.CreateEventCreationCompletionData(varName, resolvedType, null, parameterDefinition, currentMember, currentType));
+				AddDelegateHandlers(result, resolvedType, false, true, method.Parameters [parameter].Name);
 			}
 		}
 
@@ -3235,7 +3237,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						} else {
 							tref = baseUnit.GetNodeAt<Expression>(location); 
 							if (tref == null) {
-								tref = memberType.Clone();
+								tref = new TypeReferenceExpression(memberType.Clone());
 								memberType.Parent.AddChild(tref, Roles.Expression);
 							}
 							if (tref is ObjectCreateExpression) {
@@ -3385,7 +3387,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 			// try lambda 
 			if (expr == null) {
-				baseUnit = ParseStub(") => {}", false);
+				baseUnit = ParseStub("foo) => {}", false);
 				expr = baseUnit.GetNodeAt<ParameterDeclaration>(
 					location.Line,
 					location.Column

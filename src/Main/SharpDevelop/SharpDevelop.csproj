@@ -108,6 +108,7 @@
     </Compile>
     <Compile Include="Dom\AssemblyReferenceModel.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserPad.cs" />
+    <Compile Include="Dom\ClassBrowser\ClassBrowserServiceImpl.cs" />
     <Compile Include="Dom\ClassBrowser\ClassBrowserTreeNodesFactory.cs" />
     <Compile Include="Dom\ClassBrowser\Commands.cs" />
     <Compile Include="Dom\ClassBrowser\OpenFromGacDialog.xaml.cs">
@@ -211,6 +212,7 @@
     <Compile Include="Workbench\FullScreenEnabledWindow.cs" />
     <Compile Include="Workbench\IWorkbenchLayout.cs" />
     <Compile Include="Workbench\LayoutConfiguration.cs" />
+    <Compile Include="Workbench\PadServiceProvider.cs" />
     <Compile Include="Workbench\RecentOpen.cs" />
     <Compile Include="Workbench\SDStatusBar.cs" />
     <Compile Include="Workbench\ShutdownService.cs" />
@@ -327,6 +329,7 @@
     <Folder Include="Dom\ClassBrowser" />
     <Folder Include="Editor" />
     <Folder Include="Editor\Bookmarks" />
+    <Folder Include="..\Base\Project\Project\TargetFrameworks" />
     <Folder Include="Templates" />
     <Folder Include="Project" />
     <Folder Include="Project\Build" />

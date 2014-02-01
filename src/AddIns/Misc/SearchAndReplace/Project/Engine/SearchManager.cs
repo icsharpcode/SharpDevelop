@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -28,6 +43,14 @@ namespace SearchAndReplace
 	public class SearchManager
 	{
 		#region FindAll
+		/// <summary>
+		/// Prepares a parallel search operation.
+		/// </summary>
+		/// <param name="strategy">The search strategy. Contains the search term and options.</param>
+		/// <param name="location">The location to search in.</param>
+		/// <param name="progressMonitor">The progress monitor used to report progress.
+		/// The parallel search operation will take ownership of this monitor: the monitor is disposed when the search finishes!</param>
+		/// <returns>Observable that starts performing the search when subscribed to. Does not support more than one subscriber!</returns>
 		public static IObservable<SearchedFile> FindAllParallel(ISearchStrategy strategy, SearchLocation location, IProgressMonitor progressMonitor)
 		{
 			currentSearchRegion = null;
@@ -122,7 +145,7 @@ namespace SearchAndReplace
 							observer.OnError(t.Exception);
 						else
 							observer.OnCompleted();
-						this.Dispose();
+						monitor.Dispose();
 					});
 				return this;
 			}
@@ -181,8 +204,9 @@ namespace SearchAndReplace
 			
 			public void Dispose()
 			{
+				// Warning: Dispose() may be called concurrently while the operation is still in progress.
+				// We cannot dispose the progress monitor here because it is still in use by the search operation.
 				cts.Cancel();
-				monitor.Dispose();
 			}
 			
 			SearchedFile SearchFile(FileName fileName)
@@ -509,6 +533,12 @@ namespace SearchAndReplace
 				&& result.Length == editor.SelectionLength;
 		}
 		
+		/// <summary>
+		/// Shows searchs results in the search results pad, and brings that pad to front.
+		/// </summary>
+		/// <param name="pattern">The pattern that is being searched for; used for the title of the search in the list of past searched.</param>
+		/// <param name="results">An observable that represents a background search operation.
+		/// The search results pad will subscribe to this observable in order to receive the search results.</param>
 		public static void ShowSearchResults(string pattern, IObservable<SearchedFile> results)
 		{
 			string title = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",

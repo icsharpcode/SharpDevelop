@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -167,7 +182,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 					config["SupportedTargetFrameworks"].InnerText.Split(';')
 					.Select<string,TargetFramework>(TargetFramework.GetByName).ToArray();
 				
-				supportedTargetFrameworks = TargetFramework.TargetFrameworks.Where(fx => specifiedTargetFrameworks.Any(s => fx.IsBasedOn(s))).ToArray();
+				supportedTargetFrameworks = SD.ProjectService.TargetFrameworks.Where(fx => specifiedTargetFrameworks.Any(s => fx.IsBasedOn(s))).ToArray();
 			} else {
 				supportedTargetFrameworks = new TargetFramework[0];
 			}
@@ -266,10 +281,8 @@ namespace ICSharpCode.SharpDevelop.Templates
 					return null;
 			}
 			if (projectDescriptor != null) {
-				IProject project = projectDescriptor.CreateProject(result, languagename);
-				if (project != null) {
-					options.SolutionFolder.Items.Add(project);
-				} else {
+				bool success = projectDescriptor.CreateProject(result, languagename, options.SolutionFolder);
+				if (!success) {
 					return null;
 				}
 			}

@@ -3,28 +3,34 @@
 http://community.sharpdevelop.net/forums/
 
 
+++ ISSUE TRACKER ++
+
+https://github.com/icsharpcode/SharpDevelop/issues
+
+
 ++ WIKI ++
 
-http://wiki.sharpdevelop.net/ (HOME)
-http://wiki.sharpdevelop.net/SharpDevelopSites.ashx (sites and servers)
-http://wiki.sharpdevelop.net/ScreenRecordingsForDevelopers.ashx
+https://github.com/icsharpcode/SharpDevelop/wiki (HOME)
+https://github.com/icsharpcode/SharpDevelop/wiki/AddIn-Writing-Help
+https://github.com/icsharpcode/SharpDevelop/wiki/Sites (sites and servers)
+https://github.com/icsharpcode/SharpDevelop/wiki/ScreenRecordingsForDevelopers
 
 
 ++ ROADMAPS ++
 
-http://wiki.sharpdevelop.net/RoadmapVersion3x.ashx
-http://wiki.sharpdevelop.net/RoadmapVersion4x.ashx
+https://github.com/icsharpcode/SharpDevelop/wiki/RoadmapVersion4x
+https://github.com/icsharpcode/SharpDevelop/wiki/RoadmapVersion5x
 
 
 ++ HELPING ++
 
-http://wiki.sharpdevelop.net/JoiningTheTeam.ashx
-http://wiki.sharpdevelop.net/FeaturesWeSolicitHelpFor.ashx
+https://github.com/icsharpcode/SharpDevelop/wiki/Joining-the-Team
+https://github.com/icsharpcode/SharpDevelop/wiki/Features-you-could-help-us-with
 
 
 ++ WISH LIST ++
 
-http://wiki.sharpdevelop.net/Wishlist.ashx
+https://github.com/icsharpcode/SharpDevelop/wiki/Wish-List
 
 ++ TECH NOTES ++
 https://www.github.com/icsharpcode/SharpDevelop/tree/master/doc/technotes/

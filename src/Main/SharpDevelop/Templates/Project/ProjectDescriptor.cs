@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -64,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 		/// Creates a project descriptor for the project node specified by the xml element.
 		/// </summary>
 		/// <param name="element">The &lt;Project&gt; node of the xml template file.</param>
-		/// <param name="hintPath">The directory on which relative paths (e.g. for referenced files) are based.</param>
+		/// <param name="fileSystem">The file system from which referenced files are loaded. Use a ChrootFileSystem to specify the base directory for relative paths.</param>
 		public ProjectDescriptor(XmlElement element, IReadOnlyFileSystem fileSystem)
 		{
 			if (element == null)
@@ -267,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 		
 		#region Create new project from template
 		//Show prompt, create files from template, create project, execute command, save project
-		public IProject CreateProject(ProjectTemplateResult templateResults, string defaultLanguage)
+		public bool CreateProject(ProjectTemplateResult templateResults, string defaultLanguage, ISolutionFolder target)
 		{
 			var projectCreateOptions = templateResults.Options;
 			var parentSolution = templateResults.Options.Solution;
@@ -276,26 +291,25 @@ namespace ICSharpCode.SharpDevelop.Templates
 			try
 			{
 				string language = string.IsNullOrEmpty(languageName) ? defaultLanguage : languageName;
-				ProjectBindingDescriptor descriptor = ProjectBindingService.GetCodonPerLanguageName(language);
+				ProjectBindingDescriptor descriptor = SD.ProjectService.ProjectBindings.FirstOrDefault(b => b.Language == language);
 				IProjectBinding languageinfo = (descriptor != null) ? descriptor.Binding : null;
 				
 				if (languageinfo == null) {
 					MessageService.ShowError(
 						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.CantCreateProjectWithTypeError}",
 						                   new StringTagPair("type", language)));
-					return null;
+					return false;
 				}
 				
 				DirectoryName projectBasePath = projectCreateOptions.ProjectBasePath;
 				string newProjectName = StringParser.Parse(name, new StringTagPair("ProjectName", projectCreateOptions.ProjectName));
 				Directory.CreateDirectory(projectBasePath);
-				FileName projectLocation = FileName.Create(Path.Combine(projectBasePath,
-				                                                        newProjectName + ProjectBindingService.GetProjectFileExtension(language)));
+				FileName projectLocation = projectBasePath.CombineFile(newProjectName + descriptor.ProjectFileExtension);
 				ProjectCreateInformation info = new ProjectCreateInformation(parentSolution, projectLocation);
 				
 				StringBuilder standardNamespace = new StringBuilder();
 				// filter 'illegal' chars from standard namespace
-				if (newProjectName != null && newProjectName.Length > 0) {
+				if (!string.IsNullOrEmpty(newProjectName)) {
 					char ch = '.';
 					for (int i = 0; i < newProjectName.Length; ++i) {
 						if (ch == '.') {
@@ -318,7 +332,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 					}
 				}
 				
-				info.TypeGuid = descriptor.Guid;
+				info.TypeGuid = descriptor.TypeGuid;
 				info.RootNamespace = standardNamespace.ToString();
 				info.ProjectName = newProjectName;
 				if (!string.IsNullOrEmpty(defaultPlatform))
@@ -336,7 +350,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 						                   new StringTagPair("projectLocation", projectLocation)),
 						"${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}"))
 					{
-						return null; //The user doesnt want to overwrite the project...
+						return false; //The user doesnt want to overwrite the project...
 					}
 				}
 				
@@ -409,10 +423,11 @@ namespace ICSharpCode.SharpDevelop.Templates
 				
 				#region Create Project
 				try {
+					info.InitializeTypeSystem = false;
 					project = languageinfo.CreateProject(info);
 				} catch (ProjectLoadException ex) {
 					MessageService.ShowError(ex.Message);
-					return null;
+					return false;
 				}
 				#endregion
 				
@@ -512,11 +527,18 @@ namespace ICSharpCode.SharpDevelop.Templates
 				// Save project
 				project.Save();
 				
+				// HACK : close and reload
+				var fn = project.FileName;
+				project.Dispose();
+				ProjectLoadInformation loadInfo = new ProjectLoadInformation(parentSolution, fn, fn.GetFileNameWithoutExtension());
+				project = SD.ProjectService.LoadProject(loadInfo);
+				target.Items.Add(project);
+				project.ProjectLoaded();
 				
 				SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectCreated(new ProjectEventArgs(project));
 				templateResults.NewProjects.Add(project);
 				success = true;
-				return project;
+				return true;
 			} finally {
 				if (project != null && !success)
 					project.Dispose();

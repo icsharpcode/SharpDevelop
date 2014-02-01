@@ -152,6 +152,7 @@
     <Compile Include="TypeSystem\Implementation\UnresolvedAttributeBlob.cs" />
     <Compile Include="TypeSystem\Implementation\UnresolvedSecurityDeclarationBlob.cs" />
     <Compile Include="TypeSystem\ISymbol.cs" />
+    <Compile Include="TypeSystem\TaskType.cs" />
     <Compile Include="TypeSystem\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\TypeSystemExtensions.cs" />
     <Compile Include="TypeSystem\FullTypeName.cs" />

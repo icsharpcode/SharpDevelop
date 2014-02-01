@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -214,8 +229,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 					return new ProjectEntry(parentProject, parseInfo.UnresolvedFile, parseInfo);
 				} else {
 					if (versionComparison == 0 && index >= 0) {
+						// Ensure we have parse info for the specified project (entry.UnresolvedFile is null for newly registered projects)
 						// If full parse info is requested, ensure we have full parse info.
-						if (!(fullParseInformationRequested && entries[index].CachedParseInformation == null)) {
+						if (entries[index].UnresolvedFile != null && !(fullParseInformationRequested && entries[index].CachedParseInformation == null)) {
 							// We already have the requested version parsed, just return it:
 							return entries[index];
 						}
@@ -271,6 +287,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#region ParseAsync
 		Task<ProjectEntry> runningAsyncParseTask;
 		ITextSourceVersion runningAsyncParseFileContentVersion;
+		IProject runningAsyncParseProject;
 		bool runningAsyncParseFullInfoRequested;
 		
 		public async Task<ParseInformation> ParseAsync(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
@@ -312,8 +329,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 					int index = FindIndexForProject(parentProject);
 					int versionComparison = CompareVersions(fileContent.Version);
 					if (versionComparison == 0 && index >= 0) {
+						// Ensure we have parse info for the specified project (entry.UnresolvedFile is null for newly registered projects)
 						// If full parse info is requested, ensure we have full parse info.
-						if (!(requestFullParseInformation && entries[index].CachedParseInformation == null)) {
+						if (entries[index].UnresolvedFile != null && !(requestFullParseInformation && entries[index].CachedParseInformation == null)) {
 							// We already have the requested version parsed, just return it:
 							return Task.FromResult(entries[index]);
 						}
@@ -321,6 +339,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					// Optimization:
 					// if an equivalent task is already running, return that one instead
 					if (runningAsyncParseTask != null && (!requestFullParseInformation || runningAsyncParseFullInfoRequested)
+					    && runningAsyncParseProject == parentProject
 					    && runningAsyncParseFileContentVersion.BelongsToSameDocumentAs(fileContent.Version)
 					    && runningAsyncParseFileContentVersion.CompareAge(fileContent.Version) == 0)
 					{
@@ -338,12 +357,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 							lock (this) {
 								runningAsyncParseTask = null;
 								runningAsyncParseFileContentVersion = null;
+								runningAsyncParseProject = null;
 							}
 						}
 					}, cancellationToken);
 				if (fileContent != null && fileContent.Version != null && !cancellationToken.CanBeCanceled) {
 					runningAsyncParseTask = task;
 					runningAsyncParseFileContentVersion = fileContent.Version;
+					runningAsyncParseProject = parentProject;
 					runningAsyncParseFullInfoRequested = requestFullParseInformation;
 				}
 			}

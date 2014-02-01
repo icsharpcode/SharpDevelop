@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				undoGroup.Dispose();
 		}
 		
-		public override void Remove(AstNode node, bool removeEmptyLine)
+		public override void Remove(AstNode node, bool removeEmptyLine = true)
 		{
 			var segment = GetSegment (node);
 			int startOffset = segment.Offset;

@@ -88,8 +88,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						continue;
 					var variable = fieldDeclaration.Variables.First();
 					var rr = ctx.Resolve(fieldDeclaration.ReturnType);
-					if ((rr.Type.IsReferenceType.HasValue && !rr.Type.IsReferenceType.Value) && (ctx.Resolve (variable.Initializer) is ConstantResolveResult))
-						continue;
+					if (rr.Type.IsReferenceType == false) {
+						// Value type:
+						var def = rr.Type.GetDefinition();
+						if (def != null && def.KnownTypeCode == KnownTypeCode.None) {
+							// user-defined value type -- might be mutable
+							continue;
+						} else if (ctx.Resolve (variable.Initializer) is ConstantResolveResult) {
+							// handled by ConvertToConstantIssue
+							continue;
+						}
+					}
 
 					var mr = ctx.Resolve(variable) as MemberResolveResult;
 					if (mr == null)

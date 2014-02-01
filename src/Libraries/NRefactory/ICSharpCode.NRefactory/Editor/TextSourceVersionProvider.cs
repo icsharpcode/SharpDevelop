@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ICSharpCode.NRefactory.Editor
@@ -54,6 +55,7 @@ namespace ICSharpCode.NRefactory.Editor
 			currentVersion = currentVersion.next;
 		}
 		
+		[DebuggerDisplay("Version #{id}")]
 		sealed class Version : ITextSourceVersion
 		{
 			// Reference back to the provider.

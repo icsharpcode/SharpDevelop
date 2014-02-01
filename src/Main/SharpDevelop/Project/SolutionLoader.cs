@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -74,6 +89,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				solutionEntries.Add(information);
 				if (projectInfoDict.ContainsKey(information.IdGuid)) {
 					// resolve GUID conflicts
+					SD.Log.WarnFormatted("Detected duplicate GUID in .sln file: {0} is used for {1} and {2}", information.IdGuid, information.ProjectName, projectInfoDict[information.IdGuid].ProjectName);
 					information.IdGuid = Guid.NewGuid();
 					fixedGuidConflicts = true;
 				}
@@ -131,22 +147,41 @@ namespace ICSharpCode.SharpDevelop.Project
 			// Now that the project configurations have been set, we can actually load the projects:
 			int projectsLoaded = 0;
 			foreach (var projectInfo in solutionEntries) {
+				// Make copy of IdGuid just in case the project binding writes to projectInfo.IdGuid
+				Guid idGuid = projectInfo.IdGuid;
 				ISolutionItem solutionItem;
 				if (projectInfo.TypeGuid == ProjectTypeGuids.SolutionFolder) {
-					solutionItem = solutionFolderDict[projectInfo.IdGuid];
+					solutionItem = solutionFolderDict[idGuid];
 				} else {
 					// Load project:
 					projectInfo.ActiveProjectConfiguration = projectInfo.ConfigurationMapping.GetProjectConfiguration(solution.ActiveConfiguration);
 					progress.TaskName = "Loading " + projectInfo.ProjectName;
 					using (projectInfo.ProgressMonitor = progress.CreateSubTask(1.0 / projectCount)) {
-						solutionItem = ProjectBindingService.LoadProject(projectInfo);
+						solutionItem = LoadProjectWithErrorHandling(projectInfo);
+					}
+					if (solutionItem.IdGuid != idGuid) {
+						Guid projectFileGuid = solutionItem.IdGuid;
+						if (!projectInfoDict.ContainsKey(projectFileGuid)) {
+							// We'll use the GUID from the project file.
+							// Register that GUID in the dictionary to avoid its use by multiple projects.
+							projectInfoDict.Add(projectFileGuid, projectInfo);
+						} else {
+							// Cannot use GUID from project file due to conflict.
+							// To fix the problem without potentially introducing new conflicts in other .sln files that contain the project,
+							// we generate a brand new GUID:
+							solutionItem.IdGuid = Guid.NewGuid();
+						}
+						SD.Log.WarnFormatted("<ProjectGuid> in project '{0}' is '{1}' and does not match the GUID stored in the solution ({2}). "
+						                     + "The conflict was resolved using the GUID {3}",
+						                     projectInfo.ProjectName, projectFileGuid, idGuid, solutionItem.IdGuid);
+						fixedGuidConflicts = true;
 					}
 					projectsLoaded++;
 					progress.Progress = (double)projectsLoaded / projectCount;
 				}
 				// Add solutionItem to solution:
 				SolutionFolder folder;
-				if (guidToParentFolderDict != null && guidToParentFolderDict.TryGetValue(projectInfo.IdGuid, out folder)) {
+				if (guidToParentFolderDict != null && guidToParentFolderDict.TryGetValue(idGuid, out folder)) {
 					folder.Items.Add(solutionItem);
 				} else {
 					solution.Items.Add(solutionItem);
@@ -154,6 +189,24 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			solution.IsDirty = fixedGuidConflicts; // reset IsDirty=false unless we've fixed GUID conflicts
+		}
+
+		static IProject LoadProjectWithErrorHandling(ProjectLoadInformation projectInfo)
+		{
+			Exception exception;
+			try {
+				return SD.ProjectService.LoadProject(projectInfo);
+			} catch (FileNotFoundException) {
+				return new MissingProject(projectInfo);
+			} catch (ProjectLoadException ex) {
+				exception = ex;
+			} catch (IOException ex) {
+				exception = ex;
+			} catch (UnauthorizedAccessException ex) {
+				exception = ex;
+			}
+			LoggingService.Warn("Project load error", exception);
+			return new UnknownProject(projectInfo, exception.Message);
 		}
 		#endregion
 		

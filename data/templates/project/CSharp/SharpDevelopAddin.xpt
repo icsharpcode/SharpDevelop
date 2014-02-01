@@ -40,6 +40,10 @@
        url         = ""
        description = "TODO: Put description here">
 	
+	<Manifest>
+        <Identity name="${ProjectName}" />
+    </Manifest>
+	
 	<Runtime>
 		<Import assembly = "${ProjectName}.dll"/>
 	</Runtime>
@@ -50,6 +54,22 @@
 	</Path>
 	-->
 </AddIn>
+]]></File>
+			<File name="${ProjectName}.nuspec"><![CDATA[<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>${ProjectName}</id>
+    <version>1.0.0.0</version>
+    <authors>${USER}</authors>
+    <owners>${USER}</owners>
+    <projectUrl>TODO Put project web URL here</projectUrl>
+    <description>TODO: Put description here</description>
+    <tags>TODO: Put tags here</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\${ProjectName}.addin" target="" />
+  </files>
+</package>
 ]]></File>
 			<File name="Configuration/AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
 			<File name="AddInWritingHelp.txt" src="..\AddInWritingHelp.txt"/>

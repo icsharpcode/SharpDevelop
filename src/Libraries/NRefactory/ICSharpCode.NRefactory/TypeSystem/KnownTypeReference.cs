@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// </summary>
 	public enum KnownTypeCode
 	{
-		// Note: DefaultResolvedTypeDefinition uses (KnownTypeCode)-1 as special value for "not yet calculated"
+		// Note: DefaultResolvedTypeDefinition uses (KnownTypeCode)-1 as special value for "not yet calculated".
 		// The order of type codes at the beginning must correspond to those in System.TypeCode.
 		
 		/// <summary>

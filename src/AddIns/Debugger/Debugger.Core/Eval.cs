@@ -1,10 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Debugger.MetaData;
 using Debugger.Interop.CorDebug;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -231,7 +247,7 @@ namespace Debugger
 				    arg.Type.GetDefinition() != null &&
 				    paramType.GetDefinition() != null &&
 				    !arg.Type.GetDefinition().IsDerivedFrom(paramType.GetDefinition())) {
-					throw new GetValueException("Inncorrect parameter type. Expected " + paramType.ToString());
+					throw new GetValueException("Incorrect parameter type. Expected " + paramType.ToString());
 				}
 				// It is importatnt to pass the parameter in the correct form (boxed/unboxed)
 				if (paramType.IsReferenceType == true) {
@@ -354,6 +370,98 @@ namespace Debugger
 				valuesAsCorDebug[i] = values[i].CorValue;
 			}
 			return valuesAsCorDebug;
+		}
+		
+		public static Value TypeOf(Thread evalThread, IType type)
+		{
+			switch (type.Kind) {
+				case TypeKind.Unknown:
+					throw new GetValueException("Cannot find type '{0}'", type.FullName);
+				case TypeKind.Class:
+				case TypeKind.Interface:
+				case TypeKind.Struct:
+				case TypeKind.Delegate:
+				case TypeKind.Enum:
+				case TypeKind.Module:
+				case TypeKind.Void:
+					return ConvertTypeDefOrParameterizedType(evalThread, type);
+				case TypeKind.Array:
+					{
+						var arrayType = (ArrayType)type;
+						var elementType = TypeOf(evalThread, arrayType.ElementType);
+						return InvokeMakeArrayType(evalThread, elementType, arrayType.Dimensions);
+					}
+				case TypeKind.Pointer:
+					{
+						var pointerType = (TypeWithElementType)type;
+						var elementType = TypeOf(evalThread, pointerType.ElementType);
+						return InvokeMakePointerType(evalThread, elementType);
+					}
+				case TypeKind.ByReference:
+					{
+						var pointerType = (TypeWithElementType)type;
+						var elementType = TypeOf(evalThread, pointerType.ElementType);
+						return InvokeMakeByRefType(evalThread, elementType);
+					}
+				default:
+					throw new System.Exception("Invalid value for TypeKind: " + type.Kind);
+			}
+		}
+		
+		static Value ConvertTypeDefOrParameterizedType(Thread evalThread, IType type)
+		{
+			var definition = type.GetDefinition();
+			if (definition == null)
+				throw new GetValueException("Cannot find type '{0}'", type.FullName);
+			var foundType = InvokeGetType(evalThread, new AssemblyQualifiedTypeName(definition));
+			ParameterizedType pt = type as ParameterizedType;
+			if (pt != null) {
+				var typeParams = new List<Value>();
+				foreach (var typeArg in pt.TypeArguments) {
+					typeParams.Add(TypeOf(evalThread, typeArg));
+				}
+				return InvokeMakeGenericType(evalThread, foundType, typeParams.ToArray());
+			}
+			return foundType;
+		}
+		
+		static Value InvokeGetType(Thread evalThread, AssemblyQualifiedTypeName name)
+		{
+			var sysType = evalThread.AppDomain.Compilation.FindType(KnownTypeCode.Type);
+			var getType = sysType.GetMethods(m => m.Name == "GetType" && m.Parameters.Count == 2).FirstOrDefault();
+			return InvokeMethod(evalThread, getType, null, new[] { NewString(evalThread, name.ToString()), CreateValue(evalThread, false) });
+		}
+		
+		static Value InvokeMakeArrayType(Thread evalThread, Value type, int rank = 1)
+		{
+			var sysType = evalThread.AppDomain.Compilation.FindType(KnownTypeCode.Type);
+			var makeArrayType = sysType.GetMethods(m => m.Name == "MakeArrayType" && m.Parameters.Count == 1).FirstOrDefault();
+			return InvokeMethod(evalThread, makeArrayType, type, new[] { CreateValue(evalThread, rank) });
+		}
+		
+		static Value InvokeMakePointerType(Thread evalThread, Value type)
+		{
+			var sysType = evalThread.AppDomain.Compilation.FindType(KnownTypeCode.Type);
+			var makePointerType = sysType.GetMethods(m => m.Name == "MakePointerType" && m.Parameters.Count == 0).FirstOrDefault();
+			return InvokeMethod(evalThread, makePointerType, type, new Value[0]);
+		}
+		
+		static Value InvokeMakeByRefType(Thread evalThread, Value type)
+		{
+			var sysType = evalThread.AppDomain.Compilation.FindType(KnownTypeCode.Type);
+			var makeByRefType = sysType.GetMethods(m => m.Name == "MakeByRefType" && m.Parameters.Count == 0).FirstOrDefault();
+			return InvokeMethod(evalThread, makeByRefType, type, new Value[0]);
+		}
+		
+		static Value InvokeMakeGenericType(Thread evalThread, Value type, Value[] typeParams)
+		{
+			var sysType = evalThread.AppDomain.Compilation.FindType(KnownTypeCode.Type);
+			var makeByRefType = sysType.GetMethods(m => m.Name == "MakeGenericType" && m.Parameters.Count == 1).FirstOrDefault();
+			var tp = Eval.NewArray(evalThread, sysType, (uint)typeParams.Length, 0);
+			for (int i = 0; i < typeParams.Length; i++) {
+				tp.SetArrayElement(evalThread, new[] { (uint)i }, typeParams[i]);
+			}
+			return InvokeMethod(evalThread, makeByRefType, type, new[] { tp });
 		}
 	}
 }

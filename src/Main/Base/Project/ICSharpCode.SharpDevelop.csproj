@@ -141,6 +141,7 @@
     <Compile Include="Editor\CodeCompletion\SnippetCompletionData.cs" />
     <Compile Include="Editor\ContextActions\ContextActionsPopupViewModel.cs" />
     <Compile Include="Editor\ContextActions\ContextActionViewModel.cs" />
+    <Compile Include="Editor\DocumentationUIBuilder.cs" />
     <Compile Include="Editor\DocumentServiceAttribute.cs" />
     <Compile Include="Editor\DocumentUtilities.cs" />
     <Compile Include="Editor\IBracketSearcher.cs" />
@@ -166,6 +167,7 @@
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor\ToolTipService.cs" />
+    <Compile Include="Editor\XmlDocFormatter.cs" />
     <Compile Include="Parser\CombinedAssemblySearcher.cs" />
     <Compile Include="Parser\DefaultAssemblySearcher.cs" />
     <Compile Include="Parser\DomAssemblyName.cs" />
@@ -195,14 +197,21 @@
     <Compile Include="Project\Configuration\IConfigurable.cs" />
     <Compile Include="Project\Configuration\ConfigurationMapping.cs" />
     <Compile Include="Project\Configuration\IConfigurationOrPlatformNameCollection.cs" />
+    <Compile Include="Project\IProjectBinding.cs" />
     <Compile Include="Project\IProjectService.cs" />
     <Compile Include="Project\ISolution.cs" />
     <Compile Include="Project\ISolutionFolder.cs" />
     <Compile Include="Project\ISolutionItem.cs" />
+    <Compile Include="Project\ProjectBindingDescriptor.cs" />
+    <Compile Include="Project\ProjectBindingDoozer.cs" />
     <Compile Include="Project\ProjectInformation.cs" />
     <Compile Include="Project\Project_TypeGuids.cs" />
     <Compile Include="Project\SolutionEventArgs.cs" />
     <Compile Include="Project\SolutionSection.cs" />
+    <Compile Include="Project\TargetFrameworks\DotNet2x.cs" />
+    <Compile Include="Project\TargetFrameworks\RedistLists.cs" />
+    <Compile Include="Project\TargetFrameworks\TargetFramework.cs" />
+    <Compile Include="Project\TargetFrameworks\DotNet4x.cs" />
     <Compile Include="Refactoring\CodeGenerator.cs" />
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IFileSystem.cs" />
@@ -329,6 +338,7 @@
     <Compile Include="Util\SimpleTaskScheduler.cs" />
     <Compile Include="Util\TreeNode.cs" />
     <Compile Include="Util\UnclosableStream.cs" />
+    <Compile Include="Util\Versions.cs" />
     <Compile Include="WinForms\IClipboardHandler.cs" />
     <Compile Include="WinForms\IContextHelpProvider.cs" />
     <Compile Include="WinForms\IPrintable.cs" />
@@ -558,7 +568,6 @@
     <Compile Include="Src\Project\ProjectLoadException.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Project\ProjectUpgradeException.cs" />
-    <Compile Include="Src\Project\TargetFramework.cs" />
     <Compile Include="Refactoring\ContextAction.cs" />
     <Compile Include="Refactoring\EditorRefactoringContext.cs" />
     <Compile Include="Refactoring\IContextAction.cs" />
@@ -584,16 +593,12 @@
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\RefactoringService\FindReferenceService.cs" />
     <Compile Include="Src\Services\RefactoringService\TypeGraphNode.cs" />
-    <Compile Include="Src\Services\RefactoringService\AssemblyQualifiedTypeName.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
     <Compile Include="Src\Services\Tasks\TagComment.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
     <Compile Include="Src\Services\Tasks\TaskService.cs" />
     <Compile Include="Src\Internal\ExternalTool\ToolLoader.cs" />
-    <Compile Include="Src\Services\ProjectBinding\IProjectBinding.cs" />
-    <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
-    <Compile Include="Src\Services\ProjectBinding\ProjectBindingDoozer.cs" />
     <Compile Include="Src\Services\Language\UILanguage.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />
@@ -723,7 +728,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\DefaultFileNodeCommands.cs" />
     <Compile Include="Src\Gui\Dialogs\ProjectOptionsView.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ToolbarCommands.cs" />
-    <Compile Include="Src\Services\ProjectBinding\ProjectBindingDescriptor.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IStringValueFilter.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\StringWrapper.cs" />
@@ -852,6 +856,7 @@
     <Folder Include="Designer" />
     <Folder Include="Dom\ClassBrowser" />
     <Folder Include="Editor\ContextActions" />
+    <Folder Include="Project\TargetFrameworks" />
     <Folder Include="Src\Editor\Dialogs" />
     <Folder Include="Templates" />
     <Folder Include="Project\Configuration" />
@@ -896,6 +901,12 @@
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
       <Project>{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}</Project>
       <Name>ICSharpCode.NRefactory.Cecil</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
+      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
+      <Name>ICSharpCode.NRefactory.Xml</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>

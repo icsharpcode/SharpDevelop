@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -335,99 +350,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		 */
-		
-		[Obsolete]
-		public static void ShowAsSearchResults(string title, List<SearchResultMatch> list)
-		{
-			if (list == null) return;
-			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
-			ReadOnlyDocument document = null;
-			ITextSource buffer = null;
-			FileName fileName = null;
-			IHighlighter highlighter = null;
-			foreach (SearchResultMatch r in list) {
-				if (document == null || fileName != r.FileName) {
-					if (highlighter != null) {
-						highlighter.Dispose();
-					}
-					fileName = r.FileName;
-					buffer = SD.FileService.GetFileContent(r.FileName);
-					document = new ReadOnlyDocument(buffer, r.FileName);
-					highlighter = SD.EditorControlService.CreateHighlighter(document);
-					highlighter.BeginHighlighting();
-				}
-				var start = r.StartLocation;
-				var end = r.EndLocation;
-				var startOffset = document.GetOffset(start);
-				var endOffset = document.GetOffset(end);
-				var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
-				var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
-				SearchResultMatch res = new SearchResultMatch(fileName, start, end, startOffset, endOffset - startOffset, builder, defaultTextColor);
-				results.Add(res);
-			}
-			if (highlighter != null) {
-				highlighter.Dispose();
-			}
-			SearchResultsPad.Instance.ShowSearchResults(title, results);
-			SearchResultsPad.Instance.BringToFront();
-		}
-		
-		/*
-		sealed class FileView {
-			public IViewContent ViewContent;
-			public OpenedFile OpenedFile;
-		}
-		
-		public static void RenameReferences(List<Reference> list, string newName)
-		{
-			Dictionary<IDocument, FileView> modifiedDocuments = new Dictionary<IDocument, FileView>();
-			List<Modification> modifications = new List<Modification>();
-			foreach (Reference r in list) {
-				IDocument document = null;
-				IViewContent viewContent = null;
-				
-				OpenedFile file = FileService.GetOpenedFile(r.FileName);
-				if (file != null) {
-					viewContent = file.CurrentView;
-					IFileDocumentProvider p = viewContent as IFileDocumentProvider;
-					if (p != null) {
-						document = p.GetDocumentForFile(file);
-					}
-				}
-				
-				if (document == null) {
-					viewContent = FileService.OpenFile(r.FileName, false);
-					IFileDocumentProvider p = viewContent as IFileDocumentProvider;
-					if (p != null) {
-						file = FileService.GetOpenedFile(r.FileName);
-						System.Diagnostics.Debug.Assert(file != null, "OpenedFile not found after opening the file.");
-						document = p.GetDocumentForFile(file);
-					}
-				}
-				
-				if (document == null) {
-					LoggingService.Warn("RenameReferences: Could not get document for file '" + r.FileName + "'");
-					continue;
-				}
-				
-				if (!modifiedDocuments.ContainsKey(document)) {
-					modifiedDocuments.Add(document, new FileView() {ViewContent = viewContent, OpenedFile = file});
-					document.StartUndoableAction();
-				}
-				
-				ModifyDocument(modifications, document, r.Offset, r.Length, newName);
-			}
-			foreach (KeyValuePair<IDocument, FileView> entry in modifiedDocuments) {
-				entry.Key.EndUndoableAction();
-				entry.Value.OpenedFile.MakeDirty();
-				if (entry.Value.ViewContent is IEditable) {
-					ParserService.ParseViewContent(entry.Value.ViewContent);
-				} else {
-					ParserService.ParseFile(entry.Value.OpenedFile.FileName, entry.Key);
-				}
-			}
-		}
-		 */
 
 		/* TODO: these are refactorings and don't belong here
 		public static void MoveClassToFile(IClass c, string newFileName)
@@ -544,4 +466,3 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#endregion
 	}
 }
-

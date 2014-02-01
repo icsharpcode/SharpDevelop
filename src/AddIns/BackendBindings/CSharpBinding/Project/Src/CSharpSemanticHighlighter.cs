@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -226,6 +241,9 @@ namespace CSharpBinding
 				
 				if (cachedLine != null && cachedLine.IsValid && newVersion.CompareAge(cachedLine.OldVersion) == 0) {
 					// the file hasn't changed since the cache was created, so just reuse the old highlighted line
+					#if DEBUG
+					cachedLine.HighlightedLine.ValidateInvariants();
+					#endif
 					return cachedLine.HighlightedLine;
 				}
 			}
@@ -256,13 +274,16 @@ namespace CSharpBinding
 			if (parseInfo == null) {
 				if (invalidLines != null && !invalidLines.Contains(documentLine)) {
 					invalidLines.Add(documentLine);
-					Debug.WriteLine("Semantic highlighting for line {0} - marking as invalid", lineNumber);
+					//Debug.WriteLine("Semantic highlighting for line {0} - marking as invalid", lineNumber);
 				}
 				
 				if (cachedLine != null) {
 					// If there's a cached version, adjust it to the latest document changes and return it.
 					// This avoids flickering when changing a line that contains semantic highlighting.
 					cachedLine.Update(newVersion);
+					#if DEBUG
+					cachedLine.HighlightedLine.ValidateInvariants();
+					#endif
 					return cachedLine.HighlightedLine;
 				} else {
 					return null;
@@ -294,6 +315,14 @@ namespace CSharpBinding
 			}
 			return line;
 		}
+		
+		#if DEBUG
+		public override void VisitSyntaxTree(ICSharpCode.NRefactory.CSharp.SyntaxTree syntaxTree)
+		{
+			base.VisitSyntaxTree(syntaxTree);
+			line.ValidateInvariants();
+		}
+		#endif
 		
 		HighlightingColor IHighlighter.DefaultTextColor {
 			get {
@@ -336,8 +365,13 @@ namespace CSharpBinding
 				return;
 			if (start.Line <= lineNumber && end.Line >= lineNumber) {
 				int lineStartOffset = line.DocumentLine.Offset;
+				int lineEndOffset = lineStartOffset + line.DocumentLine.Length;
 				int startOffset = lineStartOffset + (start.Line == lineNumber ? start.Column - 1 : 0);
 				int endOffset = lineStartOffset + (end.Line == lineNumber ? end.Column - 1 : line.DocumentLine.Length);
+				// For some parser errors, the mcs parser produces grossly wrong locations (e.g. miscounting the number of newlines),
+				// so we need to coerce the offsets to valid values within the line
+				startOffset = startOffset.CoerceValue(lineStartOffset, lineEndOffset);
+				endOffset = endOffset.CoerceValue(lineStartOffset, lineEndOffset);
 				if (line.Sections.Count > 0) {
 					HighlightedSection prevSection = line.Sections.Last();
 					if (startOffset < prevSection.Offset + prevSection.Length) {

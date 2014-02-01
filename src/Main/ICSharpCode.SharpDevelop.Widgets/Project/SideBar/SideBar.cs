@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -190,55 +205,55 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			switch (keyData) {
 				case Keys.Home:
 					if (activeTab.Items.Count > 0 && !isInRenameMode) {
-						activeTab.ChoosedItem = activeTab.Items[0];
-						EnsureVisible(activeTab.ChoosedItem);
+						activeTab.ChosenItem = activeTab.Items[0];
+						EnsureVisible(activeTab.ChosenItem);
 						Refresh();
 					}
 					break;
 				case Keys.End:
 					if (activeTab.Items.Count > 0 && !isInRenameMode) {
-						activeTab.ChoosedItem = activeTab.Items[activeTab.Items.Count - 1];
-						EnsureVisible(activeTab.ChoosedItem);
+						activeTab.ChosenItem = activeTab.Items[activeTab.Items.Count - 1];
+						EnsureVisible(activeTab.ChosenItem);
 						Refresh();
 					}
 					break;
 				case Keys.PageUp:
 					if (activeTab.Items.Count > 0 && !isInRenameMode) {
-						index = Math.Max(0, activeTab.Items.IndexOf(activeTab.ChoosedItem) - scrollBar.LargeChange);
-						activeTab.ChoosedItem = activeTab.Items[index];
-						EnsureVisible(activeTab.ChoosedItem);
+						index = Math.Max(0, activeTab.Items.IndexOf(activeTab.ChosenItem) - scrollBar.LargeChange);
+						activeTab.ChosenItem = activeTab.Items[index];
+						EnsureVisible(activeTab.ChosenItem);
 						Refresh();
 					}
 					break;
 				case Keys.PageDown:
 					if (activeTab.Items.Count > 0 && !isInRenameMode) {
-						index = Math.Min(activeTab.Items.Count - 1, activeTab.Items.IndexOf(activeTab.ChoosedItem) + scrollBar.LargeChange);
-						activeTab.ChoosedItem = activeTab.Items[index];
-						EnsureVisible(activeTab.ChoosedItem);
+						index = Math.Min(activeTab.Items.Count - 1, activeTab.Items.IndexOf(activeTab.ChosenItem) + scrollBar.LargeChange);
+						activeTab.ChosenItem = activeTab.Items[index];
+						EnsureVisible(activeTab.ChosenItem);
 						Refresh();
 					}
 					break;
 				case Keys.Down:
 					if (activeTab.Items.Count > 0 && !isInRenameMode) {
-						if (activeTab.ChoosedItem != null) {
-							activeTab.ChoosedItem = activeTab.Items[Math.Min(activeTab.Items.Count - 1, activeTab.Items.IndexOf(activeTab.ChoosedItem) + 1)];
+						if (activeTab.ChosenItem != null) {
+							activeTab.ChosenItem = activeTab.Items[Math.Min(activeTab.Items.Count - 1, activeTab.Items.IndexOf(activeTab.ChosenItem) + 1)];
 						} else {
-							activeTab.ChoosedItem = activeTab.Items[0];
+							activeTab.ChosenItem = activeTab.Items[0];
 						}
 						activeTab.SelectedItem = null;
-						EnsureVisible(activeTab.ChoosedItem);
+						EnsureVisible(activeTab.ChosenItem);
 						Refresh();
 					}
 					return true;
 				case Keys.Up:
 					if (activeTab.Items.Count > 0 && !isInRenameMode) {
-						if (activeTab.ChoosedItem != null) {
-							activeTab.ChoosedItem = activeTab.Items[Math.Max(0, activeTab.Items.IndexOf(activeTab.ChoosedItem) - 1)];
+						if (activeTab.ChosenItem != null) {
+							activeTab.ChosenItem = activeTab.Items[Math.Max(0, activeTab.Items.IndexOf(activeTab.ChosenItem) - 1)];
 						} else {
-							activeTab.ChoosedItem = activeTab.Items[0];
+							activeTab.ChosenItem = activeTab.Items[0];
 						}
 						activeTab.SelectedItem = null;
-						EnsureVisible(activeTab.ChoosedItem);
+						EnsureVisible(activeTab.ChosenItem);
 						Refresh();
 					}
 					return true;
@@ -313,7 +328,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		
 		void ItemContextMenuPopup(object sender, EventArgs e)
 		{
-			activeTab.ChoosedItem = activeTab.SelectedItem;
+			activeTab.ChosenItem = activeTab.SelectedItem;
 			Refresh();
 		}
 		
@@ -779,7 +794,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 						case DragDropEffects.Move:
 							SideTabItem item = sideBar.activeTab.GetItemAt(p.X, p.Y);
 							
-							if (item != sideBar.activeTab.ChoosedItem) {
+							if (item != sideBar.activeTab.ChosenItem) {
 								int idx = sideBar.activeTab.Items.DraggedIndex;
 								if (idx != -1) {
 									sideBar.activeTab.Items.Remove(draggedItem);
@@ -832,7 +847,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 							sideBar.ClearDraggings(sideBar.activeTab);
 							sideBar.Refresh();
 						} else
-							if (item != sideBar.activeTab.ChoosedItem) {
+							if (item != sideBar.activeTab.ChosenItem) {
 							if (item.SideTabItemStatus != SideTabItemStatus.Drag) {
 								sideBar.ClearDraggings(sideBar.activeTab);
 								item.SideTabItemStatus = SideTabItemStatus.Drag;
@@ -918,7 +933,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 				base.OnMouseDown(e);
 				if (e.Button == MouseButtons.Left && sideBar.activeTab != null) {
 					mouseDownPos = e.Location;
-					sideBar.activeTab.ChoosedItem = sideBar.activeTab.SelectedItem;
+					sideBar.activeTab.ChosenItem = sideBar.activeTab.SelectedItem;
 				}
 				Refresh();
 			}

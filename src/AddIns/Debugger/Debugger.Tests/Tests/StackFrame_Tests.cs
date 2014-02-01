@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 
@@ -57,7 +72,7 @@ namespace Debugger.Tests {
     <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_Tests.exe (Has symbols)</ModuleLoaded>
-    <Paused>StackFrame_Tests.cs:13,5-13,41</Paused>
+    <Paused>StackFrame_Tests.cs:28,5-28,41</Paused>
     <Loop1>
       <Item>
         <LocalVariable
@@ -72,7 +87,7 @@ namespace Debugger.Tests {
           Value="10" />
       </Item>
     </Loop1>
-    <Paused>StackFrame_Tests.cs:16,5-16,41</Paused>
+    <Paused>StackFrame_Tests.cs:31,5-31,41</Paused>
     <Loop2>
       <Item>
         <LocalVariable
@@ -87,7 +102,7 @@ namespace Debugger.Tests {
           Value="20" />
       </Item>
     </Loop2>
-    <Paused>StackFrame_Tests.cs:19,4-19,40</Paused>
+    <Paused>StackFrame_Tests.cs:34,4-34,40</Paused>
     <None>
       <Item>
         <LocalVariable
@@ -96,7 +111,7 @@ namespace Debugger.Tests {
           Value="0" />
       </Item>
     </None>
-    <Paused>StackFrame_Tests.cs:23,4-23,40</Paused>
+    <Paused>StackFrame_Tests.cs:38,4-38,40</Paused>
     <NewVarDefined>
       <Item>
         <LocalVariable

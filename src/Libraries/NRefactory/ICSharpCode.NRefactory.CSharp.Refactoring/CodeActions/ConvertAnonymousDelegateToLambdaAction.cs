@@ -42,6 +42,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			Expression convertExpression = null;
 
 			var stmt = node.Body.Statements.FirstOrDefault();
+			if (stmt == null)
+				return null;
 			if (stmt.GetNextSibling(s => s.Role == BlockStatement.StatementRole) == null) {
 				var exprStmt = stmt as ExpressionStatement;
 				if (exprStmt != null) {

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -16,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	class SolutionFolder : ISolutionFolder
 	{
 		readonly Solution parentSolution;
-		readonly Guid idGuid;
+		Guid idGuid;
 		
 		public SolutionFolder(Solution parentSolution, Guid idGuid)
 		{
@@ -114,6 +129,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public Guid IdGuid {
 			get { return idGuid; }
+			set { idGuid = value; }
 		}
 		
 		public Guid TypeGuid {
@@ -131,13 +147,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public IProject AddExistingProject(FileName fileName)
 		{
+			if (parentSolution.Projects.Any(p => p.FileName == fileName))
+				throw new ProjectLoadException("Project " + fileName + " is already part of this solution.");
 			ProjectLoadInformation loadInfo = new ProjectLoadInformation(parentSolution, fileName, fileName.GetFileNameWithoutExtension());
-			var descriptor = ProjectBindingService.GetCodonPerProjectFile(fileName);
-			if (descriptor != null) {
-				loadInfo.TypeGuid = descriptor.Guid;
+			IProject project = SD.ProjectService.LoadProject(loadInfo);
+			if (parentSolution.GetItemByGuid(project.IdGuid) != null) {
+				SD.Log.Warn("Added project has duplicate GUID; a new GUID will be generated.");
+				project.IdGuid = Guid.NewGuid();
 			}
-			IProject project = ProjectBindingService.LoadProject(loadInfo);
-			Debug.Assert(project.IdGuid != Guid.Empty);
 			this.Items.Add(project);
 			project.ProjectLoaded();
 			ProjectBrowserPad.RefreshViewAsync();

@@ -161,6 +161,26 @@ public class Foo
 ");
 		}
 
+		/// <summary>
+		/// Bug 17107 - Source Analysis ignores volatile keyword
+		/// </summary>
+		[Test]
+		public void TestBug17107()
+		{
+			TestWrongContext<ConvertToAutoPropertyIssue>(@"
+using System;
+
+public class Foo
+{
+	volatile Boolean willUpdate;
+
+	Boolean WillUpdate {
+		get { return willUpdate; }
+		set { willUpdate = value; }
+	}
+}
+");
+		}
 
 	}
 }

@@ -205,6 +205,8 @@ namespace Mono.CSharp {
 		TypeSpec[] targs;
 		TypeParameterSpec[] constraints;
 
+		public static readonly MethodSpec Excluded = new MethodSpec (MemberKind.Method, InternalType.FakeInternalType, null, null, ParametersCompiled.EmptyReadOnlyParameters, 0);
+
 		public MethodSpec (MemberKind kind, TypeSpec declaringType, IMethodDefinition details, TypeSpec returnType,
 			AParametersCollection parameters, Modifiers modifiers)
 			: base (kind, declaringType, details, modifiers)
@@ -1464,7 +1466,7 @@ namespace Mono.CSharp {
 				} else {
 					//
 					// It is legal to have "this" initializers that take no arguments
-					// in structs, they are just no-ops.
+					// in structs
 					//
 					// struct D { public D (int a) : this () {}
 					//
@@ -1485,9 +1487,17 @@ namespace Mono.CSharp {
 
 		public override void Emit (EmitContext ec)
 		{
-			// It can be null for static initializers
-			if (base_ctor == null)
+			//
+			// It can be null for struct initializers or System.Object
+			//
+			if (base_ctor == null) {
+				if (type == ec.BuiltinTypes.Object)
+					return;
+
+				ec.Emit (OpCodes.Ldarg_0);
+				ec.Emit (OpCodes.Initobj, type);
 				return;
+			}
 			
 			var call = new CallEmitter ();
 			call.InstanceExpression = new CompilerGeneratedThis (type, loc); 
@@ -1497,6 +1507,12 @@ namespace Mono.CSharp {
 		public override void EmitStatement (EmitContext ec)
 		{
 			Emit (ec);
+		}
+
+		public override void FlowAnalysis (FlowAnalysisContext fc)
+		{
+			if (argument_list != null)
+				argument_list.FlowAnalysis (fc);
 		}
 	}
 
@@ -1742,7 +1758,7 @@ namespace Mono.CSharp {
 					}
 				}
 
-				if (block.Resolve (null, bc, this)) {
+				if (block.Resolve (bc, this)) {
 					debug_builder = Parent.CreateMethodSymbolEntry ();
 					EmitContext ec = new EmitContext (this, ConstructorBuilder.GetILGenerator (), bc.ReturnType, debug_builder);
 					ec.With (EmitContext.Options.ConstructorScope, true);
@@ -2131,7 +2147,7 @@ namespace Mono.CSharp {
 			ToplevelBlock block = method.Block;
 			if (block != null) {
 				BlockContext bc = new BlockContext (method, block, method.ReturnType);
-				if (block.Resolve (null, bc, method)) {
+				if (block.Resolve (bc, method)) {
 					debug_builder = member.Parent.CreateMethodSymbolEntry ();
 					EmitContext ec = method.CreateEmitContext (MethodBuilder.GetILGenerator (), debug_builder);
 

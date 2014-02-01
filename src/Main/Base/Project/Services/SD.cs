@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
@@ -9,6 +24,7 @@ using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
@@ -43,7 +59,8 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void InitializeForUnitTests()
 		{
-			var container = new SharpDevelopServiceContainer(ServiceSingleton.FallbackServiceProvider);
+			var container = new SharpDevelopServiceContainer();
+			container.AddFallbackProvider(ServiceSingleton.FallbackServiceProvider);
 			container.AddService(typeof(IPropertyService), new PropertyServiceImpl());
 			container.AddService(typeof(IAddInTree), new AddInTreeImpl(null));
 			ServiceSingleton.ServiceProvider = container;
@@ -258,6 +275,11 @@ namespace ICSharpCode.SharpDevelop
 		/// <inheritdoc see="IOutputPad"/>
 		public static IOutputPad OutputPad {
 			get { return GetRequiredService<IOutputPad>(); }
+		}
+		
+		/// <inheritdoc see="IClassBrowser"/>
+		public static IClassBrowser ClassBrowser {
+			get { return GetRequiredService<IClassBrowser>(); }
 		}
 	}
 }

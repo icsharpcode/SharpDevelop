@@ -108,7 +108,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 						UndocumentedExpressionType = UndocumentedExpressionType.RefValue,
 						Arguments = {
 							new IdentifierExpression("tr"),
-							new PrimitiveType("object")
+							new TypeReferenceExpression(new PrimitiveType("object"))
 						}
 					}));
 		}
@@ -123,7 +123,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 						UndocumentedExpressionType = UndocumentedExpressionType.RefValue,
 						Arguments = {
 							new IdentifierExpression("tr"),
-							new PrimitiveType("object")
+							new TypeReferenceExpression(new PrimitiveType("object"))
 						}
 					},
 					new IdentifierExpression("o")));

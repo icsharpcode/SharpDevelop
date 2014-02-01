@@ -746,6 +746,25 @@ class C : S
 			});
 			
 		}
+		
+		[Test]
+		public void TestUnfinishedDictionaryInitializer()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+@"class Test
+{
+	public static void Main(string [] args)
+	{
+		var dict = new Dictionary<char, char> {
+			{ a$
+		}
+	}
+}
+",
+				provider => {
+					Assert.IsNotNull(provider.Find("args"), "'args' not found.");
+				});
+		}
 	}
 }
 

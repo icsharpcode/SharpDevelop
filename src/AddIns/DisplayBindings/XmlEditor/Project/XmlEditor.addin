@@ -31,7 +31,6 @@
 	<Path name="/AddIns/XmlEditor/DefaultSchemaFileAssociations">
 		<SchemaFileAssociation id=".addin" namespaceUri="http://www.icsharpcode.net/2005/addin"/>
 		<SchemaFileAssociation id=".booproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
-		<SchemaFileAssociation id=".build" namespaceUri="http://nant.sf.net/release/0.85/nant.xsd"/>
 		<SchemaFileAssociation id=".config" namespaceUri="urn:app-config" />
 		<SchemaFileAssociation id=".csproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
 		<SchemaFileAssociation id=".fsproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>

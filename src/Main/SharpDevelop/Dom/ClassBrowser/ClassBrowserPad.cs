@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
@@ -19,7 +34,8 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
-	class PersistedWorkspace
+	// Note: This class must be public for XAML serialization/deserialization!
+	public class PersistedWorkspace
 	{
 		public PersistedWorkspace()
 		{
@@ -83,31 +99,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		}
 	}
 	
-	class ClassBrowserPad : AbstractPadContent, IClassBrowser
+	class ClassBrowserPad : AbstractPadContent
 	{
-		#region IClassBrowser implementation
-
-		public ICollection<IAssemblyList> AssemblyLists {
-			get { return treeView.AssemblyLists; }
-		}
-
-		public IAssemblyList MainAssemblyList {
-			get { return treeView.MainAssemblyList; }
-			set { treeView.MainAssemblyList = value; }
-		}
-		
-		public IAssemblyList UnpinnedAssemblies {
-			get { return treeView.UnpinnedAssemblies; }
-			set { treeView.UnpinnedAssemblies = value; }
-		}
-		
-		public IAssemblyModel FindAssemblyModel(FileName fileName)
-		{
-			return treeView.FindAssemblyModel(fileName);
-		}
-		
-		#endregion
-		
 		const string PersistedWorkspaceSetting = "ClassBrowser.Workspaces";
 		const string DefaultWorkspaceName = "<default>";
 
@@ -154,10 +147,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			get { return panel; }
 		}
 		
-		public IClassBrowserTreeView TreeView {
-			get { return treeView; }
-		}
-		
 		public bool GoToEntity(IEntity entity)
 		{
 			// Activate the pad
@@ -176,10 +165,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		void ProjectServiceCurrentSolutionChanged(object sender, EventArgs e)
 		{
-			foreach (var node in treeView.AssemblyLists.OfType<ISolutionAssemblyList>().ToArray())
-				treeView.AssemblyLists.Remove(node);
+			foreach (var node in SD.ClassBrowser.AssemblyLists.OfType<ISolutionAssemblyList>().ToArray())
+				SD.ClassBrowser.AssemblyLists.Remove(node);
 			if (projectService.CurrentSolution != null)
-				treeView.AssemblyLists.Add(new SolutionAssemblyList(projectService.CurrentSolution));
+				SD.ClassBrowser.AssemblyLists.Add(new SolutionAssemblyList(projectService.CurrentSolution));
 		}
 		
 		void AssemblyListCollectionChanged(IReadOnlyCollection<IAssemblyModel> removedItems, IReadOnlyCollection<IAssemblyModel> addedItems)
@@ -276,7 +265,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			IAssemblyModel assemblyModel = SafelyCreateAssemblyModelFromFile(assemblyFile);
 			if (assemblyModel != null) {
-				MainAssemblyList.Assemblies.Add(assemblyModel);
+				SD.ClassBrowser.MainAssemblyList.Assemblies.Add(assemblyModel);
 			}
 		}
 		
@@ -298,9 +287,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		/// </summary>
 		void UpdateActiveWorkspace()
 		{
-			if ((MainAssemblyList != null) && (activeWorkspace != null)) {
+			var mainAssemblyList = SD.ClassBrowser.MainAssemblyList;
+			if ((mainAssemblyList != null) && (activeWorkspace != null)) {
 				// Temporarily detach from event handler
-				MainAssemblyList.Assemblies.CollectionChanged -= AssemblyListCollectionChanged;
+				mainAssemblyList.Assemblies.CollectionChanged -= AssemblyListCollectionChanged;
 			}
 			
 			activeWorkspace = persistedWorkspaces.FirstOrDefault(w => w.IsActive);
@@ -311,7 +301,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				defaultWorkspace.IsActive = true;
 			}
 			
-			MainAssemblyList.Assemblies.Clear();
+			mainAssemblyList.Assemblies.Clear();
 			if (activeWorkspace != null) {
 				foreach (string assemblyFile in activeWorkspace.AssemblyFiles) {
 					AppendAssemblyFileToList(assemblyFile);
@@ -319,8 +309,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 			
 			// Attach to event handler, again.
-			if (MainAssemblyList != null) {
-				MainAssemblyList.Assemblies.CollectionChanged += AssemblyListCollectionChanged;
+			if (mainAssemblyList != null) {
+				mainAssemblyList.Assemblies.CollectionChanged += AssemblyListCollectionChanged;
 			}
 		}
 	}

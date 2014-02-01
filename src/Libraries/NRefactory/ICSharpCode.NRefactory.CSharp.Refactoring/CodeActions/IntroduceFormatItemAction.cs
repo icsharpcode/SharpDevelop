@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[ContextAction("Introduce format item", Description = "Creates a string.format call with the selection as parameter.")]
 	public class IntroduceFormatItemAction : CodeActionProvider
 	{
-		readonly static MemberReferenceExpression PrototypeFormatReference = new MemberReferenceExpression (new PrimitiveType ("string"), "Format");
+		readonly static MemberReferenceExpression PrototypeFormatReference = new PrimitiveType ("string").Member("Format");
 		
 		public override IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{

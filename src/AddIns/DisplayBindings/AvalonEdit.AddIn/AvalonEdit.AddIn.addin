@@ -42,18 +42,6 @@
 		       class = "ICSharpCode.AvalonEdit.AddIn.TextMarkerToolTipProvider"/>
 	</Path>
 	
-	<!--
-	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor">
-			<MenuItem id = "SaveWithEncoding"
-			          label = "${res:XML.MainMenu.FileMenu.SaveWithEncoding}"
-			          insertafter="SaveAs"
-			          insertbefore="CloseFile"
-			          class = "ICSharpCode.AvalonEdit.AddIn.Commands.SaveFileWithEncoding"/>
-		</Condition>
-	</Path>
-	-->
-	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/File">
 		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 			<MenuItem id = "SaveWithEncoding"
@@ -61,6 +49,16 @@
 			          insertafter="SaveAs"
 			          insertbefore="SaveAll"
 			          class = "ICSharpCode.AvalonEdit.AddIn.Commands.SaveFileWithEncoding"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Insert">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
+			<MenuItem id = "Separator1" type = "Separator"/>
+			<MenuItem id = "ClipboardRing"
+		          label = "${res:SharpDevelop.Refactoring.ClipboardRingCommand}"
+		          shortcut = "Ctrl+Shift+V"
+		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.ClipboardRing"/>
 		</Condition>
 	</Path>
 	

@@ -61,6 +61,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					this.InUnsafeContext = inUnsafeContext;
 					this.UseUnsafeConstructs = false;
 				}
+
+				public override string ToString()
+				{
+					return string.Format("[UnsafeState: InUnsafeContext={0}, UseUnsafeConstructs={1}]", InUnsafeContext, UseUnsafeConstructs);
+				}
 			}
 
 			readonly Stack<UnsafeState> unsafeStateStack = new Stack<UnsafeState> ();
@@ -81,16 +86,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitTypeDeclaration(typeDeclaration);
 
 				var state = unsafeStateStack.Pop();
-				unsafeIsRedundant |= typeDeclaration.HasModifier(Modifiers.Unsafe) && !state.UseUnsafeConstructs;
-
+				unsafeIsRedundant = typeDeclaration.HasModifier(Modifiers.Unsafe) && !state.UseUnsafeConstructs;
 				if (unsafeIsRedundant) {
 					AddIssue(new CodeIssue(
 						typeDeclaration.ModifierTokens.First (t => t.Modifier == Modifiers.Unsafe),
 						ctx.TranslateString("'unsafe' modifier is redundant."), 
 						ctx.TranslateString("Remove redundant 'unsafe' modifier"), 
-						script => {
-							script.ChangeModifier (typeDeclaration, typeDeclaration.Modifiers & ~Modifiers.Unsafe);
-						}
+						script => script.ChangeModifier(typeDeclaration, typeDeclaration.Modifiers & ~Modifiers.Unsafe)
 					) { IssueMarker = IssueMarker.GrayOut });
 				}
 			}
@@ -111,6 +113,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitFixedStatement(FixedStatement fixedStatement)
 			{
 				base.VisitFixedStatement(fixedStatement);
+
+				unsafeStateStack.Peek().UseUnsafeConstructs = true;
+			}
+
+			public override void VisitSizeOfExpression(SizeOfExpression sizeOfExpression)
+			{
+				base.VisitSizeOfExpression(sizeOfExpression);
 				unsafeStateStack.Peek().UseUnsafeConstructs = true;
 			}
 

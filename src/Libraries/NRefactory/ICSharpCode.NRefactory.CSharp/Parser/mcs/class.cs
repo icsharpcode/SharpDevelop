@@ -13,6 +13,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -698,6 +699,12 @@ namespace Mono.CSharp
 			}
 		}
 
+		bool ITypeDefinition.IsCyclicTypeForwarder {
+			get {
+				return false;
+			}
+		}
+
 		//
 		// Returns true for secondary partial containers
 		//
@@ -1014,6 +1021,7 @@ namespace Mono.CSharp
 					if (!has_complex_initializer && fi.IsDefaultInitializer)
 						continue;
 
+					ec.AssignmentInfoOffset += fi.AssignmentOffset;
 					ec.CurrentBlock.AddScopeStatement (new StatementExpression (init [i]));
 				}
 
@@ -1035,6 +1043,7 @@ namespace Mono.CSharp
 				if (fi.IsDefaultInitializer && ec.Module.Compiler.Settings.Optimize)
 					continue;
 
+				ec.AssignmentInfoOffset += fi.AssignmentOffset;
 				ec.CurrentBlock.AddScopeStatement (new StatementExpression (s));
 			}
 		}
@@ -2400,8 +2409,6 @@ namespace Mono.CSharp
 		//
 		// Public function used to locate types.
 		//
-		// Set 'ignore_cs0104' to true if you want to ignore cs0104 errors.
-		//
 		// Returns: Type or null if they type can not be found.
 		//
 		public override FullNamedExpression LookupNamespaceOrType (string name, int arity, LookupMode mode, Location loc)
@@ -2765,6 +2772,17 @@ namespace Mono.CSharp
 
 			if (base_type != null && base_type.HasDynamicElement) {
 				Module.PredefinedAttributes.Dynamic.EmitAttribute (TypeBuilder, base_type, Location);
+			}
+		}
+
+		public override void GetCompletionStartingWith (string prefix, List<string> results)
+		{
+			base.GetCompletionStartingWith (prefix, results);
+
+			var bt = base_type;
+			while (bt != null) {
+				results.AddRange (MemberCache.GetCompletitionMembers (this, bt, prefix).Where (l => l.IsStatic).Select (l => l.Name));
+				bt = bt.BaseType;
 			}
 		}
 

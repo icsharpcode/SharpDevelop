@@ -159,5 +159,21 @@ class TestClass {
 			IMethod getterAfterRoundtrip = (IMethod)getter.ToMemberReference().Resolve(result.Member.Compilation.TypeResolveContext);
 			Assert.AreEqual(getter, getterAfterRoundtrip);
 		}
+
+		[Test]
+		public void AnonymousTypeToString() {
+			string program = @"
+class TestClass {
+	void F() {
+		var s = $new { Prop = 0 }.ToString()$;
+	}
+}";
+
+			var result = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.That(result.IsError, Is.False);
+			Assert.That(result.TargetResult.Type.Kind == TypeKind.Anonymous);
+			Assert.That(result.Member.Name, Is.EqualTo("ToString"));
+			Assert.That(result.Member.DeclaringType.Name, Is.EqualTo("Object"));
+		}
 	}
 }

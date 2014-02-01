@@ -196,6 +196,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			// replace ThisLineIndent with NextLineIndent if the newLineChar is pushed
 			if (ch == Engine.newLineChar)
 			{
+				var delta = Engine.textEditorOptions.ContinuationIndent;
+				while (NextLineIndent.CurIndent - ThisLineIndent.CurIndent > delta &&
+					   NextLineIndent.PopIf(IndentType.Continuation)) ;
 				ThisLineIndent = NextLineIndent.Clone();
 			}
 		}
@@ -481,6 +484,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public bool IsEqualCharPushed;
 
 		/// <summary>
+		///     The indentation of the previous line.
+		/// </summary>
+		public int PreviousLineIndent;
+
+		/// <summary>
 		///     True if the dot member (e.g. method invocation) indentation has
 		///     been handled in the current statement.
 		/// </summary>
@@ -507,6 +515,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			IsEqualCharPushed = prototype.IsEqualCharPushed;
 			IsMemberReferenceDotHandled = prototype.IsMemberReferenceDotHandled;
 			LastBlockIndent = prototype.LastBlockIndent;
+			PreviousLineIndent = prototype.PreviousLineIndent;
 		}
 
 		public override void Push(char ch)
@@ -562,6 +571,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					IsMemberReferenceDotHandled = true;
 
 					ThisLineIndent.RemoveAlignment();
+					while (ThisLineIndent.CurIndent > PreviousLineIndent && 
+					       ThisLineIndent.PopIf(IndentType.Continuation)) ;
+
 					ThisLineIndent.Push(IndentType.Continuation);
 					NextLineIndent = ThisLineIndent.Clone();
 				}
@@ -570,6 +582,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				// try to capture ': base(...)', ': this(...)' and inherit statements when they are on a new line
 				ThisLineIndent.Push(IndentType.Continuation);
+			}
+			else if (ch == Engine.newLineChar)
+			{
+				PreviousLineIndent = ThisLineIndent.CurIndent;
 			}
 
 			if (Engine.wordToken.ToString() == "else")
@@ -625,6 +641,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				ThisLineIndent.RemoveAlignment();
 				ThisLineIndent.PopTry();
+				BraceStyle style;
+				if (TryGetBraceStyle(this.CurrentBody, out style)) {
+					if (style == BraceStyle.NextLineShifted ||
+						style == BraceStyle.NextLineShifted2||
+						style == BraceStyle.BannerStyle) {
+						ThisLineIndent.Push(IndentType.Block);
+					}
+				}
 			}
 
 			base.OnExit();
@@ -859,18 +883,71 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			switch (braceStyle)
 			{
+				case BraceStyle.NextLineShifted:
+					ThisLineIndent.Push(IndentType.Block);
+					NextLineIndent.Push(IndentType.Block);
+					break;
 				case BraceStyle.DoNotChange:
 				case BraceStyle.EndOfLine:
 				case BraceStyle.EndOfLineWithoutSpace:
 				case BraceStyle.NextLine:
-				case BraceStyle.NextLineShifted:
 				case BraceStyle.BannerStyle:
 					NextLineIndent.Push(IndentType.Block);
 					break;
 				case BraceStyle.NextLineShifted2:
+					ThisLineIndent.Push(IndentType.Block);
 					NextLineIndent.Push(IndentType.DoubleBlock);
 					break;
 			}
+		}
+
+		bool TryGetBraceStyle (Body body, out BraceStyle style)
+		{
+			style = BraceStyle.DoNotChange;
+			switch (body)
+			{
+				case Body.None:
+					if (!Engine.formattingOptions.IndentBlocks)
+						return false;
+					style = BraceStyle.NextLine;
+					return true;
+				case Body.Namespace:
+					if (!Engine.formattingOptions.IndentNamespaceBody)
+						return false;
+					style = Engine.formattingOptions.NamespaceBraceStyle;
+					return true;
+				case Body.Class:
+					if (!Engine.formattingOptions.IndentClassBody)
+						return false;
+					style = Engine.formattingOptions.ClassBraceStyle;
+					return true;
+				case Body.Struct:
+					if (!Engine.formattingOptions.IndentStructBody)
+						return false;
+					style = Engine.formattingOptions.StructBraceStyle;
+					return true;
+				case Body.Interface:
+					if (!Engine.formattingOptions.IndentInterfaceBody)
+						return false;
+					style = Engine.formattingOptions.InterfaceBraceStyle;
+					return true;
+				case Body.Enum:
+					if (!Engine.formattingOptions.IndentEnumBody)
+						return false;
+					style = Engine.formattingOptions.EnumBraceStyle;
+					return true;
+				case Body.Switch:
+					if (!Engine.formattingOptions.IndentSwitchBody)
+						return false;
+					style = Engine.formattingOptions.StatementBraceStyle;
+					return true;
+				case Body.Try:
+				case Body.Catch:
+				case Body.Finally:
+					style = Engine.formattingOptions.StatementBraceStyle;
+					return true;
+			}
+			return false;
 		}
 
 		/// <summary>
@@ -879,57 +956,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		void AddIndentation(Body body)
 		{
-			switch (body)
-			{
-				case Body.None:
-					if (Engine.formattingOptions.IndentBlocks)
-						NextLineIndent.Push(IndentType.Block);
-					else
-						NextLineIndent.Push(IndentType.Empty);
-					break;
-				case Body.Namespace:
-					if (Engine.formattingOptions.IndentNamespaceBody)
-						AddIndentation(Engine.formattingOptions.NamespaceBraceStyle);
-					else
-						NextLineIndent.Push(IndentType.Empty);
-					break;
-				case Body.Class:
-					if (Engine.formattingOptions.IndentClassBody)
-						AddIndentation(Engine.formattingOptions.ClassBraceStyle);
-					else
-						NextLineIndent.Push(IndentType.Empty);
-					break;
-				case Body.Struct:
-					if (Engine.formattingOptions.IndentStructBody)
-						AddIndentation(Engine.formattingOptions.StructBraceStyle);
-					else
-						NextLineIndent.Push(IndentType.Empty);
-					break;
-				case Body.Interface:
-					if (Engine.formattingOptions.IndentInterfaceBody)
-						AddIndentation(Engine.formattingOptions.InterfaceBraceStyle);
-					else
-						NextLineIndent.Push(IndentType.Empty);
-					break;
-				case Body.Enum:
-					if (Engine.formattingOptions.IndentEnumBody)
-						AddIndentation(Engine.formattingOptions.EnumBraceStyle);
-					else
-						NextLineIndent.Push(IndentType.Empty);
-					break;
-				case Body.Switch:
-					if (Engine.formattingOptions.IndentSwitchBody)
-						AddIndentation(Engine.formattingOptions.StatementBraceStyle);
-					else
-						NextLineIndent.Push(IndentType.Empty);
-					break;
-				case Body.Try:
-				case Body.Catch:
-				case Body.Finally:
-					AddIndentation(Engine.formattingOptions.StatementBraceStyle);
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
+			BraceStyle style;
+			if (TryGetBraceStyle (body, out style)) {
+				AddIndentation(style);
+			} else {
+				NextLineIndent.Push(IndentType.Empty);
 			}
 		}
 

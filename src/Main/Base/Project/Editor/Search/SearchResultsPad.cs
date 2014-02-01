@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -66,6 +81,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			}
 		}
 		
+		ISearchResult activeSearchResult;
 		List<ISearchResult> lastSearches = new List<ISearchResult>();
 		
 		public IEnumerable<ISearchResult> LastSearches {
@@ -75,9 +91,17 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public void ClearLastSearchesList()
 		{
 			lastSearches.Clear();
+			if (activeSearchResult != null) {
+				activeSearchResult.OnDeactivate();
+				activeSearchResult = null;
+			}
 			SD.WinForms.SetContent(contentPlaceholder, null);
 		}
 		
+		/// <summary>
+		/// Shows a search in the search results pad.
+		/// The previously shown search will be stored in the list of past searches.
+		/// </summary>
 		public void ShowSearchResults(ISearchResult result)
 		{
 			if (result == null)
@@ -91,6 +115,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			while (lastSearches.Count > 15)
 				lastSearches.RemoveAt(15);
 			
+			if (activeSearchResult != result) {
+				if (activeSearchResult != null) {
+					activeSearchResult.OnDeactivate();
+				}
+				activeSearchResult = result;
+			}
 			SD.WinForms.SetContent(contentPlaceholder, result.GetControl());
 			
 			toolBar.Items.Clear();
@@ -108,11 +138,23 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			SearchResultsShown(this, EventArgs.Empty);
 		}
 		
+		/// <summary>
+		/// Shows a search in the search results pad.
+		/// The previously shown search will be stored in the list of past searches.
+		/// </summary>
+		/// <param name="title">The title of the search.</param>
+		/// <param name="matches">The list of matches. ShowSearchResults() will enumerate once through the IEnumerable in order to retrieve the search results.</param>
 		public void ShowSearchResults(string title, IEnumerable<SearchResultMatch> matches)
 		{
 			ShowSearchResults(CreateSearchResult(title, matches));
 		}
 		
+		/// <summary>
+		/// Performs a background search in the search results pad.
+		/// The previously shown search will be stored in the list of past searches.
+		/// </summary>
+		/// <param name="title">The title of the search.</param>
+		/// <param name="matches">The background search operation. ShowSearchResults() will subscribe to the observable in order to retrieve the search results.</param>
 		public void ShowSearchResults(string title, IObservable<SearchedFile> matches)
 		{
 			ShowSearchResults(CreateSearchResult(title, matches));
@@ -120,6 +162,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public event EventHandler SearchResultsShown = delegate {};
 		
+		/// <inheritdoc cref="ISearchResultFactory.CreateSearchResult(string,IEnumerable{SearchResultMatch})"/>
 		public static ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches)
 		{
 			if (title == null)
@@ -135,6 +178,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		}
 		
 		
+		/// <inheritdoc cref="ISearchResultFactory.CreateSearchResult(string,IObservable{SearchResultMatch})"/>
 		public static ISearchResult CreateSearchResult(string title, IObservable<SearchedFile> matches)
 		{
 			if (title == null)
@@ -187,6 +231,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			public IList GetToolbarItems()
 			{
 				return null;
+			}
+			
+			public void OnDeactivate()
+			{
 			}
 		}
 	}

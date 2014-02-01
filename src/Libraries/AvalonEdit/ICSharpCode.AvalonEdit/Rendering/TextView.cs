@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -42,6 +57,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		ColumnRulerRenderer columnRulerRenderer;
+		CurrentLineHighlightRenderer currentLineHighlighRenderer;
 		
 		/// <summary>
 		/// Creates a new TextView instance.
@@ -54,6 +70,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			lineTransformers = new ObserveAddRemoveCollection<IVisualLineTransformer>(LineTransformer_Added, LineTransformer_Removed);
 			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
 			columnRulerRenderer = new ColumnRulerRenderer(this);
+			currentLineHighlighRenderer = new CurrentLineHighlightRenderer(this);
 			this.Options = new TextEditorOptions();
 			
 			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
@@ -1027,7 +1044,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (heightTree.GetIsCollapsed(documentLine.LineNumber))
 				throw new InvalidOperationException("Trying to build visual line from collapsed line");
 			
-			Debug.WriteLine("Building line " + documentLine.LineNumber);
+			//Debug.WriteLine("Building line " + documentLine.LineNumber);
 			
 			VisualLine visualLine = new VisualLine(this, documentLine);
 			VisualLineTextSource textSource = new VisualLineTextSource(visualLine) {
@@ -1621,14 +1638,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		[ThreadStatic] static bool invalidCursor;
 		
 		/// <summary>
-		/// Updates the mouse cursor by calling <see cref="Mouse.UpdateCursor"/>, but with input priority.
+		/// Updates the mouse cursor by calling <see cref="Mouse.UpdateCursor"/>, but with background priority.
 		/// </summary>
 		public static void InvalidateCursor()
 		{
 			if (!invalidCursor) {
 				invalidCursor = true;
 				Dispatcher.CurrentDispatcher.BeginInvoke(
-					DispatcherPriority.Input,
+					DispatcherPriority.Background, // fixes issue #288
 					new Action(
 						delegate {
 							invalidCursor = false;
@@ -1994,6 +2011,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (e.Property == ColumnRulerPenProperty) {
 				columnRulerRenderer.SetRuler(this.Options.ColumnRulerPosition, this.ColumnRulerPen);
 			}
+			if (e.Property == CurrentLineBorderProperty) {
+				currentLineHighlighRenderer.BorderPen = this.CurrentLineBorder;
+			}
+			if (e.Property == CurrentLineBackgroundProperty) {
+				currentLineHighlighRenderer.BackgroundBrush = this.CurrentLineBackground;
+			}
 		}
 		
 		/// <summary>
@@ -2018,6 +2041,42 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public Pen ColumnRulerPen {
 			get { return (Pen)GetValue(ColumnRulerPenProperty); }
 			set { SetValue(ColumnRulerPenProperty, value); }
+		}
+		
+		/// <summary>
+		/// The <see cref="CurrentLineBackground"/> property.
+		/// </summary>
+		public static readonly DependencyProperty CurrentLineBackgroundProperty =
+			DependencyProperty.Register("CurrentLineBackground", typeof(Brush), typeof(TextView));
+		
+		/// <summary>
+		/// Gets/Sets the background brush used by current line highlighter.
+		/// </summary>
+		public Brush CurrentLineBackground {
+			get { return (Brush)GetValue(CurrentLineBackgroundProperty); }
+			set { SetValue(CurrentLineBackgroundProperty, value); }
+		}
+		
+		/// <summary>
+		/// The <see cref="CurrentLineBorder"/> property.
+		/// </summary>
+		public static readonly DependencyProperty CurrentLineBorderProperty =
+			DependencyProperty.Register("CurrentLineBorder", typeof(Pen), typeof(TextView));
+		
+		/// <summary>
+		/// Gets/Sets the background brush used for the current line.
+		/// </summary>
+		public Pen CurrentLineBorder {
+			get { return (Pen)GetValue(CurrentLineBorderProperty); }
+			set { SetValue(CurrentLineBorderProperty, value); }
+		}
+		
+		/// <summary>
+		/// Gets/Sets highlighted line number.
+		/// </summary>
+		public int HighlightedLine {
+			get { return this.currentLineHighlighRenderer.Line; }
+			set { this.currentLineHighlighRenderer.Line = value; }
 		}
 	}
 }

@@ -891,5 +891,49 @@ class Test {
 			var c = GetConversion(program);
 			Assert.IsTrue(c.IsValid);
 		}
+		
+		[Test]
+		public void InvalidConversionToVoid_ImplicitStatementLambda()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		Action a = () => {
+			return $1$;
+		};
+	}
+}";
+			Assert.AreEqual(TypeKind.Void, GetExpectedType(program).Kind);
+			Assert.IsFalse(GetConversion(program).IsValid);
+		}
+		
+		[Test]
+		public void InvalidConversionToVoid_AnonymousMethod()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		Action a = delegate {
+			return $1$;
+		};
+	}
+}";
+			Assert.AreEqual(TypeKind.Void, GetExpectedType(program).Kind);
+			Assert.IsFalse(GetConversion(program).IsValid);
+		}
+		
+		[Test]
+		public void VoidLamda_Uses_Identity_Conversion()
+		{
+			string program = @"using System;
+class TestClass {
+	static int GetInt() { return 4; }
+	static void Main() {
+		Action a = () => $GetInt()$;
+	}
+}";
+			Assert.AreEqual("System.Int32", GetExpectedType(program).FullName);
+			Assert.IsTrue(GetConversion(program).IsValid);
+		}
 	}
 }

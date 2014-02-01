@@ -19,7 +19,7 @@ namespace ICSharpCode.NAnt.Tests
 			Assert.AreEqual(3, tasks.Count, "Should be three tasks.");
 
 			// First task.
-			Task task = tasks[0];
+			SDTask task = tasks[0];
 			Assert.AreEqual("c:\\Projects\\dotnet\\Test\\corsavytest\\Foo.cs", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(34, task.Line, "Task line is incorrect.");
 			Assert.AreEqual(4, task.Column, "Task column is incorrect.");
@@ -57,7 +57,7 @@ namespace ICSharpCode.NAnt.Tests
 			Assert.AreEqual(1, tasks.Count, "Should be three tasks.");
 
 			// First task.
-			Task task = tasks[0];
+			SDTask task = tasks[0];
 			Assert.AreEqual("c:\\Projects\\dotnet\\Test\\corsavytest\\Foo.cs", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(39, task.Line, "Task line is incorrect.");
 			Assert.AreEqual(12, task.Column, "Task column is incorrect.");

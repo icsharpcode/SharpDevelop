@@ -87,6 +87,9 @@
     <Compile Include="Src\ChangeMarkerMargin\DocumentSequence.cs" />
     <Compile Include="Src\ChangeMarkerMargin\IChangeWatcher.cs" />
     <Compile Include="Src\ChangeMarkerMargin\LineChangeInfo.cs" />
+    <Compile Include="Src\ContextActions\ClipboardRing.cs" />
+    <Compile Include="Src\ContextActions\ClipboardRingAction.cs" />
+    <Compile Include="Src\ContextActions\ClipboardRingPopup.cs" />
     <Compile Include="Src\ContextActions\ContextActionOptionPanelDoozer.cs" />
     <Compile Include="Src\ContextActions\ContextActionOptions.xaml.cs">
       <DependentUpon>ContextActionOptions.xaml</DependentUpon>
@@ -118,7 +121,6 @@
     <Compile Include="Src\SyntaxHighlighting\SyntaxModeDoozer.cs" />
     <Compile Include="Src\TextMarkerToolTipProvider.cs" />
     <Compile Include="Src\Utils.cs" />
-    <Compile Include="Src\XmlDoc\DocumentationUIBuilder.cs" />
     <Compile Include="Src\XmlDoc\XmlDocTooltipProvider.cs" />
     <None Include="AvalonEdit.AddIn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -156,7 +158,6 @@
     <Compile Include="Src\Commands\SurroundWithCommand.cs" />
     <Compile Include="Src\CustomCommands.cs" />
     <Compile Include="Src\CustomizedHighlightingColor.cs" />
-    <Compile Include="Src\DocumentPrinter.cs" />
     <Compile Include="Src\InlineUIElementGenerator.cs" />
     <Compile Include="Src\IconBarManager.cs" />
     <Compile Include="Src\IconBarMargin.cs" />

@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var methodDeclaration = CreateEventInvocatorAction.CreateEventInvocator (context, type, eventDeclaration, eventDeclaration.Variables.First (), resolvedType.GetDelegateInvokeMethod (), false);
 				var stmt = new ExpressionStatement (new InvocationExpression (
 					new IdentifierExpression (methodDeclaration.Name),
-					new MemberReferenceExpression (context.CreateShortType("System", "EventArgs"), "Empty")
+					context.CreateShortType("System", "EventArgs").Member("Empty")
 				));
 				script.InsertWithCursor(
 					context.TranslateString("Create event invocator"),

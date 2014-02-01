@@ -887,6 +887,14 @@ namespace ICSharpCode.NRefactory.CSharp
 					return new CodeAssignStatement(Convert(unary.Expression), cboe);
 				}
 			}
+			if (assignment != null && assignment.Operator == AssignmentOperatorType.Add) {
+				var rr = Resolve(assignment.Left);
+				if (!rr.IsError && rr.Type.Kind == TypeKind.Delegate) {
+					var expr = (MemberReferenceExpression)assignment.Left;
+					var memberRef = (CodeEventReferenceExpression)HandleMemberReference(Convert(expr.Target), expr.MemberName, expr.TypeArguments, (MemberResolveResult)rr);
+					return new CodeAttachEventStatement(memberRef, Convert(assignment.Right));
+				}
+			}
 			return new CodeExpressionStatement(Convert(expressionStatement.Expression));
 		}
 		
@@ -1260,7 +1268,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var cn = cu.Namespaces [j];
 					bool found = cn.Imports
 						.Cast<CodeNamespaceImport> ()
-							.Any (ns => ns.Namespace == gi.Namespace);
+						.Any (ns => ns.Namespace == gi.Namespace);
 					if (!found)
 						cn.Imports.Add (gi);
 				}

@@ -20,7 +20,10 @@
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.UnderLineErrorsCheckBox}" />
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightBrackets}"
-					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox}" />
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox}" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightCurrentLine}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightCurrentLineCheckBox}" />
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightSymbol}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox}" />

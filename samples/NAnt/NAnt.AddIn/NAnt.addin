@@ -74,9 +74,10 @@
 
 	<!-- Options panel -->
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<DialogPanel id="NAntAddInOptionPanel"
-		       	     label="NAnt"
-		       	     class="ICSharpCode.NAnt.Gui.NAntAddInOptionPanel"/>
+		<OptionPanel
+			id="NAntAddInOptionPanel"
+			label="NAnt"
+			class="ICSharpCode.NAnt.Gui.NAntAddInOptionsView"/>
 	</Path>
 
 	<!-- NAnt pad -->
@@ -160,7 +161,7 @@
 
 	<!-- NAnt templates -->
 	<Path name="/SharpDevelop/BackendBindings/Templates">
-		<Directory id="NAnt" path="./Templates"/>
+		<TemplateFile id="NAnt" path="./Templates"/>
 	</Path>
 
 	<!-- Bitmap resources -->

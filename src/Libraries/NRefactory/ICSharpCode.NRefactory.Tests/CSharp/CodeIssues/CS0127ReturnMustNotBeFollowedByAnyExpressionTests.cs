@@ -301,6 +301,63 @@ class Bar
 	}
 }");
 		}
+		
+		[Test]
+		public void TestAsyncMethod_Void()
+		{
+			var input = @"using System;
+using System.Threading.Tasks;
+
+class Test
+{
+	public async void M()
+	{
+		return 1;
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0127ReturnMustNotBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+		}
+		
+		[Test]
+		public void TestAsyncMethod_Task()
+		{
+			var input = @"using System;
+using System.Threading.Tasks;
+
+class Test
+{
+	public async Task M()
+	{
+		return 1;
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0127ReturnMustNotBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+		}
+		
+		[Test]
+		public void TestAsyncMethod_TaskOfInt()
+		{
+			var input = @"using System;
+using System.Threading.Tasks;
+
+class Test
+{
+	public async Task<int> M()
+	{
+		return 1;
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0127ReturnMustNotBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
 	}
 }
 

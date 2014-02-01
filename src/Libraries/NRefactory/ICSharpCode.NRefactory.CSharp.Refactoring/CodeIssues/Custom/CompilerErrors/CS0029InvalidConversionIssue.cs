@@ -149,7 +149,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var fd = expression.Parent.Parent as FieldDeclaration;
 					if (fd != null) {
 						fixes.Add(new CodeAction(
-							ctx.TranslateString("Change field return type"), 
+							ctx.TranslateString("Change field type"), 
 							script => {
 								script.Replace(fd.ReturnType, ctx.CreateTypeSystemAstBuilder(fd).ConvertType(rr.Type));
 							}, 
@@ -160,7 +160,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var lc =  expression.Parent.Parent as VariableDeclarationStatement;
 					if (lc != null) {
 						fixes.Add(new CodeAction(
-							ctx.TranslateString("Fix local return type"), 
+							ctx.TranslateString("Change local variable type"), 
 							script => {
 								script.Replace(lc.Type, new SimpleType("var"));
 							}, 

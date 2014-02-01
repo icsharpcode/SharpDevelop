@@ -54,18 +54,21 @@
  			and then run the msi to uninstall SharpDevelop. Without the 
 			"Installed OR" this would not be allowed.
 		-->
+		
+		<!-- SharpDevelop 5 doesn't support Win XP and below. -->
+		<Condition Message="SharpDevelop $(var.PRODUCTDISPLAYVERSION) can only be installed on Windows Vista and higher.">
+			Installed OR (VersionNT >= 600)
+		</Condition>
+		
 		<!--
-			Check for .NET 4.0 RTM Full
+			Check for .NET 4.5 RTM
 		-->
-		<Property Id="NETFRAMEWORK40FULL" Secure="yes">
-			<RegistrySearch Id="NetFramework40Full" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Install" Type="raw" />
+		<!-- we could check NETFRAMEWORK45 optionally if we want to force the user to install a specific version -->
+		<Property Id="NETFRAMEWORK45" Secure="yes">
+			<RegistrySearch Id="NetFramework45" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Release" Type="raw" />
 		</Property>
-		<Property Id="NETFRAMEWORK40FULLVERSION" Secure="yes">
-			<RegistrySearch Id="NetFramework40FullVersion" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Version" Type="raw" />
-		</Property>
-		<!-- we could check NETFRAMEWORK40FULLVERSION optionally if we want to force the user to install a specific version -->
-		<Condition Message="This setup requires the .NET 4.0 Full Framework to be installed.">
-			Installed OR NETFRAMEWORK40FULL
+		<Condition Message="This setup requires the .NET Framework 4.5 to be installed.">
+			Installed OR NETFRAMEWORK45
 		</Condition>
 		
 		<!--
@@ -316,9 +319,10 @@
 				<ComponentRef Id="ICSharpCodeAddInManager2Dll"/>
 				<ComponentRef Id="AddInManager2ICSharpCodeSharpZipLibDll"/>
 				<ComponentRef Id="AddInManager2NuGetCoreDll"/>
+				<ComponentRef Id="AddInManager2MSWebXmlTransformDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
-				<ComponentRef Id="CodeQualityFiles"/>
+				<!--<ComponentRef Id="CodeQualityFiles"/>-->
 				<ComponentRef Id="CodeCoverageFiles"/>
 				<ComponentRef Id="DebuggerAddInFiles"/>
 				<ComponentRef Id="FiletypeIcons"/>
@@ -444,12 +448,12 @@
 				<ComponentRef Id="UsageDataCollectorAddin"/>
 				<ComponentRef Id="UsageDataCollectorDll"/>
 				
-				<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
+<!--				<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
 				<ComponentRef Id="ICSharpCodeReportDesignerAddin"/>
 				<ComponentRef Id="ICSharpCodeReportsAddinDll"/>
 				<ComponentRef Id="ICSharpCodeReportsCoreDll"/>
 				<ComponentRef Id="IronyDll"/>
-				<ComponentRef Id="ITextSharpDll"/>
+				<ComponentRef Id="ITextSharpDll"/>-->
 			
 				<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
 				<ComponentRef Id="NuGetConsoleTypesDll"/>

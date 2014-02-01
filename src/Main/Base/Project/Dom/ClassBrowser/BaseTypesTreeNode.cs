@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Linq;
@@ -59,72 +74,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (currentTypeDef != null) {
 				foreach (var baseType in currentTypeDef.DirectBaseTypes) {
 					ITypeDefinition baseTypeDef = baseType.GetDefinition();
-					if ((baseTypeDef != null)) {
-						ITypeDefinitionModel baseTypeModel = GetTypeDefinitionModel(currentTypeDef, baseTypeDef);
+					if (baseTypeDef != null) {
+						ITypeDefinitionModel baseTypeModel = baseTypeDef.GetModel();
 						if (baseTypeModel != null)
 							baseTypes.Add(baseTypeModel);
 					}
 				}
 			}
-		}
-		
-		ITypeDefinitionModel GetTypeDefinitionModel(ITypeDefinition mainTypeDefinition, ITypeDefinition baseTypeDefinition)
-		{
-			ITypeDefinitionModel resolveTypeDefModel = null;
-			var assemblyFileName = mainTypeDefinition.ParentAssembly.GetRuntimeAssemblyLocation();
-			IAssemblyModel assemblyModel = null;
-			
-			try {
-				// Try to get AssemblyModel from project list
-				IProjectService projectService = SD.GetRequiredService<IProjectService>();
-				if (projectService.CurrentSolution != null) {
-					var projectOfAssembly = projectService.CurrentSolution.Projects.FirstOrDefault(p => p.AssemblyModel.Location == assemblyFileName);
-					if (projectOfAssembly != null) {
-						// We automatically have an AssemblyModel from project
-						assemblyModel = projectOfAssembly.AssemblyModel;
-					}
-				}
-				
-				var assemblyParserService = SD.GetService<IAssemblyParserService>();
-				if (assemblyModel == null) {
-					if (assemblyParserService != null) {
-						if (assemblyFileName != null) {
-							assemblyModel = assemblyParserService.GetAssemblyModel(assemblyFileName);
-						}
-					}
-				}
-				
-				if (assemblyModel != null) {
-					// Nothing in projects, load from assembly file
-					resolveTypeDefModel = assemblyModel.TopLevelTypeDefinitions[baseTypeDefinition.FullTypeName];
-					if (resolveTypeDefModel != null) {
-						return resolveTypeDefModel;
-					}
-					
-					// Look at referenced assemblies
-					if ((assemblyModel.References != null) && (assemblyParserService != null)) {
-						foreach (var referencedAssemblyName in assemblyModel.References.AssemblyNames) {
-							CombinedAssemblySearcher searcher = new CombinedAssemblySearcher();
-							if ((assemblyModel.Context != null) && (assemblyModel.Context.Project != null)) {
-								searcher.AddSearcher(new ProjectAssemblyReferenceSearcher(assemblyModel.Context.Project));
-							}
-							searcher.AddSearcher(new DefaultAssemblySearcher(assemblyModel.Location));
-							var resolvedFile = searcher.FindAssembly(referencedAssemblyName.AssemblyName);
-							if (resolvedFile != null) {
-								var referenceAssemblyModel = assemblyParserService.GetAssemblyModel(resolvedFile);
-								resolveTypeDefModel = referenceAssemblyModel.TopLevelTypeDefinitions[baseTypeDefinition.FullTypeName];
-								if (resolveTypeDefModel != null) {
-									return resolveTypeDefModel;
-								}
-							}
-						}
-					}
-				}
-			} catch (Exception) {
-				// TODO Can't load the type, what to do?
-			}
-			
-			return resolveTypeDefModel;
 		}
 		
 		protected override System.Collections.Generic.IComparer<ICSharpCode.TreeView.SharpTreeNode> NodeComparer {

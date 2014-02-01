@@ -612,6 +612,24 @@ class TestClass
 	}
 }");
 		}
+
+		/// <summary>
+		/// Bug 11948 - Extract method incorrectly extracts code that contains yield return
+		/// </summary>
+		[Test]
+		public void TestBug11948()
+		{
+			TestWrongContext<ExtractMethodAction>(@"class TestClass
+{
+	int member = 5;
+	IEnumerable<int> TestMethod ()
+	{
+		int i = 5;
+		<-yield return i;->
+		Console.WriteLine (i);
+	}
+}");
+		}
 	}
 }
 

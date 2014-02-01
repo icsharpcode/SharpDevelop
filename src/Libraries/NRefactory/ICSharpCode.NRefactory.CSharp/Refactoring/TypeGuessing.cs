@@ -68,14 +68,21 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				foreach (var extMethods in targetResult.GetExtensionMethods ()) {
 					foreach (var extMethod in extMethods) {
-						if (index + 1 < extMethod.Parameters.Count) {
-							if (extMethod.Parameters [index + 1].IsParams) {
-								var arrayType = extMethod.Parameters [index + 1].Type as ArrayType;
+						IType[] inferredTypes;
+						var m = extMethod;
+						if (CSharpResolver.IsEligibleExtensionMethod(targetResult.TargetType, extMethod, true, out inferredTypes)) {
+							if (inferredTypes != null)
+								m = extMethod.Specialize(new TypeParameterSubstitution(null, inferredTypes));
+						}
+
+						int correctedIndex = index + 1;
+						if (correctedIndex < m.Parameters.Count) {
+							if (m.Parameters [correctedIndex].IsParams) {
+								var arrayType = m.Parameters [correctedIndex].Type as ArrayType;
 								if (arrayType != null)
 									yield return arrayType.ElementType;
 							}
-
-							yield return extMethod.Parameters [index + 1].Type;
+							yield return m.Parameters [correctedIndex].Type;
 						}
 					}
 				}

@@ -216,6 +216,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (guessName != null) {
 
 						var actions = new List<CodeAction>();
+						
+						actions.Add(new CodeAction (
+							string.Format(context.TranslateString("Replace with '\"{0}\"'."), guessName),
+							script => {
+								script.Replace(paramNode, new PrimitiveExpression(guessName));
+							}, paramNode
+						)); 
+
 						if (canAddParameterName) {
 							actions.Add(new CodeAction(
 								string.Format(context.TranslateString("Add '\"{0}\"' parameter."), guessName),
@@ -228,13 +236,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								}, paramNode
 							)); 
 						}
-
-						actions.Add(new CodeAction (
-							string.Format(context.TranslateString("Replace with '\"{0}\"'."), guessName),
-							script => {
-								script.Replace(paramNode, new PrimitiveExpression(guessName));
-							}, paramNode
-						)); 
 
 						AddIssue(new CodeIssue(
 							paramNode,

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.3
+# SharpDevelop 5.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageViewer", "ImageViewer.csproj", "{BECEEB35-A81D-4545-AC8E-BC622451DB99}"
 EndProject
 Global
@@ -10,9 +10,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BECEEB35-A81D-4545-AC8E-BC622451DB99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BECEEB35-A81D-4545-AC8E-BC622451DB99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BECEEB35-A81D-4545-AC8E-BC622451DB99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BECEEB35-A81D-4545-AC8E-BC622451DB99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BECEEB35-A81D-4545-AC8E-BC622451DB99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BECEEB35-A81D-4545-AC8E-BC622451DB99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

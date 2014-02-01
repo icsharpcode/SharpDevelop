@@ -97,6 +97,7 @@
     <Compile Include="ProcessRunner\ProcessExitedTestFixture.cs" />
     <Compile Include="ProcessRunner\ProcessRunnerNotStartedTestFixture.cs" />
     <Compile Include="ProcessRunner\StandardOutputFromProcessTestFixture.cs" />
+    <Compile Include="Project\AddExistingProjectTests.cs" />
     <Compile Include="Project\BeforeBuildCustomToolProjectItemsTests.cs" />
     <Compile Include="Project\MockSolution.cs" />
     <Compile Include="Project\ProjectCustomToolOptionsTests.cs" />
@@ -136,7 +137,7 @@
     <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />
     <Compile Include="WebReferences\WebReferenceTests.cs" />
     <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
-    <Compile Include="WebReferences\VBNetWebReferenceTest.cs" />
+    <Compile Include="WebReferences\VBWebReferenceTest.cs" />
     <Compile Include="WebReferences\WebReferenceTestHelper.cs" />
     <Compile Include="WebReferences\UnsupportedLanguageTest.cs" />
     <Compile Include="WebReferences\WebReferenceFolderAlreadyExistsTest.cs" />

@@ -83,6 +83,7 @@
     <Compile Include="Document\TextAnchorTest.cs" />
     <Compile Include="Document\TextSegmentTreeTest.cs" />
     <Compile Include="Document\TextUtilitiesTests.cs" />
+    <Compile Include="Document\UndoStackTests.cs" />
     <Compile Include="Editing\ChangeDocumentTests.cs" />
     <Compile Include="Editing\TextSegmentReadOnlySectionTests.cs" />
     <Compile Include="Highlighting\HighlightedLineMergeTests.cs" />

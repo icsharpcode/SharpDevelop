@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.2.0.8749-Beta 2
+# SharpDevelop 4.4
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSTest.SharpDevelop", "MSTest.SharpDevelop\MSTest.SharpDevelop.csproj", "{8DF3A610-47F9-4448-B455-952BD57CB5CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSTest.SharpDevelop.Tests", "MSTest.SharpDevelop.Tests\MSTest.SharpDevelop.Tests.csproj", "{51D56190-67B7-4A49-BA0A-24010460CCC6}"

@@ -43,6 +43,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context);
 		}
 
+		internal static bool CheckTarget(Expression target, Expression expr)
+		{
+			return !target.DescendantNodesAndSelf().Any(
+				n => (n is IdentifierExpression || n is MemberReferenceExpression) && 
+				expr.DescendantNodesAndSelf().Any(n2 => ((INode)n).IsMatch(n2))
+			);
+		}
+
 		class GatherVisitor : GatherVisitorBase<ConvertIfToOrExpressionIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx) : base (ctx)
@@ -83,6 +91,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						if (initializer == null || !(target is IdentifierExpression) || ((IdentifierExpression)target).Identifier != initializer.Name)
 							return;
 						var expr = match.Get<Expression>("condition").Single();
+						if (!CheckTarget(target, expr))
+							return;
 						AddIssue(new CodeIssue(
 							ifElseStatement.IfToken,
 							ctx.TranslateString("Convert to '||' expresssion"),
@@ -103,6 +113,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						return;
 					} else {
 						var expr = match.Get<Expression>("condition").Single();
+						if (!CheckTarget(target, expr))
+							return;
 						AddIssue(new CodeIssue(
 							ifElseStatement.IfToken,
 							ctx.TranslateString("Convert to '|=' expresssion"),

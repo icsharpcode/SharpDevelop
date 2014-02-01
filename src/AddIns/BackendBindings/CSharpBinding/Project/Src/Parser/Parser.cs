@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -119,6 +134,8 @@ namespace CSharpBinding.Parser
 					int commentEndOffset = document.GetOffset(comment.EndLocation) - commentEndSignLength;
 					int endOffset;
 					int searchOffset = 0;
+					// HACK: workaround for parser bug: uses \n instead of \r\n in comment.Content
+					string commentContent = document.GetText(commentStartOffset, commentEndOffset - commentStartOffset + 1);
 					do {
 						int start = commentStartOffset + searchOffset;
 						int absoluteOffset = document.IndexOf(match, start, document.TextLength - start, StringComparison.Ordinal);
@@ -131,7 +148,7 @@ namespace CSharpBinding.Parser
 						}
 						tagComments.Add(new TagComment(content.Substring(0, match.Length), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(match.Length)));
 						searchOffset = endOffset - commentStartOffset;
-					} while (comment.Content.ContainsAny(TaskListTokens, searchOffset, out match));
+					} while (commentContent.ContainsAny(TaskListTokens, searchOffset, out match));
 				}
 			}
 		}
@@ -153,7 +170,11 @@ namespace CSharpBinding.Parser
 			if (csParseInfo == null)
 				throw new ArgumentException("Parse info does not have SyntaxTree");
 			
-			return ResolveAtLocation.Resolve(compilation, csParseInfo.UnresolvedFile, csParseInfo.SyntaxTree, location, cancellationToken);
+			CSharpUnresolvedFile unresolvedFile = csParseInfo.UnresolvedFile;
+			var projectContents = compilation.Assemblies.Select(asm => asm.UnresolvedAssembly).OfType<IProjectContent>().ToList();
+			if (projectContents.All(pc => pc.GetFile(unresolvedFile.FileName) != unresolvedFile))
+				unresolvedFile = null;
+			return ResolveAtLocation.Resolve(compilation, unresolvedFile, csParseInfo.SyntaxTree, location, cancellationToken);
 		}
 		
 		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<SearchResultMatch> callback, CancellationToken cancellationToken)

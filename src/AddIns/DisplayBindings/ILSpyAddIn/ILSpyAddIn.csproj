@@ -133,6 +133,7 @@
     <ProjectReference Include="..\..\Debugger\Debugger.Core\Debugger.Core.csproj">
       <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>
       <Name>Debugger.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
       <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>

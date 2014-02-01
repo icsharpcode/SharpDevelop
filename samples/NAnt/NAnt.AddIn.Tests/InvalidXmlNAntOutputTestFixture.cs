@@ -17,7 +17,7 @@ namespace ICSharpCode.NAnt.Tests
 			
 			Assert.AreEqual(1, tasks.Count, "Should be one task.");
 			
-			Task task = tasks[0];
+			SDTask task = tasks[0];
 			Assert.AreEqual(@"C:\Projects\foo\foo.build", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(7, task.Line, "Task line is incorrect.");
 			Assert.AreEqual(5, task.Column, "Task column is incorrect.");

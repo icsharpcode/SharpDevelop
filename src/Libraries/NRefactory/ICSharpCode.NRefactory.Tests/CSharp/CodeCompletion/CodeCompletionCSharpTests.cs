@@ -28,6 +28,7 @@
 
 using System;
 using NUnit.Framework;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
@@ -342,6 +343,28 @@ public class TestMyLongName
 			Assert.IsNotNull (provider.Find ("name"), "name 'name' not found.");
 		}
 
-		
+		[Test()]
+		public void TestMethodCreationCompletionWithLambda ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Test
+{
+	public void TestMethod (string[] args)
+	{
+		$args.FirstOrDefault(d$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("delegate"), "completion item 'delegate' not found!");
+			Assert.IsNotNull (provider.Find ("async delegate"), "completion item 'async delegate' not found!");
+			Assert.IsNotNull (provider.Find ("(string arg)"), "completion item '(string arg)' not found!");
+			Assert.IsNotNull (provider.Find ("HandleFunc"), "completion item 'HandleFuncpredicate' not found!");
+		}
 	}
 }

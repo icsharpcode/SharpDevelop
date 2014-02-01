@@ -55,10 +55,10 @@ namespace NoGoop.ObjBrowser
 		/// </summary>
 		string[] PreviouslyOpenedTypeLibraries {
 			get {
-				return properties.Get("PreviouslyOpenedTypeLibraries", new string[0]);
+				return (string[]) properties.GetList<string>("PreviouslyOpenedTypeLibraries");
 			}
 			set {
-				properties.Set("PreviouslyOpenedTypeLibraries", value);
+				properties.SetList("PreviouslyOpenedTypeLibraries", value);
 			}
 		}
 		

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -93,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 //			}
 //			foreach (var key in removed)
 //				projectContentDictionary.Remove(key);
-			}
+		}
 		
 		LoadedAssembly GetLoadedAssembly(FileName fileName, bool includeInternalMembers)
 		{
@@ -194,29 +209,39 @@ namespace ICSharpCode.SharpDevelop.Parser
 		static readonly string referenceAssembliesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Reference Assemblies\Microsoft\\Framework");
 		static readonly string frameworkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework");
 		
-		static string FindXmlDocumentation(string assemblyFileName, TargetRuntime runtime)
+		static string FindXmlDocumentation(FileName assemblyFileName, TargetRuntime runtime)
 		{
-			string fileName;
+			// First, look in the same directory as the assembly.
+			// This usually works for .NET reference assembies and 3rd party libraries
+			string xmlFileName = LookupLocalizedXmlDoc(assemblyFileName);
+			if (xmlFileName != null)
+				return xmlFileName;
+			// Otherwise, assume the assembly is part of .NET and try looking
+			// in the framework directory.
+			// (if the assembly is not part of .NET, we won't find anything there)
+			string name = assemblyFileName.GetFileName();
 			switch (runtime) {
 				case TargetRuntime.Net_1_0:
-					fileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v1.0.3705", assemblyFileName));
+					xmlFileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v1.0.3705", name));
 					break;
 				case TargetRuntime.Net_1_1:
-					fileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v1.1.4322", assemblyFileName));
+					xmlFileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v1.1.4322", name));
 					break;
 				case TargetRuntime.Net_2_0:
-					fileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v2.0.50727", assemblyFileName))
-						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, "v3.5"))
-						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, "v3.0"))
-						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v3.5\Profile\Client"));
+					xmlFileName = LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, "v3.5", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v3.5\Profile\Client", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, "v3.0", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v2.0.50727", name));
 					break;
 				case TargetRuntime.Net_4_0:
 				default:
-					fileName = LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.0", assemblyFileName))
-						?? LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v4.0.30319", assemblyFileName));
+					xmlFileName = LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.5.1", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.5", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.0", name))
+						?? LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v4.0.30319", name));
 					break;
 			}
-			return fileName;
+			return xmlFileName;
 		}
 		
 		static string LookupLocalizedXmlDoc(string fileName)

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -29,6 +44,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public const string BreakpointMarker = "Breakpoint";
 		public const string InstructionPointerMarker = "Current statement";
 		public const string ColumnRuler = "Column ruler";
+		public const string CurrentLineHighlighter = "Current line highlighting";
 		
 		public static void ApplyCustomizationsToDefaultElements(TextEditor textEditor, IEnumerable<CustomizedHighlightingColor> customizations)
 		{
@@ -42,6 +58,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.TextView.ClearValue(TextView.LinkTextForegroundBrushProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.LinkTextBackgroundBrushProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.ColumnRulerPenProperty);
+			textEditor.TextArea.TextView.ClearValue(TextView.CurrentLineBorderProperty);
+			textEditor.TextArea.TextView.ClearValue(TextView.CurrentLineBackgroundProperty);
 			
 			// 'assigned' flags are used so that the first matching customization wins.
 			// This is necessary because more specific customizations come first in the list
@@ -52,6 +70,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			bool assignedLineNumbers = false;
 			bool assignedLinkText = false;
 			bool assignedColumnRulerColor = false;
+			bool assignedCurrentLineHighlighter = false;
 			
 			foreach (CustomizedHighlightingColor color in customizations) {
 				switch (color.Name) {
@@ -114,6 +133,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						assignedColumnRulerColor = true;
 						if (color.Foreground != null)
 							textEditor.TextArea.TextView.ColumnRulerPen = CreateFrozenPen(color.Foreground.Value);
+						break;
+					case CurrentLineHighlighter:
+						if (assignedCurrentLineHighlighter)
+							continue;
+						assignedCurrentLineHighlighter = true;
+						if (color.Background != null)
+							textEditor.TextArea.TextView.CurrentLineBackground = CreateFrozenBrush(color.Background.Value);
+						if (color.Foreground != null)
+							textEditor.TextArea.TextView.CurrentLineBorder = CreateFrozenPen(color.Foreground.Value);
 						break;
 				}
 			}

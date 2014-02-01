@@ -19,7 +19,8 @@
     <StartAction>Program</StartAction>
     <StartProgram>..\..\..\bin\SharpDevelop.exe</StartProgram>
     <OutputPath>..\..\..\AddIns\Samples\HtmlPreview</OutputPath>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>

@@ -330,6 +330,63 @@ class Test
 	}
 }");
 		}
+		
+		[Test]
+		public void TestAsyncMethod_Void()
+		{
+			var input = @"using System;
+using System.Threading.Tasks;
+
+class Test
+{
+	public async void M()
+	{
+		return;
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0126ReturnMustBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+		
+		[Test]
+		public void TestAsyncMethod_Task()
+		{
+			var input = @"using System;
+using System.Threading.Tasks;
+
+class Test
+{
+	public async Task M()
+	{
+		return;
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0126ReturnMustBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+		
+		[Test]
+		public void TestAsyncMethod_TaskOfInt()
+		{
+			var input = @"using System;
+using System.Threading.Tasks;
+
+class Test
+{
+	public async Task<int> M()
+	{
+		return;
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0126ReturnMustBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+		}
 	}
 }
 

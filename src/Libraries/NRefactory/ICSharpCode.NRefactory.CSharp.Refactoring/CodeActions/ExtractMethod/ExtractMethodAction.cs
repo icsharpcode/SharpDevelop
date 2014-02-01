@@ -32,6 +32,7 @@ using ICSharpCode.NRefactory.CSharp.Analysis;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Threading.Tasks;
+using Mono.CSharp;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 {
@@ -55,6 +56,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 
 			foreach (var node in selected) {
 				if (!(node is Statement) && !(node is Comment) && !(node is NewLineNode) && !(node is PreProcessorDirective))
+					yield break;
+				if (node.DescendantNodesAndSelf().Any(n => n is YieldBreakStatement || n is YieldReturnStatement))
 					yield break;
 			}
 			var action = CreateFromStatements (context, new List<AstNode> (selected));

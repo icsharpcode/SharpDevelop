@@ -58,7 +58,7 @@
 		<SyntaxMode
 			id="VisualBasic.Razor.SyntaxMode"
 			extensions=".vbhtml"
-			name="VBNET/Razor"
+			name="VB/Razor"
 			resource="ICSharpCode.AspNet.Mvc.Resources.VisualBasicRazor.xshd"/>
 	</Path>
 

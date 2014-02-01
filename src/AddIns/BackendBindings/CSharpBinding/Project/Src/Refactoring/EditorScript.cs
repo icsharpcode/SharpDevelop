@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -7,6 +22,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -14,6 +30,7 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Snippets;
 using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
@@ -66,12 +83,31 @@ namespace CSharpBinding.Refactoring
 			editor.Select(startOffset, endOffset - startOffset);
 		}
 		
-		static readonly Task completedTask = Task.FromResult<object>(null);
-		
 		public override Task Link(params AstNode[] nodes)
 		{
-			// TODO
-			return completedTask;
+			var segs = nodes.Select(node => GetSegment(node)).ToArray();
+			InsertionContext c = new InsertionContext(editor.GetRequiredService<TextArea>(), segs.Min(seg => seg.Offset));
+			c.InsertionPosition = segs.Max(seg => seg.EndOffset);
+			
+			var tcs = new TaskCompletionSource<bool>();
+			c.Deactivated += (sender, e) => tcs.SetResult(true);
+			
+			if (segs.Length > 0) {
+				// try to use node in identifier context to avoid the code completion popup.
+				var identifier = nodes.OfType<Identifier>().FirstOrDefault();
+				ISegment first;
+				if (identifier == null)
+					first = segs[0];
+				else
+					first = GetSegment(identifier);
+				c.Link(first, segs.Except(new[]{first}).ToArray());
+				c.RaiseInsertionCompleted(EventArgs.Empty);
+			} else {
+				c.RaiseInsertionCompleted(EventArgs.Empty);
+				c.Deactivate(new SnippetEventArgs(DeactivateReason.NoActiveElements));
+			}
+			
+			return tcs.Task;
 		}
 		
 		public override Task<Script> InsertWithCursor(string operation, InsertPosition defaultPosition, IList<AstNode> nodes)
@@ -114,35 +150,47 @@ namespace CSharpBinding.Refactoring
 					}
 					break;
 			}
-			operationsRunning++;
 			InsertWithCursorOnLayer(this, layer, tcs, nodes, editor.Document);
 			return tcs.Task;
 		}
 		
 		void InsertWithCursorOnLayer(EditorScript currentScript, InsertionCursorLayer layer, TaskCompletionSource<Script> tcs, IList<AstNode> nodes, IDocument target)
 		{
+			var doc = target as TextDocument;
+			var op = new UndoOperation(layer, tcs);
+			if (doc != null) {
+				doc.UndoStack.Push(op);
+			}
 			layer.Exited += delegate(object s, InsertionCursorEventArgs args) {
-				if (args.Success) {
-					if (args.InsertionPoint.LineAfter == NewLineInsertion.None &&
-					    args.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count > 1) {
-						args.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
+				doc.UndoStack.StartContinuedUndoGroup();
+				try {
+					if (args.Success) {
+						if (args.InsertionPoint.LineAfter == NewLineInsertion.None &&
+						    args.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count > 1) {
+							args.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
+						}
+
+						int offset = currentScript.GetCurrentOffset(args.InsertionPoint.Location);
+						int indentLevel = currentScript.GetIndentLevelAt(offset);
+						
+						foreach (var node in nodes.Reverse()) {
+							var output = currentScript.OutputNode(indentLevel, node);
+							int delta = args.InsertionPoint.Insert(target, output.Text);
+							output.RegisterTrackedSegments(currentScript, delta + offset);
+						}
+						currentScript.FormatText(nodes);
+						tcs.SetResult(currentScript);
 					}
-					foreach (var node in nodes.Reverse ()) {
-						int indentLevel = currentScript.GetIndentLevelAt(target.GetOffset(args.InsertionPoint.Location));
-						var output = currentScript.OutputNode(indentLevel, node);
-						var offset = target.GetOffset(args.InsertionPoint.Location);
-						var delta = args.InsertionPoint.Insert(target, output.Text);
-						output.RegisterTrackedSegments(currentScript, delta + offset);
-					}
-					tcs.SetResult(currentScript);
+					layer.Dispose();
+					DisposeOnClose();
+				} finally {
+					doc.UndoStack.EndUndoGroup();
 				}
-				layer.Dispose();
-				DisposeOnClose();
+				op.Reset();
 			};
 		}
 		
 		readonly List<Script> startedScripts = new List<Script>();
-		int operationsRunning;
 		
 		public override Task<Script> InsertWithCursor(string operation, ITypeDefinition parentType, Func<Script, RefactoringContext, IList<AstNode>> nodeCallback)
 		{
@@ -195,7 +243,6 @@ namespace CSharpBinding.Refactoring
 				tcs.SetResult(script);
 				return tcs.Task;
 			}
-			operationsRunning++;
 			InsertWithCursorOnLayer(script, layer, tcs, nodes, area.Document);
 			return tcs.Task;
 		}
@@ -205,14 +252,10 @@ namespace CSharpBinding.Refactoring
 		{
 			if (isDisposed)
 				return;
-			if (force)
-				operationsRunning = 0;
-			if (operationsRunning-- == 0) {
-				isDisposed = true;
-				base.Dispose ();
-				// refresh parse information so that the issue can disappear immediately
-				SD.ParserService.ParseAsync(editor.FileName, editor.Document).FireAndForget();
-			}
+			isDisposed = true;
+			base.Dispose();
+			// refresh parse information so that the issue can disappear immediately
+			SD.ParserService.ParseAsync(editor.FileName, editor.Document).FireAndForget();
 			foreach (var script in startedScripts)
 				script.Dispose();
 		}
@@ -221,16 +264,48 @@ namespace CSharpBinding.Refactoring
 		{
 			DisposeOnClose();
 		}
-
+		
+		class UndoOperation : IUndoableOperation
+		{
+			InsertionCursorLayer layer;
+			TaskCompletionSource<Script> tcs;
+			
+			public UndoOperation(InsertionCursorLayer layer, TaskCompletionSource<Script> tcs)
+			{
+				this.layer = layer;
+				this.tcs = tcs;
+			}
+			
+			public void Reset()
+			{
+				layer = null;
+				tcs = null;
+			}
+			
+			public void Undo()
+			{
+				if (layer != null)
+					layer.Dispose();
+				layer = null;
+				if (tcs != null)
+					tcs.SetCanceled();
+				tcs = null;
+			}
+			
+			public void Redo()
+			{
+			}
+		}
 	}
 	
-	class InsertionCursorLayer : UIElement, IDisposable
+	class InsertionCursorLayer : Canvas, IDisposable
 	{
-		string operation;
-		InsertionPoint[] insertionPoints;
+		readonly string operation;
+		readonly InsertionPoint[] insertionPoints;
 		readonly TextArea editor;
 		
 		public int CurrentInsertionPoint { get; set; }
+		int insertionPointNextToMouse = -1;
 		
 		public event EventHandler<InsertionCursorEventArgs> Exited;
 		
@@ -249,17 +324,75 @@ namespace CSharpBinding.Refactoring
 			this.editor.ActiveInputHandler = new InputHandler(this);
 			this.editor.TextView.InsertLayer(this, KnownLayer.Text, LayerInsertionPosition.Above);
 			this.editor.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
+			AddGroupBox();
 			ScrollToInsertionPoint();
 		}
 		
 		static readonly Pen markerPen = new Pen(Brushes.Blue, 1);
+		static readonly Pen tempMarkerPen = new Pen(Brushes.Gray, 1);
 		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			var currentInsertionPoint = insertionPoints[CurrentInsertionPoint];
+			DrawLineForInsertionPoint(CurrentInsertionPoint, markerPen, drawingContext);
+			if (insertionPointNextToMouse > -1 && insertionPointNextToMouse != CurrentInsertionPoint)
+				DrawLineForInsertionPoint(insertionPointNextToMouse, tempMarkerPen, drawingContext);
+			
+			SetGroupBoxPosition(); // HACK
+		}
+
+		void DrawLineForInsertionPoint(int index, Pen pen, DrawingContext drawingContext)
+		{
+			var currentInsertionPoint = insertionPoints[index];
 			var pos = editor.TextView.GetVisualPosition(new TextViewPosition(currentInsertionPoint.Location), VisualYPosition.LineMiddle);
 			var endPos = new Point(pos.X + editor.TextView.ActualWidth * 0.6, pos.Y);
-			drawingContext.DrawLine(markerPen, pos - editor.TextView.ScrollOffset, endPos - editor.TextView.ScrollOffset);
+			drawingContext.DrawLine(pen, pos - editor.TextView.ScrollOffset, endPos - editor.TextView.ScrollOffset);
+		}
+		
+		protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
+		{
+			return new PointHitTestResult(this, hitTestParameters.HitPoint);
+		}
+		
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			insertionPointNextToMouse = FindNextInsertionPoint(e.GetPosition(this));
+			e.Handled = true;
+			InvalidateVisual();
+			base.OnMouseMove(e);
+		}
+		
+		protected override void OnMouseDown(MouseButtonEventArgs e)
+		{
+			if (e.LeftButton == MouseButtonState.Pressed) {
+				if (e.ClickCount > 1) {
+					FireExited(true);
+				} else {
+					CurrentInsertionPoint = insertionPointNextToMouse;
+					InvalidateVisual();
+				}
+				e.Handled = true;
+			}
+			base.OnMouseDown(e);
+		}
+
+		int FindNextInsertionPoint(Point point)
+		{
+			var position = editor.TextView.GetPosition(point + editor.TextView.ScrollOffset);
+			if (position == null) return -1;
+			
+			int insertionPoint = CurrentInsertionPoint;
+			int mouseLocationLine = position.Value.Location.Line;
+			int currentLocationLine = insertionPoints[insertionPoint].Location.Line;
+			
+			for (int i = 0; i < insertionPoints.Length; i++) {
+				var line = insertionPoints[i].Location.Line;
+				var diff = Math.Abs(line - mouseLocationLine);
+				if (Math.Abs(currentLocationLine - mouseLocationLine) > diff && diff < 2) {
+					insertionPoint = i;
+					currentLocationLine = line;
+				}
+			}
+			return insertionPoint;
 		}
 		
 		void TextViewScrollOffsetChanged(object sender, EventArgs e)
@@ -277,6 +410,10 @@ namespace CSharpBinding.Refactoring
 				this.layer = layer;
 				AddBinding(EditingCommands.MoveDownByLine, ModifierKeys.None, Key.Down, MoveMarker(false));
 				AddBinding(EditingCommands.MoveUpByLine, ModifierKeys.None, Key.Up, MoveMarker(true));
+				AddBinding(EditingCommands.MoveDownByPage, ModifierKeys.None, Key.PageDown, MoveMarkerPage(false));
+				AddBinding(EditingCommands.MoveUpByPage, ModifierKeys.None, Key.PageUp, MoveMarkerPage(true));
+				AddBinding(EditingCommands.MoveToLineStart, ModifierKeys.None, Key.Home, MoveMarkerFull(true));
+				AddBinding(EditingCommands.MoveToLineEnd, ModifierKeys.None, Key.End, MoveMarkerFull(false));
 				AddBinding(EditingCommands.EnterParagraphBreak, ModifierKeys.None, Key.Enter, layer.InsertCode);
 				AddBinding(ExitCommand, ModifierKeys.None, Key.Escape, layer.Cancel);
 			}
@@ -288,6 +425,49 @@ namespace CSharpBinding.Refactoring
 						layer.CurrentInsertionPoint = Math.Max(0, layer.CurrentInsertionPoint - 1);
 					else
 						layer.CurrentInsertionPoint = Math.Min(layer.insertionPoints.Length - 1, layer.CurrentInsertionPoint + 1);
+					layer.InvalidateVisual();
+					layer.ScrollToInsertionPoint();
+				};
+			}
+			
+			ExecutedRoutedEventHandler MoveMarkerPage(bool up)
+			{
+				return (sender, e) => {
+					TextLocation current = layer.insertionPoints[layer.CurrentInsertionPoint].Location;
+					double currentVPos = layer.editor.TextView.GetVisualTopByDocumentLine(current.Line);
+					
+					int newIndex = layer.CurrentInsertionPoint;
+					
+					double newVPos;
+					do {
+						if (up) {
+							newIndex--;
+							if (newIndex < 0) {
+								newIndex = 0;
+								break;
+							}
+						} else {
+							newIndex++;
+							if (newIndex >= layer.insertionPoints.Length) {
+								newIndex = layer.insertionPoints.Length - 1;
+								break;
+							}
+						}
+						newVPos = layer.editor.TextView.GetVisualTopByDocumentLine(layer.insertionPoints[newIndex].Location.Line);
+					} while (Math.Abs(currentVPos - newVPos) < layer.editor.ActualHeight);
+					layer.CurrentInsertionPoint = newIndex;
+					layer.InvalidateVisual();
+					layer.ScrollToInsertionPoint();
+				};
+			}
+			
+			ExecutedRoutedEventHandler MoveMarkerFull(bool up)
+			{
+				return (sender, e) => {
+					if (up)
+						layer.CurrentInsertionPoint = 0;
+					else
+						layer.CurrentInsertionPoint = layer.insertionPoints.Length - 1;
 					layer.InvalidateVisual();
 					layer.ScrollToInsertionPoint();
 				};
@@ -310,16 +490,18 @@ namespace CSharpBinding.Refactoring
 		{
 			var location = insertionPoints[CurrentInsertionPoint].Location;
 			editor.GetService<TextEditor>().ScrollTo(location.Line, location.Column);
+			SetGroupBoxPosition();
 		}
 
-		void Cancel(object sender, ExecutedRoutedEventArgs e)
+		void SetGroupBoxPosition()
 		{
-			FireExited(false);
+			var location = insertionPoints[CurrentInsertionPoint].Location;
+			var boxPosition = editor.TextView.GetVisualPosition(new TextViewPosition(location), VisualYPosition.LineMiddle) - editor.TextView.ScrollOffset + new Vector(editor.TextView.ActualWidth * 0.6 - 5, -groupBox.ActualHeight / 2.0);
+			Canvas.SetTop(groupBox, boxPosition.Y);
+			Canvas.SetLeft(groupBox, boxPosition.X);
 		}
-		/// <summary>
-		/// call this somewhere useful, please... :)
-		/// </summary>
-		public void EndMode()
+		
+		void Cancel(object sender, ExecutedRoutedEventArgs e)
 		{
 			FireExited(false);
 		}
@@ -329,6 +511,31 @@ namespace CSharpBinding.Refactoring
 			if (Exited != null) {
 				Exited(this, new InsertionCursorEventArgs(insertionPoints[CurrentInsertionPoint], success));
 			}
+		}
+		
+		GroupBox groupBox;
+		
+		void AddGroupBox()
+		{
+			var content = new StackPanel {
+				Children = {
+					new TextBlock {
+						Text = "Use Up/Down to move to another location.\r\n" +
+							"Press Enter to select the location.\r\n" +
+							"Press Esc to cancel this operation."
+					}
+				}
+			};
+			
+			groupBox = new GroupBox {
+				Background = Brushes.White,
+				BorderBrush = Brushes.Blue,
+				BorderThickness = new Thickness(1),
+				Header = operation,
+				Content = content
+			};
+			
+			Children.Add(groupBox);
 		}
 	}
 	

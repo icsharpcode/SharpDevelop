@@ -1,9 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -19,8 +36,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			allSolutions = new NullSafeSimpleModelCollection<ISolution>();
 			allProjects = allSolutions.SelectMany(s => s.Projects);
+			projectBindings = SD.AddInTree.BuildItems<ProjectBindingDescriptor>("/SharpDevelop/Workbench/ProjectBindings", null);
+			targetFrameworks = SD.AddInTree.BuildItems<TargetFramework>("/SharpDevelop/TargetFrameworks", null);
 			
-			SD.GetFutureService<IWorkbench>().ContinueWith(t => t.Result.ActiveViewContentChanged += ActiveViewContentChanged);
+			SD.GetFutureService<IWorkbench>().ContinueWith(t => t.Result.ActiveViewContentChanged += ActiveViewContentChanged).FireAndForget();
 			
 			var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
 			if (applicationStateInfoService != null) {
@@ -137,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!CloseSolution(allowCancel: true))
 				return false;
 			FileUtility.ObservedLoad(OpenSolutionInternal, fileName);
-				
+			
 			return currentSolution != null;
 		}
 		
@@ -147,13 +166,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			using (var progress = AsynchronousWaitDialog.ShowWaitDialog("Loading Solution...")) {
 				
 				solution = LoadSolutionFile(fileName, progress);
-				//(openSolution.Preferences as IMementoCapable).SetMemento(solutionProperties);
-				
-//				try {
-//					ApplyConfigurationAndReadProjectPreferences();
-//				} catch (Exception ex) {
-//					MessageService.ShowException(ex);
-//				}
 				
 				this.CurrentSolution = solution;
 			}
@@ -263,7 +275,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public event EventHandler<SolutionClosingEventArgs> SolutionClosing = delegate { };
 		public event EventHandler<SolutionEventArgs> SolutionClosed = delegate { };
 		
-		public bool CloseSolution(bool allowCancel)
+		public bool CloseSolution(bool allowCancel = true)
 		{
 			SD.MainThread.VerifyAccess();
 			var solution = this.CurrentSolution;
@@ -369,6 +381,53 @@ namespace ICSharpCode.SharpDevelop.Project
 		void IProjectServiceRaiseEvents.RaiseProjectItemRemoved(ProjectItemEventArgs e)
 		{
 			ProjectItemRemoved(this, e);
+		}
+		#endregion
+
+		#region Project Bindings
+		readonly IReadOnlyList<ProjectBindingDescriptor> projectBindings;
+		
+		public IReadOnlyList<ProjectBindingDescriptor> ProjectBindings {
+			get { return projectBindings; }
+		}
+		
+		public IProject LoadProject(ProjectLoadInformation info)
+		{
+			if (info == null)
+				throw new ArgumentNullException("info");
+			info.ProgressMonitor.CancellationToken.ThrowIfCancellationRequested();
+			ProjectBindingDescriptor descriptor = null;
+			if (info.TypeGuid != Guid.Empty) {
+				descriptor = projectBindings.FirstOrDefault(b => b.TypeGuid == info.TypeGuid);
+			}
+			if (descriptor == null) {
+				string extension = info.FileName.GetExtension();
+				if (extension.Equals(".proj", StringComparison.OrdinalIgnoreCase) || extension.Equals(".build", StringComparison.OrdinalIgnoreCase))
+					return new MSBuildFileProject(info);
+				descriptor = projectBindings.FirstOrDefault(b => extension.Equals(b.ProjectFileExtension, StringComparison.OrdinalIgnoreCase));
+			}
+			if (descriptor == null)
+				throw new ProjectLoadException(SD.ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.NoBackendForProjectType"));
+			
+			// Set type GUID based on file extension
+			info.TypeGuid = descriptor.TypeGuid;
+			IProjectBinding binding = descriptor.Binding;
+			if (binding == null)
+				throw new ProjectLoadException(SD.ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.NoBackendForProjectType"));
+			if (!binding.HandlingMissingProject && !SD.FileSystem.FileExists(info.FileName))
+				throw new FileNotFoundException("Project file not found", info.FileName);
+			var result = binding.LoadProject(info);
+			if (result == null)
+				throw new InvalidOperationException("IProjectBinding.LoadProject() must not return null");
+			return result;
+		}
+		#endregion
+		
+		#region Target Frameworks
+		readonly IReadOnlyList<TargetFramework> targetFrameworks;
+		
+		public IReadOnlyList<TargetFramework> TargetFrameworks {
+			get { return targetFrameworks; }
 		}
 		#endregion
 	}

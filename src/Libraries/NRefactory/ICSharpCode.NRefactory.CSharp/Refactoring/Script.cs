@@ -492,7 +492,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				int startOffset = stringWriter.GetStringBuilder ().Length;
 				int endOffset = startOffset + (identifier.Name ?? "").Length + (identifier.IsVerbatim ? 1 : 0);
-				NewSegments.Add(new KeyValuePair<AstNode, Segment>(identifier, new Segment(startOffset, endOffset)));
+				NewSegments.Add(new KeyValuePair<AstNode, Segment>(identifier, new Segment(startOffset, endOffset - startOffset)));
 				base.WriteIdentifier (identifier);
 			}
 			
@@ -615,7 +615,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 	}
 
-	static class ExtMethods
+	public static class ExtMethods
 	{
 		public static void ContinueScript (this Task task, Action act)
 		{

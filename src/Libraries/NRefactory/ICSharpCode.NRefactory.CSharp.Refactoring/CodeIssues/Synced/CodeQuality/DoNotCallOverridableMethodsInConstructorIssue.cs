@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	                  Description = "Warns about calls to virtual member functions occuring in the constructor.",
 	                  Category = IssueCategories.CodeQualityIssues,
 	                  Severity = Severity.Warning,
-                      AnalysisDisableKeyword = "DoNotCallOverridableMethodsInConstructor")]
+	                  AnalysisDisableKeyword = "DoNotCallOverridableMethodsInConstructor")]
 	public class DoNotCallOverridableMethodsInConstructorIssue : CodeIssueProvider
 	{
 		public override IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context, string subIssue)
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				bool oldIsSealedType = isSealedType;
 				isSealedType = typeDeclaration.Modifiers.HasFlag(Modifiers.Sealed);
-			    CallFinder.CurrentType = typeDeclaration;
+				CallFinder.CurrentType = typeDeclaration;
 				base.VisitTypeDeclaration(typeDeclaration);
 				isSealedType = oldIsSealedType;
 			}
@@ -115,44 +115,38 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		class VirtualCallFinderVisitor: GatherVisitorBase<DoNotCallOverridableMethodsInConstructorIssue>
 		{
 			readonly BaseRefactoringContext context;
-            public TypeDeclaration CurrentType;
+			public TypeDeclaration CurrentType;
 			public VirtualCallFinderVisitor(BaseRefactoringContext context) : base(context)
 			{
 				this.context = context;
 			}
 
-		    
-
-		    public override void VisitInvocationExpression(InvocationExpression invocationExpression)
+			public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
 			{
-				base.VisitInvocationExpression(invocationExpression);
-				if (!IsCallDependentOnCurrentInstance(invocationExpression))
-					// Call within current class scope without 'this' or 'base'
-					return;
-				var targetMethod = context.Resolve(invocationExpression) as InvocationResolveResult;
-				if (targetMethod == null)
-					return;
-				if (targetMethod.IsVirtualCall) {
-					if (targetMethod.Member.DeclaringType.Kind == ICSharpCode.NRefactory.TypeSystem.TypeKind.Delegate)
-						return;
-					AddIssue(new CodeIssue(invocationExpression,
-                             context.TranslateString("Virtual member call in constructor"),
-                             new CodeAction(string.Format(context.TranslateString("Make class '{0}' sealed"), CurrentType.Name),
-                             script => script.ChangeModifier(CurrentType, CurrentType.Modifiers | Modifiers.Sealed), 
-							invocationExpression)));
+				base.VisitMemberReferenceExpression(memberReferenceExpression);
+				var targetMember = context.Resolve(memberReferenceExpression) as MemberResolveResult;
+				if (targetMember != null && targetMember.IsVirtualCall && targetMember.TargetResult is ThisResolveResult) {
+					CreateIssue(memberReferenceExpression);
 				}
 			}
 
-			bool IsCallDependentOnCurrentInstance(InvocationExpression invocationExpression)
+			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 			{
-				if (invocationExpression.Target is IdentifierExpression)
-					// Call within current class scope without 'this' or 'base'
-					return true;
-				var expression = invocationExpression.Target as MemberReferenceExpression;
-				if (expression == null || expression.Target is ThisReferenceExpression)
-					// Call within current class scope using 'this' or 'base'
-					return true;
-				return false;
+				base.VisitInvocationExpression(invocationExpression);
+				var targetMethod = context.Resolve(invocationExpression) as InvocationResolveResult;
+				if (targetMethod != null && targetMethod.IsVirtualCall && targetMethod.TargetResult is ThisResolveResult) {
+					CreateIssue(invocationExpression);
+				}
+			}
+
+			void CreateIssue(AstNode node)
+			{
+				AddIssue(new CodeIssue(
+					node,
+					context.TranslateString("Virtual member call in constructor"),
+					new CodeAction(string.Format(context.TranslateString("Make class '{0}' sealed"), CurrentType.Name),
+					               script => script.ChangeModifier(CurrentType, CurrentType.Modifiers | Modifiers.Sealed),
+					               node)));
 			}
 			
 			public override void VisitLambdaExpression(LambdaExpression lambdaExpression)

@@ -13,7 +13,7 @@ using System;
 using System.Linq;
 using SLE = System.Linq.Expressions;
 
-#if NET_4_0 || MONODROID
+#if NET_4_0 || MOBILE_DYNAMIC
 using System.Dynamic;
 #endif
 
@@ -63,7 +63,7 @@ namespace Mono.CSharp
 	//
 	public class RuntimeValueExpression : Expression, IDynamicAssign, IMemoryLocation
 	{
-#if !NET_4_0 && !MONODROID
+#if !NET_4_0 && !MOBILE_DYNAMIC
 		public class DynamicMetaObject
 		{
 			public TypeSpec RuntimeType;
@@ -146,7 +146,7 @@ namespace Mono.CSharp
 			return base.MakeExpression (ctx);
 #else
 
-#if NET_4_0 || MONODROID
+#if NET_4_0 || MOBILE_DYNAMIC
 				if (type.IsStruct && !obj.Expression.Type.IsValueType)
 					return SLE.Expression.Unbox (obj.Expression, type.GetMetaInfo ());
 
@@ -181,7 +181,7 @@ namespace Mono.CSharp
 			return this;
 		}
 
-#if NET_4_0 || MONODROID
+#if NET_4_0 || MOBILE_DYNAMIC
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
 #if STATIC
@@ -450,6 +450,14 @@ namespace Mono.CSharp
 				d.PrepareEmit ();
 
 				site.AddTypeContainer (d);
+
+				//
+				// Add new container to inflated site container when the
+				// member cache already exists
+				//
+				if (site.CurrentType is InflatedTypeSpec && index > 0)
+					site.CurrentType.MemberCache.AddMember (d.CurrentType);
+
 				del_type = new TypeExpression (d.CurrentType, loc);
 				if (targs_for_instance != null) {
 					del_type_instance_access = null;
@@ -532,6 +540,11 @@ namespace Mono.CSharp
 			}
 		}
 
+		public override void FlowAnalysis (FlowAnalysisContext fc)
+		{
+			arguments.FlowAnalysis (fc);
+		}
+
 		public static MemberAccess GetBinderNamespace (Location loc)
 		{
 			return new MemberAccess (new MemberAccess (
@@ -611,6 +624,11 @@ namespace Mono.CSharp
 			using (ec.With (BuilderContext.Options.OmitDebugInfo, true)) {
 				stmt.Emit (ec);
 			}
+		}
+
+		public override void FlowAnalysis (FlowAnalysisContext fc)
+		{
+			invoke.FlowAnalysis (fc);
 		}
 	}
 

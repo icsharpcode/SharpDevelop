@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -581,14 +596,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			RefreshPads();
 		}
 		
-		public static Value Evaluate(string code)
+		public static Value Evaluate(string code, bool allowMethodInvoke = true, bool allowSetValue = false)
 		{
 			if (CurrentStackFrame == null || CurrentStackFrame.NextStatement == null)
 				throw new GetValueException("no stackframe available!");
 			var location = CurrentStackFrame.NextStatement;
 			var fileName = new FileName(location.Filename);
 			var rr = SD.ParserService.ResolveSnippet(fileName, new TextLocation(location.StartLine, location.StartColumn), new ParseableFileContentFinder().Create(fileName), code, null, System.Threading.CancellationToken.None);
-			return new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation, true).Convert(rr);
+			return new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation, allowMethodInvoke, allowSetValue).Convert(rr);
 		}
 
 		public void JumpToCurrentLine()
@@ -626,7 +641,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (!(IsDebugging && CurrentProcess.IsPaused))
 				return;
-			var resolveResult = e.ResolveResult;
+			if (CurrentStackFrame == null)
+				return;
+			var resolveResult = SD.ParserService.Resolve(e.Editor, e.LogicalPosition, CurrentStackFrame.AppDomain.Compilation);
 			if (resolveResult == null)
 				return;
 			if (resolveResult is LocalResolveResult || resolveResult is MemberResolveResult) {

@@ -75,15 +75,24 @@ namespace Mono.CSharp
 				return flags != null;
 			}
 
+			IList<CustomAttributeData> GetCustomAttributes ()
+			{
+				var mi = provider as MemberInfo;
+				if (mi != null)
+					return CustomAttributeData.GetCustomAttributes (mi);
+
+				var pi = provider as ParameterInfo;
+				if (pi != null)
+					return CustomAttributeData.GetCustomAttributes (pi);
+
+				provider = null;
+				return null;
+			}
+
 			void ReadAttribute ()
 			{
-				IList<CustomAttributeData> cad;
-				if (provider is MemberInfo) {
-					cad = CustomAttributeData.GetCustomAttributes ((MemberInfo) provider);
-				} else if (provider is ParameterInfo) {
-					cad = CustomAttributeData.GetCustomAttributes ((ParameterInfo) provider);
-				} else {
-					provider = null;
+				var cad = GetCustomAttributes ();
+				if (cad == null) {
 					return;
 				}
 
@@ -493,7 +502,7 @@ namespace Mono.CSharp
 				} else if (i == 0 && method.IsStatic && (parent.Modifiers & Modifiers.METHOD_EXTENSION) != 0 &&
 					HasAttribute (CustomAttributeData.GetCustomAttributes (method), "ExtensionAttribute", CompilerServicesNamespace)) {
 					mod = Parameter.Modifier.This;
-					types[i] = ImportType (p.ParameterType);
+					types[i] = ImportType (p.ParameterType, new DynamicTypeReader (p));
 				} else {
 					types[i] = ImportType (p.ParameterType, new DynamicTypeReader (p));
 
@@ -1150,6 +1159,14 @@ namespace Mono.CSharp
 				throw new NotImplementedException ("Unknown element type " + type.ToString ());
 			}
 
+			TypeSpec compiled_type;
+			if (compiled_types.TryGetValue (type, out compiled_type)) {
+				if (compiled_type.BuiltinType == BuiltinTypeSpec.Type.Object && dtype.IsDynamicObject ())
+					return module.Compiler.BuiltinTypes.Dynamic;
+
+				return compiled_type;
+			}
+
 			return CreateType (type, dtype, true);
 		}
 
@@ -1798,6 +1815,16 @@ namespace Mono.CSharp
 			}
 		}
 
+		bool ITypeDefinition.IsCyclicTypeForwarder {
+			get {
+#if STATIC
+				return ((MetaType) provider).__IsCyclicTypeForwarder;
+#else
+				return false;
+#endif
+			}
+		}
+
 		public override string Name {
 			get {
 				if (name == null) {
@@ -1919,20 +1946,24 @@ namespace Mono.CSharp
 				if (caller.Kind != MemberKind.MissingType)
 					report.SymbolRelatedToPreviousError (caller);
 
-				if (t.MemberDefinition.DeclaringAssembly == ctx.Module.DeclaringAssembly) {
+				var definition = t.MemberDefinition;
+				if (definition.DeclaringAssembly == ctx.Module.DeclaringAssembly) {
 					report.Error (1683, loc,
 						"Reference to type `{0}' claims it is defined in this assembly, but it is not defined in source or any added modules",
 						name);
-				} else if (t.MemberDefinition.DeclaringAssembly.IsMissing) {
-					if (t.MemberDefinition.IsTypeForwarder) {
+				} else if (definition.DeclaringAssembly.IsMissing) {
+					if (definition.IsTypeForwarder) {
 						report.Error (1070, loc,
 							"The type `{0}' has been forwarded to an assembly that is not referenced. Consider adding a reference to assembly `{1}'",
-							name, t.MemberDefinition.DeclaringAssembly.FullName);
+							name, definition.DeclaringAssembly.FullName);
 					} else {
 						report.Error (12, loc,
 							"The type `{0}' is defined in an assembly that is not referenced. Consider adding a reference to assembly `{1}'",
-							name, t.MemberDefinition.DeclaringAssembly.FullName);
+							name, definition.DeclaringAssembly.FullName);
 					}
+				} else if (definition.IsTypeForwarder) {
+					report.Error (731, loc, "The type forwarder for type `{0}' in assembly `{1}' has circular dependency",
+						name, definition.DeclaringAssembly.FullName);
 				} else {
 					report.Error (1684, loc,
 						"Reference to type `{0}' claims it is defined assembly `{1}', but it could not be found",
@@ -2226,6 +2257,12 @@ namespace Mono.CSharp
 		}
 
 		bool ITypeDefinition.IsTypeForwarder {
+			get {
+				return false;
+			}
+		}
+
+		bool ITypeDefinition.IsCyclicTypeForwarder {
 			get {
 				return false;
 			}

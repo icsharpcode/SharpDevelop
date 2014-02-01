@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
@@ -51,6 +66,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		readonly string defaultTaskName;
 		readonly CancellationTokenSource cancellation;
 		readonly ProgressCollector collector;
+		readonly bool runningInOwnThread;
+		readonly Action<IProgressMonitor> asyncOperation;
 		
 		readonly SynchronizationHelper synchronizationHelper = new SynchronizationHelper();
 		AsynchronousWaitDialogForm dlg;
@@ -91,8 +108,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (titleName == null)
 				throw new ArgumentNullException("titleName");
-			AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, defaultTaskName, allowCancel);
-			h.Start();
+			AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, defaultTaskName, allowCancel, null);
+			h.StartInThread();
 			return h;
 		}
 		
@@ -106,8 +123,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (titleName == null)
 				throw new ArgumentNullException("titleName");
-			using (AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, defaultTaskName, true)) {
-				h.Start();
+			using (AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, defaultTaskName, true, null)) {
+				h.StartInThread();
 				try {
 					action(h);
 				} catch (OperationCanceledException ex) {
@@ -118,12 +135,41 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		private AsynchronousWaitDialog(string titleName, string defaultTaskName, bool allowCancel)
+		/// <summary>
+		/// Shows a wait dialog that does not support cancelling and waits for an asynchronous operation to end.
+		/// </summary>
+		/// <param name="titleName">Title of the wait dialog</param>
+		/// <param name="asyncOperation">Asynchronous operation to be executed.</param>
+		public static void ShowWaitDialogForAsyncOperation(string titleName, Action<IProgressMonitor> asyncOperation)
+		{
+			ShowWaitDialogForAsyncOperation(titleName, null, asyncOperation);
+		}
+		
+		/// <summary>
+		/// Shows a wait dialog that does not support cancelling and waits for an asynchronous operation to end.
+		/// </summary>
+		/// <param name="titleName">Title of the wait dialog</param>
+		/// <param name="allowCancel">Specifies whether a cancel button should be shown.</param>
+		/// <param name="defaultTaskName">The default description text, if no named task is active.</param>
+		/// <param name="asyncOperation">Asynchronous operation to be executed.</param>
+		/// <returns>AsynchronousWaitDialog object - you can use it to access the wait dialog's properties.
+		/// To close the wait dialog, call Dispose() on the AsynchronousWaitDialog object</returns>
+		public static void ShowWaitDialogForAsyncOperation(string titleName, string defaultTaskName, Action<IProgressMonitor> asyncOperation)
+		{
+			if (titleName == null)
+				throw new ArgumentNullException("titleName");
+			AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, defaultTaskName, false, asyncOperation);
+			h.StartWithAsyncOperation();
+		}
+		
+		private AsynchronousWaitDialog(string titleName, string defaultTaskName, bool allowCancel, Action<IProgressMonitor> asyncOperation)
 		{
 			this.titleName = StringParser.Parse(titleName);
 			this.defaultTaskName = StringParser.Parse(defaultTaskName ?? "${res:Global.PleaseWait}");
 			if (allowCancel)
 				this.cancellation = new CancellationTokenSource();
+			this.asyncOperation = asyncOperation;
+			this.runningInOwnThread = (asyncOperation == null);
 			this.collector = new ProgressCollector(synchronizationHelper, allowCancel ? cancellation.Token : CancellationToken.None);
 		}
 		#endregion
@@ -185,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Start waiting thread
 		/// </summary>
-		internal void Start()
+		internal void StartInThread()
 		{
 			Thread newThread = new Thread(Run);
 			newThread.Name = "AsynchronousWaitDialog thread";
@@ -198,8 +244,43 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void Run()
 		{
 			Thread.Sleep(ShowWaitDialogDelay);
-			if (collector.ProgressMonitorIsDisposed)
+			
+			if (CreateDialogForm()) {
+				if (collector.ShowingDialog) {
+					Application.Run();
+				} else {
+					Application.Run(dlg);
+				}
+			}
+		}
+		#endregion
+		
+		internal void StartWithAsyncOperation()
+		{
+			// Start asynchronous operation
+			if (asyncOperation == null)
 				return;
+			asyncOperation(collector.ProgressMonitor);
+			
+			// Wait delay before showing dialog
+			var timer = new System.Windows.Forms.Timer();
+			timer.Interval = ShowWaitDialogDelay;
+			timer.Tick += (sender, e) =>
+			{
+				timer.Stop();
+				timer.Dispose();
+				
+				// Create and show dialog
+				if (CreateDialogForm())
+					dlg.ShowDialog();
+			};
+			timer.Start();
+		}
+		
+		bool CreateDialogForm()
+		{
+			if (collector.ProgressMonitorIsDisposed)
+				return false;
 			
 			dlg = new AsynchronousWaitDialogForm(cancellation != null);
 			dlg.Text = titleName;
@@ -215,18 +296,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// check IsDisposed once again (we might have missed an event while we initialized the dialog):
 			if (collector.ProgressMonitorIsDisposed) {
 				dlg.Dispose();
-				return;
+				return false;
 			}
 			
 			progress_PropertyChanged(null, new System.ComponentModel.PropertyChangedEventArgs("TaskName"));
 			
-			if (collector.ShowingDialog) {
-				Application.Run();
-			} else {
-				Application.Run(dlg);
-			}
+			return true;
 		}
-		#endregion
 		
 		/// <summary>
 		/// Closes the wait dialog.
@@ -234,7 +310,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void progress_ProgressMonitorDisposed(object sender, EventArgs e)
 		{
 			dlg.Dispose();
-			Application.ExitThread();
+			if (runningInOwnThread)
+				Application.ExitThread();
 		}
 		
 		bool reshowTimerRunning = false;
@@ -252,8 +329,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 					timer.Tick += delegate {
 						timer.Dispose();
 						reshowTimerRunning = false;
-						if (!collector.ShowingDialog)
-							dlg.Show();
+						if (!collector.ShowingDialog) {
+							if (runningInOwnThread)
+								dlg.Show();
+							else
+								if (!dlg.Visible)
+									dlg.ShowDialog();
+						}
 					};
 					timer.Start();
 				}

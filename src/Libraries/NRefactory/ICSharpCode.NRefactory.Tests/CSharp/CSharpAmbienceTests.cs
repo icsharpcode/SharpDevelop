@@ -48,8 +48,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void GenericType()
 		{
 			var typeDef = compilation.FindType(typeof(Dictionary<,>)).GetDefinition();
-			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef);
+			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedEntityNames | ConversionFlags.ShowTypeParameterList;
+			string result = ambience.ConvertSymbol(typeDef);
 			
 			Assert.AreEqual("System.Collections.Generic.Dictionary<TKey, TValue>", result);
 		}
@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var typeDef = compilation.FindType(typeof(Dictionary<,>)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef);
+			string result = ambience.ConvertSymbol(typeDef);
 			
 			Assert.AreEqual("Dictionary<TKey, TValue>", result);
 		}
@@ -68,8 +68,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void SimpleType()
 		{
 			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
-			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef);
+			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedEntityNames | ConversionFlags.ShowTypeParameterList;
+			string result = ambience.ConvertSymbol(typeDef);
 			
 			Assert.AreEqual("System.Object", result);
 		}
@@ -78,8 +78,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void SimpleTypeDefinition()
 		{
 			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
-			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedTypeNames);
-			string result = ambience.ConvertEntity(typeDef);
+			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedEntityNames);
+			string result = ambience.ConvertSymbol(typeDef);
 			
 			Assert.AreEqual("public class Object", result);
 		}
@@ -88,8 +88,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void SimpleTypeDefinitionWithoutModifiers()
 		{
 			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
-			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.ShowModifiers | ConversionFlags.ShowAccessibility);
-			string result = ambience.ConvertEntity(typeDef);
+			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedEntityNames | ConversionFlags.ShowModifiers | ConversionFlags.ShowAccessibility);
+			string result = ambience.ConvertSymbol(typeDef);
 			
 			Assert.AreEqual("class Object", result);
 		}
@@ -99,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var typeDef = compilation.FindType(typeof(List<>)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.All;
-			string result = ambience.ConvertEntity(typeDef);
+			string result = ambience.ConvertSymbol(typeDef);
 			
 			Assert.AreEqual("public class System.Collections.Generic.List<T>", result);
 		}
@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var typeDef = compilation.FindType(typeof(IEnumerable<>)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.All;
-			string result = ambience.ConvertEntity(typeDef);
+			string result = ambience.ConvertSymbol(typeDef);
 			
 			Assert.AreEqual("public interface System.Collections.Generic.IEnumerable<out T>", result);
 		}
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef);
+			string result = ambience.ConvertSymbol(typeDef);
 			
 			Assert.AreEqual("Object", result);
 		}
@@ -128,8 +128,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void GenericTypeWithNested()
 		{
 			var typeDef = compilation.FindType(typeof(List<>.Enumerator)).GetDefinition();
-			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef);
+			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedEntityNames | ConversionFlags.ShowTypeParameterList;
+			string result = ambience.ConvertSymbol(typeDef);
 			
 			Assert.AreEqual("System.Collections.Generic.List<T>.Enumerator", result);
 		}
@@ -139,7 +139,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var typeDef = compilation.FindType(typeof(List<>.Enumerator)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.ShowDeclaringType | ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef);
+			string result = ambience.ConvertSymbol(typeDef);
 			
 			Assert.AreEqual("List<T>.Enumerator", result);
 		}
@@ -152,7 +152,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			var func = compilation.FindType(typeof(Func<,>)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			
-			Assert.AreEqual("Func<in T, out TResult>", ambience.ConvertEntity(func));
+			Assert.AreEqual("Func<in T, out TResult>", ambience.ConvertSymbol(func));
 		}
 		
 		[Test]
@@ -160,7 +160,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var func = compilation.FindType(typeof(Func<,>)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.All;
-			Assert.AreEqual("public delegate TResult System.Func<in T, out TResult>(T arg);", ambience.ConvertEntity(func));
+			Assert.AreEqual("public delegate TResult System.Func<in T, out TResult>(T arg);", ambience.ConvertSymbol(func));
 		}
 		#endregion
 		
@@ -170,7 +170,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var field = compilation.FindType(typeof(CSharpAmbienceTests.Program)).GetFields(f => f.Name == "test").Single();
 			ambience.ConversionFlags = ConversionFlags.All;
-			string result = ambience.ConvertEntity(field);
+			string result = ambience.ConvertSymbol(field);
 			
 			Assert.AreEqual("private int ICSharpCode.NRefactory.CSharp.CSharpAmbienceTests.Program.test;", result);
 		}
@@ -180,7 +180,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var field = compilation.FindType(typeof(CSharpAmbienceTests.Program)).GetFields(f => f.Name == "TEST2").Single();
 			ambience.ConversionFlags = ConversionFlags.All;
-			string result = ambience.ConvertEntity(field);
+			string result = ambience.ConvertSymbol(field);
 			
 			Assert.AreEqual("private const int ICSharpCode.NRefactory.CSharp.CSharpAmbienceTests.Program.TEST2;", result);
 		}
@@ -190,7 +190,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var field = compilation.FindType(typeof(CSharpAmbienceTests.Program)).GetFields(f => f.Name == "test").Single();
 			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.ShowDeclaringType | ConversionFlags.ShowModifiers | ConversionFlags.ShowAccessibility);
-			string result = ambience.ConvertEntity(field);
+			string result = ambience.ConvertSymbol(field);
 			
 			Assert.AreEqual("int test;", result);
 		}
@@ -202,7 +202,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var ev = compilation.FindType(typeof(CSharpAmbienceTests.Program)).GetEvents(f => f.Name == "ProgramChanged").Single();
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
-			string result = ambience.ConvertEntity(ev);
+			string result = ambience.ConvertSymbol(ev);
 			
 			Assert.AreEqual("public event EventHandler Program.ProgramChanged;", result);
 		}
@@ -212,7 +212,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var ev = compilation.FindType(typeof(CSharpAmbienceTests.Program)).GetEvents(f => f.Name == "SomeEvent").Single();
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-			string result = ambience.ConvertEntity(ev);
+			string result = ambience.ConvertSymbol(ev);
 			
 			Assert.AreEqual("public event EventHandler SomeEvent;", result);
 		}
@@ -224,7 +224,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var prop = compilation.FindType(typeof(CSharpAmbienceTests.Program)).GetProperties(p => p.Name == "Test").Single();
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-			string result = ambience.ConvertEntity(prop);
+			string result = ambience.ConvertSymbol(prop);
 			
 			Assert.AreEqual("public int Test { get; set; }", result);
 		}
@@ -234,7 +234,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var prop = compilation.FindType(typeof(CSharpAmbienceTests.Program)).GetProperties(p => p.IsIndexer).Single();
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-			string result = ambience.ConvertEntity(prop);
+			string result = ambience.ConvertSymbol(prop);
 			
 			Assert.AreEqual("public int this[int index] { get; }", result);
 		}

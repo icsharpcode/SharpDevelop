@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 // enable this define to test that event handlers are removed correctly
 //#define EventHandlerDebugging
@@ -48,9 +63,20 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			get { return _xamlObject.ElementType; }
 		}
 		
+		void SetNameInternal(string newName)
+		{
+			_xamlObject.Name = newName;
+		}
+		
 		public override string Name {
 			get { return _xamlObject.Name; }
-			set { _xamlObject.Name = value; }
+			set {
+				UndoService undoService = this.Services.GetService<UndoService>();
+				if (undoService != null)
+					undoService.Execute(new SetNameAction(this, value));
+				else
+					SetNameInternal(value);
+			}
 		}
 		
 		public override string Key {
@@ -173,6 +199,53 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
                 item = ((XamlDesignContext)Context)._componentService.RegisterXamlComponentRecursive(obj);
 		    }
 		    return item;
+		}
+		
+		sealed class SetNameAction : ITransactionItem
+		{
+			XamlDesignItem designItem;
+			string oldName;
+			string newName;
+			
+			public SetNameAction(XamlDesignItem designItem, string newName)
+			{
+				this.designItem = designItem;
+				this.newName = newName;
+				
+				oldName = designItem.Name;
+			}
+			
+			public string Title {
+				get {
+					return "Set name";
+				}
+			}
+			
+			public void Do()
+			{
+				designItem.SetNameInternal(newName);
+			}
+			
+			public void Undo()
+			{
+				designItem.SetNameInternal(oldName);
+			}
+			
+			public System.Collections.Generic.ICollection<DesignItem> AffectedElements {
+				get {
+					return new DesignItem[] { designItem };
+				}
+			}
+
+			public bool MergeWith(ITransactionItem other)
+			{
+				SetNameAction o = other as SetNameAction;
+				if (o != null && designItem == o.designItem) {
+					newName = o.newName;
+					return true;
+				}
+				return false;
+			}
 		}
 	}
 }

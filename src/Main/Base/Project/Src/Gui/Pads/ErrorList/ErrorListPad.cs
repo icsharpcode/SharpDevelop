@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.ObjectModel;
@@ -108,8 +123,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			errorView.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, ExecuteCopy, CanExecuteCopy));
 			errorView.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
 			
-			errors.CollectionChanged += delegate { MenuService.UpdateText(toolBar.Items); };
-			
 			InternalShowResults();
 		}
 		
@@ -127,11 +140,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void OnSolutionOpen(object sender, SolutionEventArgs e)
 		{
 			errors.Clear();
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void OnSolutionClosed(object sender, EventArgs e)
 		{
 			errors.Clear();
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void ProjectServiceEndBuild(object sender, EventArgs e)
@@ -174,6 +189,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (TaskService.InUpdate)
 				return;
 			errors.Clear();
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void TaskServiceAdded(object sender, TaskEventArgs e)
@@ -181,6 +197,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (TaskService.InUpdate)
 				return;
 			AddTask(e.Task);
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
@@ -188,6 +205,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (TaskService.InUpdate)
 				return;
 			errors.Remove(e.Task);
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void InternalShowResults()
@@ -197,6 +215,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach (SDTask task in TaskService.Tasks) {
 				AddTask(task);
 			}
+			
+			MenuService.UpdateText(toolBar.Items);
 		}
 		
 		void CanExecuteCopy(object sender, CanExecuteRoutedEventArgs e)

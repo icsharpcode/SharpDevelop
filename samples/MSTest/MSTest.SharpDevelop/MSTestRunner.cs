@@ -1,98 +1,52 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-using ICSharpCode.SharpDevelop.Util;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.MSTest
 {
-	public class MSTestRunner : TestRunnerBase
+	public class MSTestRunner : TestProcessRunnerBase
 	{
-		IUnitTestProcessRunner processRunner;
-		IFileSystem fileSystem;
-		IUnitTestMessageService messageService;
 		string resultsFileName;
 		
-		public MSTestRunner()
-			: this(new UnitTestProcessRunner(),
-			       new UnitTestFileService(),
-			       new UnitTestMessageService())
+		public MSTestRunner(TestExecutionOptions options)
+			: base(new MSTestProcessRunnerContext(options))
 		{
-		}
-
-		public MSTestRunner(
-			IUnitTestProcessRunner processRunner,
-			IFileSystem fileSystem,
-			IUnitTestMessageService messageService)
-		{
-			this.processRunner = processRunner;
-			this.fileSystem = fileSystem;
-			this.messageService = messageService;
-			
-			processRunner.LogStandardOutputAndError = false;
-			processRunner.OutputLineReceived += OutputLineReceived;
-			processRunner.ErrorLineReceived += OutputLineReceived;
-			processRunner.ProcessExited += ProcessRunnerExited;
 		}
 		
-		void ProcessRunnerExited(object source, EventArgs e)
-		{
-			// Read all tests.
-			if (FileExists(resultsFileName)) {
-				var testResults = new MSTestResults(resultsFileName);
-				var workbench = new UnitTestWorkbench();
-				workbench.SafeThreadAsyncCall(() => UpdateTestResults(testResults));
-			} else {
-				messageService.ShowFormattedErrorMessage("Unable to find test results file: '{0}'.", resultsFileName);
-				OnAllTestsFinished(source, e);
-			}
-		}
-		
-		void UpdateTestResults(MSTestResults testResults)
-		{
-			foreach (TestResult result in testResults) {
-				OnTestFinished(this, new TestFinishedEventArgs(result));
-			}
-			OnAllTestsFinished(this, new EventArgs());
-		}
-		
-		void OutputLineReceived(object source, LineReceivedEventArgs e)
-		{
-			OnMessageReceived(e.Line);
-		}
-		
-		public override void Start(SelectedTests selectedTests)
-		{
-			ProcessStartInfo startInfo = GetProcessStartInfo(selectedTests);
-			TryDeleteResultsFile();
-			Start(startInfo);
-		}
-		
-		protected override ProcessStartInfo GetProcessStartInfo(SelectedTests selectedTests)
+		protected override ProcessStartInfo GetProcessStartInfo(IEnumerable<ITest> selectedTests)
 		{
 			resultsFileName = new MSTestResultsFileName(selectedTests).FileName;
-			CreateDirectoryForResultsFile();
-			var mstestApplication = new MSTestApplication(selectedTests, resultsFileName);
-			return mstestApplication.ProcessStartInfo;
-		}
-		
-		void Start(ProcessStartInfo processStartInfo)
-		{
-			LogCommandLine(processStartInfo);
+			CreateDirectoryForResultsFile(resultsFileName);
 			
-			if (FileExists(processStartInfo.FileName)) {
-				processRunner.WorkingDirectory = processStartInfo.WorkingDirectory;
-				processRunner.Start(processStartInfo.FileName, processStartInfo.Arguments);
-			} else {
-				ShowApplicationDoesNotExistMessage(processStartInfo.FileName);
-			}
+			var monitor = (MSTestMonitor)TestResultsReader;
+			monitor.ResultsFileName = resultsFileName;
+			
+			var app = new MSTestApplication(selectedTests, resultsFileName);
+			return app.ProcessStartInfo;
 		}
 		
-		void CreateDirectoryForResultsFile()
+		public static void CreateDirectoryForResultsFile(string resultsFileName)
 		{
 			string path = Path.GetDirectoryName(resultsFileName);
 			if (!Directory.Exists(path)) {
@@ -100,39 +54,14 @@ namespace ICSharpCode.MSTest
 			}
 		}
 		
-		bool FileExists(string fileName)
+		protected override TestResult CreateTestResultForTestFramework(TestResult testResult)
 		{
-			return fileSystem.FileExists(fileName);
+			return testResult;
 		}
 		
-		void ShowApplicationDoesNotExistMessage(string fileName)
+		public override int GetExpectedNumberOfTestResults(IEnumerable<ITest> selectedTests)
 		{
-			string resourceString = "${res:ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat}";
-			messageService.ShowFormattedErrorMessage(resourceString, fileName);
-		}
-		
-		public override void Stop()
-		{
-			processRunner.Kill();
-		}
-		
-		public override void Dispose()
-		{
-			processRunner.ErrorLineReceived -= OutputLineReceived;
-			processRunner.OutputLineReceived -= OutputLineReceived;
-			processRunner.ProcessExited -= ProcessRunnerExited;
-			
-			TryDeleteResultsFile();
-		}
-
-		void TryDeleteResultsFile()
-		{
-			try {
-				Console.WriteLine("Deleting results file: " + resultsFileName);
-				File.Delete(resultsFileName);
-			} catch (Exception ex) {
-				Console.WriteLine(ex.Message);
-			}
+			return 0;
 		}
 	}
 }

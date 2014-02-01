@@ -1,14 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Globalization;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using System.Windows.Threading;
 using System.Diagnostics;
@@ -31,7 +49,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		}
 
 		Category specialCategory = new Category("Special");
-		Category popularCategory = new Category("Popular");		
+		Category popularCategory = new Category("Popular");
 		Category otherCategory = new Category("Other");
 		Category attachedCategory = new Category("Attached");
 
@@ -158,14 +176,17 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			}
 		}
 
-		IEnumerable<DesignItem> selectedItems;
+		IList<DesignItem> selectedItems;
 
 		public IEnumerable<DesignItem> SelectedItems {
 			get {
 				return selectedItems;
 			}
 			set {
-				selectedItems = value;
+				if (value == null)
+					selectedItems = null;
+				else
+					selectedItems = value.ToList();
 				RaisePropertyChanged("SelectedItems");
 				Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
 					delegate {
@@ -178,17 +199,27 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		{
 			Filter = null;
 		}
+		
+		volatile bool reloadActive;
+		public bool ReloadActive {
+			get { return reloadActive; }
+		}
 
 		void Reload()
 		{
-			Clear();
-			
-			if (SelectedItems == null || SelectedItems.Count() == 0) return;
-			if (SelectedItems.Count() == 1) SingleItem = SelectedItems.First();
-
-			foreach (var md in GetDescriptors()) {
-				if (PassesFilter(md.Name))
-					AddNode(md);
+			reloadActive = true;
+			try {
+				Clear();
+				
+				if (selectedItems == null || selectedItems.Count == 0) return;
+				if (selectedItems.Count == 1) SingleItem = selectedItems[0];
+	
+				foreach (var md in GetDescriptors()) {
+					if (PassesFilter(md.Name))
+						AddNode(md);
+				}
+			} finally {
+				reloadActive = false;
 			}
 		}
 
@@ -233,7 +264,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			if (string.IsNullOrEmpty(Filter)) return true;
 			for (int i = 0; i < name.Length; i++) {
 				if (i == 0 || char.IsUpper(name[i])) {
-					if (string.Compare(name, i, Filter, 0, Filter.Length, true) == 0) {
+					if (string.Compare(name, i, Filter, 0, Filter.Length, StringComparison.OrdinalIgnoreCase) == 0) {
 						return true;
 					}
 				}
@@ -271,7 +302,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			if (Metadata.IsPopularProperty(node.FirstProperty)) return popularCategory;
 			if (node.FirstProperty.IsAttachedDependencyProperty()) return attachedCategory;
 			var typeName = node.FirstProperty.DeclaringType.FullName;
-			if (typeName.StartsWith("System.Windows.") || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls."))
+			if (typeName.StartsWith("System.Windows.", StringComparison.Ordinal) || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls.", StringComparison.Ordinal))
 				return otherCategory;
 			return specialCategory;
 		}

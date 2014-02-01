@@ -41,7 +41,7 @@
 			<Doozer name="OptionPanel" class="ICSharpCode.SharpDevelop.OptionPanelDoozer"/>
 			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.Workbench.DisplayBindingDoozer"/>
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
-			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.ProjectBindingDoozer"/>
+			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.Project.ProjectBindingDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
 			<Doozer name="TextEditorExtension" class="ICSharpCode.SharpDevelop.Editor.TextEditorExtensionDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
@@ -93,7 +93,8 @@
 		         class="ICSharpCode.SharpDevelop.Editor.Bookmarks.BookmarkManager"/>
 		<Service id="ICSharpCode.SharpDevelop.IUIService"
 		         class="ICSharpCode.SharpDevelop.UIService"/>
-		
+		<Service id="ICSharpCode.SharpDevelop.Dom.ClassBrowser.IClassBrowser"
+		         class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserServiceImpl"/>
 		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsService"
 		         class="ICSharpCode.SharpDevelop.WinForms.WinFormsService"/>
 		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsMenuService"
@@ -136,7 +137,6 @@
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
 		     class    = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.ClassBrowserPad"
-		     serviceInterface = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.IClassBrowser"
 		     defaultPosition = "Right" />
 		
 		<Pad id       = "SideBar"
@@ -172,7 +172,6 @@
 		     title    = "${res:MainWindow.Windows.OutputWindow}"
 		     icon     = "PadIcons.Output"
 		     class    = "ICSharpCode.SharpDevelop.Gui.CompilerMessageView"
-		     serviceInterface = "ICSharpCode.SharpDevelop.Workbench.IOutputPad"
 		     defaultPosition = "Bottom" />
 		
 		<Pad id       = "PropertyPad"
@@ -428,11 +427,6 @@
 		<MenuItem id    = "SetAsStartupProject"
 		          label = "${res:ProjectComponent.ContextMenu.SetAsStartupProject}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
-		<MenuItem id = "Convert"
-		          label = "${res:ICSharpCode.SharpDevelop.Commands.Convert}"
-		          type  = "Menu">
-			<!-- elements are added by backend bindings -->
-		</MenuItem>
 		<MenuItem id = "GenerateDocumentation"
 		          label = "${res:ProjectComponent.ContextMenu.GenerateDocumentation}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.GenerateProjectDocumentation"/>
@@ -1892,10 +1886,12 @@
 			          icon="Icons.16x16.SelectionArrow"
 			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
 			
-			<MenuItem id = "Rename"
-			          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
-			          shortcut="Ctrl+R"
-			          class = "ICSharpCode.SharpDevelop.Editor.Commands.RenameSymbolCommand"/>
+			<Condition name="SymbolTypeAtCaret" type="member,type,local" projectonly="true" action="Exclude">
+				<MenuItem id = "Rename"
+				          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
+				          shortcut="Ctrl+R"
+				          class = "ICSharpCode.SharpDevelop.Editor.Commands.RenameSymbolCommand"/>
+			</Condition>
 			
 			<MenuItem id = "GotoBrace"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
@@ -1913,21 +1909,6 @@
 			<MenuItem id = "Separator1" type = "Separator" />
 			<Include id = "ToolList" path = "/SharpDevelop/Workbench/Tools" />
 			<MenuItem id = "Separator2" type = "Separator" />
-			
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor">
-				<MenuItem id = "ConvertCode" label = "${res:XML.MainMenu.ToolMenu.ConvertCodeTo}" type="Menu">
-					<Condition name="ActiveContentExtension" activeextension=".vb" action = "Disable">
-						<MenuItem id = "CSharp"
-						          label = "C#"
-						          class = "ICSharpCode.SharpDevelop.Commands.CSharpConvertBuffer"/>
-					</Condition>
-					<Condition name="ActiveContentExtension" activeextension=".cs" action = "Disable">
-						<MenuItem id = "VBNet"
-						          label = "VB.NET"
-						          class = "ICSharpCode.SharpDevelop.Commands.VBConvertBuffer"/>
-					</Condition>
-				</MenuItem>
-			</Condition>
 			
 			<Condition name = "SolutionOpen" action="Disable">
 				<MenuItem id = "Upgrade"
@@ -1973,7 +1954,7 @@
 			<MenuItem id = "Help"
 			          label = "${res:XML.MainMenu.HelpMenu.Topics}"
 			          shortcut = "Alt|F1"
-			          link = "http://wiki.sharpdevelop.net/"/>
+			          link = "https://github.com/icsharpcode/SharpDevelop/wiki/"/>
 			<MenuItem id = "Separator1" type = "Separator" />
 			<MenuItem id    = "ViewReadme"
 			          label = "${res:XML.MainMenu.HelpMenu.ReadMe}"
@@ -2019,11 +2000,13 @@
 	
 	<Path name = "/SharpDevelop/EntityContextMenu">
 		<Include id="GotoDefinition" item="/SharpDevelop/Workbench/MainMenu/Search/GotoDefinition" />
-		<MenuItem id="OpenInClassBrowser"
-		          icon="ILSpy"
-		          type="Item"
-		          label="${res:MainWindow.Windows.ClassBrowser.OpenInClassBrowser}"
-		          class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenInClassBrowserCommand"/>
+		<Condition name="SymbolTypeAtCaret" type="member,type" action="Exclude">
+			<MenuItem id="OpenInClassBrowser"
+			          icon="ILSpy"
+			          type="Item"
+			          label="${res:MainWindow.Windows.ClassBrowser.OpenInClassBrowser}"
+			          class="ICSharpCode.SharpDevelop.Dom.ClassBrowser.OpenInClassBrowserCommand"/>
+		</Condition>
 		<MenuItem id="Separator1" type="Separator" />
 		
 		<Include id="Rename" item="/SharpDevelop/Workbench/MainMenu/Search/Rename" />
@@ -2447,10 +2430,21 @@
 				</Not>
 				<Or> <!-- and either a C# or VB project -->
 					<Condition name = "ProjectActive" activeproject="C#" />
-					<Condition name = "ProjectActive" activeproject="VBNet" />
+					<Condition name = "ProjectActive" activeproject="VB" />
 				</Or>
 			</And>
 			<Class id="ConvertToPortableLibraryBehavior" class="ICSharpCode.SharpDevelop.Project.PortableLibrary.ConvertToPortableLibraryProjectBehavior" />
 		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/TargetFrameworks">
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net20" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net30" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net35" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net35Client" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net40" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net40Client" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net45" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net451" />
 	</Path>
 </AddIn>

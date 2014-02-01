@@ -84,7 +84,6 @@
     <Compile Include="Src\ObjectEditor.xaml.cs">
       <DependentUpon>ObjectEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\OutlineViewPad.cs" />
     <Compile Include="Src\ProjectTools.cs" />
     <Compile Include="Src\PropertyDescriptionService.cs" />
     <Compile Include="Src\WpfAndWinFormsTopLevelWindowService.cs" />
