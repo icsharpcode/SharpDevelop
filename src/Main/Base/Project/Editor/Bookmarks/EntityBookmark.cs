@@ -97,5 +97,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		{
 			throw new NotSupportedException();
 		}
+		
+		object IBookmark.CreateTooltipContent()
+		{
+			return null;
+		}
 	}
 }

@@ -194,5 +194,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		public virtual void Drop(int lineNumber)
 		{
 		}
+		
+		public virtual object CreateTooltipContent()
+		{
+			return null;
+		}
 	}
 }

@@ -18,13 +18,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
@@ -37,12 +41,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public class IconBarMargin : AbstractMargin, IDisposable
 	{
 		readonly IBookmarkMargin manager;
+		readonly MouseHoverLogic hoverLogic;
 		
 		public IconBarMargin(IBookmarkMargin manager)
 		{
 			if (manager == null)
 				throw new ArgumentNullException("manager");
 			this.manager = manager;
+			this.hoverLogic = new MouseHoverLogic(this);
+			this.hoverLogic.MouseHover += (sender, e) => MouseHover(this, e);
+			this.hoverLogic.MouseHoverStopped += (sender, e) => MouseHoverStopped(this, e);
+			this.Unloaded += OnUnloaded;
 		}
 		
 		#region OnTextViewChanged
@@ -51,11 +60,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (oldTextView != null) {
 				oldTextView.VisualLinesChanged -= OnRedrawRequested;
+				oldTextView.MouseMove -= TextViewMouseMove;
 				manager.RedrawRequested -= OnRedrawRequested;
 			}
 			base.OnTextViewChanged(oldTextView, newTextView);
 			if (newTextView != null) {
 				newTextView.VisualLinesChanged += OnRedrawRequested;
+				newTextView.MouseMove += TextViewMouseMove;
 				manager.RedrawRequested += OnRedrawRequested;
 			}
 			InvalidateVisual();
@@ -228,6 +239,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					dragStarted = true;
 				InvalidateVisual();
 			}
+			TextViewMouseMove(TextView, e);
 		}
 		
 		protected override void OnMouseUp(MouseButtonEventArgs e)
@@ -259,5 +271,146 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 		}
+
+		#region Tooltip
+		ToolTip toolTip;
+		Popup popupToolTip;
+		
+		void MouseHover(object sender, MouseEventArgs e)
+		{
+			Debug.Assert(sender == this);
+			
+			if (!TryCloseExistingPopup(false)) {
+				return;
+			}
+			
+			int line = GetLineFromMousePosition(e);
+			if (line < 1) return;
+			IBookmark bm = GetBookmarkFromLine(line);
+			if (bm == null) return;
+			object content = bm.CreateTooltipContent();
+			popupToolTip = content as Popup;
+			
+			if (popupToolTip != null) {
+				var popupPosition = GetPopupPosition(line);
+				popupToolTip.Closed += ToolTipClosed;
+				popupToolTip.HorizontalOffset = popupPosition.X;
+				popupToolTip.VerticalOffset = popupPosition.Y;
+				popupToolTip.StaysOpen = true;  // We will close it ourselves
+				
+				e.Handled = true;
+				popupToolTip.IsOpen = true;
+				distanceToPopupLimit = double.PositiveInfinity; // reset limit; we'll re-calculate it on the next mouse movement
+			} else {
+				if (toolTip == null) {
+					toolTip = new ToolTip();
+					toolTip.Closed += ToolTipClosed;
+				}
+				toolTip.PlacementTarget = this; // required for property inheritance
+				
+				if (content is string) {
+					toolTip.Content = new TextBlock
+					{
+						Text = content as string,
+						TextWrapping = TextWrapping.Wrap
+					};
+				} else toolTip.Content = content;
+				
+				e.Handled = true;
+				toolTip.IsOpen = true;
+			}
+		}
+		
+		bool TryCloseExistingPopup(bool mouseClick)
+		{
+			if (popupToolTip != null) {
+				if (popupToolTip.IsOpen && !mouseClick && popupToolTip is ITooltip && !((ITooltip)popupToolTip).CloseWhenMouseMovesAway) {
+					return false; // Popup does not want to be closed yet
+				}
+				popupToolTip.IsOpen = false;
+				popupToolTip = null;
+			}
+			return true;
+		}
+		
+		Point GetPopupPosition(int line)
+		{
+			Point positionInPixels = TextView.PointToScreen(TextView.GetVisualPosition(new TextViewPosition(line, 1), VisualYPosition.LineBottom) - this.TextView.ScrollOffset);
+			positionInPixels.X -= 50;
+			// use device independent units, because Popup Left/Top are in independent units
+			return positionInPixels.TransformFromDevice(this);
+		}
+		
+		void MouseHoverStopped(object sender, MouseEventArgs e)
+		{
+			// Non-popup tooltips get closed as soon as the mouse starts moving again
+			if (toolTip != null) {
+				toolTip.IsOpen = false;
+				e.Handled = true;
+			}
+		}
+		
+		double distanceToPopupLimit;
+		const double MaxMovementAwayFromPopup = 5;
+		
+		double GetDistanceToPopup(MouseEventArgs e)
+		{
+			Point p = popupToolTip.Child.PointFromScreen(PointToScreen(e.GetPosition(this)));
+			Size size = popupToolTip.Child.RenderSize;
+			double x = 0;
+			if (p.X < 0)
+				x = -p.X;
+			else if (p.X > size.Width)
+				x = p.X - size.Width;
+			double y = 0;
+			if (p.Y < 0)
+				y = -p.Y;
+			else if (p.Y > size.Height)
+				y = p.Y - size.Height;
+			return Math.Sqrt(x * x + y * y);
+		}
+		
+		protected override void OnMouseLeave(MouseEventArgs e)
+		{
+			if (popupToolTip != null && !popupToolTip.IsMouseOver) {
+				// do not close popup if mouse moved from editor to popup
+				TryCloseExistingPopup(false);
+			}
+		}
+
+		void TextViewMouseMove(object sender, MouseEventArgs e)
+		{
+			if (popupToolTip != null) {
+				double distanceToPopup = GetDistanceToPopup(e);
+				if (distanceToPopup > distanceToPopupLimit) {
+					// Close popup if mouse moved away, exceeding the limit
+					TryCloseExistingPopup(false);
+				} else {
+					// reduce distanceToPopupLimit
+					distanceToPopupLimit = Math.Min(distanceToPopupLimit, distanceToPopup + MaxMovementAwayFromPopup);
+				}
+			}
+		}
+		
+		void OnUnloaded(object sender, EventArgs e)
+		{
+			// Close popup when another document gets selected
+			// TextEditorMouseLeave is not sufficient for this because the mouse might be over the popup when the document switch happens (e.g. Ctrl+Tab)
+			TryCloseExistingPopup(true);
+		}
+
+		void ToolTipClosed(object sender, EventArgs e)
+		{
+			if (toolTip == sender) {
+				toolTip = null;
+			}
+			if (popupToolTip == sender) {
+				// Because popupToolTip instances are created by the tooltip provider,
+				// they might be reused; so we should detach the event handler
+				popupToolTip.Closed -= ToolTipClosed;
+				popupToolTip = null;
+			}
+		}
+		#endregion
 	}
 }
