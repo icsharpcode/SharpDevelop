@@ -82,6 +82,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
 			string header = ambience.ConvertSymbol(symbol);
 			
+			if (symbol is IParameter) {
+				header = "parameter " + header;
+			} else if (symbol is IVariable) {
+				header = "local variable " + header;
+			}
+			
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			DocumentationUIBuilder b = new DocumentationUIBuilder(ambience);
 			b.AddCodeBlock(header, keepLargeMargin: true);
