@@ -426,7 +426,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IEnumerable<ISegment> GetDeletableSegments(ISegment segment)
 		{
-			if (segment.EndOffset < this.EndOffset)
+			if (segment.EndOffset <= this.EndOffset)
 				return Enumerable.Empty<ISegment>();
 			
 			return new[] {
