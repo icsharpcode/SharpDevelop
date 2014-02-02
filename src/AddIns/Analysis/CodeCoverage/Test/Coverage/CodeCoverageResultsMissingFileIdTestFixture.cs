@@ -122,7 +122,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		/// <summary> No FileID => No sequence points!
 		/// SD.CodeCoverage DOES NOT RETURN SequencePoints
 		/// for assemblies without debug info,
-        /// =&gt; methods without FileID
+		/// =&gt; methods without FileID
 		/// </summary>
 		[Test]
 		public void SequencePointsCount_NUnitNotEqualAssertFailMethod_ReturnsNoSequencePoints()
