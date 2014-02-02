@@ -105,14 +105,14 @@ namespace ICSharpCode.CodeCoverage
 			this.IsStatic = this.GetBooleanAttributeValue("isStatic");
 			if ( !String.IsNullOrEmpty( this.FileID ) ) {
 				this.SequencePoints = this.GetSequencePoints();
+				this.BodyStartSP = getBodyStartSP(); // before OrderBy Line/Col
 				// SP's are originaly ordered by CIL offset
 				// but ccrewrite can move offset of
 				//   Contract.Requires before method signature SP { and
 				//   Contract.Ensures after method closing SP }
 				// So sort SP's back by line/column
 				this.SequencePoints.OrderBy(item => item.Line).OrderBy(item => item.Column);
-				this.BodyStartSP = getBodyStartSP(this.SequencePoints);
-				this.BodyFinalSP = getBodyFinalSP(this.SequencePoints);
+				this.BodyFinalSP = getBodyFinalSP(); // after orderBy Line/Col
 				this.SequencePoints = this.FilterSequencePoints(this.SequencePoints);
 				this.BranchPoints = this.GetBranchPoints();
 				this.BranchCoverageRatio = this.GetBranchRatio();
@@ -155,25 +155,33 @@ namespace ICSharpCode.CodeCoverage
 		}
 	
 		// Find method-body start SequencePoint "{"
-		// Sequence points are ordered by Line/Column
+		// Sequence points expected to be ordered by Offset
 		// Cannot just get first one because of ccrewrite&ContractClassFor
-		// For same reason must abandon constructor method signature SP
-		public static CodeCoverageSequencePoint getBodyStartSP(IEnumerable<CodeCoverageSequencePoint> sPoints) {
+		public CodeCoverageSequencePoint getBodyStartSP() {
+			bool startPointFound = false;
 			CodeCoverageSequencePoint startSeqPoint = null;
-			foreach (CodeCoverageSequencePoint sPoint in sPoints) {
+			foreach (CodeCoverageSequencePoint sPoint in this.SequencePoints) {
 				if ( sPoint.Content == "{") {
-					startSeqPoint = sPoint;
+					if ( this.IsConstructor ) {
+						// take previous/last one if not null
+						startSeqPoint = startSeqPoint?? sPoint;
+					}
+					else {
+						startSeqPoint = sPoint;
+					}
+					startPointFound = true;
 					break;
 				}
+				startSeqPoint = sPoint;
 			}
-			return startSeqPoint;
+			return startPointFound? startSeqPoint: null;
 		}
 
 		// Find method-body final SequencePoint "}"
-		// Sequence points are ordered by Line/Column
-		public static CodeCoverageSequencePoint getBodyFinalSP(IEnumerable<CodeCoverageSequencePoint> sps) {
+		// Sequence points expected to be ordered by Line/Column
+		public CodeCoverageSequencePoint getBodyFinalSP() {
 			CodeCoverageSequencePoint finalSeqPoint = null;
-			foreach (CodeCoverageSequencePoint sp in Enumerable.Reverse(sps)) {
+			foreach (CodeCoverageSequencePoint sp in this.SequencePoints) {
 				if ( sp.Content == "}") {
 					if (finalSeqPoint == null) {
 						finalSeqPoint = sp;
