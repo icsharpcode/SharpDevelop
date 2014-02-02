@@ -577,12 +577,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 			get { return caret; }
 		}
 		
-		void CaretPositionChanged(object sender, EventArgs e) 
+		void CaretPositionChanged(object sender, EventArgs e)
 		{
 			if (textView == null)
 				return;
 			
-			this.textView.HighlightedLine = this.Caret.Line;			
+			this.textView.HighlightedLine = this.Caret.Line;
 		}
 		
 		ObservableCollection<UIElement> leftMargins = new ObservableCollection<UIElement>();
@@ -849,6 +849,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 					// We have to ignore those (not handle them) to keep the shortcut working.
 					return;
 				}
+				HideMouseCursor();
 				PerformTextInput(e);
 				e.Handled = true;
 			}
@@ -978,7 +979,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 				return;
 			}
 			
-			HideMouseCursor();
 			foreach (TextAreaStackedInputHandler h in stackedInputHandlers) {
 				if (e.Handled)
 					break;
@@ -1002,7 +1002,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			HideMouseCursor();
 			TextView.InvalidateCursorIfMouseWithinTextView();
 		}
 		
@@ -1018,16 +1017,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		bool isMouseCursorHidden;
 		
-		void AttachTypingEvents() {
+		void AttachTypingEvents()
+		{
+			// Use the PreviewMouseMove event in case some other editor layer consumes the MouseMove event (e.g. SD's InsertionCursorLayer)
 			this.MouseEnter += delegate { ShowMouseCursor(); };
 			this.MouseLeave += delegate { ShowMouseCursor(); };
-			this.MouseMove += delegate { ShowMouseCursor(); };
+			this.PreviewMouseMove += delegate { ShowMouseCursor(); };
 			this.TouchEnter += delegate { ShowMouseCursor(); };
 			this.TouchLeave += delegate { ShowMouseCursor(); };
-			this.TouchMove += delegate { ShowMouseCursor(); };
+			this.PreviewTouchMove += delegate { ShowMouseCursor(); };
 		}
 		
-		void ShowMouseCursor() {
+		void ShowMouseCursor()
+		{
 			if (this.isMouseCursorHidden) {
 				System.Windows.Forms.Cursor.Show();
 				this.isMouseCursorHidden = false;
@@ -1035,7 +1037,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		void HideMouseCursor() {
-			if (Options.HideCursorWhileTyping && !this.isMouseCursorHidden && this.IsMouseOver) {	
+			if (Options.HideCursorWhileTyping && !this.isMouseCursorHidden && this.IsMouseOver) {
 				this.isMouseCursorHidden = true;
 				System.Windows.Forms.Cursor.Hide();
 			}
