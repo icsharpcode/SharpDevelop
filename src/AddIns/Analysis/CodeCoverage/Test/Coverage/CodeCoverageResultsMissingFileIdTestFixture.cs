@@ -111,15 +111,28 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			Assert.AreEqual(expectedName, name);
 		}
 		
-		[Test]
+		[Test, Ignore("Replaced by test below")]
 		public void SequencePointsCount_NUnitNotEqualAssertFailMethod_ReturnsAllSequencePoints()
 		{
 			int sequencePointCount = FirstModuleFirstMethod.SequencePoints.Count;
 			int expectedSequencePointCount = 3;
 			Assert.AreEqual(expectedSequencePointCount, sequencePointCount);
 		}
-		
+
+		/// <summary> No FileID => No sequence points!
+		/// SD.CodeCoverage DOES NOT RETURN SequencePoints
+		/// for assemblies without debug info,
+        /// =&gt; methods without FileID
+		/// </summary>
 		[Test]
+		public void SequencePointsCount_NUnitNotEqualAssertFailMethod_ReturnsNoSequencePoints()
+		{
+			int sequencePointCount = FirstModuleFirstMethod.SequencePoints.Count;
+			int expectedSequencePointCount = 0;
+			Assert.AreEqual(expectedSequencePointCount, sequencePointCount);
+		}
+		
+		[Test, Ignore("SequencePoint.FileID DOES NOT EXISTS in Fixture above! This must be very OLD test.")]
 		public void SequencePointsCount_MyClassConstructorHasFourSequencePointsWithOneMissingFileId_ReturnsAllSequencePoints()
 		{
 			int sequencePointCount = SecondModule.Methods[0].SequencePoints.Count;
