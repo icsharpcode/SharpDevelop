@@ -17,13 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -38,10 +34,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <remarks>
 	/// This class is thread-safe.
 	/// </remarks>
-	public class CSharpResolver
+	public class CSharpResolver : ICodeContext
 	{
 		static readonly ResolveResult ErrorResult = ErrorResolveResult.UnknownError;
-		
 		readonly ICompilation compilation;
 		internal readonly CSharpConversions conversions;
 		readonly CSharpTypeResolveContext context;
@@ -101,6 +96,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public CSharpTypeResolveContext CurrentTypeResolveContext {
 			get { return context; }
 		}
+
+		IAssembly ITypeResolveContext.CurrentAssembly {
+			get { return context.CurrentAssembly; }
+		}
 		
 		CSharpResolver WithContext(CSharpTypeResolveContext newContext)
 		{
@@ -125,7 +124,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
-		/// Gets whether the resolver is currently within a lambda expression.
+		/// Gets whether the resolver is currently within a lambda expression or anonymous method.
 		/// </summary>
 		public bool IsWithinLambdaExpression {
 			get { return isWithinLambdaExpression; }
@@ -155,6 +154,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public CSharpResolver WithCurrentMember(IMember member)
 		{
 			return WithContext(context.WithCurrentMember(member));
+		}
+		
+		ITypeResolveContext ITypeResolveContext.WithCurrentMember(IMember member)
+		{
+			return WithCurrentMember(member);
 		}
 		
 		/// <summary>
@@ -199,6 +203,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			return new CSharpResolver(compilation, conversions, context.WithCurrentTypeDefinition(typeDefinition),
 			                          checkForOverflow, isWithinLambdaExpression, newTypeDefinitionCache, localVariableStack, objectInitializerStack);
+		}
+		
+		ITypeResolveContext ITypeResolveContext.WithCurrentTypeDefinition(ITypeDefinition typeDefinition)
+		{
+			return WithCurrentTypeDefinition(typeDefinition);
 		}
 		
 		sealed class TypeDefinitionCache
@@ -272,6 +281,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		/// <summary>
 		/// Gets all currently visible local variables and lambda parameters.
+		/// Does not include method parameters.
 		/// </summary>
 		public IEnumerable<IVariable> LocalVariables {
 			get {

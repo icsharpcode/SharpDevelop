@@ -111,6 +111,11 @@ namespace ICSharpCode.XamlBinding
 			return new XamlAstResolver(compilation, (XamlFullParseInformation)parseInfo)
 				.ResolveAtLocation(location, cancellationToken);
 		}
+
+		public ICodeContext ResolveContext(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
+		{
+			return null; // null result is allowed; the parser service will substitute a dummy context
+		}
 		
 		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<SearchResultMatch> callback, CancellationToken cancellationToken)
 		{

@@ -176,6 +176,24 @@ namespace CSharpBinding.Parser
 				unresolvedFile = null;
 			return ResolveAtLocation.Resolve(compilation, unresolvedFile, csParseInfo.SyntaxTree, location, cancellationToken);
 		}
+
+		public ICodeContext ResolveContext(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
+		{
+			var csParseInfo = parseInfo as CSharpFullParseInformation;
+			if (csParseInfo == null)
+				throw new ArgumentException("Parse info does not have SyntaxTree");
+			
+			CSharpUnresolvedFile unresolvedFile = csParseInfo.UnresolvedFile;
+			var projectContents = compilation.Assemblies.Select(asm => asm.UnresolvedAssembly).OfType<IProjectContent>().ToList();
+			if (projectContents.All(pc => pc.GetFile(unresolvedFile.FileName) != unresolvedFile))
+				unresolvedFile = null;
+			var syntaxTree = csParseInfo.SyntaxTree;
+			var node = syntaxTree.GetNodeAt(location);
+			if (node == null)
+				return null; // null result is allowed; the parser service will substitute a dummy context
+			var resolver = new CSharpAstResolver(compilation, syntaxTree, unresolvedFile);
+			return resolver.GetResolverStateBefore(node);
+		}
 		
 		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<SearchResultMatch> callback, CancellationToken cancellationToken)
 		{

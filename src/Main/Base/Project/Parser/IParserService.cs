@@ -142,6 +142,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// which parsed version of the file to return (for example, different project settings
 		/// can cause the file to be parsed differently).
 		/// </param>
+		/// <param name="cancellationToken">Cancellation token used to abort the operation.</param>
 		/// <returns>
 		/// Returns the ParseInformation for the specified file, or null if the file cannot be parsed.
 		/// For files currently open in an editor, this method does not necessary reparse, but may return
@@ -174,6 +175,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// which parsed version of the file to return (for example, different project settings
 		/// can cause the file to be parsed differently).
 		/// </param>
+		/// <param name="cancellationToken">Cancellation token used to abort the operation.</param>
 		/// <returns>
 		/// Returns the IUnresolvedFile for the specified file, or null if the file cannot be parsed.
 		/// For files currently open in an editor, this method does not necessarily reparse, but may return
@@ -181,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </returns>
 		/// <remarks><inheritdoc cref="Parse"/></remarks>
 		IUnresolvedFile ParseFile(FileName fileName, ITextSource fileContent = null, IProject parentProject = null,
-		                      CancellationToken cancellationToken = default(CancellationToken));
+		                          CancellationToken cancellationToken = default(CancellationToken));
 		
 		/// <summary>
 		/// Parses the specified file on a background thread.
@@ -194,6 +196,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// which parsed version of the file to return (for example, different project settings
 		/// can cause the file to be parsed differently).
 		/// </param>
+		/// <param name="cancellationToken">Cancellation token used to abort the operation.</param>
 		/// <returns><inheritdoc cref="Parse"/></returns>
 		/// <remarks>
 		/// This method is thread-safe.
@@ -223,10 +226,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// which parsed version of the file to return (for example, different project settings
 		/// can cause the file to be parsed differently).
 		/// </param>
+		/// <param name="cancellationToken">Cancellation token used to abort the operation.</param>
 		/// <returns><inheritdoc cref="ParseFile"/></returns>
 		/// <remarks><inheritdoc cref="ParseAsync"/></remarks>
 		Task<IUnresolvedFile> ParseFileAsync(FileName fileName, ITextSource fileContent = null, IProject parentProject = null,
-		                                 CancellationToken cancellationToken = default(CancellationToken));
+		                                     CancellationToken cancellationToken = default(CancellationToken));
 		#endregion
 		
 		#region Resolve
@@ -249,6 +253,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 		Task FindLocalReferencesAsync(FileName fileName, IVariable variable, Action<SearchResultMatch> callback,
 		                              ITextSource fileContent = null, ICompilation compilation = null,
 		                              CancellationToken cancellationToken = default(CancellationToken));
+		
+		ICodeContext ResolveContext(ITextEditor editor, TextLocation location,
+		                            ICompilation compilation = null,
+		                            CancellationToken cancellationToken = default(CancellationToken));
+		
+		ICodeContext ResolveContext(FileName fileName, TextLocation location,
+		                            ITextSource fileContent = null, ICompilation compilation = null,
+		                            CancellationToken cancellationToken = default(CancellationToken));
 		#endregion
 		
 		#region Parsed File Listeners
