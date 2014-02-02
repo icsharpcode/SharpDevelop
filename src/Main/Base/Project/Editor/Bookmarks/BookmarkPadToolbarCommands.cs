@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 			BookmarkPadBase pad = (BookmarkPadBase)this.Owner;
 			if (pad.ListView.Items.Count > 0) {
 				pad.ListView.SelectedIndex = (pad.ListView.SelectedIndex + 1) % pad.ListView.Items.Count;
-				FileService.JumpToFilePosition(pad.SelectedItem.FileName, pad.SelectedItem.LineNumber, pad.SelectedItem.ColumnNumber);
+				SD.FileService.JumpToFilePosition(pad.SelectedItem.FileName, pad.SelectedItem.LineNumber, pad.SelectedItem.ColumnNumber);
 			}
 		}
 	}
@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 			BookmarkPadBase pad = (BookmarkPadBase)this.Owner;
 			if (pad.ListView.Items.Count > 0) {
 				pad.ListView.SelectedIndex = (pad.ListView.SelectedIndex - 1 + pad.ListView.Items.Count) % pad.ListView.Items.Count;
-				FileService.JumpToFilePosition(pad.SelectedItem.FileName, pad.SelectedItem.LineNumber, pad.SelectedItem.ColumnNumber);
+				SD.FileService.JumpToFilePosition(pad.SelectedItem.FileName, pad.SelectedItem.LineNumber, pad.SelectedItem.ColumnNumber);
 			}
 		}
 	}
@@ -77,9 +77,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 	{
 		public override void Run()
 		{
-			BookmarkPadBase pad = (BookmarkPadBase)this.Owner;
-			bool anyEnabled = pad.Items.OfType<BreakpointBookmark>().Any(bp => bp.IsEnabled);
-			foreach (var bp in pad.Items.OfType<BreakpointBookmark>()) {
+			BookmarkPadBase pad = (BookmarkPadBase)Owner;
+			bool anyEnabled = pad.Items.OfType<IHaveStateEnabled>().Any(bp => bp.IsEnabled);
+			foreach (var bp in pad.Items.OfType<IHaveStateEnabled>()) {
 				bp.IsEnabled = !anyEnabled;
 			}
 		}

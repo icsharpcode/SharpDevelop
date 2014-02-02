@@ -38,7 +38,7 @@ namespace ICSharpCode.UnitTesting
 		{
 		}
 		
-		public NUnitTestDebugger(IUnitTestDebuggerService debuggerService,
+		public NUnitTestDebugger(IDebuggerService debuggerService,
 			IMessageService messageService,
 			ITestResultsReader testResultsReader,
 			UnitTestingOptions options)

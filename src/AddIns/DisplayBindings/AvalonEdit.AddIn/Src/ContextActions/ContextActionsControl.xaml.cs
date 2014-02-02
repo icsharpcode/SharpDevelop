@@ -35,6 +35,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		}
 		
 		public event EventHandler ActionExecuted;
+		public event RoutedEventHandler ActionSelected;
+		public event RoutedEventHandler ActionUnselected;
 		
 		public new void Focus()
 		{
@@ -56,6 +58,18 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		{
 			if (ActionExecuted != null)
 				ActionExecuted(this, EventArgs.Empty);
+		}
+		
+		void ActionGotFocus(object sender, RoutedEventArgs e)
+		{
+			if (ActionSelected != null)
+				ActionSelected(this, e);
+		}
+		
+		void ActionLostFocus(object sender, RoutedEventArgs e)
+		{
+			if (ActionUnselected != null)
+				ActionUnselected(this, e);
 		}
 		
 		public static readonly DependencyProperty ItemTemplateProperty =

@@ -28,9 +28,8 @@ namespace ICSharpCode.UnitTesting
 {
 	public abstract class TestDebuggerBase : TestRunnerBase
 	{
-		IUnitTestDebuggerService debuggerService;
 		IMessageService messageService;
-		IDebugger debugger;
+		IDebuggerService debugger;
 		ITestResultsReader testResultsReader;
 		
 		public TestDebuggerBase()
@@ -40,14 +39,13 @@ namespace ICSharpCode.UnitTesting
 		{
 		}
 		
-		public TestDebuggerBase(IUnitTestDebuggerService debuggerService,
+		public TestDebuggerBase(IDebuggerService debuggerService,
 			IMessageService messageService,
 			ITestResultsReader testResultsReader)
 		{
-			this.debuggerService = debuggerService;
+			this.debugger = debuggerService;
 			this.messageService = messageService;
 			this.testResultsReader = testResultsReader;
-			this.debugger = debuggerService.CurrentDebugger;
 			
 			testResultsReader.TestFinished += OnTestFinished;
 		}
@@ -70,7 +68,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public bool IsDebuggerRunning {
-			get { return debuggerService.IsDebuggerLoaded && debugger.IsDebugging; }
+			get { return debugger.IsDebuggerLoaded && debugger.IsDebugging; }
 		}
 		
 		bool CanStopDebugging()

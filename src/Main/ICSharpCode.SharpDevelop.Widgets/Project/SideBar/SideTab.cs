@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		SideTabItemCollection items = new SideTabItemCollection();
 		SideTabStatus sideTabStatus;
 		SideTabItem   selectedItem = null;
-		SideTabItem   choosedItem  = null;
+		SideTabItem   chosenItem  = null;
 		
 		ImageList largeImageList = null;
 		ImageList smallImageList = null;
@@ -209,37 +209,37 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 				return selectedItem;
 			}
 			set {
-				if (selectedItem != null && selectedItem != choosedItem) {
+				if (selectedItem != null && selectedItem != chosenItem) {
 					selectedItem.SideTabItemStatus = SideTabItemStatus.Normal;
 				}
 				selectedItem = value;
-				if (selectedItem != null && selectedItem != choosedItem) {
+				if (selectedItem != null && selectedItem != chosenItem) {
 					selectedItem.SideTabItemStatus = SideTabItemStatus.Selected;
 				}
 			}
 		}
 		
-		protected  void OnChoosedItemChanged(EventArgs e)
+		protected  void OnChosenItemChanged(EventArgs e)
 		{
-			if (ChoosedItemChanged != null) {
-				ChoosedItemChanged(this, e);
+			if (ChosenItemChanged != null) {
+				ChosenItemChanged(this, e);
 			}
 		}
-		public event EventHandler ChoosedItemChanged;
+		public event EventHandler ChosenItemChanged;
 		
-		public SideTabItem ChoosedItem {
+		public SideTabItem ChosenItem {
 			get {
-				return choosedItem;
+				return chosenItem;
 			}
 			set {
-				if (choosedItem != null) {
-					choosedItem.SideTabItemStatus = SideTabItemStatus.Normal;
+				if (chosenItem != null) {
+					chosenItem.SideTabItemStatus = SideTabItemStatus.Normal;
 				}
-				choosedItem = value;
-				if (choosedItem != null) {
-					choosedItem.SideTabItemStatus = SideTabItemStatus.Choosed;
+				chosenItem = value;
+				if (chosenItem != null) {
+					chosenItem.SideTabItemStatus = SideTabItemStatus.Chosen;
 				}
-				OnChoosedItemChanged(null);
+				OnChosenItemChanged(null);
 			}
 		}
 		

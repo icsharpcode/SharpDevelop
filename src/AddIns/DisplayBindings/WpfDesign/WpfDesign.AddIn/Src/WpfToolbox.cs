@@ -26,6 +26,7 @@ using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Designer;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -61,7 +62,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			SideTab sideTab = new SideTab(sideBar, "Windows Presentation Foundation");
 			sideTab.DisplayName = StringParser.Parse(sideTab.Name);
 			sideTab.CanBeDeleted = false;
-			sideTab.ChoosedItemChanged += OnChoosedItemChanged;
+			sideTab.ChosenItemChanged += OnChosenItemChanged;
 			
 			sideTab.Items.Add(new WpfSideTabItem());
 			foreach (Type t in Metadata.GetPopularControls())
@@ -76,52 +77,54 @@ namespace ICSharpCode.WpfDesign.AddIn
 			return !t.IsAbstract && !t.IsGenericTypeDefinition && t.IsSubclassOf(typeof(FrameworkElement));
 		}
 
-		static HashSet<string> addedAssemblys = new HashSet<string>();
+		static readonly HashSet<string> addedAssemblies = new HashSet<string>();
 		public void AddProjectDlls(OpenedFile file)
 		{
 			var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+			var typeResolutionService = new TypeResolutionService(file.FileName);
+			
 			foreach (var reference in compilation.ReferencedAssemblies) {
-				string f = reference.GetReferenceAssemblyLocation();
+				string assemblyFileName = reference.GetReferenceAssemblyLocation();
 				
-				if (f != null && !addedAssemblys.Contains(f)) {
+				if (assemblyFileName != null && !addedAssemblies.Contains(assemblyFileName)) {
 					try {
 						// DO NOT USE Assembly.LoadFrom!!!
 						// see http://community.sharpdevelop.net/forums/t/19968.aspx
-						// TODO : reimplement this!
-//						var assembly = Assembly.LoadFrom(f);
-//
-//						SideTab sideTab = new SideTab(sideBar, assembly.FullName.Split(new[] {','})[0]);
-//						sideTab.DisplayName = StringParser.Parse(sideTab.Name);
-//						sideTab.CanBeDeleted = false;
-//						sideTab.ChoosedItemChanged += OnChoosedItemChanged;
-//
-//						sideTab.Items.Add(new WpfSideTabItem());
-//
-//						foreach (var t in assembly.GetExportedTypes())
-//						{
-//							if (IsControl(t))
-//							{
-//								sideTab.Items.Add(new WpfSideTabItem(t));
-//							}
-//						}
-//
-//						if (sideTab.Items.Count > 1)
-//							sideBar.Tabs.Add(sideTab);
-//
-//						addedAssemblys.Add(f);
+						Assembly assembly = typeResolutionService.LoadAssembly(assemblyFileName);
+						if (assembly == null) continue;
+
+						SideTab sideTab = new SideTab(sideBar, assembly.FullName.Split(new[] {','})[0]);
+						sideTab.DisplayName = StringParser.Parse(sideTab.Name);
+						sideTab.CanBeDeleted = false;
+						sideTab.ChosenItemChanged += OnChosenItemChanged;
+
+						sideTab.Items.Add(new WpfSideTabItem());
+
+						foreach (var t in assembly.GetExportedTypes())
+						{
+							if (IsControl(t))
+							{
+								sideTab.Items.Add(new WpfSideTabItem(t));
+							}
+						}
+
+						if (sideTab.Items.Count > 1)
+							sideBar.Tabs.Add(sideTab);
+
+						addedAssemblies.Add(assemblyFileName);
 					} catch (Exception ex) {
-						WpfViewContent.DllLoadErrors.Add(new SDTask(new BuildError(f, ex.Message)));
+						WpfViewContent.DllLoadErrors.Add(new SDTask(new BuildError(assemblyFileName, ex.Message)));
 					}
 				}
 			}
 		}
 
-		void OnChoosedItemChanged(object sender, EventArgs e)
+		void OnChosenItemChanged(object sender, EventArgs e)
 		{
 			if (toolService != null) {
 				ITool newTool = null;
-				if (sideBar.ActiveTab != null && sideBar.ActiveTab.ChoosedItem != null) {
-					newTool = sideBar.ActiveTab.ChoosedItem.Tag as ITool;
+				if (sideBar.ActiveTab != null && sideBar.ActiveTab.ChosenItem != null) {
+					newTool = sideBar.ActiveTab.ChosenItem.Tag as ITool;
 				}
 				toolService.CurrentTool = newTool ?? toolService.PointerTool;
 			}
@@ -153,13 +156,13 @@ namespace ICSharpCode.WpfDesign.AddIn
 			} else {
 				tagToFind = toolService.CurrentTool;
 			}
-			if (sideBar.ActiveTab.ChoosedItem != null) {
-				if (sideBar.ActiveTab.ChoosedItem.Tag == tagToFind)
+			if (sideBar.ActiveTab.ChosenItem != null) {
+				if (sideBar.ActiveTab.ChosenItem.Tag == tagToFind)
 					return;
 			}
 			foreach (SideTabItem item in sideBar.ActiveTab.Items) {
 				if (item.Tag == tagToFind) {
-					sideBar.ActiveTab.ChoosedItem = item;
+					sideBar.ActiveTab.ChosenItem = item;
 					sideBar.Refresh();
 					return;
 				}
@@ -168,13 +171,13 @@ namespace ICSharpCode.WpfDesign.AddIn
 				foreach (SideTabItem item in tab.Items) {
 					if (item.Tag == tagToFind) {
 						sideBar.ActiveTab = tab;
-						sideBar.ActiveTab.ChoosedItem = item;
+						sideBar.ActiveTab.ChosenItem = item;
 						sideBar.Refresh();
 						return;
 					}
 				}
 			}
-			sideBar.ActiveTab.ChoosedItem = null;
+			sideBar.ActiveTab.ChosenItem = null;
 			sideBar.Refresh();
 		}
 		
@@ -182,8 +185,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			protected override object StartItemDrag(SideTabItem draggedItem)
 			{
-				if (this.ActiveTab.ChoosedItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
-					this.ActiveTab.ChoosedItem = draggedItem;
+				if (this.ActiveTab.ChosenItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
+					this.ActiveTab.ChosenItem = draggedItem;
 				}
 				
 				if (draggedItem.Tag != null) {

@@ -60,9 +60,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				return;
 			}
 			if (withDebugging) {
-				DebuggerService.CurrentDebugger.Start(psi);
+				SD.Debugger.Start(psi);
 			} else {
-				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
+				SD.Debugger.StartWithoutDebugging(psi);
 			}
 		}
 		

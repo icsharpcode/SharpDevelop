@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
@@ -366,6 +367,21 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			bracketHighlight.PropertyChanged += item_PropertyChanged;
 			items.Add(bracketHighlight);
 			
+			// Create entry for "Current Line highlight"
+			IHighlightingItem currentLineHighlight = new SimpleHighlightingItem(
+				CustomizingHighlighter.CurrentLineHighlighter,
+				ta => {
+					ta.Document.Text = "example text line";
+					ta.TextView.Options.HighlightCurrentLine = true;
+				})
+			{
+				Foreground = Color.FromArgb(52, 0, 255, 110),
+				Background = Color.FromArgb(22, 20, 220, 224)
+			};
+			currentLineHighlight = new CustomizedHighlightingItem(customizationList, currentLineHighlight, language, canSetFont: false);
+			currentLineHighlight.PropertyChanged += item_PropertyChanged;
+			items.Add(currentLineHighlight);
+			
 			// Create entry for "Folding controls"
 			IHighlightingItem foldingControls = new SimpleHighlightingItem(
 				FoldingControls,
@@ -481,7 +497,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			items.Add(messageMarker);
 			
 			IHighlightingItem breakpointMarker = new SimpleHighlightingItem(
-				BreakpointBookmark.BreakpointMarker,
+				BookmarkBase.BreakpointMarkerName,
 				ta => {
 					ta.Document.Text = "some code with a breakpoint";
 					ITextMarker marker = textMarkerService.Create(0, ta.Document.TextLength);
@@ -491,15 +507,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					};
 				})
 			{
-				Background = BreakpointBookmark.DefaultBackground,
-				Foreground = BreakpointBookmark.DefaultForeground
+				Background = BookmarkBase.BreakpointDefaultBackground,
+				Foreground = BookmarkBase.BreakpointDefaultForeground
 			};
 			breakpointMarker = new CustomizedHighlightingItem(customizationList, breakpointMarker, language, canSetFont: false);
 			breakpointMarker.PropertyChanged += item_PropertyChanged;
 			items.Add(breakpointMarker);
 			
 			IHighlightingItem currentStatementMarker = new SimpleHighlightingItem(
-				CurrentLineBookmark.Name,
+				BookmarkBase.CurrentLineBookmarkName,
 				ta => {
 					ta.Document.Text = "current statement line";
 					ITextMarker marker = textMarkerService.Create(0, ta.Document.TextLength);
@@ -509,8 +525,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					};
 				})
 			{
-				Background = CurrentLineBookmark.DefaultBackground,
-				Foreground = CurrentLineBookmark.DefaultForeground
+				Background = BookmarkBase.CurrentLineDefaultBackground,
+				Foreground = BookmarkBase.CurrentLineDefaultForeground
 			};
 			currentStatementMarker = new CustomizedHighlightingItem(customizationList, currentStatementMarker, language, canSetFont: false);
 			currentStatementMarker.PropertyChanged += item_PropertyChanged;

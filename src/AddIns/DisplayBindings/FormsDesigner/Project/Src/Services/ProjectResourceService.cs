@@ -91,17 +91,16 @@ namespace ICSharpCode.FormsDesigner.Services
 				return null;
 			}
 			
-			throw new NotImplementedException();
-			/*
+			ICompilation compilation = SD.ParserService.GetCompilation(project);
+			
 			// Get the (generated) class where the resource is defined.
-			IClass resourceClass = this.projectContent.GetClassByReflectionName(typeRef.Type.BaseType, true);
+			var resourceClass = compilation.FindType(new FullTypeName(typeRef.Type.BaseType)).GetDefinition();
 			if (resourceClass == null) {
 				throw new InvalidOperationException("Could not find class for project resources: '" + typeRef.Type.BaseType + "'.");
 			}
 			
-			if (resourceClass.CompilationUnit == null || resourceClass.CompilationUnit.FileName == null) {
+			if (resourceClass.Region.IsEmpty)
 				return null;
-			}
 			
 			// Make sure the class we have found is a generated resource class.
 			if (!IsGeneratedResourceClass(resourceClass)) {
@@ -109,27 +108,27 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			
 			// Get the name of the resource file based on the file that contains the generated class.
-			string resourceFileName = Path.GetFileNameWithoutExtension(resourceClass.CompilationUnit.FileName);
+			string resourceFileName = Path.GetFileNameWithoutExtension(resourceClass.Region.FileName);
 			if (resourceFileName.EndsWith("Designer", StringComparison.OrdinalIgnoreCase)) {
 				resourceFileName = Path.GetFileNameWithoutExtension(resourceFileName);
 			}
-			resourceFileName = Path.Combine(Path.GetDirectoryName(resourceClass.CompilationUnit.FileName), resourceFileName);
+			resourceFileName = Path.Combine(Path.GetDirectoryName(resourceClass.Region.FileName), resourceFileName);
 			if (File.Exists(resourceFileName + ".resources")) {
 				resourceFileName = resourceFileName + ".resources";
 			} else if (File.Exists(resourceFileName + ".resx")) {
 				resourceFileName = resourceFileName + ".resx";
 			} else {
-				throw new FileNotFoundException("Could not find the resource file for type '" + resourceClass.FullyQualifiedName + "'. Tried these file names: '" + resourceFileName + ".(resources|resx)'.");
+				throw new FileNotFoundException("Could not find the resource file for type '" + resourceClass.FullName + "'. Tried these file names: '" + resourceFileName + ".(resources|resx)'.");
 			}
 			
 			// Get the property for the resource.
 			IProperty prop = resourceClass.Properties.SingleOrDefault(p => p.Name == propRef.PropertyName);
 			if (prop == null) {
-				throw new InvalidOperationException("Property '" + propRef.PropertyName + "' not found in type '" + resourceClass.FullyQualifiedName + "'.");
+				throw new InvalidOperationException("Property '" + propRef.PropertyName + "' not found in type '" + resourceClass.FullName + "'.");
 			}
 			
 			if (!prop.CanGet) {
-				throw new InvalidOperationException("Property '" + propRef.PropertyName + "' in type '" + resourceClass.FullyQualifiedName + "' does not have a getter.");
+				throw new InvalidOperationException("Property '" + propRef.PropertyName + "' in type '" + resourceClass.FullName + "' does not have a getter.");
 			}
 			
 			// Get the code of the resource class and
@@ -139,38 +138,38 @@ namespace ICSharpCode.FormsDesigner.Services
 			// It would be better if we could use a real code parser for this, but
 			// that is not possible without getting dependent on the programming language.
 			
-			IDocument doc = new ReadOnlyDocument(SD.FileService.GetFileContent(resourceClass.CompilationUnit.FileName));
+			IDocument doc = new ReadOnlyDocument(SD.FileService.GetFileContent(resourceClass.Region.FileName));
 			
-			int startOffset = doc.PositionToOffset(prop.GetterRegion.BeginLine, prop.GetterRegion.BeginColumn);
-			int endOffset   = doc.PositionToOffset(prop.GetterRegion.EndLine, prop.GetterRegion.EndColumn);
+			int startOffset = doc.PositionToOffset(prop.Getter.BodyRegion.BeginLine, prop.Getter.BodyRegion.BeginColumn);
+			int endOffset   = doc.PositionToOffset(prop.Getter.BodyRegion.EndLine, prop.Getter.BodyRegion.EndColumn);
 			
 			string code = doc.GetText(startOffset, endOffset - startOffset + 1);
 			
 			int index = code.IndexOf("ResourceManager", StringComparison.Ordinal);
 			if (index == -1) {
-				throw new InvalidOperationException("No reference to ResourceManager found in property getter of '" + prop.FullyQualifiedName + "'. Code: '" + code + "'");
+				throw new InvalidOperationException("No reference to ResourceManager found in property getter of '" + prop.FullName + "'. Code: '" + code + "'");
 			}
 			
 			index = code.IndexOf("Get", index, StringComparison.Ordinal);
 			if (index == -1) {
-				throw new InvalidOperationException("No call to Get... found in property getter of '" + prop.FullyQualifiedName + "'. Code: '" + code + "'");
+				throw new InvalidOperationException("No call to Get... found in property getter of '" + prop.FullName + "'. Code: '" + code + "'");
 			}
 			
 			index = code.IndexOf(this.StringLiteralDelimiter, index + 1, StringComparison.Ordinal);
 			if (index == -1) {
-				throw new InvalidOperationException("No string delimiter ('" + this.StringLiteralDelimiter + "') found in property getter of '" + prop.FullyQualifiedName + "'. Code: '" + code + "'");
+				throw new InvalidOperationException("No string delimiter ('" + this.StringLiteralDelimiter + "') found in property getter of '" + prop.FullName + "'. Code: '" + code + "'");
 			}
 			index += this.StringLiteralDelimiter.Length;
 			
 			int endIndex = code.LastIndexOf(this.StringLiteralDelimiter, StringComparison.Ordinal);
 			if (endIndex == -1) {
-				throw new InvalidOperationException("No string terminator ('" + this.StringLiteralDelimiter + "') found in property getter of '" + prop.FullyQualifiedName + "'. Code: '" + code + "'");
+				throw new InvalidOperationException("No string terminator ('" + this.StringLiteralDelimiter + "') found in property getter of '" + prop.FullName + "'. Code: '" + code + "'");
 			}
 			
 			string resourceKey = code.Substring(index, endIndex - index);
 			LoggingService.Debug("-> Decoded resource: In: " + resourceFileName + ". Key: " + resourceKey);
 			
-			return new ProjectResourceInfo(resourceFileName, resourceKey);*/
+			return new ProjectResourceInfo(new FileName(resourceFileName), resourceKey);
 		}
 		
 		/// <summary>

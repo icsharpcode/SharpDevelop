@@ -36,6 +36,10 @@
     <OutputPath>bin\Release</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />

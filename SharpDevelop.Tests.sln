@@ -31,9 +31,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.AvalonEdit.Tests", "src\Libraries\AvalonEdit\ICSharpCode.AvalonEdit.Tests\ICSharpCode.AvalonEdit.Tests.csproj", "{6222A3A1-83CE-47A3-A4E4-A018F82D44D8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NRefactory", "NRefactory", "{E5A0F4D8-37FD-4A30-BEB0-4409DC4E0865}"
-	ProjectSection(SolutionItems) = preProject
-		TODOnewNR.txt = TODOnewNR.txt
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory", "src\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj", "{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}"
 EndProject

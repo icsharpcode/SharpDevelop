@@ -2323,11 +2323,11 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Mostra marcatori &amp;EOL</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
+    <value>Evide&amp;nzia coppie parentesi</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
     <value>Evidenzia simboli</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
-    <value>Evide&amp;nzia coppie parentesi</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HorizontalRulerCheckBox" xml:space="preserve">
     <value>Mostra rig&amp;hello oriz.le</value>

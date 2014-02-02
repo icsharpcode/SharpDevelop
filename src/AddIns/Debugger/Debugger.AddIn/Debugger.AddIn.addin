@@ -9,6 +9,7 @@
 	</Manifest>
 	
 	<Runtime>
+		<Import assembly=":ICSharpCode.SharpDevelop" />
 		<Import assembly="Debugger.AddIn.dll">
 			<ConditionEvaluator name = "IsBreakpointSet" class = "Debugger.AddIn.IsBreakpointCondition"/>
 			<ConditionEvaluator name = "IsBreakpointActive" class="Debugger.AddIn.IsActiveBreakpointCondition" />
@@ -16,13 +17,9 @@
 		<Import assembly="Debugger.Core.dll"/>
 	</Runtime>
 	
-	<Path name="/SharpDevelop/Services/DebuggerService/Debugger">
-		<Debugger id="DefaultDebugger"
-		          supportsStepping = "true"
-		          supportsExecutionControl = "true"
-		          supportsAttaching = "true"
-		          supportsDetaching = "true"
-		          class="ICSharpCode.SharpDevelop.Services.WindowsDebugger"/>
+	<Path name="/SharpDevelop/Services">
+		<Service id="ICSharpCode.SharpDevelop.Debugging.IDebuggerService"
+		         class="ICSharpCode.SharpDevelop.Services.WindowsDebugger" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
@@ -75,7 +72,7 @@
 			          label = "${res:MainWindow.Windows.Debug.DebugExecutable}"
 			          class = "Debugger.AddIn.DebugExecutableMenuCommand"/>
 		</Condition>
-<!--		<MenuItem id="AddExpressionBreakpoint"
+		<!--		<MenuItem id="AddExpressionBreakpoint"
 		          insertafter="Toggle Breakpoint"
 		          label = "${res:MainWindow.Windows.Debug.AddExpressionBreakpoint}"
 		          shortcut="Shift|F7"

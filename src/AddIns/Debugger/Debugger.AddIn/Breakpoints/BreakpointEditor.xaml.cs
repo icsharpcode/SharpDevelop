@@ -17,13 +17,25 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.SharpDevelop.Debugging;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 
-namespace ICSharpCode.UnitTesting
+namespace Debugger.AddIn.Breakpoints
 {
-	public interface IUnitTestDebuggerService
+	/// <summary>
+	/// Interaction logic for BreakpointEditor.xaml
+	/// </summary>
+	public partial class BreakpointEditor : UserControl
 	{
-		bool IsDebuggerLoaded { get; }
-		IDebugger CurrentDebugger { get; }
+		public BreakpointEditor(BreakpointBookmark target)
+		{
+			InitializeComponent();
+		}
 	}
 }

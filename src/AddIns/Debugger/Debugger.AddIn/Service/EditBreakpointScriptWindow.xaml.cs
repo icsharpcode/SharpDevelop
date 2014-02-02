@@ -31,6 +31,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
+using Debugger.AddIn.Breakpoints;
 
 namespace Debugger.AddIn
 {

@@ -60,5 +60,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		/// Notifies the bookmark that it was dropped on the specified line.
 		/// </summary>
 		void Drop(int lineNumber);
+		
+		/// <summary>
+		/// Creates the tooltip content for the bookmark.
+		/// </summary>
+		object CreateTooltipContent();
 	}
 }

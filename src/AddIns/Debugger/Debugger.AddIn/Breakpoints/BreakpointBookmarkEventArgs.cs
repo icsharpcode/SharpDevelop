@@ -18,7 +18,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Debugging
+namespace Debugger.AddIn.Breakpoints
 {
 	public class BreakpointBookmarkEventArgs : EventArgs
 	{

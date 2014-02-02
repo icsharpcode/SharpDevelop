@@ -18,12 +18,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using CSharpBinding.Completion;
 using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Refactoring;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -42,6 +42,13 @@ namespace CSharpBinding
 			this.container.AddService(typeof(IBracketSearcher), new CSharpBracketSearcher());
 			this.container.AddService(typeof(CodeGenerator), new CSharpCodeGenerator());
 			this.container.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), new Microsoft.CSharp.CSharpCodeProvider());
+		}
+		
+		public override ICodeCompletionBinding CreateCompletionBinding(FileName fileName, TextLocation currentLocation, ICSharpCode.NRefactory.Editor.ITextSource fileContent)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			return new CSharpCompletionBinding(fileName, currentLocation, fileContent);
 		}
 	}
 	

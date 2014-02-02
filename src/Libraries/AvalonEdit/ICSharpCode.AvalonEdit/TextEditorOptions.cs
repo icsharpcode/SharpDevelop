@@ -445,5 +445,53 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
+		
+		bool highlightCurrentLine = false;
+		
+		/// <summary>
+		/// Gets/Sets if current line should be shown.
+		/// </summary>
+		[DefaultValue(false)]
+		public virtual bool HighlightCurrentLine {
+			get { return highlightCurrentLine; }
+			set {
+				if (highlightCurrentLine != value) {
+					highlightCurrentLine = value;
+					OnPropertyChanged("HighlightCurrentLine");
+				}
+			}
+		}
+		
+		bool hideCursorWhileTyping = true;
+		
+		/// <summary>
+		/// Gets/Sets if mouse cursor should be hidden while user is typing.
+		/// </summary>
+		[DefaultValue(true)]
+		public bool HideCursorWhileTyping {
+			get { return hideCursorWhileTyping; }
+			set {
+				if (hideCursorWhileTyping != value) {
+					hideCursorWhileTyping = value;
+					OnPropertyChanged("HideCursorWhileTyping");
+				}
+			}
+		}
+		
+		bool allowToggleOverstrikeMode = false;
+		
+		/// <summary>
+		/// Gets/Sets if the user is allowed to enable/disable overstrike mode.
+		/// </summary>
+		[DefaultValue(false)]
+		public bool AllowToggleOverstrikeMode {
+			get { return allowToggleOverstrikeMode; }
+			set {
+				if (allowToggleOverstrikeMode != value) {
+					allowToggleOverstrikeMode = value;
+					OnPropertyChanged("AllowToggleOverstrikeMode");
+				}
+			}
+		}
 	}
 }

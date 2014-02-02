@@ -17,6 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -97,18 +99,53 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.ActiveTab = clipboardRing;
 		}
 		
+		public List<string> GetClipboardRingItems()
+		{
+			var list = new List<string>();
+			if (clipboardRing == null || clipboardRing.Items == null)
+				return list;
+			
+			foreach (var item in clipboardRing.Items) {
+				string itemData = item.Tag as string;
+				if (itemData != null)
+					list.Add(itemData);
+			}
+			
+			return list;
+		}
+		
 		public void PutInClipboardRing(string text)
 		{
 			if (clipboardRing != null) {
 				string shortenedText = text.Trim();
+				if (shortenedText == String.Empty)
+					return;
+				
 				if (shortenedText.Length > 50)
 					shortenedText = shortenedText.Substring(0, 47) + "...";
-				clipboardRing.Items.Add("Text:" + shortenedText, text);
+				
+				RemoveFromClipboardRing(text);
+				clipboardRing.Items.Insert(0, shortenedText, text);
 				if (clipboardRing.Items.Count > 20) {
-					clipboardRing.Items.RemoveAt(0);
+					clipboardRing.Items.RemoveAt(clipboardRing.Items.Count - 1);
 				}
 			}
 			Refresh();
+		}
+		
+		void RemoveFromClipboardRing(string text) 
+		{
+			int pos = 0;
+			foreach (var item in clipboardRing.Items) {
+				string itemData = item.Tag as string;
+				if(itemData != null && itemData.Equals(text))
+					break;
+				pos++;
+			}
+				
+			if (pos < clipboardRing.Items.Count) {
+				clipboardRing.Items.RemoveAt(pos);
+			}
 		}
 		
 		public void SaveSideBarViewConfig()
@@ -186,8 +223,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override object StartItemDrag(SideTabItem draggedItem)
 		{
-			if (this.ActiveTab.ChoosedItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
-				this.ActiveTab.ChoosedItem = draggedItem;
+			if (this.ActiveTab.ChosenItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
+				this.ActiveTab.ChosenItem = draggedItem;
 			}
 			var dataObject = new System.Windows.DataObject();
 			dataObject.SetText(draggedItem.Tag.ToString());

@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		protected override void RefreshProcessList(ListView listView, bool showNonManaged)
 		{
 			listView.Items.Clear();
-			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			WindowsDebugger debugger = (WindowsDebugger)SD.Debugger;
 			Process currentProcess = Process.GetCurrentProcess();
 			foreach (Process process in Process.GetProcesses()) {
 				try {

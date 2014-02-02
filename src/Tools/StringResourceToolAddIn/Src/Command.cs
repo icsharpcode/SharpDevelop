@@ -35,14 +35,11 @@ namespace StringResourceToolAddIn
 		{
 			// Here an example that shows how to access the current text document:
 			
-			ITextEditorProvider tecp = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
-			if (tecp == null) {
+			var textEditor = SD.GetActiveViewContentService<ITextEditor>();
+			if (textEditor == null) {
 				// active content is not a text editor control
 				return;
 			}
-			
-			// Get the active text area from the control:
-			ITextEditor textEditor = tecp.TextEditor;
 			if (textEditor.SelectionLength == 0)
 				return;
 			// get the selected text:
@@ -64,7 +61,7 @@ namespace StringResourceToolAddIn
 			}
 			
 			string resourceName = MessageService.ShowInputBox("Add Resource", "Please enter the name for the new resource.\n" +
-			                                                  "This should be a namespace-like construct, please see what the names of resources in the same component are.", PropertyService.Get("ResourceToolLastResourceName"));
+			                                                  "This should be a namespace-like construct, please see what the names of resources in the same component are.", SD.PropertyService.Get("ResourceToolLastResourceName", ""));
 			if (resourceName == null || resourceName.Length == 0) return;
 			PropertyService.Set("ResourceToolLastResourceName", resourceName);
 			

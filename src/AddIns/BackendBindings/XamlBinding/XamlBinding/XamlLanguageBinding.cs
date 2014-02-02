@@ -17,7 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -57,6 +59,8 @@ namespace ICSharpCode.XamlBinding
 				// add ILanguageBinding
 				textView.Services.AddService(typeof(XamlTextEditorExtension), this);
 			}
+			
+			SD.ParserService.ParseInformationUpdated += ParseInformationUpdated;
 		}
 
 		public override void Detach()
@@ -75,6 +79,44 @@ namespace ICSharpCode.XamlBinding
 					contentHost.Dispose();
 				}
 				textView.Services.RemoveService(typeof(XamlTextEditorExtension));
+			}
+			
+			SD.ParserService.ParseInformationUpdated -= ParseInformationUpdated;
+		}
+
+		void ParseInformationUpdated(object sender, ICSharpCode.SharpDevelop.Parser.ParseInformationEventArgs e)
+		{
+			if (!e.FileName.Equals(textView.Document.FileName)) return;
+			ITextMarkerService markerService = textView.GetService<ITextMarkerService>();
+			if (markerService == null) return;
+			markerService.RemoveAll(m => m.Tag is Error);
+			foreach (Error error in e.NewUnresolvedFile.Errors) {
+				var offset = textView.Document.GetOffset(error.Region.Begin);
+				var endOffset = textView.Document.GetOffset(error.Region.End);
+				int length = endOffset - offset;
+				
+				if (length < 2) {
+					// marker should be at least 2 characters long, but take care that we don't make
+					// it longer than the document
+					length = Math.Min(2, textView.Document.TextLength - offset);
+				}
+				var marker = markerService.Create(offset, length);
+				switch (error.ErrorType) {
+					case ErrorType.Unknown:
+						marker.MarkerColor = Colors.Blue;
+						break;
+					case ErrorType.Error:
+						marker.MarkerColor = Colors.Red;
+						break;
+					case ErrorType.Warning:
+						marker.MarkerColor = Colors.Orange;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+				marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
+				marker.ToolTip = error.Message;
+				marker.Tag = error;
 			}
 		}
 	}

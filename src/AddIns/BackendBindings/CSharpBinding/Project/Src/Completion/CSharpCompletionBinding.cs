@@ -20,10 +20,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -32,6 +36,22 @@ namespace CSharpBinding.Completion
 {
 	public class CSharpCompletionBinding : ICodeCompletionBinding
 	{
+		FileName contextFileName;
+		TextLocation currentLocation;
+		ITextSource fileContent;
+		
+		public CSharpCompletionBinding()
+			: this(null, TextLocation.Empty, null)
+		{
+		}
+		
+		public CSharpCompletionBinding(FileName contextFileName, TextLocation currentLocation, ITextSource fileContent)
+		{
+			this.contextFileName = contextFileName;
+			this.currentLocation = currentLocation;
+			this.fileContent = fileContent;
+		}
+		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			// We use HandleKeyPressed instead.
@@ -52,36 +72,49 @@ namespace CSharpBinding.Completion
 		
 		bool ShowCompletion(ITextEditor editor, char completionChar, bool ctrlSpace)
 		{
-			var completionContext = CSharpCompletionContext.Get(editor);
+			CSharpCompletionContext completionContext;
+			if (fileContent == null) {
+				completionContext = CSharpCompletionContext.Get(editor);
+			} else {
+				completionContext = CSharpCompletionContext.Get(editor, fileContent, currentLocation, contextFileName);
+			}
 			if (completionContext == null)
 				return false;
 			
+			int caretOffset;
+			if (fileContent == null) {
+				caretOffset = editor.Caret.Offset;
+				currentLocation = editor.Caret.Location;
+			} else {
+				caretOffset = completionContext.Document.GetOffset(currentLocation);
+			}
+			
 			var completionFactory = new CSharpCompletionDataFactory(completionContext, new CSharpResolver(completionContext.TypeResolveContextAtCaret));
+			
 			CSharpCompletionEngine cce = new CSharpCompletionEngine(
-				editor.Document,
+				completionContext.Document,
 				completionContext.CompletionContextProvider,
 				completionFactory,
 				completionContext.ProjectContent,
 				completionContext.TypeResolveContextAtCaret
 			);
-			
 			cce.FormattingPolicy = FormattingOptionsFactory.CreateSharpDevelop();
-			cce.EolMarker = DocumentUtilities.GetLineTerminator(editor.Document, editor.Caret.Line);
-			cce.IndentString = editor.Options.IndentationString;
+			cce.EolMarker = DocumentUtilities.GetLineTerminator(completionContext.Document, currentLocation.Line);
 			
+			cce.IndentString = editor.Options.IndentationString;
 			int startPos, triggerWordLength;
 			IEnumerable<ICompletionData> completionData;
 			if (ctrlSpace) {
-				if (!cce.TryGetCompletionWord(editor.Caret.Offset, out startPos, out triggerWordLength)) {
-					startPos = editor.Caret.Offset;
+				if (!cce.TryGetCompletionWord(caretOffset, out startPos, out triggerWordLength)) {
+					startPos = caretOffset;
 					triggerWordLength = 0;
 				}
 				completionData = cce.GetCompletionData(startPos, true);
 				completionData = completionData.Concat(cce.GetImportCompletionData(startPos));
 			} else {
-				startPos = editor.Caret.Offset;
+				startPos = caretOffset;
 				if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
-					if (startPos > 1 && char.IsLetterOrDigit (editor.Document.GetCharAt (startPos - 2)))
+					if (startPos > 1 && char.IsLetterOrDigit (completionContext.Document.GetCharAt (startPos - 2)))
 						return false;
 					completionData = cce.GetCompletionData(startPos, false);
 					startPos--;
@@ -96,8 +129,8 @@ namespace CSharpBinding.Completion
 			list.Items.AddRange(FilterAndAddTemplates(editor, completionData.Cast<ICompletionItem>().ToList()));
 			if (list.Items.Count > 0) {
 				list.SortItems();
-				list.PreselectionLength = editor.Caret.Offset - startPos;
-				list.PostselectionLength = Math.Max(0, startPos + triggerWordLength - editor.Caret.Offset);
+				list.PreselectionLength = caretOffset - startPos;
+				list.PostselectionLength = Math.Max(0, startPos + triggerWordLength - caretOffset);
 				list.SuggestedItem = list.Items.FirstOrDefault(i => i.Text == cce.DefaultCompletionString);
 				editor.ShowCompletionWindow(list);
 				return true;
@@ -106,13 +139,13 @@ namespace CSharpBinding.Completion
 			if (!ctrlSpace) {
 				// Method Insight
 				var pce = new CSharpParameterCompletionEngine(
-					editor.Document,
+					completionContext.Document,
 					completionContext.CompletionContextProvider,
 					completionFactory,
 					completionContext.ProjectContent,
 					completionContext.TypeResolveContextAtCaret
 				);
-				var newInsight = pce.GetParameterDataProvider(editor.Caret.Offset, completionChar) as CSharpMethodInsight;
+				var newInsight = pce.GetParameterDataProvider(caretOffset, completionChar) as CSharpMethodInsight;
 				if (newInsight != null && newInsight.items.Count > 0) {
 					newInsight.UpdateHighlightedParameter(pce);
 					newInsight.Show();

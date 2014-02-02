@@ -1597,7 +1597,7 @@ Exemplos:"120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Mostrar marcadores de fim de linha (EOL)</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
     <value>Realçar chaveta correspondente</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HorizontalRulerCheckBox" xml:space="preserve">

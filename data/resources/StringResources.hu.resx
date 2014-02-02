@@ -1233,7 +1233,7 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Sorvége &amp;jelek mutatása</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
     <value>Záró&amp;jelpár kiemelése</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HorizontalRulerCheckBox" xml:space="preserve">

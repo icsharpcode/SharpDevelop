@@ -28,6 +28,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using ICSharpCode.SharpDevelop;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph.Layout;
 using ICSharpCode.NRefactory.Ast;
@@ -60,7 +61,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			InitializeComponent();
 			
-			debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
+			debuggerService = SD.Debugger as WindowsDebugger;
 			if (debuggerService == null) throw new ApplicationException("Only windows debugger is currently supported");
 			
 			this.layoutViewModel = new EnumViewModel<LayoutDirection>();

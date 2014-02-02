@@ -39,7 +39,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.CanSaved = false;
 			
 			AddDefaultItem();
-			this.ChoosedItemChanged += SelectedTabItemChanged;
+			this.ChosenItemChanged += SelectedTabItemChanged;
 		}
 		
 		protected void AddDefaultItem()
@@ -66,7 +66,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void SelectedTabItemChanged(object sender, EventArgs e)
 		{
-			SideTabItem item = (sender as SideTab).ChoosedItem;
+			SideTabItem item = (sender as SideTab).ChosenItem;
 			if (item == null) {
 				toolboxService.SetSelectedToolboxItem(null);
 			} else {

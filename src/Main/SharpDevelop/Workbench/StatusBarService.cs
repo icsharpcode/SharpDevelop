@@ -57,6 +57,30 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			);
 		}
 		
+		public void SetSelectionSingle(int length)
+		{
+			if (length > 0) {
+				statusBar.SelectionStatusBarPanel.Content = StringParser.Parse(
+					"${res:StatusBarService.SelectionStatusBarPanelTextSingle}",
+					new StringTagPair("Length", String.Format("{0,-10}", length)));
+			} else {
+				statusBar.SelectionStatusBarPanel.Content = null;
+			}
+		}
+		
+		public void SetSelectionMulti(int rows, int cols)
+		{
+			if (rows > 0 && cols > 0) {
+				statusBar.SelectionStatusBarPanel.Content = StringParser.Parse(
+					"${res:StatusBarService.SelectionStatusBarPanelTextMulti}",
+					new StringTagPair("Rows", String.Format("{0}", rows)),
+					new StringTagPair("Cols", String.Format("{0}", cols)),
+					new StringTagPair("Total", String.Format("{0}", rows * cols)));
+			} else {
+				statusBar.SelectionStatusBarPanel.Content = null;
+			}
+		}
+		
 		public void SetInsertMode(bool insertMode)
 		{
 			statusBar.ModeStatusBarPanel.Content = insertMode ? StringParser.Parse("${res:StatusBarService.CaretModes.Insert}") : StringParser.Parse("${res:StatusBarService.CaretModes.Overwrite}");

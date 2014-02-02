@@ -46,8 +46,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 			} else if (mrr != null) {
 				e.SetToolTip(CreateTooltip(mrr.Member));
 			} else if (lrr != null) {
-				var ambience = AmbienceService.GetCurrentAmbience();
-				e.SetToolTip(ambience.ConvertSymbol(lrr.Variable));
+				e.SetToolTip(new FlowDocumentTooltip(XmlDocFormatter.CreateTooltip(lrr.Variable)));
 			}
 		}
 		

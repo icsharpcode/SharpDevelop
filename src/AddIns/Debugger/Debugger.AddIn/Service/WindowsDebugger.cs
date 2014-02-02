@@ -25,8 +25,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Debugger;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 using Debugger.AddIn;
+using Debugger.AddIn.Breakpoints;
 using Debugger.AddIn.Tooltips;
 using Debugger.AddIn.TreeModel;
 using Debugger.Interop.CorPublish;
@@ -43,7 +45,7 @@ using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
-	public class WindowsDebugger : IDebugger
+	public class WindowsDebugger : BaseDebuggerService
 	{
 		public static WindowsDebugger Instance { get; set; }
 		
@@ -97,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		ICorPublish corPublish;
 		
 		/// <inheritdoc/>
-		public bool BreakAtBeginning { get; set; }
+		public override bool BreakAtBeginning { get; set; }
 		
 		public bool ServiceInitialized {
 			get { return CurrentDebugger != null; }
@@ -116,30 +118,35 @@ namespace ICSharpCode.SharpDevelop.Services
 		// string errorProcessPaused  = "${res:XML.MainMenu.DebugMenu.Error.ProcessPaused}";
 		// string errorCannotStepNoActiveFunction = "${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}";
 		
-		public bool IsDebugging {
+		public override bool IsDebugging {
 			get {
 				return ServiceInitialized && CurrentProcess != null;
 			}
 		}
 		
-		public bool IsAttached {
+		public override bool IsAttached {
 			get {
 				return ServiceInitialized && attached;
 			}
 		}
 		
-		public bool IsProcessRunning {
+		public override bool IsProcessRunning {
 			get {
 				return IsDebugging && CurrentProcess.IsRunning;
 			}
 		}
 		
-		public bool CanDebug(IProject project)
+		public override bool CanDebug(IProject project)
 		{
 			return true;
 		}
 		
-		public void Start(ProcessStartInfo processStartInfo)
+		public override bool Supports(DebuggerFeatures feature)
+		{
+			return true;
+		}
+		
+		public override void Start(ProcessStartInfo processStartInfo)
 		{
 			if (IsDebugging) {
 				MessageService.ShowMessage(errorDebugging);
@@ -162,8 +169,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.KernelDebuggerEnabled}");
 			} else {
 				attached = false;
-				if (DebugStarting != null)
-					DebugStarting(this, EventArgs.Empty);
+				OnDebugStarting(EventArgs.Empty);
 				
 				UpdateBreakpointLines();
 				
@@ -186,8 +192,7 @@ namespace ICSharpCode.SharpDevelop.Services
 						}
 						MessageService.ShowMessage(msg);
 						
-						if (DebugStopped != null)
-							DebugStopped(this, EventArgs.Empty);
+						OnDebugStopped(EventArgs.Empty);
 					} else {
 						throw;
 					}
@@ -195,7 +200,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public void ShowAttachDialog()
+		public override void ShowAttachDialog()
 		{
 			using (AttachToProcessForm attachForm = new AttachToProcessForm()) {
 				if (attachForm.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
@@ -204,7 +209,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public void Attach(System.Diagnostics.Process existingProcess)
+		public override void Attach(System.Diagnostics.Process existingProcess)
 		{
 			if (existingProcess == null)
 				return;
@@ -221,8 +226,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (version.StartsWith("v1.0")) {
 				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
 			} else {
-				if (DebugStarting != null)
-					DebugStarting(this, EventArgs.Empty);
+				OnDebugStarting(EventArgs.Empty);
 				
 				UpdateBreakpointLines();
 				
@@ -237,8 +241,7 @@ namespace ICSharpCode.SharpDevelop.Services
 						string msg = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Error.CannotAttachToProcess}");
 						MessageService.ShowMessage(msg + " " + e.Message);
 						
-						if (DebugStopped != null)
-							DebugStopped(this, EventArgs.Empty);
+						OnDebugStopped(EventArgs.Empty);
 					} else {
 						throw;
 					}
@@ -246,18 +249,18 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 
-		public void Detach()
+		public override void Detach()
 		{
 			ClassBrowserSupport.Detach(CurrentProcess);
 			CurrentDebugger.Detach();
 		}
 		
-		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
+		public override void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{
 			System.Diagnostics.Process.Start(processStartInfo);
 		}
 		
-		public void Stop()
+		public override void Stop()
 		{
 			if (!IsDebugging) {
 				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.Stop}");
@@ -280,50 +283,38 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public void Break()
+		public override void Break()
 		{
 			if (CurrentProcess != null && CurrentProcess.IsRunning) {
 				CurrentProcess.Break();
 			}
 		}
 		
-		public void Continue()
+		public override void Continue()
 		{
 			if (CurrentProcess != null && CurrentProcess.IsPaused) {
 				CurrentProcess.AsyncContinue();
 			}
 		}
 		
-		public void StepInto()
+		public override void StepInto()
 		{
 			if (CurrentStackFrame != null) {
 				CurrentStackFrame.AsyncStepInto();
 			}
 		}
 		
-		public void StepOver()
+		public override void StepOver()
 		{
 			if (CurrentStackFrame != null) {
 				CurrentStackFrame.AsyncStepOver();
 			}
 		}
 		
-		public void StepOut()
+		public override void StepOut()
 		{
 			if (CurrentStackFrame != null) {
 				CurrentStackFrame.AsyncStepOut();
-			}
-		}
-		
-		public event EventHandler DebugStarting;
-		public event EventHandler DebugStarted;
-		public event EventHandler DebugStopped;
-		public event EventHandler IsProcessRunningChanged;
-		
-		protected virtual void OnIsProcessRunningChanged(EventArgs e)
-		{
-			if (IsProcessRunningChanged != null) {
-				IsProcessRunningChanged(this, e);
 			}
 		}
 		
@@ -339,7 +330,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			return false;
 		}
 		
-		public bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
+		public override bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
 		{
 			if (CurrentStackFrame != null) {
 				if (CurrentStackFrame.SetIP(filename, line, column, dryRun)) {
@@ -348,11 +339,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 			}
 			return false;
-		}
-		
-		public void Dispose()
-		{
-			Stop();
 		}
 		
 		#endregion
@@ -431,7 +417,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					return false;
 			} catch (GetValueException e) {
 				string errorMessage = "Error while evaluating breakpoint condition " + code + ":\n" + e.Message + "\n";
-				DebuggerService.PrintDebugMessage(errorMessage);
+				BaseDebuggerService.PrintDebugMessage(errorMessage);
 				SD.MainThread.InvokeAsyncAndForget(() => MessageService.ShowWarning(errorMessage));
 				return true;
 			}
@@ -439,14 +425,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void LogMessage(object sender, MessageEventArgs e)
 		{
-			DebuggerService.PrintDebugMessage(e.Message);
+			BaseDebuggerService.PrintDebugMessage(e.Message);
 		}
 		
 		void debugger_ProcessStarted()
 		{
-			if (DebugStarted != null) {
-				DebugStarted(this, EventArgs.Empty);
-			}
+			OnDebugStarted(EventArgs.Empty);
 			
 			CurrentProcess.ModuleLoaded   += (s, e) => UpdateBreakpointIcons();
 			CurrentProcess.ModuleLoaded   += (s, e) => RefreshPads();
@@ -462,9 +446,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void debugger_ProcessExited()
 		{
-			if (DebugStopped != null) {
-				DebugStopped(this, EventArgs.Empty);
-			}
+			OnDebugStopped(EventArgs.Empty);
 			
 			ClassBrowserSupport.Detach(CurrentProcess);
 			CurrentProcess = null;
@@ -572,7 +554,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				} else {
 					if (EvaluateCondition(bookmark.Condition)) {
 						breakProcess = true;
-						DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber, bookmark.FileName, bookmark.Condition));
+						BaseDebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber, bookmark.FileName, bookmark.Condition));
 					}
 				}
 			}
@@ -588,7 +570,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		void debuggedProcess_DebuggingResumed(object sender, DebuggerEventArgs e)
 		{
 			OnIsProcessRunningChanged(EventArgs.Empty);
-			DebuggerService.RemoveCurrentLineMarker();
+			RemoveCurrentLineMarker();
 			
 			CurrentThread = null;
 			CurrentStackFrame = null;
@@ -612,10 +594,10 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			
 			SD.Workbench.MainWindow.Activate();
-			DebuggerService.RemoveCurrentLineMarker();
+			RemoveCurrentLineMarker();
 			SequencePoint nextStatement = CurrentStackFrame.NextStatement;
 			if (nextStatement != null) {
-				DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+				JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 			}
 		}
 		
@@ -637,11 +619,13 @@ namespace ICSharpCode.SharpDevelop.Services
 				.ForEach(p => e.Module.LoadSymbolsFromDisk(new []{ Path.GetDirectoryName(p.OutputAssemblyFullPath) }));
 		}
 		
-		public void HandleToolTipRequest(ToolTipRequestEventArgs e)
+		public override void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
 			if (!(IsDebugging && CurrentProcess.IsPaused))
 				return;
-			var resolveResult = e.ResolveResult;
+			if (CurrentStackFrame == null)
+				return;
+			var resolveResult = SD.ParserService.Resolve(e.Editor, e.LogicalPosition, CurrentStackFrame.AppDomain.Compilation);
 			if (resolveResult == null)
 				return;
 			if (resolveResult is LocalResolveResult || resolveResult is MemberResolveResult) {
@@ -662,6 +646,33 @@ namespace ICSharpCode.SharpDevelop.Services
 					SD.Log.Warn(ex);
 				}
 			}
+		}
+		
+		public override void RemoveCurrentLineMarker()
+		{
+			CurrentLineBookmark.Remove();
+		}
+		
+		public override void ToggleBreakpointAt(ITextEditor editor, int lineNumber)
+		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
+
+			if (!SD.BookmarkManager.RemoveBookmarkAt(editor.FileName, lineNumber, b => b is BreakpointBookmark)) {
+				SD.BookmarkManager.AddMark(new BreakpointBookmark(), editor.Document, lineNumber);
+			}
+		}
+		
+		public override void JumpToCurrentLine(string sourceFullFilename, int startLine, int startColumn, int endLine, int endColumn)
+		{
+			IViewContent viewContent = FileService.OpenFile(sourceFullFilename);
+			if (viewContent != null) {
+				IPositionable positionable = viewContent.GetService<IPositionable>();
+				if (positionable != null) {
+					positionable.JumpTo(startLine, startColumn);
+				}
+			}
+			CurrentLineBookmark.SetPosition(viewContent, startLine, startColumn, endLine, endColumn);
 		}
 	}
 }

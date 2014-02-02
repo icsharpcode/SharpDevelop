@@ -2350,11 +2350,11 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>&amp;EOL markeringen weergeven</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
+    <value>&amp;Markeren passend haakje</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
     <value>Markeer symbolen</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
-    <value>&amp;Markeren passend haakje</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HorizontalRulerCheckBox" xml:space="preserve">
     <value>Toon &amp;horizontale lineaal</value>
@@ -5036,6 +5036,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.CompilerMessageView.ToggleWordWrapButton.ToolTip" xml:space="preserve">
     <value>Schakel woordomslag aan/uit</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.AddWatchExpression" xml:space="preserve">
+    <value>Wacht expressie toevoegen</value>
   </data>
   <data name="MainWindow.Windows.Debug.Breakpoints" xml:space="preserve">
     <value>Breekpunten</value>

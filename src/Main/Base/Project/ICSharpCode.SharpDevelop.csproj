@@ -82,6 +82,8 @@
     <Compile Include="..\..\..\Libraries\ICSharpCode.Build.Tasks\Project\KnownFrameworkAssemblies.cs">
       <Link>Src\Gui\Dialogs\ReferenceDialog\KnownFrameworkAssemblies.cs</Link>
     </Compile>
+    <Compile Include="Debugging\BaseDebuggerService.cs" />
+    <Compile Include="Debugging\IDebuggerService.cs" />
     <Compile Include="Designer\IDesignerTypeResolutionService.cs" />
     <Compile Include="Designer\TypeResolutionService.cs" />
     <Compile Include="Dom\ClassBrowser\AssemblyLoadErrorTreeNode.cs" />
@@ -574,8 +576,6 @@
     <Compile Include="Refactoring\IContextActionProvider.cs" />
     <Compile Include="Src\Services\AmbienceService\DefaultAmbience.cs" />
     <Compile Include="Src\Services\ClassBrowserIcons\ImageSourceImage.cs" />
-    <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
-    <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
     <Compile Include="Workbench\File\IFileService.cs" />
     <Compile Include="Workbench\File\OpenedFile.cs" />
     <Compile Include="Src\Services\FileIconService.cs" />
@@ -684,15 +684,12 @@
     <Compile Include="Src\Commands\CustomStringTagProvider.cs" />
     <Compile Include="Src\Commands\VBConverter\CSharpConvertBuffer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveViewContentUntitledEvaluator.cs" />
-    <Compile Include="Src\Services\Debugger\DebuggerService.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\CompilerMessageView.cs" />
     <Compile Include="Src\Internal\Templates\StandardHeaders.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\IsProcessRunningEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\PadDoozer.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategory.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveContentExtensionEvaluator.cs" />
-    <Compile Include="Src\Services\Debugger\IDebugger.cs" />
-    <Compile Include="Src\Services\Debugger\DefaultDebugger.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveWindowStateEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\OpenWindowStateEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\DebuggerSupportsEvaluator.cs" />
@@ -790,10 +787,8 @@
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
     <Compile Include="Src\Services\ProjectService\ParseableFileContentFinder.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
-    <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
-    <Compile Include="Src\Services\Debugger\DebuggerDoozer.cs" />
     <Compile Include="Src\Project\ConfigurationGuiHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractXmlFormsProjectOptionPanel.cs">
       <SubType>UserControl</SubType>
@@ -856,6 +851,7 @@
     <Folder Include="Designer" />
     <Folder Include="Dom\ClassBrowser" />
     <Folder Include="Editor\ContextActions" />
+    <Folder Include="Debugging" />
     <Folder Include="Project\TargetFrameworks" />
     <Folder Include="Src\Editor\Dialogs" />
     <Folder Include="Templates" />

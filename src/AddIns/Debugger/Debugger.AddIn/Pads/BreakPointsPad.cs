@@ -22,6 +22,7 @@ using System.Windows.Controls;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
+using Debugger.AddIn.Breakpoints;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -42,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override bool ShowBookmarkInThisPad(SDBookmark mark)
 		{
-			return mark.IsVisibleInBookmarkPad && mark is BreakpointBookmark;
+			return mark.ShowInPad(this) && mark is BreakpointBookmark;
 		}
 	}
 }

@@ -178,10 +178,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			IAssemblyModel assemblyModel = (IAssemblyModel) parameter;
 			
 			// Start debugger with given assembly
-			DebuggerService.CurrentDebugger.Start(new ProcessStartInfo {
-			                                      	FileName = assemblyModel.Context.Location,
-			                                      	WorkingDirectory = Path.GetDirectoryName(assemblyModel.Context.Location)
-			                                      });
+			SD.Debugger.Start(new ProcessStartInfo {
+			                  	FileName = assemblyModel.Context.Location,
+			                  	WorkingDirectory = Path.GetDirectoryName(assemblyModel.Context.Location)
+			                  });
 		}
 	}
 	

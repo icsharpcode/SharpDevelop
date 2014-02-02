@@ -33,11 +33,6 @@ using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn
 {
-	public enum SupportedLanguage
-	{
-		CSharp
-	}
-	
 	public static class Extensions
 	{
 		public static ResolveResult ToResolveResult(this Value value, StackFrame context)

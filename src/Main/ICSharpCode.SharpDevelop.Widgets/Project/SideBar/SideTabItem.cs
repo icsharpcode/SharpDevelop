@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 	public enum SideTabItemStatus {
 		Normal,
 		Selected,
-		Choosed,
+		Chosen,
 		Drag
 	}
 	
@@ -150,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 					}
 					g.DrawString(name, f, SystemBrushes.ControlText, new PointF(rectangle.X + width + 1, rectangle.Y + 1));
 					break;
-				case SideTabItemStatus.Choosed:
+				case SideTabItemStatus.Chosen:
 					ControlPaint.DrawBorder3D(g, rectangle, Border3DStyle.Sunken);
 					rectangle.X += 1;
 					rectangle.Y += 1;

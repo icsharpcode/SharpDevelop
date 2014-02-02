@@ -278,5 +278,25 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			}
 			return false;
 		}
+		
+		/// <summary>
+		/// Adds existing segments as snippet elements.
+		/// </summary>
+		public void Link(ISegment mainElement, ISegment[] boundElements)
+		{
+			var main = new SnippetReplaceableTextElement { Text = Document.GetText(mainElement) };
+			RegisterActiveElement(main, new ReplaceableActiveElement(this, mainElement.Offset, mainElement.EndOffset));
+			foreach (var boundElement in boundElements) {
+				var bound = new SnippetBoundElement { TargetElement = main };
+				var start = Document.CreateAnchor(boundElement.Offset);
+				start.MovementType = AnchorMovementType.BeforeInsertion;
+				start.SurviveDeletion = true;
+				var end = Document.CreateAnchor(boundElement.EndOffset);
+				end.MovementType = AnchorMovementType.BeforeInsertion;
+				end.SurviveDeletion = true;
+				
+				RegisterActiveElement(bound, new BoundActiveElement(this, main, bound, new AnchorSegment(start, end)));
+			}
+		}
 	}
 }
