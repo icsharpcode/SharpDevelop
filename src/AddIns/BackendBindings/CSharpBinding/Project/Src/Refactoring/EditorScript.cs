@@ -31,6 +31,7 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Snippets;
+using ICSharpCode.AvalonEdit.Utils;
 using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
@@ -343,9 +344,12 @@ namespace CSharpBinding.Refactoring
 		void DrawLineForInsertionPoint(int index, Pen pen, DrawingContext drawingContext)
 		{
 			var currentInsertionPoint = insertionPoints[index];
-			var pos = editor.TextView.GetVisualPosition(new TextViewPosition(currentInsertionPoint.Location), VisualYPosition.LineMiddle);
+			var pos = editor.TextView.GetVisualPosition(new TextViewPosition(currentInsertionPoint.Location), VisualYPosition.LineTop);
 			var endPos = new Point(pos.X + editor.TextView.ActualWidth * 0.6, pos.Y);
-			drawingContext.DrawLine(pen, pos - editor.TextView.ScrollOffset, endPos - editor.TextView.ScrollOffset);
+			pos -= editor.TextView.ScrollOffset;
+			endPos -= editor.TextView.ScrollOffset;
+			var pixelSize = PixelSnapHelpers.GetPixelSize(this);
+			drawingContext.DrawLine(pen, PixelSnapHelpers.Round(pos, pixelSize), PixelSnapHelpers.Round(endPos, pixelSize));
 		}
 		
 		protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
@@ -356,9 +360,18 @@ namespace CSharpBinding.Refactoring
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			insertionPointNextToMouse = FindNextInsertionPoint(e.GetPosition(this));
-			e.Handled = true;
+			// don't set e.Handled = true; so that the event continues bubbling
 			InvalidateVisual();
 			base.OnMouseMove(e);
+		}
+		
+		protected override void OnQueryCursor(QueryCursorEventArgs e)
+		{
+			if (FindNextInsertionPoint(e.GetPosition(this)) >= 0)
+				e.Cursor = Cursors.UpArrow;
+			else
+				e.Cursor = Cursors.Arrow;
+			e.Handled = true;
 		}
 		
 		protected override void OnMouseDown(MouseButtonEventArgs e)
@@ -367,7 +380,9 @@ namespace CSharpBinding.Refactoring
 				if (e.ClickCount > 1) {
 					FireExited(true);
 				} else {
-					CurrentInsertionPoint = insertionPointNextToMouse;
+					insertionPointNextToMouse = FindNextInsertionPoint(e.GetPosition(this));
+					if (insertionPointNextToMouse >= 0)
+						CurrentInsertionPoint = insertionPointNextToMouse;
 					InvalidateVisual();
 				}
 				e.Handled = true;
@@ -380,9 +395,9 @@ namespace CSharpBinding.Refactoring
 			var position = editor.TextView.GetPosition(point + editor.TextView.ScrollOffset);
 			if (position == null) return -1;
 			
-			int insertionPoint = CurrentInsertionPoint;
+			int insertionPoint = -1;
 			int mouseLocationLine = position.Value.Location.Line;
-			int currentLocationLine = insertionPoints[insertionPoint].Location.Line;
+			int currentLocationLine = -10;
 			
 			for (int i = 0; i < insertionPoints.Length; i++) {
 				var line = insertionPoints[i].Location.Line;
