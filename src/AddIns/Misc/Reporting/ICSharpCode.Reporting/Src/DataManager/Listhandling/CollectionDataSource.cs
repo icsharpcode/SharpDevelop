@@ -72,12 +72,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				throw new ArgumentNullException("reportSettings");
 			
 			baseList = CreateBaseList(list);
-			
 			CurrentList = baseList;
-			
-//			this.elementType = elementType;
 			this.reportSettings = reportSettings;
-			
 			this.listProperties = this.baseList.GetItemProperties(null);
 			OrderGroup = OrderGroup.AsIs;
 		}
@@ -130,7 +126,6 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			var sortProperty = listProperties.Find(reportSettings.SortColumnsCollection[0].ColumnName,true);
 			if(reportSettings.SortColumnsCollection.Count == 1) {
 				sortedList = baseList.OrderBy(o => o.GetType().GetProperty(sortProperty.Name).GetValue(o, null) );
-				
 			}
 			return sortedList;
 		}
@@ -145,7 +140,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			OrderGroup = OrderGroup.Grouped;
 			GroupedList = GroupInternal();
 		}
-		
+	
 		
 		IEnumerable<IGrouping<object, object>> GroupInternal () {
 			var groupProperty = listProperties.Find(reportSettings.GroupColumnsCollection[0].ColumnName,true);
@@ -159,6 +154,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 			return groupedList;
 		}
+		
 		
 		#endregion
 		

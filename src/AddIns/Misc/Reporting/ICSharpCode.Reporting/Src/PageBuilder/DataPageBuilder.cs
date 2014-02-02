@@ -159,9 +159,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 					sectionContainer.Location = pagePosition;
 				}
 
-//				sectionContainer.ExportedItems.AddRange(convertedItems);
-//				MeasureAndArrangeContainer(sectionContainer);
-				
 				exportRows.Add(sectionContainer);
 				pagePosition = new Point(CurrentSection.Location.X, pagePosition.Y + sectionContainer.DesiredSize.Height + 1);
 			}

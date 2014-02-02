@@ -38,8 +38,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony
 			base.Init();
 			//add built-in methods, special form IIF, import Math and Environment methods
 //			BuiltIns.AddMethod(BuiltInPrintMethod, "print");
-//			BuiltIns.AddMethod(BuiltInFormatMethod, "format");
-	http://irony.codeplex.com/discussions/446823		
+//			BuiltIns.AddMethod(BuiltInFormatMethod, "format");	
 			BuiltIns.AddSpecialForm(SpecialFormsLibrary.Iif, "iif", 3, 3);
 			BuiltIns.ImportStaticMembers(typeof(System.Math));
 			BuiltIns.ImportStaticMembers(typeof(Environment));

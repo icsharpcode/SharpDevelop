@@ -113,7 +113,7 @@
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>=Today()</Text>
+                    <Text>=Today</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>

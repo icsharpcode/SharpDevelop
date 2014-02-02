@@ -123,7 +123,7 @@ namespace ICSharpCode.Reporting.Globals
 					                            CultureInfo.CurrentCulture.NumberFormat);
 					str = dec.ToString (format,CultureInfo.CurrentCulture);
 					
-				} catch (FormatException e) {
+				} catch (FormatException) {
 					throw ;
 				}
 				return str;

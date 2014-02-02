@@ -40,8 +40,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 	public class BasePageBuilder:IReportCreator
 	{
 
-		public BasePageBuilder(IReportModel reportModel)
-		{
+		public BasePageBuilder(IReportModel reportModel){
 			if (reportModel == null) {
 				 throw new ArgumentNullException("reportModel");
 			}
@@ -52,8 +51,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		#region create Report Sections
 		
-		void BuildReportHeader()
-		{
+		void BuildReportHeader(){
 			if (Pages.Count == 0) {
 				var header = CreateSection(ReportModel.ReportHeader,CurrentLocation);
 				var r = new Rectangle(header.Location.X, header.Location.Y, header.Size.Width, header.Size.Height);
@@ -63,8 +61,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		void BuildPageHeader()
-		{
+		void BuildPageHeader(){
 			var pageHeader = CreateSection(ReportModel.PageHeader,CurrentLocation);
 			DetailStart = new Point(ReportModel.ReportSettings.LeftMargin,pageHeader.Location.Y + pageHeader.DesiredSize.Height +1);
 			AddSectionToPage(pageHeader);
@@ -76,38 +73,26 @@ namespace ICSharpCode.Reporting.PageBuilder
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
 			
 			
-			var pageFooter = CreateSection(ReportModel.PageFooter,CurrentLocation);
-			
-			Console.WriteLine("pagefooter at {0} ehight {1}",CurrentLocation, pageFooter.Size);
-			
-			pageFooter.BackColor = System.Drawing.Color.LightGray;
-			
+			var pageFooter = CreateSection(ReportModel.PageFooter,CurrentLocation);			
 			DetailEnds = new Point(pageFooter.Location.X + pageFooter.Size.Width,pageFooter.Location.Y -1);
 			AddSectionToPage(pageFooter);
 		}
 		
 		
-		void AddSectionToPage(IExportContainer header)
-		{
+		void AddSectionToPage(IExportContainer header){
 			header.Parent = CurrentPage;
 			CurrentPage.ExportedItems.Add(header);
 		}
 		
 		
-		protected void BuildReportFooter()
-		{
+		protected void BuildReportFooter(){
 			var lastSection = CurrentPage.ExportedItems.Last();
-//			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
-//			                            lastSection.Location.Y - lastSection.Size.Height - 1);
-//			
-CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
+			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            lastSection.Location.Y - ReportModel.ReportFooter.Size.Height - 2);
-			var reportFooter = CreateSection(ReportModel.ReportFooter,CurrentLocation);	
-			reportFooter.BackColor = Color.Red;
-			Console.WriteLine("reportfooter {0} - {1} ",reportFooter.Location,reportFooter.Size);
-//			if (reportFooter.ExportedItems.Any()) {
+			var reportFooter = CreateSection(ReportModel.ReportFooter,CurrentLocation);
+			if (reportFooter.ExportedItems.Any()) {
 				AddSectionToPage(reportFooter);
-//			}
+			}
 		}
 		
 		
@@ -119,17 +104,12 @@ CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 		
 		
 		protected bool PageFull(IExportContainer container) {
-			if (container.DisplayRectangle.Bottom > DetailEnds.Y) {
-				return true;
-			}
-			return false;
+			return container.DisplayRectangle.Bottom > DetailEnds.Y;
 		}
 
 		#endregion
 		
-
-		protected IExportContainer CreateSection(IReportContainer container,Point location)
-		{
+		protected IExportContainer CreateSection(IReportContainer container,Point location){
 			var containerConverter = new ContainerConverter(location);
 			var convertedContainer = containerConverter.ConvertToExportContainer(container);
 			
@@ -151,8 +131,7 @@ CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 		}
 		  
 		
-		protected static void ArrangeContainer(IExportContainer exportContainer)
-		{
+		protected static void ArrangeContainer(IExportContainer exportContainer){
 			var exportArrange = exportContainer.GetArrangeStrategy();
 			exportArrange.Arrange(exportContainer);
 		}
@@ -161,8 +140,7 @@ CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 		
 		#region Pagehandling
 		
-		IPageInfo CreatePageInfo()
-		{
+		IPageInfo CreatePageInfo(){
 			var pi = new PageInfo();
 			pi.PageNumber = Pages.Count +1;
 			pi.ReportName = ReportModel.ReportSettings.ReportName;
@@ -176,8 +154,7 @@ CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 		}
 		
 		
-		protected virtual ExportPage CreateNewPage()
-		{
+		protected virtual ExportPage CreateNewPage(){
 			var page = InitNewPage();
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.TopMargin);
 			return page;
@@ -191,8 +168,7 @@ CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 		}
 		
 		
-		public virtual void BuildExportList()
-		{
+		public virtual void BuildExportList(){
 			Pages.Clear();
 			CurrentPage = CreateNewPage ();
 			WriteStandardSections();
@@ -215,8 +191,7 @@ CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 		}
 		
 		
-		protected void RunDebugVisitor()
-		{
+		protected void RunDebugVisitor(){
 			var debugExporter = new DebugExporter(Pages);
 			debugExporter.Run();
 		}
