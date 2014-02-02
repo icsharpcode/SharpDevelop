@@ -32,6 +32,8 @@ namespace ICSharpCode.CodeCoverage
 		XElement element;
 		CodeCoverageResults parent;
 
+		public CodeCoverageMethodElement(XElement element) 
+		    : this (element, null) {}
 		public CodeCoverageMethodElement(XElement element, CodeCoverageResults parent)
 		{
 			this.parent = parent;
@@ -75,22 +77,24 @@ namespace ICSharpCode.CodeCoverage
 			this.FileID = GetFileRef();
 			this.FileName = String.Empty;
 			if (!String.IsNullOrEmpty(this.FileID)) {
-				this.FileName = parent.GetFileName(this.FileID);
-				if ( File.Exists(this.FileName) ) {
-					if (cacheFileName != this.FileName) {
-						cacheFileName = this.FileName;
-						cacheDocument = null;
-						try {
-							using (Stream stream = new FileStream(this.FileName, FileMode.Open, FileAccess.Read)) {
-								try {
-									stream.Position = 0;
-									string textSource = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default);
-									cacheDocument = new CodeCoverageStringTextSource(textSource);
-								} catch {}
-							}
-						} catch {}
-					}
-				}
+			    if (parent != null) {
+    				this.FileName = parent.GetFileName(this.FileID);
+    				if ( File.Exists(this.FileName) ) {
+    					if (cacheFileName != this.FileName) {
+    						cacheFileName = this.FileName;
+    						cacheDocument = null;
+    						try {
+    							using (Stream stream = new FileStream(this.FileName, FileMode.Open, FileAccess.Read)) {
+    								try {
+    									stream.Position = 0;
+    									string textSource = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default);
+    									cacheDocument = new CodeCoverageStringTextSource(textSource);
+    								} catch {}
+    							}
+    						} catch {}
+    					}
+    				}
+			    }
 			}
 			
 			this.IsVisited = this.GetBooleanAttributeValue("visited");

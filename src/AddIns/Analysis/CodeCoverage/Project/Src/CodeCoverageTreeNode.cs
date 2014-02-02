@@ -61,7 +61,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 		}
 		
-		public CodeCoverageTreeNode(string name, CodeCoverageImageListIndex index, int visitedCodeLength, int unvisitedCodeLength, decimal visitedBranchCoverage)
+		public CodeCoverageTreeNode(string name, CodeCoverageImageListIndex index, int visitedCodeLength, int unvisitedCodeLength, decimal visitedBranchCoverage = 100)
 		{
 			sortOrder = 10;
 			this.visitedCodeLength = visitedCodeLength;
