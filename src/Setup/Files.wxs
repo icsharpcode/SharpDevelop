@@ -249,9 +249,6 @@
 									<Component Id="OpenCoverLog4netDll" Guid="DFF17E8D-D634-49D2-B53B-B0F190C12245" DiskId="1">
 										<File Id="OpenCover.log4net.dll" Name="log4net.dll" Source="..\..\bin\Tools\OpenCover\log4net.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.log4net.dll" AssemblyManifest="OpenCover.log4net.dll" />
 									</Component>
-									<Component Id="OpenCoverMicrosoftPracticesUnityDll" Guid="E7EF4E31-5136-4303-9389-359E8BB7905E" DiskId="1">
-										<File Id="OpenCover.Microsoft.Practices.Unity.dll" Name="Microsoft.Practices.Unity.dll" Source="..\..\bin\Tools\OpenCover\Microsoft.Practices.Unity.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Microsoft.Practices.Unity.dll" AssemblyManifest="OpenCover.Microsoft.Practices.Unity.dll" />
-									</Component>
 									<Component Id="OpenCoverMonoCecilDll" Guid="8B24DEA5-45FB-4D99-A9EE-71CACDA1993B" DiskId="1">
 										<File Id="OpenCover.Mono.Cecil.dll" Name="Mono.Cecil.dll" Source="..\..\bin\Tools\OpenCover\Mono.Cecil.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Mono.Cecil.dll" AssemblyManifest="OpenCover.Mono.Cecil.dll" />
 									</Component>
@@ -277,6 +274,15 @@
 											<File Id="OpenCover.Profiler.x86.dll" Name="OpenCover.Profiler.dll" Source="..\..\bin\Tools\OpenCover\x86\OpenCover.Profiler.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
+									<Component Id="OpenCoverAutofacConfigurationDll" Guid="C9F29A3E-67FF-4A66-B709-1FFBB7242F18" DiskId="1">
+										<File Id="OpenCover.Autofac.Configuration.dll" Name="Autofac.Configuration.dll" Source="..\..\bin\Tools\OpenCover\Autofac.Configuration.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Autofac.Configuration.dll" AssemblyManifest="OpenCover.Autofac.Configuration.dll" />
+									</Component>
+									<Component Id="OpenCoverAutofacDll" Guid="31671972-7979-4E76-8508-246B23267391" DiskId="1">
+										<File Id="OpenCover.Autofac.dll" Name="Autofac.dll" Source="..\..\bin\Tools\OpenCover\Autofac.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Autofac.dll" AssemblyManifest="OpenCover.Autofac.dll" />
+									</Component>
+									<Component Id="OpenCoverExtensionsDll" Guid="C0E73A83-C37B-4C71-834D-9D1626F2F1AA" DiskId="1">
+										<File Id="OpenCover.Extensions.dll" Name="OpenCover.Extensions.dll" Source="..\..\bin\Tools\OpenCover\OpenCover.Extensions.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Extensions.dll" AssemblyManifest="OpenCover.Extensions.dll" />
+									</Component>
 								</Directory>
 							</Directory>
 							<Component Guid="2EC34D8A-CF14-4E1F-A512-9A596A1C256D" Id="ICSharpCodeCoreWinFormsDll" DiskId="1">
@@ -1479,7 +1485,7 @@
 										<File Source="..\..\AddIns\Misc\UsageDataCollector\UsageDataCollector.xml" Name="UsageDataCollector.xml" Id="UsageDataCollector.xml" />
 									</Component>
 								</Directory>
-<!--								<Directory Id="SharpDevelopReports" Name="SharpDevelopReports">
+								<!--								<Directory Id="SharpDevelopReports" Name="SharpDevelopReports">
 									<Component Guid="9D0B24E0-6BE3-4E0A-AE50-DFF55BAE388F" Id="SharpDevelopReportsEmptyReportFileTemplate" DiskId="1">
 										<File Source="..\..\AddIns\Misc\SharpDevelopReports\EmptyReport.xft" Name="EmptyReport.xft" Id="SharpDevelopReportsEmptyReport.xft" KeyPath="yes" />
 									</Component>
