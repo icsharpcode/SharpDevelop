@@ -288,9 +288,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				compilation = GetCompilationForFile(fileName);
 			ResolveResult rr = entry.parser.Resolve(parseInfo, location, compilation, cancellationToken);
 			LoggingService.Debug("Resolved " + location + " to " + rr);
-			if (rr == null)
-				throw new InvalidOperationException("Resolving " + location + " in " + fileName + " produced null ResolveResult.");
-			return rr;
+			return rr ?? ErrorResolveResult.UnknownError;
 		}
 
 		public ICodeContext ResolveContext(ITextEditor editor, TextLocation location, ICompilation compilation = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -348,7 +346,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 						compilation = GetCompilationForFile(fileName);
 					ResolveResult rr = entry.parser.Resolve(parseInfo, location, compilation, cancellationToken);
 					LoggingService.Debug("Resolved " + location + " to " + rr);
-					return rr;
+					return rr ?? ErrorResolveResult.UnknownError;
 				}, cancellationToken);
 		}
 		
