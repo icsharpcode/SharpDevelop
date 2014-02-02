@@ -29,6 +29,8 @@ namespace ICSharpCode.CodeCoverage
 		#region Property names
 		public static readonly string VisitedColorProperty            = "VisitedColor";
 		public static readonly string VisitedForeColorProperty        = "VisitedForeColor";
+		public static readonly string PartVisitedColorProperty        = "PartVisitedColor";
+		public static readonly string PartVisitedForeColorProperty    = "PartVisitedForeColor";
 		public static readonly string NotVisitedColorProperty         = "NotVisitedColor";
 		public static readonly string NotVisitedForeColorProperty     = "NotVisitedForeColor";
 		
@@ -88,6 +90,23 @@ namespace ICSharpCode.CodeCoverage
 		public static Color VisitedForeColor {
 			get { return Properties.Get<Color>(VisitedForeColorProperty, Color.Black); }
 			set { Properties.Set<Color>(VisitedForeColorProperty, value); }
+		}
+		
+		/// <summary>
+		/// Gets the colour that will be used when highlighting visited code.
+		/// </summary>
+		public static Color PartVisitedColor {
+			get { return Properties.Get<Color>(PartVisitedColorProperty, Color.Yellow); }
+			set { Properties.Set<Color>(PartVisitedColorProperty, value); }
+		}
+		
+		/// <summary>
+		/// Gets the foreground colour that will be used when highlighting
+		/// visited code.
+		/// </summary>
+		public static Color PartVisitedForeColor {
+			get { return Properties.Get<Color>(PartVisitedForeColorProperty, Color.Black); }
+			set { Properties.Set<Color>(PartVisitedForeColorProperty, value); }
 		}
 		
 		/// <summary>

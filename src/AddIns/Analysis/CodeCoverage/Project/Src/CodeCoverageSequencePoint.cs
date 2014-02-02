@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace ICSharpCode.CodeCoverage
@@ -79,13 +80,18 @@ namespace ICSharpCode.CodeCoverage
 			return !String.IsNullOrEmpty(Document);
 		}
 		
+		public string FileID { get; set; }
 		public string Document { get; set; }
+		public string Content { get; set; }
 		public int VisitCount { get; set; }
 		public int Line { get; set; }
 		public int Column { get; set; }
 		public int EndLine { get; set; }
 		public int EndColumn { get; set; }
 		public int Length { get; set; }
+		public int Offset { get; set; }
+		public bool BranchCoverage { get; set; }
+		public List<CodeCoverageBranchPoint> Branches { get; set; }
 		
 		public override bool Equals(object obj)
 		{

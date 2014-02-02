@@ -48,7 +48,9 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public CodeCoverageMethod(string className, XElement reader)
-			: this(className, new CodeCoverageMethodElement(reader))
+		    : this (className, reader, null) {}
+		public CodeCoverageMethod(string className, XElement reader, CodeCoverageResults parent)
+			: this(className, new CodeCoverageMethodElement(reader, parent))
 		{
 		}
 		
@@ -58,6 +60,13 @@ namespace ICSharpCode.CodeCoverage
 			IsProperty = element.IsProperty && IsPropertyMethodName();
 			IsGetter = element.IsGetter;
 			IsSetter = element.IsSetter;
+
+			this.IsVisited = element.IsVisited;
+			this.BranchCoverage = element.BranchCoverage;
+			this.BranchCoverageRatio = element.BranchCoverageRatio;
+			this.SequencePointsCount = element.SequencePointsCount;
+			this.sequencePoints = element.SequencePoints;
+			
 		}
 		
 		/// <summary>
@@ -67,6 +76,11 @@ namespace ICSharpCode.CodeCoverage
 		public bool IsGetter { get; private set; }
 		public bool IsSetter { get; private set; }
 		
+		public bool IsVisited { get; private set; }
+		public decimal BranchCoverage { get; private set; }
+		public Tuple<int,int> BranchCoverageRatio { get; private set; }
+		public int SequencePointsCount { get; private set; }
+
 		bool IsPropertyMethodName()
 		{
 			return name.Contains("get_") || name.Contains("set_");
@@ -112,7 +126,7 @@ namespace ICSharpCode.CodeCoverage
 			get {
 				int count = 0;
 				foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-					if (sequencePoint.VisitCount > 0) {
+					if (sequencePoint.VisitCount != 0) {
 						count++;
 					}
 				}
@@ -136,7 +150,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			int total = 0;
 			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-				if (sequencePoint.VisitCount > 0) {
+				if (sequencePoint.VisitCount != 0) {
 					total += sequencePoint.Length;
 				}
 			}
@@ -214,8 +228,9 @@ namespace ICSharpCode.CodeCoverage
 		public static List<CodeCoverageMethod> GetAllMethods(List<CodeCoverageMethod> methods, string namespaceStartsWith)
 		{
 			List<CodeCoverageMethod> matchedMethods = new List<CodeCoverageMethod>();
+			namespaceStartsWith += ".";
 			foreach (CodeCoverageMethod method in methods) {
-				if (method.ClassNamespace.StartsWith(namespaceStartsWith)) {
+			    if ((method.ClassNamespace+".").StartsWith(namespaceStartsWith)) {
 					matchedMethods.Add(method);
 				}
 			}

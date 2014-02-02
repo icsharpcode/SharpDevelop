@@ -78,8 +78,9 @@ namespace ICSharpCode.CodeCoverage
 			var classNames =
 				assembly.Elements("Classes").Elements("Class").Where(
 					c =>
-					!c.Element("FullName").Value.Contains("__") && !c.Element("FullName").Value.Contains("<") &&
-					!c.Element("FullName").Value.Contains("/") && c.Attribute("skippedDueTo") == null).Select(
+					!c.Element("FullName").Value.Contains("__") && 
+					//!c.Element("FullName").Value.Contains("<") &&
+					c.Attribute("skippedDueTo") == null).Select(
 						c => c.Element("FullName").Value).Distinct().OrderBy(name => name);
 			foreach (string className in classNames) {
 				AddModule(assembly, className);
@@ -110,7 +111,7 @@ namespace ICSharpCode.CodeCoverage
 				.Elements("Methods")
 				.Elements("Method");
 			foreach (XElement method in methods) {
-				AddMethod(module, className, method);
+				AddMethod(module, className.Replace('/','.'), method);
 			}
 			return module;
 		}
@@ -120,51 +121,37 @@ namespace ICSharpCode.CodeCoverage
 			string id = reader.Attribute("hash").Value;
 			return GetAssembly(id);
 		}
-		
-		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XElement reader)
-		{
-			CodeCoverageMethod method = new CodeCoverageMethod(className, reader);
-			module.Methods.Add(method);
-			var points = reader
-				.Elements("SequencePoints")
-				.Elements("SequencePoint");
-			foreach (XElement point in points) {
-				AddSequencePoint(method, point, reader);
-			}
-			return method;
-		}
-		
+
 		/// <summary>
 		/// Sequence points that do not have a file id are not
 		/// added to the code coverage method. Typically these are
 		/// for types that are not part of the project but types from
 		/// the .NET framework. 
 		/// </summary>
-		void AddSequencePoint(CodeCoverageMethod method, XElement reader, XElement methodNode)
+		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XElement reader)
 		{
-			string fileName = GetFileName(methodNode);
-			
-			CodeCoverageSequencePoint sequencePoint = 
-				new CodeCoverageSequencePoint(fileName, reader);
-			method.SequencePoints.Add(sequencePoint);
+			CodeCoverageMethod method = new CodeCoverageMethod(className, reader, this);
+			if (!method.Name.Contains("__")) {
+			    module.Methods.Add(method);
+			}
+			return method;
 		}
 		
-		string GetFileName(XElement reader)
-		{
-			XElement fileId = reader.Element("FileRef");
-			if (fileId != null) {
-				return GetFileName(fileId.Attribute("uid").Value);
-			}
-			return String.Empty;
-		}
+		/// <summary>
+		/// Cache result because same FileID is repeated for all (class.)method(s).SequencePoints
+		/// </summary>
+		private static Tuple<string,string> fileIdNameCache = new Tuple<string, string>(String.Empty,String.Empty);
 
 		/// <summary>
 		/// Returns a filename based on the file id. The filenames are stored in the
 		/// PartCover results xml at the start of the file each with its own id.
 		/// </summary>
-		string GetFileName(string id)
+		public string GetFileName(string id)
 		{
-			return GetDictionaryValue(fileNames, id);
+			if (fileIdNameCache.Item1 != id) {
+				fileIdNameCache = new Tuple<string, string>(id, GetDictionaryValue(fileNames, id));
+			}
+			return fileIdNameCache.Item2;
 		}
 		
 		/// <summary>

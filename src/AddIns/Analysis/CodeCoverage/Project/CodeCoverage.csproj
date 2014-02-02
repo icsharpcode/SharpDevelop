@@ -67,6 +67,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\CodeCoverageBranchPoint.cs" />
     <Compile Include="Src\CodeCoverageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -89,6 +90,7 @@
     <Compile Include="Src\CodeCoverageMethod.cs" />
     <Compile Include="Src\CodeCoverageResultsReader.cs" />
     <Compile Include="Src\CodeCoverageSequencePoint.cs" />
+    <Compile Include="Src\CodeCoverageStringTextSource.cs" />
     <Compile Include="Src\CodeCoverageTestRunner.cs" />
     <Compile Include="Src\CodeCoverageTestRunnerContext.cs" />
     <Compile Include="Src\CodeCoverageTestRunnerFactory.cs" />
