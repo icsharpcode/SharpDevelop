@@ -45,7 +45,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			var fixedPage = new FixedPage();
 			fixedPage.Width = exportPage.Size.ToWpf().Width;
 			fixedPage.Height = exportPage.Size.ToWpf().Height;
-			fixedPage.Background = new SolidColorBrush(System.Drawing.Color.Blue.ToWpf());
+			fixedPage.Background = new SolidColorBrush(System.Drawing.Color.White.ToWpf());
 			return fixedPage;
 		}
 		

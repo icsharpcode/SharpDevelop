@@ -244,7 +244,7 @@
             <Items>
                 <BaseTextItem>
                     <Location>31, 5</Location>
-                    <Size>555, 20</Size>
+                    <Size>365, 20</Size>
                     <BackColor>White</BackColor>
                     <Font>Segoe UI, 9.75pt</Font>
                     <StringTrimming>None</StringTrimming>
@@ -259,8 +259,8 @@
                     <Name>BaseTextItem2147483641</Name>
                 </BaseTextItem>
                 <BaseTextItem>
-                    <Location>624, 5</Location>
-                    <Size>100, 20</Size>
+                    <Location>526, 5</Location>
+                    <Size>198, 20</Size>
                     <BackColor>White</BackColor>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <StringTrimming>None</StringTrimming>

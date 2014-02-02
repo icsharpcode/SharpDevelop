@@ -65,11 +65,9 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			foreach (var element in exportedItems) {
 				var container = element as ExportContainer;
 				if (container != null) {
-//					Console.WriteLine("recursive");
 					var containerCanvas = FixedDocumentCreator.CreateContainer(container);
 					CanvasHelper.SetPosition(containerCanvas,new Point(container.Location.X,container.Location.Y));
 					myCanvas.Children.Add(containerCanvas);
-//					Console.WriteLine("call recursive");
 					PerformList(containerCanvas,container.ExportedItems);
 				} else {
 					var acceptor = element as IAcceptor;
@@ -97,8 +95,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				            new Point(exportGraphics.Location.X, exportGraphics.Location.Y),
 				            new Point(exportGraphics.Location.X + exportGraphics.Size.Width,exportGraphics.Location.Y));
 			}
-			DrawingElement m = new DrawingElement(visual);
-			UIElement = m;
+			var dragingElement = new DrawingElement(visual);
+			UIElement = dragingElement;
 		}
 		
 		

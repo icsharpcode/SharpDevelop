@@ -71,12 +71,17 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		void BuildPageFooter()
-		{
+		void BuildPageFooter(){
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
 			
-			var pageFooter = CreateSection(ReportModel.PageFooter,CurrentLocation);	
+			
+			var pageFooter = CreateSection(ReportModel.PageFooter,CurrentLocation);
+			
+			Console.WriteLine("pagefooter at {0} ehight {1}",CurrentLocation, pageFooter.Size);
+			
+			pageFooter.BackColor = System.Drawing.Color.LightGray;
+			
 			DetailEnds = new Point(pageFooter.Location.X + pageFooter.Size.Width,pageFooter.Location.Y -1);
 			AddSectionToPage(pageFooter);
 		}
@@ -92,16 +97,22 @@ namespace ICSharpCode.Reporting.PageBuilder
 		protected void BuildReportFooter()
 		{
 			var lastSection = CurrentPage.ExportedItems.Last();
-			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
-			                            lastSection.Location.Y - lastSection.Size.Height - 1);
-
+//			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
+//			                            lastSection.Location.Y - lastSection.Size.Height - 1);
+//			
+CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
+			                            lastSection.Location.Y - ReportModel.ReportFooter.Size.Height - 2);
 			var reportFooter = CreateSection(ReportModel.ReportFooter,CurrentLocation);	
-			AddSectionToPage(reportFooter);
+			reportFooter.BackColor = Color.Red;
+			Console.WriteLine("reportfooter {0} - {1} ",reportFooter.Location,reportFooter.Size);
+//			if (reportFooter.ExportedItems.Any()) {
+				AddSectionToPage(reportFooter);
+//			}
 		}
 		
 		
 		protected void  WriteStandardSections() {
-			this.BuildReportHeader();
+			BuildReportHeader();
 			BuildPageHeader();
 			BuildPageFooter();
 		}
