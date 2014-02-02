@@ -70,7 +70,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		public override void Attach(System.Diagnostics.Process process)
 		{
-			SD.Debugger.Attach();
+			SD.Debugger.Attach(process);
 		}
 		public override void Detach()
 		{
