@@ -159,5 +159,15 @@ namespace CSharpBinding.Refactoring
 				UsingHelper.InsertUsing(context, script, ns);
 			}
 		}
+		
+		public override void MakePartial(ITypeDefinition td)
+		{
+			SDRefactoringContext refactoringContext = td.CreateRefactoringContext();
+			var typeDeclaration = refactoringContext.GetNode<TypeDeclaration>();
+			
+			using (Script script = refactoringContext.StartScript()) {
+				script.ChangeModifier(typeDeclaration, typeDeclaration.Modifiers | Modifiers.Partial);
+			}
+		}
 	}
 }
