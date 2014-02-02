@@ -213,6 +213,16 @@ struct MutableStruct {
 }
 ");
 		}
+
+		[Test]
+		public void TestUnassignedField ()
+		{
+			TestWrongContext<FieldCanBeMadeReadOnlyIssue>(@"class Test
+{
+	object fooBar;
+}");
+		}
+
 	}
 }
 

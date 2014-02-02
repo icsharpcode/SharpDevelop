@@ -138,8 +138,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			SetOffset(offset);
 			if (offset > 0) {
 				char lastChar = document.GetCharAt(offset - 1);
-				var result = MagicKeyCompletion(lastChar, controlSpace) ?? Enumerable.Empty<ICompletionData>();
-				if (controlSpace && char.IsWhiteSpace(lastChar)) {
+				bool isComplete = false;
+				var result = MagicKeyCompletion(lastChar, controlSpace, out isComplete) ?? Enumerable.Empty<ICompletionData>();
+				if (!isComplete && controlSpace && char.IsWhiteSpace(lastChar)) {
 					offset -= 2;
 					while (offset >= 0 && char.IsWhiteSpace(document.GetCharAt(offset))) {
 						offset--;
@@ -147,7 +148,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (offset > 0) {
 						var nonWsResult = MagicKeyCompletion(
 							document.GetCharAt(offset),
-							controlSpace
+							controlSpace,
+							out isComplete
 						);
 						if (nonWsResult != null) {
 							var text = new HashSet<string>(result.Select(r => r.CompletionText));
@@ -356,14 +358,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							continue;
 						if (lookup.IsAccessible(m, isProtectedAllowed)) {
 							var data = contextList.AddMember(m);
-							data.DisplayFlags |= DisplayFlags.NamedArgument;
+							if (data != null)
+								data.DisplayFlags |= DisplayFlags.NamedArgument;
 						}
 					}
 
 					foreach (IProperty m in initializerType.GetMembers (m => m.SymbolKind == SymbolKind.Property)) {
 						if (m.CanSet && lookup.IsAccessible(m.Setter, isProtectedAllowed)) {
 							var data = contextList.AddMember(m);
-							data.DisplayFlags |= DisplayFlags.NamedArgument;
+							if (data != null)
+								data.DisplayFlags |= DisplayFlags.NamedArgument;
 						}
 					}
 
@@ -610,8 +614,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return Enumerable.Empty<ICompletionData>();
 		}
 
-		IEnumerable<ICompletionData> MagicKeyCompletion(char completionChar, bool controlSpace)
+		IEnumerable<ICompletionData> MagicKeyCompletion(char completionChar, bool controlSpace, out bool isComplete)
 		{
+			isComplete = false;
 			ExpressionResolveResult resolveResult;
 			switch (completionChar) {
 				// Magic key completion
@@ -658,7 +663,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return GetXmlDocumentationCompletionData();
 					}
 					if (controlSpace) {
-						return DefaultControlSpaceItems();
+						return DefaultControlSpaceItems(ref isComplete);
 					}
 					return null;
 				case '>':
@@ -678,7 +683,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					var invoke = GetInvocationBeforeCursor(true);
 					if (invoke == null) {
 						if (controlSpace)
-							return DefaultControlSpaceItems(invoke);
+							return DefaultControlSpaceItems(ref isComplete, invoke);
 						return null;
 					}
 					if (invoke.Node is TypeOfExpression) {
@@ -701,11 +706,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 
 					if (controlSpace) {
-						return DefaultControlSpaceItems(invoke);
+						return DefaultControlSpaceItems(ref isComplete, invoke);
 					}
 					return null;
 				case '=':
-					return controlSpace ? DefaultControlSpaceItems() : null;
+					return controlSpace ? DefaultControlSpaceItems(ref isComplete) : null;
 				case ',':
 					int cpos2;
 					if (!GetParameterCompletionCommandOffset(out cpos2)) { 
@@ -730,7 +735,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						var parent = isAsExpression.Node as VariableDeclarationStatement;
 						var proposeNameList = new CompletionDataWrapper(this);
 						if (parent.Variables.Count != 1)
-							return DefaultControlSpaceItems(isAsExpression, controlSpace);
+							return DefaultControlSpaceItems(ref isComplete, isAsExpression, controlSpace);
 
 						foreach (var possibleName in GenerateNameProposals (parent.Type)) {
 							if (possibleName.Length > 0) {
@@ -740,6 +745,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 						AutoSelect = false;
 						AutoCompleteEmptyMatch = false;
+						isComplete = true;
 						return proposeNameList.Result;
 					}
 					//				int tokenIndex = offset;
@@ -962,7 +968,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								// after from no auto code completion.
 								return null;
 							}
-							return DefaultControlSpaceItems();
+							return DefaultControlSpaceItems(ref isComplete);
 						}
 						var dataList = new CompletionDataWrapper(this);
 						AddKeywords(dataList, linqKeywords);
@@ -976,7 +982,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					var contextList = new CompletionDataWrapper(this);
 					var identifierStart = GetExpressionAtCursor();
 					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null)) {
-						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
+						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(ref isComplete, identifierStart) : null;
 					}
 
 					if (identifierStart != null) {
@@ -998,10 +1004,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								return null;
 
 							// May happen in variable names
-							return controlSpace ? DefaultControlSpaceItems(identifierStart) : null;
+							return controlSpace ? DefaultControlSpaceItems(ref isComplete, identifierStart) : null;
 						}
 						if (identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
-							return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
+							return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(ref isComplete, identifierStart) : null;
 						}
 						if (identifierStart.Node is CatchClause) {
 							if (((CatchClause)identifierStart.Node).VariableNameToken.IsInside(location)) {
@@ -1033,7 +1039,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 					if ((!Char.IsWhiteSpace(nextCh) && allowedChars.IndexOf(nextCh) < 0) || !(Char.IsWhiteSpace(prevCh) || allowedChars.IndexOf(prevCh) >= 0)) {
 						if (controlSpace)
-							return DefaultControlSpaceItems(identifierStart);
+							return DefaultControlSpaceItems(ref isComplete, identifierStart);
 					}
 
 					int prevTokenIndex = tokenIndex;
@@ -1054,7 +1060,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (accCtx != null) {
 							return accCtx;
 						}
-						return DefaultControlSpaceItems(null, controlSpace);
+						return DefaultControlSpaceItems(ref isComplete, null, controlSpace);
 					}
 					CSharpResolver csResolver;
 					AstNode n = identifierStart.Node;
@@ -1164,7 +1170,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 					if (n is Identifier && n.Parent is ForeachStatement) {
 						if (controlSpace) {
-							return DefaultControlSpaceItems();
+							return DefaultControlSpaceItems(ref isComplete);
 						}
 						return null;
 					}
@@ -1173,7 +1179,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						// check for new [] {...} expression -> no need to resolve the type there
 						var parent = n.Parent as ArrayCreateExpression;
 						if (parent != null && parent.Type.IsNull) {
-							return DefaultControlSpaceItems();
+							return DefaultControlSpaceItems(ref isComplete);
 						}
 
 						var initalizerResult = ResolveExpression(n.Parent);
@@ -1181,7 +1187,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						var concreteNode = identifierStart.Unit.GetNodeAt<IdentifierExpression>(location);
 						// check if we're on the right side of an initializer expression
 						if (concreteNode != null && concreteNode.Parent != null && concreteNode.Parent.Parent != null && concreteNode.Identifier != "a" && concreteNode.Parent.Parent is NamedExpression) {
-							return DefaultControlSpaceItems();
+							return DefaultControlSpaceItems(ref isComplete);
 						}
 						if (initalizerResult != null && initalizerResult.Result.Type.Kind != TypeKind.Unknown) { 
 
@@ -1190,18 +1196,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 									continue;
 								}
 								var data = contextList.AddMember(property);
-								data.DisplayFlags |= DisplayFlags.NamedArgument;
+								if (data != null)
+									data.DisplayFlags |= DisplayFlags.NamedArgument;
 							}
 							foreach (var field in initalizerResult.Result.Type.GetFields ()) {       
 								if (!field.IsPublic) {
 									continue;
 								}
 								var data = contextList.AddMember(field);
-								data.DisplayFlags |= DisplayFlags.NamedArgument;
+								if (data != null)
+									data.DisplayFlags |= DisplayFlags.NamedArgument;
 							}
 							return contextList.Result;
 						}
-						return DefaultControlSpaceItems();
+						return DefaultControlSpaceItems(ref isComplete);
 					}
 
 					if (IsAttributeContext(n)) {
@@ -1396,7 +1404,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (a.Region.Begin < location && (currentMember == null || a.Region.Begin > currentMember.Region.Begin))
 							currentMember = a;
 				}
-				return DefaultControlSpaceItems();
+				bool isComplete = false;
+				return DefaultControlSpaceItems(ref isComplete);
 			}
 
 			var attribute = syntaxTree.GetNodeAt<Attribute>(location);
@@ -1504,7 +1513,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 
-		IEnumerable<ICompletionData> DefaultControlSpaceItems(ExpressionResult xp = null, bool controlSpace = true)
+		IEnumerable<ICompletionData> DefaultControlSpaceItems(ref bool isComplete, ExpressionResult xp = null, bool controlSpace = true)
 		{
 			var wrapper = new CompletionDataWrapper(this);
 			if (offset >= document.TextLength) {
@@ -1556,6 +1565,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 				AutoSelect = false;
 				AutoCompleteEmptyMatch = false;
+				isComplete = true;
 				return wrapper.Result;
 			}
 
@@ -1573,6 +1583,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					AutoSelect = false;
 					AutoCompleteEmptyMatch = false;
+					isComplete = true;
 					return wrapper.Result;
 				}
 			}
@@ -1656,11 +1667,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 			foreach (var property in resolved.Type.GetProperties (p => p.Accessibility == Accessibility.Public)) {
 				var data = wrapper.AddMember(property);
-				data.DisplayFlags |= DisplayFlags.NamedArgument;
+				if (data != null)
+					data.DisplayFlags |= DisplayFlags.NamedArgument;
 			}
 			foreach (var field in resolved.Type.GetFields (p => p.Accessibility == Accessibility.Public)) {
 				var data = wrapper.AddMember(field);
-				data.DisplayFlags |= DisplayFlags.NamedArgument;
+				if (data != null)
+					data.DisplayFlags |= DisplayFlags.NamedArgument;
 			}
 			foreach (var constructor in resolved.Type.GetConstructors (p => p.Accessibility == Accessibility.Public)) {
 				foreach (var p in constructor.Parameters) {
@@ -2382,8 +2395,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					};
 					if (!(hintType.Kind == TypeKind.Interface && hintType.Kind != TypeKind.Array)) {
 						var hint = wrapper.AddType(hintType, true);
-						DefaultCompletionString = hint.DisplayText;
 						if (hint != null) {
+							DefaultCompletionString = hint.DisplayText;
 							hint.CompletionCategory = derivedTypesCategory;
 						}
 					}

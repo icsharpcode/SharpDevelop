@@ -769,6 +769,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 			set;
 		}
+
+		public bool SpaceBeforeSemicolon {
+			get;
+			set;
+		}
 		#endregion
 		
 		#region Blank Lines

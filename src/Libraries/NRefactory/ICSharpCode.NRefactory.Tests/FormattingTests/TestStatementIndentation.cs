@@ -2012,5 +2012,57 @@ class Foo
 }
 ");
 		}
+
+		[Test]
+		public void TestSpaceBeforeSemicolon()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.SpaceBeforeSemicolon = true;
+			Test(policy, @"using System;
+
+class Test
+{
+	int field;
+
+	event EventHandler foo;
+
+	void Foo ()
+	{
+		int a = 2 + 3;
+		Foo ();
+		break;
+		continue;
+		goto foo;
+		return;
+		throw new Exception ();
+		yield break;
+		yield return 5;
+		
+	}
+}
+", @"using System ;
+
+class Test
+{
+	int field ;
+
+	event EventHandler foo ;
+
+	void Foo ()
+	{
+		int a = 2 + 3 ;
+		Foo () ;
+		break ;
+		continue ;
+		goto foo ;
+		return ;
+		throw new Exception () ;
+		yield break ;
+		yield return 5 ;
+		
+	}
+}
+");
+		}
 	}
 }

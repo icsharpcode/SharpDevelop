@@ -615,6 +615,7 @@
     <Compile Include="CSharp\CodeIssues\PossibleMistakenCallToGetTypeIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantNotNullAttributeInNonNullableTypeTests.cs" />
     <Compile Include="CSharp\CodeIssues\CS0618UsageOfObsoleteMemberIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CS0169FieldIsNeverUsedIssueTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">

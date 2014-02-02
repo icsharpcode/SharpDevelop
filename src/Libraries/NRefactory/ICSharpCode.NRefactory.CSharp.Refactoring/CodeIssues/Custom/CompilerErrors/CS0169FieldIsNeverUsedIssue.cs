@@ -1,10 +1,10 @@
-//
-// FieldCanBeMadeReadOnlyIssue.cs
+﻿//
+// CS0169FieldIsNeverUsedIssue.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,33 +27,27 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Refactoring;
-using ICSharpCode.NRefactory.CSharp.Analysis;
 using System.Linq;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using System.Threading;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System;
-using System.Diagnostics;
-using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Convert field to readonly",
-	                  Description = "Convert field to readonly",
-	                  Category = IssueCategories.PracticesAndImprovements,
-	                  Severity = Severity.Suggestion,
-	                  AnalysisDisableKeyword = "FieldCanBeMadeReadOnly.Local")]
-	public class FieldCanBeMadeReadOnlyIssue : GatherVisitorCodeIssueProvider
+	[IssueDescription("CS0169: Field is never used",
+		Description = "CS0169: Field is never used",
+		Category = IssueCategories.CompilerWarnings,
+		Severity = Severity.Warning,
+		PragmaWarning = 169)]
+	public class CS0169FieldIsNeverUsedIssue : GatherVisitorCodeIssueProvider
 	{
 		protected override IGatherVisitor CreateVisitor(BaseRefactoringContext context)
 		{
 			return new GatherVisitor(context);
 		}
 
-		class GatherVisitor : GatherVisitorBase<FieldCanBeMadeReadOnlyIssue>
+		class GatherVisitor : GatherVisitorBase<CS0169FieldIsNeverUsedIssue>
 		{
-			readonly Stack<List<Tuple<VariableInitializer, IVariable, VariableState>>> fieldStack = new Stack<List<Tuple<VariableInitializer, IVariable, VariableState>>>();
+			readonly Stack<List<Tuple<VariableInitializer, IVariable>>> fieldStack = new Stack<List<Tuple<VariableInitializer, IVariable>>>();
 
 			public GatherVisitor(BaseRefactoringContext context) : base (context)
 			{
@@ -62,33 +56,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			void Collect()
 			{
 				foreach (var varDecl in fieldStack.Peek()) {
-					if (varDecl.Item3 == VariableState.None)
-						continue;
 					AddIssue(new CodeIssue(
 						varDecl.Item1.NameToken,
-						ctx.TranslateString("Convert to readonly"),
-						ctx.TranslateString("To readonly"),
-						script => {
-						var field = (FieldDeclaration)varDecl.Item1.Parent;
-						script.ChangeModifier(field, field.Modifiers | Modifiers.Readonly);
-					}
+						string.Format(ctx.TranslateString("The private field '{0}' is never assigned"), varDecl.Item2.Name)
 					));
 				}
 			}
 
 			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 			{	
-				var list = new List<Tuple<VariableInitializer, IVariable, VariableState>>();
+				var list = new List<Tuple<VariableInitializer, IVariable>>();
 				fieldStack.Push(list);
 
 				foreach (var fieldDeclaration in ConvertToConstantIssue.CollectFields (this, typeDeclaration)) {
-					if (fieldDeclaration.HasModifier(Modifiers.Const) || fieldDeclaration.HasModifier(Modifiers.Readonly))
+					if (fieldDeclaration.HasModifier(Modifiers.Const))
 						continue;
 					if (fieldDeclaration.HasModifier(Modifiers.Public) || fieldDeclaration.HasModifier(Modifiers.Protected) || fieldDeclaration.HasModifier(Modifiers.Internal))
 						continue;
 					if (fieldDeclaration.Variables.Count() > 1)
 						continue;
 					var variable = fieldDeclaration.Variables.First();
+					if (!variable.Initializer.IsNull)
+						continue;
 					var rr = ctx.Resolve(fieldDeclaration.ReturnType);
 					if (rr.Type.IsReferenceType == false) {
 						// Value type:
@@ -105,47 +94,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var mr = ctx.Resolve(variable) as MemberResolveResult;
 					if (mr == null)
 						continue;
-					list.Add(Tuple.Create(variable, mr.Member as IVariable, VariableState.None)); 
+					list.Add(Tuple.Create(variable, mr.Member as IVariable)); 
 				}
 				base.VisitTypeDeclaration(typeDeclaration);
 				Collect();
 				fieldStack.Pop();
 			}
 
-			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
-			{
-
-				foreach (var node in constructorDeclaration.Descendants) {
-					if (node is AnonymousMethodExpression || node is LambdaExpression) {
-						node.AcceptVisitor(this);
-					} else {
-						var assignmentAnalysis = new ConvertToConstantIssue.VariableUsageAnalyzation (ctx);
-						var newVars = new List<Tuple<VariableInitializer, IVariable, VariableState>>();
-						node.AcceptVisitor(assignmentAnalysis); 
-						foreach (var variable in fieldStack.Pop()) {
-							var state = assignmentAnalysis.GetStatus(variable.Item2);
-							if (variable.Item3 > state)
-								state = variable.Item3;
-							newVars.Add(new Tuple<VariableInitializer, IVariable, VariableState> (variable.Item1, variable.Item2, state));
-						}
-						fieldStack.Push(newVars);
-
-					}
-				}
-			}
-
 			public override void VisitBlockStatement(BlockStatement blockStatement)
 			{
 				var assignmentAnalysis = new ConvertToConstantIssue.VariableUsageAnalyzation (ctx);
-				var newVars = new List<Tuple<VariableInitializer, IVariable, VariableState>>();
+				var newVars = new List<Tuple<VariableInitializer, IVariable>>();
 				blockStatement.AcceptVisitor(assignmentAnalysis); 
-					foreach (var variable in fieldStack.Pop()) {
-						var state = assignmentAnalysis.GetStatus(variable.Item2);
-						if (state == VariableState.Changed)
-							continue;
-						newVars.Add(new Tuple<VariableInitializer, IVariable, VariableState> (variable.Item1, variable.Item2, state));
-					}
-					fieldStack.Push(newVars);
+				foreach (var variable in fieldStack.Pop()) {
+					if (assignmentAnalysis.GetStatus(variable.Item2) == VariableState.Changed)
+						continue;
+					newVars.Add(variable);
+				}
+				fieldStack.Push(newVars);
 			}
 		}
 	}

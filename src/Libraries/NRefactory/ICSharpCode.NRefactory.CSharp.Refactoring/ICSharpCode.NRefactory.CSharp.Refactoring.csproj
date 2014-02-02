@@ -425,6 +425,7 @@
     <Compile Include="CodeIssues\Synced\PracticesAndImprovements\PossibleMistakenCallToGetTypeIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\RedundantNotNullAttributeInNonNullableTypeIssue.cs" />
     <Compile Include="CodeIssues\Custom\CompilerErrors\CS0618UsageOfObsoleteMemberIssue.cs" />
+    <Compile Include="CodeIssues\Custom\CompilerErrors\CS0169FieldIsNeverUsedIssue.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
