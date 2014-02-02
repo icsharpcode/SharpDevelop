@@ -305,21 +305,31 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		[Ignore("TODO - Not yet implemented")]
-		public void ClassKind_ChangeClassToBePartial_UsesClassKindUpdaterToModifyClass()
+		public void ClassKind_ChangeClassToBePartial_UsesCodeGeneratorToModifyClass()
 		{
-//			CreateProjectContent();
-//			CreatePublicClass("MyClass");
-//			
-//			codeClass.ClassKind = global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass;
-//			
-//			classKindUpdater.AssertWasCalled(updater => updater.MakeClassPartial());
+			CreateClass("public class MyClass {}");
+			
+			codeClass.ClassKind = global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass;
+			
+			codeGenerator.AssertWasCalled(generator => generator.MakePartial(
+				Arg<ITypeDefinition>.Matches(typeDef => typeDef.Name == "MyClass")));
+		}
+		
+		[Test]
+		public void ClassKind_ChangeClassToBePartialWhenClassIsAlreadyPartial_CodeGeneratorIsNotChanged()
+		{
+			CreateClass("public partial class MyClass {}");
+			
+			codeClass.ClassKind = global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass;
+			
+			codeGenerator.AssertWasNotCalled(generator => generator.MakePartial(
+				Arg<ITypeDefinition>.Is.Anything));
 		}
 		
 		[Test]
 		public void ClassKind_ChangeClassToBeMainClass_ThrowsNotImplementedException()
 		{
-			CreateClass("public class MyClass {}");
+			CreateClass("public partial class MyClass {}");
 			
 			Assert.Throws<NotImplementedException>(() => codeClass.ClassKind = global::EnvDTE.vsCMClassKind.vsCMClassKindMainClass);
 		}

@@ -18,6 +18,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.EasyCodeDom;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
@@ -109,15 +110,16 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		[Ignore("TODO - Not implemented")]
 		public void AddImport_AddSystemXmlNamespace_NamespaceAndcompilationUnitPassedToNamespaceCreator()
 		{
-			CreateProjectWithOneFile("");
+			CreateProjectWithOneFile("", @"d:\project\MyProject\MyFile.cs");
 			CreateFileCodeModel();
 			
 			fileCodeModel.AddImport("System.Xml");
 			
-//			namespaceCreator.AssertWasCalled(creator => creator.AddNamespace(compilationUnitHelper.CompilationUnit, "System.Xml"));
+			codeGenerator.AssertWasCalled(generator => generator.AddImport(
+				new FileName(@"d:\project\MyProject\MyFile.cs"),
+				"System.Xml"));
 		}
 		
 		[Test]

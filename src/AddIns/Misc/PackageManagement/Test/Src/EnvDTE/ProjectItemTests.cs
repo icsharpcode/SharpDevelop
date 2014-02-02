@@ -451,5 +451,23 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.IsFalse(fakeFileService.IsSaveFileCalled);
 		}
+		
+		[Test]
+		public void FileCodeModel_AddImportToProjectFile_UsesCodeGenerator()
+		{
+			CreateProjectItems(@"d:\projects\Test\Tests.csproj");
+			AddCompilationUnit();
+			msbuildProject.AddFile(@"src\program.cs");
+			msbuildProject.SetLanguageBinding(languageBinding);
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
+			
+			global::EnvDTE.FileCodeModel2 fileCodeModel = fileItem.FileCodeModel;
+			fileCodeModel.AddImport("System.Xml");
+			
+			codeGenerator.AssertWasCalled(generator => generator.AddImport(
+				new FileName(@"d:\projects\Test\src\program.cs"),
+				"System.Xml"));
+		}
 	}
 }

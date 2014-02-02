@@ -21,6 +21,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Refactoring;
 using PackageManagement.Tests.Helpers;
@@ -33,14 +34,19 @@ namespace PackageManagement.Tests.EnvDTE
 		protected CodeGenerator codeGenerator;
 		protected CodeModelContext codeModelContext;
 		protected string projectLanguage = "C#";
+		protected ILanguageBinding languageBinding;
 		
 		public override void SetUp()
 		{
 			base.SetUp();
 			project.Stub(p => p.Language).Return(null).WhenCalled(mi => mi.ReturnValue = projectLanguage);
-			codeGenerator = MockRepository.GenerateStrictMock<CodeGenerator>();
+			
+			codeGenerator = MockRepository.GenerateMock<CodeGenerator>();
+			languageBinding = MockRepository.GenerateMock<ILanguageBinding>();
+			languageBinding.Stub(binding => binding.CodeGenerator).Return(codeGenerator);
+			project.Stub(p => p.LanguageBinding).Return(languageBinding);
+			
 			codeModelContext = new CodeModelContext {
-				CodeGenerator = codeGenerator,
 				CurrentProject = project
 			};
 		}

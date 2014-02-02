@@ -84,11 +84,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.vsCMAccess Access {
 			get { return typeDefinition.Accessibility.ToAccess(); }
-			set {
-				if (typeDefinition != null) {
-					context.CodeGenerator.ChangeAccessibility(typeDefinition, value.ToAccessibility());
-				}
-			}
+			set { }
 		}
 		
 		public virtual string FullName {

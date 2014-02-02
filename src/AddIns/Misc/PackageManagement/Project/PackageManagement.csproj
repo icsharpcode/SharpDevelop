@@ -82,7 +82,6 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
     <Compile Include="Src\ClassCodeGenerator.cs" />
-    <Compile Include="Src\ClassKindUpdater.cs" />
     <Compile Include="Src\ConfigSettingsFileSystem.cs" />
     <Compile Include="Src\DependentFile.cs" />
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
@@ -151,7 +150,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\FileConflictViewModel.cs" />
-    <Compile Include="Src\IClassKindUpdater.cs" />
+    <Compile Include="Src\ICodeGenerator.cs" />
     <Compile Include="Src\IPackageRepositoryFactoryEvents.cs" />
     <Compile Include="Src\IPackageViewModelParent.cs" />
     <Compile Include="Src\IUpdatePackagesAction.cs" />
@@ -257,6 +256,7 @@
     <Compile Include="Src\ServiceWithWorkbenchOwner.cs" />
     <Compile Include="Src\SharpDevelopCredentialProvider.cs" />
     <Compile Include="Src\SharpDevelopHttpUserAgent.cs" />
+    <Compile Include="Src\ThreadSafeCodeGenerator.cs" />
     <Compile Include="Src\UpdatePackagesAction.cs" />
     <Compile Include="Src\UpdatePackagesActionFactory.cs" />
     <Compile Include="Src\UpdateSolutionPackagesAction.cs" />

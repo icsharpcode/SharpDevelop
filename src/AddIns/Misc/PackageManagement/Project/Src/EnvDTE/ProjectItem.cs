@@ -71,16 +71,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return null;
 		}
 		
-//		internal ProjectItem(MSBuildBasedProject project, IClass c)
-//			: this(new Project(project), project.FindFile(c.CompilationUnit.FileName))
-//		{
-//		}
-//		
-//		internal ProjectItem(IProjectContent projectContent, IClass c)
-//			: this((MSBuildBasedProject)projectContent.Project, c)
-//		{
-//		}
-		
 		string GetKindFromFileProjectItemType()
 		{
 			if (IsDirectory) {
@@ -191,6 +181,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		CodeModelContext CreateModelContext()
 		{
 			return new CodeModelContext {
+				CurrentProject = containingProject.MSBuildProject,
 				FilteredFileName = projectItem.FileName
 			};
 		}

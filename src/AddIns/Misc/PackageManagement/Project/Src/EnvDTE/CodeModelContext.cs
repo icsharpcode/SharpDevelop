@@ -24,10 +24,20 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeModelContext
 	{
-		public EnvDTE.Project DteProject { get; set; }
+		ICodeGenerator codeGenerator;
+		
+		public Project DteProject { get; set; }
 		public IProject CurrentProject { get; set; }
 		public IDocumentLoader DocumentLoader { get; set; }
-		public CodeGenerator CodeGenerator { get; set; }
+		
+		public ICodeGenerator CodeGenerator {
+			get {
+				if (codeGenerator == null) {
+					codeGenerator = new ThreadSafeCodeGenerator(CurrentProject.LanguageBinding.CodeGenerator);
+				}
+				return codeGenerator;
+			}
+		}
 		
 		/// <summary>
 		/// Specifies the file name if this code model context refers to

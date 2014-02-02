@@ -17,11 +17,37 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IClassKindUpdater
+	public class ThreadSafeCodeGenerator : ICodeGenerator
 	{
-		void MakeClassPartial();
+		readonly CodeGenerator codeGenerator;
+		readonly IMessageLoop mainThread;
+		
+		public ThreadSafeCodeGenerator(CodeGenerator codeGenerator)
+		{
+			this.codeGenerator = codeGenerator;
+			this.mainThread = SD.MainThread;
+		}
+		
+		public void AddImport(FileName fileName, string name)
+		{
+			InvokeIfRequired(() => codeGenerator.AddImport(fileName, name));
+		}
+		
+		public void MakePartial(ITypeDefinition typeDefinition)
+		{
+			InvokeIfRequired(() => codeGenerator.MakePartial(typeDefinition));
+		}
+		
+		void InvokeIfRequired(Action action)
+		{
+			mainThread.InvokeIfRequired(action);
+		}
 	}
 }

@@ -17,52 +17,14 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.PackageManagement.EnvDTE
+namespace ICSharpCode.PackageManagement
 {
-	public class CodeClass2 : CodeClass, global::EnvDTE.CodeClass2
+	public interface ICodeGenerator
 	{
-		public CodeClass2(CodeModelContext context, ITypeDefinition typeDefinition)
-			: base(context, typeDefinition)
-		{
-		}
-		
-		public global::EnvDTE.CodeElements PartialClasses {
-			get {
-				var partialClasses = new CodeElementsList<CodeType>();
-				partialClasses.Add(this);
-				return partialClasses;
-			}
-		}
-		
-		public bool IsGeneric {
-			get { return typeDefinition.FullTypeName.TypeParameterCount > 0; }
-		}
-		
-		public global::EnvDTE.vsCMClassKind ClassKind {
-			get {
-				if (typeDefinition.Parts.First().IsPartial) {
-					return global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass;
-				}
-				return global::EnvDTE.vsCMClassKind.vsCMClassKindMainClass;
-			}
-			set {
-				if (value == ClassKind) {
-					return;
-				}
-				
-				if (value == global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass) {
-					context.CodeGenerator.MakePartial(typeDefinition);
-				} else {
-					throw new NotImplementedException();
-				}
-			}
-		}
-		
-		public bool IsAbstract {
-			get { return typeDefinition.IsAbstract; }
-		}
+		void AddImport(FileName fileName, string name);
+		void MakePartial(ITypeDefinition typeDefinition);
 	}
 }
