@@ -94,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		TextBox errorTextBox;
 		
-		void ShowError(Exception ex)
+		protected void ShowError(Exception ex)
 		{
 			if (errorTextBox == null) {
 				errorTextBox = new TextBox();
@@ -114,36 +114,5 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		protected virtual string LoadErrorHeaderText {
 			get { return String.Empty; }
 		}
-		
-		public override sealed void Load(OpenedFile file, Stream stream)
-		{
-			try {
-				LoadInternal(file, new UnclosableStream(stream));
-				if (errorList.Count > 0) {
-					errorList.Remove(file);
-					if (errorList.Count == 0) {
-						SD.WinForms.SetContent(contentControl, userContent, this);
-					} else {
-						ShowError(errorList.Values.First().exception);
-					}
-				}
-			} catch (Exception ex) {
-				errorList[file] = new LoadError(ex, stream);
-				ShowError(ex);
-			}
-		}
-		
-		public override sealed void Save(OpenedFile file, Stream stream)
-		{
-			if (errorList.ContainsKey(file)) {
-				byte[] data = errorList[file].fileData;
-				stream.Write(data, 0, data.Length);
-			} else {
-				SaveInternal(file, stream);
-			}
-		}
-		
-		protected abstract void LoadInternal(OpenedFile file, Stream stream);
-		protected abstract void SaveInternal(OpenedFile file, Stream stream);
 	}
 }

@@ -29,7 +29,7 @@ namespace ICSharpCode.WixBinding
 	/// <summary>
 	/// Displays the setup package files.
 	/// </summary>
-	public class PackageFilesView : AbstractViewContentWithoutFile, IWixDocumentWriter
+	public class PackageFilesView : AbstractViewContent, IWixDocumentWriter, ICustomizedCommands
 	{
 		IWixPackageFilesControl packageFilesControl;
 		WixProject project;
@@ -88,14 +88,26 @@ namespace ICSharpCode.WixBinding
 		{
 			return this.project == project;
 		}
-		
-		public override void Load()
+
+		bool ICustomizedCommands.SaveCommand()
 		{
+			Save();
+			return true;
+		}
+		
+		bool ICustomizedCommands.SaveAsCommand()
+		{
+			Save();
+			return true;
 		}
 		
 		public override void Save()
 		{
 			packageFilesControl.Save();
+		}
+		
+		public override bool IsViewOnly {
+			get { return false; }
 		}
 		
 		public override bool IsDirty {

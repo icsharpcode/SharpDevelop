@@ -39,7 +39,7 @@ namespace ICSharpCode.ILSpyAddIn
 	/// <summary>
 	/// Hosts a decompiled type.
 	/// </summary>
-	class DecompiledViewContent : AbstractViewContentWithoutFile
+	class DecompiledViewContent : AbstractViewContent
 	{
 		/// <summary>
 		/// Entity to jump to once decompilation has finished.
@@ -99,20 +99,6 @@ namespace ICSharpCode.ILSpyAddIn
 			SD.BookmarkManager.BookmarkAdded -= BookmarkManager_Added;
 			SD.BookmarkManager.BookmarkRemoved -= BookmarkManager_Removed;
 			base.Dispose();
-		}
-		#endregion
-		
-		#region Load/Save
-		public override void Load()
-		{
-			// nothing to do...
-		}
-		
-		public override void Save()
-		{
-			if (!decompilationFinished)
-				return;
-			// TODO: show Save As dialog to allow the user to save the decompiled file
 		}
 		#endregion
 		

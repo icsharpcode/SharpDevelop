@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 	/// <summary>
 	/// Option view for project options.
 	/// </summary>
-	public class ProjectOptionsView : AbstractViewContentWithoutFile
+	public class ProjectOptionsView : AbstractViewContent, ICustomizedCommands
 	{
 		List<IOptionPanelDescriptor> descriptors = new List<IOptionPanelDescriptor>();
 		TabbedOptions tabControl = new TabbedOptions();
@@ -69,14 +69,11 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			get { return tabControl.IsDirty; }
 		}
 		
-		public override void Load()
-		{
-			foreach (IOptionPanel op in tabControl.OptionPanels) {
-				op.LoadOptions();
-			}
+		public override bool IsViewOnly {
+			get { return false; }
 		}
 		
-		public override void Save()
+		public bool Save()
 		{
 			try {
 				foreach (IOptionPanel op in tabControl.OptionPanels) {
@@ -84,9 +81,20 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				}
 			} catch (Exception ex) {
 				MessageService.ShowException(ex, "Error saving project options panel");
-				return;
+				return false;
 			}
 			project.Save();
+			return true;
+		}
+		
+		bool ICustomizedCommands.SaveCommand()
+		{
+			return Save();
+		}
+		
+		bool ICustomizedCommands.SaveAsCommand()
+		{
+			return Save();
 		}
 		
 		public override void Dispose()

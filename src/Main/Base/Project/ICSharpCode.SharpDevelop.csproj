@@ -350,10 +350,8 @@
     <Compile Include="WinForms\IWinFormsToolbarService.cs" />
     <Compile Include="WinForms\WinFormsExtensions.cs" />
     <Compile Include="Workbench\AbstractPadContent.cs" />
-    <Compile Include="Workbench\AbstractSecondaryViewContent.cs" />
     <Compile Include="Workbench\AbstractViewContent.cs" />
     <Compile Include="Workbench\AbstractViewContentHandlingLoadErrors.cs" />
-    <Compile Include="Workbench\AbstractViewContentWithoutFile.cs" />
     <Compile Include="Workbench\DisplayBinding\DisplayBindingDescriptor.cs" />
     <Compile Include="Workbench\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Workbench\DisplayBinding\IDisplayBinding.cs" />

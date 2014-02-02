@@ -97,26 +97,6 @@ namespace ICSharpCode.SharpDevelop
 		event EventHandler InfoTipChanged;
 
 		/// <summary>
-		/// Saves the content to the location <code>fileName</code>
-		/// </summary>
-		/// <remarks>
-		/// When the user switches between multiple views editing the same file, a view
-		/// change will trigger one view content to save that file into a memory stream
-		/// and the other view content will load the file from that memory stream.
-		/// </remarks>
-		void Save(OpenedFile file, Stream stream);
-		
-		/// <summary>
-		/// Load or reload the content of the specified file from the stream.
-		/// </summary>
-		/// <remarks>
-		/// When the user switches between multiple views editing the same file, a view
-		/// change will trigger one view content to save that file into a memory stream
-		/// and the other view content will load the file from that memory stream.
-		/// </remarks>
-		void Load(OpenedFile file, Stream stream);
-		
-		/// <summary>
 		/// Gets the list of files that are being edited using this view content.
 		/// The returned collection usually is read-only.
 		/// </summary>
@@ -161,29 +141,6 @@ namespace ICSharpCode.SharpDevelop
 		/// Gets the collection that stores the secondary view contents.
 		/// </summary>
 		ICollection<IViewContent> SecondaryViewContents { get; }
-		
-		
-		/// <summary>
-		/// Gets switching without a Save/Load cycle for <paramref name="file"/> is supported
-		/// when switching from this view content to <paramref name="newView"/>.
-		/// </summary>
-		bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView);
-		
-		/// <summary>
-		/// Gets switching without a Save/Load cycle for <paramref name="file"/> is supported
-		/// when switching from <paramref name="oldView"/> to this view content.
-		/// </summary>
-		bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView);
-		
-		/// <summary>
-		/// Executes an action before switching from this view content to the new view content.
-		/// </summary>
-		void SwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView);
-		
-		/// <summary>
-		/// Executes an action before switching from the old view content to this view content.
-		/// </summary>
-		void SwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView);
 		#endregion
 	}
 }

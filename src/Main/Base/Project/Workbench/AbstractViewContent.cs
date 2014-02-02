@@ -196,38 +196,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return secondaryViewContentCollection;
 			}
 		}
-		
-		/// <summary>
-		/// Gets switching without a Save/Load cycle for <paramref name="file"/> is supported
-		/// when switching from this view content to <paramref name="newView"/>.
-		/// </summary>
-		public virtual bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
-		{
-			return newView == this;
-		}
-		
-		/// <summary>
-		/// Gets switching without a Save/Load cycle for <paramref name="file"/> is supported
-		/// when switching from <paramref name="oldView"/> to this view content.
-		/// </summary>
-		public virtual bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
-		{
-			return oldView == this;
-		}
-		
-		/// <summary>
-		/// Executes an action before switching from this view content to the new view content.
-		/// </summary>
-		public virtual void SwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
-		{
-		}
-		
-		/// <summary>
-		/// Executes an action before switching from the old view content to this view content.
-		/// </summary>
-		public virtual void SwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
-		{
-		}
 		#endregion
 		
 		#region Files
@@ -572,14 +540,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		}
 		
 		#endregion
-		
-		public virtual void Save(OpenedFile file, Stream stream)
-		{
-		}
-		
-		public virtual void Load(OpenedFile file, Stream stream)
-		{
-		}
 		
 		public virtual INavigationPoint BuildNavPoint()
 		{
