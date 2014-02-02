@@ -17,12 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Implementation;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
 using ICSharpCode.SharpDevelop.Editor;
@@ -280,6 +278,11 @@ namespace ICSharpCode.SharpDevelop
 		/// <inheritdoc see="IClassBrowser"/>
 		public static IClassBrowser ClassBrowser {
 			get { return GetRequiredService<IClassBrowser>(); }
+		}
+		
+		/// <inheritdoc see="IDebuggerService"/>
+		public static IDebuggerService Debugger {
+			get { return GetRequiredService<IDebuggerService>(); }
 		}
 	}
 }

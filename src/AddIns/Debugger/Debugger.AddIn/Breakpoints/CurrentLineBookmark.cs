@@ -85,11 +85,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			get { return false; }
 		}
 		
-		public const string Name = "Current statement";
-		
-		public static readonly Color DefaultBackground = Colors.Yellow;
-		public static readonly Color DefaultForeground = Colors.Blue;
-		
 		public override int ZOrder {
 			get { return 100; }
 		}
@@ -98,8 +93,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			get { return false; }
 		}
 		
-		public override bool IsVisibleInBookmarkPad {
-			get { return false; }
+		public override bool ShowInPad(BookmarkPadBase pad)
+		{
+			return false;
 		}
 		
 		public override IImage Image {
@@ -114,11 +110,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			int eOffset = Math.Min(eLine.Offset + endColumn - 1, eLine.EndOffset);
 			ITextMarker marker = markerService.Create(sOffset, Math.Max(eOffset - sOffset, 1));
 			IHighlighter highlighter = this.Document.GetService(typeof(IHighlighter)) as IHighlighter;
-			marker.BackgroundColor = DefaultBackground;
-			marker.ForegroundColor = DefaultForeground;
+			marker.BackgroundColor = BookmarkBase.CurrentLineDefaultBackground;
+			marker.ForegroundColor = BookmarkBase.CurrentLineDefaultForeground;
 			
 			if (highlighter != null) {
-				var color = highlighter.GetNamedColor(Name);
+				var color = highlighter.GetNamedColor(BookmarkBase.CurrentLineBookmarkName);
 				if (color != null) {
 					marker.BackgroundColor = color.Background.GetColor(null);
 					marker.ForegroundColor = color.Foreground.GetColor(null);
@@ -136,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			// call async because the Debugger seems to use Application.DoEvents(), but we don't want to process events
 			// because Drag'N'Drop operation has finished
 			SD.MainThread.InvokeAsyncAndForget(delegate {
-				DebuggerService.CurrentDebugger.SetInstructionPointer(this.FileName, lineNumber, 1, false);
+				SD.Debugger.SetInstructionPointer(this.FileName, lineNumber, 1, false);
 			});
 		}
 	}

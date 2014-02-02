@@ -97,6 +97,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Breakpoints\BreakpointBookmark.cs" />
+    <Compile Include="Breakpoints\BreakpointBookmarkEventArgs.cs" />
+    <Compile Include="Breakpoints\BreakpointEditor.xaml.cs">
+      <DependentUpon>BreakpointEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Breakpoints\CurrentLineBookmark.cs" />
     <Compile Include="NRefactory\ExpressionEvaluationVisitor.cs" />
     <Compile Include="NRefactory\ExpressionExtensionMethods.cs" />
     <Compile Include="Options\DebuggingOptionsPanel.xaml.cs">
@@ -296,6 +302,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Breakpoints" />
     <Folder Include="Tooltips" />
     <Folder Include="Visualizers" />
     <Folder Include="Visualizers\Commands" />
@@ -315,6 +322,7 @@
     <Folder Include="Visualizers\Presentation" />
     <Folder Include="Visualizers\TextVisualizer" />
     <Folder Include="Visualizers\Utils" />
+    <Page Include="Breakpoints\BreakpointEditor.xaml" />
     <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Options\DebuggingSymbolsPanel.xaml" />
     <Page Include="Pads\CommonResources.xaml" />

@@ -26,6 +26,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using Microsoft.Win32;
+using Debugger.AddIn.Breakpoints;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn
@@ -47,10 +48,10 @@ namespace Debugger.AddIn
 		{
 			ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
 			
-			if (textEditor == null || DebuggerService.CurrentDebugger == null)
+			if (textEditor == null || SD.Debugger == null)
 				return;
 			
-			DebuggerService.CurrentDebugger.SetInstructionPointer(textEditor.FileName, textEditor.Caret.Line, textEditor.Caret.Column, false);
+			SD.Debugger.SetInstructionPointer(textEditor.FileName, textEditor.Caret.Line, textEditor.Caret.Column, false);
 		}
 	}
 	
@@ -144,8 +145,8 @@ namespace Debugger.AddIn
 		
 		void StartExecutable(string fileName, string workingDirectory = null, string arguments = null)
 		{
-			DebuggerService.CurrentDebugger.BreakAtBeginning = DebuggingOptions.Instance.BreakAtBeginning;
-			DebuggerService.CurrentDebugger.Start(new ProcessStartInfo {
+			SD.Debugger.BreakAtBeginning = DebuggingOptions.Instance.BreakAtBeginning;
+			SD.Debugger.Start(new ProcessStartInfo {
 			                      	FileName = fileName,
 			                      	WorkingDirectory = workingDirectory ?? Path.GetDirectoryName(fileName),
 			                      	Arguments = arguments

@@ -199,5 +199,20 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		{
 			return null;
 		}
+		
+		public const string BreakpointMarkerName = "Breakpoint";
+		
+		public static readonly Color BreakpointDefaultBackground = Color.FromRgb(180, 38, 38);
+		public static readonly Color BreakpointDefaultForeground = Colors.White;
+		
+		public const string CurrentLineBookmarkName = "Current statement";
+		
+		public static readonly Color CurrentLineDefaultBackground = Colors.Yellow;
+		public static readonly Color CurrentLineDefaultForeground = Colors.Blue;
+	}
+	
+	public interface IHaveStateEnabled
+	{
+		bool IsEnabled { get; set; }
 	}
 }

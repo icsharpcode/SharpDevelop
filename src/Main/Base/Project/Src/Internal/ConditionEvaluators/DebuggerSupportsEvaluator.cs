@@ -39,22 +39,22 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			DebuggerDescriptor debugger = DebuggerService.Descriptor;
+			var debugger = SD.Debugger;
 			switch (condition.Properties["debuggersupports"]) {
 				case "Start":
-					return (debugger != null) ? debugger.SupportsStart : true;
+					return debugger.Supports(DebuggerFeatures.Start);
 				case "StartWithoutDebugging":
-					return (debugger != null) ? debugger.SupportsStartWithoutDebugging : true;
+					return debugger.Supports(DebuggerFeatures.StartWithoutDebugging);
 				case "Stop":
-					return (debugger != null) ? debugger.SupportsStop : true;
+					return debugger.Supports(DebuggerFeatures.Stop);
 				case "ExecutionControl":
-					return (debugger != null) ? debugger.SupportsExecutionControl : false;
+					return debugger.Supports(DebuggerFeatures.ExecutionControl);
 				case "Stepping":
-					return (debugger != null) ? debugger.SupportsStepping : false;
+					return debugger.Supports(DebuggerFeatures.Stepping);
 				case "Attaching":
-					return (debugger != null) ? debugger.SupportsAttaching : false;
+					return debugger.Supports(DebuggerFeatures.Attaching);
 				case "Detaching":
-					return (debugger != null) ? debugger.SupportsDetaching : false;					
+					return debugger.Supports(DebuggerFeatures.Detaching);
 				default:
 					throw new ArgumentException("Unknown debugger support for : >" + condition.Properties["debuggersupports"] + "< please fix addin file.", "debuggersupports");
 			}

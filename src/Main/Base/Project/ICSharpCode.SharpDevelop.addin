@@ -46,7 +46,6 @@
 			<Doozer name="TextEditorExtension" class="ICSharpCode.SharpDevelop.Editor.TextEditorExtensionDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
 			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionBindingDoozer"/>
-			<Doozer name="Debugger" class="ICSharpCode.SharpDevelop.Debugging.DebuggerDoozer"/>
 			<Doozer name="Directory" class="ICSharpCode.SharpDevelop.DirectoryDoozer"/>
 			<Doozer name="TaskBoundAdditionalLogger" class="ICSharpCode.SharpDevelop.Project.TaskBoundAdditionalLoggerDoozer"/>
 			<Doozer name="TaskBoundLoggerFilter" class="ICSharpCode.SharpDevelop.Project.TaskBoundLoggerFilterDoozer"/>

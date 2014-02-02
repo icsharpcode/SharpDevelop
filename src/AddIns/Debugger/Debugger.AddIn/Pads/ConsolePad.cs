@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public ConsolePad()
 		{
-			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			WindowsDebugger debugger = (WindowsDebugger)SD.Debugger;
 		}
 		
 		protected override void AbstractConsolePadTextEntered(object sender, TextCompositionEventArgs e)

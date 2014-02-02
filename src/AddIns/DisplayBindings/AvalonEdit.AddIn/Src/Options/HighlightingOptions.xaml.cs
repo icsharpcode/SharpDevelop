@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
@@ -496,7 +497,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			items.Add(messageMarker);
 			
 			IHighlightingItem breakpointMarker = new SimpleHighlightingItem(
-				BreakpointBookmark.BreakpointMarker,
+				BookmarkBase.BreakpointMarkerName,
 				ta => {
 					ta.Document.Text = "some code with a breakpoint";
 					ITextMarker marker = textMarkerService.Create(0, ta.Document.TextLength);
@@ -506,15 +507,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					};
 				})
 			{
-				Background = BreakpointBookmark.DefaultBackground,
-				Foreground = BreakpointBookmark.DefaultForeground
+				Background = BookmarkBase.BreakpointDefaultBackground,
+				Foreground = BookmarkBase.BreakpointDefaultForeground
 			};
 			breakpointMarker = new CustomizedHighlightingItem(customizationList, breakpointMarker, language, canSetFont: false);
 			breakpointMarker.PropertyChanged += item_PropertyChanged;
 			items.Add(breakpointMarker);
 			
 			IHighlightingItem currentStatementMarker = new SimpleHighlightingItem(
-				CurrentLineBookmark.Name,
+				BookmarkBase.CurrentLineBookmarkName,
 				ta => {
 					ta.Document.Text = "current statement line";
 					ITextMarker marker = textMarkerService.Create(0, ta.Document.TextLength);
@@ -524,8 +525,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					};
 				})
 			{
-				Background = CurrentLineBookmark.DefaultBackground,
-				Foreground = CurrentLineBookmark.DefaultForeground
+				Background = BookmarkBase.CurrentLineDefaultBackground,
+				Foreground = BookmarkBase.CurrentLineDefaultForeground
 			};
 			currentStatementMarker = new CustomizedHighlightingItem(customizationList, currentStatementMarker, language, canSetFont: false);
 			currentStatementMarker.PropertyChanged += item_PropertyChanged;

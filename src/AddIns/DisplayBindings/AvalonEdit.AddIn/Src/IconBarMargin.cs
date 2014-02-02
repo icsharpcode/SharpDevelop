@@ -265,7 +265,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					// no bookmark on the line: create a new breakpoint
 					ITextEditor textEditor = TextView.GetService(typeof(ITextEditor)) as ITextEditor;
 					if (textEditor != null) {
-						DebuggerService.ToggleBreakpointAt(textEditor, line);
+						SD.Debugger.ToggleBreakpointAt(textEditor, line);
 						return;
 					}
 				}

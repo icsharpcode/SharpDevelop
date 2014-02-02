@@ -56,6 +56,7 @@
     <Compile Include="Commands\RunningTestsCondition.cs" />
     <Compile Include="Commands\TestableCondition.cs" />
     <Compile Include="Commands\UnitTestCommands.cs" />
+    <Compile Include="Interfaces\UnitTestDebuggerService.cs" />
     <Compile Include="Pad\UnitTestNodeFactory.cs" />
     <Compile Include="Service\ITestService.cs" />
     <Compile Include="Model\ITest.cs" />
@@ -64,7 +65,6 @@
     <Compile Include="Model\ITestSolution.cs" />
     <Compile Include="Model\TestBase.cs" />
     <Compile Include="Interfaces\IBuildOptions.cs" />
-    <Compile Include="Interfaces\IUnitTestDebuggerService.cs" />
     <Compile Include="Interfaces\IUnitTestSaveAllFilesCommand.cs" />
     <Compile Include="Interfaces\IUnitTestTaskService.cs" />
     <Compile Include="Interfaces\UnitTestBuildOptions.cs" />
@@ -82,7 +82,6 @@
     <Compile Include="Pad\TestTreeView.cs" />
     <Compile Include="Pad\UnitTestNode.cs" />
     <Compile Include="Pad\UnitTestsPad.cs" />
-    <Compile Include="Interfaces\UnitTestDebuggerService.cs" />
     <Compile Include="Interfaces\UnitTestSaveAllFilesCommand.cs" />
     <Compile Include="Interfaces\UnitTestTaskService.cs" />
     <Compile Include="Model\TestSolution.cs" />

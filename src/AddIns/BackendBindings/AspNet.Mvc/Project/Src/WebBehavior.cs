@@ -112,7 +112,7 @@ namespace ICSharpCode.AspNet.Mvc
 					case StartAction.Program:
 						ProcessStartInfo processInfo = DotNetStartBehavior.CreateStartInfo(StartProgram, Project.Directory, StartWorkingDirectory, StartArguments);
 						if (withDebugging) {
-							DebuggerService.CurrentDebugger.Start(processInfo);
+							SD.Debugger.Start(processInfo);
 						} else {
 							Process.Start(processInfo);
 						}
@@ -152,14 +152,14 @@ namespace ICSharpCode.AspNet.Mvc
 			int index = Array.FindIndex(processes, p => properties.UseIISExpress ? p.Id == LastStartedIISExpressProcessId : p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
 			if (index > -1) {
 				if (withDebugging)
-					DebuggerService.CurrentDebugger.Attach(processes[index]);
+					SD.Debugger.Attach(processes[index]);
 			} else {
 				if (properties.UseIISExpress) {
 					// start IIS express and attach to it
 					if (WebProjectService.IsIISExpressInstalled) {
 						ProcessStartInfo processInfo = IISExpressProcessStartInfo.Create(WebProject);
 						if (withDebugging) {
-							DebuggerService.CurrentDebugger.Start(processInfo);
+							SD.Debugger.Start(processInfo);
 						} else {
 							var process = Process.Start(processInfo);
 							LastStartedIISExpressProcessId = process.Id;
@@ -192,9 +192,9 @@ namespace ICSharpCode.AspNet.Mvc
 			if (index == -1)
 				return;
 			if (withDebugging) {
-				DebuggerService.CurrentDebugger.Attach(processes[index]);
+				SD.Debugger.Attach(processes[index]);
 				
-				if (!DebuggerService.CurrentDebugger.IsAttached) {
+				if (!SD.Debugger.IsAttached) {
 					if(properties.UseIIS) {
 						string format = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.NoIISWP");
 						MessageService.ShowMessage(string.Format(format, processName));
