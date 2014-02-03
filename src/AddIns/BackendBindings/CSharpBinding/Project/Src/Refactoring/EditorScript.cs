@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.Refactoring
@@ -188,7 +189,13 @@ namespace CSharpBinding.Refactoring
 			var tcs = new TaskCompletionSource<Script>();
 			if (parentType == null)
 				return tcs.Task;
-			var part = parentType.Parts.FirstOrDefault ();
+			IUnresolvedTypeDefinition part = null;
+			
+			foreach (var p in parentType.Parts) {
+				if (part == null || EntityModelContextUtils.IsBetterPart(p, part, ".cs"))
+					part = p;
+			}
+			
 			if (part == null)
 				return tcs.Task;
 			
