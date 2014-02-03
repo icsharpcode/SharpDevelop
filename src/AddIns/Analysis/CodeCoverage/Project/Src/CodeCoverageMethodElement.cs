@@ -138,7 +138,9 @@ namespace ICSharpCode.CodeCoverage
 				sp.EndColumn = (int)GetDecimalAttributeValue(xSPoint.Attribute("ec"));
 				sp.VisitCount = (int)GetDecimalAttributeValue(xSPoint.Attribute("vc"));
 				sp.Offset = (int)GetDecimalAttributeValue(xSPoint.Attribute("offset"));
-				sp.BranchCoverage = true;
+				sp.BranchExitsCount = (int)GetDecimalAttributeValue(xSPoint.Attribute("bec"));
+				sp.BranchExitsVisit = (int)GetDecimalAttributeValue(xSPoint.Attribute("bev"));
+				sp.BranchCoverage = (sp.BranchExitsCount == sp.BranchExitsVisit);
 				sp.Content = String.Empty;
 				sp.Length = 0;
 
@@ -306,46 +308,21 @@ namespace ICSharpCode.CodeCoverage
 			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Ensures)
 			if (this.BodyFinalSP == null) { return; } // empty body
 			
-			// Connect Sequence & Branches
-			IEnumerator<CodeCoverageSequencePoint> SPEnumerator = this.SequencePoints.GetEnumerator();
-			CodeCoverageSequencePoint currSeqPoint = this.BodyStartSP;
-			int nextSeqPointOffset = BodyStartSP.Offset;
-			
-			foreach (var bp in this.BranchPoints) {
-				
-				// ignore branches outside of method body offset range
-				if (bp.Offset < BodyStartSP.Offset)
-					continue;
-				if (bp.Offset > BodyFinalSP.Offset)
-					break;
-
-				// Sync with SequencePoint
-				while ( nextSeqPointOffset < bp.Offset ) {
-					currSeqPoint = SPEnumerator.Current;
-					if ( SPEnumerator.MoveNext() ) {
-						nextSeqPointOffset = SPEnumerator.Current.Offset;
-					} else {
-						nextSeqPointOffset = int.MaxValue;
-					}
-				}
-				if (currSeqPoint.Branches == null) {
-					currSeqPoint.Branches = new List<CodeCoverageBranchPoint>();
-				}
-				// Add Branch to Branches
-				currSeqPoint.Branches.Add(bp);
-			}
-
-			// Merge sp.Branches on exit-offset
 			// Calculate Method Branch coverage
 			int totalBranchVisit = 0;
 			int totalBranchCount = 0;
-			int pointBranchVisit = 0;
-			int pointBranchCount = 0;
-			Dictionary<int, CodeCoverageBranchPoint> bpExits = new Dictionary<int, CodeCoverageBranchPoint>();
 			foreach (var sp in this.SequencePoints) {
 
-				// SequencePoint covered & has branches?
-				if (sp.VisitCount != 0 && sp.Branches != null) {
+				// SequencePoint is visited?
+				if (sp.VisitCount != 0) {
+
+					// Don't want branch coverage of ccrewrite(n)
+					// SequencePoint's with offset before and after method body
+					if (sp.Offset < BodyStartSP.Offset ||
+						sp.Offset > BodyFinalSP.Offset) {
+						sp.BranchCoverage = true;
+						continue; // skip
+					}
 
 					// 1) Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
 					// one do not want or cannot cover by test-case because is handled earlier at same method.
@@ -360,36 +337,13 @@ namespace ICSharpCode.CodeCoverage
 						sp.Content.StartsWith("Contract.") ||
 						sp.Content.StartsWith("Contract ")
 					   ) {
-						sp.Branches = null;
+						sp.BranchCoverage = true;
 						continue; // skip
 					}
 
-					// Merge sp.Branches on OffsetEnd using bpExits key
-					bpExits.Clear();
-					foreach (var bp in sp.Branches) {
-						if (!bpExits.ContainsKey(bp.OffsetEnd)) {
-							bpExits[bp.OffsetEnd] = bp; // insert branch
-						} else {
-							bpExits[bp.OffsetEnd].VisitCount += bp.VisitCount; // update branch
-						}
-					}
-
-					// Compute branch coverage
-					pointBranchVisit = 0;
-					pointBranchCount = 0;
-					foreach (var bp in bpExits.Values) {
-						pointBranchVisit += bp.VisitCount == 0? 0 : 1 ;
-						pointBranchCount += 1;
-					}
-					// Not full coverage?
-					if (pointBranchVisit != pointBranchCount) {
-						   sp.BranchCoverage = false; // => part-covered
-					}
-					totalBranchVisit += pointBranchVisit;
-					totalBranchCount += pointBranchCount;
+					totalBranchCount += sp.BranchExitsCount;
+					totalBranchVisit += sp.BranchExitsVisit;
 				}
-				if (sp.Branches != null)
-					sp.Branches = null; // release memory
 			}
 
 			this.BranchCoverageRatio = (totalBranchCount!=0) ? new Tuple<int,int>(totalBranchVisit,totalBranchCount) : null;

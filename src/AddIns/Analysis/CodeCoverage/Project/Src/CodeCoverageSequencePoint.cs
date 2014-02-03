@@ -90,8 +90,9 @@ namespace ICSharpCode.CodeCoverage
 		public int EndColumn { get; set; }
 		public int Length { get; set; }
 		public int Offset { get; set; }
+		public int BranchExitsCount { get; set; }
+		public int BranchExitsVisit { get; set; }
 		public bool BranchCoverage { get; set; }
-		public List<CodeCoverageBranchPoint> Branches { get; set; }
 		
 		public override bool Equals(object obj)
 		{
