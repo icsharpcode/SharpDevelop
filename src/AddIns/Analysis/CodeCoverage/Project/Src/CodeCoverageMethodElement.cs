@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -32,8 +32,8 @@ namespace ICSharpCode.CodeCoverage
 		XElement element;
 		CodeCoverageResults parent;
 
-		public CodeCoverageMethodElement(XElement element) 
-		    : this (element, null) {}
+		public CodeCoverageMethodElement(XElement element)
+			: this (element, null) {}
 		public CodeCoverageMethodElement(XElement element, CodeCoverageResults parent)
 		{
 			this.parent = parent;
@@ -67,7 +67,7 @@ namespace ICSharpCode.CodeCoverage
 		public bool IsProperty {
 			get { return IsGetter || IsSetter; }
 		}
-		
+
 		void Init()
 		{
 			MethodName = GetMethodName();
@@ -77,24 +77,24 @@ namespace ICSharpCode.CodeCoverage
 			this.FileID = GetFileRef();
 			this.FileName = String.Empty;
 			if (!String.IsNullOrEmpty(this.FileID)) {
-			    if (parent != null) {
-    				this.FileName = parent.GetFileName(this.FileID);
-    				if ( File.Exists(this.FileName) ) {
-    					if (cacheFileName != this.FileName) {
-    						cacheFileName = this.FileName;
-    						cacheDocument = null;
-    						try {
-    							using (Stream stream = new FileStream(this.FileName, FileMode.Open, FileAccess.Read)) {
-    								try {
-    									stream.Position = 0;
-    									string textSource = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default);
-    									cacheDocument = new CodeCoverageStringTextSource(textSource);
-    								} catch {}
-    							}
-    						} catch {}
-    					}
-    				}
-			    }
+				if (parent != null) {
+					this.FileName = parent.GetFileName(this.FileID);
+					if ( File.Exists(this.FileName) ) {
+						if (cacheFileName != this.FileName) {
+							cacheFileName = this.FileName;
+							cacheDocument = null;
+							try {
+								using (Stream stream = new FileStream(this.FileName, FileMode.Open, FileAccess.Read)) {
+									try {
+										stream.Position = 0;
+										string textSource = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default);
+										cacheDocument = new CodeCoverageStringTextSource(textSource);
+									} catch {}
+								}
+							} catch {}
+						}
+					}
+				}
 			}
 			
 			this.IsVisited = this.GetBooleanAttributeValue("visited");
@@ -104,25 +104,26 @@ namespace ICSharpCode.CodeCoverage
 			this.IsConstructor = this.GetBooleanAttributeValue("isConstructor");
 			this.IsStatic = this.GetBooleanAttributeValue("isStatic");
 			if ( !String.IsNullOrEmpty( this.FileID ) ) {
-				this.SequencePoints = this.GetSequencePoints();
-				this.BodyStartSP = getBodyStartSP(); // before OrderBy Line/Col
+				this.GetSequencePoints();
+				this.GetSequencePointsContent();
+				this.getBodyStartSP(); // before OrderBy Line/Col
+				this.getBodyFinalSP(); // before orderBy Line/Col
+				this.FilterSequencePoints(); // before orderBy Line/Col
+				this.GetBranchPoints();
+				this.GetBranchRatio();
+				this.GetBranchCoverage();
+
 				// SP's are originaly ordered by CIL offset
 				// but ccrewrite can move offset of
 				//   Contract.Requires before method signature SP { and
 				//   Contract.Ensures after method closing SP }
 				// So sort SP's back by line/column
 				this.SequencePoints.OrderBy(item => item.Line).OrderBy(item => item.Column);
-				this.BodyFinalSP = getBodyFinalSP(); // after orderBy Line/Col
-				this.SequencePoints = this.FilterSequencePoints(this.SequencePoints);
-				this.BranchPoints = this.GetBranchPoints();
-				this.BranchCoverageRatio = this.GetBranchRatio();
-				this.BranchCoverage = this.GetBranchCoverage();
 			}
 		}
 		
-		List<CodeCoverageSequencePoint> GetSequencePoints() {
+		void GetSequencePoints() {
 
-			List<CodeCoverageSequencePoint> sps = new List<CodeCoverageSequencePoint>();
 			var xSPoints = this.element
 				.Elements("SequencePoints")
 				.Elements("SequencePoint");
@@ -136,52 +137,68 @@ namespace ICSharpCode.CodeCoverage
 				sp.Column = (int)GetDecimalAttributeValue(xSPoint.Attribute("sc"));
 				sp.EndColumn = (int)GetDecimalAttributeValue(xSPoint.Attribute("ec"));
 				sp.VisitCount = (int)GetDecimalAttributeValue(xSPoint.Attribute("vc"));
-				if (cacheFileName == sp.Document && cacheDocument != null) {
-					sp.Content = cacheDocument.GetText(sp);
-					if (sp.Line != sp.EndLine) {
-						sp.Content = Regex.Replace (sp.Content, @"\s+", " ");
-					}
-					sp.Length = Regex.Replace (sp.Content, @"\s", "").Length; // ignore white-space for coverage%
-				} else {
-					sp.Content = String.Empty;
-					sp.Length = 0;
-				}
 				sp.Offset = (int)GetDecimalAttributeValue(xSPoint.Attribute("offset"));
 				sp.BranchCoverage = true;
+				sp.Content = String.Empty;
+				sp.Length = 0;
 
-				sps.Add(sp);
+				this.SequencePoints.Add(sp);
 			}
-			return sps;
 		}
 	
-		// Find method-body start SequencePoint "{"
+		void GetSequencePointsContent()
+		{
+			if (cacheFileName == this.FileName && cacheDocument != null) {
+				foreach (var sp in this.SequencePoints) {
+					GetSequencePointContent(sp);
+				}
+			}
+		}
+
+		void GetSequencePointContent(CodeCoverageSequencePoint sp)
+		{
+			// ccrewrite will cause lots of invalid calls to GetText()!
+			if (cacheFileName == sp.Document && cacheDocument != null) {
+				sp.Content = cacheDocument.GetText(sp); // never returns null
+				if (sp.Content != String.Empty) {
+					if (sp.Line != sp.EndLine) {
+						// merge lines to single line
+						sp.Content = Regex.Replace(sp.Content, @"\s+", " ");
+					}
+					// SequencePoint.Length counts all but whitespace
+					sp.Length = Regex.Replace(sp.Content, @"\s", "").Length;
+				}
+			}
+		}
+
+		// Find method-body start SequencePoint "{" (sp.Content required)
 		// Sequence points expected to be ordered by Offset
 		// Cannot just get first one because of ccrewrite&ContractClassFor
-		public CodeCoverageSequencePoint getBodyStartSP() {
+		void getBodyStartSP() {
 			bool startPointFound = false;
 			CodeCoverageSequencePoint startSeqPoint = null;
-			foreach (CodeCoverageSequencePoint sPoint in this.SequencePoints) {
-				if ( sPoint.Content == "{") {
+			foreach (CodeCoverageSequencePoint sp in this.SequencePoints) {
+				if ( sp.Content == "{") {
 					if ( this.IsConstructor ) {
 						// take previous/last one if not null
-						startSeqPoint = startSeqPoint?? sPoint;
+						startSeqPoint = startSeqPoint?? sp;
 					}
 					else {
-						startSeqPoint = sPoint;
+						startSeqPoint = sp;
 					}
 					startPointFound = true;
 					break;
 				}
-				startSeqPoint = sPoint;
+				startSeqPoint = sp;
 			}
-			return startPointFound? startSeqPoint: null;
+			this.BodyStartSP = startPointFound? startSeqPoint: null;
 		}
 
-		// Find method-body final SequencePoint "}"
-		// Sequence points expected to be ordered by Line/Column
-		public CodeCoverageSequencePoint getBodyFinalSP() {
+		// Find method-body final SequencePoint "}" (sp.Content required)
+		// Sequence points expected to be ordered by Offset
+		void getBodyFinalSP() {
 			CodeCoverageSequencePoint finalSeqPoint = null;
-			foreach (CodeCoverageSequencePoint sp in this.SequencePoints) {
+			foreach (CodeCoverageSequencePoint sp in ((IEnumerable<CodeCoverageSequencePoint>)this.SequencePoints).Reverse()) {
 				if ( sp.Content == "}") {
 					if (finalSeqPoint == null) {
 						finalSeqPoint = sp;
@@ -193,20 +210,17 @@ namespace ICSharpCode.CodeCoverage
 							 sp.EndColumn == finalSeqPoint.EndColumn &&
 							 sp.Offset < finalSeqPoint.Offset) {
 						finalSeqPoint = sp;
-					}
-					else if (sp.Line < finalSeqPoint.Line) {
+						// duplicate found, so far no reason to expect "triplicate" :)
 						break;
 					}
 				}
 			}
-			return finalSeqPoint;
+			this.BodyFinalSP = finalSeqPoint;
 		}
 		
-		List<CodeCoverageSequencePoint> FilterSequencePoints(List<CodeCoverageSequencePoint> sps) {
+		void FilterSequencePoints() {
 
-			List<CodeCoverageSequencePoint> returnList = sps;
-
-			if (sps.Count > 2 &&
+			if (this.SequencePoints.Count != 0 &&
 				this.BodyStartSP != null &&
 				this.BodyFinalSP != null ) {
 				
@@ -218,31 +232,31 @@ namespace ICSharpCode.CodeCoverage
 				// before method signature and after end-brackets xxx{} are removed
 				// If ContractClassFor is in another file but interleaves this method lines
 				// then, afaik, not much can be done to remove inserted alien SP's
-				List<CodeCoverageSequencePoint> selected = new List<CodeCoverageSequencePoint>();
+				var selected = new List<CodeCoverageSequencePoint>();
 
-				foreach (var point in sps) {
-					if (
-						(point.Line > BodyStartSP.Line || (point.Line == BodyStartSP.Line && point.Column >= BodyStartSP.Column)) &&
-						(point.Line < BodyFinalSP.Line || (point.Line == BodyFinalSP.Line && point.Column < BodyFinalSP.Column))
-					   ) {
+				foreach (var point in this.SequencePoints) {
+					
+					// if Content.Length is 0, GetText() is failed by ccrewrite inserted invalid SequencePoint
+					if (point.Content.Length != 0
+						&& (point.Line > BodyStartSP.Line || (point.Line == BodyStartSP.Line && point.Column >= BodyStartSP.Column))
+						&& (point.Line < BodyFinalSP.Line || (point.Line == BodyFinalSP.Line && point.Column < BodyFinalSP.Column))
+					) {
 						selected.Add (point);
 					}
 					// After ccrewrite ContractClass/ContractClassFor
-					// duplicate method end-sequence-point (}) is added
+					// duplicate method end-sequence-point "}" is added
 					//
-					// Add first finalSP (can be a duplicate)
+					// Add only first finalSP (can be a duplicate)
 					// Note: IL.Offset of second duplicate finalSP will
 					// extend branch coverage outside method-end "}",
 					// and that can lead to wrong branch coverage display!
 					if (object.ReferenceEquals (point, this.BodyFinalSP)) {
-						   selected.Add (point);
+						selected.Add (point);
 					}
 				}
 
-				returnList = selected;
+				this.SequencePoints = selected;
 			}
-
-			return returnList;
 		}
 
 		int GetSequencePointsCount() {
@@ -256,9 +270,8 @@ namespace ICSharpCode.CodeCoverage
 			return 0;
 		}
 
-		List<CodeCoverageBranchPoint> GetBranchPoints() {
+		void GetBranchPoints() {
 			// get all BranchPoints
-			List<CodeCoverageBranchPoint> bps = new List<CodeCoverageBranchPoint>();
 			var xBPoints = this.element
 				.Elements("BranchPoints")
 				.Elements("BranchPoint");
@@ -268,34 +281,34 @@ namespace ICSharpCode.CodeCoverage
 				bp.Offset = (int)GetDecimalAttributeValue(xBPoint.Attribute("offset"));
 				bp.Path = (int)GetDecimalAttributeValue(xBPoint.Attribute("path"));
 				bp.OffsetEnd = (int)GetDecimalAttributeValue(xBPoint.Attribute("offsetend"));
-				bps.Add(bp);
+				this.BranchPoints.Add(bp);
 			}
-			return bps;
 		}
 		
-		Tuple<int,int> GetBranchRatio () {
+		void GetBranchRatio () {
 
-			// goal: Get branch ratio and exclude (rewriten) Code Contracts branches
-
+			// goal: Get branch ratio, merge branch-exits and exclude (rewriten) Code Contracts branches
+			this.BranchCoverageRatio = null;
+			
 			if ( this.BranchPoints == null
-				|| this.BranchPoints.Count() == 0
+				|| this.BranchPoints.Count == 0
 				|| this.SequencePoints == null
 				|| this.SequencePoints.Count == 0
 			   )
 			{
-				return null;
+				return;
 			}
 
 			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Requires)
 			// and '{' branches at static methods
-			if (this.BodyStartSP == null) { return null; } // empty body
+			if (this.BodyStartSP == null) { return; } // empty body
 
 			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Ensures)
-			if (this.BodyFinalSP == null) { return null; } // empty body
+			if (this.BodyFinalSP == null) { return; } // empty body
 			
 			// Connect Sequence & Branches
 			IEnumerator<CodeCoverageSequencePoint> SPEnumerator = this.SequencePoints.GetEnumerator();
-			CodeCoverageSequencePoint currSeqPoint = BodyStartSP;
+			CodeCoverageSequencePoint currSeqPoint = this.BodyStartSP;
 			int nextSeqPointOffset = BodyStartSP.Offset;
 			
 			foreach (var bp in this.BranchPoints) {
@@ -379,13 +392,13 @@ namespace ICSharpCode.CodeCoverage
 					sp.Branches = null; // release memory
 			}
 
-			return (totalBranchCount!=0) ? new Tuple<int,int>(totalBranchVisit,totalBranchCount) : null;
+			this.BranchCoverageRatio = (totalBranchCount!=0) ? new Tuple<int,int>(totalBranchVisit,totalBranchCount) : null;
 			
 		}
 
-		decimal GetBranchCoverage () {
+		void GetBranchCoverage () {
 			
-			return this.BranchCoverageRatio == null ? 0m : ((decimal)(this.BranchCoverageRatio.Item1*100))/((decimal)this.BranchCoverageRatio.Item2);
+			this.BranchCoverage = this.BranchCoverageRatio == null ? 0m : ((decimal)(this.BranchCoverageRatio.Item1*100))/((decimal)this.BranchCoverageRatio.Item2);
 			
 		}
 

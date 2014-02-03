@@ -25,7 +25,7 @@ namespace ICSharpCode.CodeCoverage
             this.textSource = source;
 
             lineInfo line;
-            List<lineInfo> lineInfoList = new List<lineInfo>();
+            var lineInfoList = new List<lineInfo>();
             int offset = 0;
             int counter = 0;
             bool newLine = false;
@@ -95,7 +95,7 @@ namespace ICSharpCode.CodeCoverage
         /// <returns></returns>
         public string GetText(int Line, int Column, int EndLine, int EndColumn) {
 
-            StringBuilder text = new StringBuilder();
+            var text = new StringBuilder();
             string line;
             bool argOutOfRange;
 
@@ -193,7 +193,7 @@ namespace ICSharpCode.CodeCoverage
                 int remains = 0;
                 int repeat = 0;
                 char prevChar = char.MinValue;
-                StringBuilder indented = new StringBuilder();
+                var indented = new StringBuilder();
                 foreach ( char currChar in ToIndent ) {
                     if ( currChar == '\t' ) {
                         remains = counter % TabSize;
