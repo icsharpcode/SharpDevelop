@@ -25,7 +25,7 @@ namespace ICSharpCode.CodeCoverage
             this.textSource = source;
 
             lineInfo line;
-            List<lineInfo> lineInfoList = new List<lineInfo>();
+            var lineInfoList = new List<lineInfo>();
             int offset = 0;
             int counter = 0;
             bool newLine = false;
@@ -95,7 +95,7 @@ namespace ICSharpCode.CodeCoverage
         /// <returns></returns>
         public string GetText(int Line, int Column, int EndLine, int EndColumn) {
 
-            StringBuilder text = new StringBuilder();
+            var text = new StringBuilder();
             string line;
             bool argOutOfRange;
 
@@ -104,9 +104,10 @@ namespace ICSharpCode.CodeCoverage
                 #region One-Line request
                 line = GetLine(Line);
 
-                Debug.Assert(!(Column < 1), "Column < 1");
-                Debug.Assert(!(Column > EndColumn), "Column > EndColumn");
-                Debug.Assert(!(EndColumn > line.Length), "EndColumn > line.Length");
+                //Debug.Assert(!(Column < 1), "Column < 1");
+                //Debug.Assert(!(Column > EndColumn), "Column > EndColumn");
+                //Debug.Assert(!(EndColumn > line.Length + 1), string.Format ("Single Line EndColumn({0}) > line.Length({1})",EndColumn, line.Length ));
+                //Debug.Assert(!(EndColumn > line.Length + 1), line);
 
                 argOutOfRange = Column < 1
                     ||   Column > EndColumn
@@ -123,12 +124,11 @@ namespace ICSharpCode.CodeCoverage
                 #region First line
                 line = GetLine(Line);
 
-                Debug.Assert(!(Column < 1), "Column < 1");
-                Debug.Assert(!(Column > line.Length), "Column > line.Length");
+                //Debug.Assert(!(Column < 1), "Column < 1");
+                //Debug.Assert(!(Column > line.Length), string.Format ("First MultiLine EndColumn({0}) > line.Length({1})",EndColumn, line.Length ));
 
                 argOutOfRange = Column < 1
                     ||   Column > line.Length;
-
                 if (!argOutOfRange) {
                     text.Append(line.Substring(Column-1));
                 }
@@ -143,8 +143,8 @@ namespace ICSharpCode.CodeCoverage
                 #region Last line
                 line = GetLine(EndLine);
 
-                Debug.Assert(!(EndColumn < 1), "EndColumn < 1");
-                Debug.Assert(!(EndColumn > line.Length), "EndColumn > line.Length");
+                //Debug.Assert(!(EndColumn < 1), "EndColumn < 1");
+                //Debug.Assert(!(EndColumn > line.Length), string.Format ("Last MultiLine EndColumn({0}) > line.Length({1})",EndColumn, line.Length ));
 
                 argOutOfRange = EndColumn < 1
                     ||   EndColumn > line.Length;
@@ -156,7 +156,7 @@ namespace ICSharpCode.CodeCoverage
                 #endregion
 
             } else {
-                Debug.Fail("Line > EndLine");
+                //Debug.Fail("Line > EndLine");
             }
             return text.ToString();
         }
@@ -169,7 +169,7 @@ namespace ICSharpCode.CodeCoverage
 
         /// <summary>Return SequencePoint enumerated line
         /// </summary>
-        /// <param name="lineNr"></param>
+        /// <param name="LineNo"></param>
         /// <returns></returns>
         public string GetLine ( int LineNo ) {
 
@@ -179,7 +179,7 @@ namespace ICSharpCode.CodeCoverage
                 lineInfo lineInfo = lines[LineNo-1];
                 retString = textSource.Substring(lineInfo.Offset, lineInfo.Length);
             } else {
-                Debug.Fail( "Line number out of range" );
+                //Debug.Fail( "Line number out of range" );
             }
 
             return retString;
@@ -193,7 +193,7 @@ namespace ICSharpCode.CodeCoverage
                 int remains = 0;
                 int repeat = 0;
                 char prevChar = char.MinValue;
-                StringBuilder indented = new StringBuilder();
+                var indented = new StringBuilder();
                 foreach ( char currChar in ToIndent ) {
                     if ( currChar == '\t' ) {
                         remains = counter % TabSize;
