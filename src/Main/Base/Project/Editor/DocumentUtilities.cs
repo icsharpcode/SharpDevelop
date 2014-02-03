@@ -167,9 +167,19 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 		
 		/// <summary>
+		/// Gets whether the specified document line is empty or contains only whitespace.
+		/// </summary>
+		public static bool IsEmptyLine(IDocument document, int lineNumber)
+		{
+			var line = document.GetLineByNumber(lineNumber);
+			ISegment segment = TextUtilities.GetWhitespaceAfter(document, line.Offset);
+			return segment.Length == line.Length;
+		}
+		
+		/// <summary>
 		/// Gets all indentation starting at offset.
 		/// </summary>
-		/// <param name="document">The document.</param>
+		/// <param name="textSource">The document.</param>
 		/// <param name="offset">The offset where the indentation starts.</param>
 		/// <returns>The indentation text.</returns>
 		public static string GetWhitespaceAfter(ITextSource textSource, int offset)
@@ -181,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <summary>
 		/// Gets all indentation before the offset.
 		/// </summary>
-		/// <param name="document">The document.</param>
+		/// <param name="textSource">The document.</param>
 		/// <param name="offset">The offset where the indentation ends.</param>
 		/// <returns>The indentation text.</returns>
 		public static string GetWhitespaceBefore(ITextSource textSource, int offset)

@@ -30,6 +30,7 @@ using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 namespace CSharpBinding.Refactoring
 {
 	class InsertionCursorLayer : Canvas, IDisposable
@@ -67,9 +68,9 @@ namespace CSharpBinding.Refactoring
 			ScrollToInsertionPoint();
 		}
 
-		static readonly Pen markerPen = new Pen(Brushes.Blue, 1);
+		static readonly Pen markerPen = new Pen(Brushes.Blue, 2);
 
-		static readonly Pen tempMarkerPen = new Pen(Brushes.Gray, 1);
+		static readonly Pen tempMarkerPen = new Pen(Brushes.Gray, 2);
 
 		protected override void OnRender(DrawingContext drawingContext)
 		{
@@ -77,16 +78,22 @@ namespace CSharpBinding.Refactoring
 			if (insertionPointNextToMouse > -1 && insertionPointNextToMouse != CurrentInsertionPoint)
 				DrawLineForInsertionPoint(insertionPointNextToMouse, tempMarkerPen, drawingContext);
 			SetGroupBoxPosition();
-			// HACK
+			// HACK: why OnRender() override? we could just use Line objects instead
 		}
 
-		void DrawLineForInsertionPoint(int index, Pen pen, DrawingContext drawingContext)
+		Point GetLinePosition(int index)
 		{
 			var currentInsertionPoint = insertionPoints[index];
-			var pos = editor.TextView.GetVisualPosition(new TextViewPosition(currentInsertionPoint.Location), VisualYPosition.LineTop);
+			var textViewPosition = new TextViewPosition(currentInsertionPoint.Location);
+			bool isEmptyLine = DocumentUtilities.IsEmptyLine(editor.Document, textViewPosition.Line);
+			var pos = editor.TextView.GetVisualPosition(textViewPosition, isEmptyLine ? VisualYPosition.LineMiddle : VisualYPosition.LineTop);
+			return pos - editor.TextView.ScrollOffset;
+		}
+		
+		void DrawLineForInsertionPoint(int index, Pen pen, DrawingContext drawingContext)
+		{
+			var pos = GetLinePosition(index);
 			var endPos = new Point(pos.X + editor.TextView.ActualWidth * 0.6, pos.Y);
-			pos -= editor.TextView.ScrollOffset;
-			endPos -= editor.TextView.ScrollOffset;
 			var pixelSize = PixelSnapHelpers.GetPixelSize(this);
 			drawingContext.DrawLine(pen, PixelSnapHelpers.Round(pos, pixelSize), PixelSnapHelpers.Round(endPos, pixelSize));
 		}
@@ -248,8 +255,7 @@ namespace CSharpBinding.Refactoring
 
 		void SetGroupBoxPosition()
 		{
-			var location = insertionPoints[CurrentInsertionPoint].Location;
-			var boxPosition = editor.TextView.GetVisualPosition(new TextViewPosition(location), VisualYPosition.LineMiddle) - editor.TextView.ScrollOffset + new Vector(editor.TextView.ActualWidth * 0.6 - 5, -groupBox.ActualHeight / 2.0);
+			var boxPosition = GetLinePosition(CurrentInsertionPoint) + new Vector(editor.TextView.ActualWidth * 0.6 - 5, -groupBox.ActualHeight / 2.0);
 			Canvas.SetTop(groupBox, boxPosition.Y);
 			Canvas.SetLeft(groupBox, boxPosition.X);
 		}
