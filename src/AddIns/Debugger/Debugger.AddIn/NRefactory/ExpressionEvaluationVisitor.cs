@@ -104,6 +104,8 @@ namespace Debugger.AddIn
 			
 			if (result.IsError)
 				throw new GetValueException("Unknown error");
+			if (result.ConstantValue == null && result.Type.Equals(SpecialType.NullType))
+				return Eval.CreateValue(evalThread, null);
 			throw new GetValueException("Unsupported language construct: " + result.GetType().Name);
 		}
 		
@@ -144,7 +146,7 @@ namespace Debugger.AddIn
 			switch (result.OperatorType) {
 				case ExpressionType.Assign:
 					if (!allowSetValue)
-						throw new InvalidOperationException("Setting values is not allowed in the current context!");
+						throw new GetValueException("Setting values is not allowed in the current context!");
 					Debug.Assert(result.Operands.Count == 2);
 					return VisitAssignment((dynamic)result.Operands[0], (dynamic)result.Operands[1]);
 				case ExpressionType.Add:
@@ -352,6 +354,8 @@ namespace Debugger.AddIn
 			if (result.Conversion.IsUserDefined)
 				return InvokeMethod(null, result.Conversion.Method, val);
 			if (result.Conversion.IsReferenceConversion && result.Conversion.IsImplicit)
+				return val;
+			if (result.Conversion.IsNullLiteralConversion)
 				return val;
 			throw new NotImplementedException(string.Format("conversion '{0}' not implemented!", result.Conversion));
 		}
