@@ -372,7 +372,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override void OnMouseLeave(MouseEventArgs e)
 		{
-			if (popupToolTip != null && !popupToolTip.IsMouseOver) {
+			if (popupToolTip != null && !popupToolTip.IsMouseOver && GetDistanceToPopup(e) > 10) {
 				// do not close popup if mouse moved from editor to popup
 				TryCloseExistingPopup(false);
 			}

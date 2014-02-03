@@ -62,6 +62,8 @@ namespace Debugger.AddIn.Pads.Controls
 			get { return (bool)GetValue(IsEditableProperty); }
 			set { SetValue(IsEditableProperty, value); }
 		}
+
+		public DebuggerCompletionContext DebugContext { get; set; }
 		
 		static void TextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
@@ -119,14 +121,18 @@ namespace Debugger.AddIn.Pads.Controls
 		
 		void editor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
 		{
+			if (e.Text != ".") return;
+			DebuggerCompletionContext context = null;
 			StackFrame frame = WindowsDebugger.CurrentStackFrame;
-			if (e.Text == "." && frame != null)
-				ShowDotCompletion(frame);
-		}
-		
-		void ShowDotCompletion(StackFrame frame)
-		{
-			var binding = DebuggerDotCompletion.PrepareDotCompletion(editor.Text.Substring(0, editor.CaretOffset), frame);
+			if (frame == null) {
+				if (DebugContext != null) {
+					context = DebugContext;
+				}
+			} else {
+				context = new DebuggerCompletionContext(frame);
+			}
+			if (context == null) return;
+			var binding = DebuggerDotCompletion.PrepareDotCompletion(editor.Text.Substring(0, editor.CaretOffset), context);
 			if (binding == null) return;
 			binding.HandleKeyPressed(editorAdapter, '.');
 		}

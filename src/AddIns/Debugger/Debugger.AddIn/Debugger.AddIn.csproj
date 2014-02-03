@@ -99,8 +99,8 @@
   <ItemGroup>
     <Compile Include="Breakpoints\BreakpointBookmark.cs" />
     <Compile Include="Breakpoints\BreakpointBookmarkEventArgs.cs" />
-    <Compile Include="Breakpoints\BreakpointEditor.xaml.cs">
-      <DependentUpon>BreakpointEditor.xaml</DependentUpon>
+    <Compile Include="Breakpoints\BreakpointEditorPopup.xaml.cs">
+      <DependentUpon>BreakpointEditorPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Breakpoints\CurrentLineBookmark.cs" />
     <Compile Include="NRefactory\ExpressionEvaluationVisitor.cs" />
@@ -141,10 +141,6 @@
     </Compile>
     <Compile Include="Service\DebuggeeExceptionForm.Designer.cs">
       <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Service\EditBreakpointScriptWindow.xaml.cs">
-      <DependentUpon>EditBreakpointScriptWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Service\ExecuteProcessWindow.xaml.cs">
       <DependentUpon>ExecuteProcessWindow.xaml</DependentUpon>
@@ -322,11 +318,10 @@
     <Folder Include="Visualizers\Presentation" />
     <Folder Include="Visualizers\TextVisualizer" />
     <Folder Include="Visualizers\Utils" />
-    <Page Include="Breakpoints\BreakpointEditor.xaml" />
+    <Page Include="Breakpoints\BreakpointEditorPopup.xaml" />
     <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Options\DebuggingSymbolsPanel.xaml" />
     <Page Include="Pads\CommonResources.xaml" />
-    <Page Include="Service\EditBreakpointScriptWindow.xaml" />
     <Page Include="Service\ExecuteProcessWindow.xaml" />
     <Page Include="Tooltips\DebuggerTooltipControl.xaml" />
     <Page Include="Tooltips\VisualizerPicker.xaml" />

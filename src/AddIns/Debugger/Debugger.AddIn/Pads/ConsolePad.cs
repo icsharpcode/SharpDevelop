@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void ShowDotCompletion(StackFrame frame, string currentText)
 		{
-			var binding = DebuggerDotCompletion.PrepareDotCompletion(currentText, frame);
+			var binding = DebuggerDotCompletion.PrepareDotCompletion(currentText, new DebuggerCompletionContext(frame));
 			if (binding == null) return;
 			binding.HandleKeyPressed(console.TextEditor, '.');
 		}

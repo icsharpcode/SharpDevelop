@@ -23,6 +23,7 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -39,29 +40,26 @@ namespace Debugger.AddIn.Pads.Controls
 			return !p.Errors.Any();
 		}
 		
-		public static ICodeCompletionBinding PrepareDotCompletion(string expressionToComplete, StackFrame context)
+		public static ICodeCompletionBinding PrepareDotCompletion(string expressionToComplete, DebuggerCompletionContext context)
 		{
-			var seq = context.NextStatement;
-			var fileName = new FileName(seq.Filename);
-			var lang = SD.LanguageService.GetLanguageByFileName(fileName);
-			var currentLocation = new TextLocation(seq.StartLine, seq.StartColumn);
+			var lang = SD.LanguageService.GetLanguageByFileName(context.FileName);
 			if (lang == null)
 				return null;
-			string content = GeneratePartialClassContextStub(fileName, currentLocation, context);
+			string content = GeneratePartialClassContextStub(context);
 			const string caretPoint = "$__Caret_Point__$;";
 			int caretOffset = content.IndexOf(caretPoint, StringComparison.Ordinal) + expressionToComplete.Length;
 			SD.Log.DebugFormatted("context used for dot completion: {0}", content.Replace(caretPoint, "$" + expressionToComplete + "|$"));
 			var doc = new ReadOnlyDocument(content.Replace(caretPoint, expressionToComplete));
-			return lang.CreateCompletionBinding(fileName, doc.GetLocation(caretOffset), doc.CreateSnapshot());
+			return lang.CreateCompletionBinding(context.FileName, doc.GetLocation(caretOffset), doc.CreateSnapshot());
 		}
 
-		static string GeneratePartialClassContextStub(FileName fileName, TextLocation currentLocation, StackFrame context)
+		static string GeneratePartialClassContextStub(DebuggerCompletionContext context)
 		{
-			var compilation = SD.ParserService.GetCompilationForFile(fileName);
-			var file = SD.ParserService.GetExistingUnresolvedFile(fileName);
+			var compilation = SD.ParserService.GetCompilationForFile(context.FileName);
+			var file = SD.ParserService.GetExistingUnresolvedFile(context.FileName);
 			if (compilation == null || file == null)
 				return "";
-			var member = file.GetMember(currentLocation);
+			var member = file.GetMember(context.Location);
 			if (member == null)
 				return "";
 			var builder = new TypeSystemAstBuilder();
@@ -92,10 +90,10 @@ namespace Debugger.AddIn.Pads.Controls
 			return WrapInType(member.DeclaringTypeDefinition, decl.ToString());
 		}
 
-		static void GenerateBodyFromContext(TypeSystemAstBuilder builder, StackFrame context, MethodDeclaration methodDeclaration)
+		static void GenerateBodyFromContext(TypeSystemAstBuilder builder, DebuggerCompletionContext context, MethodDeclaration methodDeclaration)
 		{
 			methodDeclaration.Body = new BlockStatement();
-			foreach (var v in context.GetLocalVariables())
+			foreach (var v in context.Variables)
 				methodDeclaration.Body.Statements.Add(new VariableDeclarationStatement(builder.ConvertType(v.Type), v.Name));
 			methodDeclaration.Body.Statements.Add(new ExpressionStatement(new IdentifierExpression("$__Caret_Point__$")));
 		}
@@ -131,6 +129,71 @@ namespace Debugger.AddIn.Pads.Controls
 			builder.Append(entity.Name);
 			builder.AppendLine(" {");
 			return builder.ToString();
+		}
+	}
+
+	public class LocalVariable
+	{
+		readonly IType type;
+
+		public IType Type {
+			get {
+				return type;
+			}
+		}
+		
+		readonly string name;
+		
+		public string Name {
+			get {
+				return name;
+			}
+		}
+		
+		public LocalVariable(IType type, string name)
+		{
+			this.type = type;
+			this.name = name;
+		}
+	}
+	
+	public class DebuggerCompletionContext
+	{
+		readonly FileName fileName;
+		TextLocation location;
+		readonly LocalVariable[] variables;
+		
+		public DebuggerCompletionContext(StackFrame frame)
+		{
+			fileName = new FileName(frame.NextStatement.Filename);
+			location = new TextLocation(frame.NextStatement.StartLine, frame.NextStatement.StartColumn);
+			variables = frame.GetLocalVariables().Select(v => new LocalVariable(v.Type, v.Name)).ToArray();
+		}
+		
+		public DebuggerCompletionContext(FileName fileName, TextLocation location)
+		{
+			this.fileName = fileName;
+			this.location = location;
+			this.variables = SD.ParserService.ResolveContext(fileName, location)
+				.LocalVariables.Select(v => new LocalVariable(v.Type, v.Name)).ToArray();
+		}
+		
+		public FileName FileName {
+			get {
+				return fileName;
+			}
+		}
+		
+		public TextLocation Location {
+			get {
+				return location;
+			}
+		}
+
+		public LocalVariable[] Variables {
+			get {
+				return variables;
+			}
 		}
 	}
 }

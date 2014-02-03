@@ -21,21 +21,45 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
+using Debugger.AddIn.Pads.Controls;
 
 namespace Debugger.AddIn.Breakpoints
 {
 	/// <summary>
-	/// Interaction logic for BreakpointEditor.xaml
+	/// Interaction logic for BreakpointEditorPopup.xaml
 	/// </summary>
-	public partial class BreakpointEditor : UserControl
+	public partial class BreakpointEditorPopup : Popup, ITooltip
 	{
-		public BreakpointEditor(BreakpointBookmark target)
+		public BreakpointEditorPopup(BreakpointBookmark target)
 		{
 			InitializeComponent();
+			this.DataContext = target;
+			condition.DebugContext = new DebuggerCompletionContext(target.FileName, target.Location);
+			condition.FontFamily = new FontFamily(SD.EditorControlService.GlobalOptions.FontFamily);
+			condition.FontSize = SD.EditorControlService.GlobalOptions.FontSize;
+			if (target.Condition == null)
+				breakAction.IsChecked = true;
+			else
+				conditionalAction.IsChecked = true;
+		}
+
+		public bool CloseWhenMouseMovesAway {
+			get { return !IsKeyboardFocusWithin && !IsFocused; }
+		}
+		
+		void TypeChecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			if (sender == breakAction)
+				((BreakpointBookmark)DataContext).Condition = null;
+			if (sender == conditionalAction && ((BreakpointBookmark)DataContext).Condition == null)
+				((BreakpointBookmark)DataContext).Condition = "";
 		}
 	}
 }

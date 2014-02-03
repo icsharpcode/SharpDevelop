@@ -88,19 +88,6 @@ namespace Debugger.AddIn
 		}
 	}
 	
-	public class EditBreakpointMenuCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			foreach (BreakpointBookmark bp in BreakpointUtil.BreakpointsOnCaret) {
-				EditBreakpointScriptWindow window = new EditBreakpointScriptWindow(bp) {
-					Owner = SD.Workbench.MainWindow
-				};
-				window.ShowDialog();
-			}
-		}
-	}
-	
 	public class IsActiveBreakpointCondition : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)

@@ -154,13 +154,9 @@ namespace Debugger.AddIn.Breakpoints
 		
 		public override object CreateTooltipContent()
 		{
-			return new Popup {
-				StaysOpen = false,
-				Child = new Border {
-					Child = new BreakpointEditor(this),
-					BorderBrush = Brushes.Black,
-					BorderThickness = new Thickness(1)
-				}
+			return new BreakpointEditorPopup(this) {
+				MinWidth = 300,
+				StaysOpen = false
 			};
 		}
 	}

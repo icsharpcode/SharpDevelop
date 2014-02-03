@@ -1,7 +1,0 @@
-﻿<UserControl x:Class="Debugger.AddIn.Breakpoints.BreakpointEditor"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-	<Grid>
-		
-	</Grid>
-</UserControl>
