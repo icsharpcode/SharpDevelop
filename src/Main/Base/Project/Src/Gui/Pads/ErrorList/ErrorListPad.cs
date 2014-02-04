@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		ToolBar toolBar;
-		DockPanel contentPanel = new DockPanel();
+		Grid contentPanel = new Grid();
 		ListView errorView = new ListView();
 		readonly ObservableCollection<SDTask> errors;
 		
@@ -112,9 +112,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			toolBar = ToolBarService.CreateToolBar(contentPanel, this, "/SharpDevelop/Pads/ErrorList/Toolbar");
 			
+			contentPanel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			contentPanel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 			contentPanel.Children.Add(toolBar);
-			toolBar.SetValue(DockPanel.DockProperty, Dock.Top);
 			contentPanel.Children.Add(errorView);
+			Grid.SetRow(errorView, 1);
 			errorView.ItemsSource = errors;
 			errorView.MouseDoubleClick += ErrorViewMouseDoubleClick;
 			errorView.Style = (Style)new TaskViewResources()["TaskListView"];

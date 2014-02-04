@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		ToolBar toolBar;
-		DockPanel contentPanel = new DockPanel();
+		Grid contentPanel = new Grid();
 		
 		ListView taskView = new ListView();
 		
@@ -159,9 +159,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 				items.Add(new TaskListTokensToolbarCheckBox(token));
 			}
 			
+			toolBar.Items.OfType<ComboBox>().ForEach(b => b.MinWidth = 75);
+			
+			contentPanel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			contentPanel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+			
 			contentPanel.Children.Add(toolBar);
-			toolBar.SetValue(DockPanel.DockProperty, Dock.Top);
 			contentPanel.Children.Add(taskView);
+			Grid.SetRow(taskView, 1);
+			
 			taskView.ItemsSource = tasks;
 			taskView.MouseDoubleClick += TaskViewMouseDoubleClick;
 			taskView.Style = (Style)new TaskViewResources()["TaskListView"];

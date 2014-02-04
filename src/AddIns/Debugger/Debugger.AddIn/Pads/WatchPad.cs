@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class WatchPad : AbstractPadContent
 	{
-		DockPanel panel;
+		Grid panel;
 		ToolBar toolBar;
 		SharpTreeView tree;
 		
@@ -60,10 +60,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			var res = new CommonResources();
 			res.InitializeComponent();
 			
-			panel = new DockPanel();
+			panel = new Grid();
 			
 			toolBar = ToolBarService.CreateToolBar(toolBar, this, "/SharpDevelop/Pads/WatchPad/ToolBar");
-			toolBar.SetValue(DockPanel.DockProperty, Dock.Top);
 			panel.Children.Add(toolBar);
 			
 			tree = new SharpTreeView();
@@ -77,6 +76,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 			};
 			panel.Children.Add(tree);
+			
+			panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			panel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+
+			Grid.SetRow(tree, 1);
 			
 //			ProjectService.SolutionLoaded  += delegate { LoadNodes(); };
 //			SD.ProjectService.CurrentSolution.PreferencesSaving += delegate { SaveNodes(); };
