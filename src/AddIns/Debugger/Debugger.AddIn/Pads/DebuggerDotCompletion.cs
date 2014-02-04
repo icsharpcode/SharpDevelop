@@ -33,11 +33,12 @@ namespace Debugger.AddIn.Pads.Controls
 {
 	static class DebuggerDotCompletion
 	{
-		public static bool CheckSyntax(string expression)
+		public static bool CheckSyntax(string expression, out Error[] errors)
 		{
 			var p = new CSharpParser();
 			p.ParseExpression(expression);
-			return !p.Errors.Any();
+			errors = p.Errors.ToArray();
+			return !errors.Any();
 		}
 		
 		public static ICodeCompletionBinding PrepareDotCompletion(string expressionToComplete, DebuggerCompletionContext context)

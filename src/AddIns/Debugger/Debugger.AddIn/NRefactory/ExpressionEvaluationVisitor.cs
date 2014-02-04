@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn
@@ -239,7 +240,7 @@ namespace Debugger.AddIn
 			var val = resolver.ResolveUnaryOperator(operatorType, operand);
 			if (val.IsCompileTimeConstant)
 				return Convert(val);
-			throw new InvalidOperationException();
+			throw new GetValueException("Operator {0} is not supported for {1}!", operatorType, new CSharpAmbience().ConvertType(operand.Type));
 		}
 		
 		Value VisitBinaryOperator(OperatorResolveResult result, BinaryOperatorType operatorType, bool checkForOverflow = false)
@@ -256,14 +257,41 @@ namespace Debugger.AddIn
 			var val = resolver.ResolveBinaryOperator(operatorType, lhsRR, rhsRR);
 			if (val.IsCompileTimeConstant)
 				return Convert(val);
-			if (operatorType == BinaryOperatorType.Add &&
-			    (lhsRR.Type.IsKnownType(KnownTypeCode.String) || rhsRR.Type.IsKnownType(KnownTypeCode.String))) {
-				var method = debuggerTypeSystem.FindType(KnownTypeCode.String)
-					.GetMethods(m => m.Name == "Concat" && m.Parameters.Count == 2)
-					.Single(m => m.Parameters.All(p => p.Type.IsKnownType(KnownTypeCode.Object)));
-				return InvokeMethod(null, method, lhs, rhs);
+			switch (operatorType) {
+				case BinaryOperatorType.Equality:
+				case BinaryOperatorType.InEquality:
+					bool equality = (operatorType == BinaryOperatorType.Equality);
+					if (lhsRR.Type.IsKnownType(KnownTypeCode.String) && rhsRR.Type.IsKnownType(KnownTypeCode.String)) {
+						if (lhs.IsNull || rhs.IsNull) {
+							bool bothNull = lhs.IsNull && rhs.IsNull;
+							return Eval.CreateValue(evalThread, equality ? bothNull : !bothNull);
+						} else {
+							bool equal = (string)lhs.PrimitiveValue == (string)rhs.PrimitiveValue;
+							return Eval.CreateValue(evalThread, equality ? equal : !equal);
+						}
+					}
+					if (lhsRR.Type.IsReferenceType != false && rhsRR.Type.IsReferenceType != false) {
+						// Reference comparison
+						if (lhs.IsNull || rhs.IsNull) {
+							bool bothNull = lhs.IsNull && rhs.IsNull;
+							return Eval.CreateValue(evalThread, equality ? bothNull : !bothNull);
+						} else {
+							bool equal = lhs.Address == rhs.Address;
+							return Eval.CreateValue(evalThread, equality ? equal : !equal);
+						}
+					}
+					goto default;
+				case BinaryOperatorType.Add:
+					if (lhsRR.Type.IsKnownType(KnownTypeCode.String) || rhsRR.Type.IsKnownType(KnownTypeCode.String)) {
+						var method = debuggerTypeSystem.FindType(KnownTypeCode.String)
+							.GetMethods(m => m.Name == "Concat" && m.Parameters.Count == 2)
+							.Single(m => m.Parameters.All(p => p.Type.IsKnownType(KnownTypeCode.Object)));
+						return InvokeMethod(null, method, lhs, rhs);
+					}
+					goto default;
+				default:
+					throw new GetValueException("Operator {0} is not supported for {1} and {2}!", operatorType, new CSharpAmbience().ConvertType(lhsRR.Type), new CSharpAmbience().ConvertType(rhsRR.Type));
 			}
-			throw new InvalidOperationException();
 		}
 		
 		Value VisitConditionalOperator(OperatorResolveResult result, BinaryOperatorType bitwiseOperatorType)
@@ -357,7 +385,7 @@ namespace Debugger.AddIn
 				return val;
 			if (result.Conversion.IsNullLiteralConversion)
 				return val;
-			throw new NotImplementedException(string.Format("conversion '{0}' not implemented!", result.Conversion));
+			throw new GetValueException("conversion '{0}' not implemented!", result.Conversion);
 		}
 		
 		Value Visit(LocalResolveResult result)
@@ -455,12 +483,21 @@ namespace Debugger.AddIn
 	
 	public class ResolveResultPrettyPrinter
 	{
-		public ResolveResultPrettyPrinter()
+		ResolveResultPrettyPrinter()
 		{
-			
 		}
 		
-		public string Print(ResolveResult result)
+		public static string Print(ResolveResult result)
+		{
+			try {
+				return new ResolveResultPrettyPrinter().PrintInternal(result);
+			} catch (NotImplementedException ex) {
+				SD.Log.Warn(ex);
+				return "";
+			}
+		}
+		
+		string PrintInternal(ResolveResult result)
 		{
 			if (result == null)
 				return "";
@@ -486,7 +523,7 @@ namespace Debugger.AddIn
 		
 		string Visit(MemberResolveResult result)
 		{
-			string text = Print(result.TargetResult);
+			string text = PrintInternal(result.TargetResult);
 			if (!string.IsNullOrWhiteSpace(text))
 				text += ".";
 			return text + result.Member.Name;
@@ -553,7 +590,7 @@ namespace Debugger.AddIn
 		{
 			StringBuilder sb = new StringBuilder();
 			
-			sb.Append(Print(result.TargetResult));
+			sb.Append(PrintInternal(result.TargetResult));
 			sb.Append('.');
 			sb.Append(result.Member.Name);
 			

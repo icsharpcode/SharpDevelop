@@ -20,6 +20,7 @@ using System;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -102,6 +103,7 @@ namespace Debugger.AddIn.Pads.Controls
 			this.editor.TextArea.TextEntered += editor_TextArea_TextEntered;
 			
 			this.Content = this.editor.TextArea;
+			this.messageView = new ToolTip { PlacementTarget = this, Placement = PlacementMode.Bottom, StaysOpen = true };
 			
 			HorizontalContentAlignment = HorizontalAlignment.Stretch;
 			VerticalContentAlignment = VerticalAlignment.Stretch;
@@ -119,22 +121,38 @@ namespace Debugger.AddIn.Pads.Controls
 			}
 		}
 		
+		ToolTip messageView;
+		
 		void editor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
 		{
-			if (e.Text != ".") return;
-			DebuggerCompletionContext context = null;
-			StackFrame frame = WindowsDebugger.CurrentStackFrame;
-			if (frame == null) {
-				if (DebugContext != null) {
-					context = DebugContext;
+			if (e.Text == ".") {
+				DebuggerCompletionContext context = null;
+				StackFrame frame = WindowsDebugger.CurrentStackFrame;
+				if (frame == null) {
+					if (DebugContext != null) {
+						context = DebugContext;
+					}
+				} else {
+					context = new DebuggerCompletionContext(frame);
 				}
+				if (context == null) return;
+				var binding = DebuggerDotCompletion.PrepareDotCompletion(editor.Text.Substring(0, editor.CaretOffset), context);
+				if (binding == null) return;
+				binding.HandleKeyPressed(editorAdapter, '.');
 			} else {
-				context = new DebuggerCompletionContext(frame);
+				// TODO : implement automated error checking CSharpParser.ParseExpression does not report useful error messages.
+//				Error[] errors;
+//				if (!DebuggerDotCompletion.CheckSyntax(Text, out errors)) {
+//					StringBuilder output = new StringBuilder();
+//					foreach (var error in errors) {
+//						output.AppendLine(error.Message + " at " + error.Region.Begin);
+//					}
+//					messageView.Content = output.ToString();
+//					messageView.IsOpen = true;
+//				} else {
+//					messageView.IsOpen = false;
+//				}
 			}
-			if (context == null) return;
-			var binding = DebuggerDotCompletion.PrepareDotCompletion(editor.Text.Substring(0, editor.CaretOffset), context);
-			if (binding == null) return;
-			binding.HandleKeyPressed(editorAdapter, '.');
 		}
 		
 		public void FocusEditor()

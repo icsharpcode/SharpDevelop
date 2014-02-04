@@ -629,12 +629,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (resolveResult == null)
 				return;
 			if (resolveResult is LocalResolveResult || resolveResult is MemberResolveResult) {
-				string text = string.Empty;
-				try {
-					text = new ResolveResultPrettyPrinter().Print(resolveResult);
-				} catch (NotImplementedException ex) {
-					SD.Log.Warn(ex);
-				}
+				string text = ResolveResultPrettyPrinter.Print(resolveResult);
 				Func<Value> getValue = delegate {
 					ExpressionEvaluationVisitor eval = new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation);
 					return eval.Convert(resolveResult);
