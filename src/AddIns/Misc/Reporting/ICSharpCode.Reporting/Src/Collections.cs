@@ -30,9 +30,6 @@ namespace ICSharpCode.Reporting
 	
 	public class SortColumnCollection: Collection<AbstractColumn>
 	{
-		public SortColumnCollection()
-		{
-		}
 		
 		public AbstractColumn Find (string columnName)
 		{

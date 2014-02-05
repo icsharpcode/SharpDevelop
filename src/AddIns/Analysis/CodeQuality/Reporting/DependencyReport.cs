@@ -45,9 +45,9 @@ namespace ICSharpCode.CodeQuality.Reporting
 			Assembly asm = Assembly.GetExecutingAssembly();
 			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.DependencyReport.srd");
 			
-			var rf = new ReportingFactory();
-			var reportCreator = rf.ReportCreator (stream,newList);
-			ReportSettings = rf.ReportModel.ReportSettings;
+			var reportingFactory = new ReportingFactory();
+			var reportCreator = reportingFactory.ReportCreator (stream,newList);
+			ReportSettings = reportingFactory.ReportModel.ReportSettings;
 			reportCreator.BuildExportList();
 			return reportCreator;
 		}

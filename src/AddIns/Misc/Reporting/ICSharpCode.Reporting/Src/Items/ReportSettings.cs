@@ -33,7 +33,7 @@ namespace ICSharpCode.Reporting.Items
 		
 		public ReportSettings()
 		{
-			this.pageSize = Globals.GlobalValues.DefaultPageSize;
+			this.pageSize = GlobalValues.DefaultPageSize;
 			BaseValues();
 		}
 		

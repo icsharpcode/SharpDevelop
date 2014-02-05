@@ -110,6 +110,7 @@ namespace ICSharpCode.Reporting.Xml
 	    
 		protected void ProcessChildProperties(XmlNode node, object parent)
 		{
+			
 			var t=parent.GetType();
 
 			// children of a class must always be properties

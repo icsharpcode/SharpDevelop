@@ -16,7 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace ICSharpCode.Reporting.BaseClasses
+namespace ICSharpCode.Reporting
 {
 	/// <summary>
 	/// Description of BasicParameter.

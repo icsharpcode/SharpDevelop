@@ -15,15 +15,7 @@
             <AvailableFieldsCollection />
             <SortColumnsCollection />
             <GroupColumnsCollection />
-            <ParameterCollection>
-                <BasicParameter>
-                    <ParameterName>param1</ParameterName>
-                    <Type>System.String</Type>
-                </BasicParameter>
-                <BasicParameter>
-                    <ParameterName>param2</ParameterName>
-                </BasicParameter>
-            </ParameterCollection>
+            <ParameterCollection />
             <SqlParameters />
             <ConnectionString />
             <CommandText />
@@ -70,7 +62,7 @@
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>=Today()</Text>
+                    <Text>=Today</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>
@@ -100,7 +92,7 @@
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>=Parameters!param2</Text>
+                    <Text>Parameters!param2</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>
@@ -132,7 +124,7 @@
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>=Parameters!param1</Text>
+                    <Text>Parameters!param1</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>

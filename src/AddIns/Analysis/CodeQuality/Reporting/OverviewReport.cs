@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.Reporting;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.CodeQuality.Engine.Dom;
 
@@ -41,23 +42,36 @@ namespace ICSharpCode.CodeQuality.Reporting
 		
 		public IReportCreator Run(ReadOnlyCollection<AssemblyNode> list)
 		{
-			/*
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.Overviewreport.srd");
-			var model = ReportEngine.LoadReportModel(stream);
-			ReportSettings = model.ReportSettings;
 			
-			var	 r =  from c in list
+			var asm = Assembly.GetExecutingAssembly();
+			var stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.Overviewreport.srd");
+			
+			
+			var	 newList =  from c in list
 				select new OverviewViewModel { Node = c};
 			
-			var p = new ReportParameters();
-			p.Parameters.Add(new BasicParameter ("param1",base.FileNames[0]));
-			p.Parameters.Add(new BasicParameter ("param2",list.Count.ToString()));
+			var reportingFactory = new ReportingFactory();
+			var reportCreator = reportingFactory.ReportCreator (stream,newList);
+			ReportSettings = reportingFactory.ReportModel.ReportSettings;
+			var reportParameters = new ParameterCollection();
+			reportParameters.Add(new BasicParameter ("param1",base.FileNames[0]));
+			reportParameters.Add(new BasicParameter ("param2",list.Count.ToString()));
+			
+			ReportSettings.ParameterCollection.AddRange(reportParameters);
+			reportCreator.BuildExportList();
+			return reportCreator;
+			/*
+var model = ReportEngine.LoadReportModel(stream);
+			ReportSettings = model.ReportSettings;
+			
+		
+			
+			
 			
 			IReportCreator creator = ReportEngine.CreatePageBuilder(model,r.ToList(),p);
 			creator.BuildExportList();
 			return creator;
-			*/
+			 */
 			return null;
 		}
 		

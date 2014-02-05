@@ -12,7 +12,7 @@
 				
 			<Menu Background="White" x:Name="printMenu" Visibility="Hidden">
 				<MenuItem Header="Reports">
-					<!--<MenuItem Header="Overview" Click="OverviewReport_Click"></MenuItem>-->
+					<MenuItem Header="Overview" Click="OverviewReport_Click"></MenuItem>
 					<MenuItem Header="Dependecies" Click=" DependecyReport_Click"></MenuItem>
 						
 				</MenuItem>

@@ -56,8 +56,6 @@ namespace ICSharpCode.Reporting
 		public IReportCreator ReportCreator (Stream stream)
 		{
 			ReportModel = LoadReportModel (stream);
-//			IReportCreator builder = null;
-//			builder = ReportCreatorFactory.ExporterFactory(ReportModel);
 			var builder = new FormPageBuilder(ReportModel);
 			return builder;
 		}
@@ -65,8 +63,6 @@ namespace ICSharpCode.Reporting
 
 		public IReportCreator ReportCreator (ReportModel reportModel) {
 			ReportModel = reportModel;
-//			IReportCreator builder = null;
-//			builder = ReportCreatorFactory.ExporterFactory(ReportModel);
 			var builder = new FormPageBuilder(ReportModel);
 			return builder;
 		}
