@@ -63,7 +63,6 @@ namespace ICSharpCode.CodeCoverage
 
 			this.IsVisited = element.IsVisited;
 			this.BranchCoverage = element.BranchCoverage;
-			this.BranchCoverageRatio = element.BranchCoverageRatio;
 			this.SequencePointsCount = element.SequencePointsCount;
 			this.sequencePoints = element.SequencePoints;
 			this.FileID = element.FileID;
@@ -78,7 +77,6 @@ namespace ICSharpCode.CodeCoverage
 		
 		public bool IsVisited { get; private set; }
 		public decimal BranchCoverage { get; private set; }
-		public Tuple<int,int> BranchCoverageRatio { get; private set; }
 		public int SequencePointsCount { get; private set; }
 		public string FileID { get; private set; }
 

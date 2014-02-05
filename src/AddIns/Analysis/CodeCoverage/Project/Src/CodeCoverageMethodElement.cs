@@ -30,21 +30,29 @@ namespace ICSharpCode.CodeCoverage
 	public class CodeCoverageMethodElement
 	{
 		XElement element;
-		CodeCoverageResults parent;
+		CodeCoverageResults results;
 
+		/// <summary>Enables CodeCoverage.Test to compile</summary>
+		/// <param name="element">XMLElement</param>
 		public CodeCoverageMethodElement(XElement element)
 			: this (element, null) {}
-		public CodeCoverageMethodElement(XElement element, CodeCoverageResults parent)
+		
+		/// <summary>Create Method Element</summary>
+		/// <param name="element">XMLElement</param>
+		/// <param name="results">has .GetFileName(FileID)</param>
+		public CodeCoverageMethodElement(XElement element, CodeCoverageResults results)
 		{
-			this.parent = parent;
+			this.results = results;
 			this.element = element;
 			this.SequencePoints = new List<CodeCoverageSequencePoint>();
-			this.BranchPoints = new List<CodeCoverageBranchPoint>();
 			Init();
 		}
+
+		// Primary TextSource cache
 		private static string cacheFileName = String.Empty;
 		private static CodeCoverageStringTextSource cacheDocument = null;
 
+		// Secondary TextSource cache
 		private static string cache2FileName = String.Empty;
 		private static CodeCoverageStringTextSource cache2Document = null;
 
@@ -59,7 +67,6 @@ namespace ICSharpCode.CodeCoverage
 		public bool IsConstructor { get; private set; }
 		public bool IsStatic { get; private set; }
 		public List<CodeCoverageSequencePoint> SequencePoints { get; private set; }
-		public List<CodeCoverageBranchPoint> BranchPoints { get; private set; }
 		public CodeCoverageSequencePoint BodyStartSP { get; private set; }
 		public CodeCoverageSequencePoint BodyFinalSP { get; private set; }
 
@@ -80,8 +87,8 @@ namespace ICSharpCode.CodeCoverage
 			this.FileID = GetFileRef();
 			this.FileName = String.Empty;
 			if (!String.IsNullOrEmpty(this.FileID)) {
-				if (parent != null) {
-					this.FileName = parent.GetFileName(this.FileID);
+				if (results != null) {
+					this.FileName = results.GetFileName(this.FileID);
 					if (cacheFileName != this.FileName) {
 						cacheFileName = this.FileName;
 						cacheDocument = GetSource (cacheFileName);
@@ -165,7 +172,7 @@ namespace ICSharpCode.CodeCoverage
 					// SequencePoint from another method/file
 					// ie: ccrewriten CodeContractClass/CodeContractClassFor
 					// [or dependency-injected or fody-weaved???]
-					sp.Document = parent.GetFileName(sp.FileID);
+					sp.Document = results.GetFileName(sp.FileID);
 				}
 				sp.BranchCoverage = (sp.BranchExitsCount == sp.BranchExitsVisit);
 				sp.Content = String.Empty;
