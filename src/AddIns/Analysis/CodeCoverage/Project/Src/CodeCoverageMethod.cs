@@ -66,7 +66,7 @@ namespace ICSharpCode.CodeCoverage
 			this.BranchCoverageRatio = element.BranchCoverageRatio;
 			this.SequencePointsCount = element.SequencePointsCount;
 			this.sequencePoints = element.SequencePoints;
-			
+			this.FileID = element.FileID;
 		}
 		
 		/// <summary>
@@ -80,6 +80,7 @@ namespace ICSharpCode.CodeCoverage
 		public decimal BranchCoverage { get; private set; }
 		public Tuple<int,int> BranchCoverageRatio { get; private set; }
 		public int SequencePointsCount { get; private set; }
+		public string FileID { get; private set; }
 
 		bool IsPropertyMethodName()
 		{
@@ -150,7 +151,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			int total = 0;
 			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-				if (sequencePoint.VisitCount != 0) {
+				if (sequencePoint.FileID == this.FileID && sequencePoint.VisitCount != 0) {
 					total += sequencePoint.Length;
 				}
 			}
@@ -161,7 +162,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			int total = 0;
 			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-				if (sequencePoint.VisitCount == 0) {
+				if (sequencePoint.FileID == this.FileID && sequencePoint.VisitCount == 0) {
 					total += sequencePoint.Length;
 				}
 			}
@@ -170,7 +171,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		public List<CodeCoverageSequencePoint> GetSequencePoints(string fileName)
 		{
-			List<CodeCoverageSequencePoint> matchedSequencePoints = new List<CodeCoverageSequencePoint>();
+			var matchedSequencePoints = new List<CodeCoverageSequencePoint>();
 			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
 				if (FileUtility.IsEqualFileName(fileName, sequencePoint.Document)) {
 					matchedSequencePoints.Add(sequencePoint);
