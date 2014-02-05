@@ -242,7 +242,7 @@ namespace ICSharpCode.CodeCoverage
 				if (classNode != null) {
 					AddClassTreeNode(classNode);
 				} else if (methodNode != null) {
-					AddSequencePoints(methodNode.Method.SequencePoints);
+					AddSequencePoints(methodNode.Method);
 				} else if (propertyNode != null) {
 					AddPropertyTreeNode(propertyNode);
 				}
@@ -283,7 +283,7 @@ namespace ICSharpCode.CodeCoverage
 				CodeCoverageMethodTreeNode method = childNode as CodeCoverageMethodTreeNode;
 				CodeCoveragePropertyTreeNode property = childNode as CodeCoveragePropertyTreeNode;
 				if (method != null) {
-					AddSequencePoints(method.Method.SequencePoints);
+					AddSequencePoints(method.Method);
 				} else {
 					AddPropertyTreeNode(property);
 				}
@@ -299,14 +299,15 @@ namespace ICSharpCode.CodeCoverage
 		void AddMethodIfNotNull(CodeCoverageMethod method)
 		{
 			if (method != null) {
-				AddSequencePoints(method.SequencePoints);
+				AddSequencePoints(method);
 			}
 		}
 		
-		void AddSequencePoints(List<CodeCoverageSequencePoint> sequencePoints)
+		void AddSequencePoints(CodeCoverageMethod method)
 		{		
-			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-				AddSequencePoint(sequencePoint);
+			foreach (CodeCoverageSequencePoint sequencePoint in method.SequencePoints) {
+				if (method.FileID == sequencePoint.FileID)
+					AddSequencePoint(sequencePoint);
 			}
 		}
 		
