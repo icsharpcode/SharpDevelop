@@ -71,7 +71,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			}
 		}
 		
-			
+		
 		[SetUp]
 		public void Init()
 		{

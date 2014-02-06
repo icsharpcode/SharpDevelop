@@ -35,8 +35,10 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// <summary>
 	/// Description of DataPageBuilder.
 	/// </summary>
+	
 	public class DataPageBuilder:BasePageBuilder
 	{
+		
 		
 		public DataPageBuilder(IReportModel reportModel,IEnumerable list):base(reportModel)
 		{

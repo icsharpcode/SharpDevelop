@@ -17,11 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-using ICSharpCode.Reporting.BaseClasses;
-using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Interfaces
@@ -33,7 +30,7 @@ namespace ICSharpCode.Reporting.Interfaces
 	{
 		void BuildExportList ();
 		Collection<ExportPage> Pages {get;}
-		
+		 event EventHandler<SectionEventArgs> SectionRendering;
 //		PagesCollection Pages{get;}
 //		event EventHandler<PageCreatedEventArgs> PageCreated;
 //		event EventHandler<SectionRenderEventArgs> SectionRendering;

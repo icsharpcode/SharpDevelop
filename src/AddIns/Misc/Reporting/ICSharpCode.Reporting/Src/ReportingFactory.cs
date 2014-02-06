@@ -34,11 +34,16 @@ namespace ICSharpCode.Reporting
 	public class ReportingFactory
 	{
 		
+		void Method(object s,EventArgs e)
+		{
+			Console.WriteLine("Got Event {0}",s.ToString());	
+		}
+		
 		public IReportCreator ReportCreator (Stream stream,IEnumerable list)
 		{
 			ReportModel = LoadReportModel (stream);
-			IReportCreator builder = null;
-			builder = new DataPageBuilder(ReportModel,list );
+			var builder = new DataPageBuilder(ReportModel,list );
+		
 			return builder;
 		}
 		
@@ -57,6 +62,7 @@ namespace ICSharpCode.Reporting
 		{
 			ReportModel = LoadReportModel (stream);
 			var builder = new FormPageBuilder(ReportModel);
+				builder.SectionRendering += (sender, e) => Method(sender, e);
 			return builder;
 		}
 		

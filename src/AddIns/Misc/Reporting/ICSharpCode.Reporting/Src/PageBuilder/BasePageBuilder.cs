@@ -39,6 +39,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// </summary>
 	public class BasePageBuilder:IReportCreator
 	{
+		
+public event EventHandler<SectionEventArgs> SectionRendering;
 
 		public BasePageBuilder(IReportModel reportModel){
 			if (reportModel == null) {
@@ -53,14 +55,29 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		void BuildReportHeader(){
 			if (Pages.Count == 0) {
-				var header = CreateSection(ReportModel.ReportHeader,CurrentLocation);
+				var sea = new SectionEventArgs(ReportModel.ReportHeader);
+				
+				Raise<SectionEventArgs> (SectionRendering,this,sea);
+				
+				var header = CreateSection(sea.Section,CurrentLocation);
+				
 				var r = new Rectangle(header.Location.X, header.Location.Y, header.Size.Width, header.Size.Height);
 				CurrentLocation = new Point (ReportModel.ReportSettings.LeftMargin,r.Bottom + 1);
 				AddSectionToPage(header);
+				Raise<SectionEventArgs> (SectionRendering,this,new SectionEventArgs(ReportModel.ReportHeader));
 			}
 		}
 		
+		protected static void Raise <T>(EventHandler<T> handler, object sender, T e)
+			where T: EventArgs{
+				// Copy to a temporary variable to be thread-safe.
+			EventHandler<T> temp = handler;
 		
+			if (temp != null) {
+				temp(sender, e);
+			}
+		}
+					
 		void BuildPageHeader(){
 			var pageHeader = CreateSection(ReportModel.PageHeader,CurrentLocation);
 			DetailStart = new Point(ReportModel.ReportSettings.LeftMargin,pageHeader.Location.Y + pageHeader.DesiredSize.Height +1);
@@ -83,6 +100,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 			header.Parent = CurrentPage;
 			CurrentPage.ExportedItems.Add(header);
 		}
+		
+		
 		
 		
 		protected void BuildReportFooter(){

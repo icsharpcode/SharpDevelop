@@ -19,6 +19,7 @@
 using System;
 using System.Reflection;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using NUnit.Framework;
 
@@ -55,6 +56,16 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			Assert.That(result,Is.InstanceOf(typeof(ExportText)));
 		}
 		
+		
+		[Test]
+		public void testeventt() {
+			reportCreator.SectionRendering += (sender, e) => {
+				Console.WriteLine("Hi with from {0} with {1}",e.ToString(),e.Section.Name);
+				((BaseTextItem)e.Section.Items[0]).Text = "hallo";
+			};
+			reportCreator.BuildExportList();
+			
+		}
 		
 		[SetUp]
 		public void LoadFromStream()
