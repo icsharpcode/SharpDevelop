@@ -24,6 +24,7 @@ using System.Text;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Indentation.CSharp;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -41,26 +42,39 @@ namespace CSharpBinding.FormattingStrategy
 		#region Smart Indentation
 		public override void IndentLine(ITextEditor editor, IDocumentLine line)
 		{
-			int lineNr = line.LineNumber;
-			DocumentAccessor acc = new DocumentAccessor(editor.Document, lineNr, lineNr);
-			
-			CSharpIndentationStrategy indentStrategy = new CSharpIndentationStrategy();
-			indentStrategy.IndentationString = editor.Options.IndentationString;
-			indentStrategy.Indent(acc, false);
-			
-			string t = acc.Text;
-			if (t.Length == 0) {
-				// use AutoIndentation for new lines in comments / verbatim strings.
-				base.IndentLine(editor, line);
-			}
+			var document = editor.Document;
+			var engine = CreateIndentEngine(document, editor.ToEditorOptions());
+			IndentSingleLine(engine, document, line);
 		}
 		
 		public override void IndentLines(ITextEditor editor, int beginLine, int endLine)
 		{
-			DocumentAccessor acc = new DocumentAccessor(editor.Document, beginLine, endLine);
-			CSharpIndentationStrategy indentStrategy = new CSharpIndentationStrategy();
-			indentStrategy.IndentationString = editor.Options.IndentationString;
-			indentStrategy.Indent(acc, true);
+			var document = editor.Document;
+			var engine = CreateIndentEngine(document, editor.ToEditorOptions());
+			int currentLine = beginLine;
+			do {
+				var line = document.GetLineByNumber(currentLine);
+				IndentSingleLine(engine, document, line);
+			} while (++currentLine <= endLine);
+		}
+
+		static void IndentSingleLine(CacheIndentEngine engine, IDocument document, IDocumentLine line)
+		{
+			engine.Update(line.EndOffset);
+			if (engine.NeedsReindent) {
+				int textOffset = line.Offset;
+				while (textOffset < line.EndOffset && char.IsWhiteSpace(document.GetCharAt(textOffset)))
+					textOffset++;
+				string newText = document.GetText(textOffset, line.Length + line.Offset - textOffset);
+				document.Replace(line.Offset, line.Length, engine.ThisLineIndent + newText);
+				engine.ResetEngineToPosition(line.Offset);
+			}
+		}
+		
+		static CacheIndentEngine CreateIndentEngine(IDocument document, TextEditorOptions options)
+		{
+			var engine = new CSharpIndentEngine(document, options, FormattingOptionsFactory.CreateSharpDevelop());
+			return new CacheIndentEngine(engine);
 		}
 		#endregion
 		
