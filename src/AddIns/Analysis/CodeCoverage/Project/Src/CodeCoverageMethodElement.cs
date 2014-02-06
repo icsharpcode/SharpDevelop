@@ -29,8 +29,8 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageMethodElement
 	{
-		XElement element;
-		CodeCoverageResults results;
+		readonly XElement element;
+		readonly CodeCoverageResults results;
 
 		/// <summary>Enables CodeCoverage.Test to compile</summary>
 		/// <param name="element">XMLElement</param>
@@ -310,11 +310,13 @@ namespace ICSharpCode.CodeCoverage
 					// ie: static methods start sequence point "{" contains compiler generated branches
 					// 3) Exclude Contract class (EnsuresOnThrow/Assert/Assume is inside method body)
 					// 4) Exclude NUnit Assert(.Throws) class
+					const string assert = "Assert";
+					const string contract = "Contract";
 					if (sp.Content == "in" || sp.Content == "{" || sp.Content == "}" ||
-						sp.Content.StartsWith("Assert.") ||
-						sp.Content.StartsWith("Assert ") ||
-						sp.Content.StartsWith("Contract.") ||
-						sp.Content.StartsWith("Contract ")
+					    sp.Content.StartsWith(assert + ".", StringComparison.Ordinal) ||
+					    sp.Content.StartsWith(assert + " ", StringComparison.Ordinal) ||
+					    sp.Content.StartsWith(contract + ".", StringComparison.Ordinal) ||
+					    sp.Content.StartsWith(contract + " ", StringComparison.Ordinal)
 					   ) {
 						sp.BranchCoverage = true;
 						continue; // skip
@@ -378,10 +380,7 @@ namespace ICSharpCode.CodeCoverage
 		string GetMethodName()
 		{
 			XElement nameElement = element.Element("Name");
-			if (nameElement != null) {
-				return GetMethodName(nameElement.Value);
-			}
-			return String.Empty;
+			return nameElement != null ? GetMethodName(nameElement.Value) : String.Empty;
 		}
 		
 		string GetMethodName(string methodSignature)
