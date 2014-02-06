@@ -133,9 +133,9 @@ namespace ICSharpCode.CodeCoverage
 						stream.Position = 0;
 						string textSource = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default);
 						retSource = new CodeCoverageStringTextSource(textSource);
-					} catch (Exception e) { Debug.Fail(e.Message); }
+					} catch (Exception) {}
 				}
-			} catch (Exception e) { Debug.Fail(e.Message); }
+			} catch (Exception) {}
 
 			cacheGetSource_LastFileName = filename;
 			cacheGetSource_LastSource = retSource;
@@ -158,11 +158,11 @@ namespace ICSharpCode.CodeCoverage
 				sp.Offset = (int)GetDecimalAttributeValue(xSPoint.Attribute("offset"));
 				sp.BranchExitsCount = (int)GetDecimalAttributeValue(xSPoint.Attribute("bec"));
 				sp.BranchExitsVisit = (int)GetDecimalAttributeValue(xSPoint.Attribute("bev"));
-				sp.FileID = xSPoint.Attribute("fileid").Value?? "0";
+				sp.FileID = xSPoint.Attribute("fileid") != null? xSPoint.Attribute("fileid").Value : "0";
 				if (sp.FileID == "0") {
 					// SequencePoint from not covered (not runnable) file
 					// ie: interface with CodeContractClass/CodeContractClassFor
-					sp.Document = xSPoint.Attribute("fileid").Value?? "";
+					sp.Document = xSPoint.Attribute("fileid") != null? xSPoint.Attribute("fileid").Value : "";
 				}
 				else if (sp.FileID == this.FileID) {
 					// This method SequencePoint (from this.FileName)
