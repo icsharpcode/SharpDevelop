@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.Core;
@@ -148,188 +147,188 @@ namespace CSharpBinding
 			editor.ClearSelection();
 		}
 		
-		// move selection - find outermost node in selection, swap selection with closest child of its parent to the selection
 		void MoveStatement(ITextEditor editor, MoveStatementDirection direction)
 		{
 			IList<AstNode> commentsBlankLines;
 			var parsedCU = ParseDocument(editor, out commentsBlankLines);
-			if (parsedCU == null)	return;
+			if (parsedCU == null) return;
 			
-			// Find the Statement or Definition containing caret -> Extend selection to Statement or Definition
+			var selectionStart = editor.Document.GetLocation(editor.SelectionStart);
+			var selectionEnd = editor.Document.GetLocation(editor.SelectionStart + editor.SelectionLength);
 			
-			AstNode currentStatement;
-			Selection statementSelection = ExtendSelection(editor, parsedCU, commentsBlankLines, out currentStatement, new Type[] {
-			                                               	typeof(Statement),
-			                                               	typeof(EntityDeclaration) });
+			AstNode currentStatement = parsedCU.GetNodeContaining(selectionStart, selectionEnd);
 			if (currentStatement == null)
 				return;
-			statementSelection = TryExtendSelectionToComments(editor.Document, statementSelection, commentsBlankLines);
-			// Take its sibling
-			if (currentStatement.Parent == null)
-				return;
-			var siblings = currentStatement.Parent.Children.Where(c => (c.Role.GetType() == currentStatement.Role.GetType())).ToList();
-			int currentStatementStartPos = siblings.IndexOf(currentStatement);
-			int currentStatementEndPos = currentStatementStartPos;
-			
-			AstNode swapStartSibling = null;
-			AstNode swapEndSibling = null;
-			
-			// Expand selection to full line, if there is more than one statement in it
-			AstNode currentSelectionStartNode = currentStatement;
-			while ((currentSelectionStartNode.PrevSibling != null)
-			       && !(currentSelectionStartNode.PrevSibling is NewLineNode)
-			       && (currentSelectionStartNode.Parent == currentSelectionStartNode.PrevSibling.Parent)) {
-				currentSelectionStartNode = currentSelectionStartNode.PrevSibling;
-				if (currentSelectionStartNode.EndLocation.Line >= statementSelection.Start.Line) {
-					statementSelection.Start = currentSelectionStartNode.StartLocation;
-					if (!(currentSelectionStartNode is Comment))
-						currentStatementStartPos--;
-				} else {
-					// This node won't belong to current selection, so go back to next element
-					currentSelectionStartNode = currentSelectionStartNode.NextSibling;
-					break;
-				}
+			var interestingNodeTypes = new[] {
+				typeof(Statement), typeof(EntityDeclaration), typeof(UsingDeclaration),
+				typeof(NewLineNode), typeof(Comment), typeof(PreProcessorDirective)
+			};
+			if (!IsNodeTypeInteresting(currentStatement, interestingNodeTypes)) {
+				// Ignore non-interesting nodes in the AST
+				currentStatement = GetInterestingParent(currentStatement, interestingNodeTypes);
 			}
-			AstNode currentSelectionEndNode = currentStatement;
-			while ((currentSelectionEndNode.NextSibling != null)
-			       && !(currentSelectionEndNode.NextSibling is NewLineNode)
-			       && (currentSelectionEndNode.Parent == currentSelectionEndNode.NextSibling.Parent)) {
-				currentSelectionEndNode = currentSelectionEndNode.NextSibling;
-				if (currentSelectionEndNode.StartLocation.Line <= statementSelection.End.Line) {
-					statementSelection.End = currentSelectionEndNode.EndLocation;
-					if (!(currentSelectionEndNode is Comment))
-						currentStatementEndPos++;
-				} else {
-					// This node won't belong to current selection, so go back to next element
-					currentSelectionEndNode = currentSelectionEndNode.NextSibling;
-					break;
-				}
-			}
-			
-			int swapIndex = 0;
-			if (direction == MoveStatementDirection.Down) {
-				swapIndex = currentStatementEndPos + 1;
-			} else {
-				swapIndex = currentStatementStartPos - 1;
-			}
-			Func<AstNode, bool> isAllowedGrandParentNode =
-				(n => (n is IfElseStatement) || (n is ForStatement) || (n is ForeachStatement) || (n is WhileStatement) || (n is DoWhileStatement));
-			if (swapIndex < 0) {
-				// This is the 1st statement in block, so swap it with beginning of the block to get it outside of it
-				var parentNode = currentStatement.Parent as BlockStatement;
-				if (parentNode != null) {
-					var grandParentNode = parentNode.Parent;
-					if ((grandParentNode != null) && isAllowedGrandParentNode(grandParentNode)) {
-						// Swap with head of grandparent statement
-						swapStartSibling = grandParentNode;
-						swapEndSibling = ((BlockStatement) parentNode).LBraceToken;
-					}
-				}
-			} else if (swapIndex >= siblings.Count) {
-				// This is the last statement in block, so swap it with block end to get the statement outside of it
-				var parentNode = currentStatement.Parent as BlockStatement;
-				if (parentNode != null) {
-					var grandParentNode = parentNode.Parent;
-					if ((grandParentNode != null) && isAllowedGrandParentNode(grandParentNode)) {
-						// Swap with rest of grandparent control statement
-						swapStartSibling = ((BlockStatement) parentNode).RBraceToken;
-						swapEndSibling = grandParentNode;
-					}
-				}
-			} else {
-				// In the middle of current block
-				swapStartSibling = siblings[swapIndex];
-				swapEndSibling = swapStartSibling;
-				
-				// Special handling for swap nodes containing blocks: Move current statement into it
-				if (swapStartSibling is IfElseStatement) {
-					var ifElseStatement = swapStartSibling as IfElseStatement;
-					if (direction == MoveStatementDirection.Up) {
-						BlockStatement swappedIfElseBlock = ifElseStatement.FalseStatement as BlockStatement;
-						if (swappedIfElseBlock == null)
-							swappedIfElseBlock = ifElseStatement.TrueStatement as BlockStatement;
-						if (swappedIfElseBlock != null) {
-							swapStartSibling = swappedIfElseBlock.RBraceToken;
-						}
-					} else {
-						BlockStatement swappedIfElseBlock = ifElseStatement.TrueStatement as BlockStatement;
-						if (swappedIfElseBlock == null)
-							swappedIfElseBlock = ifElseStatement.TrueStatement as BlockStatement;
-						if (swappedIfElseBlock != null) {
-							swapEndSibling = swappedIfElseBlock.LBraceToken;
-						}
-					}
-				} else {
-					BlockStatement innerBlockStatement = GetInnerBlockOfControlNode(swapStartSibling);
-					if (innerBlockStatement != null) {
-						if (direction == MoveStatementDirection.Up) {
-							swapStartSibling = innerBlockStatement.RBraceToken;
-						} else {
-							swapEndSibling = innerBlockStatement.LBraceToken;
-						}
-					}
-				}
-			}
-
-			if ((swapStartSibling == null) || (swapEndSibling == null))
+			if (currentStatement == null)
 				return;
 			
-			Selection swapSiblingSelection = ExtendSelectionToComments(editor.Document, swapStartSibling.StartLocation, swapEndSibling.EndLocation, commentsBlankLines);
-			if (swapSiblingSelection == null)
-				swapSiblingSelection = new Selection() { Start = swapStartSibling.StartLocation, End = swapEndSibling.EndLocation };
+			List<AstNode> currentStatementSiblings = null;
+			if ((currentStatement is BlockStatement) &&
+			    ((currentStatement.Parent is Statement) || (currentStatement.Parent is EntityDeclaration)) &&
+			    !(currentStatement.Parent is BlockStatement)) {
+				// Extend current statement to owner of this block statement
+				currentStatement = currentStatement.Parent;
+			}
 			
-			// Expand swapSiblingSelection, too, if there are > 1 statements in line
+			if ((currentStatement is Comment) && ((Comment) currentStatement).IsDocumentation &&
+			    (currentStatement.Parent is EntityDeclaration)) {
+				// Documentation comments belong to their method declaration
+				currentStatement = currentStatement.Parent;
+			}
+			
+			currentStatementSiblings = currentStatement.Parent.Children.Where(
+				c => IsNodeTypeInteresting(c, interestingNodeTypes) && !(c is NewLineNode)
+			).ToList();
+			
+			// Collect all statements intersecting with selection lines
+			Func<AstNode, bool> selectionExpansionPredicate = node =>
+				((node.EndLocation.Line >= selectionStart.Line) && (node.StartLocation.Line <= selectionEnd.Line));
+			var selectedStatements = currentStatementSiblings.Where(selectionExpansionPredicate);
+			if (!selectedStatements.Any())
+				return;
+			
+			// Find out which nodes we have to swap selected statements with
+			AstNode swapSibling = null;
 			if (direction == MoveStatementDirection.Up) {
-				AstNode tempNode = swapStartSibling;
-				while ((tempNode.PrevSibling != null) && !(tempNode.PrevSibling is NewLineNode)) {
-					tempNode = tempNode.PrevSibling;
-					if (tempNode.EndLocation.Line >= swapSiblingSelection.Start.Line) {
-						swapSiblingSelection.Start = tempNode.StartLocation;
-					} else {
-						break;
-					}
-				}
+				int indexOfFirstSelectedSibling = currentStatementSiblings.IndexOf(selectedStatements.First());
+				swapSibling = (indexOfFirstSelectedSibling > 0) ? currentStatementSiblings[indexOfFirstSelectedSibling - 1] : null;
 			} else {
-				AstNode tempNode = swapEndSibling;
-				while ((tempNode.NextSibling != null) && !(tempNode.NextSibling is NewLineNode)) {
-					tempNode = tempNode.NextSibling;
-					if (tempNode.StartLocation.Line <= swapSiblingSelection.End.Line) {
-						swapSiblingSelection.End = tempNode.EndLocation;
+				int indexOfLastSelectedSibling = currentStatementSiblings.IndexOf(selectedStatements.Last());
+				swapSibling = (indexOfLastSelectedSibling < currentStatementSiblings.Count - 1) ? currentStatementSiblings[indexOfLastSelectedSibling + 1] : null;
+			}
+			
+			IEnumerable<AstNode> swapSiblings = null;
+			if (swapSibling != null) {
+				Func<AstNode, bool> swapExpansionPredicate = node =>
+					((node.EndLocation.Line >= swapSibling.StartLocation.Line) && (node.StartLocation.Line <= swapSibling.EndLocation.Line));
+				swapSiblings = currentStatementSiblings.Where(swapExpansionPredicate);
+			}
+			
+			if (!selectedStatements.Any(node => node is PreProcessorDirective)) {
+				// Handling moving into neighbour block statements or moving the line out of them
+				if (direction == MoveStatementDirection.Up) {
+					if (swapSibling != null) {
+						var lastSwapSibling = swapSiblings.Last();
+						var innerBlockStatement = GetInnerBlockOfControlNode(lastSwapSibling, direction);
+						if (innerBlockStatement != null) {
+							// Swap with end brace
+							swapSiblings = new[] {
+								(AstNode) innerBlockStatement.RBraceToken, lastSwapSibling.Children.Last()
+							};
+						}
 					} else {
-						break;
+						// Check if we are inside of a block statement where we can move the lines out from
+						var firstSelectedStatement = selectedStatements.First();
+						if ((firstSelectedStatement.Parent is BlockStatement) &&
+						    NodeSupportsBlockMovement(firstSelectedStatement.Parent.Parent)) {
+							// Our swap sibling is the starting brace of block statement and head of parent statement
+							swapSiblings = new[] {
+								firstSelectedStatement.Parent.Parent.Children.First(),
+								((BlockStatement) firstSelectedStatement.Parent).LBraceToken
+							};
+						}
+					}
+				} else {
+					if (swapSibling != null) {
+						var firstSwapSibling = swapSiblings.First();
+						var innerBlockStatement = GetInnerBlockOfControlNode(firstSwapSibling, direction);
+						if (innerBlockStatement != null) {
+							// Swap with start brace of block statement
+							swapSiblings = new[] { firstSwapSibling.Children.First(), innerBlockStatement.LBraceToken };
+						}
+					} else {
+						// Check if we are inside of a block statement where we can move the lines out from
+						var lastSelectedStatement = selectedStatements.Last();
+						if ((lastSelectedStatement.Parent is BlockStatement) &&
+						    NodeSupportsBlockMovement(lastSelectedStatement.Parent.Parent)) {
+							// Our swap sibling is the ending brace of block statement (and foot statement, like with do...while loops)
+							swapSiblings = new[] {
+								((BlockStatement) lastSelectedStatement.Parent).RBraceToken,
+								lastSelectedStatement.Parent.Parent.Children.Last()
+							};
+						}
 					}
 				}
 			}
 			
-			// Preserve the indentation of moved statement
-			if (statementSelection.Start.Column > swapSiblingSelection.Start.Column) {
-				statementSelection = new Selection {
-					Start = new TextLocation(statementSelection.Start.Line, swapSiblingSelection.Start.Column),
-					End = statementSelection.End
-				};
-			} else if (statementSelection.Start.Column < swapSiblingSelection.Start.Column) {
-				swapSiblingSelection = new Selection {
-					Start = new TextLocation(swapSiblingSelection.Start.Line, statementSelection.Start.Column),
-					End = swapSiblingSelection.End
-				};
-			}
+			if (swapSiblings == null)
+				return;
 			
-			// Swap them
-			string currentNodeText = editor.Document.GetText(statementSelection.Start, statementSelection.End);
-			SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSiblingSelection.Start, swapSiblingSelection.End);
+			// Swap lines of current and neighbour statements
+			TextLocation movedTextStart = selectedStatements.First().StartLocation;
+			TextLocation movedTextEnd = selectedStatements.Last().EndLocation;
+			TextLocation swappedTextStart = swapSiblings.First().StartLocation;
+			TextLocation swappedTextEnd = swapSiblings.Last().EndLocation;
+			
+			string currentNodeText = editor.Document.GetText(movedTextStart, movedTextEnd);
+			string swappedNodeText = editor.Document.GetText(swappedTextStart, swappedTextEnd);
+			SwapText(editor.Document, movedTextStart, movedTextEnd, swappedTextStart, swappedTextEnd);
+			
+			// Select moved text
+//			editor.Select(editor.Document.GetOffset(swappedTextStart.Line, swappedTextStart.Column), 5);//currentNodeText.Length);
+//			SelectText(new Selection {
+//			           	Start = new TextLocation(swappedTextStart.Line, 0),
+//			           	End = new TextLocation(swappedTextStart.Line + (movedTextEnd.Line - movedTextStart.Line), 200) },
+//			           editor);
+			
+//			currentStatement = parsedCU.GetNodeContaining(selectionStart, selectionEnd);
+			
 			// Move caret to the start of moved statement
-			TextLocation upperLocation = new TextLocation[] {statementSelection.Start, swapSiblingSelection.Start}.Min();
-			if (direction == MoveStatementDirection.Up)
+			TextLocation upperLocation = new TextLocation[] { movedTextStart, swappedTextStart }.Min();
+			int currentMovedOffset = editor.Document.Text.IndexOf(currentNodeText, editor.Document.GetOffset(upperLocation));
+			int swappedMovedOffset = editor.Document.Text.IndexOf(swappedNodeText, editor.Document.GetOffset(upperLocation));
+			if (direction == MoveStatementDirection.Up) {
 				editor.Caret.Location = upperLocation;
-			else {
+			} else {
 				// look where current statement ended up because it is hard to calculate it correctly
-				int currentMovedOffset = editor.Document.Text.IndexOf(currentNodeText, editor.Document.GetOffset(upperLocation));
 				editor.Caret.Offset = currentMovedOffset;
 			}
+			
+			// Correct indentation
+			editor.Language.FormattingStrategy.IndentLines(
+				editor,
+				editor.Document.GetLineForOffset(currentMovedOffset).LineNumber,
+				editor.Document.GetLineForOffset(currentMovedOffset + currentNodeText.Length).LineNumber);
+			editor.Language.FormattingStrategy.IndentLines(
+				editor,
+				editor.Document.GetLineForOffset(swappedMovedOffset).LineNumber,
+				editor.Document.GetLineForOffset(swappedMovedOffset + swappedNodeText.Length).LineNumber);
 		}
 		
-		BlockStatement GetInnerBlockOfControlNode(AstNode node)
+		bool NodeSupportsBlockMovement(AstNode node)
 		{
+			var blockNodeTypes = new[] {
+				typeof(IfElseStatement),
+				typeof(ForStatement),
+				typeof(ForeachStatement),
+				typeof(WhileStatement),
+				typeof(DoWhileStatement),
+				typeof(UsingStatement)
+			};
+			
+			return blockNodeTypes.Contains(node.GetType());
+		}
+		
+		BlockStatement GetInnerBlockOfControlNode(AstNode node, MoveStatementDirection direction)
+		{
+			if (node is IfElseStatement) {
+				if (direction == MoveStatementDirection.Up) {
+					var ifStatement = (IfElseStatement) node;
+					if (ifStatement.FalseStatement.IsNull)
+						return ifStatement.TrueStatement as BlockStatement;
+					return ifStatement.FalseStatement as BlockStatement;
+				} else {
+					return ((IfElseStatement) node).TrueStatement as BlockStatement;
+				}
+			}
 			if (node is ForStatement) {
 				return ((ForStatement) node).EmbeddedStatement as BlockStatement;
 			}
@@ -341,6 +340,9 @@ namespace CSharpBinding
 			}
 			if (node is DoWhileStatement) {
 				return ((DoWhileStatement) node).EmbeddedStatement as BlockStatement;
+			}
+			if (node is UsingStatement) {
+				return ((UsingStatement) node).EmbeddedStatement as BlockStatement;
 			}
 			
 			return null;
