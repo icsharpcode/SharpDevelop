@@ -124,5 +124,18 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			throw new NotImplementedException();
 		}
+		
+		public void DeleteFiles(IEnumerable<IPackageFile> files, string rootDir)
+		{
+		}
+		
+		public void AddFiles(IEnumerable<IPackageFile> files, string rootDir)
+		{
+		}
+		
+		public void MoveFile(string source, string destination)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

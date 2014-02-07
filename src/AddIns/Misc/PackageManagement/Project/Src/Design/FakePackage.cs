@@ -210,5 +210,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public Version MinClientVersion { get; set; }
 		public Uri GalleryUrl { get; set; }
+		
+		public bool DevelopmentDependency { get; set; }
 	}
 }

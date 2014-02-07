@@ -2,17 +2,16 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 		<id>AvalonEdit</id>
-		<version>4.3.1.9430</version>
+		<version>4.4.0.9727</version>
 		<authors>Daniel Grunwald</authors>
 		<owners>SharpDevelop</owners>
 		<licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
 		<projectUrl>http://www.avalonedit.net</projectUrl>
 		<iconUrl>http://community.sharpdevelop.net/blogs/mattward/SharpDevelop.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>AvalonEdit is the WPF-based text editor used in SharpDevelop. There are two builds of AvalonEdit included in this package. One that targets .NET 4.0 and  one that targets .NET 3.5.</description>
+		<description>AvalonEdit is the WPF-based text editor used in SharpDevelop. There are two builds of AvalonEdit included in this package. One that targets .NET 4.0 and one that targets .NET 3.5.</description>
 		<summary>AvalonEdit is the WPF-based text editor used in SharpDevelop</summary>
-		<releaseNotes>AvalonEdit 4.3 adds support for input method editors (IME); and fixes a major bug that sometimes caused "InvalidOperationException: Trying to build visual line from collapsed line" when updating existing foldings.
-AvalonEdit 4.3.1 fixes a bug in IME support - we did not properly re-enable the IME if it was disabled by another WPF control.</releaseNotes>
+		<releaseNotes>AvalonEdit 4.4 changes the Home/End keys to only act on the current TextLine when word-wrapping is enabled. It also removes the caret stop in the middle of surrogate pairs, making characters outside the basic multilingual plane work as expected.</releaseNotes>
 		<language>en-US</language>
 		<tags>WPF Text Editor SharpDevelop AvalonEdit</tags>
   </metadata>

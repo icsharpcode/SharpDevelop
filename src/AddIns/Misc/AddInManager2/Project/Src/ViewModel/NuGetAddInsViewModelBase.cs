@@ -207,7 +207,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			return GetBufferedPackages(allPackages)
 				.Where(package => ShowPrereleases || package.IsReleaseVersion())
-				.DistinctLast(PackageEqualityComparer.Id);
+				.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 		}
 		
 		private IEnumerable<IPackage> GetBufferedPackages(IQueryable<IPackage> allPackages)

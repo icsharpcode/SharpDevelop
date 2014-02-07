@@ -73,7 +73,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			return base.GetFilteredPackagesBeforePagingResults(allPackages)
 				.Where(package => package.IsReleaseVersion())
-				.DistinctLast(PackageEqualityComparer.Id);
+				.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 		}
 		
 		protected override void UpdatePackageViewModels(IEnumerable<IPackage> packages)

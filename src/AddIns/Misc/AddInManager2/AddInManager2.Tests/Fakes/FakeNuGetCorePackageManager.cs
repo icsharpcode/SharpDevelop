@@ -171,5 +171,8 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 		{
 			throw new NotImplementedException();
 		}
+
+		public DependencyVersion DependencyVersion { get; set; }
+		public bool WhatIf { get; set; }
 	}
 }

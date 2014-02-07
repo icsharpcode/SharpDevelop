@@ -140,5 +140,28 @@ namespace ICSharpCode.PackageManagement.Design
 			PackagePassedToHasOlderPackageInstalled = package;
 			return HasOlderPackageInstalledReturnValue;
 		}
+		
+		public DependencyVersion DependencyVersion {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool WhatIf {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public void UpdatePackageReference(IPackage remotePackage, bool updateDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
