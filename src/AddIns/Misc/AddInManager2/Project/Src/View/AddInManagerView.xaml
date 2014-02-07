@@ -56,7 +56,7 @@
 		</DataTemplate>
 		
 		<DataTemplate x:Key="packageRepositoryItemTemplate" DataType="{x:Type model:PackageRepository}">
-			<TextBlock Text="{Binding Path=NameWithHighlight}">
+			<TextBlock Text="{Binding Path=NameWithHighlight}" ToolTip="{Binding Path=NameWithHighlight}" TextWrapping="Wrap">
 				<TextBlock.Style>
 					<Style TargetType="TextBlock">
 						<Style.Triggers>

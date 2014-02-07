@@ -267,8 +267,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			get
 			{
-				// Disabling is only possible if this AddIn has an identity!
-				return (Id != null);
+				// Disabling is only possible if this AddIn has an identity and is not the AddInManager itself
+				return (Id != null) && (_addIn.Manifest.PrimaryIdentity != "ICSharpCode.AddInManager2");
 			}
 		}
 		
