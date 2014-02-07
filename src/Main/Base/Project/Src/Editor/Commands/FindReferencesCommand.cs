@@ -65,8 +65,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 						NewSymbolName = entity.Name
 					};
 					if ((bool) renameDialog.ShowDialog()) {
-//						using (IProgressMonitor progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
-						
 						AsynchronousWaitDialog.ShowWaitDialogForAsyncOperation(
 							"${res:SharpDevelop.Refactoring.Rename}",
 							progressMonitor =>
