@@ -45,7 +45,7 @@ namespace ICSharpCode.PackageManagement
 		PackageReferenceRepository CreatePackageReferenceRepository()
 		{
 			var sharedRepository = LocalRepository as ISharedPackageRepository;
-			var packageRefRepository = new PackageReferenceRepository(projectSystem, sharedRepository);
+			var packageRefRepository = new PackageReferenceRepository(projectSystem, projectSystem.ProjectName, sharedRepository);
 			packageRefRepository.RegisterIfNecessary();
 			return packageRefRepository;
 		}

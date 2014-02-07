@@ -20,7 +20,8 @@ namespace ICSharpCode.PackageManagement
 				null,
 				logger,
 				installAction.IgnoreDependencies,
-				installAction.AllowPrereleaseVersions);
+				installAction.AllowPrereleaseVersions,
+				DependencyVersion.Lowest);
 		}
 		
 		public IPackageOperationResolver CreateUpdatePackageOperationResolver(IPackageRepository localRepository, IPackageRepository sourceRepository, ILogger logger, IUpdatePackageSettings settings)
@@ -31,7 +32,8 @@ namespace ICSharpCode.PackageManagement
 				null,
 				logger,
 				!settings.UpdateDependencies,
-				settings.AllowPrereleaseVersions);
+				settings.AllowPrereleaseVersions,
+				DependencyVersion.Lowest);
 		}
 	}
 }

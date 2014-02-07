@@ -192,5 +192,9 @@ namespace ICSharpCode.PackageManagement
 				return null;
 			}
 		}
+		
+		public bool DevelopmentDependency {
+			get { return package.DevelopmentDependency; }
+		}
 	}
 }

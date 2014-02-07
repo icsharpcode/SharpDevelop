@@ -96,7 +96,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		IEnumerable<IPackage> DistinctPackagesById(IQueryable<IPackage> packages)
 		{
 			if (ListAvailable && !AllVersions) {
-				return packages.DistinctLast(PackageEqualityComparer.Id);
+				return packages.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 			}
 			return packages;
 		}

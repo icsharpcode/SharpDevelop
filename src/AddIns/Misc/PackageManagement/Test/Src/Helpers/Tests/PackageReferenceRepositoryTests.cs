@@ -24,7 +24,7 @@ namespace PackageManagement.Tests.Helpers.Tests
 			fakeFileSystem = helper.FakeProjectSystem;
 			fakeFileSystem.PathToReturnFromGetFullPath = path;
 			sourceRepository = helper.FakeSharedSourceRepository;
-			repository = new PackageReferenceRepository(fakeFileSystem, sourceRepository);
+			repository = new PackageReferenceRepository(fakeFileSystem, helper.FakeProjectSystem.ProjectName, sourceRepository);
 		}
 		
 		[Test]
@@ -32,7 +32,7 @@ namespace PackageManagement.Tests.Helpers.Tests
 		{
 			string expectedPath = @"d:\temp";
 			CreatePackageReferenceRepository(expectedPath);
-						
+			
 			repository.RegisterIfNecessary();
 			
 			Assert.AreEqual(expectedPath, sourceRepository.PathPassedToRegisterRepository);

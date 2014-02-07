@@ -198,5 +198,23 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			throw new NotImplementedException();
 		}
+		
+		public DependencyVersion DependencyVersion {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool WhatIf {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
