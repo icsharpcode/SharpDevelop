@@ -111,14 +111,6 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			Assert.AreEqual(expectedName, name);
 		}
 		
-		[Test, Ignore("Replaced by test below")]
-		public void SequencePointsCount_NUnitNotEqualAssertFailMethod_ReturnsAllSequencePoints()
-		{
-			int sequencePointCount = FirstModuleFirstMethod.SequencePoints.Count;
-			int expectedSequencePointCount = 3;
-			Assert.AreEqual(expectedSequencePointCount, sequencePointCount);
-		}
-
 		/// <summary> No method.FileID => No sequence points!
 		/// SD.CodeCoverage DOES NOT RETURN SequencePoints
 		/// for assemblies without debug info,
