@@ -27,7 +27,6 @@ using NuGet;
 using NUnit.Framework;
 using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
-using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
