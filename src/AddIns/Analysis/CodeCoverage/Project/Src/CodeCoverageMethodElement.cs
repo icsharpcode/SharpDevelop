@@ -45,6 +45,9 @@ namespace ICSharpCode.CodeCoverage
 		private static string cacheFileName = String.Empty;
 		private static CodeCoverageStringTextSource cacheDocument = null;
 
+		private static string cache2FileName = String.Empty;
+		private static CodeCoverageStringTextSource cache2Document = null;
+
 		public string FileID { get; private set; }
 		public string FileName { get; private set; }
 		public bool IsVisited { get; private set; }
@@ -56,9 +59,9 @@ namespace ICSharpCode.CodeCoverage
 		public bool IsConstructor { get; private set; }
 		public bool IsStatic { get; private set; }
 		public List<CodeCoverageSequencePoint> SequencePoints { get; private set; }
+		public List<CodeCoverageBranchPoint> BranchPoints { get; private set; }
 		public CodeCoverageSequencePoint BodyStartSP { get; private set; }
 		public CodeCoverageSequencePoint BodyFinalSP { get; private set; }
-		public List<CodeCoverageBranchPoint> BranchPoints { get; private set; }
 
 		public bool IsGetter { get; private set; }
 		public bool IsSetter { get; private set; }
@@ -79,20 +82,9 @@ namespace ICSharpCode.CodeCoverage
 			if (!String.IsNullOrEmpty(this.FileID)) {
 				if (parent != null) {
 					this.FileName = parent.GetFileName(this.FileID);
-					if ( File.Exists(this.FileName) ) {
-						if (cacheFileName != this.FileName) {
-							cacheFileName = this.FileName;
-							cacheDocument = null;
-							try {
-								using (Stream stream = new FileStream(this.FileName, FileMode.Open, FileAccess.Read)) {
-									try {
-										stream.Position = 0;
-										string textSource = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default);
-										cacheDocument = new CodeCoverageStringTextSource(textSource);
-									} catch {}
-								}
-							} catch {}
-						}
+					if (cacheFileName != this.FileName) {
+						cacheFileName = this.FileName;
+						cacheDocument = GetSource (cacheFileName);
 					}
 				}
 			}
@@ -108,8 +100,7 @@ namespace ICSharpCode.CodeCoverage
 				this.GetSequencePointsContent();
 				this.getBodyStartSP(); // before OrderBy Line/Col
 				this.getBodyFinalSP(); // before orderBy Line/Col
-				this.FilterSequencePoints(); // before orderBy Line/Col
-				this.GetBranchPoints();
+				//this.FilterSequencePoints(); // before orderBy Line/Col
 				this.GetBranchRatio();
 				this.GetBranchCoverage();
 
@@ -122,6 +113,29 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
+		private static var cacheGetSource_LastFileName = (string)null;
+		private static var cacheGetSource_LastSource = (CodeCoverageStringTextSource)null;
+
+		static CodeCoverageStringTextSource GetSource(string filename) {
+
+			if (filename == cacheGetSource_LastFileName) return cacheGetSource_LastSource;
+
+			var retSource = (CodeCoverageStringTextSource)null;
+			try {
+				using (Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read)) {
+					try {
+						stream.Position = 0;
+						string textSource = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default);
+						retSource = new CodeCoverageStringTextSource(textSource);
+					} catch (Exception e) { Debug.Fail(e.Message); }
+				}
+			} catch (Exception e) { Debug.Fail(e.Message); }
+
+			cacheGetSource_LastFileName = filename;
+			cacheGetSource_LastSource = retSource;
+			return retSource;
+		}
+
 		void GetSequencePoints() {
 
 			var xSPoints = this.element
@@ -129,9 +143,7 @@ namespace ICSharpCode.CodeCoverage
 				.Elements("SequencePoint");
 
 			foreach (XElement xSPoint in xSPoints) {
-				CodeCoverageSequencePoint sp = new CodeCoverageSequencePoint();
-				sp.FileID = this.FileID;
-				sp.Document = this.FileName;
+				var sp = new CodeCoverageSequencePoint();
 				sp.Line = (int)GetDecimalAttributeValue(xSPoint.Attribute("sl"));
 				sp.EndLine = (int)GetDecimalAttributeValue(xSPoint.Attribute("el"));
 				sp.Column = (int)GetDecimalAttributeValue(xSPoint.Attribute("sc"));
@@ -140,6 +152,22 @@ namespace ICSharpCode.CodeCoverage
 				sp.Offset = (int)GetDecimalAttributeValue(xSPoint.Attribute("offset"));
 				sp.BranchExitsCount = (int)GetDecimalAttributeValue(xSPoint.Attribute("bec"));
 				sp.BranchExitsVisit = (int)GetDecimalAttributeValue(xSPoint.Attribute("bev"));
+				sp.FileID = xSPoint.Attribute("fileid").Value?? "0";
+				if (sp.FileID == "0") {
+					// SequencePoint from not covered (not runnable) file
+					// ie: interface with CodeContractClass/CodeContractClassFor
+					sp.Document = xSPoint.Attribute("fileid").Value?? "";
+				}
+				else if (sp.FileID == this.FileID) {
+					// This method SequencePoint (from this.FileName) 
+					sp.Document = this.FileName;
+				}
+				else {
+					// SequencePoint from another method/file
+					// ie: ccrewriten CodeContractClass/CodeContractClassFor 
+					// [or dependency-injected or fody-weaved???]
+					sp.Document = parent.GetFileName(sp.FileID);
+				}
 				sp.BranchCoverage = (sp.BranchExitsCount == sp.BranchExitsVisit);
 				sp.Content = String.Empty;
 				sp.Length = 0;
@@ -150,26 +178,35 @@ namespace ICSharpCode.CodeCoverage
 	
 		void GetSequencePointsContent()
 		{
-			if (cacheFileName == this.FileName && cacheDocument != null) {
-				foreach (var sp in this.SequencePoints) {
-					GetSequencePointContent(sp);
-				}
+			foreach (var sp in this.SequencePoints) {
+				GetSequencePointContent(sp);
 			}
 		}
 
 		void GetSequencePointContent(CodeCoverageSequencePoint sp)
 		{
-			// ccrewrite will cause lots of invalid calls to GetText()!
-			if (cacheFileName == sp.Document && cacheDocument != null) {
-				sp.Content = cacheDocument.GetText(sp); // never returns null
-				if (sp.Content != String.Empty) {
-					if (sp.Line != sp.EndLine) {
-						// merge lines to single line
-						sp.Content = Regex.Replace(sp.Content, @"\s+", " ");
-					}
-					// SequencePoint.Length counts all but whitespace
-					sp.Length = Regex.Replace(sp.Content, @"\s", "").Length;
+			if (cacheFileName == sp.Document) {
+				// check primary cache (this.Filename)
+				sp.Content = cacheDocument == null? "" : cacheDocument.GetText(sp);
+			}
+			else {
+				// check & update secondary cache
+				if (cache2FileName == sp.Document) {
+					sp.Content = cache2Document == null? "" : cache2Document.GetText(sp);
 				}
+				else {
+					cache2FileName = sp.Document;
+					cache2Document = GetSource (cache2FileName);
+					sp.Content = cache2Document == null? "" : cache2Document.GetText(sp);
+				}
+			}
+			if (sp.Content != String.Empty) {
+				if (sp.Line != sp.EndLine) {
+					// merge multiple lines to single line
+					sp.Content = Regex.Replace(sp.Content, @"\s+", " ");
+				}
+				// SequencePoint.Length counts all but whitespace
+				sp.Length = Regex.Replace(sp.Content, @"\s", "").Length;
 			}
 		}
 
@@ -289,32 +326,25 @@ namespace ICSharpCode.CodeCoverage
 		
 		void GetBranchRatio () {
 
-			// goal: Get branch ratio, merge branch-exits and exclude (rewriten) Code Contracts branches
 			this.BranchCoverageRatio = null;
 			
-			if ( this.BranchPoints == null
-				|| this.BranchPoints.Count == 0
-				|| this.SequencePoints == null
-				|| this.SequencePoints.Count == 0
-			   )
-			{
-				return;
-			}
+			Debug.Assert (this.SequencePoints != null);
+			if ( this.SequencePoints.Count == 0 ) return;
 
 			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Requires)
 			// and '{' branches at static methods
-			if (this.BodyStartSP == null) { return; } // empty body
+			if (this.BodyStartSP == null) return; // empty body
 
 			// This sequence point offset is used to skip CCRewrite(n) BranchPoint's (Ensures)
-			if (this.BodyFinalSP == null) { return; } // empty body
+			if (this.BodyFinalSP == null) return; // empty body
 			
 			// Calculate Method Branch coverage
 			int totalBranchVisit = 0;
 			int totalBranchCount = 0;
 			foreach (var sp in this.SequencePoints) {
 
-				// SequencePoint is visited?
-				if (sp.VisitCount != 0) {
+				// SequencePoint is visited and belongs to this method?
+				if (sp.VisitCount != 0 && sp.Document == this.FileName) {
 
 					// Don't want branch coverage of ccrewrite(n)
 					// SequencePoint's with offset before and after method body
