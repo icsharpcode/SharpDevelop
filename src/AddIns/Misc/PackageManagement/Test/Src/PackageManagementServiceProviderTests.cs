@@ -16,30 +16,30 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using ICSharpCode.PackageManagement;
-//using NUnit.Framework;
-//
-//namespace PackageManagement.Tests
-//{
-//	[TestFixture]
-//	public class PackageManagementServiceProviderTests
-//	{
-//		PackageManagementServiceProvider serviceProvider;
-//		
-//		public void CreateServiceProvider()
-//		{
-//			serviceProvider = new PackageManagementServiceProvider();
-//		}
-//		
-//		[Test]
-//		public void GetService_TypeOfDTE_ReturnsDTE()
-//		{
-//			CreateServiceProvider();
-//			
-//			object dte = serviceProvider.GetService(typeof(global::EnvDTE.DTE)) as global::EnvDTE.DTE;
-//			
-//			Assert.IsInstanceOf(typeof(global::EnvDTE.DTE), dte);
-//		}
-//	}
-//}
+using System;
+using ICSharpCode.PackageManagement;
+using NUnit.Framework;
+
+namespace PackageManagement.Tests
+{
+	[TestFixture]
+	public class PackageManagementServiceProviderTests
+	{
+		PackageManagementServiceProvider serviceProvider;
+		
+		public void CreateServiceProvider()
+		{
+			serviceProvider = new PackageManagementServiceProvider();
+		}
+		
+		[Test]
+		public void GetService_TypeOfDTE_ReturnsDTE()
+		{
+			CreateServiceProvider();
+			
+			object dte = serviceProvider.GetService(typeof(global::EnvDTE.DTE)) as global::EnvDTE.DTE;
+			
+			Assert.IsInstanceOf(typeof(global::EnvDTE.DTE), dte);
+		}
+	}
+}
