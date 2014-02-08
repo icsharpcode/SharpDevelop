@@ -4,13 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -70,6 +70,12 @@ namespace PackageManagement.Tests
 			var package = new FakePackage(packageId);
 			fakeSolutionPackageRepository.FakePackagesByReverseDependencyOrder.Add(package);
 			return package;
+		}
+		
+		void AddNonMSBuildBasedProjectToOpenProjects()
+		{
+			IProject project = MockRepository.GenerateStub<IProject>();
+			fakeProjectService.FakeOpenProjects.Add(project);
 		}
 		
 		[Test]
@@ -596,6 +602,19 @@ namespace PackageManagement.Tests
 			Assert.AreEqual(testProject2, fakeProjectFactory.ProjectsPassedToCreateProject[1]);
 			Assert.AreEqual(fakeRegisteredPackageRepositories.ActiveRepository, fakeProjectFactory.RepositoriesPassedToCreateProject[0]);
 			Assert.AreEqual(fakeRegisteredPackageRepositories.ActiveRepository, fakeProjectFactory.RepositoriesPassedToCreateProject[1]);
+		}
+		
+		[Test]
+		public void GetMSBuildProjects_TwoProjectsInOpenSolutionButOneIsNotMSBuildBased_ReturnsOneMSBuildBasedProject()
+		{
+			CreateSolution();
+			TestableProject project = AddProjectToOpenProjects("A");
+			AddNonMSBuildBasedProjectToOpenProjects();
+			
+			IEnumerable<IProject> projects = solution.GetMSBuildProjects();
+			var expectedProjects = new IProject[] { project };
+			
+			CollectionAssert.AreEqual(expectedProjects, projects);
 		}
 	}
 }
