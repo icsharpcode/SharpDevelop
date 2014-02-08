@@ -31,38 +31,24 @@ namespace ICSharpCode.Reporting
 	/// <summary>
 	/// Description of Reporting.
 	/// </summary>
+	
+	
 	public class ReportingFactory
 	{
 		
-		void Method(object s,EventArgs e)
-		{
-			Console.WriteLine("Got Event {0}",s.ToString());	
-		}
 		
 		public IReportCreator ReportCreator (Stream stream,IEnumerable list)
 		{
 			ReportModel = LoadReportModel (stream);
 			var builder = new DataPageBuilder(ReportModel,list );
-		
 			return builder;
 		}
 		
-		
-		[Obsolete("Use public IReportCreator ReportCreator (Stream stream,IEnumerable list")]
-		public IReportCreator ReportCreator (Stream stream,Type listType,IEnumerable list)
-		{
-			ReportModel = LoadReportModel (stream);
-			IReportCreator builder = null;
-			builder = new DataPageBuilder(ReportModel,list );
-			return builder;
-		}
-		
-		
+
 		public IReportCreator ReportCreator (Stream stream)
 		{
 			ReportModel = LoadReportModel (stream);
 			var builder = new FormPageBuilder(ReportModel);
-				builder.SectionRendering += (sender, e) => Method(sender, e);
 			return builder;
 		}
 		
@@ -82,17 +68,15 @@ namespace ICSharpCode.Reporting
 			return ReportModel;
 		}
 		
+		
 		static ReportModel LoadModel(XmlDocument doc)
 		{
 			var loader = new ModelLoader();
 			object root = loader.Load(doc.DocumentElement);
-
 			var model = root as ReportModel;
-			if (model == null) {
-//				throw new IllegalFileFormatException("ReportModel");
-			}
 			return model;
 		}
+		
 		
 		public ReportModel ReportModel {get;private set;}
 	}

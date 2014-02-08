@@ -57,8 +57,6 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			reportCreator.BuildExportList();
 			foreach (var item in reportCreator.Pages[0].ExportedItems) {
 				var p2 = new Point(item.Location.X,item.Location.Y);
-				
-				Console.WriteLine("{0} - {1} - {2}- <{3}>",p2,item.Size.Height,item.Name,item.DisplayRectangle);
 				if (item.Name != "ReportFooter") {
 					Assert.That(p2.Y,Is.GreaterThan(referencePoint.Y),item.Name);
 					var t = referenceRect.IntersectsWith(item.DisplayRectangle);

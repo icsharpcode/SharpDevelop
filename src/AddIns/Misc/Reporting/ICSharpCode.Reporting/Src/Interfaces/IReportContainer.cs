@@ -18,8 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.Items;
 
 namespace ICSharpCode.Reporting.Interfaces
 {

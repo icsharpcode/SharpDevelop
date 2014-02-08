@@ -96,7 +96,7 @@
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>
-                    <Name>BaseTextItem2147483639</Name>
+                    <Name>Param2</Name>
                 </BaseTextItem>
                 <BaseTextItem>
                     <Location>27, 118</Location>

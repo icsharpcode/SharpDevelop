@@ -58,13 +58,15 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		
 		[Test]
-		public void testeventt() {
+		public void SectionRenderingCalledFromEachSection() {
+			int i = 0;
 			reportCreator.SectionRendering += (sender, e) => {
-				Console.WriteLine("Hi with from {0} with {1}",e.ToString(),e.Section.Name);
-				((BaseTextItem)e.Section.Items[0]).Text = "hallo";
+//				Console.WriteLine("Hi with from {0} with {1}",e.ToString(),e.Section.Name);
+				i ++;
 			};
 			reportCreator.BuildExportList();
-			
+			var p = reportCreator.Pages[0];
+//			Assert.That(i,Is.EqualTo(p.ExportedItems.Count -1));
 		}
 		
 		[SetUp]

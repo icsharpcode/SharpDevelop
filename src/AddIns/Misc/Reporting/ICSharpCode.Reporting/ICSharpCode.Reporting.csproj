@@ -172,6 +172,7 @@
     <Compile Include="Src\Pdf\PdfHelper.cs" />
     <Compile Include="Src\Pdf\PdfVisitor.cs" />
     <Compile Include="Src\ReportingFactory.cs" />
+    <Compile Include="Src\ReportSectionNames.cs" />
     <Compile Include="Src\Wpf\PreviewViewModel.cs" />
     <Compile Include="Src\Wpf\Visitor\CanvasExtension.cs" />
     <Compile Include="Src\Wpf\Visitor\CanvasHelper.cs" />

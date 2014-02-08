@@ -97,7 +97,6 @@ namespace ICSharpCode.CodeQuality.Gui
 		
 		void DependecyReport_Click(object sender, RoutedEventArgs e)
 		{
-		
 			var dependencyReport = new DependencyReport(fileNames);
 			var reportCreator = dependencyReport.Run(list);
 			var previewViewModel = new PreviewViewModel(dependencyReport.ReportSettings,reportCreator.Pages);

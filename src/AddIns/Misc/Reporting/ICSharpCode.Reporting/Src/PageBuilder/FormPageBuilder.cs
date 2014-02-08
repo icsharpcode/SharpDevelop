@@ -38,7 +38,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 			SetupExpressionRunner(ReportModel.ReportSettings,null);
 			base.BuildExportList();
 			BuildDetail();
-			base.AddPage(CurrentPage);
+			BuildReportFooter();
+			AddPage(CurrentPage);
 			UpdatePageInfo();
 //			RunDebugVisitor();
 			ExpressionRunner.Run();

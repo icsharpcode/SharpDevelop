@@ -40,7 +40,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 	public class BasePageBuilder:IReportCreator
 	{
 		
-public event EventHandler<SectionEventArgs> SectionRendering;
+		public event EventHandler<SectionEventArgs> SectionRendering;
 
 		public BasePageBuilder(IReportModel reportModel){
 			if (reportModel == null) {
@@ -55,20 +55,14 @@ public event EventHandler<SectionEventArgs> SectionRendering;
 		
 		void BuildReportHeader(){
 			if (Pages.Count == 0) {
-				var sea = new SectionEventArgs(ReportModel.ReportHeader);
-				
-				Raise<SectionEventArgs> (SectionRendering,this,sea);
-				
-				var header = CreateSection(sea.Section,CurrentLocation);
-				
+				var header = CreateSection(ReportModel.ReportHeader,CurrentLocation);
 				var r = new Rectangle(header.Location.X, header.Location.Y, header.Size.Width, header.Size.Height);
 				CurrentLocation = new Point (ReportModel.ReportSettings.LeftMargin,r.Bottom + 1);
 				AddSectionToPage(header);
-				Raise<SectionEventArgs> (SectionRendering,this,new SectionEventArgs(ReportModel.ReportHeader));
 			}
 		}
 		
-		protected static void Raise <T>(EventHandler<T> handler, object sender, T e)
+		static void Raise <T>(EventHandler<T> handler, object sender, T e)
 			where T: EventArgs{
 				// Copy to a temporary variable to be thread-safe.
 			EventHandler<T> temp = handler;
@@ -129,6 +123,8 @@ public event EventHandler<SectionEventArgs> SectionRendering;
 		#endregion
 		
 		protected IExportContainer CreateSection(IReportContainer container,Point location){
+			var sea = new SectionEventArgs(container);
+			Raise<SectionEventArgs> (SectionRendering,this,sea);
 			var containerConverter = new ContainerConverter(location);
 			var convertedContainer = containerConverter.ConvertToExportContainer(container);
 			

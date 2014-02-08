@@ -128,9 +128,6 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 			reportCreator.BuildExportList();
 			var exporteditems = reportCreator.Pages[0].ExportedItems;
 			for (int i = 1; i < exporteditems.Count -1; i++) {
-				Console.WriteLine(" {0} - {1} - {2}",exporteditems[i-1].DisplayRectangle.Bottom,exporteditems[i].Location.Y,exporteditems[i].Name);
-//				Assert.That(exporteditems[i].Location.Y,Is.GreaterThan(exporteditems[i-1].DisplayRectangle.Bottom));
-				
 				Assert.That(exporteditems[i].Location.Y,Is.EqualTo(exporteditems[i-1].DisplayRectangle.Bottom +1));
 			}
 		}

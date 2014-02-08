@@ -221,7 +221,6 @@ namespace ICSharpCode.Reporting.Xml
 
 	    static void SetPropertyToString(object obj, PropertyInfo pi, string value)
 		{
-			Console.WriteLine("MP - SetPropertyToString {0} - {1}",pi.Name,value.ToString());
 			// it's string, so use a type converter.
 			TypeConverter tc=TypeDescriptor.GetConverter(pi.PropertyType);
 			try
