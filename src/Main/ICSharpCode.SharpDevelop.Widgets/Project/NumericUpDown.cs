@@ -116,8 +116,10 @@ namespace ICSharpCode.SharpDevelop.Widgets
 			downButton = (DragRepeatButton)Template.FindName("PART_DownButton", this);
 			textBox = (TextBox)Template.FindName("PART_TextBox", this);
 
-			upButton.Click += new RoutedEventHandler(upButton_Click);
-			downButton.Click += new RoutedEventHandler(downButton_Click);
+			upButton.Click += upButton_Click;
+			downButton.Click += downButton_Click;
+			
+			textBox.LostFocus += (sender, e) => OnLostFocus(e);
 
 			var upDrag = new DragListener(upButton);
 			var downDrag = new DragListener(downButton);
