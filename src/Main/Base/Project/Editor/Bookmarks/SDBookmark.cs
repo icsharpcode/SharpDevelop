@@ -80,16 +80,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		}
 		
 		/// <summary>
-		/// Gets/Sets if the bookmark is shown in the bookmark pad.
+		/// Gets whether the bookmark should be displayed in the given pad.
 		/// </summary>
-		/// <remarks>
-		/// Default is true, override this property if you are using the bookmark for
-		/// something special like like "CurrentLineBookmark" in the debugger.
-		/// </remarks>
-		public virtual bool IsVisibleInBookmarkPad {
-			get {
-				return true;
-			}
+		public virtual bool ShowInPad(BookmarkPadBase pad)
+		{
+			return true;
 		}
 		
 		protected override void RemoveMark()

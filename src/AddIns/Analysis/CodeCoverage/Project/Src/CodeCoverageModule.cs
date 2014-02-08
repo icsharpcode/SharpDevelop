@@ -61,6 +61,21 @@ namespace ICSharpCode.CodeCoverage
 			return total;
 		}
 		
+		public decimal GetVisitedBranchCoverage() {
+			decimal total = 0;
+			int count = 0;
+			foreach (CodeCoverageMethod method in methods) {
+				if (method.IsVisited) {
+					++count;
+					total += method.BranchCoverage == 0 ? 100 : method.BranchCoverage ;
+				}
+			}
+			if (count!=0) {
+				return total/count;
+			}
+			return 0;
+		}
+
 		public List<CodeCoverageSequencePoint> GetSequencePoints(string fileName)
 		{
 			List<CodeCoverageSequencePoint> sequencePoints = new List<CodeCoverageSequencePoint>();

@@ -80,7 +80,7 @@ class MyTest
 			Assert.IsNotNull (provider.Find ("k"), "name proposal 'k' not found.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestNameProposal ()
 		{
 			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
@@ -95,9 +95,10 @@ class MyTest
 ");
 			Assert.IsNotNull (provider.Find ("myTest"), "name proposal 'myTest' not found.");
 			Assert.IsNotNull (provider.Find ("test"), "name proposal 'test' not found.");
+			Assert.IsNull (provider.Find ("System"), "'System' found.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestNameProposalForeach ()
 		{
 			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
@@ -112,6 +113,7 @@ class MyTest
 ");
 			Assert.IsNotNull (provider.Find ("myTest"), "name proposal 'myTest' not found.");
 			Assert.IsNotNull (provider.Find ("test"), "name proposal 'test' not found.");
+			Assert.IsNull (provider.Find ("System"), "'System' found.");
 		}
 		
 		/// <summary>

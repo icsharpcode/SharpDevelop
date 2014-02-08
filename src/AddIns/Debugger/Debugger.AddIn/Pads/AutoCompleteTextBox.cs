@@ -17,13 +17,22 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Completion;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -54,6 +63,8 @@ namespace Debugger.AddIn.Pads.Controls
 			get { return (bool)GetValue(IsEditableProperty); }
 			set { SetValue(IsEditableProperty, value); }
 		}
+
+		public DebuggerCompletionContext DebugContext { get; set; }
 		
 		static void TextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
@@ -92,6 +103,7 @@ namespace Debugger.AddIn.Pads.Controls
 			this.editor.TextArea.TextEntered += editor_TextArea_TextEntered;
 			
 			this.Content = this.editor.TextArea;
+			this.messageView = new ToolTip { PlacementTarget = this, Placement = PlacementMode.Bottom, StaysOpen = true };
 			
 			HorizontalContentAlignment = HorizontalAlignment.Stretch;
 			VerticalContentAlignment = VerticalAlignment.Stretch;
@@ -109,37 +121,38 @@ namespace Debugger.AddIn.Pads.Controls
 			}
 		}
 		
+		ToolTip messageView;
+		
 		void editor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
 		{
-			StackFrame frame = WindowsDebugger.CurrentStackFrame;
-			if (e.Text == "." && frame != null)
-				ShowDotCompletion(frame, this.editor.Text);
-		}
-		
-		private void ShowDotCompletion(StackFrame frame, string currentText)
-		{
-			string language = ProjectService.CurrentProject == null ? "C#" : ProjectService.CurrentProject.Language;
-			#warning reimplement this!
-//			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.GetLanguage(language));
-//
-//			var seg = frame.NextStatement;
-//
-//			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
-//			var info = ParserService.GetParseInformation(seg.Filename);
-//
-//			string text = ParserService.GetParseableFileContent(seg.Filename).Text;
-//
-//			int currentOffset = this.editor.CaretOffset;
-//
-//			var expr = expressionFinder.FindExpression(currentText, currentOffset);
-//
-//			expr.Region = new DomRegion(seg.StartLine, seg.StartColumn, seg.EndLine, seg.EndColumn);
-//
-//			var rr = resolver.Resolve(expr, info, text);
-//
-//			if (rr != null) {
-//				editorAdapter.ShowCompletionWindow(new DotCodeCompletionItemProvider().GenerateCompletionListForResolveResult(rr, expr.Context));
-//			}
+			if (e.Text == ".") {
+				DebuggerCompletionContext context = null;
+				StackFrame frame = WindowsDebugger.CurrentStackFrame;
+				if (frame == null) {
+					if (DebugContext != null) {
+						context = DebugContext;
+					}
+				} else {
+					context = new DebuggerCompletionContext(frame);
+				}
+				if (context == null) return;
+				var binding = DebuggerDotCompletion.PrepareDotCompletion(editor.Text.Substring(0, editor.CaretOffset), context);
+				if (binding == null) return;
+				binding.HandleKeyPressed(editorAdapter, '.');
+			} else {
+				// TODO : implement automated error checking CSharpParser.ParseExpression does not report useful error messages.
+//				Error[] errors;
+//				if (!DebuggerDotCompletion.CheckSyntax(Text, out errors)) {
+//					StringBuilder output = new StringBuilder();
+//					foreach (var error in errors) {
+//						output.AppendLine(error.Message + " at " + error.Region.Begin);
+//					}
+//					messageView.Content = output.ToString();
+//					messageView.IsOpen = true;
+//				} else {
+//					messageView.IsOpen = false;
+//				}
+			}
 		}
 		
 		public void FocusEditor()

@@ -544,11 +544,13 @@
 				<ComponentRef Id="OpenCoverGendarmeFrameworkDll"/>
 				<ComponentRef Id="OpenCoverLog4netConfig"/>
 				<ComponentRef Id="OpenCoverLog4netDll"/>
-				<ComponentRef Id="OpenCoverMicrosoftPracticesUnityDll"/>
 				<ComponentRef Id="OpenCoverMonoCecilDll"/>
 				<ComponentRef Id="OpenCoverMonoCecilPdbDll"/>
 				<ComponentRef Id="OpenCoverProfilerX86Dll"/>
 				<ComponentRef Id="OpenCoverProfilerX64Dll"/>
+				<ComponentRef Id="OpenCoverAutofacDll"/>
+				<ComponentRef Id="OpenCoverAutofacConfigurationDll"/>
+				<ComponentRef Id="OpenCoverExtensionsDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

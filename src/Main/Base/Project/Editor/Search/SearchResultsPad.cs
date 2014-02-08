@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			}
 		}
 		
-		DockPanel dockPanel;
+		Grid contentPanel;
 		ToolBar toolBar;
 		ContentPresenter contentPlaceholder;
 		IList defaultToolbarItems;
@@ -63,21 +63,25 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			instance = this;
 			toolBar = new ToolBar();
 			ToolBarTray.SetIsLocked(toolBar, true);
-			defaultToolbarItems = ToolBarService.CreateToolBarItems(dockPanel, this, "/SharpDevelop/Pads/SearchResultPad/Toolbar");
+			defaultToolbarItems = ToolBarService.CreateToolBarItems(contentPanel, this, "/SharpDevelop/Pads/SearchResultPad/Toolbar");
 			foreach (object toolBarItem in defaultToolbarItems) {
 				toolBar.Items.Add(toolBarItem);
 			}
 			
-			DockPanel.SetDock(toolBar, Dock.Top);
 			contentPlaceholder = new ContentPresenter();
-			dockPanel = new DockPanel {
+			contentPanel = new Grid {
 				Children = { toolBar, contentPlaceholder }
 			};
+			
+			contentPanel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			contentPanel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+
+			Grid.SetRow(contentPlaceholder, 1);
 		}
 		
 		public override object Control {
 			get {
-				return dockPanel;
+				return contentPanel;
 			}
 		}
 		

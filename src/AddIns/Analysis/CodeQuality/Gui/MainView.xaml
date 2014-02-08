@@ -9,6 +9,7 @@
 	<DockPanel>
 		<ToolBar DockPanel.Dock="Top">
 			<Button Click="AddAssemblyClick">Add Assembly</Button>
+			<Button Click="AddCurrentProjectAssemblyClick">Add Current Project Assembly</Button>
 				
 			<Menu Background="White" x:Name="printMenu" Visibility="Hidden">
 				<MenuItem Header="Reports">

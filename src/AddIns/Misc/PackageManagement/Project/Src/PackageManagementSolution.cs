@@ -141,7 +141,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<IProject> GetMSBuildProjects()
 		{
-			return projectService.AllProjects;
+			return projectService.AllProjects.OfType<MSBuildBasedProject>();;
 		}
 		
 		public bool IsOpen {
@@ -195,7 +195,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository)
 		{
-			foreach (MSBuildBasedProject msbuildProject in GetMSBuildProjects().OfType<MSBuildBasedProject>()) {
+			foreach (MSBuildBasedProject msbuildProject in GetMSBuildProjects()) {
 				yield return projectFactory.CreateProject(sourceRepository, msbuildProject);
 			}
 		}

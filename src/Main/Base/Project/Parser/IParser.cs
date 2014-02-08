@@ -79,6 +79,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		                       IProject parentProject, CancellationToken cancellationToken);
 		
 		ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken);
+		ICodeContext ResolveContext(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken);
 		
 		ResolveResult ResolveSnippet(ParseInformation parseInfo, TextLocation location, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken);
 		

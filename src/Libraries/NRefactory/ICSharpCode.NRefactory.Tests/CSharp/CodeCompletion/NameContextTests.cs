@@ -306,6 +306,8 @@ class Foo
 ", provider => Assert.AreEqual(0, provider.Count, "provider needs to be empty"));
 
 		}
+
+
 	}
 }
 

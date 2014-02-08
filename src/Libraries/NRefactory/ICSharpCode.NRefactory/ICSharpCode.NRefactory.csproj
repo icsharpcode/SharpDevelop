@@ -146,6 +146,7 @@
     <Compile Include="TypeSystem\DefaultSolutionSnapshot.cs" />
     <Compile Include="TypeSystem\DomRegion.cs" />
     <Compile Include="TypeSystem\EntityType.cs" />
+    <Compile Include="TypeSystem\ICodeContext.cs" />
     <Compile Include="TypeSystem\Implementation\BlobReader.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultVariable.cs" />
     <Compile Include="TypeSystem\Implementation\ResolvedAttributeBlob.cs" />

@@ -91,6 +91,8 @@
 		
 		<Style x:Key="addInListButtonStyle" TargetType="{x:Type Button}" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}">
 			<Setter Property="Visibility" Value="Collapsed" />
+			<Setter Property="HorizontalAlignment" Value="Left" />
+			<Setter Property="Margin" Value="2,2,2,2" />
 			<Style.Triggers>
 				<MultiDataTrigger>
 					<MultiDataTrigger.Conditions>
@@ -128,16 +130,16 @@
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="60"/>
 					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
 				
-				<Grid.RowDefinitions>
+				<!--<Grid.RowDefinitions>
 					<RowDefinition Height="60"/>
-				</Grid.RowDefinitions>
+				</Grid.RowDefinitions>-->
 				
 				<Image
 					Grid.Column="0"
 					Height="32"
+					VerticalAlignment="Top"
 					Style="{StaticResource AddInImageStyle}" />
 				<Image
 					Grid.Column="0"
@@ -159,79 +161,66 @@
 					Width="16"
 					Style="{StaticResource InstalledTickImageStyle}"
 					Margin="36,0,0,0"/>
-				<StackPanel
-					Grid.Column="1"
-					Margin="4, 0">
-					<TextBlock
-						x:Name="nameTextBlock"
-						Text="{Binding Path=Name}"
-						FontWeight="Bold"/>
-					<TextBlock
-						x:Name="summaryTextBlock"
-						Text="{Binding Path=Summary}"
-						TextWrapping="Wrap"
-						TextTrimming="CharacterEllipsis"
-						MaxHeight="40"/>
-				</StackPanel>
-				<Button
-					x:Name="addPackageButton"
-					Grid.Column="2"
-					Content="{core:Localize AddInManager.ActionInstall}"
-					IsDefault="True"
-					Command="{Binding Path=AddPackageCommand}"
-					VerticalAlignment="Top"
-					Style="{StaticResource addInListButtonStyle}"
-					Margin="2,2,2,2"/>
-				<Button
-					x:Name="updatePackageButton"
-					Grid.Column="2"
-					Content="{core:Localize AddInManager.ActionUpdate}"
-					IsDefault="True"
-					Command="{Binding Path=UpdatePackageCommand}"
-					VerticalAlignment="Top"
-					Style="{StaticResource addInListButtonStyle}"
-					Margin="2,2,2,2"/>
-				<Button
-					x:Name="disablePackageButton"
-					Grid.Column="2"
-					Content="{core:Localize AddInManager.ActionDisable}"
-					IsDefault="True"
-					Command="{Binding Path=DisablePackageCommand}"
-					VerticalAlignment="Top"
-					Style="{StaticResource addInListButtonStyle}"
-					Margin="2,2,2,2"/>
-				<Button
-					x:Name="removePackageButton"
-					Grid.Column="2"
-					Content="{core:Localize AddInManager.ActionUninstall}"
-					Command="{Binding Path=RemovePackageCommand}"
-					VerticalAlignment="Bottom"
-					Style="{StaticResource addInListButtonStyle}"
-					Margin="2,2,2,2"/>
-				<Button
-					x:Name="cancelInstallationButton"
-					Grid.Column="2"
-					Content="{core:Localize AddInManager.ActionCancelInstallation}"
-					Command="{Binding Path=CancelInstallationCommand}"
-					VerticalAlignment="Bottom"
-					Style="{StaticResource addInListButtonStyle}"
-					Margin="2,2,2,2"/>
-				<Button
-					x:Name="cancelUpdateButton"
-					Grid.Column="2"
-					Content="{core:Localize AddInManager.ActionCancelUpdate}"
-					Command="{Binding Path=CancelUpdateCommand}"
-					VerticalAlignment="Bottom"
-					Style="{StaticResource addInListButtonStyle}"
-					Margin="2,2,2,2"/>
-				<Button
-					x:Name="cancelUninstallationButton"
-					Grid.Column="2"
-					Content="{core:Localize AddInManager.ActionCancelDeinstallation}"
-					Command="{Binding Path=CancelUninstallationCommand}"
-					VerticalAlignment="Bottom"
-					Style="{StaticResource addInListButtonStyle}"
-					Margin="2,2,2,2"/>
+				
+				<Grid Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Left">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<StackPanel Grid.Row="0" Margin="4,4,4,4" HorizontalAlignment="Left">
+						<TextBlock
+							x:Name="nameTextBlock"
+							Text="{Binding Path=Name}"
+							FontWeight="Bold"
+							TextWrapping="Wrap"
+							Margin="0,0,0,6"/>
+						<TextBlock
+							x:Name="summaryTextBlock"
+							Text="{Binding Path=Summary}"
+							TextWrapping="Wrap"
+							TextTrimming="CharacterEllipsis"/>
+					</StackPanel>
+					<StackPanel Grid.Row="1" Margin="2,2,2,2" Orientation="Horizontal">
+						<Button
+							x:Name="addPackageButton"
+							Content="{core:Localize AddInManager.ActionInstall}"
+							IsDefault="True"
+							Command="{Binding Path=AddPackageCommand}"
+							Style="{StaticResource addInListButtonStyle}"/>
+						<Button
+							x:Name="updatePackageButton"
+							Content="{core:Localize AddInManager.ActionUpdate}"
+							IsDefault="True"
+							Command="{Binding Path=UpdatePackageCommand}"
+							Style="{StaticResource addInListButtonStyle}"/>
+						<Button
+							x:Name="disablePackageButton"
+							Content="{core:Localize AddInManager.ActionDisable}"
+							IsDefault="True"
+							Command="{Binding Path=DisablePackageCommand}"
+							Style="{StaticResource addInListButtonStyle}"/>
+						<Button
+							x:Name="removePackageButton"
+							Content="{core:Localize AddInManager.ActionUninstall}"
+							Command="{Binding Path=RemovePackageCommand}"
+							Style="{StaticResource addInListButtonStyle}"/>
+						<Button
+							x:Name="cancelInstallationButton"
+							Content="{core:Localize AddInManager.ActionCancelInstallation}"
+							Command="{Binding Path=CancelInstallationCommand}"
+							Style="{StaticResource addInListButtonStyle}"/>
+						<Button
+							x:Name="cancelUpdateButton"
+							Content="{core:Localize AddInManager.ActionCancelUpdate}"
+							Command="{Binding Path=CancelUpdateCommand}"
+							Style="{StaticResource addInListButtonStyle}"/>
+						<Button
+							x:Name="cancelUninstallationButton"
+							Content="{core:Localize AddInManager.ActionCancelDeinstallation}"
+							Command="{Binding Path=CancelUninstallationCommand}"
+							Style="{StaticResource addInListButtonStyle}"/>
+					</StackPanel>
+				</Grid>
 			</Grid>
 			
 			<DataTemplate.Triggers>
@@ -468,11 +457,10 @@
 	
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition MinWidth="100"/>
+			<ColumnDefinition MinWidth="200"/>
 			<ColumnDefinition Width="Auto"/>
 			<ColumnDefinition Width=".6*" MinWidth="100"/>
 		</Grid.ColumnDefinitions>
-		
 		
 		<Grid Grid.Column="0">
 			<Grid>
@@ -495,7 +483,7 @@
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
 					
-					<!--				<TextBlock
+					<!-- <TextBlock
 						Grid.Row="0"
 						Grid.Column="0"
 						VerticalAlignment="Center"

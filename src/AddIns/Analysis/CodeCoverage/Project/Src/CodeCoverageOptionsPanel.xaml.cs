@@ -47,6 +47,7 @@ namespace ICSharpCode.CodeCoverage
 			DataContext = this;
 			DisplayItems = new ObservableCollection<CodeCoverageDisplayItem>();
 			DisplayItems.Add(new CodeCoverageDisplayItem(StringParser.Parse("${res:ICSharpCode.CodeCoverage.CodeCovered}"), CodeCoverageOptions.VisitedColorProperty, CodeCoverageOptions.VisitedColor, CodeCoverageOptions.VisitedForeColorProperty, CodeCoverageOptions.VisitedForeColor));
+			DisplayItems.Add(new CodeCoverageDisplayItem(StringParser.Parse("${res:ICSharpCode.CodeCoverage.CodePartCovered}"), CodeCoverageOptions.PartVisitedColorProperty, CodeCoverageOptions.PartVisitedColor, CodeCoverageOptions.PartVisitedForeColorProperty, CodeCoverageOptions.PartVisitedForeColor));
 			DisplayItems.Add(new CodeCoverageDisplayItem(StringParser.Parse("${res:ICSharpCode.CodeCoverage.CodeNotCovered}"), CodeCoverageOptions.NotVisitedColorProperty, CodeCoverageOptions.NotVisitedColor, CodeCoverageOptions.NotVisitedForeColorProperty, CodeCoverageOptions.NotVisitedForeColor));
 			DisplayItem = DisplayItems[0];
 		}

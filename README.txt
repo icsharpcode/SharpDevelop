@@ -33,14 +33,14 @@ Extended Requirements (building SharpDevelop)
  - if you have cloned the SD git repository: git must be available on your PATH
  
 Libraries and integrated tools:
-	AvalonDock: New BSD License (BSD) (thanks to Adolfo Marinucci) 
+	AvalonDock: New BSD License (BSD) (thanks to Adolfo Marinucci) - http://avalondock.codeplex.com/
 	GraphSharp
 	IQToolkit
 	Irony
 	ITextSharp
 	log4net
 	Mono T4
-	Mono.Cecil: MIT License (thanks to Jb Evain) 
+	Mono.Cecil: MIT License (thanks to Jb Evain) - https://github.com/jbevain/cecil
 	SharpSvn
 	SQLite
 	WPFToolkit
@@ -50,7 +50,7 @@ Integrated Tools (shipping with SharpDevelop):
 	IronRuby
 	NuGet
 	NUnit
-	PartCover
+	OpenCover - https://github.com/OpenCover/opencover
 	WiX
 
 Reusable Libraries (developed as part of SharpDevelop):

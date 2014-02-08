@@ -49,8 +49,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			string isdebugging = condition.Properties.Get("isdebugging", String.Empty);
 			string isprocessrunning = condition.Properties.Get("isprocessrunning", String.Empty);
-			bool debuggerIsDebugging = DebuggerService.IsDebuggerLoaded ? DebuggerService.CurrentDebugger.IsDebugging : false;
-			bool debuggerIsProcessRunning = DebuggerService.IsDebuggerLoaded ? DebuggerService.CurrentDebugger.IsProcessRunning : false;
+			bool debuggerIsDebugging = SD.Debugger.IsDebuggerLoaded ? SD.Debugger.IsDebugging : false;
+			bool debuggerIsProcessRunning = SD.Debugger.IsDebuggerLoaded ? SD.Debugger.IsProcessRunning : false;
 			
 			bool isdebuggingPassed = (isdebugging == String.Empty) ||
 				(debuggerIsDebugging == Boolean.Parse(isdebugging));

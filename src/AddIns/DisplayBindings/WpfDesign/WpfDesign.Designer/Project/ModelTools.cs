@@ -150,7 +150,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 			if (double.IsNaN(s.Height) && createdItem.View.DesiredSize.Height > 0)
 			{
-				s.Height = createdItem.View.DesiredSize.Width;
+				s.Height = createdItem.View.DesiredSize.Height;
 			}
 
 			var newS = Metadata.GetDefaultSize(createdItem.ComponentType, true);

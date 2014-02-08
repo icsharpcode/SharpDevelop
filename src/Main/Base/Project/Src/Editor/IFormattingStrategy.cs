@@ -70,10 +70,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 		}
 		
-		public virtual void IndentLines(ITextEditor editor, int begin, int end)
+		public virtual void IndentLines(ITextEditor editor, int beginLine, int endLine)
 		{
 			using (editor.Document.OpenUndoGroup()) {
-				for (int i = begin; i <= end; i++) {
+				for (int i = beginLine; i <= endLine; i++) {
 					IndentLine(editor, editor.Document.GetLineByNumber(i));
 				}
 			}

@@ -136,6 +136,7 @@
     <Compile Include="Parser\AssemblyParserService.cs" />
     <Compile Include="Parser\LoadSolutionProjects.cs" />
     <Compile Include="Parser\SharpDevelopSolutionSnapshot.cs" />
+    <Compile Include="Parser\UnknownCodeContext.cs" />
     <Compile Include="Project\Build\BuildEngine.cs" />
     <Compile Include="Project\Build\BuildModifiedProjectsOnlyService.cs" />
     <Compile Include="Project\Build\BuildService.cs" />

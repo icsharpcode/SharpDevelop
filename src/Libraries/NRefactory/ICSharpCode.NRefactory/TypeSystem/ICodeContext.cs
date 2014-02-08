@@ -17,13 +17,22 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.SharpDevelop.Debugging;
+using System.Collections.Generic;
 
-namespace ICSharpCode.UnitTesting
+namespace ICSharpCode.NRefactory.TypeSystem
 {
-	public interface IUnitTestDebuggerService
+	public interface ICodeContext : ITypeResolveContext
 	{
-		bool IsDebuggerLoaded { get; }
-		IDebugger CurrentDebugger { get; }
+		/// <summary>
+		/// Gets all currently visible local variables and lambda parameters.
+		/// Does not include method parameters.
+		/// </summary>
+		IEnumerable<IVariable> LocalVariables { get; }
+		
+		/// <summary>
+		/// Gets whether the context is within a lambda expression or anonymous method.
+		/// </summary>
+		bool IsWithinLambdaExpression { get; }
 	}
 }
+

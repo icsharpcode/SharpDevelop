@@ -446,5 +446,17 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedReferences, result);
 		}
+		
+		[Test]
+		public void DevelopmentDependency_PackageHasDevelopmentDependencySetToTrue_ReturnsWrappedPackageDevelopmentDependency()
+		{
+			CreatePackage();
+			var expectedVersion = new Version("1.1");
+			fakePackage.DevelopmentDependency = true;
+			
+			bool dependency = package.DevelopmentDependency;
+			
+			Assert.IsTrue(dependency);
+		}
 	}
 }

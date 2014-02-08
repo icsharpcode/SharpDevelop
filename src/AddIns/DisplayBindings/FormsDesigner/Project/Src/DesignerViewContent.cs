@@ -143,7 +143,7 @@ namespace ICSharpCode.FormsDesigner
 			this.IsActiveViewContentChanged += this.IsActiveViewContentChangedHandler;
 			
 			FileService.FileRemoving += this.FileServiceFileRemoving;
-			ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting += this.DebugStarting;
+			SD.Debugger.DebugStarting += this.DebugStarting;
 		}
 
 		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider)
@@ -715,7 +715,7 @@ namespace ICSharpCode.FormsDesigner
 				// to SaveInternal which requires the designer to be loaded.
 				base.Dispose();
 			} finally {
-				ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting -= this.DebugStarting;
+				SD.Debugger.DebugStarting -= this.DebugStarting;
 				FileService.FileRemoving -= this.FileServiceFileRemoving;
 				
 				this.UnloadDesigner();

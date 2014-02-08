@@ -9,6 +9,7 @@
 	</Manifest>
 	
 	<Runtime>
+		<Import assembly=":ICSharpCode.SharpDevelop" />
 		<Import assembly="Debugger.AddIn.dll">
 			<ConditionEvaluator name = "IsBreakpointSet" class = "Debugger.AddIn.IsBreakpointCondition"/>
 			<ConditionEvaluator name = "IsBreakpointActive" class="Debugger.AddIn.IsActiveBreakpointCondition" />
@@ -16,13 +17,9 @@
 		<Import assembly="Debugger.Core.dll"/>
 	</Runtime>
 	
-	<Path name="/SharpDevelop/Services/DebuggerService/Debugger">
-		<Debugger id="DefaultDebugger"
-		          supportsStepping = "true"
-		          supportsExecutionControl = "true"
-		          supportsAttaching = "true"
-		          supportsDetaching = "true"
-		          class="ICSharpCode.SharpDevelop.Services.WindowsDebugger"/>
+	<Path name="/SharpDevelop/Services">
+		<Service id="ICSharpCode.SharpDevelop.Debugging.IDebuggerService"
+		         class="ICSharpCode.SharpDevelop.Services.WindowsDebugger" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
@@ -44,28 +41,22 @@
 			          type = "Separator"/>
 		</Condition>
 		<MenuItem id="BreakpointSeparator" type = "Separator" />
-		
-		<MenuItem id="ChangeBreakPoint" label="${res:MainWindow.Windows.Debug.Conditional.Breakpoints.Breakpoint}" type="Menu">
-			<Include id="SetBreakpoint" item="/SharpDevelop/Workbench/MainMenu/Debug/Toggle Breakpoint" />
-			<Condition name="IsBreakpointSet">
-				<Condition name="IsBreakpointActive">
-					<MenuItem id="DisableBreakpoint"
-					          class="Debugger.AddIn.DisableBreakpointMenuCommand"
-					          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.DisableBreakpoint}" />
-				</Condition>
-				<ComplexCondition>
-					<Not>
-						<Condition name="IsBreakpointActive" />
-					</Not>
-					<MenuItem id="EnableBreakpoint"
-					          class="Debugger.AddIn.EnableBreakpointMenuCommand"
-					          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint}" />
-				</ComplexCondition>
-				<MenuItem id="EditCondition"
-				          class="Debugger.AddIn.EditBreakpointMenuCommand"
-				          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EditCondition}" />
+		<Include id="SetBreakpoint" item="/SharpDevelop/Workbench/MainMenu/Debug/Toggle Breakpoint" />
+		<Condition name="IsBreakpointSet">
+			<Condition name="IsBreakpointActive">
+				<MenuItem id="DisableBreakpoint"
+				          class="Debugger.AddIn.DisableBreakpointMenuCommand"
+				          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.DisableBreakpoint}" />
 			</Condition>
-		</MenuItem>
+			<ComplexCondition>
+				<Not>
+					<Condition name="IsBreakpointActive" />
+				</Not>
+				<MenuItem id="EnableBreakpoint"
+				          class="Debugger.AddIn.EnableBreakpointMenuCommand"
+				          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint}" />
+			</ComplexCondition>
+		</Condition>
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/MainMenu/Debug">
@@ -75,7 +66,7 @@
 			          label = "${res:MainWindow.Windows.Debug.DebugExecutable}"
 			          class = "Debugger.AddIn.DebugExecutableMenuCommand"/>
 		</Condition>
-<!--		<MenuItem id="AddExpressionBreakpoint"
+		<!--		<MenuItem id="AddExpressionBreakpoint"
 		          insertafter="Toggle Breakpoint"
 		          label = "${res:MainWindow.Windows.Debug.AddExpressionBreakpoint}"
 		          shortcut="Shift|F7"

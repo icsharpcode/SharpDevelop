@@ -27,12 +27,12 @@ namespace ICSharpCode.Scripting
 {
 	public class RunScriptingConsoleApplicationCommand : AbstractMenuCommand
 	{
-		IDebugger debugger;
+		IDebuggerService debugger;
 		IScriptingWorkbench workbench;
 		ScriptingConsoleApplication scriptingConsoleApplication;
 		
 		public RunScriptingConsoleApplicationCommand(IScriptingWorkbench workbench, 
-			IDebugger debugger,
+			IDebuggerService debugger,
 			ScriptingConsoleApplication scriptingConsoleApplication)
 		{
 			this.workbench = workbench;

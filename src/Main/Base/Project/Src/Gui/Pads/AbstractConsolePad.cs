@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		const string toolBarTreePath = "/SharpDevelop/Pads/CommonConsole/ToolBar";
 		
-		DockPanel panel;
+		Grid panel;
 		protected ConsoleControl console;
 		ToolBar toolbar;
 		
@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected AbstractConsolePad()
 		{
-			this.panel = new DockPanel();
+			this.panel = new Grid();
 			
 			this.console = new ConsoleControl();
 			
@@ -61,8 +61,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.toolbar = BuildToolBar();
 			this.toolbar.SetValue(DockPanel.DockProperty, Dock.Top);
 			
-			this.panel.Children.Add(toolbar);
-			this.panel.Children.Add(console);
+			panel.Children.Add(toolbar);
+			panel.Children.Add(console);
+			
+			panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			panel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+
+			Grid.SetRow(console, 1);
 			
 			this.history = new List<string>();
 			
@@ -70,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				e.Handled = HandleInput(e.Key);
 			};
 			
-			this.console.editor.TextArea.TextEntered += new TextCompositionEventHandler(AbstractConsolePadTextEntered);
+			this.console.editor.TextArea.TextEntered += AbstractConsolePadTextEntered;
 			
 			this.InitializeConsole();
 		}

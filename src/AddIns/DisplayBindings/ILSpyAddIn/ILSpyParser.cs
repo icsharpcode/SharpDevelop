@@ -67,6 +67,19 @@ namespace ICSharpCode.ILSpyAddIn
 			return ResolveAtLocation.Resolve(compilation, null, decompiledParseInfo.SyntaxTree, location, cancellationToken);
 		}
 		
+		public ICodeContext ResolveContext(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
+		{
+			var decompiledParseInfo = parseInfo as ILSpyFullParseInformation;
+			if (decompiledParseInfo == null)
+				throw new ArgumentException("ParseInfo does not have SyntaxTree");
+			var syntaxTree = decompiledParseInfo.SyntaxTree;
+			var node = syntaxTree.GetNodeAt(location);
+			if (node == null)
+				return null; // null result is allowed; the parser service will substitute a dummy context
+			var resolver = new CSharpAstResolver(compilation, syntaxTree, null);
+			return resolver.GetResolverStateBefore(node);
+		}
+		
 		public ResolveResult ResolveSnippet(ParseInformation parseInfo, TextLocation location, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();

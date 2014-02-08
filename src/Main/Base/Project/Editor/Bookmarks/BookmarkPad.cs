@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		
 		protected override bool ShowBookmarkInThisPad(SDBookmark bookmark)
 		{
-			return bookmark.IsVisibleInBookmarkPad && !(bookmark is BreakpointBookmark);
+			return bookmark.ShowInPad(this);
 		}
 	}
 	

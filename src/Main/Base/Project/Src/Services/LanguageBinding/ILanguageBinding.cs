@@ -17,7 +17,12 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop
@@ -55,5 +60,10 @@ namespace ICSharpCode.SharpDevelop
 		System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
 			get;
 		}
+		
+		/// <summary>
+		/// Creates a completion binding which works with a fileName and a location as context.
+		/// </summary>
+		ICodeCompletionBinding CreateCompletionBinding(FileName fileName, TextLocation currentLocation, ITextSource fileContent);
 	}
 }

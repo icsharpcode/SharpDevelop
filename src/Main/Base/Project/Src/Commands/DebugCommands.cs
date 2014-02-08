@@ -63,11 +63,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			if (DebuggerService.CurrentDebugger.IsDebugging) {
-				LoggingService.Info("Debugger Command: Continue");
-				DebuggerService.CurrentDebugger.Continue();
+			if (SD.Debugger.IsDebugging) {
+				SD.Log.Info("Debugger Command: Continue");
+				SD.Debugger.Continue();
 			} else {
-				LoggingService.Info("Debugger Command: Run");
+				SD.Log.Info("Debugger Command: Run");
 				new Execute().Run();
 			}
 		}
@@ -77,8 +77,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			LoggingService.Info("Debugger Command: Break");
-			DebuggerService.CurrentDebugger.Break();
+			SD.Log.Info("Debugger Command: Break");
+			SD.Debugger.Break();
 		}
 	}
 	
@@ -86,8 +86,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			LoggingService.Info("Debugger Command: Stop");
-			DebuggerService.CurrentDebugger.Stop();
+			SD.Log.Info("Debugger Command: Stop");
+			SD.Debugger.Stop();
 		}
 	}
 	
@@ -95,12 +95,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			LoggingService.Info("Debugger Command: StepOver");
-			if (!DebuggerService.CurrentDebugger.IsDebugging) {
-				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
+			SD.Log.Info("Debugger Command: StepOver");
+			if (!SD.Debugger.IsDebugging) {
+				SD.Debugger.BreakAtBeginning = true;
 				new Execute().Run();
 			} else {
-				DebuggerService.CurrentDebugger.StepOver();
+				SD.Debugger.StepOver();
 			}
 		}
 	}
@@ -109,12 +109,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			LoggingService.Info("Debugger Command: StepInto");
-			if (!DebuggerService.CurrentDebugger.IsDebugging) {
-				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
+			SD.Log.Info("Debugger Command: StepInto");
+			if (!SD.Debugger.IsDebugging) {
+				SD.Debugger.BreakAtBeginning = true;
 				new Execute().Run();
 			} else {
-				DebuggerService.CurrentDebugger.StepInto();
+				SD.Debugger.StepInto();
 			}
 		}
 	}
@@ -123,8 +123,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			LoggingService.Info("Debugger Command: StepOut");
-			DebuggerService.CurrentDebugger.StepOut();
+			SD.Log.Info("Debugger Command: StepOut");
+			SD.Debugger.StepOut();
 		}
 	}
 	
@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			
 			if (editor != null) {
 				if (!string.IsNullOrEmpty(editor.FileName)) {
-					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
+					SD.Debugger.ToggleBreakpointAt(editor, editor.Caret.Line);
 				}
 			}
 		}
@@ -146,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			DebuggerService.CurrentDebugger.ShowAttachDialog();
+			SD.Debugger.ShowAttachDialog();
 		}
 	}
 	
@@ -154,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			DebuggerService.CurrentDebugger.Detach();
+			SD.Debugger.Detach();
 		}
 	}
 	

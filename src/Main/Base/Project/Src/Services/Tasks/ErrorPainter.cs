@@ -44,8 +44,8 @@ namespace ICSharpCode.SharpDevelop
 			TaskService.Added   += OnAdded;
 			TaskService.Removed += OnRemoved;
 			TaskService.Cleared += OnCleared;
-			DebuggerService.DebugStarted += OnDebugStartedStopped;
-			DebuggerService.DebugStopped += OnDebugStartedStopped;
+			SD.Debugger.DebugStarted += OnDebugStartedStopped;
+			SD.Debugger.DebugStopped += OnDebugStartedStopped;
 			textEditor.Options.PropertyChanged += textEditor_Options_PropertyChanged;
 			
 			ErrorColor = Colors.Red;
@@ -69,8 +69,8 @@ namespace ICSharpCode.SharpDevelop
 			TaskService.Added   -= OnAdded;
 			TaskService.Removed -= OnRemoved;
 			TaskService.Cleared -= OnCleared;
-			DebuggerService.DebugStarted -= OnDebugStartedStopped;
-			DebuggerService.DebugStopped -= OnDebugStartedStopped;
+			SD.Debugger.DebugStarted -= OnDebugStartedStopped;
+			SD.Debugger.DebugStopped -= OnDebugStartedStopped;
 			textEditor.Options.PropertyChanged -= textEditor_Options_PropertyChanged;
 			ClearErrors();
 			instances.Remove(this);
@@ -142,7 +142,7 @@ namespace ICSharpCode.SharpDevelop
 		void UpdateEnabled()
 		{
 			bool newEnabled = textEditor.Options.UnderlineErrors;
-			if (DebuggerService.IsDebuggerStarted)
+			if (SD.Debugger.IsDebuggerStarted)
 				newEnabled = false;
 			
 			if (isEnabled != newEnabled) {

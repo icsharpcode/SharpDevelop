@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -177,7 +178,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#endregion
 		
 		TextEditor textEditor = new TextEditor();
-		DockPanel panel = new DockPanel();
+		Grid panel = new Grid();
 		ToolBar toolStrip;
 		
 		List<MessageViewCategory> messageCategories = new List<MessageViewCategory>();
@@ -251,7 +252,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AddCategory(TaskService.BuildMessageViewCategory);
 			
 			textEditor.IsReadOnly = true;
-			
 			textEditor.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
 			
 			properties = PropertyService.NestedProperties(OutputWindowOptionsPanel.OutputWindowsProperty);
@@ -264,10 +264,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			textEditor.TextArea.TextView.ElementGenerators.OfType<LinkElementGenerator>().ForEach(x => x.RequireControlModifierForClick = false);
 			
 			toolStrip = ToolBarService.CreateToolBar(panel, this, "/SharpDevelop/Pads/CompilerMessageView/Toolbar");
-			toolStrip.SetValue(DockPanel.DockProperty, Dock.Top);
+			toolStrip.Items.OfType<ComboBox>().ForEach(b => b.MinWidth = 75);
+			
+			panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			panel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 			
 			panel.Children.Add(toolStrip);
 			panel.Children.Add(textEditor);
+			Grid.SetRow(textEditor, 1);
 			
 			SetWordWrap();
 			DisplayActiveCategory();

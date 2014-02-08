@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 			
 			if (CodeCompletionOptions.TooltipsOnlyWhenDebugging) {
-				if (!DebuggerService.IsDebuggerLoaded || !DebuggerService.CurrentDebugger.IsDebugging) {
+				if (!SD.Debugger.IsDebuggerLoaded || !SD.Debugger.IsDebugging) {
 					e.Handled = true;
 					return;
 				}

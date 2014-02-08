@@ -109,7 +109,8 @@ namespace ICSharpCode.AddInManager2.Model
 				null,
 				_logger,
 				false,
-				allowPrereleaseVersions);
+				allowPrereleaseVersions,
+				DependencyVersion.Lowest);
 		}
 		
 		public void ExecuteOperation(PackageOperation operation)

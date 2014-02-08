@@ -78,5 +78,7 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 			get;
 			set;
 		}
+
+		public PackageSaveModes PackageSaveMode { get; set; }
 	}
 }

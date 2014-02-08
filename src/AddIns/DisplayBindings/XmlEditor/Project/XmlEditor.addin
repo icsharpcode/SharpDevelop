@@ -103,8 +103,7 @@
 				          class="ICSharpCode.XmlEditor.CreateSchemaCommand"/>
 				<MenuItem id="ValidateXml"
 				          label="${res:ICSharpCode.XmlEditor.ValidateXmlMenuLabel}"
-				          class="ICSharpCode.XmlEditor.ValidateXmlCommand"
-				          shortcut="Control|Shift|V"/>
+				          class="ICSharpCode.XmlEditor.ValidateXmlCommand"/>
 				<MenuItem id="GoToDefinition"
 				          label="${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
 				          class="ICSharpCode.XmlEditor.GoToSchemaDefinitionCommand"/>

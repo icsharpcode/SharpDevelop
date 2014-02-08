@@ -52,5 +52,6 @@ namespace PackageManagement.Tests.Helpers
 		
 		public bool HasRecentPackages { get; set; }
 		public bool SupportsPrereleasePackages { get; set; }
+		public PackageSaveModes PackageSaveMode { get; set; }
 	}
 }

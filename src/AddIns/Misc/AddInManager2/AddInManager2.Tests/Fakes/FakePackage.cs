@@ -202,5 +202,7 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 		{
 			return string.Format("[FakePackage Id={0}, Version={1}]", Id, Version);
 		}
+
+		public bool DevelopmentDependency { get; set; }
 	}
 }

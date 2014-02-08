@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>AvalonEdit.Sample</id>
-    <version>4.3.1.9430</version>
+    <version>4.4.0.9727</version>
     <authors>Daniel Grunwald</authors>
     <owners>SharpDevelop</owners>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
@@ -16,7 +16,7 @@ StartupUri="/Samples/AvalonEdit/Window1.xaml"</description>
     <summary>Sample code for AvalonEdit the WPF-based text editor used in SharpDevelop 4.0.</summary>
     <language>en-US</language>
     <dependencies>
-      <dependency id="AvalonEdit" version="4.3.1.9430" />
+      <dependency id="AvalonEdit" version="4.4.0.9727" />
     </dependencies>
 		<frameworkAssemblies>
 			<frameworkAssembly assemblyName="System.Windows.Forms" />

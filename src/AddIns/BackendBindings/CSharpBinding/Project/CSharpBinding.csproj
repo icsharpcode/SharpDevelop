@@ -103,6 +103,7 @@
       <DependentUpon>InsertCtorDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\Refactoring\InsertCtorSnippetRefactoring.cs" />
+    <Compile Include="Src\Refactoring\InsertionCursorLayer.cs" />
     <Compile Include="Src\Refactoring\InsertionPoint.cs" />
     <Compile Include="Src\Refactoring\IssueOptions.xaml.cs">
       <DependentUpon>IssueOptions.xaml</DependentUpon>

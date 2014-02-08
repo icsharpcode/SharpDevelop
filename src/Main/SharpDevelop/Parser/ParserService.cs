@@ -57,19 +57,19 @@ namespace ICSharpCode.SharpDevelop.Parser
 			// RaiseParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
 			// To ensure events are raised in the same order, we always invoke on the main thread.
 			SD.MainThread.InvokeAsyncAndForget(delegate {
-				if (!LoadSolutionProjectsThread.IsRunning) {
-					string addition;
-					if (e.OldUnresolvedFile == null) {
-						addition = " (new)";
-					} else if (e.NewUnresolvedFile == null) {
-						addition = " (removed)";
-					} else {
-						addition = " (updated)";
-					}
-					LoggingService.Debug("ParseInformationUpdated " + e.FileName + addition);
-				}
-				ParseInformationUpdated(null, e);
-			});
+			                                   	if (!LoadSolutionProjectsThread.IsRunning) {
+			                                   		string addition;
+			                                   		if (e.OldUnresolvedFile == null) {
+			                                   			addition = " (new)";
+			                                   		} else if (e.NewUnresolvedFile == null) {
+			                                   			addition = " (removed)";
+			                                   		} else {
+			                                   			addition = " (updated)";
+			                                   		}
+			                                   		LoggingService.Debug("ParseInformationUpdated " + e.FileName + addition);
+			                                   	}
+			                                   	ParseInformationUpdated(null, e);
+			                                   });
 		}
 		#endregion
 		
@@ -288,7 +288,31 @@ namespace ICSharpCode.SharpDevelop.Parser
 				compilation = GetCompilationForFile(fileName);
 			ResolveResult rr = entry.parser.Resolve(parseInfo, location, compilation, cancellationToken);
 			LoggingService.Debug("Resolved " + location + " to " + rr);
-			return rr;
+			return rr ?? ErrorResolveResult.UnknownError;
+		}
+
+		public ICodeContext ResolveContext(ITextEditor editor, TextLocation location, ICompilation compilation = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
+			return ResolveContext(editor.FileName, location, editor.Document, compilation, cancellationToken);
+		}
+		
+		public ICodeContext ResolveContext(FileName fileName, TextLocation location, ITextSource fileContent = null, ICompilation compilation = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (compilation == null)
+				compilation = GetCompilationForFile(fileName);
+			var entry = GetFileEntry(fileName, true);
+			if (entry.parser == null)
+				return new UnknownCodeContext(compilation);
+			IProject project = compilation != null ? compilation.GetProject() : null;
+			var parseInfo = entry.Parse(fileContent, project, cancellationToken);
+			if (parseInfo == null)
+				return new UnknownCodeContext(compilation);
+			var context = entry.parser.ResolveContext(parseInfo, location, compilation, cancellationToken);
+			if (context == null)
+				return new UnknownCodeContext(compilation, parseInfo.UnresolvedFile, location);
+			return context;
 		}
 		
 		public ResolveResult ResolveSnippet(FileName fileName, TextLocation fileLocation, ITextSource fileContent, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken)
@@ -322,7 +346,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 						compilation = GetCompilationForFile(fileName);
 					ResolveResult rr = entry.parser.Resolve(parseInfo, location, compilation, cancellationToken);
 					LoggingService.Debug("Resolved " + location + " to " + rr);
-					return rr;
+					return rr ?? ErrorResolveResult.UnknownError;
 				}, cancellationToken);
 		}
 		

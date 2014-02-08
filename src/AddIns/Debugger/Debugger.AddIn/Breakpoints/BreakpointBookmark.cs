@@ -19,17 +19,21 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.SharpDevelop.Debugging
+namespace Debugger.AddIn.Breakpoints
 {
-	public class BreakpointBookmark : SDMarkerBookmark
+	public class BreakpointBookmark : SDMarkerBookmark, IHaveStateEnabled
 	{
 		bool isHealthy = true;
 		bool isEnabled = true;
@@ -95,11 +99,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			this.FileName = fileName;
 		}
 		
-		public const string BreakpointMarker = "Breakpoint";
-		
-		public static readonly Color DefaultBackground = Color.FromRgb(180, 38, 38);
-		public static readonly Color DefaultForeground = Colors.White;
-		
 		public static IImage BreakpointImage {
 			get { return SD.ResourceService.GetImage("Bookmarks.Breakpoint"); }
 		}
@@ -132,16 +131,16 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			IDocumentLine line = this.Document.GetLineByNumber(this.LineNumber);
 			ITextMarker marker = markerService.Create(line.Offset, line.Length);
 			IHighlighter highlighter = this.Document.GetService(typeof(IHighlighter)) as IHighlighter;
-			marker.BackgroundColor = DefaultBackground;
-			marker.ForegroundColor = DefaultForeground;
-			marker.MarkerColor = DefaultBackground;
+			marker.BackgroundColor = BookmarkBase.BreakpointDefaultBackground;
+			marker.ForegroundColor = BookmarkBase.BreakpointDefaultForeground;
+			marker.MarkerColor = BookmarkBase.BreakpointDefaultBackground;
 			marker.MarkerTypes = TextMarkerTypes.CircleInScrollBar;
 			
 			if (highlighter != null) {
-				var color = highlighter.GetNamedColor(BreakpointMarker);
+				var color = highlighter.GetNamedColor(BookmarkBase.BreakpointMarkerName);
 				if (color != null) {
 					marker.BackgroundColor = color.Background.GetColor(null);
-					marker.MarkerColor = color.Background.GetColor(null) ?? DefaultBackground;
+					marker.MarkerColor = color.Background.GetColor(null) ?? BookmarkBase.BreakpointDefaultForeground;
 					marker.ForegroundColor = color.Foreground.GetColor(null);
 				}
 			}
@@ -151,6 +150,14 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public override string ToString()
 		{
 			return string.Format("{0} @{1}", this.FileName, this.LineNumber);
+		}
+		
+		public override object CreateTooltipContent()
+		{
+			return new BreakpointEditorPopup(this) {
+				MinWidth = 300,
+				StaysOpen = false
+			};
 		}
 	}
 }

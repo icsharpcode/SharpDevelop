@@ -26,24 +26,14 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using Debugger.AddIn.Pads.Controls;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class ConsolePad : AbstractConsolePad
 	{
-		SupportedLanguage language;
-//		NRefactoryResolver resolver;
-		
 		const string debuggerConsoleToolBarTreePath = "/SharpDevelop/Pads/ConsolePad/ToolBar";
-		
-		public SupportedLanguage SelectedLanguage {
-			get { return language; }
-			set {
-				this.language = value;
-				OnLanguageChanged();
-			}
-		}
 		
 		protected override bool AcceptCommand(string command)
 		{
@@ -82,30 +72,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		protected override void InitializeConsole()
-		{
-			base.InitializeConsole();
-			OnLanguageChanged();
-		}
-		
-		void OnLanguageChanged()
-		{
-			#warning reimplement this!
-//			switch (SelectedLanguage) {
-//				case SupportedLanguage.CSharp:
-//					resolver = new NRefactoryResolver(LanguageProperties.CSharp);
-//					SetHighlighting("C#");
-//					break;
-//				case SupportedLanguage.VBNet:
-//					resolver = new NRefactoryResolver(LanguageProperties.VBNet);
-//					SetHighlighting("VBNET");
-//					break;
-//			}
-		}
-		
 		public ConsolePad()
 		{
-			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			WindowsDebugger debugger = (WindowsDebugger)SD.Debugger;
 		}
 		
 		protected override void AbstractConsolePadTextEntered(object sender, TextCompositionEventArgs e)
@@ -117,26 +86,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void ShowDotCompletion(StackFrame frame, string currentText)
 		{
-			var seg = frame.NextStatement;
-			if (seg == null)
-				return;
-			#warning reimplement this!
-//			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
-//			var info = ParserService.GetParseInformation(seg.Filename);
-//			
-//			string text = ParserService.GetParseableFileContent(seg.Filename).Text;
-//			
-//			int currentOffset = TextEditor.Caret.Offset - console.CommandOffset - 1;
-//			
-//			var expr = expressionFinder.FindExpression(currentText, currentOffset);
-//			
-//			expr.Region = new DomRegion(seg.StartLine, seg.StartColumn, seg.EndLine, seg.EndColumn);
-//			
-//			var rr = resolver.Resolve(expr, info, text);
-//			
-//			if (rr != null) {
-//				TextEditor.ShowCompletionWindow(new DotCodeCompletionItemProvider().GenerateCompletionListForResolveResult(rr, expr.Context));
-//			}
+			var binding = DebuggerDotCompletion.PrepareDotCompletion(currentText, new DebuggerCompletionContext(frame));
+			if (binding == null) return;
+			binding.HandleKeyPressed(console.TextEditor, '.');
 		}
 		
 		protected override ToolBar BuildToolBar()

@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -52,13 +53,17 @@ namespace ICSharpCode.UnitTesting
 				testSolution = value;
 				if (testSolution != null) {
 					this.Root = new UnitTestNode(testSolution);
-					this.Root.Children.CollectionChanged += delegate {
-						this.ShowRoot = this.Root != null && this.Root.Children.Count > 1;
-					};
+					this.Root.Children.CollectionChanged += OnRootChildrenCollectionChanged;
+					OnRootChildrenCollectionChanged(null, null);
 				} else {
 					this.Root = null;
 				}
 			}
+		}
+		
+		void OnRootChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			this.ShowRoot = this.Root != null && this.Root.Children.Count > 1;
 		}
 		
 		public TestTreeView()

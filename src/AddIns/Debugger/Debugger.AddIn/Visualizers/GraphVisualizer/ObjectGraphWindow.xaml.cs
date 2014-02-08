@@ -29,6 +29,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ICSharpCode.SharpDevelop;
 using Debugger.AddIn.Visualizers.Graph.Layout;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
@@ -46,7 +47,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			InitializeComponent();
 			
-			debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
+			debuggerService = SD.Debugger as WindowsDebugger;
 			if (debuggerService == null) throw new DebuggerVisualizerException("Only windows debugger is currently supported");
 		}
 		

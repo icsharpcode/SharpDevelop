@@ -33,9 +33,9 @@
     </BuildLogFile>
     <FrameworkVersion>.NET Framework 4.0</FrameworkVersion>
     <HelpTitle>AvalonEdit</HelpTitle>
-    <CopyrightText>Copyright 2008-2013, Daniel Grunwald</CopyrightText>
+    <CopyrightText>Copyright 2008-2014, Daniel Grunwald</CopyrightText>
     <PresentationStyle>Prototype</PresentationStyle>
-    <HelpFileVersion>4.2.0.0</HelpFileVersion>
+    <HelpFileVersion>4.4.0.0</HelpFileVersion>
     <ComponentConfigurations>
       <ComponentConfig id="Code Block Component" enabled="True">
         <component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">

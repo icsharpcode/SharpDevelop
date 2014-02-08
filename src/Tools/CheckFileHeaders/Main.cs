@@ -213,7 +213,7 @@ namespace CheckFileHeaders
 						if (line.Length == 0)
 							continue;
 						if (line == copyrightHeaderOld || line == "//" + copyrightHeaderOld) {
-							lastLine = 2;
+							lastLine = 1;
 							return 7;
 						} else if (line == copyrightHeader) {
 							return 8;

@@ -405,16 +405,18 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public void FixSemicolon(CSharpTokenNode semicolon)
 		{
-			if (semicolon.IsNull) {
+			if (semicolon.IsNull)
 				return;
-			}
 			int endOffset = document.GetOffset(semicolon.StartLocation);
 			int offset = endOffset;
 			while (offset - 1 > 0 && char.IsWhiteSpace (document.GetCharAt (offset - 1))) {
 				offset--;
 			}
-			if (offset < endOffset) {
-				AddChange(offset, endOffset - offset, null);
+			if (policy.SpaceBeforeSemicolon) {
+				AddChange(offset, endOffset - offset, " ");
+			} else {
+				if (offset < endOffset)
+					AddChange(offset, endOffset - offset, null);
 			}
 		}
 		
