@@ -36,7 +36,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			var popupViewModel = new ContextActionsPopupViewModel();
 			var actions = BuildClipboardRingData(context);
 			
-			string labelSource = "${res:SharpDevelop.Refactoring.ClipboardRing}";
+			string labelSource = "${res:SharpDevelop.SideBar.ClipboardRing}";
 			if (actions == null || actions.Count == 0) 
 				labelSource = "${res:SharpDevelop.Refactoring.ClipboardRingEmpty}";
 			
