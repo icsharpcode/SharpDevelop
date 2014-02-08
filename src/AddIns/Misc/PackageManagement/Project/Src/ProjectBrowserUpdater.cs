@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement
@@ -33,7 +34,7 @@ namespace ICSharpCode.PackageManagement
 		public ProjectBrowserUpdater(ProjectBrowserControl projectBrowser)
 		{
 			this.projectBrowser = projectBrowser;
-			ProjectService.ProjectItemAdded += ProjectItemAdded;
+			SD.ProjectService.ProjectItemAdded += ProjectItemAdded;
 		}
 
 		protected virtual void ProjectItemAdded(object sender, ProjectItemEventArgs e)
@@ -53,7 +54,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Dispose()
 		{
-			ProjectService.ProjectItemAdded -= ProjectItemAdded;
+			SD.ProjectService.ProjectItemAdded -= ProjectItemAdded;
 		}
 	}
 }
