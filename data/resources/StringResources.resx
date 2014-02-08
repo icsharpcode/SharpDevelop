@@ -2039,6 +2039,15 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
     <value>Save</value>
     <comment>Save *inputbox* items</comment>
   </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTarget" xml:space="preserve">
+    <value>Links in tooltips should go to</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDefinition" xml:space="preserve">
+    <value>Definition in code</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDocumentation" xml:space="preserve">
+    <value>Documentation (if available)</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.UseDataUsageCache" xml:space="preserve">
     <value>Pre-select recently used members</value>
   </data>

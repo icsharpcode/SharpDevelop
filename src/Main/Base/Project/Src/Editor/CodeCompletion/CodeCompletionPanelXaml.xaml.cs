@@ -32,7 +32,6 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		{
 			InitializeComponent();
 			this.DataContext = this;
-			WrapText = StringParser.Parse("${res:Dialog.Options.IDEOptions.CodeCompletion.LanguageDependend}");
 		}
 		
 		#region overrides
@@ -67,8 +66,6 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 		
 		#endregion
-		
-		public string WrapText {get; private set;}
 		
 		#region Properties
 		
@@ -119,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		void Button_Click(object sender, RoutedEventArgs e)
 		{
-			ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionDataUsageCache.ResetCache();
+			CodeCompletionDataUsageCache.ResetCache();
 		}
 	}
 }

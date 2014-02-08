@@ -30,15 +30,15 @@ namespace ICSharpCode.SharpDevelop
 			return AddInTree.BuildItems<HelpProvider>("/SharpDevelop/Services/HelpProvider", null, false);
 		}
 		
-		public static void ShowHelp(IEntity c)
+		public static bool ShowHelp(IEntity c)
 		{
 			if (c == null)
 				throw new ArgumentNullException("c");
 			foreach (HelpProvider p in GetProviders()) {
 				if (p.TryShowHelp(c))
-					return;
+					return true;
 			}
-			new HelpProvider().TryShowHelp(c);
+			return new HelpProvider().TryShowHelp(c);
 		}
 		
 		public virtual bool TryShowHelp(IEntity c)
