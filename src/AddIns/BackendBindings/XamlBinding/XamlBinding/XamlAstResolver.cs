@@ -49,6 +49,13 @@ namespace ICSharpCode.XamlBinding
 		public ResolveResult ResolveAtLocation(TextLocation location, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			int offset = textDocument.GetOffset(location);
+			var line = textDocument.GetLineByNumber(location.Line);
+			
+			if (offset == line.EndOffset)
+				return ErrorResolveResult.UnknownError;
+			if (char.IsWhiteSpace(textDocument.GetCharAt(offset)))
+				return ErrorResolveResult.UnknownError;
+			
 			AXmlObject innermost = parseInfo.Document.GetChildAtOffset(offset);
 			if (innermost is AXmlText)
 				return ResolveText((AXmlText)innermost, cancellationToken);
