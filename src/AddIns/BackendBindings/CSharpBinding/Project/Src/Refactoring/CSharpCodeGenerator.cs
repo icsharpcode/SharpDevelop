@@ -144,6 +144,21 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
+		public override void AddFieldAtStart(ITypeDefinition declaringType, Accessibility accessibility, IType fieldType, string name)
+		{
+			SDRefactoringContext context = declaringType.CreateRefactoringContext();
+			var typeDecl = context.GetNode<TypeDeclaration>();
+			using (var script = context.StartScript()) {
+				var astBuilder = context.CreateTypeSystemAstBuilder(typeDecl.FirstChild);
+				var fieldDecl = new FieldDeclaration();
+				fieldDecl.Modifiers = TypeSystemAstBuilder.ModifierFromAccessibility(accessibility);
+				fieldDecl.ReturnType = astBuilder.ConvertType(context.Compilation.Import(fieldType));
+				fieldDecl.Variables.Add(new VariableInitializer(name));
+				
+				script.AddTo(typeDecl, fieldDecl);
+			}
+		}
+		
 		public override void ChangeAccessibility(IEntity entity, Accessibility newAccessiblity)
 		{
 			// TODO script.ChangeModifiers(...)

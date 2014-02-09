@@ -222,7 +222,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			output.RegisterTrackedSegments(this, startOffset);
 			CorrectFormatting (null, newNode);
 		}
-
+	
+		public void AddTo(TypeDeclaration typeDecl, EntityDeclaration entityDecl)
+		{
+			var startOffset = GetCurrentOffset(typeDecl.LBraceToken.EndLocation);
+			var output = OutputNode(1 + GetIndentLevelAt(startOffset), entityDecl, true);
+			InsertText(startOffset, output.Text);
+			output.RegisterTrackedSegments(this, startOffset);
+			CorrectFormatting (null, entityDecl);
+		}
+		
 		/// <summary>
 		/// Changes the modifier of a given entity declaration.
 		/// </summary>

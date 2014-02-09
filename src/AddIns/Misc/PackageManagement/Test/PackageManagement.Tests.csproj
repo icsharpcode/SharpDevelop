@@ -398,11 +398,5 @@
     <Folder Include="Src\VisualStudio" />
     <Folder Include="Src\Scripting" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\bin\SharpDevelop.exe">
-      <Link>SharpDevelop.exe</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

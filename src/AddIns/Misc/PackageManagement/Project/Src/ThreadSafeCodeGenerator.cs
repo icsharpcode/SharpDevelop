@@ -49,5 +49,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			mainThread.InvokeIfRequired(action);
 		}
+		
+		public void AddFieldAtStart(ITypeDefinition typeDefinition, Accessibility accessibility, IType fieldType, string name)
+		{
+			InvokeIfRequired(() => codeGenerator.AddFieldAtStart(typeDefinition, accessibility, fieldType, name));
+		}
 	}
 }

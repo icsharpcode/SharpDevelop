@@ -28,7 +28,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeType : CodeElement, global::EnvDTE.CodeType
 	{
-		protected readonly ITypeDefinition typeDefinition;
+		protected ITypeDefinition typeDefinition;
 		IType[] typeArguments;
 		
 		CodeElementsList<CodeElement> members;

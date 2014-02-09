@@ -26,5 +26,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		void AddImport(FileName fileName, string name);
 		void MakePartial(ITypeDefinition typeDefinition);
+		void AddFieldAtStart(ITypeDefinition typeDefinition, Accessibility accessibility, IType fieldType, string name);
 	}
 }
