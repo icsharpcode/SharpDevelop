@@ -81,9 +81,9 @@ namespace ICSharpCode.CodeQuality.Reporting
 			if (sectionName == ReportSectionNames.ReportHeader) {
 
 				var param1 = (BaseTextItem)e.Section.Items.FirstOrDefault(n => n.Name == "Param1");
-				FileInfo fi =new FileInfo(FileNames[0]);
+//				FileInfo fi =new FileInfo(FileNames[0]);
 //			var s = fi..Directory + fi.Name;
-				param1.Text = fi.Name;
+				param1.Text = FileNames[0];
 				var param2 = (BaseTextItem)e.Section.Items.FirstOrDefault(n => n.Name == "Param2");
 				param2.Text = list.Count.ToString();
 			}

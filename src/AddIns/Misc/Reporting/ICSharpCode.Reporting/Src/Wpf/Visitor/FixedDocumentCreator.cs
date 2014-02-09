@@ -59,7 +59,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			return canvas;
 		}
 
-		
+		/*
 		public static TextBlock CreateTextBlock(ExportText exportText,bool setBackcolor){
 			
 			var textBlock = new TextBlock();
@@ -79,8 +79,9 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			MeasureTextBlock (textBlock,exportText);
 			return textBlock;
 		}
+		*/
 		
-		
+		/*
 		static void CheckForNewLine(TextBlock textBlock,ExportText exportText) {
 			string [] inlines = exportText.Text.Split(Environment.NewLine.ToCharArray());
 			for (int i = 0; i < inlines.Length; i++) {
@@ -101,22 +102,15 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			textBlock.Height = wpfSize.Height;
 		}	
 		
+		*/
 		
+		/*
 		static Size MeasureTextInWpf(ExportText exportText){
 			
 			if (exportText.CanGrow) {
-				var formattedText = new FormattedText(exportText.Text,
-				                           CultureInfo.CurrentCulture,
-				                           FlowDirection.LeftToRight,
-				                           new Typeface(exportText.Font.FontFamily.Name),
-				                           exportText.Font.Size,
-				                           new SolidColorBrush(exportText.ForeColor.ToWpf()),
-				                           null,
-				                           TextFormattingMode.Display);
+				var formattedText = NewMethod(exportText);
 				
 				formattedText.MaxTextWidth = exportText.DesiredSize.Width * 96.0 / 72.0;
-//				ft.MaxTextHeight = exportText.DesiredSize.Height + 5 * 96.0 / 72.0;
-//				ft.MaxTextHeight = Double.MaxValue ;
 				
 				formattedText.SetFontSize(Math.Floor(exportText.Font.Size  * 96.0 / 72.0));
 				
@@ -126,6 +120,34 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				return size;
 			}
 			return new Size(exportText.Size.Width,exportText.Size.Height);
+		}
+
+		*/
+		
+		
+		public static FormattedText CreateFormattedText(ExportText exportText)
+		{
+			var formattedText = new FormattedText(exportText.Text,
+				CultureInfo.CurrentCulture,
+				FlowDirection.LeftToRight,
+				new Typeface(exportText.Font.FontFamily.Name),
+				exportText.Font.Size,
+				new SolidColorBrush(exportText.ForeColor.ToWpf()), null, TextFormattingMode.Display);
+			
+			formattedText.MaxTextWidth = exportText.DesiredSize.Width * 96.0 / 72.0;
+			formattedText.SetFontSize(Math.Floor(exportText.Font.Size  * 96.0 / 72.0));
+			
+			var td = new TextDecorationCollection()	;
+			CheckUnderline(td,exportText);
+			formattedText.SetTextDecorations(td);
+			return formattedText;
+		}
+
+		static void CheckUnderline(TextDecorationCollection td, ExportText exportText)
+		{
+			if (exportText.Font.Underline) {
+				td.Add(new TextDecoration{Location = TextDecorationLocation.Underline});
+			}
 		}
 		
 		
@@ -158,7 +180,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			FixedPage.SetTop(element,exportColumn.Location.Y);
 		}
 		
-		
+		/*
 		static void SetFont(TextBlock textBlock,IExportText exportText){
 			textBlock.FontFamily = new FontFamily(exportText.Font.FontFamily.Name);
 
@@ -180,7 +202,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				CreateStrikeout(textBlock,exportText);
 			}
 		}
-		
+		*/
 		
 		static void SetContentAlignment(TextBlock textBlock,ExportText exportText)
 		{
@@ -244,7 +266,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			textBlock.TextDecorations.Add(strikeOut);
 		}
 		
-		
+		/*
 		static void CreateUnderline(TextBlock textBlock,IExportText exportColumn){
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
@@ -256,7 +278,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			underLine.PenThicknessUnit = TextDecorationUnit.FontRecommended;
 			textBlock.TextDecorations.Add(underLine);
 		}
-		
+		*/
 		
 		public static Pen CreateWpfPen(IReportObject exportColumn){
 			if (exportColumn == null)
@@ -264,6 +286,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			var pen = new Pen();
 			pen.Brush = ConvertBrush(exportColumn.ForeColor);
 			pen.Thickness = 1;
+			
 			var exportGraphics = exportColumn as IExportGraphics;
 			if (exportGraphics != null) {
 				pen.Thickness = exportGraphics.Thickness;

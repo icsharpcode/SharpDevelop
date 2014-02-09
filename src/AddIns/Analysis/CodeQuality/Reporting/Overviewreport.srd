@@ -116,12 +116,12 @@
                 </BaseTextItem>
                 <BaseTextItem>
                     <Location>139, 91</Location>
-                    <Size>438, 20</Size>
+                    <Size>377, 20</Size>
                     <BackColor>White</BackColor>
                     <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
-                    <CanGrow>False</CanGrow>
+                    <CanGrow>True</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
                     <Text>Parameters!param1</Text>

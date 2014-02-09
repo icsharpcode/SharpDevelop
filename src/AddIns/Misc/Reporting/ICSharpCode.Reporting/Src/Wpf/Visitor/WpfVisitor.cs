@@ -79,12 +79,28 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		
 		public override void Visit(ExportText exportColumn){
+			/*			
 			var textBlock = FixedDocumentCreator.CreateTextBlock((ExportText)exportColumn,ShouldSetBackcolor(exportColumn));
 			CanvasHelper.SetPosition(textBlock,new Point(exportColumn.Location.X,exportColumn.Location.Y));
 			UIElement = textBlock;
+			*/
+			
+			var ft = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
+			var visual = new DrawingVisual();
+			var location = new Point(exportColumn.Location.X,exportColumn.Location.Y);
+			using (var dc = visual.RenderOpen()){
+				if (ShouldSetBackcolor(exportColumn)) {
+					dc.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),
+						null,
+						new Rect(location,new Size(exportColumn.Size.Width,exportColumn.Size.Height)));
+				}
+				dc.DrawText(ft,location);
+			}
+			var dragingElement = new DrawingElement(visual);
+			UIElement = dragingElement;
+			
 		}
-		
-		
+
 		
 		public override void Visit(ExportLine exportGraphics)
 		{
@@ -111,8 +127,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				                 new Rect(exportRectangle.Location.X,exportRectangle.Location.Y,
 				                          exportRectangle.Size.Width,exportRectangle.Size.Height));
 			}
-			DrawingElement m = new DrawingElement(visual);
-			UIElement = m;
+			var dragingElement = new DrawingElement(visual);
+			UIElement = dragingElement;
 		}
 		
 		public override void Visit(ExportCircle exportCircle)
@@ -132,8 +148,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				                           
 				                 
 			}
-			DrawingElement m = new DrawingElement(visual);
-			UIElement = m;
+			var dragingElement = new DrawingElement(visual);
+			UIElement = dragingElement;
 		}
 		
 		static Point CalcRad(System.Drawing.Size size) {
