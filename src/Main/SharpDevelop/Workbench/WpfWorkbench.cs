@@ -205,16 +205,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void CheckRemovedOrReplacedFile(object sender, FileEventArgs e)
 		{
-			foreach (OpenedFile file in SD.FileService.OpenedFiles) {
-				if (FileUtility.IsBaseDirectory(e.FileName, file.FileName)) {
-					foreach (IViewContent content in file.RegisteredViewContents.ToArray()) {
-						// content.WorkbenchWindow can be null if multiple view contents
-						// were in the same WorkbenchWindow and both should be closed
-						// (e.g. Windows Forms Designer, Subversion History View)
-						if (content.WorkbenchWindow != null) {
-							content.WorkbenchWindow.CloseWindow(true);
-						}
-					}
+			foreach (var workbenchWindow in WorkbenchWindowCollection.ToArray()) {
+				var files = workbenchWindow.ViewContents.SelectMany(vc => vc.Files);
+				if (files.Any(file => FileUtility.IsBaseDirectory(e.FileName, file.FileName))) {
+					workbenchWindow.CloseWindow(true);
 				}
 			}
 			Editor.PermanentAnchorService.FileDeleted(e);
