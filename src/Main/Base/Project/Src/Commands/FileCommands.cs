@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				if (File.Exists(file.FileName) && (File.GetAttributes(file.FileName) & attr) != 0) {
 					SaveFileAs.Save(file);
 				} else {
-					FileUtility.ObservedSave(new NamedFileOperationDelegate(file.SaveToDisk), file.FileName, FileErrorPolicy.ProvideAlternative);
+					FileUtility.ObservedSave(fn => file.SaveToDisk(fn, FileSaveOptions.AllowUserInteraction), file.FileName, FileErrorPolicy.ProvideAlternative);
 				}
 			}
 		}
@@ -194,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					if (!FileService.CheckFileName(fileName)) {
 						return;
 					}
-					if (FileUtility.ObservedSave(new NamedFileOperationDelegate(file.SaveToDisk), fileName) == FileOperationResult.OK) {
+					if (FileUtility.ObservedSave(fn => file.SaveToDisk(fn, FileSaveOptions.AllowUserInteraction), fileName) == FileOperationResult.OK) {
 						SD.FileService.RecentOpen.AddRecentFile(fileName);
 						MessageService.ShowMessage(fileName, "${res:ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved}");
 					}

@@ -17,6 +17,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		}
 		
 		/// <summary>
+		/// Gets whether the model is (re)loading.
+		/// </summary>
+		internal bool isLoading;
+		
+		/// <summary>
 		/// Gets whether the model is stale.
 		/// </summary>
 		public bool IsStale { get; internal set; }

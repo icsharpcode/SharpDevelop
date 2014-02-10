@@ -29,13 +29,13 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			return new OnDiskBinaryModel(file);
 		}
 		
-		public void Save(OpenedFile file, IBinaryFileModel model)
+		public void Save(OpenedFile file, IBinaryFileModel model, FileSaveOptions options)
 		{
-			SaveCopyAs(file, model, file.FileName);
+			SaveCopyAs(file, model, file.FileName, options);
 			file.ReplaceModel(this, model, ReplaceModelMode.SetAsValid); // remove dirty flag
 		}
 		
-		public void SaveCopyAs(OpenedFile file, IBinaryFileModel model, FileName outputFileName)
+		public void SaveCopyAs(OpenedFile file, IBinaryFileModel model, FileName outputFileName, FileSaveOptions options)
 		{
 			var onDisk = model as OnDiskBinaryModel;
 			if (onDisk != null) {

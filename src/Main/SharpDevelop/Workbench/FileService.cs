@@ -256,19 +256,21 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public void UpdateFileModel<T>(FileName fileName, IFileModelProvider<T> modelProvider, Action<T> action, FileUpdateOptions options = FileUpdateOptions.None) where T : class
 		{
+			bool interactive = (options & FileUpdateOptions.AllowUserInteraction) == FileUpdateOptions.AllowUserInteraction;
 			OpenedFile file = CreateOpenedFile(fileName);
 			try {
-				T model = file.GetModel(modelProvider);
+				T model = file.GetModel(modelProvider, interactive ? GetModelOptions.AllowUserInteraction : GetModelOptions.None);
 				action(model);
+				FileSaveOptions saveOptions = interactive ? FileSaveOptions.AllowUserInteraction : FileSaveOptions.None;
 				if ((options & FileUpdateOptions.SaveToDisk) == FileUpdateOptions.SaveToDisk) {
-					file.SaveToDisk();
+					file.SaveToDisk(saveOptions);
 				}
 				if (!IsOpen(fileName) && file.IsDirty) {
 					// The file is not open in a view, but we need to store our changes somewhere:
 					if ((options & FileUpdateOptions.OpenViewIfNoneExists) != 0) {
 						OpenFile(fileName, false);
 					} else {
-						file.SaveToDisk();
+						file.SaveToDisk(saveOptions);
 					}
 				}
 			} finally {

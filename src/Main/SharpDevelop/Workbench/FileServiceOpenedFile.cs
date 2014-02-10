@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				fileChangeWatcher = null;
 			}
 			
-			if (wasDirty) {
+			if (wasDirty && SD.ParserService.GetExistingUnresolvedFile(this.FileName) != null) {
 				// We discarded some information when closing the file,
 				// so we need to re-parse it.
 				if (SD.FileSystem.FileExists(this.FileName))
@@ -68,12 +68,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
-		public override void SaveToDisk(FileName fileName)
+		public override void SaveToDisk(FileName fileName, FileSaveOptions options)
 		{
 			try {
 				if (fileChangeWatcher != null)
 					fileChangeWatcher.Enabled = false;
-				base.SaveToDisk(fileName);
+				base.SaveToDisk(fileName, options);
 			} finally {
 				if (fileChangeWatcher != null)
 					fileChangeWatcher.Enabled = true;

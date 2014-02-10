@@ -6,6 +6,21 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
+	[Flags]
+	public enum FileSaveOptions
+	{
+		None = 0,
+		/// <summary>
+		/// Allows displaying modal dialogs during the save operation.
+		/// For example, the text document file model may prompt the user on data loss due to the choice of encoding.
+		/// </summary>
+		AllowUserInteraction = 1,
+		/// <summary>
+		/// The save operation was triggered by a GetModel() call.
+		/// </summary>
+		SaveForGetModel = 2,
+	}
+	
 	/// <summary>
 	/// Interface that deals with loading and saving OpenedFile model instances.
 	/// Pre-defined model providers are available in the <see cref="FileModels"/> class.
@@ -31,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// lower-level models, this is done by marking that lower-level model as dirty.
 		/// In other cases, the provider may have to explicitly remove the dirty flag from the model.
 		/// </summary>
-		void Save(OpenedFile file, T model);
+		void Save(OpenedFile file, T model, FileSaveOptions options);
 		
 		/// <summary>
 		/// Saves a file model to disk. This method may by-pass lower-level models (such as FileModels.Binary) and directly write to disk.
@@ -39,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// However, transferring the dirty flag to a lower-level model is allowed.
 		/// </summary>
 		/// <exception cref="System.IO.IOException">Error saving the file.</exception>
-		void SaveCopyAs(OpenedFile file, T model, FileName outputFileName);
+		void SaveCopyAs(OpenedFile file, T model, FileName outputFileName, FileSaveOptions options);
 		
 		/// <summary>
 		/// Gets whether this provider can load from the specified other provider.

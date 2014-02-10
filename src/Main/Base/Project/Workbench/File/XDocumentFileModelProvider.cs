@@ -22,14 +22,14 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			return document;
 		}
 		
-		public void Save(OpenedFile file, XDocument model)
+		public void Save(OpenedFile file, XDocument model, FileSaveOptions options)
 		{
 			MemoryStream ms = new MemoryStream();
 			model.Save(ms, SaveOptions.DisableFormatting);
 			file.ReplaceModel(FileModels.Binary, new BinaryFileModel(ms.ToArray()));
 		}
 		
-		public void SaveCopyAs(OpenedFile file, XDocument model, FileName outputFileName)
+		public void SaveCopyAs(OpenedFile file, XDocument model, FileName outputFileName, FileSaveOptions options)
 		{
 			model.Save(outputFileName, SaveOptions.DisableFormatting);
 		}

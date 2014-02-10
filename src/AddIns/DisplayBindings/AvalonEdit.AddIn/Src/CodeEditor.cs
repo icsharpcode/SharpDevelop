@@ -281,29 +281,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		/// <summary>
-		/// Use fixed encoding for loading.
-		/// </summary>
-		public bool UseFixedEncoding { get; set; }
-		
-		public Encoding Encoding {
-			get { return primaryTextEditor.Encoding; }
-			set { primaryTextEditor.Encoding = value; }
-		}
-		
-		/// <summary>
-		/// Gets if the document can be saved with the current encoding without losing data.
-		/// </summary>
-		public bool CanSaveWithCurrentEncoding()
-		{
-			Encoding encoding = this.Encoding;
-			if (encoding == null || FileReader.IsUnicode(encoding))
-				return true;
-			// not a unicode codepage
-			string text = document.Text;
-			return encoding.GetString(encoding.GetBytes(text)) == text;
-		}
-		
 		// always use primary text editor for loading/saving
 		// (the file encoding is stored only there)
 		public void Load(Stream stream)
@@ -323,31 +300,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (LoadedFileContent != null)
 				LoadedFileContent(this, EventArgs.Empty);
 			NewLineConsistencyCheck.StartConsistencyCheck(this);
-		}
-		
-		bool documentFirstLoad = true;
-		bool clearUndoStackOnSwitch = true;
-		
-		/// <summary>
-		/// Gets/Sets whether to clear the undo stack when reloading the document.
-		/// The default is true.
-		/// http://community.sharpdevelop.net/forums/t/15816.aspx
-		/// </summary>
-		public bool ClearUndoStackOnSwitch {
-			get { return clearUndoStackOnSwitch; }
-			set { clearUndoStackOnSwitch = value; }
-		}
-		
-		void ReloadDocument(TextDocument document, string newContent)
-		{
-			var diff = new MyersDiffAlgorithm(new StringSequence(document.Text), new StringSequence(newContent));
-			document.Replace(0, document.TextLength, newContent, diff.GetEdits().ToOffsetChangeMap());
-			
-			if (this.ClearUndoStackOnSwitch || documentFirstLoad)
-				document.UndoStack.ClearAll();
-			
-			if (documentFirstLoad)
-				documentFirstLoad = false;
 		}
 		
 		public event EventHandler LoadedFileContent;

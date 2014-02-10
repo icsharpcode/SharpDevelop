@@ -532,7 +532,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 						file.ReplaceModel(FileModels.Binary, new BinaryFileModel(data));
 						
 						Directory.CreateDirectory(Path.GetDirectoryName(fileName));
-						file.SaveToDisk();
+						file.SaveToDisk(FileSaveOptions.None);
 						
 						if (project != null)
 							AddTemplateFileToProject(project, newFile, fileName);

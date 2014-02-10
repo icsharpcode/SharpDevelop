@@ -45,6 +45,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// (in that case, other changes from the view may be saved as well).
 		/// </summary>
 		SaveToDisk = 2,
+		/// <summary>
+		/// Whether to allow user interaction in the model load+save operations.
+		/// </summary>
+		AllowUserInteraction = 4,
 	}
 	
 	/// <summary>

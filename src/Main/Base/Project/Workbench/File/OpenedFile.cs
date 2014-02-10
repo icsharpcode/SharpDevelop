@@ -40,6 +40,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// Returns null if the model is not already loaded, or if it is stale and the AllowStale option isn't in use.
 		/// </summary>
 		DoNotLoad = 2,
+		/// <summary>
+		/// Allows showing modal dialogs during the GetModel() call.
+		/// For example, the previous model might ask the user details on how to save.
+		/// </summary>
+		AllowUserInteraction = 4,
 	}
 	
 	/// <summary>
@@ -73,8 +78,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			public abstract object Provider { get; }
 			
-			public abstract void Save(OpenedFile file);
-			public abstract void SaveCopyAs(OpenedFile file, FileName outputFileName);
+			public abstract void Save(OpenedFile file, FileSaveOptions options);
+			public abstract void SaveCopyAs(OpenedFile file, FileName outputFileName, FileSaveOptions options);
 			public abstract void NotifyRename(OpenedFile file, FileName oldName, FileName newName);
 			public abstract void NotifyStale(OpenedFile file);
 			public abstract void NotifyUnloaded(OpenedFile file);
@@ -95,14 +100,14 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			public override object Provider { get { return provider; } }
 			
-			public override void Save(OpenedFile file)
+			public override void Save(OpenedFile file, FileSaveOptions options)
 			{
-				provider.Save(file, Model);
+				provider.Save(file, Model, options);
 			}
 			
-			public override void SaveCopyAs(OpenedFile file, FileName outputFileName)
+			public override void SaveCopyAs(OpenedFile file, FileName outputFileName, FileSaveOptions options)
 			{
-				provider.SaveCopyAs(file, Model, outputFileName);
+				provider.SaveCopyAs(file, Model, outputFileName, options);
 			}
 			
 			public override void NotifyRename(OpenedFile file, FileName oldName, FileName newName)
@@ -221,25 +226,25 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		/// <remarks>If the file is saved successfully, the dirty flag will be cleared (the dirty model becomes valid instead).</remarks>
 		/// <exception cref="InvalidOperationException">The file is untitled.</exception>
-		public void SaveToDisk()
+		public void SaveToDisk(FileSaveOptions options)
 		{
 			CheckDisposed();
 			if (IsUntitled)
 				throw new InvalidOperationException("Cannot save an untitled file to disk.");
-			SaveToDisk(this.FileName);
+			SaveToDisk(this.FileName, options);
 		}
 		
 		/// <summary>
 		/// Changes the file name, and saves the file to disk.
 		/// </summary>
 		/// <remarks>If the file is saved successfully, the dirty flag will be cleared (the dirty model becomes valid instead).</remarks>
-		public virtual void SaveToDisk(FileName fileName)
+		public virtual void SaveToDisk(FileName fileName, FileSaveOptions options)
 		{
 			CheckDisposed();
 			
 			bool safeSaving = SD.FileService.SaveUsingTemporaryFile && SD.FileSystem.FileExists(fileName);
 			FileName saveAs = safeSaving ? FileName.Create(fileName + ".bak") : fileName;
-			SaveCopyTo(saveAs);
+			SaveCopyTo(saveAs, options);
 			if (safeSaving) {
 				DateTime creationTime = File.GetCreationTimeUtc(fileName);
 				File.Delete(fileName);
@@ -262,24 +267,23 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <summary>
 		/// Saves a copy of the file to disk. Does not change the name of the OpenedFile to the specified file name, and does not reset the dirty flag.
 		/// </summary>
-		public virtual void SaveCopyAs(FileName fileName)
+		public virtual void SaveCopyAs(FileName fileName, FileSaveOptions options)
 		{
 			CheckDisposed();
-			SaveCopyTo(fileName);
+			SaveCopyTo(fileName, options);
 		}
 		
-		void SaveCopyTo(FileName outputFileName)
+		void SaveCopyTo(FileName outputFileName, FileSaveOptions options)
 		{
 			preventLoading = true;
 			try {
 				var entry = PickValidEntry();
 				if (entry != null) {
-					entry.SaveCopyAs(this, outputFileName);
+					entry.SaveCopyAs(this, outputFileName, options);
 				} else if (outputFileName != this.FileName) {
 					SD.FileSystem.CopyFile(this.FileName, outputFileName, true);
 				}
-			}
-			finally {
+			} finally {
 				preventLoading = false;
 			}
 		}
@@ -323,7 +327,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			try {
 				// Before we can load the requested model, save the dirty model (if necessary):
 				while (dirtyEntry != null && dirtyEntry.NeedsSaveForLoadInto(modelProvider)) {
-					dirtyEntry.Save(this);
+					var saveOptions = FileSaveOptions.SaveForGetModel;
+					if ((options & GetModelOptions.AllowUserInteraction) != 0)
+						saveOptions |= FileSaveOptions.AllowUserInteraction;
+					dirtyEntry.Save(this, saveOptions);
 					// re-fetch entry because it's possible that it was created/replaced/unloaded
 					entry = GetEntry(modelProvider);
 					// if the entry was made valid by the save operation, return it directly
@@ -497,7 +504,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		/// <summary>
 		/// Gets the reference count of the OpenedFile.
-		/// This is used for the IFileService.UpdateFileModel() implementation.
 		/// </summary>
 		public int ReferenceCount {
 			get { return referenceCount; }

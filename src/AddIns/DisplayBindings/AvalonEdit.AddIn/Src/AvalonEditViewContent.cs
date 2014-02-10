@@ -77,26 +77,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return ProjectService.GetFileFilters().Any(f => f.ContainsExtension(filetype)) ||
 				IconService.HasImageForFile(filetype);
 		}
-		
-		void codeEditor_Document_UndoStack_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			if (!isLoading)
-				PrimaryFile.IsDirty = !codeEditor.Document.UndoStack.IsOriginalFile;
-		}
-		
-		void PrimaryFile_IsDirtyChanged(object sender, EventArgs e)
-		{
-			var document = codeEditor.Document;
-			if (document != null) {
-				var undoStack = document.UndoStack;
-				if (this.PrimaryFile.IsDirty) {
-					if (undoStack.IsOriginalFile)
-						undoStack.DiscardOriginalFileMarker();
-				} else {
-					undoStack.MarkAsOriginalFile();
-				}
-			}
-		}
 
 		public override object Control {
 			get { return codeEditor; }
@@ -104,41 +84,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public override object InitiallyFocusedControl {
 			get { return codeEditor.PrimaryTextEditor.TextArea; }
-		}
-		
-		public override void Save(OpenedFile file, Stream stream)
-		{
-			if (file != PrimaryFile)
-				return;
-			
-			if (codeEditor.CanSaveWithCurrentEncoding()) {
-				codeEditor.Save(stream);
-			} else {
-				int r = MessageService.ShowCustomDialog(
-					"${res:Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox.FileEncodingGroupBox}",
-					StringParser.Parse("${res:AvalonEdit.FileEncoding.EncodingCausesDataLoss}",
-					                   new StringTagPair("encoding", codeEditor.Encoding.EncodingName)),
-					0, -1,
-					"${res:AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8}",
-					"${res:AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue}");
-				if (r == 1) {
-					// continue saving with data loss
-					MemoryStream ms = new MemoryStream();
-					codeEditor.Save(ms);
-					ms.Position = 0;
-					ms.WriteTo(stream);
-					ms.Position = 0;
-					// Read back the version we just saved to show the data loss to the user (he'll be able to press Undo).
-					using (StreamReader reader = new StreamReader(ms, codeEditor.Encoding, false)) {
-						codeEditor.Document.Text = reader.ReadToEnd();
-					}
-					return;
-				} else {
-					// unfortunately we don't support cancel within IViewContent.Save, so we'll use the safe choice of UTF-8 instead
-					codeEditor.Encoding = System.Text.Encoding.UTF8;
-					codeEditor.Save(stream);
-				}
-			}
 		}
 		
 		bool isLoading;
@@ -261,8 +206,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (trackedFeature != null)
 				trackedFeature.EndTracking();
-			if (PrimaryFile != null)
-				this.PrimaryFile.IsDirtyChanged -= PrimaryFile_IsDirtyChanged;
 			base.Dispose();
 			BookmarksDetach();
 			codeEditor.Dispose();
