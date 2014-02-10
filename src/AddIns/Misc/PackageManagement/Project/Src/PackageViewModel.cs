@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using ICSharpCode.PackageManagement.Scripting;
+using ICSharpCode.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -69,8 +69,8 @@ namespace ICSharpCode.PackageManagement
 		
 		void CreateCommands()
 		{
-			addPackageCommand = new DelegateCommand(param => AddPackage());
-			removePackageCommand = new DelegateCommand(param => RemovePackage());
+			addPackageCommand = new DelegateCommand(param => AddOrManagePackage());
+			removePackageCommand = new DelegateCommand(param => RemoveOrManagePackage());
 			managePackageCommand = new DelegateCommand(param => ManagePackage());
 		}
 	
@@ -191,17 +191,39 @@ namespace ICSharpCode.PackageManagement
 		public bool HasLastPublished {
 			get { return package.Published.HasValue; }
 		}
-		
+
+		public void AddOrManagePackage() {
+			if (selectedProjects.HasMultipleProjects()) {
+				if (package.HasProjectContent()) {
+					ManagePackage();
+				}
+				else {
+					AddPackage();
+				}
+			}
+			else {
+				AddPackage();
+			}
+		}
+
 		public void AddPackage()
 		{
 			ClearReportedMessages();
 			logger.LogAddingPackage();
 			
 			using (IDisposable operation = StartInstallOperation(package)) {
-				TryInstallingPackage();
+				if (package.HasProjectContent()) {
+					TryInstallingPackage();
+				}
+				else {
+					var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
+					var packageManager = new NuGet.PackageManager(package.Repository, solutionPackageRepository.PackagePathResolver, solutionPackageRepository.FileSystem, solutionPackageRepository.Repository);
+					packageManager.InstallPackage(package.Id, package.Version, false, parent.IncludePrerelease);
+				}
 			}
 			
 			logger.LogAfterPackageOperationCompletes();
+			OnPropertyChanged(model => model.IsAdded);
 		}
 		
 		protected virtual IDisposable StartInstallOperation(IPackageFromRepository package)
@@ -285,7 +307,6 @@ namespace ICSharpCode.PackageManagement
 		void InstallPackage()
 		{
 			InstallPackage(packageOperations);
-			OnPropertyChanged(model => model.IsAdded);
 		}
 		
 		void InstallPackage(IEnumerable<PackageOperation> packageOperations)
@@ -309,13 +330,34 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.OnPackageOperationError(ex);
 		}
 		
+		public void RemoveOrManagePackage() {
+			if (selectedProjects.HasMultipleProjects()) {
+				if (package.HasProjectContent()) {
+					ManagePackage();
+				}
+				else {
+					RemovePackage();
+				}
+			}
+			else {
+				RemovePackage();
+			}
+		}
+
 		public void RemovePackage()
 		{
 			ClearReportedMessages();
 			logger.LogRemovingPackage();
-			TryUninstallingPackage();
+
+			if (package.HasProjectContent()) {
+				TryUninstallingPackage();
+			} else {
+				var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
+				var packageManager = new NuGet.PackageManager(solutionPackageRepository.Repository, solutionPackageRepository.PackagePathResolver, solutionPackageRepository.FileSystem);
+				packageManager.UninstallPackage(package.Id, package.Version);
+			}
+
 			logger.LogAfterPackageOperationCompletes();
-			
 			OnPropertyChanged(model => model.IsAdded);
 		}
 		
@@ -340,9 +382,21 @@ namespace ICSharpCode.PackageManagement
 		public bool IsManaged {
 			get {
 				if (selectedProjects.HasMultipleProjects()) {
-					return true;
+					// Solution-level package management
+					// or Multi Project Solution
+					if (IsAdded) {
+						if (package.HasProjectContent()) {
+							return true; // [Manage] Button
+						}
+						return false; // [Remove] Button
+					}
+					// package.HasProjectContent() is too slow on uninstalled packages
+					// check (and Manage) after user click on [Add Package] Button
+					return false; // add Button -> redirect to [Manage] if (package.HasProjectContent())
 				}
-				return !selectedProjects.HasSingleProjectSelected();
+				// Project-level Package Management / Single Project Solution
+				// or Solution-level package management
+				return !selectedProjects.HasSingleProjectSelected(); // [Add]/[Remove] or [Manage] Button
 			}
 		}
 		

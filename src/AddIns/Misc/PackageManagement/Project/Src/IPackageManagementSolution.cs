@@ -45,5 +45,6 @@ namespace ICSharpCode.PackageManagement
 		
 		bool IsOpen { get; }
 		string FileName { get; }
+		ISolutionPackageRepository CreateSolutionPackageRepository();
 	}
 }

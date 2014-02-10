@@ -68,7 +68,8 @@ namespace ICSharpCode.PackageManagement
 		bool IsPackageInstalled(IPackageManagementProject project)
 		{
 			IPackage package = GetPackage();
-			return project.IsPackageInstalled(package);
+			return project.IsPackageInstalled(package) || PackageManagementServices.Solution.IsPackageInstalled(package);
+
 		}
 		
 		protected override bool AnyProjectsSelected(IList<IPackageManagementSelectedProject> projects)

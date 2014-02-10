@@ -130,6 +130,11 @@ namespace ICSharpCode.PackageManagement.Design
 			return FakeInstalledPackages.Contains(package);
 		}
 		
+		public ISolutionPackageRepository CreateSolutionPackageRepository()
+		{
+			return null;
+		}
+		
 		public IQueryable<IPackage> GetPackages()
 		{
 			return FakeInstalledPackages.AsQueryable();

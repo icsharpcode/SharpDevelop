@@ -159,7 +159,7 @@ namespace ICSharpCode.PackageManagement
 			return repository.IsInstalled(package);
 		}
 		
-		ISolutionPackageRepository CreateSolutionPackageRepository()
+		public ISolutionPackageRepository CreateSolutionPackageRepository()
 		{
 			return solutionPackageRepositoryFactory.CreateSolutionPackageRepository(OpenSolution);
 		}
@@ -174,6 +174,11 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		bool IsPackageInstalledInSolutionOrAnyProject(IList<IPackageManagementProject> projects, IPackage package)
+		{
+			return IsPackageInstalled(package) || IsPackageInstalledInAnyProject(projects, package);
+		}
+		
+		bool IsPackageInstalledInAnyProject(IList<IPackageManagementProject> projects, IPackage package)
 		{
 			if (projects.Any(project => project.IsPackageInstalled(package))) {
 				return true;
