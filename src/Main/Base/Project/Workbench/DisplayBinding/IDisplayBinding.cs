@@ -50,7 +50,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </remarks>
 		/// <returns>
 		/// A newly created IViewContent object.
+		/// May return null if the view content could not be created.
 		/// </returns>
+		/// <exception cref="IOException">Error loading the file</exception>
+		/// <exception cref="FormatException">Error loading the file (invalid file format)</exception>
 		IViewContent CreateContentForFile(OpenedFile file);
 	}
 }

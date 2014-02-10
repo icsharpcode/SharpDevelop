@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			allSolutions = new NullSafeSimpleModelCollection<ISolution>();
 			allProjects = allSolutions.SelectMany(s => s.Projects);
-			projectBindings = SD.AddInTree.BuildItems<ProjectBindingDescriptor>("/SharpDevelop/Workbench/ProjectBindings", null);
+			projectBindings = SD.AddInTree.BuildItems<ProjectBindingDescriptor>("/SharpDevelop/Workbench/ProjectBindings", null, false);
 			targetFrameworks = SD.AddInTree.BuildItems<TargetFramework>("/SharpDevelop/TargetFrameworks", null);
 			
 			SD.GetFutureService<IWorkbench>().ContinueWith(t => t.Result.ActiveViewContentChanged += ActiveViewContentChanged).FireAndForget();
