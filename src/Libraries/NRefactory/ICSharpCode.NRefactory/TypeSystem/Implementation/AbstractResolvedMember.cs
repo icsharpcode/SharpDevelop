@@ -126,15 +126,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 
 		public abstract IMember Specialize(TypeParameterSubstitution substitution);
-
-		public virtual IMemberReference ToMemberReference()
+		
+		IMemberReference IMember.ToReference()
+		{
+			return (IMemberReference)ToReference();
+		}
+		
+		public override ISymbolReference ToReference()
 		{
 			var declTypeRef = this.DeclaringType.ToTypeReference();
 			if (IsExplicitInterfaceImplementation && ImplementedInterfaceMembers.Count == 1) {
-				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToMemberReference());
+				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToReference());
 			} else {
 				return new DefaultMemberReference(this.SymbolKind, declTypeRef, this.Name);
 			}
+		}
+		
+		public virtual IMemberReference ToMemberReference()
+		{
+			return (IMemberReference)ToReference();
 		}
 		
 		internal IMethod GetAccessor(ref IMethod accessorField, IUnresolvedMethod unresolvedAccessor)

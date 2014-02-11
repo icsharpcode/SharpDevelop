@@ -86,5 +86,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the short name of the symbol.
 		/// </summary>
 		string Name { get; }
+		
+		/// <summary>
+		/// Creates a symbol reference that can be used to rediscover this symbol in another compilation.
+		/// </summary>
+		ISymbolReference ToReference();
+	}
+	
+	public interface ISymbolReference
+	{
+		ISymbol Resolve(ITypeResolveContext context);
 	}
 }

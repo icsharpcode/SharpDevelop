@@ -61,11 +61,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return unresolved.IsIndexer; }
 		}
 		
-		public override IMemberReference ToMemberReference()
+		public override ISymbolReference ToReference()
 		{
 			var declTypeRef = this.DeclaringType.ToTypeReference();
 			if (IsExplicitInterfaceImplementation && ImplementedInterfaceMembers.Count == 1) {
-				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToMemberReference());
+				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToReference());
 			} else {
 				return new DefaultMemberReference(
 					this.SymbolKind, declTypeRef, this.Name, 0,

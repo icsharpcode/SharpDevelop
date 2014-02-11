@@ -71,5 +71,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			return members.FirstOrDefault(m => m.ImplementedInterfaceMembers.Count == 1 && interfaceMember.Equals(m.ImplementedInterfaceMembers[0]));
 		}
+		
+		ISymbol ISymbolReference.Resolve(ITypeResolveContext context)
+		{
+			return Resolve(context);
+		}
 	}
 }

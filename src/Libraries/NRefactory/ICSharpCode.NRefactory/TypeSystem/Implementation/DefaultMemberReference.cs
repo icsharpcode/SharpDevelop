@@ -99,6 +99,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return null;
 		}
 		
+		ISymbol ISymbolReference.Resolve(ITypeResolveContext context)
+		{
+			return ((IMemberReference)this).Resolve(context);
+		}
+		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
 			return (int)symbolKind ^ typeReference.GetHashCode() ^ name.GetHashCode() ^ parameterTypes.GetHashCode();

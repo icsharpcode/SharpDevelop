@@ -141,7 +141,7 @@ class TestClass {
 }";
 			var result = Resolve<InvocationResolveResult>(program);
 			IProperty prop = result.Type.GetProperties().Single();
-			IProperty propAfterRoundtrip = (IProperty)prop.ToMemberReference().Resolve(result.Member.Compilation.TypeResolveContext);
+			IProperty propAfterRoundtrip = (IProperty)prop.ToReference().Resolve(result.Member.Compilation.TypeResolveContext);
 			Assert.AreEqual(prop, propAfterRoundtrip);
 		}
 		
@@ -156,7 +156,7 @@ class TestClass {
 }";
 			var result = Resolve<InvocationResolveResult>(program);
 			IMethod getter = result.Type.GetProperties().Single().Getter;
-			IMethod getterAfterRoundtrip = (IMethod)getter.ToMemberReference().Resolve(result.Member.Compilation.TypeResolveContext);
+			IMethod getterAfterRoundtrip = (IMethod)getter.ToReference().Resolve(result.Member.Compilation.TypeResolveContext);
 			Assert.AreEqual(getter, getterAfterRoundtrip);
 		}
 

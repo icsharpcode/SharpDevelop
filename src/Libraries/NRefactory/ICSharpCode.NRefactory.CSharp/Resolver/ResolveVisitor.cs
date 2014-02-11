@@ -3170,6 +3170,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				return type.ToString() + " " + name + ";";
 			}
+
+			public ISymbolReference ToReference()
+			{
+				return new VariableReference(type.ToTypeReference(), name, region, IsConst, ConstantValue);
+			}
 		}
 		
 		sealed class SimpleConstant : SimpleVariable

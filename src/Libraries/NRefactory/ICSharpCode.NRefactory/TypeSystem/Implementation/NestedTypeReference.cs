@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Type reference used to reference nested types.
 	/// </summary>
 	[Serializable]
-	public sealed class NestedTypeReference : ITypeReference, ISupportsInterning
+	public sealed class NestedTypeReference : ITypeReference, ISymbolReference, ISupportsInterning
 	{
 		readonly ITypeReference declaringTypeRef;
 		readonly string name;
@@ -74,6 +74,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				}
 			}
 			return new UnknownType(null, name, additionalTypeParameterCount);
+		}
+		
+		ISymbol ISymbolReference.Resolve(ITypeResolveContext context)
+		{
+			var type = Resolve(context);
+			if (type is ITypeDefinition)
+				return (ISymbol)type;
+			return null;
 		}
 		
 		public override string ToString()

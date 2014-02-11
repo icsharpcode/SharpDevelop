@@ -93,5 +93,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// If this is true, then ConstantValue contains the size of the buffer.
 		/// </summary>
 		bool IsFixed { get; }
+		
+		new IMemberReference ToReference(); // solve ambiguity between IMember.ToReference() and IVariable.ToReference()
 	}
 }

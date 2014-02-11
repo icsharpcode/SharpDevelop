@@ -266,7 +266,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsInstanceOf<SpecializedMethod>(method);
 			Assert.IsFalse(method.IsParameterized); // the method itself is not specialized
 			Assert.AreEqual(method.TypeParameters, method.TypeArguments);
-			var methodReference = method.ToMemberReference();
+			var methodReference = method.ToReference();
 			var resolvedMethod = methodReference.Resolve(compilation.TypeResolveContext);
 			Assert.AreEqual(method, resolvedMethod);
 		}
@@ -1082,7 +1082,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsProperty));
 			var prop = type.Properties.Single(p => p.Name == "Prop");
-			var mr = prop.Getter.ToMemberReference();
+			var mr = prop.Getter.ToReference();
 			Assert.AreEqual(prop.Getter, mr.Resolve(compilation.TypeResolveContext));
 		}
 		
@@ -1130,7 +1130,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsPropertyExplicitly));
 			var prop = type.Properties.Single();
-			var mr = prop.Getter.ToMemberReference();
+			var mr = prop.Getter.ToReference();
 			Assert.AreEqual(prop.Getter, mr.Resolve(compilation.TypeResolveContext));
 		}
 		
@@ -1167,7 +1167,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IType type = compilation.FindType(typeof(ExplicitGenericInterfaceImplementationWithUnifiableMethods<int, int>));
 			Assert.AreEqual(2, type.GetMethods(m => m.IsExplicitInterfaceImplementation).Count());
 			foreach (IMethod method in type.GetMethods(m => m.IsExplicitInterfaceImplementation)) {
-				IMethod resolvedMethod = (IMethod)method.ToMemberReference().Resolve(compilation.TypeResolveContext);
+				IMethod resolvedMethod = (IMethod)method.ToReference().Resolve(compilation.TypeResolveContext);
 				Assert.AreEqual(method, resolvedMethod);
 			}
 		}

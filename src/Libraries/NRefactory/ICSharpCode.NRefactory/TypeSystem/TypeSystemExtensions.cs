@@ -301,7 +301,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (entity.Compilation == compilation)
 				return entity;
 			if (entity is IMember)
-				return ((IMember)entity).ToMemberReference().Resolve(compilation.TypeResolveContext);
+				return ((IMember)entity).ToReference().Resolve(compilation.TypeResolveContext);
 			else if (entity is ITypeDefinition)
 				return ((ITypeDefinition)entity).ToTypeReference().Resolve(compilation.TypeResolveContext).GetDefinition();
 			else
@@ -319,7 +319,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return null;
 			if (member.Compilation == compilation)
 				return member;
-			return member.ToMemberReference().Resolve(compilation.TypeResolveContext);
+			return member.ToReference().Resolve(compilation.TypeResolveContext);
 		}
 		
 		/// <summary>

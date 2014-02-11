@@ -21,6 +21,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -198,6 +199,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ITypeDefinition INamespace.GetTypeDefinition(string name, int typeParameterCount)
 			{
 				return null;
+			}
+
+			public ISymbolReference ToReference()
+			{
+				return new MergedNamespaceReference(ExternAlias, ((INamespace)this).FullName);
 			}
 		}
 	}
