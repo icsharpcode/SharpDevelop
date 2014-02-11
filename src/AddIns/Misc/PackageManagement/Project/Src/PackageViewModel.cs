@@ -216,14 +216,13 @@ namespace ICSharpCode.PackageManagement
 					TryInstallingPackage();
 				}
 				else {
-					var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
-					var packageManager = new NuGet.PackageManager(package.Repository, solutionPackageRepository.PackagePathResolver, solutionPackageRepository.FileSystem, solutionPackageRepository.Repository);
-					packageManager.InstallPackage(package.Id, package.Version, false, parent.IncludePrerelease);
+					TryInstallingSolutionPackage();
 				}
 			}
 			
 			logger.LogAfterPackageOperationCompletes();
 			OnPropertyChanged(model => model.IsAdded);
+			OnPropertyChanged(model => model.IsManaged);
 		}
 		
 		protected virtual IDisposable StartInstallOperation(IPackageFromRepository package)
@@ -290,7 +289,20 @@ namespace ICSharpCode.PackageManagement
 		{
 			return selectedProjects.IsPackageInstalledInSolution(package);
 		}
-		
+
+		void TryInstallingSolutionPackage()
+		{
+			try {
+				var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
+				var packageManager = new NuGet.PackageManager(package.Repository, solutionPackageRepository.PackagePathResolver, solutionPackageRepository.FileSystem, solutionPackageRepository.Repository);
+				packageManager.InstallPackage(package.Id, package.Version, false, parent.IncludePrerelease);
+				packageManagementEvents.OnParentPackageInstalled(package);
+			} catch (Exception ex) {
+				ReportError(ex);
+				logger.LogError(ex);
+			}
+		}		
+
 		void TryInstallingPackage()
 		{
 			try {
@@ -352,20 +364,32 @@ namespace ICSharpCode.PackageManagement
 			if (package.HasProjectContent()) {
 				TryUninstallingPackage();
 			} else {
-				var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
-				var packageManager = new NuGet.PackageManager(solutionPackageRepository.Repository, solutionPackageRepository.PackagePathResolver, solutionPackageRepository.FileSystem);
-				packageManager.UninstallPackage(package.Id, package.Version);
+				TryUninstallingSolutionPackage();
 			}
 
 			logger.LogAfterPackageOperationCompletes();
 			OnPropertyChanged(model => model.IsAdded);
+			OnPropertyChanged(model => model.IsManaged);
 		}
 		
 		void LogRemovingPackage()
 		{
 			logger.LogRemovingPackage();
 		}
-		
+
+		void TryUninstallingSolutionPackage()
+		{
+			try {
+				var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
+				var packageManager = new NuGet.PackageManager(solutionPackageRepository.Repository, solutionPackageRepository.PackagePathResolver, solutionPackageRepository.FileSystem);
+				packageManager.UninstallPackage(package.Id, package.Version);
+				packageManagementEvents.OnParentPackageUninstalled(package);
+			} catch (Exception ex) {
+				ReportError(ex);
+				logger.LogError(ex);
+			}
+		}		
+
 		void TryUninstallingPackage()
 		{
 			try {
@@ -429,6 +453,7 @@ namespace ICSharpCode.PackageManagement
 			
 			logger.LogAfterPackageOperationCompletes();
 			OnPropertyChanged(model => model.IsAdded);
+			OnPropertyChanged(model => model.IsManaged);
 		}
 		
 		void TryInstallingPackagesForSelectedProjects(IList<IPackageManagementSelectedProject> projects)
