@@ -5,51 +5,51 @@
 	   addInManagerHidden = "preinstalled">
 	
 	<Manifest>
-		<Identity name="ICSharpCode.Reports.Addin" />
+		<Identity name="ICSharpCode.Reporting.Addin" />
 		
 		<Dependency addin="SharpDevelop" />
 		<Dependency addin="ICSharpCode.Data.Addin" requirePreload="true" />
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "ICSharpCode.Reports.Core.dll" />
-		<Import assembly = "ICSharpCode.Reports.Addin.dll">
-			<Doozer name="ReportDialogPanel" class="ICSharpCode.Reports.Addin.ReportWizard.DialogPanelDoozer"/>
+		<Import assembly = "ICSharpCode.Reporting.dll" />
+		<Import assembly = "ICSharpCode.Reporting.Addin.dll">
+			<!--<Doozer name="ReportDialogPanel" class="ICSharpCode.Reports.Addin.ReportWizard.DialogPanelDoozer"/>-->
 		</Import>
 	</Runtime>
 	
 	<!-- DisplayBinding -->
 	
-	<!--<Path name ="/SharpDevelop/Workbench/DisplayBindings">
+	<Path name ="/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id="SharpDevelopReportsBinding"
 		                insertbefore="Text"
 		                fileNamePattern="\.(srd)$"
 		                languagePattern="^SharpDevelopReports$"
-		                class="ICSharpCode.Reports.Addin.ReportDesignerDisplayBinding"/>
-	</Path>-->
+		                class="ICSharpCode.Reporting.Addin.DesignerBinding.ReportDesignerBinding"/>
+	</Path>
 	
 	<!-- File Filter -->
-	<Path name ="/SharpDevelop/Workbench/FileFilter">
+	<!--<Path name ="/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id="SharpDevelopReports"
 		            insertbefore="AllFiles"
 		            name="SharpDevelop Reports (*.srd)"
 		            extensions="*.srd"
 		            mimeType = "text/xml"/>
-	</Path>
+	</Path>-->
 	
 	<!-- ReportExplorer -->
 	
-	<Path name = "/SharpDevelop/Workbench/Pads">
+<!--	<Path name = "/SharpDevelop/Workbench/Pads">
 			<Pad id="reportexplorer"
 			     category = "Tools"
 			     icon="Icons.16x16.SharpQuery.Refresh"
 			     title = "ReportExplorer"
 			     class="ICSharpCode.Reports.Addin.ReportExplorerPad"
 			     defaultPosition = "Right, Hidden" />
-	</Path>
+	</Path>-->
 	
 	
-	<Path name = "/SharpDevelop/ReportDesigner/ContextMenus/ContainerMenu">
+	<!--<Path name = "/SharpDevelop/ReportDesigner/ContextMenus/ContainerMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
 		          icon        = "Icons.16x16.FormsDesigner.ViewCode"
@@ -79,9 +79,9 @@
 		<MenuItem id = "DesignerVerbsBuilder"
 		          type = "Builder"
 		          class = "ICSharpCode.Reports.Addin.Commands.DesignerVerbSubmenuBuilder" />
-	</Path>
+	</Path>-->
 
-	<Path name = "/SharpDevelop/ReportDesigner/ContextMenus/TraySelectionMenu">
+	<!--<Path name = "/SharpDevelop/ReportDesigner/ContextMenus/TraySelectionMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
 		          icon        = "Icons.16x16.FormsDesigner.ViewCode"
@@ -98,10 +98,10 @@
 		<MenuItem id = "DesignerVerbsBuilder"
 		          type = "Builder"
 		          class = "ICSharpCode.Reports.Addin.Commands.DesignerVerbSubmenuBuilder" />
-	</Path>
+	</Path>-->
 	
 	
-	<Path name = "/SharpDevelop/ReportDesigner/ContextMenus/SelectionMenu">
+	<!--<Path name = "/SharpDevelop/ReportDesigner/ContextMenus/SelectionMenu">
 		
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
@@ -140,32 +140,32 @@
 		          type = "Builder"
 		          class = "ICSharpCode.Reports.Addin.Commands.DesignerVerbSubmenuBuilder" />
 	</Path>
-
+-->
 
 	 
    <!-- ReportExplorer ContextMenu's -->
 	
-	<Path name ="/SharpDevelopReports/ContextMenu/FieldsExplorer/SectionTreeNode">
+	<!--<Path name ="/SharpDevelopReports/ContextMenu/FieldsExplorer/SectionTreeNode">
 		<MenuItem id="removenodes"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Section.Clear}"
 		          class="ICSharpCode.Reports.Addin.Commands.ClearSelectedNodeCommand"/>
-	</Path>
+	</Path>-->
 
 	<!-- Sorting -->
 	
-	<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnSortTreeNode">
+	<!--<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnSortTreeNode">
 		<MenuItem id="toggle"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.ToggleSort}"
 		          class="ICSharpCode.Reports.Addin.Commands.ToggleOrderCommand"/>
-		plorer
+		
 		<MenuItem id="removesortnode"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.Remove}"
 		          class="ICSharpCode.Reports.Addin.Commands.RemoveSortNodeCommand"/>
 	
-	</Path>
+	</Path>-->
 	
 	<!-- Grouping -->
-	<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnGroupTreeNode">
+	<!--<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnGroupTreeNode">
 		<MenuItem id="toggle"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.ToggleSort}"
 		          class="ICSharpCode.Reports.Addin.Commands.ToggleOrderCommand"/>
@@ -173,42 +173,42 @@
 		<MenuItem id="removegroupnode"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.Remove}"
 		          class="ICSharpCode.Reports.Addin.Commands.RemoveGroupNodeCommand"/>
-	</Path>
+	</Path>-->
 	
 	
 	<!-- Run Expression Editor -->
-	<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ParameterNode">
+	<!--<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ParameterNode">
 	<MenuItem id="params"
 		          label="${res:SharpReport.FieldsExplorer.Parameters}"
 		          class="ICSharpCode.Reports.Addin.Commands.ParameterEditorCommand"/>
-	</Path>
-	
+	</Path>-->
 	<!-- Start SharpDevelop Reports from MainMenu -->
+	 <!-- label = "${res:SharpReport.ReportGenerator}"-->
 	
-	<!--<Path name = "/SharpDevelop/Workbench/Tools">
+<!--	<Path name = "/SharpDevelop/Workbench/Tools">
 		<MenuItem id       = "ReportGeneratorPad"
-		          label = "${res:SharpReport.ReportGenerator}"
-		          
-		          class    = "ICSharpCode.Reports.Addin.Commands.StartViewCommand"/>
+		        
+		          label = "New Sharpreporting"
+		          class    = "ICSharpCode.Reporting.Addin.Commands.XXXXStartViewCommand"/>
 	</Path>-->
 
 	<!-- Report wizard -->
 
-	<Path  name = "/ReportGenerator/ReportGeneratorWizard">
+	<!--<Path  name = "/ReportGenerator/ReportGeneratorWizard">
 		<ReportDialogPanel id="Base" label = "${res:SharpReport.Wizard.BaseSettings}" class="ICSharpCode.Reports.Addin.ReportWizard.BaseSettingsPanel"/>
 		<ReportDialogPanel id="PushModel" label="${res:SharpReport.Wizard.PushModel}" class="ICSharpCode.Reports.Addin.ReportWizard.PushModelPanel"/>
 		<ReportDialogPanel id="PullModel" label="${res:SharpReport.Wizard.PullModel}" class="ICSharpCode.Reports.Addin.ReportWizard.PullModelPanel"/>
 		<ReportDialogPanel id="QueryResult" label="${res:SharpReport.Wizard.ShowQueryResult}" class ="ICSharpCode.Reports.Addin.ReportWizard.ResultPanel"/>
 		<ReportDialogPanel id="Layout" label="Layout" class ="ICSharpCode.Reports.Addin.ReportWizard.LayoutPanel"/>
 
-	</Path>
+	</Path>-->
 	
 	<!-- ContextMenu Sections -->
 	<!-- Save Data from Resultpanel as *xsd File -->
-	<Path name ="/ReportGenerator/ResultPanel/ContextMenuDefault">
+	<!--<Path name ="/ReportGenerator/ResultPanel/ContextMenuDefault">
 		<MenuItem id="xsdcomplete" label="${res:SharpReport.Wizard.ResultPanel.SaveXsdComplete}" class="ICSharpCode.Reports.Addin.ReportWizard.XsdSchemaAndDataCommand"/>
 		<MenuItem id="xsdschema" label="${res:SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly}" class="ICSharpCode.Reports.Addin.ReportWizard.XsdSchemaOnlyCommand"/>
-	</Path>
+	</Path>-->
 
 	<!-- Tell SharpDevelop to look for the file template (EmptyReport.xft) in the AddIn directory -->
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
