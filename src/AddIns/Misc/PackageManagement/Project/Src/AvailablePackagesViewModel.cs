@@ -30,10 +30,11 @@ namespace ICSharpCode.PackageManagement
 		string errorMessage;
 		
 		public AvailablePackagesViewModel(
+			PackagesViewModels packagesViewModelParent,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
+			: base(packagesViewModelParent, registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
 			IsSearchable = true;
 			ShowPackageSources = true;

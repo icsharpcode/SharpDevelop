@@ -28,11 +28,12 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository recentPackageRepository;
 		
 		public RecentPackagesViewModel(
+			PackagesViewModels packagesViewModelParent,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
+			: base(packagesViewModelParent, registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
 			this.packageManagementEvents = packageManagementEvents;
 			

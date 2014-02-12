@@ -33,10 +33,10 @@ namespace ICSharpCode.PackageManagement
 			var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
 			var installedPackageViewModelFactory = new InstalledPackageViewModelFactory(packageViewModelFactory);
 			
-			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, installedPackageViewModelFactory, taskFactory);
-			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, registeredPackageRepositories, updatedPackageViewModelFactory, taskFactory);
-			RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			AvailablePackagesViewModel = new AvailablePackagesViewModel(this, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			InstalledPackagesViewModel = new InstalledPackagesViewModel(this, solution, packageManagementEvents, registeredPackageRepositories, installedPackageViewModelFactory, taskFactory);
+			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(this, solution, registeredPackageRepositories, updatedPackageViewModelFactory, taskFactory);
+			RecentPackagesViewModel = new RecentPackagesViewModel(this, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 		}
 		
 		public AvailablePackagesViewModel AvailablePackagesViewModel { get; private set; }
@@ -58,6 +58,15 @@ namespace ICSharpCode.PackageManagement
 			InstalledPackagesViewModel.Dispose();
 			RecentPackagesViewModel.Dispose();
 			UpdatedPackagesViewModel.Dispose();
+		}
+
+		public System.Collections.Generic.IEnumerable<PackagesViewModel> GetPackagesViewModels {
+			get {
+				yield return AvailablePackagesViewModel;
+				yield return InstalledPackagesViewModel;
+				yield return UpdatedPackagesViewModel;
+				yield return RecentPackagesViewModel;
+			}
 		}
 	}
 }

@@ -34,6 +34,7 @@ namespace ICSharpCode.PackageManagement.Design
 			DesignTimeRegisteredPackageRepositories registeredPackageRepositories,
 			FakePackageManagementSolution solution)
 			: base(
+				null,
 				registeredPackageRepositories,
 				new PackageViewModelFactory(solution, null, null),
 				new PackageManagementTaskFactory())

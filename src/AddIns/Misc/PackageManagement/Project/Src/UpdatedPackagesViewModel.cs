@@ -33,11 +33,13 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		
 		public UpdatedPackagesViewModel(
+			PackagesViewModels packagesViewModelParent,
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			UpdatedPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(
+				packagesViewModelParent,
 				registeredPackageRepositories,
 				packageViewModelFactory,
 				taskFactory)

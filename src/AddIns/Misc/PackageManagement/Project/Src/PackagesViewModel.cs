@@ -38,12 +38,15 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackage> allPackages;
 		ITask<PackagesForSelectedPageResult> task;
 		bool includePrerelease;
+		readonly PackagesViewModels packagesViewModelParent;
 		
 		public PackagesViewModel(
+			PackagesViewModels packagesViewModelParent,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 		{
+			this.packagesViewModelParent = packagesViewModelParent;
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.packageViewModelFactory = packageViewModelFactory;
 			this.taskFactory = taskFactory;
@@ -125,9 +128,41 @@ namespace ICSharpCode.PackageManagement
 		{
 			task = taskFactory.CreateTask(
 				() => GetPackagesForSelectedPageResult(),
-				(result) => OnPackagesReadForSelectedPage(result));
+				OnPackagesReadForSelectedPage);
+		}
+
+		public void RefreshSiblingViews (IPackageFromRepository package) {
+			foreach (PackagesViewModel packagesViewModel in packagesViewModelParent.GetPackagesViewModels) {
+				if (packagesViewModel != this) {
+					if (packagesViewModel is AvailablePackagesViewModel) {
+						// package installed from "Available Packages" Tab, 
+						// unistaled from "Installed/Recent Packages" Tab,
+						// does not refresh same package in "Available Packages" Tab
+						packagesViewModel.allPackages = null;
+						packagesViewModel.StartReadPackagesTask();
+						// To slow: UpdatePackageViewModel(packagesViewModel, package);
+					}
+					else { // refresh other siblings? 
+					}
+				}
+			}
 		}
 		
+		static void UpdatePackageViewModel (PackagesViewModel packagesViewModel, IPackageName package) {
+			for (int i = 0; i < packagesViewModel.PackageViewModels.Count; i++) {
+				var found = packagesViewModel.PackageViewModels[i];
+				if (found.Id == package.Id && found.Version == package.Version) {
+					foreach (IPackage item in packagesViewModel.GetAllPackages()) {
+						if (item.Id == package.Id && item.Version == package.Version) {
+							packagesViewModel.PackageViewModels[i] = packagesViewModel.CreatePackageViewModel(item);
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+
 		PackagesForSelectedPageResult GetPackagesForSelectedPageResult()
 		{
 			IEnumerable<IPackage> packages = GetPackagesForSelectedPage();

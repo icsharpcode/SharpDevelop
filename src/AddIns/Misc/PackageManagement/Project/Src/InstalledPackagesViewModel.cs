@@ -31,12 +31,13 @@ namespace ICSharpCode.PackageManagement
 		string errorMessage;
 
 		public InstalledPackagesViewModel(
+			PackagesViewModels packagesViewModelParent,
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			InstalledPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
+			: base(packagesViewModelParent, registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
 			this.solution = solution;
 			this.packageManagementEvents = packageManagementEvents;

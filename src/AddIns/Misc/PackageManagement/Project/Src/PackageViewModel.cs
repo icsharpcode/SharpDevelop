@@ -223,6 +223,7 @@ namespace ICSharpCode.PackageManagement
 			logger.LogAfterPackageOperationCompletes();
 			OnPropertyChanged(model => model.IsAdded);
 			OnPropertyChanged(model => model.IsManaged);
+			parent.OnPackageManaged (package);
 		}
 		
 		protected virtual IDisposable StartInstallOperation(IPackageFromRepository package)
@@ -296,7 +297,6 @@ namespace ICSharpCode.PackageManagement
 				var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
 				var packageManager = new NuGet.PackageManager(package.Repository, solutionPackageRepository.PackagePathResolver, solutionPackageRepository.FileSystem, solutionPackageRepository.Repository);
 				packageManager.InstallPackage(package.Id, package.Version, false, parent.IncludePrerelease);
-				packageManagementEvents.OnParentPackageInstalled(package);
 			} catch (Exception ex) {
 				ReportError(ex);
 				logger.LogError(ex);
@@ -370,6 +370,7 @@ namespace ICSharpCode.PackageManagement
 			logger.LogAfterPackageOperationCompletes();
 			OnPropertyChanged(model => model.IsAdded);
 			OnPropertyChanged(model => model.IsManaged);
+			parent.OnPackageManaged (package);
 		}
 		
 		void LogRemovingPackage()
@@ -383,7 +384,6 @@ namespace ICSharpCode.PackageManagement
 				var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
 				var packageManager = new NuGet.PackageManager(solutionPackageRepository.Repository, solutionPackageRepository.PackagePathResolver, solutionPackageRepository.FileSystem);
 				packageManager.UninstallPackage(package.Id, package.Version);
-				packageManagementEvents.OnParentPackageUninstalled(package);
 			} catch (Exception ex) {
 				ReportError(ex);
 				logger.LogError(ex);
@@ -454,6 +454,7 @@ namespace ICSharpCode.PackageManagement
 			logger.LogAfterPackageOperationCompletes();
 			OnPropertyChanged(model => model.IsAdded);
 			OnPropertyChanged(model => model.IsManaged);
+			parent.OnPackageManaged (package);
 		}
 		
 		void TryInstallingPackagesForSelectedProjects(IList<IPackageManagementSelectedProject> projects)
