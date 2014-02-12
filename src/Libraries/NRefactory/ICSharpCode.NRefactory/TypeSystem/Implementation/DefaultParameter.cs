@@ -174,7 +174,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		readonly DomRegion region;
 		readonly bool isRef, isOut, isParams, isOptional;
 		readonly object defaultValue;
-		readonly IMemberReference owner;
 		
 		public ParameterReference(ITypeReference type, string name, DomRegion region, bool isRef, bool isOut, bool isParams, bool isOptional, object defaultValue)
 		{

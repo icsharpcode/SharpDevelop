@@ -94,8 +94,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentNullException("variableTypeReference");
 			if (name == null)
 				throw new ArgumentNullException("name");
-			if (constantValue == null)
-				throw new ArgumentNullException("constantValue");
 			this.variableTypeReference = variableTypeReference;
 			this.name = name;
 			this.region = region;
