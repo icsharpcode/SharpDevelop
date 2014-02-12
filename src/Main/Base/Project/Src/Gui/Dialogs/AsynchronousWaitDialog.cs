@@ -333,7 +333,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 							if (runningInOwnThread)
 								dlg.Show();
 							else
-								if (!dlg.Visible)
+								if (!collector.ProgressMonitorIsDisposed && !dlg.Visible)
 									dlg.ShowDialog();
 						}
 					};
