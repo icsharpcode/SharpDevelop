@@ -121,7 +121,8 @@ namespace ICSharpCode.PackageManagement
 		
 		bool IsPackageInstalled()
 		{
-			return selectedProjects.IsPackageInstalled(package);
+			return selectedProjects.IsPackageInstalledInSolution(package) 
+				|| selectedProjects.IsPackageInstalled(package);
 		}
 		
 		public IEnumerable<PackageDependencySet> Dependencies {
