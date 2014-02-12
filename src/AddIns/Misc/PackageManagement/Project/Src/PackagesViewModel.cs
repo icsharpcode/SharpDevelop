@@ -131,7 +131,7 @@ namespace ICSharpCode.PackageManagement
 				OnPackagesReadForSelectedPage);
 		}
 
-		public void RefreshSiblingViews (IPackageFromRepository package) {
+		public void OnPackageManaged (IPackageFromRepository package) {
 			foreach (PackagesViewModel packagesViewModel in packagesViewModelParent.GetPackagesViewModels) {
 				if (packagesViewModel != this) {
 					if (packagesViewModel is AvailablePackagesViewModel) {
@@ -140,7 +140,6 @@ namespace ICSharpCode.PackageManagement
 						// does not refresh same package in "Available Packages" Tab
 						packagesViewModel.allPackages = null;
 						packagesViewModel.StartReadPackagesTask();
-						// To slow: UpdatePackageViewModel(packagesViewModel, package);
 					}
 					else { // refresh other siblings? 
 					}
@@ -148,21 +147,6 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		static void UpdatePackageViewModel (PackagesViewModel packagesViewModel, IPackageName package) {
-			for (int i = 0; i < packagesViewModel.PackageViewModels.Count; i++) {
-				var found = packagesViewModel.PackageViewModels[i];
-				if (found.Id == package.Id && found.Version == package.Version) {
-					foreach (IPackage item in packagesViewModel.GetAllPackages()) {
-						if (item.Id == package.Id && item.Version == package.Version) {
-							packagesViewModel.PackageViewModels[i] = packagesViewModel.CreatePackageViewModel(item);
-							break;
-						}
-					}
-					break;
-				}
-			}
-		}
-
 		PackagesForSelectedPageResult GetPackagesForSelectedPageResult()
 		{
 			IEnumerable<IPackage> packages = GetPackagesForSelectedPage();
