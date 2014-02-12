@@ -765,5 +765,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return assembly.GetTypeDefinition (new TopLevelTypeName (namespaceName, name, typeParameterCount));
 		}
 		#endregion
+		
+		#region ResolveResult
+		public static ISymbol GetSymbol(this ResolveResult rr)
+		{
+			if (rr is LocalResolveResult) {
+				return ((LocalResolveResult)rr).Variable;
+			} else if (rr is MemberResolveResult) {
+				return ((MemberResolveResult)rr).Member;
+			} else if (rr is TypeResolveResult) {
+				return ((TypeResolveResult)rr).Type.GetDefinition();
+			}
+			
+			return null;
+		}
+		#endregion
 	}
 }
