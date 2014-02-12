@@ -806,7 +806,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			MethodDeclaration decl = new MethodDeclaration();
 			decl.Modifiers = GetMemberModifiers(method);
-			if (method.IsAsync)
+			if (method.IsAsync && ShowModifiers)
 				decl.Modifiers |= Modifiers.Async;
 			decl.ReturnType = ConvertType(method.ReturnType);
 			decl.Name = method.Name;
