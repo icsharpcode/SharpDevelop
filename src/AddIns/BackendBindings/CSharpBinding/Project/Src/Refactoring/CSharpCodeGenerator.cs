@@ -159,6 +159,20 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
+		public override void AddMethodAtStart(ITypeDefinition declaringType, Accessibility accessibility, IType returnType, string name)
+		{
+			SDRefactoringContext context = declaringType.CreateRefactoringContext();
+			var typeDecl = context.GetNode<TypeDeclaration>();
+			using (var script = context.StartScript()) {
+				var astBuilder = context.CreateTypeSystemAstBuilder(typeDecl.FirstChild);
+				var methodDecl = new MethodDeclaration();
+				methodDecl.Name = name;
+				methodDecl.ReturnType = astBuilder.ConvertType(context.Compilation.Import(returnType));
+				
+				script.AddTo(typeDecl, methodDecl);
+			}
+		}
+		
 		public override void ChangeAccessibility(IEntity entity, Accessibility newAccessiblity)
 		{
 			// TODO script.ChangeModifiers(...)
