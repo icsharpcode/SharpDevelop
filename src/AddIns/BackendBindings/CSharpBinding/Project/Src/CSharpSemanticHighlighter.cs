@@ -407,6 +407,13 @@ namespace CSharpBinding
 				var resolverNode = node;
 				while (CSharpAstResolver.IsUnresolvableNode(resolverNode) && resolverNode.Parent != null)
 					resolverNode = resolverNode.Parent;
+				if (resolverNode.Role == Roles.TargetExpression && resolverNode.Parent is InvocationExpression)
+					resolverNode = resolverNode.Parent;
+				
+				if (node is Identifier)
+					resolverNode.AddAnnotation(node);
+				if (color != null)
+					resolverNode.AddAnnotation(color);
 				currentNavigator.Resolved(resolverNode, resolver.Resolve(resolverNode));
 			}
 			base.Colorize(node, color);
@@ -421,6 +428,12 @@ namespace CSharpBinding
 				currentNavigator.Resolved(identifier, rr);
 			}
 			base.Colorize(identifier, rr);
+		}
+		
+		public override void VisitPrimitiveType(PrimitiveType primitiveType)
+		{
+			// highlight usages of primitive types as well.
+			Colorize(primitiveType, null);
 		}
 		
 		public readonly Color DefaultFillColor = Color.FromArgb(22, 30, 130, 255);
@@ -454,7 +467,7 @@ namespace CSharpBinding
 				return null;
 			var navigators = new IResolveVisitorNavigator[searchScopes.Count];
 			for (int i = 0; i < navigators.Length; i++) {
-				navigators[i] = searchScopes[i].GetNavigator(compilation, Colorize);
+				navigators[i] = searchScopes[i].GetNavigator(compilation, ColorizeMatch);
 			}
 			IResolveVisitorNavigator combinedNavigator;
 			if (searchScopes.Count == 1) {
@@ -466,18 +479,24 @@ namespace CSharpBinding
 			return combinedNavigator;
 		}
 		
-		void Colorize(AstNode node, ResolveResult result)
+		void ColorizeMatch(AstNode node, ResolveResult result)
 		{
-			Identifier identifier = node.GetChildByRole(Roles.Identifier);
-			if (!identifier.IsNull)
-				AddMarker(identifier.StartLocation, identifier.EndLocation);
-			else
-				AddMarker(node.StartLocation, node.EndLocation);
-		}
-		
-		void AddMarker(TextLocation start, TextLocation end)
-		{
-			Colorize(start, end, symbolReferenceColor);
+			Identifier identifier = node.Annotation<Identifier>() ?? node.GetChildByRole(Roles.Identifier);
+			TextLocation start, end;
+			if (!identifier.IsNull) {
+				start = identifier.StartLocation;
+				end = identifier.EndLocation;
+			} else {
+				start = node.StartLocation;
+				end = node.EndLocation;
+			}
+			var complementary = node.Annotation<HighlightingColor>();
+			HighlightingColor newColor = symbolReferenceColor;
+			if (complementary != null) {
+				newColor = newColor.Clone();
+				newColor.MergeWith(complementary);
+			}
+			Colorize(start, end, newColor);
 		}
 		#endregion
 	}
