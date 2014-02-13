@@ -119,7 +119,7 @@
     <Compile Include="Project\Commands\ViewCommands.cs" />
     <Compile Include="Project\Configuration\AssemblyInfo.cs" />
     <None Include="EmptyReport.xft">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <Compile Include="Project\Designer\SmartTagTransactions.cs" />
     <Compile Include="Project\Designer\TextBasedDesignerActionList.cs" />

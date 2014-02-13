@@ -30,13 +30,22 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	{
 
 		
+		public override void Visit(ExportContainer exportContainer)
+		{
+			foreach (var element in exportContainer.ExportedItems) {
+				var te = element as ExportText;
+				if (te != null) {
+					Visit(te);
+				}
+			}
+		}
+		
+		
 		public override void Visit(ExportText exportColumn)
 		{
 			if (!String.IsNullOrEmpty(exportColumn.FormatString)) {
 				StandardFormatter.FormatOutput(exportColumn);
 			}
 		}
-		
-		
 	}
 }

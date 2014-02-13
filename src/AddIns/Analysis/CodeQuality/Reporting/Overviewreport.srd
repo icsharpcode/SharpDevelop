@@ -54,13 +54,15 @@
                 </BaseTextItem>
                 <BaseTextItem>
                     <Location>601, 59</Location>
-                    <Size>100, 26</Size>
+                    <Size>100, 34</Size>
                     <BackColor>White</BackColor>
                     <Font>Segoe UI, 15.75pt</Font>
+                    <FormatString>dd/MM/yyyy</FormatString>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
+                    <DataType>System.DateTime</DataType>
                     <RTL>No</RTL>
                     <Text>=Today</Text>
                     <DrawBorder>False</DrawBorder>
