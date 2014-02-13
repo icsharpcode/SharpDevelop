@@ -409,6 +409,8 @@ namespace CSharpBinding
 					resolverNode = resolverNode.Parent;
 				if (resolverNode.Role == Roles.TargetExpression && resolverNode.Parent is InvocationExpression)
 					resolverNode = resolverNode.Parent;
+				if (resolverNode.Role == Roles.Type && resolverNode.Parent is ObjectCreateExpression)
+					resolverNode = resolverNode.Parent;
 				
 				if (node is Identifier)
 					resolverNode.AddAnnotation(node);
