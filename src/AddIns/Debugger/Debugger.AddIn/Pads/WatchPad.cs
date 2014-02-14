@@ -166,6 +166,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			pad.AddWatch(watchValue);
 		}
+		
+		public override DragDropEffects GetDropEffect(DragEventArgs e, int index)
+		{
+			return DragDropEffects.Copy;
+		}
 	}
 	
 	static class WpfExtensions
