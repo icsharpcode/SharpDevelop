@@ -86,6 +86,7 @@ namespace Debugger.AddIn.Pads.Controls
 			this.editor.ClearValue(TextEditor.FontFamilyProperty);
 			this.editor.ClearValue(TextEditor.FontSizeProperty);
 			this.editor.ShowLineNumbers = false;
+			this.editor.Options.HighlightCurrentLine = false;
 			this.editor.WordWrap = false;
 			this.editor.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
 			this.editor.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;

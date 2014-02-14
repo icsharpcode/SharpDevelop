@@ -596,6 +596,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					}
 					textEditor.Select(0, 0);
 					bracketHighlighter.SetHighlight(null);
+					textEditor.Options.HighlightCurrentLine = false;
 					item.ShowExample(textEditor.TextArea);
 					ITextMarker m = textMarkerService.TextMarkers.SingleOrDefault();
 					if (m != null && m.Tag != null) {
