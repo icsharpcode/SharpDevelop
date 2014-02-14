@@ -115,6 +115,8 @@ namespace CSharpBinding.Refactoring
 							CSharpAstResolver resolver = await context.GetAstResolverAsync().ConfigureAwait(false);
 							var refactoringContext = new SDRefactoringContext(context.TextSource, resolver, context.CaretLocation, selectionStart, selectionLength, cancellationToken);
 							return codeActionProvider.GetActions(refactoringContext).Select(Wrap).ToArray();
+						} catch (OperationCanceledException) {
+							throw; // don't catch cancellations
 						} catch (Exception ex) {
 							SD.Log.WarnFormatted("CSharpContextActionProviderWrapper crashed: {0}", ex);
 							SD.AnalyticsMonitor.TrackException(ex);
