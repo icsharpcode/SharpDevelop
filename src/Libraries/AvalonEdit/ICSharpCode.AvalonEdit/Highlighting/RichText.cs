@@ -151,7 +151,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public RichTextModel ToRichTextModel()
 		{
-			return new RichTextModel(stateChangeOffsets, stateChanges);
+			return new RichTextModel(stateChangeOffsets, stateChanges.Select(ch => ch.Clone()).ToArray());
 		}
 		
 		/// <summary>
