@@ -164,8 +164,6 @@
     <Compile Include="Src\IFieldExtensions.cs" />
     <Compile Include="Src\IDocumentLoader.cs" />
     <Compile Include="Src\IMethodOrPropertyExtensions.cs" />
-    <Compile Include="Src\InstalledPackageViewModel.cs" />
-    <Compile Include="Src\InstalledPackageViewModelFactory.cs" />
     <Compile Include="Src\IPackageManagementSelectedProject.cs" />
     <Compile Include="Src\ISelectProjectsService.cs" />
     <Compile Include="Src\ISolutionPackageRepository.cs" />

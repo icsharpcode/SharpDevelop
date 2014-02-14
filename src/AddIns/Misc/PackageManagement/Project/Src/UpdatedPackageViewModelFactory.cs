@@ -23,12 +23,11 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackageViewModelFactory : PackageViewModelFactory
 	{
-		SelectedProjectsForUpdatedPackages selectedProjectsForUpdatedPackages;
-		
+		SelectedProjectsForUpdatedPackages selectedProjects;
+
 		public UpdatedPackageViewModelFactory(IPackageViewModelFactory packageViewModelFactory)
-			: base(packageViewModelFactory)
-		{
-			selectedProjectsForUpdatedPackages = new SelectedProjectsForUpdatedPackages(Solution);
+			: base(packageViewModelFactory) {
+			selectedProjects = new SelectedProjectsForUpdatedPackages(Solution);
 		}
 		
 		public override PackageViewModel CreatePackageViewModel(IPackageViewModelParent parent, IPackageFromRepository package)
@@ -36,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 			return new UpdatedPackageViewModel(
 				parent,
 				package,
-				selectedProjectsForUpdatedPackages,
+				selectedProjects,
 				PackageManagementEvents,
 				PackageActionRunner,
 				Logger);

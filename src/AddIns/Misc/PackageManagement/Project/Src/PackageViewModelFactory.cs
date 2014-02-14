@@ -38,7 +38,8 @@ namespace ICSharpCode.PackageManagement
 			IPackageActionRunner actionRunner)
 		{
 			this.Solution = solution;
-			this.SelectedProjects = new PackageManagementSelectedProjects(solution);
+//			this.SelectedProjects = new PackageManagementSelectedProjects(solution);
+			this.SelectedProjects = new SelectedProjectsForInstalledPackages(solution);
 			this.PackageManagementEvents = packageManagementEvents;
 			this.PackageActionRunner = actionRunner;
 			this.Logger = new PackageManagementLogger(packageManagementEvents);

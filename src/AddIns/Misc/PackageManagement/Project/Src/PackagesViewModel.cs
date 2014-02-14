@@ -132,21 +132,25 @@ namespace ICSharpCode.PackageManagement
 		}
 
 		public void OnPackageManaged (IPackageFromRepository package) {
-			foreach (PackagesViewModel packagesViewModel in packagesViewModelParent.GetPackagesViewModels) {
-				if (packagesViewModel != this) {
-					if (packagesViewModel is AvailablePackagesViewModel) {
-						// package installed from "Available Packages" Tab, 
-						// unistaled from "Installed/Recent Packages" Tab,
-						// does not refresh same package in "Available Packages" Tab
-						packagesViewModel.allPackages = null;
-						packagesViewModel.StartReadPackagesTask();
-					}
-					else { // refresh other siblings? 
+			if (packagesViewModelParent != null) { // it is null at design time
+				foreach (PackagesViewModel packagesViewModel in packagesViewModelParent.GetPackagesViewModels) {
+					if (packagesViewModel != this) {
+						OnPackageManaged(packagesViewModel, package);
 					}
 				}
 			}
 		}
 		
+		static void OnPackageManaged (PackagesViewModel packagesViewModel, IPackageName package) {
+			foreach (var found in packagesViewModel.PackageViewModels) {
+				if (found.Id == package.Id && found.Version == package.Version) {
+					found.OnPropertyChanged(model => model.IsAdded);
+					found.OnPropertyChanged(model => model.IsManaged);
+					break;
+				}
+			}
+		}
+
 		PackagesForSelectedPageResult GetPackagesForSelectedPageResult()
 		{
 			IEnumerable<IPackage> packages = GetPackagesForSelectedPage();

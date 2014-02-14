@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement
 			return String.Empty;
 		}
 		
-		protected void OnPropertyChanged<TProperty>(Expression<Func<TModel, TProperty>> expression)
+		protected internal void OnPropertyChanged<TProperty>(Expression<Func<TModel, TProperty>> expression)
 		{
 			string propertyName = PropertyChangedFor(expression);
 			OnPropertyChanged(propertyName);

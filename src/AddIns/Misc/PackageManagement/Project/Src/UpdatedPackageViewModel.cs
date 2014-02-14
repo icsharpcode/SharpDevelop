@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement
 		public UpdatedPackageViewModel(
 			IPackageViewModelParent parent,
 			IPackageFromRepository package,
-			SelectedProjectsForUpdatedPackages selectedProjects,
+			PackageManagementSelectedProjects selectedProjects,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ILogger logger)
@@ -34,13 +34,12 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		protected override ProcessPackageOperationsAction CreateInstallPackageAction(
-			IPackageManagementProject project)
+		protected override ProcessPackageAction CreatePackageManageAction(IPackageManagementSelectedProject selectedProject)
 		{
-			return project.CreateUpdatePackageAction();
+			return base.CreateUpdatePackageManageActionForSelectedProject(selectedProject);
 		}
 		
-		protected override IDisposable StartInstallOperation(IPackageFromRepository package)
+		protected override IDisposable StartOperation(IPackageFromRepository package)
 		{
 			return package.StartUpdateOperation();
 		}

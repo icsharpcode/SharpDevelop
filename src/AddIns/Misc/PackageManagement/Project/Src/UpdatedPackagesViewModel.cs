@@ -36,7 +36,7 @@ namespace ICSharpCode.PackageManagement
 			PackagesViewModels packagesViewModelParent,
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			UpdatedPackageViewModelFactory packageViewModelFactory,
+			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(
 				packagesViewModelParent,
@@ -48,6 +48,8 @@ namespace ICSharpCode.PackageManagement
 			this.logger = packageViewModelFactory.Logger;
 			this.packageManagementEvents = packageViewModelFactory.PackageManagementEvents;
 			
+			packageManagementEvents.ParentPackageInstalled += PackagesUpdated;
+			packageManagementEvents.ParentPackageUninstalled += PackagesUpdated;
 			packageManagementEvents.ParentPackagesUpdated += PackagesUpdated;
 			
 			ShowPackageSources = true;
