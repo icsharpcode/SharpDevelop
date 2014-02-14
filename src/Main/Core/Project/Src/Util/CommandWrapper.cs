@@ -160,6 +160,8 @@ namespace ICSharpCode.Core
 		
 		public event EventHandler CanExecuteChanged {
 			add {
+				if (value == null)
+					return;
 				if (conditions.Count > 0 && RegisterConditionRequerySuggestedHandler != null)
 					RegisterConditionRequerySuggestedHandler(value);
 				
@@ -169,6 +171,8 @@ namespace ICSharpCode.Core
 					canExecuteChangedHandlersToRegisterOnCommand.Add(value);
 			}
 			remove {
+				if (value == null)
+					return;
 				if (conditions.Count > 0 && UnregisterConditionRequerySuggestedHandler != null)
 					UnregisterConditionRequerySuggestedHandler(value);
 				
