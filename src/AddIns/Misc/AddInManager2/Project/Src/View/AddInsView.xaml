@@ -453,6 +453,15 @@
 				</DataTrigger>
 			</DataTemplate.Triggers>
 		</DataTemplate>
+		
+		<Style x:Key="allPackagesListBoxStyle" TargetType="ListBox">
+			<Setter Property="Visibility" Value="Hidden" />
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding HasError}" Value="False">
+					<Setter Property="Visibility" Value="Visible" />
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
 	</UserControl.Resources>
 	
 	<Grid>
@@ -482,24 +491,6 @@
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
-					
-					<!-- <TextBlock
-						Grid.Row="0"
-						Grid.Column="0"
-						VerticalAlignment="Center"
-						Margin="2, 0, 5, 2"
-						Visibility="{Binding Path=ShowPackageRepositories, Converter={StaticResource BoolToVisibility}}"
-						Text="{core:Localize AddInManager2.AddInsView.Repository}" />
-					<ComboBox
-						Grid.Row="0"
-						Grid.Column="1"
-						Grid.ColumnSpan="2"
-						Margin="2, 0, 0, 2"
-						Style="{StaticResource PackageSourceComboBoxStyle}"
-						SelectedItem="{Binding Path=SelectedPackageSource}"
-						ItemsSource="{Binding Path=PackageRepositories}"
-						ItemTemplate="{StaticResource PackageSourceComboBoxItemTemplate}"
-						Visibility="{Binding Path=ShowPackageRepositories, Converter={StaticResource BoolToVisibility}}"/>-->
 					
 					<TextBlock
 						Grid.Row="1"
@@ -534,10 +525,6 @@
 				</Grid>
 				
 				<Grid Grid.Row="1">
-					<Grid.RowDefinitions>
-						<RowDefinition />
-						<RowDefinition Height="Auto"/>
-					</Grid.RowDefinitions>
 					<ListBox
 						x:Name="allPackagesListBox"
 						Grid.Row="0"
@@ -548,6 +535,14 @@
 						ItemContainerStyle="{StaticResource packageListBoxItemContainerStyle}"
 						HorizontalContentAlignment="Stretch"
 						ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+					<TextBlock
+						x:Name="ErrorMessageText"
+						Grid.Row="0"
+						Visibility="{Binding Path=HasError, Converter={StaticResource BoolToVisibility}}"
+						Text="{Binding Path=ErrorMessage}"
+						TextWrapping="Wrap"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"/>
 					<ProgressBar
 						Grid.Row="0"
 						Height="20"
@@ -556,12 +551,6 @@
 						Visibility="{Binding Path=IsReadingPackages, Converter={StaticResource BoolToVisibility}}"
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"/>
-					<TextBlock
-						x:Name="ErrorMessageText"
-						Grid.Row="0"
-						Visibility="{Binding Path=HasError, Converter={StaticResource BoolToVisibility}}"
-						Text="{Binding Path=ErrorMessage}"
-						TextWrapping="Wrap"/>
 					<aimview:PagedResultsView
 						x:Name="pagedResultsView"
 						Grid.Row="1"

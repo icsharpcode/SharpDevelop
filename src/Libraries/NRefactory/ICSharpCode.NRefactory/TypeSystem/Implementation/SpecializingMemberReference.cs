@@ -50,6 +50,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			);
 		}
 		
+		ISymbol ISymbolReference.Resolve(ITypeResolveContext context)
+		{
+			return Resolve(context);
+		}
+		
 		public ITypeReference DeclaringTypeReference {
 			get {
 				if (classTypeArgumentReferences != null)

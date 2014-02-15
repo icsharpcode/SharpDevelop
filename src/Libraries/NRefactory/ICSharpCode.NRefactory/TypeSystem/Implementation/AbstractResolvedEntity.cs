@@ -90,6 +90,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			else
 				return null;
 		}
+
+		public abstract ISymbolReference ToReference();
 		
 		public bool IsStatic { get { return unresolved.IsStatic; } }
 		public bool IsAbstract { get { return unresolved.IsAbstract; } }

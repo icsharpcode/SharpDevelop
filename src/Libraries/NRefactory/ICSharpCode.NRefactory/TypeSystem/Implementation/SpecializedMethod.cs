@@ -154,7 +154,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 
-		public override IMemberReference ToMemberReference()
+		public override IMemberReference ToReference()
 		{
 			// Pass the MethodTypeArguments to the SpecializingMemberReference only if
 			// the generic method itself is parameterized, not if the generic method is only
@@ -169,12 +169,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			// in the resulting member reference.
 			if (isParameterized) {
 				return new SpecializingMemberReference(
-					baseMember.ToMemberReference(),
+					baseMember.ToReference(),
 					ToTypeReference(base.Substitution.ClassTypeArguments),
 					ToTypeReference(base.Substitution.MethodTypeArguments));
 			} else {
-				return base.ToMemberReference();
+				return base.ToReference();
 			}
+		}
+		
+		public override IMemberReference ToMemberReference()
+		{
+			return ToReference();
 		}
 		
 		public override bool Equals(object obj)

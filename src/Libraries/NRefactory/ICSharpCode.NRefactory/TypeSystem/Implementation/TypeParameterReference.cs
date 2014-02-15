@@ -23,7 +23,7 @@ using ICSharpCode.NRefactory.Utils;
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	[Serializable]
-	public sealed class TypeParameterReference : ITypeReference
+	public sealed class TypeParameterReference : ITypeReference, ISymbolReference
 	{
 		static readonly TypeParameterReference[] classTypeParameterReferences = new TypeParameterReference[8];
 		static readonly TypeParameterReference[] methodTypeParameterReferences = new TypeParameterReference[8];
@@ -78,6 +78,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			} else {
 				return SpecialType.UnknownType;
 			}
+		}
+		
+		ISymbol ISymbolReference.Resolve(ITypeResolveContext context)
+		{
+			return Resolve(context) as ISymbol;
 		}
 		
 		public override string ToString()

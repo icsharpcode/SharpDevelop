@@ -132,8 +132,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		private void ShowErrorMessage(string message)
 		{
-			this.Message = StringParser.Parse(message);
-			this.HasError = true;
+			SD.MessageService.ShowWarning(StringParser.Parse(message));
 		}
 		
 		public string Message

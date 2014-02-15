@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Type Reference used when the fully qualified type name is known.
 	/// </summary>
 	[Serializable]
-	public sealed class GetClassTypeReference : ITypeReference, ISupportsInterning
+	public sealed class GetClassTypeReference : ITypeReference, ISymbolReference, ISupportsInterning
 	{
 		readonly IAssemblyReference assembly;
 		readonly FullTypeName fullTypeName;
@@ -113,6 +113,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				}
 			}
 			return type ?? new UnknownType(fullTypeName);
+		}
+		
+		ISymbol ISymbolReference.Resolve(ITypeResolveContext context)
+		{
+			var type = Resolve(context);
+			if (type is ITypeDefinition)
+				return (ISymbol)type;
+			return null;
 		}
 		
 		public override string ToString()

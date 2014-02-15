@@ -371,8 +371,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 			var model = referencedEntity.GetModel();
 			return delegate(object sender, RoutedEventArgs e) {
 				IEntity resolvedEntity = model != null ? model.Resolve() : null;
-				if (resolvedEntity != null)
-					SharpDevelop.NavigationService.NavigateTo(resolvedEntity);
+				if (resolvedEntity != null) {
+					bool shouldDisplayHelp = CodeCompletionOptions.TooltipLinkTarget == TooltipLinkTarget.Documentation
+						&& resolvedEntity.ParentAssembly.IsPartOfDotnetFramework();
+					if (!shouldDisplayHelp || !HelpProvider.ShowHelp(resolvedEntity))
+						NavigationService.NavigateTo(resolvedEntity);
+				}
 				e.Handled = true;
 			};
 		}

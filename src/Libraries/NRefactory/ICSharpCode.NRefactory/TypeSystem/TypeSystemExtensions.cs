@@ -301,7 +301,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (entity.Compilation == compilation)
 				return entity;
 			if (entity is IMember)
-				return ((IMember)entity).ToMemberReference().Resolve(compilation.TypeResolveContext);
+				return ((IMember)entity).ToReference().Resolve(compilation.TypeResolveContext);
 			else if (entity is ITypeDefinition)
 				return ((ITypeDefinition)entity).ToTypeReference().Resolve(compilation.TypeResolveContext).GetDefinition();
 			else
@@ -319,7 +319,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return null;
 			if (member.Compilation == compilation)
 				return member;
-			return member.ToMemberReference().Resolve(compilation.TypeResolveContext);
+			return member.ToReference().Resolve(compilation.TypeResolveContext);
 		}
 		
 		/// <summary>
@@ -763,6 +763,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (assembly == null)
 				throw new ArgumentNullException ("assembly");
 			return assembly.GetTypeDefinition (new TopLevelTypeName (namespaceName, name, typeParameterCount));
+		}
+		#endregion
+		
+		#region ResolveResult
+		public static ISymbol GetSymbol(this ResolveResult rr)
+		{
+			if (rr is LocalResolveResult) {
+				return ((LocalResolveResult)rr).Variable;
+			} else if (rr is MemberResolveResult) {
+				return ((MemberResolveResult)rr).Member;
+			} else if (rr is TypeResolveResult) {
+				return ((TypeResolveResult)rr).Type.GetDefinition();
+			}
+			
+			return null;
 		}
 		#endregion
 	}

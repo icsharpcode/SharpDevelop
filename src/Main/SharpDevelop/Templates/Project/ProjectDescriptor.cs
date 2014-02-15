@@ -306,6 +306,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 				Directory.CreateDirectory(projectBasePath);
 				FileName projectLocation = projectBasePath.CombineFile(newProjectName + descriptor.ProjectFileExtension);
 				ProjectCreateInformation info = new ProjectCreateInformation(parentSolution, projectLocation);
+				info.TargetFramework = projectCreateOptions.TargetFramework;
 				
 				StringBuilder standardNamespace = new StringBuilder();
 				// filter 'illegal' chars from standard namespace

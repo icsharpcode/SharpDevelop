@@ -214,6 +214,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			} while (type.Members.Select (m => m.GetChildByRole (Roles.Identifier)).Any (n => n.Name == proposedName));
 			return proposedName;
 		}
+		
+		public virtual string GetLocalNameProposal (string name, TextLocation loc, bool camelCase = true)
+		{
+			string baseName = (camelCase ? char.ToLower (name [0]) : char.ToUpper (name [0])) + name.Substring (1);
+			var node = RootNode.GetNodeAt(loc);
+			if (node == null)
+				return baseName;
+			
+			var context = GetResolverStateBefore (node);
+			int number = -1;
+			string proposedName;
+			do {
+				proposedName = AppendNumberToName (baseName, number++);
+			} while (!(context.ResolveSimpleName (proposedName, EmptyList<IType>.Instance) is UnknownIdentifierResolveResult));
+			return proposedName;
+		}
 
 		static string AppendNumberToName (string baseName, int number)
 		{

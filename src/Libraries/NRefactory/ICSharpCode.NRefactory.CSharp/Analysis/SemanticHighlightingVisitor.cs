@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		protected abstract void Colorize(TextLocation start, TextLocation end, TColor color);
 		
 		#region Colorize helper methods
-		protected void Colorize(Identifier identifier, ResolveResult rr)
+		protected virtual void Colorize(Identifier identifier, ResolveResult rr)
 		{
 			if (identifier.IsNull)
 				return;
@@ -141,7 +141,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			VisitIdentifier(identifier); // un-colorize contextual keywords
 		}
 		
-		protected void Colorize(AstNode node, TColor color)
+		protected virtual void Colorize(AstNode node, TColor color)
 		{
 			if (node.IsNull)
 				return;

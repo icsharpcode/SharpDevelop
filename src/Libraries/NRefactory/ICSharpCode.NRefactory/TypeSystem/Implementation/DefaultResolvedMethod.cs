@@ -234,16 +234,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public override IMemberReference ToMemberReference()
+		public override ISymbolReference ToReference()
 		{
 			var declTypeRef = this.DeclaringType.ToTypeReference();
 			if (IsExplicitInterfaceImplementation && ImplementedInterfaceMembers.Count == 1) {
-				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToMemberReference());
+				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToReference());
 			} else {
 				return new DefaultMemberReference(
 					this.SymbolKind, declTypeRef, this.Name, this.TypeParameters.Count,
 					this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 			}
+		}
+		
+		public override IMemberReference ToMemberReference()
+		{
+			return (IMemberReference)ToReference();
 		}
 		
 		public override IMember Specialize(TypeParameterSubstitution substitution)

@@ -343,9 +343,70 @@ namespace CSharpBinding.Refactoring
 				var markers = markerService.GetMarkersAtOffset(context.CaretOffset);
 				foreach (var tag in markers.Select(m => m.Tag).OfType<InspectionTag>()) {
 					result.AddRange(tag.Actions);
+					string issueName;
+					if (CanSuppress(tag, out issueName)) {
+						result.Add(new SuppressIssueContextAction(issueName, SuppressType.Once));
+						result.Add(new SuppressIssueContextAction(issueName, SuppressType.Always));
+					}
 				}
 			}
 			return Task.FromResult(result.ToArray());
+		}
+		
+		bool CanSuppress(InspectionTag tag, out string issueName)
+		{
+			var attr = (IssueDescriptionAttribute)tag.Provider.ProviderType.GetCustomAttributes(false).FirstOrDefault(a => a is IssueDescriptionAttribute);
+			issueName = null;
+			if (attr == null || attr.AnalysisDisableKeyword == null)
+				return false;
+			issueName = attr.AnalysisDisableKeyword;
+			return true;
+		}
+		
+		enum SuppressType {
+			Once,
+			Always
+		}
+		
+		[ContextAction("Suppress issue", Description = "Suppresses an issue.")]
+		class SuppressIssueContextAction : ContextAction
+		{
+			string issueName;
+			SuppressType type;
+			
+			public SuppressIssueContextAction(string issueName, SuppressType type)
+			{
+				this.issueName = issueName;
+				this.type = type;
+			}
+			
+			public override Task<bool> IsAvailableAsync(EditorRefactoringContext context, CancellationToken cancellationToken)
+			{
+				return Task.FromResult(true);
+			}
+			
+			public override string DisplayName
+			{
+				get {
+					string fmt;
+					if (type == SuppressType.Once)
+						fmt = "Suppress '{0}' once";
+					else
+						fmt = "Suppress '{0}'";
+					return string.Format(fmt, issueName);
+				}
+			}
+			
+			public override void Execute(EditorRefactoringContext context)
+			{
+				var myContext = SDRefactoringContext.Create(context.Editor, default(CancellationToken));
+				var currentNode = myContext.RootNode.GetNodeAt<Statement>(context.CaretLocation);
+				if (currentNode == null)
+					return;
+				using (var script = myContext.StartScript()) {
+					script.InsertBefore(currentNode, new Comment(string.Format(" disable{1}{0}", issueName, type == SuppressType.Once ? " once " : " ")));
+				}
+			}
 		}
 		#endregion
 	}

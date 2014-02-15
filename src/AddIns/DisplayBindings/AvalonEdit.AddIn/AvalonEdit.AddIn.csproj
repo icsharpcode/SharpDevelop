@@ -134,7 +134,6 @@
     <Compile Include="Src\AvalonEditorControlService.cs" />
     <Compile Include="Src\AvalonEditViewContent.cs" />
     <Compile Include="Src\BracketHighlightRenderer.cs" />
-    <Compile Include="Src\CaretReferencesRenderer.cs" />
     <Compile Include="Src\ChooseEncodingDialog.xaml.cs">
       <DependentUpon>ChooseEncodingDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -143,7 +142,6 @@
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CodeEditorView.cs" />
-    <Compile Include="Src\ExpressionHighlightRenderer.cs" />
     <Compile Include="Src\CaretHighlightAdorner.cs" />
     <Compile Include="Src\NewLineConsistencyCheck.cs" />
     <Compile Include="Src\SearchPanelLocalization.cs" />

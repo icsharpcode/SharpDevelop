@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void listView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			CallStackItem item = listView.SelectedItem as CallStackItem;
-			if (item == null)
+			if ((item == null) || (item.Frame == null))
 				return;
 			
 			if (item.Frame.Process.IsPaused) {

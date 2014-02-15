@@ -25,6 +25,7 @@ namespace ICSharpCode.UnitTesting
 	{
 		public UnitTestingOptionsPanel()
 		{
+			InitializeComponent();
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace CSharpBinding.Refactoring
 			SyntaxTree st = await context.GetSyntaxTreeAsync().ConfigureAwait(false);
 			Identifier identifier = (Identifier)st.GetNodeAt(context.CaretLocation, node => node.Role == Roles.Identifier);
 			if (identifier == null) return false;
-			if (MakeValidFileName(identifier.Name).Equals(Path.GetFileNameWithoutExtension(context.FileName), StringComparison.OrdinalIgnoreCase))
+			if (MakeValidFileName(identifier.Name).Equals(Path.GetFileName(context.FileName), StringComparison.OrdinalIgnoreCase))
 				return false;
 			if (identifier.Parent.Parent is TypeDeclaration)
 				return false;

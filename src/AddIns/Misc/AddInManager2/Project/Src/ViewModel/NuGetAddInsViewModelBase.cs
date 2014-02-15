@@ -62,8 +62,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		private void StartReadPackagesTask()
 		{
-			IsReadingPackages = true;
 			HasError = false;
+			IsReadingPackages = true;
 //			ClearPackages();
 			CancelReadPackagesTask();
 			CreateReadPackagesTask();
@@ -107,6 +107,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			bool wasCancelled = false;
 			if (task.IsFaulted)
 			{
+				ClearPackages();
 				SaveError(task.Exception);
 			}
 			else if (task.IsCancelled)

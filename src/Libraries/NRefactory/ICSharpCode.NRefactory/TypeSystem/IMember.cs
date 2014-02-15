@@ -82,7 +82,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IMember CreateResolved(ITypeResolveContext context);
 	}
 	
-	public interface IMemberReference
+	public interface IMemberReference : ISymbolReference
 	{
 		/// <summary>
 		/// Gets the declaring type reference for the member.
@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <returns>
 		/// Returns the resolved member, or <c>null</c> if the member could not be found.
 		/// </returns>
-		IMember Resolve(ITypeResolveContext context);
+		new IMember Resolve(ITypeResolveContext context);
 	}
 	
 	/// <summary>
@@ -167,7 +167,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// If this member is specialized using open generic types, the resulting member reference will need to be looked up in an appropriate generic context.
 		/// Otherwise, the main resolve context of a compilation is sufficient.
 		/// </remarks>
+		[Obsolete("Use the ToReference method instead.")]
 		IMemberReference ToMemberReference();
+		
+				/// <summary>
+		/// Creates a member reference that can be used to rediscover this member in another compilation.
+		/// </summary>
+		/// <remarks>
+		/// If this member is specialized using open generic types, the resulting member reference will need to be looked up in an appropriate generic context.
+		/// Otherwise, the main resolve context of a compilation is sufficient.
+		/// </remarks>
+		new IMemberReference ToReference();
 
 		/// <summary>
 		/// Gets the substitution belonging to this specialized member.

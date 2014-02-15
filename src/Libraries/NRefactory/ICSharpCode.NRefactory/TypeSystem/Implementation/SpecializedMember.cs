@@ -71,10 +71,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IMemberReference ToMemberReference()
 		{
+			return ToReference();
+		}
+		
+		public virtual IMemberReference ToReference()
+		{
 			return new SpecializingMemberReference(
-				baseMember.ToMemberReference(),
+				baseMember.ToReference(),
 				ToTypeReference(substitution.ClassTypeArguments),
 				null);
+		}
+		
+		ISymbolReference ISymbol.ToReference()
+		{
+			return ToReference();
 		}
 		
 		internal static IList<ITypeReference> ToTypeReference(IList<IType> typeArguments)

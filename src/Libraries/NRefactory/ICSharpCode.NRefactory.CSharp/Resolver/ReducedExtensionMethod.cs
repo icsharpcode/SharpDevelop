@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
 	/// An invocated extension method hides the extension parameter in its parameter list.
-	/// It's used to hide the internals of extension method invocation in certain situation to simulate the 
+	/// It's used to hide the internals of extension method invocation in certain situation to simulate the
 	/// syntactic way of writing extension methods on semantic level.
 	/// </summary>
 	public class ReducedExtensionMethod : IMethod
@@ -77,23 +77,36 @@ namespace ICSharpCode.NRefactory.CSharp
 				this.baseMethod = baseMethod;
 			}
 
-			#region IMemberReference implementation
 			public IMember Resolve(ITypeResolveContext context)
 			{
-				return new ReducedExtensionMethod ((IMethod)baseMethod.ToMemberReference ().Resolve (context));
+				return new ReducedExtensionMethod ((IMethod)baseMethod.ToReference ().Resolve (context));
+			}
+			
+			ISymbol ISymbolReference.Resolve(ITypeResolveContext context)
+			{
+				return Resolve(context);
 			}
 
 			public ITypeReference DeclaringTypeReference {
 				get {
-					return baseMethod.ToMemberReference ().DeclaringTypeReference;
+					return baseMethod.ToReference ().DeclaringTypeReference;
 				}
 			}
-			#endregion
 		}
 
 		public IMemberReference ToMemberReference()
 		{
 			return new ReducedExtensionMethodMemberReference (baseMethod);
+		}
+		
+		public IMemberReference ToReference()
+		{
+			return new ReducedExtensionMethodMemberReference (baseMethod);
+		}
+		
+		ISymbolReference ISymbol.ToReference()
+		{
+			return ToReference();
 		}
 
 		public IMember MemberDefinition {
@@ -240,10 +253,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public IMethod ReducedFrom { 
+		public IMethod ReducedFrom {
 			get {
 				return baseMethod;
-			} 
+			}
 		}
 
 		public IList<IType> TypeArguments {

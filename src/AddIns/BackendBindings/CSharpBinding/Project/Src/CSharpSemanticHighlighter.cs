@@ -18,14 +18,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Analysis;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
@@ -50,6 +55,9 @@ namespace CSharpBinding
 		int lineNumber;
 		HighlightedLine line;
 		CSharpFullParseInformation parseInfo;
+		ISymbolReference currentSymbolReference;
+		IResolveVisitorNavigator currentNavigator;
+		HighlightingColor symbolReferenceColor;
 		
 		#region Constructor + Dispose
 		public CSharpSemanticHighlighter(IDocument document)
@@ -66,6 +74,7 @@ namespace CSharpBinding
 			this.enumerationTypeColor = this.valueKeywordColor;
 			this.typeParameterTypeColor = this.referenceTypeColor;
 			this.delegateTypeColor = this.referenceTypeColor;
+			this.symbolReferenceColor = new HighlightingColor { Background = new SimpleHighlightingBrush(DefaultFillColor) };
 			
 			this.methodDeclarationColor = this.methodCallColor = highlighting.GetNamedColor("MethodCall");
 			//this.eventDeclarationColor = this.eventAccessColor = defaultTextColor;
@@ -92,6 +101,7 @@ namespace CSharpBinding
 				SD.ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
 				SD.ParserService.LoadSolutionProjectsThread.Finished += ParserService_LoadSolutionProjectsThreadEnded;
 				eventHandlersAreRegistered = true;
+				document.GetService<IServiceContainer>().AddService(typeof(CSharpSemanticHighlighter), this);
 			}
 		}
 		
@@ -101,6 +111,7 @@ namespace CSharpBinding
 				SD.ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
 				SD.ParserService.LoadSolutionProjectsThread.Finished -= ParserService_LoadSolutionProjectsThreadEnded;
 				eventHandlersAreRegistered = false;
+				document.GetService<IServiceContainer>().RemoveService(typeof(CSharpSemanticHighlighter));
 			}
 			this.resolver = null;
 			this.parseInfo = null;
@@ -174,10 +185,7 @@ namespace CSharpBinding
 		
 		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
-			cachedLines.Clear();
-			invalidLines.Clear();
-			forceParseOnNextRefresh = true;
-			OnHighlightingStateChanged(1, document.LineCount);
+			InvalidateAll();
 		}
 		
 		void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
@@ -388,6 +396,109 @@ namespace CSharpBinding
 				                  	Color = color
 				                  });
 			}
+		}
+		
+		protected override void Colorize(AstNode node, HighlightingColor color)
+		{
+			if (currentSymbolReference != null && currentNavigator == null)
+				currentNavigator = InitNavigator();
+
+			if (currentNavigator != null) {
+				var resolverNode = node;
+				while (CSharpAstResolver.IsUnresolvableNode(resolverNode) && resolverNode.Parent != null)
+					resolverNode = resolverNode.Parent;
+				if (resolverNode.Role == Roles.TargetExpression && resolverNode.Parent is InvocationExpression)
+					resolverNode = resolverNode.Parent;
+				if (resolverNode.Role == Roles.Type && resolverNode.Parent is ObjectCreateExpression)
+					resolverNode = resolverNode.Parent;
+				
+				if (node is Identifier && !node.IsNull)
+					resolverNode.AddAnnotation(node);
+				if (color != null)
+					resolverNode.AddAnnotation(color);
+				currentNavigator.Resolved(resolverNode, resolver.Resolve(resolverNode));
+			}
+			base.Colorize(node, color);
+		}
+		
+		protected override void Colorize(Identifier identifier, ResolveResult rr)
+		{
+			if (currentSymbolReference != null && currentNavigator == null)
+				currentNavigator = InitNavigator();
+
+			if (currentNavigator != null) {
+				currentNavigator.Resolved(identifier, rr);
+			}
+			base.Colorize(identifier, rr);
+		}
+		
+		public override void VisitPrimitiveType(PrimitiveType primitiveType)
+		{
+			// highlight usages of primitive types as well.
+			Colorize(primitiveType, null);
+		}
+		
+		public readonly Color DefaultFillColor = Color.FromArgb(22, 30, 130, 255);
+
+		public void SetCurrentSymbol(ISymbol symbol)
+		{
+			currentNavigator = null;
+			currentSymbolReference = null;
+			if (symbol != null)
+				currentSymbolReference = symbol.ToReference();
+			InvalidateAll();
+		}
+
+		void InvalidateAll()
+		{
+			cachedLines.Clear();
+			invalidLines.Clear();
+			forceParseOnNextRefresh = true;
+			OnHighlightingStateChanged(1, document.LineCount);
+		}
+		
+		FindReferences findReferences = new FindReferences();
+		
+		IResolveVisitorNavigator InitNavigator()
+		{
+			if (currentSymbolReference == null) return null;
+			var compilation = resolver.Compilation;
+			var symbol = currentSymbolReference.Resolve(compilation.TypeResolveContext);
+			var searchScopes = findReferences.GetSearchScopes(symbol);
+			if (searchScopes.Count == 0)
+				return null;
+			var navigators = new IResolveVisitorNavigator[searchScopes.Count];
+			for (int i = 0; i < navigators.Length; i++) {
+				navigators[i] = searchScopes[i].GetNavigator(compilation, ColorizeMatch);
+			}
+			IResolveVisitorNavigator combinedNavigator;
+			if (searchScopes.Count == 1) {
+				combinedNavigator = navigators[0];
+			} else {
+				combinedNavigator = new CompositeResolveVisitorNavigator(navigators);
+			}
+			
+			return combinedNavigator;
+		}
+		
+		void ColorizeMatch(AstNode node, ResolveResult result)
+		{
+			Identifier identifier = node.Annotation<Identifier>() ?? node.GetChildByRole(Roles.Identifier);
+			TextLocation start, end;
+			if (!identifier.IsNull) {
+				start = identifier.StartLocation;
+				end = identifier.EndLocation;
+			} else {
+				start = node.StartLocation;
+				end = node.EndLocation;
+			}
+			var complementary = node.Annotation<HighlightingColor>();
+			HighlightingColor newColor = symbolReferenceColor;
+			if (complementary != null) {
+				newColor = newColor.Clone();
+				newColor.MergeWith(complementary);
+			}
+			Colorize(start, end, newColor);
 		}
 		#endregion
 	}

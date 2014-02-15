@@ -68,25 +68,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			this.SerializationInfo.Add(new KeyItemPair("On", StringParser.Parse("${res:Dialog.ProjectOptions.Build.On}")));
 			this.SerializationInfo.Add(new KeyItemPair("Auto", StringParser.Parse("${res:Dialog.ProjectOptions.Build.Auto}")));
 			
-			this.TargetCPU = new List<KeyItemPair>();
-			supports32BitPreferred = false;
-			if (DotnetDetection.IsDotnet45Installed()) {
-				var upgradableProject = projectOptions.Project as IUpgradableProject;
-				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.Supports32BitPreferredOption)
-					supports32BitPreferred = projectOptions.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2010;
-				// Show 32 vs. 64 options even for library projects;
-				// it's relevant for web applications.
-			}
-			if (supports32BitPreferred) {
-				this.TargetCPU.Add(new KeyItemPair("AnyCPU32", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any32}")));
-				this.TargetCPU.Add(new KeyItemPair("AnyCPU64", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any64}")));
-			} else {
-				this.TargetCPU.Add(new KeyItemPair("AnyCPU", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any}")));
-			}
-			this.TargetCPU.Add(new KeyItemPair("x86", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x86}")));
-			this.TargetCPU.Add(new KeyItemPair("x64", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x64}")));
-			this.TargetCPU.Add(new KeyItemPair("Itanium", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}")));
-			
 			this.FileAlign = new List<KeyItemPair>();
 			this.FileAlign.Add(new KeyItemPair("512", "512"));
 			this.FileAlign.Add(new KeyItemPair("1024", "1024"));
@@ -102,6 +83,27 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				val = 0x400000;
 			}
 			DllBaseAddress = "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
+			
+			this.TargetCPU = new List<KeyItemPair>();
+			supports32BitPreferred = false;
+			var outputType = projectOptions.GetProperty("OutputType", OutputType.Exe);
+			if (DotnetDetection.IsDotnet45Installed() &&
+			    ((outputType.Value == OutputType.Exe) || (outputType.Value == OutputType.WinExe))) {
+				var upgradableProject = projectOptions.Project as IUpgradableProject;
+				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.Supports32BitPreferredOption)
+					supports32BitPreferred = (projectOptions.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2010);
+				// Show 32 vs. 64 options even for library projects;
+				// it's relevant for web applications.
+			}
+			if (supports32BitPreferred) {
+				this.TargetCPU.Add(new KeyItemPair("AnyCPU32", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any32}")));
+				this.TargetCPU.Add(new KeyItemPair("AnyCPU64", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any64}")));
+			} else {
+				this.TargetCPU.Add(new KeyItemPair("AnyCPU", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any}")));
+			}
+			this.TargetCPU.Add(new KeyItemPair("x86", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x86}")));
+			this.TargetCPU.Add(new KeyItemPair("x64", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x64}")));
+			this.TargetCPU.Add(new KeyItemPair("Itanium", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}")));
 			
 			if (supports32BitPreferred && string.Equals(this.PlatformTarget.Value, "AnyCPU", StringComparison.OrdinalIgnoreCase)) {
 				bool default32BitPreferred = false;

@@ -72,6 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					guessedType = GetDelegateType(context, ((MethodGroupResolveResult)resolveResult).Methods.First(), expr);
 				}
 				var name = CreateMethodDeclarationAction.CreateBaseName(expr, guessedType);
+				name = context.GetLocalNameProposal(name, expr.StartLocation);
 				var type = context.UseExplicitTypes ? context.CreateShortType(guessedType) : new SimpleType("var");
 				var varDecl = new VariableDeclarationStatement(type, name, expr.Clone());
 				var replaceNode = visitor.Matches.First () as Expression;
@@ -100,6 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 					var linkedNodes = new List<AstNode>();
 					var name = CreateMethodDeclarationAction.CreateBaseName(expr, guessedType);
+					name = context.GetLocalNameProposal(name, expr.StartLocation);
 					var type = context.UseExplicitTypes ? context.CreateShortType(guessedType) : new SimpleType("var");
 					var varDecl = new VariableDeclarationStatement(type, name, expr.Clone());
 					linkedNodes.Add(varDecl.Variables.First().NameToken);

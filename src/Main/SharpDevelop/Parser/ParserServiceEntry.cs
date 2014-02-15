@@ -319,7 +319,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				// Let's look up the file in the list of open files right now
 				// so that we don't need to SafeThreadCall() later on.
 				lookupOpenFileOnTargetThread = false;
-				fileContent = parser.GetFileContent(fileName);
+				if (parser != null) {
+					fileContent = parser.GetFileContent(fileName);
+				}
 			}
 			Task<ProjectEntry> task;
 			lock (this) {

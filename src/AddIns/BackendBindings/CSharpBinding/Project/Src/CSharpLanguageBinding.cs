@@ -19,7 +19,10 @@
 using System;
 using System.Collections.Generic;
 
+using System.Threading;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using CSharpBinding.Completion;
 using CSharpBinding.FormattingStrategy;
@@ -58,12 +61,15 @@ namespace CSharpBinding
 		IssueManager inspectionManager;
 		IList<IContextActionProvider> contextActionProviders;
 		CodeManipulation codeManipulation;
+		CSharpSemanticHighlighter highlighter;
+		CancellationTokenSource caretMovementTokenSource;
 		
 		public void Attach(ITextEditor editor)
 		{
 			this.editor = editor;
 			inspectionManager = new IssueManager(editor);
 			codeManipulation = new CodeManipulation(editor);
+			this.editor.Caret.LocationChanged += CaretLocationChanged;
 			
 			if (!editor.ContextActionProviders.IsReadOnly) {
 				contextActionProviders = AddInTree.BuildItems<IContextActionProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
@@ -81,7 +87,21 @@ namespace CSharpBinding
 			if (contextActionProviders != null) {
 				editor.ContextActionProviders.RemoveAll(contextActionProviders.Contains);
 			}
+			this.editor.Caret.LocationChanged -= CaretLocationChanged;
 			this.editor = null;
+		}
+
+		void CaretLocationChanged(object sender, EventArgs e)
+		{
+			if (highlighter == null)
+				highlighter = editor.GetService<CSharpSemanticHighlighter>();
+			if (highlighter == null)
+				return;
+			if (caretMovementTokenSource != null)
+				caretMovementTokenSource.Cancel();
+			caretMovementTokenSource = new CancellationTokenSource();
+			var rr = SD.ParserService.Resolve(editor.FileName, editor.Caret.Location, editor.Document, cancellationToken: caretMovementTokenSource.Token);
+			highlighter.SetCurrentSymbol(rr.GetSymbol());
 		}
 	}
 }

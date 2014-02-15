@@ -3314,6 +3314,9 @@ Bitte einen anderen Dateinamen wählen.</value>
   <data name="ICSharpCode.CodeCoverage.Column" xml:space="preserve">
     <value>Spalte</value>
   </data>
+  <data name="ICSharpCode.CodeCoverage.Content" xml:space="preserve">
+    <value>Inhalt</value>
+  </data>
   <data name="ICSharpCode.CodeCoverage.DisplayOptions" xml:space="preserve">
     <value>Anzeige-Optionen</value>
   </data>

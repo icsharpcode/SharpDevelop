@@ -71,11 +71,11 @@ namespace ICSharpCode.Core
 		{
 			if (string.IsNullOrEmpty(extension))
 				return false;
-			int index = this.Extensions.IndexOf("*" + extension, StringComparison.OrdinalIgnoreCase);
-			if (index < 0 || index + extension.Length > this.Extensions.Length)
+			int index = Extensions.IndexOf("*" + extension, StringComparison.OrdinalIgnoreCase);
+			int matchLength = index + extension.Length + 1;
+			if (index < 0 || matchLength > Extensions.Length)
 				return false;
-			return index + extension.Length < this.Extensions.Length
-				|| this.Extensions[index + extension.Length] == ';';
+			return matchLength == Extensions.Length || Extensions[matchLength] == ';';
 		}
 		
 		public override string ToString()

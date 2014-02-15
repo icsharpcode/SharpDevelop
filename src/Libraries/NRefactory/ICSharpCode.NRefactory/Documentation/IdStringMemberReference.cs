@@ -68,5 +68,10 @@ namespace ICSharpCode.NRefactory.Documentation
 			}
 			return null;
 		}
+		
+		ISymbol ISymbolReference.Resolve(ITypeResolveContext context)
+		{
+			return Resolve(context);
+		}
 	}
 }

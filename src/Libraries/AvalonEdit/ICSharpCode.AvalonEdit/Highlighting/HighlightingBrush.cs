@@ -58,23 +58,26 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// Highlighting brush implementation that takes a frozen brush.
 	/// </summary>
 	[Serializable]
-	sealed class SimpleHighlightingBrush : HighlightingBrush, ISerializable
+	public sealed class SimpleHighlightingBrush : HighlightingBrush, ISerializable
 	{
 		readonly SolidColorBrush brush;
 		
-		public SimpleHighlightingBrush(SolidColorBrush brush)
+		internal SimpleHighlightingBrush(SolidColorBrush brush)
 		{
 			brush.Freeze();
 			this.brush = brush;
 		}
 		
+		/// <inheritdoc/>
 		public SimpleHighlightingBrush(Color color) : this(new SolidColorBrush(color)) {}
 		
+		/// <inheritdoc/>
 		public override Brush GetBrush(ITextRunConstructionContext context)
 		{
 			return brush;
 		}
-		
+
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return brush.ToString();
@@ -91,6 +94,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			info.AddValue("color", brush.Color.ToString(CultureInfo.InvariantCulture));
 		}
 		
+		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
 			SimpleHighlightingBrush other = obj as SimpleHighlightingBrush;
@@ -99,6 +103,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			return this.brush.Color.Equals(other.brush.Color);
 		}
 		
+		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			return brush.Color.GetHashCode();

@@ -372,10 +372,41 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			return this == other; // use reference equality for type parameters
 		}
+
+		public virtual ISymbolReference ToReference()
+		{
+			if (owner == null)
+				return TypeParameterReference.Create(ownerType, index);
+			return new OwnedTypeParameterReference(owner.ToReference(), index);
+		}
 		
 		public override string ToString()
 		{
 			return this.ReflectionName + " (owner=" + owner + ")";
+		}
+	}
+	
+	public sealed class OwnedTypeParameterReference : ISymbolReference
+	{
+		ISymbolReference owner;
+		int index;
+		
+		public OwnedTypeParameterReference(ISymbolReference owner, int index)
+		{
+			if (owner == null)
+				throw new ArgumentNullException("owner");
+			this.owner = owner;
+			this.index = index;
+		}
+		
+		public ISymbol Resolve(ITypeResolveContext context)
+		{
+			var entity = owner.Resolve(context) as IEntity;
+			if (entity is ITypeDefinition)
+				return ((ITypeDefinition)entity).TypeParameters[index];
+			if (entity is IMethod)
+				return ((IMethod)entity).TypeParameters[index];
+			return null;
 		}
 	}
 }

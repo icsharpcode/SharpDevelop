@@ -78,5 +78,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return this;
 			return new SpecializedField(this, substitution);
 		}
+		
+		IMemberReference IField.ToReference()
+		{
+			return (IMemberReference)ToReference();
+		}
 	}
 }

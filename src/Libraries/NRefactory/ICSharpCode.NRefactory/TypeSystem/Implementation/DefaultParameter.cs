@@ -138,5 +138,62 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			return b.ToString();
 		}
+
+		public ISymbolReference ToReference()
+		{
+			if (owner == null)
+				return new ParameterReference(type.ToTypeReference(), name, region, isRef, isOut, isParams, isOptional, defaultValue);
+			return new OwnedParameterReference(owner.ToReference(), owner.Parameters.IndexOf(this));
+		}
+	}
+	
+	sealed class OwnedParameterReference : ISymbolReference
+	{
+		readonly IMemberReference memberReference;
+		readonly int index;
+		
+		public OwnedParameterReference(IMemberReference member, int index)
+		{
+			if (member == null)
+				throw new ArgumentNullException("member");
+			this.memberReference = member;
+			this.index = index;
+		}
+		
+		public ISymbol Resolve(ITypeResolveContext context)
+		{
+			IParameterizedMember member = (IParameterizedMember)memberReference.Resolve(context);
+			return member.Parameters[index];
+		}
+	}
+	
+	public sealed class ParameterReference : ISymbolReference
+	{
+		readonly ITypeReference type;
+		readonly string name;
+		readonly DomRegion region;
+		readonly bool isRef, isOut, isParams, isOptional;
+		readonly object defaultValue;
+		
+		public ParameterReference(ITypeReference type, string name, DomRegion region, bool isRef, bool isOut, bool isParams, bool isOptional, object defaultValue)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (name == null)
+				throw new ArgumentNullException("name");
+			this.type = type;
+			this.name = name;
+			this.region = region;
+			this.isRef = isRef;
+			this.isOut = isOut;
+			this.isParams = isParams;
+			this.isOptional = isOptional;
+			this.defaultValue = defaultValue;
+		}
+
+		public ISymbol Resolve(ITypeResolveContext context)
+		{
+			return new DefaultParameter(type.Resolve(context), name, region: region, isRef: isRef, isOut: isOut, isParams: isParams, isOptional: isOptional, defaultValue: defaultValue);
+		}
 	}
 }

@@ -65,6 +65,7 @@ namespace WixBinding.Tests.Utils
 		
 		public OpenedFile PrimaryFile {
 			get { return primaryFile; }
+			set { primaryFile = value; }
 		}
 		
 		public FileName PrimaryFileName {

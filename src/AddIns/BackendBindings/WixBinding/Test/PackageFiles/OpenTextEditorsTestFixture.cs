@@ -18,6 +18,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -37,7 +38,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			SD.InitializeForUnitTests();
 			existingTextEditor = new MockTextEditor();
-			MockTextEditorViewContent viewContent = new MockTextEditorViewContent();
+			var viewContent = new MockTextEditorViewContent();
 			viewContent.TextEditor = existingTextEditor;
 			viewContent.SetFileName(@"d:\projects\test\file.wxs");
 			
@@ -63,6 +64,20 @@ namespace WixBinding.Tests.PackageFiles
 			WixDocument unknownDocument = new WixDocument();
 			unknownDocument.FileName = @"d:\unknown-file.wxs";
 			Assert.IsNull(openEditors.FindTextEditorForDocument(unknownDocument));
+		}
+		
+		[Test]
+		public void FindTextEditorForDocument_FirstViewContentHasNoTextEditorAndNoPrimaryFileName_DoesNotThrowNullReferenceException()
+		{
+			var viewContent = new MockViewContent();
+			viewContent.PrimaryFile = null;
+			workbench.ViewContentCollection.Add(viewContent);
+			var unknownDocument = new WixDocument();
+			unknownDocument.FileName = @"d:\unknown-file.wxs";
+			
+			ITextEditor textEditor = openEditors.FindTextEditorForDocument(unknownDocument);
+			
+			Assert.IsNull(textEditor);
 		}
 	}
 }
