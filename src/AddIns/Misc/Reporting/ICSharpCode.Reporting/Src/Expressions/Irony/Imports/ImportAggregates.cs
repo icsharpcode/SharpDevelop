@@ -43,7 +43,6 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 		public static bool  FieldExist (object current,string fieldName) {
 			var property1 = current.ParsePropertyPath(fieldName);
 			if (property1 == null) {
-				Console.WriteLine(String.Format("Aggregate <Sum> Field '{0}' not found",fieldName));
 				return false;
 			}
 			return true;

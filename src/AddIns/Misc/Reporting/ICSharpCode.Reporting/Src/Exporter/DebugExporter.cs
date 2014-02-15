@@ -37,11 +37,7 @@ namespace ICSharpCode.Reporting.Exporter
 		
 		
 		public override void Run () {
-			Console.WriteLine();
-			Console.WriteLine("Start DebugExporter with {0} Pages ",Pages.Count);
 			visitor.Run(Pages);
-			Console.WriteLine("Finish DebugVisitor");
-			Console.WriteLine();
 		}
 	}
 }

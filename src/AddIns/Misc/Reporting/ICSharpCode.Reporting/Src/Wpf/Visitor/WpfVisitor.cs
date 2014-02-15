@@ -61,7 +61,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		void PerformList(Canvas myCanvas, System.Collections.Generic.List<IExportColumn> exportedItems)
 		{
-			Console.WriteLine(myCanvas.Name);
 			foreach (var element in exportedItems) {
 				var container = element as ExportContainer;
 				if (container != null) {

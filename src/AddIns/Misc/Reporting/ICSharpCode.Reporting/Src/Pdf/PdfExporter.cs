@@ -43,19 +43,12 @@ namespace ICSharpCode.Reporting.Pdf
 		{
 			pdfDocument = new PdfDocument();
 			visitor = new PdfVisitor(pdfDocument);
-			
 			SetDocumentTitle(Pages[0].PageInfo.ReportName);
-
-			Console.WriteLine();
-			Console.WriteLine("Start PdfExporter with {0} Pages ",Pages.Count);
-			
 			foreach (var page in Pages) {
 				var acceptor = page as IAcceptor;
 				if (acceptor != null) {
 					visitor.Visit(page);
 				}
-				
-				Console.WriteLine("-----------PageBreak---------");
 			}
 			
 			const string filename = "HelloWorld.pdf";
@@ -65,9 +58,6 @@ namespace ICSharpCode.Reporting.Pdf
 			// ...and start a viewer.
 			
 			Process.Start(filename);
-			Console.WriteLine("Finish WpfVisitor");
-			Console.WriteLine();
-			 
 		}
 		
 		void SetDocumentTitle(string reportName)
