@@ -23,7 +23,7 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageModule : ICodeCoverageWithVisits
 	{
-		string name = String.Empty;
+		readonly string name = String.Empty;
 		List<CodeCoverageMethod> methods = new List<CodeCoverageMethod>();
 		List<string> rootNamespaces;
 		
@@ -78,7 +78,7 @@ namespace ICSharpCode.CodeCoverage
 
 		public List<CodeCoverageSequencePoint> GetSequencePoints(string fileName)
 		{
-			List<CodeCoverageSequencePoint> sequencePoints = new List<CodeCoverageSequencePoint>();
+			var sequencePoints = new List<CodeCoverageSequencePoint>();
 			foreach (CodeCoverageMethod method in methods) {
 				sequencePoints.AddRange(method.GetSequencePoints(fileName));
 			}

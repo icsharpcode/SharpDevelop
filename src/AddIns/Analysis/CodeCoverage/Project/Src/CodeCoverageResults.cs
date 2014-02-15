@@ -29,9 +29,9 @@ namespace ICSharpCode.CodeCoverage
 	/// </summary>
 	public class CodeCoverageResults
 	{
-		List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
-		Dictionary<string, string> fileNames = new Dictionary<string, string>();
-		Dictionary<string, string> assemblies = new Dictionary<string, string>();
+		readonly List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
+		readonly Dictionary<string, string> fileNames = new Dictionary<string, string>();
+		readonly Dictionary<string, string> assemblies = new Dictionary<string, string>();
 		
 		public CodeCoverageResults(string fileName)
 			: this(new StreamReader(fileName, true))
@@ -50,7 +50,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		public List<CodeCoverageSequencePoint> GetSequencePoints(string fileName)
 		{
-			List<CodeCoverageSequencePoint> sequencePoints = new List<CodeCoverageSequencePoint>();
+			var sequencePoints = new List<CodeCoverageSequencePoint>();
 			foreach (CodeCoverageModule module in modules) {
 				sequencePoints.AddRange(module.GetSequencePoints(fileName));
 			}
@@ -63,7 +63,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		void ReadResults(XContainer reader)
 		{
-			IEnumerable<XElement> modules = reader.Descendants("Module").Where(m => m.Attribute("skippedDueTo") == null);
+			var modules = reader.Descendants("Module").Where(m => m.Attribute("skippedDueTo") == null);
 			foreach (XElement file in reader.Descendants("File")) {
 				AddFileName(file);
 			}
@@ -79,7 +79,6 @@ namespace ICSharpCode.CodeCoverage
 				assembly.Elements("Classes").Elements("Class").Where(
 					c =>
 					!c.Element("FullName").Value.Contains("__") && 
-					//!c.Element("FullName").Value.Contains("<") &&
 					c.Attribute("skippedDueTo") == null).Select(
 						c => c.Element("FullName").Value).Distinct().OrderBy(name => name);
 			foreach (string className in classNames) {
@@ -130,7 +129,7 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XElement reader)
 		{
-			CodeCoverageMethod method = new CodeCoverageMethod(className, reader, this);
+			var method = new CodeCoverageMethod(className, reader, this);
 			if (!method.Name.Contains("__")) {
 			    module.Methods.Add(method);
 			}
@@ -163,12 +162,9 @@ namespace ICSharpCode.CodeCoverage
 			return GetDictionaryValue(assemblies, id);
 		}
 		
-		string GetDictionaryValue(Dictionary<string, string> dictionary, string key)
+		string GetDictionaryValue(IReadOnlyDictionary<string, string> dictionary, string key)
 		{
-			if (dictionary.ContainsKey(key)) {
-				return dictionary[key];
-			}
-			return String.Empty;
+			return dictionary.ContainsKey(key) ? dictionary[key] : String.Empty;
 		}
 		
 		/// <summary>

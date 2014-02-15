@@ -36,7 +36,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"\t\t\t<FullName>C:\\Projects\\Test\\Foo.Tests\\bin\\Foo.Tests.DLL</FullName>\r\n" +
 				"\t\t\t<ModuleName>Foo.Tests</ModuleName>\r\n" +
 				"\t\t\t<Files>\r\n" +
-				"\t\t\t\t<File uid=\"1\" fullPath=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+				"\t\t\t\t<File uid=\"2\" fullPath=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
 				"\t\t\t</Files>\r\n" +
 				"\t\t\t<Classes>\r\n" +
 				"\t\t\t\t<Class>\r\n" +
@@ -45,11 +45,11 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"false\" isSetter=\"false\">\r\n" +
 				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
 				"\t\t\t\t\t\t\t<Name>System.Void Foo.Tests.FooTestFixture::SimpleTest()</Name>\r\n" +
-				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t<FileRef uid=\"2\" />\r\n" +
 				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" />\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" fileid=\"2\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" fileid=\"2\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" fileid=\"2\" />\r\n" +
 				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
 				"\t\t\t\t\t\t</Method>\r\n" +
 				"\t\t\t\t\t</Methods>\r\n" +
@@ -123,10 +123,14 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			Assert.AreEqual(3, count);
 		}
 		
-		[Test, Ignore("SequencePoint.Length is not 1 anymore")]
+		[Test]
 		public void SequencePoint_FirstSequencePoint_HasExpectedPropertyValues()
 		{
+			Assert.Inconclusive("SequencePoint.Length is computed from text-source not present in this test");
+
 			CodeCoverageSequencePoint point = base.CreateSequencePoint();
+			// ??? if in this.SetUpFixture fileId is set to "1" then filename from another test fixture is returned ???
+			// ??? "c:\test\MyTests\Class1.cs" 
 			point.Document = @"c:\Projects\Foo\FooTestFixture.cs";
 			point.VisitCount = 1;
 			point.Column = 3;
@@ -166,16 +170,18 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			Assert.AreEqual(1, count);
 		}
 		
-		[Test, Ignore("SequencePoint.Length is not 1 anymore")]
+		[Test]
 		public void GetVisitedCodeLength_FirstMethod_ReturnsSummedLengthOfVisitedSequencePoints()
 		{
+			Assert.Inconclusive("SequencePoint.Length is computed from text-source not present in this test");
 			int length = FirstModuleFirstMethod.GetVisitedCodeLength();
 			Assert.AreEqual(2, length);
 		}
 		
-		[Test, Ignore("SequencePoint.Length is not 1 anymore")]
+		[Test]
 		public void GetUnvisitedCodeLength_FirstMethod_ReturnsSummedLengthOfUnvisitedSequencePoints()
 		{
+			Assert.Inconclusive("SequencePoint.Length is computed from text-source not present in this test");
 			int length = FirstModuleFirstMethod.GetUnvisitedCodeLength();
 			Assert.AreEqual(1, length);
 		}

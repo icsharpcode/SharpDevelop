@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Media;
 
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
@@ -50,7 +49,7 @@ namespace ICSharpCode.CodeCoverage
 				return;
 			}
 			
-			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			var markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			if (markerService != null) {
 				int startOffset = document.PositionToOffset(sequencePoint.Line, sequencePoint.Column);
 				int endOffset = document.PositionToOffset(sequencePoint.EndLine, sequencePoint.EndColumn);
@@ -66,7 +65,7 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		public void RemoveMarkers(IDocument document)
 		{
-			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			var markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			if (markerService != null) {
 				markerService.RemoveAll(IsCodeCoverageTextMarker);
 			}
@@ -74,7 +73,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		bool IsCodeCoverageTextMarker(ITextMarker marker)
 		{
-			Type type = marker.Tag as Type;
+			var type = marker.Tag as Type;
 			return type == typeof(CodeCoverageHighlighter);
 		}
 		
@@ -109,21 +108,15 @@ namespace ICSharpCode.CodeCoverage
 		}
 	
 		public static System.Drawing.Color GetSequencePointBackColor(CodeCoverageSequencePoint sequencePoint) {
-			if (sequencePoint.VisitCount > 0) {
-				if ( sequencePoint.BranchCoverage == true ) {
-					return CodeCoverageOptions.VisitedColor;
-				}
-				return CodeCoverageOptions.PartVisitedColor;
+			if (sequencePoint.VisitCount != 0) {
+				return sequencePoint.BranchCoverage == true ? CodeCoverageOptions.VisitedColor : CodeCoverageOptions.PartVisitedColor;
 			}
 			return CodeCoverageOptions.NotVisitedColor;
 		}
 		
 		public static System.Drawing.Color GetSequencePointForeColor(CodeCoverageSequencePoint sequencePoint) {
-			if (sequencePoint.VisitCount > 0) {
-				if ( sequencePoint.BranchCoverage == true ) {
-					return CodeCoverageOptions.VisitedForeColor;
-				}
-				return CodeCoverageOptions.PartVisitedForeColor;
+			if (sequencePoint.VisitCount != 0) {
+				return sequencePoint.BranchCoverage == true ? CodeCoverageOptions.VisitedForeColor : CodeCoverageOptions.PartVisitedForeColor;
 			}
 			return CodeCoverageOptions.NotVisitedForeColor;
 		}

@@ -19,12 +19,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.AddIn;
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
@@ -32,7 +30,6 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -236,13 +233,13 @@ namespace ICSharpCode.CodeCoverage
 			listView.BeginUpdate();
 			try {
 				listView.Items.Clear();
-				CodeCoverageClassTreeNode classNode = node as CodeCoverageClassTreeNode;
-				CodeCoverageMethodTreeNode methodNode = node as CodeCoverageMethodTreeNode;
-				CodeCoveragePropertyTreeNode propertyNode = node as CodeCoveragePropertyTreeNode;
+				var classNode = node as CodeCoverageClassTreeNode;
+				var methodNode = node as CodeCoverageMethodTreeNode;
+				var propertyNode = node as CodeCoveragePropertyTreeNode;
 				if (classNode != null) {
 					AddClassTreeNode(classNode);
 				} else if (methodNode != null) {
-					AddSequencePoints(methodNode.Method.SequencePoints);
+					AddSequencePoints(methodNode.Method);
 				} else if (propertyNode != null) {
 					AddPropertyTreeNode(propertyNode);
 				}
@@ -253,9 +250,9 @@ namespace ICSharpCode.CodeCoverage
 		
 		void UpdateTextEditor(CodeCoverageTreeNode node)
 		{
-			CodeCoverageClassTreeNode classNode = node as CodeCoverageClassTreeNode;
-			CodeCoverageMethodTreeNode methodNode = node as CodeCoverageMethodTreeNode;
-			CodeCoveragePropertyTreeNode propertyNode = node as CodeCoveragePropertyTreeNode;
+			var classNode = node as CodeCoverageClassTreeNode;
+			var methodNode = node as CodeCoverageMethodTreeNode;
+			var propertyNode = node as CodeCoveragePropertyTreeNode;
 			if (classNode != null && classNode.Nodes.Count > 0) {
 				propertyNode = classNode.Nodes[0] as CodeCoveragePropertyTreeNode;
 				methodNode = classNode.Nodes[0] as CodeCoverageMethodTreeNode;
@@ -280,10 +277,10 @@ namespace ICSharpCode.CodeCoverage
 		void AddClassTreeNode(CodeCoverageClassTreeNode node)
 		{
 			foreach (CodeCoverageTreeNode childNode in node.Nodes) {
-				CodeCoverageMethodTreeNode method = childNode as CodeCoverageMethodTreeNode;
-				CodeCoveragePropertyTreeNode property = childNode as CodeCoveragePropertyTreeNode;
+				var method = childNode as CodeCoverageMethodTreeNode;
+				var property = childNode as CodeCoveragePropertyTreeNode;
 				if (method != null) {
-					AddSequencePoints(method.Method.SequencePoints);
+					AddSequencePoints(method.Method);
 				} else {
 					AddPropertyTreeNode(property);
 				}
@@ -299,20 +296,21 @@ namespace ICSharpCode.CodeCoverage
 		void AddMethodIfNotNull(CodeCoverageMethod method)
 		{
 			if (method != null) {
-				AddSequencePoints(method.SequencePoints);
+				AddSequencePoints(method);
 			}
 		}
 		
-		void AddSequencePoints(List<CodeCoverageSequencePoint> sequencePoints)
+		void AddSequencePoints(CodeCoverageMethod method)
 		{		
-			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-				AddSequencePoint(sequencePoint);
+			foreach (CodeCoverageSequencePoint sequencePoint in method.SequencePoints) {
+				if (method.FileID == sequencePoint.FileID)
+					AddSequencePoint(sequencePoint);
 			}
 		}
 		
 		void AddSequencePoint(CodeCoverageSequencePoint sequencePoint)
 		{
-			ListViewItem item = new ListViewItem(sequencePoint.VisitCount.ToString());
+			var item = new ListViewItem(sequencePoint.VisitCount.ToString());
 			item.SubItems.Add(sequencePoint.Line.ToString());
 			item.SubItems.Add(sequencePoint.Column.ToString());
 			item.SubItems.Add(sequencePoint.EndLine.ToString());
@@ -328,7 +326,7 @@ namespace ICSharpCode.CodeCoverage
 		void ListViewItemActivate(object sender, EventArgs e)
 		{
 			if (listView.SelectedItems.Count > 0) {
-				CodeCoverageSequencePoint sequencePoint = (CodeCoverageSequencePoint)listView.SelectedItems[0].Tag;
+				var sequencePoint = (CodeCoverageSequencePoint)listView.SelectedItems[0].Tag;
 				if (sequencePoint.Document.Length > 0) {
 					FileService.JumpToFilePosition(sequencePoint.Document, sequencePoint.Line, sequencePoint.Column);
 				}
