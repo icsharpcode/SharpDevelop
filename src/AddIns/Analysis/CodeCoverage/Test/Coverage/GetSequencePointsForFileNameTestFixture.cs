@@ -49,7 +49,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"\t\t\t\t\t\t\t<Name>System.Void Foo.Tests.FooTestFixture::FooTest()</Name>\r\n" +
 				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
 				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" fileid=\"1\" />\r\n" +
 				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
 				"\t\t\t\t\t\t</Method>\r\n" +
 				"\t\t\t\t\t</Methods>\r\n" +
@@ -62,7 +62,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"\t\t\t\t\t\t\t<Name>System.Void Foo.Tests.SimpleTestFixture2::SimpleTest2()</Name>\r\n" +
 				"\t\t\t\t\t\t\t<FileRef uid=\"2\" />\r\n" +
 				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" fileid=\"2\" />\r\n" +
 				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
 				"\t\t\t\t\t\t</Method>\r\n" +
 				"\t\t\t\t\t</Methods>\r\n" +
@@ -75,7 +75,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"\t\t\t\t\t\t\t<Name>System.Void Foo.Tests.SimpleTestFixture3::SimpleTest3()</Name>\r\n" +
 				"\t\t\t\t\t\t\t<FileRef uid=\"2\" />\r\n" +
 				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" fileid=\"2\" />\r\n" +
 				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
 				"\t\t\t\t\t\t</Method>\r\n" +
 				"\t\t\t\t\t</Methods>\r\n" +
@@ -97,7 +97,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"\t\t\t\t\t\t\t<Name>System.Void Foo.Tests.BarTestFixture::.SimpleTest2()</Name>\r\n" +
 				"\t\t\t\t\t\t\t<FileRef uid=\"3\" />\r\n" +
 				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" fileid=\"3\" />\r\n" +
 				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
 				"\t\t\t\t\t\t</Method>\r\n" +
 				"\t\t\t\t\t</Methods>\r\n" +

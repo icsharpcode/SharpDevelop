@@ -48,9 +48,9 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
 				"\t\t\t\t\t\t\t<Name>System.Boolean NUnit.Framework.NotEqualAsserter::Fail()</Name>\r\n" +
 				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" fileid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" fileid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" fileid=\"1\" />\r\n" +
 				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
 				"\t\t\t\t\t\t</Method>\r\n" +
 				"\t\t\t\t\t</Methods>\r\n" +
@@ -72,10 +72,10 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"\t\t\t\t\t\t\t<Name>System.Void MyTests.Tests.MyClass::.ctor()</Name>\r\n" +
 				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
 				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" fileid=\"1\" />\r\n" +
 				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
-				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" fileid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" fileid=\"1\" />\r\n" +
 				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
 				"\t\t\t\t\t\t</Method>\r\n" +
 				"\t\t\t\t\t</Methods>\r\n" +
@@ -111,15 +111,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			Assert.AreEqual(expectedName, name);
 		}
 		
-		[Test, Ignore("Replaced by test below")]
-		public void SequencePointsCount_NUnitNotEqualAssertFailMethod_ReturnsAllSequencePoints()
-		{
-			int sequencePointCount = FirstModuleFirstMethod.SequencePoints.Count;
-			int expectedSequencePointCount = 3;
-			Assert.AreEqual(expectedSequencePointCount, sequencePointCount);
-		}
-
-		/// <summary> No FileID => No sequence points!
+		/// <summary> No method.FileID => No sequence points!
 		/// SD.CodeCoverage DOES NOT RETURN SequencePoints
 		/// for assemblies without debug info,
 		/// =&gt; methods without FileID
@@ -132,7 +124,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			Assert.AreEqual(expectedSequencePointCount, sequencePointCount);
 		}
 		
-		[Test, Ignore("SequencePoint.FileID DOES NOT EXISTS in Fixture above! This must be very OLD test.")]
+		[Test]
 		public void SequencePointsCount_MyClassConstructorHasFourSequencePointsWithOneMissingFileId_ReturnsAllSequencePoints()
 		{
 			int sequencePointCount = SecondModule.Methods[0].SequencePoints.Count;

@@ -110,33 +110,37 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			get { return SecondModule; }
 		}
 		
-		[Test, Ignore("SequencePoint.Length is not 1 anymore")]
+		[Test]
 		public void ModuleGetVisitedCodeLength_FooModule_ReturnsTotalLengthOfAllVisitedMethodSequencePoints()
 		{
+			Assert.Inconclusive("SequencePoint.Length is computed from text-source not present in this test");
 			int length = FooModule.GetVisitedCodeLength();
 			int expectedLength = 4;
 			Assert.AreEqual(expectedLength, length);
 		}
 		
-		[Test, Ignore("SequencePoint.Length is not 1 anymore")]
+		[Test]
 		public void ModuleGetUnvisitedCodeLength_FooModule_ReturnsTotalLengthOfAllNonVisitedMethodSequencePoints()
 		{
+			Assert.Inconclusive("SequencePoint.Length is computed from text-source not present in this test");
 			int length = FooModule.GetUnvisitedCodeLength();
 			int expectedLength = 2;
 			Assert.AreEqual(expectedLength, length);
 		}
 		
-		[Test, Ignore("SequencePoint.Length is not 1 anymore")]
+		[Test]
 		public void ModuleGetVisitedCodeLength_BarModule_ReturnsTotalLengthOfAllVisitedMethodSequencePoints()
 		{
+			Assert.Inconclusive("SequencePoint.Length is computed from text-source not present in this test");
 			int length = BarModule.GetVisitedCodeLength();
 			int expectedLength = 2;
 			Assert.AreEqual(expectedLength, length);
 		}
 		
-		[Test, Ignore("SequencePoint.Length is not 1 anymore")]
+		[Test]
 		public void ModuleGetUnvisitedCodeLength_BarModule_ReturnsTotalLengthOfAllNonVisitedMethodSequencePoints()
 		{
+			Assert.Inconclusive("SequencePoint.Length is computed from text-source not present in this test");
 			int length = BarModule.GetUnvisitedCodeLength();
 			int expectedLength = 1;
 			Assert.AreEqual(expectedLength, length);
