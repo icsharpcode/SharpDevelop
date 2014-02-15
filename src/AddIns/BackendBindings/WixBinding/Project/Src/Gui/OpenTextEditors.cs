@@ -37,8 +37,10 @@ namespace ICSharpCode.WixBinding
 		{
 			foreach (IViewContent view in workbench.ViewContentCollection) {
 				ITextEditor textEditor = view.GetService<ITextEditor>();
-				if (AreFileNamesEqual(view.PrimaryFileName, document.FileName)) {
-					return textEditor;
+				if (textEditor != null) {
+					if (AreFileNamesEqual(view.PrimaryFileName, document.FileName)) {
+						return textEditor;
+					}
 				}
 			}
 			return null;
