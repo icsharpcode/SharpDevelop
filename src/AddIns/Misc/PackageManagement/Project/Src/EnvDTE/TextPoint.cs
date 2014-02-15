@@ -19,7 +19,6 @@
 using System;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {

@@ -16,22 +16,14 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using ICSharpCode.NRefactory.TypeSystem;
-//using ICSharpCode.SharpDevelop.Dom;
-//
-//namespace ICSharpCode.PackageManagement
-//{
-//	public static class DomRegionExtensions
-//	{
-//		public static FilePosition ToStartPosition(this DomRegion region, ICompilationUnit compilationUnit)
-//		{
-//			return new FilePosition(compilationUnit, region.BeginLine, region.BeginColumn);
-//		}
-//		
-//		public static FilePosition ToEndPosition(this DomRegion region, ICompilationUnit compilationUnit)
-//		{
-//			return new FilePosition(compilationUnit, region.EndLine, region.EndColumn);
-//		}
-//	}
-//}
+using System;
+using ICSharpCode.NRefactory.Editor;
+
+namespace ICSharpCode.PackageManagement
+{
+	public interface IDocumentView
+	{
+		IDocument Document { get; }
+		void IndentLines(int beginLine, int endLine);
+	}
+}

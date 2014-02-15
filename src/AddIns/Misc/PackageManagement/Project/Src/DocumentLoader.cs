@@ -23,10 +23,10 @@ namespace ICSharpCode.PackageManagement
 {
 	public class DocumentLoader : IDocumentLoader
 	{
-		public IRefactoringDocumentView LoadRefactoringDocumentView(string fileName)
+		public IDocumentView LoadDocumentView(string fileName)
 		{
 			return SD.MainThread.InvokeIfRequired(() => {
-				return new RefactoringDocumentView(fileName);
+				return new DocumentView(fileName);
 			});
 		}
 	}

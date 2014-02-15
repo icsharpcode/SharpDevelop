@@ -89,7 +89,7 @@
     <Compile Include="Src\Design\FakeProjectBuilder.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />
     <Compile Include="Src\DocumentLoader.cs" />
-    <Compile Include="Src\DomRegionExtensions.cs" />
+    <Compile Include="Src\DocumentView.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributeArgument.cs" />
@@ -151,6 +151,7 @@
     </Compile>
     <Compile Include="Src\FileConflictViewModel.cs" />
     <Compile Include="Src\ICodeGenerator.cs" />
+    <Compile Include="Src\IDocumentView.cs" />
     <Compile Include="Src\IPackageRepositoryFactoryEvents.cs" />
     <Compile Include="Src\IPackageViewModelParent.cs" />
     <Compile Include="Src\IUpdatePackagesAction.cs" />
@@ -161,10 +162,8 @@
     <Compile Include="Src\IUpdatePackageSettings.cs" />
     <Compile Include="Src\IVirtualMethodUpdater.cs" />
     <Compile Include="Src\IProjectBrowserUpdater.cs" />
-    <Compile Include="Src\IRefactoringDocumentView.cs" />
     <Compile Include="Src\IFieldExtensions.cs" />
     <Compile Include="Src\IDocumentLoader.cs" />
-    <Compile Include="Src\IMethodOrPropertyExtensions.cs" />
     <Compile Include="Src\InstalledPackageViewModel.cs" />
     <Compile Include="Src\InstalledPackageViewModelFactory.cs" />
     <Compile Include="Src\IPackageManagementSelectedProject.cs" />
@@ -292,7 +291,6 @@
     <Compile Include="Src\ProjectBrowserUpdater.cs" />
     <Compile Include="Src\ProjectTemplatePackageRepositoryCache.cs" />
     <Compile Include="Src\ProjectTemplatePackagesSettingsFileName.cs" />
-    <Compile Include="Src\RefactoringDocumentView.cs" />
     <Compile Include="Src\RegisteredPackageRepositories.cs" />
     <Compile Include="Src\ManagePackagesView.cs">
       <DependentUpon>ManagePackagesView.xaml</DependentUpon>

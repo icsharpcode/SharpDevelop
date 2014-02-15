@@ -22,6 +22,6 @@ namespace ICSharpCode.PackageManagement
 {
 	public interface IDocumentLoader
 	{
-		IRefactoringDocumentView LoadRefactoringDocumentView(string fileName);
+		IDocumentView LoadDocumentView(string fileName);
 	}
 }

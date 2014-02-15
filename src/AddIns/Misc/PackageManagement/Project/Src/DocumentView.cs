@@ -18,12 +18,44 @@
 
 using System;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IRefactoringDocumentView
-	{
-		IDocument RefactoringDocument { get; }
-		void IndentLines(int beginLine, int endLine);
+	public class DocumentView : IDocumentView
+	{		
+		public DocumentView(string fileName)
+		{
+			View = FileService.OpenFile(fileName);
+			TextEditor = GetTextEditor();
+			FormattingStrategy = TextEditor.Language.FormattingStrategy;
+			Document = LoadDocument();
+		}
+		
+		IViewContent View { get; set; }
+		ITextEditor TextEditor { get; set; }
+		IFormattingStrategy FormattingStrategy { get; set; }
+		
+		ITextEditor GetTextEditor()
+		{
+			return View.GetService<ITextEditor>();
+		}
+		
+		public IDocument Document { get; private set; }
+		
+		IDocument LoadDocument()
+		{
+			return new ThreadSafeDocument(TextEditor.Document);
+		}
+		
+		public void IndentLines(int beginLine, int endLine)
+		{
+			SD.MainThread.InvokeIfRequired(() => {
+				using (IDisposable undoGroup = TextEditor.Document.OpenUndoGroup()) {
+					FormattingStrategy.IndentLines(TextEditor, beginLine, endLine);
+				}
+			});
+		}
 	}
 }

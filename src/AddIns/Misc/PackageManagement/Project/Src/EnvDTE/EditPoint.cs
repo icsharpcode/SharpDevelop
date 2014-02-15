@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class EditPoint : TextPoint, global::EnvDTE.EditPoint
 	{
 		IDocument document;
-		IRefactoringDocumentView documentView;
+		IDocumentView documentView;
 		
 		internal EditPoint(string fileName, TextLocation location, IDocumentLoader documentLoader)
 			: base(fileName, location, documentLoader)
@@ -49,8 +49,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void OpenDocument()
 		{
-			documentView = documentLoader.LoadRefactoringDocumentView(fileName);
-			document = documentView.RefactoringDocument;
+			documentView = documentLoader.LoadDocumentView(fileName);
+			document = documentView.Document;
 		}
 		
 		int GetStartOffset()
