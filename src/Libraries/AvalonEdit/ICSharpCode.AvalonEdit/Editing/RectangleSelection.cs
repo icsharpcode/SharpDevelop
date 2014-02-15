@@ -396,9 +396,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			var data = base.CreateDataObject(textArea);
 			
-			MemoryStream isRectangle = new MemoryStream(1);
-			isRectangle.WriteByte(1);
-			data.SetData(RectangularSelectionDataType, isRectangle, false);
+			if (EditingCommandHandler.ConfirmDataFormat(textArea, data, RectangularSelectionDataType)) {
+				MemoryStream isRectangle = new MemoryStream(1);
+				isRectangle.WriteByte(1);
+				data.SetData(RectangularSelectionDataType, isRectangle, false);
+			}
 			return data;
 		}
 		

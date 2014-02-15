@@ -234,6 +234,21 @@ namespace ICSharpCode.AvalonEdit.Editing
 							string newLine = TextUtilities.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
 							text = TextUtilities.NormalizeNewLines(text, newLine);
 							
+							string pasteFormat;
+							// fill the suggested DataFormat used for the paste action:
+							if (rectangular)
+								pasteFormat = RectangleSelection.RectangularSelectionDataType;
+							else
+								pasteFormat = DataFormats.UnicodeText;
+							
+							var pastingEventArgs = new DataObjectPastingEventArgs(e.Data, true, pasteFormat);
+							textArea.RaiseEvent(pastingEventArgs);
+							if (pastingEventArgs.CommandCancelled)
+								return;
+							
+							// DataObject.PastingEvent handlers might have changed the format to apply.
+							rectangular = pastingEventArgs.FormatToApply == RectangleSelection.RectangularSelectionDataType;
+							
 							// Mark the undo group with the currentDragDescriptor, if the drag
 							// is originating from the same control. This allows combining
 							// the undo groups when text is moved.
@@ -319,6 +334,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 					allowedEffects &= ~DragDropEffects.Move;
 				}
 			}
+			
+			var copyingEventArgs = new DataObjectCopyingEventArgs(dataObject, true);
+			textArea.RaiseEvent(copyingEventArgs);
+			if (copyingEventArgs.CommandCancelled)
+				return;
 			
 			object dragDescriptor = new object();
 			this.currentDragDescriptor = dragDescriptor;

@@ -312,64 +312,89 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (textArea != null && textArea.Document != null) {
 				if (textArea.Selection.IsEmpty && textArea.Options.CutCopyWholeLine) {
 					DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-					CopyWholeLine(textArea, currentLine);
-					ISegment[] segmentsToDelete = textArea.GetDeletableSegments(new SimpleSegment(currentLine.Offset, currentLine.TotalLength));
-					for (int i = segmentsToDelete.Length - 1; i >= 0; i--) {
-						textArea.Document.Remove(segmentsToDelete[i]);
+					if (CopyWholeLine(textArea, currentLine)) {
+						ISegment[] segmentsToDelete = textArea.GetDeletableSegments(new SimpleSegment(currentLine.Offset, currentLine.TotalLength));
+						for (int i = segmentsToDelete.Length - 1; i >= 0; i--) {
+							textArea.Document.Remove(segmentsToDelete[i]);
+						}
 					}
 				} else {
-					CopySelectedText(textArea);
-					textArea.RemoveSelectedText();
+					if (CopySelectedText(textArea))
+						textArea.RemoveSelectedText();
 				}
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;
 			}
 		}
 		
-		static void CopySelectedText(TextArea textArea)
+		static bool CopySelectedText(TextArea textArea)
 		{
 			var data = textArea.Selection.CreateDataObject(textArea);
+			var copyingEventArgs = new DataObjectCopyingEventArgs(data, false);
+			textArea.RaiseEvent(copyingEventArgs);
+			if (copyingEventArgs.CommandCancelled)
+				return false;
 			
 			try {
 				Clipboard.SetDataObject(data, true);
 			} catch (ExternalException) {
 				// Apparently this exception sometimes happens randomly.
 				// The MS controls just ignore it, so we'll do the same.
-				return;
+				return false;
 			}
 			
 			string text = textArea.Selection.GetText();
 			text = TextUtilities.NormalizeNewLines(text, Environment.NewLine);
 			textArea.OnTextCopied(new TextEventArgs(text));
+			return true;
 		}
 		
 		const string LineSelectedType = "MSDEVLineSelect";  // This is the type VS 2003 and 2005 use for flagging a whole line copy
 		
-		static void CopyWholeLine(TextArea textArea, DocumentLine line)
+		public static bool ConfirmDataFormat(TextArea textArea, DataObject dataObject, string format)
+		{
+			var e = new DataObjectSettingDataEventArgs(dataObject, format);
+			textArea.RaiseEvent(e);
+			return !e.CommandCancelled;
+		}
+		
+		static bool CopyWholeLine(TextArea textArea, DocumentLine line)
 		{
 			ISegment wholeLine = new SimpleSegment(line.Offset, line.TotalLength);
 			string text = textArea.Document.GetText(wholeLine);
 			// Ensure we use the appropriate newline sequence for the OS
 			text = TextUtilities.NormalizeNewLines(text, Environment.NewLine);
-			DataObject data = new DataObject(text);
+			DataObject data = new DataObject();
+			if (ConfirmDataFormat(textArea, data, DataFormats.UnicodeText))
+				data.SetText(text);
 			
 			// Also copy text in HTML format to clipboard - good for pasting text into Word
 			// or to the SharpDevelop forums.
-			IHighlighter highlighter = textArea.GetService(typeof(IHighlighter)) as IHighlighter;
-			HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragment(textArea.Document, highlighter, wholeLine, new HtmlOptions(textArea.Options)));
+			if (ConfirmDataFormat(textArea, data, DataFormats.Html)) {
+				IHighlighter highlighter = textArea.GetService(typeof(IHighlighter)) as IHighlighter;
+				HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragment(textArea.Document, highlighter, wholeLine, new HtmlOptions(textArea.Options)));
+			}
 			
-			MemoryStream lineSelected = new MemoryStream(1);
-			lineSelected.WriteByte(1);
-			data.SetData(LineSelectedType, lineSelected, false);
+			if (ConfirmDataFormat(textArea, data, LineSelectedType)) {
+				MemoryStream lineSelected = new MemoryStream(1);
+				lineSelected.WriteByte(1);
+				data.SetData(LineSelectedType, lineSelected, false);
+			}
+			
+			var copyingEventArgs = new DataObjectCopyingEventArgs(data, false);
+			textArea.RaiseEvent(copyingEventArgs);
+			if (copyingEventArgs.CommandCancelled)
+				return false;
 			
 			try {
 				Clipboard.SetDataObject(data, true);
 			} catch (ExternalException) {
 				// Apparently this exception sometimes happens randomly.
 				// The MS controls just ignore it, so we'll do the same.
-				return;
+				return false;
 			}
 			textArea.OnTextCopied(new TextEventArgs(text));
+			return true;
 		}
 		
 		static void CanPaste(object target, CanExecuteRoutedEventArgs args)
@@ -396,7 +421,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				}
 				if (dataObject == null)
 					return;
-				Debug.WriteLine( dataObject.GetData(DataFormats.Html) as string );
+				Debug.WriteLine(dataObject.GetData(DataFormats.Html) as string);
 				
 				// convert text back to correct newlines for this document
 				string newLine = TextUtilities.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
@@ -411,6 +436,27 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (!string.IsNullOrEmpty(text)) {
 					bool fullLine = textArea.Options.CutCopyWholeLine && dataObject.GetDataPresent(LineSelectedType);
 					bool rectangular = dataObject.GetDataPresent(RectangleSelection.RectangularSelectionDataType);
+					
+					string pasteFormat;
+					// fill the suggested DataFormat used for the paste action:
+					if (fullLine)
+						pasteFormat = LineSelectedType;
+					else if (rectangular && textArea.Selection.IsEmpty && !(textArea.Selection is RectangleSelection))
+						pasteFormat = RectangleSelection.RectangularSelectionDataType;
+					else
+						pasteFormat = DataFormats.UnicodeText;
+					
+					var pastingEventArgs = new DataObjectPastingEventArgs(dataObject, false, pasteFormat);
+					textArea.RaiseEvent(pastingEventArgs);
+					if (pastingEventArgs.CommandCancelled)
+						return;
+					
+					// DataObject.PastingEvent handlers might have changed the format to apply.
+					pasteFormat = pastingEventArgs.FormatToApply;
+					
+					fullLine = pasteFormat == LineSelectedType;
+					rectangular = pasteFormat == RectangleSelection.RectangularSelectionDataType;
+					
 					if (fullLine) {
 						DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
 						if (textArea.ReadOnlySectionProvider.CanInsert(currentLine.Offset)) {
