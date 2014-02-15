@@ -148,6 +148,9 @@
 			             label="Code inspection"
 			             class="CSharpBinding.Refactoring.IssueOptions"/>
 			<ContextActionOptionPanel id="ContextActions" path="/SharpDevelop/ViewContent/TextEditor/C#/ContextActions"/>
+			<OptionPanel id="Formatting"
+			             label="Formatting"
+			             class="CSharpBinding.OptionPanels.CSharpFormattingOptionPanel"/>
 		</OptionPanel>
 	</Path>
 	

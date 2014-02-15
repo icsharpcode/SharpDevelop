@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using ICSharpCode.NRefactory.CSharp;
@@ -28,33 +29,77 @@ namespace CSharpBinding.FormattingStrategy
 	/// Generic container for C# formatting options that can be chained together from general to specific and inherit
 	/// options from parent.
 	/// </summary>
-	public class CSharpFormattingOptionsContainer
+	public class CSharpFormattingOptionsContainer : INotifyPropertyChanged
 	{
 		CSharpFormattingOptionsContainer parent;
-		CSharpFormattingOptionsContainer child;
+		CSharpFormattingOptions cachedOptions;
 		
-		Dictionary<string, object> options;
+		HashSet<string> activeOptions;
 		
 		internal CSharpFormattingOptionsContainer()
 		{
 			parent = null;
-			child = null;
-			
-			options = new Dictionary<string, object>();
+			activeOptions = new HashSet<string>();
+			cachedOptions = FormattingOptionsFactory.CreateEmpty();
 		}
 		
-		public CSharpFormattingOptionsContainer Child
+		internal CSharpFormattingOptionsContainer(CSharpFormattingOptions options)
+		{
+			parent = null;
+			activeOptions = new HashSet<string>();
+			
+			cachedOptions = options;
+			// Activate all options
+			foreach (var property in typeof(CSharpFormattingOptions).GetProperties()) {
+				activeOptions.Add(property.Name);
+			}
+		}
+		
+		public CSharpFormattingOptionsContainer Parent
 		{
 			get
 			{
-				return child;
+				return parent;
 			}
 			set
 			{
-				if (child != null) {
-					child.parent = this;
+				if (parent != null) {
+					parent.PropertyChanged += HandlePropertyChanged;
 				}
-				child = value;
+				parent = value;
+				parent.PropertyChanged += HandlePropertyChanged;
+				cachedOptions = CreateOptions();
+				OnPropertyChanged("Parent");
+			}
+		}
+		
+		#region INotifyPropertyChanged implementation
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		private void OnPropertyChanged(string propertyName)
+		{
+			if (PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+
+		#endregion
+		
+		private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "Parent") {
+				// Parent of parent has been updated, recreate options object
+				cachedOptions = CreateOptions();
+			} else {
+				// Some other property has changed, check if we have our own value for it
+				if (!activeOptions.Contains(e.PropertyName)) {
+					// We rely on property value from some of the parents and have to update it from there
+					PropertyInfo propertyInfo = typeof(CSharpFormattingOptions).GetProperty(e.PropertyName);
+					if (propertyInfo != null) {
+						propertyInfo.SetValue(cachedOptions, GetOption<object>(e.PropertyName));
+					}
+				}
 			}
 		}
 		
@@ -69,6 +114,7 @@ namespace CSharpBinding.FormattingStrategy
 		/// </param>
 		/// <returns>True, if option with given type could be found in hierarchy. False otherwise.</returns>
 		public T GetOption<T>(Expression<Func<CSharpFormattingOptions, T>> propertyGetter)
+			where T : struct
 		{
 			// Get name of property (to look for in dictionary)
 			string optionName = null;
@@ -93,10 +139,9 @@ namespace CSharpBinding.FormattingStrategy
 			CSharpFormattingOptionsContainer container = this;
 			do
 			{
-				object val;
-				container.options.TryGetValue(option, out val);
-				if (val is T) {
-					return (T) val;
+				PropertyInfo propertyInfo = typeof(CSharpFormattingOptions).GetProperty(option);
+				if ((propertyInfo != null) && (propertyInfo.PropertyType == typeof(T))) {
+					return (T) propertyInfo.GetValue(container.cachedOptions);
 				}
 				container = container.parent;
 			} while (container != null);
@@ -105,11 +150,48 @@ namespace CSharpBinding.FormattingStrategy
 		}
 		
 		/// <summary>
+		/// Sets an option.
+		/// </summary>
+		/// <param name="option">Option name.</param>
+		/// <param name="value">Option value, <c>null</c> to reset.</param>
+		public void SetOption<T>(string option, T? value)
+			where T : struct
+		{
+			if (value.HasValue) {
+				// Save value in option values and cached options
+				activeOptions.Add(option);
+				PropertyInfo propertyInfo = typeof(CSharpFormattingOptions).GetProperty(option);
+				if ((propertyInfo != null) && (propertyInfo.PropertyType == typeof(T))) {
+					propertyInfo.SetValue(cachedOptions, value.Value);
+				}
+			} else {
+				// Reset this option
+				activeOptions.Remove(option);
+				// Update formatting options object from parents
+				PropertyInfo propertyInfo = typeof(CSharpFormattingOptions).GetProperty(option);
+				if ((propertyInfo != null) && (propertyInfo.PropertyType == typeof(T))) {
+					propertyInfo.SetValue(cachedOptions, GetOption<T>(option));
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Retrieves a <see cref="ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions"/> instance from current
+		/// container, resolving all options throughout container hierarchy.
+		/// </summary>
+		/// <returns>Filled <see cref="ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions"/> instance.</returns>
+		public CSharpFormattingOptions GetEffectiveOptions()
+		{
+			// Use copy of cached options instance
+			return cachedOptions.Clone();
+		}
+		
+		/// <summary>
 		/// Creates a <see cref="ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions"/> instance from current
-		/// container, resolving all options through container hierarchy.
+		/// container, resolving all options throughout container hierarchy.
 		/// </summary>
 		/// <returns>Created and filled <see cref="ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions"/> instance.</returns>
-		public CSharpFormattingOptions CreateOptions()
+		private CSharpFormattingOptions CreateOptions()
 		{
 			var outputOptions = FormattingOptionsFactory.CreateEmpty();
 			

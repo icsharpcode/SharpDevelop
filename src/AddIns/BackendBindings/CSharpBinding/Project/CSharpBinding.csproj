@@ -89,6 +89,18 @@
     <Compile Include="Src\FormsDesigner\CSharpFormsDesignerLoaderContext.cs" />
     <Compile Include="Src\FormsDesigner\ICSharpDesignerLoaderContext.cs" />
     <Compile Include="Src\FormsDesigner\SecondaryDisplayBinding.cs" />
+    <Compile Include="Src\OptionPanels\CSharpFormattingEditor.xaml.cs">
+      <DependentUpon>CSharpFormattingEditor.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\OptionPanels\CSharpFormattingOptionPanel.xaml.cs">
+      <DependentUpon>CSharpFormattingOptionPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\OptionPanels\CSharpProjectFormattingOptions.xaml.cs">
+      <DependentUpon>CSharpProjectFormattingOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Parser\FoldingVisitor.cs" />
     <Compile Include="Src\Refactoring\AbstractInlineRefactorDialog.cs" />
     <Compile Include="Src\Refactoring\ConvertInterfaceToAbstractClassContextAction.cs" />
@@ -235,6 +247,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\OptionPanels\CSharpFormattingEditor.xaml" />
+    <Page Include="Src\OptionPanels\CSharpFormattingOptionPanel.xaml" />
+    <Page Include="Src\OptionPanels\CSharpProjectFormattingOptions.xaml" />
     <Page Include="Src\Refactoring\CreatePropertiesDialog.xaml" />
     <Page Include="Src\Refactoring\InsertCtorDialog.xaml" />
     <Page Include="Src\Refactoring\IssueOptions.xaml" />
