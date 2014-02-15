@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
@@ -430,6 +431,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				}
 			}
 			IOutputAstVisitor outputVisitor = (language==NR.SupportedLanguage.CSharp) ? new CSharpOutputVisitor() : (IOutputAstVisitor)new VBNetOutputVisitor();
+			var match = Regex.Match(codeForNewType, @"^([\s]+)", RegexOptions.Multiline);
+			if (match != null && !string.IsNullOrEmpty(match.Groups[0].Value)) {
+				outputVisitor.Options.IndentationChar = match.Groups[0].Value[0];
+			}
+			
 			using (SpecialNodesInserter.Install(comments, outputVisitor)) {
 				parser.CompilationUnit.AcceptVisitor(outputVisitor, null);
 			}
