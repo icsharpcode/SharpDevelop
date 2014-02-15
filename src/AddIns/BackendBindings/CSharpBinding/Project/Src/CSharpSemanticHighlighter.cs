@@ -412,7 +412,7 @@ namespace CSharpBinding
 				if (resolverNode.Role == Roles.Type && resolverNode.Parent is ObjectCreateExpression)
 					resolverNode = resolverNode.Parent;
 				
-				if (node is Identifier)
+				if (node is Identifier && !node.IsNull)
 					resolverNode.AddAnnotation(node);
 				if (color != null)
 					resolverNode.AddAnnotation(color);
