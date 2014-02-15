@@ -80,7 +80,6 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\ClassCodeGeneratorTests.cs" />
     <Compile Include="Src\CodeGeneratorTests.cs" />
     <Compile Include="Src\DependentFileNameTests.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2Tests.cs" />
@@ -199,7 +198,6 @@
     <Compile Include="Src\UpdatePackagesActionTests.cs" />
     <Compile Include="Src\UpdateSolutionPackagesActionTests.cs" />
     <Compile Include="Src\UserAgentGeneratorForRepositoryRequestsTests.cs" />
-    <Compile Include="Src\VirtualMethodUpdaterTests.cs" />
     <Compile Include="Src\PackageActionRunnerTests.cs" />
     <Compile Include="Src\PackageActionsToRunTests.cs" />
     <Compile Include="Src\PackageFilesTests.cs" />

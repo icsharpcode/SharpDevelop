@@ -22,6 +22,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests.EnvDTE
@@ -30,13 +31,6 @@ namespace PackageManagement.Tests.EnvDTE
 	public class CodeFunctionTests : CodeModelTestBase
 	{
 		CodeFunction codeFunction;
-		IVirtualMethodUpdater methodUpdater;
-		
-//		void CreateFunction()
-//		{
-//			methodUpdater = MockRepository.GenerateStub<IVirtualMethodUpdater>();
-//			codeFunction = new CodeFunction(helper.Method, null, methodUpdater);
-//		}
 		
 		void CreateFunction(string code)
 		{
@@ -397,25 +391,47 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(1, attributes.Count);
 			Assert.AreEqual("System.ObsoleteAttribute", attribute.FullName);
 		}
-//		
-//		[Test]
-//		public void CanOverride_SetToTrueForFunction_VirtualKeywordAddedToFunction()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			
-//			codeFunction.CanOverride = true;
-//			
-//			methodUpdater.AssertWasCalled(updater => updater.MakeMethodVirtual());
-//		}
-//		
-//		[Test]
-//		public void CanOverride_SetToFalseForFunction_VirtualKeywordNotAddedToFunction()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			
-//			codeFunction.CanOverride = false;
-//			
-//			methodUpdater.AssertWasNotCalled(updater => updater.MakeMethodVirtual());
-//		}
+		
+		[Test]
+		public void CanOverride_SetToTrueForFunction_VirtualKeywordAddedToFunction()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public void MyFunction() {}\r\n" +
+				"}");
+			
+			codeFunction.CanOverride = true;
+			
+			codeGenerator.AssertWasCalled(generator => generator.MakeVirtual(
+				Arg<IMember>.Matches(member => member.Name == "MyFunction")));
+		}
+		
+		[Test]
+		public void CanOverride_SetToFalseForFunction_VirtualKeywordNotAddedToFunction()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public void MyFunction() {}\r\n" +
+				"}");
+			
+			codeFunction.CanOverride = false;
+			
+			codeGenerator.AssertWasNotCalled(generator => generator.MakeVirtual(
+				Arg<IMember>.Is.Anything));
+		}
+		
+		[Test]
+		public void CanOverride_SetToTrueForFunctionThatIsAlreadyVirtual_VirtualKeywordNotAddedToFunction()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public virtual void MyFunction() {}\r\n" +
+				"}");
+			
+			codeFunction.CanOverride = true;
+			
+			codeGenerator.AssertWasNotCalled(generator => generator.MakeVirtual(
+				Arg<IMember>.Is.Anything));
+		}
 	}
 }

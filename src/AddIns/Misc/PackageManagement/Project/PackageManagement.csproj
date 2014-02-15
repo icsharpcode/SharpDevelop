@@ -81,7 +81,6 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
-    <Compile Include="Src\ClassCodeGenerator.cs" />
     <Compile Include="Src\ConfigSettingsFileSystem.cs" />
     <Compile Include="Src\DependentFile.cs" />
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
@@ -160,7 +159,6 @@
     <Compile Include="Src\IProjectBuilder.cs" />
     <Compile Include="Src\IProjectContentExtensions.cs" />
     <Compile Include="Src\IUpdatePackageSettings.cs" />
-    <Compile Include="Src\IVirtualMethodUpdater.cs" />
     <Compile Include="Src\IProjectBrowserUpdater.cs" />
     <Compile Include="Src\IFieldExtensions.cs" />
     <Compile Include="Src\IDocumentLoader.cs" />

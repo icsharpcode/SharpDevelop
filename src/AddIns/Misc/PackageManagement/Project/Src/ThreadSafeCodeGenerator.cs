@@ -59,5 +59,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			InvokeIfRequired(() => codeGenerator.AddMethodAtStart(typeDefinition, accessibility, returnType, name));
 		}
+		
+		public void MakeVirtual(IMember member)
+		{
+			InvokeIfRequired(() => codeGenerator.MakeVirtual(member));
+		}
 	}
 }

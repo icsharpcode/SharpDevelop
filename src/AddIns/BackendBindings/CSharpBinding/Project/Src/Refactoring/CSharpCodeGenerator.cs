@@ -198,5 +198,15 @@ namespace CSharpBinding.Refactoring
 				script.ChangeModifier(typeDeclaration, typeDeclaration.Modifiers | Modifiers.Partial);
 			}
 		}
+		
+		public override void MakeVirtual(IMember member)
+		{
+			SDRefactoringContext refactoringContext = member.CreateRefactoringContext();
+			var entityDeclaration = refactoringContext.GetNode<EntityDeclaration>();
+			
+			using (Script script = refactoringContext.StartScript()) {
+				script.ChangeModifier(entityDeclaration, entityDeclaration.Modifiers | Modifiers.Virtual);
+			}
+		}
 	}
 }
