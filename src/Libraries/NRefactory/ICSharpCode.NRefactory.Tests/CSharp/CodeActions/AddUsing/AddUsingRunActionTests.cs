@@ -61,7 +61,7 @@ namespace TestNamespace
 	}
 }";
 
-			formattingOptions.BlankLinesAfterUsings = 2;
+			formattingOptions.MinimumBlankLinesAfterUsings = 2;
 			Test(new AddUsingAction(), testCode, expectedOutput);
 		}
 
@@ -91,7 +91,7 @@ namespace TestNamespace
 	}
 }";
 
-			formattingOptions.BlankLinesBeforeUsings = 2;
+			formattingOptions.MinimumBlankLinesBeforeUsings = 2;
 			Test(new AddUsingAction(), testCode, expectedOutput);
 		}
 

@@ -183,6 +183,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								var m = member as IParameterizedMember;
 								if (m != null && m.Parameters.Any(p => p.Name == name.Value))
 									break;
+								if (name.Value == "value" && (member.SymbolKind == SymbolKind.Property || member.SymbolKind == SymbolKind.Indexer || member.SymbolKind == SymbolKind.Event) && el.Name == "paramref")
+									break;
 								AddXmlIssue(name.ValueSegment.Offset - firstline.Length + 1, name.ValueSegment.Length - 2, string.Format(ctx.TranslateString("Parameter '{0}' not found"), name.Value));
 								break;
 							case "exception":

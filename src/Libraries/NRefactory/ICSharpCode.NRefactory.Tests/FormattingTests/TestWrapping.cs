@@ -632,7 +632,7 @@ int j,
 		public void TestNoBlankLinesBetweenEndBraceAndEndParenthesis ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			policy.BlankLinesBetweenMembers = 1;
+			policy.MinimumBlankLinesBetweenMembers = 1;
 
 			Test (policy, @"class Test
 {

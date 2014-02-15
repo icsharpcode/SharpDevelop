@@ -2342,7 +2342,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			Action<ICompletionData, IType> typeCallback = null;
 			var inferredTypesCategory = new Category("Inferred Types", null);
 			var derivedTypesCategory = new Category("Derived Types", null);
-			if (hintType != null) {
+
+			if (hintType != null && (hintType.Kind != TypeKind.TypeParameter || IsTypeParameterInScope(hintType))) {
 				if (hintType.Kind != TypeKind.Unknown) {
 					var lookup = new MemberLookup(
 						ctx.CurrentTypeDefinition,
@@ -2424,6 +2425,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AutoCompleteEmptyMatch = true;
 			AutoCompleteEmptyMatchOnCurlyBracket = false;
 			return wrapper.Result;
+		}
+
+		bool IsTypeParameterInScope(IType hintType)
+		{
+			var tp = hintType as ITypeParameter;
+			var ownerName = tp.Owner.ReflectionName;
+			if (currentMember != null && ownerName == currentMember.ReflectionName)
+				return true;
+			var ot = currentType;
+			while (ot != null) {
+				if (ownerName == ot.ReflectionName)
+					return true;
+				ot = ot.DeclaringTypeDefinition;
+			}
+			return false;
 		}
 
 		IEnumerable<ICompletionData> GetOverrideCompletionData(IUnresolvedTypeDefinition type, string modifiers)
@@ -2818,7 +2834,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 			var astResolver = unit != null ? CompletionContextProvider.GetResolver(state, unit) : null;
 			IType hintType = exprParent != null && astResolver != null ? 
-			                 TypeGuessing.GetValidTypes(astResolver, exprParent).FirstOrDefault() :
+				TypeGuessing.GetValidTypes(astResolver, exprParent).FirstOrDefault() :
 			                 null;
 			var result = new CompletionDataWrapper(this);
 			var lookup = new MemberLookup(

@@ -26,6 +26,7 @@
 
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
@@ -515,6 +516,26 @@ class TestClass
 		return i < 0 || Foo (i - 1);
 	}
 }");
+		}
+
+		/// <summary>
+		/// Bug 17769 - Incorrect "method never returns" warning
+		/// </summary>
+		[Test]
+		public void TestBug17769 ()
+		{
+			TestWrongContext<FunctionNeverReturnsIssue> (@"
+using System.Linq;
+class A
+{
+    A[] list = new A[0];
+
+    public bool Test ()
+    {
+        return list.Any (t => t.Test ());
+    }
+}
+");
 		}
 	}
 }

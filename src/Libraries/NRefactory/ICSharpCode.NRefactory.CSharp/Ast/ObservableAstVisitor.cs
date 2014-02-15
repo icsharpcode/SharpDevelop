@@ -44,6 +44,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (leave != null)
 				leave(node);
 		}
+
+		void IAstVisitor.VisitNullNode(AstNode nullNode)
+		{
+		}
 		
 		public event Action<SyntaxTree> EnterSyntaxTree, LeaveSyntaxTree;
 		

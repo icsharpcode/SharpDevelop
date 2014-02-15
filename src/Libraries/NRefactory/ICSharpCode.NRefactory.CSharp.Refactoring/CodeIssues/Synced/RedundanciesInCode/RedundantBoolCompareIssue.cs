@@ -77,9 +77,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (exprType == null || exprType.KnownTypeCode != KnownTypeCode.Boolean)
 					return;
 
-				var boolConstant = (bool)match.Get<PrimitiveExpression> ("const").First ().Value;
+				var boolExpr = match.Get<PrimitiveExpression>("const").First();
+				var boolConstant = (bool)boolExpr.Value;
+
+				TextLocation start, end;
+				if (boolExpr == binaryOperatorExpression.Left) {
+					start = binaryOperatorExpression.StartLocation;
+					end = binaryOperatorExpression.OperatorToken.EndLocation;
+				} else {
+					start = binaryOperatorExpression.OperatorToken.StartLocation;
+					end = binaryOperatorExpression.EndLocation;
+				}
+
 				AddIssue (new CodeIssue(
-					binaryOperatorExpression, 
+					start, end, 
 					boolConstant ? ctx.TranslateString ("Comparison with 'true' is redundant") : ctx.TranslateString ("Comparison with 'false' is redundant"),
 					ctx.TranslateString ("Remove redundant comparison"), 
 					script => {

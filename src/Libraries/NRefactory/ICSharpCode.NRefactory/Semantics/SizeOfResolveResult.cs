@@ -22,7 +22,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// Represents the 'typeof'.
+	/// Represents the 'sizeof'.
 	/// </summary>
 	public class SizeOfResolveResult : ResolveResult
 	{

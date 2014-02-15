@@ -777,47 +777,47 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Blank Lines
-		public int BlankLinesBeforeUsings {
+		public int MinimumBlankLinesBeforeUsings {
 			get;
 			set;
 		}
 
-		public int BlankLinesAfterUsings {
+		public int MinimumBlankLinesAfterUsings {
 			get;
 			set;
 		}
 
-		public int BlankLinesBeforeFirstDeclaration {
+		public int MinimumBlankLinesBeforeFirstDeclaration {
 			get;
 			set;
 		}
 
-		public int BlankLinesBetweenTypes {
+		public int MinimumBlankLinesBetweenTypes {
 			get;
 			set;
 		}
 
-		public int BlankLinesBetweenFields {
+		public int MinimumBlankLinesBetweenFields {
 			get;
 			set;
 		}
 
-		public int BlankLinesBetweenEventFields {
+		public int MinimumBlankLinesBetweenEventFields {
 			get;
 			set;
 		}
 
-		public int BlankLinesBetweenMembers {
+		public int MinimumBlankLinesBetweenMembers {
 			get;
 			set;
 		}
 
-		public int BlankLinesAroundRegion {
+		public int MinimumBlankLinesAroundRegion {
 			get;
 			set;
 		}
 
-		public int BlankLinesInsideRegion {
+		public int MinimumBlankLinesInsideRegion {
 			get;
 			set;
 		}

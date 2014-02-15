@@ -339,6 +339,7 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.SimplifyConditionalTernaryExpressionIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.SimplifyLinqExpressionIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StaticConstructorParameterIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StaticEventSubscriptionIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StaticFieldInGenericTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StringCompareIsCultureSpecificIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StringCompareToIsCultureSpecificIssue" />
@@ -428,6 +429,7 @@
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateOverloadWithoutParameterAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreatePropertyAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS1520MethodMustHaveAReturnTypeAction" />
+		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS1105ExtensionMethodMustBeDeclaredStaticAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.DeclareLocalVariableAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExtensionMethodInvocationToStaticMethodInvocationAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExtractAnonymousMethodAction" />

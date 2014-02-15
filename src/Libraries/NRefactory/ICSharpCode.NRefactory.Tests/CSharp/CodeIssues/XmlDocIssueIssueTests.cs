@@ -150,6 +150,24 @@ namespace Foo {
 	}
 }");
 		}
+
+		/// <summary>
+		/// Bug 17729 - Incorrect XML-docs warning about 'value' paramref 
+		/// </summary>
+		[Test]
+		public void TestBug17729 ()
+		{
+			TestWrongContext<XmlDocIssue>(@"
+using System;
+
+class Foo {
+	/// <summary>
+	/// If <paramref name=""value""/> is 0 ...
+	/// </summary>
+	public int Bar { get; set; }
+}
+");
+		}
 	}
 
 

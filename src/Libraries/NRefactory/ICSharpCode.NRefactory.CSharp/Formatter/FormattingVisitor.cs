@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		#region NewLines
 
-		void AdjustNewLineBlock(AstNode startNode, int targetNewLineCount)
+		void AdjustNewLineBlock(AstNode startNode, int targetMinimumNewLineCount)
 		{
 			var indentString = policy.EmptyLineFormatting == EmptyLineFormatting.Indent ? curIndent.IndentString : "";
 
@@ -127,7 +127,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			var node = startNode.NextSibling;
 			int currentNewLineCount = 0;
 			// Check the existing newlines
-			for (; currentNewLineCount < targetNewLineCount; node = node.NextSibling) {
+			for (; currentNewLineCount < targetMinimumNewLineCount; node = node.NextSibling) {
 				if (node is WhitespaceNode)
 					continue;
 				if (!(node is NewLineNode))
@@ -160,10 +160,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					// end of file/block etc, nothing more to do but break before assigning null to node
 					break;
 			}
-			if (currentNewLineCount < targetNewLineCount) {
+			if (currentNewLineCount < targetMinimumNewLineCount) {
 				// We need to add more newlines
 				var builder = new StringBuilder();
-				for (; currentNewLineCount < targetNewLineCount; currentNewLineCount++) {
+				for (; currentNewLineCount < targetMinimumNewLineCount; currentNewLineCount++) {
 					if (currentNewLineCount > 0)
 						// Don't indent the first line in the block since that is not an empty line.
 						builder.Append(indentString);
@@ -171,18 +171,18 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				var offset = document.GetOffset(newLineInsertPosition);
 				AddChange(offset, 0, builder.ToString());
-			} else if (currentNewLineCount == targetNewLineCount && node is NewLineNode){
-				// Check to see if there are any newlines to remove
-				var endNode = node.GetNextSibling(n => !(n is NewLineNode || n is WhitespaceNode));
-				if (endNode != null) {
-					var startOffset = document.GetOffset(newLineInsertPosition);
-					var endOffset = document.GetOffset(new TextLocation(endNode.StartLocation.Line, 0));
-					EnsureText(startOffset, endOffset, null);
-				}
+			} else if (currentNewLineCount == targetMinimumNewLineCount && node is NewLineNode){
+//				// Check to see if there are any newlines to remove
+//				var endNode = node.GetNextSibling(n => !(n is NewLineNode || n is WhitespaceNode));
+//				if (endNode != null) {
+//					var startOffset = document.GetOffset(newLineInsertPosition);
+//					var endOffset = document.GetOffset(new TextLocation(endNode.StartLocation.Line, 0));
+//					EnsureText(startOffset, endOffset, null);
+//				}
 			}
 		}
 
-		public void EnsureNewLinesAfter(AstNode node, int blankLines)
+		public void EnsureMinimumNewLinesAfter(AstNode node, int blankLines)
 		{
 			if (node is PreProcessorDirective) {
 				var directive = (PreProcessorDirective)node;
@@ -196,7 +196,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			AdjustNewLineBlock(node, blankLines);
 		}
 		
-		public void EnsureBlankLinesBefore(AstNode node, int blankLines)
+		public void EnsureMinimumBlankLinesBefore(AstNode node, int blankLines)
 		{
 			if (formatter.FormattingMode != FormattingMode.Intrusive)
 				return;
@@ -207,7 +207,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			} while (line > 0 && IsSpacing(document.GetLineByNumber(line)));
 			if (line > 0 && !IsSpacing(document.GetLineByNumber(line)))
 			    line++;
-			if (loc.Line - line == blankLines)
+
+			if (loc.Line - line >= blankLines)
 				return;
 
 			var sb = new StringBuilder ();
@@ -371,7 +372,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return i;
 		}
 
-		static bool NoWhitespacePredicate(AstNode arg)
+		internal static bool NoWhitespacePredicate(AstNode arg)
 		{
 			return !(arg is NewLineNode || arg is WhitespaceNode);
 		}
