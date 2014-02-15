@@ -16,16 +16,14 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using ICSharpCode.SharpDevelop.Dom;
-//using ICSharpCode.SharpDevelop.Dom.Refactoring;
-//
-//namespace ICSharpCode.PackageManagement
-//{
-//	public interface IRefactoringDocumentView
-//	{
-//		IRefactoringDocument RefactoringDocument { get; }
-//		ICompilationUnit Parse();
-//		void IndentLines(int beginLine, int endLine);
-//	}
-//}
+using System;
+using ICSharpCode.NRefactory.Editor;
+
+namespace ICSharpCode.PackageManagement
+{
+	public interface IRefactoringDocumentView
+	{
+		IDocument RefactoringDocument { get; }
+		void IndentLines(int beginLine, int endLine);
+	}
+}
