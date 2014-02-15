@@ -42,7 +42,16 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		{
 			var textEditorAdapter = textEditor as AvalonEditTextEditorAdapter;
 			if (textEditorAdapter != null) {
+				RemoveExistingFoldingManager(textEditorAdapter);
 				foldingManager = FoldingManager.Install(textEditorAdapter.TextEditor.TextArea);
+			}
+		}
+		
+		void RemoveExistingFoldingManager(AvalonEditTextEditorAdapter textEditorAdapter)
+		{
+			var existingFoldingManager = textEditorAdapter.TextEditor.TextArea.GetService(typeof(FoldingManager)) as FoldingManager;
+			if (existingFoldingManager != null) {
+				FoldingManager.Uninstall(existingFoldingManager);
 			}
 		}
 		
