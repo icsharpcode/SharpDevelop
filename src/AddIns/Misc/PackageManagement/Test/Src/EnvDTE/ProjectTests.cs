@@ -21,7 +21,6 @@ using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -141,7 +140,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string kind = dteProject.Kind;
 			
-			Assert.AreEqual(ProjectTypeGuids.CSharp.ToString(), kind);
+			Assert.AreEqual("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", kind);
 		}
 		
 		[Test]
@@ -151,7 +150,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string kind = dteProject.Kind;
 			
-			Assert.AreEqual(ProjectTypeGuids.VB.ToString(), kind);
+			Assert.AreEqual("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", kind);
 		}
 		
 		[Test]

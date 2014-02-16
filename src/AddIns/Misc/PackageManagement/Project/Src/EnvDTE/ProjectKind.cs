@@ -32,11 +32,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			string type = ProjectType.GetProjectType(project);
 			if (type == ProjectType.CSharp) {
-				return SD.ProjectTypeGuids.CSharp.ToString();
+				return GetProjectKind(SD.ProjectTypeGuids.CSharp);
 			} else if (type == ProjectType.VB) {
-				return SD.ProjectTypeGuids.VB.ToString();
+				return GetProjectKind(SD.ProjectTypeGuids.VB);
 			}
 			return String.Empty;
+		}
+		
+		string GetProjectKind(Guid guid)
+		{
+			return "{" + guid.ToString().ToUpperInvariant() + "}";
 		}
 		
 		public string Kind { get; private set; }
