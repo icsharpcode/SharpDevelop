@@ -121,7 +121,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					members = new CodeElementsList<CodeElement>();
 					members.AddRange(typeDefinition.Members
 						.Where(member => IsInFilter(member.Region))
-						.Where(member => !member.Region.End.IsEmpty)
+						.Where(member => !member.Region.End.IsEmpty || !typeDefinition.ParentAssembly.IsMainAssembly)
 						.Select(member => CreateMember(context, member)));
 				}
 				return members;

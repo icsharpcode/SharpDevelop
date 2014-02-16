@@ -381,5 +381,29 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("Obsolete", attribute.Name);
 		}
+		
+		[Test]
+		public void Members_ClassIsSystemAttributeAsReturnTypeFromClassMethod_HasMembersForSystemAttribute()
+		{
+			CreateClass(
+				"using System;\r\n" +
+				"class MyClass {\r\n" +
+				"    public Attribute GetAttribute() {\r\n" +
+				"        return null;\r\n" +
+				"    }\r\n" +
+				"}");
+			CodeClass2 returnType = codeClass
+				.Members
+				.OfType<CodeFunction2>()
+				.First(member => member.Name == "GetAttribute")
+				.Type
+				.CodeType as CodeClass2;
+			
+			List<CodeElement> members = returnType.Members.ToList();
+			
+			Assert.AreEqual("System.Attribute", returnType.FullName);
+			Assert.That(members.Count, Is.GreaterThan(0));
+			Assert.IsTrue(members.Any(member => member.Name == "IsDefaultAttribute"));
+		}
 	}
 }
