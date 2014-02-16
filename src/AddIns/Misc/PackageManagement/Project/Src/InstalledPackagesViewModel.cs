@@ -31,7 +31,6 @@ namespace ICSharpCode.PackageManagement
 		string errorMessage;
 
 		public InstalledPackagesViewModel(
-			PackagesViewModels packagesViewModelParent,
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,

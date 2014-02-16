@@ -28,7 +28,6 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository recentPackageRepository;
 		
 		public RecentPackagesViewModel(
-			PackagesViewModels packagesViewModelParent,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
