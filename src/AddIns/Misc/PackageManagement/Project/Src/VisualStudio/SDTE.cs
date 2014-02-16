@@ -16,15 +16,15 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using ICSharpCode.PackageManagement.EnvDTE;
-//
-//namespace Microsoft.VisualStudio.Shell.Interop
-//{
-//	public class SDTE : DTE
-//	{
-//		public SDTE()
-//		{
-//		}
-//	}
-//}
+using System;
+using ICSharpCode.PackageManagement.EnvDTE;
+
+namespace Microsoft.VisualStudio.Shell.Interop
+{
+	public class SDTE : DTE
+	{
+		public SDTE()
+		{
+		}
+	}
+}
