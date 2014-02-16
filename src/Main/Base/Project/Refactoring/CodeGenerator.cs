@@ -88,6 +88,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			throw new NotSupportedException("Feature not supported!");
 		}
 		
+		public virtual void AddFieldAtStart(ITypeDefinition typeDefinition, Accessibility accessibility, IType fieldType, string name)
+		{
+			throw new NotSupportedException("Feature not supported!");
+		}
+		
+		public virtual void AddMethodAtStart(ITypeDefinition declaringType, Accessibility accessibility, IType returnType, string name)
+		{
+			throw new NotSupportedException("Feature not supported!");
+		}
+		
 		public virtual void ChangeAccessibility(IEntity entity, Accessibility newAccessiblity)
 		{
 			throw new NotSupportedException("Feature not supported!");

@@ -17,42 +17,52 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.PackageManagement
 {
-	public static class NRefactoryExtensionsForEnvDTE
+	public class ThreadSafeCodeGenerator : ICodeGenerator
 	{
-		public static string GetCodeModelLanguage(this IProject project)
+		readonly CodeGenerator codeGenerator;
+		readonly IMessageLoop mainThread;
+		
+		public ThreadSafeCodeGenerator(CodeGenerator codeGenerator)
 		{
-			if (project != null && project.Language == "VB") {
-				return global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageVB;
-			}
-			return global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageCSharp;
+			this.codeGenerator = codeGenerator;
+			this.mainThread = SD.MainThread;
 		}
 		
-		public static global::EnvDTE.vsCMAccess ToAccess(this Accessibility accessiblity)
+		public void AddImport(FileName fileName, string name)
 		{
-			if (accessiblity == Accessibility.Public) {
-				return global::EnvDTE.vsCMAccess.vsCMAccessPublic;
-			}
-			return global::EnvDTE.vsCMAccess.vsCMAccessPrivate;
+			InvokeIfRequired(() => codeGenerator.AddImport(fileName, name));
 		}
 		
-		public static Accessibility ToAccessibility(this global::EnvDTE.vsCMAccess access)
+		public void MakePartial(ITypeDefinition typeDefinition)
 		{
-			switch (access) {
-				case global::EnvDTE.vsCMAccess.vsCMAccessPublic:
-					return Accessibility.Public;
-				case global::EnvDTE.vsCMAccess.vsCMAccessPrivate:
-					return Accessibility.Private;
-				default:
-					throw new Exception("Invalid value for vsCMAccess");
-			}
+			InvokeIfRequired(() => codeGenerator.MakePartial(typeDefinition));
+		}
+		
+		void InvokeIfRequired(Action action)
+		{
+			mainThread.InvokeIfRequired(action);
+		}
+		
+		public void AddFieldAtStart(ITypeDefinition typeDefinition, Accessibility accessibility, IType fieldType, string name)
+		{
+			InvokeIfRequired(() => codeGenerator.AddFieldAtStart(typeDefinition, accessibility, fieldType, name));
+		}
+		
+		public void AddMethodAtStart(ITypeDefinition typeDefinition, Accessibility accessibility, IType returnType, string name)
+		{
+			InvokeIfRequired(() => codeGenerator.AddMethodAtStart(typeDefinition, accessibility, returnType, name));
+		}
+		
+		public void MakeVirtual(IMember member)
+		{
+			InvokeIfRequired(() => codeGenerator.MakeVirtual(member));
 		}
 	}
 }

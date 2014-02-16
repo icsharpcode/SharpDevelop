@@ -22,7 +22,7 @@ using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 using NUnit.Framework;
 
-namespace PackageManagement.Scripting.Tests
+namespace PackageManagement.Tests.Scripting
 {
 	[TestFixture]
 	public class ConsoleHostFileConflictResolverTests

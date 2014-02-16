@@ -16,32 +16,44 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using System.Collections.Generic;
-//using ICSharpCode.SharpDevelop.Dom;
-//using Rhino.Mocks;
-//
-//namespace PackageManagement.Tests.Helpers
-//{
-//	public class TypeParameterHelper
-//	{
-//		public ITypeParameter TypeParameter;
-//		
-//		public TypeParameterHelper()
-//		{
-//			TypeParameter = MockRepository.GenerateMock<ITypeParameter>();
-//		}
-//		
-//		public void SetName(string name)
-//		{
-//			TypeParameter.Stub(tp => tp.Name);
-//		}
-//		
-//		public List<ITypeParameter> TypeParameterToList()
-//		{
-//			var parameters = new List<ITypeParameter>();
-//			parameters.Add(TypeParameter);
-//			return parameters;
-//		}
-//	}
-//}
+using System;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
+
+namespace PackageManagement.Tests.Helpers
+{
+	public class TestableSolutionSnapshot : DefaultSolutionSnapshot, ISolutionSnapshotWithProjectMapping
+	{
+		IProject project;
+		
+		public TestableSolutionSnapshot(IProject project)
+		{
+			this.project = project;
+		}
+		
+		public IProject GetProject(IAssembly assembly)
+		{
+			return GetProject(assembly.UnresolvedAssembly as IProjectContent);
+		}
+		
+		IProject GetProject(IProjectContent projectContent)
+		{
+			if (this.project.ProjectContent == projectContent) {
+				return project;
+			}
+			return null;
+		}
+		
+		public IProjectContent GetProjectContent(IProject project)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public ICompilation GetCompilation(IProject project)
+		{
+			throw new NotImplementedException();
+		}
+	}
+}

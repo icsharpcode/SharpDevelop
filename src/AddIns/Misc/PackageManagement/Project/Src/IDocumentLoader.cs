@@ -17,13 +17,11 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.PackageManagement
 {
 	public interface IDocumentLoader
 	{
-//		IRefactoringDocument LoadRefactoringDocument(string fileName);
-//		IRefactoringDocumentView LoadRefactoringDocumentView(string fileName);
+		IDocumentView LoadDocumentView(string fileName);
 	}
 }

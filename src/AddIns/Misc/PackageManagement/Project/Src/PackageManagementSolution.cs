@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -165,6 +164,12 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public IQueryable<IPackage> GetPackages()
+		{
+			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
+			return repository.GetPackages();
+		}
+		
+		public IQueryable<IPackage> GetInstalledPackages()
 		{
 			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
 			List<IPackageManagementProject> projects = GetProjects(ActivePackageRepository).ToList();

@@ -181,7 +181,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#region Parse
 		public ParseInformation Parse(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
 		{
-			if (fileContent == null) {
+			if (fileContent == null && parser != null) {
 				fileContent = parser.GetFileContent(fileName);
 			}
 			
@@ -190,7 +190,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		public IUnresolvedFile ParseFile(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
 		{
-			if (fileContent == null) {
+			if (fileContent == null && parser != null) {
 				fileContent = parser.GetFileContent(fileName);
 			}
 			

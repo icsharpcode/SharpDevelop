@@ -20,6 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 
@@ -31,6 +34,9 @@ namespace PackageManagement.Tests.Helpers
 		string assemblyName;
 		string rootNamespace;
 		bool isStartable = true;
+		IAssemblyModel assemblyModel;
+		IProjectContent projectContent;
+		ILanguageBinding languageBinding;
 		
 		public ItemType ItemTypeToReturnFromGetDefaultItemType {
 			get { return TestableProjectBehaviour.ItemTypeToReturnFromGetDefaultItemType; }
@@ -144,6 +150,33 @@ namespace PackageManagement.Tests.Helpers
 			lock (SyncRoot) {
 				return MSBuildProjectFile.Imports;
 			}
+		}
+		
+		public override IAssemblyModel AssemblyModel {
+			get { return assemblyModel; }
+		}
+		
+		public void SetAssemblyModel(IAssemblyModel assemblyModel)
+		{
+			this.assemblyModel = assemblyModel;
+		}
+		
+		public override IProjectContent ProjectContent {
+			get { return projectContent; }
+		}
+		
+		public void SetProjectContent(IProjectContent projectContent)
+		{
+			this.projectContent = projectContent;
+		}
+		
+		public void SetLanguageBinding(ILanguageBinding languageBinding)
+		{
+			this.languageBinding = languageBinding;
+		}
+		
+		public override ILanguageBinding LanguageBinding {
+			get { return languageBinding; }
 		}
 	}
 }

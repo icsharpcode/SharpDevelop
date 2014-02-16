@@ -23,56 +23,59 @@ using System.Text;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeType : CodeElement, global::EnvDTE.CodeType
 	{
-		protected readonly ITypeDefinitionModel typeModel;
+		protected ITypeDefinition typeDefinition;
+		IType[] typeArguments;
+		
 		CodeElementsList<CodeElement> members;
 		
-		public static CodeType Create(CodeModelContext context, IType type)
+		internal static CodeType Create(CodeModelContext context, IType type)
 		{
-			var typeDef = type.GetDefinition();
-			if (typeDef != null) {
-				var typeModel = typeDef.GetModel();
-				if (typeModel != null)
-					return Create(context.WithFilteredFileName(null), typeModel);
+			ITypeDefinition typeDefinition = type.GetDefinition();
+			if (typeDefinition != null) {
+				return Create(context.WithFilteredFileName(null), typeDefinition, type.TypeArguments.ToArray());
 			}
 			return null;
 		}
 		
-		public static CodeType Create(CodeModelContext context, ITypeDefinitionModel typeModel)
+		internal static CodeType Create(
+			CodeModelContext context,
+			ITypeDefinition typeDefinition,
+			params IType[] typeArguments)
 		{
-			switch (typeModel.TypeKind) {
+			switch (typeDefinition.Kind) {
 				case TypeKind.Class:
-				case TypeKind.Module:
-					goto default;
+					return new CodeClass2(context, typeDefinition);
 				case TypeKind.Interface:
-					goto default;
+					return new CodeInterface(context, typeDefinition, typeArguments);
+				case TypeKind.Module:
 				case TypeKind.Struct:
 				case TypeKind.Void:
-					goto default;
 				case TypeKind.Delegate:
-					goto default;
 				case TypeKind.Enum:
-					goto default;
 				default:
-					return new CodeType(context, typeModel);
+					return new CodeType(context, typeDefinition, typeArguments);
 			}
 		}
 		
-		/// <summary>
-		/// Note that projectContent may be different to the IClass.ProjectContent since the class
-		/// is retrieved from the namespace contents and could belong to a separate project or
-		/// referenced assembly.
-		/// </summary>
-		public CodeType(CodeModelContext context, ITypeDefinitionModel typeModel)
-			: base(context, typeModel)
+		public CodeType(CodeModelContext context, ITypeDefinition typeDefinition, params IType[] typeArguments)
+			: base(context, typeDefinition)
 		{
-			this.typeModel = typeModel;
+			this.typeDefinition = typeDefinition;
+			this.typeArguments = typeArguments;
+			this.InfoLocation = GetInfoLocation();
+		}
+		
+		global::EnvDTE.vsCMInfoLocation GetInfoLocation()
+		{
+			if (typeDefinition.ParentAssembly.IsMainAssembly) {
+				return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject;
+			}
+			return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
 		}
 		
 		public CodeType()
@@ -80,39 +83,46 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual global::EnvDTE.vsCMAccess Access {
-			get { return typeModel.Accessibility.ToAccess(); }
-			set {
-				var td = typeModel.Resolve();
-				if (td != null) {
-					context.CodeGenerator.ChangeAccessibility(td, value.ToAccessibility());
-				}
-			}
+			get { return typeDefinition.Accessibility.ToAccess(); }
+			set { }
 		}
 		
 		public virtual string FullName {
 			get {
-				var fullTypeName = typeModel.FullTypeName;
-				StringBuilder b = new StringBuilder();
+				FullTypeName fullTypeName = typeDefinition.FullTypeName;
+				var fullName = new StringBuilder();
 				if (!string.IsNullOrEmpty(fullTypeName.TopLevelTypeName.Namespace)) {
-					b.Append(fullTypeName.TopLevelTypeName.Namespace);
-					b.Append('.');
+					fullName.Append(fullTypeName.TopLevelTypeName.Namespace);
+					fullName.Append('.');
 				}
-				b.Append(fullTypeName.TopLevelTypeName.Name);
+				fullName.Append(fullTypeName.TopLevelTypeName.Name);
 				for (int i = 0; i < fullTypeName.NestingLevel; i++) {
-					b.Append('.');
-					b.Append(fullTypeName.GetNestedTypeName(i));
+					fullName.Append('.');
+					fullName.Append(fullTypeName.GetNestedTypeName(i));
 				}
-				return b.ToString();
+				return fullName.ToString() + GetTypeArguments();
 			}
+		}
+		
+		string GetTypeArguments()
+		{
+			if (typeArguments.Length == 0) {
+				return String.Empty;
+			}
+			
+			return String.Format(
+				"<{0}>",
+				String.Join(", ", typeArguments.Select(type => type.FullName)));
 		}
 		
 		public virtual global::EnvDTE.CodeElements Members {
 			get {
 				if (members == null) {
-					members = typeModel.Members
-						.Where(m => IsInFilter(m.Region))
-						.Select(m => CreateMember(context, m))
-						.AsCodeElements();
+					members = new CodeElementsList<CodeElement>();
+					members.AddRange(typeDefinition.Members
+						.Where(member => IsInFilter(member.Region))
+						.Where(member => !member.Region.End.IsEmpty || !typeDefinition.ParentAssembly.IsMainAssembly)
+						.Select(member => CreateMember(context, member)));
 				}
 				return members;
 			}
@@ -120,44 +130,39 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.CodeElements Bases {
 			get {
-				var list = new CodeElementsList<CodeType>();
-				var td = typeModel.Resolve();
-				if (td != null) {
-					IEnumerable<IType> baseTypes;
-					if (td.Kind == TypeKind.Interface)
-						baseTypes = td.DirectBaseTypes;
-					else
-						baseTypes = td.DirectBaseTypes.Where(t => t.Kind != TypeKind.Interface);
-					foreach (var baseType in baseTypes) {
-						CodeType element = Create(context, baseType);
-						if (element != null)
-							list.Add(element);
+				var types = new CodeElementsList<CodeType>();
+				foreach (IType baseType in GetBaseTypes()) {
+					CodeType element = Create(context, baseType);
+					if (element != null) {
+						types.Add(element);
 					}
 				}
-				return list;
+				return types;
 			}
+		}
+		
+		IEnumerable<IType> GetBaseTypes()
+		{
+			if (typeDefinition.Kind == TypeKind.Interface) {
+				return typeDefinition.DirectBaseTypes;
+			}
+			return typeDefinition.DirectBaseTypes.Where(type => type.Kind != TypeKind.Interface);
 		}
 		
 		public virtual global::EnvDTE.CodeElements Attributes {
 			get {
-				return GetAttributes(typeModel);
+				return GetAttributes(typeDefinition);
 			}
 		}
 		
 		public virtual global::EnvDTE.CodeNamespace Namespace {
-			get {
-				if (context.FilteredFileName != null)
-					return new FileCodeModel2(context).GetNamespace(typeModel.Namespace);
-				else
-					throw new NotImplementedException();
-				//    return new CodeNamespace(context, typeModel.Namespace);
-			}
+			get { return new FileCodeModelCodeNamespace(context, typeDefinition.Namespace); }
 		}
 		
 		public virtual global::EnvDTE.ProjectItem ProjectItem {
 			get {
 				if (context.CurrentProject != null) {
-					return EnvDTE.ProjectItem.FindByEntity(context.CurrentProject, typeModel);
+					return EnvDTE.ProjectItem.FindByEntity(context.CurrentProject, typeDefinition);
 				}
 				return null;
 			}
@@ -169,8 +174,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		/// </summary>
 		protected override bool GetIsDerivedFrom(string fullName)
 		{
-			var td = typeModel.Resolve();
-			return td != null && td.GetAllBaseTypeDefinitions().Any(b => b.FullName == fullName);
+			return typeDefinition
+				.GetAllBaseTypeDefinitions()
+				.Any(baseType => baseType.FullName == fullName);
 		}
 	}
 }

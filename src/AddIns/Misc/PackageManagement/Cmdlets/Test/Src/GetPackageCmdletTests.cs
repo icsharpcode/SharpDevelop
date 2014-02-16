@@ -23,7 +23,6 @@ using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Cmdlets.Tests.Helpers;
-using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Cmdlets.Tests
 {
@@ -714,6 +713,20 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
 			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ProcessRecord_NoParametersPassedAndPackageOnlyInPackagesFolder_ReturnsPackageInPackagesFolder()
+		{
+			CreateCmdlet();
+			FakePackage package = FakePackage.CreatePackageWithVersion("One", "1.0");
+			fakeSolution.PackagesOnlyInPackagesFolder.Add(package);
+			
+			RunCmdlet();
+			
+			List<object> actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			List<FakePackage> expectedPackages = fakeSolution.PackagesOnlyInPackagesFolder;
+			Assert.AreEqual(expectedPackages, actualPackages);
 		}
 	}
 }

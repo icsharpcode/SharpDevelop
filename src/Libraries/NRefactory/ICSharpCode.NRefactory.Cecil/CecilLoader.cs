@@ -1272,6 +1272,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				// FlagHasNoExtensionMethods is unused in LazyCecilTypeDefinition
 			}
 			
+			public bool IsPartial {
+				get { return false; }
+			}
+			
 			public override object Clone()
 			{
 				throw new NotSupportedException();

@@ -54,6 +54,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		internal const ushort FlagAddDefaultConstructorIfRequired = 0x0040;
 		internal const ushort FlagHasExtensionMethods = 0x0080;
 		internal const ushort FlagHasNoExtensionMethods = 0x0100;
+		internal const ushort FlagPartialTypeDefinition = 0x0200;
 		// flags for AbstractUnresolvedMember:
 		internal const ushort FlagExplicitInterfaceImplementation = 0x0040;
 		internal const ushort FlagVirtual = 0x0080;

@@ -16,169 +16,154 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using ICSharpCode.PackageManagement.EnvDTE;
-//using ICSharpCode.SharpDevelop.Dom;
-//using NUnit.Framework;
-//using PackageManagement.Tests.Helpers;
-//
-//namespace PackageManagement.Tests.EnvDTE
-//{
-//	[TestFixture]
-//	public class CodeTypeRef2Tests
-//	{
-//		CodeTypeRef2 typeRef;
-//		ReturnTypeHelper helper;
-//		CodeElement parent;
-//		ClassHelper classHelper;
-//		
-//		[SetUp]
-//		public void Init()
-//		{
-//			helper = new ReturnTypeHelper();
-//			classHelper = new ClassHelper();
-//			parent = new CodeElement();
-//		}
-//		
-//		void AddUnderlyingClassToReturnType(string fullyQualifiedName)
-//		{
-//			classHelper.CreatePublicClass(fullyQualifiedName);
-//			helper.AddUnderlyingClass(classHelper.Class);
-//		}
-//		
-//		void CreateCodeTypeRef2()
-//		{
-//			typeRef = new CodeTypeRef2(classHelper.ProjectContentHelper.ProjectContent, parent, helper.ReturnType);
-//		}
-//		
-//		void ReturnTypeUsesDifferentProjectContent()
-//		{
-//			classHelper = new ClassHelper();
-//			classHelper.ProjectContentHelper.SetProjectForProjectContent(ProjectHelper.CreateTestProject());
-//		}
-//		
-//		void ReturnTypeSameProjectContent()
-//		{
-//			var project = ProjectHelper.CreateTestProject();
-//			classHelper.ProjectContentHelper.SetProjectForProjectContent(project);
-//		}
-//		
-//		void ProjectContentIsForVisualBasicProject()
-//		{
-//			classHelper.ProjectContentHelper.ProjectContentIsForVisualBasicProject();
-//		}
-//		
-//		void ProjectContentIsForCSharpProject()
-//		{
-//			classHelper.ProjectContentHelper.ProjectContentIsForCSharpProject();
-//		}
-//
-//		[Test]
-//		public void CodeType_ReturnTypeIsSystemString_ReturnsCodeClass2ForSystemStringType()
-//		{
-//			helper.CreateReturnType("System.String");
-//			AddUnderlyingClassToReturnType("System.String");
-//			CreateCodeTypeRef2();
-//			
-//			CodeClass2 codeClass = typeRef.CodeType as CodeClass2;
-//			string name = codeClass.FullName;
-//			
-//			Assert.AreEqual("System.String", name);
-//		}
-//		
-//		[Test]
-//		public void CodeType_ReturnTypeFromDifferentProjectContent_CodeTypeLocationIsExternal()
-//		{
-//			helper.CreateReturnType("System.String");
-//			AddUnderlyingClassToReturnType("System.String");
-//			ReturnTypeUsesDifferentProjectContent();
-//			CreateCodeTypeRef2();
-//			
-//			CodeClass2 codeClass = typeRef.CodeType as CodeClass2;
-//			global::EnvDTE.vsCMInfoLocation location = codeClass.InfoLocation;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, location);
-//		}
-//		
-//		[Test]
-//		public void CodeType_ReturnTypeFromSameProjectContent_CodeTypeLocationIsProject()
-//		{
-//			helper.CreateReturnType("MyType");
-//			AddUnderlyingClassToReturnType("MyType");
-//			ReturnTypeSameProjectContent();
-//			CreateCodeTypeRef2();
-//			
-//			CodeClass2 codeClass = typeRef.CodeType as CodeClass2;
-//			global::EnvDTE.vsCMInfoLocation location = codeClass.InfoLocation;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, location);
-//		}
-//		
-//		[Test]
-//		public void IsGeneric_NotGenericReturnType_ReturnsFalse()
-//		{
-//			helper.CreateReturnType("MyType");
-//			helper.AddDotNetName("MyType");
-//			CreateCodeTypeRef2();
-//			
-//			bool generic = typeRef.IsGeneric;
-//			
-//			Assert.IsFalse(generic);
-//		}
-//		
-//		[Test]
-//		public void IsGeneric_GenericReturnType_ReturnsTrue()
-//		{
-//			helper.CreateReturnType("System.Nullable");
-//			helper.AddDotNetName("System.Nullable{System.String}");
-//			CreateCodeTypeRef2();
-//			
-//			bool generic = typeRef.IsGeneric;
-//			
-//			Assert.IsTrue(generic);
-//		}
-//		
-//		[Test]
-//		public void AsFullName_GenericReturnType_ReturnsDotNetNameWithCurlyBracesReplacedWithAngleBrackets()
-//		{
-//			helper.CreateReturnType("System.Nullable");
-//			helper.AddDotNetName("System.Nullable{System.String}");
-//			CreateCodeTypeRef2();
-//			
-//			string name = typeRef.AsFullName;
-//			
-//			Assert.AreEqual("System.Nullable<System.String>", name);
-//		}
-//		
-//		[Test]
-//		public void AsString_ReturnTypeIsSystemStringInCSharpProject_ReturnsString()
-//		{
-//			helper.CreateReturnType("System.String");
-//			ProjectContentIsForCSharpProject();
-//			AddUnderlyingClassToReturnType("System.String");
-//			CreateCodeTypeRef2();
-//			
-//			string name = typeRef.AsString;
-//			
-//			Assert.AreEqual("string", name);
-//		}
-//		
-//		[Test]
-//		public void AsString_ReturnTypeIsSystemInt32InCSharpProject_ReturnsInt()
-//		{
-//			helper.CreateReturnType("System.Int32");
-//			AddUnderlyingClassToReturnType("System.Int32");
-//			ProjectContentIsForCSharpProject();
-//			CreateCodeTypeRef2();
-//			
-//			string name = typeRef.AsString;
-//			
-//			Assert.AreEqual("int", name);
-//		}
-//		
-//		[Test]
-//		public void AsString_ReturnTypeIsSystemInt32InVisualBasicProject_ReturnsInteger()
-//		{
+using System;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.PackageManagement.EnvDTE;
+using NUnit.Framework;
+
+namespace PackageManagement.Tests.EnvDTE
+{
+	[TestFixture]
+	public class CodeTypeRef2Tests : CodeModelTestBase
+	{
+		CodeTypeRef2 typeRef;
+		CodeFunction2 parent;
+		
+		void CreateCodeTypeRef2(string code)
+		{
+			AddCodeFile("class.cs", code);
+			IMethod method = assemblyModel
+				.TopLevelTypeDefinitions
+				.First()
+				.Members
+				.First()
+				.Resolve() as IMethod;
+			
+			parent = new CodeFunction2(codeModelContext, method);
+			typeRef = parent.Type as CodeTypeRef2;
+		}
+
+		[Test]
+		public void CodeType_ReturnTypeIsSystemString_ReturnsCodeClass2ForSystemStringType()
+		{
+			CreateCodeTypeRef2(
+				"using System;\r\n" +
+				"class MyClass {\r\n" +
+				"    string MyMethod() { return null; }\r\n" +
+				"}");
+			
+			CodeClass2 codeClass = typeRef.CodeType as CodeClass2;
+			string name = codeClass.FullName;
+			
+			Assert.AreEqual("System.String", name);
+		}
+		
+		[Test]
+		public void CodeType_ReturnTypeFromDifferentAssemblyFromProjectt_CodeTypeLocationIsExternal()
+		{
+			CreateCodeTypeRef2(
+				"using System;\r\n" +
+				"class MyClass {\r\n" +
+				"    string MyMethod() { return null; }\r\n" +
+				"}");
+			
+			CodeClass2 codeClass = typeRef.CodeType as CodeClass2;
+			global::EnvDTE.vsCMInfoLocation location = codeClass.InfoLocation;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, location);
+		}
+		
+		[Test]
+		public void CodeType_ReturnTypeFromSameProjectContent_CodeTypeLocationIsProject()
+		{
+			CreateCodeTypeRef2(
+				"using System;\r\n" +
+				"class MyClass {\r\n" +
+				"    MyType MyMethod() { return null; }\r\n" +
+				"}\r\n" +
+				"class MyType {}");
+			
+			CodeClass2 codeClass = typeRef.CodeType as CodeClass2;
+			global::EnvDTE.vsCMInfoLocation location = codeClass.InfoLocation;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, location);
+		}
+		
+		[Test]
+		public void IsGeneric_NotGenericReturnType_ReturnsFalse()
+		{
+			CreateCodeTypeRef2(
+				"using System;\r\n" +
+				"class MyClass {\r\n" +
+				"    string MyMethod() { return null; }\r\n" +
+				"}");
+			
+			bool generic = typeRef.IsGeneric;
+			
+			Assert.IsFalse(generic);
+		}
+		
+		[Test]
+		public void IsGeneric_GenericReturnType_ReturnsTrue()
+		{
+			CreateCodeTypeRef2(
+				"using System;\r\n" +
+				"class MyClass {\r\n" +
+				"    Nullable<int> MyMethod() { return null; }\r\n" +
+				"}");
+			
+			bool generic = typeRef.IsGeneric;
+			
+			Assert.IsTrue(generic);
+		}
+		
+		[Test]
+		public void AsFullName_GenericReturnType_ReturnsDotNetNameWithCurlyBracesReplacedWithAngleBrackets()
+		{
+			CreateCodeTypeRef2(
+				"using System;\r\n" +
+				"class MyClass {\r\n" +
+				"    Nullable<int> MyMethod() { return null; }\r\n" +
+				"}");
+			
+			string name = typeRef.AsFullName;
+			
+			Assert.AreEqual("System.Nullable<System.Int32>", name);
+		}
+		
+		[Test]
+		public void AsString_ReturnTypeIsSystemStringInCSharpProject_ReturnsString()
+		{
+			CreateCodeTypeRef2(
+				"using System;\r\n" +
+				"class MyClass {\r\n" +
+				"    string MyMethod() { return null; }\r\n" +
+				"}");
+			
+			string name = typeRef.AsString;
+			
+			Assert.AreEqual("string", name);
+		}
+		
+		[Test]
+		public void AsString_ReturnTypeIsSystemInt32InCSharpProject_ReturnsInt()
+		{
+			CreateCodeTypeRef2(
+				"using System;\r\n" +
+				"class MyClass {\r\n" +
+				"    System.Int32 MyMethod() { return 10; }\r\n" +
+				"}");
+			
+			string name = typeRef.AsString;
+			
+			Assert.AreEqual("int", name);
+		}
+		
+		[Test]
+		[Ignore("VB.NET not supported")]
+		public void AsString_ReturnTypeIsSystemInt32InVisualBasicProject_ReturnsInteger()
+		{
 //			helper.CreateReturnType("System.Int32");
 //			AddUnderlyingClassToReturnType("System.Int32");
 //			ProjectContentIsForVisualBasicProject();
@@ -187,210 +172,245 @@
 //			string name = typeRef.AsString;
 //			
 //			Assert.AreEqual("Integer", name);
-//		}
-//		
-//		[Test]
-//		public void AsString_ReturnTypeIsCustomType_ReturnsFullTypeName()
-//		{
-//			helper.CreateReturnType("Test.MyClass");
-//			AddUnderlyingClassToReturnType("Test.MyClass");
-//			ProjectContentIsForCSharpProject();
-//			helper.AddDotNetName("Test.MyClass");
-//			CreateCodeTypeRef2();
-//			
-//			string name = typeRef.AsString;
-//			
-//			Assert.AreEqual("Test.MyClass", name);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsReferenceType_ReturnsClassType()
-//		{
-//			helper.CreateReturnType("Test.MyClass");
-//			AddUnderlyingClassToReturnType("Test.MyClass");
-//			helper.MakeReferenceType();
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefCodeType, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsNotReferenceType_ReturnsNonClassType()
-//		{
-//			helper.CreateReturnType("Test.MyClass");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefOther, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemVoid_ReturnsVoidType()
-//		{
-//			helper.CreateReturnType("System.Void");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefVoid, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemString_ReturnsStringType()
-//		{
-//			helper.CreateReturnType("System.String");
-//			helper.MakeReferenceType();
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefString, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemBoolean_ReturnsBooleanType()
-//		{
-//			helper.CreateReturnType("System.Boolean");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefBool, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemByte_ReturnsByteType()
-//		{
-//			helper.CreateReturnType("System.Byte");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefByte, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemChar_ReturnsCharType()
-//		{
-//			helper.CreateReturnType("System.Char");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefChar, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemDecimal_ReturnsDecimalType()
-//		{
-//			helper.CreateReturnType("System.Decimal");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefDecimal, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemDouble_ReturnsDoubleType()
-//		{
-//			helper.CreateReturnType("System.Double");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefDouble, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemSingle_ReturnsFloatType()
-//		{
-//			helper.CreateReturnType("System.Single");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefFloat, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemInt32_ReturnsIntType()
-//		{
-//			helper.CreateReturnType("System.Int32");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefInt, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemInt16_ReturnsShortType()
-//		{
-//			helper.CreateReturnType("System.Int16");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefShort, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemInt64_ReturnsLongType()
-//		{
-//			helper.CreateReturnType("System.Int64");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefLong, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemUInt32_ReturnsIntType()
-//		{
-//			helper.CreateReturnType("System.UInt32");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefInt, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemUInt16_ReturnsShortType()
-//		{
-//			helper.CreateReturnType("System.UInt16");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefShort, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemUInt64_ReturnsLongType()
-//		{
-//			helper.CreateReturnType("System.UInt64");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefLong, kind);
-//		}
-//		
-//		[Test]
-//		public void TypeKind_ReturnTypeIsSystemObject_ReturnsObjectType()
-//		{
-//			helper.CreateReturnType("System.Object");
-//			CreateCodeTypeRef2();
-//			
-//			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefObject, kind);
-//		}
-//	}
-//}
+		}
+		
+		[Test]
+		public void AsString_ReturnTypeIsCustomType_ReturnsFullTypeName()
+		{
+			CreateCodeTypeRef2(
+				"using System;\r\n" +
+				"namespace Test {\r\n" +
+				"    class MyClass {\r\n" +
+				"        CustomType MyMethod() { return null; }\r\n" +
+				"    }\r\n" +
+				"    class CustomType {}\r\n" +
+				"}");
+			
+			string name = typeRef.AsString;
+			
+			Assert.AreEqual("Test.CustomType", name);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsReferenceType_ReturnsClassType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    MyType MyMethod() { return null; }\r\n" +
+				"}\r\n" +
+				"class MyType {}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefCodeType, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsUnknownTypeAndNotReferenceType_ReturnsNonClassType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    MyType MyMethod() { return null; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefOther, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemVoid_ReturnsVoidType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    void MyMethod() { }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefVoid, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemString_ReturnsStringType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    string MyMethod() { return null; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefString, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemBoolean_ReturnsBooleanType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    bool MyMethod() { return false; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefBool, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemByte_ReturnsByteType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    byte MyMethod() { return 0x1; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefByte, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemChar_ReturnsCharType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    char MyMethod() { return 'a'; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefChar, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemDecimal_ReturnsDecimalType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    decimal MyMethod() { return 0; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefDecimal, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemDouble_ReturnsDoubleType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    double MyMethod() { return 0; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefDouble, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemSingle_ReturnsFloatType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    System.Single MyMethod() { return 0.1; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefFloat, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemInt32_ReturnsIntType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    System.Int32 MyMethod() { return 0; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefInt, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemInt16_ReturnsShortType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    System.Int16 MyMethod() { return 0; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefShort, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemInt64_ReturnsLongType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    System.Int64 MyMethod() { return 0; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefLong, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemUInt32_ReturnsIntType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    System.UInt32 MyMethod() { return 0; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefInt, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemUInt16_ReturnsShortType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    System.UInt16 MyMethod() { return 0; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefShort, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemUInt64_ReturnsLongType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    System.UInt64 MyMethod() { return 0; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefLong, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemObject_ReturnsObjectType()
+		{
+			CreateCodeTypeRef2(
+				"class MyClass {\r\n" +
+				"    System.Object MyMethod() { return null; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefObject, kind);
+		}
+	}
+}

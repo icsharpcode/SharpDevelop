@@ -16,46 +16,53 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using System.Collections.Generic;
-//using ICSharpCode.SharpDevelop.Dom;
-//using Rhino.Mocks;
-//
-//namespace PackageManagement.Tests.Helpers
-//{
-//	public class UsingScopeHelper
-//	{
-//		public IUsingScope UsingScope;
-//		public List<IUsing> Usings = new List<IUsing>();
-//		
-//		public UsingScopeHelper()
-//		{
-//			UsingScope = MockRepository.GenerateStub<IUsingScope>();
-//			UsingScope.Stub(scope => scope.Usings).Return(Usings);
-//		}
-//		
-//		public void AddNamespace(string name)
-//		{
-//			var usingHelper = new UsingHelper();
-//			usingHelper.AddNamespace(name);
-//			Usings.Add(usingHelper.Using);
-//		}
-//		
-//		IUsing CreateUsingWithNamespaces(params string[] names)
-//		{
-//			return null;
-//		}
-//		
-//		public void AddNamespaceAlias(string alias, string namespaceName)
-//		{
-//			var usingHelper = new UsingHelper();
-//			usingHelper.AddNamespaceAlias(alias, namespaceName);
-//			Usings.Add(usingHelper.Using);
-//		}
-//		
-//		public void SetNamespaceName(string namespaceName)
-//		{
-//			UsingScope.Stub(u => u.NamespaceName).Return(namespaceName);
-//		}
-//	}
-//}
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+
+namespace ICSharpCode.PackageManagement.EnvDTE
+{
+	public class CodeElementsInNamespace : CodeElementsList<CodeElement>
+	{
+		CodeModelContext context;
+		INamespace ns;
+		
+		public CodeElementsInNamespace(CodeModelContext context)
+			: this(context, context.DteProject.GetCompilationUnit().RootNamespace)
+		{
+		}
+		
+		public CodeElementsInNamespace(CodeModelContext context, INamespace ns)
+		{
+			this.context = context;
+			this.ns = ns;
+			GetCodeElements();
+		}
+		
+		void GetCodeElements()
+		{
+			foreach (INamespace childNamespace in ns.ChildNamespaces) {
+				AddCodeNamespace(childNamespace);
+			}
+			
+			foreach (IType type in ns.Types) {
+				AddType(type);
+			}
+		}
+		
+		void AddCodeNamespace(INamespace ns)
+		{
+			Add(new CodeNamespace(context, ns));
+		}
+		
+		void AddType(IType type)
+		{
+			Add(CodeType.Create(context, type));
+		}
+	}
+}

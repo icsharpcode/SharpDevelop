@@ -148,7 +148,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IQueryable<IPackage> GetPackagesInstalledInSolution()
 		{
-			return Solution.GetPackages();
+			return Solution.GetInstalledPackages();
 		}
 		
 		public IQueryable<IPackage> GetInstalledPackages(IPackageRepository sourceRepository)

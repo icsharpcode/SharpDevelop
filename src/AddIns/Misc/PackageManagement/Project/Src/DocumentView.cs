@@ -16,33 +16,46 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using System.Collections.Generic;
-//using ICSharpCode.SharpDevelop.Dom;
-//using Rhino.Mocks;
-//
-//namespace PackageManagement.Tests.Helpers
-//{
-//	public class MethodOrPropertyHelper
-//	{
-//		public List<IParameter> parameters = new List<IParameter>();
-//		
-//		public void AddParameter(string name)
-//		{
-//			AddParameter("System.String", name);
-//		}
-//		
-//		public void AddParameter(string type, string name)
-//		{
-//			IParameter parameter = MockRepository.GenerateStub<IParameter>();
-//			parameter.Stub(p => p.Name).Return(name);
-//			
-//			var returnTypeHelper = new ReturnTypeHelper();
-//			returnTypeHelper.CreateReturnType("System.String");
-//			returnTypeHelper.AddDotNetName("System.String");
-//			parameter.ReturnType = returnTypeHelper.ReturnType;
-//			
-//			parameters.Add(parameter);
-//		}
-//	}
-//}
+using System;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
+
+namespace ICSharpCode.PackageManagement
+{
+	public class DocumentView : IDocumentView
+	{		
+		public DocumentView(string fileName)
+		{
+			View = FileService.OpenFile(fileName);
+			TextEditor = GetTextEditor();
+			FormattingStrategy = TextEditor.Language.FormattingStrategy;
+			Document = LoadDocument();
+		}
+		
+		IViewContent View { get; set; }
+		ITextEditor TextEditor { get; set; }
+		IFormattingStrategy FormattingStrategy { get; set; }
+		
+		ITextEditor GetTextEditor()
+		{
+			return View.GetService<ITextEditor>();
+		}
+		
+		public IDocument Document { get; private set; }
+		
+		IDocument LoadDocument()
+		{
+			return new ThreadSafeDocument(TextEditor.Document);
+		}
+		
+		public void IndentLines(int beginLine, int endLine)
+		{
+			SD.MainThread.InvokeIfRequired(() => {
+				using (IDisposable undoGroup = TextEditor.Document.OpenUndoGroup()) {
+					FormattingStrategy.IndentLines(TextEditor, beginLine, endLine);
+				}
+			});
+		}
+	}
+}

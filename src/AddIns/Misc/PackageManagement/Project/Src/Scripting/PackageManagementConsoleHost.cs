@@ -126,6 +126,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			powerShellHost.SetRemoteSignedExecutionPolicy();
 			UpdateFormatting();
 			RedefineClearHostFunction();
+			DefineTabExpansionFunction();
 			UpdateWorkingDirectory();
 		}
 		
@@ -160,6 +161,15 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void RedefineClearHostFunction()
 		{
 			string command = "function Clear-Host { $host.PrivateData.ClearHost() }";
+			powerShellHost.ExecuteCommand(command);
+		}
+		
+		void DefineTabExpansionFunction()
+		{
+			string command =
+				"function TabExpansion($line, $lastWord) {" +
+				"    return New-Object PSObject -Property @{ NoResult = $true }" +
+				"}";
 			powerShellHost.ExecuteCommand(command);
 		}
 		

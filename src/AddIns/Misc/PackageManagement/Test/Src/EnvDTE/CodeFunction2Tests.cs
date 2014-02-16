@@ -16,131 +16,135 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using ICSharpCode.PackageManagement.EnvDTE;
-//using NUnit.Framework;
-//using PackageManagement.Tests.Helpers;
-//
-//namespace PackageManagement.Tests.EnvDTE
-//{
-//	[TestFixture]
-//	public class CodeFunction2Tests
-//	{
-//		CodeFunction2 codeFunction;
-//		MethodHelper helper;
-//		
-//		[SetUp]
-//		public void Init()
-//		{
-//			helper = new MethodHelper();
-//		}
-//		
-//		void CreatePublicFunction(string name)
-//		{
-//			helper.CreatePublicMethod(name);
-//			CreateFunction();
-//		}
-//		
-//		void CreateFunction()
-//		{
-//			codeFunction = new CodeFunction2(helper.Method);
-//		}
-//		
-//		[Test]
-//		public void OverrideKind_OrdinaryMethod_ReturnsNone()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			
-//			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindNone, kind);
-//		}
-//		
-//		[Test]
-//		public void OverrideKind_AbstractMethod_ReturnsAbstract()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			helper.MakeMethodAbstract();
-//			
-//			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindAbstract, kind);
-//		}
-//		
-//		[Test]
-//		public void OverrideKind_VirtualMethod_ReturnsVirtual()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			helper.MakeMethodVirtual();
-//			
-//			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindVirtual, kind);
-//		}
-//		
-//		[Test]
-//		public void OverrideKind_MethodOverride_ReturnsOverride()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			helper.MakeMethodOverride();
-//			
-//			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindOverride, kind);
-//		}
-//		
-//		[Test]
-//		public void OverrideKind_SealedMethod_ReturnsSealed()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			helper.MakeMethodSealed();
-//			
-//			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindSealed, kind);
-//		}
-//		
-//		[Test]
-//		public void OverrideKind_MethodHiddenByNewKeyword_ReturnsNew()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			helper.MakeMethodNewOverride();
-//			
-//			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindNew, kind);
-//		}
-//		
-//		[Test]
-//		public void IsGeneric_MethodHasTypeParameter_ReturnsTrue()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			helper.AddTypeParameter("TResult");
-//			
-//			bool generic = codeFunction.IsGeneric;
-//			
-//			Assert.IsTrue(generic);
-//		}
-//		
-//		[Test]
-//		public void IsGeneric_MethodHasTypeParameters_ReturnsFalse()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			helper.NoTypeParameters();
-//			
-//			bool generic = codeFunction.IsGeneric;
-//			
-//			Assert.IsFalse(generic);
-//		}
-//		
-//		[Test]
-//		public void IsGeneric_MethodTypeParametersIsNull_ReturnsFalse()
-//		{
-//			CreatePublicFunction("MyClass.MyFunction");
-//			
-//			bool generic = codeFunction.IsGeneric;
-//			
-//			Assert.IsFalse(generic);
-//		}
-//	}
-//}
+using System;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.PackageManagement.EnvDTE;
+using NUnit.Framework;
+
+namespace PackageManagement.Tests.EnvDTE
+{
+	[TestFixture]
+	public class CodeFunction2Tests : CodeModelTestBase
+	{
+		CodeFunction2 codeFunction;
+		
+		void CreateFunction(string code)
+		{
+			AddCodeFile("class.cs", code);
+			
+			IMethod method = assemblyModel
+				.TopLevelTypeDefinitions
+				.First()
+				.Members
+				.First()
+				.Resolve() as IMethod;
+			
+			codeFunction = new CodeFunction2(codeModelContext, method);
+		}
+		
+		[Test]
+		public void OverrideKind_OrdinaryMethod_ReturnsNone()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public void MyFunction() {}\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindNone, kind);
+		}
+		
+		[Test]
+		public void OverrideKind_AbstractMethod_ReturnsAbstract()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public abstract void MyFunction();\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindAbstract, kind);
+		}
+		
+		[Test]
+		public void OverrideKind_VirtualMethod_ReturnsVirtual()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public virtual void MyFunction() {}\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindVirtual, kind);
+		}
+		
+		[Test]
+		public void OverrideKind_MethodOverride_ReturnsOverride()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public override string ToString() { return \"MyClass\"; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindOverride, kind);
+		}
+		
+		[Test]
+		public void OverrideKind_SealedMethod_ReturnsSealed()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public sealed void MyFunction() {}\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindSealed, kind);
+		}
+		
+		[Test]
+		public void OverrideKind_MethodHiddenByNewKeyword_ReturnsNew()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public new string ToString() { return \"MyClass\"; }\r\n" +
+				"}");
+			
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindNew, kind);
+		}
+		
+		[Test]
+		public void IsGeneric_MethodHasTypeParameter_ReturnsTrue()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public void MyFunction<TResult>() {}\r\n" +
+				"}");
+			
+			bool generic = codeFunction.IsGeneric;
+			
+			Assert.IsTrue(generic);
+		}
+		
+		[Test]
+		public void IsGeneric_MethodHasNoTypeParameters_ReturnsFalse()
+		{
+			CreateFunction(
+				"public class MyClass {\r\n" +
+				"    public void MyFunction() {}\r\n" +
+				"}");
+			
+			bool generic = codeFunction.IsGeneric;
+			
+			Assert.IsFalse(generic);
+		}
+	}
+}

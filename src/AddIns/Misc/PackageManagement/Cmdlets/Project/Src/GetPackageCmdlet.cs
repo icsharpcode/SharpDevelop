@@ -200,12 +200,12 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			if (project != null) {
 				return new UpdatedPackages(project, repository);
 			}
-			return new UpdatedPackages(GetSolutionPackages(), repository);
+			return new UpdatedPackages(GetPackagesInstalledIntoAnyProject(), repository);
 		}
 		
-		IQueryable<IPackage> GetSolutionPackages()
+		IQueryable<IPackage> GetPackagesInstalledIntoAnyProject()
 		{
-			return ConsoleHost.Solution.GetPackages();
+			return ConsoleHost.Solution.GetInstalledPackages();
 		}
 		
 		IPackageManagementProject GetSelectedProject(IPackageRepository repository)
@@ -223,17 +223,17 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> GetInstalledPackages()
 		{
-			IQueryable<IPackage> packages = GetPackagesFromSelectedProjectOrSolution();
+			IQueryable<IPackage> packages = GetPackagesFromSelectedProjectOrPackagesFolder();
 			return FilterPackages(packages);
 		}
 		
-		IQueryable<IPackage> GetPackagesFromSelectedProjectOrSolution()
+		IQueryable<IPackage> GetPackagesFromSelectedProjectOrPackagesFolder()
 		{
 			IPackageManagementProject project = GetSelectedProject();
 			if (project != null) {
 				return project.GetPackages();
 			}
-			return GetSolutionPackages();
+			return ConsoleHost.Solution.GetPackages();
 		}
 		
 		IPackageManagementProject GetSelectedProject()

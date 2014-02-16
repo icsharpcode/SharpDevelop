@@ -16,22 +16,18 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using ICSharpCode.NRefactory.TypeSystem;
-//using ICSharpCode.SharpDevelop.Dom;
-//
-//namespace ICSharpCode.PackageManagement
-//{
-//	public static class DomRegionExtensions
-//	{
-//		public static FilePosition ToStartPosition(this DomRegion region, ICompilationUnit compilationUnit)
-//		{
-//			return new FilePosition(compilationUnit, region.BeginLine, region.BeginColumn);
-//		}
-//		
-//		public static FilePosition ToEndPosition(this DomRegion region, ICompilationUnit compilationUnit)
-//		{
-//			return new FilePosition(compilationUnit, region.EndLine, region.EndColumn);
-//		}
-//	}
-//}
+using System;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+
+namespace ICSharpCode.PackageManagement
+{
+	public interface ICodeGenerator
+	{
+		void AddImport(FileName fileName, string name);
+		void MakePartial(ITypeDefinition typeDefinition);
+		void MakeVirtual(IMember member);
+		void AddFieldAtStart(ITypeDefinition typeDefinition, Accessibility accessibility, IType fieldType, string name);
+		void AddMethodAtStart(ITypeDefinition typeDefinition, Accessibility accessibility, IType returnType, string name);
+	}
+}

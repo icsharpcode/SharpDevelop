@@ -18,52 +18,37 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeNamespace : CodeElement, global::EnvDTE.CodeNamespace
 	{
-		readonly string fullName;
-		INamespaceModel model;
+		INamespace ns;
 		
-		public CodeNamespace(CodeModelContext context, INamespaceModel model)
-			: base(context, model)
-		{
-			this.model = model;
-		}
-		
-		public CodeNamespace(CodeModelContext context, string fullName)
+		public CodeNamespace(CodeModelContext context, INamespace ns)
 			: base(context)
 		{
-			this.fullName = fullName;
+			this.ns = ns;
+			this.InfoLocation = global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
+			this.Language = context.CurrentProject.GetCodeModelLanguage();
 		}
 		
 		public override global::EnvDTE.vsCMElement Kind {
 			get { return global::EnvDTE.vsCMElement.vsCMElementNamespace; }
 		}
 		
-		public override global::EnvDTE.vsCMInfoLocation InfoLocation {
-			get { return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal; }
-		}
-		
 		public string FullName {
-			get { return fullName; }
+			get { return ns.FullName; }
 		}
 		
-		CodeElementsList<CodeElement> members;
+		public override string Name {
+			get { return ns.Name; }
+		}
 		
 		public virtual global::EnvDTE.CodeElements Members {
-			get {
-				if (members == null) {
-					if (model == null)
-						throw new NotSupportedException();
-					IModelCollection<CodeElement> namespaceMembers = model.ChildNamespaces.Select(ns => new CodeNamespace(context, ns));
-					IModelCollection<CodeElement> typeMembers = model.Types.Select(td => CodeType.Create(context, td));
-					members = namespaceMembers.Concat(typeMembers).AsCodeElements();
-				}
-				return members;
-			}
+			get { return new CodeElementsInNamespace(context, ns); }
 		}
 	}
 }

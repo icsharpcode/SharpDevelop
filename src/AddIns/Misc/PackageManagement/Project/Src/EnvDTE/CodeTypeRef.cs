@@ -42,12 +42,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual string AsFullName {
-			get { return type.ReflectionName; }
+			get { return CodeType.FullName; }
 		}
 		
 		public virtual string AsString {
 			get {
-				return new CSharpAmbience().ConvertType(type);
+				if (TypeKind != global::EnvDTE.vsCMTypeRef.vsCMTypeRefCodeType) {
+					return new CSharpAmbience().ConvertType(type);
+				}
+				return AsFullName;
 			}
 		}
 		
@@ -65,16 +68,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get {
 				switch (type.Kind) {
 					case NRefactory.TypeSystem.TypeKind.Class:
-						if (type.IsKnownType(KnownTypeCode.String))
-							return global::EnvDTE.vsCMTypeRef.vsCMTypeRefString;
-						else
-							return global::EnvDTE.vsCMTypeRef.vsCMTypeRefObject;
+						return GetClassType(type);
 					case NRefactory.TypeSystem.TypeKind.Struct:
-						var typeDef = type.GetDefinition();
-						if (typeDef != null)
+						ITypeDefinition typeDef = type.GetDefinition();
+						if (typeDef != null) {
 							return GetStructTypeKind(typeDef.KnownTypeCode);
-						else
+						} else {
 							return global::EnvDTE.vsCMTypeRef.vsCMTypeRefOther;
+						}
 					case NRefactory.TypeSystem.TypeKind.Delegate:
 					case NRefactory.TypeSystem.TypeKind.Interface:
 					case NRefactory.TypeSystem.TypeKind.Module:
@@ -86,11 +87,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					case NRefactory.TypeSystem.TypeKind.Pointer:
 						return global::EnvDTE.vsCMTypeRef.vsCMTypeRefPointer;
 					default:
-						if (type.IsReferenceType == true)
+						if (type.IsReferenceType == true) {
 							return global::EnvDTE.vsCMTypeRef.vsCMTypeRefObject;
-						else
+						} else {
 							return global::EnvDTE.vsCMTypeRef.vsCMTypeRefOther;
+						}
 				}
+			}
+		}
+		
+		global::EnvDTE.vsCMTypeRef GetClassType(IType type)
+		{
+			if (type.IsKnownType(KnownTypeCode.String)) {
+				return global::EnvDTE.vsCMTypeRef.vsCMTypeRefString;
+			} else if (type.IsKnownType(KnownTypeCode.Object)) {
+				return global::EnvDTE.vsCMTypeRef.vsCMTypeRefObject;
+			} else {
+				return global::EnvDTE.vsCMTypeRef.vsCMTypeRefCodeType;
 			}
 		}
 		
@@ -119,11 +132,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefDouble;
 				case KnownTypeCode.Decimal:
 					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefDecimal;
-				case KnownTypeCode.Void:
-					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefVoid;
-				case KnownTypeCode.IntPtr:
-				case KnownTypeCode.UIntPtr:
-					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefPointer;
+//				case KnownTypeCode.IntPtr:
+//				case KnownTypeCode.UIntPtr:
+//					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefPointer;
 				default:
 					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefOther;
 			}
