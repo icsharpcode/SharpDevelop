@@ -93,6 +93,9 @@ namespace ICSharpCode.XamlBinding
 						return new TypeResolveResult(type);
 				}
 			}
+			if (attribute.ParentElement == null)
+				return ErrorResolveResult.UnknownError;
+			
 			string propertyName = attribute.LocalName;
 			if (propertyName.Contains(".")) {
 				string namespaceName = string.IsNullOrEmpty(attribute.Namespace) ? attribute.ParentElement.LookupNamespace("") : attribute.Namespace;
