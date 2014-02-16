@@ -29,11 +29,6 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-//		protected override bool IsProjectSelected(IPackageManagementProject project, IPackageFromRepository package)
-//		{
-//			return base.IsProjectSelected(project, package) && IsProjectEnabled(project, package);
-//		}
-		
 		protected override bool IsProjectEnabled(IPackageManagementProject project, IPackageFromRepository package)
 		{
 			return project.GetPackages()

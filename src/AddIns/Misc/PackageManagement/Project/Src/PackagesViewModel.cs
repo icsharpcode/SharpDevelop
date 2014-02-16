@@ -21,9 +21,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Windows.Input;
-
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -92,7 +90,6 @@ namespace ICSharpCode.PackageManagement
 		public IRegisteredPackageRepositories RegisteredPackageRepositories {
 			get { return registeredPackageRepositories; }
 		}
-		
 		public bool IsReadingPackages { get; private set; }
 		
 		public void ReadPackages()
@@ -129,26 +126,6 @@ namespace ICSharpCode.PackageManagement
 			task = taskFactory.CreateTask(
 				() => GetPackagesForSelectedPageResult(),
 				OnPackagesReadForSelectedPage);
-		}
-
-		public void OnPackageManaged (IPackageFromRepository package) {
-			if (packagesViewModelParent != null) { // it is null at design time
-				foreach (PackagesViewModel packagesViewModel in packagesViewModelParent.GetPackagesViewModels) {
-					if (packagesViewModel != this) {
-						OnPackageManaged(packagesViewModel, package);
-					}
-				}
-			}
-		}
-		
-		static void OnPackageManaged (PackagesViewModel packagesViewModel, IPackageName package) {
-			foreach (var found in packagesViewModel.PackageViewModels) {
-				if (found.Id == package.Id && found.Version == package.Version) {
-					found.OnPropertyChanged(model => model.IsAdded);
-					found.OnPropertyChanged(model => model.IsManaged);
-					break;
-				}
-			}
 		}
 
 		PackagesForSelectedPageResult GetPackagesForSelectedPageResult()

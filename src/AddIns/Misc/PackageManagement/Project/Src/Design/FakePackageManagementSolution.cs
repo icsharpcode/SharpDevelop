@@ -19,9 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
-using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 

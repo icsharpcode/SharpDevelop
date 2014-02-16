@@ -27,10 +27,12 @@ namespace ICSharpCode.PackageManagement
 	public class AvailablePackagesViewModel : PackagesViewModel
 	{
 		IPackageRepository repository;
+		IPackageManagementEvents packageManagementEvents;
 		string errorMessage;
 		
 		public AvailablePackagesViewModel(
 			PackagesViewModels packagesViewModelParent,
+			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
@@ -39,6 +41,24 @@ namespace ICSharpCode.PackageManagement
 			IsSearchable = true;
 			ShowPackageSources = true;
 			ShowPrerelease = true;
+
+			this.packageManagementEvents = packageManagementEvents;
+			RegisterEvents();
+		}
+		
+		void RegisterEvents()
+		{
+			packageManagementEvents.ParentPackageInstalled += PackagesChanged;
+			packageManagementEvents.ParentPackageUninstalled += PackagesChanged;
+			packageManagementEvents.ParentPackagesUpdated += PackagesChanged;
+		}
+		
+		void PackagesChanged(object sender, EventArgs e)
+		{
+			foreach (var found in this.PackageViewModels) {
+				found.OnPropertyChanged(model => model.IsAdded);
+				found.OnPropertyChanged(model => model.IsManaged);
+			}
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()

@@ -231,7 +231,6 @@ namespace ICSharpCode.PackageManagement
 			logger.LogAfterPackageOperationCompletes();
 			OnPropertyChanged(model => model.IsAdded);
 			OnPropertyChanged(model => model.IsManaged);
-			parent.OnPackageManaged (package);
 		}
 		
 		protected virtual IDisposable StartOperation(IPackageFromRepository package)
@@ -393,7 +392,6 @@ namespace ICSharpCode.PackageManagement
 			logger.LogAfterPackageOperationCompletes();
 			OnPropertyChanged(model => model.IsAdded);
 			OnPropertyChanged(model => model.IsManaged);
-			parent.OnPackageManaged (package);
 		}
 		
 		void LogRemovingPackage()
@@ -477,7 +475,6 @@ namespace ICSharpCode.PackageManagement
 			logger.LogAfterPackageOperationCompletes();
 			OnPropertyChanged(model => model.IsAdded);
 			OnPropertyChanged(model => model.IsManaged);
-			parent.OnPackageManaged (package);
 		}
 		
 		void TryManagePackagesForSelectedProjects(IList<IPackageManagementSelectedProject> projects)

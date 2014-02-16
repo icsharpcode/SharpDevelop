@@ -23,6 +23,5 @@ namespace ICSharpCode.PackageManagement
 	public interface IPackageViewModelParent
 	{
 		bool IncludePrerelease { get; }
-		void OnPackageManaged (IPackageFromRepository package);
 	}
 }
