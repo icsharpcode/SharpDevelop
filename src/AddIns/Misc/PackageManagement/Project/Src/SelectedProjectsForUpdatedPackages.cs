@@ -28,6 +28,10 @@ namespace ICSharpCode.PackageManagement
 			: base(solution)
 		{
 		}
+		protected override bool IsProjectSelected(IPackageManagementProject project, IPackageFromRepository package)
+		{
+			return IsProjectEnabled(project, package);
+		}
 		
 		protected override bool IsProjectEnabled(IPackageManagementProject project, IPackageFromRepository package)
 		{
