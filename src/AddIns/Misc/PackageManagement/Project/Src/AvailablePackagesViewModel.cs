@@ -36,7 +36,10 @@ namespace ICSharpCode.PackageManagement
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(packagesViewModelParent, registeredPackageRepositories, packageViewModelFactory, taskFactory)
+			: base(
+				registeredPackageRepositories, 
+				packageViewModelFactory, 
+				taskFactory)
 		{
 			IsSearchable = true;
 			ShowPackageSources = true;

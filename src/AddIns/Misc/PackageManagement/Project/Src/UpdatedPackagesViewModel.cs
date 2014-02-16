@@ -39,7 +39,6 @@ namespace ICSharpCode.PackageManagement
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(
-				packagesViewModelParent,
 				registeredPackageRepositories,
 				packageViewModelFactory,
 				taskFactory)

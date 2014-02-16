@@ -36,15 +36,12 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackage> allPackages;
 		ITask<PackagesForSelectedPageResult> task;
 		bool includePrerelease;
-		readonly PackagesViewModels packagesViewModelParent;
 		
 		public PackagesViewModel(
-			PackagesViewModels packagesViewModelParent,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 		{
-			this.packagesViewModelParent = packagesViewModelParent;
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.packageViewModelFactory = packageViewModelFactory;
 			this.taskFactory = taskFactory;

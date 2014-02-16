@@ -33,11 +33,13 @@ namespace ICSharpCode.PackageManagement
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(packagesViewModelParent, registeredPackageRepositories, packageViewModelFactory, taskFactory)
+			: base(
+				registeredPackageRepositories, 
+				packageViewModelFactory, 
+				taskFactory)
 		{
 			recentPackageRepository = registeredPackageRepositories.RecentPackageRepository;
 			
-			// disable once CSharpWarnings::CS1717
 			this.packageManagementEvents = packageManagementEvents;
 			RegisterEvents();
 		}
