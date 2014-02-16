@@ -127,9 +127,7 @@ namespace ICSharpCode.PackageManagement
 		
 		protected bool IsPackageInstalled()
 		{
-			return selectedProjects.IsPackageInstalled(package) 
-				|| selectedProjects.IsPackageInstalledInSolution(package);
-			
+			return selectedProjects.IsPackageInstalledInSolution(package);
 		}
 		
 		public IEnumerable<PackageDependencySet> Dependencies {
@@ -200,6 +198,11 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Published.HasValue; }
 		}
 
+		public void OnPackagePropertyChanged() {
+			OnPropertyChanged(model => model.IsAdded);
+			OnPropertyChanged(model => model.IsManaged);
+		}
+
 		public void AddOrManagePackage() {
 			if (selectedProjects.HasMultipleProjects()) {
 				if (package.HasProjectContent()) {
@@ -229,8 +232,7 @@ namespace ICSharpCode.PackageManagement
 			}
 			
 			logger.LogAfterPackageOperationCompletes();
-			OnPropertyChanged(model => model.IsAdded);
-			OnPropertyChanged(model => model.IsManaged);
+			OnPackagePropertyChanged();
 		}
 		
 		protected virtual IDisposable StartOperation(IPackageFromRepository package)
@@ -390,8 +392,7 @@ namespace ICSharpCode.PackageManagement
 			}
 
 			logger.LogAfterPackageOperationCompletes();
-			OnPropertyChanged(model => model.IsAdded);
-			OnPropertyChanged(model => model.IsManaged);
+			OnPackagePropertyChanged();
 		}
 		
 		void LogRemovingPackage()
@@ -428,11 +429,12 @@ namespace ICSharpCode.PackageManagement
 		public bool IsManaged {
 			get {
 				if (selectedProjects.HasSingleProjectSelected()) {
-					// Project-level Package Management / Single Project Solution
+					// Single Project selected 
+					// Project-level Package Management
 					return false; // [Add]/[Remove]
 				}
-				// Multi Project Solution
-				// or Solution-level package management
+				// Solution selected 
+				// Project-level/Solution-level Package Management
 				if (IsAdded) {
 					if (package.HasProjectContent()) {
 						return true; // [Manage] Button
@@ -473,8 +475,7 @@ namespace ICSharpCode.PackageManagement
 			}
 			
 			logger.LogAfterPackageOperationCompletes();
-			OnPropertyChanged(model => model.IsAdded);
-			OnPropertyChanged(model => model.IsManaged);
+			OnPackagePropertyChanged();
 		}
 		
 		void TryManagePackagesForSelectedProjects(IList<IPackageManagementSelectedProject> projects)
@@ -539,24 +540,6 @@ namespace ICSharpCode.PackageManagement
 				return CreateUninstallPackageAction(selectedProject);
 			}
 			return null;
-		}
-		
-		bool LicensesAccepted(IList<IPackageManagementSelectedProject> projects)
-		{
-			IPackageManagementSelectedProject project = projects.FirstOrDefault();
-			if (project != null) {
-				return LicensesAccepted(project);
-			}
-			return false;
-		}
-		
-		bool LicensesAccepted(IPackageManagementSelectedProject selectedProject)
-		{
-			IEnumerable<IPackage> licensedPackages = GetPackagesRequiringLicenseAcceptance(selectedProject);
-			if (licensedPackages.Any()) {
-				return packageManagementEvents.OnAcceptLicenses(licensedPackages);
-			}
-			return true;
 		}
 		
 		bool LicensesAccepted()

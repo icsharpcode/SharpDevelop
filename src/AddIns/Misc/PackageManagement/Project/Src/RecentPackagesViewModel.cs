@@ -35,28 +35,30 @@ namespace ICSharpCode.PackageManagement
 			ITaskFactory taskFactory)
 			: base(packagesViewModelParent, registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
-			this.packageManagementEvents = packageManagementEvents;
-			
 			recentPackageRepository = registeredPackageRepositories.RecentPackageRepository;
 			
-			packageManagementEvents.ParentPackageInstalled += ParentPackageInstalled;
-			packageManagementEvents.ParentPackageUninstalled += ParentPackageUninstalled;
+			// disable once CSharpWarnings::CS1717
+			this.packageManagementEvents = packageManagementEvents;
+			RegisterEvents();
 		}
 		
-		void ParentPackageInstalled(object sender, EventArgs e)
+		void RegisterEvents()
 		{
-			ReadPackages();
-		}
-		
-		void ParentPackageUninstalled(object sender, EventArgs e)
-		{
-			ReadPackages();
+			packageManagementEvents.ParentPackageInstalled += OnNewRecentPackage;
+			packageManagementEvents.ParentPackageUninstalled += OnPackageChanged;
+			packageManagementEvents.ParentPackagesUpdated += OnNewRecentPackage;
 		}
 		
 		protected override void OnDispose()
 		{
-			packageManagementEvents.ParentPackageInstalled -= ParentPackageInstalled;
-			packageManagementEvents.ParentPackageUninstalled -= ParentPackageUninstalled;
+			packageManagementEvents.ParentPackageInstalled -= OnNewRecentPackage;
+			packageManagementEvents.ParentPackageUninstalled -= OnPackageChanged;
+			packageManagementEvents.ParentPackagesUpdated -= OnNewRecentPackage;
+		}
+		
+		void OnNewRecentPackage(object sender, EventArgs e)
+		{
+			ReadPackages();
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()

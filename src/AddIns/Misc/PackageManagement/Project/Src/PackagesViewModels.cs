@@ -59,13 +59,5 @@ namespace ICSharpCode.PackageManagement
 			UpdatedPackagesViewModel.Dispose();
 		}
 
-		public System.Collections.Generic.IEnumerable<PackagesViewModel> GetPackagesViewModels {
-			get {
-				yield return AvailablePackagesViewModel;
-				yield return InstalledPackagesViewModel;
-				yield return UpdatedPackagesViewModel;
-				yield return RecentPackagesViewModel;
-			}
-		}
 	}
 }

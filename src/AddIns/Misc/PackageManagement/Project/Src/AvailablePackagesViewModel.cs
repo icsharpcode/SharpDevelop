@@ -48,17 +48,16 @@ namespace ICSharpCode.PackageManagement
 		
 		void RegisterEvents()
 		{
-			packageManagementEvents.ParentPackageInstalled += PackagesChanged;
-			packageManagementEvents.ParentPackageUninstalled += PackagesChanged;
-			packageManagementEvents.ParentPackagesUpdated += PackagesChanged;
+			packageManagementEvents.ParentPackageInstalled += OnPackageChanged;
+			packageManagementEvents.ParentPackageUninstalled += OnPackageChanged;
+			packageManagementEvents.ParentPackagesUpdated += OnPackageChanged;
 		}
 		
-		void PackagesChanged(object sender, EventArgs e)
+		protected override void OnDispose()
 		{
-			foreach (var found in this.PackageViewModels) {
-				found.OnPropertyChanged(model => model.IsAdded);
-				found.OnPropertyChanged(model => model.IsManaged);
-			}
+			packageManagementEvents.ParentPackageInstalled -= OnPackageChanged;
+			packageManagementEvents.ParentPackageUninstalled -= OnPackageChanged;
+			packageManagementEvents.ParentPackagesUpdated -= OnPackageChanged;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
