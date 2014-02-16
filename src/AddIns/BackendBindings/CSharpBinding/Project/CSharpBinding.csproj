@@ -68,6 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\CaretReferenceHighlightRenderer.cs">
+      <DependentUpon>CSharpSemanticHighlighter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\Completion\CSharpCompletionContext.cs" />
     <Compile Include="Src\Completion\CSharpInsightItem.cs" />
@@ -80,6 +83,9 @@
     <Compile Include="Src\Completion\SegmentTrackingOutputFormatter.cs" />
     <Compile Include="Src\Completion\TypeCompletionData.cs" />
     <Compile Include="Src\Completion\XmlDocCompletionData.cs" />
+    <Compile Include="Src\CSharpSemanticHighlighterVisitor.cs">
+      <DependentUpon>CSharpSemanticHighlighter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
     <Compile Include="Src\FormsDesigner\CSharpDesignerGenerator.cs" />
     <Compile Include="Src\FormsDesigner\CSharpDesignerLoader.cs" />

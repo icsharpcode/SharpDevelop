@@ -493,7 +493,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		#region RenameReferencesInFile
 
-		AstNode GetNodeToReplace(AstNode node)
+		public static AstNode GetNodeToReplace(AstNode node)
 		{
 			if (node is ConstructorInitializer)
 				return null;
