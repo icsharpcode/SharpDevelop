@@ -31,6 +31,7 @@ namespace PackageManagement.Tests
 	public class AvailablePackagesViewModelTests
 	{
 		AvailablePackagesViewModel viewModel;
+		PackageManagementEvents packageManagementEvents;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		ExceptionThrowingRegisteredPackageRepositories exceptionThrowingRegisteredPackageRepositories;
 		FakeTaskFactory taskFactory;
@@ -50,7 +51,13 @@ namespace PackageManagement.Tests
 		{
 			taskFactory = new FakeTaskFactory();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
-			viewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			packageManagementEvents = new PackageManagementEvents();
+
+			viewModel = new AvailablePackagesViewModel(
+				packageManagementEvents,
+				registeredPackageRepositories, 
+				packageViewModelFactory, 
+				taskFactory);
 		}
 		
 		void CreateExceptionThrowingRegisteredPackageRepositories()

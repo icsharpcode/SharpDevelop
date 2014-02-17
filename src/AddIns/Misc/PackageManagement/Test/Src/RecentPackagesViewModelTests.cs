@@ -86,12 +86,14 @@ namespace PackageManagement.Tests
 		public void PackageViewModels_PackageIsUninstalledAfterRecentPackagesDisplayed_PackagesOnDisplayAreUpdated()
 		{
 			CreateViewModel();
+			var package = AddPackageToRecentPackageRepository();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
-			var package = AddPackageToRecentPackageRepository();
 			
-			ClearReadPackagesTasks();
+			//RecentPackagesViewModel will not re-ReadPackages OnParentPackageUninstalled
+			// because OnParentPackageUninstalled that package is not removed from recent packages
 			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
+
 			CompleteReadPackagesTask();
 			
 			var expectedPackages = new FakePackage[] {

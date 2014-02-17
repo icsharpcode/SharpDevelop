@@ -57,7 +57,7 @@ namespace PackageManagement.Tests
 		{
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
-			var installedPackageViewModelFactory = new InstalledPackageViewModelFactory(packageViewModelFactory);
+			var installedPackageViewModelFactory = new PackageViewModelFactory(packageViewModelFactory);
 			taskFactory = new FakeTaskFactory();
 			packageManagementEvents = new PackageManagementEvents();
 			

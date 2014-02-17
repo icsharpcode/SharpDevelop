@@ -49,6 +49,7 @@ namespace PackageManagement.Tests
 			viewModelParent = MockRepository.GenerateStub<IPackageViewModelParent>();
 			viewModel = new TestableUpdatedPackageViewModel(viewModelParent, fakeSolution);
 			fakeProject = fakeSolution.FakeProjectToReturnFromGetProject;
+			fakeSolution.AddPackageToSharedLocalRepository("","0.0.0.0");
 			fakeActionRunner = viewModel.FakeActionRunner;
 			fakePackageManagementEvents = viewModel.FakePackageManagementEvents;
 		}

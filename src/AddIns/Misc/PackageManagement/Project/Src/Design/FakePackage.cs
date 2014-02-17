@@ -82,6 +82,8 @@ namespace ICSharpCode.PackageManagement.Design
 		public int RatingsCount { get; set; }
 		public double Rating { get; set; }
 		
+		public bool HasProjectContent() { return true; }
+		
 		public IEnumerable<IPackageAssemblyReference> AssemblyReferences {
 			get { return AssemblyReferenceList; }
 		}
