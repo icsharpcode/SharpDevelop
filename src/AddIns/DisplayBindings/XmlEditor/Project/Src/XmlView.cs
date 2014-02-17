@@ -230,7 +230,8 @@ namespace ICSharpCode.XmlEditor
 			TaskService.ClearExceptCommentTasks();
 			if (IsWellFormed) {
 				try {
-					using (XmlTextReader reader = new XmlTextReader(new StringReader(editor.Document.Text))) {
+					using (XmlTextReader reader = new XmlTextReader(editor.Document.CreateReader())) {
+						reader.XmlResolver = null;
 						XmlSchemaInference schemaInference = new XmlSchemaInference();
 						XmlSchemaSet schemaSet = schemaInference.InferSchema(reader);
 						return GetSchemas(schemaSet, editor);
@@ -351,8 +352,7 @@ namespace ICSharpCode.XmlEditor
 			if (editor == null) return false;
 			
 			try {
-				StringReader stringReader = new StringReader(editor.Document.Text);
-				XmlTextReader xmlReader = new XmlTextReader(stringReader);
+				XmlTextReader xmlReader = new XmlTextReader(editor.Document.CreateReader());
 				xmlReader.XmlResolver = null;
 				XmlReaderSettings settings = new XmlReaderSettings();
 				settings.ValidationType = ValidationType.Schema;
@@ -398,8 +398,7 @@ namespace ICSharpCode.XmlEditor
 			ITextEditor editor = TextEditor;
 			if (editor == null) return false;
 			
-			StringReader stringReader = new StringReader(editor.Document.Text);
-			XmlTextReader xmlReader = new XmlTextReader(stringReader);
+			XmlTextReader xmlReader = new XmlTextReader(editor.Document.CreateReader());
 			xmlReader.XmlResolver = null;
 
 			try	{

@@ -31,15 +31,13 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Navigation;
-using System.Windows.Threading;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Startup;
 using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Startup;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
@@ -107,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			// Set WindowState after PresentationSource is initialized, because now bounds and location are properly set.
 			this.WindowState = lastNonMinimizedWindowState;
 		}
-
+		
 		void SetBounds(Rect bounds)
 		{
 			this.Left = bounds.Left;
@@ -174,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		// keep a reference to the event handler to prevent it from being garbage collected
 		// (CommandManager.RequerySuggested only keeps weak references to the event handlers)
 		EventHandler requerySuggestedEventHandler;
-
+		
 		void CommandManager_RequerySuggested(object sender, EventArgs e)
 		{
 			UpdateMenu();
@@ -263,10 +261,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public ICollection<IViewContent> PrimaryViewContents {
 			get {
 				SD.MainThread.VerifyAccess();
-				return (from window in WorkbenchWindowCollection
-				        where window.ViewContents.Count > 0
-				        select window.ViewContents[0]
-				       ).ToList().AsReadOnly();
+				return (
+					from window in WorkbenchWindowCollection
+					where window.ViewContents.Count > 0
+					select window.ViewContents[0]
+				).ToList().AsReadOnly();
 			}
 		}
 		
@@ -306,10 +305,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 						value.ActiveViewContentChanged += WorkbenchWindowActiveViewContentChanged;
 					}
 					
+					WorkbenchWindowActiveViewContentChanged(null, null);
 					if (ActiveWorkbenchWindowChanged != null) {
 						ActiveWorkbenchWindowChanged(this, EventArgs.Empty);
 					}
-					WorkbenchWindowActiveViewContentChanged(null, null);
 				}
 			}
 		}
@@ -319,10 +318,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (workbenchLayout != null) {
 				// update ActiveViewContent
 				IWorkbenchWindow window = this.ActiveWorkbenchWindow;
-				if (window != null)
+				if (window != null) {
 					this.ActiveViewContent = window.ActiveViewContent;
-				else
+				} else {
 					this.ActiveViewContent = null;
+				}
 				
 				// update ActiveContent
 				this.ActiveContent = workbenchLayout.ActiveContent;
@@ -360,6 +360,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				if (activeViewContent != value) {
 					activeViewContent = value;
 					
+					// Call LoadModel() before raising the event; this
+					// ensures that listeners to ActiveViewContentChanged
+					// see an up-to-date model.
+					if (value != null)
+						value.LoadModel();
 					if (ActiveViewContentChanged != null) {
 						ActiveViewContentChanged(this, EventArgs.Empty);
 					}

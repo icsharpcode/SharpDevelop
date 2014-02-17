@@ -65,6 +65,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 		}
 		
+		public void NotifyLoaded(OpenedFile file, IBinaryFileModel model)
+		{
+		}
+		
 		public void NotifyUnloaded(OpenedFile file, IBinaryFileModel model)
 		{
 		}

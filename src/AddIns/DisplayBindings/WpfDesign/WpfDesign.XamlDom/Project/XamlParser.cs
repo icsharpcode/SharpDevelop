@@ -706,6 +706,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public static XamlObject ParseSnippet(XamlObject root, string xaml, XamlParserSettings settings)
 		{
 			XmlTextReader reader = new XmlTextReader(new StringReader(xaml));
+			reader.XmlResolver = null;
 			var element = root.OwnerDocument.XmlDocument.ReadNode(reader);
 			
 			if (element != null) {

@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -296,7 +297,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			return source.MinBy(keySelector, Comparer<K>.Default);
 		}
-
+		
 		/// <summary>
 		/// Returns the minimum element.
 		/// </summary>
@@ -334,7 +335,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			return source.MaxBy(keySelector, Comparer<K>.Default);
 		}
-
+		
 		/// <summary>
 		/// Returns the maximum element.
 		/// </summary>
@@ -740,7 +741,7 @@ namespace ICSharpCode.SharpDevelop
 				return s;
 			return s.Substring(0, length);
 		}
-
+		
 		/// <summary>
 		/// Takes at most <param name="length" /> first characters from string, and appends '...' if string is longer.
 		/// String can be null.
@@ -751,7 +752,7 @@ namespace ICSharpCode.SharpDevelop
 				return s;
 			return s.Substring(0, length) + "...";
 		}
-
+		
 		/// <summary>
 		/// Removes any character given in the array from the given string.
 		/// </summary>
@@ -920,7 +921,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Gets an <see cref="IImage"/> from a resource.
 		/// </summary>
 		/// <exception cref="ResourceNotFoundException">The resource with the specified name does not exist</exception>
-		public static IImage GetImage(this IResourceService resourceService, string resourceName)
+		public static IImage GetImage(this ICSharpCode.Core.IResourceService resourceService, string resourceName)
 		{
 			if (resourceService == null)
 				throw new ArgumentNullException("resourceService");
@@ -933,7 +934,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Gets an image source from a resource.
 		/// </summary>
 		/// <exception cref="ResourceNotFoundException">The resource with the specified name does not exist</exception>
-		public static ImageSource GetImageSource(this IResourceService resourceService, string resourceName)
+		public static ImageSource GetImageSource(this ICSharpCode.Core.IResourceService resourceService, string resourceName)
 		{
 			if (resourceService == null)
 				throw new ArgumentNullException("resourceService");
@@ -1035,7 +1036,12 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static DocumentFileModelInfo GetFileModelInfo(this TextDocument document)
 		{
-			return document.GetService<DocumentFileModelInfo>();
+			var info = document.GetService<DocumentFileModelInfo>();
+			if (info == null) {
+				info = new DocumentFileModelInfo();
+				document.GetRequiredService<IServiceContainer>().AddService(typeof(DocumentFileModelInfo), info);
+			}
+			return info;
 		}
 		
 		/// <summary>

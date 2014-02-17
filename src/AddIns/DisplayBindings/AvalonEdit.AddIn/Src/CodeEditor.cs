@@ -281,38 +281,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		// always use primary text editor for loading/saving
-		// (the file encoding is stored only there)
-		public void Load(Stream stream)
-		{
-			if (UseFixedEncoding) {
-				using (StreamReader reader = new StreamReader(stream, primaryTextEditor.Encoding, detectEncodingFromByteOrderMarks: false)) {
-					ReloadDocument(primaryTextEditor.Document, reader.ReadToEnd());
-				}
-			} else {
-				// do encoding auto-detection
-				using (StreamReader reader = FileReader.OpenStream(stream, this.Encoding ?? SD.FileService.DefaultFileEncoding)) {
-					ReloadDocument(primaryTextEditor.Document, reader.ReadToEnd());
-					this.Encoding = reader.CurrentEncoding;
-				}
-			}
-			// raise event which allows removing existing NewLineConsistencyCheck overlays
-			if (LoadedFileContent != null)
-				LoadedFileContent(this, EventArgs.Empty);
-			NewLineConsistencyCheck.StartConsistencyCheck(this);
-		}
-		
-		public event EventHandler LoadedFileContent;
-		
-		public void Save(Stream stream)
-		{
-			// don't use TextEditor.Save here because that would touch the Modified flag,
-			// but OpenedFile is already managing IsDirty
-			using (StreamWriter writer = new StreamWriter(stream, primaryTextEditor.Encoding ?? Encoding.UTF8)) {
-				primaryTextEditor.Document.WriteTextTo(writer);
-			}
-		}
-		
 		public event EventHandler CaretPositionChanged;
 		
 		void TextAreaCaretPositionChanged(object sender, EventArgs e)
@@ -336,7 +304,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			
 			NavigationService.Log(this.BuildNavPoint());
-			var document = this.Document;
 			int lineOffset = document.GetLineByNumber(this.Line).Offset;
 			int chOffset = this.Column;
 			int col = 1;

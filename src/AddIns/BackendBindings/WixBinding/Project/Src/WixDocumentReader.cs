@@ -63,6 +63,7 @@ namespace ICSharpCode.WixBinding
 		public WixDocumentReader(TextReader textReader)
 		{
 			reader = new XmlTextReader(textReader);
+			reader.XmlResolver = null;
 		}
 		
 		public ReadOnlyCollection<string> GetDialogIds()

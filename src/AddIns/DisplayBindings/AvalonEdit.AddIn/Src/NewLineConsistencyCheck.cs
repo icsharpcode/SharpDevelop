@@ -125,16 +125,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			var featureUse = SD.AnalyticsMonitor.TrackFeature(typeof(NewLineConsistencyCheck));
 			
-			EventHandler removeWarning = null;
-			removeWarning = delegate {
+			EventHandler removeWarning = delegate {
 				groupBox.Remove();
 				editor.PrimaryTextEditor.TextArea.Focus();
-				editor.LoadedFileContent -= removeWarning;
 				
 				featureUse.EndTracking();
 			};
 			
-			editor.LoadedFileContent += removeWarning;
 			cancelButton.Click += delegate {
 				SD.AnalyticsMonitor.TrackFeature(typeof(NewLineConsistencyCheck), "cancelButton");
 				removeWarning(null, null);

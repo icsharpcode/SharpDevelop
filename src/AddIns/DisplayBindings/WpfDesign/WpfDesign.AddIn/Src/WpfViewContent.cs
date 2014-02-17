@@ -101,6 +101,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				outline.Root = null;
 			}
 			using (XmlTextReader r = new XmlTextReader(stream)) {
+				r.XmlResolver = null;
 				XamlLoadSettings settings = new XamlLoadSettings();
 				settings.DesignerAssemblies.Add(typeof(WpfViewContent).Assembly);
 				settings.CustomServiceRegisterFunctions.Add(

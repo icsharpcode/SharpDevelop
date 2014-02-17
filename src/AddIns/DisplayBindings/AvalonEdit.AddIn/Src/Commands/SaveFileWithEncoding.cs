@@ -18,6 +18,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -37,9 +38,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 			if (codeEditor != null) {
 				ChooseEncodingDialog dlg = new ChooseEncodingDialog();
 				dlg.Owner = SD.Workbench.MainWindow;
-				dlg.Encoding = codeEditor.PrimaryTextEditor.Encoding;
+				dlg.Encoding = codeEditor.Document.GetFileModelInfo().Encoding;
 				if (dlg.ShowDialog() == true) {
-					codeEditor.PrimaryTextEditor.Encoding = dlg.Encoding;
+					codeEditor.Document.GetFileModelInfo().Encoding = dlg.Encoding;
 					SharpDevelop.Commands.SaveFile.Save(vc.PrimaryFile);
 				}
 			}

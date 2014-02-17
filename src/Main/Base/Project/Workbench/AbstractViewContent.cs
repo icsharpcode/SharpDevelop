@@ -89,6 +89,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 		}
 		
+		public virtual void LoadModel()
+		{
+		}
+		
 		string tabPageText = "TabPageText";
 		
 		public event EventHandler TabPageTextChanged;

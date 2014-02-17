@@ -16,9 +16,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			using (Stream stream = file.GetModel(FileModels.Binary).OpenRead()) {
 				document = XDocument.Load(stream, LoadOptions.PreserveWhitespace);
 			}
-			document.Changed += delegate {
-				file.MakeDirty(this);
-			};
 			return document;
 		}
 		
@@ -45,6 +42,13 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public void NotifyStale(OpenedFile file, XDocument model)
 		{
+		}
+		
+		public void NotifyLoaded(OpenedFile file, XDocument model)
+		{
+			model.Changed += delegate {
+				file.MakeDirty(this);
+			};
 		}
 		
 		public void NotifyUnloaded(OpenedFile file, XDocument model)

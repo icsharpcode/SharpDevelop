@@ -45,17 +45,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly CodeEditor codeEditor = new CodeEditor();
 		IAnalyticsMonitorTrackedFeature trackedFeature;
 		
-		public AvalonEditViewContent(OpenedFile file, Encoding fixedEncodingForLoading = null)
+		public AvalonEditViewContent(OpenedFile file)
 		{
 			// Use common service container for view content and primary text editor.
 			// This makes all text editor services available as view content services and vice versa.
 			// (with the exception of the interfaces implemented directly by this class,
 			// those are available as view-content services only)
 			this.Services = codeEditor.PrimaryTextEditor.GetRequiredService<IServiceContainer>();
-			if (fixedEncodingForLoading != null) {
-				codeEditor.UseFixedEncoding = true;
-				codeEditor.PrimaryTextEditor.Encoding = fixedEncodingForLoading;
-			}
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.SourceTabPage}";
 			
 			if (file.FileName != null) {
@@ -66,10 +62,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			
 			this.Files.Add(file);
-			file.ForceInitializeView(this);
-			
-			file.IsDirtyChanged += PrimaryFile_IsDirtyChanged;
-			codeEditor.Document.UndoStack.PropertyChanged += codeEditor_Document_UndoStack_PropertyChanged;
+			this.LoadModel();
 		}
 		
 		bool IsKnownFileExtension(string filetype)
@@ -77,7 +70,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return ProjectService.GetFileFilters().Any(f => f.ContainsExtension(filetype)) ||
 				IconService.HasImageForFile(filetype);
 		}
-
+		
 		public override object Control {
 			get { return codeEditor; }
 		}
@@ -86,30 +79,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return codeEditor.PrimaryTextEditor.TextArea; }
 		}
 		
-		bool isLoading;
 		
-		public override void Load(OpenedFile file, Stream stream)
+		public override void LoadModel()
 		{
-			if (file != PrimaryFile)
-				return;
-			isLoading = true;
-			try {
-				if (!file.IsUntitled) {
-					codeEditor.PrimaryTextEditor.IsReadOnly = (File.GetAttributes(file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
-				}
-				
-				codeEditor.Load(stream);
-				// Load() causes the undo stack to think stuff changed, so re-mark the file as original if necessary
-				if (!this.PrimaryFile.IsDirty) {
-					codeEditor.Document.UndoStack.MarkAsOriginalFile();
-				}
-				
-				// we set the file name after loading because this will place the fold markers etc.
-				codeEditor.FileName = file.FileName;
-				BookmarksAttach();
-			} finally {
-				isLoading = false;
-			}
+			// if (!file.IsUntitled) {
+			//    codeEditor.PrimaryTextEditor.IsReadOnly = (File.GetAttributes(file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+			// }
+			
+			codeEditor.Document = PrimaryFile.GetModel(FileModels.TextDocument);
+			base.LoadModel();
+			
+			// we set the file name after loading because this will place the fold markers etc.
+			codeEditor.FileName = PrimaryFile.FileName;
+			BookmarksAttach();
 		}
 		
 		protected override void OnFileNameChanged(OpenedFile file)
@@ -159,7 +141,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			PermanentAnchorService.AttachDocument(codeEditor.FileName, codeEditor.Document);
 		}
-
+		
 		void BookmarksDetach()
 		{
 			if (codeEditor.FileName != null) {

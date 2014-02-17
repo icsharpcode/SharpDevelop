@@ -37,6 +37,13 @@ namespace ICSharpCode.SharpDevelop
 	public interface IViewContent : IDisposable, ICanBeDirty, IServiceProvider
 	{
 		/// <summary>
+		/// Notifies the view content that it should (re-)load the file models.
+		/// This method is called by the SharpDevelop infrastructure whenever a view content
+		/// receives focus.
+		/// </summary>
+		void LoadModel();
+		
+		/// <summary>
 		/// This is the UI element for the view.
 		/// You can use both Windows.Forms and WPF controls.
 		/// </summary>

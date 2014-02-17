@@ -17,13 +17,16 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Text;
 
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -77,21 +80,47 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return true;
 		}
 		
+		static Encoding DetectExistingEncoding(OpenedFile file)
+		{
+			var existingTextModel = file.GetModel(FileModels.TextDocument, GetModelOptions.DoNotLoad);
+			if (existingTextModel != null)
+				return existingTextModel.GetFileModelInfo().Encoding;
+			using (Stream stream = file.GetModel(FileModels.Binary).OpenRead()) {
+				using (StreamReader reader = FileReader.OpenStream(stream, SD.FileService.DefaultFileEncoding)) {
+					reader.Peek();
+					// force reader to auto-detect encoding
+					return reader.CurrentEncoding;
+				}
+			}
+		}
+		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			ChooseEncodingDialog dlg = new ChooseEncodingDialog();
 			dlg.Owner = SD.Workbench.MainWindow;
-			using (Stream stream = file.OpenRead()) {
-				using (StreamReader reader = FileReader.OpenStream(stream, SD.FileService.DefaultFileEncoding)) {
-					reader.Peek(); // force reader to auto-detect encoding
-					dlg.Encoding = reader.CurrentEncoding;
-				}
-			}
+			dlg.Encoding = DetectExistingEncoding(file);
 			if (dlg.ShowDialog() == true) {
-				return new AvalonEditViewContent(file, dlg.Encoding);
+				LoadWithEncoding(file, dlg.Encoding);
+				return new AvalonEditViewContent(file);
 			} else {
 				return null;
 			}
+		}
+		
+		static void LoadWithEncoding(OpenedFile file, Encoding encoding)
+		{
+			var doc = file.GetModel(FileModels.TextDocument, GetModelOptions.DoNotLoad | GetModelOptions.AllowStale);
+			if (doc == null)
+				doc = new TextDocument();
+			doc.GetFileModelInfo().Encoding = encoding;
+			string newText;
+			using (Stream stream = file.GetModel(FileModels.Binary).OpenRead()) {
+				using (StreamReader reader = new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks: false)) {
+					newText = reader.ReadToEnd();
+				}
+			}
+			FileModels.TextDocument.ReloadDocument(doc, new StringTextSource(newText));
+			file.ReplaceModel(FileModels.TextDocument, doc, ReplaceModelMode.SetAsValid);
 		}
 		
 		public bool IsPreferredBindingForFile(FileName fileName)
@@ -105,3 +134,4 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 	}
 }
+						

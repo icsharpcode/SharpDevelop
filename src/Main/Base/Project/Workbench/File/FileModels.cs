@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <summary>
 		/// The text document file model provider.
 		/// </summary>
-		public static readonly IFileModelProvider<ICSharpCode.AvalonEdit.Document.TextDocument> TextDocument = new TextDocumentFileModelProvider();
+		public static readonly TextDocumentFileModelProvider TextDocument = new TextDocumentFileModelProvider();
 		
 		/// <summary>
 		/// The XDocument file model provider.

@@ -78,6 +78,15 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		void NotifyStale(OpenedFile file, T model);
 		
 		/// <summary>
+		/// Notifies the provider that a new model was loaded.
+		/// This method is called by OpenedFile.GetModel() after a Load() operation (unless Load() returned the existing stale model),
+		/// or by OpenedFile.ReplaceModel().
+		/// 
+		/// This method is intended to be used to set up the handling of the IsDirty flag.
+		/// </summary>
+		void NotifyLoaded(OpenedFile file, T model);
+		
+		/// <summary>
 		/// Notifies a model that it became unloaded.
 		/// This can happen due to:
 		/// <list type="items"></list>

@@ -138,9 +138,5 @@ namespace HexEditor.View
 		{
 			if (PrimaryFile != null) PrimaryFile.MakeDirty();
 		}
-		
-		public override bool IsDirty {
-			get { return base.IsDirty; }
-		}
 	}
 }

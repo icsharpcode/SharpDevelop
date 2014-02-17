@@ -70,6 +70,13 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	/// <summary>
 	/// Represents an opened file.
 	/// </summary>
+	/// <remarks>
+	/// This class uses reference counting: the <c>AddReference()</c> and <c>ReleaseReference()</c>
+	/// methods are used to track an explicit reference count.
+	/// When the last reference is released, the opened file will be disposed.
+	/// View contents must maintain a reference to their opened files
+	/// (this usually happens via the AbstractViewContent.Files collection).
+	/// </remarks>
 	public abstract class OpenedFile : ICanBeDirty
 	{
 		abstract class ModelEntry
@@ -287,7 +294,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				preventLoading = false;
 			}
 		}
-
+		
 		#endregion
 		
 		#region GetModel
@@ -295,7 +302,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			CheckDisposed();
 			foreach (var entry in entries) {
-				if (entry.Provider == modelProvider)
+				if (object.Equals(entry.Provider, modelProvider))
 					return (ModelEntry<T>)entry;
 			}
 			return null;
@@ -495,7 +502,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		#region Reference Counting
 		int referenceCount = 1;
-
+		
 		void CheckDisposed()
 		{
 			if (referenceCount <= 0)
@@ -694,29 +701,29 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			IsDirty = false;
 		}
 		
-//		/// <summary>
-//		/// Called before saving the current view. This event is raised both when saving to disk and to memory (for switching between views).
-//		/// </summary>
-//		public event EventHandler SavingCurrentView;
-//
-//		/// <summary>
-//		/// Called after saving the current view. This event is raised both when saving to disk and to memory (for switching between views).
-//		/// </summary>
-//		public event EventHandler SavedCurrentView;
+		//		/// <summary>
+		//		/// Called before saving the current view. This event is raised both when saving to disk and to memory (for switching between views).
+		//		/// </summary>
+		//		public event EventHandler SavingCurrentView;
+		//
+		//		/// <summary>
+		//		/// Called after saving the current view. This event is raised both when saving to disk and to memory (for switching between views).
+		//		/// </summary>
+		//		public event EventHandler SavedCurrentView;
 		
 		
 		void SaveCurrentViewToStream(Stream stream)
 		{
-//			if (SavingCurrentView != null)
-//				SavingCurrentView(this, EventArgs.Empty);
+			//			if (SavingCurrentView != null)
+			//				SavingCurrentView(this, EventArgs.Empty);
 			inSaveOperation = true;
 			try {
 				currentView.Save(this, stream);
 			} finally {
 				inSaveOperation = false;
 			}
-//			if (SavedCurrentView != null)
-//				SavedCurrentView(this, EventArgs.Empty);
+			//			if (SavedCurrentView != null)
+			//				SavedCurrentView(this, EventArgs.Empty);
 		}
 		
 		protected void SaveCurrentView()
@@ -736,7 +743,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return;
 			if (currentView != null) {
 				if (newView.SupportsSwitchToThisWithoutSaveLoad(this, currentView)
-				    || currentView.SupportsSwitchFromThisWithoutSaveLoad(this, newView))
+					|| currentView.SupportsSwitchFromThisWithoutSaveLoad(this, newView))
 				{
 					// switch without Save/Load
 					currentView.SwitchFromThisWithoutSaveLoad(this, newView);
@@ -820,5 +827,5 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 	}
-	 */
+	*/
 }
