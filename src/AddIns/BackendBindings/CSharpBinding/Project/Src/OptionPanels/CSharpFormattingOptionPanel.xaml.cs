@@ -25,7 +25,9 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.SharpDevelop.Gui;
+using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding.OptionPanels
 {
@@ -37,6 +39,7 @@ namespace CSharpBinding.OptionPanels
 		public CSharpFormattingOptionPanel()
 		{
 			InitializeComponent();
+			formattingEditor.OptionsContainer = new CSharpFormattingOptionsContainer(FormattingOptionsFactory.CreateSharpDevelop());
 		}
 	}
 }
