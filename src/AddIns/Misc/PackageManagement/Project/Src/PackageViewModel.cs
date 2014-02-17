@@ -128,6 +128,8 @@ namespace ICSharpCode.PackageManagement
 		protected bool IsPackageInstalled()
 		{
 			return selectedProjects.IsPackageInstalledInSolution(package);
+				// It works same without second condition ....
+				//|| selectedProjects.IsPackageInstalled(package);
 		}
 		
 		public IEnumerable<PackageDependencySet> Dependencies {
@@ -519,6 +521,8 @@ namespace ICSharpCode.PackageManagement
 		
 		protected ProcessPackageAction CreateUpdatePackageManageActionForSelectedProject(IPackageManagementSelectedProject selectedProject)
 		{
+
+			// TODO? Fix UpdatedPackageViewModelTests to comply with this condition
 			if (selectedProject.Project.GetPackages().Where(p => p.Id == package.Id).Any() &&
 				!selectedProject.Project.GetPackages().Where(p => p.Id == package.Id && p.Version == package.Version).Any()) {
 				return CreateUpdatePackageAction(selectedProject);
@@ -528,10 +532,10 @@ namespace ICSharpCode.PackageManagement
 		
 		ProcessPackageAction CreateInstallPackageManageActionForSelectedProject(IPackageManagementSelectedProject selectedProject)
 		{
-			if (!selectedProject.Project.GetPackages().Where(p => p.Id == package.Id && p.Version == package.Version).Any()) {
+			//if (!selectedProject.Project.GetPackages().Where(p => p.Id == package.Id && p.Version == package.Version).Any()) {
 				return CreateInstallPackageAction(selectedProject);
-			}
-			return null;
+			//}
+			//return null;
 		}
 		
 		ProcessPackageAction CreateUninstallPackageManageActionForSelectedProject(IPackageManagementSelectedProject selectedProject)
