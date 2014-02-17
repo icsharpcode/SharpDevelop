@@ -43,6 +43,6 @@ namespace ICSharpCode.Reporting.Items
 
 		public int GroupLevel {get;private set;}
 	
-		
+		public SortColumn GroupSortColumn {get;set;}
 	}
 }

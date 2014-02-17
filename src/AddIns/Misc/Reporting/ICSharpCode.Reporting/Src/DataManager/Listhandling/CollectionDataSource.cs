@@ -143,8 +143,13 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 	
 		
 		IEnumerable<IGrouping<object, object>> GroupInternal () {
+			PropertyDescriptor sortProperty = null;
 			var groupProperty = listProperties.Find(reportSettings.GroupColumnsCollection[0].ColumnName,true);
-			var sortProperty = listProperties.Find("Randomint",true);
+			var groupColumn = (GroupColumn)reportSettings.GroupColumnsCollection[0];
+			
+			if (groupColumn.GroupSortColumn != null) {
+				sortProperty = listProperties.Find(groupColumn.GroupSortColumn.ColumnName,true);
+			}
 			IEnumerable<IGrouping<object, object>> groupedList;
 			if (sortProperty == null) {
 				groupedList = baseList.GroupBy(a => a.GetType().GetProperty(groupProperty.Name).GetValue(a, null)).OrderBy(c => c.Key);
@@ -154,7 +159,6 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 			return groupedList;
 		}
-		
 		
 		#endregion
 		
@@ -167,8 +171,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 		}
 		
-		#region Fill
 		
+		#region Fill
 		
 		public void Fill (List<IPrintableObject> collection, object current) {
 			Current = current;

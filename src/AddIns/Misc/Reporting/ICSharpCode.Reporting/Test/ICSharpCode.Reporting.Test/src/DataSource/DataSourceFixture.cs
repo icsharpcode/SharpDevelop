@@ -46,6 +46,34 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		}
 		
 		
+		[Test]
+		public void GroupbyOneColumnSortSubList () {
+			var rs = new ReportSettings();
+			var gc = new GroupColumn() {
+				ColumnName ="GroupItem",
+				SortDirection = ListSortDirection.Ascending,
+				GroupSortColumn = new SortColumn() {
+					ColumnName = "Randomint",
+					SortDirection = ListSortDirection.Ascending
+				}
+			};
+			rs.GroupColumnsCollection.Add(gc);
+			var collectionSource = new CollectionDataSource	(list,rs);
+			collectionSource.Bind();
+			var testKey = String.Empty;
+			var testSubKey = -1;
+			var groupedList = collectionSource.GroupedList;
+			foreach (var element in groupedList) {
+				Assert.That(element.Key,Is.GreaterThan(testKey));
+				testKey = element.Key.ToString();
+				foreach (Contributor sub in element) {
+					Assert.That(sub.RandomInt,Is.GreaterThanOrEqualTo(testSubKey));
+					testSubKey = sub.RandomInt;
+				}
+				testSubKey = -1;
+			}
+		}
+		
 		
 		[Test]
 		public void GroupbyOneColumn () {
@@ -53,6 +81,12 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			rs.GroupColumnsCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
 			var collectionSource = new CollectionDataSource	(list,rs);
 			collectionSource.Bind();
+			var testKey = String.Empty;
+			var groupedList = collectionSource.GroupedList;
+			foreach (var element in groupedList) {
+				Assert.That(element.Key,Is.GreaterThan(testKey));
+				testKey = element.Key.ToString();
+			}
 		}
 		
 		

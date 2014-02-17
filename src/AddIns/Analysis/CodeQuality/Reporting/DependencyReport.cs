@@ -19,10 +19,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Reflection;
 
 using ICSharpCode.Reporting;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Items;
 using ICSharpCode.CodeQuality.Engine.Dom;
 
 namespace ICSharpCode.CodeQuality.Reporting
@@ -46,6 +48,11 @@ namespace ICSharpCode.CodeQuality.Reporting
 			var reportingFactory = new ReportingFactory();
 			var reportCreator = reportingFactory.ReportCreator (stream,newList);
 			ReportSettings = reportingFactory.ReportModel.ReportSettings;
+			var groupColumn = (GroupColumn)ReportSettings.GroupColumnsCollection[0];
+			groupColumn.GroupSortColumn = new SortColumn() {
+				ColumnName = "ReferenceCount",
+				SortDirection = ListSortDirection.Ascending
+			};
 			reportCreator.BuildExportList();
 			return reportCreator;
 		}
