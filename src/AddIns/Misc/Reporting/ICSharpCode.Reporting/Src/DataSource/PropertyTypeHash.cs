@@ -24,7 +24,7 @@ namespace ICSharpCode.Reporting.DataSource
 	/// <summary>
 	/// Description of PropertyTypeHash.
 	/// </summary>
-	internal class PropertyTypeHash
+	class PropertyTypeHash
 	{
 		static PropertyTypeHash instance = new PropertyTypeHash();
 
@@ -56,7 +56,7 @@ namespace ICSharpCode.Reporting.DataSource
 			}
 		}
 
-		private PropertyTypeHash()
+		PropertyTypeHash()
 		{
 		}
 	}

@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Globalization;
 
 using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.Items;
 
 namespace ICSharpCode.Reporting.DataSource.Comparer
 {

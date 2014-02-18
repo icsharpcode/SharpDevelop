@@ -18,7 +18,6 @@
 
 using System;
 using System.Drawing;
-using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 
@@ -26,6 +25,12 @@ namespace ICSharpCode.Reporting.Items
 {
 	public class PrintableItem : IPrintableObject
 	{
+		public PrintableItem() {
+			ForeColor = Color.Black;
+			FrameColor = Color.Black;
+			BackColor = Color.White;
+		}
+		
 		public string Name { get; set; }
 
 		public Point Location { get; set; }
@@ -38,11 +43,6 @@ namespace ICSharpCode.Reporting.Items
 			return null;
 		}
 		
-		public virtual IMeasurementStrategy MeasurementStrategy ()
-		{
-			return null;
-		}
-		
 		public Color ForeColor {get;set;}
 			
 		public Color BackColor {get;set;}
@@ -50,6 +50,8 @@ namespace ICSharpCode.Reporting.Items
 		public Color FrameColor {get;set;}
 		
 		public bool CanGrow {get;set;}
+		
+		public bool DrawBorder {get;set;}
 		
 	}
 }

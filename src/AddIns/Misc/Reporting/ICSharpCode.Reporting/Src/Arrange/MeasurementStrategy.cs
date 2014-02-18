@@ -19,8 +19,8 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reporting.Globals;
-using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Arrange
 {
@@ -29,28 +29,38 @@ namespace ICSharpCode.Reporting.Arrange
 	/// </summary>
 	public interface IMeasurementStrategy
     {
-        Size Measure(IPrintableObject reportItem,Graphics graphics);
+        Size Measure(IExportColumn exportColumn,Graphics graphics);
     }
 
 
-	internal class ContainerMeasurementStrategy:IMeasurementStrategy
+	class ContainerMeasurementStrategy:IMeasurementStrategy
 	{
-		public ContainerMeasurementStrategy()
-		{
-		}
 		
-		public Size Measure(IPrintableObject reportItem,Graphics graphics)
+		public Size Measure(IExportColumn exportColumn,Graphics graphics)
 		{
-			return reportItem.Size;
+			var items = ((ExportContainer)exportColumn).ExportedItems;
+			
+			foreach (var element in items) {
+				if (element is IExportContainer) {
+					Measure(element,graphics);
+				}
+				var tbi = element as IExportText;
+				if (tbi != null) {
+					element.DesiredSize = MeasurementService.Measure(tbi,graphics);
+				}
+			}
+			exportColumn.DesiredSize = exportColumn.Size;
+			return exportColumn.DesiredSize;
 		}
 	}
 	
-	internal class TextBasedMeasurementStrategy:IMeasurementStrategy
+	
+	class TextBasedMeasurementStrategy:IMeasurementStrategy
 	{
 		
-		public Size Measure(IPrintableObject reportItem, Graphics graphics)
+		public Size Measure(IExportColumn exportColumn, Graphics graphics)
 		{
-			return MeasurementService.Measure((ITextItem)reportItem,graphics);
+			return MeasurementService.Measure((IExportText)exportColumn,graphics);
 		}
 	}
 }

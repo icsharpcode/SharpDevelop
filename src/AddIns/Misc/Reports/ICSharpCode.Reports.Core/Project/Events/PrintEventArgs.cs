@@ -20,14 +20,7 @@ using System;
 using System.Drawing;
 	
 	
-	/// <summary>
-	/// Handles BeforPrint and AfterPrint Events
-	/// </summary>
-	/// <remarks>
-	/// 	created by - Forstmeier Peter
-	/// 	created on - 22.11.2004 13:06:44
-	/// </remarks>
-	
+		
 namespace ICSharpCode.Reports.Core {
 	
 	public class SectionEventArgs : EventArgs

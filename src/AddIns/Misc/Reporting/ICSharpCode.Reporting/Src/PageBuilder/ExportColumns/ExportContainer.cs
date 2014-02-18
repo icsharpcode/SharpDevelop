@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Reporting.Arrange;
-using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
 
@@ -41,14 +40,21 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 			get { return exportedItems; }
 		}
 		
+		
+		
+		public override IArrangeStrategy GetArrangeStrategy()
+		{
+			return new ContainerArrangeStrategy();
+		}
+		
+		public override IMeasurementStrategy MeasurementStrategy()
+		{
+			return new ContainerMeasurementStrategy();
+		}
+		
 		public void Accept(IVisitor visitor)
 		{
 			visitor.Visit(this);
-		}
-		
-		public override ICSharpCode.Reporting.Arrange.IArrangeStrategy GetArrangeStrategy()
-		{
-			return new ContainerArrangeStrategy();
 		}
 	}
 }

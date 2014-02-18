@@ -19,9 +19,6 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reporting.Arrange;
-using ICSharpCode.Reporting.BaseClasses;
-using ICSharpCode.Reporting.Exporter;
-using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
@@ -31,6 +28,12 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	/// </summary>
 	public class ExportColumn:IExportColumn
 	{
+		public ExportColumn() {
+			ForeColor = Color.Black;
+			FrameColor = Color.Black;
+			BackColor = Color.White;
+		}
+		
 		
 		public string Name {get;set;}
 		
@@ -55,11 +58,17 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 			
 		public bool CanGrow {get;set;}
 		
+		public bool DrawBorder {get;set;}
 		
 		public Rectangle DisplayRectangle {
 			get {
-				return new Rectangle(Location,Size);
+				return new Rectangle(Location,DesiredSize);
 			}
+		}
+		
+		public virtual IMeasurementStrategy MeasurementStrategy()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

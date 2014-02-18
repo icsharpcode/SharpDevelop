@@ -24,7 +24,7 @@ namespace ICSharpCode.Reporting.Globals
 	/// <summary>
 	/// Description of CreateGraphics.
 	/// </summary>
-	public class CreateGraphics
+	internal class CreateGraphics
 	{
 		public static Graphics FromSize (Size size){
 			if (size == null) {

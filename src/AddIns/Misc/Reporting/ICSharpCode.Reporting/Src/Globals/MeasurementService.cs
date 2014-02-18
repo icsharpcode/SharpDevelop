@@ -18,36 +18,33 @@
 
 using System;
 using System.Drawing;
-using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Globals
 {
 	/// <summary>
 	/// Description of MeasurementService.
 	/// </summary>
-	internal class MeasurementService
+	static class MeasurementService
 	{
 		
-		public MeasurementService()
-		{
-		}
 		
-		public static Size Measure (ITextItem item,Graphics graphics) {
-			
+		public static Size Measure (IExportText item,Graphics graphics) {
 			if (!item.CanGrow) {
 				return item.Size;
 			}
+			var sf = new StringFormat();
+			sf.FormatFlags = StringFormatFlags.MeasureTrailingSpaces;
 			if (!String.IsNullOrEmpty(item.Text)) {
-				SizeF size = graphics.MeasureString(item.Text.TrimEnd(),
+				SizeF sizeF = graphics.MeasureString(item.Text.TrimEnd(),
 				                                    item.Font,
 				                                    item.Size.Width);
-				var i = (int)size.Height/item.Font.Height;
-				if (size.Height < item.Size.Height) {
+				                               
+				if (sizeF.Height < item.Size.Height) {
 					return item.Size;
 				}
-				return new Size(item.Size.Width,(int)Math.Ceiling(size.Height));
+				return new Size(item.Size.Width,(int)Math.Ceiling(sizeF.Height));
 			}
-			
 			return item.Size;
 		}
 	}

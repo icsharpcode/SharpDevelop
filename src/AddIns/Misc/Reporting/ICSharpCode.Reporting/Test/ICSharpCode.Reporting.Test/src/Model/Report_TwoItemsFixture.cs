@@ -18,7 +18,6 @@
 
 using System;
 using System.Drawing;
-using System.IO;
 using System.Reflection;
 
 using ICSharpCode.Reporting.Items;
@@ -70,7 +69,7 @@ namespace ICSharpCode.Reporting.Test.Model
 		[SetUp]
 		public void LoadModelFromStream()
 		{
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			Assembly asm = Assembly.GetExecutingAssembly();
 			var stream = asm.GetManifestResourceStream(TestHelper.RepWithTwoItems);
 			var rf = new ReportingFactory();
 			model = rf.LoadReportModel(stream);

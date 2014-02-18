@@ -33,7 +33,7 @@ namespace ICSharpCode.Reporting.Items
 		
 		public ReportSettings()
 		{
-			this.pageSize = Globals.GlobalValues.DefaultPageSize;
+			this.pageSize = GlobalValues.DefaultPageSize;
 			BaseValues();
 		}
 		
@@ -61,9 +61,9 @@ namespace ICSharpCode.Reporting.Items
 //			this.availableFields = new AvailableFieldsCollection();
 //			this.groupingsCollection = new GroupColumnCollection();
 			this.SortColumnsCollection = new SortColumnCollection();
-			GroupColumnCollection = new GroupColumnCollection();
+			this.GroupColumnsCollection = new GroupColumnCollection();
 //			this.sqlParameters = new SqlParameterCollection();
-//			this.parameterCollection = new ParameterCollection();
+			ParameterCollection = new ParameterCollection();
 //			this.NoDataMessage = "No Data for this Report";
 		}
 		
@@ -147,8 +147,15 @@ namespace ICSharpCode.Reporting.Items
 //		[Browsable(true), Category("Base Settings")]
 		public GlobalEnums.ReportType ReportType {get;set;}
 		
+		
+//		[Category("Parameters")]
+//		[EditorAttribute ( typeof(ParameterCollectionEditor),
+//		                  typeof(System.Drawing.Design.UITypeEditor) )]
+		
+		public ParameterCollection ParameterCollection {get; private set;}
+	
 		public SortColumnCollection SortColumnsCollection {get;private set;}
 		
-		public GroupColumnCollection GroupColumnCollection {get;private set;}
+		public GroupColumnCollection GroupColumnsCollection {get;private set;}
 	}
 }

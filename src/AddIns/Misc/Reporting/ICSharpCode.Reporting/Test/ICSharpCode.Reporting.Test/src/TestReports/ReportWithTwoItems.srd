@@ -66,22 +66,35 @@
             <DrawBorder>False</DrawBorder>
             <PageBreakAfter>False</PageBreakAfter>
             <Items>
-                <BaseTextItem>
-                    <Location>26, 22</Location>
-                    <Size>100, 20</Size>
+                <BaseRowItem>
+                    <Location>149, 22</Location>
+                    <Size>310, 30</Size>
                     <BackColor>White</BackColor>
-                    <Font>Microsoft Sans Serif, 10pt</Font>
-                    <StringTrimming>None</StringTrimming>
-                    <ContentAlignment>TopLeft</ContentAlignment>
-                    <CanGrow>True</CanGrow>
-                    <CanShrink>False</CanShrink>
-                    <RTL>No</RTL>
-                    <Text>TestText for Item in PageHeader</Text>
                     <DrawBorder>False</DrawBorder>
+                    <ForeColor>ControlText</ForeColor>
                     <FrameColor>Black</FrameColor>
-                    <ForeColor>Black</ForeColor>
-                    <Name>BaseTextItem2147483646</Name>
-                </BaseTextItem>
+                    <Items>
+                        <BaseTextItem>
+                            <Location>13, 7</Location>
+                            <Size>100, 20</Size>
+                            <BackColor>White</BackColor>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <StringTrimming>None</StringTrimming>
+                            <ContentAlignment>TopLeft</ContentAlignment>
+                            <CanGrow>True</CanGrow>
+                            <CanShrink>False</CanShrink>
+                            <RTL>No</RTL>
+                            <Text>TestText for Item in PageHeader</Text>
+                            <DrawBorder>False</DrawBorder>
+                            <FrameColor>Black</FrameColor>
+                            <ForeColor>Black</ForeColor>
+                            <Name>BaseTextItem2147483646</Name>
+                        </BaseTextItem>
+                    </Items>
+                    <AlternateBackColor />
+                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+                    <Name>BaseRowItem1</Name>
+                </BaseRowItem>
             </Items>
             <FrameColor>Black</FrameColor>
             <Name>ReportPageHeader</Name>
@@ -118,7 +131,7 @@
                     <CanShrink>False</CanShrink>
                     <DataType>System.String</DataType>
                     <RTL>No</RTL>
-                    <Text>=Globals!PageNumber</Text>
+                    <Text>='Page ' + Globals!PageNumber</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>Black</ForeColor>

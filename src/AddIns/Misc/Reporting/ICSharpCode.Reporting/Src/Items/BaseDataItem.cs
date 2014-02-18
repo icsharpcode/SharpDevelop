@@ -18,6 +18,8 @@
 
 using System;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Items
 {
@@ -30,11 +32,19 @@ namespace ICSharpCode.Reporting.Items
 		{
 		}
 		
+		public override  IExportColumn CreateExportColumn()
+		{
+			var exCol = (IExportText)base.CreateExportColumn();
+			exCol.Text = DBValue;
+			return exCol;
+		}
+	
+		
 		public virtual string DBValue {get;set;}
 			
 		public virtual string ColumnName {get;set;}
 		
-		public string DataType {get;set;}
+//		public string DataType {get;set;}
 		
 	}
 }

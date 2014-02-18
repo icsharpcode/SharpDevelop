@@ -20,11 +20,9 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Drawing;
-using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.PageBuilder;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reporting.Test.PageBuilder
@@ -79,7 +77,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		[SetUp]
 		public void LoadFromStream()
 		{
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			Assembly asm = Assembly.GetExecutingAssembly();
 			var stream = asm.GetManifestResourceStream(TestHelper.RepWithTwoItems);
 			var reportingFactory = new ReportingFactory();
 			reportCreator = reportingFactory.ReportCreator(stream);

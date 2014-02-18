@@ -23,8 +23,11 @@ namespace ICSharpCode.Reporting.Globals
 	/// <summary>
 	/// Description of GlobalEnums.
 	/// </summary>
-	public  class GlobalEnums
+	public sealed class GlobalEnums
 	{
+		GlobalEnums() {
+		}
+		/*
 		public enum ReportSection {
 			ReportHeader,
 			ReportPageHeader,
@@ -32,7 +35,7 @@ namespace ICSharpCode.Reporting.Globals
 			ReportPageFooter,
 			ReportFooter
 		}
-		
+		*/
 		///<summary>Technics to get the data
 		/// Push : report get's a ready filld dataset or something tah implements IList
 		/// Pull : report has to fill data by themself

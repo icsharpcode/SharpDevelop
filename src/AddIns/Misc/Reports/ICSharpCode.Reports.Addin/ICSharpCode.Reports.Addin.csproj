@@ -119,10 +119,7 @@
     <Compile Include="Project\Commands\ViewCommands.cs" />
     <Compile Include="Project\Configuration\AssemblyInfo.cs" />
     <None Include="EmptyReport.xft">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ICSharpCode.ReportDesigner.addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <Compile Include="Project\Designer\SmartTagTransactions.cs" />
     <Compile Include="Project\Designer\TextBasedDesignerActionList.cs" />
@@ -260,6 +257,7 @@
       <DependentUpon>ReportViewerSecondaryView.cs</DependentUpon>
     </Compile>
     <Compile Include="Project\SecondaryViews\ReportViewerSecondaryView.cs" />
+    <Compile Include="Project\SecondaryViews\WPFReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\XmlView.cs" />
     <Compile Include="Project\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="Project\Services\DefaultServiceContainer.cs" />
@@ -336,7 +334,6 @@
     <ProjectReference Include="..\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj">
       <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
       <Name>ICSharpCode.Reports.Core</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

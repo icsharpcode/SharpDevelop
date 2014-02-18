@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ReportModel>
+    <ReportSettings>
+        <ReportSettings>
+            <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
+            <DataModel>FormSheet</DataModel>
+            <FileName>D:\SharpDevelop3.0_CHECKOUT\SharpDevelop\bin\Raaaaaeport1.srd</FileName>
+            <RightMargin>50</RightMargin>
+            <UseStandardPrinter>True</UseStandardPrinter>
+            <SortColumnCollection />
+            <AvailableFieldsCollection />
+            <NoDataMessage>No Data for this Report</NoDataMessage>
+            <LeftMargin>50</LeftMargin>
+            <PageSize>827, 1169</PageSize>
+            <Padding>5, 5, 5, 5</Padding>
+            <BottomMargin>50</BottomMargin>
+            <CommandType>Text</CommandType>
+            <ParameterCollection />
+            <Landscape>False</Landscape>
+            <ReportName>Report1</ReportName>
+            <TopMargin>50</TopMargin>
+            <GroupColumnsCollection />
+            <GraphicsUnit>Millimeter</GraphicsUnit>
+            <CommandText />
+            <ReportType>FormSheet</ReportType>
+            <ConnectionString />
+        </ReportSettings>
+    </ReportSettings>
+    <SectionCollection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportHeader</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+           <Items />
+            <Location>50, 50</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportPageHeader</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items />
+            <Location>50, 125</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportDetail</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items />
+            <Location>50, 200</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportPageFooter</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items />
+            <Location>50, 275</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportFooter</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items />
+            <Location>50, 350</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+    </SectionCollection>
+</ReportModel>

@@ -58,23 +58,23 @@ namespace ICSharpCode.Reporting.Xml
 				// instantiate the class
 				string ns=node.Prefix;
 				string cname=node.LocalName;
-				Console.WriteLine ("ProcessNode(XmlNode node, object parent)  {0}",cname);
-				Type t=GetTypeByName(ns, cname);
-				if (t == null) {
-					Console.WriteLine("\t Not found {0}",t.FullName);
-//					t = GetTypeByName (ns,"ErrorItem");
-				}
 				
-				Trace.Assert(t != null, "Type "+cname+" could not be determined.");
+				Console.WriteLine ("ProcessNode(XmlNode node, object parent)  {0}",cname);
+			
+				Type t=GetTypeByName(ns, cname);
+			
+//				Trace.Assert(t != null, "Type "+cname+" could not be determined.");
 //				Debug.WriteLine("Looking for " + cname + " and got " + t.FullName);
-				Console.WriteLine("Looking for " + cname + " and got " + t.FullName);
+//				Console.WriteLine("Looking for " + cname + " and got " + t.FullName);
 				try
 				{
 					ret=Activator.CreateInstance(t);
 				}
-				catch(Exception e)
+				catch(Exception)
 				{
-					Trace.Fail("Type "+cname+" could not be instantiated:\r\n"+e.Message);
+					Console.WriteLine("MycroParser:");
+					Console.WriteLine("\t Not found {0}",cname);
+//					Trace.Fail("Type "+cname+" could not be instantiated:\r\n"+e.Message);
 				}
 
 				// support the ISupportInitialize interface
@@ -107,8 +107,10 @@ namespace ICSharpCode.Reporting.Xml
 			return ret;
 		}
 
+	    
 		protected void ProcessChildProperties(XmlNode node, object parent)
 		{
+			
 			var t=parent.GetType();
 
 			// children of a class must always be properties
@@ -116,6 +118,7 @@ namespace ICSharpCode.Reporting.Xml
 			{
 			    if (!(child is XmlElement)) continue;
 			    string pname=child.LocalName;
+			
 			    var pi=t.GetProperty(pname);
 
 			    if (pi==null)
@@ -218,7 +221,6 @@ namespace ICSharpCode.Reporting.Xml
 
 	    static void SetPropertyToString(object obj, PropertyInfo pi, string value)
 		{
-			Console.WriteLine("MP - SetPropertyToString {0} - {1}",pi.Name,value.ToString());
 			// it's string, so use a type converter.
 			TypeConverter tc=TypeDescriptor.GetConverter(pi.PropertyType);
 			try

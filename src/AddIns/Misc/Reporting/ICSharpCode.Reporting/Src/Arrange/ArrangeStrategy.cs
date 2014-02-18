@@ -17,9 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Drawing;
 using System.Linq;
-
+using System.Collections.Generic;
 using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.Arrange
@@ -29,65 +30,97 @@ namespace ICSharpCode.Reporting.Arrange
 	/// </summary>
 	/// 
 	public interface IArrangeStrategy
-    {
-        void Arrange(IExportColumn exportColumn);
-    }
+	{
+		void Arrange(IExportColumn exportColumn);
+	}
 	
 	
 	internal class ContainerArrangeStrategy:IArrangeStrategy
 	{
-		public ContainerArrangeStrategy()
-		{
-		}
 		
-
-		public void Arrange(IExportColumn exportColumn)
-		{
+		public void Arrange(IExportColumn exportColumn){
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
 			var container = exportColumn as IExportContainer;
 			if ((container != null) && (container.ExportedItems.Count > 0)) {
-				
-				
-				FindBiggestRectangle(container);
-				var resizeable = from resize in container.ExportedItems
-					where ((resize.CanGrow == true))
-					select resize;
-               
-				if (resizeable.Any()) {
-					if (!BiggestRectangle.IsEmpty) {
-						var containerRectangle = new Rectangle(container.Location,container.Size);
-						var desiredRectangle = Rectangle.Union(containerRectangle,BiggestRectangle);
-						container.DesiredSize = new Size(container.Size.Width,desiredRectangle.Size.Height + 5);
-					}
+				List<IExportColumn> canGrowItems = CreateCanGrowList(container);
+				if (canGrowItems.Count > 0) {
+					var containerSize = ArrangeInternal(container);
+					if (containerSize.Height > container.DesiredSize.Height) {
+						container.DesiredSize = new Size(containerSize.Width,containerSize.Height);
+					} 
 				}
 			}
 		}
-		
-		private void FindBiggestRectangle (IExportContainer container)
-		{
-		    BiggestRectangle = Rectangle.Empty;
-            /*
-            foreach (var item in container.ExportedItems)
-            {
-                if (item.DesiredSize.Height > BiggestRectangle.Size.Height)
-                {
-                    BiggestRectangle = new Rectangle(new Point(container.Location.X + item.Location.X,
-                                                               container.Location.Y + item.Location.Y)
-                                                     , item.DesiredSize);
-                }
-            }
-            */
-		    foreach (var item in container.ExportedItems
-                .Where(item => item.DesiredSize.Height > BiggestRectangle.Size.Height))
-		    {
-		        BiggestRectangle = new Rectangle(new Point(container.Location.X + item.Location.X,
-		                                                   container.Location.Y + item.Location.Y)
-		                                         ,item.DesiredSize);
-		    }
-		}
 
-	    public Rectangle BiggestRectangle {get; private set;}
+		
+		static Size ArrangeInternal(IExportContainer container)
+		{
+			var containerRectangle = container.DisplayRectangle;
+			Rectangle elementRectangle = Rectangle.Empty;
+			
+			foreach (var element in container.ExportedItems) {
+				var con = element as IExportContainer;
+				if (con != null) {
+					var keep = containerRectangle;
+					con.DesiredSize = ArrangeInternal(con);
+					elementRectangle  = AdujstRectangles(keep,con.DisplayRectangle);
+					containerRectangle = keep;
+					
+				} else {
+					elementRectangle = AdujstRectangles(containerRectangle,element.DisplayRectangle);
+				}
+				
+				if (!containerRectangle.Contains(elementRectangle)) {
+					
+					containerRectangle = new Rectangle(containerRectangle.Left,
+					                                   containerRectangle.Top ,
+					                                   containerRectangle.Width,
+					                                   element.Location.Y + elementRectangle.Size.Height + 5);
+					                                
+//					containerRectangle = Rectangle.Union(containerRectangle,elementRectangle);
+				}
+			}
+			return containerRectangle.Size;
+		}
+		
+		
+		static Rectangle AdujstRectangles (Rectangle container,Rectangle element) {
+			return new Rectangle(container.Left + element.Left,
+			                     container.Top + element.Top,
+			                     element.Size.Width,
+			                     element.Size.Height);
+		}
+		
+		
+		static List<IExportColumn> CreateCanGrowList(IExportContainer container)
+		{
+			var l1 = new List<IExportColumn>();
+			foreach (var element in container.Descendents()) {
+				if (element.CanGrow) {
+					l1.Add(element);
+				}
+			}
+			return l1;
+		}
 	}
 	
+	
+	static class Extensions {
+		
+		public static IEnumerable<IExportColumn> Descendents(this IExportContainer node) {
+			if (node == null) throw new ArgumentNullException("node");
+			if(node.ExportedItems.Count > 0) {
+				foreach (var child in node.ExportedItems) {
+					var cont = child as IExportContainer;
+					if (cont != null) {
+						foreach (var desc in Descendents(cont)) {
+							yield return desc;
+						}
+					}
+					yield return child;
+				}
+			}
+		}
+	}
 }

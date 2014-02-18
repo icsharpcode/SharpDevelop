@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -32,6 +33,9 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	{
 		 Font Font {get;set;}
 		 string Text {get;set;}
+		 ContentAlignment ContentAlignment {get;set;}
+		 string DataType {get;set;}
+		 string FormatString {get;set;}
 	}
 	
 	
@@ -50,6 +54,16 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		
 		
 		public string Text {get;set;}
-			
+		
+		public string FormatString {get;set;}
+		
+		public ContentAlignment ContentAlignment {get;set;}
+		
+		public string DataType {get;set;}
+		
+		public override ICSharpCode.Reporting.Arrange.IMeasurementStrategy MeasurementStrategy()
+		{
+			return new TextBasedMeasurementStrategy();
+		}
 	}
 }

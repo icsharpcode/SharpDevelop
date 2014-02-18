@@ -17,6 +17,7 @@
             <GroupColumnsCollection>
                 <GroupColumn>
                     <SortDirection>Ascending</SortDirection>
+                    <CaseSensitive>False</CaseSensitive>
                     <ColumnName>Name</ColumnName>
                     <DataTypeName>System.String</DataTypeName>
                 </GroupColumn>
@@ -37,7 +38,6 @@
             <Location>50, 50</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
-            <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
@@ -47,7 +47,6 @@
                     <Location>157, 3</Location>
                     <Size>414, 40</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 18pt, style=Bold</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
@@ -68,7 +67,6 @@
             <Location>50, 125</Location>
             <Size>727, 69</Size>
             <BackColor>White</BackColor>
-            <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
@@ -78,7 +76,6 @@
                     <Location>22, 47</Location>
                     <Size>660, 10</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <ForeColor>Black</ForeColor>
                     <FromPoint>10, 5</FromPoint>
                     <ToPoint>647, 5</ToPoint>
@@ -93,7 +90,6 @@
                     <Location>222, 3</Location>
                     <Size>257, 26</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Microsoft Sans Serif, 15.75pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
@@ -111,14 +107,15 @@
                     <Location>563, 3</Location>
                     <Size>100, 26</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 15.75pt</Font>
+                    <FormatString>dd/MM/yyyy</FormatString>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
+                    <DataType>System.DateTime</DataType>
                     <RTL>No</RTL>
-                    <Text>=Today()</Text>
+                    <Text>=Today</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>
@@ -132,67 +129,49 @@
             <Location>50, 209</Location>
             <Size>727, 115</Size>
             <BackColor>White</BackColor>
-            <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
             <PageBreakAfter>False</PageBreakAfter>
             <Items>
-                <BaseRowItem>
-                    <Location>31, 72</Location>
-                    <Size>641, 30</Size>
+                <BaseDataItem>
+                    <Location>445, 72</Location>
+                    <Size>71, 20</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
+                    <Font>Segoe UI, 9pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>MiddleRight</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>BaseDataItem2147483646</Text>
                     <DrawBorder>False</DrawBorder>
-                    <ForeColor>Black</ForeColor>
                     <FrameColor>Black</FrameColor>
-                    <Items>
-                        <BaseDataItem>
-                            <Location>443, 4</Location>
-                            <Size>71, 20</Size>
-                            <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
-                            <Font>Segoe UI, 9pt</Font>
-                            <StringTrimming>None</StringTrimming>
-                            <ContentAlignment>MiddleRight</ContentAlignment>
-                            <CanGrow>False</CanGrow>
-                            <CanShrink>False</CanShrink>
-                            <RTL>No</RTL>
-                            <Text>BaseDataItem2147483646</Text>
-                            <DrawBorder>False</DrawBorder>
-                            <FrameColor>Black</FrameColor>
-                            <ForeColor>Black</ForeColor>
-                            <ColumnName>ReferenceCount</ColumnName>
-                            <Name>BaseDataItem2147483646</Name>
-                        </BaseDataItem>
-                        <BaseDataItem>
-                            <Location>254, 4</Location>
-                            <Size>156, 20</Size>
-                            <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
-                            <Font>Microsoft Sans Serif, 10pt</Font>
-                            <StringTrimming>None</StringTrimming>
-                            <ContentAlignment>TopLeft</ContentAlignment>
-                            <CanGrow>False</CanGrow>
-                            <CanShrink>False</CanShrink>
-                            <RTL>No</RTL>
-                            <Text>References</Text>
-                            <DrawBorder>False</DrawBorder>
-                            <FrameColor>Black</FrameColor>
-                            <ForeColor>Black</ForeColor>
-                            <ColumnName>References</ColumnName>
-                            <Name>BaseDataItem2</Name>
-                        </BaseDataItem>
-                    </Items>
-                    <AlternateBackColor />
-                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
-                    <Name>BaseRowItem1</Name>
-                </BaseRowItem>
+                    <ForeColor>Black</ForeColor>
+                    <ColumnName>ReferenceCount</ColumnName>
+                    <Name>BaseDataItem2147483646</Name>
+                </BaseDataItem>
+                <BaseDataItem>
+                    <Location>256, 72</Location>
+                    <Size>156, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>References</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>Black</ForeColor>
+                    <ColumnName>References</ColumnName>
+                    <Name>BaseDataItem2</Name>
+                </BaseDataItem>
                 <GroupHeader>
                     <Location>31, 22</Location>
                     <Size>641, 30</Size>
                     <BackColor>LightGray</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <DrawBorder>False</DrawBorder>
                     <ForeColor>Black</ForeColor>
                     <FrameColor>Black</FrameColor>
@@ -201,7 +180,6 @@
                             <Location>414, 7</Location>
                             <Size>100, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9.75pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>MiddleRight</ContentAlignment>
@@ -218,7 +196,6 @@
                             <Location>254, 2</Location>
                             <Size>100, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Microsoft Sans Serif, 10pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>TopLeft</ContentAlignment>
@@ -235,7 +212,6 @@
                             <Location>12, 3</Location>
                             <Size>211, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Microsoft Sans Serif, 10pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>TopLeft</ContentAlignment>
@@ -263,7 +239,6 @@
             <Location>50, 339</Location>
             <Size>727, 36</Size>
             <BackColor>White</BackColor>
-            <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
@@ -271,9 +246,8 @@
             <Items>
                 <BaseTextItem>
                     <Location>31, 5</Location>
-                    <Size>555, 20</Size>
+                    <Size>365, 20</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 9.75pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
@@ -287,10 +261,9 @@
                     <Name>BaseTextItem2147483641</Name>
                 </BaseTextItem>
                 <BaseTextItem>
-                    <Location>624, 5</Location>
-                    <Size>100, 20</Size>
+                    <Location>526, 5</Location>
+                    <Size>198, 20</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
@@ -312,7 +285,6 @@
             <Location>50, 390</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
-            <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>

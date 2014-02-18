@@ -27,11 +27,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 	/// </summary>
 	public class IndexList :List<BaseComparer> 
 	{
-		
-		public IndexList()
-		{
-		}
-		
+
 		public int CurrentPosition {get;set;}
 	}
 }

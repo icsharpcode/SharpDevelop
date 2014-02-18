@@ -19,10 +19,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Reflection;
 
+using ICSharpCode.Reporting;
+using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Items;
 using ICSharpCode.CodeQuality.Engine.Dom;
-using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.CodeQuality.Reporting
 {
@@ -31,43 +34,45 @@ namespace ICSharpCode.CodeQuality.Reporting
 	/// </summary>
 	public class DependencyReport:BaseReport
 	{
-		private const string overviewReport = "DependencyReport.srd";
+		const string overviewReport = "DependencyReport.srd";
 		
 		public DependencyReport(List<string> fileNames):base(fileNames)
 		{
 		}
 		
 		public IReportCreator Run(ReadOnlyCollection<AssemblyNode> list)
-		{			
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.DependencyReport.srd");
-			var model = ReportEngine.LoadReportModel(stream);
-			ReportSettings = model.ReportSettings;
+		{
 			var newList = MakeList (list);
-			
-			IReportCreator creator = ReportEngine.CreatePageBuilder(model,newList,null);
-			creator.BuildExportList();
-			return creator;
+			var asm = Assembly.GetExecutingAssembly();
+			var stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.DependencyReport.srd");
+			var reportingFactory = new ReportingFactory();
+			var reportCreator = reportingFactory.ReportCreator (stream,newList);
+			ReportSettings = reportingFactory.ReportModel.ReportSettings;
+			var groupColumn = (GroupColumn)ReportSettings.GroupColumnsCollection[0];
+			groupColumn.GroupSortColumn = new SortColumn() {
+				ColumnName = "ReferenceCount",
+				SortDirection = ListSortDirection.Ascending
+			};
+			reportCreator.BuildExportList();
+			return reportCreator;
 		}
+
 		
-		
-		private List <DependencyViewModel> MakeList (ReadOnlyCollection<AssemblyNode> list)
+		List <DependencyViewModel> MakeList (ReadOnlyCollection<AssemblyNode> list)
 		{
 			var newList = new List<DependencyViewModel>();
 			foreach (var baseNode in list) {
 				foreach (var element in list) {
 					if (baseNode.Name != element.Name) {
-						
-					
-					var referenceCount = baseNode.GetUses(element);
-					if (referenceCount > 0) {
-						newList.Add(new DependencyViewModel()
-						            {
-						            	Node = baseNode,
-						            	References = element.Name,
-						            	ReferenceCount = referenceCount
-						            });
-					}
+						var referenceCount = baseNode.GetUses(element);
+						if (referenceCount > 0) {
+							newList.Add(new DependencyViewModel()
+							            {
+							            	Node = baseNode,
+							            	References = element.Name,
+							            	ReferenceCount = referenceCount
+							            });
+						}
 					}
 				}
 			}
@@ -76,7 +81,7 @@ namespace ICSharpCode.CodeQuality.Reporting
 	}
 	
 	
-	internal class DependencyViewModel:ReportViewModel
+	class DependencyViewModel:ReportViewModel
 	{
 		public DependencyViewModel()
 		{
