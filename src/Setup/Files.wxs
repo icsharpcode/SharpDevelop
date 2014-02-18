@@ -1479,26 +1479,25 @@
 										<File Source="..\..\AddIns\Misc\UsageDataCollector\UsageDataCollector.xml" Name="UsageDataCollector.xml" Id="UsageDataCollector.xml" />
 									</Component>
 								</Directory>
-<!--								<Directory Id="SharpDevelopReports" Name="SharpDevelopReports">
-									<Component Guid="9D0B24E0-6BE3-4E0A-AE50-DFF55BAE388F" Id="SharpDevelopReportsEmptyReportFileTemplate" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\EmptyReport.xft" Name="EmptyReport.xft" Id="SharpDevelopReportsEmptyReport.xft" KeyPath="yes" />
+								<Directory Id="SharpDevelopReporting" Name="SharpDevelopReporting">
+									<Component Guid="3FCFB7F3-73FD-41EB-BE9D-01CC773F9E35" Id="SharpDevelopReportingEmptyReportFileTemplate" DiskId="1">
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\EmptyReport.xft" Name="EmptyReport.xft" Id="SharpDevelopReportingEmptyReport.xft" KeyPath="yes" />
 									</Component>
-									<Component Guid="70F6CB6E-5776-4157-BABB-1D01960CFD42" Id="ICSharpCodeReportDesignerAddin" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\ICSharpCode.ReportDesigner.addin" Name="ICSharpCode.ReportDesigner.addin" Id="ICSharpCode.ReportDesigner.addin" KeyPath="yes" />
+									<Component Guid="5BE15CE6-CE1D-49D3-93E4-E4BB37B15CA4" Id="ICSharpCodeReportingAddin" DiskId="1">
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\ICSharpCode.Reporting.Addin.dll" Name="ICSharpCode.Reporting.Addin.dll" Id="ICSharpCode.Reporting.Addin.dll" KeyPath="yes" />
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\ICSharpCode.Reporting.addin" Name="ICSharpCode.Reporting.addin" Id="ICSharpCode.Reporting.addin" />
 									</Component>
-									<Component Guid="368CD4A5-70EA-4374-AF4E-A4328DE66680" Id="ICSharpCodeReportsAddinDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Addin.dll" Name="ICSharpCode.Reports.Addin.dll" Id="ICSharpCode.Reports.Addin.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Addin.dll" AssemblyManifest="ICSharpCode.Reports.Addin.dll" />
+									<Component Guid="274B5B10-3E3C-47E7-980F-F9277C8C6630" Id="ICSharpCodeReportingDll" DiskId="1">
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\ICSharpCode.Reporting.dll" Name="ICSharpCode.Reporting.dll" Id="ICSharpCode.Reporting.dll" KeyPath="yes" />
 									</Component>
-									<Component Guid="0836040D-7E4A-42CA-A291-BE8AAB207D29" Id="ICSharpCodeReportsCoreDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Core.dll" Name="ICSharpCode.Reports.Core.dll" Id="ICSharpCode.Reports.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Core.dll" AssemblyManifest="ICSharpCode.Reports.Core.dll" />
+									<Component Guid="2D7402AE-2F6D-40D0-9A25-757BD99CD0AF" Id="IronyDll" DiskId="1">
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\Irony.dll" Name="Irony.dll" Id="Irony.dll" KeyPath="yes" />
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\Irony.Interpreter.dll" Name="Irony.Interpreter.dll" Id="Irony.Interpreter.dll" />
 									</Component>
-									<Component Guid="DBF1DA4F-19BA-46AF-86A4-B3228424F219" Id="IronyDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\Irony.dll" Name="Irony.dll" Id="Irony.dll" KeyPath="yes" />
+									<Component Guid="3AA38468-F3F9-4F73-BF59-1DB0A1EBE96F" Id="PdfSharpDll" DiskId="1">
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\PdfSharp.dll" Name="PdfSharp.dll" Id="PdfSharp.dll" KeyPath="yes" />
 									</Component>
-									<Component Guid="A105D4E4-2AF4-43BE-AA71-15F14DA4163B" Id="ITextSharpDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
-									</Component>
-								</Directory>-->
+								</Directory>
 								<Directory Id="PackageManagement" Name="PackageManagement">
 									<Component Id="NuGetCoreDll" Guid="AA347D26-712F-4BF7-BB74-517F6BFC563F" DiskId="1">
 										<File Id="NuGet.Core.dll" Name="NuGet.Core.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Core.dll" AssemblyManifest="NuGet.Core.dll" />

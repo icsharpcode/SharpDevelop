@@ -448,12 +448,11 @@
 				<ComponentRef Id="UsageDataCollectorAddin"/>
 				<ComponentRef Id="UsageDataCollectorDll"/>
 				
-<!--				<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
-				<ComponentRef Id="ICSharpCodeReportDesignerAddin"/>
-				<ComponentRef Id="ICSharpCodeReportsAddinDll"/>
-				<ComponentRef Id="ICSharpCodeReportsCoreDll"/>
+				<ComponentRef Id="SharpDevelopReportingEmptyReportFileTemplate"/>
+				<ComponentRef Id="ICSharpCodeReportingAddin"/>
+				<ComponentRef Id="ICSharpCodeReportingDll"/>
 				<ComponentRef Id="IronyDll"/>
-				<ComponentRef Id="ITextSharpDll"/>-->
+				<ComponentRef Id="PdfSharpDll"/>
 			
 				<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
 				<ComponentRef Id="NuGetConsoleTypesDll"/>
