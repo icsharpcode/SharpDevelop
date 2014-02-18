@@ -93,21 +93,9 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (IsReadingPackages) return;
 			if (PackageViewModels == null) return;
-			var operation = e as ParentPackageOperationEventArgs;
-			if (operation != null && operation.Package != null) {
-				foreach (var packageViewModel in PackageViewModels) {
-					if (packageViewModel.Id == operation.Package.Id) {
-						// Do not compare package.Version here
-						// On update, two packages are changed
-						packageViewModel.PackageChanged();
-					}
-				}
-			} 
-			else {
-				// Unknown operation/package -> refresh all items
-				foreach (var packageViewModel in this.PackageViewModels) {
-					packageViewModel.PackageChanged();
-				}
+			// refresh all because we don't know if any dependant package is (un)installed
+			foreach (var packageViewModel in this.PackageViewModels) {
+				packageViewModel.PackageChanged();
 			}
 		}
 		

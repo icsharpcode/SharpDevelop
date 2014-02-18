@@ -17,7 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -38,7 +37,6 @@ namespace ICSharpCode.PackageManagement
 			IPackageActionRunner actionRunner)
 		{
 			this.Solution = solution;
-//			this.SelectedProjects = new PackageManagementSelectedProjects(solution);
 			this.SelectedProjects = new SelectedProjectsForInstalledPackages(solution);
 			this.PackageManagementEvents = packageManagementEvents;
 			this.PackageActionRunner = actionRunner;
