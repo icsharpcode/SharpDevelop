@@ -46,8 +46,6 @@ namespace ICSharpCode.PackageManagement
 			this.logger = packageViewModelFactory.Logger;
 			this.packageManagementEvents = packageViewModelFactory.PackageManagementEvents;
 			
-			packageManagementEvents.ParentPackageInstalled += PackagesUpdated;
-			packageManagementEvents.ParentPackageUninstalled += PackagesUpdated;
 			packageManagementEvents.ParentPackagesUpdated += PackagesUpdated;
 			
 			ShowPackageSources = true;
