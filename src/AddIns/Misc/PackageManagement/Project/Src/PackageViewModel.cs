@@ -199,6 +199,7 @@ namespace ICSharpCode.PackageManagement
 		}
 
 		public void PackageChanged() {
+			OnPropertyChanged(model => model.IsManaged);
 			OnPropertyChanged(model => model.IsAdded);
 		}
 
