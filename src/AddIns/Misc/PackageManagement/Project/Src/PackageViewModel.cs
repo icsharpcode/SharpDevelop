@@ -319,7 +319,6 @@ namespace ICSharpCode.PackageManagement
 						installAction.IgnoreDependencies, 
 						installAction.AllowPrereleaseVersions);
 					packageManagementEvents.OnParentPackageInstalled(package);
-					PackageChanged();
 				}
 			} catch (Exception ex) {
 				ReportError(ex);
@@ -333,7 +332,6 @@ namespace ICSharpCode.PackageManagement
 				GetInstallPackageOperations();
 				if (LicensesAccepted()) {
 					InstallPackage();
-					PackageChanged();
 				}
 			} catch (Exception ex) {
 				ReportError(ex);
@@ -407,7 +405,6 @@ namespace ICSharpCode.PackageManagement
 				var packageManager = new NuGet.PackageManager(solutionPackageRepository.Repository, solutionPackageRepository.PackagePathResolver, solutionPackageRepository.FileSystem);
 				packageManager.UninstallPackage(package.Id, package.Version);
 				packageManagementEvents.OnParentPackageUninstalled(package);
-				PackageChanged();
 			} catch (Exception ex) {
 				ReportError(ex);
 				logger.LogError(ex);
@@ -421,7 +418,6 @@ namespace ICSharpCode.PackageManagement
 				UninstallPackageAction action = project.CreateUninstallPackageAction();
 				action.Package = package;
 				actionRunner.Run(action);
-				PackageChanged();
 			} catch (Exception ex) {
 				ReportError(ex);
 				logger.LogError(ex);
@@ -498,7 +494,6 @@ namespace ICSharpCode.PackageManagement
 				IList<ProcessPackageAction> actions = GetProcessPackageActionsForSelectedProjects(projects);
 				if (actions.Any() && LicensesAccepted()) {
 					RunActionsIfAnyExist(actions);
-					PackageChanged();
 				}
 			} catch (Exception ex) {
 				ReportError(ex);

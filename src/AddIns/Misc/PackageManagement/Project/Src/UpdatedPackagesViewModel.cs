@@ -46,21 +46,30 @@ namespace ICSharpCode.PackageManagement
 			this.logger = packageViewModelFactory.Logger;
 			this.packageManagementEvents = packageViewModelFactory.PackageManagementEvents;
 			
-			packageManagementEvents.ParentPackagesUpdated += PackagesUpdated;
-			
 			ShowPackageSources = true;
 			ShowUpdateAllPackages = true;
 			ShowPrerelease = true;
+
+			RegisterEvents();
+		}
+		
+		void RegisterEvents()
+		{
+			packageManagementEvents.ParentPackageInstalled += PackagesUpdated;
+			packageManagementEvents.ParentPackageUninstalled += PackagesUpdated;
+			packageManagementEvents.ParentPackagesUpdated += PackagesUpdated;
+		}
+
+		protected override void OnDispose()
+		{
+			packageManagementEvents.ParentPackageInstalled -= PackagesUpdated;
+			packageManagementEvents.ParentPackageUninstalled -= PackagesUpdated;
+			packageManagementEvents.ParentPackagesUpdated -= PackagesUpdated;
 		}
 		
 		void PackagesUpdated(object sender, EventArgs e)
 		{
 			ReadPackages();
-		}
-		
-		protected override void OnDispose()
-		{
-			packageManagementEvents.ParentPackagesUpdated -= PackagesUpdated;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()

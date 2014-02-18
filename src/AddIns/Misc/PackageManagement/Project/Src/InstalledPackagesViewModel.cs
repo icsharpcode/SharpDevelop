@@ -55,6 +55,18 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.ParentPackagesUpdated += InstalledPackagesChanged;
 		}
 		
+		protected override void OnDispose()
+		{
+			packageManagementEvents.ParentPackageInstalled -= InstalledPackagesChanged;
+			packageManagementEvents.ParentPackageUninstalled -= InstalledPackagesChanged;
+			packageManagementEvents.ParentPackagesUpdated -= InstalledPackagesChanged;
+		}
+		
+		void InstalledPackagesChanged(object sender, EventArgs e)
+		{
+			ReadPackages();
+		}
+		
 		void TryGetActiveProject()
 		{
 			try {
@@ -64,18 +76,6 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 
-		void InstalledPackagesChanged(object sender, EventArgs e)
-		{
-			ReadPackages();
-		}
-		
-		protected override void OnDispose()
-		{
-			packageManagementEvents.ParentPackageInstalled -= InstalledPackagesChanged;
-			packageManagementEvents.ParentPackageUninstalled -= InstalledPackagesChanged;
-			packageManagementEvents.ParentPackagesUpdated -= InstalledPackagesChanged;
-		}
-		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
 			if (errorMessage != null) {
