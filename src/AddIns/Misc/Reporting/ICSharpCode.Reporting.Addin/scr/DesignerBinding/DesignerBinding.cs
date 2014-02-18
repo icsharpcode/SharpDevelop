@@ -12,6 +12,7 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Workbench;
+using ICSharpCode.Reporting.Addin.Commands;
 
 namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 	
@@ -19,43 +20,45 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 	public class ReportDesignerBinding:IDisplayBinding {
 		
 		
-		#region IDisplayBinding implementation
-		
 		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return true;
 		}
+		
 		
 		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return Path.GetExtension(fileName).Equals(".srd", StringComparison.OrdinalIgnoreCase);
 		}
 		
+		
 		public double AutoDetectFileContent(FileName fileName, System.IO.Stream fileContent, string detectedMimeType)
 		{
 			throw new System.NotImplementedException();
 		}
 		
+		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			MessageService.ShowMessage("ReportDesigner not available at the Moment","New ReportDesigner");
-			return null;
-			/*
+			//			MessageService.ShowMessage("ReportDesigner not available at the Moment","New ReportDesigner");
+			//			return null;
+			
 			if (file.IsDirty) {
-				var cmd = new ReportWizardCommand(file);
-				cmd.Run();
-				if (cmd.Canceled) {
-					return null;
-				}
-				file.SetData(cmd.GeneratedReport.ToArray());
+				MessageService.ShowMessage("ReportWizard not available at the Moment","New ReportDesigner");
+				return	null;
+				//				var cmd = new ReportWizardCommand(file);
+				//				cmd.Run();
+				//				if (cmd.Canceled) {
+				//					return null;
+				//				}
+				//				file.SetData(cmd.GeneratedReport.ToArray());
 			}
-			var viewCmd = new CreateDesignViewCommand(file);
+			
+			var viewCmd = new CreateDesignerCommand(file);
 			viewCmd.Run();
-			return viewCmd.DesignerView;
-			*/
+			//			return viewCmd.DesignerView;
+			return null;
 			
 		}
-		
-		#endregion
 	}
 }
