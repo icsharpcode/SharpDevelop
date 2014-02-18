@@ -821,7 +821,11 @@ namespace PackageManagement.Tests
 			
 			bool managed = viewModel.IsManaged;
 			
-			Assert.IsTrue(managed);
+			// Assert.IsTrue(managed);
+			// Only installed project-level package "IsManaged"
+			Assert.IsFalse(managed);
+			bool added = viewModel.IsAdded;
+			Assert.IsFalse(added);
 		}
 		
 		[Test]
@@ -834,7 +838,11 @@ namespace PackageManagement.Tests
 			
 			bool managed = viewModel.IsManaged;
 			
-			Assert.IsTrue(managed);
+			// Assert.IsTrue(managed);
+			// Only installed project-level package "IsManaged"
+			Assert.IsFalse(managed);
+			bool added = viewModel.IsAdded;
+			Assert.IsFalse(added);
 		}
 		
 		[Test]
@@ -893,8 +901,10 @@ namespace PackageManagement.Tests
 		public void ManagePackage_TwoProjectsSelectedAndUserAcceptsSelectedProjects_IsAddedPropertyChanged()
 		{
 			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			viewModel.FakePackageManagementEvents.ProjectsToSelect.Add("Project A");
+			viewModel.FakePackageManagementEvents.ProjectsToSelect.Add("Project B");
 			UserAcceptsProjectSelection();
-			
+				
 			string propertyChangedName = null;
 			viewModel.PropertyChanged += (sender, e) => propertyChangedName = e.PropertyName;
 			

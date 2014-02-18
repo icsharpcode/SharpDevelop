@@ -66,6 +66,8 @@ namespace ICSharpCode.PackageManagement.Design
 			return new FakePackage(id, version);
 		}
 		
+		public bool IsProjectPackage { get { return true; } }
+		
 		public string Id { get; set; }
 		public SemanticVersion Version { get; set; }
 		public string Title { get; set; }
@@ -81,8 +83,6 @@ namespace ICSharpCode.PackageManagement.Design
 		public int DownloadCount { get; set; }
 		public int RatingsCount { get; set; }
 		public double Rating { get; set; }
-		
-		public bool HasProjectContent() { return true; }
 		
 		public IEnumerable<IPackageAssemblyReference> AssemblyReferences {
 			get { return AssemblyReferenceList; }

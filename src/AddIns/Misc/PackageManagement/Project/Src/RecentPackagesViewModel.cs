@@ -45,19 +45,19 @@ namespace ICSharpCode.PackageManagement
 		
 		void RegisterEvents()
 		{
-			packageManagementEvents.ParentPackageInstalled += OnNewRecentPackage;
+			packageManagementEvents.ParentPackageInstalled += OnAddRecentPackage;
 			packageManagementEvents.ParentPackageUninstalled += OnPackageChanged;
-			packageManagementEvents.ParentPackagesUpdated += OnNewRecentPackage;
+			packageManagementEvents.ParentPackagesUpdated += OnAddRecentPackage;
 		}
 		
 		protected override void OnDispose()
 		{
-			packageManagementEvents.ParentPackageInstalled -= OnNewRecentPackage;
+			packageManagementEvents.ParentPackageInstalled -= OnAddRecentPackage;
 			packageManagementEvents.ParentPackageUninstalled -= OnPackageChanged;
-			packageManagementEvents.ParentPackagesUpdated -= OnNewRecentPackage;
+			packageManagementEvents.ParentPackagesUpdated -= OnAddRecentPackage;
 		}
 		
-		void OnNewRecentPackage(object sender, EventArgs e)
+		void OnAddRecentPackage(object sender, EventArgs e)
 		{
 			ReadPackages();
 		}

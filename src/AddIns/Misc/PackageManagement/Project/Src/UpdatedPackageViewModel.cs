@@ -35,13 +35,21 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		protected override ProcessPackageAction CreatePackageManageAction(IPackageManagementSelectedProject selectedProject)
-		{
-			return base.CreateUpdatePackageManageActionForSelectedProject(selectedProject);
+		{	// Modify PackageViewModel logic
+			if (selectedProject.IsSelected) {
+				return base.CreateUpdatePackageManageActionForSelectedProject(selectedProject);
+			}
+			return null;
 		}
 		
 		protected override IDisposable StartOperation(IPackageFromRepository package)
-		{
+		{	// Modify PackageViewModel logic
 			return package.StartUpdateOperation();
+		}
+		
+		protected override ProcessPackageOperationsAction CreateInstallPackageAction(IPackageManagementProject project)
+		{	// Modify UpdatePackageAction logic
+			return project.CreateUpdatePackageAction();
 		}
 	}
 }

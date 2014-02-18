@@ -119,7 +119,7 @@ namespace ICSharpCode.PackageManagement
 			get {
 				if (selectedProjects.HasSingleProjectSelected()) {
 					return selectedProjects.GetSingleProjectSelected(package.Repository).IsPackageInstalled(package)
-						|| (selectedProjects.IsPackageInstalledInSolution(package) && !package.HasProjectContent());
+						|| (IsPackageInstalled() && !package.IsProjectPackage);
 				}
 				return IsPackageInstalled();
 			}
@@ -127,9 +127,7 @@ namespace ICSharpCode.PackageManagement
 		
 		protected bool IsPackageInstalled()
 		{
-			return selectedProjects.IsPackageInstalledInSolution(package);
-				// It works same without second condition ....
-				//|| selectedProjects.IsPackageInstalled(package);
+			return IsPackageInstalledInSolution(package);
 		}
 		
 		public IEnumerable<PackageDependencySet> Dependencies {
@@ -200,14 +198,13 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Published.HasValue; }
 		}
 
-		public void OnPackagePropertyChanged() {
+		public void PackageChanged() {
 			OnPropertyChanged(model => model.IsAdded);
-			OnPropertyChanged(model => model.IsManaged);
 		}
 
 		public void AddOrManagePackage() {
 			if (selectedProjects.HasMultipleProjects()) {
-				if (package.HasProjectContent()) {
+				if (package.IsProjectPackage) {
 					ManagePackage();
 				}
 				else {
@@ -225,7 +222,7 @@ namespace ICSharpCode.PackageManagement
 			logger.LogAddingPackage();
 			
 			using (IDisposable operation = StartOperation(package)) {
-				if (package.HasProjectContent()) {
+				if (package.IsProjectPackage) {
 					TryInstallingPackage();
 				}
 				else {
@@ -234,7 +231,6 @@ namespace ICSharpCode.PackageManagement
 			}
 			
 			logger.LogAfterPackageOperationCompletes();
-			OnPackagePropertyChanged();
 		}
 		
 		protected virtual IDisposable StartOperation(IPackageFromRepository package)
@@ -290,7 +286,7 @@ namespace ICSharpCode.PackageManagement
 		
 		bool IsPackageInstalledInSolution(IPackage package)
 		{
-			return selectedProjects.IsPackageInstalledInSolution(package);
+			return selectedProjects.Solution.IsPackageInstalled(package);
 		}
 
 		void TryInstallingSolutionPackage()
@@ -322,6 +318,7 @@ namespace ICSharpCode.PackageManagement
 						installAction.IgnoreDependencies, 
 						installAction.AllowPrereleaseVersions);
 					packageManagementEvents.OnParentPackageInstalled(package);
+					PackageChanged();
 				}
 			} catch (Exception ex) {
 				ReportError(ex);
@@ -335,6 +332,7 @@ namespace ICSharpCode.PackageManagement
 				GetInstallPackageOperations();
 				if (LicensesAccepted()) {
 					InstallPackage();
+					PackageChanged();
 				}
 			} catch (Exception ex) {
 				ReportError(ex);
@@ -370,7 +368,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RemoveOrManagePackage() {
 			if (selectedProjects.HasMultipleProjects()) {
-				if (package.HasProjectContent()) {
+				if (package.IsProjectPackage) {
 					ManagePackage();
 				}
 				else {
@@ -387,14 +385,13 @@ namespace ICSharpCode.PackageManagement
 			ClearReportedMessages();
 			logger.LogRemovingPackage();
 
-			if (package.HasProjectContent()) {
+			if (package.IsProjectPackage) {
 				TryUninstallingPackage();
 			} else {
 				TryUninstallingSolutionPackage();
 			}
 
 			logger.LogAfterPackageOperationCompletes();
-			OnPackagePropertyChanged();
 		}
 		
 		void LogRemovingPackage()
@@ -409,6 +406,7 @@ namespace ICSharpCode.PackageManagement
 				var packageManager = new NuGet.PackageManager(solutionPackageRepository.Repository, solutionPackageRepository.PackagePathResolver, solutionPackageRepository.FileSystem);
 				packageManager.UninstallPackage(package.Id, package.Version);
 				packageManagementEvents.OnParentPackageUninstalled(package);
+				PackageChanged();
 			} catch (Exception ex) {
 				ReportError(ex);
 				logger.LogError(ex);
@@ -422,6 +420,7 @@ namespace ICSharpCode.PackageManagement
 				UninstallPackageAction action = project.CreateUninstallPackageAction();
 				action.Package = package;
 				actionRunner.Run(action);
+				PackageChanged();
 			} catch (Exception ex) {
 				ReportError(ex);
 				logger.LogError(ex);
@@ -438,14 +437,14 @@ namespace ICSharpCode.PackageManagement
 				// Solution selected 
 				// Project-level/Solution-level Package Management
 				if (IsAdded) {
-					if (package.HasProjectContent()) {
+					if (package.IsProjectPackage) {
 						return true; // [Manage] Button
 					}
 					return false; // [Remove] Button
 				}
-				// package.HasProjectContent() is too slow on uninstalled packages
+				// package.IsProjectPackage() is too slow on uninstalled packages
 				// check ([Add] or [Manage]) after user press on [Add] Package Button
-				return false; // [Add] Button -> redirect to [Manage] if (package.HasProjectContent())
+				return false; // [Add] Button -> redirect to [Manage] if (package.IsProjectPackage())
 			}
 		}
 		
@@ -477,15 +476,28 @@ namespace ICSharpCode.PackageManagement
 			}
 			
 			logger.LogAfterPackageOperationCompletes();
-			OnPackagePropertyChanged();
 		}
 		
 		void TryManagePackagesForSelectedProjects(IList<IPackageManagementSelectedProject> projects)
 		{
 			try {
+				packageOperations = new PackageOperation[0];
+				if (!IsPackageInstalled()) {
+					IPackageManagementSelectedProject firstSelectedProject = (
+						from project in projects 
+						where project.IsSelected 
+						select project).FirstOrDefault();
+					
+					if (firstSelectedProject != null) {
+						InstallPackageAction installAction = firstSelectedProject.Project.CreateInstallPackageAction();
+						installAction.AllowPrereleaseVersions = parent.IncludePrerelease;
+						packageOperations = firstSelectedProject.Project.GetInstallPackageOperations(package, installAction);
+					}
+				}
 				IList<ProcessPackageAction> actions = GetProcessPackageActionsForSelectedProjects(projects);
-				if (actions.Any() && (IsPackageInstalled() || LicensesAccepted())) {
+				if (actions.Any() && LicensesAccepted()) {
 					RunActionsIfAnyExist(actions);
+					PackageChanged();
 				}
 			} catch (Exception ex) {
 				ReportError(ex);
@@ -519,29 +531,26 @@ namespace ICSharpCode.PackageManagement
 			return CreateUninstallPackageManageActionForSelectedProject(selectedProject);
 		}
 		
-		protected ProcessPackageAction CreateUpdatePackageManageActionForSelectedProject(IPackageManagementSelectedProject selectedProject)
+		ProcessPackageAction CreateInstallPackageManageActionForSelectedProject(IPackageManagementSelectedProject selectedProject)
 		{
-
-			// TODO? Fix UpdatedPackageViewModelTests to comply with this condition
-			if (selectedProject.Project.GetPackages().Where(p => p.Id == package.Id).Any() &&
-				!selectedProject.Project.GetPackages().Where(p => p.Id == package.Id && p.Version == package.Version).Any()) {
-				return CreateUpdatePackageAction(selectedProject);
+			if (!selectedProject.Project.IsPackageInstalled(package)) {
+				return CreateInstallPackageAction(selectedProject);
 			}
 			return null;
 		}
 		
-		ProcessPackageAction CreateInstallPackageManageActionForSelectedProject(IPackageManagementSelectedProject selectedProject)
-		{
-			//if (!selectedProject.Project.GetPackages().Where(p => p.Id == package.Id && p.Version == package.Version).Any()) {
-				return CreateInstallPackageAction(selectedProject);
-			//}
-			//return null;
-		}
-		
 		ProcessPackageAction CreateUninstallPackageManageActionForSelectedProject(IPackageManagementSelectedProject selectedProject)
 		{
-			if (selectedProject.Project.GetPackages().Where(p => p.Id == package.Id && p.Version == package.Version).Any()) {
+			if (selectedProject.Project.IsPackageInstalled(package)) {
 				return CreateUninstallPackageAction(selectedProject);
+			}
+			return null;
+		}
+		
+		protected ProcessPackageAction CreateUpdatePackageManageActionForSelectedProject(IPackageManagementSelectedProject selectedProject)
+		{
+			if (!selectedProject.Project.IsPackageInstalled(package)) {
+				return CreateUpdatePackageAction(selectedProject);
 			}
 			return null;
 		}
@@ -561,6 +570,7 @@ namespace ICSharpCode.PackageManagement
 			project.Logger = logger;
 			
 			ProcessPackageOperationsAction action = CreateInstallPackageAction(project);
+			action.AllowPrereleaseVersions = parent.IncludePrerelease;
 			action.Package = package;
 			return action;
 		}
@@ -581,6 +591,7 @@ namespace ICSharpCode.PackageManagement
 			project.Logger = logger;
 			
 			ProcessPackageOperationsAction action = project.CreateUpdatePackageAction();
+			action.AllowPrereleaseVersions = parent.IncludePrerelease;
 			action.Package = package;
 			return action;
 		}
@@ -591,32 +602,6 @@ namespace ICSharpCode.PackageManagement
 				actionRunner.Run(actions);
 			}
 		}
-		
-		IEnumerable<IPackage> GetPackagesRequiringLicenseAcceptance(IPackageManagementSelectedProject selectedProject)
-		{
-			IPackageManagementProject project = selectedProject.Project;
-			project.Logger = logger;
-			InstallPackageAction installAction = project.CreateInstallPackageAction();
-			installAction.AllowPrereleaseVersions = parent.IncludePrerelease;
-			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, installAction);
-			return GetPackagesRequiringLicenseAcceptance(operations);
-		}
-		
-		IEnumerable<IPackage> GetPackagesRequiringLicenseAcceptance(IEnumerable<PackageOperation> operations)
-		{
-			foreach (PackageOperation operation in operations) {
-				if (PackageOperationRequiresLicenseAcceptance(operation)) {
-					yield return operation.Package;
-				}
-			}
-		}
-		
-		bool PackageOperationRequiresLicenseAcceptance(PackageOperation operation)
-		{
-			return
-				(operation.Action == PackageAction.Install) &&
-				operation.Package.RequireLicenseAcceptance &&
-				!IsPackageInstalledInSolution(operation.Package);
-		}
+	
 	}
 }

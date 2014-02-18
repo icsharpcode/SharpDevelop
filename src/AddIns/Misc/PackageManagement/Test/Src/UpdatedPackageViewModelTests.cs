@@ -49,7 +49,6 @@ namespace PackageManagement.Tests
 			viewModelParent = MockRepository.GenerateStub<IPackageViewModelParent>();
 			viewModel = new TestableUpdatedPackageViewModel(viewModelParent, fakeSolution);
 			fakeProject = fakeSolution.FakeProjectToReturnFromGetProject;
-			fakeSolution.AddPackageToSharedLocalRepository("","0.0.0.0");
 			fakeActionRunner = viewModel.FakeActionRunner;
 			fakePackageManagementEvents = viewModel.FakePackageManagementEvents;
 		}
@@ -135,6 +134,7 @@ namespace PackageManagement.Tests
 			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
 			fakePackageManagementEvents.ProjectsToSelect.Add("Project B");
 			fakePackageManagementEvents.OnSelectProjectsReturnValue = true;
+
 			viewModel.ManagePackage();
 			
 			FakePackage expectedPackage = viewModel.FakePackage;

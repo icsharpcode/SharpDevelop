@@ -95,18 +95,18 @@ namespace ICSharpCode.PackageManagement
 			if (PackageViewModels == null) return;
 			var operation = e as ParentPackageOperationEventArgs;
 			if (operation != null && operation.Package != null) {
-				foreach (var found in PackageViewModels) {
-					if (found.Id == operation.Package.Id) {
+				foreach (var packageViewModel in PackageViewModels) {
+					if (packageViewModel.Id == operation.Package.Id) {
 						// Do not compare package.Version here
 						// On update, two packages are changed
-						found.OnPackagePropertyChanged();
+						packageViewModel.PackageChanged();
 					}
 				}
 			} 
 			else {
 				// Unknown operation/package -> refresh all items
-				foreach (var found in this.PackageViewModels) {
-					found.OnPackagePropertyChanged();
+				foreach (var packageViewModel in this.PackageViewModels) {
+					packageViewModel.PackageChanged();
 				}
 			}
 		}
