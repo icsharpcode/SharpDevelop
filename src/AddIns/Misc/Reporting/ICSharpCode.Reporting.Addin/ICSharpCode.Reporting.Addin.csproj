@@ -61,14 +61,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
-    <Folder Include="scr" />
-    <Folder Include="scr\DesignerBinding" />
-    <Folder Include="scr\Commands" />
+    <Folder Include="DesignerBinding" />
+    <Folder Include="Commands" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="scr\Commands\ViewCommands.cs" />
-    <Compile Include="scr\DesignerBinding\DesignerBinding.cs" />
+    <Compile Include="Commands\ViewCommands.cs" />
+    <Compile Include="DesignerBinding\DesignerBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EmptyReport.xft">
