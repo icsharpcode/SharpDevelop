@@ -220,8 +220,11 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		[Ignore("Property is not changed. Event OnParentPackageInstalled is fired")]
 		public void AddPackage_PackageAddedSuccessfully_PropertyNotifyChangedFiredForIsAddedProperty()
 		{
+			Assert.Ignore("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
+
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 
@@ -233,8 +236,11 @@ namespace PackageManagement.Tests
 		}
 
 		[Test]
+		[Ignore("Property is not changed. Event OnParentPackageInstalled is fired")]
 		public void AddPackage_PackageAddedSuccessfully_PropertyNotifyChangedFiredAfterPackageInstalled()
 		{
+			Assert.Ignore("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
+
 			CreateViewModel();
 			IPackage packagePassedToInstallPackageWhenPropertyNameChanged = null;
 			viewModel.PropertyChanged += (sender, e) => {
@@ -337,8 +343,11 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		[Ignore("Property is not changed. Event OnParentPackageUninstalled is fired")]
 		public void RemovePackage_PackageRemovedSuccessfully_PropertyNotifyChangedFiredForIsAddedProperty()
 		{
+			Assert.Ignore("OnParentPackageUninstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
+
 			CreateViewModel();
 			string propertyChangedName = null;
 			viewModel.PropertyChanged += (sender, e) => propertyChangedName = e.PropertyName;
@@ -348,8 +357,11 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		[Ignore("Property is not changed. Event OnParentPackageUninstalled is fired")]
 		public void RemovePackage_PackageRemovedSuccessfully_PropertyNotifyChangedFiredAfterPackageUninstalled()
 		{
+			Assert.Ignore("OnParentPackageUninstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
+
 			CreateViewModel();
 			IPackage packagePassedToUninstallPackageWhenPropertyNameChanged = null;
 			viewModel.PropertyChanged += (sender, e) => {
@@ -898,8 +910,11 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		[Ignore("Property is not changed. Event OnParentPackageInstalled is fired")]
 		public void ManagePackage_TwoProjectsSelectedAndUserAcceptsSelectedProjects_IsAddedPropertyChanged()
 		{
+			Assert.Ignore("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
+
 			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
 			viewModel.FakePackageManagementEvents.ProjectsToSelect.Add("Project A");
 			viewModel.FakePackageManagementEvents.ProjectsToSelect.Add("Project B");

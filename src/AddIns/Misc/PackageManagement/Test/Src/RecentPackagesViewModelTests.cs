@@ -90,7 +90,7 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			//RecentPackagesViewModel will not re-ReadPackages OnParentPackageUninstalled
+			// RecentPackagesViewModel will not re-ReadPackages OnParentPackageUninstalled
 			// because OnParentPackageUninstalled that package is not removed from recent packages
 			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
 
