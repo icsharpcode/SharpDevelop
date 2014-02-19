@@ -61,7 +61,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		SetAsValid,
 		/// <summary>
-		/// The new model is marked as dirty, the previously dirty model is marked as stale, and any other models are unchanged.
+		/// The new model is marked as dirty or valid (depending on whether the OpenedFile was previously dirty),
+		/// the previously dirty model (if any) is marked as stale, and any other models are unchanged.
 		/// This mode is intended for use in <see cref="IFileModelProvider{T}.Save"/> implementations.
 		/// </summary>
 		TransferDirty
@@ -89,6 +90,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			public abstract void SaveCopyAs(OpenedFile file, FileName outputFileName, FileSaveOptions options);
 			public abstract void NotifyRename(OpenedFile file, FileName oldName, FileName newName);
 			public abstract void NotifyStale(OpenedFile file);
+			public abstract void NotifyLoaded(OpenedFile file);
 			public abstract void NotifyUnloaded(OpenedFile file);
 			public abstract bool NeedsSaveForLoadInto<T>(IFileModelProvider<T> modelProvider) where T : class;
 		}
@@ -125,6 +127,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			public override void NotifyStale(OpenedFile file)
 			{
 				provider.NotifyStale(file, Model);
+			}
+			
+			public override void NotifyLoaded(OpenedFile file)
+			{
+				provider.NotifyLoaded(file, Model);
 			}
 			
 			public override void NotifyUnloaded(OpenedFile file)
@@ -475,6 +482,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				if (entry.Model != model) {
 					entry.NotifyUnloaded(this);
 					entry.Model = model;
+					entry.NotifyLoaded(this);
 				}
 				entry.IsStale = false;
 			}
@@ -491,8 +499,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					}
 					break;
 				case ReplaceModelMode.TransferDirty:
-					dirtyEntry = entry;
-					this.IsDirty = true;
+					if (dirtyEntry != null)
+						dirtyEntry = entry;
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();

@@ -26,6 +26,7 @@ using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
+	/*
 	/// <summary>
 	/// This class handles errors in the Load method and prevents destroying invalid files.
 	/// Scenario:
@@ -67,31 +68,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
-		public bool HasLoadError {
-			get {
-				return errorList.Count > 0;
-			}
-		}
-		
-		class LoadError
-		{
-			internal Exception exception;
-			internal byte[] fileData;
-			
-			public LoadError(Exception exception, Stream stream)
-			{
-				this.exception = exception;
-				stream.Position = 0;
-				this.fileData = new byte[(int)stream.Length];
-				int pos = 0;
-				while (pos < fileData.Length) {
-					int c = stream.Read(fileData, pos, fileData.Length - pos);
-					if (c == 0) break;
-					pos += c;
-				}
-			}
-		}
-		
 		TextBox errorTextBox;
 		
 		protected void ShowError(Exception ex)
@@ -105,8 +81,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			SD.WinForms.SetContent(contentControl, errorTextBox, this);
 		}
 		
-		Dictionary<OpenedFile, LoadError> errorList = new Dictionary<OpenedFile, LoadError>();
-		
 		/// <summary>
 		/// Gets a text to be shown above the exception when a load error occurs.
 		/// The default is an empty string.
@@ -115,4 +89,5 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			get { return String.Empty; }
 		}
 	}
+	*/
 }

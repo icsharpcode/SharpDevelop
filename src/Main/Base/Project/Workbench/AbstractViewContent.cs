@@ -208,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void InitFiles()
 		{
-			files = new ObserveAddRemoveCollection<OpenedFile>(RegisterFileEventHandlers, UnregisterFileEventHandlers);
+			files = new ObserveAddRemoveCollection<OpenedFile>(OnFileAdded, OnFileRemoved);
 			filesReadonly = new ReadOnlyCollection<OpenedFile>(files);
 		}
 		
@@ -254,7 +254,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
-		void RegisterFileEventHandlers(OpenedFile newItem)
+		internal virtual void OnFileAdded(OpenedFile newItem)
 		{
 			newItem.FileNameChanged += OnFileNameChanged;
 			newItem.IsDirtyChanged += OnIsDirtyChanged;
@@ -262,7 +262,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			OnIsDirtyChanged(null, EventArgs.Empty); // re-evaluate this.IsDirty after changing the file collection
 		}
 		
-		void UnregisterFileEventHandlers(OpenedFile oldItem)
+		internal virtual void OnFileRemoved(OpenedFile oldItem)
 		{
 			oldItem.FileNameChanged -= OnFileNameChanged;
 			oldItem.IsDirtyChanged -= OnIsDirtyChanged;

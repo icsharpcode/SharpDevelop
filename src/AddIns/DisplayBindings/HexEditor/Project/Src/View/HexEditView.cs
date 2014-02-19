@@ -27,7 +27,7 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace HexEditor.View
 {
-	public class HexEditView : AbstractViewContent, IClipboardHandler, IUndoHandler
+	public class HexEditView : AbstractViewContentSD1234, IClipboardHandler, IUndoHandler
 	{
 		HexEditContainer hexEditContainer;
 		
@@ -38,7 +38,7 @@ namespace HexEditor.View
 			
 			this.Files.Add(file);
 			
-			file.ForceInitializeView(this);
+			LoadModel();
 			
 			SD.AnalyticsMonitor.TrackFeature(typeof(HexEditView));
 		}

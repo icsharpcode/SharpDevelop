@@ -352,6 +352,7 @@
     <Compile Include="Workbench\AbstractPadContent.cs" />
     <Compile Include="Workbench\AbstractViewContent.cs" />
     <Compile Include="Workbench\AbstractViewContentHandlingLoadErrors.cs" />
+    <Compile Include="Workbench\AbstractViewContentSD1234.cs" />
     <Compile Include="Workbench\DisplayBinding\DisplayBindingDescriptor.cs" />
     <Compile Include="Workbench\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Workbench\DisplayBinding\IDisplayBinding.cs" />
