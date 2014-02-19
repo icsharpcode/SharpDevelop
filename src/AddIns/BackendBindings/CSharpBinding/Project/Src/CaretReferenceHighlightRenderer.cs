@@ -188,7 +188,7 @@ namespace CSharpBinding
 		{
 			var identifierNode = FindReferences.GetNodeToReplace(node);
 			TextLocation start, end;
-			if (!identifierNode.IsNull) {
+			if (identifierNode != null && !identifierNode.IsNull) {
 				start = identifierNode.StartLocation;
 				end = identifierNode.EndLocation;
 			}
