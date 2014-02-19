@@ -297,7 +297,7 @@ namespace ICSharpCode.PackageManagement
 				installAction.IgnoreDependencies = false;
 				installAction.AllowPrereleaseVersions = parent.IncludePrerelease;
 
-				var solutionRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
+				var solutionRepository = selectedProjects.Solution.CreateSolutionPackageRepository();
 
 				var resolverFactory = new PackageOperationsResolverFactory();
 				var resolver = resolverFactory.CreateInstallPackageOperationResolver(
