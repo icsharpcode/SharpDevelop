@@ -140,6 +140,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 	}
 
 	
+	
 	internal class CalculatePdfFormat {
 		
 		public static int PdfAlignment(TextStyleDecorator textDecorator)

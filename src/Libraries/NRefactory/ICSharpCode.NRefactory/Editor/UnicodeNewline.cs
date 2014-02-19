@@ -322,7 +322,14 @@ namespace ICSharpCode.NRefactory
 		/// </summary>
 		public static bool IsNewLine(char ch)
 		{
-			return GetDelimiterLength (ch) > 0;
+			return
+				ch == NewLine.CR ||
+				ch == NewLine.LF ||
+				ch == NewLine.NEL ||
+				ch == NewLine.VT ||
+				ch == NewLine.FF ||
+				ch == NewLine.LS ||
+				ch == NewLine.PS;
 		}
 
 		/// <summary>

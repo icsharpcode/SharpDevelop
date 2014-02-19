@@ -23,6 +23,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -97,6 +98,11 @@ namespace ICSharpCode.PackageManagement
 		public ICompilation GetCompilationUnit(string fileName)
 		{
 			return SD.ParserService.GetCompilationForFile(new FileName(fileName));
+		}
+		
+		public ICompilation GetCompilationUnit(IProject project)
+		{
+			return SD.ParserService.GetCompilation(project);
 		}
 	}
 }

@@ -17,12 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Drawing;
 using System.Linq;
-
-using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.PageBuilder
 {
@@ -34,37 +30,28 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		public FormPageBuilder(IReportModel reportModel):base(reportModel)
 		{
-			
 		}
 		
 		
 		public override void BuildExportList()
 		{
+			SetupExpressionRunner(ReportModel.ReportSettings,null);
 			base.BuildExportList();
-			WritePages ();
+			BuildDetail();
+			BuildReportFooter();
+			AddPage(CurrentPage);
+			UpdatePageInfo();
+//			RunDebugVisitor();
+			ExpressionRunner.Run();
 		}
+
 		
-		
-		
-		void BuilDetail()
+		void BuildDetail()
 		{
-			Console.WriteLine("FormPageBuilder - Build DetailSection {0} - {1} - {2}",ReportModel.ReportSettings.PageSize.Width,ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.RightMargin);
 			CurrentLocation = DetailStart;
-			
 			var detail = CreateSection(ReportModel.DetailSection,CurrentLocation);
 			detail.Parent = CurrentPage;
 			CurrentPage.ExportedItems.Insert(2,detail);
 		}
-		
-		
-		protected override void WritePages()
-		{
-			base.WritePages();
-			BuilDetail();
-			base.AddPage(CurrentPage);
-			Console.WriteLine("------{0}---------",ReportModel.ReportSettings.PageSize);
-		}
-		
-		
 	}
 }

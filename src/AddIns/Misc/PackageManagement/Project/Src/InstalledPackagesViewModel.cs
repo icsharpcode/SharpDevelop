@@ -84,7 +84,7 @@ namespace ICSharpCode.PackageManagement
 			if (project != null) {
 				return project.GetPackages();
 			}
-			return solution.GetPackages();
+			return solution.GetInstalledPackages();
 		}
 		
 		void ThrowOriginalExceptionWhenTryingToGetProjectManager()

@@ -50,7 +50,6 @@ namespace ICSharpCode.Reports.Addin.Commands
 	}
 	
 	
-	
 	public class CollectParametersCommand :AbstractCommand
 	{
 		readonly ReportSettings reportSettings;

@@ -24,9 +24,31 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeModelContext
 	{
+		ICodeGenerator codeGenerator;
+		IDocumentLoader documentLoader;
+		
+		public Project DteProject { get; set; }
 		public IProject CurrentProject { get; set; }
-		public IDocumentLoader DocumentLoader { get; set; }
-		public CodeGenerator CodeGenerator { get; set; }
+		
+		public IDocumentLoader DocumentLoader {
+			get {
+				if (documentLoader == null) {
+					documentLoader = new DocumentLoader();
+				}
+				return documentLoader;
+			}
+			
+			set { documentLoader = value; }
+		}
+		
+		public ICodeGenerator CodeGenerator {
+			get {
+				if (codeGenerator == null) {
+					codeGenerator = new ThreadSafeCodeGenerator(CurrentProject.LanguageBinding.CodeGenerator);
+				}
+				return codeGenerator;
+			}
+		}
 		
 		/// <summary>
 		/// Specifies the file name if this code model context refers to
@@ -35,7 +57,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public CodeModelContext WithFilteredFileName(string fileName)
 		{
-			CodeModelContext newContext = (CodeModelContext)MemberwiseClone();
+			var newContext = (CodeModelContext)MemberwiseClone();
 			newContext.FilteredFileName = fileName;
 			return newContext;
 		}

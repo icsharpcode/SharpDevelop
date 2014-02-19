@@ -17,7 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
+
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
@@ -25,10 +27,63 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	/// <summary>
 	/// Description of AbstractVisitor.
 	/// </summary>
-	public abstract class AbstractVisitor : IVisitor
-	{
-		public abstract void Visit(ExportColumn exportColumn);
-		public abstract void Visit(ExportContainer exportColumn);
-		public abstract void Visit(ExportText exportColumn);
+	/// 
+	class AbstractVisitor : IVisitor{
+
+		public virtual void Run (Collection<ExportPage> pages) {
+			if (pages == null)
+				throw new ArgumentNullException("pages");
+			Pages = pages;
+			foreach (var page in pages) {
+				Visit(page);
+			}
+		}
+		
+		
+		public virtual void Visit (ExportPage page) {
+			
+			foreach (var element in page.ExportedItems) {
+				var ac = element as IAcceptor;
+				ac.Accept(this);
+			}
+		}
+		
+		
+		public virtual void Visit (ExportContainer exportContainer) {
+			foreach (var element in exportContainer.ExportedItems) {
+				
+				var ac = element as IAcceptor;
+				ac.Accept(this);
+			}
+		}
+		
+		
+		public virtual void Visit(ExportText exportColumn)
+		{
+		}
+		
+		
+		public virtual void Visit(ExportLine exportGraphics)
+		{
+		}
+		
+		public virtual void Visit (ExportRectangle exportRectangle) {
+			
+		}
+		
+		
+		public virtual void Visit (ExportCircle exportCircle) {
+			
+		}
+		
+		
+		protected static bool ShouldSetBackcolor (ExportColumn exportColumn) {
+			return exportColumn.BackColor != Color.White;
+		}
+		
+		
+		protected Collection<ExportPage> Pages {get; private set;}
+		
+		
 	}
 }

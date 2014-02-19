@@ -59,5 +59,57 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 		}
+		
+		[Test]
+		public void NullNodesCallVisitNullNode()
+		{
+			foreach (Type type in typeof(AstNode).Assembly.GetExportedTypes()) {
+				if (type.IsSubclassOf(typeof(AstNode))) {
+					var nullField = type.GetField("Null");
+					if (nullField != null) {
+						AstNode nullNode = (AstNode)nullField.GetValue(null);
+						Assert.IsTrue(nullNode.IsNull, nullNode.GetType().Name + " should be a null node");
+						var v1 = new VisitNullNodeTest();
+						var v2 = new VisitNullNodeTest<string>();
+						var v3 = new VisitNullNodeTest<string, string>();
+						nullNode.AcceptVisitor(v1);
+						nullNode.AcceptVisitor(v2);
+						nullNode.AcceptVisitor(v3, null);
+						Assert.IsTrue(v1.called, nullNode.GetType().Name + " should call 'void VisitNullNode();'");
+						Assert.IsTrue(v2.called, nullNode.GetType().Name + " should call 'T VisitNullNode();'");
+						Assert.IsTrue(v3.called, nullNode.GetType().Name + " should call 'S VisitNullNode(T data);'");
+					}
+				}
+			}
+		}
+		
+		class VisitNullNodeTest : DepthFirstAstVisitor 
+		{
+			internal bool called;
+			public override void VisitNullNode(AstNode nullNode)
+			{
+				called = true;
+			}
+		}
+		
+		class VisitNullNodeTest<T> : DepthFirstAstVisitor<T> 
+		{
+			internal bool called;
+			public override T VisitNullNode(AstNode nullNode)
+			{
+				called = true;
+				return base.VisitNullNode(nullNode);
+			}
+		}
+		
+		class VisitNullNodeTest<T, S> : DepthFirstAstVisitor<T, S> 
+		{
+			internal bool called;
+			public override S VisitNullNode(AstNode nullNode, T data)
+			{
+				called = true;
+				return base.VisitNullNode(nullNode, data);
+			}
+		}
 	}
 }

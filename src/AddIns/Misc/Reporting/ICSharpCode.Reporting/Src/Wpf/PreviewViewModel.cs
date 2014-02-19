@@ -19,14 +19,11 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Documents;
-using System.Windows.Markup;
 
-using ICSharpCode.Reporting.Exporter;
-using ICSharpCode.Reporting.ExportRenderer;
-using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
+using ICSharpCode.Reporting.WpfReportViewer.Visitor;
 
 namespace ICSharpCode.Reporting.WpfReportViewer
 {
@@ -36,29 +33,30 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 	public class PreviewViewModel:INotifyPropertyChanged
 	{
 		
-		private FixedDocument document ;
+		FixedDocument document ;
 		
-		public PreviewViewModel(ReportSettings reportSettings, Collection<IPage> pages)
+		public PreviewViewModel(ReportSettings reportSettings, Collection<ExportPage> pages)
 		{
 			if (pages == null)
 				throw new ArgumentNullException("pages");
 			if (reportSettings == null)
 				throw new ArgumentNullException("reportSettings");
-			Document = new FixedDocument();
-			var s = Document.DocumentPaginator.PageSize;
-			Document.DocumentPaginator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width,reportSettings.PageSize.Height);
-			var wpfExporter = new WpfExporter(reportSettings,pages);
+			
+			Document = CreateFixedDocument(reportSettings);
+			
+			var wpfExporter = new WpfExporter(pages);
 			wpfExporter.Run();
-			var fixedPage = wpfExporter.FixedPage;
-			AddPageToDocument(Document,fixedPage);
+			this.document = wpfExporter.Document;
+		}
+
+		static FixedDocument CreateFixedDocument(ReportSettings reportSettings)
+		{
+			var document = new FixedDocument();
+			document.DocumentPaginator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width,
+			                                                              reportSettings.PageSize.Height);
+		return document;
 		}
 		
-		static void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)
-		{
-			var pageContent = new PageContent();
-			((IAddChild)pageContent).AddChild(page);
-			fixedDocument.Pages.Add(pageContent);
-		}
 		
 		public FixedDocument Document
 		{
@@ -66,7 +64,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 			set {
 				this.document = value;
 				OnNotifyPropertyChanged ("Document");
-				}	
+			}
 		}
 		
 		

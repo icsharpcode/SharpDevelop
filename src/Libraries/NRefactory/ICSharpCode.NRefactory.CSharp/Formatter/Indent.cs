@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 	public class Indent
 	{
-		readonly Stack<IndentType> indentStack = new Stack<IndentType>();
+		readonly CloneableStack<IndentType> indentStack = new CloneableStack<IndentType>();
 		readonly TextEditorOptions options;
 		int curIndent;
 		int extraSpaces;
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		Indent(Indent engine)
 		{
-			this.indentStack = new Stack<IndentType>(engine.indentStack.Reverse());
+			this.indentStack = engine.indentStack.Clone();
 			this.options = engine.options;
 			this.curIndent = engine.curIndent;
 			this.extraSpaces = engine.extraSpaces;

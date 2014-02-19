@@ -30,7 +30,7 @@ namespace ICSharpCode.Reporting.DataSource
 	/// <summary>
 	/// Description of DataCollection.
 	/// </summary>
-	internal class DataCollection<T> : IList<T>,ITypedList
+	class DataCollection<T> : IList<T>,ITypedList
 	{
 		Collection<T> list = new Collection<T>();
 		Type elementType;
@@ -89,7 +89,7 @@ namespace ICSharpCode.Reporting.DataSource
 		}
 		
 		
-		public void AddRange(IList range)
+		public void AddRange(IEnumerable range)
 		{
 			foreach(T t in range) {
 				Add(t);
@@ -207,7 +207,7 @@ namespace ICSharpCode.Reporting.DataSource
 		}
 		
 		[DebuggerStepThrough]
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			return list.GetEnumerator();
 		}

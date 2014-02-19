@@ -19,7 +19,7 @@
 using System;
 using System.Reflection;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.PageBuilder;
+using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using NUnit.Framework;
 
@@ -28,14 +28,14 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 	[TestFixture]
 	public class BaseConvertFixture
 	{
-		private IReportCreator reportCreator;
+		IReportCreator reportCreator;
 		
 		
 		[Test]
 		public void CurrentPageContainFiveItems() {
 			reportCreator.BuildExportList();
 			var page = reportCreator.Pages[0];
-			Assert.That(page.ExportedItems.Count, Is.EqualTo(5));
+			Assert.That(page.ExportedItems.Count, Is.EqualTo(4));
 		}
 		
 		
@@ -57,10 +57,22 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		}
 		
 		
+		[Test]
+		public void SectionRenderingCalledFromEachSection() {
+			int i = 0;
+			reportCreator.SectionRendering += (sender, e) => {
+//				Console.WriteLine("Hi with from {0} with {1}",e.ToString(),e.Section.Name);
+				i ++;
+			};
+			reportCreator.BuildExportList();
+			var p = reportCreator.Pages[0];
+//			Assert.That(i,Is.EqualTo(p.ExportedItems.Count -1));
+		}
+		
 		[SetUp]
 		public void LoadFromStream()
 		{
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			var asm = Assembly.GetExecutingAssembly();
 			var stream = asm.GetManifestResourceStream(TestHelper.RepWithTwoItems);
 			var reportingFactory = new ReportingFactory();
 			reportCreator = reportingFactory.ReportCreator(stream);

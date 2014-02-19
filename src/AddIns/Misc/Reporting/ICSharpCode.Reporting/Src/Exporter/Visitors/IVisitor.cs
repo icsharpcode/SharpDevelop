@@ -17,15 +17,17 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
 {
 	public interface IVisitor
 	{
-		void Visit(ExportColumn exportColumn);
+		void Visit(ExportPage page);
 		void Visit(ExportContainer exportColumn);
 		void Visit(ExportText exportColumn);
+		void Visit(ExportLine exportGraphics);
+		void Visit (ExportRectangle exportRectangle);
+		void Visit (ExportCircle exportCircle);
 	}
 }

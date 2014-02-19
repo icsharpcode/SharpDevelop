@@ -17,12 +17,11 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.ComponentModel;
 using System.IO;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
 
@@ -55,20 +54,22 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return new FileProjectItems(this);
 		}
 		
-		internal static ProjectItem FindByEntity(IProject project, IEntityModel entity)
+		internal static ProjectItem FindByEntity(IProject project, IEntity entity)
 		{
-			throw new NotImplementedException();
+			if (entity.Region.FileName != null) {
+				return FindByFileName(project, entity.Region.FileName);
+			}
+			return null;
 		}
 		
-//		internal ProjectItem(MSBuildBasedProject project, IClass c)
-//			: this(new Project(project), project.FindFile(c.CompilationUnit.FileName))
-//		{
-//		}
-//		
-//		internal ProjectItem(IProjectContent projectContent, IClass c)
-//			: this((MSBuildBasedProject)projectContent.Project, c)
-//		{
-//		}
+		internal static ProjectItem FindByFileName(IProject project, string fileName)
+		{
+			SD.FileProjectItem item = project.FindFile(new FileName(fileName));
+			if (item != null) {
+				return new ProjectItem(new Project(project as MSBuildBasedProject), item);
+			}
+			return null;
+		}
 		
 		string GetKindFromFileProjectItemType()
 		{
@@ -170,12 +171,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public global::EnvDTE.FileCodeModel2 FileCodeModel {
 			get {
-//				if (!IsDirectory) {
-//					return new FileCodeModel2(containingProject, projectItem);
-//				}
-//				return null;
-				throw new NotImplementedException();
+				if (!IsDirectory) {
+					return new FileCodeModel2(CreateModelContext(), containingProject);
+				}
+				return null;
 			}
+		}
+		
+		CodeModelContext CreateModelContext()
+		{
+			return new CodeModelContext {
+				CurrentProject = containingProject.MSBuildProject,
+				FilteredFileName = projectItem.FileName
+			};
 		}
 		
 		internal string GetIncludePath(string fileName)

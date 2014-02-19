@@ -80,12 +80,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		internal HashSet<string> customConditionalSymbols;
 
+		/// <summary>
+		///     Stores the results of evaluations of the preprocessor if/elif directives 
+		///     in the current block (between #if and #endif).
+		/// </summary>
+		internal CloneableStack<bool> ifDirectiveEvalResults = new CloneableStack<bool> ();
 
 		/// <summary>
-		///     True if any of the preprocessor if/elif directives in the current
-		///     block (between #if and #endif) were evaluated to true.
+		///     Stores the indentation levels of the if directives in the current block.
 		/// </summary>
-		internal Stack<bool> ifDirectiveEvalResult = new Stack<bool> ();
+		internal CloneableStack<Indent> ifDirectiveIndents = new CloneableStack<Indent>();
 
 		/// <summary>
 		///     Stores the last sequence of characters that can form a
@@ -245,7 +249,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		internal char previousNewline = '\0';
 
-
 		/// <summary>
 		///    Current indent level on this line.
 		/// </summary>
@@ -283,7 +286,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.textEditorOptions = textEditorOptions;
 			this.document = document;
 
-			this.currentState = IndentStateFactory.Default(this);
+			this.currentState = new GlobalBodyState(this);
 
 			this.conditionalSymbols = new HashSet<string>();
 			this.customConditionalSymbols = new HashSet<string>();
@@ -311,7 +314,6 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			this.wordToken = new StringBuilder(prototype.wordToken.ToString());
 			this.previousKeyword = string.Copy(prototype.previousKeyword);
-			this.ifDirectiveEvalResult = prototype.ifDirectiveEvalResult;
 
 			this.offset = prototype.offset;
 			this.line = prototype.line;
@@ -324,7 +326,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.currentIndent = new StringBuilder(prototype.CurrentIndent.ToString());
 			this.lineBeganInsideMultiLineComment = prototype.lineBeganInsideMultiLineComment;
 			this.lineBeganInsideVerbatimString = prototype.lineBeganInsideVerbatimString;
-			this.ifDirectiveEvalResult = new Stack<bool>(prototype.ifDirectiveEvalResult.Reverse());
+			this.ifDirectiveEvalResults = prototype.ifDirectiveEvalResults.Clone();
+			this.ifDirectiveIndents = prototype.ifDirectiveIndents.Clone();
 
 			this.EnableCustomIndentLevels = prototype.EnableCustomIndentLevels;
 		}
@@ -373,26 +376,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			var isNewLine = NewLine.IsNewLine(ch);
 			if (!isNewLine) {
 				currentState.Push(currentChar = ch);
-			} else {
-				if (ch == NewLine.LF && previousNewline == NewLine.CR) {
-					offset++;
-					return;
-				}
-				currentState.Push(currentChar = newLineChar);
-			}
-
-			offset++;
-
-			if (!isNewLine)
-			{
+				offset++;
 				previousNewline = '\0';
 				// ignore whitespace and newline chars
-				if (!char.IsWhiteSpace(currentChar))
+				var isWhitespace = currentChar == ' ' || currentChar == '\t';
+				if (!isWhitespace)
 				{
 					previousChar = currentChar;
+					isLineStart = false;
 				}
-
-				isLineStart &= char.IsWhiteSpace(ch);
 
 				if (isLineStart)
 				{
@@ -408,9 +400,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				{
 					column++;
 				}
-			}
-			else
-			{
+			} else {
+				if (ch == NewLine.LF && previousNewline == NewLine.CR) {
+					offset++;
+					return;
+				}
+				currentState.Push(currentChar = newLineChar);
+				offset++;
+
 				previousNewline = ch;
 				// there can be more than one chars that determine the EOL,
 				// the engine uses only one of them defined with newLineChar
@@ -432,9 +429,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <inheritdoc />
 		public void Reset()
 		{
-			currentState = IndentStateFactory.Default(this);
+			currentState = new GlobalBodyState(this);
 			conditionalSymbols.Clear();
-			ifDirectiveEvalResult.Clear();
+			ifDirectiveEvalResults.Clear();
+			ifDirectiveIndents.Clear();
 
 			offset = 0;
 			line = 1;

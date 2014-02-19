@@ -35,21 +35,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		global::EnvDTE.vsCMParameterKind GetParameterKind()
 		{
-			global::EnvDTE.vsCMParameterKind kind = 0;
+			global::EnvDTE.vsCMParameterKind kind =  global::EnvDTE.vsCMParameterKind.vsCMParameterKindNone;
 			if (parameter.IsOptional) {
-				kind |= global::EnvDTE.vsCMParameterKind.vsCMParameterKindOptional;
+				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindOptional;
 			}
 			if (parameter.IsOut) {
-				kind |= global::EnvDTE.vsCMParameterKind.vsCMParameterKindOut;
-			} 
+				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindOut;
+			}
 			if (parameter.IsRef) {
-				kind |= global::EnvDTE.vsCMParameterKind.vsCMParameterKindRef;
-			} 
+				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindRef;
+			}
 			if (parameter.IsParams) {
-				kind |= global::EnvDTE.vsCMParameterKind.vsCMParameterKindParamArray;
-			} 
-			if (!(parameter.IsOut || parameter.IsRef)) {
-				kind |= global::EnvDTE.vsCMParameterKind.vsCMParameterKindIn;
+				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindParamArray;
 			}
 			return kind;
 		}

@@ -4,38 +4,38 @@
        description = "Reporting Tool For SharpDevelop"
 	   addInManagerHidden = "preinstalled">
 	
-	<Manifest>
+<!--	<Manifest>
 		<Identity name="ICSharpCode.Reports.Addin" />
 		
 		<Dependency addin="SharpDevelop" />
 		<Dependency addin="ICSharpCode.Data.Addin" requirePreload="true" />
 	</Manifest>
-	
-	<Runtime>
+	-->
+<!--	<Runtime>
 		<Import assembly = "ICSharpCode.Reports.Core.dll" />
 		<Import assembly = "ICSharpCode.Reports.Addin.dll">
 			<Doozer name="ReportDialogPanel" class="ICSharpCode.Reports.Addin.ReportWizard.DialogPanelDoozer"/>
 		</Import>
-	</Runtime>
+	</Runtime>-->
 	
 	<!-- DisplayBinding -->
 	
-	<Path name ="/SharpDevelop/Workbench/DisplayBindings">
+	<!--<Path name ="/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id="SharpDevelopReportsBinding"
 		                insertbefore="Text"
 		                fileNamePattern="\.(srd)$"
 		                languagePattern="^SharpDevelopReports$"
 		                class="ICSharpCode.Reports.Addin.ReportDesignerDisplayBinding"/>
-	</Path>
+	</Path>-->
 	
 	<!-- File Filter -->
-	<Path name ="/SharpDevelop/Workbench/FileFilter">
+<!--	<Path name ="/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id="SharpDevelopReports"
 		            insertbefore="AllFiles"
 		            name="SharpDevelop Reports (*.srd)"
 		            extensions="*.srd"
 		            mimeType = "text/xml"/>
-	</Path>
+	</Path>-->
 	
 	<!-- ReportExplorer -->
 	
@@ -182,14 +182,15 @@
 		          label="${res:SharpReport.FieldsExplorer.Parameters}"
 		          class="ICSharpCode.Reports.Addin.Commands.ParameterEditorCommand"/>
 	</Path>
+	
 	<!-- Start SharpDevelop Reports from MainMenu -->
 	
-	<Path name = "/SharpDevelop/Workbench/Tools">
+	<!--<Path name = "/SharpDevelop/Workbench/Tools">
 		<MenuItem id       = "ReportGeneratorPad"
 		          label = "${res:SharpReport.ReportGenerator}"
 		          
 		          class    = "ICSharpCode.Reports.Addin.Commands.StartViewCommand"/>
-	</Path>
+	</Path>-->
 
 	<!-- Report wizard -->
 

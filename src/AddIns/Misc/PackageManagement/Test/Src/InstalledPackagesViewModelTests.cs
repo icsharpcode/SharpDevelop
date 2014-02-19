@@ -253,5 +253,20 @@ namespace PackageManagement.Tests
 			IPackageViewModelParent parent = childViewModel.GetParent();
 			Assert.AreEqual(viewModel, parent);
 		}
+		
+		[Test]
+		public void PackageViewModels_PackageOnlyInPackagesFolder_ReturnsNoPackages()
+		{
+			CreateSolution();
+			NoProjectSelected();
+			CreateViewModel(solution);
+			FakePackage package = FakePackage.CreatePackageWithVersion("One", "1.1");
+			solution.PackagesOnlyInPackagesFolder.Add(package);
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
 	}
 }

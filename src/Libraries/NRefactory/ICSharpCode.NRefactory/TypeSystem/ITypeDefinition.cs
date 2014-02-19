@@ -50,6 +50,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool? HasExtensionMethods { get; }
 		
 		/// <summary>
+		/// Gets whether the partial modifier is set on this part of the type definition.
+		/// </summary>
+		bool IsPartial { get; }
+		
+		/// <summary>
 		/// Gets whether this unresolved type definition causes the addition of a default constructor
 		/// if no other constructor is present.
 		/// </summary>
@@ -136,6 +141,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <remarks>This property is used to speed up the search for extension methods.</remarks>
 		bool HasExtensionMethods { get; }
+		
+		/// <summary>
+		/// Gets whether this type definition is made up of one or more partial classes.
+		/// </summary>
+		bool IsPartial { get; }
 		
 		/// <summary>
 		/// Determines how this type is implementing the specified interface member.

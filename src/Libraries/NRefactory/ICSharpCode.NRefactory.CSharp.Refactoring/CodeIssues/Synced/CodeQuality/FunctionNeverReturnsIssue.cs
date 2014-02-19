@@ -152,6 +152,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return base.VisitAssignmentExpression(assignmentExpression);
 				}
 
+				public override bool VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression)
+				{
+					return false;
+				}
+
+				public override bool VisitLambdaExpression(LambdaExpression lambdaExpression)
+				{
+					return false;
+				}
+
 				public override bool VisitIdentifierExpression(IdentifierExpression identifierExpression)
 				{
 					return CheckRecursion(identifierExpression);

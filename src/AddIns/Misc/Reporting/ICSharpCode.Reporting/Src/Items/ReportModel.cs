@@ -17,9 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using ICSharpCode.Reporting.Factories;
-using ICSharpCode.Reporting.Globals;
+using System.Collections.ObjectModel;
+
 using ICSharpCode.Reporting.Interfaces;
 
 namespace ICSharpCode.Reporting.Items
@@ -31,7 +30,7 @@ namespace ICSharpCode.Reporting.Items
 	{
 		
 		public ReportModel() {
-			SectionCollection = new List<BaseSection>();
+			SectionCollection = new Collection<BaseSection>();
 		}
 			
 	
@@ -93,6 +92,6 @@ namespace ICSharpCode.Reporting.Items
 			}
 		}
 		
-		public List<BaseSection> SectionCollection {get; private set;}
+		public Collection<BaseSection> SectionCollection {get; private set;}
 	}
 }

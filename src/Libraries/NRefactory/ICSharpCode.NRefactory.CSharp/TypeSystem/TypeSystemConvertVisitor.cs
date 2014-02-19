@@ -827,6 +827,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			td.IsAbstract = (modifiers & (Modifiers.Abstract | Modifiers.Static)) != 0;
 			td.IsSealed = (modifiers & (Modifiers.Sealed | Modifiers.Static)) != 0;
 			td.IsShadowing = (modifiers & Modifiers.New) != 0;
+			td.IsPartial = (modifiers & Modifiers.Partial) != 0;
 		}
 		
 		static void ApplyModifiers(AbstractUnresolvedMember m, Modifiers modifiers)

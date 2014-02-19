@@ -53,6 +53,7 @@ namespace ICSharpCode.Reports.Addin
 			return viewCmd.DesignerView;
 		}
 
+		
 		public bool IsPreferredBindingForFile(ICSharpCode.Core.FileName fileName)
 		{
 			return true;

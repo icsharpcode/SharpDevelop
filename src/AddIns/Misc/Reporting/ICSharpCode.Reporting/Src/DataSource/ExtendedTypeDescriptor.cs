@@ -26,7 +26,7 @@ namespace ICSharpCode.Reporting.DataSource
 	/// <summary>
 	/// Description of ExtendedTypeDescriptor.
 	/// </summary>
-	internal class ExtendedTypeDescriptor
+	class ExtendedTypeDescriptor
 	{
 		private static Hashtable collections = new Hashtable();
 

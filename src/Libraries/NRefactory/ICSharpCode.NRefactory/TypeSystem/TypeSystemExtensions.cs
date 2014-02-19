@@ -237,16 +237,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						);
 					}
 				case SymbolKind.Namespace:
-					INamespace ns = (INamespace)symbol;
-					if (ns.ParentNamespace == null) {
-						return compilation.RootNamespace;
-					} else {
-						INamespace importedParent = Import(compilation, ns.ParentNamespace);
-						if (importedParent != null)
-							return importedParent.GetChildNamespace(ns.Name);
-						else
-							return null;
-					}
+					return Import(compilation, (INamespace)symbol);
 				default:
 					if (symbol is IEntity)
 						return Import(compilation, (IEntity)symbol);

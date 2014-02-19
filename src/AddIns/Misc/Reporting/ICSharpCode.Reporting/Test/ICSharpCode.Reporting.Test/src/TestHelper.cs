@@ -28,17 +28,34 @@ namespace ICSharpCode.Reporting.Test
 	/// </summary>
 	public static class TestHelper
 	{
-		private const string nameSpace = "ICSharpCode.Reporting.Test.src.TestReports.";
-		private const string plainReportName = "PlainModel.srd";
-		private const string rr = "ReportWithTwoItems.srd";
-		
+		const string nameSpace = "ICSharpCode.Reporting.Test.src.TestReports.";
+		const string plainReportName = "PlainModel.srd";
+		const string withTwoItems = "ReportWithTwoItems.srd";
+		const string fromList = "FromList.srd";
+		const string groupedList = "GroupedList.srd";
+		const string globalsTestReport = "TestForGlobals.srd";
 		
 		public static string PlainReportFileName{
 			get{return nameSpace + plainReportName;}
 		}
 		
+		
 		public static string RepWithTwoItems {
-			get {return nameSpace + rr;}
+			get {return nameSpace + withTwoItems;}
+		}
+		
+		
+		public static string ReportFromList {
+			get {return nameSpace + fromList;}
+		}
+		
+		public static string GroupedList {
+			get {return nameSpace + groupedList;}
+		}
+		
+		
+		public static string TestForGlobals {
+			get {return nameSpace + globalsTestReport;}
 		}
 		
 		
@@ -55,7 +72,6 @@ namespace ICSharpCode.Reporting.Test
 					}
 					ShowDebug(container);
 				} else {
-//					var b = item as IAcceptor;
 					if (acceptor != null) {
 						acceptor.Accept(visitor);
 						

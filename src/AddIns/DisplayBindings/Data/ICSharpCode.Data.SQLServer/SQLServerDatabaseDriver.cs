@@ -154,7 +154,9 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
 
         public override string ODBCProviderName
         {
-            get { return "SQLNCLI10.1"; }
+        	// SqlServer 2012
+           get { return "SQLNCLI10.1"; }
+//            get { return "SQLNCLI11.0"; }
         }
 
         public override void PopulateDatasources()

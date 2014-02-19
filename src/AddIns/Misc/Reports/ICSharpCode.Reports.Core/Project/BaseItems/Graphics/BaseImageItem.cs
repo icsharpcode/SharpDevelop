@@ -16,13 +16,6 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// <summary>
-/// Handles the drawing of Images like Bitmap's and so on
-/// </summary>
-/// <remarks>
-/// 	created by - Forstmeier Peter
-/// 	created on - 04.10.2005 11:17:29
-/// </remarks>
 using System;
 using System.Drawing;
 using System.Globalization;

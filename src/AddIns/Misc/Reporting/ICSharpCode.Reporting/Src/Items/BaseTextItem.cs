@@ -18,7 +18,6 @@
 
 using System;
 using System.Drawing;
-using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -33,6 +32,10 @@ namespace ICSharpCode.Reporting.Items
 	{
 		Font Font {get;set;}
 		string Text {get;set;}
+		ContentAlignment ContentAlignment {get;set;}
+		string FormatString {get;set;}
+		string DataType {get;set;}
+		
 	}
 	
 	public class BaseTextItem:PrintableItem,ITextItem
@@ -47,6 +50,26 @@ namespace ICSharpCode.Reporting.Items
 		
 		public string Text {get;set;}
 		
+		public string FormatString {get;set;}
+		
+		public ContentAlignment ContentAlignment {get;set;}
+		
+		string dataType;
+		
+		public string DataType 
+		{
+			get {
+				if (String.IsNullOrEmpty(this.dataType)) {
+					this.dataType = typeof(System.String).ToString();
+				}
+				return dataType;
+			}
+			set {
+				dataType = value;
+			}
+		}
+		
+		
 		public override  IExportColumn CreateExportColumn()
 		{
 			var ex = new ExportText();
@@ -58,14 +81,12 @@ namespace ICSharpCode.Reporting.Items
 			ex.Size = Size;
 			ex.Font = Font;
 			ex.Text = Text;
+			ex.FormatString = FormatString;
+			ex.ContentAlignment = ContentAlignment;
+			ex.DataType = DataType;
 			ex.CanGrow = CanGrow;
+			ex.DrawBorder = DrawBorder;
 			return ex;
-		}
-		
-		public override ICSharpCode.Reporting.Arrange.IMeasurementStrategy MeasurementStrategy()
-		{
-			return new TextBasedMeasurementStrategy();
-		}
-			
+		}	
 	}
 }

@@ -493,7 +493,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		#region RenameReferencesInFile
 
-		AstNode GetNodeToReplace(AstNode node)
+		public static AstNode GetNodeToReplace(AstNode node)
 		{
 			if (node is ConstructorInitializer)
 				return null;
@@ -746,13 +746,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return false;
 		}
 		
+		/*
 		bool PerformVirtualLookup(IMember member, IMember referencedMember)
 		{
 			if (FindCallsThroughVirtualBaseMethod && member.IsOverride && !WholeVirtualSlot)
 				return true;
 			var typeDef = referencedMember.DeclaringTypeDefinition;
 			return FindCallsThroughInterface && typeDef != null && typeDef.Kind == TypeKind.Interface;
-		}
+		}*/
 		
 		sealed class FindFieldReferences : FindMemberReferencesNavigator
 		{

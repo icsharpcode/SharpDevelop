@@ -16,24 +16,24 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using ICSharpCode.SharpDevelop.Dom;
-//
-//namespace ICSharpCode.PackageManagement.EnvDTE
-//{
-//	public class CodeStruct : CodeType, global::EnvDTE.CodeStruct
-//	{
-//		public CodeStruct()
-//		{
-//		}
-//		
-//		public CodeStruct(IProjectContent projectContent, IClass c)
-//			: base(projectContent, c)
-//		{
-//		}
-//		
-//		public override global::EnvDTE.vsCMElement Kind {
-//			get { return global::EnvDTE.vsCMElement.vsCMElementStruct; }
-//		}
-//	}
-//}
+using System;
+using ICSharpCode.NRefactory.TypeSystem;
+
+namespace ICSharpCode.PackageManagement.EnvDTE
+{
+	public class CodeStruct : CodeType, global::EnvDTE.CodeStruct
+	{
+		public CodeStruct()
+		{
+		}
+		
+		public CodeStruct(CodeModelContext context, ITypeDefinition typeDefinition)
+			: base(context, typeDefinition)
+		{
+		}
+		
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementStruct; }
+		}
+	}
+}

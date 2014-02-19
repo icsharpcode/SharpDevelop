@@ -37,10 +37,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public static global::EnvDTE.vsCMAccess ToAccess(this Accessibility accessiblity)
 		{
-			if (accessiblity == Accessibility.Public)
+			if (accessiblity == Accessibility.Public) {
 				return global::EnvDTE.vsCMAccess.vsCMAccessPublic;
-			else
-				return global::EnvDTE.vsCMAccess.vsCMAccessPrivate;
+			}
+			return global::EnvDTE.vsCMAccess.vsCMAccessPrivate;
 		}
 		
 		public static Accessibility ToAccessibility(this global::EnvDTE.vsCMAccess access)
@@ -53,16 +53,6 @@ namespace ICSharpCode.PackageManagement
 				default:
 					throw new Exception("Invalid value for vsCMAccess");
 			}
-		}
-		
-		public static CodeElementsList<T> AsCodeElements<T>(this IModelCollection<T> input)
-			where T : global::EnvDTE.CodeElement
-		{
-			var list = new CodeElementsList<T>();
-			// TODO: react to changes
-			foreach (var element in input)
-				list.Add(element);
-			return list;
 		}
 	}
 }

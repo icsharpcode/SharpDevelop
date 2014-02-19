@@ -27,15 +27,9 @@ using ICSharpCode.Reporting.Items;
 
 namespace ICSharpCode.Reporting
 {
-	/// <summary>
-	/// Description of Collections.
-	/// </summary>
 	
-	public class ColumnCollection: Collection<AbstractColumn>{
-		
-		public ColumnCollection()
-		{
-		}
+	public class SortColumnCollection: Collection<AbstractColumn>
+	{
 		
 		public AbstractColumn Find (string columnName)
 		{
@@ -43,43 +37,7 @@ namespace ICSharpCode.Reporting
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
-		}
-	
-		
-		public void AddRange (IEnumerable<AbstractColumn> items)
-		{
-			foreach (AbstractColumn item in items){
-				this.Add(item);
-			}
-		}
-		
-		
-		/// <summary>
-		/// The Culture is used for direct String Comparison
-		/// </summary>
-		
-		public static CultureInfo Culture
-		{
-			get { return CultureInfo.CurrentCulture;}
-		}
-	}
-	
-	
-	
-	public class SortColumnCollection: ColumnCollection
-	{
-		public SortColumnCollection()
-		{
-		}
-		
-		public new AbstractColumn Find (string columnName)
-		{
-			if (String.IsNullOrEmpty(columnName)) {
-				throw new ArgumentNullException("columnName");
-			}
-			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,StringComparison.OrdinalIgnoreCase));
 		}
 	
 		
@@ -104,24 +62,38 @@ namespace ICSharpCode.Reporting
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,StringComparison.OrdinalIgnoreCase));
 		}
 	}
 	
 	
-	public class ReportItemCollection : Collection<PrintableItem>
-	{
+	public class ParameterCollection: Collection<BasicParameter>{
 		
-		// Trick to get the inner list as List<T> (InnerList always has that type because we only use
-		// the parameterless constructor on Collection<T>)
-		
-		private List<PrintableItem> InnerList {
-			get { return (List<PrintableItem>)base.Items; }
+		public ParameterCollection()
+		{			
 		}
 		
-		private void Sort(IComparer<PrintableItem> comparer)
+		
+		public BasicParameter Find (string parameterName)
 		{
-			InnerList.Sort(comparer);
+			if (String.IsNullOrEmpty(parameterName)) {
+				throw new ArgumentNullException("parameterName");
+			}
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,StringComparison.OrdinalIgnoreCase));
+		}
+		
+		
+		public static CultureInfo Culture
+		{
+			get { return System.Globalization.CultureInfo.CurrentCulture; }
+		}
+		
+		
+		public void AddRange (IEnumerable<BasicParameter> items)
+		{
+			foreach (BasicParameter item in items){
+				this.Add(item);
+			}
 		}
 	}
 }

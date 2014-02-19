@@ -102,14 +102,15 @@ namespace ICSharpCode.NRefactory.Documentation
 		XmlDocumentationCache cache = new XmlDocumentationCache();
 		
 		readonly string fileName;
-		DateTime lastWriteDate;
-		IndexEntry[] index; // SORTED array of index entries
+		volatile IndexEntry[] index; // SORTED array of index entries
 		
 		#region Constructor / Redirection support
 		/// <summary>
 		/// Creates a new XmlDocumentationProvider.
 		/// </summary>
 		/// <param name="fileName">Name of the .xml file.</param>
+		/// <exception cref="IOException">Error reading from XML file (or from redirected file)</exception>
+		/// <exception cref="XmlException">Invalid XML file</exception>
 		public XmlDocumentationProvider(string fileName)
 		{
 			if (fileName == null)
@@ -203,7 +204,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		#region Load / Create Index
 		void ReadXmlDoc(XmlTextReader reader)
 		{
-			lastWriteDate = File.GetLastWriteTimeUtc(fileName);
+			//lastWriteDate = File.GetLastWriteTimeUtc(fileName);
 			// Open up a second file stream for the line<->position mapping
 			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete)) {
 				LinePositionMapper linePosMapper = new LinePositionMapper(fs);
@@ -218,7 +219,7 @@ namespace ICSharpCode.NRefactory.Documentation
 					}
 				}
 				indexList.Sort();
-				this.index = indexList.ToArray();
+				this.index = indexList.ToArray(); // volatile write
 			}
 		}
 		
@@ -295,8 +296,13 @@ namespace ICSharpCode.NRefactory.Documentation
 		{
 			if (key == null)
 				throw new ArgumentNullException("key");
-			
+			return GetDocumentation(key, true);
+		}
+		
+		string GetDocumentation(string key, bool allowReload)
+		{
 			int hashcode = GetHashCode(key);
+			var index = this.index; // read volatile field
 			// index is sorted, so we can use binary search
 			int m = Array.BinarySearch(index, new IndexEntry(hashcode, 0));
 			if (m < 0)
@@ -310,17 +316,47 @@ namespace ICSharpCode.NRefactory.Documentation
 			lock (cache) {
 				string val;
 				if (!cache.TryGet(key, out val)) {
-					// go through all items that have the correct hash
-					while (++m < index.Length && index[m].HashCode == hashcode) {
-						val = LoadDocumentation(key, index[m].PositionInFile);
-						if (val != null)
-							break;
+					try {
+						// go through all items that have the correct hash
+						while (++m < index.Length && index[m].HashCode == hashcode) {
+							val = LoadDocumentation(key, index[m].PositionInFile);
+							if (val != null)
+								break;
+						}
+						// cache the result (even if it is null)
+						cache.Add(key, val);
+					} catch (IOException) {
+						// may happen if the documentation file was deleted/is inaccessible/changed (EndOfStreamException)
+						return allowReload ? ReloadAndGetDocumentation(key) : null;
+					} catch (XmlException) {
+						// may happen if the documentation file was changed so that the file position no longer starts on a valid XML element
+						return allowReload ? ReloadAndGetDocumentation(key) : null;
 					}
-					// cache the result (even if it is null)
-					cache.Add(key, val);
 				}
 				return val;
 			}
+		}
+		
+		string ReloadAndGetDocumentation(string key)
+		{
+			try {
+				// Reload the index
+				using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete)) {
+					using (XmlTextReader xmlReader = new XmlTextReader(fs)) {
+						xmlReader.XmlResolver = null; // no DTD resolving
+						xmlReader.MoveToContent();
+						ReadXmlDoc(xmlReader);
+					}
+				}
+			} catch (IOException) {
+				// Ignore errors on reload; IEntity.Documentation callers aren't prepared to handle exceptions
+				this.index = new IndexEntry[0]; // clear index to avoid future load attempts
+				return null;
+			} catch (XmlException) {
+				this.index = new IndexEntry[0]; // clear index to avoid future load attempts
+				return null;				
+			}
+			return GetDocumentation(key, allowReload: false); // prevent infinite reload loops
 		}
 		#endregion
 		

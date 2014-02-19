@@ -18,60 +18,51 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeClass2 : CodeClass, global::EnvDTE.CodeClass2
 	{
-		public CodeClass2(CodeModelContext context, ITypeDefinitionModel typeModel)
-			: base(context, typeModel)
+		public CodeClass2(CodeModelContext context, ITypeDefinition typeDefinition)
+			: base(context, typeDefinition)
 		{
 		}
 		
 		public global::EnvDTE.CodeElements PartialClasses {
 			get {
-				var list = new CodeElementsList<CodeType>();
-				var td = typeModel.Resolve();
-				if (td != null) {
-					foreach (var fileName in td.Parts.Select(p => p.UnresolvedFile.FileName).Distinct()) {
-						var newContext = context.WithFilteredFileName(fileName);
-						list.Add(CodeType.Create(newContext, typeModel));
-					}
-				} else {
-					list.Add(this);
-				}
-				return list;
+				var partialClasses = new CodeElementsList<CodeType>();
+				partialClasses.Add(this);
+				return partialClasses;
 			}
 		}
 		
 		public bool IsGeneric {
-			get { return typeModel.FullTypeName.TypeParameterCount > 0; }
+			get { return typeDefinition.FullTypeName.TypeParameterCount > 0; }
 		}
 		
 		public global::EnvDTE.vsCMClassKind ClassKind {
 			get {
-				if (typeModel.IsPartial) {
+				if (typeDefinition.Parts.First().IsPartial) {
 					return global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass;
 				}
 				return global::EnvDTE.vsCMClassKind.vsCMClassKindMainClass;
 			}
 			set {
-				if (value == this.ClassKind)
+				if (value == ClassKind) {
 					return;
+				}
+				
 				if (value == global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass) {
-					var td = typeModel.Resolve();
-					if (td == null)
-						throw new NotSupportedException();
-					context.CodeGenerator.MakePartial(td);
+					context.CodeGenerator.MakePartial(typeDefinition);
 				} else {
-					throw new NotSupportedException();
+					throw new NotImplementedException();
 				}
 			}
 		}
 		
 		public bool IsAbstract {
-			get { return typeModel.IsAbstract; }
+			get { return typeDefinition.IsAbstract; }
 		}
 	}
 }

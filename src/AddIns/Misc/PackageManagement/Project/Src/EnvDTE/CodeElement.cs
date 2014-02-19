@@ -19,15 +19,14 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeElement : global::EnvDTE.CodeElementBase, global::EnvDTE.CodeElement
 	{
 		DTE dte;
-		protected readonly CodeModelContext context;
-		readonly ISymbolModel symbolModel;
+		protected CodeModelContext context;
+		IEntity entity;
 		
 		public CodeElement()
 		{
@@ -38,37 +37,35 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.context = context;
 		}
 		
-		public CodeElement(CodeModelContext context, ISymbolModel symbolModel)
+		public CodeElement(CodeModelContext context, IEntity entity)
 		{
 			this.context = context;
-			this.symbolModel = symbolModel;
-			if (symbolModel.ParentProject != null)
-				this.Language = symbolModel.ParentProject.GetCodeModelLanguage();
+			this.entity = entity;
+			this.Language = context.CurrentProject.GetCodeModelLanguage();
 		}
 		
-		public static CodeElement CreateMember(CodeModelContext context, IMemberModel m)
+		internal static CodeElement CreateMember(CodeModelContext context, IMember member)
 		{
-			switch (m.SymbolKind) {
+			switch (member.SymbolKind) {
 				case SymbolKind.Field:
-					return new CodeVariable(context, (IFieldModel)m);
+					return new CodeVariable(context, (IField)member);
 				case SymbolKind.Property:
 				case SymbolKind.Indexer:
-//					return new CodeProperty2(m);
-					throw new NotImplementedException();
+					return new CodeProperty2(context, (IProperty)member);
 				case SymbolKind.Event:
-					return null; // events are not supported in EnvDTE?
+					return null;
 				case SymbolKind.Method:
 				case SymbolKind.Operator:
 				case SymbolKind.Constructor:
 				case SymbolKind.Destructor:
-					return new CodeFunction2(context, (IMethodModel)m);
+					return new CodeFunction2(context, (IMethod)member);
 				default:
 					throw new NotSupportedException("Invalid value for SymbolKind");
 			}
 		}
 		
 		public virtual string Name {
-			get { return symbolModel.Name; }
+			get { return entity.Name; }
 		}
 		
 		public virtual string Language { get; protected set; }
@@ -76,28 +73,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		// default is vsCMPart.vsCMPartWholeWithAttributes
 		public virtual global::EnvDTE.TextPoint GetStartPoint()
 		{
-			if (symbolModel != null)
-				return TextPoint.CreateStartPoint(context, symbolModel.Region);
-			else
-				return null;
+			return TextPoint.CreateStartPoint(context, entity.Region);
 		}
 		
 		public virtual global::EnvDTE.TextPoint GetEndPoint()
 		{
-			if (symbolModel != null)
-				return TextPoint.CreateEndPoint(context, symbolModel.Region);
-			else
-				return null;
+			return TextPoint.CreateEndPoint(context, entity.Region);
 		}
 		
-		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation {
-			get {
-				if (symbolModel != null && symbolModel.ParentProject == context)
-					return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject;
-				else
-					return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
-			}
-		}
+		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation { get; protected set; }
 		
 		public virtual global::EnvDTE.DTE DTE {
 			get {
@@ -114,22 +98,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected bool IsInFilter(DomRegion region)
 		{
-			if (context.FilteredFileName == null)
+			if (context.FilteredFileName == null) {
 				return true;
+			}
 			return context.FilteredFileName == region.FileName;
 		}
 		
-		protected CodeElementsList<CodeAttribute2> GetAttributes(IEntityModel entityModel)
+		protected CodeElementsList<CodeAttribute2> GetAttributes(IEntity entity)
 		{
-			var list = new CodeElementsList<CodeAttribute2>();
-			var td = entityModel.Resolve();
-			if (td != null) {
-				foreach (var attr in td.Attributes) {
-					if (IsInFilter(attr.Region))
-						list.Add(new CodeAttribute2(context, attr));
+			var attributes = new CodeElementsList<CodeAttribute2>();
+			foreach (IAttribute attribute in entity.Attributes) {
+				if (IsInFilter(attribute.Region)) {
+					attributes.Add(new CodeAttribute2(context, attribute));
 				}
 			}
-			return list;
+			return attributes;
 		}
 
 		protected override bool GetIsDerivedFrom(string fullName)

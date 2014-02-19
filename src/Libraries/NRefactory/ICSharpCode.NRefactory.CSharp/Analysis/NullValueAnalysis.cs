@@ -776,6 +776,18 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				this.analysis = analysis;
 			}
 
+			protected override VisitorResult VisitChildren(AstNode node, VariableStatusInfo data)
+			{
+				Debug.Fail("Missing override for " + node.GetType().Name);
+				return VisitorResult.ForValue(data, NullValueStatus.Unknown);
+			}
+			
+			public override VisitorResult VisitNullNode(AstNode nullNode, VariableStatusInfo data)
+			{
+				// can occur due to syntax errors
+				return VisitorResult.ForValue(data, NullValueStatus.Unknown);
+			}
+			
 			public override VisitorResult VisitEmptyStatement(EmptyStatement emptyStatement, VariableStatusInfo data)
 			{
 				return VisitorResult.ForValue(data, NullValueStatus.Unknown);

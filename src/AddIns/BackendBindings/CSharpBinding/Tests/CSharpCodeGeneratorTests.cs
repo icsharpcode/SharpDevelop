@@ -16,12 +16,16 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System.Threading;
+using System.Threading.Tasks;
 using CSharpBinding.Completion;
 using CSharpBinding.Parser;
 using CSharpBinding.Refactoring;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
@@ -311,6 +315,47 @@ class MySimpleAttribute : Attribute {}
 
 [MySimple]
 class TargetClass
+{
+	void TargetA()
+	{
+	}
+	
+	public int TargetB { get; set; }
+	
+	public int TargetC_ {
+		get {
+			return 0;
+		}
+	}
+}
+
+interface TargetInterface
+{
+}
+", textEditor.Document.Text);
+		}
+		
+		[Test]
+		public void MakeClassPartial()
+		{
+			SD.ParserService.Stub(p => p.ParseAsync(
+				Arg<FileName>.Is.Equal(textEditor.FileName),
+				Arg<ITextSource>.Is.Equal(textEditor.TextEditor.Document),
+				Arg<IProject>.Is.Null,
+				Arg<CancellationToken>.Is.Anything))
+				.Return(new Task<ParseInformation>(() => SD.ParserService.GetCachedParseInformation(textEditor.FileName)));
+			var compilation = SD.ParserService.GetCompilationForFile(textEditor.FileName);
+			var entity = FindEntity<ITypeDefinition>("TargetClass");
+			gen.MakePartial(entity);
+			
+			Assert.AreEqual(@"using System;
+using System.Reflection;
+
+[assembly: AssemblyTitle(""CSharpBinding.Tests"")]
+
+class MySimpleAttribute : Attribute {}
+
+partial class TargetClass
 {
 	void TargetA()
 	{

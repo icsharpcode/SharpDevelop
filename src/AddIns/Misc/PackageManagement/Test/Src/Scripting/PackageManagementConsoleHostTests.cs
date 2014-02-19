@@ -18,12 +18,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting;
-using ICSharpCode.Scripting.Tests.Utils;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -672,6 +672,19 @@ namespace PackageManagement.Tests.Scripting
 			host.SetDefaultRunspace();
 			
 			Assert.IsTrue(powerShellHost.IsSetDefaultRunspaceCalled);
+		}
+		
+		[Test]
+		public void Run_ConsoleExitsOnFirstRead_TabExpansionFunctionDefined()
+		{
+			CreateHost();
+			RunHost();
+			
+			string partialExecutedScript = "function TabExpansion";
+			
+			bool executed = powerShellHost.AllCommandsPassedToExecuteCommand.Any(command => command.Contains(partialExecutedScript));
+			
+			Assert.IsTrue(executed);
 		}
 	}
 }

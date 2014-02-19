@@ -30,54 +30,45 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	/// <summary>
 	/// Description of SectionConverter.
 	/// </summary>
-	internal class ContainerConverter
+	class ContainerConverter : IContainerConverter
 	{
-		private Graphics graphics;
-		
-		public ContainerConverter(Graphics graphics,IReportContainer reportContainer,Point currentLocation )
+		public ContainerConverter(Point currentLocation)
 		{
-			if (graphics == null) {
-				throw new ArgumentNullException("graphics");
-			}
-			if (reportContainer == null) {
-				throw new ArgumentNullException("reportContainer");
-			}
-			
-			this.graphics = graphics;
-			Container = reportContainer;
 			CurrentLocation = currentLocation;
 		}
-		
-		
-		public IExportContainer Convert() {
-			var containerStrategy = Container.MeasurementStrategy ();
-			var exportContainer = (ExportContainer)Container.CreateExportColumn();
-	
+
+
+		public virtual IExportContainer ConvertToExportContainer(IReportContainer reportContainer)
+		{
+			var exportContainer = (ExportContainer)reportContainer.CreateExportColumn();
 			exportContainer.Location = CurrentLocation;
-			exportContainer.DesiredSize = containerStrategy.Measure(Container,graphics);
-			
-			var itemsList = new List<IExportColumn>();
-			
-			foreach (var element in Container.Items) {
-				var item = ExportColumnFactory.CreateItem(element);
-				item.Parent = exportContainer;
-				var measureStrategy = element.MeasurementStrategy();
-				item.DesiredSize = measureStrategy.Measure(element,graphics);
-				
-				itemsList.Add(item);
-				Console.WriteLine("Size {0} DesiredSize {1}",item.Size,item.DesiredSize);
-			}
-			exportContainer.ExportedItems.AddRange(itemsList);
-			
-			Console.WriteLine("calling Container-Arrange");
-			var exportArrange = exportContainer.GetArrangeStrategy();
-			exportArrange.Arrange(exportContainer);
-			
 			return exportContainer;
 		}
-			
-		internal IReportContainer Container {get; private set;}
+
 		
-		internal Point CurrentLocation {get; private set;}
+		public List<IExportColumn> CreateConvertedList(List<IPrintableObject> items){                                    
+			var itemsList = new List<IExportColumn>();
+			foreach (var element in items) {
+				var exportColumn = ExportColumnFactory.CreateItem(element);
+				var ec = element as IReportContainer;
+				if (ec != null) {
+					var l = CreateConvertedList(ec.Items);
+					((IExportContainer)exportColumn).ExportedItems.AddRange(l);
+				}
+				
+				itemsList.Add(exportColumn);
+			}
+			return itemsList;
+		}
+
+		
+		public void SetParent(IExportContainer parent, List<IExportColumn> convertedItems)
+		{
+			foreach (var item in convertedItems) {
+				item.Parent = parent;
+			}
+		}
+		
+		protected Point CurrentLocation { get;  set; }
 	}
 }

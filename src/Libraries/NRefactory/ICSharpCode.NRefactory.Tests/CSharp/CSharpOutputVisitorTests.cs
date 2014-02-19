@@ -160,7 +160,7 @@ namespace ICSharpCode.NRefactory.CSharp
 ";
 			var unit = SyntaxTree.Parse(code);
 			var options = FormattingOptionsFactory.CreateMono();
-			options.BlankLinesBetweenMembers = 2;
+			options.MinimumBlankLinesBetweenMembers = 2;
 			AssertOutput("class Test\n{\n$Test ()\n${\n$}\n\n\n$void Foo ()\n${\n$}\n\n\n$int P {\n$$get;\n$$set;\n$}\n}\n", unit, options);
 		}
 
@@ -179,7 +179,7 @@ namespace NS
 ";
 			var unit = SyntaxTree.Parse(code);
 			var options = FormattingOptionsFactory.CreateMono();
-			options.BlankLinesAfterUsings = 2;
+			options.MinimumBlankLinesAfterUsings = 2;
 			AssertOutput("using System;\nusing System.Collections;\nusing List = System.Collections.List;\n\n\nnamespace NS\n{\n$using System.Collections.Generic;\n$using Collection = System.Collections.Collection;\n$using System.Xml;\n\n\n$class C\n${\n$}\n}\n", unit, options);
 		}
 		

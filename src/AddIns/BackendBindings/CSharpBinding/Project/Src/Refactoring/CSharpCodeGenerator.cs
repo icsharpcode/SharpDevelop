@@ -144,6 +144,35 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
+		public override void AddFieldAtStart(ITypeDefinition declaringType, Accessibility accessibility, IType fieldType, string name)
+		{
+			SDRefactoringContext context = declaringType.CreateRefactoringContext();
+			var typeDecl = context.GetNode<TypeDeclaration>();
+			using (var script = context.StartScript()) {
+				var astBuilder = context.CreateTypeSystemAstBuilder(typeDecl.FirstChild);
+				var fieldDecl = new FieldDeclaration();
+				fieldDecl.Modifiers = TypeSystemAstBuilder.ModifierFromAccessibility(accessibility);
+				fieldDecl.ReturnType = astBuilder.ConvertType(context.Compilation.Import(fieldType));
+				fieldDecl.Variables.Add(new VariableInitializer(name));
+				
+				script.AddTo(typeDecl, fieldDecl);
+			}
+		}
+		
+		public override void AddMethodAtStart(ITypeDefinition declaringType, Accessibility accessibility, IType returnType, string name)
+		{
+			SDRefactoringContext context = declaringType.CreateRefactoringContext();
+			var typeDecl = context.GetNode<TypeDeclaration>();
+			using (var script = context.StartScript()) {
+				var astBuilder = context.CreateTypeSystemAstBuilder(typeDecl.FirstChild);
+				var methodDecl = new MethodDeclaration();
+				methodDecl.Name = name;
+				methodDecl.ReturnType = astBuilder.ConvertType(context.Compilation.Import(returnType));
+				
+				script.AddTo(typeDecl, methodDecl);
+			}
+		}
+		
 		public override void ChangeAccessibility(IEntity entity, Accessibility newAccessiblity)
 		{
 			// TODO script.ChangeModifiers(...)
@@ -157,6 +186,26 @@ namespace CSharpBinding.Refactoring
 			using (var script = context.StartScript()) {
 				AstType ns = astBuilder.ConvertNamespace(namespaceName);
 				UsingHelper.InsertUsing(context, script, ns);
+			}
+		}
+		
+		public override void MakePartial(ITypeDefinition td)
+		{
+			SDRefactoringContext refactoringContext = td.CreateRefactoringContext();
+			var typeDeclaration = refactoringContext.GetNode<TypeDeclaration>();
+			
+			using (Script script = refactoringContext.StartScript()) {
+				script.ChangeModifier(typeDeclaration, typeDeclaration.Modifiers | Modifiers.Partial);
+			}
+		}
+		
+		public override void MakeVirtual(IMember member)
+		{
+			SDRefactoringContext refactoringContext = member.CreateRefactoringContext();
+			var entityDeclaration = refactoringContext.GetNode<EntityDeclaration>();
+			
+			using (Script script = refactoringContext.StartScript()) {
+				script.ChangeModifier(entityDeclaration, entityDeclaration.Modifiers | Modifiers.Virtual);
 			}
 		}
 	}

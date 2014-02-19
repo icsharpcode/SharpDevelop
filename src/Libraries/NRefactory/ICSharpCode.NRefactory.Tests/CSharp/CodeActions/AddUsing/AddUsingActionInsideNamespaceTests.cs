@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions.AddUsing
 }";
 
 			formattingOptions.UsingPlacement = UsingPlacement.InsideNamespace;
-			formattingOptions.BlankLinesAfterUsings = 0;
+			formattingOptions.MinimumBlankLinesAfterUsings = 0;
 			Test(new AddUsingAction(), testCode, expectedOutput);
 		}
 
@@ -62,8 +62,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions.AddUsing
 }";
 
 			formattingOptions.UsingPlacement = UsingPlacement.InsideNamespace;
-			formattingOptions.BlankLinesBeforeUsings = 2;
-			formattingOptions.BlankLinesAfterUsings = 0;
+			formattingOptions.MinimumBlankLinesBeforeUsings = 2;
+			formattingOptions.MinimumBlankLinesAfterUsings = 0;
 			Test(new AddUsingAction(), testCode, expectedOutput);
 		}
 
@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions.AddUsing
 }";
 
 			formattingOptions.UsingPlacement = UsingPlacement.InsideNamespace;
-			formattingOptions.BlankLinesAfterUsings = 2;
+			formattingOptions.MinimumBlankLinesAfterUsings = 2;
 			Test(new AddUsingAction(), testCode, expectedOutput);
 		}
 

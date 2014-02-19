@@ -37,10 +37,12 @@ namespace PackageManagement.Tests.EnvDTE
 namespace Test {
 	public class MyAttribute : Attribute
 	{
+		public MyAttribute() {}
 		public MyAttribute(object arg) {}
 		public MyAttribute(object arg1, object arg2) {}
 		
-		public object One, Two;
+		public object One { get; set; }
+		public object Two { get; set; }
 	}
 }");
 		}
@@ -85,18 +87,16 @@ namespace Test {
 		}
 		
 		[Test]
-		[Ignore("Why is true expected to be uppercase?")]
 		public void Value_AttributeHasOneBooleanPositionalArgument_ReturnsBooleanValue()
 		{
 			CreateAttribute("[Test.MyAttribute(true)]");
 			
 			string attributeValue = codeAttribute.Value;
 			
-			Assert.AreEqual("True", attributeValue);
+			Assert.AreEqual("true", attributeValue);
 		}
 		
 		[Test]
-		[Ignore("Why is true expected to be uppercase?")]
 		public void Value_AttributeHasStringAndBooleanPositionalArgument_ReturnsArgumentCommandSeparated()
 		{
 			CreateAttribute("[Test.MyAttribute(\"Test\", true)]");
@@ -106,86 +106,77 @@ namespace Test {
 			Assert.AreEqual("\"Test\", true", attributeValue);
 		}
 		
-//		[Test]
-//		public void Arguments_AttributeHasOneStringPositionalArgument_ReturnsOneAttributeArgumentWithNoName()
-//		{
-//			CreateMSBuildAttribute("Test.MyAttribute");
-//			helper.AddPositionalArguments("StringValue");
-//			CreateAttribute();
-//			
-//			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
-//			
-//			CodeAttributeArgument attributeArg = args.FirstCodeAttributeArgumentOrDefault();
-//			
-//			Assert.AreEqual(1, args.Count);
-//			Assert.AreEqual(String.Empty, attributeArg.Name);
-//			Assert.AreEqual("\"StringValue\"", attributeArg.Value);
-//		}
-//		
-//		[Test]
-//		public void Arguments_AttributeHasOneStringNamedArgument_ReturnsOneAttributeArgumentWithName()
-//		{
-//			CreateMSBuildAttribute("Test.MyAttribute");
-//			helper.AddNamedArgument("Name", "StringValue");
-//			CreateAttribute();
-//			
-//			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
-//			
-//			CodeAttributeArgument attributeArg = args.FirstCodeAttributeArgumentOrDefault();
-//			
-//			Assert.AreEqual("Name", attributeArg.Name);
-//			Assert.AreEqual("\"StringValue\"", attributeArg.Value);
-//		}
-//		
-//		[Test]
-//		public void Arguments_GetArgumentByItemIndexWhenTwoPositionalArguments_ReturnsArgumentAtIndex()
-//		{
-//			CreateMSBuildAttribute("Test.MyAttribute");
-//			helper.AddPositionalArguments("StringValue", false);
-//			CreateAttribute();
-//			
-//			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
-//			
-//			CodeAttributeArgument arg = args.Item(2) as CodeAttributeArgument;
-//			
-//			Assert.AreEqual("False", arg.Value);
-//		}
-//		
-//		[Test]
-//		public void Arguments_GetArgumentByItemNameWhenTwoNamedArguments_ReturnsArgument()
-//		{
-//			CreateMSBuildAttribute("Test.MyAttribute");
-//			helper.AddNamedArgument("One", "OneValue");
-//			helper.AddNamedArgument("Two", false);
-//			CreateAttribute();
-//			
-//			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
-//			
-//			CodeAttributeArgument arg = args.Item("Two") as CodeAttributeArgument;
-//			
-//			Assert.AreEqual("False", arg.Value);
-//		}
-//		
-//		[Test]
-//		public void Name_AttributeIsNotLastPartOfName_ReturnsShortNameContainingAttributePart()
-//		{
-//			CreateMSBuildAttribute("Tests.TestAttributeColumn", "TestAttributeColumn");
-//			CreateAttribute();
-//			
-//			string name = codeAttribute.Name;
-//			
-//			Assert.AreEqual("TestAttributeColumn", name);
-//		}
-//		
-//		[Test]
-//		public void Kind_AttributeIsDataAnnotationsDisplayColumnAttribute_ReturnsAttribute()
-//		{
-//			CreateMSBuildAttribute("System.ComponentModel.DataAnnotations.DisplayColumnAttribute");
-//			CreateAttribute();
-//			
-//			global::EnvDTE.vsCMElement kind = codeAttribute.Kind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementAttribute, kind);
-//		}
+		[Test]
+		public void Arguments_AttributeHasOneStringPositionalArgument_ReturnsOneAttributeArgumentWithNoName()
+		{
+			CreateAttribute("[Test.MyAttribute(\"StringValue\")]");
+			
+			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
+			
+			CodeAttributeArgument attributeArg = args.FirstCodeAttributeArgumentOrDefault();
+			
+			Assert.AreEqual(1, args.Count);
+			Assert.AreEqual(String.Empty, attributeArg.Name);
+			Assert.AreEqual("\"StringValue\"", attributeArg.Value);
+		}
+		
+		[Test]
+		public void Arguments_AttributeHasOneStringNamedArgument_ReturnsOneAttributeArgumentWithName()
+		{
+			CreateAttribute("[Test.MyAttribute(One = \"StringValue\")]");
+			
+			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
+			
+			CodeAttributeArgument attributeArg = args.FirstCodeAttributeArgumentOrDefault();
+			
+			Assert.AreEqual("One", attributeArg.Name);
+			Assert.AreEqual("\"StringValue\"", attributeArg.Value);
+		}
+		
+		[Test]
+		public void Arguments_GetArgumentByItemIndexWhenTwoPositionalArguments_ReturnsArgumentAtIndex()
+		{
+			CreateAttribute("[Test.MyAttribute(\"StringValue\", false)]");
+			
+			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
+			
+			CodeAttributeArgument arg = args.Item(2) as CodeAttributeArgument;
+			
+			Assert.AreEqual("false", arg.Value);
+		}
+		
+		[Test]
+		public void Arguments_GetArgumentByItemNameWhenTwoNamedArguments_ReturnsArgument()
+		{
+			CreateAttribute("[Test.MyAttribute(One = \"OneValue\", Two = false)]");
+			
+			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
+			
+			var arg = args.Item("Two") as CodeAttributeArgument;
+			
+			Assert.AreEqual("false", arg.Value);
+		}
+		
+		[Test]
+		public void Name_AttributeIsNotLastPartOfName_ReturnsShortNameContainingAttributePart()
+		{
+			CreateAttribute(
+				"public class TestAttributeColumn : Attribute {}\r\n" +
+				"[TestAttributeColumn]");
+			
+			string name = codeAttribute.Name;
+			
+			Assert.AreEqual("TestAttributeColumn", name);
+		}
+		
+		[Test]
+		public void Kind_AttributeIsDataAnnotationsDisplayColumnAttribute_ReturnsAttribute()
+		{
+			CreateAttribute("[System.FlagsAttribute]");
+			
+			global::EnvDTE.vsCMElement kind = codeAttribute.Kind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementAttribute, kind);
+		}
 	}
 }

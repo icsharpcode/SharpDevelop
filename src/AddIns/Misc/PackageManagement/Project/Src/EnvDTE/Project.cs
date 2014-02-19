@@ -37,6 +37,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		IPackageManagementProjectService projectService;
 		IPackageManagementFileService fileService;
 		DTE dte;
+		CodeModelContext context;
 		
 		public Project(MSBuildBasedProject project)
 			: this(
@@ -54,6 +55,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.MSBuildProject = project;
 			this.projectService = projectService;
 			this.fileService = fileService;
+			
+			context = new CodeModelContext {
+				CurrentProject = project,
+				DteProject = this
+			};
 			
 			CreateProperties();
 			Object = new ProjectObject(this);
@@ -243,8 +249,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual global::EnvDTE.CodeModel CodeModel {
-			get { throw new NotImplementedException(); }
-			//get { return new CodeModel(projectService.GetProjectContent(MSBuildProject) ); }
+			get { return new CodeModel(context, this); }
 		}
 		
 		public virtual global::EnvDTE.ConfigurationManager ConfigurationManager {
@@ -312,6 +317,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return fileService.GetCompilationUnit(fileName);
 		}
 		
+		internal ICompilation GetCompilationUnit()
+		{
+			return fileService.GetCompilationUnit(MSBuildProject);
+		}
+		
 		internal void RemoveProjectItem(ProjectItem projectItem)
 		{
 			projectService.RemoveProjectItem(MSBuildProject, projectItem.MSBuildProjectItem);
@@ -319,11 +329,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal ProjectItem FindProjectItem(string fileName)
 		{
-			SD.FileProjectItem item = MSBuildProject.FindFile(new FileName(fileName));
-			if (item != null) {
-				return new ProjectItem(this, item);
-			}
-			return null;
+			return ProjectItem.FindByFileName(MSBuildProject, fileName);
 		}
 		
 		internal IViewContent GetOpenFile(string fileName)

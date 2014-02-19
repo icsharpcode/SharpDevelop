@@ -17,7 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
@@ -28,24 +27,29 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 //	http://www.remondo.net/strategy-pattern-example-csharp/
 	
 	
-	public class DebugVisitor : AbstractVisitor
+	class DebugVisitor : AbstractVisitor
 	{
-		public override void Visit(ExportColumn exportColumn)
+		
+		public override void Visit(ExportPage page)
 		{
-			Console.WriteLine("Visit ExportColumn {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
+			base.Visit(page);
 		}
 		
 		
-		
-		public override void Visit(ExportContainer exportColumn)
+		public override void Visit(ExportContainer exportContainer)
 		{
-			Console.WriteLine("Visit ExportContainer {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
+			base.Visit(exportContainer);
 		}
+		
 		
 		public override void Visit(ExportText exportColumn)
 		{
-			Console.WriteLine("Visit ExportText {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
+		}
+		
+		public override void Visit(ExportLine exportGraphics)
+		{
+//			base.Visit(exportGraphics);
+			Console.WriteLine("Line from {0} size  {1}",exportGraphics.Location,exportGraphics.Size.Width);
 		}
 	}
-
 }

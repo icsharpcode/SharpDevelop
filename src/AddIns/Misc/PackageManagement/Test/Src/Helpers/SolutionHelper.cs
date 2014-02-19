@@ -63,7 +63,10 @@ namespace PackageManagement.Tests.Helpers
 			solution.Stub(s => s.MSBuildProjectCollection).Return(new ProjectCollection());
 			
 			var projects = new SimpleModelCollection<IProject>();
-			solution.Stub(s =>s.Projects).Return(projects);
+			solution.Stub(s => s.Projects).Return(projects);
+			
+			var items = new NullSafeSimpleModelCollection<ISolutionItem>();
+			solution.Stub(s => s.Items).Return(items);
 			
 			return solution;
 		}

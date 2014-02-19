@@ -17,19 +17,19 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeFunction2 : CodeFunction, global::EnvDTE.CodeFunction2
 	{
-		public CodeFunction2(CodeModelContext context, IMethodModel methodModel)
-			: base(context, methodModel)
+		public CodeFunction2(CodeModelContext context, IMethod method)
+			: base(context, method)
 		{
 		}
 		
 		public virtual bool IsGeneric {
-			get { return methodModel.TypeParameterCount > 0; }
+			get { return method.TypeParameters.Count > 0; }
 		}
 		
 		public virtual global::EnvDTE.vsCMOverrideKind OverrideKind {
@@ -39,15 +39,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		global::EnvDTE.vsCMOverrideKind GetOverrideKind()
 		{
 			global::EnvDTE.vsCMOverrideKind kind = 0;
-			if (methodModel.IsAbstract)
+			if (method.IsAbstract)
 				kind |= global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindAbstract;
-			if (methodModel.IsOverride)
+			if (method.IsOverride)
 				kind |= global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindOverride;
-			if (methodModel.IsVirtual && !methodModel.IsAbstract && !methodModel.IsOverride)
+			if (method.IsVirtual && !method.IsAbstract && !method.IsOverride)
 				kind |= global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindVirtual;
-			if (methodModel.IsSealed)
+			if (method.IsSealed)
 				kind |= global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindSealed;
-			if (methodModel.IsShadowing)
+			if (method.IsShadowing)
 				kind |= global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindNew;
 			return kind;
 		}

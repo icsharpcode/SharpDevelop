@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.using System;
 
+using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
@@ -64,24 +65,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!m.Success)
 					return;
 
-				Expression identifier = null;
-				AstType type = null;
-
-				if (binaryOperatorExpression.Left is TypeOfExpression && binaryOperatorExpression.Right is InvocationExpression) {
-					type = (binaryOperatorExpression.Left as TypeOfExpression).Type;
-					var right = binaryOperatorExpression.Right as InvocationExpression;
-					identifier = (right.Target as MemberReferenceExpression).Target;
-				} else if (binaryOperatorExpression.Right is TypeOfExpression && binaryOperatorExpression.Left is InvocationExpression) {
-					type = (binaryOperatorExpression.Right as TypeOfExpression).Type;
-					var left = binaryOperatorExpression.Left as InvocationExpression;
-					identifier = (left.Target as MemberReferenceExpression).Target;
-				} else
+				Expression identifier = m.Get<Expression>("a").Single();
+				AstType type = m.Get<AstType>("b").Single();
+				
+				var typeResolved = ctx.Resolve(type) as TypeResolveResult;
+				if (typeResolved == null)
 					return;
-
-				if (identifier == null || type == null)
-					return;
-
-				var typeResolved = ctx.Resolve(type) as TypeResolveResult; 
 
 				if (typeResolved.Type.Kind == TypeKind.Class) {
 					if (!typeResolved.Type.GetDefinition().IsSealed) {

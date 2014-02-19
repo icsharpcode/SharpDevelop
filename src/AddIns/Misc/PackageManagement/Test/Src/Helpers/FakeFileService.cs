@@ -134,14 +134,20 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public string FileNamePassedToGetCompilationUnit;
-		//public ICompilation CompilationUnitToReturnFromGetCompilationUnit =
-		//	new DefaultCompilationUnit(new DefaultProjectContent());
+		public ICompilation CompilationUnitToReturnFromGetCompilationUnit;
 		
 		public ICompilation GetCompilationUnit(string fileName)
 		{
 			FileNamePassedToGetCompilationUnit = fileName;
-		//	return CompilationUnitToReturnFromGetCompilationUnit;
-			return null;
+			return CompilationUnitToReturnFromGetCompilationUnit;
+		}
+		
+		public IProject ProjectPassedToGetCompilationUnit;
+		
+		public ICompilation GetCompilationUnit(IProject project)
+		{
+			ProjectPassedToGetCompilationUnit = project;
+			return CompilationUnitToReturnFromGetCompilationUnit;
 		}
 		
 		Dictionary<string, IViewContent> openViews = new Dictionary<string, IViewContent>();

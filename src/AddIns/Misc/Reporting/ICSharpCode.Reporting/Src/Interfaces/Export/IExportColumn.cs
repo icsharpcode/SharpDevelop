@@ -19,8 +19,6 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reporting.Arrange;
-using ICSharpCode.Reporting.BaseClasses;
-using ICSharpCode.Reporting.Exporter;
 
 namespace ICSharpCode.Reporting.Interfaces.Export
 {
@@ -30,6 +28,7 @@ namespace ICSharpCode.Reporting.Interfaces.Export
 	public interface IExportColumn:IReportObject
 	{
 		IArrangeStrategy GetArrangeStrategy();
+		IMeasurementStrategy MeasurementStrategy ();
 		Size DesiredSize {get;set;}
 		IExportColumn Parent {get;set;}
 		Rectangle DisplayRectangle {get;}

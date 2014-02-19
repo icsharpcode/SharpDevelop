@@ -94,19 +94,19 @@ namespace ICSharpCode.Reports.Core.WPF
 			
 			var text = column as ExportText;
 			if (text != null) {
-				var t = CreateTextBlock(text);
+				var textBlock = CreateTextBlock(text);
 				
 				if (column.StyleDecorator.DrawBorder) {
 					border = CreateBorder(column.StyleDecorator as BaseStyleDecorator,
 					                      GlobalValues.DefaultBorderThickness,
 					                      GlobalValues.DefaultCornerRadius	);			                      					                      
 					                     
-					border.Child = t;
+					border.Child = textBlock;
 					element = border;
 				}
 				else
 				{
-					element = t;
+					element = textBlock;
 				}
 			}
 			

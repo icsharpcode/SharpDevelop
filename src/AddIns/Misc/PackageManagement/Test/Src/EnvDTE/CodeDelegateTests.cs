@@ -16,72 +16,55 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using ICSharpCode.PackageManagement.EnvDTE;
-//using ICSharpCode.SharpDevelop.Dom;
-//using NUnit.Framework;
-//using PackageManagement.Tests.Helpers;
-//
-//namespace PackageManagement.Tests.EnvDTE
-//{
-//	[TestFixture]
-//	public class CodeDelegateTests
-//	{
-//		CodeDelegate codeDelegate;
-//		ProjectContentHelper helper;
-//		IClass fakeDelegate;
-//		
-//		[SetUp]
-//		public void Init()
-//		{
-//			helper = new ProjectContentHelper();
-//		}
-//		
-//		void CreatePublicDelegate(string name)
-//		{
-//			fakeDelegate = helper.AddPublicDelegateToProjectContent(name);
-//			CreateDelegate();
-//		}
-//		
-//		void CreatePrivateDelegate(string name)
-//		{
-//			fakeDelegate = helper.AddPrivateDelegateToProjectContent(name);
-//			CreateDelegate();
-//		}
-//		
-//		void CreateDelegate()
-//		{
-//			codeDelegate = new CodeDelegate(helper.ProjectContent, fakeDelegate);
-//		}
-//
-//		[Test]
-//		public void Access_PublicDelegate_ReturnsPublic()
-//		{
-//			CreatePublicDelegate("MyDelegate");
-//			
-//			global::EnvDTE.vsCMAccess access = codeDelegate.Access;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
-//		}
-//		
-//		[Test]
-//		public void Access_PrivateDelegate_ReturnsPrivate()
-//		{
-//			CreatePrivateDelegate("MyDelegate");
-//			
-//			global::EnvDTE.vsCMAccess access = codeDelegate.Access;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
-//		}
-//		
-//		[Test]
-//		public void Kind_PublicDelegate_ReturnsClass()
-//		{
-//			CreatePublicDelegate("MyDelegate");
-//			
-//			global::EnvDTE.vsCMElement kind = codeDelegate.Kind;
-//			
-//			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementDelegate, kind);
-//		}
-//	}
-//}
+using System;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.PackageManagement.EnvDTE;
+using NUnit.Framework;
+
+namespace PackageManagement.Tests.EnvDTE
+{
+	[TestFixture]
+	public class CodeDelegateTests : CodeModelTestBase
+	{
+		CodeDelegate codeDelegate;
+		
+		void CreateDelegate(string code)
+		{
+			AddCodeFile("delegate.cs", code);
+			codeDelegate = new CodeDelegate(
+				codeModelContext,
+				assemblyModel.TopLevelTypeDefinitions.First().Resolve());
+		}
+
+		[Test]
+		public void Access_PublicDelegate_ReturnsPublic()
+		{
+			CreateDelegate("public delegate void MyDelegate(string param1);");
+			
+			global::EnvDTE.vsCMAccess access = codeDelegate.Access;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
+		}
+		
+		[Test]
+		public void Access_PrivateDelegate_ReturnsPrivate()
+		{
+			CreateDelegate("delegate void MyDelegate(string param1);");
+			
+			global::EnvDTE.vsCMAccess access = codeDelegate.Access;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
+		}
+		
+		[Test]
+		public void Kind_PublicDelegate_ReturnsDelegate()
+		{
+			CreateDelegate("public delegate void MyDelegate(string param1);");
+			
+			global::EnvDTE.vsCMElement kind = codeDelegate.Kind;
+			
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementDelegate, kind);
+		}
+	}
+}

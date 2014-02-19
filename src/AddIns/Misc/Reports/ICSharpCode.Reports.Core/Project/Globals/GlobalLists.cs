@@ -81,7 +81,8 @@ namespace ICSharpCode.Reports.Core.Globals
 			"System.DateTime",
 			"System.TimeSpan",
 			"System.Decimal",
-			"System.Int"};
+			"System.Int16",
+			"System.Int32"};
 		#endregion
 		
 		#region Aggregates

@@ -7017,15 +7017,15 @@ namespace Mono.CSharp {
 		{
 			return null;
 		}
+		
+		public override object Accept (Mono.CSharp.StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
 
 		protected override bool DoFlowAnalysis(FlowAnalysisContext fc)
 		{
 			return false;
-		}
-
-		public override object Accept (Mono.CSharp.StructuralVisitor visitor)
-		{
-			return visitor.Visit (this);
 		}
 	}
 }	

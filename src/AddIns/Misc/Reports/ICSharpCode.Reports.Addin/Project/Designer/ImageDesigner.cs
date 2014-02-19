@@ -19,7 +19,6 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 namespace ICSharpCode.Reports.Addin.Designer
@@ -30,8 +29,8 @@ namespace ICSharpCode.Reports.Addin.Designer
 	/// </summary>
 	public class ImageDesigner:ControlDesigner
 	{
-		private ISelectionService selectionService;
-		private IComponentChangeService componentChangeService;
+		ISelectionService selectionService;
+		IComponentChangeService componentChangeService;
 		
 		public ImageDesigner()
 		{

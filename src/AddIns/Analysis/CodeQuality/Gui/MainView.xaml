@@ -4,8 +4,8 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:gui="clr-namespace:ICSharpCode.CodeQuality.Gui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:rep="clr-namespace:ICSharpCode.Reports.Core.WpfReportViewer;assembly=ICSharpCode.Reports.Core">
-	
+	xmlns:reporting="clr-namespace:ICSharpCode.Reporting.WpfReportViewer;assembly=ICSharpCode.Reporting">
+
 	<DockPanel>
 		<ToolBar DockPanel.Dock="Top">
 			<Button Click="AddAssemblyClick">Add Assembly</Button>
@@ -40,8 +40,7 @@
 				x:Name="reportTab"
 				Visibility="Hidden">
 				<Grid>
-					<rep:WpfReportViewer
-						x:Name="viewer" />
+					<reporting:WpfReportViewer x:Name="viewer" />
 				</Grid>
 			</TabItem>
 		</TabControl>

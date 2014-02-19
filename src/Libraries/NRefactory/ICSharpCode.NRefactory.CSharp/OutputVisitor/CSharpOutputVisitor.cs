@@ -1263,7 +1263,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				bool first = true;
 				foreach (var member in typeDeclaration.Members) {
 					if (!first) {
-						for (int i = 0; i < policy.BlankLinesBetweenMembers; i++)
+						for (int i = 0; i < policy.MinimumBlankLinesBetweenMembers; i++)
 							NewLine();
 					}
 					first = false;
@@ -2066,7 +2066,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				nextSibling = nextSibling.NextSibling;
 
 			if ((node is UsingDeclaration || node is UsingAliasDeclaration) && !(nextSibling is UsingDeclaration || nextSibling is UsingAliasDeclaration)) {
-				for (int i = 0; i < policy.BlankLinesAfterUsings; i++)
+				for (int i = 0; i < policy.MinimumBlankLinesAfterUsings; i++)
 					NewLine();
 			}
 		}
@@ -2220,6 +2220,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteIdentifier(identifier);
 		}
 
+		void IAstVisitor.VisitNullNode(AstNode nullNode)
+		{
+		}
 		#endregion
 		
 		#region Pattern Nodes

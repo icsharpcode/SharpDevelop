@@ -16,38 +16,44 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//using System;
-//using ICSharpCode.SharpDevelop.Dom;
-//
-//namespace ICSharpCode.PackageManagement.EnvDTE
-//{
-//	public class CodeProperty2 : CodeProperty, global::EnvDTE.CodeProperty2
-//	{
-//		public CodeProperty2()
-//		{
-//		}
-//		
-//		public CodeProperty2(IProperty property)
-//			: base(property)
-//		{
-//		}
-//		
-//		public global::EnvDTE.vsCMPropertyKind ReadWrite { 
-//			get { return GetPropertyKind(); }
-//		}
-//		
-//		global::EnvDTE.vsCMPropertyKind GetPropertyKind()
-//		{
-//			if (Property.CanSet && Property.CanGet) {
-//				return global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindReadWrite;
-//			} else if (Property.CanSet) {
-//				return global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindWriteOnly;
-//			}
-//			return global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindReadOnly;
-//		}
-//		
-//		public global::EnvDTE.CodeElements Parameters {
-//			get { return new CodeParameters(null, Property.Parameters); }
-//		}
-//	}
-//}
+using System;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
+
+namespace ICSharpCode.PackageManagement.EnvDTE
+{
+	public class CodeProperty2 : CodeProperty, global::EnvDTE.CodeProperty2
+	{
+		public CodeProperty2()
+		{
+		}
+		
+		public CodeProperty2(CodeModelContext context, IProperty property)
+			: base(context, property)
+		{
+		}
+		
+		public global::EnvDTE.vsCMPropertyKind ReadWrite { 
+			get { return GetPropertyKind(); }
+		}
+		
+		global::EnvDTE.vsCMPropertyKind GetPropertyKind()
+		{
+			if (property.CanSet && property.CanGet) {
+				return global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindReadWrite;
+			} else if (property.CanSet) {
+				return global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindWriteOnly;
+			}
+			return global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindReadOnly;
+		}
+		
+		public global::EnvDTE.CodeElements Parameters {
+			get {
+				var parameters = new CodeElementsList<CodeElement>();
+				parameters.AddRange(property.Parameters.Select(parameter => new CodeParameter2(context, parameter)));
+				return parameters;
+			}
+		}
+	}
+}

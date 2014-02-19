@@ -23,9 +23,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.NRefactory.Utils;
-using ICSharpCode.Reports.Core;
+using ICSharpCode.Reporting;
+using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Items;
+using ICSharpCode.CodeQuality.Engine.Dom;
 
 namespace ICSharpCode.CodeQuality.Reporting
 {
@@ -35,6 +37,7 @@ namespace ICSharpCode.CodeQuality.Reporting
 	public class OverviewReport:BaseReport
 	{
 		private const string overviewReport = "OverviewReport.srd";
+		ReadOnlyCollection<AssemblyNode> list;
 		
 		public  OverviewReport(List<string> fileNames):base(fileNames)
 		{
@@ -42,27 +45,69 @@ namespace ICSharpCode.CodeQuality.Reporting
 		
 		public IReportCreator Run(ReadOnlyCollection<AssemblyNode> list)
 		{
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.Overviewreport.srd");
-			var model = ReportEngine.LoadReportModel(stream);
-			ReportSettings = model.ReportSettings;
+			this.list = list;
+			var asm = Assembly.GetExecutingAssembly();
+			var stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.Overviewreport.srd");
 			
-			var	 r =  from c in list
-				select new OverviewViewModel { Node = c};
+			var viewModelList = CreateViewModel(list);
 			
-			var p = new ReportParameters();
-			p.Parameters.Add(new BasicParameter ("param1",base.FileNames[0]));
-			p.Parameters.Add(new BasicParameter ("param2",list.Count.ToString()));
-			
-			IReportCreator creator = ReportEngine.CreatePageBuilder(model,r.ToList(),p);
-			creator.BuildExportList();
-			return creator;
+			var reportingFactory = new ReportingFactory();
+			var reportCreator = reportingFactory.ReportCreator (stream,viewModelList);
+			ReportSettings = reportingFactory.ReportModel.ReportSettings;
+//			var reportParameters = new ParameterCollection();
+//			reportParameters.Add(new BasicParameter ("param1",base.FileNames[0]));
+//			reportParameters.Add(new BasicParameter ("param2",list.Count.ToString()));
+//			
+//			ReportSettings.ParameterCollection.AddRange(reportParameters);
+			reportCreator.SectionRendering += HandleSectionEvents;
+			reportCreator.BuildExportList();
+			return reportCreator;
+		}
+
+		
+		static IEnumerable<OverviewViewModel> CreateViewModel(ReadOnlyCollection<AssemblyNode> list)
+		{
+			var newList = from c in list
+			              select new OverviewViewModel {
+				Node = c
+			};
+			return newList;
 		}
 		
+		
+		void HandleSectionEvents(object sender, SectionEventArgs e)
+		{
+			var sectionName = e.Section.Name;
+			if (sectionName == ReportSectionNames.ReportHeader) {
+
+				var param1 = (BaseTextItem)e.Section.Items.FirstOrDefault(n => n.Name == "Param1");
+//				FileInfo fi =new FileInfo(FileNames[0]);
+//			var s = fi..Directory + fi.Name;
+				param1.Text = FileNames[0];
+				var param2 = (BaseTextItem)e.Section.Items.FirstOrDefault(n => n.Name == "Param2");
+				param2.Text = list.Count.ToString();
+			}
+			
+			else if (sectionName == ReportSectionNames.ReportPageHeader) {
+				Console.WriteLine("PushPrinting :" +ReportSectionNames .ReportPageHeader);
+			}
+			
+			else if (sectionName == ReportSectionNames.ReportDetail){
+//				Console.WriteLine("PushPrinting :" + ReportSectionNames.ReportDetail);
+			}
+			
+			else if (sectionName == ReportSectionNames.ReportPageFooter){
+//				Console.WriteLine("PushPrinting :" + ReportSectionNames.ReportPageFooter);
+			}
+			
+			else if (sectionName == ReportSectionNames.ReportFooter){
+//				Console.WriteLine("PushPrinting :" + ReportSectionNames.ReportFooter);
+			}
+		}
 	}
 	
 	
-	internal class OverviewViewModel:ReportViewModel
+	class OverviewViewModel:ReportViewModel
 	{
 		public OverviewViewModel ()
 		{

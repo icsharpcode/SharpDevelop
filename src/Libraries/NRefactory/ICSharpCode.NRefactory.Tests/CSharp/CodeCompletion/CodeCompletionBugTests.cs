@@ -6314,5 +6314,42 @@ class Program
 ");
 			Assert.IsTrue(provider == null || provider.Count == 0); 
 		}
+
+		/// <summary>
+		/// Bug 17653 - Wrong completion entry in tuple factory method
+		/// </summary>
+		[Test]
+		public void TestBug17653 ()
+		{
+			CombinedProviderTest(@"using System;
+class Foo
+{
+	public static void Main (string[] args)
+	{
+		$Tuple.Create(new $
+	}
+}
+", provider => Assert.IsNull(provider.Find("T1"), "'T1' found (type parameter)."));
+		}
+
+		[Test]
+		public void TestBug17653_ValidTypeParameterCreation ()
+		{
+			CombinedProviderTest(@"using System;
+class Foo<T1> where T1 : new()
+{
+	public static void Main (string[] args)
+	{
+		$T1 t = new $
+	}
+}
+", provider => { 
+				Assert.IsNotNull(provider.Find("T1"), "'T1' found (type parameter).");
+				Assert.AreEqual("T1", provider.DefaultCompletionString);
+			});
+		}
+
+
+
 	}
 }

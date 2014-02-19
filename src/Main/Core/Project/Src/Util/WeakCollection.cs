@@ -62,21 +62,6 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// Checks if the collection contains an item. Runtime: O(n).
-		/// </summary>
-		public bool Contains(T item)
-		{
-			if (item == null)
-				throw new ArgumentNullException("item");
-			CheckNoEnumerator();
-			foreach (T element in this) {
-				if (item.Equals(element))
-					return true;
-			}
-			return false;
-		}
-		
-		/// <summary>
 		/// Removes an element from the collection. Returns true if the item is found and removed,
 		/// false when the item is not found.
 		/// Runtime: O(n).
@@ -84,13 +69,14 @@ namespace ICSharpCode.Core
 		public bool Remove(T item)
 		{
 			if (item == null)
-				throw new ArgumentNullException("item");
+				return false;
 			CheckNoEnumerator();
+			var comparer = EqualityComparer<T>.Default;
 			for (int i = 0; i < innerList.Count;) {
 				T element = (T)innerList[i].Target;
 				if (element == null) {
 					RemoveAt(i);
-				} else if (element == item) {
+				} else if (comparer.Equals(element, item)) {
 					RemoveAt(i);
 					return true;
 				} else {

@@ -15,15 +15,7 @@
             <AvailableFieldsCollection />
             <SortColumnsCollection />
             <GroupColumnsCollection />
-            <ParameterCollection>
-                <BasicParameter>
-                    <ParameterName>param1</ParameterName>
-                    <Type>System.String</Type>
-                </BasicParameter>
-                <BasicParameter>
-                    <ParameterName>param2</ParameterName>
-                </BasicParameter>
-            </ParameterCollection>
+            <ParameterCollection />
             <SqlParameters />
             <ConnectionString />
             <CommandText />
@@ -39,7 +31,6 @@
             <Location>50, 50</Location>
             <Size>727, 168</Size>
             <BackColor>White</BackColor>
-            <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
@@ -49,7 +40,6 @@
                     <Location>122, 13</Location>
                     <Size>414, 40</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 18pt, style=Bold</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
@@ -64,16 +54,17 @@
                 </BaseTextItem>
                 <BaseTextItem>
                     <Location>601, 59</Location>
-                    <Size>100, 26</Size>
+                    <Size>100, 34</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 15.75pt</Font>
+                    <FormatString>dd/MM/yyyy</FormatString>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
+                    <DataType>System.DateTime</DataType>
                     <RTL>No</RTL>
-                    <Text>=Today()</Text>
+                    <Text>=Today</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>
@@ -83,7 +74,6 @@
                     <Location>12, 145</Location>
                     <Size>680, 10</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <ForeColor>ControlText</ForeColor>
                     <FromPoint>10, 5</FromPoint>
                     <ToPoint>669, 6</ToPoint>
@@ -98,24 +88,22 @@
                     <Location>139, 118</Location>
                     <Size>108, 20</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>=Parameters!param2</Text>
+                    <Text>Parameters!param2</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>
-                    <Name>BaseTextItem2147483639</Name>
+                    <Name>Param2</Name>
                 </BaseTextItem>
                 <BaseTextItem>
                     <Location>27, 118</Location>
                     <Size>106, 20</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
@@ -130,16 +118,15 @@
                 </BaseTextItem>
                 <BaseTextItem>
                     <Location>139, 91</Location>
-                    <Size>438, 20</Size>
+                    <Size>377, 20</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
-                    <CanGrow>False</CanGrow>
+                    <CanGrow>True</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>=Parameters!param1</Text>
+                    <Text>Parameters!param1</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>
@@ -149,7 +136,6 @@
                     <Location>27, 91</Location>
                     <Size>106, 20</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
@@ -166,7 +152,6 @@
                     <Location>195, 59</Location>
                     <Size>257, 26</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Microsoft Sans Serif, 15.75pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
@@ -188,7 +173,6 @@
             <Location>50, 233</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
-            <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
@@ -198,7 +182,6 @@
                     <Location>14, 16</Location>
                     <Size>658, 30</Size>
                     <BackColor>LightGray</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <DrawBorder>False</DrawBorder>
                     <ForeColor>ControlText</ForeColor>
                     <FrameColor>Black</FrameColor>
@@ -207,7 +190,6 @@
                             <Location>571, 7</Location>
                             <Size>41, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>MiddleRight</ContentAlignment>
@@ -224,7 +206,6 @@
                             <Location>501, 7</Location>
                             <Size>53, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>MiddleRight</ContentAlignment>
@@ -241,7 +222,6 @@
                             <Location>425, 7</Location>
                             <Size>55, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>MiddleRight</ContentAlignment>
@@ -258,7 +238,6 @@
                             <Location>347, 7</Location>
                             <Size>52, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>MiddleRight</ContentAlignment>
@@ -275,7 +254,6 @@
                             <Location>267, 7</Location>
                             <Size>55, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>MiddleRight</ContentAlignment>
@@ -292,7 +270,6 @@
                             <Location>4, 7</Location>
                             <Size>100, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>TopLeft</ContentAlignment>
@@ -318,7 +295,6 @@
             <Location>50, 308</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
-            <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
@@ -328,7 +304,6 @@
                     <Location>14, 14</Location>
                     <Size>658, 30</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <DrawBorder>False</DrawBorder>
                     <ForeColor>Black</ForeColor>
                     <FrameColor>Black</FrameColor>
@@ -337,7 +312,6 @@
                             <Location>571, 3</Location>
                             <Size>41, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>MiddleRight</ContentAlignment>
@@ -355,7 +329,6 @@
                             <Location>501, 3</Location>
                             <Size>53, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>MiddleRight</ContentAlignment>
@@ -373,7 +346,6 @@
                             <Location>425, 3</Location>
                             <Size>55, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>MiddleRight</ContentAlignment>
@@ -391,7 +363,6 @@
                             <Location>347, 3</Location>
                             <Size>52, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>MiddleRight</ContentAlignment>
@@ -409,7 +380,6 @@
                             <Location>268, 3</Location>
                             <Size>54, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Segoe UI, 9pt</Font>
                             <FormatString>0</FormatString>
                             <StringTrimming>None</StringTrimming>
@@ -429,7 +399,6 @@
                             <Location>4, 3</Location>
                             <Size>258, 20</Size>
                             <BackColor>White</BackColor>
-                            <VisibleInReport>True</VisibleInReport>
                             <Font>Microsoft Sans Serif, 10pt</Font>
                             <StringTrimming>None</StringTrimming>
                             <ContentAlignment>TopLeft</ContentAlignment>
@@ -456,7 +425,6 @@
             <Location>50, 383</Location>
             <Size>727, 37</Size>
             <BackColor>White</BackColor>
-            <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
@@ -466,7 +434,6 @@
                     <Location>14, 3</Location>
                     <Size>573, 20</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 9.75pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
@@ -483,7 +450,6 @@
                     <Location>614, 3</Location>
                     <Size>100, 20</Size>
                     <BackColor>White</BackColor>
-                    <VisibleInReport>True</VisibleInReport>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
@@ -505,7 +471,6 @@
             <Location>50, 435</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
-            <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>

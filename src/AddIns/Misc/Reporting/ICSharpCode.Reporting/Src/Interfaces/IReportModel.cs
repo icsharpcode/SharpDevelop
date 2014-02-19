@@ -18,6 +18,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 using ICSharpCode.Reporting.Items;
 
 namespace ICSharpCode.Reporting.Interfaces
@@ -28,16 +30,8 @@ namespace ICSharpCode.Reporting.Interfaces
 	public interface IReportModel
 	{
 		ReportSettings ReportSettings {get;set;}
-		List<BaseSection> SectionCollection {get;}
-		/*
-		ISection ReportHeader {get;}
-		ISection PageHeader {get;}
-		ISection DetailSection {get;}
-		ISection PageFooter {get;}
-		ISection ReportFooter {get;}
+		Collection<BaseSection> SectionCollection {get;}
 		
-		GlobalEnums.PushPullModel DataModel {get;}
-		*/
 		IReportContainer ReportHeader {get;}
 		IReportContainer PageHeader {get;}
 		IReportContainer DetailSection {get;}

@@ -17,53 +17,27 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
 using ICSharpCode.Reporting.Exporter.Visitors;
-using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter
 {
 	/// <summary>
 	/// Description of DebugExporter.
 	/// </summary>
-	public class DebugExporter:BaseExporter
+	class DebugExporter:BaseExporter
 	{
 		private DebugVisitor visitor;
 		
-		public DebugExporter(Collection<IPage> pages):base(pages)
+		public DebugExporter(Collection<ExportPage> pages):base(pages)
 		{
 			visitor = new DebugVisitor();
 		}
 		
 		
 		public override void Run () {
-			foreach (var page in Pages) {
-				ShowDebug(page);
-			}
+			visitor.Run(Pages);
 		}
-		
-		
-		 void ShowDebug(IExportContainer container)
-		{
-			foreach (var item in container.ExportedItems) {
-				var exportContainer = item as IExportContainer;
-				var acceptor = item as IAcceptor;
-				if (exportContainer != null) {
-					if (acceptor != null) {
-						Console.WriteLine("--container--");
-						acceptor.Accept(visitor);
-					}
-					ShowDebug(item as IExportContainer);
-				} else {
-					if (acceptor != null) {
-						Console.WriteLine("..Item...");
-						acceptor.Accept(visitor);
-					}
-				}
-			}
-		}
-		
 	}
 }

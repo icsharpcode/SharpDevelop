@@ -18,17 +18,17 @@
 
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeFunction : CodeElement, global::EnvDTE.CodeFunction
 	{
-		protected readonly IMethodModel methodModel;
+		protected readonly IMethod method;
 		
-		public CodeFunction(CodeModelContext context, IMethodModel methodModel)
-			: base(context, methodModel)
+		public CodeFunction(CodeModelContext context, IMethod method)
+			: base(context, method)
 		{
+			this.method = method;
 		}
 		
 		public CodeFunction()
@@ -40,49 +40,40 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual global::EnvDTE.vsCMAccess Access {
-			get { return methodModel.Accessibility.ToAccess(); }
+			get { return method.Accessibility.ToAccess(); }
 			set {
-				var method = methodModel.Resolve();
-				if (method == null)
-					throw new NotSupportedException();
-				context.CodeGenerator.ChangeAccessibility(method, value.ToAccessibility());
+//				var method = method.Resolve();
+//				if (method == null)
+//					throw new NotSupportedException();
+//				context.CodeGenerator.ChangeAccessibility(method, value.ToAccessibility());
 			}
 		}
 		
 		public virtual global::EnvDTE.CodeElements Parameters {
 			get {
-				var list = new CodeElementsList<CodeParameter2>();
-				var method = (IParameterizedMember)methodModel.Resolve();
-				if (method != null) {
-					foreach (var p in method.Parameters) {
-						list.Add(new CodeParameter2(context, p));
-					}
+				var parameters = new CodeElementsList<CodeParameter2>();
+				foreach (IParameter parameter in method.Parameters) {
+					parameters.Add(new CodeParameter2(context, parameter));
 				}
-				return list;
+				return parameters;
 			}
 		}
 		
 		public virtual global::EnvDTE.CodeTypeRef2 Type {
 			get {
-				var method = methodModel.Resolve();
-				if (method == null)
-					return null;
 				return new CodeTypeRef2(context, this, method.ReturnType);
 			}
 		}
 		
 		public virtual global::EnvDTE.CodeElements Attributes {
-			get { return GetAttributes(methodModel); }
+			get { return GetAttributes(method); }
 		}
 		
 		public virtual bool CanOverride {
-			get { return methodModel.IsOverridable; }
+			get { return method.IsOverridable; }
 			set {
-				if (value && !methodModel.IsOverridable) {
-					var method = methodModel.Resolve();
-					if (method != null) {
-						context.CodeGenerator.MakeVirtual(method);
-					}
+				if (value && !method.IsOverridable) {
+					context.CodeGenerator.MakeVirtual(method);
 				}
 			}
 		}
@@ -93,7 +84,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		global::EnvDTE.vsCMFunction GetFunctionKind()
 		{
-			switch (methodModel.SymbolKind) {
+			switch (method.SymbolKind) {
 				case SymbolKind.Constructor:
 					return global::EnvDTE.vsCMFunction.vsCMFunctionConstructor;
 				//case SymbolKind.Destructor:
@@ -105,11 +96,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual bool IsShared {
-			get { return methodModel.IsStatic; }
+			get { return method.IsStatic; }
 		}
 		
 		public virtual bool MustImplement {
-			get { return methodModel.IsAbstract; }
+			get { return method.IsAbstract; }
 		}
 	}
 }
