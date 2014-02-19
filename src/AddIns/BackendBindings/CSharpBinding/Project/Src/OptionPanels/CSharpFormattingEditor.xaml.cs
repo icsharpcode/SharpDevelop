@@ -18,75 +18,77 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Markup;
 using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding.OptionPanels
 {
-	internal class IFormattingItemContainer
+	/// <summary>
+	/// Marker interface for group or option container.
+	/// It doesn't need to have any members.
+	/// </summary>
+	internal interface IFormattingItemContainer
 	{
-		string Text { get; set; }
 	}
 	
 	/// <summary>
 	/// Represents a container item for other container items in formatting editor list
 	/// </summary>
-	internal class FormattingGroupContainer : IFormattingItemContainer
+	[ContentProperty("Children")]
+	internal class FormattingGroupContainer : DependencyObject, IFormattingItemContainer
 	{
-		public string Text
-		{
-			get;
-			set;
+		readonly ObservableCollection<IFormattingItemContainer> children = new ObservableCollection<IFormattingItemContainer>();
+		
+		public static readonly DependencyProperty TextProperty =
+			DependencyProperty.Register("Text", typeof(string), typeof(FormattingGroupContainer),
+			                            new FrameworkPropertyMetadata());
+		
+		public string Text {
+			get { return (string) GetValue(TextProperty); }
+			set { SetValue(TextProperty, value); }
 		}
 		
-		public IEnumerable<IFormattingItemContainer> Children
+		public ObservableCollection<IFormattingItemContainer> Children
 		{
-			get;
-			set;
+			get {
+				return children;
+			}
 		}
 	}
 	
 	/// <summary>
 	/// Represents a container for formatting options.
 	/// </summary>
-	internal class FormattingOptionContainer : IFormattingItemContainer
+	[ContentProperty("Children")]
+	internal class FormattingOptionContainer : DependencyObject, IFormattingItemContainer
 	{
-		public string Text
-		{
-			get;
-			set;
-		}
+		readonly ObservableCollection<FormattingOption> children = new ObservableCollection<FormattingOption>(); 
 		
-		public IEnumerable<FormattingOption> Children
+		public ObservableCollection<FormattingOption> Children
 		{
-			get;
-			set;
+			get {
+				return children;
+			}
 		}
 	}
 	
 	/// <summary>
 	/// Represents a single formatting option in formatting editor.
 	/// </summary>
-	internal class FormattingOption
+	internal class FormattingOption : DependencyObject
 	{
-		public FormattingOption(CSharpFormattingOptionsContainer container)
-		{
-			OptionsContainer = container;
-		}
-		
-		public CSharpFormattingOptionsContainer OptionsContainer
-		{
-			get;
-			set;
+		public static readonly DependencyProperty TextProperty =
+			DependencyProperty.Register("Text", typeof(string), typeof(FormattingOption),
+			                            new FrameworkPropertyMetadata());
+		public string Text {
+			get { return (string) GetValue(TextProperty); }
+			set { SetValue(TextProperty, value); }
 		}
 		
 		public string Option
-		{
-			get;
-			set;
-		}
-		public string Text
 		{
 			get;
 			set;
@@ -98,12 +100,15 @@ namespace CSharpBinding.OptionPanels
 	/// </summary>
 	public partial class CSharpFormattingEditor : UserControl
 	{
-		readonly List<IFormattingItemContainer> rootEntries;
-		
 		public CSharpFormattingEditor()
 		{
-			rootEntries = new List<IFormattingItemContainer>();
 			InitializeComponent();
+			
+			// rootEntries object is only the root container, its children should be shown directly
+			var rootEntries = this.Resources["rootEntries"] as FormattingGroupContainer;
+			if (rootEntries != null) {
+				this.DataContext = rootEntries.Children;
+			}
 		}
 		
 		public static readonly DependencyProperty OptionsContainerProperty =
@@ -117,14 +122,14 @@ namespace CSharpBinding.OptionPanels
 		
 		static void OnOptionsContainerPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			var editor = o as CSharpFormattingEditor;
-			if (editor != null) {
-				editor.BuildOptionItems();
-				editor.DataContext = editor.rootEntries;
-			}
+//			var editor = o as CSharpFormattingEditor;
+//			if (editor != null) {
+//				editor.BuildOptionItems();
+//				editor.DataContext = editor.rootEntries;
+//			}
 		}
 
-		void BuildOptionItems()
+		/*void BuildOptionItems()
 		{
 			rootEntries.Clear();
 			rootEntries.AddRange(
@@ -158,14 +163,52 @@ namespace CSharpBinding.OptionPanels
 					},
 					new FormattingGroupContainer { Text = "Braces", Children = new [] { new FormattingOptionContainer {
 								Children = new [] {
-									new FormattingOption(OptionsContainer) { Text = "-" }
+									new FormattingOption(OptionsContainer) { Option = "NamespaceBraceStyle", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "ClassBraceStyle", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "InterfaceBraceStyle", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "StructBraceStyle", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "StructBraceStyle", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "EnumBraceStyle", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "MethodBraceStyle", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "AnonymousMethodBraceStyle", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "ConstructorBraceStyle", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
 								}
 							}
 						}
 					},
 					new FormattingGroupContainer { Text = "New lines", Children = new [] { new FormattingOptionContainer {
 								Children = new [] {
-									new FormattingOption(OptionsContainer) { Text = "-" }
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 								}
 							}
 						}
@@ -174,70 +217,70 @@ namespace CSharpBinding.OptionPanels
 						Children = new [] {
 							new FormattingGroupContainer { Text = "Methods", Children = new [] { new FormattingOptionContainer {
 										Children = new [] {
-											new FormattingOption(OptionsContainer) { Text = "-" }
+											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 										}
 									}
 								}
 							},
 							new FormattingGroupContainer { Text = "Method calls", Children = new [] { new FormattingOptionContainer {
 										Children = new [] {
-											new FormattingOption(OptionsContainer) { Text = "-" }
+											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 										}
 									}
 								}
 							},
 							new FormattingGroupContainer { Text = "Fields", Children = new [] { new FormattingOptionContainer {
 										Children = new [] {
-											new FormattingOption(OptionsContainer) { Text = "-" }
+											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 										}
 									}
 								}
 							},
 							new FormattingGroupContainer { Text = "Local variables", Children = new [] { new FormattingOptionContainer {
 										Children = new [] {
-											new FormattingOption(OptionsContainer) { Text = "-" }
+											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 										}
 									}
 								}
 							},
 							new FormattingGroupContainer { Text = "Constructors", Children = new [] { new FormattingOptionContainer {
 										Children = new [] {
-											new FormattingOption(OptionsContainer) { Text = "-" }
+											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 										}
 									}
 								}
 							},
 							new FormattingGroupContainer { Text = "Indexers", Children = new [] { new FormattingOptionContainer {
 										Children = new [] {
-											new FormattingOption(OptionsContainer) { Text = "-" }
+											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 										}
 									}
 								}
 							},
 							new FormattingGroupContainer { Text = "Delegates", Children = new [] { new FormattingOptionContainer {
 										Children = new [] {
-											new FormattingOption(OptionsContainer) { Text = "-" }
+											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 										}
 									}
 								}
 							},
 							new FormattingGroupContainer { Text = "Statements", Children = new [] { new FormattingOptionContainer {
 										Children = new [] {
-											new FormattingOption(OptionsContainer) { Text = "-" }
+											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 										}
 									}
 								}
 							},
 							new FormattingGroupContainer { Text = "Operators", Children = new [] { new FormattingOptionContainer {
 										Children = new [] {
-											new FormattingOption(OptionsContainer) { Text = "-" }
+											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 										}
 									}
 								}
 							},
 							new FormattingGroupContainer { Text = "Brackets", Children = new [] { new FormattingOptionContainer {
 										Children = new [] {
-											new FormattingOption(OptionsContainer) { Text = "-" }
+											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 										}
 									}
 								}
@@ -246,34 +289,34 @@ namespace CSharpBinding.OptionPanels
 					},
 					new FormattingGroupContainer { Text = "Blank lines", Children = new [] { new FormattingOptionContainer {
 								Children = new [] {
-									new FormattingOption(OptionsContainer) { Text = "-" }
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 								}
 							}
 						}
 					},
 					new FormattingGroupContainer { Text = "Keep formatting", Children = new [] { new FormattingOptionContainer {
 								Children = new [] {
-									new FormattingOption(OptionsContainer) { Text = "-" }
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 								}
 							}
 						}
 					},
 					new FormattingGroupContainer { Text = "Wrapping", Children = new [] { new FormattingOptionContainer {
 								Children = new [] {
-									new FormattingOption(OptionsContainer) { Text = "-" }
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 								}
 							}
 						}
 					},
 					new FormattingGroupContainer { Text = "Using declarations", Children = new [] { new FormattingOptionContainer {
 								Children = new [] {
-									new FormattingOption(OptionsContainer) { Text = "-" }
+									new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
 								}
 							}
 						}
 					}
 				}
 			);
-		}
+		}*/
 	}
 }
