@@ -79,7 +79,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				OpenedFile openedFile = SD.FileService.GetOpenedFile(resourceFile);
 				Stream s;
 				if (openedFile != null) {
-					s = openedFile.OpenRead();
+					s = openedFile.GetModel(FileModels.Binary).OpenRead();
 				} else {
 					s = new FileStream(resourceFile, FileMode.Open, FileAccess.Read, FileShare.Read);
 				}

@@ -397,7 +397,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			SD.MainThread.InvokeIfRequired(delegate {
 			                               	OpenedFile file = SD.FileService.GetOpenedFile(fileName);
 			                               	if (file != null) {
-			                               		s = file.OpenRead();
+			                               		s = file.GetModel(FileModels.Binary).OpenRead();
 			                               	}
 			                               });
 			if (s == null) {

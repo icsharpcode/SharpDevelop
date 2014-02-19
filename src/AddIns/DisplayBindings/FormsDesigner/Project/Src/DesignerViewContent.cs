@@ -364,7 +364,7 @@ namespace ICSharpCode.FormsDesigner
 		void MakeDirty()
 		{
 			hasUnmergedChanges = true;
-			this.DesignerCodeFile.MakeDirty();
+			MakeDirty(this.DesignerCodeFile);
 			this.resourceStore.MarkResourceFilesAsDirty();
 			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}

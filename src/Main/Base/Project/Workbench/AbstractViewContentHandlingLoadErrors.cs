@@ -26,7 +26,6 @@ using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
-	/*
 	/// <summary>
 	/// This class handles errors in the Load method and prevents destroying invalid files.
 	/// Scenario:
@@ -39,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	/// holding the invalid data that got copied from the text editor to the resource editor in memory.
 	/// So saving during a load error works as expected.
 	/// </summary>
-	public abstract class AbstractViewContentHandlingLoadErrors : AbstractViewContent
+	public abstract class AbstractViewContentHandlingLoadErrors : AbstractViewContentSD1234
 	{
 		ContentPresenter contentControl = new ContentPresenter();
 		object userContent;
@@ -68,9 +67,34 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
+		public bool HasLoadError {
+			get {
+				return errorList.Count > 0;
+			}
+		}
+		
+		class LoadError
+		{
+			internal Exception exception;
+			internal byte[] fileData;
+			
+			public LoadError(Exception exception, Stream stream)
+			{
+				this.exception = exception;
+				stream.Position = 0;
+				this.fileData = new byte[(int)stream.Length];
+				int pos = 0;
+				while (pos < fileData.Length) {
+					int c = stream.Read(fileData, pos, fileData.Length - pos);
+					if (c == 0) break;
+					pos += c;
+				}
+			}
+		}
+		
 		TextBox errorTextBox;
 		
-		protected void ShowError(Exception ex)
+		void ShowError(Exception ex)
 		{
 			if (errorTextBox == null) {
 				errorTextBox = new TextBox();
@@ -81,6 +105,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			SD.WinForms.SetContent(contentControl, errorTextBox, this);
 		}
 		
+		Dictionary<OpenedFile, LoadError> errorList = new Dictionary<OpenedFile, LoadError>();
+		
 		/// <summary>
 		/// Gets a text to be shown above the exception when a load error occurs.
 		/// The default is an empty string.
@@ -88,6 +114,36 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		protected virtual string LoadErrorHeaderText {
 			get { return String.Empty; }
 		}
+		
+		public override sealed void Load(OpenedFile file, Stream stream)
+		{
+			try {
+				LoadInternal(file, new UnclosableStream(stream));
+				if (errorList.Count > 0) {
+					errorList.Remove(file);
+					if (errorList.Count == 0) {
+						SD.WinForms.SetContent(contentControl, userContent, this);
+					} else {
+						ShowError(errorList.Values.First().exception);
+					}
+				}
+			} catch (Exception ex) {
+				errorList[file] = new LoadError(ex, stream);
+				ShowError(ex);
+			}
+		}
+		
+		public override sealed void Save(OpenedFile file, Stream stream)
+		{
+			if (errorList.ContainsKey(file)) {
+				byte[] data = errorList[file].fileData;
+				stream.Write(data, 0, data.Length);
+			} else {
+				SaveInternal(file, stream);
+			}
+		}
+		
+		protected abstract void LoadInternal(OpenedFile file, Stream stream);
+		protected abstract void SaveInternal(OpenedFile file, Stream stream);
 	}
-	*/
 }

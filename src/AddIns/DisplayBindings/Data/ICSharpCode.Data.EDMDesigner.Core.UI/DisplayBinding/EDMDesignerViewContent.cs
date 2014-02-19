@@ -41,7 +41,7 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 {
-	public class EDMDesignerViewContent : AbstractViewContent, IHasPropertyContainer, IToolsHost, IEDMDesignerChangeWatcherObserver
+	public class EDMDesignerViewContent : AbstractViewContentSD1234, IHasPropertyContainer, IToolsHost, IEDMDesignerChangeWatcherObserver
 	{
 		private ScrollViewer _scrollViewer = new ScrollViewer() {
 			HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -86,7 +86,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 			if (primaryFile == null)
 				throw new ArgumentNullException("primaryFile");
 			
-			primaryFile.ForceInitializeView(this); // call Load()
+			LoadModel(); // call Load()
 
 			EDMDesignerChangeWatcher.AddEDMDesignerViewContent(this);
 		}
@@ -200,7 +200,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 			foreach (DesignerView designerView in _edmView.DesignerViews) {
 				foreach (ITypeDesigner uiType in designerView) {
 					if (uiType == changedObject || uiType.UIType.BusinessInstance == changedObject) {
-						PrimaryFile.IsDirty = true;
+						MakeDirty(PrimaryFile);
 						return true;
 					}
 				}

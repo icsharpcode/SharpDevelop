@@ -110,18 +110,8 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
-		
-		public void Save()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Save(string fileName)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Load(string fileName)
+
+		public void LoadModel()
 		{
 			throw new NotImplementedException();
 		}
@@ -131,37 +121,12 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public void SwitchedTo()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Selected()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Deselecting()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Deselected()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void RedrawContent()
-		{
-			throw new NotImplementedException();
-		}
-		
 		public void Dispose()
 		{
 			throw new NotImplementedException();
 		}
 		
-		public IList<OpenedFile> Files {
+		public IReadOnlyList<OpenedFile> Files {
 			get {
 				throw new NotImplementedException();
 			}
@@ -181,36 +146,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			get {
 				throw new NotImplementedException();
 			}
-		}
-		
-		public void Save(OpenedFile file, System.IO.Stream stream)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Load(OpenedFile file, System.IO.Stream stream)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void SwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void SwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
-		{
-			throw new NotImplementedException();
 		}
 		
 		protected virtual void OnTitleNameChanged(EventArgs e)

@@ -136,7 +136,8 @@ namespace HexEditor.View
 		
 		void DocumentChanged(object sender, EventArgs e)
 		{
-			if (PrimaryFile != null) PrimaryFile.MakeDirty();
+			if (PrimaryFile != null)
+				MakeDirty(PrimaryFile);
 		}
 	}
 }

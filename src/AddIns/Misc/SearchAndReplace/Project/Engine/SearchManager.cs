@@ -72,12 +72,10 @@ namespace SearchAndReplace
 			static ITextSource ReadFile(FileName fileName)
 			{
 				OpenedFile openedFile = SD.FileService.GetOpenedFile(fileName);
-				if (openedFile == null || openedFile.CurrentView == null)
+				if (openedFile == null)
 					return null;
-				var provider = openedFile.CurrentView.GetService<IFileDocumentProvider>();
-				if (provider == null)
-					return null;
-				IDocument doc = provider.GetDocumentForFile(openedFile);
+				// Get document, but only if it's already loaded:
+				IDocument doc = openedFile.GetModel(FileModels.TextDocument, GetModelOptions.DoNotLoad);
 				if (doc == null)
 					return null;
 				return doc.CreateSnapshot();

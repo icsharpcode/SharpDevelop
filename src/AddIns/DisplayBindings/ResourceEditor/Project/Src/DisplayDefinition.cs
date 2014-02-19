@@ -73,7 +73,7 @@ namespace ResourceEditor
 
 		void SetDirty(object sender, EventArgs e)
 		{
-			this.PrimaryFile.MakeDirty();
+			MakeDirty(this.PrimaryFile);
 		}
 		
 		public ResourceEditWrapper(OpenedFile file)

@@ -27,7 +27,7 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.IconEditor
 {
-	public class IconViewContent : AbstractViewContent
+	public class IconViewContent : AbstractViewContentSD1234
 	{
 		EditorPanel editor = new EditorPanel();
 		
@@ -44,7 +44,7 @@ namespace ICSharpCode.IconEditor
 		
 		void editor_IconWasEdited(object sender, EventArgs e)
 		{
-			PrimaryFile.MakeDirty();
+			MakeDirty(PrimaryFile);
 		}
 		
 		public override void Load(OpenedFile file, Stream stream)

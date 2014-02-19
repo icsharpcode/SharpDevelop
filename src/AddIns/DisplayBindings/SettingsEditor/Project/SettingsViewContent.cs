@@ -55,9 +55,9 @@ namespace ICSharpCode.SettingsEditor
 			view.SettingsChanged += ((s,e) =>
 			                         {
 			                         	if (this.PrimaryFile != null)
-			                         		this.PrimaryFile.MakeDirty();
+			                         		MakeDirty(this.PrimaryFile);
 			                         	if (appConfigFile != null)
-			                         		appConfigFile.MakeDirty();
+			                         		MakeDirty(appConfigFile);
 			                         });
 			                        
 		}
@@ -74,11 +74,11 @@ namespace ICSharpCode.SettingsEditor
 				return;
 			FileName appConfigFileName = CompilableProject.GetAppConfigFile(p, createIfNotExists);
 			if (appConfigFileName != null) {
-				appConfigFile = SD.FileService.GetOrCreateOpenedFile(appConfigFileName);
+				appConfigFile = SD.FileService.CreateOpenedFile(appConfigFileName);
 				this.Files.Add(appConfigFile);
+				ForceInitializeView(appConfigFile);
 				if (createIfNotExists)
-					appConfigFile.MakeDirty();
-				appConfigFile.ForceInitializeView(this);
+					MakeDirty(appConfigFile);
 			}
 		}
 		

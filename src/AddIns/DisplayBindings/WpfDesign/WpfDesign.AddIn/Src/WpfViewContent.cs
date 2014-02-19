@@ -181,7 +181,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		void OnUndoStackChanged(object sender, EventArgs e)
 		{
 			wasChangedInDesigner = true;
-			this.PrimaryFile.MakeDirty();
+			MakeDirty(PrimaryFile);
 		}
 		
 		#region Property editor / SelectionChanged

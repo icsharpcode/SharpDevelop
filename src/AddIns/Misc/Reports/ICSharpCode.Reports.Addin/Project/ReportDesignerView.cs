@@ -388,7 +388,7 @@ namespace ICSharpCode.Reports.Addin
 		private void MakeDirty()
 		{
 			hasUnmergedChanges = true;
-			this.PrimaryFile.MakeDirty();
+			MakeDirty(this.PrimaryFile);
 		}
 		
 		#endregion

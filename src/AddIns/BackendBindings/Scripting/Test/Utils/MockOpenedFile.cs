@@ -33,21 +33,5 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			this.FileName = new ICSharpCode.Core.FileName(fileName);
 		}
-		
-		public override IList<IViewContent> RegisteredViewContents {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public override void RegisterView(IViewContent view)
-		{
-		}
-		
-		public override void UnregisterView(IViewContent view)
-		{
-		}
-		
-		public override event EventHandler FileClosed { add {} remove {} }
 	}
 }

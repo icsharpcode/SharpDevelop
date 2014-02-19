@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	/// View contents must maintain a reference to their opened files
 	/// (this usually happens via the AbstractViewContent.Files collection).
 	/// </remarks>
-	public abstract class OpenedFile : ICanBeDirty
+	public class OpenedFile : ICanBeDirty
 	{
 		abstract class ModelEntry
 		{
@@ -394,7 +394,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// If multiple valid models exist, one is picked at random.
 		/// </summary>
 		/// <remarks>
-		/// This method is used when SharpDevelop detects
+		/// This method is used when SharpDevelop detects that the file was changed externally;
+		/// but the user does not want to reload the file. 
 		/// </remarks>
 		public void MakeDirty()
 		{

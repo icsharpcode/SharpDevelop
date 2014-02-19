@@ -76,6 +76,31 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		Provider provider = new Provider(); // each AbstractViewContent gets its own provider instance
 		bool isStale = true;
 		
+		protected AbstractViewContentSD1234()
+		{
+		}
+		
+		protected AbstractViewContentSD1234(OpenedFile file) : base(file)
+		{
+		}
+		
+		protected void MakeDirty(OpenedFile file)
+		{
+			file.MakeDirty(provider);
+		}
+		
+		/// <summary>
+		/// Calls Load() for the specified file only.
+		/// This is useful after adding a new file to the Files collection.
+		/// </summary>
+		protected void ForceInitializeView(OpenedFile file)
+		{
+			using (Stream s = file.GetModel(FileModels.Binary).OpenRead()) {
+				Load(file, s);
+			}
+			file.ReplaceModel(provider, this, ReplaceModelMode.TransferDirty);
+		}
+		
 		public abstract void Save(OpenedFile file, Stream stream);
 		public abstract void Load(OpenedFile file, Stream stream);
 		
