@@ -108,9 +108,10 @@ namespace ICSharpCode.PackageManagement
 					.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 			}
 			if (project != null) {
-				filteredPackages = filteredPackages.Where(package => package.HasProjectContent());
+				filteredPackages = filteredPackages.Where(IsProjectPackage);
 			}
 			return filteredPackages;
 		}
+
 	}
 }

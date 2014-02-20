@@ -66,8 +66,6 @@ namespace ICSharpCode.PackageManagement.Design
 			return new FakePackage(id, version);
 		}
 		
-		public bool IsProjectPackage { get { return true; } }
-		
 		public string Id { get; set; }
 		public SemanticVersion Version { get; set; }
 		public string Title { get; set; }

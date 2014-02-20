@@ -64,7 +64,19 @@ namespace PackageManagement.Tests.Helpers
 			this.FakePackageManagementEvents = packageManagementEvents;
 			this.FakeActionRunner = actionRunner;
 			this.FakeLogger = logger;
+
+			IsProjectPackageReturnsValue = true;
+			IsProjectPackageIsCalled = false;
 		}
+		
+		protected override bool IsProjectPackage(NuGet.IPackage package)
+		{
+			IsProjectPackageIsCalled = true;
+			return IsProjectPackageReturnsValue;
+		}
+		
+		public bool IsProjectPackageReturnsValue { get; set; }
+		public bool IsProjectPackageIsCalled { get; set; }
 		
 		protected override PackageViewModelOperationLogger CreateLogger(ILogger logger)
 		{

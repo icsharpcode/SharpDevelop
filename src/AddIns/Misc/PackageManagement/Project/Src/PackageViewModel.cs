@@ -119,7 +119,7 @@ namespace ICSharpCode.PackageManagement
 			get {
 				if (selectedProjects.HasSingleProjectSelected()) {
 					return selectedProjects.GetSingleProjectSelected(package.Repository).IsPackageInstalled(package)
-						|| (IsPackageInstalled() && !package.IsProjectPackage);
+						|| (IsPackageInstalled() && !IsProjectPackage(package));
 				}
 				return IsPackageInstalled();
 			}
@@ -198,6 +198,15 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Published.HasValue; }
 		}
 
+		/// <summary>
+		/// Make this & IPackageExtensions.IsProjectPackage overridable/testable
+		/// </summary>
+		/// <param name="package"></param>
+		/// <returns></returns>
+		protected virtual bool IsProjectPackage(IPackage package) {
+			return package.IsProjectPackage();
+		}
+
 		public void PackageChanged() {
 			OnPropertyChanged(model => model.IsManaged);
 			OnPropertyChanged(model => model.IsAdded);
@@ -205,7 +214,7 @@ namespace ICSharpCode.PackageManagement
 
 		public void AddOrManagePackage() {
 			if (selectedProjects.HasMultipleProjects()) {
-				if (package.IsProjectPackage) {
+				if (IsProjectPackage(package)) {
 					ManagePackage();
 				}
 				else {
@@ -223,7 +232,7 @@ namespace ICSharpCode.PackageManagement
 			logger.LogAddingPackage();
 			
 			using (IDisposable operation = StartOperation(package)) {
-				if (package.IsProjectPackage) {
+				if (IsProjectPackage(package)) {
 					TryInstallingPackage();
 				}
 				else {
@@ -367,7 +376,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RemoveOrManagePackage() {
 			if (selectedProjects.HasMultipleProjects()) {
-				if (package.IsProjectPackage) {
+				if (IsProjectPackage(package)) {
 					ManagePackage();
 				}
 				else {
@@ -384,7 +393,7 @@ namespace ICSharpCode.PackageManagement
 			ClearReportedMessages();
 			logger.LogRemovingPackage();
 
-			if (package.IsProjectPackage) {
+			if (IsProjectPackage(package)) {
 				TryUninstallingPackage();
 			} else {
 				TryUninstallingSolutionPackage();
@@ -434,7 +443,7 @@ namespace ICSharpCode.PackageManagement
 				// Solution selected 
 				// Project-level/Solution-level Package Management
 				if (IsAdded) {
-					if (package.IsProjectPackage) {
+					if (IsProjectPackage(package)) {
 						return true; // [Manage] Button
 					}
 					return false; // [Remove] Button

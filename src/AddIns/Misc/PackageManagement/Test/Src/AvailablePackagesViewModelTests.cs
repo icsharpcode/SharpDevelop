@@ -30,7 +30,7 @@ namespace PackageManagement.Tests
 	[TestFixture]
 	public class AvailablePackagesViewModelTests
 	{
-		AvailablePackagesViewModel viewModel;
+		TestableAvailablePackagesViewModel viewModel;
 		PackageManagementEvents packageManagementEvents;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		ExceptionThrowingRegisteredPackageRepositories exceptionThrowingRegisteredPackageRepositories;
@@ -53,7 +53,8 @@ namespace PackageManagement.Tests
 			var packageViewModelFactory = new FakePackageViewModelFactory();
 			packageManagementEvents = new PackageManagementEvents();
 
-			viewModel = new AvailablePackagesViewModel(
+			viewModel = new TestableAvailablePackagesViewModel(
+				new FakePackageManagementSolution(),
 				packageManagementEvents,
 				registeredPackageRepositories, 
 				packageViewModelFactory, 
