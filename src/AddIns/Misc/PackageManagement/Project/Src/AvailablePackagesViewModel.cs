@@ -107,9 +107,6 @@ namespace ICSharpCode.PackageManagement
 					.Where(package => package.IsReleaseVersion())
 					.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 			}
-			if (project != null) {
-				filteredPackages = filteredPackages.Where(IsProjectPackage);
-			}
 			return filteredPackages;
 		}
 
