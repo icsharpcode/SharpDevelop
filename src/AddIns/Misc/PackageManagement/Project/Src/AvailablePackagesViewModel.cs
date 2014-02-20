@@ -26,16 +26,17 @@ namespace ICSharpCode.PackageManagement
 {
 	public class AvailablePackagesViewModel : PackagesViewModel
 	{
-		IPackageRepository repository;
-		IPackageManagementEvents packageManagementEvents;
-		string errorMessage;
+		IPackageRepository availablePackagesRepository;
 		
 		public AvailablePackagesViewModel(
+			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(
+				solution,
+				packageManagementEvents,
 				registeredPackageRepositories, 
 				packageViewModelFactory, 
 				taskFactory)
@@ -65,7 +66,7 @@ namespace ICSharpCode.PackageManagement
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
 			try {
-				repository = RegisteredPackageRepositories.ActiveRepository;
+				availablePackagesRepository = RegisteredPackageRepositories.ActiveRepository;
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}
@@ -73,13 +74,17 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			if (repository == null) {
+			if (availablePackagesRepository == null) {
 				throw new ApplicationException(errorMessage);
 			}
+			IQueryable<IPackage> allPackages;
 			if (IncludePrerelease) {
-				return repository.GetPackages();
+				allPackages = availablePackagesRepository.GetPackages();
 			}
-			return repository.GetPackages().Where(package => package.IsLatestVersion);
+			else {
+				allPackages = availablePackagesRepository.GetPackages().Where(package => package.IsLatestVersion);
+			}
+			return allPackages;
 		}
 		
 		/// <summary>
@@ -92,13 +97,20 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
+			IEnumerable<IPackage> filteredPackages;
 			if (IncludePrerelease) {
-				return base.GetFilteredPackagesBeforePagingResults(allPackages)
+				filteredPackages = base.GetFilteredPackagesBeforePagingResults(allPackages)
 					.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 			}
-			return base.GetFilteredPackagesBeforePagingResults(allPackages)
-				.Where(package => package.IsReleaseVersion())
-				.DistinctLast<IPackage>(PackageEqualityComparer.Id);
+			else {
+				filteredPackages = base.GetFilteredPackagesBeforePagingResults(allPackages)
+					.Where(package => package.IsReleaseVersion())
+					.DistinctLast<IPackage>(PackageEqualityComparer.Id);
+			}
+			if (project != null) {
+				filteredPackages = filteredPackages.Where(package => package.HasProjectContent());
+			}
+			return filteredPackages;
 		}
 	}
 }

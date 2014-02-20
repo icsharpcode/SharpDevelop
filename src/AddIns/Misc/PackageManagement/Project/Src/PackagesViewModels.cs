@@ -32,10 +32,10 @@ namespace ICSharpCode.PackageManagement
 			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, actionRunner);
 			var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
 			
-			AvailablePackagesViewModel = new AvailablePackagesViewModel(packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			AvailablePackagesViewModel = new AvailablePackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, registeredPackageRepositories, updatedPackageViewModelFactory, taskFactory);
-			RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, updatedPackageViewModelFactory, taskFactory);
+			RecentPackagesViewModel = new RecentPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 		}
 		
 		public AvailablePackagesViewModel AvailablePackagesViewModel { get; private set; }

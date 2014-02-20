@@ -30,6 +30,11 @@ namespace ICSharpCode.PackageManagement
 	{
 		Pages pages = new Pages();
 		
+		protected IPackageManagementEvents packageManagementEvents;
+		protected IPackageManagementSolution solution;
+		protected IPackageManagementProject project;
+		protected string errorMessage = string.Empty;
+
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageViewModelFactory packageViewModelFactory;
 		ITaskFactory taskFactory;
@@ -38,18 +43,23 @@ namespace ICSharpCode.PackageManagement
 		bool includePrerelease;
 		
 		public PackagesViewModel(
+			IPackageManagementSolution solution,
+			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 		{
+			this.solution = solution;
+			this.packageManagementEvents = packageManagementEvents;
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.packageViewModelFactory = packageViewModelFactory;
 			this.taskFactory = taskFactory;
+			this.solution = solution;
 			
 			PackageViewModels = new ObservableCollection<PackageViewModel>();
-			ErrorMessage = String.Empty;
 
 			CreateCommands();
+			TryGetActiveProject();
 		}
 		
 		void CreateCommands()
@@ -61,6 +71,15 @@ namespace ICSharpCode.PackageManagement
 			UpdateAllPackagesCommand = new DelegateCommand(param => UpdateAllPackages());
 		}
 		
+		void TryGetActiveProject()
+		{
+			try {
+				project = solution.GetActiveProject();
+			} catch (Exception ex) {
+				errorMessage = ex.Message;
+			}
+		}
+
 		public ICommand ShowNextPageCommand { get; private set; }
 		public ICommand ShowPreviousPageCommand { get; private set; }
 		public ICommand ShowPageCommand { get; private set; }

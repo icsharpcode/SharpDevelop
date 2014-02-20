@@ -24,20 +24,22 @@ namespace ICSharpCode.PackageManagement
 {
 	public class RecentPackagesViewModel : PackagesViewModel
 	{
-		IPackageManagementEvents packageManagementEvents;
-		IPackageRepository recentPackageRepository;
+		IPackageRepository recentPackagesRepository;
 		
 		public RecentPackagesViewModel(
+			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(
+				solution,
+				packageManagementEvents,
 				registeredPackageRepositories, 
 				packageViewModelFactory, 
 				taskFactory)
 		{
-			recentPackageRepository = registeredPackageRepositories.RecentPackageRepository;
+			recentPackagesRepository = registeredPackageRepositories.RecentPackageRepository;
 			
 			this.packageManagementEvents = packageManagementEvents;
 			RegisterEvents();
@@ -64,7 +66,7 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			return recentPackageRepository.GetPackages();
+			return recentPackagesRepository.GetPackages().Where(package => project == null || package.HasProjectContent());
 		}
 	}
 }

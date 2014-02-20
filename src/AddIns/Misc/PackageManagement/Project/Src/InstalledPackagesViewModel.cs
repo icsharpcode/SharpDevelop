@@ -25,11 +25,6 @@ namespace ICSharpCode.PackageManagement
 {
 	public class InstalledPackagesViewModel : PackagesViewModel
 	{
-		IPackageManagementSolution solution;
-		IPackageManagementEvents packageManagementEvents;
-		IPackageManagementProject project;
-		string errorMessage;
-
 		public InstalledPackagesViewModel(
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
@@ -37,15 +32,13 @@ namespace ICSharpCode.PackageManagement
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(
+				solution,
+				packageManagementEvents,
 				registeredPackageRepositories, 
 				packageViewModelFactory, 
 				taskFactory)
 		{
-			this.solution = solution;
-			this.packageManagementEvents = packageManagementEvents;
-			
 			RegisterEvents();
-			TryGetActiveProject();
 		}
 		
 		void RegisterEvents()
@@ -67,18 +60,9 @@ namespace ICSharpCode.PackageManagement
 			ReadPackages();
 		}
 		
-		void TryGetActiveProject()
-		{
-			try {
-				project = solution.GetActiveProject();
-			} catch (Exception ex) {
-				errorMessage = ex.Message;
-			}
-		}
-
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			if (errorMessage != null) {
+			if (!string.IsNullOrEmpty(errorMessage)) {
 				ThrowOriginalExceptionWhenTryingToGetProjectManager();
 			}
 			if (project != null) {

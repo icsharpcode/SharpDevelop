@@ -28,16 +28,17 @@ namespace ICSharpCode.PackageManagement
 	{
 		PackageManagementSelectedProjects selectedProjects;
 		UpdatedPackages updatedPackages;
-		string errorMessage = String.Empty;
 		ILogger logger;
-		IPackageManagementEvents packageManagementEvents;
 		
 		public UpdatedPackagesViewModel(
 			IPackageManagementSolution solution,
+			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(
+				solution,
+				packageManagementEvents,
 				registeredPackageRepositories,
 				packageViewModelFactory,
 				taskFactory)
