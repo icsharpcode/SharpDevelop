@@ -66,12 +66,7 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			IQueryable<IPackage> allPackages;
-			allPackages = recentPackagesRepository.GetPackages();
-			if (project != null) {
-				allPackages = allPackages.Where(IsProjectPackage).AsQueryable();
-			}
-			return allPackages;
+			return recentPackagesRepository.GetPackages();
 		}
 	}
 }
