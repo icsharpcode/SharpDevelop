@@ -69,7 +69,7 @@ namespace CSharpBinding.FormattingStrategy
 			ComboBox comboBox = o as ComboBox;
 			if ((option != null) && (comboBox != null)) {
 				// Add "default" entry in ComboBox
-				// TODO Add located resource!
+				// TODO Add located resource, maybe context-bound, like "(solution)" or "(global)"!
 				comboBox.Items.Add(new ComboBoxItem { Content = "(default)", Tag = null });
 				comboBox.SelectedIndex = 0;
 				
@@ -78,7 +78,25 @@ namespace CSharpBinding.FormattingStrategy
 					Type optionType = container.GetOptionType(option);
 					FillComboValues(comboBox, optionType);
 					object currentValue = container.GetOption(option);
-					comboBox.SelectedItem = comboBox.Items.OfType<ComboBoxItem>().FirstOrDefault(item => currentValue.Equals(item.Tag));
+					comboBox.SelectedItem = comboBox.Items.OfType<ComboBoxItem>().FirstOrDefault(item => object.Equals(currentValue, item.Tag));
+				}
+				
+				comboBox.SelectionChanged += ComboBox_SelectionChanged;
+			}
+		}
+
+		static void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+		{
+			ComboBox comboBox = sender as ComboBox;
+			if (comboBox != null) {
+				string option = GetOption(comboBox);
+				CSharpFormattingOptionsContainer container = GetContainer(comboBox);
+				if ((container != null) && (option != null)) {
+					ComboBoxItem selectedItem = comboBox.SelectedItem as ComboBoxItem;
+					if (selectedItem != null) {
+						// Set option to appropriate value
+						container.SetOption(option, selectedItem.Tag);
+					}
 				}
 			}
 		}

@@ -75,20 +75,20 @@
 			<local:FormattingGroupContainer Text="Spaces">
 				<local:FormattingGroupContainer Text="Methods">
 					<local:FormattingOptionContainer>
-						<local:FormattingOption Option="SpaceBeforeMethodDeclarationParentheses" Text="Space before parantheses" />
-						<local:FormattingOption Option="SpaceBetweenEmptyMethodDeclarationParentheses" Text="Space between parantheses" />
+						<local:FormattingOption Option="SpaceBeforeMethodDeclarationParentheses" Text="Space before parentheses" />
+						<local:FormattingOption Option="SpaceBetweenEmptyMethodDeclarationParentheses" Text="Space between parentheses" />
 						<local:FormattingOption Option="SpaceBeforeMethodDeclarationParameterComma" Text="Space before parameter comma" />
 						<local:FormattingOption Option="SpaceAfterMethodDeclarationParameterComma" Text="Space after parameter comma" />
-						<local:FormattingOption Option="SpaceWithinMethodDeclarationParentheses" Text="Space within parantheses" />
+						<local:FormattingOption Option="SpaceWithinMethodDeclarationParentheses" Text="Space within parentheses" />
 					</local:FormattingOptionContainer>
 				</local:FormattingGroupContainer>
 				<local:FormattingGroupContainer Text="Method calls">
 					<local:FormattingOptionContainer>
-						<local:FormattingOption Option="SpaceBeforeMethodCallParentheses" Text="Space before parantheses" />
-						<local:FormattingOption Option="SpaceBetweenEmptyMethodCallParentheses" Text="Space between empty parantheses" />
+						<local:FormattingOption Option="SpaceBeforeMethodCallParentheses" Text="Space before parentheses" />
+						<local:FormattingOption Option="SpaceBetweenEmptyMethodCallParentheses" Text="Space between empty parentheses" />
 						<local:FormattingOption Option="SpaceBeforeMethodCallParameterComma" Text="Space before parameter comma" />
 						<local:FormattingOption Option="SpaceAfterMethodCallParameterComma" Text="Space after parameter comma" />
-						<local:FormattingOption Option="SpaceWithinMethodCallParentheses" Text="Space within parantheses" />
+						<local:FormattingOption Option="SpaceWithinMethodCallParentheses" Text="Space within parentheses" />
 					</local:FormattingOptionContainer>
 				</local:FormattingGroupContainer>
 				<local:FormattingGroupContainer Text="Fields">
@@ -105,11 +105,11 @@
 				</local:FormattingGroupContainer>
 				<local:FormattingGroupContainer Text="Constructors">
 					<local:FormattingOptionContainer>
-						<local:FormattingOption Option="SpaceBeforeConstructorDeclarationParentheses" Text="Space before parantheses" />
-						<local:FormattingOption Option="SpaceBetweenEmptyConstructorDeclarationParentheses" Text="Space between empty parantheses" />
+						<local:FormattingOption Option="SpaceBeforeConstructorDeclarationParentheses" Text="Space before parentheses" />
+						<local:FormattingOption Option="SpaceBetweenEmptyConstructorDeclarationParentheses" Text="Space between empty parentheses" />
 						<local:FormattingOption Option="SpaceBeforeConstructorDeclarationParameterComma" Text="Space before parameter comma" />
 						<local:FormattingOption Option="SpaceAfterConstructorDeclarationParameterComma" Text="Space after parameter comma" />
-						<local:FormattingOption Option="SpaceWithinConstructorDeclarationParentheses" Text="Space within parantheses" />
+						<local:FormattingOption Option="SpaceWithinConstructorDeclarationParentheses" Text="Space within parentheses" />
 					</local:FormattingOptionContainer>
 				</local:FormattingGroupContainer>
 				<local:FormattingGroupContainer Text="Indexers">
@@ -122,59 +122,59 @@
 				</local:FormattingGroupContainer>
 				<local:FormattingGroupContainer Text="Delegates">
 					<local:FormattingOptionContainer>
-						<local:FormattingOption Option="SpaceBeforeDelegateDeclarationParentheses" Text="Space before parantheses" />
-						<local:FormattingOption Option="SpaceBetweenEmptyDelegateDeclarationParentheses" Text="Space between empty parantheses" />
+						<local:FormattingOption Option="SpaceBeforeDelegateDeclarationParentheses" Text="Space before parentheses" />
+						<local:FormattingOption Option="SpaceBetweenEmptyDelegateDeclarationParentheses" Text="Space between empty parentheses" />
 						<local:FormattingOption Option="SpaceBeforeDelegateDeclarationParameterComma" Text="Space before parameter comma" />
 						<local:FormattingOption Option="SpaceAfterDelegateDeclarationParameterComma" Text="Space after parameter comma" />
-						<local:FormattingOption Option="SpaceWithinDelegateDeclarationParentheses" Text="Space within parantheses" />
+						<local:FormattingOption Option="SpaceWithinDelegateDeclarationParentheses" Text="Space within parentheses" />
 					</local:FormattingOptionContainer>
 				</local:FormattingGroupContainer>
 				<local:FormattingGroupContainer Text="Statements">
 					<local:FormattingOptionContainer>
-						<local:FormattingOption Option="SpaceBeforeNewParentheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeIfParentheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeWhileParentheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeForParentheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeForeachParentheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeCatchParentheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeSwitchParentheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeLockParentheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeUsingParentheses" Text="" />
-						<local:FormattingOption Option="SpaceAroundAssignment" Text="" />
-						<local:FormattingOption Option="SpaceAroundLogicalOperator" Text="" />
-						<local:FormattingOption Option="SpaceAroundEqualityOperator" Text="" />
-						<local:FormattingOption Option="SpaceAroundRelationalOperator" Text="" />
-						<local:FormattingOption Option="SpaceAroundBitwiseOperator" Text="" />
-						<local:FormattingOption Option="SpaceAroundAdditiveOperator" Text="" />
-						<local:FormattingOption Option="SpaceAroundMultiplicativeOperator" Text="" />
-						<local:FormattingOption Option="SpaceAroundShiftOperator" Text="" />
-						<local:FormattingOption Option="SpaceAroundNullCoalescingOperator" Text="" />
-						<local:FormattingOption Option="SpaceAfterUnsafeAddressOfOperator" Text="" />
-						<local:FormattingOption Option="SpaceAfterUnsafeAsteriskOfOperator" Text="" />
-						<local:FormattingOption Option="SpaceAroundUnsafeArrowOperator" Text="" />
-						<local:FormattingOption Option="SpacesWithinParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinIfParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinWhileParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinForParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinForeachParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinCatchParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinSwitchParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinLockParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinUsingParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinCastParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinSizeOfParentheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeSizeOfParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinTypeOfParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinNewParentheses" Text="" />
-						<local:FormattingOption Option="SpacesBetweenEmptyNewParentheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeNewParameterComma" Text="" />
-						<local:FormattingOption Option="SpaceAfterNewParameterComma" Text="" />
-						<local:FormattingOption Option="SpaceBeforeTypeOfParentheses" Text="" />
-						<local:FormattingOption Option="SpacesWithinCheckedExpressionParantheses" Text="" />
-						<local:FormattingOption Option="SpaceBeforeConditionalOperatorCondition" Text="" />
-						<local:FormattingOption Option="SpaceAfterConditionalOperatorCondition" Text="" />
-						<local:FormattingOption Option="SpaceBeforeConditionalOperatorSeparator" Text="" />
-						<local:FormattingOption Option="SpaceAfterConditionalOperatorSeparator" Text="" />
+						<local:FormattingOption Option="SpaceBeforeNewParentheses" Text="Space before &quot;new&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeIfParentheses" Text="Space before &quot;if&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeWhileParentheses" Text="Space before &quot;while&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeForParentheses" Text="Space before &quot;for&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeForeachParentheses" Text="Space before &quot;foreach&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeCatchParentheses" Text="Space before &quot;catch&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeSwitchParentheses" Text="Space before &quot;switch&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeLockParentheses" Text="Space before &quot;lock&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeUsingParentheses" Text="Space before &quot;using&quot; parentheses" />
+						<local:FormattingOption Option="SpaceAroundAssignment" Text="Space around assignment" />
+						<local:FormattingOption Option="SpaceAroundLogicalOperator" Text="Space around logical operator" />
+						<local:FormattingOption Option="SpaceAroundEqualityOperator" Text="Space around equality operator" />
+						<local:FormattingOption Option="SpaceAroundRelationalOperator" Text="Space around relational operator" />
+						<local:FormattingOption Option="SpaceAroundBitwiseOperator" Text="Space around bitwise operator" />
+						<local:FormattingOption Option="SpaceAroundAdditiveOperator" Text="Space around additive operator" />
+						<local:FormattingOption Option="SpaceAroundMultiplicativeOperator" Text="Space around multiplicative operator" />
+						<local:FormattingOption Option="SpaceAroundShiftOperator" Text="Space around shift operator" />
+						<local:FormattingOption Option="SpaceAroundNullCoalescingOperator" Text="Space around null coalescing operator" />
+						<local:FormattingOption Option="SpaceAfterUnsafeAddressOfOperator" Text="Space after unsafe address of operator" />
+						<local:FormattingOption Option="SpaceAfterUnsafeAsteriskOfOperator" Text="Space after unsafe asterisk of operator" />
+						<local:FormattingOption Option="SpaceAroundUnsafeArrowOperator" Text="Space around unsafe arrow operator" />
+						<local:FormattingOption Option="SpacesWithinParentheses" Text="Spaces within parentheses" />
+						<local:FormattingOption Option="SpacesWithinIfParentheses" Text="Spaces within &quot;if&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinWhileParentheses" Text="Spaces within &quot;while&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinForParentheses" Text="Spaces within &quot;for&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinForeachParentheses" Text="Spaces within &quot;foreach&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinCatchParentheses" Text="Spaces within &quot;catch&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinSwitchParentheses" Text="Spaces within &quot;switch&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinLockParentheses" Text="Spaces within &quot;lock&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinUsingParentheses" Text="Spaces within &quot;using&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinCastParentheses" Text="Spaces within cast parentheses" />
+						<local:FormattingOption Option="SpacesWithinSizeOfParentheses" Text="Spaces within &quot;sizeof&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeSizeOfParentheses" Text="Space before &quot;sizeof&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinTypeOfParentheses" Text="Spaces within &quot;typeof&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinNewParentheses" Text="Spaces within &quot;new&quot; parentheses" />
+						<local:FormattingOption Option="SpacesBetweenEmptyNewParentheses" Text="Spaces between empty &quot;new&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeNewParameterComma" Text="Space before &quot;new&quot; parameter comma" />
+						<local:FormattingOption Option="SpaceAfterNewParameterComma" Text="Space after &quot;new&quot; parameter comma" />
+						<local:FormattingOption Option="SpaceBeforeTypeOfParentheses" Text="Space before &quot;typeof&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinCheckedExpressionParantheses" Text="Spaces within &quot;checked&quot; expression parentheses" />
+						<local:FormattingOption Option="SpaceBeforeConditionalOperatorCondition" Text="Space before conditional operator condition" />
+						<local:FormattingOption Option="SpaceAfterConditionalOperatorCondition" Text="Space after conditional operator condition" />
+						<local:FormattingOption Option="SpaceBeforeConditionalOperatorSeparator" Text="Space before conditional operator separator" />
+						<local:FormattingOption Option="SpaceAfterConditionalOperatorSeparator" Text="Space after conditional operator separator" />
 					</local:FormattingOptionContainer>
 				</local:FormattingGroupContainer>
 				<local:FormattingGroupContainer Text="Brackets">
@@ -213,26 +213,26 @@
 			</local:FormattingGroupContainer>
 			<local:FormattingGroupContainer Text="Wrapping">
 				<local:FormattingOptionContainer>
-					<local:FormattingOption Option="ArrayInitializerWrapping" Text="" />
-					<local:FormattingOption Option="ArrayInitializerBraceStyle" Text="" />
-					<local:FormattingOption Option="ChainedMethodCallWrapping" Text="" />
-					<local:FormattingOption Option="MethodCallArgumentWrapping" Text="" />
-					<local:FormattingOption Option="NewLineAferMethodCallOpenParentheses" Text="" />
-					<local:FormattingOption Option="MethodCallClosingParenthesesOnNewLine" Text="" />
-					<local:FormattingOption Option="IndexerArgumentWrapping" Text="" />
-					<local:FormattingOption Option="NewLineAferIndexerOpenBracket" Text="" />
-					<local:FormattingOption Option="IndexerClosingBracketOnNewLine" Text="" />
-					<local:FormattingOption Option="MethodDeclarationParameterWrapping" Text="" />
-					<local:FormattingOption Option="NewLineAferMethodDeclarationOpenParentheses" Text="" />
-					<local:FormattingOption Option="MethodDeclarationClosingParenthesesOnNewLine" Text="" />
-					<local:FormattingOption Option="IndexerDeclarationParameterWrapping" Text="" />
-					<local:FormattingOption Option="NewLineAferIndexerDeclarationOpenBracket" Text="" />
-					<local:FormattingOption Option="IndexerDeclarationClosingBracketOnNewLine" Text="" />
-					<local:FormattingOption Option="AlignToFirstIndexerArgument" Text="" />
-					<local:FormattingOption Option="AlignToFirstIndexerDeclarationParameter" Text="" />
-					<local:FormattingOption Option="AlignToFirstMethodCallArgument" Text="" />
-					<local:FormattingOption Option="AlignToFirstMethodDeclarationParameter" Text="" />
-					<local:FormattingOption Option="NewLineBeforeNewQueryClause" Text="" />
+					<local:FormattingOption Option="ArrayInitializerWrapping" Text="Array initializer wrapping" />
+					<local:FormattingOption Option="ArrayInitializerBraceStyle" Text="Array initializer brace style" />
+					<local:FormattingOption Option="ChainedMethodCallWrapping" Text="Chained method call wrapping" />
+					<local:FormattingOption Option="MethodCallArgumentWrapping" Text="Method call argument wrapping" />
+					<local:FormattingOption Option="NewLineAferMethodCallOpenParentheses" Text="New line after method call open parentheses" />
+					<local:FormattingOption Option="MethodCallClosingParenthesesOnNewLine" Text="Method call closing parentheses on new line" />
+					<local:FormattingOption Option="IndexerArgumentWrapping" Text="Indexer argument wrapping" />
+					<local:FormattingOption Option="NewLineAferIndexerOpenBracket" Text="New line after indexer open bracket" />
+					<local:FormattingOption Option="IndexerClosingBracketOnNewLine" Text="Indexer closing bracket on new line" />
+					<local:FormattingOption Option="MethodDeclarationParameterWrapping" Text="Method declaration parameter wrapping" />
+					<local:FormattingOption Option="NewLineAferMethodDeclarationOpenParentheses" Text="New line after method declaration open parentheses" />
+					<local:FormattingOption Option="MethodDeclarationClosingParenthesesOnNewLine" Text="Method declaration closing parentheses on new line" />
+					<local:FormattingOption Option="IndexerDeclarationParameterWrapping" Text="Indexer declaration parameter wrapping" />
+					<local:FormattingOption Option="NewLineAferIndexerDeclarationOpenBracket" Text="New line after indexer declaration open bracket" />
+					<local:FormattingOption Option="IndexerDeclarationClosingBracketOnNewLine" Text="Indexer declaration closing bracket on new line" />
+					<local:FormattingOption Option="AlignToFirstIndexerArgument" Text="Align to first indexer argument" />
+					<local:FormattingOption Option="AlignToFirstIndexerDeclarationParameter" Text="Align to first indexer declaration parameter" />
+					<local:FormattingOption Option="AlignToFirstMethodCallArgument" Text="Align to first method call argument" />
+					<local:FormattingOption Option="AlignToFirstMethodDeclarationParameter" Text="Align to first method declaration parameter" />
+					<local:FormattingOption Option="NewLineBeforeNewQueryClause" Text="New line before new query clause" />
 				</local:FormattingOptionContainer>
 			</local:FormattingGroupContainer>
 			<local:FormattingGroupContainer Text="Using declarations">
@@ -263,17 +263,30 @@
 				BorderThickness="0"
 				HorizontalContentAlignment="Stretch"
 				ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+				<ListBox.Template>
+					<ControlTemplate>
+						<ItemsPresenter />
+					</ControlTemplate>
+				</ListBox.Template>
 				<ListBox.ItemTemplate>
 					<DataTemplate>
-						<DockPanel Margin="0,0,0,0">
-							<ComboBox DockPanel.Dock="Right" Margin="0,0,0,0" MinWidth="100"
+						<Grid Margin="0,0,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxColumn" />
+							</Grid.ColumnDefinitions>
+							<ComboBox Grid.Column="1" Margin="0,0,0,0" MinWidth="100"
 							          VerticalAlignment="Center"
 							          format:FormattingOptionBinding.Container="{Binding ElementName=CSharpFormattingEditor_Self, Path=OptionsContainer}"
 							          format:FormattingOptionBinding.Option="{Binding Option}" />
 							<sd:RestrictDesiredSize RestrictHeight="False" MinWidth="150">
-								<TextBlock Text="{Binding Text}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Text}" VerticalAlignment="Center" />
+								<TextBlock Grid.Column="0"
+								           Text="{Binding Text}"
+								           TextTrimming="CharacterEllipsis"
+								           ToolTip="{Binding Text}"
+								           VerticalAlignment="Center" />
 							</sd:RestrictDesiredSize>
-						</DockPanel>
+						</Grid>
 					</DataTemplate>
 				</ListBox.ItemTemplate>
 			</ListBox>
@@ -283,7 +296,7 @@
 	
 	<sd:RestrictDesiredSize Margin="0,4,0,0">
 		<ScrollViewer VerticalScrollBarVisibility="Auto">
-			<ItemsControl ItemsSource="{Binding}" Background="{x:Static SystemColors.WindowBrush}">
+			<ItemsControl ItemsSource="{Binding}" Background="{x:Static SystemColors.WindowBrush}" Grid.IsSharedSizeScope="True">
 			</ItemsControl>
 		</ScrollViewer>
 	</sd:RestrictDesiredSize>

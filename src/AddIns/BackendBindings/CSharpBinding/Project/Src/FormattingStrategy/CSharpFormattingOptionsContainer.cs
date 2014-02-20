@@ -194,8 +194,8 @@ namespace CSharpBinding.FormattingStrategy
 				activeOptions.Remove(option);
 				// Update formatting options object from parents
 				PropertyInfo propertyInfo = typeof(CSharpFormattingOptions).GetProperty(option);
-				if ((propertyInfo != null) && (propertyInfo.PropertyType == value.GetType())) {
-					propertyInfo.SetValue(cachedOptions, GetOption(option));
+				if (propertyInfo != null) {
+					propertyInfo.SetValue(cachedOptions, GetEffectiveOption(option));
 				}
 			}
 		}
