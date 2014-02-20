@@ -24,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		
 		public ClipboardRingAction(string text) 
 		{
-			string entry = text.Trim();
+			string entry = text.Trim().Replace('\t', ' ').Replace("\r\n", " ").Replace('\r', ' ').Replace('\n', ' ');
 			if(entry.Length > maxLength)
 				entry = entry.Substring(0, maxLength-endString.Length) + endString;
 			
