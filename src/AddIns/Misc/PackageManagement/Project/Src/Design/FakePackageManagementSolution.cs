@@ -201,7 +201,12 @@ namespace ICSharpCode.PackageManagement.Design
 			throw new NotImplementedException();
 		}
 		
-		public IQueryable<IPackage> GetInstalledPackages()
+		public IQueryable<IPackage> GetSolutionPackages()
+		{
+			throw new NotImplementedException();
+		}
+
+		public IQueryable<IPackage> GetProjectPackages()
 		{
 			return FakeInstalledPackages.AsQueryable();
 		}

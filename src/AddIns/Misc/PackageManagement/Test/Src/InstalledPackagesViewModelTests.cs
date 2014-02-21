@@ -255,7 +255,21 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void PackageViewModels_PackageOnlyInPackagesFolder_ReturnsNoPackages()
+		public void PackageViewModels_PackageOnlyInPackagesFolder_ProjectSelected_ReturnsNoPackages()
+		{
+			CreateSolution();
+			CreateViewModel(solution);
+			FakePackage package = FakePackage.CreatePackageWithVersion("One", "1.1");
+			solution.PackagesOnlyInPackagesFolder.Add(package);
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
+
+		[Test]
+		public void PackageViewModels_PackageOnlyInPackagesFolder_NoProjectSelected_ReturnsOnePackage()
 		{
 			CreateSolution();
 			NoProjectSelected();
@@ -266,7 +280,7 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
 		}
 	}
 }

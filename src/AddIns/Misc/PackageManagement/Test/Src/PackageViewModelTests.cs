@@ -220,6 +220,8 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		[Category("ToDo")]
+		[Description("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged")]
 		public void AddPackage_PackageAddedSuccessfully_PropertyNotifyChangedFiredForIsAddedProperty()
 		{
 			CreateViewModel();
@@ -231,7 +233,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 
 			// fake fire parent action because there is no viewModel.parent in this test fixture 
-			Assert.Inconclusive("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
+			// Assert.Inconclusive("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
 			viewModel.FakePackageManagementEvents.PackageViewModel = viewModel;
 			viewModel.FakePackageManagementEvents.OnParentPackageInstalled(viewModel.FakePackage);
 			
@@ -239,6 +241,8 @@ namespace PackageManagement.Tests
 		}
 
 		[Test]
+		[Category("ToDo")]
+		[Description("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged")]
 		public void AddPackage_PackageAddedSuccessfully_PropertyNotifyChangedFiredAfterPackageInstalled()
 		{
 			CreateViewModel();
@@ -250,7 +254,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			// fake fire parent action because there is no viewModel.parent in this test fixture 
-			Assert.Inconclusive("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
+			// Assert.Inconclusive("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
 			viewModel.FakePackageManagementEvents.PackageViewModel = viewModel;
 			viewModel.FakePackageManagementEvents.OnParentPackageInstalled(viewModel.FakePackage);
 			
@@ -348,15 +352,17 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		[Category("ToDo")]
+		[Description("OnParentPackageUninstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged")]
 		public void RemovePackage_PackageRemovedSuccessfully_PropertyNotifyChangedFiredForIsAddedProperty()
 		{
+
 			CreateViewModel();
 			string propertyChangedName = null;
 			viewModel.PropertyChanged += (sender, e) => propertyChangedName = e.PropertyName;
 			viewModel.RemovePackage();
 			
 			// fake fire parent action because there is no viewModel.parent in this test fixture
-			Assert.Inconclusive("OnParentPackageUninstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
 			viewModel.FakePackageManagementEvents.PackageViewModel = viewModel;
 			viewModel.FakePackageManagementEvents.OnParentPackageUninstalled(viewModel.FakePackage);
 			
@@ -364,6 +370,8 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		[Category("ToDo")]
+		[Description("OnParentPackageUninstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged")]
 		public void RemovePackage_PackageRemovedSuccessfully_PropertyNotifyChangedFiredAfterPackageUninstalled()
 		{
 			CreateViewModel();
@@ -374,7 +382,6 @@ namespace PackageManagement.Tests
 			viewModel.RemovePackage();
 			
 			// fake fire parent action because there is no viewModel.parent in this test fixture 
-			Assert.Inconclusive("OnParentPackageUninstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
 			viewModel.FakePackageManagementEvents.PackageViewModel = viewModel;
 			viewModel.FakePackageManagementEvents.OnParentPackageUninstalled(viewModel.FakePackage);
 			
@@ -919,6 +926,8 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		[Category("ToDo")]
+		[Description("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged")]
 		public void ManagePackage_TwoProjectsSelectedAndUserAcceptsSelectedProjects_IsAddedPropertyChanged()
 		{
 			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
@@ -932,7 +941,7 @@ namespace PackageManagement.Tests
 			viewModel.ManagePackage();
 			
 			// fake fire parent action because there is no viewModel.parent in this test fixture 
-			Assert.Inconclusive("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
+			// Assert.Inconclusive("OnParentPackageInstalled event, parent ([derived]PackagesViewModel) will call ReadPackages() or OnPackageChanged");
 			viewModel.FakePackageManagementEvents.PackageViewModel = viewModel;
 			viewModel.FakePackageManagementEvents.OnParentPackageInstalled(viewModel.FakePackage);
 			

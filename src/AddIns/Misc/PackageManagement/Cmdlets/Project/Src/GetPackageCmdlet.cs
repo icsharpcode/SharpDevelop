@@ -205,7 +205,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> GetPackagesInstalledIntoAnyProject()
 		{
-			return ConsoleHost.Solution.GetInstalledPackages();
+			return ConsoleHost.Solution.GetProjectPackages();
 		}
 		
 		IPackageManagementProject GetSelectedProject(IPackageRepository repository)

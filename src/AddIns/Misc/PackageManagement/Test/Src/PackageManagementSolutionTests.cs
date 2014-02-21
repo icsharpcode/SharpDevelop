@@ -608,7 +608,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void GetInstalledPackages_OnePackageInstalledIntoOneProjectButTwoPackagesInSolutionRepository_ReturnsOnlyPackageInstalled()
+		public void GetProjectPackages_OnePackageInstalledIntoOneProjectButTwoPackagesInSolutionRepository_ReturnsOnlyOneProjectPackage()
 		{
 			CreateSolution();
 			fakeProjectService.CurrentProject = null;
@@ -623,10 +623,9 @@ namespace PackageManagement.Tests
 			fakeSolutionPackageRepository.FakeSharedRepository.FakePackages.Add(installedProjectPackage);
 			project.FakePackages.Add(installedProjectPackage);
 			
-			IQueryable<IPackage> packages = solution.GetInstalledPackages();
+			IQueryable<IPackage> packages = solution.GetProjectPackages();
 			
 			var expectedPackages = new FakePackage[] {
-				installedSolutionPackage,
 				installedProjectPackage
 			};
 			
@@ -634,14 +633,14 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void GetInstalledPackages_TwoProjectsButNoPackagesInstalled_PackageProjectsCreatedUsingActiveRepository()
+		public void GetProjectPackages_TwoProjectsButNoPackagesInstalledInProjects_PackageProjectsCreatedUsingActiveRepository()
 		{
 			CreateSolution();
 			fakeProjectService.CurrentProject = null;
 			TestableProject testProject1 = AddProjectToOpenProjects("Test1");
 			TestableProject testProject2 = AddProjectToOpenProjects("Test2");
 			
-			IQueryable<IPackage> packages = solution.GetInstalledPackages();
+			IQueryable<IPackage> packages = solution.GetProjectPackages();
 			
 			Assert.AreEqual(testProject1, fakeProjectFactory.ProjectsPassedToCreateProject[0]);
 			Assert.AreEqual(testProject2, fakeProjectFactory.ProjectsPassedToCreateProject[1]);
