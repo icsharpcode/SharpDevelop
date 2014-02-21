@@ -362,6 +362,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				// No entry for the model provider exists; we need to create a new one.
 				entry = new ModelEntry<T>(modelProvider, model);
 				entries.Add(entry);
+				entry.NotifyLoaded(this);
 			} else if (entry.Model == model) {
 				// The existing stale model was reused
 				entry.IsStale = false;
@@ -370,6 +371,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				entry.NotifyUnloaded(this);
 				entry.Model = model;
 				entry.IsStale = false;
+				entry.NotifyLoaded(this);
 			}
 			return model;
 		}
