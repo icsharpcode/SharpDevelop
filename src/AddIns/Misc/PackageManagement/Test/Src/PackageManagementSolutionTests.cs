@@ -617,16 +617,17 @@ namespace PackageManagement.Tests
 			fakeProjectFactory.CreatePackageManagementProject = (repository, msbuildProject) => {
 				return project;
 			};
-			FakePackage notInstalledPackage = FakePackage.CreatePackageWithVersion("NotInstalled", "1.0.0.0");
-			fakeSolutionPackageRepository.FakeSharedRepository.FakePackages.Add(notInstalledPackage);
-			FakePackage installedPackage = FakePackage.CreatePackageWithVersion("Installed", "1.0.0.0");
-			fakeSolutionPackageRepository.FakeSharedRepository.FakePackages.Add(installedPackage);
-			project.FakePackages.Add(installedPackage);
+			FakePackage installedSolutionPackage = FakePackage.CreatePackageWithVersion("SolutionPackage", "1.0.0.0");
+			fakeSolutionPackageRepository.FakeSharedRepository.FakePackages.Add(installedSolutionPackage);
+			FakePackage installedProjectPackage = FakePackage.CreatePackageWithVersion("ProjectPackage", "1.0.0.0");
+			fakeSolutionPackageRepository.FakeSharedRepository.FakePackages.Add(installedProjectPackage);
+			project.FakePackages.Add(installedProjectPackage);
 			
 			IQueryable<IPackage> packages = solution.GetInstalledPackages();
 			
 			var expectedPackages = new FakePackage[] {
-				installedPackage
+				installedSolutionPackage,
+				installedProjectPackage
 			};
 			
 			Assert.AreEqual(expectedPackages, packages);
