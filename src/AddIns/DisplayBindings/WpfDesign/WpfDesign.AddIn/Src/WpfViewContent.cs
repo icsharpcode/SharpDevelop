@@ -84,6 +84,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			wasChangedInDesigner = false;
 			Debug.Assert(file == this.PrimaryFile);
+			SD.AnalyticsMonitor.TrackFeature(typeof(WpfViewContent), "Load");
 			
 			_stream = new MemoryStream();
 			stream.CopyTo(_stream);
@@ -137,6 +138,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
 		{
 			if (wasChangedInDesigner && designer.DesignContext != null) {
+				SD.AnalyticsMonitor.TrackFeature(typeof(WpfViewContent), "Save");
 				XmlWriterSettings settings = new XmlWriterSettings();
 				settings.Indent = true;
 				settings.IndentChars = SD.EditorControlService.GlobalOptions.IndentationString;

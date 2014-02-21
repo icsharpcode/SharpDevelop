@@ -510,6 +510,7 @@ namespace ICSharpCode.FormsDesigner
 
 		void LoadAndDisplayDesigner()
 		{
+			SD.AnalyticsMonitor.TrackFeature(typeof(FormsDesignerViewContent), "Load");
 			try {
 				
 				LoadDesigner();
@@ -627,6 +628,7 @@ namespace ICSharpCode.FormsDesigner
 
 		public virtual void MergeFormChanges()
 		{
+			SD.AnalyticsMonitor.TrackFeature(typeof(FormsDesignerViewContent), "Save");
 			if (this.HasLoadError || this.designSurface == null) {
 				LoggingService.Debug("Forms designer: Cannot merge form changes because the designer is not loaded successfully or not loaded at all");
 				return;
