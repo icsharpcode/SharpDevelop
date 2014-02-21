@@ -345,8 +345,7 @@ namespace CSharpBinding.Refactoring
 					result.AddRange(tag.Actions);
 					string issueName;
 					if (CanSuppress(tag, out issueName)) {
-						result.Add(new SuppressIssueContextAction(issueName, SuppressType.Once));
-						result.Add(new SuppressIssueContextAction(issueName, SuppressType.Always));
+						result.Add(new SuppressIssueContextAction(issueName));
 					}
 				}
 			}
@@ -363,21 +362,14 @@ namespace CSharpBinding.Refactoring
 			return true;
 		}
 		
-		enum SuppressType {
-			Once,
-			Always
-		}
-		
 		[ContextAction("Suppress issue", Description = "Suppresses an issue.")]
 		class SuppressIssueContextAction : ContextAction
 		{
 			string issueName;
-			SuppressType type;
 			
-			public SuppressIssueContextAction(string issueName, SuppressType type)
+			public SuppressIssueContextAction(string issueName)
 			{
 				this.issueName = issueName;
-				this.type = type;
 			}
 			
 			public override Task<bool> IsAvailableAsync(EditorRefactoringContext context, CancellationToken cancellationToken)
@@ -387,27 +379,21 @@ namespace CSharpBinding.Refactoring
 			
 			public override string DisplayName
 			{
-				get {
-					string fmt;
-					if (type == SuppressType.Once)
-						fmt = "Suppress '{0}' once";
-					else
-						fmt = "Suppress '{0}'";
-					return string.Format(fmt, issueName);
-				}
+				get { return string.Format("Suppress '{0}'", issueName); }
 			}
 			
 			public override void Execute(EditorRefactoringContext context)
 			{
-				var myContext = SDRefactoringContext.Create(context.Editor, default(CancellationToken));
-				var currentNode = myContext.RootNode.GetNodeAt<Statement>(context.CaretLocation);
-				if (currentNode == null)
-					return;
-				using (var script = myContext.StartScript()) {
-					script.InsertBefore(currentNode, new Comment(string.Format(" disable{1}{0}", issueName, type == SuppressType.Once ? " once " : " ")));
-				}
+				SD.AnalyticsMonitor.TrackFeature(typeof(SuppressIssueContextAction), issueName);
+				var lineNo = context.CaretLocation.Line;
+				var document = context.Editor.Document;
+				
+				var line = document.GetLineByNumber(lineNo);
+				string indentation = DocumentUtilities.GetIndentation(document, lineNo);
+				string newLine = DocumentUtilities.GetLineTerminator(document, lineNo);
+				document.Insert(line.Offset, indentation + "// disable once " + issueName + newLine);
 			}
 		}
-		#endregion
 	}
+	#endregion
 }
