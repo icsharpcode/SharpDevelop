@@ -73,7 +73,7 @@ namespace HexEditor.Util
 			DrawCaret(position, this.width, this.height);
 		}
 		
-		private void DrawCaret(Point start, int width, int height)
+		void DrawCaret(Point start, int width, int height)
 		{
 			if (width > 1)
 				g.DrawRectangle(Pens.Black, start.X - 1, start.Y, width, height - 1);

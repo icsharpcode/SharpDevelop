@@ -86,7 +86,7 @@ namespace HexEditor.Util
 		/// </summary>
 		/// <param name="buffer">Buffer to use</param>
 		/// <remarks>Used internally, don't use!</remarks>
-		internal UndoStep Undo(ref BufferManager buffer)
+		internal UndoStep Undo(BufferManager buffer)
 		{
 			if (UndoStack.Count > 0) {
 				UndoStep step = (UndoStep)UndoStack.Peek();
@@ -117,7 +117,7 @@ namespace HexEditor.Util
 		/// </summary>
 		/// <param name="buffer">Buffer to use</param>
 		/// <remarks>Used internally, don't use!</remarks>
-		internal UndoStep Redo(ref BufferManager buffer)
+		internal UndoStep Redo(BufferManager buffer)
 		{
 			if (RedoStack.Count > 0) {
 				UndoStep step = (UndoStep)RedoStack.Peek();

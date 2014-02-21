@@ -17,8 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using ICSharpCode.AvalonEdit.Utils;
@@ -33,129 +33,94 @@ namespace HexEditor.Util
 	/// </summary>
 	public class BufferManager
 	{
-		internal Control parent;
-		OpenedFile currentFile;
-		Stream stream;
-		
 		/// <summary>
 		/// Currently used, but not good for really big files (like 590 MB)
 		/// </summary>
-		Rope<byte> buffer;
+		Rope<byte> buffer = new Rope<byte>();
+		
+		readonly OpenedFile file;
+		
+		public event EventHandler<EventArgs> BufferChanged;
+		
+		protected virtual void OnBufferChanged(EventArgs e)
+		{
+			var handler = BufferChanged;
+			if (handler != null)
+				handler(this, e);
+		}
 		
 		/// <summary>
 		/// Creates a new BufferManager and attaches it to a control.
 		/// </summary>
-		/// <param name="parent">The parent control to attach to.</param>
-		public BufferManager(Control parent)
+		public BufferManager(OpenedFile file)
 		{
-			this.parent = parent;
-			
-			this.buffer = new Rope<byte>();
+			this.file = file;
+			var stream = file.GetModel(FileModels.Binary).OpenRead();
+			this.LoadTask = Task.Run(() => DoLoad(stream));
 		}
 		
-		/// <summary>
-		/// Cleares the whole buffer.
-		/// </summary>
-		public void Clear()
-		{
-			this.buffer.Clear();
-			parent.Invalidate();
-			GC.Collect();
-		}
+		public Task LoadTask { get; private set; }
+		public IProgressMonitor Progress { get; set; }
 		
-		/// <summary>
-		/// Loads the data from a stream.
-		/// </summary>
-		public void Load(OpenedFile file, Stream stream)
+		bool OnProgressUpdated(double d)
 		{
-			this.currentFile = file;
-			this.stream = stream;
-			this.buffer.Clear();
-			
-			((Editor)this.parent).Enabled = false;
-			
-			if (File.Exists(currentFile.FileName)) {
-				try {
-					BinaryReader reader = new BinaryReader(this.stream, System.Text.Encoding.Default);
-					
-					while (reader.PeekChar() != -1) {
-						this.buffer.AddRange(reader.ReadBytes(524288));
-						UpdateProgress((int)(this.buffer.Count / (double)reader.BaseStream.Length) * 100);
-					}
-					
-					reader.Close();
-				} catch (OutOfMemoryException) {
-					MessageService.ShowErrorFormatted("${res:FileUtilityService.FileSizeTooBig}");
-				}
-			} else {
-				MessageService.ShowErrorFormatted("${res:Fileutility.CantFindFileError}", currentFile.FileName);
+			var progress = Progress;
+			if (progress != null) {
+				progress.Report(d);
+				return !progress.CancellationToken.IsCancellationRequested;
 			}
-			
-			this.parent.Invalidate();
-			
-			UpdateProgress(100);
-			
-			if (this.parent.InvokeRequired)
-				this.parent.Invoke(new MethodInvoker(
-					delegate() {this.parent.Cursor = Cursors.Default;}
-				));
-			else {this.parent.Cursor = Cursors.Default;}
-			
-			
-			((Editor)this.parent).LoadingFinished();
-			
-			((Editor)this.parent).Enabled = true;
-			
-			this.parent.Invalidate();
+			return true;
+		}
+		
+		const int CHUNK_SIZE = 1024 * 512;
+		
+		void DoLoad(Stream stream)
+		{
+			var buffer = new Rope<byte>();
+			try {
+				double progressInverse = (double)CHUNK_SIZE / stream.Length;
+				int count = 0;
+				
+				byte[] byteBuffer = new byte[CHUNK_SIZE];
+				
+				using (stream) {
+					int read = stream.Read(byteBuffer, 0, CHUNK_SIZE);
+					while (read > 0) {
+						buffer.AddRange(byteBuffer, 0, read);
+						count++;
+						if (!OnProgressUpdated(count * progressInverse)) return;
+						if (count % 5 == 0) {
+							var copy = buffer.Clone();
+							SD.MainThread.InvokeAsyncAndForget(
+								() => {
+									this.buffer = copy;
+									OnBufferChanged(EventArgs.Empty);
+								}
+							);
+						}
+						read = stream.Read(byteBuffer, 0, CHUNK_SIZE);
+					}
+				}
+			} catch (OutOfMemoryException) {
+				SD.MessageService.ShowErrorFormatted("${res:FileUtilityService.FileSizeTooBig}");
+			} finally {
+				SD.MainThread.InvokeAsyncAndForget(
+					() => {
+						this.buffer = buffer;
+						OnBufferChanged(EventArgs.Empty);
+					}
+				);
+			}
 		}
 		
 		/// <summary>
 		/// Writes all data to a stream.
 		/// </summary>
-		public void Save(OpenedFile file, Stream stream)
+		public void Save(Stream stream)
 		{
 			BinaryWriter writer = new BinaryWriter(stream);
-			writer.Write(this.buffer.ToArray());
+			writer.Write(buffer.ToArray());
 			writer.Flush();
-		}
-		
-		/// <summary>
-		/// Used for threading to update the processbars and stuff.
-		/// </summary>
-		/// <param name="percentage">The current percentage of the process</param>
-		private void UpdateProgress(int percentage)
-		{
-			Editor c = (Editor)this.parent;
-			
-			Application.DoEvents();
-			
-			if (c.ProgressBar != null) {
-				if (percentage >= 100) {
-					if (c.InvokeRequired)
-						c.Invoke(new MethodInvoker(
-							delegate() {c.ProgressBar.Value = 100; c.ProgressBar.Visible = false;}
-						));
-					else {
-						c.ProgressBar.Value = 100;
-						c.ProgressBar.Visible = false; }
-				} else {
-					if (c.InvokeRequired)
-						c.Invoke(new MethodInvoker(
-							delegate() {c.ProgressBar.Value = percentage; c.ProgressBar.Visible = true;}
-						));
-					else { c.ProgressBar.Value = percentage; c.ProgressBar.Visible = true; }
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Returns the current buffer as a byte[].
-		/// </summary>
-		public byte[] Buffer {
-			get {
-				if (buffer == null) return new byte[0];
-				return buffer.ToArray();
-			}
 		}
 		
 		/// <summary>
@@ -164,8 +129,6 @@ namespace HexEditor.Util
 		public int BufferSize {
 			get { return buffer.Count; }
 		}
-
-		#region Methods
 		
 		public byte[] GetBytes(int start, int count)
 		{
@@ -176,7 +139,7 @@ namespace HexEditor.Util
 			if (count >= (buffer.Count - start)) count = (buffer.Count - start);
 			return buffer.GetRange(start, count).ToArray();
 		}
-
+		
 		public byte GetByte(int offset)
 		{
 			if (buffer.Count == 0) return 0;
@@ -185,19 +148,11 @@ namespace HexEditor.Util
 			return (byte)buffer[offset];
 		}
 		
-		public bool DeleteByte(int offset)
-		{
-			if ((offset < buffer.Count) & (offset > -1)) {
-				buffer.RemoveAt(offset);
-				return true;
-			}
-			return false;
-		}
-		
 		public bool RemoveByte(int offset)
 		{
 			if ((offset < buffer.Count) & (offset > -1)) {
 				buffer.RemoveAt(offset);
+				file.MakeDirty(HexEditFileModelProvider.Instance);
 				return true;
 			}
 			return false;
@@ -207,6 +162,8 @@ namespace HexEditor.Util
 		{
 			if (((offset < buffer.Count) && (offset > -1)) && ((offset + length) <= buffer.Count)) {
 				buffer.RemoveRange(offset, length);
+				file.MakeDirty(HexEditFileModelProvider.Instance);
+				OnBufferChanged(EventArgs.Empty);
 				return true;
 			}
 			return false;
@@ -221,20 +178,25 @@ namespace HexEditor.Util
 			} else {
 				buffer.InsertRange(start, bytes);
 			}
+			file.MakeDirty(HexEditFileModelProvider.Instance);
+			OnBufferChanged(EventArgs.Empty);
 		}
 		
-		public void SetByte(int position, byte @byte, bool overwrite)
+		public void SetByte(int offset, byte @byte, bool overwrite)
 		{
 			if (overwrite) {
-				if (position > buffer.Count - 1) {
+				if (offset > buffer.Count - 1) {
 					buffer.Add(@byte);
 				} else {
-					buffer[position] = @byte;
+					buffer[offset] = @byte;
 				}
 			} else {
-				buffer.Insert(position, @byte);
+				buffer.Insert(offset, @byte);
 			}
+			file.MakeDirty(HexEditFileModelProvider.Instance);
+			OnBufferChanged(EventArgs.Empty);
 		}
-		#endregion
 	}
+	
+	
 }

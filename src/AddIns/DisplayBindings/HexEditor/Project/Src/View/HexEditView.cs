@@ -17,48 +17,43 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.IO;
-using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
+using HexEditor.Util;
 
 namespace HexEditor.View
 {
-	public class HexEditView : AbstractViewContentSD1234, IClipboardHandler, IUndoHandler
+	public class HexEditView : AbstractViewContent, IClipboardHandler, IUndoHandler
 	{
 		HexEditContainer hexEditContainer;
+		OpenedFile file;
 		
 		public HexEditView(OpenedFile file)
 		{
 			hexEditContainer = new HexEditContainer();
-			hexEditContainer.hexEditControl.DocumentChanged += new EventHandler(DocumentChanged);
-			
+			this.file = file;
 			this.Files.Add(file);
-			
-			LoadModel();
 			
 			SD.AnalyticsMonitor.TrackFeature(typeof(HexEditView));
 		}
-
+		
+		public override async void LoadModel()
+		{
+			using (var progress = AsynchronousWaitDialog.ShowWaitDialog("Loading ...", true)) {
+				var model = file.GetModel(HexEditFileModelProvider.Instance);
+				hexEditContainer.Enabled = false;
+				hexEditContainer.Buffer = model;
+				model.Progress = progress;
+				await model.LoadTask;
+				hexEditContainer.Enabled = true;
+				SD.MainThread.CallLater(TimeSpan.FromMilliseconds(200), hexEditContainer.InvalidateAll);
+			}
+		}
+		
 		public override object Control {
 			get { return hexEditContainer; }
-		}
-		
-		public override void Save(OpenedFile file, Stream stream)
-		{
-			SD.AnalyticsMonitor.TrackFeature(typeof(HexEditView), "Save");
-			this.hexEditContainer.SaveFile(file, stream);
-			this.TitleName = Path.GetFileName(file.FileName);
-			this.TabPageText = this.TitleName;
-		}
-		
-		public override void Load(OpenedFile file, Stream stream)
-		{
-			SD.AnalyticsMonitor.TrackFeature(typeof(HexEditView), "Load");
-			this.hexEditContainer.LoadFile(file, stream);
 		}
 		
 		public override bool IsReadOnly {
@@ -133,11 +128,5 @@ namespace HexEditor.View
 		}
 		
 		#endregion
-		
-		void DocumentChanged(object sender, EventArgs e)
-		{
-			if (PrimaryFile != null)
-				MakeDirty(PrimaryFile);
-		}
 	}
 }

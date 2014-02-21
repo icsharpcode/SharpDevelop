@@ -37,21 +37,19 @@ namespace HexEditor.Util
 			}
 		}
 		
-		public SelectionManager(ref BufferManager buffer)
+		public SelectionManager(BufferManager buffer)
 		{
 			this.buffer = buffer;
 		}
 		
 		#region Properties
 		int start, end;
-		bool hasSelection;
 		
 		public int Start {
 			get { return start; }
 			set {
 				start = value;
-				EventArgs e = new EventArgs();
-				OnSelectionChanged(e);
+				OnSelectionChanged(EventArgs.Empty);
 			}
 		}
 		
@@ -59,15 +57,11 @@ namespace HexEditor.Util
 			get { return end; }
 			set {
 				end = value;
-				EventArgs e = new EventArgs();
-				OnSelectionChanged(e);
+				OnSelectionChanged(EventArgs.Empty);
 			}
 		}
 		
-		public bool HasSomethingSelected {
-			get { return hasSelection; }
-			set { hasSelection = value; }
-		}
+		public bool HasSomethingSelected { get; set; }
 		
 		#endregion
 		
@@ -78,25 +72,13 @@ namespace HexEditor.Util
 		/// <returns>A string with the selected text</returns>
 		public string SelectionText {
 			get {
-				int start = this.Start;
-				int end = this.End;
-				if (this.End < this.Start) {
-					start = this.End;
-					end = this.Start;
-				}
-				return Encoding.Default.GetString(buffer.GetBytes(this.Start, Math.Abs(end - start)));
+				return Encoding.Default.GetString(GetSelectionBytes());
 			}
 		}
 		
 		public byte[] GetSelectionBytes()
 		{
-			int start = this.Start;
-			int end = this.End;
-			if (this.End < this.Start) {
-				start = this.End;
-				end = this.Start;
-			}
-			return buffer.GetBytes(this.Start, Math.Abs(end - start));
+			 return buffer.GetBytes(Math.Min(Start, End), Math.Abs(End - Start)); 
 		}
 		
 		/// <summary>

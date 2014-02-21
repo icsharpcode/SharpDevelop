@@ -54,7 +54,6 @@ namespace HexEditor.View
             this.tCBViewMode = new System.Windows.Forms.ToolStripComboBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tSTBCharsPerLine = new System.Windows.Forms.NumericUpDown();
-            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.hexEditControl = new HexEditor.Editor();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -91,8 +90,7 @@ namespace HexEditor.View
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbSizeToFit,
-            this.toolStripSeparator1,
-            this.toolStripProgressBar1});
+            this.toolStripSeparator1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(689, 25);
@@ -105,13 +103,6 @@ namespace HexEditor.View
             this.tSTBCharsPerLine.Size = new System.Drawing.Size(40, 25);
             this.tSTBCharsPerLine.TextChanged += new System.EventHandler(tSTBCharsPerLine_TextChanged);
             // 
-            // toolStripProgressBar1
-            // 
-            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
-            this.toolStripProgressBar1.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.toolStripProgressBar1.Size = new System.Drawing.Size(150, 22);
-            this.toolStripProgressBar1.Visible = false;
-            // 
             // hexEditControl
             // 
             this.hexEditControl.BackColor = System.Drawing.Color.White;
@@ -123,7 +114,6 @@ namespace HexEditor.View
             this.hexEditControl.FitToWindowWidth = false;
             this.hexEditControl.Location = new System.Drawing.Point(0, 25);
             this.hexEditControl.Name = "hexEditControl";
-            this.hexEditControl.ProgressBar = this.toolStripProgressBar1;
             this.hexEditControl.Size = new System.Drawing.Size(689, 308);
             this.hexEditControl.TabIndex = 3;
             this.hexEditControl.ViewMode = HexEditor.Util.ViewMode.Hexadecimal;
@@ -143,7 +133,6 @@ namespace HexEditor.View
             this.PerformLayout();
 
         }
-        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         internal HexEditor.Editor hexEditControl;
         private System.Windows.Forms.ToolStripComboBox tCBViewMode;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;

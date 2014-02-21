@@ -45,10 +45,25 @@ namespace HexEditor.View
 		public bool CanRedo {
 			get { return hexEditControl.CanRedo; }
 		}
+
+		public BufferManager Buffer {
+			get {
+				return hexEditControl.Buffer;
+			}
+			set {
+				hexEditControl.Buffer = value;
+			}
+		}
 		
 		public HexEditContainer()
 		{
 			InitializeComponent();
+		}
+		
+		public void InvalidateAll()
+		{
+			Invalidate();
+			hexEditControl.Invalidate();
 		}
 		
 		bool loaded = false;
@@ -110,18 +125,6 @@ namespace HexEditor.View
 		void HexEditContainerGotFocus(object sender, EventArgs e)
 		{
 			hexEditControl.Focus();
-		}
-		
-		public void LoadFile(OpenedFile file, Stream stream)
-		{
-			hexEditControl.LoadFile(file, stream);
-			hexEditControl.Invalidate();
-		}
-		
-		public void SaveFile(OpenedFile file, Stream stream)
-		{
-			hexEditControl.SaveFile(file, stream);
-			hexEditControl.Invalidate();
 		}
 		
 		public string Cut()

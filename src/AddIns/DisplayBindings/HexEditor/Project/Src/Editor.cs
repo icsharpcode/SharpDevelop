@@ -17,19 +17,17 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Xml;
-
+using ICSharpCode.SharpDevelop;
 using HexEditor.Util;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -43,19 +41,14 @@ namespace HexEditor
 	public partial class Editor : UserControl
 	{
 		// TODO : Make big files compatible (data structures are bad)
-
+		
 		/// <summary>
 		/// number of the first visible line (first line = 0)
 		/// </summary>
 		int topline;
-		
-		public int TopLine {
-			get { return topline; }
-			set { topline = value; }
-		}
 		int charwidth, hexinputmodepos;
 		int underscorewidth, underscorewidth3, fontheight;
-		bool insertmode, hexinputmode, selectionmode, handled, moved;
+		bool insertmode, hexinputmode, selectionmode, moved;
 		
 		public bool Initializing { get; set; }
 		
@@ -72,7 +65,7 @@ namespace HexEditor
 		
 		SelectionManager selection;
 		UndoManager undoStack;
-
+		
 		Panel activeView;
 		
 		public Panel ActiveView {
@@ -91,7 +84,7 @@ namespace HexEditor
 		public event EventHandler DocumentChanged;
 		
 		/// <summary>
-		/// On-method for DocumentChanged-event.
+		/// Fires the <see cref="OnDocumentChanged"/> event.
 		/// </summary>
 		/// <param name="e">The eventargs for the event</param>
 		protected virtual void OnDocumentChanged(EventArgs e)
@@ -111,29 +104,42 @@ namespace HexEditor
 			//
 			InitializeComponent();
 			
-			buffer = new BufferManager(this);
-			selection = new SelectionManager(ref buffer);
-			undoStack = new UndoManager();
 			insertmode = true;
-			underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", Settings.DataFont);
+			underscorewidth = MeasureStringWidth(CreateGraphics(), "_", Settings.DataFont);
 			underscorewidth3 = underscorewidth * 3;
 			fontheight = GetFontHeight(Settings.DataFont);
-			selregion = new Rectangle[] {};
-			selpoints = new Point[] {};
-			headertext = GetHeaderText();
+			selregion = new Rectangle[0];
+			selpoints = new Point[0];
 			
 			this.ActiveView = this.hexView;
-			
 			UpdatePainters();
-			
 			caret = new Caret(this.gbHex, 1, fontheight, 0);
+		}
+		
+		void SetBuffer(BufferManager buffer)
+		{
+			if (this.buffer != null)
+				this.buffer.BufferChanged -= BufferChanged;
+			this.buffer = buffer;
+			buffer.BufferChanged += BufferChanged;
+			
+			selection = new SelectionManager(buffer);
+			undoStack = new UndoManager();
+			
+			headertext = GetHeaderText();
 			
 			HexEditSizeChanged(null, EventArgs.Empty);
 			AdjustScrollBar();
 			
-			this.Invalidate();
+			Invalidate();
 		}
-
+		
+		void BufferChanged(object sender, EventArgs e)
+		{
+			Invalidate();
+			OnDocumentChanged(EventArgs.Empty);
+		}
+		
 		#region Measure functions
 		static int GetFontHeight(Font font)
 		{
@@ -141,15 +147,15 @@ namespace HexEditor
 			int height2 = (int)Math.Ceiling(font.GetHeight());
 			return Math.Max(height1, height2) + 1;
 		}
-
+		
 		static int MeasureStringWidth(Graphics g, string word, Font font)
 		{
 			return TextRenderer.MeasureText(g, word, font, new Size(short.MaxValue, short.MaxValue),
-			                                TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix |
-			                                TextFormatFlags.PreserveGraphicsClipping).Width;
+				TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix |
+				TextFormatFlags.PreserveGraphicsClipping).Width;
 		}
 		#endregion
-
+		
 		/// <summary>
 		/// used to store headertext for calculation.
 		/// </summary>
@@ -172,34 +178,20 @@ namespace HexEditor
 			}
 			return false;
 		}
-
+		
 		#region Properties
 		ViewMode viewMode = ViewMode.Hexadecimal;
 		int bytesPerLine = 16;
 		bool fitToWindowWidth;
 		string fileName;
 		Encoding encoding = Encoding.Default;
-
-		/// <summary>
-		/// ProgressBar used to display the progress of loading saving, outside of the control.
-		/// </summary>
-		/// <remarks>Currently not in use</remarks>
-		private ToolStripProgressBar progressBar;
-		
-		/// <summary>
-		/// ProgressBar used to display the progress of loading saving, outside of the control.
-		/// </summary>
-		/// <remarks>Currently not in use</remarks>
-		public ToolStripProgressBar ProgressBar {
-			get { return progressBar; }
-			set { progressBar = value; }
-		}
 		
 		/// <summary>
 		/// Represents the current buffer of the editor.
 		/// </summary>
 		public BufferManager Buffer {
 			get { return buffer; }
+			set { SetBuffer(value); }
 		}
 		
 		/// <summary>
@@ -219,10 +211,10 @@ namespace HexEditor
 		new public bool Enabled {
 			get { return base.Enabled; }
 			set {
-				if (this.InvokeRequired) {
-					base.Enabled = this.VScrollBar.Enabled = this.hexView.Enabled = this.textView.Enabled = this.side.Enabled = this.header.Enabled = value;
+				if (InvokeRequired) {
+					base.Enabled = VScrollBar.Enabled = hexView.Enabled = textView.Enabled = side.Enabled = header.Enabled = value;
 				} else {
-					base.Enabled = this.VScrollBar.Enabled = this.hexView.Enabled = this.textView.Enabled = this.side.Enabled = this.header.Enabled = value;
+					base.Enabled = VScrollBar.Enabled = hexView.Enabled = textView.Enabled = side.Enabled = header.Enabled = value;
 				}
 			}
 		}
@@ -252,10 +244,10 @@ namespace HexEditor
 			get { return Settings.DataFont; }
 			set {
 				Settings.DataFont = value;
-				underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", value);
+				underscorewidth = MeasureStringWidth(CreateGraphics(), "_", value);
 				underscorewidth3 = underscorewidth * 3;
 				fontheight = GetFontHeight(value);
-				this.Invalidate();
+				Invalidate();
 			}
 		}
 		
@@ -266,18 +258,16 @@ namespace HexEditor
 			get { return Settings.OffsetFont; }
 			set {
 				Settings.OffsetFont = value;
-				underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", value);
+				underscorewidth = MeasureStringWidth(CreateGraphics(), "_", value);
 				underscorewidth3 = underscorewidth * 3;
 				fontheight = GetFontHeight(value);
-				this.Invalidate();
+				Invalidate();
 			}
 		}
 		
 		new public Font Font {
 			get { return null; }
-			set {
-
-			}
+			set { }
 		}
 		
 		/// <summary>
@@ -289,10 +279,8 @@ namespace HexEditor
 			set {
 				viewMode = value;
 				UpdateViews();
-				
-				this.headertext = GetHeaderText();
-
-				this.Invalidate();
+				headertext = GetHeaderText();
+				Invalidate();
 			}
 		}
 		
@@ -304,7 +292,7 @@ namespace HexEditor
 			get { return fitToWindowWidth; }
 			set {
 				fitToWindowWidth = value;
-				if (value) this.BytesPerLine = CalculateMaxBytesPerLine();
+				if (value) BytesPerLine = CalculateMaxBytesPerLine();
 			}
 		}
 		
@@ -320,9 +308,9 @@ namespace HexEditor
 				bytesPerLine = value;
 				UpdateViews();
 				
-				this.headertext = GetHeaderText();
+				headertext = GetHeaderText();
 				
-				this.Invalidate();
+				Invalidate();
 			}
 		}
 		
@@ -333,14 +321,14 @@ namespace HexEditor
 		string GetHeaderText()
 		{
 			StringBuilder text = new StringBuilder();
-			for (int i = 0; i < this.BytesPerLine; i++) {
-				switch (this.ViewMode) {
+			for (int i = 0; i < BytesPerLine; i++) {
+				switch (ViewMode) {
 					case ViewMode.Decimal:
 						text.Append(' ', 3 - GetLength(i));
 						text.Append(i.ToString());
 						break;
 					case ViewMode.Hexadecimal:
-						text.Append(' ', 3 - string.Format("{0:X}", i).Length);
+						text.Append(' ', 3 - GetLength(i, 16));
 						text.AppendFormat("{0:X}", i);
 						break;
 					case ViewMode.Octal:
@@ -368,7 +356,7 @@ namespace HexEditor
 		/// </summary>
 		void AdjustScrollBar()
 		{
-			int linecount = this.GetMaxLines();
+			int linecount = GetMaxLines();
 			
 			if (linecount > GetMaxVisibleLines()) {
 				// Set Vertical scrollbar
@@ -387,11 +375,11 @@ namespace HexEditor
 		void VScrollBarScroll(object sender, ScrollEventArgs e)
 		{
 			UpdateViews();
-			this.topline = VScrollBar.Value;
+			topline = VScrollBar.Value;
 			Point pos = GetPositionForOffset(caret.Offset, charwidth);
 			caret.SetToPosition(pos);
 			
-			this.Invalidate();
+			Invalidate();
 		}
 		
 		/// <summary>
@@ -400,25 +388,25 @@ namespace HexEditor
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
 			base.OnMouseWheel(e);
-
-			if (!this.VScrollBar.Enabled) return;
-
+			
+			if (!VScrollBar.Enabled) return;
+			
 			int delta = -(e.Delta / 3 / 10);
 			int oldvalue = 0;
-
+			
 			if ((VScrollBar.Value + delta) > VScrollBar.Maximum) {
 				oldvalue = VScrollBar.Value;
 				VScrollBar.Value = VScrollBar.Maximum;
-				this.VScrollBarScroll(null, new ScrollEventArgs(ScrollEventType.Last, oldvalue, VScrollBar.Value, ScrollOrientation.VerticalScroll));
+				VScrollBarScroll(null, new ScrollEventArgs(ScrollEventType.Last, oldvalue, VScrollBar.Value, ScrollOrientation.VerticalScroll));
 			} else if ((VScrollBar.Value + delta) < VScrollBar.Minimum) {
 				oldvalue = VScrollBar.Value;
 				VScrollBar.Value = 0;
-				this.VScrollBarScroll(null, new ScrollEventArgs(ScrollEventType.First, oldvalue, VScrollBar.Value, ScrollOrientation.VerticalScroll));
+				VScrollBarScroll(null, new ScrollEventArgs(ScrollEventType.First, oldvalue, VScrollBar.Value, ScrollOrientation.VerticalScroll));
 			} else {
 				oldvalue = VScrollBar.Value;
 				VScrollBar.Value += delta;
-				if (delta > 0) this.VScrollBarScroll(null, new ScrollEventArgs(ScrollEventType.SmallIncrement, oldvalue, VScrollBar.Value, ScrollOrientation.VerticalScroll));
-				if (delta < 0) this.VScrollBarScroll(null, new ScrollEventArgs(ScrollEventType.SmallDecrement, oldvalue, VScrollBar.Value, ScrollOrientation.VerticalScroll));
+				if (delta > 0) VScrollBarScroll(null, new ScrollEventArgs(ScrollEventType.SmallIncrement, oldvalue, VScrollBar.Value, ScrollOrientation.VerticalScroll));
+				if (delta < 0) VScrollBarScroll(null, new ScrollEventArgs(ScrollEventType.SmallDecrement, oldvalue, VScrollBar.Value, ScrollOrientation.VerticalScroll));
 			}
 		}
 		
@@ -427,14 +415,14 @@ namespace HexEditor
 		/// </summary>
 		void HexViewMouseClick(object sender, MouseEventArgs e)
 		{
-			this.Focus();
-			this.ActiveView = this.hexView;
-			this.charwidth = 3;
-			this.caret.Width = 1;
+			Focus();
+			ActiveView = hexView;
+			charwidth = 3;
+			caret.Width = 1;
 			if (!insertmode)
-				this.caret.Width  = underscorewidth * 2;
-
-			caret.Graphics  = this.gbHex;
+				caret.Width  = underscorewidth * 2;
+			
+			caret.Graphics  = gbHex;
 			
 			if (e.Button != MouseButtons.Right) {
 				if (!moved) {
@@ -452,13 +440,13 @@ namespace HexEditor
 		/// </summary>
 		void TextViewMouseClick(object sender, MouseEventArgs e)
 		{
-			this.Focus();
+			Focus();
 			hexinputmode = false;
-			this.ActiveView = this.textView;
-			this.charwidth = 1;
-			this.caret.Width = 1;
-			if (!insertmode) this.caret.Width = underscorewidth;
-			caret.Graphics = this.gbText;
+			ActiveView = textView;
+			charwidth = 1;
+			caret.Width = 1;
+			if (!insertmode) caret.Width = underscorewidth;
+			caret.Graphics = gbText;
 			
 			if (e.Button != MouseButtons.Right) {
 				if (!moved) {
@@ -470,21 +458,23 @@ namespace HexEditor
 				}
 			}
 			
-			this.Focus();
+			Focus();
 			hexinputmode = false;
-			this.ActiveView = this.textView;
-			this.charwidth = 1;
-			this.caret.Width = 1;
-			if (!insertmode) this.caret.Width = underscorewidth;
+			ActiveView = textView;
+			charwidth = 1;
+			caret.Width = 1;
+			if (!insertmode) caret.Width = underscorewidth;
 		}
 		#endregion
-
+		
 		#region Painters
 		/// <summary>
 		/// General painting, using double buffering.
 		/// </summary>
 		void HexEditPaint(object sender, PaintEventArgs e)
 		{
+			if (buffer == null) return;
+			
 			// Refresh selection.
 			CalculateSelectionRegions();
 			
@@ -503,57 +493,57 @@ namespace HexEditor
 			PaintSelection(gbHex, gbText, true);
 			
 			if (activeView == hexView)
-				this.caret.Graphics = gbHex;
+				caret.Graphics = gbHex;
 			else
-				this.caret.Graphics = gbText;
+				caret.Graphics = gbText;
 			
-			this.caret.DrawCaret();
+			caret.DrawCaret();
 			
 			// Paint on device ...
-			this.gHeader.DrawImageUnscaled(bHeader, 0, 0);
-			this.gSide.DrawImageUnscaled(bSide, 0, 0);
-			this.gHex.DrawImageUnscaled(bHex, 0, 0);
-			this.gText.DrawImageUnscaled(bText, 0, 0);
+			gHeader.DrawImageUnscaled(bHeader, 0, 0);
+			gSide.DrawImageUnscaled(bSide, 0, 0);
+			gHex.DrawImageUnscaled(bHex, 0, 0);
+			gText.DrawImageUnscaled(bText, 0, 0);
 		}
 		
 		/// <summary>
 		/// Draws the header text ("Offset 0 1 2 3 ...")
 		/// </summary>
 		/// <param name="g">The graphics device to draw on.</param>
-		void PaintHeader(System.Drawing.Graphics g)
+		void PaintHeader(Graphics g)
 		{
 			g.Clear(Color.White);
-			TextRenderer.DrawText(g, headertext, Settings.OffsetFont, new Rectangle(1, 1, this.hexView.Width + 5, fontheight),
-			                      Settings.OffsetForeColor.ToSystemDrawing(), this.BackColor, TextFormatFlags.Left & TextFormatFlags.Top);
+			TextRenderer.DrawText(g, headertext, Settings.OffsetFont, new Rectangle(1, 1, hexView.Width + 5, fontheight),
+				Settings.OffsetForeColor.ToSystemDrawing(), BackColor, TextFormatFlags.Left & TextFormatFlags.Top);
 		}
-
+		
 		/// <summary>
 		/// Draws the offset numbers for each visible line.
 		/// </summary>
 		/// <param name="g">The graphics device to draw on.</param>
 		/// <param name="top">The top line to start.</param>
-		void PaintOffsetNumbers(System.Drawing.Graphics g, int top)
+		void PaintOffsetNumbers(Graphics g, int top)
 		{
 			g.Clear(Color.White);
 			string text = String.Empty;
-			int count = top + this.GetMaxVisibleLines();
-
+			int count = top + GetMaxVisibleLines();
+			
 			StringBuilder builder = new StringBuilder(StringParser.Parse("${res:AddIns.HexEditor.Display.Elements.Offset}\n"));
 			if (count == 0)
 				builder.Append("0\n");
-
+			
 			for (int i = top; i < count; i++) {
-				if ((i * this.BytesPerLine) <= this.buffer.BufferSize) {
-					switch (this.ViewMode) {
+				if ((i * BytesPerLine) <= buffer.BufferSize) {
+					switch (ViewMode) {
 						case ViewMode.Decimal:
-							builder.AppendLine((i * this.BytesPerLine).ToString());
+							builder.AppendLine((i * BytesPerLine).ToString());
 							break;
 						case ViewMode.Hexadecimal:
-							builder.AppendFormat("{0:X}", i * this.BytesPerLine);
+							builder.AppendFormat("{0:X}", i * BytesPerLine);
 							builder.AppendLine();
 							break;
 						case ViewMode.Octal:
-							int tmp = i * this.BytesPerLine;
+							int tmp = i * BytesPerLine;
 							if (tmp == 0) {
 								builder.AppendLine("0");
 							} else {
@@ -564,17 +554,17 @@ namespace HexEditor
 								}
 								builder.AppendLine(num.ToString());
 							}
-
+							
 							break;
 					}
 				}
 			}
-
+			
 			text = builder.ToString();
 			builder = null;
 			
-			TextRenderer.DrawText(g, text, Settings.OffsetFont,this.side.ClientRectangle,
-			                      Settings.OffsetForeColor.ToSystemDrawing(), Color.White, TextFormatFlags.Right);
+			TextRenderer.DrawText(g, text, Settings.OffsetFont,side.ClientRectangle,
+				Settings.OffsetForeColor.ToSystemDrawing(), Color.White, TextFormatFlags.Right);
 		}
 		
 		/// <summary>
@@ -582,19 +572,19 @@ namespace HexEditor
 		/// </summary>
 		/// <param name="g">The graphics device to draw on.</param>
 		/// <param name="top">The top line to start.</param>
-		void PaintHex(System.Drawing.Graphics g, int top)
+		void PaintHex(Graphics g, int top)
 		{
 			g.Clear(Color.White);
 			StringBuilder builder = new StringBuilder();
-
+			
 			int offset = GetOffsetForLine(top);
-
+			
 			for (int i = 0; i < GetMaxVisibleLines(); i++) {
-				builder.AppendLine(GetHex(buffer.GetBytes(offset, this.BytesPerLine)));
+				builder.AppendLine(GetHex(buffer.GetBytes(offset, BytesPerLine)));
 				offset = GetOffsetForLine(top + i + 1);
 			}
-
-			TextRenderer.DrawText(g, builder.ToString(), Settings.DataFont, new Rectangle(0, 0, this.hexView.Width, this.hexView.Height), Settings.DataForeColor.ToSystemDrawing(), Color.White, TextFormatFlags.Left & TextFormatFlags.Top);
+			
+			TextRenderer.DrawText(g, builder.ToString(), Settings.DataFont, new Rectangle(0, 0, hexView.Width, hexView.Height), Settings.DataForeColor.ToSystemDrawing(), Color.White, TextFormatFlags.Left & TextFormatFlags.Top);
 		}
 		
 		/// <summary>
@@ -602,16 +592,16 @@ namespace HexEditor
 		/// </summary>
 		/// <param name="g">The graphics device to draw on.</param>
 		/// <param name="top">The top line to start.</param>
-		void PaintText(System.Drawing.Graphics g, int top)
+		void PaintText(Graphics g, int top)
 		{
 			g.Clear(Color.White);
-
+			
 			int offset = GetOffsetForLine(top);
 			
 			StringBuilder builder = new StringBuilder();
-
+			
 			for (int i = 0; i < GetMaxVisibleLines(); i++) {
-				builder.AppendLine(GetText(buffer.GetBytes(offset, this.BytesPerLine)));
+				builder.AppendLine(GetText(buffer.GetBytes(offset, BytesPerLine)));
 				offset = GetOffsetForLine(top + i + 1);
 			}
 			TextRenderer.DrawText(g, builder.ToString(), Settings.DataFont, new Point(0, 0), Settings.DataForeColor.ToSystemDrawing(), Color.White);
@@ -622,23 +612,23 @@ namespace HexEditor
 		/// </summary>
 		/// <param name="hexView">the graphics device for the hex view panel</param>
 		/// <param name="textView">the graphics device for the text view panel</param>
-		void PaintPointer(System.Drawing.Graphics hexView, System.Drawing.Graphics textView)
+		void PaintPointer(Graphics hexView, Graphics textView)
 		{
 			// Paint a rectangle as a pointer in the view without the focus ...
 			if (selection.HasSomethingSelected) return;
-			if (this.ActiveView == this.hexView) {
-				Point pos = this.GetPositionForOffset(caret.Offset, 1);
-				if (hexinputmode) pos = this.GetPositionForOffset(caret.Offset - 1, 1);
+			if (ActiveView == this.hexView) {
+				Point pos = GetPositionForOffset(caret.Offset, 1);
+				if (hexinputmode) pos = GetPositionForOffset(caret.Offset - 1, 1);
 				Size size = new Size(underscorewidth, fontheight);
 				Pen p = new Pen(Color.Black, 1f);
-				p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+				p.DashStyle = DashStyle.Dot;
 				textView.DrawRectangle(p, new Rectangle(pos, size));
 			} else {
-				Point pos = this.GetPositionForOffset(caret.Offset, 3);
+				Point pos = GetPositionForOffset(caret.Offset, 3);
 				pos.Offset(0, 1);
 				Size size = new Size(underscorewidth * 2, fontheight);
 				Pen p = new Pen(Color.Black, 1f);
-				p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+				p.DashStyle = DashStyle.Dot;
 				hexView.DrawRectangle(p, new Rectangle(pos, size));
 			}
 		}
@@ -648,7 +638,11 @@ namespace HexEditor
 		/// </summary>
 		void CalculateSelectionRegions()
 		{
-			ArrayList al = new ArrayList();
+			if (selection == null) {
+				selpoints = new Point[0];
+				selregion = new Rectangle[0];
+				return;
+			}
 			
 			int lines = Math.Abs(GetLineForOffset(selection.End) - GetLineForOffset(selection.Start));
 			int start, end;
@@ -671,164 +665,167 @@ namespace HexEditor
 			if (end > GetOffsetForLine(topline + GetMaxVisibleLines())) end = GetOffsetForLine(topline + GetMaxVisibleLines() + 1);
 			
 			int tmp_start = start;
-			if (((selection.End % this.bytesPerLine) == 0) && (selection.End < selection.Start))
+			if (((selection.End % bytesPerLine) == 0) && (selection.End < selection.Start))
 				tmp_start++;
 			
-			if (this.activeView == this.hexView)
+			if (activeView == hexView)
 			{
+				var rectangles = new List<Rectangle>();
+				
 				if (GetLineForOffset(end) == GetLineForOffset(tmp_start)) {
 					Point pt = GetPositionForOffset(start, 3);
-					al.Add(new Rectangle(new Point(pt.X - 4, pt.Y), new Size((end - start) * underscorewidth3 + 2, fontheight)));
+					rectangles.Add(new Rectangle(new Point(pt.X - 4, pt.Y), new Size((end - start) * underscorewidth3 + 2, fontheight)));
 				} else {
 					// First Line
 					Point pt = GetPositionForOffset(start, 3);
-					al.Add(new Rectangle(new Point(pt.X - 4, pt.Y), new Size((this.BytesPerLine - (start - this.BytesPerLine * GetLineForOffset(start))) * underscorewidth3 + 2, fontheight)));
+					rectangles.Add(new Rectangle(new Point(pt.X - 4, pt.Y), new Size((BytesPerLine - (start - BytesPerLine * GetLineForOffset(start))) * underscorewidth3 + 2, fontheight)));
 					
 					// Lines between
-					Point pt2 = GetPositionForOffset((1 + GetLineForOffset(start)) * this.BytesPerLine, 3);
-					al.Add(new Rectangle(new Point(pt2.X - 4, pt2.Y), new Size(this.BytesPerLine * underscorewidth3 + 2, fontheight * (lines - 1) - lines + 1)));
+					Point pt2 = GetPositionForOffset((1 + GetLineForOffset(start)) * BytesPerLine, 3);
+					rectangles.Add(new Rectangle(new Point(pt2.X - 4, pt2.Y), new Size(BytesPerLine * underscorewidth3 + 2, fontheight * (lines - 1) - lines + 1)));
 					
 					// Last Line
-					Point pt3 = GetPositionForOffset(GetLineForOffset(end) * this.BytesPerLine, 3);
-					al.Add(new Rectangle(new Point(pt3.X - 4, pt3.Y), new Size((end - GetLineForOffset(end) * this.BytesPerLine) * underscorewidth3 + 2, fontheight)));
+					Point pt3 = GetPositionForOffset(GetLineForOffset(end) * BytesPerLine, 3);
+					rectangles.Add(new Rectangle(new Point(pt3.X - 4, pt3.Y), new Size((end - GetLineForOffset(end) * BytesPerLine) * underscorewidth3 + 2, fontheight)));
 				}
 				
-				this.selregion = (Rectangle[])al.ToArray(typeof (Rectangle));
+				selregion = rectangles.ToArray<Rectangle>();
 				
-				al.Clear();
+				var points = new List<Point>();
 				
 				start = start_dummy;
 				
 				if (GetLineForOffset(end) == GetLineForOffset(tmp_start)) {
 					Point pt = GetPositionForOffset(start, 1);
-					al.Add(new Point(pt.X - 1, pt.Y));
-					al.Add(new Point(pt.X - 1, pt.Y + fontheight));
-					al.Add(new Point(pt.X - 1 + (end - start + 1) * underscorewidth - 8, pt.Y + fontheight));
-					al.Add(new Point(pt.X - 1 + (end - start + 1) * underscorewidth - 8, pt.Y));
+					points.Add(new Point(pt.X - 1, pt.Y));
+					points.Add(new Point(pt.X - 1, pt.Y + fontheight));
+					points.Add(new Point(pt.X - 1 + (end - start + 1) * underscorewidth - 8, pt.Y + fontheight));
+					points.Add(new Point(pt.X - 1 + (end - start + 1) * underscorewidth - 8, pt.Y));
 				} else {
 					// First Line
 					Point pt = GetPositionForOffset(start, 1);
 					pt = new Point(pt.X - 1, pt.Y);
-					al.Add(pt);
+					points.Add(pt);
 					pt = new Point(pt.X, pt.Y + fontheight - 1);
-					al.Add(pt);
-
+					points.Add(pt);
+					
 					// Second Line
 					pt = GetPositionForOffset(GetOffsetForLine(GetLineForOffset(start) + 1), 1);
 					pt = new Point(pt.X - 1, pt.Y);
-					al.Add(pt);
-
+					points.Add(pt);
+					
 					//last
 					pt = GetPositionForOffset(GetOffsetForLine(GetLineForOffset(end)), 1);
-					if ((end % this.BytesPerLine) != 0) {
+					if ((end % BytesPerLine) != 0) {
 						pt = new Point(pt.X - 1, pt.Y + fontheight);
 					} else {
 						pt = new Point(pt.X - 1, pt.Y + fontheight - 1);
 					}
-					al.Add(pt);
+					points.Add(pt);
 					
-					if ((end % this.BytesPerLine) != 0) {
+					if ((end % BytesPerLine) != 0) {
 						//last
 						pt = GetPositionForOffset(end, 1);
 						pt = new Point(pt.X, pt.Y + fontheight);
-						al.Add(pt);
-
+						points.Add(pt);
+						
 						//last
 						pt = GetPositionForOffset(end, 1);
 						pt = new Point(pt.X, pt.Y);
-						al.Add(pt);
-						
+						points.Add(pt);
 					}
-
+					
 					//last
-					pt = GetPositionForOffset(end + (this.BytesPerLine - (end % this.BytesPerLine)) - 1, 1);
+					pt = GetPositionForOffset(end + (BytesPerLine - (end % BytesPerLine)) - 1, 1);
 					pt = new Point(pt.X + underscorewidth, pt.Y);
-					al.Add(pt);
-
+					points.Add(pt);
+					
 					//last
-					pt = GetPositionForOffset(end + (this.BytesPerLine - (end % this.BytesPerLine)) - 1, 1);
+					pt = GetPositionForOffset(end + (BytesPerLine - (end % BytesPerLine)) - 1, 1);
 					pt = new Point(pt.X + underscorewidth, GetPositionForOffset(start, 1).Y);
-					al.Add(pt);
+					points.Add(pt);
 				}
 				
-				selpoints = (Point[])al.ToArray(typeof(Point));
+				selpoints = points.ToArray<Point>();
 			} else {
+				var rectangles = new List<Rectangle>();
+				
 				if (GetLineForOffset(end) == GetLineForOffset(tmp_start)) {
 					Point pt = GetPositionForOffset(start, 1);
-					al.Add(new Rectangle(new Point(pt.X - 4, pt.Y), new Size((end - start) * underscorewidth + 3, fontheight)));
+					rectangles.Add(new Rectangle(new Point(pt.X - 4, pt.Y), new Size((end - start) * underscorewidth + 3, fontheight)));
 				} else {
 					// First Line
 					Point pt = GetPositionForOffset(start, 1);
-					al.Add(new Rectangle(new Point(pt.X - 4, pt.Y), new Size((this.BytesPerLine - (start - this.BytesPerLine * GetLineForOffset(start))) * underscorewidth + 3, fontheight)));
+					rectangles.Add(new Rectangle(new Point(pt.X - 4, pt.Y), new Size((BytesPerLine - (start - BytesPerLine * GetLineForOffset(start))) * underscorewidth + 3, fontheight)));
 					
 					// Lines between
-					Point pt2 = GetPositionForOffset((1 + GetLineForOffset(start)) * this.BytesPerLine, 3);
-					al.Add(new Rectangle(new Point(pt2.X - 4, pt2.Y), new Size(this.BytesPerLine * underscorewidth + 3, fontheight * (lines - 1) - lines + 1)));
+					Point pt2 = GetPositionForOffset((1 + GetLineForOffset(start)) * BytesPerLine, 3);
+					rectangles.Add(new Rectangle(new Point(pt2.X - 4, pt2.Y), new Size(BytesPerLine * underscorewidth + 3, fontheight * (lines - 1) - lines + 1)));
 					
 					// Last Line
-					Point pt3 = GetPositionForOffset(GetLineForOffset(end) * this.BytesPerLine, 1);
-					al.Add(new Rectangle(new Point(pt3.X - 4, pt3.Y), new Size((end - GetLineForOffset(end) * this.BytesPerLine) * underscorewidth + 3, fontheight)));
+					Point pt3 = GetPositionForOffset(GetLineForOffset(end) * BytesPerLine, 1);
+					rectangles.Add(new Rectangle(new Point(pt3.X - 4, pt3.Y), new Size((end - GetLineForOffset(end) * BytesPerLine) * underscorewidth + 3, fontheight)));
 				}
 				
-				selregion = (Rectangle[])al.ToArray(typeof(Rectangle));
+				selregion = rectangles.ToArray<Rectangle>();
 				
-				al.Clear();
+				var points = new List<Point>();
 				
 				start = start_dummy;
 				
 				if (GetLineForOffset(end) == GetLineForOffset(tmp_start)) {
 					Point pt = GetPositionForOffset(start, 3);
-					al.Add(new Point(pt.X - 1, pt.Y));
-					al.Add(new Point(pt.X - 1, pt.Y + fontheight));
-					al.Add(new Point(pt.X - 1 + (end - start) * underscorewidth3 - 5, pt.Y + fontheight));
-					al.Add(new Point(pt.X - 1 + (end - start) * underscorewidth3 - 5, pt.Y));
+					points.Add(new Point(pt.X - 1, pt.Y));
+					points.Add(new Point(pt.X - 1, pt.Y + fontheight));
+					points.Add(new Point(pt.X - 1 + (end - start) * underscorewidth3 - 5, pt.Y + fontheight));
+					points.Add(new Point(pt.X - 1 + (end - start) * underscorewidth3 - 5, pt.Y));
 				} else {
 					// First Line
 					Point pt = GetPositionForOffset(start, 3);
 					pt = new Point(pt.X - 1, pt.Y);
-					al.Add(pt);
+					points.Add(pt);
 					pt = new Point(pt.X, pt.Y + fontheight - 1);
-					al.Add(pt);
-
+					points.Add(pt);
+					
 					// Second Line
 					pt = GetPositionForOffset(GetOffsetForLine(GetLineForOffset(start) + 1), 3);
 					pt = new Point(pt.X - 1, pt.Y);
-					al.Add(pt);
-
+					points.Add(pt);
+					
 					//last
 					pt = GetPositionForOffset(GetOffsetForLine(GetLineForOffset(end)), 3);
-					if ((end % this.BytesPerLine) != 0) {
+					if ((end % BytesPerLine) != 0) {
 						pt = new Point(pt.X - 1, pt.Y + fontheight);
 					} else {
 						pt = new Point(pt.X - 1, pt.Y + fontheight - 1);
 					}
-					al.Add(pt);
+					points.Add(pt);
 					
-					if ((end % this.BytesPerLine) != 0) {
-
+					if ((end % BytesPerLine) != 0) {
+						
 						//last
 						pt = GetPositionForOffset(end, 3);
 						pt = new Point(pt.X - 5, pt.Y + fontheight);
-						al.Add(pt);
-
+						points.Add(pt);
+						
 						//last
 						pt = GetPositionForOffset(end, 3);
 						pt = new Point(pt.X - 5, pt.Y);
-						al.Add(pt);
+						points.Add(pt);
 					}
-
+					
 					//last
-					pt = GetPositionForOffset(end + (this.BytesPerLine - (end % this.BytesPerLine)) - 1, 3);
+					pt = GetPositionForOffset(end + (BytesPerLine - (end % BytesPerLine)) - 1, 3);
 					pt = new Point(pt.X - 5 + underscorewidth3, pt.Y);
-					al.Add(pt);
-
+					points.Add(pt);
+					
 					//last
-					pt = GetPositionForOffset(end + (this.BytesPerLine - (end % this.BytesPerLine)) - 1, 3);
+					pt = GetPositionForOffset(end + (BytesPerLine - (end % BytesPerLine)) - 1, 3);
 					pt = new Point(pt.X - 5 + underscorewidth3, GetPositionForOffset(start, 3).Y);
-					al.Add(pt);
+					points.Add(pt);
 				}
 				
-				selpoints = (Point[])al.ToArray(typeof(Point));
+				selpoints = points.ToArray<Point>();
 			}
 		}
 		
@@ -858,7 +855,7 @@ namespace HexEditor
 			if (start < GetOffsetForLine(topline)) start = GetOffsetForLine(topline) - 2;
 			if (end > GetOffsetForLine(topline + GetMaxVisibleLines())) end = GetOffsetForLine(topline + GetMaxVisibleLines() + 1);
 			
-			if (this.activeView == this.hexView) {
+			if (activeView == this.hexView) {
 				StringBuilder builder = new StringBuilder();
 				
 				for (int i = GetLineForOffset(start) + 1; i < GetLineForOffset(end); i++) {
@@ -866,14 +863,14 @@ namespace HexEditor
 				}
 				
 				if (selregion.Length == 3) {
-					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 					TextRenderer.DrawText(hexView, builder.ToString(), Settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left);
 					TextRenderer.DrawText(hexView, GetLineHex(GetLineForOffset(end)), Settings.DataFont, (Rectangle)selregion[2], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				} else if (selregion.Length == 2) {
-					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 					TextRenderer.DrawText(hexView, GetLineHex(GetLineForOffset(end)), Settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				} else {
-					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				}
 			} else {
 				StringBuilder builder = new StringBuilder();
@@ -883,14 +880,14 @@ namespace HexEditor
 				}
 				
 				if (selregion.Length == 3) {
-					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 					TextRenderer.DrawText(textView, builder.ToString(), Settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left);
 					TextRenderer.DrawText(textView, GetLineText(GetLineForOffset(end)), Settings.DataFont, (Rectangle)selregion[2], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				} else if (selregion.Length == 2) {
-					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 					TextRenderer.DrawText(textView, GetLineText(GetLineForOffset(end)), Settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				} else {
-					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				}
 			}
 			
@@ -898,32 +895,32 @@ namespace HexEditor
 			
 			GraphicsPath path = new GraphicsPath(FillMode.Winding);
 			
-			if (GetLineForOffset(start) == GetLineForOffset(end) || ((start % this.bytesPerLine) == 0 && GetLineForOffset(start) + 1 == GetLineForOffset(end))) {
-				if (this.selpoints.Length == 8) {
-					path.AddLine(this.selpoints[0], this.selpoints[1]);
-					path.AddLine(this.selpoints[3], this.selpoints[4]);
-					path.AddLine(this.selpoints[4], this.selpoints[5]);
-					path.AddLine(this.selpoints[5], this.selpoints[0]);
+			if (GetLineForOffset(start) == GetLineForOffset(end) || ((start % bytesPerLine) == 0 && GetLineForOffset(start) + 1 == GetLineForOffset(end))) {
+				if (selpoints.Length == 8) {
+					path.AddLine(selpoints[0], selpoints[1]);
+					path.AddLine(selpoints[3], selpoints[4]);
+					path.AddLine(selpoints[4], selpoints[5]);
+					path.AddLine(selpoints[5], selpoints[0]);
 				} else
-					path.AddPolygon(this.selpoints);
+					path.AddPolygon(selpoints);
 			} else {
-				if ((GetLineForOffset(start) == GetLineForOffset(end) - 1) && (start % this.bytesPerLine >= end % this.bytesPerLine)) {
-					if (this.selpoints.Length < 8) {
-						path.AddPolygon(this.selpoints);
+				if ((GetLineForOffset(start) == GetLineForOffset(end) - 1) && (start % bytesPerLine >= end % bytesPerLine)) {
+					if (selpoints.Length < 8) {
+						path.AddPolygon(selpoints);
 					} else {
-						path.AddLine(this.selpoints[0], this.selpoints[1]);
-						path.AddLine(this.selpoints[6], this.selpoints[7]);
+						path.AddLine(selpoints[0], selpoints[1]);
+						path.AddLine(selpoints[6], selpoints[7]);
 						path.CloseFigure();
-						path.AddLine(this.selpoints[2], this.selpoints[3]);
-						path.AddLine(this.selpoints[4], this.selpoints[5]);
+						path.AddLine(selpoints[2], selpoints[3]);
+						path.AddLine(selpoints[4], selpoints[5]);
 						path.CloseFigure();
 					}
 				} else
-					path.AddPolygon(this.selpoints);
+					path.AddPolygon(selpoints);
 			}
 			
 			
-			if (this.activeView == this.hexView)
+			if (activeView == this.hexView)
 				textView.DrawPath(Pens.Black, path);
 			else
 				hexView.DrawPath(Pens.Black, path);
@@ -932,36 +929,34 @@ namespace HexEditor
 		
 		#region Undo/Redo
 		/*
-		 * Undo/Redo handling for the buffer.
-		 * */
+		* Undo/Redo handling for the buffer.
+		* */
 		public void Redo()
 		{
-			EventArgs e2 = new EventArgs();
-			OnDocumentChanged(e2);
-
-			UndoStep step = undoStack.Redo(ref buffer);
+			OnDocumentChanged(EventArgs.Empty);
+			
+			UndoStep step = undoStack.Redo(buffer);
 			hexinputmode = false;
 			hexinputmodepos = 0;
 			selection.Clear();
-			if (step != null) caret.SetToPosition(GetPositionForOffset(step.Start, this.charwidth));
-			this.Invalidate();
+			if (step != null) caret.SetToPosition(GetPositionForOffset(step.Start, charwidth));
+			Invalidate();
 		}
 		
 		public void Undo()
 		{
-			EventArgs e2 = new EventArgs();
-			OnDocumentChanged(e2);
-
-			UndoStep step = undoStack.Undo(ref buffer);
+			OnDocumentChanged(EventArgs.Empty);
+			
+			UndoStep step = undoStack.Undo(buffer);
 			hexinputmode = false;
 			hexinputmodepos = 0;
 			selection.Clear();
 			if (step != null) {
 				int offset = step.Start;
 				if (offset > buffer.BufferSize) offset = buffer.BufferSize;
-				caret.SetToPosition(GetPositionForOffset(offset, this.charwidth));
+				caret.SetToPosition(GetPositionForOffset(offset, charwidth));
 			}
-			this.Invalidate();
+			Invalidate();
 		}
 		
 		public bool CanUndo {
@@ -975,8 +970,8 @@ namespace HexEditor
 		
 		#region Selection
 		/*
-		 * Selection handling
-		 * */
+		* Selection handling
+		* */
 		public void SetSelection(int start, int end)
 		{
 			if (start > buffer.BufferSize) start = buffer.BufferSize;
@@ -990,7 +985,7 @@ namespace HexEditor
 			
 			CalculateSelectionRegions();
 			
-			this.Invalidate();
+			Invalidate();
 		}
 		
 		public bool HasSomethingSelected {
@@ -999,14 +994,14 @@ namespace HexEditor
 		
 		public void SelectAll()
 		{
-			SetSelection(0, this.buffer.BufferSize);
+			SetSelection(0, buffer.BufferSize);
 		}
 		#endregion
 		
 		#region Clipboard Actions
 		/*
-		 * Clipboard handling
-		 * */
+		* Clipboard handling
+		* */
 		public string Copy()
 		{
 			string text = selection.SelectionText;
@@ -1032,35 +1027,33 @@ namespace HexEditor
 			if (caret.Offset > buffer.BufferSize) caret.Offset = buffer.BufferSize;
 			if (selection.HasSomethingSelected) {
 				byte[] old = selection.GetSelectionBytes();
-				int start = selection.Start;
-				
-				if (selection.Start > selection.End) start = selection.End;
+				int start = Math.Min(selection.Start, selection.End);
 				
 				buffer.RemoveBytes(start, Math.Abs(selection.End - selection.Start));
-				buffer.SetBytes(start, this.Encoding.GetBytes(text.ToCharArray()), false);
-				undoStack.AddOverwriteStep(start, this.Encoding.GetBytes(text.ToCharArray()), old);
-
-				caret.Offset = start + ClipboardManager.Paste().Length;
+				buffer.SetBytes(start, Encoding.GetBytes(text), false);
+				undoStack.AddOverwriteStep(start, Encoding.GetBytes(text), old);
+				
+				caret.Offset = start + SD.Clipboard.GetText().Length;
 				selection.Clear();
 			} else {
-				buffer.SetBytes(caret.Offset, this.Encoding.GetBytes(text.ToCharArray()), false);
+				buffer.SetBytes(caret.Offset, Encoding.GetBytes(text), false);
 				
-				undoStack.AddRemoveStep(caret.Offset, this.Encoding.GetBytes(text.ToCharArray()));
-
-				caret.Offset += ClipboardManager.Paste().Length;
+				undoStack.AddRemoveStep(caret.Offset, Encoding.GetBytes(text));
+				
+				caret.Offset += SD.Clipboard.GetText().Length;
 			}
-			if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
-			if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
-			if (this.topline < 0) this.topline = 0;
-			if (this.topline > VScrollBar.Maximum) {
+			if (GetLineForOffset(caret.Offset) < topline) topline = GetLineForOffset(caret.Offset);
+			if (GetLineForOffset(caret.Offset) > topline + GetMaxVisibleLines() - 2)
+				topline = GetLineForOffset(caret.Offset) - GetMaxVisibleLines() + 2;
+			if (topline < 0) topline = 0;
+			if (topline > VScrollBar.Maximum) {
 				AdjustScrollBar();
-				if (this.topline > VScrollBar.Maximum) this.topline = VScrollBar.Maximum;
+				if (topline > VScrollBar.Maximum) topline = VScrollBar.Maximum;
 			}
-			VScrollBar.Value = this.topline;
-			this.Invalidate();
+			VScrollBar.Value = topline;
+			Invalidate();
 			
-			EventArgs e2 = new EventArgs();
-			OnDocumentChanged(e2);
+			OnDocumentChanged(EventArgs.Empty);
 		}
 		
 		public void Delete()
@@ -1075,10 +1068,9 @@ namespace HexEditor
 				
 				selection.Clear();
 			}
-			this.Invalidate();
+			Invalidate();
 			
-			EventArgs e2 = new EventArgs();
-			OnDocumentChanged(e2);
+			OnDocumentChanged(EventArgs.Empty);
 		}
 		#endregion
 		
@@ -1093,11 +1085,11 @@ namespace HexEditor
 			for (int i = 0; i < bytes.Length; i++) {
 				if (bytes[i] < 32 || (bytes[i] >= 0x80 && bytes[i] < 0xA0)) bytes[i] = 46;
 			}
-
-			string text = this.Encoding.GetString(bytes);
+			
+			string text = Encoding.GetString(bytes);
 			return text.Replace("&", "&&");
 		}
-
+		
 		/// <summary>
 		/// Gets the text from a line.
 		/// </summary>
@@ -1105,7 +1097,7 @@ namespace HexEditor
 		/// <returns>A string, which contains the text on the given line.</returns>
 		string GetLineText(int line)
 		{
-			return GetText(buffer.GetBytes(GetOffsetForLine(line), this.BytesPerLine));
+			return GetText(buffer.GetBytes(GetOffsetForLine(line), BytesPerLine));
 		}
 		
 		/// <summary>
@@ -1115,7 +1107,7 @@ namespace HexEditor
 		/// <returns>A string, which contains the text on the given line in hex representation.</returns>
 		string GetLineHex(int line)
 		{
-			return GetHex(buffer.GetBytes(GetOffsetForLine(line), this.BytesPerLine));
+			return GetHex(buffer.GetBytes(GetOffsetForLine(line), BytesPerLine));
 		}
 		
 		/// <summary>
@@ -1137,25 +1129,24 @@ namespace HexEditor
 		/// </summary>
 		void HexEditSizeChanged(object sender, EventArgs e)
 		{
-			if (this.FitToWindowWidth) this.BytesPerLine = CalculateMaxBytesPerLine();
+			if (FitToWindowWidth) BytesPerLine = CalculateMaxBytesPerLine();
 			
-			this.Invalidate();
+			Invalidate();
 			UpdateViews();
-			
 		}
 		
 		void UpdatePainters()
 		{
-			gHeader = this.header.CreateGraphics();
-			gSide = this.side.CreateGraphics();
-			gHex = this.hexView.CreateGraphics();
-			gText = this.textView.CreateGraphics();
+			gHeader = header.CreateGraphics();
+			gSide = side.CreateGraphics();
+			gHex = hexView.CreateGraphics();
+			gText = textView.CreateGraphics();
 			
 			// Bitmaps for painting
-			bHeader = new Bitmap(this.header.Width, this.header.Height, this.gHeader);
-			bSide = new Bitmap(this.side.Width, this.side.Height, this.gSide);
-			bHex = new Bitmap(this.hexView.Width, this.hexView.Height, this.gHex);
-			bText = new Bitmap(this.textView.Width, this.textView.Height, this.gText);
+			bHeader = new Bitmap(header.Width, header.Height, gHeader);
+			bSide = new Bitmap(side.Width, side.Height, gSide);
+			bHex = new Bitmap(hexView.Width, hexView.Height, gHex);
+			bText = new Bitmap(textView.Width, textView.Height, gText);
 			
 			gbHeader = Graphics.FromImage(bHeader);
 			gbSide = Graphics.FromImage(bSide);
@@ -1168,22 +1159,22 @@ namespace HexEditor
 		/// </summary>
 		void UpdateViews()
 		{
-			this.UpdatePainters();
+			UpdatePainters();
 			
-			int sidetext = this.GetMaxLines() * this.BytesPerLine;
-			int textwidth = MeasureStringWidth(this.textView.CreateGraphics(), new string('_', this.BytesPerLine + 1), Settings.DataFont);
-			int hexwidth = underscorewidth3 * this.BytesPerLine;
+			int sidetext = GetMaxLines() * BytesPerLine;
+			int textwidth = MeasureStringWidth(textView.CreateGraphics(), new string('_', BytesPerLine + 1), Settings.DataFont);
+			int hexwidth = underscorewidth3 * BytesPerLine;
 			int top = hexView.Top;
-			this.hexView.Top = fontheight - 1;
-			this.textView.Top = fontheight - 1;
-			this.header.Top = 0;
-			this.header.Left = hexView.Left - 10;
-			this.hexView.Height = this.Height - fontheight + top - 18;
-			this.textView.Height = this.Height - fontheight + top - 18;
-
+			hexView.Top = fontheight - 1;
+			textView.Top = fontheight - 1;
+			header.Top = 0;
+			header.Left = hexView.Left - 10;
+			hexView.Height = Height - fontheight + top - 18;
+			textView.Height = Height - fontheight + top - 18;
+			
 			string st = String.Empty;
-
-			switch (this.ViewMode) {
+			
+			switch (ViewMode) {
 				case ViewMode.Hexadecimal:
 					if (sidetext.ToString().Length < 8) {
 						st = "  Offset";
@@ -1201,7 +1192,7 @@ namespace HexEditor
 							tmp = (int)(tmp / 8);
 						}
 					}
-
+					
 					st = "  " + st;
 					break;
 				case ViewMode.Decimal:
@@ -1212,24 +1203,24 @@ namespace HexEditor
 					}
 					break;
 			}
-
-			this.side.Width = MeasureStringWidth(this.side.CreateGraphics(), st, Settings.OffsetFont);
-			this.side.Left = 0;
-			this.hexView.Left = this.side.Width + 10;
-
-			if ((textwidth + hexwidth + 25) > this.Width - this.side.Width) {
-				this.hexView.Width = this.Width - this.side.Width - textwidth - 30;
-				this.textView.Width = textwidth;
-				this.textView.Left = this.Width - textwidth - 16;
+			
+			side.Width = MeasureStringWidth(side.CreateGraphics(), st, Settings.OffsetFont);
+			side.Left = 0;
+			hexView.Left = side.Width + 10;
+			
+			if ((textwidth + hexwidth + 25) > Width - side.Width) {
+				hexView.Width = Width - side.Width - textwidth - 30;
+				textView.Width = textwidth;
+				textView.Left = Width - textwidth - 16;
 			} else {
-				this.hexView.Width = hexwidth;
-				this.textView.Width = textwidth;
-				this.textView.Left = hexwidth + this.hexView.Left + 20;
+				hexView.Width = hexwidth;
+				textView.Width = textwidth;
+				textView.Left = hexwidth + hexView.Left + 20;
 			}
 			
-			this.caret.SetToPosition(GetPositionForOffset(this.caret.Offset, this.charwidth));
-			this.header.Width = this.hexView.Width + 10;
-			this.header.Height = this.fontheight;
+			caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
+			header.Width = hexView.Width + 10;
+			header.Height = fontheight;
 			AdjustScrollBar();
 		}
 		
@@ -1246,7 +1237,7 @@ namespace HexEditor
 				end = selection.Start;
 			}
 			
-			if (this.activeView != this.hexView) {
+			if (activeView != hexView) {
 				hexinputmode = false;
 				hexinputmodepos = 0;
 			}
@@ -1256,18 +1247,18 @@ namespace HexEditor
 				switch (e.KeyCode)
 				{
 					case Keys.Up:
-						if (this.topline > 0)
-							this.topline--;
+						if (topline > 0)
+							topline--;
 						break;
 					case Keys.Down:
-						if (this.topline < this.GetMaxLines())
-							this.topline++;
+						if (topline < GetMaxLines())
+							topline++;
 						break;
 				}
-
-				this.VScrollBar.Value = this.topline;
-
-				this.handled = true;
+				
+				VScrollBar.Value = topline;
+				
+				e.Handled = true;
 			}
 			
 			switch (e.KeyCode) {
@@ -1278,38 +1269,38 @@ namespace HexEditor
 					if (!e.Control) {
 						int oldoffset = caret.Offset;
 						MoveCaret(e);
-						if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
-						if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
-						VScrollBar.Value = this.topline;
+						if (GetLineForOffset(caret.Offset) < topline) topline = GetLineForOffset(caret.Offset);
+						if (GetLineForOffset(caret.Offset) > topline + GetMaxVisibleLines() - 2) topline = GetLineForOffset(caret.Offset) - GetMaxVisibleLines() + 2;
+						VScrollBar.Value = topline;
 						
 						if (e.Shift) {
 							if (selection.HasSomethingSelected) {
-								this.SetSelection(selection.Start, caret.Offset);
+								SetSelection(selection.Start, caret.Offset);
 							} else {
-								this.SetSelection(oldoffset, caret.Offset);
+								SetSelection(oldoffset, caret.Offset);
 							}
 						} else {
-							this.selection.Clear();
+							selection.Clear();
 						}
-						handled = true;
+						e.Handled = true;
 					}
 					break;
 				case Keys.Insert:
 					insertmode = !insertmode;
 					if (!insertmode) {
-						if (this.activeView == this.hexView)
-							this.caret.Width = underscorewidth * 2;
+						if (activeView == hexView)
+							caret.Width = underscorewidth * 2;
 						else
-							this.caret.Width = underscorewidth;
+							caret.Width = underscorewidth;
 					} else {
-						this.caret.Width = 1;
+						caret.Width = 1;
 					}
 					
-					caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
-					handled = true;
+					caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
+					e.Handled = true;
 					break;
 				case Keys.Back:
-					handled = true;
+					e.Handled = true;
 					if (hexinputmode) return;
 					if (selection.HasSomethingSelected) {
 						byte[] bytes = selection.GetSelectionBytes();
@@ -1326,24 +1317,23 @@ namespace HexEditor
 						if (buffer.RemoveByte(caret.Offset - 1))
 						{
 							if (caret.Offset > -1) caret.Offset--;
-							if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
-							if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
+							if (GetLineForOffset(caret.Offset) < topline) topline = GetLineForOffset(caret.Offset);
+							if (GetLineForOffset(caret.Offset) > topline + GetMaxVisibleLines() - 2) topline = GetLineForOffset(caret.Offset) - GetMaxVisibleLines() + 2;
 							
 							undoStack.AddInsertStep(caret.Offset, new byte[] {b});
 						}
 					}
 					
-					EventArgs e2 = new EventArgs();
-					OnDocumentChanged(e2);
+					OnDocumentChanged(EventArgs.Empty);
 					break;
 				case Keys.Delete:
-					handled = true;
+					e.Handled = true;
 					if (hexinputmode) return;
 					if (selection.HasSomethingSelected) {
 						byte[] old = selection.GetSelectionBytes();
 						buffer.RemoveBytes(start, Math.Abs(selection.End - selection.Start));
 						caret.Offset = selection.Start;
-
+						
 						undoStack.AddInsertStep(selection.Start, old);
 						
 						selection.Clear();
@@ -1354,76 +1344,76 @@ namespace HexEditor
 						
 						undoStack.AddInsertStep(caret.Offset, new byte[] {b});
 						
-						if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
-						if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
+						if (GetLineForOffset(caret.Offset) < topline) topline = GetLineForOffset(caret.Offset);
+						if (GetLineForOffset(caret.Offset) > topline + GetMaxVisibleLines() - 2) topline = GetLineForOffset(caret.Offset) - GetMaxVisibleLines() + 2;
 					}
 					
-					e2 = new EventArgs();
-					OnDocumentChanged(e2);
+					OnDocumentChanged(EventArgs.Empty);
 					break;
 				case Keys.CapsLock:
 				case Keys.ShiftKey:
 				case Keys.ControlKey:
 					break;
 				case Keys.Tab:
-					if (this.activeView == this.hexView) {
-						this.activeView = this.textView;
-						this.charwidth = 1;
+					if (activeView == hexView) {
+						activeView = textView;
+						charwidth = 1;
 					} else {
-						this.activeView = this.hexView;
-						this.charwidth = 3;
+						activeView = hexView;
+						charwidth = 3;
 					}
-					this.handled = true;
+					e.Handled = true;
 					break;
 				default:
 					byte asc = (byte)e.KeyValue;
 					
 					if (e.Control) {
-						handled = true;
+						e.Handled = true;
 						switch (asc) {
-								// Ctrl-A is pressed -> select all
+							// Ctrl-A is pressed -> select all
 							case 65 :
-								this.SetSelection(0, buffer.BufferSize);
+								SetSelection(0, buffer.BufferSize);
 								break;
 								// Ctrl-C is pressed -> copy text to ClipboardManager
 							case 67 :
-								ClipboardManager.Copy(this.Copy());
+								SD.Clipboard.SetText(Copy());
 								break;
 								// Ctrl-V is pressed -> paste from ClipboardManager
 							case 86 :
-								if (ClipboardManager.ContainsText) {
-									this.Paste(ClipboardManager.Paste());
-									if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
-									if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
-									if (this.topline < 0) this.topline = 0;
-									if (this.topline > VScrollBar.Maximum) {
+								if (SD.Clipboard.ContainsText()) {
+									Paste(SD.Clipboard.GetText());
+									if (GetLineForOffset(caret.Offset) < topline) topline = GetLineForOffset(caret.Offset);
+									if (GetLineForOffset(caret.Offset) > topline + GetMaxVisibleLines() - 2) topline = GetLineForOffset(caret.Offset) - GetMaxVisibleLines() + 2;
+									if (topline < 0) topline = 0;
+									if (topline > VScrollBar.Maximum) {
 										AdjustScrollBar();
-										if (this.topline > VScrollBar.Maximum) this.topline = VScrollBar.Maximum;
+										if (topline > VScrollBar.Maximum) topline = VScrollBar.Maximum;
 									}
-									VScrollBar.Value = this.topline;
+									VScrollBar.Value = topline;
 								}
 								break;
 								// Ctrl-X is pressed -> cut from document
 							case 88 :
 								if (selection.HasSomethingSelected) {
-									ClipboardManager.Copy(this.Copy());
-									this.Delete();
+									SD.Clipboard.SetText(Copy());
+									Delete();
 								}
 								break;
 						}
 						break;
 					}
-					if (this.activeView == this.hexView) {
+					if (activeView == hexView) {
 						ProcessHexInput(e);
-						handled = true;
+						e.Handled = true;
 						return;
 					}
-
+					
 					break;
 			}
-			if (handled) {
-				this.Invalidate();
-				caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+			if (e.Handled) {
+				e.SuppressKeyPress = true;
+				caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
+				SD.MainThread.CallLater(TimeSpan.FromMilliseconds(50), Invalidate);
 			}
 		}
 		
@@ -1432,35 +1422,28 @@ namespace HexEditor
 		/// </summary>
 		void HexEditKeyPress(object sender, KeyPressEventArgs e)
 		{
-			if (handled) {
-				handled = false;
-			} else {
-				byte[] old = buffer.GetBytes(caret.Offset, 1);
-				try  {
-					if (selection.HasSomethingSelected) {
-						Delete();
-						buffer.SetByte(caret.Offset, (byte)e.KeyChar, !insertmode);
-					} else {
-						buffer.SetByte(caret.Offset, (byte)e.KeyChar, !insertmode);
-					}
-				} catch (System.ArgumentOutOfRangeException) {}
-				caret.Offset++;
-				if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
-				if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
-				VScrollBar.Value = this.topline;
+			byte[] old = buffer.GetBytes(caret.Offset, 1);
+			try  {
+				if (selection.HasSomethingSelected) {
+					Delete();
+					buffer.SetByte(caret.Offset, (byte)e.KeyChar, !insertmode);
+				} else {
+					buffer.SetByte(caret.Offset, (byte)e.KeyChar, !insertmode);
+				}
+			} catch (ArgumentOutOfRangeException) {}
+			caret.Offset++;
+			if (GetLineForOffset(caret.Offset) < topline) topline = GetLineForOffset(caret.Offset);
+			if (GetLineForOffset(caret.Offset) > topline + GetMaxVisibleLines() - 2) topline = GetLineForOffset(caret.Offset) - GetMaxVisibleLines() + 2;
+			VScrollBar.Value = topline;
 				
-				if (insertmode)
-					undoStack.AddRemoveStep(caret.Offset - 1, new byte[] {(byte)e.KeyChar});
-				else
-					undoStack.AddOverwriteStep(caret.Offset - 1, new byte[] {(byte)e.KeyChar}, old);
+			if (insertmode)
+				undoStack.AddRemoveStep(caret.Offset - 1, new byte[] {(byte)e.KeyChar});
+			else
+				undoStack.AddOverwriteStep(caret.Offset - 1, new byte[] {(byte)e.KeyChar}, old);
 				
-				OnDocumentChanged(EventArgs.Empty);
-			}
+			OnDocumentChanged(EventArgs.Empty);
 			caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
-			
-
-			
-			this.Invalidate();
+			Invalidate();
 		}
 		
 		/// <summary>
@@ -1475,23 +1458,23 @@ namespace HexEditor
 			}
 			switch (input.KeyCode) {
 				case Keys.Up:
-					if (caret.Offset >= this.BytesPerLine) {
-						caret.Offset -= this.BytesPerLine;
-						caret.SetToPosition(this.GetPositionForOffset(caret.Offset, this.charwidth));
+					if (caret.Offset >= BytesPerLine) {
+						caret.Offset -= BytesPerLine;
+						caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 					}
 					break;
 				case Keys.Down:
-					if (caret.Offset <= this.Buffer.BufferSize - this.BytesPerLine) {
-						caret.Offset += this.BytesPerLine;
-						caret.SetToPosition(this.GetPositionForOffset(caret.Offset, this.charwidth));
+					if (caret.Offset <= Buffer.BufferSize - BytesPerLine) {
+						caret.Offset += BytesPerLine;
+						caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 					} else {
-						caret.Offset = this.Buffer.BufferSize;
-						caret.SetToPosition(this.GetPositionForOffset(caret.Offset, this.charwidth));
+						caret.Offset = Buffer.BufferSize;
+						caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 					}
 					break;
 				case Keys.Left:
 					if (caret.Offset >= 1) {
-						if (this.activeView == this.hexView) {
+						if (activeView == hexView) {
 							if (input.Control) {
 								hexinputmode = false;
 								if (hexinputmodepos == 0) {
@@ -1507,12 +1490,12 @@ namespace HexEditor
 						} else {
 							caret.Offset--;
 						}
-						caret.SetToPosition(this.GetPositionForOffset(caret.Offset, this.charwidth));
+						caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 					}
 					break;
 				case Keys.Right:
-					if (caret.Offset <= this.Buffer.BufferSize - 1) {
-						if (this.activeView == this.hexView) {
+					if (caret.Offset <= Buffer.BufferSize - 1) {
+						if (activeView == hexView) {
 							if (input.Control) {
 								hexinputmode = true;
 								if (hexinputmodepos == 1) {
@@ -1528,12 +1511,12 @@ namespace HexEditor
 						} else {
 							caret.Offset++;
 						}
-
-						caret.SetToPosition(this.GetPositionForOffset(caret.Offset, this.charwidth));
+						
+						caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 					}
 					break;
 			}
-
+			
 		}
 		
 		/// <summary>
@@ -1577,7 +1560,7 @@ namespace HexEditor
 						buffer.SetByte(caret.Offset, (byte)(Convert.ToInt32(@in, 16)), true);
 						caret.Offset++;
 						
-						caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+						caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 					} else if (hexinputmodepos == 0) {
 						UndoAction action;
 						
@@ -1594,11 +1577,11 @@ namespace HexEditor
 						hexinputmodepos = 1;
 						
 						undoStack.AddUndoStep(new UndoStep(new byte[] {(byte)(Convert.ToInt32(@in, 16))}, old, caret.Offset, action));
-
-						caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+						
+						caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 					}
-
-					caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+					
+					caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 				} else {
 					UndoAction action;
 					
@@ -1621,9 +1604,9 @@ namespace HexEditor
 						}
 						
 						undoStack.AddUndoStep(new UndoStep(new byte[] {(byte)(Convert.ToInt32(@in, 16))}, _old, caret.Offset - 1, action));
-
-						caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
-
+						
+						caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
+						
 					} else if (hexinputmodepos == 0) {
 						byte[] _old = buffer.GetBytes(caret.Offset, 1);
 						@in = (char)(input.KeyValue) + "0";
@@ -1640,83 +1623,31 @@ namespace HexEditor
 						undoStack.AddUndoStep(new UndoStep(new byte[] {(byte)(Convert.ToInt32(@in, 16))}, _old, caret.Offset, action));
 					}
 					
-					caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+					caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 				}
 				
-				EventArgs e = new EventArgs();
-				OnDocumentChanged(e);
-				
-				this.Invalidate();
+				OnDocumentChanged(EventArgs.Empty);
+				Invalidate();
 			}
 		}
-		
-		#region file functions
-		/// <summary>
-		/// Loads a file into the editor.
-		/// </summary>
-		/// <param name="file">The file-info to open.</param>
-		/// <param name="stream">The stream to read from/write to.</param>
-		public void LoadFile(OpenedFile file, Stream stream)
-		{
-			buffer.Load(file, stream);
-			if (this.progressBar != null) {
-				this.progressBar.Visible = false;
-				this.progressBar.Available = false;
-				this.progressBar.Value = 0;
-			}
-			//this.Cursor = Cursors.WaitCursor;
-		}
-		
-		/// <summary>
-		/// Called from the BufferManager when Loading is finished.
-		/// </summary>
-		/// <remarks>Currently not directly needed, because there's no thread in use to load the data.</remarks>
-		internal void LoadingFinished()
-		{
-			if (this.InvokeRequired) {
-				this.Invoke (new MethodInvoker (LoadingFinished));
-				return;
-			}
-			this.FileName = fileName;
-			selection.Clear();
-			if (this.progressBar != null) {
-				this.progressBar.Visible = false;
-				this.progressBar.Available = false;
-				this.progressBar.Value = 0;
-			}
-			
-			this.side.Cursor = this.Cursor = this.header.Cursor = Cursors.Default;
-			
-			GC.Collect();
-			this.Invalidate();
-		}
-		
-		/// <summary>
-		/// Saves the current buffer to a stream.
-		/// </summary>
-		public void SaveFile(OpenedFile file, Stream stream)
-		{
-			buffer.Save(file, stream);
-		}
-		#endregion
 		
 		/// <summary>
 		/// Invalidates the control when the focus returns to it.
 		/// </summary>
 		private void HexEditGotFocus(object sender, EventArgs e)
 		{
-			this.Invalidate();
+			Invalidate();
 		}
 		
 		#region selection events
 		/**
-		 * Methods to control the current selection
-		 * with mouse for both hex and text view.
-		 * */
+		* Methods to control the current selection
+		* with mouse for both hex and text view.
+		* */
 		
 		void TextViewMouseDown(object sender, MouseEventArgs e)
 		{
-			this.activeView = this.textView;
+			activeView = textView;
 			if (e.Button == MouseButtons.Left) {
 				if (selection.HasSomethingSelected) {
 					selection.Start = 0;
@@ -1732,13 +1663,13 @@ namespace HexEditor
 			if ((e.Button == MouseButtons.Left) && selectionmode && (e.Location != oldMousePos)) {
 				int end = selection.End;
 				selection.End = GetOffsetForPosition(e.Location, 1);
-				this.activeView = this.textView;
+				activeView = textView;
 				moved = true;
 				selection.HasSomethingSelected = true;
 				caret.Offset = GetOffsetForPosition(e.Location, 1);
-				caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+				caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 				
-				this.Invalidate();
+				Invalidate();
 			}
 			
 			oldMousePos = e.Location;
@@ -1762,16 +1693,16 @@ namespace HexEditor
 				moved = false;
 			}
 			caret.Offset = GetOffsetForPosition(e.Location, 1);
-			caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+			caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 			
 			selectionmode = false;
 			
-			this.Invalidate();
+			Invalidate();
 		}
 		
 		void HexViewMouseDown(object sender, MouseEventArgs e)
 		{
-			this.activeView = this.hexView;
+			activeView = hexView;
 			if (e.Button == MouseButtons.Left) {
 				selectionmode = true;
 				selection.Start = GetOffsetForPosition(e.Location, 3);
@@ -1785,13 +1716,13 @@ namespace HexEditor
 				int end = selection.End;
 				selection.End = GetOffsetForPosition(e.Location, 3);
 				selection.HasSomethingSelected = true;
-				this.activeView = this.hexView;
+				activeView = hexView;
 				moved = true;
 				
 				caret.Offset = GetOffsetForPosition(e.Location, 3);
-				caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+				caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 				
-				this.Invalidate();
+				Invalidate();
 			}
 			
 			oldMousePos = e.Location;
@@ -1800,7 +1731,7 @@ namespace HexEditor
 		void HexViewMouseUp(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Right) return;
-
+			
 			if (selectionmode) {
 				selection.HasSomethingSelected = true;
 				if ((selection.End == selection.Start) || ((selection.Start == 0) && (selection.End == 0))) {
@@ -1816,10 +1747,10 @@ namespace HexEditor
 				moved = false;
 			}
 			caret.Offset = GetOffsetForPosition(e.Location, 3);
-			caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+			caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 			selectionmode = false;
 			
-			this.Invalidate();
+			Invalidate();
 		}
 		#endregion
 		
@@ -1845,7 +1776,7 @@ namespace HexEditor
 		/// <returns>Int32, containing the result</returns>
 		internal int CalculateMaxBytesPerLine()
 		{
-			int width = this.Width - this.side.Width - 90;
+			int width = Width - side.Width - 90;
 			int textwidth = 0, hexwidth = 0;
 			int count = 0;
 			// while the width of the textview + the width of the hexview is
@@ -1859,7 +1790,7 @@ namespace HexEditor
 			
 			if (count < 1)
 				count = 1;
-
+			
 			return count;
 		}
 		
@@ -1877,7 +1808,7 @@ namespace HexEditor
 			// one line (height of font = fontheight) = physical line + topline = virtual line.
 			int line = (int)Math.Round((float)position.Y / (float)fontheight) + topline;
 			
-			if (position.Y > (this.textView.Height / 2.0f))
+			if (position.Y > (textView.Height / 2.0f))
 				line++;
 			
 			// calculate the char: horizontal position (X) divided by the width of one char
@@ -1886,26 +1817,26 @@ namespace HexEditor
 			
 			int ch = diff >= 0.75f ? (int)col + 1 : (int)col;
 			
-			if (ch > this.BytesPerLine) ch = this.BytesPerLine;
+			if (ch > BytesPerLine) ch = BytesPerLine;
 			if (ch < 0) ch = 0;
 			
 			// calculate offset
-			int offset = line * this.BytesPerLine + ch;
+			int offset = line * BytesPerLine + ch;
 			
 			if ((diff > 0.35f) && (diff < 0.75f)) {
-				this.hexinputmodepos = 1;
-				this.hexinputmode = true;
+				hexinputmodepos = 1;
+				hexinputmode = true;
 			} else {
-				this.hexinputmodepos = 0;
-				this.hexinputmode = false;
+				hexinputmodepos = 0;
+				hexinputmode = false;
 			}
 			
 			// check
 			if (offset < 0) return 0;
-			if (offset < this.buffer.BufferSize) {
+			if (offset < buffer.BufferSize) {
 				return offset;
 			} else {
-				return this.buffer.BufferSize;
+				return buffer.BufferSize;
 			}
 		}
 		
@@ -1918,10 +1849,10 @@ namespace HexEditor
 		/// <returns>The Drawing.Point at which the offset is currently.</returns>
 		internal Point GetPositionForOffset(int offset, int charwidth)
 		{
-			int line = (int)(offset / this.BytesPerLine) - this.topline;
+			int line = (int)(offset / BytesPerLine) - topline;
 			int pline = line * fontheight - 1 * (line - 1) - 1;
-			int col = (offset % this.BytesPerLine) * underscorewidth * charwidth + 4;
-			if (hexinputmode && !selectionmode && !selection.HasSomethingSelected && this.insertmode) col += (hexinputmodepos * underscorewidth);
+			int col = (offset % BytesPerLine) * underscorewidth * charwidth + 4;
+			if (hexinputmode && !selectionmode && !selection.HasSomethingSelected && insertmode) col += (hexinputmodepos * underscorewidth);
 			
 			return new Point(col, pline);
 		}
@@ -1933,7 +1864,7 @@ namespace HexEditor
 		/// <returns>The starting offset for a line.</returns>
 		internal int GetOffsetForLine(int line)
 		{
-			return line * this.BytesPerLine;
+			return line * BytesPerLine;
 		}
 		
 		/// <summary>
@@ -1946,7 +1877,7 @@ namespace HexEditor
 		{
 			if (offset == 0)
 				return 0;
-			return (int)Math.Ceiling((double)offset / (double)this.BytesPerLine) - 1;
+			return (int)Math.Ceiling((double)offset / (double)BytesPerLine) - 1;
 		}
 		
 		/// <summary>
@@ -1955,31 +1886,29 @@ namespace HexEditor
 		/// <returns>The count of currently visible virtual lines.</returns>
 		internal int GetMaxVisibleLines()
 		{
-			return (int)(this.hexView.Height / fontheight) + 3;
+			return (int)(hexView.Height / fontheight) + 3;
 		}
 		
 		/// <summary>
 		/// Calculates the count of all virtual lines in the buffer.
 		/// </summary>
 		/// <returns>Retrns 1 if the buffer is empty, otherwise the count of all virtual lines in the buffer.</returns>
-		internal int GetMaxLines()
+		int GetMaxLines()
 		{
 			if (buffer == null) return 1;
-			int lines = (int)(buffer.BufferSize / this.BytesPerLine);
-			if ((buffer.BufferSize % this.BytesPerLine) != 0) lines++;
+			int lines = (int)(buffer.BufferSize / BytesPerLine);
+			if ((buffer.BufferSize % BytesPerLine) != 0) lines++;
 			return lines;
 		}
 		
 		/// <summary>
 		/// Calculates the count of digits of a given number.
 		/// </summary>
-		/// <param name="number">The number to calculate</param>
-		/// <returns>the count of digits in the number</returns>
-		static int GetLength(int number)
+		static int GetLength(int number, int @base = 10)
 		{
 			int count = 1;
-			while (number > 9) {
-				number = number / 10;
+			while (number >= @base) {
+				number = number / @base;
 				count++;
 			}
 			return count;
@@ -1990,7 +1919,7 @@ namespace HexEditor
 		/// </summary>
 		void HexEditControlContextMenuStripChanged(object sender, EventArgs e)
 		{
-			this.ContextMenuStrip.Closed += new ToolStripDropDownClosedEventHandler(ContextMenuStripClosed);
+			ContextMenuStrip.Closed += new ToolStripDropDownClosedEventHandler(ContextMenuStripClosed);
 		}
 		
 		/// <summary>
@@ -1998,7 +1927,7 @@ namespace HexEditor
 		/// </summary>
 		void ContextMenuStripClosed(object sender, EventArgs e)
 		{
-			this.Invalidate();
+			Invalidate();
 		}
 	}
 }
