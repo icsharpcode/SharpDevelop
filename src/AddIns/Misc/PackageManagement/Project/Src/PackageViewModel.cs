@@ -127,7 +127,7 @@ namespace ICSharpCode.PackageManagement
 		
 		protected bool IsPackageInstalled()
 		{
-			return IsPackageInstalledInSolution(package);
+			return IsPackageInstalled(package);
 		}
 		
 		public IEnumerable<PackageDependencySet> Dependencies {
@@ -262,6 +262,21 @@ namespace ICSharpCode.PackageManagement
 			packageOperations = project.GetInstallPackageOperations(package, installAction);
 		}
 		
+		IEnumerable<PackageOperation> GetInstallPackageOperations(IEnumerable<IPackageManagementSelectedProject> projects) {
+			IEnumerable<PackageOperation> installPackageOperations = new PackageOperation[0];
+			IPackageManagementSelectedProject firstSelectedProject = (
+				from project in projects 
+				where project.IsSelected 
+				select project).FirstOrDefault();
+			
+			if (firstSelectedProject != null) {
+				InstallPackageAction installAction = firstSelectedProject.Project.CreateInstallPackageAction();
+				installAction.AllowPrereleaseVersions = parent.IncludePrerelease;
+				installPackageOperations = firstSelectedProject.Project.GetInstallPackageOperations(package, installAction);
+			}
+			return installPackageOperations;
+		}
+		
 		IPackageManagementProject GetSingleProjectSelected()
 		{
 			return selectedProjects.GetSingleProjectSelected(package.Repository);
@@ -291,10 +306,10 @@ namespace ICSharpCode.PackageManagement
 
 		bool PackageRequiresLicenseAcceptance(IPackage package)
 		{
-			return package.RequireLicenseAcceptance && !IsPackageInstalledInSolution(package);
+			return package.RequireLicenseAcceptance && !IsPackageInstalled(package);
 		}
 		
-		bool IsPackageInstalledInSolution(IPackage package)
+		bool IsPackageInstalled(IPackage package)
 		{
 			return selectedProjects.Solution.IsPackageInstalled(package);
 		}
@@ -469,11 +484,6 @@ namespace ICSharpCode.PackageManagement
 		
 		public void ManagePackagesForSelectedProjects(IEnumerable<IPackageManagementSelectedProject> projects)
 		{
-			ManagePackagesForSelectedProjects(projects.ToList());
-		}
-		
-		void ManagePackagesForSelectedProjects(IList<IPackageManagementSelectedProject> projects)
-		{
 			ClearReportedMessages();
 			logger.LogManagingPackage();
 			
@@ -484,24 +494,11 @@ namespace ICSharpCode.PackageManagement
 			logger.LogAfterPackageOperationCompletes();
 		}
 		
-		void TryManagePackagesForSelectedProjects(IList<IPackageManagementSelectedProject> projects)
+		void TryManagePackagesForSelectedProjects(IEnumerable<IPackageManagementSelectedProject> projects)
 		{
 			try {
-				packageOperations = new PackageOperation[0];
-				if (!IsPackageInstalled()) {
-					IPackageManagementSelectedProject firstSelectedProject = (
-						from project in projects 
-						where project.IsSelected 
-						select project).FirstOrDefault();
-					
-					if (firstSelectedProject != null) {
-						InstallPackageAction installAction = firstSelectedProject.Project.CreateInstallPackageAction();
-						installAction.AllowPrereleaseVersions = parent.IncludePrerelease;
-						packageOperations = firstSelectedProject.Project.GetInstallPackageOperations(package, installAction);
-					}
-				}
-				IList<ProcessPackageAction> actions = GetProcessPackageActionsForSelectedProjects(projects);
-				if (actions.Any() && LicensesAccepted()) {
+				if (IsPackageInstalled() || LicensesAccepted(projects)) {
+					IList<ProcessPackageAction> actions = GetProcessPackageActionsForSelectedProjects(projects);
 					RunActionsIfAnyExist(actions);
 				}
 			} catch (Exception ex) {
@@ -516,7 +513,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public IList<ProcessPackageAction> GetProcessPackageActionsForSelectedProjects(
-			IList<IPackageManagementSelectedProject> selectedProjects)
+			IEnumerable<IPackageManagementSelectedProject> selectedProjects)
 		{
 			var actions = new List<ProcessPackageAction>();
 			foreach (IPackageManagementSelectedProject selectedProject in selectedProjects) {
@@ -558,6 +555,11 @@ namespace ICSharpCode.PackageManagement
 				return CreateUpdatePackageAction(selectedProject);
 			}
 			return null;
+		}
+
+		bool LicensesAccepted(IEnumerable<IPackageManagementSelectedProject> projects) {
+			packageOperations = GetInstallPackageOperations(projects);
+			return LicensesAccepted();
 		}
 		
 		bool LicensesAccepted()

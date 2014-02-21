@@ -1316,7 +1316,7 @@ namespace PackageManagement.Tests
 			CreateTwoFakeSelectedProjects();
 			FirstFakeSelectedProject.IsSelected = true;
 			AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
-			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = true;
 			
 			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
 			
