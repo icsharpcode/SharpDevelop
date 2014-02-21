@@ -86,7 +86,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IQueryable<IPackage> GetInstalledPackages(IPackageRepository aggregateRepository)
 		{
-			return selectedProjects.GetInstalledPackages(aggregateRepository);
+			return selectedProjects.GetPackages(aggregateRepository);
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()

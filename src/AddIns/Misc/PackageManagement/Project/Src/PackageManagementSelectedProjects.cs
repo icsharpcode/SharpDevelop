@@ -138,26 +138,16 @@ namespace ICSharpCode.PackageManagement
 				IPackageManagementProject project = GetSingleProjectSelected(package.Repository);
 				return project.IsPackageInstalled(package);
 			}
-			return IsPackageInstalledInSolution(package);
-		}
-		
-		public bool IsPackageInstalledInSolution(IPackage package)
-		{
 			return Solution.IsPackageInstalled(package);
 		}
 		
-		public IQueryable<IPackage> GetPackagesInstalledInSolution()
-		{
-			return Solution.GetPackages();
-		}
-		
-		public IQueryable<IPackage> GetInstalledPackages(IPackageRepository sourceRepository)
+		public IQueryable<IPackage> GetPackages(IPackageRepository sourceRepository)
 		{
 			if (HasSingleProjectSelected()) {
 				IPackageManagementProject project = GetSingleProjectSelected(sourceRepository);
 				return project.GetPackages();
 			}
-			return GetPackagesInstalledInSolution();
+			return Solution.GetPackages();
 		}
 		
 		public IPackageManagementProject GetSingleProjectSelected(IPackageRepository repository)
