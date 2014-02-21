@@ -28,12 +28,12 @@ namespace CSharpBinding.FormattingStrategy
 	/// <summary>
 	/// Offers an attached property to bind a formatting option to a ComboBox.
 	/// </summary>
-	public static class FormattingOptionBinding
+	internal static class FormattingOptionBinding
 	{
 		public static readonly DependencyProperty ContainerProperty =
 			DependencyProperty.RegisterAttached("Container", typeof(CSharpFormattingOptionsContainer),
 			                                    typeof(FormattingOptionBinding),
-			                                    new FrameworkPropertyMetadata(OnContainerPropertyChanged));
+			                                    new FrameworkPropertyMetadata());
 		public static readonly DependencyProperty OptionProperty =
 			DependencyProperty.RegisterAttached("Option", typeof(string), typeof(FormattingOptionBinding),
 			                                    new FrameworkPropertyMetadata(OnOptionPropertyChanged));
@@ -43,9 +43,9 @@ namespace CSharpBinding.FormattingStrategy
 			return (CSharpFormattingOptionsContainer) element.GetValue(ContainerProperty);
 		}
 		
-		public static void SetContainer(Selector element, CSharpFormattingOptionsContainer enumType)
+		public static void SetContainer(Selector element, CSharpFormattingOptionsContainer container)
 		{
-			element.SetValue(ContainerProperty, enumType);
+			element.SetValue(ContainerProperty, container);
 		}
 		
 		public static string GetOption(Selector element)
@@ -53,39 +53,46 @@ namespace CSharpBinding.FormattingStrategy
 			return (string) element.GetValue(OptionProperty);
 		}
 		
-		public static void SetOption(Selector element, string enumType)
+		public static void SetOption(Selector element, string option)
 		{
-			element.SetValue(OptionProperty, enumType);
-		}
-		
-		static void OnContainerPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-		{
-			// No op?
+			element.SetValue(OptionProperty, option);
 		}
 		
 		static void OnOptionPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			string option = e.NewValue as string;
 			ComboBox comboBox = o as ComboBox;
-			if ((option != null) && (comboBox != null)) {
-				// Add "default" entry in ComboBox
-				// TODO Add located resource, maybe context-bound, like "(solution)" or "(global)"!
-				comboBox.Items.Add(new ComboBoxItem { Content = "(default)", Tag = null });
-				comboBox.SelectedIndex = 0;
-				
-				CSharpFormattingOptionsContainer container = GetContainer(comboBox);
+			CSharpFormattingOptionsContainer container = GetContainer(comboBox);
+			if ((option != null) && (comboBox != null) && (container != null)) {
 				if (container != null) {
+					if (container.Parent != null) {
+						// Add "default" entry in ComboBox
+						// TODO Add located resource, maybe context-bound, like "(solution)" or "(global)"!
+						comboBox.Items.Add(new ComboBoxItem { Content = "(default)", Tag = null });
+						comboBox.SelectedIndex = 0;
+					}
+					
 					Type optionType = container.GetOptionType(option);
 					FillComboValues(comboBox, optionType);
-					object currentValue = container.GetOption(option);
-					comboBox.SelectedItem = comboBox.Items.OfType<ComboBoxItem>().FirstOrDefault(item => object.Equals(currentValue, item.Tag));
+					UpdateComboBoxValue(container, option, comboBox);
+					
+					comboBox.SelectionChanged += ComboBox_SelectionChanged;
+					container.PropertyChanged += (sender, eventArgs) =>
+					{
+						if ((eventArgs.PropertyName == null) || (eventArgs.PropertyName == option))
+							UpdateComboBoxValue(container, option, comboBox);
+					};
 				}
-				
-				comboBox.SelectionChanged += ComboBox_SelectionChanged;
 			}
 		}
+		
+		static void UpdateComboBoxValue(CSharpFormattingOptionsContainer container, string option, ComboBox comboBox)
+		{
+			object currentValue = container.GetOption(option);
+			comboBox.SelectedItem = comboBox.Items.OfType<ComboBoxItem>().FirstOrDefault(item => object.Equals(currentValue, item.Tag));
+		}
 
-		static void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+		static void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			ComboBox comboBox = sender as ComboBox;
 			if (comboBox != null) {
@@ -105,6 +112,8 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			if (type == typeof(bool)) {
 				FillBoolComboValues(comboBox);
+			} else if (type == typeof(int)) {
+				FillIntComboValues(comboBox);
 			} else if (type == typeof(BraceStyle)) {
 				FillBraceStyleComboValues(comboBox);
 			} else if (type == typeof(PropertyFormatting)) {
@@ -125,6 +134,15 @@ namespace CSharpBinding.FormattingStrategy
 			// TODO Add located resources!
 			comboBox.Items.Add(new ComboBoxItem { Content = "Yes", Tag = true });
 			comboBox.Items.Add(new ComboBoxItem { Content = "No", Tag = false });
+		}
+		
+		static void FillIntComboValues(ComboBox comboBox)
+		{
+			comboBox.Items.Add(new ComboBoxItem { Content = "0", Tag = 0 });
+			comboBox.Items.Add(new ComboBoxItem { Content = "1", Tag = 1 });
+			comboBox.Items.Add(new ComboBoxItem { Content = "2", Tag = 2 });
+			comboBox.Items.Add(new ComboBoxItem { Content = "3", Tag = 3 });
+			comboBox.Items.Add(new ComboBoxItem { Content = "4", Tag = 4 });
 		}
 		
 		static void FillBraceStyleComboValues(ComboBox comboBox)

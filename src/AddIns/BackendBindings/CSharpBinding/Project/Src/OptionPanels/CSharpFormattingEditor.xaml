@@ -1,5 +1,6 @@
 ﻿<UserControl
 	x:Class="CSharpBinding.OptionPanels.CSharpFormattingEditor"
+	x:ClassModifier="internal"
 	x:Name="CSharpFormattingEditor_Self"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -242,6 +243,8 @@
 			</local:FormattingGroupContainer>
 		</local:FormattingGroupContainer>
 		
+		<BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
+		
 		<DataTemplate DataType="{x:Type local:FormattingOption}">
 			<TextBlock Text="{Binding Text}" Height="16" />
 		</DataTemplate>
@@ -294,10 +297,25 @@
 	
 	</UserControl.Resources>
 	
-	<sd:RestrictDesiredSize Margin="0,4,0,0">
-		<ScrollViewer VerticalScrollBarVisibility="Auto">
-			<ItemsControl ItemsSource="{Binding}" Background="{x:Static SystemColors.WindowBrush}" Grid.IsSharedSizeScope="True">
-			</ItemsControl>
-		</ScrollViewer>
-	</sd:RestrictDesiredSize>
+	<DockPanel>
+		<Grid
+			DockPanel.Dock="Top"
+			Visibility="{Binding Path=AllowPresets, Converter={StaticResource boolToVisibilityConverter}}">
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			
+			<Button Grid.Column="0" Content="Reset to:" Click="ResetButton_Click" />
+			<ComboBox Name="presetComboBox" Grid.Column="1" Margin="3,0,0,0" ItemsSource="{Binding Presets}" />
+		</Grid>
+		
+		<sd:RestrictDesiredSize Margin="0,4,0,0">
+			<ScrollViewer VerticalScrollBarVisibility="Auto">
+				<ItemsControl ItemsSource="{Binding RootChildren}" Background="{x:Static SystemColors.WindowBrush}" Grid.IsSharedSizeScope="True">
+				</ItemsControl>
+			</ScrollViewer>
+		</sd:RestrictDesiredSize>
+	</DockPanel>
 </UserControl>

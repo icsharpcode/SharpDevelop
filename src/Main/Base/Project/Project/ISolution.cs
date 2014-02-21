@@ -94,6 +94,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		Properties Preferences { get; }
 		
 		/// <summary>
+		/// Gets a container that can be used to store data about the solution.
+		/// This data is stored along with .sln file as .sln.sdsettings.
+		/// </summary>
+		Properties GlobalPreferences { get; }
+		
+		/// <summary>
 		/// This event is raised by <see cref="SavePreferences"/> immediately before the preferences are saved to disk.
 		/// It can be used to set additional data on the preferences at the last moment.
 		/// </summary>

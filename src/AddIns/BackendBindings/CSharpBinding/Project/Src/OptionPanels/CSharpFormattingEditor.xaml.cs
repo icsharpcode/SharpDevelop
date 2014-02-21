@@ -17,11 +17,14 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.SharpDevelop;
 using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding.OptionPanels
@@ -65,7 +68,7 @@ namespace CSharpBinding.OptionPanels
 	[ContentProperty("Children")]
 	internal class FormattingOptionContainer : DependencyObject, IFormattingItemContainer
 	{
-		readonly ObservableCollection<FormattingOption> children = new ObservableCollection<FormattingOption>(); 
+		readonly ObservableCollection<FormattingOption> children = new ObservableCollection<FormattingOption>();
 		
 		public ObservableCollection<FormattingOption> Children
 		{
@@ -98,225 +101,100 @@ namespace CSharpBinding.OptionPanels
 	/// <summary>
 	/// Interaction logic for CSharpFormattingEditor.xaml
 	/// </summary>
-	public partial class CSharpFormattingEditor : UserControl
+	internal partial class CSharpFormattingEditor : UserControl
 	{
+		readonly ObservableCollection<ComboBoxItem> presetItems;
+		readonly Dictionary<string, Func<CSharpFormattingOptions>> presets;
+		
 		public CSharpFormattingEditor()
 		{
-			InitializeComponent();
+			presets = new Dictionary<string, Func<CSharpFormattingOptions>>();
+			presetItems = new ObservableCollection<ComboBoxItem>();
 			
-			// rootEntries object is only the root container, its children should be shown directly
-			var rootEntries = this.Resources["rootEntries"] as FormattingGroupContainer;
-			if (rootEntries != null) {
-				this.DataContext = rootEntries.Children;
-			}
+			InitializeComponent();
+			this.DataContext = this;
+			
+			FillPresetList();
 		}
 		
 		public static readonly DependencyProperty OptionsContainerProperty =
 			DependencyProperty.Register("OptionsContainer", typeof(CSharpFormattingOptionsContainer), typeof(CSharpFormattingEditor),
-			                            new FrameworkPropertyMetadata(OnOptionsContainerPropertyChanged));
+			                            new FrameworkPropertyMetadata());
 		
 		public CSharpFormattingOptionsContainer OptionsContainer {
 			get { return (CSharpFormattingOptionsContainer)GetValue(OptionsContainerProperty); }
 			set { SetValue(OptionsContainerProperty, value); }
 		}
 		
-		static void OnOptionsContainerPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-		{
-//			var editor = o as CSharpFormattingEditor;
-//			if (editor != null) {
-//				editor.BuildOptionItems();
-//				editor.DataContext = editor.rootEntries;
-//			}
+		public static readonly DependencyProperty AllowPresetsProperty =
+			DependencyProperty.Register("AllowPresets", typeof(bool), typeof(CSharpFormattingEditor),
+			                            new FrameworkPropertyMetadata());
+		
+		public bool AllowPresets {
+			get { return (bool)GetValue(AllowPresetsProperty); }
+			set { SetValue(AllowPresetsProperty, value); }
 		}
-
-		/*void BuildOptionItems()
+		
+		private void FillPresetList()
 		{
-			rootEntries.Clear();
-			rootEntries.AddRange(
-				new IFormattingItemContainer[]
-				{
-					new FormattingGroupContainer { Text = "Indentation", Children = new [] { new FormattingOptionContainer {
-								Children = new [] {
-									new FormattingOption(OptionsContainer) { Option = "IndentNamespaceBody", Text = "Indent namespace body" },
-									new FormattingOption(OptionsContainer) { Option = "IndentClassBody", Text = "Indent class body" },
-									new FormattingOption(OptionsContainer) { Option = "IndentInterfaceBody", Text = "Indent interface body" },
-									new FormattingOption(OptionsContainer) { Option = "IndentStructBody", Text = "Indent struct body" },
-									new FormattingOption(OptionsContainer) { Option = "IndentEnumBody", Text = "Indent enum body" },
-									new FormattingOption(OptionsContainer) { Option = "IndentMethodBody", Text = "Indent method body" },
-									new FormattingOption(OptionsContainer) { Option = "IndentPropertyBody", Text = "Indent property body" },
-									new FormattingOption(OptionsContainer) { Option = "IndentEventBody", Text = "Indent event body" },
-									new FormattingOption(OptionsContainer) { Option = "IndentBlocks", Text = "Indent blocks" },
-									new FormattingOption(OptionsContainer) { Option = "IndentSwitchBody", Text = "Indent switch body" },
-									new FormattingOption(OptionsContainer) { Option = "IndentCaseBody", Text = "Indent case body" },
-									new FormattingOption(OptionsContainer) { Option = "IndentBreakStatements", Text = "Indent break statements" },
-									new FormattingOption(OptionsContainer) { Option = "AlignEmbeddedUsingStatements", Text = "Align embedded using statements" },
-									new FormattingOption(OptionsContainer) { Option = "AlignEmbeddedIfStatements", Text = "Align embedded if statements" },
-									new FormattingOption(OptionsContainer) { Option = "AlignElseInIfStatements", Text = "Align else in if statements" },
-									new FormattingOption(OptionsContainer) { Option = "AutoPropertyFormatting", Text = "Auto property formatting" },
-									new FormattingOption(OptionsContainer) { Option = "SimplePropertyFormatting", Text = "Simple property formatting" },
-									new FormattingOption(OptionsContainer) { Option = "EmptyLineFormatting", Text = "Empty line formatting" },
-									new FormattingOption(OptionsContainer) { Option = "IndentPreprocessorDirectives", Text = "Indent preprocessor directives" },
-									new FormattingOption(OptionsContainer) { Option = "AlignToMemberReferenceDot", Text = "Align to member reference dot" },
-								}
-							}
+			presets["Empty"] = FormattingOptionsFactory.CreateEmpty;
+			presets["SharpDevelop"] = FormattingOptionsFactory.CreateSharpDevelop;
+			presets["Mono"] = FormattingOptionsFactory.CreateMono;
+			presets["K&R"] = FormattingOptionsFactory.CreateKRStyle;
+			presets["Allman"] = FormattingOptionsFactory.CreateAllman;
+			presets["Whitesmiths"] = FormattingOptionsFactory.CreateWhitesmiths;
+			presets["GNU"] = FormattingOptionsFactory.CreateGNU;
+			
+			// TODO Localize "(no preset)"!
+			presetItems.Add(new ComboBoxItem { Content = "Empty", Tag = "Empty" });
+			presetItems.Add(new ComboBoxItem { Content = "SharpDevelop", Tag = "SharpDevelop" });
+			presetItems.Add(new ComboBoxItem { Content = "Mono", Tag = "Mono" });
+			presetItems.Add(new ComboBoxItem { Content = "K&R", Tag = "K&R" });
+			presetItems.Add(new ComboBoxItem { Content = "Allman", Tag = "Allman" });
+			presetItems.Add(new ComboBoxItem { Content = "Whitesmiths", Tag = "Whitesmiths" });
+			presetItems.Add(new ComboBoxItem { Content = "GNU", Tag = "GNU" });
+			
+			presetComboBox.SelectedIndex = 0;
+		}
+		
+		public ObservableCollection<ComboBoxItem> Presets
+		{
+			get {
+				return presetItems;
+			}
+		}
+		
+		void ResetButton_Click(object sender, RoutedEventArgs e)
+		{
+			ComboBoxItem selectedPresetItem = presetComboBox.SelectedItem as ComboBoxItem;
+			if (selectedPresetItem != null) {
+				if (presets.ContainsKey((string) selectedPresetItem.Tag)) {
+					var presetFunc = presets[(string) selectedPresetItem.Tag];
+					
+					// Ask user if he's sure to reset all previously defined settings
+					// TODO Localize messages!
+					if (presetFunc != null) {
+						if (SD.MessageService.AskQuestion("Are you sure that you want to reset all previously defined formatting options?")) {
+							OptionsContainer.Reset(presetFunc());
 						}
-					},
-					new FormattingGroupContainer { Text = "Braces", Children = new [] { new FormattingOptionContainer {
-								Children = new [] {
-									new FormattingOption(OptionsContainer) { Option = "NamespaceBraceStyle", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "ClassBraceStyle", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "InterfaceBraceStyle", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "StructBraceStyle", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "StructBraceStyle", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "EnumBraceStyle", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "MethodBraceStyle", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "AnonymousMethodBraceStyle", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "ConstructorBraceStyle", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" },
-								}
-							}
-						}
-					},
-					new FormattingGroupContainer { Text = "New lines", Children = new [] { new FormattingOptionContainer {
-								Children = new [] {
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-								}
-							}
-						}
-					},
-					new FormattingGroupContainer { Text = "Spaces",
-						Children = new [] {
-							new FormattingGroupContainer { Text = "Methods", Children = new [] { new FormattingOptionContainer {
-										Children = new [] {
-											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-										}
-									}
-								}
-							},
-							new FormattingGroupContainer { Text = "Method calls", Children = new [] { new FormattingOptionContainer {
-										Children = new [] {
-											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-										}
-									}
-								}
-							},
-							new FormattingGroupContainer { Text = "Fields", Children = new [] { new FormattingOptionContainer {
-										Children = new [] {
-											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-										}
-									}
-								}
-							},
-							new FormattingGroupContainer { Text = "Local variables", Children = new [] { new FormattingOptionContainer {
-										Children = new [] {
-											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-										}
-									}
-								}
-							},
-							new FormattingGroupContainer { Text = "Constructors", Children = new [] { new FormattingOptionContainer {
-										Children = new [] {
-											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-										}
-									}
-								}
-							},
-							new FormattingGroupContainer { Text = "Indexers", Children = new [] { new FormattingOptionContainer {
-										Children = new [] {
-											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-										}
-									}
-								}
-							},
-							new FormattingGroupContainer { Text = "Delegates", Children = new [] { new FormattingOptionContainer {
-										Children = new [] {
-											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-										}
-									}
-								}
-							},
-							new FormattingGroupContainer { Text = "Statements", Children = new [] { new FormattingOptionContainer {
-										Children = new [] {
-											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-										}
-									}
-								}
-							},
-							new FormattingGroupContainer { Text = "Operators", Children = new [] { new FormattingOptionContainer {
-										Children = new [] {
-											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-										}
-									}
-								}
-							},
-							new FormattingGroupContainer { Text = "Brackets", Children = new [] { new FormattingOptionContainer {
-										Children = new [] {
-											new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-										}
-									}
-								}
-							}
-						}
-					},
-					new FormattingGroupContainer { Text = "Blank lines", Children = new [] { new FormattingOptionContainer {
-								Children = new [] {
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-								}
-							}
-						}
-					},
-					new FormattingGroupContainer { Text = "Keep formatting", Children = new [] { new FormattingOptionContainer {
-								Children = new [] {
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-								}
-							}
-						}
-					},
-					new FormattingGroupContainer { Text = "Wrapping", Children = new [] { new FormattingOptionContainer {
-								Children = new [] {
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-								}
-							}
-						}
-					},
-					new FormattingGroupContainer { Text = "Using declarations", Children = new [] { new FormattingOptionContainer {
-								Children = new [] {
-									new FormattingOption(OptionsContainer) { Option = "", Text = "-" }
-								}
-							}
-						}
+					} else {
+						SD.MessageService.ShowWarning("No formatting preset selected!");
 					}
 				}
-			);
-		}*/
+			}
+		}
+		
+		public ObservableCollection<IFormattingItemContainer> RootChildren
+		{
+			get {
+				// rootEntries object is only the root container, its children should be shown directly
+				var rootEntries = this.Resources["rootEntries"] as FormattingGroupContainer;
+				if (rootEntries != null) {
+					return rootEntries.Children;
+				}
+				
+				return null;
+			}
+		}
 	}
 }

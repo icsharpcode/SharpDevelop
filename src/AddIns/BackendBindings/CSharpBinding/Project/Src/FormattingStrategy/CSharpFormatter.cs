@@ -24,14 +24,14 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.FormattingStrategy
 {
-	public class CSharpFormatterHelper
+	internal class CSharpFormatterHelper
 	{
 		/// <summary>
 		/// Formats the specified part of the document.
 		/// </summary>
-		public static void Format(ITextEditor editor, int offset, int length, CSharpFormattingOptions options)
+		public static void Format(ITextEditor editor, int offset, int length, CSharpFormattingOptionsContainer optionsContainer)
 		{
-			var formatter = new CSharpFormatter(options, editor.ToEditorOptions());
+			var formatter = new CSharpFormatter(optionsContainer.GetEffectiveOptions(), editor.ToEditorOptions());
 			formatter.AddFormattingRegion(new DomRegion(editor.Document.GetLocation(offset), editor.Document.GetLocation(offset + length)));
 			var changes = formatter.AnalyzeFormatting(editor.Document, SyntaxTree.Parse(editor.Document));
 			changes.ApplyChanges(offset, length);

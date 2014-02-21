@@ -26,17 +26,35 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding.OptionPanels
 {
 	/// <summary>
 	/// Interaction logic for CSharpProjectFormattingOptionPanel.xaml
 	/// </summary>
-	public partial class CSharpProjectFormattingOptionPanel : ProjectOptionPanel
+	internal partial class CSharpProjectFormattingOptionPanel : ProjectOptionPanel
 	{
+		CSharpFormattingOptionsPersistence persistenceHelper;
+		
 		public CSharpProjectFormattingOptionPanel()
 		{
 			InitializeComponent();
+		}
+		
+		protected override void Load(ICSharpCode.SharpDevelop.Project.MSBuildBasedProject project, string configuration, string platform)
+		{
+			base.Load(project, configuration, platform);
+			persistenceHelper = CSharpFormattingOptionsPersistence.GetProjectOptions(project);
+			formattingEditor.OptionsContainer = persistenceHelper.OptionsContainer;
+			formattingEditor.AllowPresets = true;
+			persistenceHelper.Load();
+		}
+		
+		protected override bool Save(ICSharpCode.SharpDevelop.Project.MSBuildBasedProject project, string configuration, string platform)
+		{
+			bool success = (persistenceHelper != null) && persistenceHelper.Save();
+			return base.Save(project, configuration, platform) && success;
 		}
 	}
 }

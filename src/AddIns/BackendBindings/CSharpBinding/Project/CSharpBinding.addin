@@ -150,7 +150,7 @@
 			<ContextActionOptionPanel id="ContextActions" path="/SharpDevelop/ViewContent/TextEditor/C#/ContextActions"/>
 			<OptionPanel id="Formatting"
 			             label="Formatting"
-			             class="CSharpBinding.OptionPanels.CSharpFormattingOptionPanel"/>
+			             class="CSharpBinding.OptionPanels.CSharpGlobalFormattingOptionPanel"/>
 		</OptionPanel>
 	</Path>
 	

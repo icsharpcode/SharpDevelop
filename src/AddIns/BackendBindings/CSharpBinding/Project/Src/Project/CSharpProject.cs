@@ -39,6 +39,9 @@ namespace CSharpBinding
 	/// </summary>
 	public class CSharpProject : CompilableProject
 	{
+		const string ExtensionPropertiesName = "SharpDevelopExtensions";
+		Properties extensionProperties;
+		
 		public override IAmbience GetAmbience()
 		{
 			return new CSharpAmbience();
@@ -117,6 +120,30 @@ namespace CSharpBinding
 					CreateCompilerSettings();
 				return compilerSettings;
 			}
+		}
+		
+		public Properties ExtensionProperties
+		{
+			get {
+				return extensionProperties;
+			}
+		}
+		
+		public override void ProjectLoaded()
+		{
+			base.ProjectLoaded();
+			
+			// Load project extensions
+			extensionProperties = Properties.Load(LoadProjectExtensions(ExtensionPropertiesName));
+		}
+		
+		public override void Save(string fileName)
+		{
+			// Save project extensions
+			var propertiesXElement = extensionProperties.Save();
+			SaveProjectExtensions(ExtensionPropertiesName, propertiesXElement);
+			
+			base.Save(fileName);
 		}
 		
 		protected override object CreateCompilerSettings()

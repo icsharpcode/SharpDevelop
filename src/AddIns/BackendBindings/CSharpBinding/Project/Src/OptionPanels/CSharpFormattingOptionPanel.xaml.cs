@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,21 +26,53 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding.OptionPanels
 {
 	/// <summary>
+	/// Option panel for global formatting settings.
+	/// </summary>
+	internal class CSharpGlobalFormattingOptionPanel : CSharpFormattingOptionPanel
+	{
+		public CSharpGlobalFormattingOptionPanel()
+			: base(CSharpFormattingOptionsPersistence.GlobalOptions, true)
+		{
+		}
+	}
+	
+	/// <summary>
 	/// Interaction logic for CSharpFormattingOptionPanel.xaml
 	/// </summary>
-	public partial class CSharpFormattingOptionPanel : OptionPanel
+	internal partial class CSharpFormattingOptionPanel : OptionPanel
 	{
-		public CSharpFormattingOptionPanel()
+		readonly CSharpFormattingOptionsPersistence persistenceHelper;
+		
+		public CSharpFormattingOptionPanel(CSharpFormattingOptionsPersistence persistenceHelper, bool allowPresets)
 		{
+			if (persistenceHelper == null)
+				throw new ArgumentNullException("persistenceHelper");
+			
+			this.persistenceHelper = persistenceHelper;
+			
 			InitializeComponent();
-			formattingEditor.OptionsContainer = new CSharpFormattingOptionsContainer(FormattingOptionsFactory.CreateSharpDevelop());
+			formattingEditor.OptionsContainer = persistenceHelper.OptionsContainer;
+			formattingEditor.AllowPresets = allowPresets;
+		}
+		
+		public override void LoadOptions()
+		{
+			base.LoadOptions();
+			persistenceHelper.Load();
+		}
+		
+		public override bool SaveOptions()
+		{
+			return persistenceHelper.Save();
 		}
 	}
 }

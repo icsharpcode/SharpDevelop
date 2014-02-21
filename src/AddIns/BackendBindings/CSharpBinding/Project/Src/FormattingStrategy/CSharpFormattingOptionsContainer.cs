@@ -21,6 +21,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
+using System.Xml;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 
 namespace CSharpBinding.FormattingStrategy
@@ -29,30 +32,18 @@ namespace CSharpBinding.FormattingStrategy
 	/// Generic container for C# formatting options that can be chained together from general to specific and inherit
 	/// options from parent.
 	/// </summary>
-	public class CSharpFormattingOptionsContainer : INotifyPropertyChanged
+	internal class CSharpFormattingOptionsContainer : INotifyPropertyChanged
 	{
 		CSharpFormattingOptionsContainer parent;
 		CSharpFormattingOptions cachedOptions;
 		
-		HashSet<string> activeOptions;
+		readonly HashSet<string> activeOptions;
 		
-		internal CSharpFormattingOptionsContainer()
+		internal CSharpFormattingOptionsContainer(CSharpFormattingOptionsContainer parent = null)
 		{
-			parent = null;
-			activeOptions = new HashSet<string>();
-			cachedOptions = FormattingOptionsFactory.CreateEmpty();
-		}
-		
-		internal CSharpFormattingOptionsContainer(CSharpFormattingOptions options)
-		{
-			parent = null;
-			activeOptions = new HashSet<string>();
-			
-			cachedOptions = options;
-			// Activate all options
-			foreach (var property in typeof(CSharpFormattingOptions).GetProperties()) {
-				activeOptions.Add(property.Name);
-			}
+			this.parent = parent;
+			this.activeOptions = new HashSet<string>();
+			Reset();
 		}
 		
 		public CSharpFormattingOptionsContainer Parent
@@ -61,16 +52,23 @@ namespace CSharpBinding.FormattingStrategy
 			{
 				return parent;
 			}
-			set
-			{
-				if (parent != null) {
-					parent.PropertyChanged += HandlePropertyChanged;
+		}
+		
+		/// <summary>
+		/// Resets all container's options to given <see cref="ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions"/> instance.
+		/// </summary>
+		/// <param name="options">Option values to set in container. <c>null</c> (default) to use empty options.</param>
+		public void Reset(CSharpFormattingOptions options = null)
+		{
+			activeOptions.Clear();
+			cachedOptions = options ?? FormattingOptionsFactory.CreateEmpty();
+			if ((options != null) || (parent == null)) {
+				// Activate all options
+				foreach (var property in typeof(CSharpFormattingOptions).GetProperties()) {
+					activeOptions.Add(property.Name);
 				}
-				parent = value;
-				parent.PropertyChanged += HandlePropertyChanged;
-				cachedOptions = CreateOptions();
-				OnPropertyChanged("Parent");
 			}
+			OnPropertyChanged(null);
 		}
 		
 		#region INotifyPropertyChanged implementation
@@ -198,6 +196,7 @@ namespace CSharpBinding.FormattingStrategy
 					propertyInfo.SetValue(cachedOptions, GetEffectiveOption(option));
 				}
 			}
+			OnPropertyChanged(option);
 		}
 		
 		/// <summary>
@@ -244,6 +243,41 @@ namespace CSharpBinding.FormattingStrategy
 			}
 
 			return outputOptions;
+		}
+		
+		public void Load(Properties parentProperties)
+		{
+			if (parentProperties == null)
+				throw new ArgumentNullException("parentProperties");
+			
+			Properties formatProperties = parentProperties.NestedProperties("CSharpFormatting");
+			if (formatProperties != null) {
+				foreach (var key in formatProperties.Keys) {
+					try {
+						object val = formatProperties.Get(key, (object) null);
+						SetOption(key, val);
+					} catch (Exception) {
+						// Silently ignore loading error, then this property will be "as parent" automatically
+					}
+				}
+			}
+		}
+		
+		public void Save(Properties parentProperties)
+		{
+			if (parentProperties == null)
+				throw new ArgumentNullException("parentProperties");
+			
+			// Create properties container from container settings
+			Properties formatProperties = new Properties();
+			foreach (var activeOption in activeOptions) {
+				object val = GetOption(activeOption);
+				if (val != null) {
+					formatProperties.Set(activeOption, val);
+				}
+			}
+			
+			parentProperties.SetNestedProperties("CSharpFormatting", formatProperties);
 		}
 	}
 }
