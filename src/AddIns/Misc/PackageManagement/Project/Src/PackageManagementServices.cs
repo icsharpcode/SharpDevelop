@@ -36,8 +36,6 @@ namespace ICSharpCode.PackageManagement
 		static readonly ResetPowerShellWorkingDirectoryOnSolutionClosed resetPowerShellWorkingDirectory;
 		static readonly PackageActionsToRun packageActionsToRun = new PackageActionsToRun();
 		static readonly PackageActionRunner packageActionRunner;
-		static readonly IPackageRepositoryCache projectTemplatePackageRepositoryCache;
-		static readonly RegisteredProjectTemplatePackageSources projectTemplatePackageSources;
 		static readonly PackageRepositoryCache packageRepositoryCache;
 		static readonly UserAgentGeneratorForRepositoryRequests userAgentGenerator;
 		
@@ -47,8 +45,6 @@ namespace ICSharpCode.PackageManagement
 			packageRepositoryCache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
 			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests(packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
-			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
-			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(packageRepositoryCache, projectTemplatePackageSources);
 			
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
@@ -110,14 +106,6 @@ namespace ICSharpCode.PackageManagement
 		
 		public static IPackageActionRunner PackageActionRunner {
 			get { return packageActionRunner; }
-		}
-		
-		public static IPackageRepositoryCache ProjectTemplatePackageRepositoryCache {
-			get { return projectTemplatePackageRepositoryCache; }
-		}
-		
-		public static RegisteredPackageSources ProjectTemplatePackageSources {
-			get { return projectTemplatePackageSources.PackageSources; }
 		}
 	}
 }

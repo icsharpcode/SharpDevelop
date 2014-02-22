@@ -102,10 +102,6 @@
 				id="PackageSources"
 				label="Package Sources"
 				class="ICSharpCode.PackageManagement.RegisteredPackageSourcesView"/>
-			<OptionPanel
-				id="ProjectTemplatePackageSources"
-				label="Template Package Sources"
-				class="ICSharpCode.PackageManagement.RegisteredProjectTemplatePackageSourcesView"/>
 		</OptionPanel>
 	</Path>
 	

@@ -212,7 +212,6 @@
     <Compile Include="Src\PackageReferencesForProjectTests.cs" />
     <Compile Include="Src\ProjectBrowserRefresherTests.cs" />
     <Compile Include="Src\ProjectBrowserUpdaterTests.cs" />
-    <Compile Include="Src\ProjectTemplatePackageRepositoryCacheTests.cs" />
     <Compile Include="Src\RegisteredPackageRepositoriesTests.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementService.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageOperationResolver.cs" />
@@ -284,7 +283,6 @@
     <Compile Include="Src\PackageManagementOutputMessagesViewTests.cs" />
     <Compile Include="Src\PackageManagementSolutionTests.cs" />
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />
-    <Compile Include="Src\RegisteredProjectTemplatePackageSourcesTests.cs" />
     <Compile Include="Src\Scripting\ConsoleInitializerTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsoleTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsTests.cs" />

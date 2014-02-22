@@ -35,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public InstallProjectTemplatePackagesCommand()
 			: this(
-				PackageManagementServices.ProjectTemplatePackageRepositoryCache,
+				PackageManagementServices.PackageRepositoryCache,
 				PackageManagementServices.ProjectService,
 				SD.MessageService,
 				SD.Log)
@@ -44,7 +44,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public InstallProjectTemplatePackagesCommand(
 			IPackageRepositoryCache packageRepositoryCache,
-			IPackageManagementProjectService projectService,	
+			IPackageManagementProjectService projectService,
 			IMessageService messageService,
 			ILoggingService loggingService)
 		{
@@ -81,7 +81,11 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<MSBuildBasedProject> GetCreatedProjects()
 		{
 			var createInfo = Owner as ProjectTemplateResult;
-			return createInfo != null ? createInfo.NewProjects.OfType<MSBuildBasedProject>() : Enumerable.Empty<MSBuildBasedProject>();
+			if (createInfo == null) {
+				return Enumerable.Empty<MSBuildBasedProject>();
+			}
+				
+			return createInfo.NewProjects.OfType<MSBuildBasedProject>();
 		}
 		
 		IPackageReferencesForProject CreatePackageReferencesForProject(MSBuildBasedProject project)
@@ -89,8 +93,9 @@ namespace ICSharpCode.PackageManagement
 			return CreatePackageReferencesForProject(project, packageRepositoryCache);
 		}
 		
-		protected virtual IPackageReferencesForProject 
-			CreatePackageReferencesForProject(MSBuildBasedProject project, IPackageRepositoryCache packageRepositoryCache)
+		protected virtual IPackageReferencesForProject CreatePackageReferencesForProject(
+			MSBuildBasedProject project,
+			IPackageRepositoryCache packageRepositoryCache)
 		{
 			return new PackageReferencesForProject(project, packageRepositoryCache);
 		}
