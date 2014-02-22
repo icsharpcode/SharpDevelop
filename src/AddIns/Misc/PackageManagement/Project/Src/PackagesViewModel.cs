@@ -112,9 +112,11 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (IsReadingPackages) return;
 			if (PackageViewModels == null) return;
+
 			// refresh all because we don't know if any dependant package is (un)installed
 			foreach (var packageViewModel in this.PackageViewModels) {
-				packageViewModel.PackageChanged();
+				if (!IsReadingPackages) 
+					packageViewModel.PackageChanged();
 			}
 		}
 		

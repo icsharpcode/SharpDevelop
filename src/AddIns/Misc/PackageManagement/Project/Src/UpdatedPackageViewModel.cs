@@ -26,12 +26,30 @@ namespace ICSharpCode.PackageManagement
 		public UpdatedPackageViewModel(
 			IPackageViewModelParent parent,
 			IPackageFromRepository package,
-			PackageManagementSelectedProjects selectedProjects,
+			SelectedProjectsForUpdatedPackages selectedProjects,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ILogger logger)
-			: base(parent, package, selectedProjects, packageManagementEvents, actionRunner, logger)
+			: base(
+				parent, 
+				package, 
+				selectedProjects, 
+				packageManagementEvents, 
+				actionRunner, 
+				logger)
 		{
+			this.selectedProjects = selectedProjects;
+		}
+		
+		SelectedProjectsForUpdatedPackages selectedProjects;
+		
+		protected override void TrySolutionPackageInstall()
+		{
+			var repository = selectedProjects.Solution.CreateSolutionPackageRepository();
+			foreach (var packageToUpdate in repository.Repository.FindPackagesById(this.Id)) {
+				TrySolutionPackageUninstall(packageToUpdate);
+			}
+			base.TrySolutionPackageInstall();
 		}
 		
 		protected override ProcessPackageAction CreatePackageManageAction(IPackageManagementSelectedProject selectedProject)
