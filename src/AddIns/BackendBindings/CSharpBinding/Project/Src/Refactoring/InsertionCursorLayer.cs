@@ -65,7 +65,6 @@ namespace CSharpBinding.Refactoring
 			this.editor.TextView.InsertLayer(this, KnownLayer.Text, LayerInsertionPosition.Above);
 			this.editor.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
 			AddGroupBox();
-			ScrollToInsertionPoint();
 		}
 
 		static readonly Pen markerPen = new Pen(Brushes.Blue, 2);
@@ -246,7 +245,7 @@ namespace CSharpBinding.Refactoring
 			FireExited(true);
 		}
 
-		void ScrollToInsertionPoint()
+		internal void ScrollToInsertionPoint()
 		{
 			var location = insertionPoints[CurrentInsertionPoint].Location;
 			editor.GetService<TextEditor>().ScrollTo(location.Line, location.Column);
