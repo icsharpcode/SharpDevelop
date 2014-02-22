@@ -80,6 +80,16 @@ namespace HexEditor.Util
 		{
 			 return buffer.GetBytes(Math.Min(Start, End), Math.Abs(End - Start)); 
 		}
+
+		public void ValidateSelection()
+		{
+			int start = Math.Min(this.start, this.end);
+			int end = Math.Max(this.start, this.end);
+			start = Math.Min(Math.Max(0, start), buffer.BufferSize);
+			end = Math.Min(Math.Max(0, end), buffer.BufferSize);
+			this.start = start;
+			this.end = end;
+		}
 		
 		/// <summary>
 		/// Cleares the selection (no text is altered)

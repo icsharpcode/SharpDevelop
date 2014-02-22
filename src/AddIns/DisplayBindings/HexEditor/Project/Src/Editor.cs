@@ -136,6 +136,12 @@ namespace HexEditor
 		
 		void BufferChanged(object sender, EventArgs e)
 		{
+			if (!Focused) {
+				selection.ValidateSelection();
+				caret.Offset = Math.Max(0, Math.Min(caret.Offset, buffer.BufferSize));
+				Point pos = GetPositionForOffset(caret.Offset, charwidth);
+				caret.SetToPosition(pos);
+			}
 			Invalidate();
 			OnDocumentChanged(EventArgs.Empty);
 		}
@@ -1301,6 +1307,7 @@ namespace HexEditor
 					break;
 				case Keys.Back:
 					e.Handled = true;
+					e.SuppressKeyPress = true;
 					if (hexinputmode) return;
 					if (selection.HasSomethingSelected) {
 						byte[] bytes = selection.GetSelectionBytes();
@@ -1314,8 +1321,7 @@ namespace HexEditor
 					} else {
 						byte b = buffer.GetByte(caret.Offset - 1);
 						
-						if (buffer.RemoveByte(caret.Offset - 1))
-						{
+						if (buffer.RemoveByte(caret.Offset - 1)) {
 							if (caret.Offset > -1) caret.Offset--;
 							if (GetLineForOffset(caret.Offset) < topline) topline = GetLineForOffset(caret.Offset);
 							if (GetLineForOffset(caret.Offset) > topline + GetMaxVisibleLines() - 2) topline = GetLineForOffset(caret.Offset) - GetMaxVisibleLines() + 2;
@@ -1328,6 +1334,7 @@ namespace HexEditor
 					break;
 				case Keys.Delete:
 					e.Handled = true;
+					e.SuppressKeyPress = true;
 					if (hexinputmode) return;
 					if (selection.HasSomethingSelected) {
 						byte[] old = selection.GetSelectionBytes();
@@ -1353,6 +1360,7 @@ namespace HexEditor
 				case Keys.CapsLock:
 				case Keys.ShiftKey:
 				case Keys.ControlKey:
+				case Keys.Enter:
 					break;
 				case Keys.Tab:
 					if (activeView == hexView) {
@@ -1405,6 +1413,7 @@ namespace HexEditor
 					if (activeView == hexView) {
 						ProcessHexInput(e);
 						e.Handled = true;
+						e.SuppressKeyPress = true;
 						return;
 					}
 					
@@ -1773,7 +1782,6 @@ namespace HexEditor
 		/// <summary>
 		/// Calculates the max possible bytes per line.
 		/// </summary>
-		/// <returns>Int32, containing the result</returns>
 		internal int CalculateMaxBytesPerLine()
 		{
 			int width = Width - side.Width - 90;
@@ -1836,6 +1844,8 @@ namespace HexEditor
 			if (offset < buffer.BufferSize) {
 				return offset;
 			} else {
+				hexinputmodepos = 0;
+				hexinputmode = false;
 				return buffer.BufferSize;
 			}
 		}
@@ -1852,7 +1862,8 @@ namespace HexEditor
 			int line = (int)(offset / BytesPerLine) - topline;
 			int pline = line * fontheight - 1 * (line - 1) - 1;
 			int col = (offset % BytesPerLine) * underscorewidth * charwidth + 4;
-			if (hexinputmode && !selectionmode && !selection.HasSomethingSelected && insertmode) col += (hexinputmodepos * underscorewidth);
+			if (hexinputmode && !selectionmode && !selection.HasSomethingSelected && insertmode)
+				col += (hexinputmodepos * underscorewidth);
 			
 			return new Point(col, pline);
 		}

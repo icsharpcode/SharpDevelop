@@ -153,6 +153,7 @@ namespace HexEditor.Util
 			if ((offset < buffer.Count) & (offset > -1)) {
 				buffer.RemoveAt(offset);
 				file.MakeDirty(HexEditFileModelProvider.Instance);
+				OnBufferChanged(EventArgs.Empty);
 				return true;
 			}
 			return false;

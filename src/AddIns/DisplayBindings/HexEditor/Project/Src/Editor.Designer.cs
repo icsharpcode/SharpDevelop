@@ -112,11 +112,11 @@ namespace HexEditor
 			// Editor
 			// 
 			this.BackColor = System.Drawing.Color.White;
+			this.Controls.Add(this.VScrollBar);
 			this.Controls.Add(this.header);
 			this.Controls.Add(this.textView);
 			this.Controls.Add(this.hexView);
 			this.Controls.Add(this.side);
-			this.Controls.Add(this.VScrollBar);
 			this.DoubleBuffered = true;
 			this.MinimumSize = new System.Drawing.Size(1, 1);
 			this.Name = "Editor";
