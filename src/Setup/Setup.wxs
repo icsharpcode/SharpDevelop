@@ -469,8 +469,6 @@
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
 				<!--<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>-->
 				<ComponentRef Id="MicrosoftWebXmlTransformDll"/>
-				<ComponentRef Id="JQuery172NuGetPackage"/>
-				<ComponentRef Id="Modernizr253NuGetPackage"/>
 			
 				<ComponentRef Id="MonoTextTemplatingDll"/>
 				<ComponentRef Id="TextTemplatingAddin"/>
