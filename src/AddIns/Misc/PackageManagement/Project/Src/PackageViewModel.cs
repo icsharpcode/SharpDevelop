@@ -280,20 +280,6 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		void SolutionPackageGetInstallOperations(
-			ISolutionPackageRepository solutionRepository, 
-			InstallPackageAction installAction,
-			IPackageFromRepository installPackage) {
-
-			var resolverFactory = new PackageOperationsResolverFactory();
-			var resolver = resolverFactory.CreateInstallPackageOperationResolver(
-				solutionRepository.Repository, 
-				installPackage.Repository, 
-				logger, 
-				installAction);
-			packageOperations = resolver.ResolveOperations(installPackage);
-		}
-
 		IPackageManagementProject GetSingleProjectSelected()
 		{
 			return selectedProjects.GetSingleProjectSelected(package.Repository);
@@ -350,6 +336,20 @@ namespace ICSharpCode.PackageManagement
 			}
 		}		
 
+		void SolutionPackageGetInstallOperations(
+			ISolutionPackageRepository solutionRepository, 
+			InstallPackageAction installAction,
+			IPackageFromRepository installPackage) {
+
+			var resolverFactory = new PackageOperationsResolverFactory();
+			var resolver = resolverFactory.CreateInstallPackageOperationResolver(
+				solutionRepository.Repository, 
+				installPackage.Repository, 
+				logger, 
+				installAction);
+			packageOperations = resolver.ResolveOperations(installPackage);
+		}
+
 		void SolutionPackageInstall(
 			ISolutionPackageRepository solutionRepository, 
 			InstallPackageAction installAction,
@@ -363,6 +363,56 @@ namespace ICSharpCode.PackageManagement
 				installPackage.Id, 
 				installPackage.Version, 
 				installAction.IgnoreDependencies, 
+				installAction.AllowPrereleaseVersions);
+		}
+
+		protected virtual void TrySolutionPackageUpdate()
+		{
+			try {
+				var solutionRepository = selectedProjects.Solution.CreateSolutionPackageRepository();
+				var updateAction = new UpdatePackageAction(null, packageManagementEvents);
+				updateAction.Package = package;
+				updateAction.AllowPrereleaseVersions = parent.IncludePrerelease;
+				SolutionPackageGetUpdateOperations(solutionRepository, updateAction, package);
+				if (LicensesAccepted()) {
+					SolutionPackageUpdate(solutionRepository, updateAction, package);
+					IEnumerable<IPackage> updatedPackages = ( 
+						from packageOperation in packageOperations 
+						where packageOperation.Package != null 
+						select packageOperation.Package).Distinct();
+					packageManagementEvents.OnParentPackagesUpdated(updatedPackages);
+				}
+			} catch (Exception ex) {
+				ReportError(ex);
+				logger.LogError(ex);
+			}
+		}		
+
+		void SolutionPackageGetUpdateOperations(
+			ISolutionPackageRepository solutionRepository, 
+			UpdatePackageAction updateAction,
+			IPackageFromRepository updatePackage) {
+
+			var resolverFactory = new PackageOperationsResolverFactory();
+			var resolver = resolverFactory.CreateUpdatePackageOperationResolver(
+				solutionRepository.Repository, 
+				updatePackage.Repository, 
+				logger, 
+				updateAction);
+			packageOperations = resolver.ResolveOperations(updatePackage);
+		}
+
+		void SolutionPackageUpdate(
+			ISolutionPackageRepository solutionRepository, 
+			UpdatePackageAction installAction,
+			IPackageFromRepository updatePackage) {
+			var packageManager = new PackageManager(
+				updatePackage.Repository, 
+				solutionRepository.PackagePathResolver, 
+				solutionRepository.FileSystem, 
+				solutionRepository.Repository);
+			packageManager.UpdatePackage(
+				updatePackage.Id, true, 
 				installAction.AllowPrereleaseVersions);
 		}
 

@@ -44,12 +44,8 @@ namespace ICSharpCode.PackageManagement
 		SelectedProjectsForUpdatedPackages selectedProjects;
 		
 		protected override void TrySolutionPackageInstall()
-		{
-			var repository = selectedProjects.Solution.CreateSolutionPackageRepository();
-			foreach (var packageToUpdate in repository.Repository.FindPackagesById(this.Id)) {
-				TrySolutionPackageUninstall(packageToUpdate);
-			}
-			base.TrySolutionPackageInstall();
+		{	// Modify PackageViewModel logic
+			base.TrySolutionPackageUpdate();
 		}
 		
 		protected override ProcessPackageAction CreatePackageManageAction(IPackageManagementSelectedProject selectedProject)
