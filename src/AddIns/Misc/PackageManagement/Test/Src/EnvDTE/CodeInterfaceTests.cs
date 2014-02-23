@@ -79,7 +79,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void AddFunction_PublicFunctionReturningSystemInt32_AddsPublicFunctionWithCodeConverter()
 		{
-			CreateInterface ("interface MyInterface {}");
+			CreateInterface("interface MyInterface {}");
 			var kind = global::EnvDTE.vsCMFunction.vsCMFunctionFunction;
 			var access = global::EnvDTE.vsCMAccess.vsCMAccessPublic;
 			CaptureCodeGeneratorAddMethodAtStartParameters();

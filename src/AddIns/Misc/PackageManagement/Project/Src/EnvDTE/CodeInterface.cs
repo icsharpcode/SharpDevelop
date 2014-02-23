@@ -35,7 +35,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public global::EnvDTE.CodeFunction AddFunction(string name, global::EnvDTE.vsCMFunction kind, object type, object Position = null, global::EnvDTE.vsCMAccess Access = global::EnvDTE.vsCMAccess.vsCMAccessPublic)
 		{
-			IType returnType = GetMethodReturnType((string)type);
+			IType returnType = FindType((string)type);
 			
 			context.CodeGenerator.AddMethodAtStart(typeDefinition, Access.ToAccessibility(), returnType, name);
 			
@@ -46,22 +46,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return new CodeFunction(context, method);
 			}
 			return null;
-		}
-		
-		IType GetMethodReturnType(string typeName)
-		{
-			var fullTypeName = new FullTypeName(typeName);
-			return typeDefinition.Compilation.FindType(fullTypeName);
-		}
-		
-		void ReloadTypeDefinition()
-		{
-			ICompilation compilation = context.DteProject.GetCompilationUnit(typeDefinition.BodyRegion.FileName);
-			
-			ITypeDefinition matchedTypeDefinition = compilation.MainAssembly.GetTypeDefinition(typeDefinition.FullTypeName);
-			if (matchedTypeDefinition != null) {
-				typeDefinition = matchedTypeDefinition;
-			}
 		}
 	}
 }

@@ -178,5 +178,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				.GetAllBaseTypeDefinitions()
 				.Any(baseType => baseType.FullName == fullName);
 		}
+		
+		protected IType FindType(string type)
+		{
+			var fieldTypeName = new FullTypeName(type);
+			return typeDefinition.Compilation.FindType(fieldTypeName);
+		}
+		
+		protected void ReloadTypeDefinition()
+		{
+			ICompilation compilation = context.DteProject.GetCompilationUnit(typeDefinition.BodyRegion.FileName);
+			
+			ITypeDefinition matchedTypeDefinition = compilation.MainAssembly.GetTypeDefinition(typeDefinition.FullTypeName);
+			if (matchedTypeDefinition != null) {
+				typeDefinition = matchedTypeDefinition;
+			}
+		}
 	}
 }

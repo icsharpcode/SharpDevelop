@@ -53,7 +53,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.CodeVariable AddVariable(string name, object type, object Position = null, global::EnvDTE.vsCMAccess Access = global::EnvDTE.vsCMAccess.vsCMAccessPublic, object Location = null)
 		{
-			IType fieldType = GetFieldType((string)type);
+			IType fieldType = FindType((string)type);
 			
 			context.CodeGenerator.AddFieldAtStart(typeDefinition, Access.ToAccessibility(), fieldType, name);
 			
@@ -64,28 +64,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return new CodeVariable(context, field);
 			}
 			return null;
-		}
-		
-		IType GetFieldType(string type)
-		{
-			var fieldTypeName = new FullTypeName(type);
-			
-			IType fieldType = typeDefinition.Compilation.FindType(fieldTypeName);
-			if (fieldType != null) {
-				return fieldType;
-			}
-			
-			return new UnknownType(fieldTypeName);
-		}
-		
-		void ReloadTypeDefinition()
-		{
-			ICompilation compilation = context.DteProject.GetCompilationUnit(typeDefinition.BodyRegion.FileName);
-			
-			ITypeDefinition matchedTypeDefinition = compilation.MainAssembly.GetTypeDefinition(typeDefinition.FullTypeName);
-			if (matchedTypeDefinition != null) {
-				typeDefinition = matchedTypeDefinition;
-			}
 		}
 	}
 }

@@ -20,9 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
-using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 using Rhino.Mocks;
@@ -33,12 +31,24 @@ namespace PackageManagement.Tests.EnvDTE
 	public class CodeClass2Tests : CodeModelTestBase
 	{
 		CodeClass2 codeClass;
+		ITypeDefinition codeClassTypeDefinition;
 		
-		void CreateClass(string code)
+		ITypeDefinition addFieldAtStartTypeDef;
+		Accessibility addFieldAtStartAccess;
+		IType addFieldAtStartReturnType;
+		string addFieldAtStartName;
+		
+		void CreateClass(string code, string fileName = @"c:\projects\MyProject\class.cs")
 		{
-			AddCodeFile("class.cs", code);
+			CreateCodeModel();
+			AddCodeFile(fileName, code);
 			ITypeDefinition typeDefinition = GetFirstTypeDefinition();
 			CreateClass(typeDefinition);
+		}
+		
+		void UpdateCode(string code, string fileName = @"c:\projects\MyProject\class.cs")
+		{
+			CreateCompilationForUpdatedCodeFile(fileName, code);
 		}
 		
 		ITypeDefinition GetFirstTypeDefinition()
@@ -48,7 +58,25 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateClass(ITypeDefinition typeDefinition)
 		{
+			codeClassTypeDefinition = typeDefinition;
 			codeClass = new CodeClass2(codeModelContext, typeDefinition);
+		}
+		
+		void CaptureCodeGeneratorAddFieldAtStartParameters()
+		{
+			codeGenerator
+				.Stub(generator => generator.AddFieldAtStart(
+					Arg<ITypeDefinition>.Is.Anything,
+					Arg<Accessibility>.Is.Anything,
+					Arg<IType>.Is.Anything,
+					Arg<string>.Is.Anything))
+				.Callback<ITypeDefinition, Accessibility, IType, string>((typeDef, access, type, name) => {
+					addFieldAtStartTypeDef = typeDef;
+					addFieldAtStartAccess = access;
+					addFieldAtStartReturnType = type;
+					addFieldAtStartName = name;
+					return true;
+				});
 		}
 		
 		[Test]
@@ -404,6 +432,93 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual("System.Attribute", returnType.FullName);
 			Assert.That(members.Count, Is.GreaterThan(0));
 			Assert.IsTrue(members.Any(member => member.Name == "IsDefaultAttribute"));
+		}
+		
+		[Test]
+		public void AddVariable_PublicSystemInt32Variable_AddsFieldWithCodeConverter()
+		{
+			CreateClass("class MyClass {}");
+			var access = global::EnvDTE.vsCMAccess.vsCMAccessPublic;
+			CaptureCodeGeneratorAddFieldAtStartParameters();
+			string newCode = 
+				"class MyClass {\r\n" +
+				"    public System.Int32 MyField;\r\n" +
+				"}";
+			UpdateCode(newCode);
+			
+			codeClass.AddVariable("MyField", "System.Int32", null, access, null);
+			
+			Assert.AreEqual(Accessibility.Public, addFieldAtStartAccess);
+			Assert.AreEqual("MyField", addFieldAtStartName);
+			Assert.AreEqual(codeClassTypeDefinition, addFieldAtStartTypeDef);
+			Assert.AreEqual("System.Int32", addFieldAtStartReturnType.FullName);
+			Assert.IsTrue(addFieldAtStartReturnType.IsKnownType (KnownTypeCode.Int32));
+		}
+		
+		[Test]
+		public void AddVariable_PrivateVariableOfUnknownType_AddsFieldWithCodeConverter()
+		{
+			CreateClass("class MyClass {}");
+			var access = global::EnvDTE.vsCMAccess.vsCMAccessPrivate;
+			CaptureCodeGeneratorAddFieldAtStartParameters();
+			string newCode = 
+				"class MyClass {\r\n" +
+				"    Unknown.UnknownClass MyField;\r\n" +
+				"}";
+			UpdateCode(newCode);
+			
+			codeClass.AddVariable("MyField", "Unknown.UnknownClass", null, access, null);
+			
+			Assert.AreEqual(Accessibility.Private, addFieldAtStartAccess);
+			Assert.AreEqual("MyField", addFieldAtStartName);
+			Assert.AreEqual(codeClassTypeDefinition, addFieldAtStartTypeDef);
+			Assert.AreEqual("Unknown.UnknownClass", addFieldAtStartReturnType.FullName);
+		}
+		
+		[Test]
+		public void AddVariable_PublicSystemInt32Variable_ReturnsCodeVariableForField()
+		{
+			string fileName = @"c:\projects\MyProject\class.cs";
+			CreateClass("class MyClass {}", fileName);
+			var access = global::EnvDTE.vsCMAccess.vsCMAccessPublic;
+			string newCode = 
+				"class MyClass {\r\n" +
+				"    public int MyField;\r\n" +
+				"}";
+			UpdateCode(newCode, fileName);
+			
+			var codeVariable = codeClass.AddVariable("MyField", "System.Int32", null, access, null) as CodeVariable;
+			
+			Assert.AreEqual("MyField", codeVariable.Name);
+		}
+		
+		[Test]
+		public void AddVariable_FieldNotFoundAfterReloadingTypeDefinition_ReturnsNull()
+		{
+			string fileName = @"c:\projects\MyProject\class.cs";
+			CreateClass("class MyClass {}", fileName);
+			var access = global::EnvDTE.vsCMAccess.vsCMAccessPublic;
+			string newCode = "class MyClass {}";
+			UpdateCode(newCode, fileName);
+			
+			var codeVariable = codeClass.AddVariable("MyField", "System.Int32", null, access, null) as CodeVariable;
+			
+			Assert.IsNull(codeVariable);
+		}
+		
+		[Test]
+		public void AddVariable_UnableToFindTypeDefinitionAfterUpdate_ReturnsNull()
+		{
+			string fileName = @"c:\projects\MyProject\class.cs";
+			CreateClass("class MyClass {}", fileName);
+			var access = global::EnvDTE.vsCMAccess.vsCMAccessPublic;
+			string newCode = "class MyClass {}";
+			UpdateCode(newCode, fileName);
+			
+			var codeVariable = codeClass.AddVariable("MyField", "System.Int32", null, access, null) as CodeVariable;
+			
+			Assert.IsNull(codeVariable);
+			Assert.AreEqual("MyClass", codeClass.Name);
 		}
 	}
 }
