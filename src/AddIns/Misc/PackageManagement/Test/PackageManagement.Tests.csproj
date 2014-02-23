@@ -80,7 +80,6 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\CodeGeneratorTests.cs" />
     <Compile Include="Src\DependentFileNameTests.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeClass2Tests.cs" />
