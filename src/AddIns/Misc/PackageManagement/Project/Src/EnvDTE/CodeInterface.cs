@@ -18,10 +18,7 @@
 
 using System;
 using System.Linq;
-using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -54,13 +51,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		IType GetMethodReturnType(string typeName)
 		{
 			var fullTypeName = new FullTypeName(typeName);
-			
-			IType type = typeDefinition.Compilation.FindType(fullTypeName);
-			if (type != null) {
-				return type;
-			}
-			
-			return new UnknownType(fullTypeName);
+			return typeDefinition.Compilation.FindType(fullTypeName);
 		}
 		
 		void ReloadTypeDefinition()

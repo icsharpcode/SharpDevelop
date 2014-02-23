@@ -27,7 +27,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		ManagePackagesViewModel managePackagesViewModel;
 		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
-		RegisteredPackageSourcesViewModel registeredProjectTemplatePackageSourcesViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
 		PackageManagementConsoleViewModel packageManagementConsoleViewModel;
 		IPackageManagementSolution solution;
