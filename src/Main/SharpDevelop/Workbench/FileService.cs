@@ -311,7 +311,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			return OpenFile(fileName, true);
 		}
-		
+
 		/// <inheritdoc/>
 		public IViewContent OpenFile(FileName fileName, bool switchToOpenedView)
 		{
@@ -328,7 +328,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			IDisplayBinding binding = SD.DisplayBindingService.GetBindingPerFileName(fileName);
 			
 			if (binding == null) {
-				binding = new ErrorFallbackBinding("Could not find any display binding for " + Path.GetFileName(fileName));
+				binding = ErrorFallbackBinding.CouldNotFindDisplayBindingFor(fileName);
 			}
 			if (FileUtility.ObservedLoad(new NamedFileOperationDelegate(new LoadFileWrapper(binding, switchToOpenedView).Invoke), fileName) == FileOperationResult.OK) {
 				RecentOpen.AddRecentFile(fileName);
@@ -436,36 +436,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				}
 			}
 			return null;
-		}
-		
-		sealed class ErrorFallbackBinding : IDisplayBinding
-		{
-			string errorMessage;
-			
-			public ErrorFallbackBinding(string errorMessage)
-			{
-				this.errorMessage = errorMessage;
-			}
-			
-			public bool CanCreateContentForFile(FileName fileName)
-			{
-				return true;
-			}
-			
-			public IViewContent CreateContentForFile(OpenedFile file)
-			{
-				return new SimpleViewContent(errorMessage) { TitleName = Path.GetFileName(file.FileName) };
-			}
-			
-			public bool IsPreferredBindingForFile(FileName fileName)
-			{
-				return false;
-			}
-			
-			public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
-			{
-				return double.NegativeInfinity;
-			}
 		}
 		
 		/// <inheritdoc/>

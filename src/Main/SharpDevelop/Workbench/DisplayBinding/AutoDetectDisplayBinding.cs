@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 			
 			if (bestMatch == null)
-				return null;
+				return ErrorFallbackBinding.CouldNotFindDisplayBindingFor(file.FileName).CreateContentForFile(file);
 			
 			return bestMatch.Binding.CreateContentForFile(file);
 		}

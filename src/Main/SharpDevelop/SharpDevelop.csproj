@@ -202,6 +202,7 @@
     <Compile Include="Workbench\DisplayBinding\AutoDetectDisplayBinding.cs" />
     <Compile Include="Workbench\DisplayBinding\DisplayBindingDoozer.cs" />
     <Compile Include="Workbench\DisplayBinding\DisplayBindingService.cs" />
+    <Compile Include="Workbench\DisplayBinding\ErrorFallbackBinding.cs" />
     <Compile Include="Workbench\DisplayBinding\OpenWithDialog.cs" />
     <Compile Include="Workbench\DisplayBinding\OpenWithDialog.Designer.cs">
       <DependentUpon>OpenWithDialog.cs</DependentUpon>
