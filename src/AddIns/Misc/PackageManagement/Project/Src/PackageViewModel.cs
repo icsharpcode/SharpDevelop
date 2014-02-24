@@ -412,7 +412,8 @@ namespace ICSharpCode.PackageManagement
 				solutionRepository.FileSystem, 
 				solutionRepository.Repository);
 			packageManager.UpdatePackage(
-				updatePackage.Id, true, 
+				updatePackage.Id, 
+				updateAction.UpdateDependencies, 
 				updateAction.AllowPrereleaseVersions);
 		}
 
