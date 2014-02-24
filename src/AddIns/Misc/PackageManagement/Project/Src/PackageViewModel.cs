@@ -404,7 +404,7 @@ namespace ICSharpCode.PackageManagement
 
 		void SolutionPackageUpdate(
 			ISolutionPackageRepository solutionRepository, 
-			UpdatePackageAction installAction,
+			UpdatePackageAction updateAction,
 			IPackageFromRepository updatePackage) {
 			var packageManager = new PackageManager(
 				updatePackage.Repository, 
@@ -413,7 +413,7 @@ namespace ICSharpCode.PackageManagement
 				solutionRepository.Repository);
 			packageManager.UpdatePackage(
 				updatePackage.Id, true, 
-				installAction.AllowPrereleaseVersions);
+				updateAction.AllowPrereleaseVersions);
 		}
 
 		void TryProjectPackageInstall()
