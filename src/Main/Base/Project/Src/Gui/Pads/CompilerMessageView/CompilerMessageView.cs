@@ -56,6 +56,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return cat;
 		}
 
+		IOutputCategory IOutputPad.GetOrCreateCategory(string displayName)
+		{
+			return SD.MainThread.InvokeIfRequired(() => GetOrCreateCategory(displayName));
+		}
+		
+		IOutputCategory GetOrCreateCategory(string displayName)
+		{
+			foreach (var cat in messageCategories) {
+				if (cat.DisplayCategory == displayName)
+					return cat;
+			}
+			var newcat = new MessageViewCategory(displayName, displayName);
+			AddCategory(newcat);
+			return newcat;
+		}
+		
 		void IOutputPad.RemoveCategory(IOutputCategory category)
 		{
 			throw new NotImplementedException();

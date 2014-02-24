@@ -38,7 +38,15 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <summary>
 		/// Creates a new output category.
 		/// </summary>
+		/// <param name="displayName">The title of the category. This is parsed using StringParser and shown to the user.</param>
 		IOutputCategory CreateCategory(string displayName);
+		
+		/// <summary>
+		/// Gets an output category, or creates a new output category if no category with the given
+		/// title already exists.
+		/// </summary>
+		/// <param name="displayName">The title of the category. This is parsed using StringParser and shown to the user.</param>
+		IOutputCategory GetOrCreateCategory(string displayName);
 		
 		/// <summary>
 		/// Removes an existing output category.
@@ -65,6 +73,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	{
 		/// <summary>
 		/// Gets the display name of this category.
+		/// May contain StringParser-tags ($res) for localization; these will be replaced
+		/// by the UI showing the display name.
 		/// </summary>
 		string DisplayName { get; }
 		
