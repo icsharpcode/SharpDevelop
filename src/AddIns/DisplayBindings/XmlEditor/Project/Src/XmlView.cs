@@ -461,7 +461,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Applys the stylesheet to the xml and displays the resulting output.
 		/// </summary>
-		public void RunXslTransform(string xsl)
+		public void RunXslTransform(string xsl, string transformFileName)
 		{
 			try {
 				SD.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
@@ -472,9 +472,9 @@ namespace ICSharpCode.XmlEditor
 				if (editor == null) return;
 				
 				if (IsWellFormed) {
-					if (IsValidXsl(xsl)) {
+					if (IsValidXsl(xsl, transformFileName)) {
 						try {
-							string transformedXml = Transform(editor.Document.Text, xsl);
+							string transformedXml = Transform(editor.Document.Text, xsl, transformFileName);
 							ShowTransformOutput(transformedXml);
 						} catch (XsltException ex) {
 							AddTask(GetFileNameFromInnerException(ex, StylesheetFileName), GetInnerExceptionErrorMessage(ex), ex.LineNumber, ex.LinePosition, TaskType.Error);
@@ -507,7 +507,7 @@ namespace ICSharpCode.XmlEditor
 		/// <param name="input">The input xml to transform.</param>
 		/// <param name="transform">The transform xml.</param>
 		/// <returns>The output of the transform.</returns>
-		static string Transform(string input, string transform)
+		static string Transform(string input, string transform, string transformFileName)
 		{
 			StringReader inputString = new StringReader(input);
 			XmlTextReader sourceDocument = new XmlTextReader(inputString);
@@ -516,7 +516,7 @@ namespace ICSharpCode.XmlEditor
 			XPathDocument transformDocument = new XPathDocument(transformString);
 
 			XslCompiledTransform xslTransform = new XslCompiledTransform();
-			xslTransform.Load(transformDocument, XsltSettings.TrustedXslt, new XmlUrlResolver());
+			xslTransform.Load(transformDocument, XsltSettings.TrustedXslt, new XslTransformUrlResolver(transformFileName));
 			
 			MemoryStream outputStream = new MemoryStream();
 			XmlTextWriter writer = new XmlTextWriter(outputStream, Encoding.UTF8);
@@ -531,7 +531,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Validates the given xsl string,.
 		/// </summary>
-		bool IsValidXsl(string xml)
+		bool IsValidXsl(string xml, string transformFileName)
 		{
 			try	{
 				SD.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
@@ -540,13 +540,13 @@ namespace ICSharpCode.XmlEditor
 				XPathDocument doc = new XPathDocument(reader);
 
 				XslCompiledTransform xslTransform = new XslCompiledTransform();
-				xslTransform.Load(doc, XsltSettings.Default, new XmlUrlResolver());
+				xslTransform.Load(doc, XsltSettings.Default, new XslTransformUrlResolver(transformFileName));
 
 				return true;
 			} catch(XsltCompileException ex) {
 				AddTask(StylesheetFileName, GetInnerExceptionErrorMessage(ex), ex.LineNumber, ex.LinePosition, TaskType.Error);
 			} catch(XsltException ex) {
-				AddTask(StylesheetFileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
+				AddTask(StylesheetFileName, GetInnerExceptionErrorMessage(ex), ex.LinePosition, ex.LineNumber, TaskType.Error);
 			} catch(XmlException ex) {
 				AddTask(StylesheetFileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
 			}

@@ -58,7 +58,7 @@ namespace ICSharpCode.XmlEditor
 				
 				if (xmlView.StylesheetFileName != null) {
 					try {
-						xmlView.RunXslTransform(GetStylesheetContent(xmlView.StylesheetFileName));
+						xmlView.RunXslTransform(GetStylesheetContent(xmlView.StylesheetFileName), xmlView.StylesheetFileName);
 					} catch (Exception ex) {
 						MessageService.ShowException(ex);
 					}
