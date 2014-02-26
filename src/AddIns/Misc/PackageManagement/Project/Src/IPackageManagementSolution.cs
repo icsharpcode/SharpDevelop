@@ -37,19 +37,23 @@ namespace ICSharpCode.PackageManagement
 		IProject GetActiveMSBuildProject();
 		IEnumerable<IProject> GetMSBuildProjects();
 		bool HasMultipleProjects();
-		bool IsPackageInstalled(IPackage package);
-		IQueryable<IPackage> GetPackages();
 		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		string GetInstallPath(IPackage package);
 		
-		/// <summary>
-		/// Returns all packages that are installed into solution or a project.
-		/// GetPackages() will return any packages in the packages folder even if
-		/// they are not installed.
-		/// </summary>
-		IQueryable<IPackage> GetInstalledPackages();
+		/// <summary>Return true if package is installed (solution/project)</summary>
+		bool IsPackageInstalled(IPackage package);
+
+		/// <summary>Return installed (solution/project) packages</summary>
+		IQueryable<IPackage> GetPackages();
+
+		/// <summary>Returns installed project-packages (in any project)</summary>
+		IQueryable<IPackage> GetProjectPackages();
+
+		/// <summary>Returns installed solution-packages</summary>
+		IQueryable<IPackage> GetSolutionPackages();
 		
 		bool IsOpen { get; }
 		string FileName { get; }
+		ISolutionPackageRepository CreateSolutionPackageRepository();
 	}
 }

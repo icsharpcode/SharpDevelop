@@ -151,6 +151,7 @@
     <Compile Include="Src\FileConflictViewModel.cs" />
     <Compile Include="Src\ICodeGenerator.cs" />
     <Compile Include="Src\IDocumentView.cs" />
+    <Compile Include="Src\InstalledPackagesViewModel.cs" />
     <Compile Include="Src\IPackageRepositoryFactoryEvents.cs" />
     <Compile Include="Src\IPackageViewModelParent.cs" />
     <Compile Include="Src\IUpdatePackagesAction.cs" />
@@ -162,8 +163,6 @@
     <Compile Include="Src\IProjectBrowserUpdater.cs" />
     <Compile Include="Src\IFieldExtensions.cs" />
     <Compile Include="Src\IDocumentLoader.cs" />
-    <Compile Include="Src\InstalledPackageViewModel.cs" />
-    <Compile Include="Src\InstalledPackageViewModelFactory.cs" />
     <Compile Include="Src\IPackageManagementSelectedProject.cs" />
     <Compile Include="Src\ISelectProjectsService.cs" />
     <Compile Include="Src\ISolutionPackageRepository.cs" />
@@ -341,7 +340,6 @@
     <Compile Include="Src\PackageRepositoryCache.cs" />
     <Compile Include="Src\PackagesForSelectedPageResult.cs" />
     <Compile Include="Src\ILicenseAcceptanceService.cs" />
-    <Compile Include="Src\InstalledPackagesViewModel.cs" />
     <Compile Include="Src\IPackageManagementFileService.cs" />
     <Compile Include="Src\IPackageManagementProjectService.cs" />
     <Compile Include="Src\IPackageManagementSolution.cs" />

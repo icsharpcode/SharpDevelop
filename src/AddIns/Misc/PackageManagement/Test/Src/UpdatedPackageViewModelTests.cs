@@ -134,6 +134,7 @@ namespace PackageManagement.Tests
 			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
 			fakePackageManagementEvents.ProjectsToSelect.Add("Project B");
 			fakePackageManagementEvents.OnSelectProjectsReturnValue = true;
+
 			viewModel.ManagePackage();
 			
 			FakePackage expectedPackage = viewModel.FakePackage;

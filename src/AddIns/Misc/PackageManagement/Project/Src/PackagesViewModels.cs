@@ -22,6 +22,8 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackagesViewModels : IDisposable
 	{
+		protected PackagesViewModels() {}
+		
 		public PackagesViewModels(
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
@@ -31,18 +33,17 @@ namespace ICSharpCode.PackageManagement
 		{
 			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, actionRunner);
 			var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
-			var installedPackageViewModelFactory = new InstalledPackageViewModelFactory(packageViewModelFactory);
 			
-			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, installedPackageViewModelFactory, taskFactory);
-			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, registeredPackageRepositories, updatedPackageViewModelFactory, taskFactory);
-			RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			AvailablePackagesViewModel = new AvailablePackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, updatedPackageViewModelFactory, taskFactory);
+			RecentPackagesViewModel = new RecentPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 		}
 		
-		public AvailablePackagesViewModel AvailablePackagesViewModel { get; private set; }
-		public InstalledPackagesViewModel InstalledPackagesViewModel { get; private set; }
-		public RecentPackagesViewModel RecentPackagesViewModel { get; private set; }
-		public UpdatedPackagesViewModel UpdatedPackagesViewModel { get; private set; }
+		public AvailablePackagesViewModel AvailablePackagesViewModel { get; protected set; }
+		public InstalledPackagesViewModel InstalledPackagesViewModel { get; protected set; }
+		public RecentPackagesViewModel RecentPackagesViewModel { get; protected set; }
+		public UpdatedPackagesViewModel UpdatedPackagesViewModel { get; protected set; }
 		
 		public void ReadPackages()
 		{
@@ -59,5 +60,6 @@ namespace ICSharpCode.PackageManagement
 			RecentPackagesViewModel.Dispose();
 			UpdatedPackagesViewModel.Dispose();
 		}
+
 	}
 }

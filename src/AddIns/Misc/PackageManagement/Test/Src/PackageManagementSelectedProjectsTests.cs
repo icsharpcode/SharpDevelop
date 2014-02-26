@@ -301,7 +301,7 @@ namespace PackageManagement.Tests
 			fakeSolution.FakeInstalledPackages.Add(package);
 			CreateSelectedProjects();
 			
-			bool installed = selectedProjects.IsPackageInstalledInSolution(package);
+			bool installed = selectedProjects.Solution.IsPackageInstalled(package);
 			
 			Assert.IsTrue(installed);
 		}
@@ -316,7 +316,7 @@ namespace PackageManagement.Tests
 			
 			var package = new FakePackage("Test");
 			
-			bool installed = selectedProjects.IsPackageInstalledInSolution(package);
+			bool installed = selectedProjects.Solution.IsPackageInstalled(package);
 			
 			Assert.IsFalse(installed);
 		}
@@ -332,7 +332,7 @@ namespace PackageManagement.Tests
 			fakeSolution.FakeInstalledPackages.Add(package);
 			CreateSelectedProjects();
 			
-			IQueryable<IPackage> packages = selectedProjects.GetPackagesInstalledInSolution();
+			IQueryable<IPackage> packages = selectedProjects.Solution.GetPackages();
 			
 			var expectedPackages = new FakePackage[] {
 				package
@@ -439,7 +439,7 @@ namespace PackageManagement.Tests
 			CreateSelectedProjects();
 			
 			var repository = new FakePackageRepository();
-			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(repository);
+			IQueryable<IPackage> packages = selectedProjects.GetPackages(repository);
 			
 			var expectedPackages = new FakePackage[] {
 				package
@@ -463,7 +463,7 @@ namespace PackageManagement.Tests
 			CreateSelectedProjects();
 			
 			var repository = new FakePackageRepository();
-			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(repository);
+			IQueryable<IPackage> packages = selectedProjects.GetPackages(repository);
 			
 			var expectedPackages = new FakePackage[] {
 				package
@@ -481,7 +481,7 @@ namespace PackageManagement.Tests
 			CreateSelectedProjects();
 			
 			var expectedRepository = new FakePackageRepository();
-			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(expectedRepository);
+			IQueryable<IPackage> packages = selectedProjects.GetPackages(expectedRepository);
 			
 			IPackageRepository repository = fakeSolution.RepositoryPassedToGetProject;
 			

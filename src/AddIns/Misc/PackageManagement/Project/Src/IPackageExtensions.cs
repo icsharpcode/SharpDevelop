@@ -42,5 +42,10 @@ namespace ICSharpCode.PackageManagement
 				return package.Id;
 			return package.Title;
 		}
+
+		public static bool IsProjectPackage(this IPackage package)
+		{
+			return package.HasProjectContent();
+		}
 	}
 }

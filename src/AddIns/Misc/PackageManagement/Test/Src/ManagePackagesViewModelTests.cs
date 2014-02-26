@@ -44,7 +44,7 @@ namespace PackageManagement.Tests
 		FakePackageManagementEvents fakeThreadSafeEvents;
 		List<IPackageManagementSelectedProject> projectsPassedToOnSelectProjects;
 		ManagePackagesUserPrompts userPrompts;
-		PackagesViewModels packagesViewModels;
+		TestablePackagesViewModels packagesViewModels;
 		ManagePackagesViewTitle viewTitle;
 		
 		void CreateSolution()
@@ -82,7 +82,7 @@ namespace PackageManagement.Tests
 				fakeFileConflictResolver);
 			fakeActionRunner = new FakePackageActionRunner();
 			
-			packagesViewModels = new PackagesViewModels(
+			packagesViewModels = new TestablePackagesViewModels(
 				solution,
 				fakeRegisteredPackageRepositories,
 				packageManagementEvents,

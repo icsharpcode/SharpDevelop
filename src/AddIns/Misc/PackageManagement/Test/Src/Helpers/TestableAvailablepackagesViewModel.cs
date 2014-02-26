@@ -17,28 +17,39 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.PackageManagement;
 
-namespace ICSharpCode.PackageManagement
+namespace PackageManagement.Tests.Helpers
 {
-	public class InstalledPackageViewModelFactory : PackageViewModelFactory
+	/// <summary>
+	/// Description of TestableAvailablepackagesViewModel.
+	/// </summary>
+	public class TestableAvailablePackagesViewModel : AvailablePackagesViewModel
 	{
-		SelectedProjectsForInstalledPackages selectedProjectsForInstalledPackages;
-		
-		public InstalledPackageViewModelFactory(IPackageViewModelFactory packageViewModelFactory)
-			: base(packageViewModelFactory)
+		public TestableAvailablePackagesViewModel(
+			IPackageManagementSolution solution,
+			IPackageManagementEvents packageManagementEvents,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageViewModelFactory packageViewModelFactory,
+			ITaskFactory taskFactory)
+			: base(
+				solution,
+				packageManagementEvents,
+				registeredPackageRepositories, 
+				packageViewModelFactory, 
+				taskFactory)
 		{
-			selectedProjectsForInstalledPackages = new SelectedProjectsForInstalledPackages(Solution);
+			IsProjectPackageReturnsValue = true;
+			IsProjectPackageIsCalled = false;
 		}
 		
-		public override PackageViewModel CreatePackageViewModel(IPackageViewModelParent parent, IPackageFromRepository package)
+		protected override bool IsProjectPackage(NuGet.IPackage package)
 		{
-			return new InstalledPackageViewModel(
-				parent,
-				package,
-				selectedProjectsForInstalledPackages,
-				PackageManagementEvents,
-				PackageActionRunner,
-				Logger);
+			IsProjectPackageIsCalled = true;
+			return IsProjectPackageReturnsValue;
 		}
+		
+		public bool IsProjectPackageReturnsValue { get; set; }
+		public bool IsProjectPackageIsCalled { get; set; }
 	}
 }

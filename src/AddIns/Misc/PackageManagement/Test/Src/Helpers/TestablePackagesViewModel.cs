@@ -49,6 +49,8 @@ namespace PackageManagement.Tests.Helpers
 			FakeRegisteredPackageRepositories registeredPackageRepositories,
 			FakeTaskFactory taskFactory)
 			: base(
+				new FakePackageManagementSolution(),
+				new FakePackageManagementEvents(),
 				registeredPackageRepositories,
 				new FakePackageViewModelFactory(),
 				taskFactory)

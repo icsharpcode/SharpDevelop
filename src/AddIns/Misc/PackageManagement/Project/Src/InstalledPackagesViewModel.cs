@@ -25,24 +25,20 @@ namespace ICSharpCode.PackageManagement
 {
 	public class InstalledPackagesViewModel : PackagesViewModel
 	{
-		IPackageManagementSolution solution;
-		IPackageManagementEvents packageManagementEvents;
-		IPackageManagementProject project;
-		string errorMessage;
-
 		public InstalledPackagesViewModel(
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			InstalledPackageViewModelFactory packageViewModelFactory,
+			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
+			: base(
+				solution,
+				packageManagementEvents,
+				registeredPackageRepositories, 
+				packageViewModelFactory, 
+				taskFactory)
 		{
-			this.solution = solution;
-			this.packageManagementEvents = packageManagementEvents;
-			
 			RegisterEvents();
-			TryGetActiveProject();
 		}
 		
 		void RegisterEvents()
@@ -52,20 +48,6 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.ParentPackagesUpdated += InstalledPackagesChanged;
 		}
 		
-		void TryGetActiveProject()
-		{
-			try {
-				project = solution.GetActiveProject();
-			} catch (Exception ex) {
-				errorMessage = ex.Message;
-			}
-		}
-
-		void InstalledPackagesChanged(object sender, EventArgs e)
-		{
-			ReadPackages();
-		}
-		
 		protected override void OnDispose()
 		{
 			packageManagementEvents.ParentPackageInstalled -= InstalledPackagesChanged;
@@ -73,15 +55,20 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.ParentPackagesUpdated -= InstalledPackagesChanged;
 		}
 		
+		void InstalledPackagesChanged(object sender, EventArgs e)
+		{
+			ReadPackages();
+		}
+		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			if (errorMessage != null) {
+			if (!string.IsNullOrEmpty(errorMessage)) {
 				ThrowOriginalExceptionWhenTryingToGetProjectManager();
 			}
 			if (project != null) {
 				return project.GetPackages();
 			}
-			return solution.GetInstalledPackages();
+			return solution.GetPackages();
 		}
 		
 		void ThrowOriginalExceptionWhenTryingToGetProjectManager()

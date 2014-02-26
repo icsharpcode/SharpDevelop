@@ -26,16 +26,19 @@ namespace ICSharpCode.PackageManagement.Design
 	public class DesignTimePackagesViewModel : PackagesViewModel
 	{
 		public DesignTimePackagesViewModel()
-			: this(new DesignTimeRegisteredPackageRepositories(), new FakePackageManagementSolution())
+			: this(new DesignTimeRegisteredPackageRepositories(), new FakePackageManagementSolution(), new PackageManagementEvents())
 		{
 		}
 		
 		public DesignTimePackagesViewModel(
 			DesignTimeRegisteredPackageRepositories registeredPackageRepositories,
-			FakePackageManagementSolution solution)
+			FakePackageManagementSolution solution,
+			PackageManagementEvents packageManagementEvents)
 			: base(
+				solution,
+				packageManagementEvents,
 				registeredPackageRepositories,
-				new PackageViewModelFactory(solution, null, null),
+				new PackageViewModelFactory(solution, packageManagementEvents, null),
 				new PackageManagementTaskFactory())
 		{
 			PageSize = 3;
