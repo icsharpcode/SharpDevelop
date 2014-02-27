@@ -30,9 +30,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// Provides <see cref="IPlacementBehavior"/> behavior for <see cref="Canvas"/>.
 	/// </summary>
 	[ExtensionFor(typeof(Canvas), OverrideExtension=typeof(DefaultPlacementBehavior))]
-	public sealed class CanvasPlacementSupport : SnaplinePlacementBehavior
+	public class CanvasPlacementSupport : SnaplinePlacementBehavior
 	{
 		GrayOutDesignerExceptActiveArea grayOut;
+		FrameworkElement extendedComponent;
+		FrameworkElement extendedView;
 		
 		static double GetCanvasProperty(UIElement element, DependencyProperty d)
 		{
@@ -48,6 +50,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			return element.ReadLocalValue(d) != DependencyProperty.UnsetValue;
 		}
 		
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
+
+			extendedComponent = (FrameworkElement)ExtendedItem.Component;
+			extendedView = (FrameworkElement)this.ExtendedItem.View;
+		}
+		
 		public override void SetPosition(PlacementInformation info)
 		{
 			base.SetPosition(info);
@@ -58,7 +68,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			if (IsPropertySet(child, Canvas.RightProperty))
 			{
-				var newR = ((Canvas) ExtendedItem.Component).ActualWidth - newPosition.Right;
+				var newR = extendedComponent.ActualWidth - newPosition.Right;
 				if (newR != GetCanvasProperty(child, Canvas.RightProperty))
 					info.Item.Properties.GetAttachedProperty(Canvas.RightProperty).SetValue(newR);
 			}
@@ -70,7 +80,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			if (IsPropertySet(child, Canvas.BottomProperty))
 			{
-				var newB = ((Canvas)ExtendedItem.Component).ActualHeight - newPosition.Bottom;
+				var newB = extendedComponent.ActualHeight - newPosition.Bottom;
 				if (newB != GetCanvasProperty(child, Canvas.BottomProperty))
 					info.Item.Properties.GetAttachedProperty(Canvas.BottomProperty).SetValue(newB);
 			}
@@ -81,8 +91,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			if (info.Item == Services.Selection.PrimarySelection)
 			{
-				var cv = this.ExtendedItem.View as Canvas;
-				var b = new Rect(0, 0, cv.ActualWidth, cv.ActualHeight);
+				var b = new Rect(0, 0, extendedView.ActualWidth, extendedView.ActualHeight);
 				// only for primary selection:
 				if (grayOut != null)
 				{
