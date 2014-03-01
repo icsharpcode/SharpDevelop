@@ -43,26 +43,26 @@ namespace ICSharpCode.PackageManagement
 		
 		SelectedProjectsForUpdatedPackages selectedProjects;
 		
-		protected override void TrySolutionPackageInstall()
-		{	// Modify PackageViewModel logic
-			base.TrySolutionPackageUpdate();
+		protected override void TryInstallingPackageIntoSolution()
+		{
+			TryUpdatingPackageInSolution();
 		}
 		
 		protected override ProcessPackageAction CreatePackageManageAction(IPackageManagementSelectedProject selectedProject)
-		{	// Modify PackageViewModel logic
+		{
 			if (selectedProject.IsSelected) {
-				return base.CreateUpdatePackageManageActionForSelectedProject(selectedProject);
+				return CreateUpdatePackageManageActionForSelectedProject(selectedProject);
 			}
 			return null;
 		}
 		
-		protected override IDisposable StartOperation(IPackageFromRepository package)
-		{	// Modify PackageViewModel logic
+		protected override IDisposable StartInstallOperation(IPackageFromRepository package)
+		{
 			return package.StartUpdateOperation();
 		}
 		
 		protected override ProcessPackageOperationsAction CreateInstallPackageAction(IPackageManagementProject project)
-		{	// Modify UpdatePackageAction logic
+		{
 			return project.CreateUpdatePackageAction();
 		}
 	}

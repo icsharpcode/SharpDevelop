@@ -77,14 +77,11 @@ namespace ICSharpCode.PackageManagement
 			if (availablePackagesRepository == null) {
 				throw new ApplicationException(errorMessage);
 			}
-			IQueryable<IPackage> allPackages;
+			
 			if (IncludePrerelease) {
-				allPackages = availablePackagesRepository.GetPackages();
+				return availablePackagesRepository.GetPackages();
 			}
-			else {
-				allPackages = availablePackagesRepository.GetPackages().Where(package => package.IsLatestVersion);
-			}
-			return allPackages;
+			return availablePackagesRepository.GetPackages().Where(package => package.IsLatestVersion);
 		}
 		
 		/// <summary>
@@ -97,17 +94,13 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
-			IEnumerable<IPackage> filteredPackages;
 			if (IncludePrerelease) {
-				filteredPackages = base.GetFilteredPackagesBeforePagingResults(allPackages)
+				return base.GetFilteredPackagesBeforePagingResults(allPackages)
 					.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 			}
-			else {
-				filteredPackages = base.GetFilteredPackagesBeforePagingResults(allPackages)
-					.Where(package => package.IsReleaseVersion())
-					.DistinctLast<IPackage>(PackageEqualityComparer.Id);
-			}
-			return filteredPackages;
+			return base.GetFilteredPackagesBeforePagingResults(allPackages)
+				.Where(package => package.IsReleaseVersion())
+				.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 		}
 
 	}

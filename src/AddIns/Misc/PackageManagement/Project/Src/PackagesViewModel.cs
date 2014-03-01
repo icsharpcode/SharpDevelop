@@ -110,13 +110,15 @@ namespace ICSharpCode.PackageManagement
 		
 		protected void OnPackageChanged(object sender, EventArgs e)
 		{
-			if (IsReadingPackages) return;
-			if (PackageViewModels == null) return;
-
-			// refresh all because we don't know if any dependant package is (un)installed
-			foreach (var packageViewModel in this.PackageViewModels) {
-				if (!IsReadingPackages) 
+			if (IsReadingPackages || (PackageViewModels == null)) {
+				return;
+			}
+			
+			// refresh all because we don't know if any dependent package is (un)installed
+			foreach (PackageViewModel packageViewModel in PackageViewModels) {
+				if (!IsReadingPackages) {
 					packageViewModel.PackageChanged();
+				}
 			}
 		}
 		
@@ -268,12 +270,8 @@ namespace ICSharpCode.PackageManagement
 			return null;
 		}
 		
-		/// <summary>
-		/// Make this & IPackageExtensions.IsProjectPackage overridable/testable
-		/// </summary>
-		/// <param name="package"></param>
-		/// <returns></returns>
-		protected virtual bool IsProjectPackage (IPackage package) {
+		protected virtual bool IsProjectPackage (IPackage package)
+		{
 			return package.IsProjectPackage();
 		}
 		

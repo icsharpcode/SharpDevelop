@@ -75,7 +75,6 @@ namespace PackageManagement.Tests.Helpers
 		{
 			PackagePassedToOnParentPackageInstalled = package;
 			IsOnParentPackageInstalledCalled = true;
-			if (PackageViewModel != null) PackageViewModel.PackageChanged();
 		}
 		
 		public IPackage PackagePassedToOnParentPackageUninstalled;
@@ -83,7 +82,6 @@ namespace PackageManagement.Tests.Helpers
 		public void OnParentPackageUninstalled(IPackage package)
 		{
 			PackagePassedToOnParentPackageUninstalled = package;
-			if (PackageViewModel != null) PackageViewModel.PackageChanged();
 		}
 		
 		public MessageLevel MessageLevelPassedToOnPackageOperationMessageLogged;

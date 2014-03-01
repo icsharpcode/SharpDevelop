@@ -22,12 +22,13 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class SelectedProjectsForUpdatedPackages : SelectedProjectsForInstalledPackages
+	public class SelectedProjectsForUpdatedPackages : PackageManagementSelectedProjects
 	{
 		public SelectedProjectsForUpdatedPackages(IPackageManagementSolution solution)
 			: base(solution)
 		{
 		}
+		
 		protected override bool IsProjectSelected(IPackageManagementProject project, IPackageFromRepository package)
 		{
 			return IsProjectEnabled(project, package);

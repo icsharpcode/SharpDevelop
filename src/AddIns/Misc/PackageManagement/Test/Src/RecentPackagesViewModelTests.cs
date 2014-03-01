@@ -95,7 +95,7 @@ namespace PackageManagement.Tests
 			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
 			CompleteReadPackagesTask();
 
-			var expectedPackages = new FakePackage[] {};
+			var expectedPackages = new FakePackage[0];
 
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
