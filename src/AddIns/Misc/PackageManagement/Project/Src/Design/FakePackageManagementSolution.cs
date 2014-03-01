@@ -128,6 +128,11 @@ namespace ICSharpCode.PackageManagement.Design
 			return FakeInstalledPackages.Contains(package);
 		}
 		
+		public ISolutionPackageRepository CreateSolutionPackageRepository()
+		{
+			return null;
+		}
+		
 		public IQueryable<IPackage> GetPackages()
 		{
 			var allPackages = new List<FakePackage>();
@@ -196,7 +201,12 @@ namespace ICSharpCode.PackageManagement.Design
 			throw new NotImplementedException();
 		}
 		
-		public IQueryable<IPackage> GetInstalledPackages()
+		public IQueryable<IPackage> GetSolutionPackages()
+		{
+			throw new NotImplementedException();
+		}
+
+		public IQueryable<IPackage> GetProjectPackages()
 		{
 			return FakeInstalledPackages.AsQueryable();
 		}

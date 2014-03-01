@@ -35,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 			this.package = package;
 			this.Repository = repository;
 		}
-		
+
 		public IPackageRepository Repository { get; private set; }
 		
 		public IEnumerable<IPackageAssemblyReference> AssemblyReferences {

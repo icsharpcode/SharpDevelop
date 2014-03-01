@@ -24,7 +24,7 @@ using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
-	public class TestableInstalledPackageViewModel : InstalledPackageViewModel
+	public class TestableInstalledPackageViewModel : PackageViewModel
 	{
 		public FakePackageOperationResolver FakePackageOperationResolver = new FakePackageOperationResolver();
 		public FakePackageManagementSolution FakeSolution;

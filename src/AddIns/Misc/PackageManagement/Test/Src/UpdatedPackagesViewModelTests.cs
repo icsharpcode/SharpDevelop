@@ -89,6 +89,7 @@ namespace PackageManagement.Tests
 			
 			viewModel = new UpdatedPackagesViewModel(
 				solution,
+				packageManagementEvents,
 				registeredPackageRepositories,
 				updatedPackageViewModelFactory,
 				taskFactory);
@@ -117,6 +118,7 @@ namespace PackageManagement.Tests
 			updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
 			viewModel = new UpdatedPackagesViewModel(
 				solution,
+				packageManagementEvents,
 				registeredPackageRepositories,
 				updatedPackageViewModelFactory,
 				taskFactory);

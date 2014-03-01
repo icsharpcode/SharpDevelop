@@ -59,12 +59,12 @@ namespace ICSharpCode.PackageManagement
 			get { return packagesViewModels.InstalledPackagesViewModel; }
 		}
 		
-		public RecentPackagesViewModel RecentPackagesViewModel {
-			get { return packagesViewModels.RecentPackagesViewModel; }
-		}
-		
 		public UpdatedPackagesViewModel UpdatedPackagesViewModel {
 			get { return packagesViewModels.UpdatedPackagesViewModel; }
+		}
+		
+		public RecentPackagesViewModel RecentPackagesViewModel {
+			get { return packagesViewModels.RecentPackagesViewModel; }
 		}
 		
 		public string Title {

@@ -17,35 +17,39 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using NuGet;
+using ICSharpCode.PackageManagement;
 
-namespace ICSharpCode.PackageManagement
+namespace PackageManagement.Tests.Helpers
 {
-	public static class IPackageExtensions
+	/// <summary>
+	/// Description of TestableRecentPackagesViewModel.
+	/// </summary>
+	public class TestableRecentPackagesViewModel : RecentPackagesViewModel
 	{
-		/// <summary>
-		/// Returns description if summary is missing.
-		/// </summary>
-		public static string SummaryOrDescription(this IPackage package)
+		public TestableRecentPackagesViewModel(
+			IPackageManagementSolution solution,
+			IPackageManagementEvents packageManagementEvents,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageViewModelFactory packageViewModelFactory,
+			ITaskFactory taskFactory)
+			: base(
+				solution,
+				packageManagementEvents,
+				registeredPackageRepositories, 
+				packageViewModelFactory, 
+				taskFactory)
 		{
-			if (String.IsNullOrEmpty(package.Summary))
-				return package.Description;
-			return package.Summary;
+			IsProjectPackageReturnsValue = true;
+			IsProjectPackageIsCalled = false;
+		}
+
+		protected override bool IsProjectPackage(NuGet.IPackage package)
+		{
+			IsProjectPackageIsCalled = true;
+			return IsProjectPackageReturnsValue;
 		}
 		
-		/// <summary>
-		/// Returns package Id if it has no title.
-		/// </summary>
-		public static string GetName(this IPackage package)
-		{
-			if (String.IsNullOrEmpty(package.Title))
-				return package.Id;
-			return package.Title;
-		}
-
-		public static bool IsProjectPackage(this IPackage package)
-		{
-			return package.HasProjectContent();
-		}
+		public bool IsProjectPackageReturnsValue { get; set; }
+		public bool IsProjectPackageIsCalled { get; set; }
 	}
 }

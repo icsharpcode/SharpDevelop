@@ -30,19 +30,40 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ILogger logger)
-			: base(parent, package, selectedProjects, packageManagementEvents, actionRunner, logger)
+			: base(
+				parent, 
+				package, 
+				selectedProjects, 
+				packageManagementEvents, 
+				actionRunner, 
+				logger)
 		{
+			this.selectedProjects = selectedProjects;
 		}
 		
-		protected override ProcessPackageOperationsAction CreateInstallPackageAction(
-			IPackageManagementProject project)
-		{
-			return project.CreateUpdatePackageAction();
+		SelectedProjectsForUpdatedPackages selectedProjects;
+		
+		protected override void TrySolutionPackageInstall()
+		{	// Modify PackageViewModel logic
+			base.TrySolutionPackageUpdate();
 		}
 		
-		protected override IDisposable StartInstallOperation(IPackageFromRepository package)
-		{
+		protected override ProcessPackageAction CreatePackageManageAction(IPackageManagementSelectedProject selectedProject)
+		{	// Modify PackageViewModel logic
+			if (selectedProject.IsSelected) {
+				return base.CreateUpdatePackageManageActionForSelectedProject(selectedProject);
+			}
+			return null;
+		}
+		
+		protected override IDisposable StartOperation(IPackageFromRepository package)
+		{	// Modify PackageViewModel logic
 			return package.StartUpdateOperation();
+		}
+		
+		protected override ProcessPackageOperationsAction CreateInstallPackageAction(IPackageManagementProject project)
+		{	// Modify UpdatePackageAction logic
+			return project.CreateUpdatePackageAction();
 		}
 	}
 }

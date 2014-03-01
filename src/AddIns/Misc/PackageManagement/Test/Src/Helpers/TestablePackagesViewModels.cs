@@ -17,49 +17,29 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.PackageManagement;
 
-namespace ICSharpCode.PackageManagement
+namespace PackageManagement.Tests.Helpers
 {
-	public class PackagesViewModels : IDisposable
+	/// <summary>
+	/// Description of TestablePackagesViewModels.
+	/// </summary>
+	public class TestablePackagesViewModels : PackagesViewModels
 	{
-		protected PackagesViewModels() {}
-		
-		public PackagesViewModels(
+		public TestablePackagesViewModels(
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IThreadSafePackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
-			ITaskFactory taskFactory)
+			ITaskFactory taskFactory) : base()
 		{
 			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, actionRunner);
 			var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
 			
-			AvailablePackagesViewModel = new AvailablePackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			AvailablePackagesViewModel = new TestableAvailablePackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, updatedPackageViewModelFactory, taskFactory);
-			RecentPackagesViewModel = new RecentPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			RecentPackagesViewModel = new TestableRecentPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 		}
-		
-		public AvailablePackagesViewModel AvailablePackagesViewModel { get; protected set; }
-		public InstalledPackagesViewModel InstalledPackagesViewModel { get; protected set; }
-		public RecentPackagesViewModel RecentPackagesViewModel { get; protected set; }
-		public UpdatedPackagesViewModel UpdatedPackagesViewModel { get; protected set; }
-		
-		public void ReadPackages()
-		{
-			AvailablePackagesViewModel.ReadPackages();
-			InstalledPackagesViewModel.ReadPackages();
-			UpdatedPackagesViewModel.ReadPackages();
-			RecentPackagesViewModel.ReadPackages();
-		}
-		
-		public void Dispose()
-		{
-			AvailablePackagesViewModel.Dispose();
-			InstalledPackagesViewModel.Dispose();
-			RecentPackagesViewModel.Dispose();
-			UpdatedPackagesViewModel.Dispose();
-		}
-
 	}
 }

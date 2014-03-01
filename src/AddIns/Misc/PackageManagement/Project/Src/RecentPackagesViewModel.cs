@@ -24,43 +24,49 @@ namespace ICSharpCode.PackageManagement
 {
 	public class RecentPackagesViewModel : PackagesViewModel
 	{
-		IPackageManagementEvents packageManagementEvents;
-		IPackageRepository recentPackageRepository;
+		IPackageRepository recentPackagesRepository;
 		
 		public RecentPackagesViewModel(
+			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
+			: base(
+				solution,
+				packageManagementEvents,
+				registeredPackageRepositories, 
+				packageViewModelFactory, 
+				taskFactory)
 		{
+			recentPackagesRepository = registeredPackageRepositories.RecentPackageRepository;
+			
 			this.packageManagementEvents = packageManagementEvents;
-			
-			recentPackageRepository = registeredPackageRepositories.RecentPackageRepository;
-			
-			packageManagementEvents.ParentPackageInstalled += ParentPackageInstalled;
-			packageManagementEvents.ParentPackageUninstalled += ParentPackageUninstalled;
+			RegisterEvents();
 		}
 		
-		void ParentPackageInstalled(object sender, EventArgs e)
+		void RegisterEvents()
 		{
-			ReadPackages();
-		}
-		
-		void ParentPackageUninstalled(object sender, EventArgs e)
-		{
-			ReadPackages();
+			packageManagementEvents.ParentPackageInstalled += OnAddRecentPackage;
+			packageManagementEvents.ParentPackageUninstalled += OnPackageChanged;
+			packageManagementEvents.ParentPackagesUpdated += OnAddRecentPackage;
 		}
 		
 		protected override void OnDispose()
 		{
-			packageManagementEvents.ParentPackageInstalled -= ParentPackageInstalled;
-			packageManagementEvents.ParentPackageUninstalled -= ParentPackageUninstalled;
+			packageManagementEvents.ParentPackageInstalled -= OnAddRecentPackage;
+			packageManagementEvents.ParentPackageUninstalled -= OnPackageChanged;
+			packageManagementEvents.ParentPackagesUpdated -= OnAddRecentPackage;
+		}
+		
+		void OnAddRecentPackage(object sender, EventArgs e)
+		{
+			ReadPackages();
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			return recentPackageRepository.GetPackages();
+			return recentPackagesRepository.GetPackages();
 		}
 	}
 }

@@ -28,16 +28,17 @@ namespace ICSharpCode.PackageManagement
 	{
 		PackageManagementSelectedProjects selectedProjects;
 		UpdatedPackages updatedPackages;
-		string errorMessage = String.Empty;
 		ILogger logger;
-		IPackageManagementEvents packageManagementEvents;
 		
 		public UpdatedPackagesViewModel(
 			IPackageManagementSolution solution,
+			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			UpdatedPackageViewModelFactory packageViewModelFactory,
+			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(
+				solution,
+				packageManagementEvents,
 				registeredPackageRepositories,
 				packageViewModelFactory,
 				taskFactory)
@@ -46,21 +47,30 @@ namespace ICSharpCode.PackageManagement
 			this.logger = packageViewModelFactory.Logger;
 			this.packageManagementEvents = packageViewModelFactory.PackageManagementEvents;
 			
-			packageManagementEvents.ParentPackagesUpdated += PackagesUpdated;
-			
 			ShowPackageSources = true;
 			ShowUpdateAllPackages = true;
 			ShowPrerelease = true;
+
+			RegisterEvents();
+		}
+		
+		void RegisterEvents()
+		{
+			packageManagementEvents.ParentPackageInstalled += PackagesUpdated;
+			packageManagementEvents.ParentPackageUninstalled += PackagesUpdated;
+			packageManagementEvents.ParentPackagesUpdated += PackagesUpdated;
+		}
+
+		protected override void OnDispose()
+		{
+			packageManagementEvents.ParentPackageInstalled -= PackagesUpdated;
+			packageManagementEvents.ParentPackageUninstalled -= PackagesUpdated;
+			packageManagementEvents.ParentPackagesUpdated -= PackagesUpdated;
 		}
 		
 		void PackagesUpdated(object sender, EventArgs e)
 		{
 			ReadPackages();
-		}
-		
-		protected override void OnDispose()
-		{
-			packageManagementEvents.ParentPackagesUpdated -= PackagesUpdated;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
@@ -76,7 +86,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IQueryable<IPackage> GetInstalledPackages(IPackageRepository aggregateRepository)
 		{
-			return selectedProjects.GetInstalledPackages(aggregateRepository);
+			return selectedProjects.GetPackages(aggregateRepository);
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()

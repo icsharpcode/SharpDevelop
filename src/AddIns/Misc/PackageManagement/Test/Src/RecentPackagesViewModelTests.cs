@@ -27,7 +27,7 @@ namespace PackageManagement.Tests
 	[TestFixture]
 	public class RecentPackagesViewModelTests
 	{
-		RecentPackagesViewModel viewModel;
+		TestableRecentPackagesViewModel viewModel;
 		PackageManagementEvents packageManagementEvents;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		FakeTaskFactory taskFactory;
@@ -38,7 +38,8 @@ namespace PackageManagement.Tests
 			taskFactory = new FakeTaskFactory();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
 			packageManagementEvents = new PackageManagementEvents();
-			viewModel = new RecentPackagesViewModel(
+			viewModel = new TestableRecentPackagesViewModel(
+				new FakePackageManagementSolution(),
 				packageManagementEvents,
 				registeredPackageRepositories,
 				packageViewModelFactory,
@@ -83,21 +84,19 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void PackageViewModels_PackageIsUninstalledAfterRecentPackagesDisplayed_PackagesOnDisplayAreUpdated()
+		public void PackageViewModels_PackageIsUninstalledAfterRecentPackagesDisplayed_PackagesOnDisplayAreNotUpdated()
 		{
 			CreateViewModel();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			var package = AddPackageToRecentPackageRepository();
-			
+
 			ClearReadPackagesTasks();
 			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
 			CompleteReadPackagesTask();
-			
-			var expectedPackages = new FakePackage[] {
-				package
-			};
-			
+
+			var expectedPackages = new FakePackage[] {};
+
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
 		
