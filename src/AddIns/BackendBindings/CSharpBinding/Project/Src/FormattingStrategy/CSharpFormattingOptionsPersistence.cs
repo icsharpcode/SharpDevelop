@@ -39,6 +39,7 @@ namespace CSharpBinding.FormattingStrategy
 			// Load global settings
 			GlobalOptions = new CSharpFormattingOptionsPersistence(
 				SD.PropertyService.MainPropertiesContainer, new CSharpFormattingOptionsContainer());
+			GlobalOptions.Load();
 			
 			// Handlers for solution loading/unloading
 			SD.ProjectService.SolutionOpened += SolutionOpened;
@@ -66,7 +67,7 @@ namespace CSharpBinding.FormattingStrategy
 					// Lazily create options container
 					projectOptions[key] = new CSharpFormattingOptionsPersistence(
 						csproject.ExtensionProperties,
-						new CSharpFormattingOptionsContainer(SolutionOptions.OptionsContainer));
+						new CSharpFormattingOptionsContainer((SolutionOptions ?? GlobalOptions).OptionsContainer)); // HACK!
 				}
 				
 				return projectOptions[key];

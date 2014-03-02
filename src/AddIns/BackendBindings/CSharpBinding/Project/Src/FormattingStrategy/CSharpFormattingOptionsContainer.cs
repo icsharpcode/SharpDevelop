@@ -44,6 +44,7 @@ namespace CSharpBinding.FormattingStrategy
 			this.parent = parent;
 			this.activeOptions = new HashSet<string>();
 			Reset();
+			cachedOptions = CreateOptions();
 		}
 		
 		public CSharpFormattingOptionsContainer Parent
@@ -81,7 +82,7 @@ namespace CSharpBinding.FormattingStrategy
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
-
+		
 		#endregion
 		
 		private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -121,33 +122,6 @@ namespace CSharpBinding.FormattingStrategy
 		}
 		
 		/// <summary>
-		/// Retrieves the value of a formatting option where desired type and option name are defined by a
-		/// property getter on <see cref="ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions"/>.
-		/// Searches in current and (if nothing set here) parent containers.
-		/// </summary>
-		/// <param name="propertyGetter">
-		/// Property getter lambda expression
-		/// (example: o =&gt; o.IndentStructBody)
-		/// </param>
-		/// <returns>True, if option with given type could be found in hierarchy. False otherwise.</returns>
-		public T GetEffectiveOption<T>(Expression<Func<CSharpFormattingOptions, T>> propertyGetter)
-			where T : struct
-		{
-			// Get name of property (to look for in dictionary)
-			string optionName = null;
-			MemberExpression memberExpression = propertyGetter.Body as MemberExpression;
-			if (memberExpression != null) {
-				optionName = memberExpression.Member.Name;
-				var val = GetEffectiveOption(optionName);
-				if (val is T) {
-					return (T) val;
-				}
-			}
-			
-			return default(T);
-		}
-		
-		/// <summary>
 		/// Retrieves the value of a formatting option by looking at current and (if nothing set here) parent
 		/// containers.
 		/// </summary>
@@ -160,9 +134,11 @@ namespace CSharpBinding.FormattingStrategy
 			do
 			{
 				object val = null;
-				PropertyInfo propertyInfo = typeof(CSharpFormattingOptions).GetProperty(option);
-				if (propertyInfo != null) {
-					val = propertyInfo.GetValue(container.cachedOptions);
+				if (container.activeOptions.Contains(option)) {
+					PropertyInfo propertyInfo = typeof(CSharpFormattingOptions).GetProperty(option);
+					if (propertyInfo != null) {
+						val = propertyInfo.GetValue(container.cachedOptions);
+					}
 				}
 				if (val != null) {
 					return val;
@@ -241,7 +217,7 @@ namespace CSharpBinding.FormattingStrategy
 					propertyInfo.SetValue(outputOptions, val);
 				}
 			}
-
+			
 			return outputOptions;
 		}
 		
