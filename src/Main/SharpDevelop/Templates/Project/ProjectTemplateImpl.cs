@@ -174,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 			}
 			
 			if (config["Icon"] != null) {
-				icon = SD.ResourceService.GetImage(config["Icon"].InnerText);
+				icon = TemplateIconLoader.GetImage(config["Icon"].InnerText);
 			}
 			
 			if (config["SupportedTargetFrameworks"] != null) {

@@ -305,6 +305,7 @@
     <Compile Include="Templates\ProjectTemplateResult.cs" />
     <Compile Include="Templates\TemplateBase.cs" />
     <Compile Include="Templates\TemplateCategory.cs" />
+    <Compile Include="Templates\TemplateIconLoader.cs" />
     <Compile Include="Templates\TemplateLoadException.cs" />
     <Compile Include="Templates\TextTemplate.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />

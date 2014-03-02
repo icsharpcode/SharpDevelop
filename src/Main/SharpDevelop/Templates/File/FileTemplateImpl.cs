@@ -240,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 			
 			XmlElement config = doc.DocumentElement["Config"];
 			name         = config.GetAttribute("name");
-			icon         = SD.ResourceService.GetImage(config.GetAttribute("icon"));
+			icon         = TemplateIconLoader.GetImage(config.GetAttribute("icon"));
 			category     = config.GetAttribute("category");
 			defaultName  = config.GetAttribute("defaultname");
 			languagename = config.GetAttribute("language");

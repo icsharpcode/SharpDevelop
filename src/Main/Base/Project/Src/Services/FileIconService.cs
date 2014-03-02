@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop
 		public static Bitmap GetBitmap(string name)
 		{
 			Bitmap bmp = null;
-			if (name.ToUpper().StartsWith("FILE:")) {
+			if (IsFileImage(name)) {
 				lock (bitmapCache) {
 					if (bitmapCache.TryGetValue(name, out bmp))
 						return bmp;
@@ -59,6 +59,11 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			return bmp;
+		}
+		
+		public static bool IsFileImage(string name)
+		{
+			return name.StartsWith("file:", StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }
