@@ -59,6 +59,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 		
 		string name;
 		string defaultPlatform;
+		string relativePath;
 		
 		/// <summary>
 		/// The language of the project.
@@ -91,6 +92,9 @@ namespace ICSharpCode.SharpDevelop.Templates
 				name = element.GetAttribute("name");
 			} else {
 				name = "${ProjectName}";
+			}
+			if (element.HasAttribute("directory")) {
+				relativePath = element.GetAttribute("directory");
 			}
 			languageName = element.GetAttribute("language");
 			if (string.IsNullOrEmpty(languageName)) {
@@ -301,7 +305,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 					return false;
 				}
 				
-				DirectoryName projectBasePath = projectCreateOptions.ProjectBasePath;
+				DirectoryName projectBasePath = GetProjectBasePath(projectCreateOptions);
 				string newProjectName = StringParser.Parse(name, new StringTagPair("ProjectName", projectCreateOptions.ProjectName));
 				Directory.CreateDirectory(projectBasePath);
 				FileName projectLocation = projectBasePath.CombineFile(newProjectName + descriptor.ProjectFileExtension);
@@ -544,6 +548,15 @@ namespace ICSharpCode.SharpDevelop.Templates
 				if (project != null && !success)
 					project.Dispose();
 			}
+		}
+		
+		DirectoryName GetProjectBasePath(ProjectTemplateOptions projectCreateOptions)
+		{
+			if (String.IsNullOrEmpty(relativePath)) {
+				return projectCreateOptions.ProjectBasePath;
+			}
+			string relativeBasePath = StringParser.Parse(relativePath, new StringTagPair("ProjectName", projectCreateOptions.ProjectName));
+			return projectCreateOptions.ProjectBasePath.CombineDirectory(relativeBasePath);
 		}
 		
 		void RunPreCreateActions(ProjectCreateInformation projectCreateInformation)
