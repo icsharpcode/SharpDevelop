@@ -85,13 +85,6 @@ namespace CSharpBinding.FormattingStrategy
 		/// <returns>Clone of options container.</returns>
 		public CSharpFormattingOptionsContainer Clone()
 		{
-//			var cloneActiveOptions = new HashSet<string>();
-//			foreach (var activeOption in activeOptions)
-//				cloneActiveOptions.Add(activeOption);
-//			var clone = new CSharpFormattingOptionsContainer(parent, cloneActiveOptions);
-//			clone.Reset(cachedOptions.Clone());
-//			return clone;
-			
 			var clone = new CSharpFormattingOptionsContainer(parent);
 			clone.CloneFrom(this);
 			return clone;
@@ -134,7 +127,7 @@ namespace CSharpBinding.FormattingStrategy
 					// We rely on property value from some of the parents and have to update it from there
 					PropertyInfo propertyInfo = typeof(CSharpFormattingOptions).GetProperty(e.PropertyName);
 					if (propertyInfo != null) {
-						var val = GetOption(e.PropertyName);
+						var val = GetEffectiveOption(e.PropertyName);
 						propertyInfo.SetValue(cachedOptions, val);
 						OnPropertyChanged(e.PropertyName);
 					}
