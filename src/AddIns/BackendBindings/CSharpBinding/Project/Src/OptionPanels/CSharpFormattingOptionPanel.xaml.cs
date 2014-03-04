@@ -58,9 +58,8 @@ namespace CSharpBinding.OptionPanels
 				throw new ArgumentNullException("persistenceHelper");
 			
 			this.persistenceHelper = persistenceHelper;
+			InitializeComponent();			
 			
-			InitializeComponent();
-			formattingEditor.OptionsContainer = persistenceHelper.OptionsContainer;
 			formattingEditor.AllowPresets = allowPresets;
 		}
 		
@@ -68,6 +67,7 @@ namespace CSharpBinding.OptionPanels
 		{
 			base.LoadOptions();
 			persistenceHelper.Load();
+			formattingEditor.OptionsContainer = persistenceHelper.StartEditing(); 
 		}
 		
 		public override bool SaveOptions()

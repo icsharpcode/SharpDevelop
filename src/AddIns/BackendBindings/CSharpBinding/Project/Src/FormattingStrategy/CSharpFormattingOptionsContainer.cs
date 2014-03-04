@@ -39,18 +39,25 @@ namespace CSharpBinding.FormattingStrategy
 		
 		readonly HashSet<string> activeOptions;
 		
-		internal CSharpFormattingOptionsContainer(CSharpFormattingOptionsContainer parent = null)
+		public CSharpFormattingOptionsContainer(CSharpFormattingOptionsContainer parent = null)
+			: this(parent, new HashSet<string>())
+		{
+		}
+		
+		private CSharpFormattingOptionsContainer(CSharpFormattingOptionsContainer parent, HashSet<string> activeOptions)
 		{
 			this.parent = parent;
-			this.activeOptions = new HashSet<string>();
+			if (parent != null) {
+				parent.PropertyChanged += HandlePropertyChanged;
+			}
+			this.activeOptions = activeOptions;
 			Reset();
-			cachedOptions = CreateOptions();
+			cachedOptions = CreateCachedOptions();
 		}
 		
 		public CSharpFormattingOptionsContainer Parent
 		{
-			get
-			{
+			get {
 				return parent;
 			}
 		}
@@ -72,6 +79,36 @@ namespace CSharpBinding.FormattingStrategy
 			OnPropertyChanged(null);
 		}
 		
+		/// <summary>
+		/// Creates a clone of current options container.
+		/// </summary>
+		/// <returns>Clone of options container.</returns>
+		public CSharpFormattingOptionsContainer Clone()
+		{
+//			var cloneActiveOptions = new HashSet<string>();
+//			foreach (var activeOption in activeOptions)
+//				cloneActiveOptions.Add(activeOption);
+//			var clone = new CSharpFormattingOptionsContainer(parent, cloneActiveOptions);
+//			clone.Reset(cachedOptions.Clone());
+//			return clone;
+			
+			var clone = new CSharpFormattingOptionsContainer(parent);
+			clone.CloneFrom(this);
+			return clone;
+		}
+		
+		/// <summary>
+		/// Clones all properties from another options container.
+		/// </summary>
+		/// <returns>Clone of options container.</returns>
+		public void CloneFrom(CSharpFormattingOptionsContainer options)
+		{
+			activeOptions.Clear();
+			foreach (var activeOption in options.activeOptions)
+				activeOptions.Add(activeOption);
+			Reset(options.cachedOptions.Clone());
+		}
+		
 		#region INotifyPropertyChanged implementation
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -87,9 +124,10 @@ namespace CSharpBinding.FormattingStrategy
 		
 		private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "Parent") {
-				// Parent of parent has been updated, recreate options object
-				cachedOptions = CreateOptions();
+			if ((e.PropertyName == "Parent") || (e.PropertyName == null)) {
+				// All properties might have changed -> update everything
+				cachedOptions = CreateCachedOptions();
+				OnPropertyChanged(e.PropertyName);
 			} else {
 				// Some other property has changed, check if we have our own value for it
 				if (!activeOptions.Contains(e.PropertyName)) {
@@ -98,6 +136,7 @@ namespace CSharpBinding.FormattingStrategy
 					if (propertyInfo != null) {
 						var val = GetOption(e.PropertyName);
 						propertyInfo.SetValue(cachedOptions, val);
+						OnPropertyChanged(e.PropertyName);
 					}
 				}
 			}
@@ -206,7 +245,7 @@ namespace CSharpBinding.FormattingStrategy
 		/// container, resolving all options throughout container hierarchy.
 		/// </summary>
 		/// <returns>Created and filled <see cref="ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions"/> instance.</returns>
-		private CSharpFormattingOptions CreateOptions()
+		private CSharpFormattingOptions CreateCachedOptions()
 		{
 			var outputOptions = FormattingOptionsFactory.CreateEmpty();
 			

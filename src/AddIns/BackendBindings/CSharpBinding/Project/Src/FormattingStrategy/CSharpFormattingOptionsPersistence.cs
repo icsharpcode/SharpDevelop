@@ -91,7 +91,8 @@ namespace CSharpBinding.FormattingStrategy
 		}
 		
 		readonly Properties propertiesContainer;
-		readonly CSharpFormattingOptionsContainer optionsContainer;
+		CSharpFormattingOptionsContainer optionsContainer;
+		CSharpFormattingOptionsContainer optionsContainerWorkingCopy;
 		
 		/// <summary>
 		/// Creates a new instance of formatting options persistence helper, using given options to predefine the options container.
@@ -109,11 +110,26 @@ namespace CSharpBinding.FormattingStrategy
 			optionsContainer = initialContainer;
 		}
 		
+		/// <summary>
+		/// Returns the option container managed by this helper.
+		/// </summary>
 		public CSharpFormattingOptionsContainer OptionsContainer
 		{
 			get {
 				return optionsContainer;
 			}
+		}
+		
+		/// <summary>
+		/// Starts editing operation by creating a working copy of current formatter settings.
+		/// </summary>
+		/// <returns>
+		/// New working copy of managed options container.
+		/// </returns>
+		public CSharpFormattingOptionsContainer StartEditing()
+		{
+			optionsContainerWorkingCopy = optionsContainer.Clone();
+			return optionsContainerWorkingCopy;
 		}
 		
 		/// <summary>
@@ -130,6 +146,13 @@ namespace CSharpBinding.FormattingStrategy
 		/// <returns><c>True</c> if successful, <c>false</c> otherwise</returns>
 		public bool Save()
 		{
+			// Apply all changes on working copy to main options container
+			if (optionsContainerWorkingCopy != null) {
+				optionsContainer.CloneFrom(optionsContainerWorkingCopy);
+				optionsContainerWorkingCopy = null;
+			}
+			
+			// Convert to SD properties
 			optionsContainer.Save(propertiesContainer);
 			return true;
 		}
