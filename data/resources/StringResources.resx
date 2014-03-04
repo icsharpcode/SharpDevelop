@@ -5072,6 +5072,12 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="ICSharpCode.XmlEditor.XmlTreeView.AddChildTextNodeAfterMenuLabel" xml:space="preserve">
     <value>Add Child Text Node</value>
   </data>
+  <data name="ICSharpCode.XmlEditor.XmlTreeView.CollapseAllMenuLabel" xml:space="preserve">
+    <value>Collapse All</value>
+  </data>
+  <data name="ICSharpCode.XmlEditor.XmlTreeView.ExpandAllMenuLabel" xml:space="preserve">
+    <value>Expand All</value>
+  </data>
   <data name="ICSharpCode.XmlEditor.XmlTreeView.InsertCommentAfterMenuLabel" xml:space="preserve">
     <value>Insert Comment After</value>
   </data>

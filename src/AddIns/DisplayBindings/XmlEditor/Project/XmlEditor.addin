@@ -211,6 +211,13 @@
 		          icon="Icons.16x16.DeleteIcon"
 		          class="ICSharpCode.XmlEditor.DeleteXmlTreeNode"/>
 		<MenuItem id="EditItemsSeparator" type="Separator"/>
+		<MenuItem id="ExpandAll"
+		          label="${res:MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip}"
+		          class="ICSharpCode.XmlEditor.ExpandAllCommand"/>
+		<MenuItem id="CollapseAll"
+		          label="${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
+		          class="ICSharpCode.XmlEditor.CollapseAllCommand"/>
+		<MenuItem id="EditItemsSeparator" type="Separator"/>
 		<ComplexCondition action="Disable">
 			<Or>
 				<Condition name="Ownerstate" ownerstate="CommentSelected"/>
