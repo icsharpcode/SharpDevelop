@@ -418,5 +418,18 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 </t:ExampleClass>
 			");
 		}
+		
+		[Test]
+		public void UsingAttachedPropertyOnDerivedClass()
+		{
+			TestLoading(@"
+<Window
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+  t:DerivedExampleDependencyObject.Example=""test"">
+</Window>
+			");
+		}
 	}
 }
