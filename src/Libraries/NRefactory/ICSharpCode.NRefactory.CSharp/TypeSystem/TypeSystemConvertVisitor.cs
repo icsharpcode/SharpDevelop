@@ -1126,7 +1126,58 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					return null;
 				}
 			}
-			
+
+			public override ConstantExpression VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression)
+			{
+				if (!objectCreateExpression.Arguments.Any()) {
+					// built in primitive type constants can be created with new
+					// Todo: correctly resolve the type instead of doing the string approach
+					switch (objectCreateExpression.Type.ToString()) {
+						case "System.Boolean":
+						case "bool":
+							return new PrimitiveConstantExpression(KnownTypeReference.Boolean, new bool());
+						case "System.Char":
+						case "char":
+							return new PrimitiveConstantExpression(KnownTypeReference.Char, new char());
+						case "System.SByte":
+						case "sbyte":
+							return new PrimitiveConstantExpression(KnownTypeReference.SByte, new sbyte());
+						case "System.Byte":
+						case "byte":
+							return new PrimitiveConstantExpression(KnownTypeReference.Byte, new byte());
+						case "System.Int16":
+						case "short":
+							return new PrimitiveConstantExpression(KnownTypeReference.Int16, new short());
+						case "System.UInt16":
+						case "ushort":
+							return new PrimitiveConstantExpression(KnownTypeReference.UInt16, new ushort());
+						case "System.Int32":
+						case "int":
+							return new PrimitiveConstantExpression(KnownTypeReference.Int32, new int());
+						case "System.UInt32":
+						case "uint":
+							return new PrimitiveConstantExpression(KnownTypeReference.UInt32, new uint());
+						case "System.Int64":
+						case "long":
+							return new PrimitiveConstantExpression(KnownTypeReference.Int64, new long());
+						case "System.UInt64":
+						case "ulong":
+							return new PrimitiveConstantExpression(KnownTypeReference.UInt64, new ulong());
+						case "System.Single":
+						case "float":
+							return new PrimitiveConstantExpression(KnownTypeReference.Single, new float());
+						case "System.Double":
+						case "double":
+							return new PrimitiveConstantExpression(KnownTypeReference.Double, new double());
+						case "System.Decimal":
+						case "decimal":
+							return new PrimitiveConstantExpression(KnownTypeReference.Decimal, new decimal());
+					}
+				}
+
+				return null;
+			}
+
 			public override ConstantExpression VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression)
 			{
 				var initializer = arrayCreateExpression.Initializer;

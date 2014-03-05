@@ -450,6 +450,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 			set;
 		}
+
+		public NewLinePlacement NewLineBeforeConstructorInitializerColon {
+			get;
+			set;
+		}
+
+		public NewLinePlacement NewLineAfterConstructorInitializerColon {
+			get;
+			set;
+		}
 		
 		// indexer
 		public bool SpaceBeforeIndexerDeclarationBracket { // tested

@@ -104,7 +104,88 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitBinaryOperatorExpression(binaryOperatorExpression);
 				Check(ctx.Resolve(binaryOperatorExpression), binaryOperatorExpression.OperatorToken);
 			}
+
+			bool IsObsolete(EntityDeclaration entity)
+			{
+				foreach (var section in entity.Attributes) {
+					foreach (var attr in section.Attributes) {
+						var rr = ctx.Resolve(attr); 
+						if (rr.Type.Name == "ObsoleteAttribute" && rr.Type.Namespace == "System")
+							return true;
+					}
+				}
+				return false;
+			}
+
+			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
+			{
+				if (IsObsolete(typeDeclaration))
+					return;
+				base.VisitTypeDeclaration(typeDeclaration);
+			}
+
+			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
+			{
+				if (IsObsolete(methodDeclaration))
+					return;
+				base.VisitMethodDeclaration(methodDeclaration);
+			}
+
+			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
+			{
+				if (IsObsolete(propertyDeclaration))
+					return;
+				base.VisitPropertyDeclaration(propertyDeclaration);
+			}
+
+			public override void VisitAccessor(Accessor accessor)
+			{
+				if (IsObsolete(accessor))
+					return;
+				base.VisitAccessor(accessor);
+			}
+
+			public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
+			{
+				if (IsObsolete(indexerDeclaration))
+					return;
+				base.VisitIndexerDeclaration(indexerDeclaration);
+			}
+
+			public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
+			{
+				if (IsObsolete(eventDeclaration))
+					return;
+				base.VisitCustomEventDeclaration(eventDeclaration);
+			}
+
+			public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
+			{
+				if (IsObsolete(fieldDeclaration))
+					return;
+				base.VisitFieldDeclaration(fieldDeclaration);
+			}
+
+			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
+			{
+				if (IsObsolete(constructorDeclaration))
+					return;
+				base.VisitConstructorDeclaration(constructorDeclaration);
+			}
+
+			public override void VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration)
+			{
+				if (IsObsolete(destructorDeclaration))
+					return;
+				base.VisitDestructorDeclaration(destructorDeclaration);
+			}
+
+			public override void VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration)
+			{
+				if (IsObsolete(operatorDeclaration))
+					return;
+				base.VisitOperatorDeclaration(operatorDeclaration);
+			}
 		}
 	}
 }
-

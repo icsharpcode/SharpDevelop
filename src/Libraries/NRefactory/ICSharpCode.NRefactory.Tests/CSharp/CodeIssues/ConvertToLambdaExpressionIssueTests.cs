@@ -92,6 +92,26 @@ class TestClass
 		}
 
 
+		[Test]
+		public void TestAssignmentExpression ()
+		{
+			TestWrongContext<ConvertToLambdaExpressionIssue>(@"
+using System;
+public class Test
+{
+	void Foo ()
+	{
+		int i;
+		Action<int> foo = x => {
+			i = x + x;
+		};
+		foo(5);
+	}
+}
+");
+		}
+
+
 		/// <summary>
 		/// Bug 14840 - Incorrect "can be converted to expression" suggestion
 		/// </summary>

@@ -319,5 +319,49 @@ class Foo
 	}
 }");
 		}
+
+		/// <summary>
+		/// Bug 17945 - Bad 'unnecessary cast' warning
+		/// </summary>
+		[Test]
+		public void TestBug17945 ()
+		{
+			TestWrongContext<RedundantCastIssue> (@"
+namespace Bug
+{
+    public class C
+    {
+        public C (object o)
+        {
+        }
+ 
+        public C (string o)
+            : this (o as object)
+        {
+        }
+    }
+}
+");
+		}
+
+		[Test]
+		public void TestOverloadSelector ()
+		{
+			TestWrongContext<RedundantCastIssue> (@"
+public class Foo
+{
+	public void Bar (object o)
+	{
+	}
+
+	public void Bar (string o)
+	    
+	{
+ 		Bar ((object)o);
+	}
+}
+
+");
+		}
 	}
 }

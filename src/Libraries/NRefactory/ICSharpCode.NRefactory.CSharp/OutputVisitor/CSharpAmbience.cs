@@ -187,8 +187,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				WriteTypeDeclarationName(typeDef.DeclaringTypeDefinition, writer, formattingPolicy);
 				writer.WriteToken(Roles.Dot, ".");
 			} else if ((ConversionFlags & ConversionFlags.UseFullyQualifiedEntityNames) == ConversionFlags.UseFullyQualifiedEntityNames) {
-				WriteQualifiedName(typeDef.Namespace, writer, formattingPolicy);
-				writer.WriteToken(Roles.Dot, ".");
+				if (!string.IsNullOrEmpty(typeDef.Namespace)) {
+					WriteQualifiedName(typeDef.Namespace, writer, formattingPolicy);
+					writer.WriteToken(Roles.Dot, ".");
+				}
 			}
 			writer.WriteIdentifier(node.NameToken);
 			if ((ConversionFlags & ConversionFlags.ShowTypeParameterList) == ConversionFlags.ShowTypeParameterList) {

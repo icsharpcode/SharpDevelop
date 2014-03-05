@@ -940,6 +940,127 @@ class Foo
 		}
 
 		[Test]
+		public void TestConstructorInitializerColonDontCare()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.NewLineAfterConstructorInitializerColon = NewLinePlacement.DoNotCare;
+			policy.NewLineBeforeConstructorInitializerColon = NewLinePlacement.DoNotCare;
+			Test(policy, @"class A
+{
+	public A ()		:			base ()
+	{
+
+	}
+
+	public A ()			: 			
+						base ()
+	{
+
+	}
+
+	public A ()
+						: 					base ()
+	{
+
+	}
+
+	public A ()				
+		     : 					
+						base ()
+	{
+
+	}
+}",
+				@"class A
+{
+	public A () : base ()
+	{
+
+	}
+
+	public A () :
+		base ()
+	{
+
+	}
+
+	public A ()
+		: base ()
+	{
+
+	}
+
+	public A ()
+		:
+		base ()
+	{
+
+	}
+}");
+		}
+
+		[Test]
+		public void TestConstructorInitializerColonNewLineBeforeSameLineAfter()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.NewLineBeforeConstructorInitializerColon = NewLinePlacement.NewLine;
+			policy.NewLineAfterConstructorInitializerColon = NewLinePlacement.SameLine;
+
+			Test(policy, @"class A
+{
+	public A ()		:			base ()
+	{
+
+	}
+
+	public A ()			: 			
+						base ()
+	{
+
+	}
+
+	public A ()
+						: 					base ()
+	{
+
+	}
+
+	public A ()				
+		     : 					
+						base ()
+	{
+
+	}
+}",
+				@"class A
+{
+	public A ()
+		: base ()
+	{
+
+	}
+
+	public A ()
+		: base ()
+	{
+
+	}
+
+	public A ()
+		: base ()
+	{
+
+	}
+
+	public A ()
+		: base ()
+	{
+
+	}
+}");
+		}
+
+		[Test]
 		public void TestIndentPreprocessorStatementsAdd()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();

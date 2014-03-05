@@ -3016,7 +3016,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return result.Result;
 			}
 
-			bool isProtectedAllowed = resolveResult is ThisResolveResult ? true : lookup.IsProtectedAccessAllowed(type);
+			bool isProtectedAllowed = lookup.IsProtectedAccessAllowed(resolveResult);
 			bool skipNonStaticMembers = (resolveResult is TypeResolveResult);
 
 			if (resolveResult is MemberResolveResult && resolvedNode is IdentifierExpression) {

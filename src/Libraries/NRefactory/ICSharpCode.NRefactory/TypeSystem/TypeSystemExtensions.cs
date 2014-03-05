@@ -42,6 +42,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </remarks>
 		public static IEnumerable<IType> GetAllBaseTypes(this IType type)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
 			BaseTypeCollector collector = new BaseTypeCollector();
 			collector.CollectBaseTypes(type);
 			return collector;
@@ -57,6 +59,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </remarks>
 		public static IEnumerable<IType> GetNonInterfaceBaseTypes(this IType type)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
 			BaseTypeCollector collector = new BaseTypeCollector();
 			collector.SkipImplementedInterfaces = true;
 			collector.CollectBaseTypes(type);

@@ -72,6 +72,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			var childs = method.DescendantNodes(child => !(child is BlockStatement) || (((BlockStatement)child).Parent is MethodDeclaration)).Where(n => n is Statement).ToList();
 			Assert.AreEqual(4, childs.Count); 
 		}
+		
+		[Test]
+		public void GetNodesBetween()
+		{
+			var parser = new CSharpParser();
+			var expr = parser.ParseExpression("a*b+c*d");
+			var nodes = expr.GetNodesBetween(1, 3, 1, 6).ToList();
+			Assert.AreEqual(new[] { "b", "+", "c" }, nodes.Select(n => n.ToString()).ToList());
+		}
 	}
 }
 

@@ -266,6 +266,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				SpaceBeforeIndexerDeclarationBracket = false,
 				SpaceAfterMethodCallParameterComma = true,
 				SpaceAfterConstructorDeclarationParameterComma = true,
+				NewLineBeforeConstructorInitializerColon = NewLinePlacement.NewLine,
+				NewLineAfterConstructorInitializerColon = NewLinePlacement.SameLine,
 				
 				SpaceBeforeNewParentheses = false,
 				SpacesWithinNewParentheses = false,

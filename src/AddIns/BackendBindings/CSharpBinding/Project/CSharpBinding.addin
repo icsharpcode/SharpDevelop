@@ -253,7 +253,6 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.NotResolvedInTextIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ObjectCreationAsStatementIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.OperatorIsCanBeUsedIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.OptionalParameterCouldBeSkippedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.OptionalParameterHierarchyMismatchIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.OptionalParameterRefOutIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ParameterCanBeDeclaredWithBaseTypeIssue" />

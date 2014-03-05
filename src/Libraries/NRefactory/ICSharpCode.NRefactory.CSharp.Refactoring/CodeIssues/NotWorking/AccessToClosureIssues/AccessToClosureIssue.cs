@@ -87,14 +87,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				var variableDecl = variableInitializer.Parent as VariableDeclarationStatement;
 				if (variableDecl != null)
-					CheckVariable (((LocalResolveResult)ctx.Resolve (variableInitializer)).Variable, 
+					CheckVariable (GetVariable(ctx.Resolve (variableInitializer)), 
 								   variableDecl.GetParent<Statement> ());
 				base.VisitVariableInitializer (variableInitializer);
 			}
 
 			public override void VisitForeachStatement (ForeachStatement foreachStatement)
 			{
-				CheckVariable (((LocalResolveResult)ctx.Resolve (foreachStatement.VariableNameToken)).Variable,
+				CheckVariable (GetVariable(ctx.Resolve (foreachStatement.VariableNameToken)),
 							   foreachStatement);
 				base.VisitForeachStatement (foreachStatement);
 			}
@@ -121,9 +121,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				base.VisitParameterDeclaration (parameterDeclaration);
 			}
+			
+			IVariable GetVariable(ResolveResult rr)
+			{
+				var lrr = rr as LocalResolveResult;
+				return lrr != null ? lrr.Variable : null;
+			}
 
 			void CheckVariable(IVariable variable, Statement env)
 			{
+				if (variable == null)
+					return;
 				if (!issueProvider.IsTargetVariable(variable))
 					return;
 

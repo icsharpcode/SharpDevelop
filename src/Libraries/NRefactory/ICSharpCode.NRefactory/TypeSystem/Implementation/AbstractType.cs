@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				.Concat(GetEvents(filter, options));
 		}
 		
-		public virtual IEnumerable<IMethod> GetAccessors(Predicate<IUnresolvedMethod> filter, GetMemberOptions options = GetMemberOptions.None)
+		public virtual IEnumerable<IMethod> GetAccessors(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			return EmptyList<IMethod>.Instance;
 		}

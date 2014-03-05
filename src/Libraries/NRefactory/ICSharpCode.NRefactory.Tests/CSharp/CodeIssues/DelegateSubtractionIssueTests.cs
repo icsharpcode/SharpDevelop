@@ -77,6 +77,27 @@ class Foo
 }
 ");
 		}
+
+		/// <summary>
+		/// Bug 18061 - Incorrect "delegate subtraction has unpredictable result" warning
+		/// </summary>
+		[Test]
+		public void TestBug18061()
+		{
+			TestWrongContext<DelegateSubtractionIssue>(@"
+using System;
+class Test
+{
+	public event EventHandler Foo;
+
+	void Bar (EventHandler bar)
+	{
+		Foo -= bar;
+	}
+}
+");
+		}
+
 	}
 }
 

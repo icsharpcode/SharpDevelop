@@ -351,10 +351,9 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			if (member.SymbolKind != SymbolKind.Method || member.ReturnType.Kind != TypeKind.Void)
 				return false;
-			while (member.IsOverride) {
-				member = (IParameterizedMember)InheritanceHelper.GetBaseMember(member);
-				if (member == null)
-					return false;
+			foreach (var baseMember in InheritanceHelper.GetBaseMembers(member, false)) {
+				if (IsInactiveConditional (baseMember.Attributes))
+					return true;
 			}
 			return IsInactiveConditional(member.Attributes);
 		}

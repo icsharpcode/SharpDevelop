@@ -261,13 +261,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			bool CanIndex(ITypeDefinition currentTypeDefinition, ResolveResult targetResolveResult)
 			{
-				var type = targetResolveResult.Type;
-				if (type is ArrayType) {
+				if (targetResolveResult.Type is ArrayType) {
 					return true;
 				}
 
 				var memberLookup = new MemberLookup(currentTypeDefinition, ctx.Compilation.MainAssembly);
-				var indexers = memberLookup.LookupIndexers(type).ToList();
+				var indexers = memberLookup.LookupIndexers(targetResolveResult).ToList();
 
 				return indexers.SelectMany(methodList => methodList).Any(
 					member => ((IProperty)member).CanGet && ((IProperty)member).Getter.Parameters.Count == 1);

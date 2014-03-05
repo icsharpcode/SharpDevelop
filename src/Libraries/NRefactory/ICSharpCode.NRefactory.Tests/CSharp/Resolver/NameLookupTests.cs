@@ -399,7 +399,23 @@ class Activator {
 			var result = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("Testnamespace.Activator", result.Type.FullName);
 		}
-		
+
+		[Test]
+		public void NamespaceDefinitionOverwritesTypeName ()
+		{
+			// Classes in the current namespace are preferred over classes from
+			// imported namespaces
+			string program = @"using System;
+namespace $Auto.Test$ {
+	class Auto
+ 	{
+	}
+}
+";
+			var result = Resolve<NamespaceResolveResult>(program);
+			Assert.AreEqual("Auto.Test", result.NamespaceName);
+		}
+
 		[Test]
 		public void ParentNamespaceTypeLookup()
 		{

@@ -303,24 +303,13 @@
     <Compile Include="CodeIssues\Synced\RedundanciesInDeclaration\RedundantDefaultFieldInitializerIssue.cs" />
     <Compile Include="CodeIssues\Synced\RedundanciesInDeclaration\RedundantOverridenMemberIssue.cs" />
     <Compile Include="CodeIssues\Synced\RedundanciesInDeclaration\UnusedTypeParameterIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\CallToObjectEqualsViaBaseIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\CastExpressionOfIncompatibleTypeIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\CompilerErrors\CS0659OverrideEqualWithoutGetHashCode.cs" />
-    <Compile Include="CodeIssues\Uncategorized\CompilerErrors\CS1729TypeHasNoConstructorWithNArgumentsIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\ConstantConditionIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\DisposeMethodInNonIDisposableTypeIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\DuplicatedLinqToListOrArrayIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\ExceptionRethrowIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\ExplicitConversionInForEachIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\ExpressionIsNeverOfProvidedTypeIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\IncorrectCallToObjectGetHashCodeIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\OptionalParameterCouldBeSkippedIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\RedundantAssignmentIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\ResultOfAsyncCallShouldNotBeIgnoredIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\UnreachableCodeIssue.cs" />
     <Compile Include="CodeIssues\Uncategorized\UseOfMemberOfNullReference.cs" />
-    <Compile Include="CodeIssues\Uncategorized\VariableOnlyAssignedIssues\ParameterOnlyAssignedIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\VariableOnlyAssignedIssues\VariableOnlyAssignedIssue.cs" />
     <Compile Include="CodeActions\AddExceptionDescriptionAction.cs" />
     <Compile Include="CodeIssues\Uncategorized\DontUseLinqWhenItsVerboseAndInefficientIssue.cs" />
     <Compile Include="CodeActions\ConvertIfStatementToConditionalTernaryExpressionAction.cs" />
@@ -384,7 +373,6 @@
     <Compile Include="CodeIssues\Synced\PracticesAndImprovements\UseIsOperatorIssue.cs" />
     <Compile Include="CodeIssues\Synced\CodeQuality\FormatStringProblemIssue.cs" />
     <Compile Include="CodeIssues\Synced\RedundanciesInCode\RedundantCatchClauseIssue.cs" />
-    <Compile Include="CodeIssues\Uncategorized\CheckNamespaceIssue.cs" />
     <Compile Include="CodeIssues\Synced\CodeQuality\PossibleMultipleEnumerationIssue.cs" />
     <Compile Include="CodeIssues\Synced\RedundanciesInCode\ConditionIsAlwaysTrueOrFalseIssue.cs" />
     <Compile Include="CodeIssues\Synced\RedundanciesInDeclaration\UnusedLabelIssue.cs" />
@@ -428,6 +416,17 @@
     <Compile Include="CodeIssues\Custom\CompilerErrors\CS0169FieldIsNeverUsedIssue.cs" />
     <Compile Include="CodeIssues\Custom\StaticEventSubscriptionIssue.cs" />
     <Compile Include="CodeActions\CS1105ExtensionMethodMustBeDeclaredStaticAction.cs" />
+    <Compile Include="CodeIssues\Custom\CompilerErrors\CS0659OverrideEqualWithoutGetHashCode.cs" />
+    <Compile Include="CodeIssues\Custom\CompilerErrors\CS1729TypeHasNoConstructorWithNArgumentsIssue.cs" />
+    <Compile Include="CodeIssues\Custom\ParameterOnlyAssignedIssue.cs" />
+    <Compile Include="CodeIssues\Custom\VariableOnlyAssignedIssue.cs" />
+    <Compile Include="CodeIssues\Custom\CallToObjectEqualsViaBaseIssue.cs" />
+    <Compile Include="CodeIssues\Custom\ConstantConditionIssue.cs" />
+    <Compile Include="CodeIssues\Custom\CheckNamespaceIssue.cs" />
+    <Compile Include="CodeIssues\Custom\CastExpressionOfIncompatibleTypeIssue.cs" />
+    <Compile Include="CodeIssues\Custom\CompilerErrors\ExpressionIsNeverOfProvidedTypeIssue.cs" />
+    <Compile Include="CodeIssues\Custom\RedundantAssignmentIssue.cs" />
+    <Compile Include="CodeIssues\Custom\UnreachableCodeIssue.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

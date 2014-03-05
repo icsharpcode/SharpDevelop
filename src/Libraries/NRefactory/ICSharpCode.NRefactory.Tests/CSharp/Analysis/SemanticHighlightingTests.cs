@@ -402,6 +402,33 @@ class Test
 		}
 
 		[Test]
+		public void TestInactiveConditionalCallOverrideTest()
+		{
+			TestColor (@"using System.Diagnostics;
+class TestBase
+{
+	[Conditional(""FOO"")]
+	public virtual void Test22()
+	{
+	}
+}
+
+
+class Test : TestBase
+{
+	public override void Test22()
+	{
+	}
+
+	public void Foo()
+	{
+		$Test22();
+	}
+}
+", inactiveCodeColor);
+		}
+
+		[Test]
 		public void TestInactivePartialCall()
 		{
 			TestColor (@"using System.Diagnostics;

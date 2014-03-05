@@ -26,6 +26,7 @@
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.PatternMatching;
 using ICSharpCode.NRefactory.Refactoring;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -52,9 +53,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitBinaryOperatorExpression(binaryOperatorExpression);
 				if (binaryOperatorExpression.Operator != BinaryOperatorType.Subtract)
 					return;
-				var rr = ctx.Resolve(binaryOperatorExpression);
-				if (rr.Type.Kind == ICSharpCode.NRefactory.TypeSystem.TypeKind.Delegate)
+				var rr = ctx.Resolve(binaryOperatorExpression.Right);
+				if (rr.Type.Kind == ICSharpCode.NRefactory.TypeSystem.TypeKind.Delegate && !IsEvent (binaryOperatorExpression.Left)) {
 					AddIssue(new CodeIssue(binaryOperatorExpression, ctx.TranslateString("Delegate subtraction has unpredictable result")));
+				}
+			}
+
+			bool IsEvent(AstNode node)
+			{
+				var rr = ctx.Resolve(node) as MemberResolveResult;
+				return rr != null && rr.Member.SymbolKind == ICSharpCode.NRefactory.TypeSystem.SymbolKind.Event;
 			}
 
 			public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
@@ -63,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (assignmentExpression.Operator != AssignmentOperatorType.Subtract)
 					return;
 				var rr = ctx.Resolve(assignmentExpression.Right);
-				if (rr.Type.Kind == ICSharpCode.NRefactory.TypeSystem.TypeKind.Delegate)
+				if (rr.Type.Kind == ICSharpCode.NRefactory.TypeSystem.TypeKind.Delegate && !IsEvent (assignmentExpression.Left))
 					AddIssue(new CodeIssue(assignmentExpression, ctx.TranslateString("Delegate subtraction has unpredictable result")));
 			}
 		}

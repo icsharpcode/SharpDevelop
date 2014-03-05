@@ -47,9 +47,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		ITypeDefinition currentTypeDefinition;
-		IAssembly currentAssembly;
-		bool isInEnumMemberInitializer;
+		readonly ITypeDefinition currentTypeDefinition;
+		readonly IAssembly currentAssembly;
+		readonly bool isInEnumMemberInitializer;
 		
 		public MemberLookup(ITypeDefinition currentTypeDefinition, IAssembly currentAssembly, bool isInEnumMemberInitializer = false)
 		{
@@ -60,8 +60,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		#region IsAccessible
 		/// <summary>
+		/// Gets whether access to protected instance members of the target expression is possible.
+		/// </summary>
+		public bool IsProtectedAccessAllowed(ResolveResult targetResolveResult)
+		{
+			return targetResolveResult is ThisResolveResult || IsProtectedAccessAllowed(targetResolveResult.Type);
+		}
+		
+		/// <summary>
 		/// Gets whether access to protected instance members of the target type is possible.
 		/// </summary>
+		/// <remarks>
+		/// This method does not consider the special case of the 'base' reference. If possible, use the
+		/// <c>IsProtectedAccessAllowed(ResolveResult)</c> overload instead.
+		/// </remarks>
 		public bool IsProtectedAccessAllowed(IType targetType)
 		{
 			if (targetType.Kind == TypeKind.TypeParameter)
@@ -151,7 +163,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("targetResolveResult");
 			
 			bool targetIsTypeParameter = targetResolveResult.Type.Kind == TypeKind.TypeParameter;
-			bool allowProtectedAccess = (targetResolveResult is ThisResolveResult || IsProtectedAccessAllowed(targetResolveResult.Type));
+			bool allowProtectedAccess = IsProtectedAccessAllowed(targetResolveResult);
 			
 			// maps the member name to the list of lookup groups
 			var lookupGroupDict = new Dictionary<string, List<LookupGroup>>();
@@ -332,7 +344,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			bool targetIsTypeParameter = targetResolveResult.Type.Kind == TypeKind.TypeParameter;
 			
-			bool allowProtectedAccess = (targetResolveResult is ThisResolveResult || IsProtectedAccessAllowed(targetResolveResult.Type));
+			bool allowProtectedAccess = IsProtectedAccessAllowed(targetResolveResult);
 			Predicate<ITypeDefinition> nestedTypeFilter = delegate(ITypeDefinition entity) {
 				return entity.Name == name && IsAccessible(entity, allowProtectedAccess);
 			};
@@ -399,12 +411,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Looks up the indexers on the target type.
 		/// </summary>
-		public IList<MethodListWithDeclaringType> LookupIndexers(IType targetType)
+		public IList<MethodListWithDeclaringType> LookupIndexers(ResolveResult targetResolveResult)
 		{
-			if (targetType == null)
-				throw new ArgumentNullException("targetType");
+			if (targetResolveResult == null)
+				throw new ArgumentNullException("targetResolveResult");
 			
-			bool allowProtectedAccess = IsProtectedAccessAllowed(targetType);
+			IType targetType = targetResolveResult.Type;
+			bool allowProtectedAccess = IsProtectedAccessAllowed(targetResolveResult);
 			Predicate<IUnresolvedProperty> filter = p => p.IsIndexer;
 			
 			List<LookupGroup> lookupGroups = new List<LookupGroup>();

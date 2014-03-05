@@ -216,6 +216,33 @@ class MyClass
 ";
 			TestWrongContext<CS0618UsageOfObsoleteMemberIssue>(input);
 		}
+
+
+		/// <summary>
+		/// Bug 17859 - Source analysis should not warn when obsolete member is used by obsolete member
+		/// </summary>
+		[Test]
+		public void TestBug17859()
+		{
+			var input = @"
+using System;
+
+public class Foo
+{
+	[Obsolete]
+	public static void OldBar ()
+	{
+	}
+
+	[Obsolete]
+	public static void OldBar2 ()
+	{
+		OldBar ();
+	}
+}
+";
+			TestWrongContext<CS0618UsageOfObsoleteMemberIssue>(input);
+		}
 	}
 }
 

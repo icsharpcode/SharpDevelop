@@ -156,6 +156,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return false;
 			}
 
+			bool IsRequiredToSelectOverload(IEnumerable<IMethod> methods, IType expectedType, int nArg)
+			{
+				// TODO: Check method accessibility & other parameter match.
+				int count = 0;
+				foreach (var method in methods) {
+					if (method.Parameters.Count < nArg)
+						continue;
+					var baseTypes = method.Parameters[nArg].Type.GetAllBaseTypes();
+					if (expectedType == method.Parameters[nArg].Type || baseTypes.Any(t => t.Equals(expectedType)))
+						count++;
+				}
+				return count > 1;
+			}
+
 			void CheckTypeCast(Expression typeCastNode, Expression expr, TextLocation castStart, TextLocation castEnd)
 			{
 				var outerTypeCastNode = typeCastNode;
@@ -197,6 +211,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 					}
 				}
+
+				var mrr = ctx.Resolve(typeCastNode.Parent) as CSharpInvocationResolveResult;
+				if (mrr != null) {
+					if (mrr.Member.SymbolKind == SymbolKind.Constructor) {
+						int nArg = typeCastNode.Parent.Children
+							.Where(n => n.Role == Roles.Argument)
+							.TakeWhile(n => n.DescendantNodesAndSelf().All(c => c != typeCastNode))
+							.Count();
+
+						if (IsRequiredToSelectOverload(mrr.Member.DeclaringTypeDefinition.GetConstructors(), expectedType, nArg))
+							return;
+					} else if (mrr.Member.SymbolKind == SymbolKind.Method) {
+						int nArg = typeCastNode.Parent.Children
+							.Where(n => n.Role == Roles.Argument)
+							.TakeWhile(n => n.DescendantNodesAndSelf().All(c => c != typeCastNode))
+							.Count();
+						if (IsRequiredToSelectOverload(mrr.Member.DeclaringTypeDefinition.GetMethods(m => m.Name == mrr.Member.Name), expectedType, nArg))
+							return;
+					}
+				}
+
 				AddIssue(outerTypeCastNode, typeCastNode, expr, castStart, castEnd);
 			}
 		}

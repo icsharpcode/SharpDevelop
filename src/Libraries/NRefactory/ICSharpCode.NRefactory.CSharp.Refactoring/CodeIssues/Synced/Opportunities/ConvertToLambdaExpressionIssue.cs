@@ -57,6 +57,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!ConvertLambdaBodyStatementToExpressionAction.TryGetConvertableExpression(lambdaExpression.Body, out block, out expr))
 					return;
 				var node = block.Statements.FirstOrDefault() ?? block;
+				var expressionStatement = node as ExpressionStatement;
+				if (expressionStatement != null) {
+					if (expressionStatement.Expression is AssignmentExpression)
+						return;
+				}
 				var returnTypes = new List<IType>();
 				foreach (var type in TypeGuessing.GetValidTypes(ctx.Resolver, lambdaExpression)) {
 					if (type.Kind != TypeKind.Delegate)

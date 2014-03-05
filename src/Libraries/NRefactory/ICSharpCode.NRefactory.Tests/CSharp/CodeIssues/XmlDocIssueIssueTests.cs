@@ -168,6 +168,45 @@ class Foo {
 }
 ");
 		}
+
+
+		[Test]
+		public void TestSeeCRefMember ()
+		{
+			TestWrongContext<XmlDocIssue>(@"
+using System;
+
+namespace Foo
+{
+	public interface IGroupingProvider
+	{
+		IGroupingProvider Next { get; set; }
+		
+		/// <summary>
+		/// Occurs when <see cref=""Next""/> changes.
+		/// </summary>
+		event EventHandler<EventArgs> NextChanged;
+	}
+}
+");
+		}
+
+		[Test]
+		public void TestEventComment ()
+		{
+			TestIssue<XmlDocIssue>(@"
+using System;
+
+namespace Foo
+{
+	public interface IGroupingProvider
+	{
+		/// <summa
+		event EventHandler<EventArgs> NextChanged;
+	}
+}
+", 1);
+		}
 	}
 
 

@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 						context = compilation.TypeResolveContext;
 					// Include (potentially specialized) inherited members when testing ToMemberReference()
 					foreach (var member in IncludeAccessors(typeDef.GetMembers())) {
-						var resolvedMember = member.ToMemberReference().Resolve(context);
+						var resolvedMember = member.ToReference().Resolve(context);
 						if (!member.Equals(resolvedMember))
 							throw new InvalidOperationException();
 					}

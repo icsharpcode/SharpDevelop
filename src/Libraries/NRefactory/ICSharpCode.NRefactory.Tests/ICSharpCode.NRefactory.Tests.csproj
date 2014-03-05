@@ -374,7 +374,6 @@
     <Compile Include="CSharp\CodeIssues\AccessToStaticMemberViaDerivedTypeIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\IsTypeCriterionTests.cs" />
     <Compile Include="Utils\CompositeFormatStringParser\CompositeFormatStringParserTests.cs" />
-    <Compile Include="CSharp\CodeIssues\OptionalParameterCouldBeSkippedTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantToStringCallIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\CallToObjectEqualsViaBaseTests.cs" />
     <Compile Include="CSharp\CodeIssues\IncorrectCallToGetHashCodeTests.cs" />
@@ -585,7 +584,6 @@
     <Compile Include="CSharp\CodeIssues\RedundantDelegateCreationIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantEnumerableCastCallIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\MissingInterfaceMemberImplementationIssueTests.cs" />
-    <Compile Include="CSharp\CodeIssues\UnmatchedSizeSpeicificationInArrayCreationTests.cs" />
     <Compile Include="FormattingTests\TestLinq.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantBlockInDifferentBranchesTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeDeclaredWithBaseTypeIssueTests.cs" />
@@ -619,6 +617,7 @@
     <Compile Include="FormattingTests\ConstructFixerTests.cs" />
     <Compile Include="CSharp\CodeIssues\StaticEventSubscriptionIssueTests.cs" />
     <Compile Include="CSharp\CodeActions\CS1105ExtensionMethodMustBeDeclaredStaticActionTests.cs" />
+    <Compile Include="CSharp\CodeIssues\UnmatchedSizeSpeicificationInArrayCreationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">

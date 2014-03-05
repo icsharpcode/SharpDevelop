@@ -434,16 +434,11 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			var initializer = constructorDeclaration.Initializer;
 			if (!initializer.IsNull) {
-				ForceSpacesBefore(constructorDeclaration.ColonToken, true);
-				ForceSpacesAfter(constructorDeclaration.ColonToken, true);
-				bool popIndent = initializer.StartLocation.Line != constructorDeclaration.ColonToken.StartLocation.Line;
-				if (popIndent) {
-					curIndent.Push(IndentType.Block);
-					FixIndentation(initializer);
-				}
+				curIndent.Push(IndentType.Block);
+				PlaceOnNewLine(policy.NewLineBeforeConstructorInitializerColon, constructorDeclaration.ColonToken);
+				PlaceOnNewLine(policy.NewLineAfterConstructorInitializerColon, initializer);
 				initializer.AcceptVisitor(this);
-				if (popIndent)
-					curIndent.Pop();
+				curIndent.Pop();
 			}
 			if (!constructorDeclaration.Body.IsNull) {
 				FixOpenBrace(policy.ConstructorBraceStyle, constructorDeclaration.Body.LBraceToken);

@@ -378,6 +378,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public const int SOd  = sizeof(double);
 		public const int SObl = sizeof(bool);
 		public const int SOe = sizeof(MyEnum);
+
+
+		public const byte CNewb = new byte();
+		public const sbyte CNewsb = new sbyte();
+		public const char CNewc = new char();
+		public const short CNews = new short();
+		public const ushort CNewus = new ushort();
+		public const int CNewi = new int();
+		public const uint CNewui = new uint();
+		public const long CNewl = new long();
+		public const ulong CNewul = new ulong();
+		public const double CNewd = new double();
+		public const float CNewf = new float();
+		public const decimal CNewm = new decimal();
 	}
 
 	public interface IExplicitImplementationTests 

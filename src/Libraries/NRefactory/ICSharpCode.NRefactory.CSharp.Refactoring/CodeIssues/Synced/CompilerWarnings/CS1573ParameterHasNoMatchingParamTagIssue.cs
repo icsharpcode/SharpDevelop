@@ -128,6 +128,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				List<Tuple<string, int>> parameters = new List<Tuple<string, int>>();
 
 				using (var reader = new XmlTextReader(new StringReader(xml.ToString()))) {
+					reader.XmlResolver = null;
 					try {
 						while (reader.Read()) {
 							if (member == null)

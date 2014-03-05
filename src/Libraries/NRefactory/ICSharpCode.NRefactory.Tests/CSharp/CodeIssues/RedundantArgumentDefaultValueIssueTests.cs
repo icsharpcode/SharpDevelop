@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
+using ICSharpCode.NRefactory.CSharp.CodeActions;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
@@ -213,6 +214,228 @@ class Test
 }
 ");
 		}
+
+		[Test]
+		public void SimpleCase()
+		{
+			Test<RedundantArgumentDefaultValueIssue>(@"
+class TestClass
+{
+	void Foo(string a1 = ""a1"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo (""a1"");
+	}
+}", @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo ();
+	}
+}");
+		}
+
+		[Test]
+		public void ChecksConstructors()
+		{
+			Test<RedundantArgumentDefaultValueIssue>(@"
+class TestClass
+{
+	public TestClass(string a1 = ""a1"")
+	{
+	}
+
+	void Bar()
+	{
+		var foo = new TestClass (""a1"");
+	}
+}", @"
+class TestClass
+{
+	public TestClass(string a1 = ""a1"")
+	{
+	}
+
+	void Bar()
+	{
+		var foo = new TestClass ();
+	}
+}");
+		}
+
+		[Test]
+		public void IgnoresAllParametersPreceedingANeededOne()
+		{
+			Test<RedundantArgumentDefaultValueIssue>(@"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", string a3 = ""a3"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo (""a1"", ""Another string"", ""a3"");
+	}
+}", @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", string a3 = ""a3"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo (""a1"", ""Another string"");
+	}
+}");
+		}
+
+		[Test]
+		public void ChecksParametersIfParamsAreUnused()
+		{
+			Test<RedundantArgumentDefaultValueIssue>(@"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", string a3 = ""a3"", params string[] extraStrings)
+	{
+	}
+
+	void Bar()
+	{
+		Foo (""a1"", ""a2"", ""a3"");
+	}
+}", 3, @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", string a3 = ""a3"", params string[] extraStrings)
+	{
+	}
+
+	void Bar()
+	{
+		Foo ();
+	}
+}", 0);
+		}
+
+		[Test]
+		public void IgnoresIfParamsAreUsed()
+		{
+			var input = @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", string a3 = ""a3"", params string[] extraStrings)
+	{
+	}
+
+	void Bar()
+	{
+		Foo (""a1"", ""a2"", ""a3"", ""extraString"");
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new RedundantArgumentDefaultValueIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+		[Ignore("Fixme")]
+		[Test]
+		public void NamedArgument()
+		{
+			Test<RedundantArgumentDefaultValueIssue>(@"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo (a2: ""a2"");
+	}
+}", @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo ();
+	}
+}");
+		}
+
+		[Ignore("Fixme")]
+		[Test]
+		public void DoesNotStopAtDifferingNamedParameters()
+		{
+			Test<RedundantArgumentDefaultValueIssue>(@"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", string a3 = ""a3"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo (""a1"", ""a2"", a3: ""non-default"");
+	}
+}", @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", string a3 = ""a3"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo (a3: ""non-default"");
+	}
+}");
+		}
+
+		[Ignore("Fixme")]
+		[Test]
+		public void DoesNotStopAtNamedParamsArray()
+		{
+			Test<RedundantArgumentDefaultValueIssue>(@"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", params string[] extras)
+	{
+	}
+
+	void Bar()
+	{
+		Foo (""a1"", ""a2"", extras: new [] { ""extra1"" });
+	}
+}", @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", params string[] extras)
+	{
+	}
+
+	void Bar()
+	{
+		Foo (extras: new[] {
+	""extra1""
+});
+	}
+}");
+		}
+
 	}
 }
 

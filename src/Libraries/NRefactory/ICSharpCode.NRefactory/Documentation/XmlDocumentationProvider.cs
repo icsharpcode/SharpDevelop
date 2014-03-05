@@ -129,6 +129,7 @@ namespace ICSharpCode.NRefactory.Documentation
 							Debug.WriteLine("XmlDoc " + fileName + " is redirecting to " + redirectionTarget);
 							using (FileStream redirectedFs = new FileStream(redirectionTarget, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete)) {
 								using (XmlTextReader redirectedXmlReader = new XmlTextReader(redirectedFs)) {
+									redirectedXmlReader.XmlResolver = null; // no DTD resolving
 									this.fileName = redirectionTarget;
 									ReadXmlDoc(redirectedXmlReader);
 								}

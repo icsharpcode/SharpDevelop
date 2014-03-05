@@ -328,6 +328,39 @@ public class Test : Base {
 		}
 		
 		[Test]
+		public void ProtectedBaseIndexer()
+		{
+			string program = @"using System;
+class X {
+	protected int this[int index] { get; }
+}
+class Y : X {
+	int M() {
+		return $base[0]$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual(OverloadResolutionErrors.None, rr.OverloadResolutionErrors);
+			Assert.AreEqual("X.Item", rr.Member.FullName);
+		}
+		
+		[Test]
+		public void ProtectedBaseIndexerError()
+		{
+			string program = @"using System;
+class X {
+	protected int this[int index] { get; }
+}
+class Y : X {
+	int M(X x) {
+		return $x[0]$;
+	}
+}";
+			var rr = Resolve(program);
+			Assert.IsTrue(rr.IsError);
+		}
+		
+		[Test]
 		public void ThisHasSameTypeAsFieldInGenericClass()
 		{
 			string program = @"using System;

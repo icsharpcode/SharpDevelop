@@ -855,7 +855,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			ConstructorDeclaration decl = new ConstructorDeclaration();
 			decl.Modifiers = GetMemberModifiers(ctor);
-			decl.Name = ctor.DeclaringTypeDefinition.Name;
+			if (ctor.DeclaringTypeDefinition != null)
+				decl.Name = ctor.DeclaringTypeDefinition.Name;
 			foreach (IParameter p in ctor.Parameters) {
 				decl.Parameters.Add(ConvertParameter(p));
 			}
@@ -866,7 +867,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		DestructorDeclaration ConvertDestructor(IMethod dtor)
 		{
 			DestructorDeclaration decl = new DestructorDeclaration();
-			decl.Name = dtor.DeclaringTypeDefinition.Name;
+			if (dtor.DeclaringTypeDefinition != null)
+				decl.Name = dtor.DeclaringTypeDefinition.Name;
 			decl.Body = GenerateBodyBlock();
 			return decl;
 		}

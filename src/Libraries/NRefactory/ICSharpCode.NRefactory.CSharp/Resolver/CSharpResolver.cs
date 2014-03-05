@@ -2196,7 +2196,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// §7.6.6.2 Indexer access
 
 			MemberLookup lookup = CreateMemberLookup();
-			var indexers = lookup.LookupIndexers(target.Type);
+			var indexers = lookup.LookupIndexers(target);
 
 			if (arguments.Any(a => a.Type.Kind == TypeKind.Dynamic)) {
 				// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable indexer.

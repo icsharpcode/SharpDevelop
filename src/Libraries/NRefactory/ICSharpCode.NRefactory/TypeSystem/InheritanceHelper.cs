@@ -61,6 +61,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var substitution = member.Substitution;
 			member = member.MemberDefinition;
 			
+			if (member.DeclaringTypeDefinition == null) {
+				// For global methods, return empty list. (prevent SharpDevelop UDC crash 4524)
+				yield break;
+			}
+			
 			IEnumerable<IType> allBaseTypes;
 			if (includeImplementedInterfaces) {
 				allBaseTypes = member.DeclaringTypeDefinition.GetAllBaseTypes();
