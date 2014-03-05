@@ -175,6 +175,16 @@ namespace ICSharpCode.XmlEditor
 			}	
 		}
 		
+		public void ExpandAll()
+		{
+			xmlElementTreeView.SelectedNode.ExpandAll();
+		}
+		
+		public void CollapseAll()
+		{
+			xmlElementTreeView.SelectedNode.Collapse(false);
+		}
+		
 		/// <summary>
 		/// Gets or sets the xml document to be shown in this
 		/// container control.

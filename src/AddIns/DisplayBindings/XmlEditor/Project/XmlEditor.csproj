@@ -68,6 +68,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\CollapseAllCommand.cs" />
+    <Compile Include="Src\ExpandAllCommand.cs" />
     <Compile Include="Src\XslTransformUrlResolver.cs" />
     <None Include="XmlEditor.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
