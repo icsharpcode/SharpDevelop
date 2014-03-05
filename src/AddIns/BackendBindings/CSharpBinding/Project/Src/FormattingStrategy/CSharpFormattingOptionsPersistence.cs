@@ -25,6 +25,15 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace CSharpBinding.FormattingStrategy
 {
+	public class CSharpFormattingOptionsPersistenceInitCommand : SimpleCommand
+	{
+		public override void Execute(object parameter)
+		{
+			// Initialize CSharpFormattingOptionsPersistence as early as possible (before solution is opened)
+			CSharpFormattingOptionsPersistence.Initialize();
+		}
+	}
+	
 	/// <summary>
 	/// Persistence helper for C# formatting options.
 	/// </summary>
@@ -32,7 +41,7 @@ namespace CSharpBinding.FormattingStrategy
 	{
 		static Dictionary<string, CSharpFormattingOptionsPersistence> projectOptions;
 		
-		static CSharpFormattingOptionsPersistence()
+		public static void Initialize()
 		{
 			projectOptions = new Dictionary<string, CSharpFormattingOptionsPersistence>();
 			
@@ -64,10 +73,10 @@ namespace CSharpBinding.FormattingStrategy
 			if (csproject != null) {
 				string key = project.FileName;
 				if (!projectOptions.ContainsKey(key)) {
-					// Lazily create options container
+					// Lazily create options container for project
 					projectOptions[key] = new CSharpFormattingOptionsPersistence(
 						csproject.ExtensionProperties,
-						new CSharpFormattingOptionsContainer((SolutionOptions ?? GlobalOptions).OptionsContainer)); // HACK!
+						new CSharpFormattingOptionsContainer((SolutionOptions ?? GlobalOptions).OptionsContainer));
 				}
 				
 				return projectOptions[key];

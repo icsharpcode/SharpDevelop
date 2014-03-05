@@ -59,7 +59,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.configurationMapping = information.ConfigurationMapping ?? new ConfigurationMapping();
 			this.Name = information.ProjectName;
 			this.FileName = information.FileName;
-			this.globalPreferencesFileName = new FileName(fileName + ".sdsettings");
 			this.idGuid = (information.IdGuid != Guid.Empty ? information.IdGuid : Guid.NewGuid());
 			this.TypeGuid = information.TypeGuid;
 			if (information.ProjectSections != null)
@@ -115,28 +114,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		Properties globalPreferences = new Properties();
-		
-		public Properties GlobalPreferences {
-			get {
-				lock (syncRoot) {
-					if (globalPreferences == null) {
-						globalPreferences = new Properties(); // in case of errors, use empty properties container
-						if (FileUtility.IsValidPath(globalPreferencesFileName) && File.Exists(globalPreferencesFileName)) {
-							try {
-								globalPreferences = Properties.Load(globalPreferencesFileName);
-							} catch (IOException) {
-							} catch (UnauthorizedAccessException) {
-							} catch (XmlException) {
-								// ignore errors about inaccessible or malformed files
-							}
-						}
-					}
-					return globalPreferences;
-				}
-			}
-		}
-		
 		static FileName GetPreferenceFileName(string projectFileName)
 		{
 			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
@@ -154,7 +131,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				FileName preferencesFile = GetPreferenceFileName(fileName);
 				System.IO.Directory.CreateDirectory(preferencesFile.GetParentDirectory());
 				p.Save(preferencesFile);
-				this.GlobalPreferences.Save(globalPreferencesFileName);
 			} catch (IOException) {
 			} catch (UnauthorizedAccessException) {
 			}
@@ -163,7 +139,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Filename / Directory
 		volatile FileName fileName;
-		volatile FileName globalPreferencesFileName;
 		volatile DirectoryName directoryName;
 		protected IProjectChangeWatcher watcher;
 		

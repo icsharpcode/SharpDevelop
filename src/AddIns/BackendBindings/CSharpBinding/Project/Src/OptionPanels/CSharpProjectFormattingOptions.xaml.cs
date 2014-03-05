@@ -45,16 +45,26 @@ namespace CSharpBinding.OptionPanels
 		protected override void Load(ICSharpCode.SharpDevelop.Project.MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
+			if (persistenceHelper != null) {
+				persistenceHelper.OptionsContainer.PropertyChanged -= ContainerPropertyChanged;
+			}
 			persistenceHelper = CSharpFormattingOptionsPersistence.GetProjectOptions(project);
 			formattingEditor.OptionsContainer = persistenceHelper.OptionsContainer;
 			formattingEditor.AllowPresets = true;
 			persistenceHelper.Load();
+			persistenceHelper.OptionsContainer.PropertyChanged += ContainerPropertyChanged;
 		}
 		
 		protected override bool Save(ICSharpCode.SharpDevelop.Project.MSBuildBasedProject project, string configuration, string platform)
 		{
 			bool success = (persistenceHelper != null) && persistenceHelper.Save();
 			return base.Save(project, configuration, platform) && success;
+		}
+
+		void ContainerPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			// A formatting option has been changed, mark project settings as dirty
+			this.IsDirty = true;
 		}
 	}
 }

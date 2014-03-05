@@ -119,6 +119,10 @@
 		             label = "${res:Dialog.ProjectOptions.Publish}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
+		<!-- TODO Localize label! -->
+		<OptionPanel id    = "CSharpProjectFormattingOptions"
+		             label = "Code Formatting"
+		             class = "CSharpBinding.OptionPanels.CSharpProjectFormattingOptionPanel"/>
 	</Path>
 	
 	<Path name = "/Workspace/Icons">
@@ -496,5 +500,11 @@
 		                type  = "Secondary"
 		                class = "CSharpBinding.FormsDesigner.FormsDesignerSecondaryDisplayBinding"
 		                fileNamePattern = "\.cs$"/>
+	</Path>
+	
+	<!-- Autostart command for initialization -->
+	<Path name = "/SharpDevelop/Autostart">
+		<Class id    = "CSharpFormattingOptionsPersistenceInitCommand"
+		       class = "CSharpBinding.FormattingStrategy.CSharpFormattingOptionsPersistenceInitCommand"/>
 	</Path>
 </AddIn>
