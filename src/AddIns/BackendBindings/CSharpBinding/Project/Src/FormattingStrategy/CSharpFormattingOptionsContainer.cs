@@ -55,6 +55,12 @@ namespace CSharpBinding.FormattingStrategy
 			cachedOptions = CreateCachedOptions();
 		}
 		
+		public string DefaultText
+		{
+			get;
+			set;
+		}
+		
 		public CSharpFormattingOptionsContainer Parent
 		{
 			get {
@@ -69,7 +75,7 @@ namespace CSharpBinding.FormattingStrategy
 		public void Reset(CSharpFormattingOptions options = null)
 		{
 			activeOptions.Clear();
-			cachedOptions = options ?? FormattingOptionsFactory.CreateEmpty();
+			cachedOptions = options ?? CreateCachedOptions();
 			if ((options != null) || (parent == null)) {
 				// Activate all options
 				foreach (var property in typeof(CSharpFormattingOptions).GetProperties()) {

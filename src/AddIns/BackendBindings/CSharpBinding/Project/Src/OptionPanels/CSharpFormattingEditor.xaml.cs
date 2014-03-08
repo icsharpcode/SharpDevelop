@@ -146,7 +146,7 @@ namespace CSharpBinding.OptionPanels
 		
 		private void FillPresetList(CSharpFormattingOptionsContainer container)
 		{
-			presets["Default"] = () => null;
+			presets["(default)"] = () => null;
 			presets["Empty"] = FormattingOptionsFactory.CreateEmpty;
 			presets["SharpDevelop"] = FormattingOptionsFactory.CreateSharpDevelop;
 			presets["Mono"] = FormattingOptionsFactory.CreateMono;
@@ -158,7 +158,7 @@ namespace CSharpBinding.OptionPanels
 			// TODO Localize!
 			if (container.Parent != null) {
 				// Add a "default" preset
-				presetItems.Add(new ComboBoxItem { Content = "Default", Tag = "Default" });
+				presetItems.Add(new ComboBoxItem { Content = (container.Parent ?? container).DefaultText, Tag = "(default)" });
 			}
 			presetItems.Add(new ComboBoxItem { Content = "Empty", Tag = "Empty" });
 			presetItems.Add(new ComboBoxItem { Content = "SharpDevelop", Tag = "SharpDevelop" });

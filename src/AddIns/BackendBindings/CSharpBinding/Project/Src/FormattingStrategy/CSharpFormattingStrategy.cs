@@ -425,6 +425,18 @@ namespace CSharpBinding.FormattingStrategy
 						}
 					}
 					return;
+					
+				case (char) 0:
+					// In any other case: Simply format selection or whole document
+					var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(SD.ProjectService.CurrentProject);
+					int formattedTextOffset = 0;
+					int formattedTextLength = textArea.Document.TextLength;
+					if (textArea.SelectionLength != 0) {
+						formattedTextOffset = textArea.SelectionStart;
+						formattedTextLength = textArea.SelectionLength;
+					}
+					CSharpFormatterHelper.Format(textArea, formattedTextOffset, formattedTextLength, formattingOptions.OptionsContainer);
+					break;
 			}
 		}
 		

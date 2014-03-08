@@ -47,7 +47,10 @@ namespace CSharpBinding.FormattingStrategy
 			
 			// Load global settings
 			GlobalOptions = new CSharpFormattingOptionsPersistence(
-				SD.PropertyService.MainPropertiesContainer, new CSharpFormattingOptionsContainer());
+				SD.PropertyService.MainPropertiesContainer, new CSharpFormattingOptionsContainer()
+				{
+					DefaultText = "(global)" // TODO Localize!
+				});
 			GlobalOptions.Load();
 			
 			// Handlers for solution loading/unloading
@@ -76,7 +79,10 @@ namespace CSharpBinding.FormattingStrategy
 					// Lazily create options container for project
 					projectOptions[key] = new CSharpFormattingOptionsPersistence(
 						csproject.ExtensionProperties,
-						new CSharpFormattingOptionsContainer((SolutionOptions ?? GlobalOptions).OptionsContainer));
+						new CSharpFormattingOptionsContainer((SolutionOptions ?? GlobalOptions).OptionsContainer)
+						{
+							DefaultText = "(project)" // TODO Localize!
+						});
 				}
 				
 				return projectOptions[key];
@@ -84,13 +90,16 @@ namespace CSharpBinding.FormattingStrategy
 			
 			return SolutionOptions ?? GlobalOptions;
 		}
-
+		
 		static void SolutionOpened(object sender, SolutionEventArgs e)
 		{
 			// Load solution settings
 			SolutionOptions = new CSharpFormattingOptionsPersistence(
 				e.Solution.GlobalPreferences,
-				new CSharpFormattingOptionsContainer(GlobalOptions.OptionsContainer));
+				new CSharpFormattingOptionsContainer(GlobalOptions.OptionsContainer)
+				{
+					DefaultText = "(solution)" // TODO Localize!
+				});
 		}
 		
 		static void SolutionClosed(object sender, SolutionEventArgs e)
