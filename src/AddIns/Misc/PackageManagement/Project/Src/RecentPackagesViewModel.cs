@@ -71,7 +71,7 @@ namespace ICSharpCode.PackageManagement
 			ReadPackages();
 		}
 		
-		protected override IQueryable<IPackage> GetAllPackages()
+		protected override IQueryable<IPackage> GetAllPackages(string searchCriteria)
 		{
 			if (recentPackagesRepository == null) {
 				throw new ApplicationException(errorMessage);

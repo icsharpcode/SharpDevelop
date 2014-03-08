@@ -18,7 +18,6 @@
 
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -60,7 +59,7 @@ namespace ICSharpCode.PackageManagement
 			ReadPackages();
 		}
 		
-		protected override IQueryable<IPackage> GetAllPackages()
+		protected override IQueryable<IPackage> GetAllPackages(string searchCriteria)
 		{
 			if (!string.IsNullOrEmpty(errorMessage)) {
 				ThrowOriginalExceptionWhenTryingToGetProjectManager();

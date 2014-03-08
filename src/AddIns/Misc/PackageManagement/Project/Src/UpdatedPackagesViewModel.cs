@@ -89,7 +89,7 @@ namespace ICSharpCode.PackageManagement
 			return selectedProjects.GetPackages(aggregateRepository);
 		}
 		
-		protected override IQueryable<IPackage> GetAllPackages()
+		protected override IQueryable<IPackage> GetAllPackages(string searchCriteria)
 		{
 			if (updatedPackages == null) {
 				ThrowSavedException();

@@ -111,6 +111,7 @@
     <Compile Include="Src\Helpers\FakeCodeGenerator.cs" />
     <Compile Include="Src\Helpers\FakeOperationAwarePackageRepository.cs" />
     <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
+    <Compile Include="Src\Helpers\FakeServiceBasedRepository.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />
     <Compile Include="Src\Helpers\FakeUpdatePackageActions.cs" />
     <Compile Include="Src\Helpers\FakeUpdatePackageActionsFactory.cs" />

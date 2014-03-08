@@ -90,10 +90,11 @@ namespace PackageManagement.Tests.Helpers
 			}
 		}
 		
-		protected override IQueryable<NuGet.IPackage> GetAllPackages()
+		protected override IQueryable<IPackage> GetAllPackages(string searchCriteria)
 		{
 			GetAllPackagesCallCount++;
-			return FakePackages.AsQueryable();
+			SearchCriteriaPassedToFilterPackagesBySearchCriteria = searchCriteria;
+			return FakePackages.AsQueryable().Find(searchCriteria);
 		}
 		
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> packages)
@@ -110,12 +111,6 @@ namespace PackageManagement.Tests.Helpers
 		public void AddThreeFakePackages()
 		{
 			AddFakePackages(howMany: 3);
-		}
-		
-		protected override IQueryable<IPackage> FilterPackagesBySearchCriteria(IQueryable<IPackage> packages, string searchTerms)
-		{
-			SearchCriteriaPassedToFilterPackagesBySearchCriteria = searchTerms;
-			return base.FilterPackagesBySearchCriteria(packages, searchTerms);
 		}
 	}
 }

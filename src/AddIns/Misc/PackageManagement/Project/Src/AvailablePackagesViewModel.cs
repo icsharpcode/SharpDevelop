@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public class AvailablePackagesViewModel : PackagesViewModel
 	{
-		IPackageRepository availablePackagesRepository;
+		IPackageRepository repository;
 		
 		public AvailablePackagesViewModel(
 			IPackageManagementSolution solution,
@@ -66,22 +66,26 @@ namespace ICSharpCode.PackageManagement
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
 			try {
-				availablePackagesRepository = RegisteredPackageRepositories.ActiveRepository;
+				repository = RegisteredPackageRepositories.ActiveRepository;
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}
 		}
 		
-		protected override IQueryable<IPackage> GetAllPackages()
+		protected override IQueryable<IPackage> GetAllPackages(string searchCriteria)
 		{
-			if (availablePackagesRepository == null) {
+			if (repository == null) {
 				throw new ApplicationException(errorMessage);
 			}
 			
 			if (IncludePrerelease) {
-				return availablePackagesRepository.GetPackages();
+				return repository
+					.Search(searchCriteria, IncludePrerelease)
+					.Where(package => package.IsAbsoluteLatestVersion);
 			}
-			return availablePackagesRepository.GetPackages().Where(package => package.IsLatestVersion);
+			return repository
+				.Search(SearchTerms, IncludePrerelease)
+				.Where(package => package.IsLatestVersion);
 		}
 		
 		/// <summary>

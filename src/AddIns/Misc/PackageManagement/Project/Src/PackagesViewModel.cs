@@ -224,9 +224,8 @@ namespace ICSharpCode.PackageManagement
 		/// </summary>
 		public IQueryable<IPackage> GetPackagesFromPackageSource()
 		{
-			IQueryable<IPackage> packages = GetAllPackages();
-			packages = OrderPackages(packages);
-			return FilterPackagesBySearchCriteria(packages);
+			IQueryable<IPackage> packages = GetAllPackages(GetSearchCriteria());
+			return OrderPackages(packages);
 		}
 		
 		protected virtual IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
@@ -235,23 +234,12 @@ namespace ICSharpCode.PackageManagement
 				.OrderBy(package => package.Id);
 		}
 		
-		IQueryable<IPackage> FilterPackagesBySearchCriteria(IQueryable<IPackage> packages)
-		{
-			string searchCriteria = GetSearchCriteria();
-			return FilterPackagesBySearchCriteria(packages, searchCriteria);
-		}
-		
 		string GetSearchCriteria()
 		{
 			if (String.IsNullOrWhiteSpace(SearchTerms)) {
 				return null;
 			}
 			return SearchTerms;
-		}
-
-		protected virtual IQueryable<IPackage> FilterPackagesBySearchCriteria(IQueryable<IPackage> packages, string searchCriteria)
-		{
-			return packages.Find(searchCriteria);
 		}
 		
 		IEnumerable<IPackage> GetPackagesForSelectedPage(IEnumerable<IPackage> allPackages)
@@ -265,7 +253,7 @@ namespace ICSharpCode.PackageManagement
 		/// <summary>
 		/// Returns all the packages.
 		/// </summary>
-		protected virtual IQueryable<IPackage> GetAllPackages()
+		protected virtual IQueryable<IPackage> GetAllPackages(string searchCriteria)
 		{
 			return null;
 		}
