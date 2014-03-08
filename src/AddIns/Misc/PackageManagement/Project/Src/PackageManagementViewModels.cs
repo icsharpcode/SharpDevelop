@@ -128,7 +128,7 @@ namespace ICSharpCode.PackageManagement
 			if (IsInDesignMode()) {
 				return new DesignTimeRegisteredPackageSourcesViewModel();
 			} else {
-				return new RegisteredPackageSourcesViewModel(packageSources);
+				return new RegisteredPackageSourcesViewModel(registeredPackageRepositories);
 			}
 		}
 		

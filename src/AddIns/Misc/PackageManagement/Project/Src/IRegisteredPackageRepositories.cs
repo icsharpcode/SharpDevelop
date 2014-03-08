@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -32,5 +33,7 @@ namespace ICSharpCode.PackageManagement
 		bool HasMultiplePackageSources { get; }
 		PackageSource ActivePackageSource { get; set; }
 		RegisteredPackageSources PackageSources { get; }
+
+		void UpdatePackageSources(IEnumerable<PackageSource> updatedPackageSources);
 	}
 }

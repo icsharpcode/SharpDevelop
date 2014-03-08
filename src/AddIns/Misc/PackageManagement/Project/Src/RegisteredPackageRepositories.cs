@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NuGet;
 
@@ -65,8 +66,10 @@ namespace ICSharpCode.PackageManagement
 			get {
 				activePackageSource = options.ActivePackageSource;
 				if (activePackageSource == null) {
-					if (options.PackageSources.Any()) {
-						activePackageSource = options.PackageSources[0];
+					List<PackageSource> enabledPackageSources = 
+						options.PackageSources.GetEnabledPackageSources().ToList();
+					if (enabledPackageSources.Any()) {
+						ActivePackageSource = enabledPackageSources[0];
 					}
 				}
 				return activePackageSource;
@@ -95,6 +98,36 @@ namespace ICSharpCode.PackageManagement
 				activePackageRepository = CreateAggregateRepository();
 			} else {
 				activePackageRepository = repositoryCache.CreateRepository(ActivePackageSource.Source);
+			}
+		}
+		
+		public void UpdatePackageSources(IEnumerable<PackageSource> updatedPackageSources)
+		{
+			PackageSources.Clear();
+ 			foreach (PackageSource updatedPackageSource in updatedPackageSources) {
+ 				PackageSources.Add(updatedPackageSource);
+ 			}
+			
+			UpdateActivePackageSource();
+		}
+		
+		void UpdateActivePackageSource()
+		{
+			if (activePackageSource == null)
+				return;
+			
+			if (activePackageSource.IsAggregate()) {
+				if (!HasMultiplePackageSources) {
+					ActivePackageSource = null;
+				}
+			} else {
+				PackageSource matchedPackageSource = PackageSources
+					.GetEnabledPackageSources()
+					.FirstOrDefault(packageSource => packageSource.Equals(activePackageSource));
+				
+				if (matchedPackageSource == null) {
+					ActivePackageSource = null;
+				}
 			}
 		}
 	}

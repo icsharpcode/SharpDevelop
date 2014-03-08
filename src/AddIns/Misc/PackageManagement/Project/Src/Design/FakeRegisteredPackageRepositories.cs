@@ -103,5 +103,10 @@ namespace ICSharpCode.PackageManagement.Design
 			FakeAggregateRepository.FakePackages.Add(package);
 			return package;
 		}
+		
+		public void UpdatePackageSources(IEnumerable<PackageSource> updatedPackageSources)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

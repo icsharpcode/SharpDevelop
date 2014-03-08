@@ -22,7 +22,9 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackagesViewModels : IDisposable
 	{
-		protected PackagesViewModels() {}
+		protected PackagesViewModels()
+		{
+		}
 		
 		public PackagesViewModels(
 			IPackageManagementSolution solution,
@@ -60,6 +62,5 @@ namespace ICSharpCode.PackageManagement
 			RecentPackagesViewModel.Dispose();
 			UpdatedPackagesViewModel.Dispose();
 		}
-
 	}
 }

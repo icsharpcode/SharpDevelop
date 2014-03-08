@@ -26,17 +26,13 @@ namespace ICSharpCode.PackageManagement.Design
 	public class DesignTimeRegisteredPackageSourcesViewModel : RegisteredPackageSourcesViewModel
 	{
 		public DesignTimeRegisteredPackageSourcesViewModel()
-			: this(new PackageManagementOptions(new Properties(), new FakeSettings()))
+			: this(new DesignTimeRegisteredPackageRepositories())
 		{
 		}
 		
-		public DesignTimeRegisteredPackageSourcesViewModel(PackageManagementOptions options)
-			: base(options.PackageSources)
+		public DesignTimeRegisteredPackageSourcesViewModel(IRegisteredPackageRepositories registeredPackageRepositories)
+			: base(registeredPackageRepositories)
 		{
-			options.PackageSources.Add(new PackageSource("Source2", "http://sharpdevelop.codeplex.com"));
-			options.PackageSources.Add(new PackageSource("Source3", "http://sharpdevelop.codeplex.com"));
-			options.PackageSources.Add(new PackageSource("Source4", "http://sharpdevelop.codeplex.com"));
-			options.PackageSources.Add(new PackageSource("Source5", "http://sharpdevelop.codeplex.com"));
 			Load();
 		}
 	}

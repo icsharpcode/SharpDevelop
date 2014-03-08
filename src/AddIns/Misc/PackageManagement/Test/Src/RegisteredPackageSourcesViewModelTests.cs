@@ -33,14 +33,17 @@ namespace PackageManagement.Tests
 		FakeFolderBrowser fakeFolderBrowser;
 		List<string> propertiesChanged;
 		RegisteredPackageSources packageSources;
+		RegisteredPackageRepositories registeredRepositories;
 		
 		void CreateViewModel()
 		{
 			var options = new TestablePackageManagementOptions();
 			packageSources = options.PackageSources;
+			var cache = new FakePackageRepositoryFactory();
+			registeredRepositories = new RegisteredPackageRepositories(cache, options);
 			packageSources.Clear();
 			fakeFolderBrowser = new FakeFolderBrowser();
-			viewModel = new RegisteredPackageSourcesViewModel(packageSources, fakeFolderBrowser);
+			viewModel = new RegisteredPackageSourcesViewModel(registeredRepositories, fakeFolderBrowser);
 		}
 		
 		void CreateViewModelWithOnePackageSource()
@@ -56,10 +59,11 @@ namespace PackageManagement.Tests
 			AddPackageSourceToOptions("Source 2", "http://url2");
 		}
 		
-		void AddPackageSourceToOptions(string name, string url)
+		PackageSource AddPackageSourceToOptions(string name, string url, bool enabled = true)
 		{
-			var source = new PackageSource(url, name);
+			var source = new PackageSource(url, name, enabled);
 			packageSources.Add(source);
+			return source;
 		}
 		
 		void RecordPropertyChanges()
@@ -602,6 +606,63 @@ namespace PackageManagement.Tests
 			bool propertyEventFired = propertiesChanged.Contains("NewPackageSourceName");
 			
 			Assert.IsTrue(propertyEventFired);
+		}
+		
+		[Test]
+		public void Save_ActivePackageSourceDisabled_ActivePackageSourceSetToNull()
+		{
+			CreateViewModel();
+			PackageSource packageSource = AddPackageSourceToOptions("Source 1", "http://url1");
+			registeredRepositories.ActivePackageSource = packageSource;
+			viewModel.Load();
+			viewModel.PackageSourceViewModels[0].IsEnabled = false;
+			
+			viewModel.Save();
+			
+			Assert.IsNull(registeredRepositories.ActivePackageSource);
+		}
+		
+		[Test]
+		public void Save_TwoPackageSourcesAndSecondIsActivePackageSourceWhichIsUnchanged_ActivePackageSourceUnchanged()
+		{
+			CreateViewModel();
+			AddPackageSourceToOptions("Source 1", "http://url1");
+			PackageSource packageSource = AddPackageSourceToOptions("Source 2", "http://url1");
+			registeredRepositories.ActivePackageSource = packageSource;
+			viewModel.Load();
+			
+			viewModel.Save();
+			
+			Assert.AreEqual(packageSource, registeredRepositories.ActivePackageSource);
+		}
+		
+		[Test]
+		public void Save_DisableOnePackageSourceWhenActivePackageSourceIsAggregate_ActivePackageSourceChangedTo()
+		{
+			CreateViewModel();
+			PackageSource packageSource1 = AddPackageSourceToOptions("Source 1", "http://url1");
+			PackageSource packageSource2 = AddPackageSourceToOptions("Source 2", "http://url1");
+			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+			viewModel.Load();
+			viewModel.PackageSourceViewModels[0].IsEnabled = false;
+			
+			viewModel.Save();
+			
+			Assert.AreEqual(packageSource2, registeredRepositories.ActivePackageSource);
+		}
+		
+		[Test]
+		public void Save_ActivePackageSourceIsAggregateAndPackageSourcesUnchanged_ActivePackageSourceIsStillAggregate()
+		{
+			CreateViewModel();
+			AddPackageSourceToOptions("Source 1", "http://url1");
+			AddPackageSourceToOptions("Source 2", "http://url1");
+			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+			viewModel.Load();
+			
+			viewModel.Save();
+			
+			Assert.AreEqual(RegisteredPackageSourceSettings.AggregatePackageSource, registeredRepositories.ActivePackageSource);
 		}
 	}
 }
