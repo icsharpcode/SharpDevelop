@@ -46,6 +46,17 @@ namespace CSharpBinding.OptionPanels
 	}
 	
 	/// <summary>
+	/// Option panel for solution-wide formatting settings.
+	/// </summary>
+	internal class CSharpSolutionFormattingOptionPanel : CSharpFormattingOptionPanel
+	{
+		public CSharpSolutionFormattingOptionPanel()
+			: base(CSharpFormattingOptionsPersistence.SolutionOptions, true)
+		{
+		}
+	}
+	
+	/// <summary>
 	/// Interaction logic for CSharpFormattingOptionPanel.xaml
 	/// </summary>
 	internal partial class CSharpFormattingOptionPanel : OptionPanel

@@ -99,7 +99,8 @@ namespace CSharpBinding.FormattingStrategy
 			activeOptions.Clear();
 			foreach (var activeOption in options.activeOptions)
 				activeOptions.Add(activeOption);
-			Reset(options.cachedOptions.Clone());
+			cachedOptions = options.cachedOptions.Clone();
+			OnPropertyChanged(null);
 		}
 		
 		#region INotifyPropertyChanged implementation

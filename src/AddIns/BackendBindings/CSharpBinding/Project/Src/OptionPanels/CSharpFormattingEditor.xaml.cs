@@ -47,7 +47,7 @@ namespace CSharpBinding.OptionPanels
 		
 		public static readonly DependencyProperty TextProperty =
 			DependencyProperty.Register("Text", typeof(string), typeof(FormattingGroupContainer),
-			                            new FrameworkPropertyMetadata());
+				new FrameworkPropertyMetadata());
 		
 		public string Text {
 			get { return (string) GetValue(TextProperty); }
@@ -85,7 +85,7 @@ namespace CSharpBinding.OptionPanels
 	{
 		public static readonly DependencyProperty TextProperty =
 			DependencyProperty.Register("Text", typeof(string), typeof(FormattingOption),
-			                            new FrameworkPropertyMetadata());
+				new FrameworkPropertyMetadata());
 		public string Text {
 			get { return (string) GetValue(TextProperty); }
 			set { SetValue(TextProperty, value); }
@@ -113,13 +113,11 @@ namespace CSharpBinding.OptionPanels
 			
 			InitializeComponent();
 			this.DataContext = this;
-			
-			FillPresetList();
 		}
 		
 		public static readonly DependencyProperty OptionsContainerProperty =
 			DependencyProperty.Register("OptionsContainer", typeof(CSharpFormattingOptionsContainer), typeof(CSharpFormattingEditor),
-			                            new FrameworkPropertyMetadata());
+				new FrameworkPropertyMetadata(OnOptionsContainerPropertyChanged));
 		
 		public CSharpFormattingOptionsContainer OptionsContainer {
 			get { return (CSharpFormattingOptionsContainer)GetValue(OptionsContainerProperty); }
@@ -128,15 +126,27 @@ namespace CSharpBinding.OptionPanels
 		
 		public static readonly DependencyProperty AllowPresetsProperty =
 			DependencyProperty.Register("AllowPresets", typeof(bool), typeof(CSharpFormattingEditor),
-			                            new FrameworkPropertyMetadata());
+				new FrameworkPropertyMetadata());
 		
 		public bool AllowPresets {
 			get { return (bool)GetValue(AllowPresetsProperty); }
 			set { SetValue(AllowPresetsProperty, value); }
 		}
 		
-		private void FillPresetList()
+		static void OnOptionsContainerPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
+			var editor = o as CSharpFormattingEditor;
+			if (editor != null) {
+				var container = e.NewValue as CSharpFormattingOptionsContainer;
+				if (container != null) {
+					editor.FillPresetList(container);
+				}
+			}
+		}
+		
+		private void FillPresetList(CSharpFormattingOptionsContainer container)
+		{
+			presets["Default"] = () => null;
 			presets["Empty"] = FormattingOptionsFactory.CreateEmpty;
 			presets["SharpDevelop"] = FormattingOptionsFactory.CreateSharpDevelop;
 			presets["Mono"] = FormattingOptionsFactory.CreateMono;
@@ -145,7 +155,11 @@ namespace CSharpBinding.OptionPanels
 			presets["Whitesmiths"] = FormattingOptionsFactory.CreateWhitesmiths;
 			presets["GNU"] = FormattingOptionsFactory.CreateGNU;
 			
-			// TODO Localize "(no preset)"!
+			// TODO Localize!
+			if (container.Parent != null) {
+				// Add a "default" preset
+				presetItems.Add(new ComboBoxItem { Content = "Default", Tag = "Default" });
+			}
 			presetItems.Add(new ComboBoxItem { Content = "Empty", Tag = "Empty" });
 			presetItems.Add(new ComboBoxItem { Content = "SharpDevelop", Tag = "SharpDevelop" });
 			presetItems.Add(new ComboBoxItem { Content = "Mono", Tag = "Mono" });

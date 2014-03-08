@@ -18,6 +18,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing.Design;
 using System.IO;
 using System.Linq;
 using System.Windows.Threading;
@@ -25,6 +27,7 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -337,7 +340,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				else
 				{
 					MessageService.ShowErrorFormatted
-						("${res:SharpDevelop.Solution.CannotSave.UnauthorizedAccessException}", fileName, ex.Message);
+					("${res:SharpDevelop.Solution.CannotSave.UnauthorizedAccessException}", fileName, ex.Message);
 				}
 			}
 		}
@@ -502,6 +505,42 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		[EditorAttribute(typeof(FormatterSettingsEditor), typeof(UITypeEditor))]
+		public object FormatterSettings
+		{
+			get {
+				// We don't need any return value etc.
+				return null;
+			}
+		}
+		
+		/// <summary>
+		/// Pseudo-editor showing a "..." for FormattingSettings option and opening the formatting editor for solution
+		/// </summary>
+		class FormatterSettingsEditor : UITypeEditor
+		{
+			public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+			{
+				return UITypeEditorEditStyle.Modal;
+			}
+			
+			public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+			{
+				var treeNode = AddInTree.GetTreeNode("/SharpDevelop/Dialogs/SolutionFormattingOptionsDialog", false);
+				bool? result = ICSharpCode.SharpDevelop.Commands.OptionsCommand.ShowTreeOptions(
+					"Solution Formatting Options",
+					treeNode);
+				if ((bool) result) {
+					// Formatting options have been changed, make solution dirty
+					var solution = context.Instance as Solution;
+					if (solution != null) {
+						solution.IsDirty = true;
+					}
+				}
+				return null;
+			}
+		}
+		
 		public override string ToString()
 		{
 			return "[Solution " + fileName + " with " + projects.Count + " projects]";
@@ -516,3 +555,4 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 	}
 }
+						

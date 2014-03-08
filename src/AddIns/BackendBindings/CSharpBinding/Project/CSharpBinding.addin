@@ -158,6 +158,12 @@
 		</OptionPanel>
 	</Path>
 	
+	<Path path = "/SharpDevelop/Dialogs/SolutionFormattingOptionsDialog">
+		<OptionPanel id="C#Formatting"
+		             label="C#"
+		             class="CSharpBinding.OptionPanels.CSharpSolutionFormattingOptionPanel"/>
+	</Path>
+	
 	<Path path = "/SharpDevelop/Workbench/MainMenu/Search">
 		<MenuItem id = "SearchForIssues"
 		          label="Search For Issues..."
