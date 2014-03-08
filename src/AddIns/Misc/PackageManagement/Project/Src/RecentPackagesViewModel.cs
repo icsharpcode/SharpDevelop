@@ -39,8 +39,6 @@ namespace ICSharpCode.PackageManagement
 				packageViewModelFactory, 
 				taskFactory)
 		{
-			recentPackagesRepository = registeredPackageRepositories.RecentPackageRepository;
-			
 			this.packageManagementEvents = packageManagementEvents;
 			RegisterEvents();
 		}
@@ -50,6 +48,15 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.ParentPackageInstalled += OnAddRecentPackage;
 			packageManagementEvents.ParentPackageUninstalled += OnPackageChanged;
 			packageManagementEvents.ParentPackagesUpdated += OnAddRecentPackage;
+		}
+		
+		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
+		{
+			try {
+				recentPackagesRepository = RegisteredPackageRepositories.RecentPackageRepository;
+			} catch (Exception ex) {
+				errorMessage = ex.Message;
+			}
 		}
 		
 		protected override void OnDispose()
@@ -66,6 +73,10 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
+			if (recentPackagesRepository == null) {
+				throw new ApplicationException(errorMessage);
+			}
+			
 			return recentPackagesRepository.GetPackages();
 		}
 	}

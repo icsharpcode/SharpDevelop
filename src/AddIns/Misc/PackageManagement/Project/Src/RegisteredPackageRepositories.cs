@@ -94,10 +94,19 @@ namespace ICSharpCode.PackageManagement
 		
 		void CreateActiveRepository()
 		{
+			EnsureActivePackageSourceIsConfigured();
+			
 			if (ActivePackageSource.IsAggregate()) {
 				activePackageRepository = CreateAggregateRepository();
 			} else {
 				activePackageRepository = repositoryCache.CreateRepository(ActivePackageSource.Source);
+			}
+		}
+		
+		void EnsureActivePackageSourceIsConfigured()
+		{
+			if (ActivePackageSource == null) {
+				throw new NoPackageSourcesConfiguredException();
 			}
 		}
 		

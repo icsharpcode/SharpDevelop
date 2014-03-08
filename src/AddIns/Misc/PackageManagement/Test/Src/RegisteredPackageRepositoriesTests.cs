@@ -330,5 +330,18 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedPackageSource, activePackageSource);
 		}
+		
+		[Test]
+		public void ActiveRepository_NullInOptionsAndNoEnabledPackageSources_ThrowsNoPackageSourcesConfiguredException()
+		{
+			CreateRegisteredPackageRepositories();
+			packageSourcesHelper.Options.ActivePackageSource = null;
+			registeredRepositories.PackageSources.Clear();
+			registeredRepositories.PackageSources.Add(new PackageSource("source") { IsEnabled = false });
+			
+			Assert.Throws<NoPackageSourcesConfiguredException>(() => {
+				IPackageRepository repository = registeredRepositories.ActiveRepository;
+			});
+		}
 	}
 }

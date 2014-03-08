@@ -34,7 +34,12 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel()
 		{
-			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
+			CreateViewModel(new FakeRegisteredPackageRepositories());
+		}
+		
+		void CreateViewModel(FakeRegisteredPackageRepositories registeredPackageRepositories)
+		{
+			this.registeredPackageRepositories = registeredPackageRepositories;
 			taskFactory = new FakeTaskFactory();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
 			packageManagementEvents = new PackageManagementEvents();
@@ -132,6 +137,20 @@ namespace PackageManagement.Tests
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void ReadPackages_ExceptionThrownWhenAccessingActiveRepository_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
+		{
+			var registeredRepositories = new ExceptionThrowingRegisteredPackageRepositories();
+			registeredRepositories.ExeptionToThrowWhenRecentPackageRepositoryAccessed = 
+				new Exception("Test");
+			CreateViewModel(registeredRepositories);
+			
+			viewModel.ReadPackages();
+			
+			ApplicationException ex = Assert.Throws<ApplicationException>(CompleteReadPackagesTask);
+			Assert.AreEqual("Test", ex.Message);
 		}
 	}
 }

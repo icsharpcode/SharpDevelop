@@ -390,7 +390,7 @@ namespace PackageManagement.Tests
 			CreateViewModel(exceptionThrowingRegisteredPackageRepositories);
 			viewModel.ReadPackages();
 			
-			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
+			ApplicationException ex = Assert.Throws<ApplicationException>(CompleteReadPackagesTask);
 			Assert.AreEqual("Test", ex.Message);
 		}
 		

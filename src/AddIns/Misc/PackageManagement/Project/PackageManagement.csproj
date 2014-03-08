@@ -225,6 +225,7 @@
     <Compile Include="Src\ManagePackagesViewTitle.cs" />
     <Compile Include="Src\MSBuildBasedProjectExtensions.cs" />
     <Compile Include="Src\IPackageFromRepositoryExtensions.cs" />
+    <Compile Include="Src\NoPackageSourcesConfiguredException.cs" />
     <Compile Include="Src\NuGetExePath.cs" />
     <Compile Include="Src\NuGetPackageRestoreCommandLine.cs" />
     <Compile Include="Src\PackageLicenseViewModel.cs" />

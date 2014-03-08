@@ -17,34 +17,14 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
-using ICSharpCode.PackageManagement.Design;
-using NuGet;
 
-namespace PackageManagement.Tests.Helpers
+namespace ICSharpCode.PackageManagement
 {
-	public class ExceptionThrowingRegisteredPackageRepositories : FakeRegisteredPackageRepositories
+	public class NoPackageSourcesConfiguredException : Exception
 	{
-		public Exception ExeptionToThrowWhenActiveRepositoryAccessed { get; set; }
-		
-		public override IPackageRepository ActiveRepository {
-			get {
-				if (ExeptionToThrowWhenActiveRepositoryAccessed != null) {
-					throw ExeptionToThrowWhenActiveRepositoryAccessed;
-				}
-				return base.ActiveRepository;
-			}
-		}
-		
-		public Exception ExeptionToThrowWhenRecentPackageRepositoryAccessed { get; set; }
-		
-		public override IRecentPackageRepository RecentPackageRepository {
-			get {
-				if (ExeptionToThrowWhenRecentPackageRepositoryAccessed != null) {
-					throw ExeptionToThrowWhenRecentPackageRepositoryAccessed;
-				}
-				return base.RecentPackageRepository;
-			}
+		public NoPackageSourcesConfiguredException()
+			: base("No package sources configured")
+		{
 		}
 	}
 }
