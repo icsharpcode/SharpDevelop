@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			if (editor == null)
 				return;
 			
-			editor.Language.FormattingStrategy.FormatLine(editor, (char) 0);
+			editor.Language.FormattingStrategy.FormatLines(editor);
 		}
 	}
 }

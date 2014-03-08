@@ -262,6 +262,21 @@ namespace CSharpBinding.FormattingStrategy
 			return regions > endregions;
 		}
 		
+		public override void FormatLines(ITextEditor textArea)
+		{
+			using (textArea.Document.OpenUndoGroup()) {
+				// In any other case: Simply format selection or whole document
+				var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(SD.ProjectService.CurrentProject);
+				int formattedTextOffset = 0;
+				int formattedTextLength = textArea.Document.TextLength;
+				if (textArea.SelectionLength != 0) {
+					formattedTextOffset = textArea.SelectionStart;
+					formattedTextLength = textArea.SelectionLength;
+				}
+				CSharpFormatterHelper.Format(textArea, formattedTextOffset, formattedTextLength, formattingOptions.OptionsContainer);
+			}
+		}
+		
 		public override void FormatLine(ITextEditor textArea, char ch) // used for comment tag formater/inserter
 		{
 			using (textArea.Document.OpenUndoGroup()) {
@@ -425,18 +440,6 @@ namespace CSharpBinding.FormattingStrategy
 						}
 					}
 					return;
-					
-				case (char) 0:
-					// In any other case: Simply format selection or whole document
-					var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(SD.ProjectService.CurrentProject);
-					int formattedTextOffset = 0;
-					int formattedTextLength = textArea.Document.TextLength;
-					if (textArea.SelectionLength != 0) {
-						formattedTextOffset = textArea.SelectionStart;
-						formattedTextLength = textArea.SelectionLength;
-					}
-					CSharpFormatterHelper.Format(textArea, formattedTextOffset, formattedTextLength, formattingOptions.OptionsContainer);
-					break;
 			}
 		}
 		
