@@ -41,10 +41,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				missingNode.SetIcon("Icons.16x16.Warning");
 				missingNode.Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.ProjectFileNotFound");
 				missingNode.AddTo(projectNode);
-			} else if (project is UnknownProject) {
+			} else if (project is ErrorProject) {
 				CustomNode unknownNode = new CustomNode();
 				unknownNode.SetIcon("Icons.16x16.Warning");
-				unknownNode.Text = StringParser.Parse(((UnknownProject)project).WarningText);
+				unknownNode.Text = ((ErrorProject)project).Exception.Message;
 				unknownNode.AddTo(projectNode);
 			} else if (project is MSBuildFileProject) {
 				projectNode.OpenedImage = projectNode.ClosedImage = "Icons.16x16.XMLFileIcon";

@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (project is MissingProject) {
 				OpenedImage = ClosedImage = "ProjectBrowser.MissingProject";
 				this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/MissingProjectNode";
-			} else if (project is UnknownProject) {
+			} else if (project is ErrorProject) {
 				OpenedImage = ClosedImage = "ProjectBrowser.ProjectWarning";
 				this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/UnknownProjectNode";
 			} else {

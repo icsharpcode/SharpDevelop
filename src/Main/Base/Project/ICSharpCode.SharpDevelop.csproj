@@ -199,6 +199,7 @@
     <Compile Include="Project\Configuration\IConfigurable.cs" />
     <Compile Include="Project\Configuration\ConfigurationMapping.cs" />
     <Compile Include="Project\Configuration\IConfigurationOrPlatformNameCollection.cs" />
+    <Compile Include="Project\ErrorProject.cs" />
     <Compile Include="Project\IProjectBinding.cs" />
     <Compile Include="Project\IProjectService.cs" />
     <Compile Include="Project\ISolution.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="Project\ProjectBindingDescriptor.cs" />
     <Compile Include="Project\ProjectBindingDoozer.cs" />
     <Compile Include="Project\ProjectInformation.cs" />
+    <Compile Include="Project\ProjectLoadException.cs" />
     <Compile Include="Project\Project_TypeGuids.cs" />
     <Compile Include="Project\SolutionEventArgs.cs" />
     <Compile Include="Project\SolutionSection.cs" />
@@ -568,7 +570,6 @@
     <Compile Include="Src\Project\ProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\ProjectCustomToolOptions.cs" />
     <Compile Include="Src\Project\ProjectStartException.cs" />
-    <Compile Include="Src\Project\ProjectLoadException.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Project\ProjectUpgradeException.cs" />
     <Compile Include="Refactoring\ContextAction.cs" />
@@ -740,7 +741,6 @@
     <Compile Include="Src\Gui\XmlForms\Lib\IObjectCreator.cs" />
     <Compile Include="Src\Internal\Doozers\PadDescriptor.cs" />
     <Compile Include="Src\Project\MissingProject.cs" />
-    <Compile Include="Src\Project\UnknownProject.cs" />
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorListPad.cs" />
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorListToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\CompilerMessageViewToolbarCommands.cs" />

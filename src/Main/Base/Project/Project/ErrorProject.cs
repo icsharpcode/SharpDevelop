@@ -21,36 +21,44 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public class UnknownProject : AbstractProject
+	public class ErrorProject : AbstractProject
 	{
-		string warningText = "${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.NoBackendForProjectType}";
-		bool warningDisplayedToUser;
-		
-		public string WarningText {
-			get { return warningText; }
-			set { warningText = value; }
+		readonly Exception exception;
+
+		/// <summary>
+		/// The exception associated that prevented loading this project.
+		/// This should be a <c>ProjectLoadException</c> or <c>IOException</c>.
+		/// </summary>
+		public Exception Exception {
+			get {
+				return exception;
+			}
 		}
+
+		//string warningText = "${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.NoBackendForProjectType}";
 		
-		public bool WarningDisplayedToUser {
-			get { return warningDisplayedToUser; }
-			set { warningDisplayedToUser = value; }
-		}
+//		public void ShowWarningMessageBox()
+//		{
+//			warningDisplayedToUser = true;
+//			MessageService.ShowError("Error loading " + this.FileName + ":\n" + warningText);
+//		}
 		
-		public void ShowWarningMessageBox()
-		{
-			warningDisplayedToUser = true;
-			MessageService.ShowError("Error loading " + this.FileName + ":\n" + warningText);
-		}
-		
-		public UnknownProject(ProjectLoadInformation information, string warningText)
-			: this(information)
-		{
-			this.warningText = warningText;
-		}
-		
-		public UnknownProject(ProjectLoadInformation information)
+		public ErrorProject(ProjectLoadInformation information, Exception exception)
 			: base(information)
 		{
+			if (exception == null)
+				throw new ArgumentNullException("exception");
+			this.exception = exception;
+		}
+		
+		public override void ProjectLoaded()
+		{
+			base.ProjectLoaded();
+			var error = exception as ProjectLoadException;
+			if (error != null) {
+				SD.OutputPad.BuildCategory.Activate();
+				error.WriteToOutputPad(SD.OutputPad.BuildCategory);
+			}
 		}
 		
 		protected override ProjectBehavior GetOrCreateBehavior()

@@ -196,6 +196,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				project.ProjectLoaded();
 			SD.FileService.RecentOpen.AddRecentProject(solution.FileName);
 			Project.Converter.UpgradeViewContent.ShowIfRequired(solution);
+			foreach (var project in solution.Projects.OfType<ErrorProject>()) {
+				var error = project.Exception as ProjectLoadException;
+				if (error != null && error.CanShowDialog) {
+					error.ShowDialog();
+					break; // show at most 1 dialog
+				}
+			}
 		}
 		
 		/*

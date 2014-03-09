@@ -18,6 +18,8 @@
 
 using System;
 using System.Runtime.Serialization;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -41,6 +43,71 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		protected ProjectLoadException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
+		}
+		
+		public virtual void WriteToOutputPad(IOutputCategory category)
+		{
+			category.AppendLine(this.Message);
+		}
+		
+		/// <summary>
+		/// Gets whether the exception supports showing a dialog that has additional information
+		/// not contained in the error message.
+		/// </summary>
+		public virtual bool CanShowDialog {
+			get {
+				return false;
+			}
+		}
+		
+		public virtual void ShowDialog()
+		{
+		}
+	}
+	
+	[Serializable()]
+	public class ToolNotFoundProjectLoadException : ProjectLoadException
+	{
+		/// <summary>
+		/// The description text
+		/// </summary>
+		public string Description { get; set; }
+		
+		/// <summary>
+		/// The link target (with leading http://)
+		/// </summary>
+		public string LinkTarget { get; set; }
+		
+		/// <summary>
+		/// 32x32 icon to display next to the description. May be null.
+		/// </summary>
+		public IImage Icon { get; set; }
+		
+		public ToolNotFoundProjectLoadException() : base()
+		{
+		}
+		
+		public ToolNotFoundProjectLoadException(string message) : base(message)
+		{
+		}
+		
+		public ToolNotFoundProjectLoadException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+		
+		protected ToolNotFoundProjectLoadException(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+		}
+		
+		public override bool CanShowDialog {
+			get { return true; }
+		}
+		
+		public override void ShowDialog()
+		{
+			using (var dlg = new ToolNotFoundDialog(this.Description, this.LinkTarget, this.Icon)) {
+				dlg.ShowDialog();
+			}
 		}
 	}
 }

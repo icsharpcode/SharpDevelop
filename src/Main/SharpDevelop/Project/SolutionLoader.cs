@@ -206,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				exception = ex;
 			}
 			LoggingService.Warn("Project load error", exception);
-			return new UnknownProject(projectInfo, exception.Message);
+			return new ErrorProject(projectInfo, exception);
 		}
 		#endregion
 		
