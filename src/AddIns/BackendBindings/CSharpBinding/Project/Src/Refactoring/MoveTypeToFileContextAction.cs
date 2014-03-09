@@ -35,6 +35,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Workbench;
 using CSharpBinding.Parser;
 
 namespace CSharpBinding.Refactoring

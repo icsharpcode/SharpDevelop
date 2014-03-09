@@ -26,6 +26,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Workbench;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 using Rhino.Mocks;

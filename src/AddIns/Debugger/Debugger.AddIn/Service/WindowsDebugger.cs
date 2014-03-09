@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Debugger;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.Pads;
+using ICSharpCode.SharpDevelop.Workbench;
 using Debugger.AddIn;
 using Debugger.AddIn.Breakpoints;
 using Debugger.AddIn.Tooltips;

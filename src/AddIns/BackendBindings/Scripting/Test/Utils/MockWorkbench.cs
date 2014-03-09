@@ -22,6 +22,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Scripting;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;

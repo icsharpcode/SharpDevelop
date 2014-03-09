@@ -19,6 +19,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference	
 {

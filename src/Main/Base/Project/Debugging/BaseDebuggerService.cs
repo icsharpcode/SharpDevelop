@@ -200,13 +200,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 
 		public virtual void JumpToCurrentLine(string sourceFullFilename, int startLine, int startColumn, int endLine, int endColumn)
 		{
-			IViewContent viewContent = FileService.OpenFile(sourceFullFilename);
-			if (viewContent != null) {
-				IPositionable positionable = viewContent.GetService<IPositionable>();
-				if (positionable != null) {
-					positionable.JumpTo(startLine, startColumn);
-				}
-			}
+			FileService.JumpToFilePosition(sourceFullFilename, startLine, startColumn);
 		}
 	}
 }
