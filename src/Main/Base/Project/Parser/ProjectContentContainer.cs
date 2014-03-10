@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (project == null)
 				throw new ArgumentNullException("project");
 			this.project = project;
-			this.projectContent = initialProjectContent.SetAssemblyName(project.AssemblyName).SetLocation(project.OutputAssemblyFullPath);
+			this.projectContent = initialProjectContent.SetAssemblyName(project.AssemblyName).SetLocation(project.OutputAssemblyFullPath).AddAssemblyReferences(references);
 			this.assemblyModel = (IUpdateableAssemblyModel)project.AssemblyModel;
 			this.assemblyModel.AssemblyName = this.projectContent.AssemblyName;
 			this.assemblyModel.FullAssemblyName = this.projectContent.FullAssemblyName;
