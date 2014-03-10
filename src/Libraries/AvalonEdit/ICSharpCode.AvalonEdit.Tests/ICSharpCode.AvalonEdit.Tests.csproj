@@ -88,6 +88,7 @@
     <Compile Include="Editing\TextSegmentReadOnlySectionTests.cs" />
     <Compile Include="Highlighting\HighlightedLineMergeTests.cs" />
     <Compile Include="Highlighting\HtmlClipboardTests.cs" />
+    <Compile Include="MultipleUIThreads.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Document\CollapsingTests.cs" />
     <Compile Include="Document\HeightTests.cs" />

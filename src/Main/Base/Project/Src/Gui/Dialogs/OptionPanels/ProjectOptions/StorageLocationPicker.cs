@@ -94,7 +94,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		static object CoerceLocation(DependencyObject d, object baseValue)
 		{
-			PropertyStorageLocations location = (PropertyStorageLocations)baseValue;
+			return CoerceLocation((PropertyStorageLocations)baseValue);
+		}
+		
+		static PropertyStorageLocations CoerceLocation(PropertyStorageLocations location)
+		{
 			if ((location & PropertyStorageLocations.ConfigurationAndPlatformSpecific) != 0) {
 				// remove 'Base' flag if any of the specific flags is set
 				location &= ~PropertyStorageLocations.Base;
@@ -147,9 +151,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			item.SetValueToExtension(MenuItem.HeaderProperty, new StringParseExtension(text));
 			item.Click += delegate(object sender, RoutedEventArgs e) {
 				if ((this.Location & location) == 0) {
-					this.Location |= location;
+					SetCurrentValue(LocationProperty, CoerceLocation(this.Location | location));
 				} else {
-					this.Location &= ~location;
+					SetCurrentValue(LocationProperty, CoerceLocation(this.Location & ~location));
 				}
 				e.Handled = true;
 			};

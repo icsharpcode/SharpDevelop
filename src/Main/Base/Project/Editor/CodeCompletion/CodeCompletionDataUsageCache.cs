@@ -110,13 +110,18 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			if (dict == null || string.IsNullOrEmpty(cacheFileName)) {
 				return;
 			}
-			int count;
-			using (FileStream fs = new FileStream(cacheFileName, FileMode.Create, FileAccess.Write)) {
-				using (BinaryWriter writer = new BinaryWriter(fs)) {
-					count = SaveCache(writer);
+			try {
+				int count;
+				using (FileStream fs = new FileStream(cacheFileName, FileMode.Create, FileAccess.Write)) {
+					using (BinaryWriter writer = new BinaryWriter(fs)) {
+						count = SaveCache(writer);
+					}
 				}
+				LoggingService.Info("Saved CodeCompletionDataUsageCache (" + count + " of " + dict.Count + " items)");
+			} catch (IOException ex) {
+				// e.g. cannot open file for write because two SD instances are shutting down simultanously
+				LoggingService.Warn("Error saving CC cache", ex);
 			}
-			LoggingService.Info("Saved CodeCompletionDataUsageCache (" + count + " of " + dict.Count + " items)");
 		}
 		
 		static int SaveCache(BinaryWriter writer)
