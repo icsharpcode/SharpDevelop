@@ -19,7 +19,6 @@
 using System;
 using System.Linq;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop
@@ -39,25 +38,24 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			if (SD.Workbench == null || 
-			    SD.Workbench.ActiveViewContent == null) {
+			var activeWorkbenchWindow = SD.Workbench.ActiveWorkbenchWindow;
+			if (activeWorkbenchWindow == null) {
 				return false;
 			}
 			
 			WindowState windowState   = condition.Properties.Get("windowstate", WindowState.None);
 			WindowState nowindowState = condition.Properties.Get("nowindowstate", WindowState.None);
-				
-				
+			
 			bool isWindowStateOk = false;
 			if (windowState != WindowState.None) {
 				if ((windowState & WindowState.Dirty) > 0) {
-					isWindowStateOk |= SD.Workbench.ActiveWorkbenchWindow.ViewContents.Any(vc => vc.IsDirty);
+					isWindowStateOk |= activeWorkbenchWindow.ViewContents.Any(vc => vc.IsDirty);
 				} 
 				if ((windowState & WindowState.Untitled) > 0) {
-					isWindowStateOk |= IsUntitled(SD.Workbench.ActiveViewContent);
+					isWindowStateOk |= IsUntitled(activeWorkbenchWindow.ActiveViewContent);
 				}
 				if ((windowState & WindowState.ViewOnly) > 0) {
-					isWindowStateOk |= SD.Workbench.ActiveViewContent.IsViewOnly;
+					isWindowStateOk |= IsViewOnly(activeWorkbenchWindow.ActiveViewContent);
 				}
 			} else {
 				isWindowStateOk = true;
@@ -65,15 +63,15 @@ namespace ICSharpCode.SharpDevelop
 			
 			if (nowindowState != WindowState.None) {
 				if ((nowindowState & WindowState.Dirty) > 0) {
-					isWindowStateOk &= !SD.Workbench.ActiveWorkbenchWindow.ViewContents.Any(vc => vc.IsDirty);
+					isWindowStateOk &= !activeWorkbenchWindow.ViewContents.Any(vc => vc.IsDirty);
 				}
 				
 				if ((nowindowState & WindowState.Untitled) > 0) {
-					isWindowStateOk &= !IsUntitled(SD.Workbench.ActiveViewContent);
+					isWindowStateOk &= !IsUntitled(activeWorkbenchWindow.ActiveViewContent);
 				}
 				
 				if ((nowindowState & WindowState.ViewOnly) > 0) {
-					isWindowStateOk &= !SD.Workbench.ActiveViewContent.IsViewOnly;
+					isWindowStateOk &= !IsViewOnly(activeWorkbenchWindow.ActiveViewContent);
 				}
 			}
 			return isWindowStateOk;
@@ -81,11 +79,18 @@ namespace ICSharpCode.SharpDevelop
 		
 		static bool IsUntitled(IViewContent viewContent)
 		{
+			if (viewContent == null)
+				return false;
 			OpenedFile file = viewContent.PrimaryFile;
 			if (file == null)
 				return false;
 			else
 				return file.IsUntitled;
+		}
+		
+		static bool IsViewOnly(IViewContent viewContent)
+		{
+			return viewContent != null && viewContent.IsViewOnly;
 		}
 	}
 }
