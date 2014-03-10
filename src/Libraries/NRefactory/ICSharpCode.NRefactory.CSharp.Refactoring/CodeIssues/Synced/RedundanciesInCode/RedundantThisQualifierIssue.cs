@@ -172,7 +172,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				}
 
-				if (declarationsSpaceVisitor.GetDeclarationSpace(thisReferenceExpression).IsNameUsed(member.Name))
+				var localDeclarationSpace = declarationsSpaceVisitor.GetDeclarationSpace(thisReferenceExpression);
+				if (localDeclarationSpace == null || localDeclarationSpace.IsNameUsed(member.Name))
 					return;
 
 				var result = state.LookupSimpleNameOrTypeName(memberReference.MemberName, EmptyList<IType>.Instance, NameLookupMode.Expression);

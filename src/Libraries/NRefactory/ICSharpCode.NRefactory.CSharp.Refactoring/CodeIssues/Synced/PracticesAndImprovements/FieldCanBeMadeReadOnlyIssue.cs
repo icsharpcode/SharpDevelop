@@ -96,16 +96,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						if (def != null && def.KnownTypeCode == KnownTypeCode.None) {
 							// user-defined value type -- might be mutable
 							continue;
-						} else if (ctx.Resolve (variable.Initializer) is ConstantResolveResult) {
+						} else if (ctx.Resolve (variable.Initializer).IsCompileTimeConstant) {
 							// handled by ConvertToConstantIssue
 							continue;
 						}
 					}
 
 					var mr = ctx.Resolve(variable) as MemberResolveResult;
-					if (mr == null)
+					if (mr == null || !(mr.Member is IVariable))
 						continue;
-					list.Add(Tuple.Create(variable, mr.Member as IVariable, VariableState.None)); 
+					list.Add(Tuple.Create(variable, (IVariable)mr.Member, VariableState.None)); 
 				}
 				base.VisitTypeDeclaration(typeDeclaration);
 				Collect();

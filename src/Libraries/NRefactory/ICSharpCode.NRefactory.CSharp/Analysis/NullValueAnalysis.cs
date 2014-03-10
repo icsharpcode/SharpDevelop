@@ -1702,8 +1702,6 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 
 			public override VisitorResult VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, VariableStatusInfo data)
 			{
-				var constructorResolveResult = analysis.context.Resolve(objectCreateExpression) as CSharpInvocationResolveResult;
-
 				foreach (var argumentToHandle in objectCreateExpression.Arguments.Select((argument, parameterIndex) => new { argument, parameterIndex })) {
 					var argument = argumentToHandle.argument;
 					var parameterIndex = argumentToHandle.parameterIndex;
@@ -1717,7 +1715,9 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 							//out and ref parameters do *NOT* capture the variable (since they must stop changing it by the time they return)
 							data = data.Clone();
 
-							FixParameter(argument, constructorResolveResult.Member.Parameters, parameterIndex, identifier, data);
+							var constructorResolveResult = analysis.context.Resolve(objectCreateExpression) as CSharpInvocationResolveResult;
+							if (constructorResolveResult != null)
+								FixParameter(argument, constructorResolveResult.Member.Parameters, parameterIndex, identifier, data);
 						}
 						continue;
 					}

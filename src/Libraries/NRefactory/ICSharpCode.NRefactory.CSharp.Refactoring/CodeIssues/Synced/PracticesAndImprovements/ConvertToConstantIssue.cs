@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						continue;
 					if (fieldDeclaration.HasModifier(Modifiers.Public) || fieldDeclaration.HasModifier(Modifiers.Protected) || fieldDeclaration.HasModifier(Modifiers.Internal))
 						continue;
-					if (fieldDeclaration.Variables.Any (v => !(ctx.Resolve (v.Initializer) is ConstantResolveResult)))
+					if (fieldDeclaration.Variables.Any (v => !ctx.Resolve (v.Initializer).IsCompileTimeConstant))
 						continue;
 					var rr = ctx.Resolve(fieldDeclaration.ReturnType);
 					if (!IsValidConstType(rr.Type))
@@ -157,9 +157,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						continue;
 					var variable = fieldDeclaration.Variables.First();
 					var mr = ctx.Resolve(variable) as MemberResolveResult;
-					if (mr == null)
+					if (mr == null || !(mr.Member is IVariable))
 						continue;
-					list.Add(Tuple.Create(variable, mr.Member as IVariable)); 
+					list.Add(Tuple.Create(variable, (IVariable)mr.Member)); 
 				}
 				base.VisitTypeDeclaration(typeDeclaration);
 				Collect();
@@ -173,7 +173,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				if (varDecl.Variables.Count () > 1)
 					return;
-				if (varDecl.Variables.Any (v => !(ctx.Resolve (v.Initializer) is ConstantResolveResult)))
+				if (varDecl.Variables.Any (v => !ctx.Resolve (v.Initializer).IsCompileTimeConstant))
 					return;
 				var containingBlock = varDecl.GetParent<BlockStatement> ();
 				if (containingBlock == null)

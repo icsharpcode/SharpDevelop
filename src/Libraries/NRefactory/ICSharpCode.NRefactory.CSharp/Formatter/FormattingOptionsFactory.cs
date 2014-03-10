@@ -150,8 +150,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				SpaceAfterForSemicolon = true,
 				SpaceAfterTypecast = false,
 				
-				AlignEmbeddedIfStatements = true,
-				AlignEmbeddedUsingStatements = true,
+				AlignEmbeddedStatements = true,
 				SimplePropertyFormatting = PropertyFormatting.AllowOneLine,
 				AutoPropertyFormatting = PropertyFormatting.AllowOneLine,
 				EmptyLineFormatting = EmptyLineFormatting.DoNotIndent,
@@ -323,8 +322,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				SpaceAfterForSemicolon = true,
 				SpaceAfterTypecast = false,
 				
-				AlignEmbeddedIfStatements = true,
-				AlignEmbeddedUsingStatements = true,
+				AlignEmbeddedStatements = true,
 				SimplePropertyFormatting = PropertyFormatting.AllowOneLine,
 				AutoPropertyFormatting = PropertyFormatting.AllowOneLine,
 				EmptyLineFormatting = EmptyLineFormatting.DoNotIndent,

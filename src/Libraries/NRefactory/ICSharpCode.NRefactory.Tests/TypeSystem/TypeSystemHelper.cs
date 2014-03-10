@@ -50,5 +50,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var compilation = CreateCompilation(unresolvedTypeDefinition);
 			return compilation.MainAssembly.GetTypeDefinition(unresolvedTypeDefinition.FullTypeName);
 		}
+		
+		public static ICompilation CreateCompilationWithoutCorlib(params IUnresolvedTypeDefinition[] unresolvedTypeDefinitions)
+		{
+			var unresolvedFile = new CSharpUnresolvedFile();
+			foreach (var typeDef in unresolvedTypeDefinitions)
+				unresolvedFile.TopLevelTypeDefinitions.Add(typeDef);
+			return CreateCompilation(unresolvedFile);
+		}
+		
+		public static ICompilation CreateCompilationWithoutCorlib(params IUnresolvedFile[] unresolvedFiles)
+		{
+			var pc = new CSharpProjectContent().AddOrUpdateFiles(unresolvedFiles);
+			return pc.CreateCompilation();
+		}
+		
+		public static ITypeDefinition CreateCompilationWithoutCorlibAndResolve(IUnresolvedTypeDefinition unresolvedTypeDefinition)
+		{
+			var compilation = CreateCompilationWithoutCorlib(unresolvedTypeDefinition);
+			return compilation.MainAssembly.GetTypeDefinition(unresolvedTypeDefinition.FullTypeName);
+		}
 	}
 }

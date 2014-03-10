@@ -373,5 +373,15 @@ class Foo
 	}
 }");
 		}
+		
+		[Test]
+		public void InvalidUseOfThisInFieldInitializer()
+		{
+			var input = @"class Foo
+{
+	int a = this.a;
+}";
+			TestWrongContextWithSubIssue<RedundantThisQualifierIssue>(input, RedundantThisQualifierIssue.EverywhereElse);
+		}
 	}
 }

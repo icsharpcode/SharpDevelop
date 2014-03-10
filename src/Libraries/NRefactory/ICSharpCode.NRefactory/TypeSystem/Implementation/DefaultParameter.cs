@@ -162,8 +162,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public ISymbol Resolve(ITypeResolveContext context)
 		{
-			IParameterizedMember member = (IParameterizedMember)memberReference.Resolve(context);
-			return member.Parameters[index];
+			IParameterizedMember member = memberReference.Resolve(context) as IParameterizedMember;
+			if (member != null && index >= 0 && index < member.Parameters.Count)
+				return member.Parameters[index];
+			else
+				return null;
 		}
 	}
 	

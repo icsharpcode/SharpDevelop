@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var rr = ctx.Resolve(foreachStatement) as ForEachResolveResult;
 				if (rr == null)
 					return;
-				if (rr.ElementType.Kind == TypeKind.Unknown)
+				if (rr.ElementType.Kind == TypeKind.Unknown || rr.ElementVariable.Type.Kind == TypeKind.Unknown)
 					return;
 				if (ReflectionHelper.GetTypeCode(rr.ElementType) == TypeCode.Object)
 					return;

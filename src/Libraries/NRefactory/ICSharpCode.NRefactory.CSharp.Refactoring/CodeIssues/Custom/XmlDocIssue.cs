@@ -168,7 +168,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								var name = el.Attributes.FirstOrDefault(attr => attr.Name == "name");
 								if (name == null)
 									break;
-								if (member.SymbolKind == SymbolKind.TypeDefinition) {
+								if (member != null && member.SymbolKind == SymbolKind.TypeDefinition) {
 									var type = (ITypeDefinition)member;
 									if (!type.TypeArguments.Any(arg => arg.Name == name.Value)) {
 										AddXmlIssue(name.ValueSegment.Offset - firstline.Length + 1, name.ValueSegment.Length - 2, string.Format(ctx.TranslateString("Type parameter '{0}' not found"), name.Value));
@@ -183,7 +183,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								var m = member as IParameterizedMember;
 								if (m != null && m.Parameters.Any(p => p.Name == name.Value))
 									break;
-								if (name.Value == "value" && (member.SymbolKind == SymbolKind.Property || member.SymbolKind == SymbolKind.Indexer || member.SymbolKind == SymbolKind.Event) && el.Name == "paramref")
+								if (name.Value == "value" && member != null && (member.SymbolKind == SymbolKind.Property || member.SymbolKind == SymbolKind.Indexer || member.SymbolKind == SymbolKind.Event) && el.Name == "paramref")
 									break;
 								AddXmlIssue(name.ValueSegment.Offset - firstline.Length + 1, name.ValueSegment.Length - 2, string.Format(ctx.TranslateString("Parameter '{0}' not found"), name.Value));
 								break;

@@ -46,9 +46,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!node.NameToken.Contains(context.Location))
 				return null;
 			
-			var method = (IMethod)((MemberResolveResult)context.Resolve(node)).Member;
-			
-			if (method.Documentation != null)
+			var memberResolveResult = context.Resolve(node) as MemberResolveResult;
+			if (memberResolveResult == null)
+				return null;
+			var method = memberResolveResult.Member as IMethod;
+			if (method == null || method.Documentation != null)
 				return null;
 			
 			IList<IMember> interfaceMethods = method.ImplementedInterfaceMembers;

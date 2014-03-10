@@ -576,7 +576,7 @@ using (var o = new MyObj ()) {
 		public void TestUsingAlignment()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
-			policy.AlignEmbeddedUsingStatements = true;
+			policy.AlignEmbeddedStatements = true;
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
 			var adapter = Test(policy, @"class Test {
@@ -595,7 +595,7 @@ using (var o = new MyObj ()) {
 		}
 	}
 }");
-			policy.AlignEmbeddedUsingStatements = false;
+			policy.AlignEmbeddedStatements = false;
 			Continue(policy, adapter, @"class Test {
 	Test TestMethod ()
 	{
@@ -973,7 +973,7 @@ do FooBar(); while (true);
 		public void TestIfAlignment()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
-			policy.AlignEmbeddedIfStatements = true;
+			policy.AlignEmbeddedStatements = true;
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			
 			var adapter = Test(policy, @"class Test {
@@ -992,12 +992,46 @@ if (b) {
 		}
 	}
 }");
-			policy.AlignEmbeddedIfStatements = false;
+			policy.AlignEmbeddedStatements = false;
 			Continue(policy, adapter, @"class Test {
 	Test TestMethod ()
 	{
 		if (a)
 			if (b) {
+			}
+	}
+}");
+		}
+
+		[Test]
+		public void TestLockAlignment()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.AlignEmbeddedStatements = true;
+			policy.ClassBraceStyle = BraceStyle.EndOfLine;
+
+			var adapter = Test(policy, @"class Test {
+	Test TestMethod ()
+	{
+lock (a)
+lock (b) {
+}
+	}
+}",
+				@"class Test {
+	Test TestMethod ()
+	{
+		lock (a)
+		lock (b) {
+		}
+	}
+}");
+			policy.AlignEmbeddedStatements = false;
+			Continue(policy, adapter, @"class Test {
+	Test TestMethod ()
+	{
+		lock (a)
+			lock (b) {
 			}
 	}
 }");

@@ -752,7 +752,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 
 				// OPTION: CSharpFormattingOptions.AlignEmbeddedIfStatements
-				if (Engine.formattingOptions.AlignEmbeddedIfStatements &&
+				if (Engine.formattingOptions.AlignEmbeddedStatements &&
 					previousStatement == Statement.If &&
 					CurrentStatement == Statement.If)
 				{
@@ -760,8 +760,17 @@ namespace ICSharpCode.NRefactory.CSharp
 					NextLineIndent.PopIf(IndentType.Continuation);
 				}
 
+				// OPTION: CSharpFormattingOptions.AlignEmbeddedStatements
+				if (Engine.formattingOptions.AlignEmbeddedStatements &&
+					previousStatement == Statement.Lock &&
+					CurrentStatement == Statement.Lock)
+				{
+					ThisLineIndent.PopIf(IndentType.Continuation);
+					NextLineIndent.PopIf(IndentType.Continuation);
+				}
+
 				// OPTION: CSharpFormattingOptions.AlignEmbeddedUsingStatements
-				if (Engine.formattingOptions.AlignEmbeddedUsingStatements &&
+				if (Engine.formattingOptions.AlignEmbeddedStatements &&
 					previousStatement == Statement.Using &&
 					CurrentStatement == Statement.Using)
 				{

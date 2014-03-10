@@ -130,7 +130,7 @@ class Foo
 		public void AlignEmbeddedIfStatements()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = true;
+			fmt.AlignEmbeddedStatements = true;
 			var indent = Helper.CreateEngine(@"
 class Foo
 {
@@ -147,7 +147,7 @@ class Foo
 		public void UnalignEmbeddedIfStatements()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo
 {
@@ -164,7 +164,7 @@ class Foo
 		public void AlignEmbeddedUsingStatements()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedUsingStatements = true;
+			fmt.AlignEmbeddedStatements = true;
 			var indent = Helper.CreateEngine(@"
 class Foo
 {
@@ -178,10 +178,26 @@ class Foo
 		}
 
 		[Test]
+		public void AlignEmbeddedLockStatements()
+		{
+			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
+			fmt.AlignEmbeddedStatements = true;
+			var indent = Helper.CreateEngine(@"
+class Foo
+{
+	void Test (IDisposable a, IDisposable b)
+	{
+		lock (a)
+		lock (a)
+		lock (b) $", fmt);
+			Assert.AreEqual("\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
+		[Test]
 		public void UnalignEmbeddedUsingStatements()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedUsingStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo
 {

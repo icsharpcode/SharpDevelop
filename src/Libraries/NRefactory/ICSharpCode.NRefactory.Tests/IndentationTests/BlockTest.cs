@@ -544,7 +544,7 @@ class Foo {
 		public void TestBrackets_StackedIfElse_AlignElseToCorrectIf()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			fmt.AlignElseInIfStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
@@ -562,7 +562,7 @@ class Foo {
 		public void TestBrackets_StackedIfElse_AlignElseToCorrectIf2()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			fmt.AlignElseInIfStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
@@ -584,7 +584,7 @@ class Foo {
 		public void TestBrackets_StackedIfElse_BreakNestedStatementsOnSemicolon()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -604,7 +604,7 @@ class Foo {
 		public void TestBrackets_StackedIfElse_ElseIf()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			fmt.AlignElseInIfStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
@@ -627,7 +627,7 @@ class Foo {
 		public void TestBrackets_StackedIfElse_BreakNestedStatementsOnIf()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = true;
+			fmt.AlignEmbeddedStatements = true;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -656,7 +656,7 @@ class Foo {
 		public void TestBrackets_StackedIfElse_BreakNestedStatementsOnAnyStatement()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = true;
+			fmt.AlignEmbeddedStatements = true;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -683,7 +683,7 @@ class Foo {
 		public void TestBrackets_StackedIfElse_BreakNestedStatementsOnAnonymousBlock()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -703,7 +703,7 @@ class Foo {
 		public void TestBrackets_StackedIfElseIf_IfInNewLine()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -722,7 +722,7 @@ class Foo {
 		public void TestBrackets_RemoveStatementContinuationWhenNoSemicolon()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -741,7 +741,7 @@ class Foo {
 		public void TestBrackets_CustomIndent()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -759,7 +759,7 @@ class Foo {
 		public void TestBrackets_CustomIndent2()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -776,7 +776,7 @@ class Foo {
 		public void TestBrackets_CustomIndent3()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -792,7 +792,7 @@ class Foo {
 		public void TestBrackets_CustomIndent4()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -810,7 +810,7 @@ class Foo {
 		public void TestBrackets_CustomIndent5()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()
@@ -826,7 +826,7 @@ if (true)
 		public void TestBrackets_CustomIndent6()
 		{
 			CSharpFormattingOptions fmt = FormattingOptionsFactory.CreateMono();
-			fmt.AlignEmbeddedIfStatements = false;
+			fmt.AlignEmbeddedStatements = false;
 			var indent = Helper.CreateEngine(@"
 class Foo {
 	void Test ()

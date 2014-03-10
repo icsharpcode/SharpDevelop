@@ -17,8 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -892,6 +894,24 @@ class C
 			var c = ((ConversionResolveResult)rr.Operands[1]).Conversion;
 			Assert.IsTrue(c.IsUserDefined);
 			Assert.AreEqual("E", c.Method.ReturnType.ReflectionName);
+		}
+		
+		ITypeDefinition enumWithMissingBaseType = TypeSystemHelper.CreateCompilationWithoutCorlibAndResolve(
+			new DefaultUnresolvedTypeDefinition("MyEnum") {
+				Kind = TypeKind.Enum,
+				BaseTypes = { KnownTypeReference.Int32 }
+			}
+		);
+		
+		[Test]
+		public void EnumBitwiseOrWithMissingBaseType()
+		{
+			var resolver = new CSharpResolver(enumWithMissingBaseType.Compilation);
+			var lhs = new ConstantResolveResult(enumWithMissingBaseType, 1);
+			var rhs = new ConstantResolveResult(enumWithMissingBaseType, 2);
+			var rr = (ConstantResolveResult)resolver.ResolveBinaryOperator(BinaryOperatorType.BitwiseOr, lhs, rhs);
+			Assert.AreEqual(enumWithMissingBaseType, rr.Type);
+			Assert.AreEqual(3, rr.ConstantValue);
 		}
 	}
 }

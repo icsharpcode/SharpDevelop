@@ -207,5 +207,15 @@ class Foo : Base
 			var issues = GetIssues(new RedundantBaseQualifierIssue(), input, out context);
 			Assert.AreEqual(2, issues.Count);
 		}
+		
+		[Test]
+		public void InvalidUseOfBaseInFieldInitializer()
+		{
+			var input = @"class Foo
+{
+	int a = base.a;
+}";
+			TestWrongContext<RedundantBaseQualifierIssue>(input);
+		}
 	}
 }

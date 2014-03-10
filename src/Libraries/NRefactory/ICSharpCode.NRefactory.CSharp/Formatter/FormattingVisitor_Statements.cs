@@ -143,8 +143,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			bool pushed = false;
 
 			if (policy.IndentBlocks && !(
-					policy.AlignEmbeddedIfStatements && node is IfElseStatement && node.Parent is IfElseStatement || 
-					policy.AlignEmbeddedUsingStatements && node is UsingStatement && node.Parent is UsingStatement)) { 
+				policy.AlignEmbeddedStatements && node is IfElseStatement && node.Parent is IfElseStatement || 
+				policy.AlignEmbeddedStatements && node is UsingStatement && node.Parent is UsingStatement || 
+				policy.AlignEmbeddedStatements && node is LockStatement && node.Parent is LockStatement)) { 
 				curIndent.Push(IndentType.Block);
 				pushed = true;
 			}

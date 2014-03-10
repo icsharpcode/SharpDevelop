@@ -150,12 +150,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool AlignEmbeddedUsingStatements { // tested
-			get;
-			set;
-		}
-
-		public bool AlignEmbeddedIfStatements { // tested
+		public bool AlignEmbeddedStatements { // tested
 			get;
 			set;
 		}

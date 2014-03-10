@@ -143,7 +143,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			foreach (var type in assembly.ManifestModule.__GetExportedTypes ()) {
 				if (type.Assembly != assembly) {
 					int typeParameterCount;
-					string ns = type.Namespace;
+					string ns = type.Namespace ?? "";
 					string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
 					ns = interningProvider.Intern(ns);
 					name = interningProvider.Intern(name);

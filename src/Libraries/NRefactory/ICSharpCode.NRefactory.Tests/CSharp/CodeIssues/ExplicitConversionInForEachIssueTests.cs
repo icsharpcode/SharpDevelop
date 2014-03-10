@@ -59,14 +59,16 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		[Test]
 		public void WarningOnExplicitConversionBetweenInterfaces ()
 		{
-			var input = @"using System.Collections.Generic;
+			var input = @"using System;
+using System.Collections.Generic;
 class Foo {
 	void Bar (IList<IList<IDisposable>> c)
 	{
 		foreach (IDisposable element in c) { }
 	}
 }";
-			string output = @"using System.Collections.Generic;
+			string output = @"using System;
+using System.Collections.Generic;
 class Foo {
 	void Bar (IList<IList<IDisposable>> c)
 	{
@@ -76,5 +78,21 @@ class Foo {
 			
 			Test<ExplicitConversionInForEachIssue>(input, output);
 		}
+		
+		[Test]
+		public void NoWarningOnMissingUsing ()
+		{
+			var input = @"class Foo {
+	void Bar (System.Collections.Generic.List<System.Text.StringBuilder> c)
+	{
+		foreach (StringBuilder b in c) { }
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new ExplicitConversionInForEachIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+		
 	}
 }

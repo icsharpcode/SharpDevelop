@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				List<AstNode> redundantBase = new List<AstNode>();
 				var type = ctx.Resolve(typeDeclaration).Type;
 
-				if (typeDeclaration.HasModifier(Modifiers.Partial)) {
+				if (typeDeclaration.HasModifier(Modifiers.Partial) && type.GetDefinition() != null) {
 					var parts = type.GetDefinition().Parts;
 					foreach (var node in typeDeclaration.BaseTypes) {
 						int count = 0;

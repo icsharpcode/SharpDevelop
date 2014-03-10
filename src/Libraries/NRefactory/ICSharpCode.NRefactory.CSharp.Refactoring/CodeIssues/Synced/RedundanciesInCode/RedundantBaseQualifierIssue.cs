@@ -107,7 +107,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (member == null)
 					return;
 
-				if (declarationsSpaceVisitor.GetDeclarationSpace(baseReferenceExpression).IsNameUsed(member.Name))
+				var localDeclarationSpace = declarationsSpaceVisitor.GetDeclarationSpace(baseReferenceExpression);
+				if (localDeclarationSpace == null || localDeclarationSpace.IsNameUsed(member.Name))
 					return;
 
 				var result = state.LookupSimpleNameOrTypeName(memberReference.MemberName, EmptyList<IType>.Instance, NameLookupMode.Expression);

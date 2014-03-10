@@ -478,10 +478,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							// evaluate as (E)(~(U)x);
 							var U = compilation.FindType(expression.ConstantValue.GetType());
 							var unpackedEnum = new ConstantResolveResult(U, expression.ConstantValue);
-							return CheckErrorAndResolveUncheckedCast(expression.Type, ResolveUnaryOperator(op, unpackedEnum));
-						} else {
-							return UnaryOperatorResolveResult(expression.Type, op, expression, isNullable);
-						}
+							var rr = ResolveUnaryOperator(op, unpackedEnum);
+							rr = WithCheckForOverflow(false).ResolveCast(type, rr);
+							if (rr.IsCompileTimeConstant)
+								return rr;
+						} 
+						return UnaryOperatorResolveResult(expression.Type, op, expression, isNullable);
 					} else {
 						methodGroup = operators.BitwiseComplementOperators;
 						break;
@@ -943,14 +945,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// evaluate as ((U)x op (U)y)
 			IType elementType = GetEnumUnderlyingType(enumType);
-			if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable) {
-				lhs = ResolveCast(elementType, lhs);
-				if (lhs.IsError)
-					return lhs;
-				rhs = ResolveCast(elementType, rhs);
-				if (rhs.IsError)
-					return rhs;
-				return ResolveBinaryOperator(op, lhs, rhs);
+			if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable && elementType.Kind != TypeKind.Enum) {
+				var rr = ResolveBinaryOperator(op, ResolveCast(elementType, lhs), ResolveCast(elementType, rhs));
+				if (rr.IsCompileTimeConstant)
+					return rr;
 			}
 			IType resultType = compilation.FindType(KnownTypeCode.Boolean);
 			return BinaryOperatorResolveResult(resultType, lhs, op, rhs, isNullable);
@@ -964,14 +962,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// evaluate as (U)((U)x – (U)y)
 			IType elementType = GetEnumUnderlyingType(enumType);
-			if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable) {
-				lhs = ResolveCast(elementType, lhs);
-				if (lhs.IsError)
-					return lhs;
-				rhs = ResolveCast(elementType, rhs);
-				if (rhs.IsError)
-					return rhs;
-				return CheckErrorAndResolveUncheckedCast(elementType, ResolveBinaryOperator(BinaryOperatorType.Subtract, lhs, rhs));
+			if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable && elementType.Kind != TypeKind.Enum) {
+				var rr = ResolveBinaryOperator(BinaryOperatorType.Subtract, ResolveCast(elementType, lhs), ResolveCast(elementType, rhs));
+				rr = WithCheckForOverflow(false).ResolveCast(elementType, rr);
+				if (rr.IsCompileTimeConstant)
+					return rr;
 			}
 			IType resultType = MakeNullable(elementType, isNullable);
 			return BinaryOperatorResolveResult(resultType, lhs, BinaryOperatorType.Subtract, rhs, isNullable);
@@ -991,13 +986,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// evaluate as (E)((U)x op (U)y)
 			if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable) {
 				IType elementType = GetEnumUnderlyingType(enumType);
-				lhs = ResolveCast(elementType, lhs);
-				if (lhs.IsError)
-					return lhs;
-				rhs = ResolveCast(elementType, rhs);
-				if (rhs.IsError)
-					return rhs;
-				return CheckErrorAndResolveUncheckedCast(enumType, ResolveBinaryOperator(op, lhs, rhs));
+				if (elementType.Kind != TypeKind.Enum) {
+					var rr = ResolveBinaryOperator(op, ResolveCast(elementType, lhs), ResolveCast(elementType, rhs));
+					rr = WithCheckForOverflow(false).ResolveCast(enumType, rr);
+					if (rr.IsCompileTimeConstant) // only report result if it's a constant; use the regular OperatorResolveResult codepath otherwise
+						return rr;
+				}
 			}
 			IType resultType = MakeNullable(enumType, isNullable);
 			return BinaryOperatorResolveResult(resultType, lhs, op, rhs, isNullable);
@@ -1398,14 +1392,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		internal object CSharpPrimitiveCast(TypeCode targetType, object input)
 		{
 			return Utils.CSharpPrimitiveCast.Cast(targetType, input, this.CheckForOverflow);
-		}
-		
-		ResolveResult CheckErrorAndResolveUncheckedCast(IType targetType, ResolveResult expression)
-		{
-			if (expression.IsError)
-				return expression;
-			else
-				return WithCheckForOverflow(false).ResolveCast(targetType, expression);
 		}
 		#endregion
 		

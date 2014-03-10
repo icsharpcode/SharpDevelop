@@ -424,6 +424,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			return compilation.Assemblies.SelectMany(a => a.GetAllTypeDefinitions());
 		}
+
+		/// <summary>
+		/// Gets all top level type definitions in the compilation.
+		/// This may include types from referenced assemblies that are not accessible in the main assembly.
+		/// </summary>
+		public static IEnumerable<ITypeDefinition> GetTopLevelTypeDefinitons (this ICompilation compilation)
+		{
+			return compilation.Assemblies.SelectMany(a => a.TopLevelTypeDefinitions);
+		}
 		
 		/// <summary>
 		/// Gets the type (potentially a nested type) defined at the specified location.

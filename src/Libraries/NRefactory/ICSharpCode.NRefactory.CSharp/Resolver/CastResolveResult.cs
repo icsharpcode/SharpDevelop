@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		// and then pass it into CSharpResolver.ResolveBinaryOperator().
 		// That method normally wraps input arguments into another conversion
 		// (the implicit conversion applied by the operator).
-		// However, identity conversions do not cause the creation ConversionResolveResult instances,
+		// However, identity conversions do not cause the creation of ConversionResolveResult instances,
 		// so the OperatorResolveResult's argument will be the CastResolveResult
 		// of the cast.
 		// Without this class (and instead using ConversionResolveResult for both purposes),

@@ -1229,7 +1229,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					dimensions = firstSpecifier.Dimensions;
 					additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers.Skip(1);
 				} else {
-					dimensions = 0;
+					// No array specifiers (neither with nor without size) - can happen if there are syntax errors.
+					// Dimensions must be at least one; otherwise 'new ArrayType' will crash.
+					dimensions = 1;
 					additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers;
 				}
 				sizeArguments = null;

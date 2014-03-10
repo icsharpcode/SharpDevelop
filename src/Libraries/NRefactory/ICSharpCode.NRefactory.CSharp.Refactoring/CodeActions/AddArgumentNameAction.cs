@@ -23,12 +23,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.Refactoring;
 using System.Linq;
-using System.Text;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
@@ -36,9 +37,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// <summary>
 	///  Add name for argument
 	/// </summary>
-	using System;
-	using System.Collections.Generic;
-	
 	[ContextAction("Add name for argument", Description = "Add name for argument including method, indexer invocation and Attibute Usage")]
 	public class AddArgumentNameAction : SpecializedCodeAction<Expression>
 	{
@@ -73,12 +71,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!(parent is CSharp.Attribute) && !(parent is IndexerExpression) && !(parent is InvocationExpression))
 				return null;
 
-			if (parent is CSharp.Attribute) {
-				var resolvedResult = context.Resolve(parent as CSharp.Attribute);
-				if (resolvedResult.IsError)
+			var attribute = parent as CSharp.Attribute;
+			if (attribute != null) {
+				var resolvedResult = context.Resolve(attribute) as CSharpInvocationResolveResult;
+				if (resolvedResult == null || resolvedResult.IsError)
 					return null;
-				var arguments = (parent as CSharp.Attribute).Arguments;
-				IMember member = (resolvedResult as CSharpInvocationResolveResult).Member;
+				var arguments = attribute.Arguments;
+				IMember member = resolvedResult.Member;
 
 				int index = 0;
 				int temp = 0; 
@@ -97,17 +96,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (method == null || method.Parameters.Count == 0 || method.Parameters.Last().IsParams)
 					return null;
 
-				var parameterMap = (resolvedResult as CSharpInvocationResolveResult).GetArgumentToParameterMap();
+				var parameterMap = resolvedResult.GetArgumentToParameterMap();
 				var parameters = method.Parameters;
 				if (index >= parameterMap.Count)
 					return null;
-				var name = parameters.ElementAt(parameterMap [index]).Name;
+				var name = parameters[parameterMap[index]].Name;
 				return new CodeAction(string.Format(context.TranslateString("Add argument name '{0}'"), name), script => {
 					for (int i = 0; i < nodes.Count; i++) {
 						int p = index + i;
 						if (p >= parameterMap.Count)
 							break;
-						name = parameters.ElementAt(parameterMap [p]).Name;
+						name = parameters[parameterMap[p]].Name;
 						var namedArgument = new NamedArgumentExpression(name, arguments.ElementAt(p).Clone());
 						script.Replace(arguments.ElementAt(p), namedArgument);
 					}}, 
@@ -115,12 +114,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				);
 			} 
 
-			if (parent is IndexerExpression) {
-				var resolvedResult = context.Resolve(parent as IndexerExpression);
-				if (resolvedResult.IsError)
+			var indexerExpression = parent as IndexerExpression;
+			if (indexerExpression != null) {
+				var resolvedResult = context.Resolve(indexerExpression) as CSharpInvocationResolveResult;
+				if (resolvedResult == null || resolvedResult.IsError)
 					return null;
-				var arguments = (parent as IndexerExpression).Arguments;
-				IMember member = (resolvedResult as CSharpInvocationResolveResult).Member;
+				var arguments = indexerExpression.Arguments;
+				IMember member = resolvedResult.Member;
 				
 				int index = 0;
 				int temp = 0; 
@@ -139,17 +139,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (property == null || property.Parameters.Count == 0 || property.Parameters.Last().IsParams) {
 					return null;
 				}
-				var parameterMap = (resolvedResult as CSharpInvocationResolveResult).GetArgumentToParameterMap();
+				var parameterMap = resolvedResult.GetArgumentToParameterMap();
 				var parameters = property.Parameters;
 				if (index >= parameterMap.Count)
 					return null;
-				var name = parameters.ElementAt(parameterMap [index]).Name;
+				var name = parameters[parameterMap[index]].Name;
 				return new CodeAction(string.Format(context.TranslateString("Add argument name '{0}'"), name), script => {
 					for (int i = 0; i< nodes.Count; i++) {
 						int p = index + i;
 						if (p >= parameterMap.Count)
 							break;
-						name = parameters.ElementAt(parameterMap [p]).Name;
+						name = parameters[parameterMap[p]].Name;
 						var namedArgument = new NamedArgumentExpression(name, arguments.ElementAt(p).Clone());
 						script.Replace(arguments.ElementAt(p), namedArgument);
 					}}, 
@@ -157,12 +157,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				);
 			} 
 
-			if (parent is InvocationExpression) {
-				var resolvedResult = context.Resolve(parent as InvocationExpression);
-				if (resolvedResult.IsError)
+			var invocationExpression = parent as InvocationExpression;
+			if (invocationExpression != null) {
+				var resolvedResult = context.Resolve(invocationExpression) as CSharpInvocationResolveResult;
+				if (resolvedResult == null || resolvedResult.IsError)
 					return null;
-				var arguments = (parent as InvocationExpression).Arguments;
-				IMember member = (resolvedResult as CSharpInvocationResolveResult).Member;
+				var arguments = invocationExpression.Arguments;
+				IMember member = resolvedResult.Member;
 				
 				int index = 0;
 				int temp = 0; 
@@ -186,13 +187,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var parameters = method.Parameters;
 				if (index >= parameterMap.Count)
 					return null;
-				var name = parameters.ElementAt(parameterMap [index]).Name;
+				var name = parameters[parameterMap[index]].Name;
 				return new CodeAction(string.Format(context.TranslateString("Add argument name '{0}'"), name), script => {
 					for (int i = 0; i< nodes.Count; i++) {
 						int p = index + i;
 						if (p >= parameterMap.Count)
 							break;
-						name = parameters.ElementAt(parameterMap [p]).Name;
+						name = parameters[parameterMap[p]].Name;
 						var namedArgument = new NamedArgumentExpression(name, arguments.ElementAt(p).Clone());
 						script.Replace(arguments.ElementAt(p), namedArgument);
 					}}, 
