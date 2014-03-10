@@ -661,6 +661,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public override void JumpToCurrentLine(string sourceFullFilename, int startLine, int startColumn, int endLine, int endColumn)
 		{
+			if (string.IsNullOrEmpty(sourceFullFilename))
+				return;
 			IViewContent viewContent = FileService.OpenFile(sourceFullFilename);
 			if (viewContent != null) {
 				IPositionable positionable = viewContent.GetService<IPositionable>();

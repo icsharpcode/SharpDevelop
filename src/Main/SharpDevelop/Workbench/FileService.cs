@@ -304,6 +304,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <inheritdoc/>
 		public IViewContent OpenFile(FileName fileName, bool switchToOpenedView)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
 			LoggingService.Info("Open file " + fileName);
 			
 			IViewContent viewContent = GetOpenFile(fileName);

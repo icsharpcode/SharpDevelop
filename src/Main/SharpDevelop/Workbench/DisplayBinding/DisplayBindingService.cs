@@ -99,6 +99,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public IDisplayBinding GetBindingPerFileName(FileName filename)
 		{
 			SD.MainThread.VerifyAccess();
+			if (filename == null)
+				return null;
 			if (FileUtility.IsUrl(filename)) {
 				// The normal display binding dispatching code can't handle URLs (e.g. because it uses Path.GetExtension),
 				// so we'll directly return the browser display binding.
@@ -115,6 +117,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			SD.MainThread.VerifyAccess();
 			
+			if (filename == null)
+				return null;
 			string defaultCommandID = displayBindingServiceProperties.Get("Default" + Path.GetExtension(filename).ToLowerInvariant(), string.Empty);
 			if (!string.IsNullOrEmpty(defaultCommandID)) {
 				foreach (DisplayBindingDescriptor binding in bindings) {
