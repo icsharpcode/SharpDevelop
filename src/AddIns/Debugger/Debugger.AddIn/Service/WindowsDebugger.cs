@@ -585,7 +585,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				throw new GetValueException("no stackframe available!");
 			var location = CurrentStackFrame.NextStatement;
 			var fileName = new FileName(location.Filename);
-			var rr = SD.ParserService.ResolveSnippet(fileName, new TextLocation(location.StartLine, location.StartColumn), new ParseableFileContentFinder().Create(fileName), code, null, System.Threading.CancellationToken.None);
+			var rr = SD.ParserService.ResolveSnippet(fileName, new TextLocation(location.StartLine, location.StartColumn), code);
 			return new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation, allowMethodInvoke, allowSetValue).Convert(rr);
 		}
 

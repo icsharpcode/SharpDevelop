@@ -242,9 +242,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 		                      ITextSource fileContent = null, ICompilation compilation = null,
 		                      CancellationToken cancellationToken = default(CancellationToken));
 		
-		ResolveResult ResolveSnippet(FileName fileName, TextLocation fileLocation,
-		                             ITextSource fileContent, string codeSnippet, ICompilation compilation,
-		                             CancellationToken cancellationToken);
+		ResolveResult ResolveSnippet(FileName fileName, TextLocation fileLocation, string codeSnippet,
+		                             ITextSource fileContent = null, ICompilation compilation = null,
+		                             CancellationToken cancellationToken = default(CancellationToken));
 		
 		Task<ResolveResult> ResolveAsync(FileName fileName, TextLocation location,
 		                                 ITextSource fileContent = null, ICompilation compilation = null,
