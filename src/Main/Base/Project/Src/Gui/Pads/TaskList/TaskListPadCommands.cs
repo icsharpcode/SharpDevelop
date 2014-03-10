@@ -54,15 +54,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.token = token;
 			this.Content = token;
 			this.Command = this;
-			this.CommandParameter = TaskListPad.Instance;
 			this.IsChecked = TaskListPad.Instance.DisplayedTokens[token];
 			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.CheckBoxStyleKey);
 		}
 		
 		bool ICheckableMenuCommand.IsChecked(object parameter)
 		{
-			var pad = (TaskListPad)parameter;
-			return pad.DisplayedTokens[token];
+			return TaskListPad.Instance.DisplayedTokens[token];
 		}
 		
 		public bool CanExecute(object parameter)
@@ -72,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Execute(object parameter)
 		{
-			var pad = (TaskListPad)parameter;
+			var pad = TaskListPad.Instance;
 			pad.DisplayedTokens[token] = IsChecked == true;
 			if (pad.IsInitialized)
 				pad.UpdateItems();

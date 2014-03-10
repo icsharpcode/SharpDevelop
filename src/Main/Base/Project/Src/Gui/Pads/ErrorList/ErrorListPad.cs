@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			errorView.ItemsSource = errors;
 			errorView.MouseDoubleClick += ErrorViewMouseDoubleClick;
 			errorView.Style = (Style)new TaskViewResources()["TaskListView"];
-			errorView.ContextMenu = MenuService.CreateContextMenu(this, DefaultContextMenuAddInTreeEntry);
+			errorView.ContextMenu = MenuService.CreateContextMenu(errorView, DefaultContextMenuAddInTreeEntry);
 			
 			errorView.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, ExecuteCopy, CanExecuteCopy));
 			errorView.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
