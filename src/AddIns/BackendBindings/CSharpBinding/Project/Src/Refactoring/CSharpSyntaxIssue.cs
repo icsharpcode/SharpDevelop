@@ -45,13 +45,15 @@ namespace CSharpBinding.Refactoring
 			if (syntaxTree == null)
 				return Enumerable.Empty<CodeIssue>();
 
-			return syntaxTree.Errors.Select(error => CreateCodeIssue(error, refactoringContext));
+			return syntaxTree.Errors.Select(error => CreateCodeIssue(error, refactoringContext)).Where(issue => issue != null);
 		}
 		
 		CodeIssue CreateCodeIssue(Error error, SDRefactoringContext context)
 		{
 			IDocument document = context.Document;
 			TextLocation begin = error.Region.Begin;
+			if (begin.Line <= 0 || begin.Line > document.LineCount)
+				return null;
 			
 			// Columns seem to be zero-based, SD expects 1-based columns
 			int offset = document.GetOffset(begin.Line, begin.Column + 1);
