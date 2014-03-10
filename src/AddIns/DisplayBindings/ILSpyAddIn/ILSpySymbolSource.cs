@@ -102,7 +102,7 @@ namespace ICSharpCode.ILSpyAddIn
 			var context = new SimpleTypeResolveContext(method);
 			var loader = new CecilLoader();
 			
-			return symbols.LocalVariables.Select(
+			return symbols.LocalVariables.Where(v => v.OriginalVariable != null).Select(
 				v => new Debugger.ILLocalVariable() {
 					Index = v.OriginalVariable.Index,
 					Type = loader.ReadTypeReference(v.Type).Resolve(context),
