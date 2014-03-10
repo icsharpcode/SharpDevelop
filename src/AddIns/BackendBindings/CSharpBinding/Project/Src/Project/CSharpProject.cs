@@ -52,7 +52,9 @@ namespace CSharpBinding
 			get {
 				string toolsVersion;
 				lock (SyncRoot) toolsVersion = this.ToolsVersion;
-				Version version = new Version(toolsVersion);
+				Version version;
+				if (!Version.TryParse(toolsVersion, out version))
+					version = new Version(4, 0); // use 4.0 as default if ToolsVersion attribute is missing/malformed
 				if (version == new Version(4, 0) && DotnetDetection.IsDotnet45Installed())
 					return new Version(5, 0);
 				return version;
