@@ -86,6 +86,8 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
+		static event Action IssueSeveritySettingsSaved;
+		
 		internal static void SaveIssueSeveritySettings()
 		{
 			var properties = PropertyService.NestedProperties("CSharpIssueSeveritySettings");
@@ -97,6 +99,8 @@ namespace CSharpBinding.Refactoring
 						properties.Set(provider.ProviderType.FullName, provider.CurrentSeverity);
 				}
 			}
+			if (IssueSeveritySettingsSaved != null)
+				IssueSeveritySettingsSaved();
 		}
 		
 		readonly ITextEditor editor;
@@ -107,7 +111,8 @@ namespace CSharpBinding.Refactoring
 			this.editor = editor;
 			this.markerService = editor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			//SD.ParserService.ParserUpdateStepFinished += ParserService_ParserUpdateStepFinished;
-			SD.ParserService.ParseInformationUpdated += new EventHandler<ParseInformationEventArgs>(SD_ParserService_ParseInformationUpdated);
+			SD.ParserService.ParseInformationUpdated += SD_ParserService_ParseInformationUpdated;
+			IssueSeveritySettingsSaved += RerunAnalysis; // re-run analysis when settings are changed
 			editor.ContextActionProviders.Add(this);
 		}
 		
@@ -115,6 +120,8 @@ namespace CSharpBinding.Refactoring
 		{
 			editor.ContextActionProviders.Remove(this);
 			//SD.ParserService.ParserUpdateStepFinished -= ParserService_ParserUpdateStepFinished;
+			SD.ParserService.ParseInformationUpdated -= SD_ParserService_ParseInformationUpdated;
+			IssueSeveritySettingsSaved -= RerunAnalysis;
 			if (cancellationTokenSource != null)
 				cancellationTokenSource.Cancel();
 			Clear();
@@ -254,6 +261,16 @@ namespace CSharpBinding.Refactoring
 				}
 				RunAnalysis(editor.Document.CreateSnapshot(), parseInfo);
 			}
+		}
+		
+		async void RerunAnalysis()
+		{
+			var snapshot = editor.Document.CreateSnapshot();
+			var parseInfo = await SD.ParserService.ParseAsync(editor.FileName, snapshot) as CSharpFullParseInformation;
+			if (parseInfo != null)
+				RunAnalysis(snapshot, parseInfo);
+			else
+				Clear();
 		}
 		
 		async void RunAnalysis(ITextSource textSource, CSharpFullParseInformation parseInfo)
