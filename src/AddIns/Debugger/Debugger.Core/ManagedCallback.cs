@@ -294,9 +294,13 @@ namespace Debugger
 			string errorText = String.Format("Debugger error: \nHR = 0x{0:X} \nCode = 0x{1:X}", errorHR, errorCode);
 			
 			if ((uint)errorHR == 0x80131C30) {
-				errorText += "\n\nDebugging 64-bit processes is currently not supported.\n" +
-					"If you are running a 64-bit system, this setting might help:\n" +
-					"Project -> Project Options -> Compiling -> Target CPU = 32-bit Intel";
+				if (Environment.Is64BitProcess) {
+					errorText += "\n\nCannot debug 32-bit processes if the debugger is running as 64-bit process.";
+				} else {
+					errorText += "\n\nDebugging 64-bit processes is currently not supported.\n" +
+						"If you are running a 64-bit system, this setting might help:\n" +
+						"Project -> Project Options -> Compiling -> Target CPU = 32-bit Intel";
+				}
 			}
 			
 			if (Environment.UserInteractive)
