@@ -209,6 +209,14 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		#endregion
 		
+		public static IEnumerable<DependencyObject> VisualAncestorsAndSelf(this DependencyObject obj)
+		{
+			while (obj != null) {
+				yield return obj;
+				obj = VisualTreeHelper.GetParent(obj);
+			}
+		}
+		
 		[Conditional("DEBUG")]
 		public static void CheckIsFrozen(Freezable f)
 		{

@@ -459,6 +459,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Close();
 			}
 		}
+		
+		void ListItem_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			if (e.ClickCount == 2) {
+				okButtonClick(sender, e);
+			}
+		}
 	}
 	
 	public class GotoUtils

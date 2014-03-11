@@ -46,11 +46,10 @@
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			Margin="8,4,8,4"
-			Name="listBox"
-			MouseDoubleClick="okButtonClick">
+			Name="listBox">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<StackPanel Orientation="Horizontal">
+					<StackPanel Orientation="Horizontal" MouseLeftButtonDown="ListItem_MouseLeftButtonDown">
 						<Image Source="{Binding ImageSource}" Style="{StaticResource ListItemImageStyle}"/>
 						<TextBlock Text="{Binding Text}" Margin="4,0,0,0" Style="{StaticResource ListItemTextStyle}"/>
 					</StackPanel>

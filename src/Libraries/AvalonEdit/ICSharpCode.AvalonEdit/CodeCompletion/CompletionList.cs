@@ -26,6 +26,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Linq;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {
@@ -180,8 +181,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			base.OnMouseDoubleClick(e);
 			if (e.ChangedButton == MouseButton.Left) {
-				e.Handled = true;
-				RequestInsertion(e);
+				// only process double clicks on the ListBoxItems, not on the scroll bar
+				if (ExtensionMethods.VisualAncestorsAndSelf(e.OriginalSource as DependencyObject).TakeWhile(obj => obj != this).Any(obj => obj is ListBoxItem)) {
+					e.Handled = true;
+					RequestInsertion(e);
+				}
 			}
 		}
 		
