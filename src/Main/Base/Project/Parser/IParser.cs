@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		/// <summary>
 		/// Creates a compilation for a single file that does not belong to any project.
-		/// Used by <see cref="ParserService.GetCompilationForFile"/>.
+		/// Used by <see cref="IParserService.GetCompilationForFile"/>.
 		/// May return null if this operation is not supported.
 		/// </summary>
 		ICompilation CreateCompilationForSingleFile(FileName fileName, IUnresolvedFile unresolvedFile);

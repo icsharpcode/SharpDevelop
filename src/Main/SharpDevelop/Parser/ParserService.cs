@@ -328,7 +328,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				compilation = GetCompilationForFile(fileName);
 			ResolveResult rr = entry.parser.ResolveSnippet(parseInfo, fileLocation, codeSnippet, compilation, cancellationToken);
 			LoggingService.Debug("Resolved " + fileLocation + " to " + rr);
-			return rr;
+			return rr ?? ErrorResolveResult.UnknownError;
 		}
 		
 		public Task<ResolveResult> ResolveAsync(FileName fileName, TextLocation location, ITextSource fileContent, ICompilation compilation, CancellationToken cancellationToken)

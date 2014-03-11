@@ -130,7 +130,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public ResolveResult ResolveSnippet(ParseInformation parseInfo, TextLocation location, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 	}
 }
