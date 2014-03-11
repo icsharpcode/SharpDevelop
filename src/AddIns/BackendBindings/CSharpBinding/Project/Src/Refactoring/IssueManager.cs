@@ -86,7 +86,7 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		static event Action IssueSeveritySettingsSaved;
+		static event EventHandler IssueSeveritySettingsSaved;
 		
 		internal static void SaveIssueSeveritySettings()
 		{
@@ -100,7 +100,7 @@ namespace CSharpBinding.Refactoring
 				}
 			}
 			if (IssueSeveritySettingsSaved != null)
-				IssueSeveritySettingsSaved();
+				IssueSeveritySettingsSaved(null, EventArgs.Empty);
 		}
 		
 		readonly ITextEditor editor;
@@ -112,6 +112,7 @@ namespace CSharpBinding.Refactoring
 			this.markerService = editor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			//SD.ParserService.ParserUpdateStepFinished += ParserService_ParserUpdateStepFinished;
 			SD.ParserService.ParseInformationUpdated += SD_ParserService_ParseInformationUpdated;
+			SD.ParserService.LoadSolutionProjectsThread.Finished += RerunAnalysis;
 			IssueSeveritySettingsSaved += RerunAnalysis; // re-run analysis when settings are changed
 			editor.ContextActionProviders.Add(this);
 		}
@@ -121,6 +122,7 @@ namespace CSharpBinding.Refactoring
 			editor.ContextActionProviders.Remove(this);
 			//SD.ParserService.ParserUpdateStepFinished -= ParserService_ParserUpdateStepFinished;
 			SD.ParserService.ParseInformationUpdated -= SD_ParserService_ParseInformationUpdated;
+			SD.ParserService.LoadSolutionProjectsThread.Finished -= RerunAnalysis;
 			IssueSeveritySettingsSaved -= RerunAnalysis;
 			if (cancellationTokenSource != null)
 				cancellationTokenSource.Cancel();
@@ -263,7 +265,7 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		async void RerunAnalysis()
+		async void RerunAnalysis(object sender, EventArgs e)
 		{
 			var snapshot = editor.Document.CreateSnapshot();
 			var parseInfo = await SD.ParserService.ParseAsync(editor.FileName, snapshot) as CSharpFullParseInformation;
