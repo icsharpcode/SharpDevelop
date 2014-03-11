@@ -37,18 +37,20 @@ namespace ICSharpCode.UnitTesting
 			if (test == null)
 				throw new ArgumentNullException("test");
 			this.test = test;
-			test.DisplayNameChanged += test_NameChanged;
-			test.ResultChanged += test_ResultChanged;
-			LazyLoading = true;
 		}
 		
-		protected override void DetachEventHandlers()
+		protected override void OnIsVisibleChanged()
 		{
-			// TODO: figure out when we can call this method
-			test.DisplayNameChanged -= test_NameChanged;
-			test.ResultChanged -= test_ResultChanged;
-			
-			base.DetachEventHandlers();
+			base.OnIsVisibleChanged();
+			if (IsVisible) {
+				test.DisplayNameChanged += test_NameChanged;
+				test.ResultChanged += test_ResultChanged;
+				// If the node isn't visible; we don't need to raise the PropertyChanged event for the items shown in the visible
+				// tree node; so we don't need to catch up on missed updates.
+			} else {
+				test.DisplayNameChanged -= test_NameChanged;
+				test.ResultChanged -= test_ResultChanged;
+			}
 		}
 		
 		public new ITest Model {

@@ -84,11 +84,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
-		protected override bool IsSpecialNode()
-		{
-			return true;
-		}
-		
 		protected override void InsertSpecialNodes()
 		{
 			var treeNode = SD.TreeNodeFactory.CreateTreeNode(assemblyReferencesModel);

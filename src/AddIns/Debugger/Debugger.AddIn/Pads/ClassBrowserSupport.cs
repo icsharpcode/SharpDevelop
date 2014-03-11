@@ -18,6 +18,7 @@
 
 using System;
 using System.IO;
+using System.Windows.Controls;
 using Debugger;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
@@ -233,12 +234,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public override void ShowContextMenu()
+		public override void ShowContextMenu(ContextMenuEventArgs e)
 		{
-			var assemblyModel = this.Model as IAssemblyModel;
-			if (assemblyModel != null) {
-				var ctx = MenuService.ShowContextMenu(null, assemblyModel, "/SharpDevelop/Services/DebuggerService/ModuleContextMenu");
-			}
+			MenuService.ShowContextMenu(null, this.Model, "/SharpDevelop/Services/DebuggerService/ModuleContextMenu");
 		}
 	}
 	

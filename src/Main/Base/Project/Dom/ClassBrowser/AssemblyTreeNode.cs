@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Controls;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.TreeView;
 
@@ -82,12 +83,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
-		public override void ShowContextMenu()
+		public override void ShowContextMenu(ContextMenuEventArgs e)
 		{
-			var assemblyModel = this.Model as IAssemblyModel;
-			if (assemblyModel != null) {
-				var ctx = MenuService.ShowContextMenu(null, assemblyModel, "/SharpDevelop/Pads/ClassBrowser/AssemblyContextMenu");
-			}
+			MenuService.ShowContextMenu(null, model, "/SharpDevelop/Pads/ClassBrowser/AssemblyContextMenu");
 		}
 	}
 }

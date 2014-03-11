@@ -18,12 +18,8 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.TreeView;
-using ICSharpCode.SharpDevelop.Parser;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -31,37 +27,27 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	/// <summary>
 	/// Represents the "Derived types" sub-node of type nodes in ClassBrowser tree.
 	/// </summary>
-	public class DerivedTypesTreeNode : ModelCollectionTreeNode
+	public class DerivedTypesTreeNode : SharpTreeNode
 	{
-		ITypeDefinitionModel definition;
+		readonly ITypeDefinitionModel definition;
 		string text;
-		bool childrenLoaded;
-		SimpleModelCollection<ITypeDefinitionModel> derivedTypes;
 		
 		public DerivedTypesTreeNode(ITypeDefinitionModel definition)
 		{
 			if (definition == null)
 				throw new ArgumentNullException("definition");
 			this.definition = definition;
-			this.definition.Updated += OnDefinitionUpdated;
 			this.text = SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.DerivedTypes");
-			derivedTypes = new SimpleModelCollection<ITypeDefinitionModel>();
-			childrenLoaded = false;
 		}
 
-		protected override void DetachEventHandlers()
+		protected override void OnIsVisibleChanged()
 		{
-			this.definition.Updated -= OnDefinitionUpdated;
-			base.DetachEventHandlers();
-		}
-		
-		protected override IModelCollection<object> ModelChildren {
-			get {
-				if (!childrenLoaded) {
-					UpdateDerivedTypes();
-					childrenLoaded = true;
-				}
-				return derivedTypes;
+			base.OnIsVisibleChanged();
+			if (IsVisible) {
+				definition.Updated += OnDefinitionUpdated;
+			} else {
+				definition.Updated -= OnDefinitionUpdated;
+				LazyLoading = true;
 			}
 		}
 		
@@ -69,77 +55,19 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		{
 			// Listing the derived types can be expensive; so it's better to switch back to lazy-loading
 			// (collapsing the node if necessary)
-			SwitchBackToLazyLoading();
-			childrenLoaded = false;
+			LazyLoading = true;
 		}
 		
-		public override SharpTreeNode FindChildNodeRecursively(Func<SharpTreeNode, bool> predicate)
+		protected override void LoadChildren()
 		{
-			// Don't search children of this node, because they are repeating type nodes from elsewhere
-			return null;
-		}
-		
-		public override bool CanFindChildNodeRecursively {
-			get { return false; }
-		}
-		
-		void UpdateDerivedTypes()
-		{
-			derivedTypes.Clear();
+			Children.Clear();
 			ITypeDefinition currentTypeDef = definition.Resolve();
 			if (currentTypeDef != null) {
 				foreach (var derivedType in FindReferenceService.FindDerivedTypes(currentTypeDef, true)) {
-					ITypeDefinitionModel derivedTypeModel = GetTypeDefinitionModel(currentTypeDef, derivedType);
+					ITypeDefinitionModel derivedTypeModel = derivedType.GetModel();
 					if (derivedTypeModel != null)
-						derivedTypes.Add(derivedTypeModel);
+						Children.Add(SD.TreeNodeFactory.CreateTreeNode(derivedTypeModel));
 				}
-			}
-		}
-		
-		ITypeDefinitionModel GetTypeDefinitionModel(ITypeDefinition mainTypeDefinition, ITypeDefinition derivedTypeDefinition)
-		{
-			ITypeDefinitionModel resolveTypeDefModel = null;
-			var assemblyFileName = mainTypeDefinition.ParentAssembly.GetRuntimeAssemblyLocation();
-			IAssemblyModel assemblyModel = null;
-			
-			try {
-				// Try to get AssemblyModel from project list
-				IProjectService projectService = SD.GetRequiredService<IProjectService>();
-				if (projectService.CurrentSolution != null) {
-					var projectOfAssembly = projectService.CurrentSolution.Projects.FirstOrDefault(p => p.AssemblyModel.Location == assemblyFileName);
-					if (projectOfAssembly != null) {
-						// We automatically have an AssemblyModel from project
-						assemblyModel = projectOfAssembly.AssemblyModel;
-					}
-				}
-				
-				if (assemblyModel == null) {
-					// Nothing in projects, load from assembly file
-					var assemblyParserService = SD.GetService<IAssemblyParserService>();
-					if (assemblyParserService != null) {
-						if (assemblyFileName != null) {
-							assemblyModel = assemblyParserService.GetAssemblyModel(assemblyFileName);
-						}
-					}
-				}
-				
-				if (assemblyModel != null) {
-					// Look in found AssemblyModel
-					resolveTypeDefModel = assemblyModel.TopLevelTypeDefinitions[derivedTypeDefinition.FullTypeName];
-					if (resolveTypeDefModel != null) {
-						return resolveTypeDefModel;
-					}
-				}
-			} catch (Exception) {
-				// TODO Can't load the type, what to do?
-			}
-			
-			return resolveTypeDefModel;
-		}
-		
-		protected override System.Collections.Generic.IComparer<ICSharpCode.TreeView.SharpTreeNode> NodeComparer {
-			get {
-				return NodeTextComparer;
 			}
 		}
 		

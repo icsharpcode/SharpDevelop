@@ -38,23 +38,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected abstract IModelCollection<object> ModelChildren { get; }
 		protected abstract IComparer<SharpTreeNode> NodeComparer { get; }
 		
-		protected virtual bool IsSpecialNode()
-		{
-			return false;
-		}
-		
 		protected virtual void InsertSpecialNodes()
 		{
-			throw new NotSupportedException("this node is not a special node!");
-		}
-		
-		protected virtual void DetachEventHandlers()
-		{
-			// If children loaded, also detach the collection change event handler
-			if (listeningToCollectionChangedEvents) {
-				ModelChildren.CollectionChanged -= ModelChildrenCollectionChanged;
-				listeningToCollectionChangedEvents = false;
-			}
 		}
 		
 		protected override void OnIsVisibleChanged()
@@ -75,17 +60,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual void ShowContextMenu()
-		{
-			// Do nothing in base class
-		}
-		
 		#region Manage Children
 		protected override void LoadChildren()
 		{
 			Children.Clear();
-			if (IsSpecialNode())
-				InsertSpecialNodes();
+			InsertSpecialNodes();
 			InsertChildren(ModelChildren);
 			if (!listeningToCollectionChangedEvents) {
 				ModelChildren.CollectionChanged += ModelChildrenCollectionChanged;
@@ -108,8 +87,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Children.RemoveAll(n => !set.Contains(n.Model));
 			set.ExceptWith(Children.Select(n => n.Model));
 			InsertChildren(set);
-			if (IsSpecialNode())
-				InsertSpecialNodes();
 		}
 		
 		void ModelChildrenCollectionChanged(IReadOnlyCollection<object> removedItems, IReadOnlyCollection<object> addedItems)
@@ -131,7 +108,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Children.Clear();
 			LazyLoading = true;
 		}
+		#endregion
 		
+		// TODO: remove this method from ModelCollectionTreeNode; it's unrelated to the core functionality of managing the IModelCollection
 		public virtual SharpTreeNode FindChildNodeRecursively(Func<SharpTreeNode, bool> predicate)
 		{
 			if (predicate == null)
@@ -160,21 +139,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public virtual bool CanFindChildNodeRecursively {
 			get { return true; }
-		}
-		#endregion
-	}
-	
-	public class WaitForSolutionLoadedTreeNode : SharpTreeNode
-	{
-		public WaitForSolutionLoadedTreeNode()
-		{
-			this.LazyLoading = false;
-		}
-		
-		public override object Text {
-			get {
-				return "Waiting for solution load to be completed...";
-			}
 		}
 	}
 }

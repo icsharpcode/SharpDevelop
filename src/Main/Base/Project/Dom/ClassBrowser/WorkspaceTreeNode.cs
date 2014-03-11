@@ -56,8 +56,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 		
 		public WorkspaceTreeNode()
 		{
-			combinedModelChildren = SD.ClassBrowser.MainAssemblyList.Assemblies.Concat(SD.ClassBrowser.UnpinnedAssemblies.Assemblies);
-			SD.ClassBrowser.CurrentWorkspace.AssemblyLists.CollectionChanged += AssemblyListsCollectionChanged;
+			combinedModelChildren = SD.ClassBrowser.CurrentWorkspace.AssemblyLists
+				.Concat<object>(SD.ClassBrowser.MainAssemblyList.Assemblies)
+				.Concat<object>(SD.ClassBrowser.UnpinnedAssemblies.Assemblies);
 		}
 		
 		protected override object GetModel()
@@ -83,25 +84,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			get {
 				return SD.ResourceService.GetImageSource("Icons.16x16.Workspace");
 			}
-		}
-		
-		protected override bool IsSpecialNode()
-		{
-			return true;
-		}
-		
-		protected override void InsertSpecialNodes()
-		{
-			foreach (var assemblyList in SD.ClassBrowser.AssemblyLists) {
-				var treeNode = SD.TreeNodeFactory.CreateTreeNode(assemblyList);
-				if (treeNode != null)
-					Children.OrderedInsert(treeNode, ChildNodeComparer);
-			}
-		}
-		
-		void AssemblyListsCollectionChanged(IReadOnlyCollection<IAssemblyList> removedItems, IReadOnlyCollection<IAssemblyList> addedItems)
-		{
-			SynchronizeModelChildren();
 		}
 	}
 }

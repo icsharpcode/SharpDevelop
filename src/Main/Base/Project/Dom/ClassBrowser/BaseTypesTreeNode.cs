@@ -29,47 +29,40 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	/// <summary>
 	/// Represents the "Base types" sub-node of type nodes in ClassBrowser tree.
 	/// </summary>
-	public class BaseTypesTreeNode : ModelCollectionTreeNode
+	public class BaseTypesTreeNode : SharpTreeNode
 	{
-		ITypeDefinitionModel definition;
+		readonly ITypeDefinitionModel definition;
 		string text;
-		bool childrenLoaded;
-		SimpleModelCollection<ITypeDefinitionModel> baseTypes;
 		
 		public BaseTypesTreeNode(ITypeDefinitionModel definition)
 		{
 			if (definition == null)
 				throw new ArgumentNullException("definition");
 			this.definition = definition;
-			this.definition.Updated += (sender, e) => UpdateBaseTypes();
 			this.text = SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.BaseTypes");
-			baseTypes = new SimpleModelCollection<ITypeDefinitionModel>();
-			childrenLoaded = false;
 		}
 
-		protected override IModelCollection<object> ModelChildren {
-			get {
-				if (!childrenLoaded) {
-					UpdateBaseTypes();
-					childrenLoaded = true;
-				}
-				return baseTypes;
+		protected override void OnIsVisibleChanged()
+		{
+			base.OnIsVisibleChanged();
+			if (IsVisible) {
+				definition.Updated += OnDefinitionUpdated;
+			} else {
+				definition.Updated -= OnDefinitionUpdated;
+				LazyLoading = true;
 			}
 		}
-		
-		public override SharpTreeNode FindChildNodeRecursively(Func<SharpTreeNode, bool> predicate)
+
+		void OnDefinitionUpdated(object sender, EventArgs e)
 		{
-			// Don't search children of this node, because they are repeating type nodes from elsewhere
-			return null;
+			// If the list of children was created, update it
+			if (!LazyLoading)
+				LoadChildren();
 		}
 		
-		public override bool CanFindChildNodeRecursively {
-			get { return false; }
-		}
-		
-		void UpdateBaseTypes()
+		protected override void LoadChildren()
 		{
-			baseTypes.Clear();
+			Children.Clear();
 			ITypeDefinition currentTypeDef = definition.Resolve();
 			if (currentTypeDef != null) {
 				foreach (var baseType in currentTypeDef.DirectBaseTypes) {
@@ -77,15 +70,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 					if (baseTypeDef != null) {
 						ITypeDefinitionModel baseTypeModel = baseTypeDef.GetModel();
 						if (baseTypeModel != null)
-							baseTypes.Add(baseTypeModel);
+							Children.Add(SD.TreeNodeFactory.CreateTreeNode(baseTypeModel));
 					}
 				}
-			}
-		}
-		
-		protected override System.Collections.Generic.IComparer<ICSharpCode.TreeView.SharpTreeNode> NodeComparer {
-			get {
-				return NodeTextComparer;
 			}
 		}
 		

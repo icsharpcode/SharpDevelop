@@ -17,13 +17,14 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows.Controls;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 {
-	public class MemberTreeNode : ModelCollectionTreeNode
+	public class MemberTreeNode : SharpTreeNode
 	{
 		IMemberModel model;
 		
@@ -74,14 +75,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			return ambience.ConvertSymbol(member);
 		}
 		
-		protected override IModelCollection<object> ModelChildren {
-			get { return ImmutableModelCollection<object>.Empty; }
-		}
-		
-		protected override System.Collections.Generic.IComparer<SharpTreeNode> NodeComparer {
-			get { return NodeTextComparer; }
-		}
-		
 		public override void ActivateItem(System.Windows.RoutedEventArgs e)
 		{
 			var target = model.Resolve();
@@ -89,12 +82,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				NavigationService.NavigateTo(target);
 		}
 		
-		public override void ShowContextMenu()
+		public override void ShowContextMenu(ContextMenuEventArgs e)
 		{
-			var entityModel = this.Model as IEntityModel;
-			if (entityModel != null) {
-				var ctx = MenuService.ShowContextMenu(null, entityModel, "/SharpDevelop/EntityContextMenu");
-			}
+			MenuService.ShowContextMenu(null, model, "/SharpDevelop/EntityContextMenu");
 		}
 	}
 }

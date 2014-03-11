@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Policy;
 using System.Text;
+using System.Windows.Controls;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
@@ -39,10 +40,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (definition == null)
 				throw new ArgumentNullException("definition");
 			this.definition = definition;
-			this.definition.Updated += (sender, e) => {
-				UpdateBaseTypesNode();
-				UpdateDerivedTypesNode();
-			};
 			this.combinedModelChildren = definition.NestedTypes.Concat<object>(definition.Members);
 		}
 		
@@ -76,35 +73,17 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
-		protected override bool IsSpecialNode()
-		{
-			return true;
-		}
-		
 		protected override void InsertSpecialNodes()
 		{
-			// Since following both methods set their entries to the top, "Base types" must come last to get them on top
-			UpdateDerivedTypesNode();
-			UpdateBaseTypesNode();
-		}
-		
-		static readonly FullTypeName SystemObjectName = new FullTypeName("System.Object");
-		
-		void UpdateBaseTypesNode()
-		{
-			this.Children.RemoveAll(n => n is BaseTypesTreeNode);
+			if (!definition.IsSealed) {
+				Children.OrderedInsert(new DerivedTypesTreeNode(definition), TypeMemberNodeComparer);
+			}
 			if (definition.FullTypeName != SystemObjectName) {
 				Children.OrderedInsert(new BaseTypesTreeNode(definition), TypeMemberNodeComparer);
 			}
 		}
 		
-		void UpdateDerivedTypesNode()
-		{
-			this.Children.RemoveAll(n => n is DerivedTypesTreeNode);
-			if (!definition.IsSealed) {
-				Children.OrderedInsert(new DerivedTypesTreeNode(definition), TypeMemberNodeComparer);
-			}
-		}
+		static readonly FullTypeName SystemObjectName = new FullTypeName("System.Object");
 		
 		public override void ActivateItem(System.Windows.RoutedEventArgs e)
 		{
@@ -113,12 +92,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				NavigationService.NavigateTo(target);
 		}
 		
-		public override void ShowContextMenu()
+		public override void ShowContextMenu(ContextMenuEventArgs e)
 		{
-			var entityModel = this.Model as IEntityModel;
-			if (entityModel != null) {
-				var ctx = MenuService.ShowContextMenu(null, entityModel, "/SharpDevelop/EntityContextMenu");
-			}
+			MenuService.ShowContextMenu(null, definition, "/SharpDevelop/EntityContextMenu");
 		}
 		
 		string GenerateNodeText()

@@ -17,7 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows.Controls;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.TreeView;
 using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
@@ -25,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	/// <summary>
 	/// Tree node representing one single referenced assembly.
 	/// </summary>
-	public class AssemblyReferenceTreeNode : ModelCollectionTreeNode
+	public class AssemblyReferenceTreeNode : SharpTreeNode
 	{
 		private IAssemblyReferenceModel model;
 		
@@ -44,19 +46,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			return model;
 		}
 		
-		protected override IModelCollection<object> ModelChildren {
-			get {
-				// TODO Show assemblies referenced by this assembly?
-				return ImmutableModelCollection<object>.Empty;
-			}
-		}
-
-		protected override System.Collections.Generic.IComparer<ICSharpCode.TreeView.SharpTreeNode> NodeComparer {
-			get {
-				return NodeTextComparer;
-			}
-		}
-		
 		public override object Text {
 			get {
 				return model.AssemblyName.ShortName;
@@ -69,12 +58,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			}
 		}
 		
-		public override void ShowContextMenu()
+		public override void ShowContextMenu(ContextMenuEventArgs e)
 		{
-			var assemblyReferenceModel = this.Model as IAssemblyReferenceModel;
-			if (assemblyReferenceModel != null) {
-				var ctx = MenuService.ShowContextMenu(null, assemblyReferenceModel, "/SharpDevelop/Pads/ClassBrowser/AssemblyReferenceContextMenu");
-			}
+			MenuService.ShowContextMenu(null, model, "/SharpDevelop/Pads/ClassBrowser/AssemblyReferenceContextMenu");
 		}
 	}
 }

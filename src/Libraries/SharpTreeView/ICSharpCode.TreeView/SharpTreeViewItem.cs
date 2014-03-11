@@ -116,6 +116,11 @@ namespace ICSharpCode.TreeView
 			}
 		}
 
+		protected override void OnContextMenuOpening(ContextMenuEventArgs e)
+		{
+			Node.ShowContextMenu(e);
+		}
+		
 		#endregion
 		
 		#region Drag and Drop

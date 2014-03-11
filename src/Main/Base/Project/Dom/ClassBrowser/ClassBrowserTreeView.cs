@@ -43,14 +43,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			this.Root = root;
 		}
 		
-		protected override void OnContextMenuOpening(ContextMenuEventArgs e)
-		{
-			var treeNode = this.SelectedItem as ModelCollectionTreeNode;
-			if (treeNode != null) {
-				treeNode.ShowContextMenu();
-			}
-		}
-		
 		private SharpTreeNode FindAssemblyTreeNode(string fullAssemblyName)
 		{
 			var assemblyTreeNode = this.Root.Children.FirstOrDefault(
