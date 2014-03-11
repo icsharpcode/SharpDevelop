@@ -298,18 +298,23 @@
 	</UserControl.Resources>
 	
 	<DockPanel>
-		<Grid
-			DockPanel.Dock="Top"
-			Visibility="{Binding Path=AllowPresets, Converter={StaticResource boolToVisibilityConverter}}">
-			
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="*" />
-			</Grid.ColumnDefinitions>
-			
-			<Button Grid.Column="0" Content="Reset to:" Click="ResetButton_Click" />
-			<ComboBox Name="presetComboBox" Grid.Column="1" Margin="3,0,0,0" ItemsSource="{Binding Presets}" />
-		</Grid>
+		<StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+			<CheckBox
+				Name="autoFormattingCheckBox"
+				Content="Automatically format code"
+				IsThreeState="True" IsChecked="{Binding AutoFormatting}"
+				Margin="0,0,0,10"/>
+			<Grid
+				Visibility="{Binding Path=AllowPresets, Converter={StaticResource boolToVisibilityConverter}}">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				
+				<Button Grid.Column="0" Content="Reset to:" Click="ResetButton_Click" />
+				<ComboBox Name="presetComboBox" Grid.Column="1" Margin="3,0,0,0" ItemsSource="{Binding Presets}" />
+			</Grid>
+		</StackPanel>
 		
 		<sd:RestrictDesiredSize Margin="0,4,0,0">
 			<ScrollViewer VerticalScrollBarVisibility="Auto">
