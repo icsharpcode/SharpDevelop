@@ -43,12 +43,18 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 			if (definition == null)
 				throw new ArgumentNullException("definition");
 			this.definition = definition;
-			this.definition.Updated += (sender, e) => UpdateDerivedTypes();
+			this.definition.Updated += OnDefinitionUpdated;
 			this.text = SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.DerivedTypes");
 			derivedTypes = new SimpleModelCollection<ITypeDefinitionModel>();
 			childrenLoaded = false;
 		}
 
+		protected override void DetachEventHandlers()
+		{
+			this.definition.Updated -= OnDefinitionUpdated;
+			base.DetachEventHandlers();
+		}
+		
 		protected override IModelCollection<object> ModelChildren {
 			get {
 				if (!childrenLoaded) {
@@ -57,6 +63,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				}
 				return derivedTypes;
 			}
+		}
+		
+		void OnDefinitionUpdated(object sender, EventArgs e)
+		{
+			// Listing the derived types can be expensive; so it's better to switch back to lazy-loading
+			// (collapsing the node if necessary)
+			SwitchBackToLazyLoading();
+			childrenLoaded = false;
 		}
 		
 		public override SharpTreeNode FindChildNodeRecursively(Func<SharpTreeNode, bool> predicate)

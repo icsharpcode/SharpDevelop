@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected virtual void DetachEventHandlers()
 		{
 			// If children loaded, also detach the collection change event handler
-			if (!LazyLoading) {
+			if (listeningToCollectionChangedEvents) {
 				ModelChildren.CollectionChanged -= ModelChildrenCollectionChanged;
 				listeningToCollectionChangedEvents = false;
 			}
@@ -122,10 +122,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			InsertChildren(addedItems);
 		}
 		
-		void SwitchBackToLazyLoading()
+		protected void SwitchBackToLazyLoading()
 		{
-			ModelChildren.CollectionChanged -= ModelChildrenCollectionChanged;
-			listeningToCollectionChangedEvents = false;
+			if (listeningToCollectionChangedEvents) {
+				ModelChildren.CollectionChanged -= ModelChildrenCollectionChanged;
+				listeningToCollectionChangedEvents = false;
+			}
 			Children.Clear();
 			LazyLoading = true;
 		}
