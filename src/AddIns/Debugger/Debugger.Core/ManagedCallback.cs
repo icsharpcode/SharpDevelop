@@ -41,8 +41,6 @@ namespace Debugger
 		bool isInCallback;
 		DebuggerPausedEventArgs pausedEventArgs;
 		
-		Thread threadToReport; // TODO: Remove
-		
 		[Debugger.Tests.Ignore]
 		public Process Process {
 			get { return process; }
@@ -61,9 +59,14 @@ namespace Debugger
 		// The reason for the accumulation is that several pause callbacks
 		// can happen "at the same time" in the debugee.
 		// The event will be raised as soon as the callback queue is drained.
-		DebuggerPausedEventArgs GetPausedEventArgs()
+		DebuggerPausedEventArgs RequestPause(Thread thread)
 		{
-			return pausedEventArgs ?? (pausedEventArgs = new DebuggerPausedEventArgs(process));
+			pauseOnNextExit = true;
+			if (pausedEventArgs == null) {
+				pausedEventArgs = new DebuggerPausedEventArgs(process);
+				pausedEventArgs.Thread = thread;
+			}
+			return pausedEventArgs;
 		}
 		
 		void EnterCallback(string name, ICorDebugProcess pProcess)
@@ -100,7 +103,6 @@ namespace Debugger
 		void EnterCallback(string name, ICorDebugThread pThread)
 		{
 			EnterCallback(name, pThread.GetProcess());
-			threadToReport = process.GetThread(pThread);
 		}
 		
 		void ExitCallback()
@@ -120,9 +122,6 @@ namespace Debugger
 
 				process.DisableAllSteppers();
 				if (pausedEventArgs != null) {
-					pausedEventArgs.Thread = threadToReport;
-					threadToReport = null;
-					
 					// Raise the pause event outside the callback
 					// Warning: Make sure that process in not resumed in the meantime
 					DebuggerPausedEventArgs e = pausedEventArgs; // Copy for capture
@@ -173,8 +172,7 @@ namespace Debugger
 				}
 			} else {
 				// User-code method
-				pauseOnNextExit = true;
-				GetPausedEventArgs().Break = true;
+				RequestPause(thread).Break = true;
 				process.TraceMessage(" - pausing in user code");
 			}
 			
@@ -187,15 +185,15 @@ namespace Debugger
 			EnterCallback("Breakpoint", pThread);
 			
 			Breakpoint breakpoint = process.Debugger.GetBreakpoint(corBreakpoint);
+			Thread thread = process.GetThread(pThread);
+			
 			// Could be one of Process.tempBreakpoints
 			// The breakpoint might have just been removed
 			if (breakpoint != null) {
-				GetPausedEventArgs().BreakpointsHit.Add(breakpoint);
+				RequestPause(thread).BreakpointsHit.Add(breakpoint);
 			} else {
-				GetPausedEventArgs().Break = true;
+				RequestPause(thread).Break = true;
 			}
-			
-			pauseOnNextExit = true;
 			
 			ExitCallback();
 		}
@@ -210,18 +208,14 @@ namespace Debugger
 		public void Break(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
 			EnterCallback("Break", pThread);
-
-			pauseOnNextExit = true;
-			GetPausedEventArgs().Break = true;
+			RequestPause(process.GetThread(pThread)).Break = true;
 			ExitCallback();
 		}
 
 		public void ControlCTrap(ICorDebugProcess pProcess)
 		{
 			EnterCallback("ControlCTrap", pProcess);
-
-			pauseOnNextExit = true;
-			GetPausedEventArgs().Break = true;
+			RequestPause(null).Break = true;
 			ExitCallback();
 		}
 
@@ -229,7 +223,7 @@ namespace Debugger
 		{
 			// Exception2 is used in .NET Framework 2.0
 			
-			if (process.DebuggeeVersion.StartsWith("v1.")) {
+			if (process.DebuggeeVersion.StartsWith("v1.", StringComparison.Ordinal)) {
 				// Forward the call to Exception2, which handles EnterCallback and ExitCallback
 				ExceptionType exceptionType = (unhandled != 0) ? ExceptionType.Unhandled : ExceptionType.FirstChance;
 				Exception2(pAppDomain, pThread, null, 0, (CorDebugExceptionCallbackType)exceptionType, 0);
@@ -311,8 +305,7 @@ namespace Debugger
 				throw new DebuggerException(errorText);
 
 			try {
-				pauseOnNextExit = true;
-				GetPausedEventArgs().Break = true;
+				RequestPause(null).Break = true;
 				ExitCallback();
 			} catch (COMException) {
 			} catch (InvalidComObjectException) {
@@ -550,9 +543,7 @@ namespace Debugger
 				// (I have managed to create a test application to trigger it)
 				Thread thread = process.GetThread(pThread);
 				thread.CurrentExceptionType = exceptionType;
-				GetPausedEventArgs().ExceptionsThrown.Add(thread);
-				
-				pauseOnNextExit = true;
+				RequestPause(thread).ExceptionsThrown.Add(thread);
 			}
 			
 			ExitCallback();

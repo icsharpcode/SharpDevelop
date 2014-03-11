@@ -463,7 +463,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			OnIsProcessRunningChanged(EventArgs.Empty);
 			
 			CurrentProcess = e.Process;
-			CurrentThread = e.Thread;
+			if (e.Thread != null)
+				CurrentThread = e.Thread;
+			else if (CurrentThread != null && CurrentThread.HasExited)
+				CurrentThread = null;
 			CurrentStackFrame = CurrentThread != null ? CurrentThread.MostRecentStackFrame : null;
 			
 			// We can have several events happening at the same time
