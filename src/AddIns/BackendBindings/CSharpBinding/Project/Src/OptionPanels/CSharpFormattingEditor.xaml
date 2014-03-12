@@ -27,9 +27,8 @@
 					<local:FormattingOption Option="IndentSwitchBody" Text="Indent switch body" />
 					<local:FormattingOption Option="IndentCaseBody" Text="Indent case body" />
 					<local:FormattingOption Option="IndentBreakStatements" Text="Indent break statements" />
-					<local:FormattingOption Option="AlignEmbeddedUsingStatements" Text="Align embedded using statements" />
-					<local:FormattingOption Option="AlignEmbeddedIfStatements" Text="Align embedded if statements" />
-					<local:FormattingOption Option="AlignElseInIfStatements" Text="Align else in if statements" />
+					<local:FormattingOption Option="AlignEmbeddedStatements" Text="Align embedded statements" />
+					<local:FormattingOption Option="AlignElseInIfStatements" Text="Align &quot;else&quot; in &quot;if&quot; statements" />
 					<local:FormattingOption Option="AutoPropertyFormatting" Text="Auto property formatting" />
 					<local:FormattingOption Option="SimplePropertyFormatting" Text="Simple property formatting" />
 					<local:FormattingOption Option="EmptyLineFormatting" Text="Empty line formatting" />
@@ -194,17 +193,17 @@
 					</local:FormattingOptionContainer>
 				</local:FormattingGroupContainer>
 			</local:FormattingGroupContainer>
-			<local:FormattingGroupContainer Text="Blank lines">
+			<local:FormattingGroupContainer Text="Minimum blank lines">
 				<local:FormattingOptionContainer>
-					<local:FormattingOption Option="BlankLinesBeforeUsings" Text="Before usings" />
-					<local:FormattingOption Option="BlankLinesAfterUsings" Text="After usings" />
-					<local:FormattingOption Option="BlankLinesBeforeFirstDeclaration" Text="Before first declaration" />
-					<local:FormattingOption Option="BlankLinesBetweenTypes" Text="Between types" />
-					<local:FormattingOption Option="BlankLinesBetweenFields" Text="Between fields" />
-					<local:FormattingOption Option="BlankLinesBetweenEventFields" Text="Between event fields" />
-					<local:FormattingOption Option="BlankLinesBetweenMembers" Text="Between members" />
-					<local:FormattingOption Option="BlankLinesAroundRegion" Text="Around region" />
-					<local:FormattingOption Option="BlankLinesInsideRegion" Text="Inside region" />
+					<local:FormattingOption Option="MinimumBlankLinesBeforeUsings" Text="Before usings" />
+					<local:FormattingOption Option="MinimumBlankLinesAfterUsings" Text="After usings" />
+					<local:FormattingOption Option="MinimumBlankLinesBeforeFirstDeclaration" Text="Before first declaration" />
+					<local:FormattingOption Option="MinimumBlankLinesBetweenTypes" Text="Between types" />
+					<local:FormattingOption Option="MinimumBlankLinesBetweenFields" Text="Between fields" />
+					<local:FormattingOption Option="MinimumBlankLinesBetweenEventFields" Text="Between event fields" />
+					<local:FormattingOption Option="MinimumBlankLinesBetweenMembers" Text="Between members" />
+					<local:FormattingOption Option="MinimumBlankLinesAroundRegion" Text="Around region" />
+					<local:FormattingOption Option="MinimumBlankLinesInsideRegion" Text="Inside region" />
 				</local:FormattingOptionContainer>
 			</local:FormattingGroupContainer>
 			<local:FormattingGroupContainer Text="Keep formatting">
