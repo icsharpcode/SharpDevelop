@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optionpanels:ProjectOptionPanel
+	x:Class="CSharpBinding.OptionPanels.CSharpProjectFormattingOptionPanel"
+	x:ClassModifier="internal"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
+	xmlns:local="clr-namespace:CSharpBinding.OptionPanels"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	
+	<Grid>
+		<local:CSharpFormattingEditor x:Name="formattingEditor" Margin="0,0,0,0" />
+	</Grid>
+</optionpanels:ProjectOptionPanel>

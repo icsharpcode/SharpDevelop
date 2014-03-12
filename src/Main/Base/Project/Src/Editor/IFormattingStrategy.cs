@@ -29,6 +29,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 	public interface IFormattingStrategy
 	{
 		/// <summary>
+		/// Formats content in current selection or whole open file, if nothing is selected.
+		/// </summary>
+		/// <param name="editor">Current text editor.</param>
+		void FormatLines(ITextEditor editor);
+		
+		/// <summary>
 		/// This function formats a specific line after <code>charTyped</code> is pressed.
 		/// </summary>
 		void FormatLine(ITextEditor editor, char charTyped);
@@ -52,6 +58,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 	public class DefaultFormattingStrategy : IFormattingStrategy
 	{
 		internal static readonly DefaultFormattingStrategy DefaultInstance = new DefaultFormattingStrategy();
+		
+		public virtual void FormatLines(ITextEditor textArea)
+		{
+		}
 		
 		public virtual void FormatLine(ITextEditor editor, char charTyped)
 		{

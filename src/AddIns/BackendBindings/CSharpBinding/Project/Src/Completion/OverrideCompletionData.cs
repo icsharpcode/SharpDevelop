@@ -98,8 +98,9 @@ namespace CSharpBinding.Completion
 			
 			var document = context.Editor.Document;
 			StringWriter w = new StringWriter();
-			var formattingOptions = FormattingOptionsFactory.CreateSharpDevelop();
-			var segmentDict = SegmentTrackingOutputFormatter.WriteNode(w, entityDeclaration, formattingOptions, context.Editor.Options);
+			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(contextAtCaret.Compilation.GetProject());
+			var segmentDict = SegmentTrackingOutputFormatter.WriteNode(
+				w, entityDeclaration, formattingOptions.OptionsContainer.GetEffectiveOptions(), context.Editor.Options);
 			
 			using (document.OpenUndoGroup()) {
 				string newText = w.ToString().TrimEnd();
@@ -109,7 +110,7 @@ namespace CSharpBinding.Completion
 					var segment = segmentDict[throwStatement];
 					context.Editor.Select(declarationBegin + segment.Offset, segment.Length);
 				}
-				CSharpFormatterHelper.Format(context.Editor, declarationBegin, newText.Length, formattingOptions);
+				CSharpFormatterHelper.Format(context.Editor, declarationBegin, newText.Length, formattingOptions.OptionsContainer);
 			}
 		}
 		

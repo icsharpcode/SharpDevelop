@@ -17,24 +17,25 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.Core;
 
-namespace CSharpBinding.FormattingStrategy
+namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
-	internal class CSharpFormatterHelper
+	/// <summary>
+	/// Menu command to reformat selected code or whole document according to formatter settings.
+	/// </summary>
+	public class ReformatSelection : AbstractMenuCommand
 	{
 		/// <summary>
-		/// Formats the specified part of the document.
+		/// Starts the command.
 		/// </summary>
-		public static void Format(ITextEditor editor, int offset, int length, CSharpFormattingOptionsContainer optionsContainer)
+		public override void Run()
 		{
-			var formatter = new CSharpFormatter(optionsContainer.GetEffectiveOptions(), editor.ToEditorOptions());
-			formatter.AddFormattingRegion(new DomRegion(editor.Document.GetLocation(offset), editor.Document.GetLocation(offset + length)));
-			var changes = formatter.AnalyzeFormatting(editor.Document, SyntaxTree.Parse(editor.Document));
-			changes.ApplyChanges(offset, length);
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			if (editor == null)
+				return;
+			
+			editor.Language.FormattingStrategy.FormatLines(editor);
 		}
 	}
 }
