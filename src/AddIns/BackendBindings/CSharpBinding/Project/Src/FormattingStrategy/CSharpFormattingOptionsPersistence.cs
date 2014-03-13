@@ -49,7 +49,7 @@ namespace CSharpBinding.FormattingStrategy
 			GlobalOptions = new CSharpFormattingOptionsPersistence(
 				SD.PropertyService.MainPropertiesContainer, new CSharpFormattingOptionsContainer()
 				{
-					DefaultText = "(global)" // TODO Localize!
+					DefaultText = StringParser.Parse("${CSharpBinding.Formatting.GlobalOptionReference}")
 				});
 			GlobalOptions.Load();
 			
@@ -81,7 +81,7 @@ namespace CSharpBinding.FormattingStrategy
 						csproject.ExtensionProperties,
 						new CSharpFormattingOptionsContainer((SolutionOptions ?? GlobalOptions).OptionsContainer)
 						{
-							DefaultText = "(project)" // TODO Localize!
+							DefaultText = StringParser.Parse("${CSharpBinding.Formatting.ProjectOptionReference}")
 						});
 				}
 				
@@ -98,7 +98,7 @@ namespace CSharpBinding.FormattingStrategy
 				e.Solution.GlobalPreferences,
 				new CSharpFormattingOptionsContainer(GlobalOptions.OptionsContainer)
 				{
-					DefaultText = "(solution)" // TODO Localize!
+					DefaultText = StringParser.Parse("${CSharpBinding.Formatting.SolutionOptionReference}")
 				});
 		}
 		

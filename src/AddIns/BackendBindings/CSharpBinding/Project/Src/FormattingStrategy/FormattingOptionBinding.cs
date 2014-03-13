@@ -67,7 +67,6 @@ namespace CSharpBinding.FormattingStrategy
 				if (container != null) {
 					if (container.Parent != null) {
 						// Add "default" entry in ComboBox
-						// TODO Add located resource, maybe context-bound, like "(solution)" or "(global)"!
 						comboBox.Items.Add(new ComboBoxItem {
 							Content = (container.Parent ?? container).DefaultText,
 							Tag = null
