@@ -39,10 +39,20 @@ namespace CSharpBinding.FormattingStrategy
 	/// </summary>
 	internal class CSharpFormattingOptionsPersistence
 	{
+		static bool initialized;
 		static Dictionary<string, CSharpFormattingOptionsPersistence> projectOptions;
+		
+		static CSharpFormattingOptionsPersistence()
+		{
+			Initialize();
+		}
 		
 		public static void Initialize()
 		{
+			if (initialized)
+				return;
+			
+			initialized = true;
 			projectOptions = new Dictionary<string, CSharpFormattingOptionsPersistence>();
 			
 			// Load global settings
@@ -54,8 +64,11 @@ namespace CSharpBinding.FormattingStrategy
 			GlobalOptions.Load();
 			
 			// Handlers for solution loading/unloading
-			SD.ProjectService.SolutionOpened += SolutionOpened;
-			SD.ProjectService.SolutionClosed += SolutionClosed;
+			var projectService = SD.GetService<IProjectService>();
+			if (projectService != null) {
+				SD.ProjectService.SolutionOpened += SolutionOpened;
+				SD.ProjectService.SolutionClosed += SolutionClosed;
+			}
 		}
 		
 		public static CSharpFormattingOptionsPersistence GlobalOptions

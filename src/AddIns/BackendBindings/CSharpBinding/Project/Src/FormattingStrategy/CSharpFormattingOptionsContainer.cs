@@ -280,7 +280,7 @@ namespace CSharpBinding.FormattingStrategy
 		/// <returns>Created and filled <see cref="ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions"/> instance.</returns>
 		private CSharpFormattingOptions CreateCachedOptions()
 		{
-			var outputOptions = FormattingOptionsFactory.CreateEmpty();
+			var outputOptions = FormattingOptionsFactory.CreateSharpDevelop();
 			
 			// Look at all container options and try to set identically named properties of CSharpFormattingOptions
 			foreach (PropertyInfo propertyInfo in typeof(CSharpFormattingOptions).GetProperties()) {
