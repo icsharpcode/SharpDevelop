@@ -155,9 +155,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			if (!CloseSolution(allowCancel: true))
 				return false;
-			FileUtility.ObservedLoad(OpenSolutionInternal, fileName);
+			FileUtility.ObservedLoad(OpenSolutionOrProjectInternal, fileName);
 			
 			return currentSolution != null;
+		}
+		
+		void OpenSolutionOrProjectInternal(FileName fileName)
+		{
+			if (fileName.HasExtension(".sln")) {
+				OpenSolutionInternal(fileName);
+			} else {
+				OpenProjectInternal(fileName);
+			}
 		}
 		
 		void OpenSolutionInternal(FileName fileName)
@@ -182,6 +191,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public bool OpenSolution(ISolution solution)
 		{
+			if (solution == null)
+				throw new ArgumentNullException("solution");
 			if (!CloseSolution(allowCancel: true))
 				return false;
 			this.CurrentSolution = solution;
@@ -191,9 +202,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void OnSolutionOpened(ISolution solution)
 		{
-			SolutionOpened(this, new SolutionEventArgs(solution));
 			foreach (var project in solution.Projects)
 				project.ProjectLoaded();
+			SolutionOpened(this, new SolutionEventArgs(solution));
 			SD.FileService.RecentOpen.AddRecentProject(solution.FileName);
 			Project.Converter.UpgradeViewContent.ShowIfRequired(solution);
 			foreach (var project in solution.Projects.OfType<ErrorProject>()) {
@@ -205,77 +216,67 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		/*
-		static void LoadProjectInternal(string fileName)
+		void OpenProjectInternal(FileName fileName)
 		{
 			if (!Path.IsPathRooted(fileName))
 				throw new ArgumentException("Path must be rooted!");
-			string solutionFile = Path.ChangeExtension(fileName, ".sln");
-			if (File.Exists(solutionFile)) {
-				LoadSolutionInternal(solutionFile);
-				
-				if (openSolution != null) {
-					bool found = false;
-					foreach (IProject p in openSolution.Projects) {
-						if (FileUtility.IsEqualFileName(fileName, p.FileName)) {
-							found = true;
-							break;
-						}
+			FileName solutionFile = new FileName(Path.ChangeExtension(fileName, ".sln"));
+			ISolution solution = null;
+			bool solutionOpened = false;
+			// Use try-finally block to dispose the solution unless it is opened successfully. 
+			try {
+				if (SD.FileSystem.FileExists(solutionFile)) {
+					using (var progress = AsynchronousWaitDialog.ShowWaitDialog("Loading Solution...")) {
+						solution = LoadSolutionFile(solutionFile, progress);
 					}
-					if (found == false) {
-						var parseArgs = new[] { new StringTagPair("SolutionName", Path.GetFileName(solutionFile)), new StringTagPair("ProjectName", Path.GetFileName(fileName))};
-						int res = MessageService.ShowCustomDialog(MessageService.ProductName,
-						                                          StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject}", parseArgs),
-						                                          0, 2,
-						                                          StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.AddProjectToSolution}", parseArgs),
-						                                          StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.CreateNewSolution}", parseArgs),
-						                                          "${res:Global.IgnoreButtonText}");
-						if (res == 0) {
-							// Add project to solution
-							Commands.AddExistingProjectToSolution.AddProject((ISolutionItemNode)ProjectBrowserPad.Instance.SolutionNode, FileName.Create(fileName));
-							SaveSolution();
-							return;
-						} else if (res == 1) {
-							CloseSolution();
-							try {
-								File.Copy(solutionFile, Path.ChangeExtension(solutionFile, ".old.sln"), true);
-							} catch (IOException){}
-						} else {
-							// ignore, just open the solution
-							return;
+					// If LoadSolutionFile() throws ProjectLoadException, let that be handled by the ObservedLoad.
+					
+					if (solution.Projects.Any(p => p.FileName == fileName)) {
+						// We can use the solution as-is
+						OpenSolution(solution);
+						solutionOpened = true;
+						return;
+					}
+					// The solution does not contain the project, ask the user on how to proceed:
+					var parseArgs = new[] { new StringTagPair("SolutionName", Path.GetFileName(solutionFile)), new StringTagPair("ProjectName", Path.GetFileName(fileName)) };
+					int res = MessageService.ShowCustomDialog(MessageService.ProductName,
+						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject}", parseArgs),
+						0, 2,
+						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.AddProjectToSolution}", parseArgs),
+						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.CreateNewSolution}", parseArgs),
+						"${res:Global.IgnoreButtonText}");
+					if (res == 0) {
+						// Fall-through: the code below will add the project to the solution
+					} else if (res == 1) {
+						// Create new solution: first make a backup of the old one
+						try {
+							File.Copy(solutionFile, Path.ChangeExtension(solutionFile, ".old.sln"), true);
+						} catch (IOException) {
 						}
+						// Replace solution with an empty one:
+						solution.Dispose();
+						solution = CreateEmptySolutionFile(solutionFile);
+						// Fall-through: the code below will add the project to the solution
 					} else {
-						// opened solution instead and correctly found the project
+						// ignore, just open the solution as-is
+						OpenSolution(solution);
+						solutionOpened = true;
 						return;
 					}
 				} else {
-					// some problem during opening, abort
-					return;
+					// Solution does not already exist; create a new one
+					solution = CreateEmptySolutionFile(solutionFile);
 				}
+				solution.AddExistingProject(fileName);
+				solution.Save();
+				OpenSolution(solution);
+				solutionOpened = true;
+			} finally {
+				// Dispose the solution if it was not opened successfully
+				if (solution != null && !solutionOpened)
+					solution.Dispose();
 			}
-			ISolution solution = new Solution(new ProjectChangeWatcher(solutionFile));
-			solution.Name = Path.GetFileNameWithoutExtension(fileName);
-			IProjectBinding binding = ProjectBindingService.GetBindingPerProjectFile(fileName);
-			IProject project;
-			if (binding != null) {
-				project = ProjectBindingService.LoadProject(new ProjectLoadInformation(solution, FileName.Create(fileName), solution.Name));
-				if (project is UnknownProject) {
-					if (((UnknownProject)project).WarningDisplayedToUser == false) {
-						((UnknownProject)project).ShowWarningMessageBox();
-					}
-					return;
-				}
-			} else {
-				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new StringTagPair("FileName", fileName)));
-				return;
-			}
-			solution.AddFolder(project);
-			
-			if (FileUtility.ObservedSave((NamedFileOperationDelegate)solution.Save, solutionFile) == FileOperationResult.OK) {
-				// only load when saved succesfully
-				LoadSolution(solutionFile);
-			}
-		}*/
+		}
 		#endregion
 		
 		#region CloseSolution
@@ -374,7 +375,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			ProjectCreated(this, e);
 		}
-
+		
 		void IProjectServiceRaiseEvents.RaiseSolutionCreated(SolutionEventArgs e)
 		{
 			SolutionCreated(this, e);
@@ -384,13 +385,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			ProjectItemAdded(this, e);
 		}
-
+		
 		void IProjectServiceRaiseEvents.RaiseProjectItemRemoved(ProjectItemEventArgs e)
 		{
 			ProjectItemRemoved(this, e);
 		}
 		#endregion
-
+		
 		#region Project Bindings
 		readonly IReadOnlyList<ProjectBindingDescriptor> projectBindings;
 		

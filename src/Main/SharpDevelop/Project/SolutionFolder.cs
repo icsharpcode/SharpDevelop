@@ -156,8 +156,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				project.IdGuid = Guid.NewGuid();
 			}
 			this.Items.Add(project);
-			project.ProjectLoaded();
-			ProjectBrowserPad.RefreshViewAsync();
+			if (parentSolution.IsLoaded) {
+				project.ProjectLoaded();
+				ProjectBrowserPad.RefreshViewAsync();
+			}
 			return project;
 		}
 		

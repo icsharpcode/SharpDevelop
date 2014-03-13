@@ -74,6 +74,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Gets whether the solution is open in the IDE.
+		/// </summary>
+		internal bool IsLoaded {
+			get { return SD.ProjectService.CurrentSolution == this; }
+		}
+		
 		#region FileName
 		public event EventHandler FileNameChanged = delegate { };
 		
