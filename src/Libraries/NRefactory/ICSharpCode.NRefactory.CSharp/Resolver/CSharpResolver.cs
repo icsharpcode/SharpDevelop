@@ -1694,8 +1694,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case NameLookupMode.Type:
 				case NameLookupMode.TypeInUsingDeclaration:
 				case NameLookupMode.BaseTypeReference:
-					result = lookup.LookupType(target.Type, identifier, typeArguments, parameterizeResultType);
-					break;
+					return lookup.LookupType(target.Type, identifier, typeArguments, parameterizeResultType);
 				default:
 					throw new NotSupportedException("Invalid value for NameLookupMode");
 			}

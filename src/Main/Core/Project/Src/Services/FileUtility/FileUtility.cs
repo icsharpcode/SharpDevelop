@@ -648,6 +648,7 @@ namespace ICSharpCode.Core
 
 		static FileOperationResult ObservedSaveHandleError(Exception e, NamedFileOperationDelegate saveFileAs, FileName fileName, string message, FileErrorPolicy policy)
 		{
+			message = message + Environment.NewLine + Environment.NewLine + e.Message;
 			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
@@ -693,6 +694,7 @@ namespace ICSharpCode.Core
 
 		static FileOperationResult ObservedLoadHandleException(Exception e, FileOperationDelegate loadFile, FileName fileName, string message, FileErrorPolicy policy)
 		{
+			message = message + Environment.NewLine + Environment.NewLine + e.Message;
 			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
