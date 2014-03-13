@@ -1467,7 +1467,15 @@ namespace ICSharpCode.SharpDevelop.Project
 					existing = projectFile.CreateProjectExtensionsElement();
 					return new XElement(name);
 				}
-				return XElement.Parse(existing[name]);
+				string content = existing[name];
+				if (string.IsNullOrEmpty(content))
+					return new XElement(name);
+				try {
+					return XElement.Parse(content);
+				} catch (XmlException ex) {
+					LoggingService.Warn(ex);
+					return new XElement(name);
+				}
 			}
 		}
 		
