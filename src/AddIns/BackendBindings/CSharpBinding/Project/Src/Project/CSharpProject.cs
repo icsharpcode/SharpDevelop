@@ -142,9 +142,11 @@ namespace CSharpBinding
 		public override void Save(string fileName)
 		{
 			// Save project extensions
-			var propertiesXElement = extensionProperties.Save();
-			SaveProjectExtensions(ExtensionPropertiesName, propertiesXElement);
-			
+			if (extensionProperties.IsDirty) {
+				var propertiesXElement = extensionProperties.Save();
+				SaveProjectExtensions(ExtensionPropertiesName, propertiesXElement);
+				extensionProperties.IsDirty = false;
+			}
 			base.Save(fileName);
 		}
 		
