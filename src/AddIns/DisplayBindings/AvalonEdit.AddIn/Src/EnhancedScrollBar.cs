@@ -138,18 +138,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.Cursor = Cursors.Hand;
 				this.ToolTip = string.Empty;
 				
-				textMarkerService.RedrawRequested += textMarkerService_RedrawRequested;
+				textMarkerService.RedrawRequested += RedrawRequested;
+				editor.TextArea.TextView.VisualLinesChanged += VisualLinesChanged;
 			}
 			
 			public void Remove()
 			{
-				textMarkerService.RedrawRequested -= textMarkerService_RedrawRequested;
+				textMarkerService.RedrawRequested -= RedrawRequested;
+				editor.TextArea.TextView.VisualLinesChanged -= VisualLinesChanged;
 				
 				var layer = AdornerLayer.GetAdornerLayer(AdornedElement);
-				layer.Remove(this);
+				if (layer != null)
+					layer.Remove(this);
 			}
 			
-			void textMarkerService_RedrawRequested(object sender, EventArgs e)
+			void RedrawRequested(object sender, EventArgs e)
+			{
+				InvalidateVisual();
+			}
+			
+			void VisualLinesChanged(object sender, EventArgs e)
 			{
 				InvalidateVisual();
 			}
