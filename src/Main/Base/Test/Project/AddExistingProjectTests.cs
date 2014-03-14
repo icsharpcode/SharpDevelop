@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			base.FixtureSetUp();
 			SD.Services.AddStrictMockService<IProjectService>();
+			SD.ProjectService.Stub(p => p.CurrentSolution).Return(null);
 			SD.ProjectService.Stub(p => p.LoadProject(Arg<ProjectLoadInformation>.Is.Anything)).Do(new Func<ProjectLoadInformation, IProject>(LoadProject));
 		}
 		
