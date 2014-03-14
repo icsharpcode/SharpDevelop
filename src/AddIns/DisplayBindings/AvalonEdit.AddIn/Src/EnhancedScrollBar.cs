@@ -42,7 +42,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly TextEditor editor;
 		readonly TextMarkerService textMarkerService;
 		readonly IChangeWatcher changeWatcher;
-		TrackBackground trackBackground;
 		TrackAdorner trackAdorner;
 		
 		public EnhancedScrollBar(TextEditor editor, TextMarkerService textMarkerService, IChangeWatcher changeWatcher)
@@ -62,10 +61,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void Dispose()
 		{
 			editor.Loaded -= editor_Loaded;
-			if (trackBackground != null) {
-				trackBackground.Remove();
-				trackBackground = null;
-			}
 			if (trackAdorner != null) {
 				trackAdorner.Remove();
 				trackAdorner = null;
@@ -86,78 +81,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			scrollViewer.ApplyTemplate();
 			var vScrollBar = (ScrollBar)scrollViewer.Template.FindName("PART_VerticalScrollBar", scrollViewer);
-			var hScrollBar = (ScrollBar)scrollViewer.Template.FindName("PART_HorizontalScrollBar", scrollViewer);
-			// make both scrollbars transparent so that they look consistent
-			MakeThumbTransparent(vScrollBar);
-			MakeThumbTransparent(hScrollBar);
 			if (vScrollBar == null)
 				return;
 			Track track = (Track)vScrollBar.Template.FindName("PART_Track", vScrollBar);
 			if (track == null)
 				return;
 			Grid grid = VisualTreeHelper.GetParent(track) as Grid;
-			if (grid != null) {
-				trackBackground = new TrackBackground(this);
-				trackAdorner = new TrackAdorner(this);
-				Grid.SetColumn(trackBackground, Grid.GetColumn(track));
-				Grid.SetRow(trackBackground, Grid.GetRow(track));
-				Grid.SetColumnSpan(trackBackground, Grid.GetColumnSpan(track));
-				Grid.SetRowSpan(trackBackground, Grid.GetRowSpan(track));
-				Grid.SetColumn(trackAdorner, Grid.GetColumn(track));
-				Grid.SetRow(trackAdorner, Grid.GetRow(track));
-				Grid.SetColumnSpan(trackAdorner, Grid.GetColumnSpan(track));
-				Grid.SetRowSpan(trackAdorner, Grid.GetRowSpan(track));
-				Panel.SetZIndex(track, 1);
-				Panel.SetZIndex(trackAdorner, 2);
-				grid.Children.Add(trackBackground);
-				grid.Children.Add(trackAdorner);
-			}
-		}
-		#endregion
-		
-		#region MakeThumbTransparent
-		List<Thumb> transparentThumbs = new List<Thumb>();
-		const double thumbOpacity = 0.7;
-		static readonly Duration animationDuration = new Duration(TimeSpan.FromSeconds(0.25));
-		
-		void MakeThumbTransparent(ScrollBar scrollBar)
-		{
-			if (scrollBar == null)
+			if (grid == null)
 				return;
-			Track track = (Track)scrollBar.Template.FindName("PART_Track", scrollBar);
-			if (track == null)
+			var layer = AdornerLayer.GetAdornerLayer(grid);
+			if (layer == null)
 				return;
-			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(track); i++) {
-				var thumb = VisualTreeHelper.GetChild(track, i) as Thumb;
-				if (thumb != null) {
-					thumb.Opacity = thumbOpacity;
-					thumb.MouseEnter += thumb_MouseEnter;
-					thumb.MouseLeave += thumb_MouseLeave;
-					transparentThumbs.Add(thumb);
-					break;
-				}
-			}
-		}
-		
-		void ClearTransparencyFromThumbs()
-		{
-			foreach (var thumb in transparentThumbs) {
-				thumb.MouseEnter -= thumb_MouseEnter;
-				thumb.MouseLeave -= thumb_MouseLeave;
-				thumb.ClearValue(Thumb.OpacityProperty);
-			}
-		}
-		
-		void thumb_MouseEnter(object sender, MouseEventArgs e)
-		{
-			var thumb = (Thumb)sender;
-			thumb.BeginAnimation(Thumb.OpacityProperty, new DoubleAnimation(1, animationDuration, FillBehavior.HoldEnd));
-		}
-		
-		void thumb_MouseLeave(object sender, MouseEventArgs e)
-		{
-			var thumb = (Thumb)sender;
-			thumb.BeginAnimation(Thumb.OpacityProperty, new DoubleAnimation(thumbOpacity, animationDuration, FillBehavior.HoldEnd));
+			trackAdorner = new TrackAdorner(this, grid);
+			layer.Add(trackAdorner);
 		}
 		#endregion
 		
@@ -168,62 +104,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return brush;
 		}
 		
-		#region TrackBackground
-		sealed class TrackBackground : UIElement
-		{
-			readonly TextEditor editor;
-			readonly TextMarkerService textMarkerService;
-			readonly IChangeWatcher changeWatcher;
-			
-			public TrackBackground(EnhancedScrollBar enhanchedScrollBar)
-			{
-				this.editor = enhanchedScrollBar.editor;
-				this.textMarkerService = enhanchedScrollBar.textMarkerService;
-				this.changeWatcher = enhanchedScrollBar.changeWatcher;
-				
-				textMarkerService.RedrawRequested += textMarkerService_RedrawRequested;
-			}
-			
-			public void Remove()
-			{
-				textMarkerService.RedrawRequested -= textMarkerService_RedrawRequested;
-				
-				Grid grid = (Grid)VisualTreeHelper.GetParent(this);
-				grid.Children.Remove(this);
-			}
-			
-			void textMarkerService_RedrawRequested(object sender, EventArgs e)
-			{
-				InvalidateVisual();
-			}
-			
-			protected override void OnRender(DrawingContext drawingContext)
-			{
-				var renderSize = this.RenderSize;
-				var document = editor.Document;
-				var textView = editor.TextArea.TextView;
-				double documentHeight = textView.DocumentHeight;
-				foreach (var marker in textMarkerService.TextMarkers) {
-					if ((marker.MarkerTypes & (TextMarkerTypes.LineInScrollBar | TextMarkerTypes.CircleInScrollBar)) == 0)
-						continue;
-					var location = document.GetLocation(marker.StartOffset);
-					double visualTop = textView.GetVisualTopByDocumentLine(location.Line);
-					double renderPos = visualTop / documentHeight * renderSize.Height;
-					var brush = GetBrush(marker.MarkerColor);
-					if ((marker.MarkerTypes & (TextMarkerTypes.LineInScrollBar)) != 0) {
-						drawingContext.DrawRectangle(brush, null, new Rect(3, renderPos - 1, renderSize.Width - 6, 2));
-					}
-					if ((marker.MarkerTypes & (TextMarkerTypes.CircleInScrollBar)) != 0) {
-						const double radius = 3;
-						drawingContext.DrawEllipse(brush, null, new Point(renderSize.Width / 2, renderPos), radius, radius);
-					}
-				}
-			}
-		}
-		#endregion
-		
 		#region TrackAdorner
-		sealed class TrackAdorner : FrameworkElement
+		sealed class TrackAdorner : Adorner
 		{
 			#region TriangleGeometry
 			static readonly StreamGeometry triangleGeometry = CreateTriangleGeometry();
@@ -247,7 +129,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			readonly TextEditor editor;
 			readonly TextMarkerService textMarkerService;
 			
-			public TrackAdorner(EnhancedScrollBar enhanchedScrollBar)
+			public TrackAdorner(EnhancedScrollBar enhanchedScrollBar, Grid trackGrid)
+				: base(trackGrid)
 			{
 				this.editor = enhanchedScrollBar.editor;
 				this.textMarkerService = enhanchedScrollBar.textMarkerService;
@@ -261,9 +144,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public void Remove()
 			{
 				textMarkerService.RedrawRequested -= textMarkerService_RedrawRequested;
-
-				Grid grid = (Grid)VisualTreeHelper.GetParent(this);
-				grid.Children.Remove(this);
+				
+				var layer = AdornerLayer.GetAdornerLayer(AdornedElement);
+				layer.Remove(this);
 			}
 			
 			void textMarkerService_RedrawRequested(object sender, EventArgs e)
@@ -284,28 +167,39 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					double visualTop = textView.GetVisualTopByDocumentLine(location.Line);
 					double renderPos = visualTop / documentHeight * renderSize.Height;
 					var brush = GetBrush(marker.MarkerColor);
+					bool isLineOrCircle = false;
+					if ((marker.MarkerTypes & (TextMarkerTypes.LineInScrollBar)) != 0) {
+						drawingContext.DrawRectangle(brush, null, new Rect(3, renderPos - 1, renderSize.Width - 6, 2));
+						isLineOrCircle = true;
+					}
+					if ((marker.MarkerTypes & (TextMarkerTypes.CircleInScrollBar)) != 0) {
+						const double radius = 3;
+						drawingContext.DrawEllipse(brush, null, new Point(renderSize.Width / 2, renderPos), radius, radius);
+						isLineOrCircle = true;
+					}
+					if (!isLineOrCircle) {
+						var translateTransform = new TranslateTransform(6, renderPos);
+						translateTransform.Freeze();
+						drawingContext.PushTransform(translateTransform);
 					
-					var translateTransform = new TranslateTransform(6, renderPos);
-					translateTransform.Freeze();
-					drawingContext.PushTransform(translateTransform);
-					
-					if ((marker.MarkerTypes & (TextMarkerTypes.ScrollBarLeftTriangle)) != 0) {
-						var scaleTransform = new ScaleTransform(-1, 1);
-						scaleTransform.Freeze();
-						drawingContext.PushTransform(scaleTransform);
-						drawingContext.DrawGeometry(brush, null, triangleGeometry);
+						if ((marker.MarkerTypes & (TextMarkerTypes.ScrollBarLeftTriangle)) != 0) {
+							var scaleTransform = new ScaleTransform(-1, 1);
+							scaleTransform.Freeze();
+							drawingContext.PushTransform(scaleTransform);
+							drawingContext.DrawGeometry(brush, null, triangleGeometry);
+							drawingContext.Pop();
+						}
+						if ((marker.MarkerTypes & (TextMarkerTypes.ScrollBarRightTriangle)) != 0) {
+							drawingContext.DrawGeometry(brush, null, triangleGeometry);
+						}
 						drawingContext.Pop();
 					}
-					if ((marker.MarkerTypes & (TextMarkerTypes.ScrollBarRightTriangle)) != 0) {
-						drawingContext.DrawGeometry(brush, null, triangleGeometry);
-					}
-					drawingContext.Pop();
 				}
 			}
 			
 			bool IsVisibleInAdorner(ITextMarker marker)
 			{
-				return (marker.MarkerTypes & (TextMarkerTypes.ScrollBarLeftTriangle | TextMarkerTypes.ScrollBarRightTriangle)) != 0;
+				return (marker.MarkerTypes & (TextMarkerTypes.ScrollBarLeftTriangle | TextMarkerTypes.ScrollBarRightTriangle | TextMarkerTypes.LineInScrollBar | TextMarkerTypes.CircleInScrollBar)) != 0;
 			}
 			
 			protected override void OnMouseDown(MouseButtonEventArgs e)
