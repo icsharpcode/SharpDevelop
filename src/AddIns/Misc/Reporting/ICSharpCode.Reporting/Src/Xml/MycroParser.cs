@@ -41,7 +41,7 @@ namespace ICSharpCode.Reporting.Xml
 	/// <summary>
 	/// See http://www.codeproject.com/dotnet/MycroXaml.asp
 	/// </summary>
-	internal abstract class MycroParser
+	public abstract class MycroParser
 	{
 		public object Load(XmlElement element)
 		{

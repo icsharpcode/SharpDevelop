@@ -9,6 +9,8 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Workbench;
+using ICSharpCode.Reporting.Addin.DesignerBinding;
+using ICSharpCode.Reporting.Addin.Views;
 
 namespace ICSharpCode.Reporting.Addin.Commands
 {
@@ -26,11 +28,11 @@ namespace ICSharpCode.Reporting.Addin.Commands
 		}
 		
 		public override void Run(){
-//			var generator = new ReportDesignerGenerator();
-//			DesignerView =  new ReportDesignerView(openedFile, generator);
-			MessageService.ShowMessage("ReportDesigner not available at the Moment","New ReportDesigner");
+			var generator = new DesignerGenerator();
+			
+			DesignerView =  new DesignerView(openedFile, generator);
 		}
 		
-//		public ReportDesignerView DesignerView {get; private set;}
+		public DesignerView DesignerView {get; private set;}
 	}
 }

@@ -40,9 +40,6 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			//			MessageService.ShowMessage("ReportDesigner not available at the Moment","New ReportDesigner");
-			//			return null;
-			
 			if (file.IsDirty) {
 				MessageService.ShowMessage("ReportWizard not available at the Moment","New ReportDesigner");
 				return	null;
@@ -56,9 +53,8 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 			
 			var viewCmd = new CreateDesignerCommand(file);
 			viewCmd.Run();
-			//			return viewCmd.DesignerView;
-			return null;
-			
+			LoggingService.Info("return DesignerView");
+			return viewCmd.DesignerView;
 		}
 	}
 }
