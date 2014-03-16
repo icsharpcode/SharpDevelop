@@ -535,7 +535,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				var treeNode = AddInTree.GetTreeNode("/SharpDevelop/Dialogs/SolutionFormattingOptionsDialog", false);
 				bool? result = ICSharpCode.SharpDevelop.Commands.OptionsCommand.ShowTreeOptions(
-					"Solution Formatting Options",
+					StringParser.Parse("${ICSharpCode.SharpDevelop.Project.SolutionFormattingOptions.Title}"),
 					treeNode);
 				if ((bool) result) {
 					// Formatting options have been changed, make solution dirty

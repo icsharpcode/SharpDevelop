@@ -217,13 +217,12 @@ namespace CSharpBinding.OptionPanels
 					var presetFunc = presets[(string) selectedPresetItem.Tag];
 					
 					// Ask user if he's sure to reset all previously defined settings
-					// TODO Localize messages!
 					if (presetFunc != null) {
-						if (SD.MessageService.AskQuestion("Are you sure that you want to reset all previously defined formatting options?")) {
+						if (SD.MessageService.AskQuestion("${CSharpBinding.Formatting.PresetOverwriteQuestion}")) {
 							OptionsContainer.Reset(presetFunc());
 						}
 					} else {
-						SD.MessageService.ShowWarning("No formatting preset selected!");
+						SD.MessageService.ShowWarning("${CSharpBinding.Formatting.NoPresetSelectedMessage}");
 					}
 				}
 			}

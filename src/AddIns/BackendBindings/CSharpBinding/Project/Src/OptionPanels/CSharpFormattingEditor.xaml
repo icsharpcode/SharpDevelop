@@ -300,7 +300,7 @@
 		<StackPanel DockPanel.Dock="Top" Orientation="Vertical">
 			<CheckBox
 				Name="autoFormattingCheckBox"
-				Content="Automatically format code"
+				Content="{core:Localize CSharpBinding.Formatting.AutoFormat}"
 				IsThreeState="True" IsChecked="{Binding AutoFormatting}"
 				Margin="0,0,0,10"
 				Visibility="Collapsed"/>
@@ -311,7 +311,7 @@
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
 				
-				<Button Grid.Column="0" Content="Reset to:" Click="ResetButton_Click" />
+				<Button Grid.Column="0" Content="{core:Localize CSharpBinding.Formatting.ResetTo}" Click="ResetButton_Click" />
 				<ComboBox Name="presetComboBox" Grid.Column="1" Margin="3,0,0,0" ItemsSource="{Binding Presets}" />
 			</Grid>
 		</StackPanel>
