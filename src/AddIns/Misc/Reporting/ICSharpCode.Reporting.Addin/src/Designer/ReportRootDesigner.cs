@@ -26,9 +26,8 @@ using System.Drawing.Design;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-
 using ICSharpCode.Core;
-using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.Addin.DesignableItems;
 
 namespace ICSharpCode.Reporting.Addin.Designer
 {
@@ -39,18 +38,18 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	public class ReportRootDesigner: DocumentDesigner
 	{
 		ICollection currentSelection;
-		private IDesignerHost host;
-		private MenuCommandService menuCommandService;
-		private IToolboxService	toolboxService;
-		private ISelectionService selectionService;
-		private IComponentChangeService componentChangeService;
-		private List<BaseSection> sections;
-		private ReportSettings reportSettings;
-		private RootReportModel rootReportModel;
+		IDesignerHost host;
+		 MenuCommandService menuCommandService;
+		IToolboxService	toolboxService;
+		ISelectionService selectionService;
+		IComponentChangeService componentChangeService;
+		List<BaseSection> sections;
+		ICSharpCode.Reporting.Items.ReportSettings reportSettings;
+		 RootReportModel rootReportModel;
 		
 		public ReportRootDesigner()
 		{
-			System.Console.WriteLine("Createb RootDesigner");
+			System.Console.WriteLine("Create RootDesigner");
 		}
 		
 
@@ -71,7 +70,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		private void InitializeGUI()
 		{
-			reportSettings = host.Container.Components[1] as ReportSettings;
+			reportSettings = host.Container.Components[1] as ICSharpCode.Reporting.Items.ReportSettings;
 			InitializeRootReportModel();
 		}
 		
@@ -187,17 +186,17 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		#region Events
 		
-		private void OnSectionSizeChanged (object sender, EventArgs e)
+		void OnSectionSizeChanged (object sender, EventArgs e)
 		{
-			this.RecalculateSections();
+			RecalculateSections();
 		}
 		
 		
-		private void RecalculateSections()
+		void RecalculateSections()
 		{
 			int locY = 50;
 			if (this.reportSettings == null) {
-				reportSettings = host.Container.Components[1] as ReportSettings;
+				reportSettings = host.Container.Components[1] as ICSharpCode.Reporting.Items.ReportSettings;
 			}
 			
 			foreach (BaseSection s in sections)
@@ -210,7 +209,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		
 		
-		private void OnLoadComplete(object sender, EventArgs e)
+		void OnLoadComplete(object sender, EventArgs e)
 		{
 			var host = (IDesignerHost)sender;
 			host.LoadComplete -= new EventHandler(this.OnLoadComplete);
@@ -220,7 +219,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		private void OnComponentAdded(object sender, ComponentEventArgs ce)
 		{
-			BaseSection section = ce.Component as BaseSection;
+			var section = ce.Component as BaseSection;
 			
 			if (section != null) {
 				this.sections.Add(section);

@@ -28,12 +28,18 @@ namespace ICSharpCode.Reporting.Items
 	
 	public class BaseSection:ReportContainer,IReportContainer
 	{
+		
+
 		#region Constructors
 		
 		public BaseSection()
 		{
 		}
 		
+		public BaseSection(string name)
+		{
+			Name = name;
+		}
 		#endregion
 	}
 }

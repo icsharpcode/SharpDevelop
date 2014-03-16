@@ -17,17 +17,38 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
 
+using System.Xml.Serialization;
 using ICSharpCode.Reporting.Globals;
+
+
 
 namespace ICSharpCode.Reporting.Items
 {
 	/// <summary>
 	/// Description of ReportSettings.
 	/// </summary>
-	public class ReportSettings
+	public class ReportSettingsDesigner:ComponentDesigner
+	{
+		const string settingsName = "ReportSettings";
+		public ReportSettingsDesigner()
+		{
+		}
+		
+		public override void Initialize(IComponent component)
+		{
+			base.Initialize(component);
+			component.Site.Name = ReportSettingsDesigner.settingsName;
+		}
+	}
+	
+	
+	[Designer(typeof(ReportSettingsDesigner))]
+	public class ReportSettings:Component
 	{
 		
 		public ReportSettings()

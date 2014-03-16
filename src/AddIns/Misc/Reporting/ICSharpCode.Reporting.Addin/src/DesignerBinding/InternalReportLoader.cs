@@ -56,22 +56,19 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			this.stream = stream;
 		}
 		
-		public void LoadOrCreateReport()
+		public ReportModel LoadOrCreateReport()
 		{
 			Console.WriteLine("LoadOrCreateReport()");
 			Application.UseWaitCursor = true;
-			try {
-				var component = this.host.CreateComponent(typeof(RootReportModel),"RootReportModel");
-				var rootControl = component as RootReportModel;
-				UpdateStatusbar();
-				ReportModel = CreateNamedSurface();
-				rootControl.Size = this.ReportModel.ReportSettings.PageSize;
-				
-			} catch (Exception e) {
-				MessageService.ShowException(e,"LoadOrCreateReport");
-			} finally {
-				Application.UseWaitCursor = false;
-			}
+			ReportModel reportModel = null;
+			
+			var rootComponent = host.CreateComponent(typeof(RootReportModel),"RootReportModel");
+			var rootControl = rootComponent as RootReportModel;
+			UpdateStatusbar();
+			reportModel = CreateNamedSurface();
+			rootControl.Size = reportModel.ReportSettings.PageSize;
+			Application.UseWaitCursor = false;
+			return reportModel;
 		}
 		
 		
@@ -89,12 +86,14 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		ReportModel CreateNamedSurface ()
 		{
-			var deserializer = new ReportDefinitionDeserializer(host,stream);
-			return deserializer.LoadObjectFromFileDefinition();
+			var deserializer = new ReportDefinitionDeserializer(host);
+			var document = deserializer.LoadXmlFromStream(stream);
+			var reportModel = deserializer.CreateModelFromXml(document.DocumentElement);
+			return reportModel;
 		}
 		
 		
-		public ReportModel ReportModel {get; private set;}
+//		public ReportModel ReportModel {get; private set;}
 
 	}
 }

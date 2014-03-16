@@ -30,8 +30,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		#region Constructors
 
-		public ReportDesignerLoader(IDesignerGenerator generator, Stream stream)		
-		{
+		public ReportDesignerLoader(IDesignerGenerator generator, Stream stream){
 			Console.WriteLine("ReportDesignerLoader:Ctor");
 			if (stream == null)
 				throw new ArgumentNullException("stream");
@@ -47,8 +46,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		#region Overriden methods of BasicDesignerLoader
 		
-		public override void BeginLoad(IDesignerLoaderHost host)
-		{
+		public override void BeginLoad(IDesignerLoaderHost host){
 			LoggingService.Info("ReportDesignerLoader:BeginLoad"); 
 			if (host == null) {
 				throw new ArgumentNullException("host");
@@ -60,17 +58,13 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		}
 		
 		
-		protected override void PerformLoad(IDesignerSerializationManager serializationManager)
-		{
-			Console.WriteLine("PerformLoad -> no Code");
+		protected override void PerformLoad(IDesignerSerializationManager serializationManager){
 			var internalLoader = new InternalReportLoader(host,generator, stream);
-			internalLoader.LoadOrCreateReport();
-			reportModel = internalLoader.ReportModel;
+			reportModel = internalLoader.LoadOrCreateReport();
+//			reportModel = internalLoader.ReportModel;
 		}
-
-		
-		protected override void PerformFlush(IDesignerSerializationManager designerSerializationManager)
-		{
+ 
+		protected override void PerformFlush(IDesignerSerializationManager designerSerializationManager){
 			LoggingService.Info("ReportDesignerLoader:PerformFlush");
 			generator.MergeFormChanges((System.CodeDom.CodeCompileUnit)null);
 		}

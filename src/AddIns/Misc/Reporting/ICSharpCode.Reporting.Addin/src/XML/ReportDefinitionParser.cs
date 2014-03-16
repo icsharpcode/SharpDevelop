@@ -56,9 +56,9 @@ namespace ICSharpCode.Reporting.Addin.XML
 				if (t == null) {
 					t = GetTypeByName (ns,"ErrorItem");
 				}
-				//Trace.Assert(t != null, "Type "+cname+" could not be determined.");
+				Trace.Assert(t != null, "Type "+cname+" could not be determined.");
 //				Debug.WriteLine("Looking for " + cname + " and got " + t.FullName);
-				Console.WriteLine("ReportDefinitionParser - Looking for " + cname + " and got " + t.FullName);
+//				Console.WriteLine("ReportDefinitionParser - Looking for " + cname + " and got " + t.FullName);
 				try
 				{
 					ret=Activator.CreateInstance(t);

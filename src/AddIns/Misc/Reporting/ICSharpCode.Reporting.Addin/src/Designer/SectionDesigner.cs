@@ -56,7 +56,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		protected override void OnDragDrop(DragEventArgs de)
 		{
 			base.OnDragDrop(de);
-			IToolboxService it = (IToolboxService)this.GetService(typeof(IToolboxService));
+			var it = (IToolboxService)this.GetService(typeof(IToolboxService));
 			it.SetSelectedToolboxItem(null);
 		}
 		
@@ -74,13 +74,13 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		private void OnSelectionChanged(object sender, EventArgs e)
+		void OnSelectionChanged(object sender, EventArgs e)
 		{
 			Control.Invalidate( );
 		}
 		
 		
-		private void GetService ()
+		void GetService ()
 		{
 			selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
 			if (selectionService != null)

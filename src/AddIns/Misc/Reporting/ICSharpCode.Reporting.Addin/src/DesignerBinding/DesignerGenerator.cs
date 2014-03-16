@@ -7,8 +7,14 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.Reporting.Addin.DesignableItems;
+using ICSharpCode.Reporting.Addin.Globals;
 using ICSharpCode.Reporting.Addin.Views;
+using ICSharpCode.Reporting.Addin.XML;
 
 namespace ICSharpCode.Reporting.Addin.DesignerBinding
 {
@@ -46,7 +52,12 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		public void MergeFormChanges(System.CodeDom.CodeCompileUnit unit)
 		{
-			throw new NotImplementedException();
+			System.Diagnostics.Trace.WriteLine("Generator:MergeFormChanges");
+			var writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
+			var xml = XmlHelper.CreatePropperWriter(writer);
+			InternalMergeFormChanges(xml);
+			Console.WriteLine(writer.ToString());
+			viewContent.ReportFileContent = writer.ToString();
 		}
 		
 		public bool InsertComponentEvent(System.ComponentModel.IComponent component, System.ComponentModel.EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
@@ -66,5 +77,37 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		}
 		
 		#endregion
+		
+		void InternalMergeFormChanges(XmlTextWriter xml)
+		{
+			if (xml == null) {
+				throw new ArgumentNullException("xml");
+			}
+			
+			var rpd = new ReportDesignerWriter();
+			XmlHelper.CreatePropperDocument(xml);
+			
+			foreach (IComponent component in viewContent.Host.Container.Components) {
+				if (!(component is Control)) {
+					rpd.Save(component,xml);
+				}
+			}
+			xml.WriteEndElement();
+			xml.WriteStartElement("SectionCollection");
+			
+			// we look only for Sections
+			foreach (var component in viewContent.Host.Container.Components) {
+				var b = component as BaseSection;
+				if (b != null) {
+					rpd.Save(component,xml);
+				}
+			}
+			//SectionCollection
+			xml.WriteEndElement();
+			//Reportmodel
+			xml.WriteEndElement();
+			xml.WriteEndDocument();
+			xml.Close();
+		}
 	}
 }

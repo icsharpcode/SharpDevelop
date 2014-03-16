@@ -8,6 +8,7 @@
  */
 using System;
 
+using System.Collections;
 using System.ComponentModel.Design;
 
 using System.ComponentModel.Design.Serialization;
@@ -16,20 +17,25 @@ using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
+using ICSharpCode.Reporting.Addin.DesignableItems;
 using ICSharpCode.Reporting.Addin.DesignerBinding;
 using ICSharpCode.Reporting.Addin.Services;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Reporting.Addin.Views
 {
 	/// <summary>
 	/// Description of the view content
 	/// </summary>
-	public class DesignerView : AbstractViewContent
+	public class DesignerView : AbstractViewContent,IHasPropertyContainer
 	{
 		readonly IDesignerGenerator generator;
 		bool unloading;
+		bool hasUnmergedChanges;
+		bool shouldUpdateSelectableObjects;
+		bool isFormsDesignerVisible;
+		string reportFileContent;
 		Panel panel;
 		ReportDesignerLoader loader;
 		DefaultServiceContainer defaultServiceContainer;
@@ -87,7 +93,32 @@ namespace ICSharpCode.Reporting.Addin.Views
 				//				throw new FormsDesignerLoadException(FormatLoadErrors(designSurface));
 				LoggingService.Error("designer not loaded");
 			}
-          
+			//-------------
+			
+			defaultServiceContainer.AddService(typeof(INameCreationService),new NameCreationService());
+			                                   
+			
+			var selectionService = (ISelectionService)this.designSurface.GetService(typeof(ISelectionService));
+			selectionService.SelectionChanged  += SelectionChangedHandler;
+			/*
+			undoEngine = new ReportDesignerUndoEngine(Host);
+			*/
+			var componentChangeService = (IComponentChangeService)this.designSurface.GetService(typeof(IComponentChangeService));
+			
+			
+			componentChangeService.ComponentChanged += OnComponentChanged;
+			componentChangeService.ComponentAdded   += OnComponentListChanged;
+			componentChangeService.ComponentRemoved += OnComponentListChanged;
+			componentChangeService.ComponentRename  += OnComponentListChanged;
+			
+			this.Host.TransactionClosed += TransactionClose;
+		
+			UpdatePropertyPad();
+	
+			hasUnmergedChanges = false;
+			
+			LoggingService.Info("Form Designer: END INITIALIZE");
+          //----------------
 			LoggingService.Info("ReportDesigner LoadDesigner_End");
 		}	
 
@@ -103,6 +134,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		DefaultServiceContainer CreateAndInitServiceContainer()
 		{
+			LoggingService.Debug("ReportDesigner: CreateAndInitServiceContainer...");
 			var serviceContainer = new DefaultServiceContainer();
 			serviceContainer.AddService(typeof(IUIService), new UIService());
 			serviceContainer.AddService(typeof(IToolboxService),new ToolboxService());
@@ -113,6 +145,8 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		void SetDesignerEvents()
 		{
+			LoggingService.Debug("ReportDesigner: SetDesignerEvents...");
+			
 			designSurface.Loading += DesignerLoading;
 			designSurface.Loaded += DesignerLoaded;
 			designSurface.Flushed += DesignerFlushed;
@@ -122,39 +156,157 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		static WindowsFormsDesignerOptionService CreateDesignerOptions()
 		{
-			var designerOptionService = new System.Windows.Forms.Design.WindowsFormsDesignerOptionService();
+			LoggingService.Debug("ReportDesigner: CreateDesignerOptions...");
+			var designerOptionService = new WindowsFormsDesignerOptionService();
 			designerOptionService.Options.Properties.Find("UseSmartTags", true).SetValue(designerOptionService, true);
 			designerOptionService.Options.Properties.Find("ShowGrid", true).SetValue(designerOptionService, false);
 			designerOptionService.Options.Properties.Find("UseSnapLines", true).SetValue(designerOptionService, true);
 			return designerOptionService;
 		}
 	
+		#region ComponentChangeService
+		
+		void OnComponentChanged (object sender, ComponentChangedEventArgs e)
+		{
+//			BaseImageItem item = e.Component as BaseImageItem;
+//			
+//			if (item != null) {
+//				item.ReportFileName = this.loader.ReportModel.ReportSettings.FileName;
+//			}
+			
+			bool loading = this.loader != null && this.loader.Loading;
+			LoggingService.Debug("ReportDesignerView: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
+			if (!loading && !unloading) {
+				this.MakeDirty();
+			}
+//			MergeFormChanges();
+		}
+		
+		
+		void OnComponentListChanged(object sender, EventArgs e)
+		{
+			bool loading = this.loader != null && this.loader.Loading;
+			LoggingService.Debug("ReportDesigner: Component added/removed/renamed, Loading=" + loading + ", Unloading=" + this.unloading);
+			if (!loading && !unloading) {
+				shouldUpdateSelectableObjects = true;
+				MakeDirty();
+			}
+		}
+		
+		private void MakeDirty()
+		{
+			hasUnmergedChanges = true;
+			PrimaryFile.MakeDirty();
+		}
+		
+		#endregion
+		
+		#region SelectionService
+		
+		void SelectionChangedHandler(object sender, EventArgs args)
+		{
+			var ser = (ISelectionService)sender;
+			var it = ser.PrimarySelection as AbstractItem;
+			if (it != null) {
+				if (String.IsNullOrEmpty(it.Site.Name)) {
+					it.Site.Name = it.Name;
+				}
+			}
+//			UpdatePropertyPadSelection((ISelectionService)sender);
+		}
+		
+		#endregion
+		
+		#region Transaction
+		
+		void TransactionClose(object sender, DesignerTransactionCloseEventArgs e)
+		{
+			if (shouldUpdateSelectableObjects) {
+				// update the property pad after the transaction is *really* finished
+				// (including updating the selection)
+//				WorkbenchSingleton.SafeThreadAsyncCall(UpdatePropertyPad);
+				shouldUpdateSelectableObjects = false;
+			}
+		}
+		
+		#endregion
+		
+		
+		#region HasPropertyContainer implementation
+		
+		PropertyContainer propertyContainer = new PropertyContainer();
+		
+		public PropertyContainer PropertyContainer {
+			get {
+				return propertyContainer;
+			}
+		}
+		
+		
+		void UpdatePropertyPad()
+		{
+			if (isFormsDesignerVisible && Host != null) {
+				propertyContainer.Host = Host;
+				propertyContainer.SelectableObjects = Host.Container.Components;
+				var selectionService = (ISelectionService)this.designSurface.GetService(typeof(ISelectionService));
+				if (selectionService != null) {
+					UpdatePropertyPadSelection(selectionService);
+				}
+			}
+		}
+		
+		
+		void UpdatePropertyPadSelection(ISelectionService selectionService)
+		{
+			ICollection selection = selectionService.GetSelectedComponents();
+			object[] selArray = new object[selection.Count];
+			selection.CopyTo(selArray, 0);
+			propertyContainer.SelectedObjects = selArray;
+		}
+		
+		
+		#endregion
+		
 		#region DesignerEvents
 		
 		void DesignerLoading(object sender, EventArgs e)
 		{
-			LoggingService.Debug("ReportDesigner: DesignerLoader loading...");
+			LoggingService.Debug("ReportDesigner: Event > DesignerLoader loading...");
 			this.unloading = false;
 		}
 		
 		
 		void DesignerLoaded(object sender, LoadedEventArgs e)
 		{
-			LoggingService.Debug("ReportDesigner: DesignerLoaded...");
+			LoggingService.Debug("ReportDesigner: Event > DesignerLoaded...");
+			this.unloading = false;
+			
+			if (e.HasSucceeded) {
+
+				SetupDesignSurface();
+				isFormsDesignerVisible = true;
+				generator.MergeFormChanges(null);
+//				StartReportExplorer ();
+
+				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + this.designSurface.ToString());
+				designSurfaceManager.ActiveDesignSurface = this.designSurface;
+				UpdatePropertyPad();
+			}
 		}
 
 		void DesignerFlushed(object sender, EventArgs e)
 		{
-			LoggingService.Debug("ReportDesigner: DesignerFlushed");
+			LoggingService.Debug("ReportDesigner: Event > DesignerFlushed");
 		}
 
 		
 		void DesingerUnloading(object sender, EventArgs e)
 		{
-			LoggingService.Debug("ReportDesigner: DesignernUnloading...");
+			LoggingService.Debug("ReportDesigner: Event > DesignernUnloading...");
 		}
 		
 		#endregion
+		
 		
 		#region Design surface manager (static)
 		
@@ -167,6 +319,47 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		#endregion
 		
+		#region IDesignerHost implementation
+		
+		public IDesignerHost Host {
+			get {
+				return this.designSurface.GetService(typeof(IDesignerHost)) as IDesignerHost;
+			}
+		}
+		
+		#endregion
+		
+		#region UI
+		
+		void SetupDesignSurface()
+		{
+			Control c = null;
+			c = designSurface.View as Control;
+			c.Parent = panel;
+			c.Dock = DockStyle.Fill;
+		}
+		
+		
+		void MergeFormChanges()
+		{
+			System.Diagnostics.Trace.WriteLine("View:MergeFormChanges()");
+			this.designSurface.Flush();
+			generator.MergeFormChanges(null);
+			LoggingService.Info("Finished merging form changes");
+			hasUnmergedChanges = false;
+		}
+		
+		
+		public string ReportFileContent {
+			get {
+				if (IsDirty) {
+					this.MergeFormChanges();
+				}
+				return this.reportFileContent; }
+			set { this.reportFileContent = value; }
+		}
+		
+		#endregion
 		
 		#region overrides
 		
@@ -193,18 +386,6 @@ namespace ICSharpCode.Reporting.Addin.Views
 			base.Load(file, stream);
 			LoadDesigner(stream);
 		}
-		
-		
-		/// <summary>
-		/// Cleans up all used resources
-		/// </summary>
-		public override void Dispose()
-		{
-			// TODO: Clean up resources in this method
-			// Control.Dispose();
-			base.Dispose();
-		}
-		
 		#endregion
 	}
 	

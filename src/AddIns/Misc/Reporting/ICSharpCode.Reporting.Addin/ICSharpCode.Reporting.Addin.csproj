@@ -91,9 +91,11 @@
     <Compile Include="src\Designer\RootReportModel.cs" />
     <Compile Include="src\Designer\SectionDesigner.cs" />
     <Compile Include="src\Globals\DesignerGlobals.cs" />
+    <Compile Include="src\Globals\StringWriterWithEncoding.cs" />
     <Compile Include="src\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="src\Services\DesignerSerializationService.cs" />
     <Compile Include="src\Services\MenuCommandService.cs" />
+    <Compile Include="src\Services\NameCreationService.cs" />
     <Compile Include="src\Services\TypeDiscoveryService.cs" />
     <Compile Include="src\Services\TypeResolutionService.cs" />
     <Compile Include="src\Services\DefaultServiceContainer.cs" />
@@ -101,7 +103,10 @@
     <Compile Include="src\Services\ToolboxService.cs" />
     <Compile Include="src\Services\UIService.cs" />
     <Compile Include="src\Views\DesignerView.cs" />
+    <Compile Include="src\XML\MycroWriter.cs" />
     <Compile Include="src\XML\ReportDefinitionParser.cs" />
+    <Compile Include="src\XML\ReportDesignerWriter.cs" />
+    <Compile Include="src\XML\XmlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EmptyReport.xft">

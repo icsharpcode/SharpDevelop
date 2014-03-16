@@ -19,6 +19,8 @@
 using System;
 using System.Collections.ObjectModel;
 
+using ICSharpCode.Reporting.Factories;
+using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 
 namespace ICSharpCode.Reporting.Items
@@ -33,7 +35,6 @@ namespace ICSharpCode.Reporting.Items
 			SectionCollection = new Collection<BaseSection>();
 		}
 			
-	
 		#region Sections
 		
 		public IReportContainer ReportHeader

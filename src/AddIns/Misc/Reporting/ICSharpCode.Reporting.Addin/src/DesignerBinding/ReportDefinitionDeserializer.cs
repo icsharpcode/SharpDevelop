@@ -19,12 +19,13 @@
 using System;
 using System.ComponentModel.Design;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 
 using ICSharpCode.Core;
+using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.Xml;
-using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.Reporting.Addin.XML;
 
 namespace ICSharpCode.Reporting.Addin.DesignerBinding
@@ -32,61 +33,43 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 	class ReportDefinitionDeserializer : ReportDefinitionParser
 	{
 		IDesignerHost host;
-		ICSharpCode.Reporting.Addin.DesignableItems.ReportSettings reportSettings;
-		Stream stream;
 		
-		#region Constructor
-		
-		public ReportDefinitionDeserializer(IDesignerHost host,Stream stream)
+		public ReportDefinitionDeserializer(IDesignerHost host)
 		{
+			Console.WriteLine("ReportDefinitionDeserializer");
 			if (host == null) {
 				throw new ArgumentNullException("host");
 			}
-			if (stream == null) {
-				throw new ArgumentNullException("stream");
-			}
-			Console.WriteLine("ReportDefinitionDeserializer");
+		
 			this.host = host;
-			this.stream = stream;
 		}
 		
-		#endregion
-		
-		public ReportModel LoadObjectFromFileDefinition()
+		public XmlDocument LoadXmlFromStream(Stream stream)
 		{
-			Console.WriteLine("LoadObjectFromFileDefinition()");
+			Console.Write("LoadXml");
+			if (stream == null)
+				throw new ArgumentNullException("stream");
 			var xmlDocument = new XmlDocument();
-			xmlDocument.Load(this.stream);
-			if (xmlDocument.FirstChild.NodeType == XmlNodeType.XmlDeclaration)
-			{
-				XmlDeclaration xmlDeclaration = (XmlDeclaration)xmlDocument.FirstChild;
+			xmlDocument.Load(stream);
+			if (xmlDocument.FirstChild.NodeType == XmlNodeType.XmlDeclaration) {
+				var xmlDeclaration = (XmlDeclaration)xmlDocument.FirstChild;
 				xmlDeclaration.Encoding = "utf-8";
 			}
-			return LoadObjectFromXmlDocument(xmlDocument.DocumentElement);
+			return xmlDocument;
 		}
 		
 		
-		private ReportModel LoadObjectFromXmlDocument(XmlElement elem)
+		public ReportModel CreateModelFromXml(XmlElement elem)
 		{
-			Console.WriteLine("LoadObjectFromXmlDocumen)");
-			//ReportSettings
-			var file =(OpenedFile) host.GetService(typeof(OpenedFile));
+			Console.WriteLine("CreateModelFromXml");
 			
-			XmlNodeList nodes =  elem.FirstChild.ChildNodes;
-			var rse = (XmlElement) nodes[0];
+			var reportSettings = CreateReportSettings(elem);
+		
 //			var reportModel = new ReportModel();
-			// manipulate reportSettings if Filename differs
-			var modelLoader = new ModelLoader();
-			this.reportSettings = modelLoader.Load(rse) as ICSharpCode.Reporting.Addin.DesignableItems.ReportSettings;
+			var reportModel = ReportModelFactory.Create();
+			reportModel.ReportSettings = reportSettings;
 			
-			if (string.Compare(this.reportSettings.FileName, file.FileName, StringComparison.CurrentCulture) != 0) {
-				System.Diagnostics.Trace.WriteLine("LoadObjectFromXmlDocument - filename changed" );
-				this.reportSettings.FileName = file.FileName;
-			}
-			var reportModel = new ReportModel();
-//			reportModel.ReportSettings = this.reportSettings;
-			
-			host.Container.Add(this.reportSettings);
+			host.Container.Add(reportSettings);
 			
 			//Move to SectionCollection
 			XmlNodeList sectionList =  elem.LastChild.ChildNodes;
@@ -94,64 +77,32 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			foreach (XmlNode sectionNode in sectionList) {
 				try {
 					object o = this.Load(sectionNode as XmlElement,null);
-					BaseSection section = o as BaseSection;
-//					ConvertAbsolut2RelativePath(section.Controls,this.reportSettings.FileName);
-//					ConvertAbsolut2RelativePath(section,this.reportSettings.FileName);
-//					host.Container.Add(section);
+					var section = o as ICSharpCode.Reporting.Addin.DesignableItems.BaseSection;
+					host.Container.Add(section);
 				} catch (Exception e) {
 					MessageService.ShowException(e);
 				}
 			}
 			return reportModel;
 		}
-		
-		
-		
-		
-		private static void ConvertAbsolut2RelativePath (System.Windows.Forms.Control.ControlCollection controls, string fileName)
-		{
-			/*
-			foreach (Control control in controls) {
-				
-				if (control.Controls.Count > 0) {
-					ConvertAbsolut2RelativePath(control.Controls,fileName);
-				}
-				
-				BaseImageItem baseImageItem = control as BaseImageItem;
-				if (baseImageItem != null) {
-					baseImageItem.ReportFileName = fileName;
-					
-					if (Path.IsPathRooted(baseImageItem.ImageFileName)) {
-						Console.WriteLine("Absolut2RelativePath");
-						Console.WriteLine("Image Filename {0}",fileName);
-						Console.WriteLine("Image Filename {0}",baseImageItem.ImageFileName);
-						string d = ICSharpCode.Reports.Core.Globals.FileUtility.GetRelativePath(
-							Path.GetDirectoryName(fileName),
-							Path.GetDirectoryName(baseImageItem.ImageFileName));
 
-						baseImageItem.RelativeFileName = d + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
-						Console.WriteLine("Rel Filename {0}",baseImageItem.RelativeFileName);
-					}
-				}
-			}
-			*/
+		
+		ReportSettings CreateReportSettings(XmlElement elem)
+		{
+			XmlNodeList nodes = elem.FirstChild.ChildNodes;
+			var reportSettingsNode = (XmlElement)nodes[0];
+			var modelLoader = new ModelLoader();
+			return  modelLoader.Load(reportSettingsNode) as ReportSettings;
 		}
 		
 		
 		protected override Type GetTypeByName(string ns, string name)
 		{
-			Type t = typeof(BaseSection).Assembly.GetType(typeof(BaseSection).Namespace + "." + name);
+			var a = Assembly.GetExecutingAssembly();
+			Type t = a.GetType("ICSharpCode.Reporting.Addin.DesignableItems" + "." + name);
+//			Type t = typeof(BaseSection).Assembly.GetType(typeof(BaseSection).Namespace + "." + name);
+				
 			return t;
 		}
-		
-		/*
-		#region Properties
-		
-		public string ReportName {
-			get { return this.reportSettings.ReportName; }
-		}
-		
-		#endregion
-		*/
 	}
 }
