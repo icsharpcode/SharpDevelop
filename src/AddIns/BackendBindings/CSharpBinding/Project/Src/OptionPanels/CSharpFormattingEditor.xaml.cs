@@ -191,13 +191,13 @@ namespace CSharpBinding.OptionPanels
 				// Add a "default" preset
 				presetItems.Add(new ComboBoxItem { Content = (container.Parent ?? container).DefaultText, Tag = "(default)" });
 			}
-			presetItems.Add(new ComboBoxItem { Content = "Empty", Tag = "Empty" });
 			presetItems.Add(new ComboBoxItem { Content = "SharpDevelop", Tag = "SharpDevelop" });
 			presetItems.Add(new ComboBoxItem { Content = "Mono", Tag = "Mono" });
 			presetItems.Add(new ComboBoxItem { Content = "K&R", Tag = "K&R" });
 			presetItems.Add(new ComboBoxItem { Content = "Allman", Tag = "Allman" });
 			presetItems.Add(new ComboBoxItem { Content = "Whitesmiths", Tag = "Whitesmiths" });
 			presetItems.Add(new ComboBoxItem { Content = "GNU", Tag = "GNU" });
+			presetItems.Add(new ComboBoxItem { Content = "Empty", Tag = "Empty" });
 			
 			presetComboBox.SelectedIndex = 0;
 		}
@@ -218,11 +218,11 @@ namespace CSharpBinding.OptionPanels
 					
 					// Ask user if he's sure to reset all previously defined settings
 					if (presetFunc != null) {
-						if (SD.MessageService.AskQuestion("${CSharpBinding.Formatting.PresetOverwriteQuestion}")) {
+						if (SD.MessageService.AskQuestion("${res:CSharpBinding.Formatting.PresetOverwriteQuestion}")) {
 							OptionsContainer.Reset(presetFunc());
 						}
 					} else {
-						SD.MessageService.ShowWarning("${CSharpBinding.Formatting.NoPresetSelectedMessage}");
+						SD.MessageService.ShowWarning("${res:CSharpBinding.Formatting.NoPresetSelectedMessage}");
 					}
 				}
 			}

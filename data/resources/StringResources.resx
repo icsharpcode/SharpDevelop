@@ -2725,6 +2725,9 @@ system. I don't think that it needs translation.</comment>
   <data name="Dialog.ProjectOptions.BuildOptions.VBOptionsDefaultValues" xml:space="preserve">
     <value>Default values for VB Options:</value>
   </data>
+  <data name="Dialog.ProjectOptions.CodeFormatting" xml:space="preserve">
+    <value>Code Formatting</value>
+  </data>
   <data name="Dialog.ProjectOptions.Configuration" xml:space="preserve">
     <value>&amp;Configuration</value>
   </data>

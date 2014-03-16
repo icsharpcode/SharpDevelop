@@ -121,7 +121,7 @@
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 		<!-- TODO Localize label! -->
 		<OptionPanel id    = "CSharpProjectFormattingOptions"
-		             label = "Code Formatting"
+		             label = "${res:Dialog.ProjectOptions.CodeFormatting}"
 		             class = "CSharpBinding.OptionPanels.CSharpProjectFormattingOptionPanel"/>
 	</Path>
 	
