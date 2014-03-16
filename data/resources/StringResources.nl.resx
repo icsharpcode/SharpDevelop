@@ -1540,6 +1540,30 @@ Om een ActiveX/COM object te maken/manipuleren, sleep een klasse uit een type-bi
   <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
     <value>Code kwaliteit analyse</value>
   </data>
+  <data name="CSharpBinding.Formatting.AutoFormat" xml:space="preserve">
+    <value>Code automatisch formateren</value>
+  </data>
+  <data name="CSharpBinding.Formatting.DefaultOptionReference" xml:space="preserve">
+    <value>(verstek)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.GlobalOptionReference" xml:space="preserve">
+    <value>(globaal)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.NoPresetSelectedMessage" xml:space="preserve">
+    <value>Er is geen preset-formatering geselecteerd!</value>
+  </data>
+  <data name="CSharpBinding.Formatting.PresetOverwriteQuestion" xml:space="preserve">
+    <value>Weet u zeker dat u alle eerder gedefinieerde formatering opties wilt resetten?</value>
+  </data>
+  <data name="CSharpBinding.Formatting.ProjectOptionReference" xml:space="preserve">
+    <value>(project)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.ResetTo" xml:space="preserve">
+    <value>Reset naar:</value>
+  </data>
+  <data name="CSharpBinding.Formatting.SolutionOptionReference" xml:space="preserve">
+    <value>(oplossing)</value>
+  </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Voeg referentie naar expliciete methode in, druk opnieuw de TAB of Enter om een nieuwe methode stub in te voegen.</value>
   </data>
@@ -1980,6 +2004,15 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountBeforeNumber" xml:space="preserve">
     <value>Opslaan</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTarget" xml:space="preserve">
+    <value>Links in tooltips dienen te gaan naar</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDefinition" xml:space="preserve">
+    <value>Definitie in code</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDocumentation" xml:space="preserve">
+    <value>Documentatie (indien beschikbaar)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.UseDataUsageCache" xml:space="preserve">
     <value>Voorselectie recent gebruikte leden</value>
@@ -3320,8 +3353,14 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="ICSharpCode.CodeCoverage.CodeNotCovered" xml:space="preserve">
     <value>Code Dekking uit</value>
   </data>
+  <data name="ICSharpCode.CodeCoverage.CodePartCovered" xml:space="preserve">
+    <value>Cpde gedeeltelijk bedekt</value>
+  </data>
   <data name="ICSharpCode.CodeCoverage.Column" xml:space="preserve">
     <value>Kolom</value>
+  </data>
+  <data name="ICSharpCode.CodeCoverage.Content" xml:space="preserve">
+    <value>Inhoud</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.DisplayOptions" xml:space="preserve">
     <value>Weergave opties</value>
@@ -4297,6 +4336,9 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
     <value>De oplossing is extern gewijzigd.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionFormattingOptions.Title" xml:space="preserve">
+    <value>Oplossing opties formateren</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Converteer geselecteerde &amp;projecten naar</value>
@@ -6099,6 +6141,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
     <value>Voeg in vanaf klembord ring...</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingEmpty" xml:space="preserve">
+    <value>Klembord ring is leeg</value>
+  </data>
   <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
     <value>Converteer naar automatische eigenschap</value>
   </data>
@@ -6574,6 +6619,12 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>ln ${Line} kol ${Column} kar ${Character}</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextMulti" xml:space="preserve">
+    <value>len ${Regels} * ${Kolommen} (${Totaal})</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextSingle" xml:space="preserve">
+    <value>len $(Lengte)</value>
   </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Varia</value>

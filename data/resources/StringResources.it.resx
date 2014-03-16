@@ -309,6 +309,17 @@ L'applicazione tenterà di scaricarlo e installarlo. Sei sicuro di voler continu
   <data name="AddInManager2.LicenseAcceptance.DeclineButton" xml:space="preserve">
     <value>&amp;Rifiuto</value>
   </data>
+  <data name="AddInManager2.LicenseAcceptance.Explanation.Package" xml:space="preserve">
+    <value>Cliccando "Accetto" accetti i termini di licenza del pacchetto specificato sopra.
+Se non accetti i termini di licenza clicca "Rifiuto".</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Explanation.Packages" xml:space="preserve">
+    <value>Cliccando "Accetto" accetti i termini di licenza dei pacchetti specificati sopra.
+Se non accetti i termini di licenza clicca "Rifiuto".</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Introduction.Package" xml:space="preserve">
+    <value>Questo pacchetto richiede l'accettazione della licenza:</value>
+  </data>
   <data name="AddInManager2.LicenseAcceptance.Introduction.Packages" xml:space="preserve">
     <value>I seguenti pacchetti richiedono un clic per accettare la licenza:</value>
   </data>
@@ -317,6 +328,9 @@ L'applicazione tenterà di scaricarlo e installarlo. Sei sicuro di voler continu
   </data>
   <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
     <value>Aggiungi</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.AutoCheckForUpdates" xml:space="preserve">
+    <value>Ricerca aggiornamenti automaticamente</value>
   </data>
   <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
     <value>Sposta Giù</value>
@@ -335,6 +349,9 @@ L'applicazione tenterà di scaricarlo e installarlo. Sei sicuro di voler continu
   </data>
   <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
     <value>AddIns</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.General" xml:space="preserve">
+    <value>Generale</value>
   </data>
   <data name="AddInManager2.OptionPanel.Tree.Repositories" xml:space="preserve">
     <value>Repositories</value>
@@ -404,7 +421,7 @@ Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler
     <value>Aiuto in linea</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
-    <value>Modalità di Aiuto</value>
+    <value>Imposta le Preferenze di Aiuto</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>Aiuto in linea non trovato. Per favore controlla che sia installato correttamente.</value>
@@ -434,7 +451,7 @@ Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler
     <value>Mostra Aiuto</value>
   </data>
   <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
-    <value>Usa un aiuto esterno</value>
+    <value>Visualizza l'Aiuto con un programma esterno</value>
   </data>
   <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
     <value>Usa l'aiuto locale</value>
@@ -3295,6 +3312,9 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   </data>
   <data name="ICSharpCode.CodeCoverage.Column" xml:space="preserve">
     <value>Colonna</value>
+  </data>
+  <data name="ICSharpCode.CodeCoverage.Content" xml:space="preserve">
+    <value>Contenuto</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.DisplayOptions" xml:space="preserve">
     <value>Visualizza Opzioni</value>

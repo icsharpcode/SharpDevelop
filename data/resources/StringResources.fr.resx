@@ -1536,6 +1536,30 @@ Pour créer ou manipuler un objet ActiveX/COM, déplcaer une classe depuis TypeL
   <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
     <value>Analyse Qualité du Code</value>
   </data>
+  <data name="CSharpBinding.Formatting.AutoFormat" xml:space="preserve">
+    <value>Formater automatiquement le code</value>
+  </data>
+  <data name="CSharpBinding.Formatting.DefaultOptionReference" xml:space="preserve">
+    <value>(défaut)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.GlobalOptionReference" xml:space="preserve">
+    <value>(global)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.NoPresetSelectedMessage" xml:space="preserve">
+    <value>Aucun choix de formatage sélectionné!</value>
+  </data>
+  <data name="CSharpBinding.Formatting.PresetOverwriteQuestion" xml:space="preserve">
+    <value>Voulez-vous réinitialiser toutes les options de formatage?</value>
+  </data>
+  <data name="CSharpBinding.Formatting.ProjectOptionReference" xml:space="preserve">
+    <value>(projet)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.ResetTo" xml:space="preserve">
+    <value>Réinitialiser à:</value>
+  </data>
+  <data name="CSharpBinding.Formatting.SolutionOptionReference" xml:space="preserve">
+    <value>(solution)</value>
+  </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Insérer une réference vers la méthode explicite; appuyer de nouveau sur tab ou enter pour insérer un nouveau template de méthode.</value>
   </data>
@@ -1976,6 +2000,15 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountBeforeNumber" xml:space="preserve">
     <value>Enregistrer</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTarget" xml:space="preserve">
+    <value>Les liens avec les info-bulles doivent aller vers</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDefinition" xml:space="preserve">
+    <value>Definition dans le code source</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDocumentation" xml:space="preserve">
+    <value>Documentation (si disponible)</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.UseDataUsageCache" xml:space="preserve">
     <value>Présélectionne les membres les plus utilisés</value>
   </data>
@@ -2347,6 +2380,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
     <value>Accolades en surbrillance</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightCurrentLineCheckBox" xml:space="preserve">
+    <value>Surligner la ligne actuelle</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
     <value>Surligner symboles</value>
@@ -3314,8 +3350,14 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="ICSharpCode.CodeCoverage.CodeNotCovered" xml:space="preserve">
     <value>Code non couvert</value>
   </data>
+  <data name="ICSharpCode.CodeCoverage.CodePartCovered" xml:space="preserve">
+    <value>Code partiellement couvert</value>
+  </data>
   <data name="ICSharpCode.CodeCoverage.Column" xml:space="preserve">
     <value>Colonne</value>
+  </data>
+  <data name="ICSharpCode.CodeCoverage.Content" xml:space="preserve">
+    <value>Contenu</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.DisplayOptions" xml:space="preserve">
     <value>Afficher les options</value>
@@ -4293,6 +4335,9 @@ Utilisez seulement des lettres, chiffres, espace, '.' ou '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
     <value>La solution a été modifiée hors de SharpDevelop.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionFormattingOptions.Title" xml:space="preserve">
+    <value>Options de formatage de solution</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Convertir les projets sélectionnés vers:</value>
@@ -6092,6 +6137,12 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
     <value>Classes dérivant de ${Name}</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
+    <value>Coller depuis le presse-papier circulaire...</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingEmpty" xml:space="preserve">
+    <value>Le presse-papier circulaire est vide</value>
+  </data>
   <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
     <value>Convertir en propriété automatique</value>
   </data>
@@ -6566,6 +6617,12 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>li. ${Line} col. ${Column} car. ${Character}</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextMulti" xml:space="preserve">
+    <value>longueur ${Rows} * ${Cols} (${Total})</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextSingle" xml:space="preserve">
+    <value>longueur ${Length}</value>
   </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Divers</value>
