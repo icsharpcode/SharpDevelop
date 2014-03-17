@@ -17,11 +17,11 @@ using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.Reporting.Addin.DesignableItems;
 using ICSharpCode.Reporting.Addin.DesignerBinding;
 using ICSharpCode.Reporting.Addin.Services;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Reporting.Addin.Views
 {
@@ -75,8 +75,8 @@ namespace ICSharpCode.Reporting.Addin.Views
 			defaultServiceContainer.AddService(typeof(ITypeResolutionService), new TypeResolutionService());
 			defaultServiceContainer.AddService(typeof(ITypeDiscoveryService),new TypeDiscoveryService());
 			                                   
-			defaultServiceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService),
-				new ICSharpCode.Reporting.Addin.Services.MenuCommandService(panel,this.designSurface ));
+			defaultServiceContainer.AddService(typeof(IMenuCommandService),
+				new ICSharpCode.Reporting.Addin.Services.MenuCommandService(panel, designSurface));
 			
 			defaultServiceContainer.AddService(typeof(MemberRelationshipService),new DefaultMemberRelationshipService());
 			defaultServiceContainer.AddService(typeof(OpenedFile),base.PrimaryFile);
@@ -333,8 +333,9 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		void SetupDesignSurface()
 		{
-			Control c = null;
-			c = designSurface.View as Control;
+//			Control c = null;
+			var c = designSurface.View as Control;
+			c.BackColor = System.Drawing.Color.Green;
 			c.Parent = panel;
 			c.Dock = DockStyle.Fill;
 		}
@@ -348,7 +349,12 @@ namespace ICSharpCode.Reporting.Addin.Views
 			LoggingService.Info("Finished merging form changes");
 			hasUnmergedChanges = false;
 		}
-		
+
+		void SetupSecondaryView()
+		{
+			var xmlView = new XmlView(generator,this);
+			SecondaryViewContents.Add(xmlView);
+		}
 		
 		public string ReportFileContent {
 			get {
@@ -385,6 +391,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 			LoggingService.Debug("ReportDesigner: Load from: " + file.FileName);
 			base.Load(file, stream);
 			LoadDesigner(stream);
+			SetupSecondaryView();
 		}
 		#endregion
 	}

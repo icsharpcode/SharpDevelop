@@ -70,6 +70,7 @@
     <Folder Include="src\Designer" />
     <Folder Include="src\Globals" />
     <Folder Include="src\DesignableItems" />
+    <Folder Include="src\TypeProvider" />
     <Folder Include="src\XML" />
     <Folder Include="src\Services" />
     <Folder Include="src\Views" />
@@ -102,7 +103,10 @@
     <Compile Include="src\Services\HelpService.cs" />
     <Compile Include="src\Services\ToolboxService.cs" />
     <Compile Include="src\Services\UIService.cs" />
+    <Compile Include="src\TypeProvider\SectionItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\TypeProviderHelper.cs" />
     <Compile Include="src\Views\DesignerView.cs" />
+    <Compile Include="src\Views\XmlView.cs" />
     <Compile Include="src\XML\MycroWriter.cs" />
     <Compile Include="src\XML\ReportDefinitionParser.cs" />
     <Compile Include="src\XML\ReportDesignerWriter.cs" />

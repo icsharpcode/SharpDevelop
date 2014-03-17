@@ -28,6 +28,8 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using ICSharpCode.Core;
 using ICSharpCode.Reporting.Addin.DesignableItems;
+using ICSharpCode.Reporting.Addin.Globals;
+using ICSharpCode.Reporting.Addin.TypeProvider;
 
 namespace ICSharpCode.Reporting.Addin.Designer
 {
@@ -49,13 +51,14 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		public ReportRootDesigner()
 		{
-			System.Console.WriteLine("Create RootDesigner");
+			Console.WriteLine("Create RootDesigner");
+//			Control.BackColor = Color.Chocolate;
 		}
 		
 
-		private void ShowMessage(Exception e)
+		void ShowMessage(Exception e)
 		{
-			base.DisplayError(e);
+			DisplayError(e);
 			var uiService = (IUIService)host.GetService(typeof(IUIService));
 			if (uiService != null) {
 				uiService.ShowError(e);
@@ -79,15 +82,15 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		{
 			rootReportModel = host.Container.Components[0] as RootReportModel;
 			rootReportModel.PageMargin = CalculateMargins();
-			rootReportModel.Page = new Rectangle(new Point(0,0),this.reportSettings.PageSize);
+			rootReportModel.Page = new Rectangle(new Point(0,0), reportSettings.PageSize);
 			rootReportModel.Landscape = this.reportSettings.Landscape;
 			rootReportModel.Invalidate();
 		}
 			
 		
-		private Margins CalculateMargins ()
+		Margins CalculateMargins ()
 		{
-			return new Margins(this.reportSettings.LeftMargin,reportSettings.RightMargin,
+			return new Margins(reportSettings.LeftMargin,reportSettings.RightMargin,
 			                   reportSettings.TopMargin,reportSettings.BottomMargin);
 		}
 			
@@ -143,7 +146,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			// strange (the property grid is empty).
 			//
 		
-			this.selectionService = (ISelectionService)GetService(typeof(ISelectionService));
+			selectionService = (ISelectionService)GetService(typeof(ISelectionService));
 			if (this.selectionService != null)
 			{
 				this.selectionService.SetSelectedComponents(new object[] {component}, SelectionTypes.Replace);
@@ -171,13 +174,14 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		protected override void PostFilterProperties(IDictionary properties)
 		{
-			/*
-			DesignerHelper.RemoveProperties(properties);
-			string [] s = new string[]{"Visible","BackColor","Text","MaximumSize","MinimumSize","Size",
-				"AutoScaleDimensions","DataBindings"};
-			DesignerHelper.Remove(properties,s);
+			
+			TypeProviderHelper.RemoveProperties(properties);
+			var s = new string[]{"Visible","BackColor",
+				"Text","MaximumSize","MinimumSize",
+				"Size","AutoScaleDimensions",
+				"DataBindings"};
+			TypeProviderHelper.Remove(properties,s);
 			base.PostFilterProperties(properties);
-			*/
 		}	
 		
 		#endregion
@@ -195,16 +199,17 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		void RecalculateSections()
 		{
 			int locY = 50;
-			if (this.reportSettings == null) {
+			if (reportSettings == null) {
 				reportSettings = host.Container.Components[1] as ICSharpCode.Reporting.Items.ReportSettings;
 			}
 			
-			foreach (BaseSection s in sections)
+			foreach (BaseSection section in sections)
 			{
-//				s.Location = new Point(this.reportSettings.LeftMargin,locY);
-//				locY = locY + s.Size.Height + GlobalsDesigner.GabBetweenSection;
+				section.Location = new Point(reportSettings.LeftMargin,locY);
+				locY = locY + section.Size.Height + DesignerGlobals.GabBetweenSection;
+				section.Invalidate();
 			}
-			this.Control.Invalidate();
+			Control.Invalidate();
 		}
 		
 		

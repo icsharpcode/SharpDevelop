@@ -21,7 +21,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 	/// <summary>
 	/// Description of DesignerGenerator.
 	/// </summary>
-	public class DesignerGenerator:IDesignerGenerator
+	class DesignerGenerator:IDesignerGenerator
 	{
 		DesignerView viewContent;
 		

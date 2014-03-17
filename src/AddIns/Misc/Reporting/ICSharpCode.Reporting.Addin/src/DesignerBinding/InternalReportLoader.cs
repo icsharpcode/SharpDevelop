@@ -72,7 +72,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		}
 		
 		
-		private void UpdateStatusbar ()
+		void UpdateStatusbar ()
 		{
 			string message;
 			if (this.generator.ViewContent.PrimaryFile.IsDirty) {

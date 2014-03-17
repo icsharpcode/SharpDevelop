@@ -9,13 +9,14 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using ICSharpCode.Reporting.Addin.TypeProvider;
 
 namespace ICSharpCode.Reporting.Addin.DesignableItems
 {
 	/// <summary>
 	/// Description of BaseSection.
 	/// </summary>
-//		[TypeDescriptionProvider(typeof(SectionItemTypeProvider))]
+		[TypeDescriptionProvider(typeof(SectionItemTypeProvider))]
 	[Designer(typeof(ICSharpCode.Reporting.Addin.Designer.SectionDesigner))]
 		public class BaseSection:AbstractItem
 	{
@@ -23,7 +24,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		public BaseSection():base()
 		{
 			base.FrameColor = Color.Black;
-//			TypeDescriptor.AddProvider(new SectionItemTypeProvider(), typeof(BaseSection));
+			TypeDescriptor.AddProvider(new SectionItemTypeProvider(), typeof(BaseSection));
 		}
 		
 		
