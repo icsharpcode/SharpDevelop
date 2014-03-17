@@ -130,6 +130,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (project is MSBuildFileProject) {
 				FileService.OpenFile(project.FileName);
+			} else {
+				ShowProperties();
 			}
 		}
 		
