@@ -88,7 +88,7 @@ namespace ICSharpCode.ILSpyAddIn
 			public ISet<AssemblyDefinition> ResolvedAssemblies {
 				get { return resolvedAssemblies; }
 			}
-
+			
 			public ILSpyAssemblyResolver(FileName fileName)
 				: base(fileName)
 			{
@@ -134,8 +134,10 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			if (name == null)
 				throw new ArgumentNullException("name");
-			var astBuilder = CreateAstBuilder(name, cancellationToken);
-			return new ILSpyFullParseInformation(ILSpyUnresolvedFile.Create(name, astBuilder), null, astBuilder.SyntaxTree);
+			using (DebugTimer.Time("DecompileType: " + name.ToFileName())) {
+				var astBuilder = CreateAstBuilder(name, cancellationToken);
+				return new ILSpyFullParseInformation(ILSpyUnresolvedFile.Create(name, astBuilder), null, astBuilder.SyntaxTree);
+			}
 		}
 		
 		static AstBuilder CreateAstBuilder(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
@@ -151,11 +153,6 @@ namespace ICSharpCode.ILSpyAddIn
 			AstBuilder astBuilder = new AstBuilder(context);
 			astBuilder.AddType(typeDefinition);
 			return astBuilder;
-		}
-		
-		static ILSpyUnresolvedFile DoDecompile(DecompiledTypeReference name, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			return ILSpyUnresolvedFile.Create(name, CreateAstBuilder(name, cancellationToken));
 		}
 	}
 	
@@ -231,7 +228,7 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			return object.Equals(this.AssemblyFile, other.AssemblyFile) && this.Type == other.Type;
 		}
-
+		
 		public override int GetHashCode()
 		{
 			int hashCode = 0;
@@ -242,7 +239,7 @@ namespace ICSharpCode.ILSpyAddIn
 			}
 			return hashCode;
 		}
-
+		
 		public static bool operator ==(DecompiledTypeReference lhs, DecompiledTypeReference rhs) {
 			if (ReferenceEquals(lhs, rhs))
 				return true;
@@ -250,7 +247,7 @@ namespace ICSharpCode.ILSpyAddIn
 				return false;
 			return lhs.Equals(rhs);
 		}
-
+		
 		public static bool operator !=(DecompiledTypeReference lhs, DecompiledTypeReference rhs) {
 			return !(lhs == rhs);
 		}

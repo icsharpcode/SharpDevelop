@@ -157,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return new CallStackItem() {
 					Frame = frame,
 					ImageSource = SD.ResourceService.GetImageSource("Icons.16x16.Method"),
-					Name = GetFullName(frame),
+					Name = GetFullName(frame, hasSymbols),
 					HasSymbols = hasSymbols,
 				};
 			} else {
@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		internal static string GetFullName(StackFrame frame)
+		static string GetFullName(StackFrame frame, bool hasSymbols)
 		{
 			StringBuilder name = new StringBuilder(64);
 			if (DebuggingOptions.Instance.ShowModuleNames) {
@@ -193,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					}
 					if (DebuggingOptions.Instance.ShowArgumentValues) {
 						try {
-							name.Append(frame.GetArgumentValue(i).AsString(100));
+							name.Append(frame.GetArgumentValue(i, hasSymbols).AsString(100));
 						} catch (GetValueException) {
 							name.Append(ResourceService.GetString("Global.NA"));
 						}

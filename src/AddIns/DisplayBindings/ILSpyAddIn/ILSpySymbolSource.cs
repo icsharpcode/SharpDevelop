@@ -28,6 +28,7 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			var typeName = DecompiledTypeReference.FromTypeDefinition(method.DeclaringTypeDefinition);
 			if (typeName == null) return null;
+			SD.Log.DebugFormatted("GetSymbols for: {0}", typeName.ToFileName());
 			return SD.ParserService.ParseFile(typeName.ToFileName()) as ILSpyUnresolvedFile;
 		}
 		

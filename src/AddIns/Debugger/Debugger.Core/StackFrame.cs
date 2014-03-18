@@ -178,7 +178,7 @@ namespace Debugger
 					fromToList.Add(range.To);
 				}
 			}
-
+			
 			if (stepIn) {
 				Stepper stepInStepper = Stepper.StepIn(this, fromToList.ToArray(), "normal");
 				this.Thread.CurrentStepIn = stepInStepper;
@@ -282,13 +282,15 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets argument with a given name </summary>
-		public Value GetArgumentValue(string name)
+		public Value GetArgumentValue(string name, bool checkCapturedVariables = true)
 		{
+			if (checkCapturedVariables) {
+				LocalVariable capturedVar;
+				if (HasCapturedVariable(name, out capturedVar))
+					return capturedVar.GetValue(this);
+			}
 			for (int i = 0; i < this.MethodInfo.Parameters.Count; i++) {
 				if (this.MethodInfo.Parameters[i].Name == name) {
-					LocalVariable capturedVar;
-					if (HasCapturedVariable(name, out capturedVar))
-						return capturedVar.GetValue(this);
 					return GetArgumentValue(i);
 				}
 			}
@@ -297,12 +299,14 @@ namespace Debugger
 		
 		/// <summary> Gets argument with a given index </summary>
 		/// <param name="index"> Zero-based index </param>
-		public Value GetArgumentValue(int index)
+		public Value GetArgumentValue(int index, bool checkCapturedVariables = true)
 		{
 			var param = this.MethodInfo.Parameters[index];
-			LocalVariable capturedVariable;
-			if (HasCapturedVariable(param.Name, out capturedVariable))
-				return capturedVariable.GetValue(this);
+			if (checkCapturedVariables) {
+				LocalVariable capturedVariable;
+				if (HasCapturedVariable(param.Name, out capturedVariable))
+					return capturedVariable.GetValue(this);
+			}
 			return new Value(this.AppDomain, GetArgumentCorValue(index));
 		}
 		
