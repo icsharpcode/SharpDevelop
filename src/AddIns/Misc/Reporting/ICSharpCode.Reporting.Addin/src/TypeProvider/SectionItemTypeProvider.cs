@@ -16,7 +16,7 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 	/// <summary>
 	/// Description of SectionItemTypeProvider.
 	/// </summary>
-	internal class SectionItemTypeProvider : TypeDescriptionProvider
+	class SectionItemTypeProvider : TypeDescriptionProvider
 	{
 		public SectionItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
 		{

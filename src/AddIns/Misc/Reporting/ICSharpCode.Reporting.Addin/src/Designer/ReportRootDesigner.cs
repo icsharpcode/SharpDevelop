@@ -47,13 +47,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		IComponentChangeService componentChangeService;
 		List<BaseSection> sections;
 		ICSharpCode.Reporting.Items.ReportSettings reportSettings;
-		 RootReportModel rootReportModel;
-		
-		public ReportRootDesigner()
-		{
-			Console.WriteLine("Create RootDesigner");
-//			Control.BackColor = Color.Chocolate;
-		}
+		RootReportModel rootReportModel;
 		
 
 		void ShowMessage(Exception e)
@@ -234,7 +228,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 //					this.host.Container.Add(cc);
 //				}
 //				
-//				this.Control.Controls.Add(section);
+				this.Control.Controls.Add(section);
 				RecalculateSections();
 			}
 		}

@@ -103,6 +103,7 @@
     <Compile Include="src\Services\HelpService.cs" />
     <Compile Include="src\Services\ToolboxService.cs" />
     <Compile Include="src\Services\UIService.cs" />
+    <Compile Include="src\TypeProvider\AbstractItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\SectionItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TypeProviderHelper.cs" />
     <Compile Include="src\Views\DesignerView.cs" />

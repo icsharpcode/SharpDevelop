@@ -16,21 +16,22 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 	/// <summary>
 	/// Description of BaseSection.
 	/// </summary>
-		[TypeDescriptionProvider(typeof(SectionItemTypeProvider))]
+	[TypeDescriptionProvider(typeof(SectionItemTypeProvider))]
 	[Designer(typeof(ICSharpCode.Reporting.Addin.Designer.SectionDesigner))]
-		public class BaseSection:AbstractItem
+	public class BaseSection:AbstractItem
 	{
-
+		
 		public BaseSection():base()
 		{
-			base.FrameColor = Color.Black;
+			FrameColor = Color.Black;
 			TypeDescriptor.AddProvider(new SectionItemTypeProvider(), typeof(BaseSection));
 		}
 		
 		
-		[EditorBrowsableAttribute()]
+//		[EditorBrowsableAttribute()]
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 		{
+			Console.WriteLine("BaseSection:OnPaint");
 			base.OnPaint(e);
 			Draw(e.Graphics);
 		}

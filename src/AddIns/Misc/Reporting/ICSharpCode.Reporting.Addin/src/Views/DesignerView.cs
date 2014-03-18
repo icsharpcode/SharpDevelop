@@ -333,11 +333,9 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		void SetupDesignSurface()
 		{
-//			Control c = null;
-			var c = designSurface.View as Control;
-			c.BackColor = System.Drawing.Color.Green;
-			c.Parent = panel;
-			c.Dock = DockStyle.Fill;
+			var ctrl = designSurface.View as Control;
+			ctrl.Parent = panel;
+			ctrl.Dock = DockStyle.Fill;
 		}
 		
 		

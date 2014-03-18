@@ -11,7 +11,6 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Printing;
-using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.Addin.Globals;
 
 namespace ICSharpCode.Reporting.Addin.Designer
@@ -24,21 +23,13 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	
 	public class RootReportModel:RootDesignedComponent
 	{
-	
 		bool showDebugFrame;
-		
-		public RootReportModel(){
-			Console.WriteLine("create RootReportModel");
-		}
-		
 		
 		[EditorBrowsableAttribute()]
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs pea)
 		{
+			Console.WriteLine("RootReportModel:Onpaint : {0}",this.BackColor);
 			base.OnPaint(pea);
-			if (this.showDebugFrame) {
-				PrintMargin(pea.Graphics);
-			}
 			using (Font font = DesignerGlobals.DesignerFont) {
 				foreach(System.Windows.Forms.Control ctrl in this.Controls)
 				{
@@ -49,34 +40,6 @@ namespace ICSharpCode.Reporting.Addin.Designer
 				}
 			}
 		}
-		
-		public void Toggle ()
-		{
-			showDebugFrame = !this.showDebugFrame;
-			Invalidate(true);
-		}
-		
-		private void PrintMargin( Graphics graphics)
-		{
-			string s = String.Format(System.Globalization.CultureInfo.CurrentCulture,
-			                         "[Size : {0}] [Landscape : {1}]  [Bounds : {2}]",
-			                         this.Page,this.Landscape,this.PageMargin);
-			using (Font font = DesignerGlobals.DesignerFont){
-				SizeF size = graphics.MeasureString(s,font);
-				graphics.DrawString(s,font,
-				             new SolidBrush(Color.LightGray),
-				             new Rectangle(this.PageMargin.Left + 100,
-				                           this.PageMargin.Top - (int)font.GetHeight() - 3,
-				                           (int)size.Width,
-				                           (int)size.Height));
-				
-				var rectangle = new Rectangle(this.PageMargin.Left - 2,this.PageMargin.Top - 2,
-				                            this.Page.Width - this.PageMargin.Left - this.PageMargin.Right + 2,
-				                            this.Size.Height - this.PageMargin.Top - this.PageMargin.Bottom + 2);
-				graphics.DrawRectangle(new Pen(Color.LightGray,1),rectangle);
-			}
-		}
-			
 		
 		public Margins PageMargin {get;set;}
 			

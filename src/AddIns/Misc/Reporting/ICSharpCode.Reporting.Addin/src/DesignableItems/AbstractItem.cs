@@ -9,6 +9,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using ICSharpCode.Reporting.Addin.TypeProvider;
 
 namespace ICSharpCode.Reporting.Addin.DesignableItems
 {
@@ -24,8 +25,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		protected AbstractItem()
 		{
 			InitializeComponent();
-//			TypeDescriptor.AddProvider(new AbstractItemTypeProvider(), typeof(AbstractItem));
-//			VisibleInReport = true;
+			TypeDescriptor.AddProvider(new AbstractItemTypeProvider(), typeof(AbstractItem));
 		}
 		
 		
@@ -45,9 +45,9 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 			get {
 				
 				return new Rectangle(this.ClientRectangle.Left ,
-				                            this.ClientRectangle.Top ,
-				                            this.ClientRectangle.Width -1,
-				                            this.ClientRectangle.Height -1);
+				                            ClientRectangle.Top ,
+				                            ClientRectangle.Width -1,
+				                            ClientRectangle.Height -1);
 			}
 		}
 		
@@ -68,22 +68,16 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		
 		protected new Size DefaultSize {get;set;}
 			
-//		public  bool VisibleInReport {get;set;}
 		
 		#endregion
 		
-		[System.ComponentModel.EditorBrowsableAttribute()]
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
-		{
-			base.OnPaint(e);
-		}
 		
 		public abstract void Draw(Graphics graphics);
 		
 		private void InitializeComponent()
 		{
-			this.SuspendLayout();
-			this.ResumeLayout(false);
+			SuspendLayout();
+			ResumeLayout(false);
 		}
 	}
 }

@@ -48,6 +48,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		protected override void OnPaintAdornments(PaintEventArgs pe)
 		{
+			Console.WriteLine("SectionDesigner:OnPaintAdornments");
 			base.OnPaintAdornments(pe);
 		}
 		
