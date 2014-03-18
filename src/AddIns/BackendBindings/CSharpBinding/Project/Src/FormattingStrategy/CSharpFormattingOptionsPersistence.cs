@@ -132,12 +132,10 @@ namespace CSharpBinding.FormattingStrategy
 		/// <param name="initialContainer">Initial (empty) instance of formatting options container.</param>
 		public CSharpFormattingOptionsPersistence(Properties propertiesContainer, CSharpFormattingOptionsContainer initialContainer)
 		{
-			if (propertiesContainer == null)
-				throw new ArgumentNullException("propertiesContainer");
 			if (initialContainer == null)
 				throw new ArgumentNullException("initialContainer");
 			
-			this.propertiesContainer = propertiesContainer;
+			this.propertiesContainer = propertiesContainer ?? new Properties();
 			optionsContainer = initialContainer;
 		}
 		

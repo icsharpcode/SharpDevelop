@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace CSharpBinding.FormattingStrategy
 {
@@ -73,8 +74,12 @@ namespace CSharpBinding.FormattingStrategy
 		
 		static CacheIndentEngine CreateIndentEngine(IDocument document, TextEditorOptions options)
 		{
-			// TODO Use project-specific formatter settings. But how to get a project from here?
-			var formattingOptions = CSharpFormattingOptionsPersistence.GlobalOptions;
+			IProject currentProject = null;
+			var projectService = SD.GetService<IProjectService>();
+			if (projectService != null) {
+				currentProject = projectService.FindProjectContainingFile(new FileName(document.FileName));
+			}
+			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(currentProject);
 			var engine = new CSharpIndentEngine(document, options, formattingOptions.OptionsContainer.GetEffectiveOptions());
 			return new CacheIndentEngine(engine);
 		}

@@ -119,7 +119,6 @@
 		             label = "${res:Dialog.ProjectOptions.Publish}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
-		<!-- TODO Localize label! -->
 		<OptionPanel id    = "CSharpProjectFormattingOptions"
 		             label = "${res:Dialog.ProjectOptions.CodeFormatting}"
 		             class = "CSharpBinding.OptionPanels.CSharpProjectFormattingOptionPanel"/>
