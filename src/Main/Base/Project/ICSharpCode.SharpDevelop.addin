@@ -1885,12 +1885,10 @@
 			          icon="Icons.16x16.SelectionArrow"
 			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
 			
-			<Condition name="SymbolTypeAtCaret" type="member,type,local" projectonly="true" action="Exclude">
-				<MenuItem id = "Rename"
-				          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
-				          shortcut="Ctrl+R"
-				          class = "ICSharpCode.SharpDevelop.Editor.Commands.RenameSymbolCommand"/>
-			</Condition>
+			<MenuItem id = "Rename"
+			          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
+			          shortcut="Ctrl+R"
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.RenameSymbolCommand"/>
 			
 			<MenuItem id = "GotoBrace"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
