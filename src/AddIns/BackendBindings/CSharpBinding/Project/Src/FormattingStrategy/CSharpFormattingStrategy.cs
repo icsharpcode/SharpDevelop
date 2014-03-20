@@ -269,17 +269,39 @@ namespace CSharpBinding.FormattingStrategy
 		
 		public override void FormatLines(ITextEditor textArea)
 		{
+			// Format current selection or whole document
+			int formattedTextOffset = 0;
+			int formattedTextLength = textArea.Document.TextLength;
+			if (textArea.SelectionLength != 0) {
+				formattedTextOffset = textArea.SelectionStart;
+				formattedTextLength = textArea.SelectionLength;
+			}
+			FormatCode(textArea, formattedTextOffset, formattedTextLength, false);
+		}
+		
+		/// <summary>
+		/// Formats a code section according to currently effective formatting settings.
+		/// </summary>
+		/// <param name="textArea">Text editor instance to format code in.</param>
+		/// <param name="offset">Start offset of formatted code.</param>
+		/// <param name="length">Length of formatted code.</param>
+		/// <param name="respectAutoFormattingSetting">
+		/// Set to <c>true</c> to perform formatting only if auto-formatting setting is active.
+		/// If <c>false</c>, formatting will be performed in any case.
+		/// </param>
+		/// <returns><c>True</c>, if code has been formatted, <c>false</c> if auto-formatting is currently forbidden.</returns>
+		private bool FormatCode(ITextEditor textArea, int offset, int length, bool respectAutoFormattingSetting)
+		{
 			using (textArea.Document.OpenUndoGroup()) {
 				// In any other case: Simply format selection or whole document
 				var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(SD.ProjectService.CurrentProject);
-				int formattedTextOffset = 0;
-				int formattedTextLength = textArea.Document.TextLength;
-				if (textArea.SelectionLength != 0) {
-					formattedTextOffset = textArea.SelectionStart;
-					formattedTextLength = textArea.SelectionLength;
+				if (!respectAutoFormattingSetting || formattingOptions.OptionsContainer.EffectiveAutoFormatting) {
+					CSharpFormatterHelper.Format(textArea, offset, length, formattingOptions.OptionsContainer);
+					return true;
 				}
-				CSharpFormatterHelper.Format(textArea, formattedTextOffset, formattedTextLength, formattingOptions.OptionsContainer);
 			}
+			
+			return false;
 		}
 		
 		public override void FormatLine(ITextEditor textArea, char ch) // used for comment tag formater/inserter
@@ -375,11 +397,27 @@ namespace CSharpBinding.FormattingStrategy
 				case ':':
 				case ')':
 				case ']':
-				case '}':
 				case '{':
 					//if (textArea.Document.TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 					IndentLine(textArea, curLine);
 					//}
+					break;
+				case '}':
+					// Try to get corresponding block beginning brace
+					var bracketSearchResult = textArea.Language.BracketSearcher.SearchBracket(textArea.Document, cursorOffset);
+					if (bracketSearchResult != null) {
+						// Format the block
+						if (!FormatCode(textArea, bracketSearchResult.OpeningBracketOffset,
+							cursorOffset - bracketSearchResult.OpeningBracketOffset, true)) {
+							// No auto-formatting seems to be active, at least indent the line
+							IndentLine(textArea, curLine);
+						}
+					}
+					break;
+				case ';':
+					// Format this line
+					var lineBeginningOffset = textArea.Document.GetOffset(lineNr, 0);
+					FormatCode(textArea, lineBeginningOffset, cursorOffset - lineBeginningOffset, true);
 					break;
 				case '\n':
 					string lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);

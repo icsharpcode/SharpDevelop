@@ -302,8 +302,7 @@
 				Name="autoFormattingCheckBox"
 				Content="{core:Localize CSharpBinding.Formatting.AutoFormat}"
 				IsThreeState="True" IsChecked="{Binding AutoFormatting}"
-				Margin="0,0,0,10"
-				Visibility="Collapsed"/>
+				Margin="0,0,0,10" />
 			<Grid
 				Visibility="{Binding Path=AllowPresets, Converter={StaticResource boolToVisibilityConverter}}">
 				<Grid.ColumnDefinitions>

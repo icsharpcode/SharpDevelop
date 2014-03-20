@@ -135,7 +135,7 @@ namespace CSharpBinding.OptionPanels
 		
 		public static readonly DependencyProperty AutoFormattingProperty =
 			DependencyProperty.Register("AutoFormatting", typeof(bool?), typeof(CSharpFormattingEditor),
-				new FrameworkPropertyMetadata());
+				new FrameworkPropertyMetadata(OnAutoFormattingPropertyChanged));
 		
 		public bool? AutoFormatting {
 			get { return (bool?)GetValue(AutoFormattingProperty); }
