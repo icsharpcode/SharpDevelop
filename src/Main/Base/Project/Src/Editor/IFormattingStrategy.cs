@@ -143,8 +143,21 @@ namespace ICSharpCode.SharpDevelop.Editor
 				BlockCommentRegion region = FindSelectedCommentRegion(editor, blockStart, blockEnd);
 				
 				if (region != null) {
-					editor.Document.Remove(region.EndOffset, region.CommentEnd.Length);
-					editor.Document.Remove(region.StartOffset, region.CommentStart.Length);
+					do {
+						editor.Document.Remove(region.EndOffset, region.CommentEnd.Length);
+						editor.Document.Remove(region.StartOffset, region.CommentStart.Length);
+						
+						int selectionStart = region.EndOffset;
+						int selectionLength = editor.SelectionLength - (region.EndOffset - editor.SelectionStart);
+						
+						if(selectionLength > 0) {
+							editor.Select(region.EndOffset, selectionLength);
+							region = FindSelectedCommentRegion(editor, blockStart, blockEnd);
+						} else {
+							region = null; 
+						}
+					} while(region != null);
+				
 				} else {
 					editor.Document.Insert(endOffset, blockEnd);
 					editor.Document.Insert(startOffset, blockStart);
