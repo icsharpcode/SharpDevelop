@@ -19,7 +19,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 //	[TypeDescriptionProvider(typeof(AbstractItemTypeProvider))]
 	public abstract class AbstractItem:System.Windows.Forms.Control
 	{
-		private Color frameColor = Color.Black;
+		Color frameColor = Color.Black;
 		
 
 		protected AbstractItem()
@@ -31,8 +31,8 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		
 		protected void DrawControl (Graphics graphics,Rectangle borderRectangle)
 		{
-			if (this.DrawBorder == true) {
-				graphics.DrawRectangle(new Pen(this.frameColor),borderRectangle);
+			if (DrawBorder == true) {
+				graphics.DrawRectangle(new Pen(frameColor),borderRectangle);
 			} 
 			System.Windows.Forms.ControlPaint.DrawBorder3D(graphics, this.ClientRectangle,
 				                                               System.Windows.Forms.Border3DStyle.Etched);
@@ -66,6 +66,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		Description("Draw a Border around the Item")]
 		public bool DrawBorder {get;set;}
 		
+	
 		protected new Size DefaultSize {get;set;}
 			
 		

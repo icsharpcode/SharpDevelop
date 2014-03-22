@@ -8,6 +8,7 @@
  */
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using ICSharpCode.Core;
@@ -53,36 +54,15 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		public void MergeFormChanges(System.CodeDom.CodeCompileUnit unit)
 		{
 			System.Diagnostics.Trace.WriteLine("Generator:MergeFormChanges");
-			var writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
-			var xml = XmlHelper.CreatePropperWriter(writer);
-			InternalMergeFormChanges(xml);
-			Console.WriteLine(writer.ToString());
+			var writer = InternalMergeFormChanges();
 			viewContent.ReportFileContent = writer.ToString();
 		}
 		
-		public bool InsertComponentEvent(System.ComponentModel.IComponent component, System.ComponentModel.EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
+		
+		StringWriter InternalMergeFormChanges()
 		{
-			throw new NotImplementedException();
-		}
-		
-		public System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public DesignerView ViewContent {
-			get {return viewContent;}
-			
-		}
-		
-		#endregion
-		
-		void InternalMergeFormChanges(XmlTextWriter xml)
-		{
-			if (xml == null) {
-				throw new ArgumentNullException("xml");
-			}
+			var writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
+			var xml = XmlHelper.CreatePropperWriter(writer);
 			
 			var rpd = new ReportDesignerWriter();
 			XmlHelper.CreatePropperDocument(xml);
@@ -108,6 +88,27 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			xml.WriteEndElement();
 			xml.WriteEndDocument();
 			xml.Close();
+			return writer;
 		}
+		
+		
+		public DesignerView ViewContent {
+			get {return viewContent;}
+			
+		}
+		
+		
+		public bool InsertComponentEvent(System.ComponentModel.IComponent component, System.ComponentModel.EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		#endregion
 	}
 }

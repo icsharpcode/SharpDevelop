@@ -59,20 +59,15 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			}
 		}
 		
-//		private new void DisplayError(Exception ex)
-//		{
-//			MessageBox.Show(ex.Message + "\n" + ex.StackTrace, "Fehler im Designer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-//		}
 		
-		
-		private void InitializeGUI()
+		void InitializeGUI()
 		{
 			reportSettings = host.Container.Components[1] as ICSharpCode.Reporting.Items.ReportSettings;
 			InitializeRootReportModel();
 		}
 		
 		
-		private void InitializeRootReportModel ()
+		void InitializeRootReportModel ()
 		{
 			rootReportModel = host.Container.Components[0] as RootReportModel;
 			rootReportModel.PageMargin = CalculateMargins();
@@ -201,7 +196,6 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			{
 				section.Location = new Point(reportSettings.LeftMargin,locY);
 				locY = locY + section.Size.Height + DesignerGlobals.GabBetweenSection;
-				section.Invalidate();
 			}
 			Control.Invalidate();
 		}
@@ -211,7 +205,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		void OnLoadComplete(object sender, EventArgs e)
 		{
 			var host = (IDesignerHost)sender;
-			host.LoadComplete -= new EventHandler(this.OnLoadComplete);
+			host.LoadComplete -= OnLoadComplete;
 			InitializeGUI();
 		}
 		

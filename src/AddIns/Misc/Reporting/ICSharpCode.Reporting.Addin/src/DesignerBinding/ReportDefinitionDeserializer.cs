@@ -65,7 +65,6 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			
 			var reportSettings = CreateReportSettings(elem);
 		
-//			var reportModel = new ReportModel();
 			var reportModel = ReportModelFactory.Create();
 			reportModel.ReportSettings = reportSettings;
 			

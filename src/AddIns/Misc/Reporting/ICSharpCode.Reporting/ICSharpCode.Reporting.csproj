@@ -87,6 +87,7 @@
     <Compile Include="Src\BaseClasses\BasicParameter.cs" />
     <Compile Include="Src\BaseClasses\ExtensionMethods.cs" />
     <Compile Include="Src\BaseClasses\PageInfo.cs" />
+    <Compile Include="Src\BaseClasses\TextDrawer.cs" />
     <Compile Include="Src\Collections.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\DataManager\Listhandling\CollectionDataSource.cs" />

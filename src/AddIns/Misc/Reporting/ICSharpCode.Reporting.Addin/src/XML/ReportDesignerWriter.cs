@@ -15,10 +15,6 @@ namespace ICSharpCode.Reporting.Addin.XML
 	/// </summary>
 	public class ReportDesignerWriter:MycroWriter
 	{
-		public ReportDesignerWriter()
-		{
-		}
-		
 		protected override string GetTypeName(Type t)
 		{
 			if (t.BaseType != null && t.BaseType.Name.StartsWith("Base",StringComparison.InvariantCultureIgnoreCase)) {

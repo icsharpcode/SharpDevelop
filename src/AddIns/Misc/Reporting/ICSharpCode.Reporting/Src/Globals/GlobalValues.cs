@@ -33,20 +33,20 @@ namespace ICSharpCode.Reporting.Globals
 		
 		public static string PlainFileName
 		{
-			get {
-				return DefaultReportName + ReportExtension;
-			}
+			get {return DefaultReportName + ReportExtension;}
 		}
 		
 		
 		public static Font DefaultFont
 		{
-			get {
-				return new Font("Microsoft Sans Serif",
+			get {return new Font("Microsoft Sans Serif",
 				               10,
 				               FontStyle.Regular,
 				               GraphicsUnit.Point);
 			}
 		}
+		
+		
+		public static Size PreferedSize {get {return new Size(100,20);}}
 	}
 }

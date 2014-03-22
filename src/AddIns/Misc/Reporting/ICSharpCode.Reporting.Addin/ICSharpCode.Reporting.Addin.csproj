@@ -80,6 +80,7 @@
     <Compile Include="src\Commands\ViewCommands.cs" />
     <Compile Include="src\DesignableItems\AbstractItem.cs" />
     <Compile Include="src\DesignableItems\BaseSection.cs" />
+    <Compile Include="src\DesignableItems\BaseTextItem.cs" />
     <Compile Include="src\DesignableItems\ReportSettings.cs" />
     <Compile Include="src\DesignerBinding\DesignerBinding.cs" />
     <Compile Include="src\DesignerBinding\DesignerGenerator.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="src\Designer\ReportSettingsDesigner.cs" />
     <Compile Include="src\Designer\RootReportModel.cs" />
     <Compile Include="src\Designer\SectionDesigner.cs" />
+    <Compile Include="src\Designer\TextItemDesigner.cs" />
     <Compile Include="src\Globals\DesignerGlobals.cs" />
     <Compile Include="src\Globals\StringWriterWithEncoding.cs" />
     <Compile Include="src\Services\DefaultMemberRelationshipService.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="src\Services\UIService.cs" />
     <Compile Include="src\TypeProvider\AbstractItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\SectionItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\TextItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TypeProviderHelper.cs" />
     <Compile Include="src\Views\DesignerView.cs" />
     <Compile Include="src\Views\XmlView.cs" />

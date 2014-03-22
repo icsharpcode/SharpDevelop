@@ -91,9 +91,5 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			var reportModel = deserializer.CreateModelFromXml(document.DocumentElement);
 			return reportModel;
 		}
-		
-		
-//		public ReportModel ReportModel {get; private set;}
-
 	}
 }

@@ -14,7 +14,7 @@ namespace ICSharpCode.Reporting.Addin.Globals
 	/// <summary>
 	/// Description of DesignerGlobals.
 	/// </summary>
-	class DesignerGlobals{
+	static class DesignerGlobals{
 		
 		public static Font DesignerFont
 		{
@@ -28,6 +28,23 @@ namespace ICSharpCode.Reporting.Addin.Globals
 		
 		public static int GabBetweenSection{
 			get {return 15;}
+		}
+		
+		
+		public static void DrawString(Graphics graphics,string text,
+		                              Font font,Brush brush,
+		                              RectangleF rectangle,
+		                              StringFormat format)
+		{
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
+			
+			graphics.DrawString(text,
+			                    font,
+			                    brush,
+			                    rectangle,
+			                    format);
 		}
 	}
 }
