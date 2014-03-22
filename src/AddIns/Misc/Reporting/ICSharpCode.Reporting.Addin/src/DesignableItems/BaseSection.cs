@@ -31,7 +31,6 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 //		[EditorBrowsableAttribute()]
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 		{
-			Console.WriteLine("BaseSection:OnPaint");
 			base.OnPaint(e);
 			Draw(e.Graphics);
 		}
@@ -39,8 +38,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		
 		public  override void Draw(Graphics graphics)
 		{
-			Console.WriteLine("Draw section");
-			base.DrawControl(graphics,Rectangle.Inflate(this.ClientRectangle,-2,-2));
+			DrawControl(graphics, Rectangle.Inflate(this.ClientRectangle, -2, -2));
 		}
 	
 		

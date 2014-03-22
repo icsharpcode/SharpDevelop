@@ -205,14 +205,16 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		void SelectionChangedHandler(object sender, EventArgs args)
 		{
-			var ser = (ISelectionService)sender;
-			var it = ser.PrimarySelection as AbstractItem;
-			if (it != null) {
-				if (String.IsNullOrEmpty(it.Site.Name)) {
-					it.Site.Name = it.Name;
+			var selectionService = (ISelectionService)sender;
+			Console.WriteLine("Sel service {0}",selectionService != null);
+			var abstractItem = selectionService.PrimarySelection as AbstractItem;
+			Console.Write("SelectionChangedHandler:AbstractItem {0}",abstractItem != null);
+			if (abstractItem != null) {
+				if (String.IsNullOrEmpty(abstractItem.Site.Name)) {
+					abstractItem.Site.Name = abstractItem.Name;
 				}
 			}
-//			UpdatePropertyPadSelection((ISelectionService)sender);
+			UpdatePropertyPadSelection((ISelectionService)sender);
 		}
 		
 		#endregion
@@ -258,6 +260,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		void UpdatePropertyPadSelection(ISelectionService selectionService)
 		{
+			Console.Write("UpdatePropertyPadSelection");
 			ICollection selection = selectionService.GetSelectedComponents();
 			object[] selArray = new object[selection.Count];
 			selection.CopyTo(selArray, 0);

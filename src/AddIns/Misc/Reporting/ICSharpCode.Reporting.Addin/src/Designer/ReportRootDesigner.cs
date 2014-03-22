@@ -216,11 +216,12 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			
 			if (section != null) {
 				this.sections.Add(section);
-//				section.SizeChanged += new EventHandler( OnSectionSizeChanged);
-//				foreach (Control cc in section.Controls) {
-//					AddToHost(cc);
-//					this.host.Container.Add(cc);
-//				}
+				section.SizeChanged += new EventHandler( OnSectionSizeChanged);
+				Console.Write("reportRootDesigner:OnComponentAdded");
+				foreach (Control cc in section.Controls) {
+					AddToHost(cc);
+					this.host.Container.Add(cc);
+				}
 //				
 				this.Control.Controls.Add(section);
 				RecalculateSections();
@@ -258,14 +259,14 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		private void OnComponentChanging(object sender, ComponentChangingEventArgs ce)
+		void OnComponentChanging(object sender, ComponentChangingEventArgs ce)
 		{
 			System.Console.WriteLine("RootDesigner:OnComponentChanging");
 //			Host.CreateTransaction();
 		}
 		
 		
-		private void OnSelectionChanged(object sender, EventArgs e)
+		void OnSelectionChanged(object sender, EventArgs e)
 		{
 			currentSelection = ((ISelectionService)sender).GetSelectedComponents();
 		}

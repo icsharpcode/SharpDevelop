@@ -46,13 +46,6 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			}
 		}
 		
-		protected override void OnPaintAdornments(PaintEventArgs pe)
-		{
-			Console.WriteLine("SectionDesigner:OnPaintAdornments");
-			base.OnPaintAdornments(pe);
-		}
-		
-		
 		
 		protected override void OnDragDrop(DragEventArgs de)
 		{
@@ -68,15 +61,9 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		protected override void PostFilterProperties(System.Collections.IDictionary properties)
-		{
-//			DesignerHelper.RemoveProperties(properties);
-			base.PostFilterProperties(properties);
-		}
-		
-		
 		void OnSelectionChanged(object sender, EventArgs e)
 		{
+			Console.WriteLine("Section : OnSelectionChanged");
 			Control.Invalidate( );
 		}
 		

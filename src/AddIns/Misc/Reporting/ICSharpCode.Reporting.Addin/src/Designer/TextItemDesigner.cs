@@ -24,13 +24,13 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		ISelectionService selectionService;
 		IComponentChangeService componentChangeService;
-		BaseTextItem ctrl;
+		ICSharpCode.Reporting.Addin.DesignableItems.BaseTextItem ctrl;
 		
 		public override void Initialize(IComponent component)
 		{
 			base.Initialize(component);
 			GetService();
-			ctrl = (BaseTextItem) component;
+			ctrl = (ICSharpCode.Reporting.Addin.DesignableItems.BaseTextItem) component;
 		}
 		
 		protected override void PostFilterProperties(System.Collections.IDictionary properties)
@@ -40,7 +40,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		private void GetService ()
+		void GetService ()
 		{
 			selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
 			if (selectionService != null)
@@ -57,13 +57,13 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		private void OnSelectionChanged(object sender, EventArgs e)
+		void OnSelectionChanged(object sender, EventArgs e)
 		{
 			Control.Invalidate( );
 		}
 		
 		
-		private void OnComponentRename(object sender,ComponentRenameEventArgs e) {
+		void OnComponentRename(object sender,ComponentRenameEventArgs e) {
 			if (e.Component == this.Component) {
 				Control.Name = e.NewName;
 				Control.Invalidate();
