@@ -22,13 +22,14 @@ using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.Reporting.Addin.DesignableItems;
 using ICSharpCode.Reporting.Addin.DesignerBinding;
 using ICSharpCode.Reporting.Addin.Services;
+using ICSharpCode.Reporting.Addin.Toolbox;
 
 namespace ICSharpCode.Reporting.Addin.Views
 {
 	/// <summary>
 	/// Description of the view content
 	/// </summary>
-	public class DesignerView : AbstractViewContent,IHasPropertyContainer
+	public class DesignerView : AbstractViewContent,IHasPropertyContainer, IToolsHost
 	{
 		readonly IDesignerGenerator generator;
 		bool unloading;
@@ -56,7 +57,8 @@ namespace ICSharpCode.Reporting.Addin.Views
 			
 			this.generator = generator;
 			this.generator.Attach(this);
-			
+			//Start Toolbox
+			ToolboxProvider.AddViewContent(this);
 		}
 
 	
@@ -228,6 +230,16 @@ namespace ICSharpCode.Reporting.Addin.Views
 				// (including updating the selection)
 //				WorkbenchSingleton.SafeThreadAsyncCall(UpdatePropertyPad);
 				shouldUpdateSelectableObjects = false;
+			}
+		}
+		
+		#endregion
+		
+		#region IToolsHost
+		
+		object IToolsHost.ToolsContent {
+			get {
+				return ToolboxProvider.ReportingSideBar;
 			}
 		}
 		

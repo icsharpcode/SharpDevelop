@@ -210,33 +210,30 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		private void OnComponentAdded(object sender, ComponentEventArgs ce)
+		void OnComponentAdded(object sender, ComponentEventArgs ce)
 		{
 			var section = ce.Component as BaseSection;
 			
 			if (section != null) {
-				this.sections.Add(section);
+				sections.Add(section);
 				section.SizeChanged += new EventHandler( OnSectionSizeChanged);
 				Console.Write("reportRootDesigner:OnComponentAdded");
-				foreach (Control cc in section.Controls) {
-					AddToHost(cc);
-					this.host.Container.Add(cc);
-				}
-//				
-				this.Control.Controls.Add(section);
+				foreach (Control ctrl in section.Controls) {
+					AddToHost(ctrl);
+					host.Container.Add(ctrl);
+				}				
+				Control.Controls.Add(section);
 				RecalculateSections();
 			}
 		}
 		
 		
-		private void AddToHost (Control ctrl)
+		void AddToHost (Control ctrl)
 		{
-			if (ctrl.Controls.Count > 0) {
-				foreach (Control c1 in ctrl.Controls) {
-					AddToHost (c1);
-				}
+			foreach (Control c1 in ctrl.Controls) {
+				AddToHost (c1);
 			}
-			this.host.Container.Add(ctrl as IComponent);
+			host.Container.Add(ctrl as IComponent);
 		}
 			
 		

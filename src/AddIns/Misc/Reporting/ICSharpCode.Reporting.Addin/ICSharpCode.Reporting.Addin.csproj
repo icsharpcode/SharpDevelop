@@ -70,6 +70,7 @@
     <Folder Include="src\Designer" />
     <Folder Include="src\Globals" />
     <Folder Include="src\DesignableItems" />
+    <Folder Include="src\Toolbox" />
     <Folder Include="src\TypeProvider" />
     <Folder Include="src\XML" />
     <Folder Include="src\Services" />
@@ -105,6 +106,8 @@
     <Compile Include="src\Services\HelpService.cs" />
     <Compile Include="src\Services\ToolboxService.cs" />
     <Compile Include="src\Services\UIService.cs" />
+    <Compile Include="src\Toolbox\SideTabItemDesigner.cs" />
+    <Compile Include="src\Toolbox\ToolboxProvider.cs" />
     <Compile Include="src\TypeProvider\AbstractItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\SectionItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TextItemTypeProvider.cs" />
@@ -138,6 +141,10 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.Reporting\ICSharpCode.Reporting.csproj">
       <Project>{40CA84D4-ACFC-4646-9CDD-B87262D34093}</Project>

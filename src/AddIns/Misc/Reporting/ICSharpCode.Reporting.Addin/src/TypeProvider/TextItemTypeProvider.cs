@@ -33,12 +33,12 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 	
 	class TextItemTypeDescriptor : CustomTypeDescriptor
 	{
-		BaseTextItem instance;
+//		BaseTextItem instance;
 		
 		public TextItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
 			: base(parent)
 		{
-			instance = instance as BaseTextItem;
+//			instance = instance as BaseTextItem;
 		}
 
 		

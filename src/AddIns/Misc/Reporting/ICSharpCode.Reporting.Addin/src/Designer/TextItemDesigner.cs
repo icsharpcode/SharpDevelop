@@ -51,7 +51,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			
 			componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
 			if (componentChangeService != null) {
-				componentChangeService.ComponentRename += new ComponentRenameEventHandler(OnComponentRename);
+				componentChangeService.ComponentRename += OnComponentRename;
 			}
 			
 		}
@@ -64,7 +64,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		
 		void OnComponentRename(object sender,ComponentRenameEventArgs e) {
-			if (e.Component == this.Component) {
+			if (e.Component == Component) {
 				Control.Name = e.NewName;
 				Control.Invalidate();
 			}
@@ -121,7 +121,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		protected override void Dispose(bool disposing)
 		{
-			if (this.selectionService != null) {
+			if (selectionService != null) {
 				selectionService.SelectionChanged -= OnSelectionChanged;
 			}
 			

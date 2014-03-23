@@ -65,12 +65,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 			stringFormat = TextDrawer.BuildStringFormat(designTrimmimg, contentAlignment);
 			using (var textBrush = new SolidBrush(ForeColor)) {
 				TextDrawer.DrawString(graphics, Text, Font, textBrush, ClientRectangle, stringFormat);
-			}
-			
-			//			if (this.RightToLeft == System.Windows.Forms.RightToLeft.Yes) {
-			//				stringFormat.FormatFlags = stringFormat.FormatFlags | StringFormatFlags.DirectionRightToLeft;
-			//			}
-			//			
+			}		
 			DrawControl(graphics, base.DrawingRectangle);
 		}
 		
