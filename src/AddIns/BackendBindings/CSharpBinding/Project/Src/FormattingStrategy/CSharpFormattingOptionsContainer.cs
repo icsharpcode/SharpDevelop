@@ -34,13 +34,10 @@ namespace CSharpBinding.FormattingStrategy
 	/// </summary>
 	internal class CSharpFormattingOptionsContainer : INotifyPropertyChanged
 	{
-		private const string AutoFormattingOptionName = "AutoFormatting"; 
-		
 		CSharpFormattingOptionsContainer parent;
 		CSharpFormattingOptions cachedOptions;
 		
 		readonly HashSet<string> activeOptions;
-		bool? autoFormatting;
 		
 		public CSharpFormattingOptionsContainer(CSharpFormattingOptionsContainer parent = null)
 			: this(parent, new HashSet<string>())
@@ -71,34 +68,6 @@ namespace CSharpBinding.FormattingStrategy
 			}
 		}
 		
-		public bool? AutoFormatting
-		{
-			get {
-				return autoFormatting;
-			}
-			set {
-				autoFormatting = value;
-				OnPropertyChanged("AutoFormatting");
-			}
-		}
-		
-		public bool EffectiveAutoFormatting
-		{
-			get {
-				// Get "effective" option, i.e. walk up all parents to find a defined value
-				CSharpFormattingOptionsContainer container = this;
-				do
-				{
-					if (container.autoFormatting.HasValue) {
-						return container.autoFormatting.Value;
-					}
-					container = container.parent;
-				} while (container != null);
-				
-				return true;
-			}
-		}
-		
 		/// <summary>
 		/// Resets all container's options to given <see cref="ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions"/> instance.
 		/// </summary>
@@ -112,7 +81,6 @@ namespace CSharpBinding.FormattingStrategy
 				foreach (var property in typeof(CSharpFormattingOptions).GetProperties()) {
 					activeOptions.Add(property.Name);
 				}
-				autoFormatting = true;
 			}
 			OnPropertyChanged(null);
 		}
@@ -138,7 +106,6 @@ namespace CSharpBinding.FormattingStrategy
 			foreach (var activeOption in options.activeOptions)
 				activeOptions.Add(activeOption);
 			cachedOptions = options.cachedOptions.Clone();
-			autoFormatting = options.autoFormatting;
 			OnPropertyChanged(null);
 		}
 		
@@ -308,11 +275,6 @@ namespace CSharpBinding.FormattingStrategy
 						// Silently ignore loading error, then this property will be "as parent" automatically
 					}
 				}
-				if (formatProperties.Contains(AutoFormattingOptionName)) {
-					autoFormatting = formatProperties.Get(AutoFormattingOptionName, true);
-				} else {
-					autoFormatting = null;
-				}
 			}
 		}
 		
@@ -328,12 +290,6 @@ namespace CSharpBinding.FormattingStrategy
 				if (val != null) {
 					formatProperties.Set(activeOption, val);
 				}
-			}
-			if (formatProperties.Contains(AutoFormattingOptionName) && !autoFormatting.HasValue) {
-				// AutoFormatting options was activated previously, remove it now
-				formatProperties.Remove(AutoFormattingOptionName);
-			} else {
-				formatProperties.Set(AutoFormattingOptionName, autoFormatting);
 			}
 			
 			parentProperties.SetNestedProperties("CSharpFormatting", formatProperties);

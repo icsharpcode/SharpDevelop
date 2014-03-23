@@ -295,7 +295,7 @@ namespace CSharpBinding.FormattingStrategy
 			using (textArea.Document.OpenUndoGroup()) {
 				// In any other case: Simply format selection or whole document
 				var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(SD.ProjectService.CurrentProject);
-				if (!respectAutoFormattingSetting || formattingOptions.OptionsContainer.EffectiveAutoFormatting) {
+				if (!respectAutoFormattingSetting || CSharpFormattingOptionsPersistence.AutoFormatting) {
 					CSharpFormatterHelper.Format(textArea, offset, length, formattingOptions.OptionsContainer);
 					return true;
 				}
