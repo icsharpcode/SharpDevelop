@@ -9,8 +9,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Windows.Forms.Design;
-using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.Addin.DesignableItems;
 using ICSharpCode.Reporting.Addin.TypeProvider;
 
 
@@ -19,41 +18,23 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	/// <summary>
 	/// Description of TextItemDesigner.
 	/// </summary>
-	public class TextItemDesigner:ControlDesigner
+	public class TextItemDesigner:AbstractDesigner
 	{
 		
-		ISelectionService selectionService;
-		IComponentChangeService componentChangeService;
-		ICSharpCode.Reporting.Addin.DesignableItems.BaseTextItem ctrl;
+		BaseTextItem ctrl;
 		
 		public override void Initialize(IComponent component)
 		{
 			base.Initialize(component);
-			GetService();
-			ctrl = (ICSharpCode.Reporting.Addin.DesignableItems.BaseTextItem) component;
+			SelectionService.SelectionChanged += OnSelectionChanged;
+			ComponentChangeService.ComponentRename += OnComponentRename;
+			ctrl = (BaseTextItem) component;
 		}
 		
 		protected override void PostFilterProperties(System.Collections.IDictionary properties)
 		{
 			TypeProviderHelper.RemoveProperties(properties);
 			base.PostFilterProperties(properties);
-		}
-		
-		
-		void GetService ()
-		{
-			selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
-			if (selectionService != null)
-			{
-				selectionService.SelectionChanged += OnSelectionChanged;
-
-			}
-			
-			componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
-			if (componentChangeService != null) {
-				componentChangeService.ComponentRename += OnComponentRename;
-			}
-			
 		}
 		
 		
@@ -121,12 +102,12 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		protected override void Dispose(bool disposing)
 		{
-			if (selectionService != null) {
-				selectionService.SelectionChanged -= OnSelectionChanged;
+			if (SelectionService != null) {
+				SelectionService.SelectionChanged -= OnSelectionChanged;
 			}
 			
-			if (componentChangeService != null) {
-				componentChangeService.ComponentRename -= OnComponentRename;
+			if (ComponentChangeService != null) {
+				ComponentChangeService.ComponentRename -= OnComponentRename;
 			}
 			base.Dispose(disposing);
 		}

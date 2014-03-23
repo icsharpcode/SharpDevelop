@@ -80,6 +80,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="src\Commands\ViewCommands.cs" />
     <Compile Include="src\DesignableItems\AbstractItem.cs" />
+    <Compile Include="src\DesignableItems\BaseLineItem.cs" />
     <Compile Include="src\DesignableItems\BaseSection.cs" />
     <Compile Include="src\DesignableItems\BaseTextItem.cs" />
     <Compile Include="src\DesignableItems\ReportSettings.cs" />
@@ -89,6 +90,8 @@
     <Compile Include="src\DesignerBinding\InternalReportLoader.cs" />
     <Compile Include="src\DesignerBinding\ReportDefinitionDeserializer.cs" />
     <Compile Include="src\DesignerBinding\ReportDesignerLoader.cs" />
+    <Compile Include="src\Designer\AbstractDesigner.cs" />
+    <Compile Include="src\Designer\LineDesigner.cs" />
     <Compile Include="src\Designer\ReportRootDesigner.cs" />
     <Compile Include="src\Designer\ReportSettingsDesigner.cs" />
     <Compile Include="src\Designer\RootReportModel.cs" />
@@ -109,6 +112,7 @@
     <Compile Include="src\Toolbox\SideTabItemDesigner.cs" />
     <Compile Include="src\Toolbox\ToolboxProvider.cs" />
     <Compile Include="src\TypeProvider\AbstractItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\LineItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\SectionItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TextItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TypeProviderHelper.cs" />

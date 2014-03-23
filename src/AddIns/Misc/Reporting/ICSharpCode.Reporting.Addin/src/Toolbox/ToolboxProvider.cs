@@ -13,6 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
+using ICSharpCode.Reporting.Addin.DesignableItems;
 
 namespace ICSharpCode.Reporting.Addin.Toolbox
 {
@@ -54,10 +55,19 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 			sideTab.Items.Add(CreateToolboxPointer(sideTab));
 			
 			// TextItem
-			var toolboxItem = new ToolboxItem(typeof(ICSharpCode.Reporting.Addin.DesignableItems.BaseTextItem)) {
+			var toolboxItem = new ToolboxItem(typeof(BaseTextItem)) {
 				DisplayName = ResourceService.GetString("SharpReport.Toolbar.TextBox"),
 				Bitmap = IconService.GetBitmap("Icons.16.16.SharpReport.Textbox")
 			};
+				sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
+			
+			//Grahics
+			// Line
+			toolboxItem = new ToolboxItem(typeof(BaseLineItem)) {
+				DisplayName = ResourceService.GetString("SharpReport.Toolbar.Line"),
+				Bitmap = IconService.GetBitmap("Icons.16.16.SharpReport.Line")
+			};
+		
 			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));	
 		
 	/*
