@@ -28,7 +28,7 @@ namespace ICSharpCode.MachineSpecifications
 	public class MSpecTestDebugger : TestDebuggerBase
 	{
 		public MSpecTestDebugger()
-			: base(new UnitTestDebuggerService(), SD.MessageService, new MSpecUnitTestMonitor())
+			: base(SD.Debugger, SD.MessageService, new MSpecUnitTestMonitor())
 		{
 		}
 

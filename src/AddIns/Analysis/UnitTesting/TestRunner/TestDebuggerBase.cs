@@ -33,7 +33,7 @@ namespace ICSharpCode.UnitTesting
 		ITestResultsReader testResultsReader;
 		
 		public TestDebuggerBase()
-			: this(new UnitTestDebuggerService(),
+			: this(SD.Debugger,
 				SD.MessageService,
 				new TestResultsReader())
 		{
