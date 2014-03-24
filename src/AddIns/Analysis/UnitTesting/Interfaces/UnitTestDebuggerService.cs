@@ -24,6 +24,34 @@ namespace ICSharpCode.UnitTesting
 {
 	public class UnitTestDebuggerService : BaseDebuggerService
 	{
+		public override void Dispose()
+		{
+			SD.Debugger.DebugStarting -= CallDebugStarting;
+			SD.Debugger.DebugStarted -= CallDebugStarted;
+			SD.Debugger.IsProcessRunningChanged -= CallIsProcessRunningChanged;
+			SD.Debugger.DebugStopped -= CallDebugStopped;
+			base.Dispose();
+		}
+		void CallDebugStarting(object sender, EventArgs e)
+		{
+			OnDebugStarting(e);
+		}
+		void CallDebugStarted(object sender, EventArgs e)
+		{
+			OnDebugStarted(e);
+		}
+		void CallIsProcessRunningChanged(object sender, EventArgs e)
+		{
+			OnIsProcessRunningChanged(e);
+		}
+		void CallDebugStopped(object sender, EventArgs e)
+		{
+			OnDebugStopped(e);
+			SD.Debugger.DebugStarting -= CallDebugStarting;
+			SD.Debugger.DebugStarted -= CallDebugStarted;
+			SD.Debugger.IsProcessRunningChanged -= CallIsProcessRunningChanged;
+			SD.Debugger.DebugStopped -= CallDebugStopped;
+		}
 		public override bool CanDebug(ICSharpCode.SharpDevelop.Project.IProject project)
 		{
 			return SD.Debugger.CanDebug(project);
@@ -34,6 +62,10 @@ namespace ICSharpCode.UnitTesting
 		}
 		public override void Start(System.Diagnostics.ProcessStartInfo processStartInfo)
 		{
+			SD.Debugger.DebugStarting += CallDebugStarting;
+			SD.Debugger.DebugStarted += CallDebugStarted;
+			SD.Debugger.IsProcessRunningChanged += CallIsProcessRunningChanged;
+			SD.Debugger.DebugStopped += CallDebugStopped;
 			SD.Debugger.Start(processStartInfo);
 		}
 		public override void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo processStartInfo)
