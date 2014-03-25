@@ -84,7 +84,7 @@ namespace ICSharpCode.PackageManagement
 					.Where(package => package.IsAbsoluteLatestVersion);
 			}
 			return repository
-				.Search(SearchTerms, IncludePrerelease)
+				.Search(searchCriteria, IncludePrerelease)
 				.Where(package => package.IsLatestVersion);
 		}
 		

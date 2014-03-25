@@ -333,22 +333,20 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ReadPackages_RepositoryHasThreePackagesWhenSelectedPageIsOneAndPageSizeIsTwo_TwoPackageViewModelsCreatedForFirstTwoPackages()
+		public void ReadPackages_SecondQueryFinishesBeforeFirst_PackagesInViewModelAreForSecondQuery()
 		{
 			CreateViewModel();
-			viewModel.PageSize = 2;
-			viewModel.SelectedPageNumber = 1;
 			viewModel.AddThreeFakePackages();
+			FakePackage package = viewModel.AddFakePackage("MyTest");
 			viewModel.ReadPackages();
-			CompleteReadPackagesTask();
+			viewModel.SearchTerms = "MyTest";
 			
-			var expectedPackages = new List<FakePackage>();
-			expectedPackages.Add(viewModel.FakePackages[0]);
-			expectedPackages.Add(viewModel.FakePackages[1]);
+			var expectedPackages = new FakePackage [] { package };
 			
+			viewModel.ReadPackages();
+			taskFactory.ExecuteTask(1);
+			taskFactory.ExecuteTask(0);
 			ClearReadPackagesTasks();
-			viewModel.ReadPackages();
-			CompleteReadPackagesTask();
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
@@ -1072,7 +1070,8 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddSixFakePackages();
 			viewModel.ReadPackages();
-			taskFactory.FirstFakeTaskCreated.Result = new PackagesForSelectedPageResult(viewModel.FakePackages, 6);
+			var query = new PackagesForSelectedPageQuery(viewModel, null, null);
+			taskFactory.FirstFakeTaskCreated.Result = new PackagesForSelectedPageResult(viewModel.FakePackages, query);
 			taskFactory.FirstFakeTaskCreated.IsFaulted = true;
 			CompleteReadPackagesTask();
 			

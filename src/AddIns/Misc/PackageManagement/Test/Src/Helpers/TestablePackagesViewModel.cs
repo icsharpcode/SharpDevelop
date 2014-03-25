@@ -64,10 +64,11 @@ namespace PackageManagement.Tests.Helpers
 			AddFakePackage("Test");
 		}
 		
-		public void AddFakePackage(string packageId)
+		public FakePackage AddFakePackage(string packageId)
 		{
 			FakePackage package = CreateFakePackage(packageId);
 			FakePackages.Add(package);
+			return package;
 		}
 		
 		FakePackage CreateFakePackage(string packageId)

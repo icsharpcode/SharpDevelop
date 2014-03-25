@@ -51,6 +51,12 @@ namespace PackageManagement.Tests.Helpers
 			}
 		}
 		
+		public void ExecuteTask(int index)
+		{
+			var task = FakeTasksCreated[index] as FakeTask<PackagesForSelectedPageResult>;
+			task.ExecuteTaskCompletely();
+		}
+		
 		public void ClearAllFakeTasks()
 		{
 			FakeTasksCreated.Clear();

@@ -232,6 +232,7 @@
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
     <Compile Include="Src\IPackageRepositoryExtensions.cs" />
     <Compile Include="Src\PackageRepositoryFactoryEventArgs.cs" />
+    <Compile Include="Src\PackagesForSelectedPageQuery.cs" />
     <Compile Include="Src\ParentPackagesOperationEventArgs.cs" />
     <Compile Include="Src\ProjectBuilder.cs" />
     <Compile Include="Src\ProjectRootElementExtensions.cs" />
