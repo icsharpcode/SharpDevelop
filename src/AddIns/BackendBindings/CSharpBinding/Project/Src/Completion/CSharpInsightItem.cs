@@ -28,6 +28,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding.Completion
 {
@@ -71,7 +72,7 @@ namespace CSharpBinding.Completion
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			var stringBuilder = new StringBuilder();
 			var formatter = new ParameterHighlightingOutputFormatter(stringBuilder, highlightedParameterIndex);
-			ambience.ConvertSymbol(Method, formatter, FormattingOptionsFactory.CreateSharpDevelop());
+			ambience.ConvertSymbol(Method, formatter, CSharpFormattingOptionsPersistence.GlobalOptions.OptionsContainer.GetEffectiveOptions());
 			
 			var documentation = XmlDocumentationElement.Get(Method);
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;

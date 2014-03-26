@@ -407,8 +407,8 @@ namespace CSharpBinding.FormattingStrategy
 					var bracketSearchResult = textArea.Language.BracketSearcher.SearchBracket(textArea.Document, cursorOffset);
 					if (bracketSearchResult != null) {
 						// Format the block
-						if (!FormatCode(textArea, bracketSearchResult.OpeningBracketOffset,
-							cursorOffset - bracketSearchResult.OpeningBracketOffset, true)) {
+						int bracketLineOffset = textArea.Document.GetLineByOffset(bracketSearchResult.OpeningBracketOffset).Offset;
+						if (!FormatCode(textArea, bracketLineOffset, cursorOffset - bracketLineOffset, true)) {
 							// No auto-formatting seems to be active, at least indent the line
 							IndentLine(textArea, curLine);
 						}

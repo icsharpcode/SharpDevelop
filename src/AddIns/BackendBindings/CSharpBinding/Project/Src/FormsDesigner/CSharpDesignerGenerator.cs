@@ -35,6 +35,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.CSharp;
+using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Parser;
 using CSharpBinding.Refactoring;
 
@@ -154,7 +155,8 @@ namespace CSharpBinding.FormsDesigner
 			
 			IDocument document = context.GetDocument(fileNameObj);
 			var ctx = SDRefactoringContext.Create(fileNameObj, document);
-			script = new DocumentScript(document, FormattingOptionsFactory.CreateSharpDevelop(), new TextEditorOptions());
+			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(compilation.GetProject());
+			script = new DocumentScript(document, formattingOptions.OptionsContainer.GetEffectiveOptions(), new TextEditorOptions());
 			scripts.Add(fileNameObj, script);
 			return script;
 		}

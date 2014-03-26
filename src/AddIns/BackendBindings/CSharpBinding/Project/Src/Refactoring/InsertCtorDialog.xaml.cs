@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
+using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding.Refactoring
 {
@@ -170,8 +171,8 @@ namespace CSharpBinding.Refactoring
 
 				using (StringWriter textWriter = new StringWriter(pList)) {
 					// Output parameter list as string
-					var formattingOptions = FormattingOptionsFactory.CreateMono();
-					CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor(textWriter, formattingOptions);
+					var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(refactoringContext.Compilation.GetProject());
+					CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor(textWriter, formattingOptions.OptionsContainer.GetEffectiveOptions());
 					for (int i = 0; i < parameters.Count; i++) {
 						if (i > 0)
 							textWriter.Write(",");
