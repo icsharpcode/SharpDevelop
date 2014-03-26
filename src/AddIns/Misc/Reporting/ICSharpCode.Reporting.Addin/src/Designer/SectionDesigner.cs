@@ -63,7 +63,6 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		void OnSelectionChanged(object sender, EventArgs e)
 		{
-			Console.WriteLine("Section : OnSelectionChanged");
 			Control.Invalidate( );
 		}
 		

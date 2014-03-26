@@ -12,6 +12,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.Reporting.Addin.DesignableItems;
 using ICSharpCode.Reporting.Addin.Globals;
 using ICSharpCode.Reporting.Addin.Views;
@@ -41,12 +42,13 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			this.viewContent = viewContent;
 		}
 		
+		
 		public void Detach()
 		{
 			throw new NotImplementedException();
 		}
 		
-		public System.Collections.Generic.IEnumerable<ICSharpCode.SharpDevelop.Workbench.OpenedFile> GetSourceFiles(out ICSharpCode.SharpDevelop.Workbench.OpenedFile designerCodeFile)
+		public System.Collections.Generic.IEnumerable<OpenedFile> GetSourceFiles(out OpenedFile designerCodeFile)
 		{
 			throw new NotImplementedException();
 		}
@@ -61,15 +63,16 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		StringWriter InternalMergeFormChanges()
 		{
+				Console.WriteLine("InternalMergeFormChanges create ReportdesignerWriter");
 			var writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
 			var xml = XmlHelper.CreatePropperWriter(writer);
-			
-			var rpd = new ReportDesignerWriter();
+		
+			var reportDesignerWriter = new ReportDesignerWriter();
 			XmlHelper.CreatePropperDocument(xml);
 			
 			foreach (IComponent component in viewContent.Host.Container.Components) {
 				if (!(component is Control)) {
-					rpd.Save(component,xml);
+					reportDesignerWriter.Save(component,xml);
 				}
 			}
 			xml.WriteEndElement();
@@ -79,7 +82,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			foreach (var component in viewContent.Host.Container.Components) {
 				var b = component as BaseSection;
 				if (b != null) {
-					rpd.Save(component,xml);
+					reportDesignerWriter.Save(component,xml);
 				}
 			}
 			//SectionCollection
@@ -91,14 +94,13 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			return writer;
 		}
 		
-		
+	
 		public DesignerView ViewContent {
 			get {return viewContent;}
 			
 		}
 		
-		
-		public bool InsertComponentEvent(System.ComponentModel.IComponent component, System.ComponentModel.EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
+		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
 		{
 			throw new NotImplementedException();
 		}

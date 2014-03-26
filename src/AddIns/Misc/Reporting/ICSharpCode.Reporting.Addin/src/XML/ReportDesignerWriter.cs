@@ -13,8 +13,12 @@ namespace ICSharpCode.Reporting.Addin.XML
 	/// <summary>
 	/// Description of ReportDesignerWriter.
 	/// </summary>
-	public class ReportDesignerWriter:MycroWriter
+	class ReportDesignerWriter:MycroWriter
 	{
+		public ReportDesignerWriter() {
+			Console.WriteLine("ReportDesignerWriter");
+			Console.WriteLine();
+		}
 		protected override string GetTypeName(Type t)
 		{
 			if (t.BaseType != null && t.BaseType.Name.StartsWith("Base",StringComparison.InvariantCultureIgnoreCase)) {

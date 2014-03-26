@@ -42,11 +42,6 @@ namespace ICSharpCode.Reporting.Addin.Views
 		DefaultServiceContainer defaultServiceContainer;
 		DesignSurface designSurface;
 		
-		public DesignerView()
-		{
-		}
-		
-		
 		public DesignerView (OpenedFile openedFile,IDesignerGenerator generator) : base(openedFile){
 			if (openedFile == null) {
 				throw new ArgumentNullException("openedFile");
@@ -89,8 +84,8 @@ namespace ICSharpCode.Reporting.Addin.Views
 			
 			LoggingService.Info("Create ReportDesignerLoader"); 
 			
-			this.loader = new ReportDesignerLoader(generator,stream);
-			this.designSurface.BeginLoad(this.loader);
+			loader = new ReportDesignerLoader(generator, stream);
+			designSurface.BeginLoad(this.loader);
 			if (!designSurface.IsLoaded) {
 				//				throw new FormsDesignerLoadException(FormatLoadErrors(designSurface));
 				LoggingService.Error("designer not loaded");
@@ -119,8 +114,6 @@ namespace ICSharpCode.Reporting.Addin.Views
 	
 			hasUnmergedChanges = false;
 			
-			LoggingService.Info("Form Designer: END INITIALIZE");
-          //----------------
 			LoggingService.Info("ReportDesigner LoadDesigner_End");
 		}	
 
@@ -159,6 +152,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 		static WindowsFormsDesignerOptionService CreateDesignerOptions()
 		{
 			LoggingService.Debug("ReportDesigner: CreateDesignerOptions...");
+			
 			var designerOptionService = new WindowsFormsDesignerOptionService();
 			designerOptionService.Options.Properties.Find("UseSmartTags", true).SetValue(designerOptionService, true);
 			designerOptionService.Options.Properties.Find("ShowGrid", true).SetValue(designerOptionService, false);
@@ -195,7 +189,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 			}
 		}
 		
-		private void MakeDirty()
+		void MakeDirty()
 		{
 			hasUnmergedChanges = true;
 			PrimaryFile.MakeDirty();
@@ -208,9 +202,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 		void SelectionChangedHandler(object sender, EventArgs args)
 		{
 			var selectionService = (ISelectionService)sender;
-			Console.WriteLine("Sel service {0}",selectionService != null);
 			var abstractItem = selectionService.PrimarySelection as AbstractItem;
-			Console.Write("SelectionChangedHandler:AbstractItem {0}",abstractItem != null);
 			if (abstractItem != null) {
 				if (String.IsNullOrEmpty(abstractItem.Site.Name)) {
 					abstractItem.Site.Name = abstractItem.Name;
@@ -272,9 +264,8 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		void UpdatePropertyPadSelection(ISelectionService selectionService)
 		{
-			Console.Write("UpdatePropertyPadSelection");
 			ICollection selection = selectionService.GetSelectedComponents();
-			object[] selArray = new object[selection.Count];
+			var selArray = new object[selection.Count];
 			selection.CopyTo(selArray, 0);
 			propertyContainer.SelectedObjects = selArray;
 		}
@@ -367,15 +358,17 @@ namespace ICSharpCode.Reporting.Addin.Views
 		{
 			var xmlView = new XmlView(generator,this);
 			SecondaryViewContents.Add(xmlView);
+			var preview = new WpfPreview(loader,this);
+			SecondaryViewContents.Add(preview);
 		}
 		
 		public string ReportFileContent {
 			get {
 				if (IsDirty) {
-					this.MergeFormChanges();
+					MergeFormChanges();
 				}
-				return this.reportFileContent; }
-			set { this.reportFileContent = value; }
+				return reportFileContent; }
+			set { reportFileContent = value; }
 		}
 		
 		#endregion

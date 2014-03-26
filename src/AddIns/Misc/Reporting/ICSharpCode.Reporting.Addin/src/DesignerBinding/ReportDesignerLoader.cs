@@ -7,13 +7,12 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
 using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Items;
-using ICSharpCode.Reporting.Xml;
 using ICSharpCode.Reporting.Addin.Services;
 
 namespace ICSharpCode.Reporting.Addin.DesignerBinding
@@ -21,10 +20,10 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 	/// <summary>
 	/// Description of ReportDesignerLoader.
 	/// </summary>
-	class ReportDesignerLoader: BasicDesignerLoader
+	public class ReportDesignerLoader: BasicDesignerLoader
 	{
 		IDesignerLoaderHost host;
-		IDesignerGenerator generator;
+		readonly IDesignerGenerator generator;
 		ReportModel reportModel;
 		Stream stream;
 		
@@ -61,9 +60,9 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		protected override void PerformLoad(IDesignerSerializationManager serializationManager){
 			var internalLoader = new InternalReportLoader(host,generator, stream);
 			reportModel = internalLoader.LoadOrCreateReport();
-//			reportModel = internalLoader.ReportModel;
 		}
  
+		
 		protected override void PerformFlush(IDesignerSerializationManager designerSerializationManager){
 			LoggingService.Info("ReportDesignerLoader:PerformFlush");
 			generator.MergeFormChanges((System.CodeDom.CodeCompileUnit)null);
@@ -72,80 +71,18 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		#endregion
 
 		
-		#region Reportmodel
+		#region Serialize to Xml
 		
-		public ReportModel ReportModel {
-			get { return reportModel; }
-		}
-		
-		public static ReportModel CreateRenderableModel()
+		public XmlDocument SerializeModel()
 		{
-			Console.WriteLine("ReportDesignerLoader:CreateRenderableModel");
-			/*
-			ReportModel m = new ReportModel();
+			Console.WriteLine("ReportDesignerLoader:SerializeModel:");
+		
 			generator.MergeFormChanges((System.CodeDom.CodeCompileUnit)null);
-			XmlDocument doc = new XmlDocument();
+			var doc = new XmlDocument();
 			doc.LoadXml(generator.ViewContent.ReportFileContent);
-			ReportLoader rl = new ReportLoader();
-			object root = rl.Load(doc.DocumentElement);
-			m = root as ReportModel;
-			
-			m.ReportSettings.FileName = generator.ViewContent.PrimaryFileName;
-			FilePathConverter.AdjustReportName(m);
-			return m;
-			*/
-			return null;
-		}
-		
-		public XmlDocument CreateXmlModel()
-		{
-			Console.WriteLine("ReportDesignerLoader:CreateXmlModel");
-			/*
-			ReportModel m = new ReportModel();
-			generator.MergeFormChanges((System.CodeDom.CodeCompileUnit)null);
-			XmlDocument xmlDocument = new XmlDocument();
-			xmlDocument.LoadXml(generator.ViewContent.ReportFileContent);
-			return xmlDocument;
-			*/
-			return null;
+			return doc;
 		}
 		
 		#endregion
-	}
-
-	/// <summary>
-	/// Load Report from File
-	/// </summary>
-	/// <param name="baseType"></param>
-	/// <returns></returns>
-
-	public class aaReportLoader : ModelLoader
-	{
-		static Dictionary<Type, Type> baseToReport;
-		
-		public static Type GetReportType(Type baseType)
-		{
-			Console.WriteLine("ReportLoader:GetReportType");
-			if (baseType == null) return null;
-			if (baseToReport == null) {
-				baseToReport = new Dictionary<Type, Type>();
-				foreach (Type t in typeof(BaseSection).Assembly.GetTypes()) {
-					
-					if (t.BaseType != null && t.BaseType.Name.StartsWith("Base",
-					                                                     StringComparison.InvariantCulture)) {
-						baseToReport[t.BaseType] = t;
-					}
-				}
-			}
-			Type r;
-			baseToReport.TryGetValue(baseType, out r);
-			return r ?? baseType;
-		}
-		
-		
-		protected override Type GetTypeByName(string ns, string name)
-		{
-			return GetReportType(base.GetTypeByName(ns, name));
-		}
 	}
 }

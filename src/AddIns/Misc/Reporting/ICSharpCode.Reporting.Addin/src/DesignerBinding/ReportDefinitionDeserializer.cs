@@ -44,7 +44,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			this.host = host;
 		}
 		
-		public XmlDocument LoadXmlFromStream(Stream stream)
+		public  XmlDocument LoadXmlFromStream(Stream stream)
 		{
 			Console.Write("LoadXml");
 			if (stream == null)
@@ -90,6 +90,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		{
 			XmlNodeList nodes = elem.FirstChild.ChildNodes;
 			var reportSettingsNode = (XmlElement)nodes[0];
+			Console.Write("ReportDefinitionDeserializer create ModelLoader");
 			var modelLoader = new ModelLoader();
 			return  modelLoader.Load(reportSettingsNode) as ReportSettings;
 		}

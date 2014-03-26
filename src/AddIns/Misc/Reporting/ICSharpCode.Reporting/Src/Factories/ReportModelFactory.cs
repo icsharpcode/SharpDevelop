@@ -15,7 +15,7 @@ namespace ICSharpCode.Reporting.Factories
 	/// <summary>
 	/// Description of ReportModelFactory.
 	/// </summary>
-	public class ReportModelFactory
+	public static class ReportModelFactory
 	{
 		public static ReportModel Create() 
 		{

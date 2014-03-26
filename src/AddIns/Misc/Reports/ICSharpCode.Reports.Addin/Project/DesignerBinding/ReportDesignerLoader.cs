@@ -150,16 +150,16 @@ namespace ICSharpCode.Reports.Addin
 		{
 			Console.WriteLine("ReportLoader:GetReportType");
 			if (baseType == null) return null;
-			if (baseToReport == null) {
-				baseToReport = new Dictionary<Type, Type>();
-				foreach (Type t in typeof(BaseSection).Assembly.GetTypes()) {
+			
+			baseToReport = new Dictionary<Type, Type>();
+			foreach (Type t in typeof(BaseSection).Assembly.GetTypes()) {
 					
-					if (t.BaseType != null && t.BaseType.Name.StartsWith("Base",
-					                                                     StringComparison.InvariantCulture)) {
-						baseToReport[t.BaseType] = t;
-					}
+				if (t.BaseType != null && t.BaseType.Name.StartsWith("Base",
+					StringComparison.InvariantCulture)) {
+					baseToReport[t.BaseType] = t;
 				}
 			}
+			
 			Type r;
 			baseToReport.TryGetValue(baseType, out r);
 			return r ?? baseType;

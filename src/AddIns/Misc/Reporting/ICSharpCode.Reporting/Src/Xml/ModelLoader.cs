@@ -26,6 +26,10 @@ namespace ICSharpCode.Reporting.Xml
 	/// </summary>
 	public class ModelLoader: MycroParser
 	{
+		public ModelLoader() {
+			Console.WriteLine("ICSharpCode.Reporting.Xml.ModelLoader");
+			Console.WriteLine();
+		}
 		protected override Type GetTypeByName(string ns, string name)
 		{
 			return typeof(BaseSection).Assembly.GetType(typeof(BaseSection).Namespace + "." + name);
