@@ -254,7 +254,7 @@ namespace ICSharpCode.UnitTesting
 			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
 			if (msbuildProject != null) {
 				string platformTarget = msbuildProject.GetEvaluatedProperty("PlatformTarget");
-				return String.Equals(platformTarget, "x86", StringComparison.OrdinalIgnoreCase)
+				return string.IsNullOrEmpty(platformTarget) || String.Equals(platformTarget, "x86", StringComparison.OrdinalIgnoreCase)
 					|| String.Equals(platformTarget, "AnyCPU", StringComparison.OrdinalIgnoreCase);
 			}
 			return false;
