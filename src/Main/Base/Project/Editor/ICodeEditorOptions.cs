@@ -31,16 +31,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 			set;
 		}
 		
-		string FontFamily {
-			get;
-			set;
-		}
-
-		double FontSize {
-			get;
-			set;
-		}
-		
 		bool ShowLineNumbers {
 			get;
 			set;
@@ -62,11 +52,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 		
 		bool MouseWheelZoom {
-			get;
-			set;
-		}
-		
-		bool UnderlineErrors {
 			get;
 			set;
 		}
@@ -102,11 +87,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 		
 		bool ShowHiddenDefinitions {
-			get;
-			set;
-		}
-		
-		bool AutoInsertBlockEnd {
 			get;
 			set;
 		}
