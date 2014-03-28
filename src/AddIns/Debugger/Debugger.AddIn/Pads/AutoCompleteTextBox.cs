@@ -140,6 +140,7 @@ namespace Debugger.AddIn.Pads.Controls
 				var binding = DebuggerDotCompletion.PrepareDotCompletion(editor.Text.Substring(0, editor.CaretOffset), context);
 				if (binding == null) return;
 				binding.HandleKeyPressed(editorAdapter, '.');
+				SD.ParserService.ParseFileAsync(context.FileName).FireAndForget();
 			} else {
 				// TODO : implement automated error checking CSharpParser.ParseExpression does not report useful error messages.
 //				Error[] errors;
