@@ -8,7 +8,6 @@
  */
 using System;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.Reporting.Addin.DesignableItems;
@@ -34,12 +33,8 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			}
 			base.Initialize(component);
 			baseLine = (BaseLineItem)component;
-			
-			ComponentChangeService.ComponentChanging += OnComponentChanging;
-			ComponentChangeService.ComponentChanged += OnComponentChanged;
-			ComponentChangeService.ComponentRename += OnComponentRename;
-			SelectionService.SelectionChanged += OnSelectionChanged;
 		}
+		
 		
 		protected override void PostFilterProperties(System.Collections.IDictionary properties)
 		{
@@ -47,41 +42,6 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			base.PostFilterProperties(properties);
 		}
 		
-		
-		#region events
-		
-		private void OnComponentChanging (object sender,ComponentChangingEventArgs e)
-		{
-//			System.Console.WriteLine("changing");
-//			System.Console.WriteLine("{0}",this.baseLine.ClientRectangle);
-			Control.Invalidate( );
-		}
-		
-		
-		void OnComponentChanged(object sender,ComponentChangedEventArgs e)
-		{
-			Console.WriteLine("{0}",this.baseLine.ClientRectangle);
-			Control.Invalidate( );
-		}
-		
-		
-		void OnComponentRename(object sender,ComponentRenameEventArgs e) {
-			if (e.Component == this.Component) {
-				Control.Name = e.NewName;
-				Control.Invalidate();
-				Control.Invalidate( );
-			}
-		}
-		
-		
-		void OnSelectionChanged(object sender, EventArgs e)
-		{
-			Control.Invalidate(  );
-		}
-
-
-		#endregion
-	
 		
 		protected override void OnPaintAdornments(PaintEventArgs pe)
 		{
@@ -139,8 +99,8 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		{
 			System.Console.WriteLine("DragBegib");
 			Point p = this.baseLine.PointToClient(new Point(x, y));
-			overFromPoint = GetHandle(this.baseLine.FromPoint).Contains(p);
-			this.overToPoint = GetHandle(this.baseLine.ToPoint).Contains(p);
+			overFromPoint = GetHandle(baseLine.FromPoint).Contains(p);
+			this.overToPoint = GetHandle(baseLine.ToPoint).Contains(p);
 			if (overFromPoint || overToPoint )
 			{
 				dragging = true;
@@ -166,10 +126,10 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			if (dragging)
 			{
 				Point p = this.baseLine.PointToClient(new Point(x, y));
-				if (this.overToPoint) {
-					this.baseLine.ToPoint = p;
+				if (overToPoint) {
+					baseLine.ToPoint = p;
 				} else {
-					this.baseLine.FromPoint = p;
+					baseLine.FromPoint = p;
 				}
 				
 //				this.baseLine.Invalidate();
@@ -210,7 +170,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 				}
 				*/				
 				dragging = false;
-				this.baseLine.Invalidate();
+				baseLine.Invalidate();
 			}
 			
 			// Always call base class.
@@ -221,20 +181,5 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		#endregion
 		
-		
-		protected override void Dispose(bool disposing)
-		{
-		
-			if (ComponentChangeService != null) {
-				ComponentChangeService.ComponentChanging -= OnComponentChanging;
-				ComponentChangeService.ComponentChanged -= OnComponentChanged;
-				ComponentChangeService.ComponentRename -= OnComponentRename;
-			}
-			if (SelectionService != null) {
-				SelectionService.SelectionChanged -= OnSelectionChanged;
-			}
-			
-			base.Dispose(disposing);
-		}
 	}
 }

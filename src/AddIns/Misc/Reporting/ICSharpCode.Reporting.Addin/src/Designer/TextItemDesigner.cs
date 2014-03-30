@@ -7,9 +7,6 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using ICSharpCode.Reporting.Addin.DesignableItems;
 using ICSharpCode.Reporting.Addin.TypeProvider;
 
 
@@ -21,36 +18,12 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	public class TextItemDesigner:AbstractDesigner
 	{
 		
-		BaseTextItem ctrl;
-		
-		public override void Initialize(IComponent component)
-		{
-			base.Initialize(component);
-			SelectionService.SelectionChanged += OnSelectionChanged;
-			ComponentChangeService.ComponentRename += OnComponentRename;
-			ctrl = (BaseTextItem) component;
-		}
-		
+
 		protected override void PostFilterProperties(System.Collections.IDictionary properties)
 		{
 			TypeProviderHelper.RemoveProperties(properties);
 			base.PostFilterProperties(properties);
 		}
-		
-		
-		void OnSelectionChanged(object sender, EventArgs e)
-		{
-			Control.Invalidate( );
-		}
-		
-		
-		void OnComponentRename(object sender,ComponentRenameEventArgs e) {
-			if (e.Component == Component) {
-				Control.Name = e.NewName;
-				Control.Invalidate();
-			}
-		}
-
 		
 		
 		#region SmartTag
@@ -100,16 +73,5 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		*/
 		#endregion
 		
-		protected override void Dispose(bool disposing)
-		{
-			if (SelectionService != null) {
-				SelectionService.SelectionChanged -= OnSelectionChanged;
-			}
-			
-			if (ComponentChangeService != null) {
-				ComponentChangeService.ComponentRename -= OnComponentRename;
-			}
-			base.Dispose(disposing);
-		}
 	}
 }

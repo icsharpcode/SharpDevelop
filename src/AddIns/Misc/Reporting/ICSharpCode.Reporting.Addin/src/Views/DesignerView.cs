@@ -382,15 +382,6 @@ namespace ICSharpCode.Reporting.Addin.Views
 		}
 		
 		
-		/// <summary>
-		/// Creates a new DesignerView object
-		/// </summary>
-		
-		
-		/// <summary>
-		/// Loads a new file into MyView
-		/// </summary>
-
 		public override void Load(OpenedFile file, System.IO.Stream stream)
 		{
 			LoggingService.Debug("ReportDesigner: Load from: " + file.FileName);
@@ -398,6 +389,20 @@ namespace ICSharpCode.Reporting.Addin.Views
 			LoadDesigner(stream);
 			SetupSecondaryView();
 		}
+		
+		
+		public override void Save(OpenedFile file, Stream stream)
+		{
+			if (IsDirty) {
+				if (hasUnmergedChanges) {
+					MergeFormChanges();
+				}
+				using(var writer = new StreamWriter(stream)) {
+					writer.Write(ReportFileContent);
+				}
+			}
+		}
+		
 		#endregion
 	}
 	
