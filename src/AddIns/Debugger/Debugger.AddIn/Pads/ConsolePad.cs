@@ -89,6 +89,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			var binding = DebuggerDotCompletion.PrepareDotCompletion(currentText, new DebuggerCompletionContext(frame));
 			if (binding == null) return;
 			binding.HandleKeyPressed(console.TextEditor, '.');
+			SD.ParserService.ParseFileAsync(new ICSharpCode.Core.FileName(frame.NextStatement.Filename)).FireAndForget();
 		}
 		
 		protected override ToolBar BuildToolBar()

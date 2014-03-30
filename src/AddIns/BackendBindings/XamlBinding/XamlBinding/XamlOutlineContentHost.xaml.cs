@@ -118,6 +118,7 @@ namespace ICSharpCode.XamlBinding
 		void TreeViewMouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			XamlOutlineNode node = treeView.SelectedItem as XamlOutlineNode;
+			if (node == null) return;
 			editor.Select(node.Marker.Offset, node.EndMarker.Offset - node.Marker.Offset);
 		}
 		

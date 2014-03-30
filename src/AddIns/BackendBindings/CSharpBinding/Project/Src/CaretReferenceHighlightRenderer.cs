@@ -78,6 +78,12 @@ namespace CSharpBinding
 
 		public void Draw(TextView textView, DrawingContext drawingContext)
 		{
+			var codeEditorOptions = editor.Options as ICodeEditorOptions;
+			if ((codeEditorOptions != null) && !codeEditorOptions.HighlightSymbol) {
+				// User has disabled highlighting of symbols
+				return;
+			}
+			
 			if (currentReferences == null) {
 				if (textView.VisualLines.Count == 0)
 					return;

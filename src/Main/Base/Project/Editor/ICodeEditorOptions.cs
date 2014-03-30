@@ -17,37 +17,78 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
 
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.UnitTesting;
-
-namespace ICSharpCode.MachineSpecifications
+namespace ICSharpCode.SharpDevelop.Editor
 {
-	public class MSpecTestDebugger : TestDebuggerBase
+	/// <summary>
+	/// Code editor options.
+	/// </summary>
+	public interface ICodeEditorOptions : INotifyPropertyChanged
 	{
-		public MSpecTestDebugger()
-			: base(SD.Debugger, SD.MessageService, new MSpecUnitTestMonitor())
-		{
+		bool AllowScrollBelowDocument {
+			get;
+			set;
+		}
+		
+		bool ShowLineNumbers {
+			get;
+			set;
 		}
 
-		protected override ProcessStartInfo GetProcessStartInfo(IEnumerable<ITest> selectedTests)
-		{
-			var app = new MSpecApplication(selectedTests);
-			var monitor = TestResultsReader as MSpecUnitTestMonitor;
-			app.Results = monitor.FileName;
-			return app.GetProcessStartInfo();
+		bool EnableChangeMarkerMargin {
+			get;
+			set;
 		}
 		
-		protected override TestResult CreateTestResultForTestFramework(TestResult testResult)
-		{
-			return testResult;
+		bool WordWrap {
+			get;
+			set;
 		}
 		
-		public override int GetExpectedNumberOfTestResults(IEnumerable<ITest> selectedTests)
-		{
-			return 0;
+		bool CtrlClickGoToDefinition {
+			get;
+			set;
+		}
+		
+		bool MouseWheelZoom {
+			get;
+			set;
+		}
+		
+		bool HighlightBrackets {
+			get;
+			set;
+		}
+		
+		bool HighlightSymbol {
+			get;
+			set;
+		}
+		
+		bool EnableAnimations {
+			get;
+			set;
+		}
+		
+		bool UseSmartIndentation {
+			get;
+			set;
+		}
+		
+		bool EnableFolding {
+			get;
+			set;
+		}
+		
+		bool EnableQuickClassBrowser {
+			get;
+			set;
+		}
+		
+		bool ShowHiddenDefinitions {
+			get;
+			set;
 		}
 	}
 }

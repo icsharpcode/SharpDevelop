@@ -31,7 +31,7 @@ namespace ICSharpCode.UnitTesting
 		UnitTestingOptions options;
 		
 		public NUnitTestDebugger()
-			: this(new UnitTestDebuggerService(),
+			: this(SD.Debugger,
 				SD.MessageService,
 				new TestResultsReader(),
 				UnitTestingOptions.Instance.Clone())

@@ -27,7 +27,7 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.AvalonEdit.AddIn.Options
 {
 	[Serializable]
-	public class CodeEditorOptions : TextEditorOptions, ITextEditorOptions
+	public class CodeEditorOptions : TextEditorOptions, ITextEditorOptions, ICodeEditorOptions
 	{
 		static readonly Lazy<CodeEditorOptions> instance = new Lazy<CodeEditorOptions>(
 			() => PropertyService.Get("CodeEditorOptions", new CodeEditorOptions()));

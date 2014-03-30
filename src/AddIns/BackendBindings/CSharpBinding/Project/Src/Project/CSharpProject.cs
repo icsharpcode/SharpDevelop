@@ -39,8 +39,8 @@ namespace CSharpBinding
 	/// </summary>
 	public class CSharpProject : CompilableProject
 	{
-		const string ExtensionPropertiesName = "SharpDevelopExtensions";
-		Properties extensionProperties;
+		Properties globalPreferences;
+		FileName globalSettingsFileName;
 		
 		public override IAmbience GetAmbience()
 		{
@@ -66,6 +66,8 @@ namespace CSharpBinding
 		
 		void Init()
 		{
+			globalPreferences = new Properties();
+			
 			reparseReferencesSensitiveProperties.Add("TargetFrameworkVersion");
 			reparseCodeSensitiveProperties.Add("DefineConstants");
 			reparseCodeSensitiveProperties.Add("AllowUnsafeBlocks");
@@ -124,10 +126,10 @@ namespace CSharpBinding
 			}
 		}
 		
-		public Properties ExtensionProperties
+		public Properties GlobalPreferences
 		{
 			get {
-				return extensionProperties;
+				return globalPreferences;
 			}
 		}
 		
@@ -135,17 +137,21 @@ namespace CSharpBinding
 		{
 			base.ProjectLoaded();
 			
-			// Load project extensions
-			extensionProperties = Properties.Load(LoadProjectExtensions(ExtensionPropertiesName));
+			// Load SD settings file
+			globalSettingsFileName = new FileName(FileName + ".sdsettings");
+			if (File.Exists(globalSettingsFileName)) {
+				globalPreferences = Properties.Load(globalSettingsFileName);
+			}
+			if (globalPreferences == null)
+				globalPreferences = new Properties();
 		}
 		
 		public override void Save(string fileName)
 		{
 			// Save project extensions
-			if (extensionProperties != null && extensionProperties.IsDirty) {
-				var propertiesXElement = extensionProperties.Save();
-				SaveProjectExtensions(ExtensionPropertiesName, propertiesXElement);
-				extensionProperties.IsDirty = false;
+			if (globalPreferences != null && globalPreferences.IsDirty) {
+				globalPreferences.Save(new FileName(fileName + ".sdsettings"));
+				globalPreferences.IsDirty = false;
 			}
 			base.Save(fileName);
 		}

@@ -56,7 +56,6 @@
     <Compile Include="Commands\RunningTestsCondition.cs" />
     <Compile Include="Commands\TestableCondition.cs" />
     <Compile Include="Commands\UnitTestCommands.cs" />
-    <Compile Include="Interfaces\UnitTestDebuggerService.cs" />
     <Compile Include="Pad\UnitTestNodeFactory.cs" />
     <Compile Include="Service\ITestService.cs" />
     <Compile Include="Model\ITest.cs" />
