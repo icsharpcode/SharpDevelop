@@ -1467,11 +1467,15 @@ namespace ICSharpCode.SharpDevelop.Project
 					existing = projectFile.CreateProjectExtensionsElement();
 					return new XElement(name);
 				}
-				string content = existing[name];
+				// Instead of using existing[name] we use a workaround here, because existing[name]
+				// removes all xmlns="..." definitions, which are needed for XAML deserialization.
+				string content = existing.Content;
 				if (string.IsNullOrEmpty(content))
 					return new XElement(name);
 				try {
-					return XElement.Parse(content);
+					var extensionsElement = XElement.Parse(content);
+					var propertiesElement = extensionsElement.Elements().FirstOrDefault(); // Should be the "Properties" node
+					return propertiesElement ?? new XElement(name);
 				} catch (XmlException ex) {
 					LoggingService.Warn(ex);
 					return new XElement(name);
