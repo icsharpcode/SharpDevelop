@@ -30,7 +30,7 @@ namespace ICSharpCode.Reporting.Addin.Globals
 			get {return 15;}
 		}
 		
-		
+		/*
 		public static void DrawString(Graphics graphics,string text,
 		                              Font font,Brush brush,
 		                              RectangleF rectangle,
@@ -46,5 +46,6 @@ namespace ICSharpCode.Reporting.Addin.Globals
 			                    rectangle,
 			                    format);
 		}
+		*/
 	}
 }

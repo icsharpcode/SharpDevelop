@@ -55,7 +55,6 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		public void MergeFormChanges(System.CodeDom.CodeCompileUnit unit)
 		{
-			System.Diagnostics.Trace.WriteLine("Generator:MergeFormChanges");
 			var writer = InternalMergeFormChanges();
 			viewContent.ReportFileContent = writer.ToString();
 		}
@@ -63,7 +62,6 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		StringWriter InternalMergeFormChanges()
 		{
-				Console.WriteLine("InternalMergeFormChanges create ReportdesignerWriter");
 			var writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
 			var xml = XmlHelper.CreatePropperWriter(writer);
 		

@@ -24,13 +24,11 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 	{
 		IDesignerLoaderHost host;
 		readonly IDesignerGenerator generator;
-		ReportModel reportModel;
 		Stream stream;
 		
 		#region Constructors
 
 		public ReportDesignerLoader(IDesignerGenerator generator, Stream stream){
-			Console.WriteLine("ReportDesignerLoader:Ctor");
 			if (stream == null)
 				throw new ArgumentNullException("stream");
 			if (generator == null) {
@@ -58,8 +56,9 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		
 		protected override void PerformLoad(IDesignerSerializationManager serializationManager){
+			LoggingService.Info("ReportDesignerLoader:PerformLoad"); 
 			var internalLoader = new InternalReportLoader(host,generator, stream);
-			reportModel = internalLoader.LoadOrCreateReport();
+			internalLoader.LoadOrCreateReport();
 		}
  
 		
@@ -75,8 +74,6 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		public XmlDocument SerializeModel()
 		{
-			Console.WriteLine("ReportDesignerLoader:SerializeModel:");
-		
 			generator.MergeFormChanges((System.CodeDom.CodeCompileUnit)null);
 			var doc = new XmlDocument();
 			doc.LoadXml(generator.ViewContent.ReportFileContent);

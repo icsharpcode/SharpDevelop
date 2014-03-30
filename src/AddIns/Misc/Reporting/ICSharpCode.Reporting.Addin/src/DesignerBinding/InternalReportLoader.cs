@@ -50,7 +50,6 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			if (stream == null) {
 				throw new ArgumentNullException("stream");
 			}
-			Console.WriteLine("---------InternalReportLoader------------");
 			this.host = host;
 			this.generator = generator;
 			this.stream = stream;
@@ -58,14 +57,11 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		public ReportModel LoadOrCreateReport()
 		{
-			Console.WriteLine("LoadOrCreateReport()");
 			Application.UseWaitCursor = true;
-			ReportModel reportModel = null;
-			
 			var rootComponent = host.CreateComponent(typeof(RootReportModel),"RootReportModel");
 			var rootControl = rootComponent as RootReportModel;
 			UpdateStatusbar();
-			reportModel = CreateNamedSurface();
+			var reportModel = CreateNamedSurface();
 			rootControl.Size = reportModel.ReportSettings.PageSize;
 			Application.UseWaitCursor = false;
 			return reportModel;
@@ -75,7 +71,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		void UpdateStatusbar ()
 		{
 			string message;
-			if (this.generator.ViewContent.PrimaryFile.IsDirty) {
+			if (generator.ViewContent.PrimaryFile.IsDirty) {
 				message = String.Format("Create Report <{0}> ...",Path.GetFileName(this.generator.ViewContent.PrimaryFile.FileName));
 			} else {
 				message = String.Format("Load  Report <{0}> ...",Path.GetFileName(this.generator.ViewContent.PrimaryFile.FileName));
@@ -86,9 +82,9 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		ReportModel CreateNamedSurface ()
 		{
-			var deserializer = new ReportDefinitionDeserializer(host);
-			var document = deserializer.LoadXmlFromStream(stream);
-			var reportModel = deserializer.CreateModelFromXml(document.DocumentElement);
+			var deserializer = new ReportDefinitionDeserializer();
+			var document = ReportDefinitionDeserializer.LoadXmlFromStream(stream);
+			var reportModel = deserializer.CreateModelFromXml(document.DocumentElement,host);
 			return reportModel;
 		}
 	}

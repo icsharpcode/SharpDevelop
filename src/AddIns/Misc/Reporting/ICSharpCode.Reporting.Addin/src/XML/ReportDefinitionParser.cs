@@ -229,7 +229,7 @@ namespace ICSharpCode.Reporting.Addin.XML
 				if (tc.CanConvertFrom(typeof(string)))
 				{
 					object val=tc.ConvertFromInvariantString(value);
-			Console.WriteLine("\tRDP -> SetPropertyToString {0} - {1}",pi.Name,value.ToString());		
+//			Console.WriteLine("\tRDP -> SetPropertyToString {0} - {1}",pi.Name,value.ToString());		
 					pi.SetValue(obj, val, null);
 				} else if (pi.PropertyType == typeof(Type)) {
 					pi.SetValue(obj, Type.GetType(value), null);

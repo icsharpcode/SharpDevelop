@@ -60,7 +60,6 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		void OnComponentChanged(object sender,ComponentChangedEventArgs e)
 		{
-			Console.WriteLine("changed");
 			Console.WriteLine("{0}",this.baseLine.ClientRectangle);
 			Control.Invalidate( );
 		}

@@ -118,7 +118,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 		}	
 
 		
-		Panel CreatePanel ()
+		static Panel CreatePanel ()
 		{
 			var ctl = new Panel();
 			ctl.Dock = DockStyle.Fill;
@@ -127,7 +127,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 		}
 
 		
-		DefaultServiceContainer CreateAndInitServiceContainer()
+		static DefaultServiceContainer CreateAndInitServiceContainer()
 		{
 			LoggingService.Debug("ReportDesigner: CreateAndInitServiceContainer...");
 			var serviceContainer = new DefaultServiceContainer();
@@ -347,10 +347,9 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		void MergeFormChanges()
 		{
-			System.Diagnostics.Trace.WriteLine("View:MergeFormChanges()");
+			LoggingService.Info("MergeFormChanges");
 			this.designSurface.Flush();
 			generator.MergeFormChanges(null);
-			LoggingService.Info("Finished merging form changes");
 			hasUnmergedChanges = false;
 		}
 

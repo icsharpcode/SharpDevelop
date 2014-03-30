@@ -32,19 +32,8 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 {
 	class ReportDefinitionDeserializer : ReportDefinitionParser
 	{
-		IDesignerHost host;
 		
-		public ReportDefinitionDeserializer(IDesignerHost host)
-		{
-			Console.WriteLine("ReportDefinitionDeserializer");
-			if (host == null) {
-				throw new ArgumentNullException("host");
-			}
-		
-			this.host = host;
-		}
-		
-		public  XmlDocument LoadXmlFromStream(Stream stream)
+		public static XmlDocument LoadXmlFromStream(Stream stream)
 		{
 			Console.Write("LoadXml");
 			if (stream == null)
@@ -59,12 +48,9 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		}
 		
 		
-		public ReportModel CreateModelFromXml(XmlElement elem)
+		public  ReportModel CreateModelFromXml(XmlElement elem,IDesignerHost host)
 		{
-			Console.WriteLine("CreateModelFromXml");
-			
 			var reportSettings = CreateReportSettings(elem);
-		
 			var reportModel = ReportModelFactory.Create();
 			reportModel.ReportSettings = reportSettings;
 			
@@ -86,11 +72,10 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		}
 
 		
-		ReportSettings CreateReportSettings(XmlElement elem)
+		static ReportSettings CreateReportSettings(XmlElement elem)
 		{
 			XmlNodeList nodes = elem.FirstChild.ChildNodes;
 			var reportSettingsNode = (XmlElement)nodes[0];
-			Console.Write("ReportDefinitionDeserializer create ModelLoader");
 			var modelLoader = new ModelLoader();
 			return  modelLoader.Load(reportSettingsNode) as ReportSettings;
 		}
