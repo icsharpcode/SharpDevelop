@@ -91,7 +91,7 @@ namespace CSharpBinding.FormattingStrategy
 				if (!projectOptions.ContainsKey(key)) {
 					// Lazily create options container for project
 					projectOptions[key] = new CSharpFormattingOptionsPersistence(
-						csproject.ExtensionProperties,
+						csproject.GlobalPreferences,
 						new CSharpFormattingOptionsContainer((SolutionOptions ?? GlobalOptions).OptionsContainer)
 						{
 							DefaultText = StringParser.Parse("${res:CSharpBinding.Formatting.ProjectOptionReference}")
