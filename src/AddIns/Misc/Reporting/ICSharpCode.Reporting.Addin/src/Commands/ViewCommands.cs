@@ -21,6 +21,10 @@ namespace ICSharpCode.Reporting.Addin.Commands
 	{
 		readonly OpenedFile openedFile;
 		
+		public CreateDesignerCommand() {
+			MessageService.ShowMessage("Not implemented at the moment","Reporting");
+		}
+		
 		public CreateDesignerCommand (OpenedFile openedFile) {
 			if (openedFile == null)
 				throw new ArgumentNullException("openedFile");
