@@ -17,22 +17,19 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.Reporting.Items;
+using System.ComponentModel.Design.Serialization;
 
-namespace ICSharpCode.Reporting.Xml
+namespace ICSharpCode.Reporting.Addin.Services
 {
 	/// <summary>
-	/// Description of ModelLoader.
+	/// Description of DefaultMemberRelationshipService.
 	/// </summary>
-	public class ModelLoader: MycroParser
+	class DefaultMemberRelationshipService:MemberRelationshipService
 	{
-		public ModelLoader() {
-			Console.WriteLine("ICSharpCode.Reporting.Xml.ModelLoader");
-			Console.WriteLine();
-		}
-		protected override Type GetTypeByName(string ns, string name)
+		
+		public override bool SupportsRelationship(MemberRelationship source, MemberRelationship relationship)
 		{
-			return typeof(BaseSection).Assembly.GetType(typeof(BaseSection).Namespace + "." + name);
+			return true;
 		}
 	}
 }

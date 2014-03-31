@@ -19,20 +19,19 @@
 	
 	<!-- DisplayBinding -->
 	<Path name="/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id="SharpDevelopReportsBinding" 
+		<DisplayBinding id="SharpDevelopReportsBinding"
 		                insertbefore="Text"
 		                fileNamePattern="\.(srd)$"
-		                languagePattern="^SharpDevelopReports$" 
+		                languagePattern="^SharpDevelopReports$"
 		                class="ICSharpCode.Reporting.Addin.DesignerBinding.ReportDesignerBinding" />
 	</Path>
 	
-	<!-- label = "${res:SharpReport.ReportGenerator}"-->
-	<!--<Path name="/SharpDevelop/Workbench/Tools">
+	<!-- Tools Menu 
+	<Path name="/SharpDevelop/Workbench/Tools">
 		<MenuItem id="ReportGeneratorPad"
-		          label="New Reporting"
-		          class="ICSharpCode.Reporting.Addin.DesignerBinding.ReportDesignerBinding" />
+		          label="${res:SharpReport.ReportGenerator}"
+		          class="ICSharpCode.Reporting.Addin.Commands.CreateDesignerCommand" />
 	</Path>-->
-	
 	
 	<!-- File Filter -->
 	<Path name="/SharpDevelop/Workbench/FileFilter">

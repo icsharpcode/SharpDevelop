@@ -45,6 +45,12 @@
     <Reference Include="Microsoft.CSharp">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -53,23 +59,81 @@
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
-    <Folder Include="DesignerBinding" />
-    <Folder Include="Commands" />
+    <Folder Include="src" />
+    <Folder Include="src\DesignerBinding" />
+    <Folder Include="src\Commands" />
+    <Folder Include="src\Designer" />
+    <Folder Include="src\Globals" />
+    <Folder Include="src\DesignableItems" />
+    <Folder Include="src\Toolbox" />
+    <Folder Include="src\TypeProvider" />
+    <Folder Include="src\XML" />
+    <Folder Include="src\Services" />
+    <Folder Include="src\Views" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Commands\ViewCommands.cs" />
-    <Compile Include="DesignerBinding\DesignerBinding.cs" />
+    <Compile Include="src\Commands\ViewCommands.cs" />
+    <Compile Include="src\DesignableItems\AbstractItem.cs" />
+    <Compile Include="src\DesignableItems\BaseLineItem.cs" />
+    <Compile Include="src\DesignableItems\BaseSection.cs" />
+    <Compile Include="src\DesignableItems\BaseTextItem.cs" />
+    <Compile Include="src\DesignableItems\ReportSettings.cs" />
+    <Compile Include="src\DesignerBinding\DesignerBinding.cs" />
+    <Compile Include="src\DesignerBinding\DesignerGenerator.cs" />
+    <Compile Include="src\DesignerBinding\IDesignerGenerator.cs" />
+    <Compile Include="src\DesignerBinding\InternalReportLoader.cs" />
+    <Compile Include="src\DesignerBinding\ReportDefinitionDeserializer.cs" />
+    <Compile Include="src\DesignerBinding\ReportDesignerLoader.cs" />
+    <Compile Include="src\Designer\AbstractDesigner.cs" />
+    <Compile Include="src\Designer\LineDesigner.cs" />
+    <Compile Include="src\Designer\ReportRootDesigner.cs" />
+    <Compile Include="src\Designer\ReportSettingsDesigner.cs" />
+    <Compile Include="src\Designer\RootReportModel.cs" />
+    <Compile Include="src\Designer\SectionDesigner.cs" />
+    <Compile Include="src\Designer\TextItemDesigner.cs" />
+    <Compile Include="src\Globals\DesignerGlobals.cs" />
+    <Compile Include="src\Globals\StringWriterWithEncoding.cs" />
+    <Compile Include="src\Services\DefaultMemberRelationshipService.cs" />
+    <Compile Include="src\Services\DesignerSerializationService.cs" />
+    <Compile Include="src\Services\MenuCommandService.cs" />
+    <Compile Include="src\Services\NameCreationService.cs" />
+    <Compile Include="src\Services\TypeDiscoveryService.cs" />
+    <Compile Include="src\Services\TypeResolutionService.cs" />
+    <Compile Include="src\Services\DefaultServiceContainer.cs" />
+    <Compile Include="src\Services\HelpService.cs" />
+    <Compile Include="src\Services\ToolboxService.cs" />
+    <Compile Include="src\Services\UIService.cs" />
+    <Compile Include="src\Toolbox\SideTabItemDesigner.cs" />
+    <Compile Include="src\Toolbox\ToolboxProvider.cs" />
+    <Compile Include="src\TypeProvider\AbstractItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\LineItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\SectionItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\TextItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\TypeProviderHelper.cs" />
+    <Compile Include="src\Views\DesignerView.cs" />
+    <Compile Include="src\Views\WpfPreview.cs" />
+    <Compile Include="src\Views\XmlView.cs" />
+    <Compile Include="src\XML\MycroWriter.cs" />
+    <Compile Include="src\XML\ReportDefinitionParser.cs" />
+    <Compile Include="src\XML\ReportDesignerWriter.cs" />
+    <Compile Include="src\XML\XmlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EmptyReport.xft">
@@ -89,6 +153,14 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.Reporting\ICSharpCode.Reporting.csproj">
       <Project>{40CA84D4-ACFC-4646-9CDD-B87262D34093}</Project>

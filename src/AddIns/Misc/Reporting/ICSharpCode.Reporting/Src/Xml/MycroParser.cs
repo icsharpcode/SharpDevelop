@@ -41,8 +41,12 @@ namespace ICSharpCode.Reporting.Xml
 	/// <summary>
 	/// See http://www.codeproject.com/dotnet/MycroXaml.asp
 	/// </summary>
-	internal abstract class MycroParser
+	public abstract class MycroParser
 	{
+		public MycroParser() {
+			Console.WriteLine("Mycroparser");
+			Console.WriteLine();
+		}
 		public object Load(XmlElement element)
 		{
 			return ProcessNode(element, null);
@@ -60,9 +64,11 @@ namespace ICSharpCode.Reporting.Xml
 				string cname=node.LocalName;
 				
 				Console.WriteLine ("ProcessNode(XmlNode node, object parent)  {0}",cname);
-			
+			if (cname.StartsWith("BaseText")) {
+					Console.WriteLine("Found");
+}			
 				Type t=GetTypeByName(ns, cname);
-			
+				
 //				Trace.Assert(t != null, "Type "+cname+" could not be determined.");
 //				Debug.WriteLine("Looking for " + cname + " and got " + t.FullName);
 //				Console.WriteLine("Looking for " + cname + " and got " + t.FullName);
