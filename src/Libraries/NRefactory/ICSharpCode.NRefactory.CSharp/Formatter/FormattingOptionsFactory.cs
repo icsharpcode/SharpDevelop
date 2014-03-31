@@ -59,6 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				IndentCaseBody = true,
 				IndentBreakStatements = true,
 				IndentPreprocessorDirectives = true,
+				IndentBlocksInsideExpressions = false,
 				NamespaceBraceStyle = BraceStyle.NextLine,
 				ClassBraceStyle = BraceStyle.NextLine,
 				InterfaceBraceStyle = BraceStyle.NextLine,
@@ -390,6 +391,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			baseOptions.FinallyNewLinePlacement = NewLinePlacement.NewLine;
 			baseOptions.WhileNewLinePlacement = NewLinePlacement.DoNotCare;
 			baseOptions.ArrayInitializerWrapping = Wrapping.DoNotChange;
+			baseOptions.IndentBlocksInsideExpressions = true;
 
 			return baseOptions;
 		}
@@ -418,6 +420,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			baseOptions.EventAddBraceStyle = BraceStyle.NextLineShifted;
 			baseOptions.EventRemoveBraceStyle = BraceStyle.NextLineShifted;
 			baseOptions.StatementBraceStyle = BraceStyle.NextLineShifted;
+			baseOptions.IndentBlocksInsideExpressions = true;
 			return baseOptions;
 		}
 

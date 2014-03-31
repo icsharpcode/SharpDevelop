@@ -485,7 +485,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					ThisLineIndent.RemoveAlignment();
 					while (ThisLineIndent.CurIndent > PreviousLineIndent && 
 					       ThisLineIndent.PopIf(IndentType.Continuation)) ;
-
 					ThisLineIndent.Push(IndentType.Continuation);
 					NextLineIndent = ThisLineIndent.Clone();
 				}
@@ -517,8 +516,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			var parent = Parent as BracesBodyState;
 			if (parent == null || parent.LastBlockIndent == null || !Engine.EnableCustomIndentLevels)
 			{
-				NextLineIndent.RemoveAlignment();
-				NextLineIndent.PopIf(IndentType.Continuation);
+				if (!Engine.formattingOptions.IndentBlocksInsideExpressions) {
+					NextLineIndent.RemoveAlignment();
+					NextLineIndent.PopIf(IndentType.Continuation);
+				}
 			}
 			else
 			{
@@ -1032,7 +1033,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void OnExit()
 		{
-			// override the base.OnExit() logic
+			Parent.OnExit();
 		}
 
 		public override IndentState Clone(CSharpIndentEngine engine)

@@ -2817,12 +2817,7 @@ namespace Mono.CSharp {
 			if (rc.IsUnreachable)
 				return rc;
 
-			base.MarkReachable (rc);
-
-			if (scope_initializers != null) {
-				foreach (var si in scope_initializers)
-					si.MarkReachable (rc);
-			}
+			MarkReachableScope (rc);
 
 			foreach (var s in statements) {
 				rc = s.MarkReachable (rc);
@@ -2837,6 +2832,16 @@ namespace Mono.CSharp {
 			flags |= Flags.ReachableEnd;
 
 			return rc;
+		}
+
+		public void MarkReachableScope (Reachability rc)
+		{
+			base.MarkReachable (rc);
+
+			if (scope_initializers != null) {
+				foreach (var si in scope_initializers)
+					si.MarkReachable (rc);
+			}
 		}
 
 		public override bool Resolve (BlockContext bc)
@@ -3798,7 +3803,7 @@ namespace Mono.CSharp {
 					return false;
 
 			} catch (Exception e) {
-				if (e is CompletionResult || bc.Report.IsDisabled || e is FatalException || bc.Report.Printer is NullReportPrinter)
+				if (e is CompletionResult || bc.Report.IsDisabled || e is FatalException || bc.Report.Printer is NullReportPrinter || bc.Module.Compiler.Settings.BreakOnInternalError)
 					throw;
 
 				if (bc.CurrentBlock != null) {
@@ -3806,9 +3811,6 @@ namespace Mono.CSharp {
 				} else {
 					bc.Report.Error (587, "Internal compiler error: {0}", e.Message);
 				}
-
-				if (bc.Module.Compiler.Settings.DebugFlags > 0)
-					throw;
 			}
 
 			//
@@ -5030,6 +5032,8 @@ namespace Mono.CSharp {
 				return rc;
 
 			base.MarkReachable (rc);
+
+			block.MarkReachableScope (rc);
 
 			if (block.Statements.Count == 0)
 				return rc;
@@ -6552,6 +6556,9 @@ namespace Mono.CSharp {
 				ok &= c.Resolve (bc);
 
 				TypeSpec resolved_type = c.CatchType;
+				if (resolved_type == null)
+					continue;
+
 				for (int ii = 0; ii < clauses.Count; ++ii) {
 					if (ii == i)
 						continue;

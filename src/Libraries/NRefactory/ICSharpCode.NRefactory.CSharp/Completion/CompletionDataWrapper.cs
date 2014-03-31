@@ -65,9 +65,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 
 
-		public void AddCustom (string displayText, string description = null, string completionText = null)
+		public ICompletionData AddCustom (string displayText, string description = null, string completionText = null)
 		{
-			result.Add (Factory.CreateLiteralCompletionData (displayText, description, completionText));
+			var literalCompletionData = Factory.CreateLiteralCompletionData(displayText, description, completionText);
+			result.Add(literalCompletionData);
+			return literalCompletionData;
 		}
 		
 		HashSet<string> usedNamespaces = new HashSet<string> ();

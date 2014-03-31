@@ -269,6 +269,33 @@ class Foo
 		}
 
 
+
+		[Test]
+		public void TestKeywordsInNamespace ()
+		{
+			TestWrongContext<RedundantUsingDirectiveIssue>(@"
+
+namespace org.eclipse.jgit.@internal.storage.file
+{
+	public class File {}
+}
+
+namespace Foo
+{
+	using org.eclipse.jgit.@internal.storage.file;
+	
+	class Bar 
+	{
+		public static void Main (string[] args)
+		{
+			File file;
+		}
+	}
+}
+
+
+");
+		}
 	}
 
 }

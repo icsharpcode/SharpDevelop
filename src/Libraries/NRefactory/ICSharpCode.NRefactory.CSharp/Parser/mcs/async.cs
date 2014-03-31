@@ -936,11 +936,22 @@ namespace Mono.CSharp
 		}
 	}
 
-	class StackFieldExpr : FieldExpr, IExpressionCleanup
+	public class StackFieldExpr : FieldExpr, IExpressionCleanup
 	{
 		public StackFieldExpr (Field field)
 			: base (field, Location.Null)
 		{
+		}
+
+		public bool IsAvailableForReuse {
+			get {
+				var field = (Field) spec.MemberDefinition;
+				return field.IsAvailableForReuse;
+			}
+			set {
+				var field = (Field) spec.MemberDefinition;
+				field.IsAvailableForReuse = value;
+			}
 		}
 
 		public override void AddressOf (EmitContext ec, AddressOp mode)
@@ -948,8 +959,7 @@ namespace Mono.CSharp
 			base.AddressOf (ec, mode);
 
 			if (mode == AddressOp.Load) {
-				var field = (Field) spec.MemberDefinition;
-				field.IsAvailableForReuse = true;
+				IsAvailableForReuse = true;
 			}
 		}
 
@@ -957,8 +967,17 @@ namespace Mono.CSharp
 		{
 			base.Emit (ec);
 
-			var field = (Field) spec.MemberDefinition;
-			field.IsAvailableForReuse = true;
+			PrepareCleanup (ec);
+		}
+
+		public void EmitLoad (EmitContext ec)
+		{
+			base.Emit (ec);
+		}
+
+		public void PrepareCleanup (EmitContext ec)
+		{
+			IsAvailableForReuse = true;
 
 			//
 			// Release any captured reference type stack variables

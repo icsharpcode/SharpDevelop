@@ -87,6 +87,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		All = 0x7ff,
 	}
 	
+	/// <summary>
+	/// Ambiences are used to convert type system symbols to text (usually for displaying the symbol to the user; e.g. in editor tooltips).
+	/// </summary>
 	public interface IAmbience
 	{
 		ConversionFlags ConversionFlags { get; set; }

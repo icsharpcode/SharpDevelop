@@ -350,8 +350,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 					bool isProtectedAllowed = ctx.CurrentTypeDefinition != null && initializerType.GetDefinition() != null ? 
-					                          ctx.CurrentTypeDefinition.IsDerivedFrom(initializerType.GetDefinition()) : 
-					                          false;
+						ctx.CurrentTypeDefinition.IsDerivedFrom(initializerType.GetDefinition()) : 
+						false;
 					foreach (var m in initializerType.GetMembers (m => m.SymbolKind == SymbolKind.Field)) {
 						var f = m as IField;
 						if (f != null && (f.IsReadOnly || f.IsConst))
@@ -844,6 +844,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							return null;
 						case "+=":
 						case "-=":
+							var curTokenIndex = tokenIndex;
 							GetPreviousToken(ref tokenIndex, false);
 
 							expressionOrVariableDeclaration = GetExpressionAt(tokenIndex);
@@ -881,17 +882,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								if (token == "+=") {
 									string parameterDefinition = AddDelegateHandlers(
 										wrapper,
-										delegateType
-									);
-									string varName = GetPreviousMemberReferenceExpression(tokenIndex);
-									wrapper.Result.Add(
-										factory.CreateEventCreationCompletionData(
-											varName,
-											delegateType,
-											evt,
-											parameterDefinition,
-											currentMember,
-											currentType)
+										delegateType,
+										optDelegateName: GuessEventHandlerMethodName(curTokenIndex)
 									);
 								}
 
@@ -2316,7 +2308,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			for (int j = line.Offset; j < line.EndOffset; j++) {
 				char ch = document.GetCharAt(j);
 				if (!char.IsWhiteSpace(ch)) {
-					return document.GetText(line.Offset, j - line.Offset - 1);
+					return document.GetText(line.Offset, j - line.Offset);
 				}
 			}
 			return "";
@@ -2364,7 +2356,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						// check for valid constructors
 						if (t.GetConstructors().Count() > 0) {
 							bool isProtectedAllowed = currentType != null ? 
-							                          currentType.Resolve(ctx).GetDefinition().IsDerivedFrom(t.GetDefinition()) : false;
+								currentType.Resolve(ctx).GetDefinition().IsDerivedFrom(t.GetDefinition()) : false;
 							if (!t.GetConstructors().Any(m => lookup.IsAccessible(m, isProtectedAllowed))) {
 								return null;
 							}
@@ -2589,36 +2581,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 
-		public string GetPreviousMemberReferenceExpression(int tokenIndex)
+		public string GuessEventHandlerMethodName(int tokenIndex)
 		{
 			string result = GetPreviousToken(ref tokenIndex, false);
-			result = GetPreviousToken(ref tokenIndex, false);
-			if (result != ".") {
-				result = null;
-			} else {
-				var names = new List<string>();
-				while (result == ".") {
-					result = GetPreviousToken(ref tokenIndex, false);
-					if (result == "this") {
-						names.Add("handle");
-					} else if (result != null) {
-						string trimmedName = result.Trim();
-						if (trimmedName.Length == 0) {
-							break;
-						}
-						names.Insert(0, trimmedName);
-					}
-					result = GetPreviousToken(ref tokenIndex, false);
-				}
-				result = String.Join("", names.ToArray());
-				foreach (char ch in result) {
-					if (!char.IsLetterOrDigit(ch) && ch != '_') {
-						result = "";
-						break;
-					}
-				}
-			}
-			return result;
+			return "Handle" + result;
 		}
 
 		bool MatchDelegate(IType delegateType, IMethod method)
@@ -2654,13 +2620,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					"delegate",
 					"Creates anonymous delegate.",
 					"delegate {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
-				);
+				).DisplayFlags |= DisplayFlags.MarkedBold;
 				if (LanguageVersion.Major >= 5) {
 					completionList.AddCustom(
 						"async delegate",
 						"Creates anonymous async delegate.",
 						"async delegate {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
-					);
+					).DisplayFlags |= DisplayFlags.MarkedBold;
 				}
 			}
 			var sb = new StringBuilder("(");
@@ -2691,26 +2657,26 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					"delegate" + signature,
 					"Creates anonymous delegate.",
 					"delegate" + signature + " {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
-				);
+				).DisplayFlags |= DisplayFlags.MarkedBold;
 				if (LanguageVersion.Major >= 5) {
 					completionList.AddCustom(
 						"async delegate" + signature,
 						"Creates anonymous async delegate.",
 						"async delegate" + signature + " {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
-					);
+					).DisplayFlags |= DisplayFlags.MarkedBold;
 				}
 				if (!completionList.Result.Any(data => data.DisplayText == sb.ToString())) {
 					completionList.AddCustom(
 						signature,
 						"Creates typed lambda expression.",
 						signature + " => |" + (addSemicolon ? ";" : "")
-					);
+					).DisplayFlags |= DisplayFlags.MarkedBold;
 					if (LanguageVersion.Major >= 5) {
 						completionList.AddCustom(
 							"async " + signature,
 							"Creates typed async lambda expression.",
 							"async " + signature + " => |" + (addSemicolon ? ";" : "")
-						);
+						).DisplayFlags |= DisplayFlags.MarkedBold;
 					}
 
 					if (!delegateMethod.Parameters.Any(p => p.IsOut || p.IsRef) && !completionList.Result.Any(data => data.DisplayText == sbWithoutTypes.ToString())) {
@@ -2718,33 +2684,25 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							sbWithoutTypes.ToString(),
 							"Creates lambda expression.",
 							sbWithoutTypes + " => |" + (addSemicolon ? ";" : "")
-						);
+						).DisplayFlags |= DisplayFlags.MarkedBold;
 						if (LanguageVersion.Major >= 5) {
 							completionList.AddCustom(
 								"async " + sbWithoutTypes,
 								"Creates async lambda expression.",
 								"async " + sbWithoutTypes + " => |" + (addSemicolon ? ";" : "")
-							);
+							).DisplayFlags |= DisplayFlags.MarkedBold;
 						}
 					}
 				}
 
 			}
 
-			string varName = "Handle" + delegateType.Name + optDelegateName;
-			completionList.Add(factory.CreateEventCreationCompletionData(varName, delegateType, null, signature, currentMember, currentType));
+			string varName = optDelegateName ?? "Handle" + delegateType.Name;
 
+			var ecd = factory.CreateEventCreationCompletionData(varName, delegateType, null, signature, currentMember, currentType);
+			ecd.DisplayFlags |= DisplayFlags.MarkedBold;
+			completionList.Add(ecd);
 
-			/*			 TODO:Make factory method out of it.
-			// It's  needed to temporarly disable inserting auto matching bracket because the anonymous delegates are selectable with '('
-			// otherwise we would end up with () => )
-			if (!containsDelegateData) {
-				var savedValue = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
-				MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = false;
-				completionList.Result.CompletionListClosed += delegate {
-					MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = savedValue;
-				};
-			}*/
 			return sb.ToString();
 		}
 
@@ -2835,7 +2793,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var astResolver = unit != null ? CompletionContextProvider.GetResolver(state, unit) : null;
 			IType hintType = exprParent != null && astResolver != null ? 
 				TypeGuessing.GetValidTypes(astResolver, exprParent).FirstOrDefault() :
-			                 null;
+				null;
 			var result = new CompletionDataWrapper(this);
 			var lookup = new MemberLookup(
 				ctx.CurrentTypeDefinition,
@@ -2900,7 +2858,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolvedType.Kind == TypeKind.Delegate) {
 				if (addedDelegates.Contains(resolvedType.ReflectionName))
 					return;
-				AddDelegateHandlers(result, resolvedType, false, true, method.Parameters [parameter].Name);
+				AddDelegateHandlers(result, resolvedType, false, true, "Handle" + method.Parameters [parameter].Type.Name + method.Parameters [parameter].Name);
 			}
 		}
 

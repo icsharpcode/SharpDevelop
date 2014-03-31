@@ -389,13 +389,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			} else {
 
 				foreach (var arg in arguments.Take (argumentStart)) {
+					if (policy.IndentBlocksInsideExpressions)
+						curIndent.Push(IndentType.Continuation);
 					arg.AcceptVisitor(this);
+					if (policy.IndentBlocksInsideExpressions)
+						curIndent.Pop();
 				}
 				foreach (var arg in arguments.Skip(argumentStart)) {
 					if (arg.GetPrevSibling(NoWhitespacePredicate) != null) {
 						if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
 							ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.GetPrevSibling(NoWhitespacePredicate).Role == Roles.Comma);
+							if (policy.IndentBlocksInsideExpressions)
+								curIndent.Push(IndentType.Continuation);
 							arg.AcceptVisitor(this);
+							if (policy.IndentBlocksInsideExpressions)
+								curIndent.Pop();
 						} else {
 							if (!doAlignToFirstArgument && arg.PrevSibling.Role == Roles.NewLine) {
 								curIndent.Push(IndentType.Continuation);
@@ -405,7 +413,11 @@ namespace ICSharpCode.NRefactory.CSharp
 							} else {
 								if (arg.PrevSibling.StartLocation.Line == arg.StartLocation.Line) {
 									ForceSpacesBefore(arg, spaceAfterMethodCallParameterComma && arg.GetPrevSibling(NoWhitespacePredicate).Role == Roles.Comma);
+									if (policy.IndentBlocksInsideExpressions)
+										curIndent.Push(IndentType.Continuation);
 									arg.AcceptVisitor(this);
+									if (policy.IndentBlocksInsideExpressions)
+										curIndent.Pop();
 								} else {
 									int extraSpaces = Math.Max(0, arguments.First().StartLocation.Column - 1 - curIndent.IndentString.Length);
 									curIndent.ExtraSpaces += extraSpaces;

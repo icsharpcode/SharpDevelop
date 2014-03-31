@@ -4586,7 +4586,7 @@ void case_60()
 void case_61()
 #line 748 "cs-parser.jay"
 {
- 		CheckAttributeTarget (GetTokenName (yyToken), GetLocation (yyVals[0+yyTop])); 
+ 		CheckAttributeTarget (yyToken, GetTokenName (yyToken), GetLocation (yyVals[0+yyTop])); 
  		yyVal = null;
 	  }
 
@@ -4594,7 +4594,7 @@ void case_62()
 #line 756 "cs-parser.jay"
 {
 		var lt = (LocatedToken) yyVals[0+yyTop];
-		yyVal = CheckAttributeTarget (lt.Value, lt.Location);
+		yyVal = CheckAttributeTarget (yyToken, lt.Value, lt.Location);
 		PushLocation (GetLocation (yyVals[0+yyTop]));
 	  }
 
@@ -14499,15 +14499,20 @@ Location PopLocation ()
 	return location_stack.Pop ();
 }
 
-string CheckAttributeTarget (string a, Location l)
+string CheckAttributeTarget (int token, string a, Location l)
 {
 	switch (a) {
 	case "assembly" : case "module" : case "field" : case "method" : case "param" : case "property" : case "type" :
 			return a;
 	}
 
-	report.Warning (658, 1, l,
-		 "`{0}' is invalid attribute target. All attributes in this attribute section will be ignored", a);
+	if (!Tokenizer.IsValidIdentifier (a)) {
+		Error_SyntaxError (token);
+	} else {
+		report.Warning (658, 1, l,
+			 "`{0}' is invalid attribute target. All attributes in this attribute section will be ignored", a);
+	}
+
 	return string.Empty;
 }
 

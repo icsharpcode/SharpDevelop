@@ -186,6 +186,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 			set;
 		}
+
+		public bool IndentBlocksInsideExpressions {
+			get;
+			set;
+		}
 		#endregion
 		
 		#region Braces

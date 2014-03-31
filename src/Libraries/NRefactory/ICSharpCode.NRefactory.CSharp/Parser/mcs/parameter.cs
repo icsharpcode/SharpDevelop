@@ -635,7 +635,7 @@ namespace Mono.CSharp {
 			if (OptAttributes != null)
 				OptAttributes.Emit ();
 
-			if (HasDefaultValue) {
+			if (HasDefaultValue && default_expr.Type != null) {
 				//
 				// Emit constant values for true constants only, the other
 				// constant-like expressions will rely on default value expression
@@ -1336,8 +1336,10 @@ namespace Mono.CSharp {
 		public void Resolve (ResolveContext rc, Parameter p)
 		{
 			var expr = Resolve (rc);
-			if (expr == null)
+			if (expr == null) {
+				this.expr = ErrorExpression.Instance;
 				return;
+			}
 
 			expr = Child;
 

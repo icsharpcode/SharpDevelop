@@ -190,6 +190,12 @@ namespace Mono.CSharp
 
 			try {
 				field_type = ImportType (fi.FieldType, new DynamicTypeReader (fi));
+
+				//
+				// Private field has private type which is not fixed buffer
+				//
+				if (field_type == null)
+					return null;
 			} catch (Exception e) {
 				// TODO: I should construct fake TypeSpec based on TypeRef signature
 				// but there is no way to do it with System.Reflection
@@ -340,6 +346,9 @@ namespace Mono.CSharp
 					}
 				}
 
+				if (spec == null)
+					return null;
+
 				++dtype.Position;
 				tspec[index] = spec;
 			}
@@ -376,7 +385,7 @@ namespace Mono.CSharp
 				kind = MemberKind.Method;
 				if (tparams == null && !mb.DeclaringType.IsInterface && name.Length > 6) {
 					if ((mod & (Modifiers.STATIC | Modifiers.PUBLIC)) == (Modifiers.STATIC | Modifiers.PUBLIC)) {
-						if (name[2] == '_' && name[1] == 'p' && name[0] == 'o') {
+						if (name[2] == '_' && name[1] == 'p' && name[0] == 'o' && (mb.Attributes & MethodAttributes.SpecialName) != 0) {
 							var op_type = Operator.GetType (name);
 							if (op_type.HasValue && parameters.Count > 0 && parameters.Count < 3) {
 								kind = MemberKind.Operator;
@@ -756,6 +765,8 @@ namespace Mono.CSharp
 					return spec;
 
 				var targs = CreateGenericArguments (0, type.GetGenericArguments (), dtype);
+				if (targs == null)
+					return null;
 				if (declaringType == null) {
 					// Simple case, no nesting
 					spec = CreateType (type_def, null, new DynamicTypeReader (), canImportBaseType);

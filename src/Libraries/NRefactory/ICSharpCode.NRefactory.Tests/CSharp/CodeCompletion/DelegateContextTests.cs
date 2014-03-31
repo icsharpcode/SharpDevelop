@@ -148,6 +148,25 @@ public class Test
 ");
 			Assert.IsNull(provider.Find(".ctor"));
 		}
+		
+		[Test]
+		public void TestCrashOnEventHandlerCCWithoutIndentation()
+		{
+			// An off-by-one error in GetLineIndent() was causing an ArgumentOutOfRangeException
+			CodeCompletionBugTests.CombinedProviderTest(
+@"using System;
+
+public class Test
+{
+void TestFoo()
+{
+$Action act = a$
+}
+}
+", provider => {
+				Assert.IsFalse(provider.AutoSelect);
+			});
+		}
 	}
 }
 

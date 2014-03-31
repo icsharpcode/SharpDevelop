@@ -24,7 +24,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
-	/// C# ambience.
+	/// C# ambience. Used to convert type system symbols to text (usually for displaying the symbol to the user; e.g. in editor tooltips)
 	/// </summary>
 	public class CSharpAmbience : IAmbience
 	{

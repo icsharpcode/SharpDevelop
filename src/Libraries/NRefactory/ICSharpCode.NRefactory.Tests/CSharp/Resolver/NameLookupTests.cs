@@ -400,7 +400,6 @@ class Activator {
 			Assert.AreEqual("Testnamespace.Activator", result.Type.FullName);
 		}
 
-		[Ignore("Fixme")]
 		[Test]
 		public void NamespaceDefinitionOverwritesTypeName ()
 		{
@@ -1134,6 +1133,17 @@ namespace Test
 			var rr = Resolve<MemberResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("ConcreteTable+Record.Value", rr.Member.ReflectionName);
+		}
+		
+		[Test]
+		public void UsingStatementReferringToMissingNestedType()
+		{
+			string program = @"using System;
+using $A.B$;
+
+class A { }";
+			var rr = Resolve<UnknownMemberResolveResult>(program);
+			
 		}
 	}
 }

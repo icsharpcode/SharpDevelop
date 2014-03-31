@@ -432,7 +432,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 
 					default:
-						throw new ArgumentException("Invalid value for UnaryOperatorType", "op");
+						return ErrorResolveResult.UnknownError;
 				}
 			}
 			// If the type is nullable, get the underlying type:
@@ -611,7 +611,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// null coalescing operator is not overloadable and needs to be handled separately
 					return ResolveNullCoalescingOperator(lhs, rhs);
 				} else {
-					throw new ArgumentException("Invalid value for BinaryOperatorType", "op");
+					return ErrorResolveResult.UnknownError;
 				}
 			}
 			
@@ -1694,6 +1694,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case NameLookupMode.Type:
 				case NameLookupMode.TypeInUsingDeclaration:
 				case NameLookupMode.BaseTypeReference:
+					// Don't do the UnknownMemberResolveResult/MethodGroupResolveResult processing,
+					// it's only relevant for expressions.
 					return lookup.LookupType(target.Type, identifier, typeArguments, parameterizeResultType);
 				default:
 					throw new NotSupportedException("Invalid value for NameLookupMode");

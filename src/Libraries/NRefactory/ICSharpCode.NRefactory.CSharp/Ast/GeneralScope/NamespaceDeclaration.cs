@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public string Name {
 			get {
-				return NamespaceName.ToString();
+				return UsingDeclaration.ConstructNamespace(NamespaceName);
 			}
 			set {
 				var arr = value.Split('.');
