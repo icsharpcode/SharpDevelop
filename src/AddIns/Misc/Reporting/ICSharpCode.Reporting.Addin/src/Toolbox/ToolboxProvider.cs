@@ -13,6 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.Reporting.Addin.DesignableItems;
 
 namespace ICSharpCode.Reporting.Addin.Toolbox
