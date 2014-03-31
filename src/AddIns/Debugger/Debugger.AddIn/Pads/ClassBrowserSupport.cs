@@ -144,7 +144,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		protected override object GetModel()
 		{
-			return process;
+			return assemblyList;
 		}
 		
 		protected override IModelCollection<object> ModelChildren {
