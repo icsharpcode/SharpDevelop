@@ -27,6 +27,7 @@ using NUnit.Framework;
 namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 {
 	[TestFixture]
+	[SetCulture("en-US")]
 	public class SumAggregate
 	{
 		
@@ -51,7 +52,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 		{
 			var script = "= sum('doubleValue')";
 			var result = Evaluate(script);
-			Assert.That (result.Text,Is.EqualTo("408,25"));
+			Assert.That (result.Text,Is.EqualTo("408.25"));
 			Assert.That(Convert.ToDouble(result.Text),Is.TypeOf(typeof(double)));
 		}
 		
@@ -61,7 +62,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.Aggregates
 		{
 			var script = "= 'myText ' + sum('doubleValue')";
 			var result = Evaluate(script);
-			Assert.That (result.Text,Is.EqualTo("myText 408,25"));
+			Assert.That (result.Text,Is.EqualTo("myText 408.25"));
 		}
 		
 		
