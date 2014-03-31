@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Reporting.Test</RootNamespace>
-    <AssemblyName>ICSharpCode.Reporting.Test</AssemblyName>
+    <AssemblyName>ICSharpCode.Reporting.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
