@@ -385,11 +385,25 @@ namespace PackageManagement.Tests
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion("test", "1.0");
 			expectedPackage.Listed = false;
 			action.PackageId = "test";
+			action.PackageVersion = new SemanticVersion("1.0");
 			
 			action.Execute();
 			
 			IPackage actualPackage = fakeProject.PackagePassedToInstallPackage;
 			Assert.AreEqual(expectedPackage, actualPackage);
+		}
+		
+		[Test]
+		public void Execute_InstallUnlistedPackageWithoutVersion_DoesNotInstallPackageIntoProject()
+		{
+			CreateAction();
+			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion("test", "1.0");
+			expectedPackage.Listed = false;
+			action.PackageId = "test";
+			
+			Exception ex = Assert.Throws(typeof(ApplicationException), () => action.Execute());
+			
+			Assert.AreEqual("Unable to find package 'test'.", ex.Message);
 		}
 		
 		[Test]
