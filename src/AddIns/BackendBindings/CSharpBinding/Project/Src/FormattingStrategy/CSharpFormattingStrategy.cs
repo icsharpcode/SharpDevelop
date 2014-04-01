@@ -407,7 +407,18 @@ namespace CSharpBinding.FormattingStrategy
 					var bracketSearchResult = textArea.Language.BracketSearcher.SearchBracket(textArea.Document, cursorOffset);
 					if (bracketSearchResult != null) {
 						// Format the block
-						int bracketLineOffset = textArea.Document.GetLineByOffset(bracketSearchResult.OpeningBracketOffset).Offset;
+						var bracketLine = textArea.Document.GetLineByOffset(bracketSearchResult.OpeningBracketOffset);
+						int bracketLineOffset = bracketLine.Offset;
+						int textLengthBeforeBracket = bracketSearchResult.OpeningBracketOffset - bracketLineOffset;
+						if (textLengthBeforeBracket > 0) {
+							string textBeforeBracket = textArea.Document.GetText(bracketLineOffset, textLengthBeforeBracket);
+							if (textBeforeBracket.Trim(' ', '\t').Length == 0) {
+								// Line seems to begin with the bracket, so format the line above, too
+								if (bracketLine.PreviousLine != null) {
+									bracketLineOffset = bracketLine.PreviousLine.Offset;
+								}
+							}
+						}
 						if (!FormatCode(textArea, bracketLineOffset, cursorOffset - bracketLineOffset, true)) {
 							// No auto-formatting seems to be active, at least indent the line
 							IndentLine(textArea, curLine);
