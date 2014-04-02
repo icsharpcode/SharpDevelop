@@ -155,7 +155,7 @@ namespace CSharpBinding.FormattingStrategy
 						if ((inString && !verbatim) || inChar)
 							++i; // skip next character
 						break;
-				}
+			}
 			}
 			return curlyCounter > 0;
 		}
@@ -408,17 +408,19 @@ namespace CSharpBinding.FormattingStrategy
 					if (bracketSearchResult != null) {
 						// Format the block
 						var bracketLine = textArea.Document.GetLineByOffset(bracketSearchResult.OpeningBracketOffset);
-						int bracketLineOffset = bracketLine.Offset;
-						int textLengthBeforeBracket = bracketSearchResult.OpeningBracketOffset - bracketLineOffset;
-						if (textLengthBeforeBracket > 0) {
-							string textBeforeBracket = textArea.Document.GetText(bracketLineOffset, textLengthBeforeBracket);
-							if (textBeforeBracket.Trim(' ', '\t').Length == 0) {
-								// Line seems to begin with the bracket, so format the line above, too
-								if (bracketLine.PreviousLine != null) {
-									bracketLineOffset = bracketLine.PreviousLine.Offset;
-								}
+						int bracketLineOffset = bracketSearchResult.OpeningBracketOffset;
+						// Walk up the lines until we arrive at previous statement or block
+						// TODO This doesn't handle comments appended to line end!
+						while (bracketLine.PreviousLine != null) {
+							bracketLine = bracketLine.PreviousLine;
+							string lineText = textArea.Document.GetText(bracketLine.Offset, bracketLine.Length).TrimEnd(' ', '\t');
+							if (lineText.EndsWith(";") || lineText.EndsWith("{") || lineText.EndsWith("}")) {
+								// Previous line is another statement, don't format it
+								break;
 							}
+							bracketLineOffset = bracketLine.Offset;
 						}
+						
 						if (!FormatCode(textArea, bracketLineOffset, cursorOffset - bracketLineOffset, true)) {
 							// No auto-formatting seems to be active, at least indent the line
 							IndentLine(textArea, curLine);
@@ -494,7 +496,7 @@ namespace CSharpBinding.FormattingStrategy
 						}
 					}
 					return;
-			}
+		}
 		}
 		
 		/// <summary>
@@ -603,7 +605,7 @@ namespace CSharpBinding.FormattingStrategy
 						if ((inString && !verbatim) || inChar)
 							++i; // skip next character
 						break;
-				}
+			}
 			}
 			return (inString || inChar) ? 2 : 0;
 		}
