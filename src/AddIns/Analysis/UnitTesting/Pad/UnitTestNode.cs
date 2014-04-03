@@ -37,6 +37,10 @@ namespace ICSharpCode.UnitTesting
 			if (test == null)
 				throw new ArgumentNullException("test");
 			this.test = test;
+			if (IsVisible) {
+				test.DisplayNameChanged += test_NameChanged;
+				test.ResultChanged += test_ResultChanged;
+			}
 		}
 		
 		protected override void OnIsVisibleChanged()
