@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Items;
 
@@ -19,11 +20,17 @@ namespace ICSharpCode.Reporting.Factories
 	{
 		public static ReportModel Create() 
 		{
-			ReportModel m = new ReportModel();
-			foreach (GlobalEnums.ReportSection sec in Enum.GetValues(typeof(GlobalEnums.ReportSection))) {
-				m.SectionCollection.Add (SectionFactory.Create(sec.ToString()));
+			var reportModel = new ReportModel();
+			foreach (var sec in Enum.GetValues(typeof(GlobalEnums.ReportSection))) {
+				reportModel.SectionCollection.Add (SectionFactory.Create(sec.ToString()));
 			}
-			return m;
+			
+			foreach (var section in reportModel.SectionCollection) {
+					section.Size = new Size(reportModel.ReportSettings.PageSize.Width - reportModel.ReportSettings.LeftMargin - reportModel.ReportSettings.RightMargin,
+						GlobalValues.DefaultSectionHeight);
+			}
+			
+			return reportModel;
 		}
 	}
 }

@@ -19,8 +19,6 @@
 using System;
 using System.Collections.ObjectModel;
 
-using ICSharpCode.Reporting.Factories;
-using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 
 namespace ICSharpCode.Reporting.Items
@@ -33,65 +31,38 @@ namespace ICSharpCode.Reporting.Items
 		
 		public ReportModel() {
 			SectionCollection = new Collection<BaseSection>();
+			ReportSettings = new ReportSettings();
 		}
 			
 		#region Sections
 		
-		public IReportContainer ReportHeader
-		{
-			get {
-				return (BaseSection)SectionCollection[0];
-			}
+		public IReportContainer ReportHeader {
+			get {return (BaseSection)SectionCollection[0];}
 		}
 		
 		
-		public IReportContainer PageHeader
-		{
-			get {
-				return (BaseSection)SectionCollection[1];
-			}
+		public IReportContainer PageHeader {
+			get {return (BaseSection)SectionCollection[1];}
 		}
 		
 		
-		public IReportContainer DetailSection
-		{
-			get {
-				return (BaseSection)SectionCollection[2];
-			}
+		public IReportContainer DetailSection {
+			get {return (BaseSection)SectionCollection[2];}
 		}
 		
 		
-		public IReportContainer PageFooter
-		{
-			get {
-				return (BaseSection)SectionCollection[3];
-			}
+		public IReportContainer PageFooter {
+			get {return (BaseSection)SectionCollection[3];}
 		}
 		
-		public IReportContainer ReportFooter
-		{
-			get {
-				return (BaseSection)SectionCollection[4];
-			}
+		
+		public IReportContainer ReportFooter {
+			get {return (BaseSection)SectionCollection[4];}
 		}
 		
 		#endregion
 		
-		
-		ReportSettings reportSettings ;
-		
-		public ReportSettings ReportSettings
-		{
-			get {
-				if (this.reportSettings == null) {
-					this.reportSettings = new ReportSettings();
-				}
-				return reportSettings;
-			}
-			set {
-				reportSettings = value;
-			}
-		}
+		public ReportSettings ReportSettings{get;set;}
 		
 		public Collection<BaseSection> SectionCollection {get; private set;}
 	}

@@ -382,7 +382,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 		}
 		
 		
-		public override void Load(OpenedFile file, System.IO.Stream stream)
+		public override void Load(OpenedFile file, Stream stream)
 		{
 			LoggingService.Debug("ReportDesigner: Load from: " + file.FileName);
 			base.Load(file, stream);

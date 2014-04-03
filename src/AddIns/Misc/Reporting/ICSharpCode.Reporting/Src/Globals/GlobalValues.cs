@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Printing;
 namespace ICSharpCode.Reporting.Globals
 {
 	/// <summary>
@@ -48,5 +49,9 @@ namespace ICSharpCode.Reporting.Globals
 		
 		
 		public static Size PreferedSize {get {return new Size(100,20);}}
+		
+		public static Margins DefaultPageMargin {get {return new Margins(50,50,50,50);}}
+		
+		public static int DefaultSectionHeight {get {return 60;}}
 	}
 }

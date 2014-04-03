@@ -81,6 +81,8 @@
     <Folder Include="src\Designer" />
     <Folder Include="src\Globals" />
     <Folder Include="src\DesignableItems" />
+    <Folder Include="src\Factory" />
+    <Folder Include="src\Wizard" />
     <Folder Include="src\Toolbox" />
     <Folder Include="src\TypeProvider" />
     <Folder Include="src\XML" />
@@ -108,6 +110,7 @@
     <Compile Include="src\Designer\RootReportModel.cs" />
     <Compile Include="src\Designer\SectionDesigner.cs" />
     <Compile Include="src\Designer\TextItemDesigner.cs" />
+    <Compile Include="src\Factory\CreateFormSheetFromModel.cs" />
     <Compile Include="src\Globals\DesignerGlobals.cs" />
     <Compile Include="src\Globals\StringWriterWithEncoding.cs" />
     <Compile Include="src\Services\DefaultMemberRelationshipService.cs" />
