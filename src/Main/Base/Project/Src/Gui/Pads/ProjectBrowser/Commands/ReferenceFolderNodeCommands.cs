@@ -17,12 +17,14 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Web.Services.Discovery;
 using System.Windows.Forms;
 using System.Xml;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -43,8 +45,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			LoggingService.Info("Show add reference dialog for " + project.FileName);
 			using (SelectReferenceDialog selDialog = new SelectReferenceDialog(project)) {
 				if (selDialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
+					var duplicateReferences = new List<string>();
 					foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
-						ProjectService.AddProjectItem(project, reference);
+						var thisReference = reference;
+						if (project.Items.OfType<ReferenceProjectItem>().All(r => r.ShortName != thisReference.ShortName)) {
+							ProjectService.AddProjectItem(project, reference);
+						}
 					}
 					project.Save();
 				}
@@ -160,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						
 						// Add proxy to code completion.
 						SD.ParserService.ParseFileAsync(FileName.Create(refDialog.WebReference.WebProxyFileName)).FireAndForget();
-
+						
 						node.Project.Save();
 					}
 				}
