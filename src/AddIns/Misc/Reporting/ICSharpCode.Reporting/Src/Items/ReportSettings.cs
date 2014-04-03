@@ -73,10 +73,10 @@ namespace ICSharpCode.Reporting.Items
 //			this.ConnectionString = String.Empty;
 //			this.CommandText = String.Empty;
 //			
-//			this.TopMargin = GlobalValues.DefaultPageMargin.Left;
-//			this.BottomMargin = GlobalValues.DefaultPageMargin.Bottom;
-//			this.LeftMargin = GlobalValues.DefaultPageMargin.Left;
-//			this.RightMargin = GlobalValues.DefaultPageMargin.Right;
+			this.TopMargin = GlobalValues.DefaultPageMargin.Left;
+			this.BottomMargin = GlobalValues.DefaultPageMargin.Bottom;
+			this.LeftMargin = GlobalValues.DefaultPageMargin.Left;
+			this.RightMargin = GlobalValues.DefaultPageMargin.Right;
 //			
 //			this.availableFields = new AvailableFieldsCollection();
 //			this.groupingsCollection = new GroupColumnCollection();

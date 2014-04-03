@@ -17,7 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using ICSharpCode.Reporting.Items;
@@ -31,7 +30,6 @@ namespace ICSharpCode.Reporting.Interfaces
 	{
 		ReportSettings ReportSettings {get;set;}
 		Collection<BaseSection> SectionCollection {get;}
-		
 		IReportContainer ReportHeader {get;}
 		IReportContainer PageHeader {get;}
 		IReportContainer DetailSection {get;}

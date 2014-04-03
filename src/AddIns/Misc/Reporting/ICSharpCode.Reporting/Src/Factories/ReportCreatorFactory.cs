@@ -27,7 +27,7 @@ namespace ICSharpCode.Reporting.Factories
 	/// <summary>
 	/// Description of ReportCreatorFactory.
 	/// </summary>
-	internal  class ReportCreatorFactory {
+	static class ReportCreatorFactory {
 		
 		public static IReportCreator ExporterFactory(IReportModel reportModel)
 		{

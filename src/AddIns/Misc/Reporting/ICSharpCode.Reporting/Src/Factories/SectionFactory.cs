@@ -14,12 +14,9 @@ namespace ICSharpCode.Reporting.Factories
 	/// <summary>
 	/// Description of SectionFactory.
 	/// </summary>
-	sealed class SectionFactory
+	static class SectionFactory
 	{
-		private SectionFactory ()
-		{
-			
-		}
+
 		public static BaseSection Create(string name) {
 			if (name == null)
 				throw new ArgumentNullException("name");
