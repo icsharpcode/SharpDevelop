@@ -65,7 +65,7 @@ namespace ICSharpCode.Reporting.Items
 //			this.GraphicsUnit = GraphicsUnit.Pixel;
 //			this.Padding = new Padding(5);
 //			this.DefaultFont = GlobalValues.DefaultFont;
-			this.ReportType = GlobalEnums.ReportType.FormSheet;
+			ReportType = GlobalEnums.ReportType.FormSheet;
 //			
 			this.DataModel = GlobalEnums.PushPullModel.FormSheet;
 //			
@@ -73,25 +73,26 @@ namespace ICSharpCode.Reporting.Items
 //			this.ConnectionString = String.Empty;
 //			this.CommandText = String.Empty;
 //			
-			this.TopMargin = GlobalValues.DefaultPageMargin.Left;
-			this.BottomMargin = GlobalValues.DefaultPageMargin.Bottom;
-			this.LeftMargin = GlobalValues.DefaultPageMargin.Left;
-			this.RightMargin = GlobalValues.DefaultPageMargin.Right;
+			TopMargin = GlobalValues.DefaultPageMargin.Left;
+			BottomMargin = GlobalValues.DefaultPageMargin.Bottom;
+			LeftMargin = GlobalValues.DefaultPageMargin.Left;
+			RightMargin = GlobalValues.DefaultPageMargin.Right;
 //			
 //			this.availableFields = new AvailableFieldsCollection();
-//			this.groupingsCollection = new GroupColumnCollection();
-			this.SortColumnsCollection = new SortColumnCollection();
-			this.GroupColumnsCollection = new GroupColumnCollection();
+
+			SortColumnsCollection = new SortColumnCollection();
+			GroupColumnsCollection = new GroupColumnCollection();
 //			this.sqlParameters = new SqlParameterCollection();
 			ParameterCollection = new ParameterCollection();
 //			this.NoDataMessage = "No Data for this Report";
 		}
 		
+		#region BaseSettings
 		
 		private string reportName;
 		
-//		[Category("Base Settings")]
-//		[DefaultValueAttribute ("")]
+		[Category("Base Settings")]
+		[DefaultValueAttribute ("")]
 		public string ReportName
 		{
 			get {
@@ -101,15 +102,14 @@ namespace ICSharpCode.Reporting.Items
 				return reportName;
 			}
 			set {
-				if (reportName != value) {
-					reportName = value;
-				}
+				reportName = value;
 			}
 		}
 		
-		private string fileName;
-//		[Category("Base Settings")]
-//		[XmlIgnoreAttribute]
+		string fileName;
+		
+		[Category("Base Settings")]
+		[XmlIgnoreAttribute]
 		public string FileName
 		{
 			get {
@@ -124,25 +124,39 @@ namespace ICSharpCode.Reporting.Items
 		}
 		
 		
-//		[Category("Page Settings")]
+		[Browsable(true), Category("Base Settings")]
+		public GlobalEnums.ReportType ReportType {get;set;}
+		
+		
+		[Browsable(true), Category("Base Settings")]
+		public GlobalEnums.PushPullModel DataModel {get;set;}
+		
+		#endregion
+		
+		
+		#region Pagesettings
+		
+		[Category("Page Settings")]
 		public int BottomMargin {get;set;}
 			
 		
-//		[Category("Page Settings")]
+		[Category("Page Settings")]
 		public int TopMargin  {get;set;}
 		
 		
 		
-//		[Category("Page Settings")]
+		[Category("Page Settings")]
 		public int LeftMargin {get;set;}
 		
 		
 		
-//		[Category("Page Settings")]
+		[Category("Page Settings")]
 		public int RightMargin  {get;set;}
 			
+		
 		private Size pageSize;
 		
+		[Category("Page Settings")]
 		public Size PageSize {
 			get {
 				if (!Landscape) {
@@ -154,18 +168,21 @@ namespace ICSharpCode.Reporting.Items
 			set { pageSize = value; }
 		}
 		
-//		[Category("Page Settings")]
-//		public Size PageSize {get;set;}
 		
-//		[Category("Page Settings")]
+		[Category("Page Settings")]
 		public bool Landscape {get;set;}
 		
+		
+		#endregion
+		
+		#region
+		
+		
 //		[Category("Data")]
-		public GlobalEnums.PushPullModel DataModel {get;set;}
 		
 		
-//		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.ReportType ReportType {get;set;}
+		
+		
 		
 		
 //		[Category("Parameters")]
@@ -177,5 +194,7 @@ namespace ICSharpCode.Reporting.Items
 		public SortColumnCollection SortColumnsCollection {get;private set;}
 		
 		public GroupColumnCollection GroupColumnsCollection {get;private set;}
+		
+		#endregion
 	}
 }
