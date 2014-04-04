@@ -14,6 +14,7 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing.Design;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using ICSharpCode.Core;
@@ -355,10 +356,16 @@ namespace ICSharpCode.Reporting.Addin.Views
 
 		void SetupSecondaryView()
 		{
-			var xmlView = new XmlView(generator,this);
-			SecondaryViewContents.Add(xmlView);
-			var preview = new WpfPreview(loader,this);
-			SecondaryViewContents.Add(preview);
+			if (!SecondaryViewContents.OfType<XmlView>().Any())
+			{
+				var xmlView = new XmlView(generator, this);
+				SecondaryViewContents.Add(xmlView);
+			}
+			if (!SecondaryViewContents.OfType<WpfPreview>().Any())
+			{
+				var preview = new WpfPreview(loader, this);
+				SecondaryViewContents.Add(preview);
+			}
 		}
 		
 		public string ReportFileContent {
