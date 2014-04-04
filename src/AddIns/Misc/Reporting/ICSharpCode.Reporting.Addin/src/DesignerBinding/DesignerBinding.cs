@@ -44,7 +44,15 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			if (file.IsDirty) {
+			bool hasContent = false;
+			using (var sr = new StreamReader(file.OpenRead()))
+			{
+				string line;
+				while (!hasContent && (line = sr.ReadLine()) != null)
+					if (line.Length != 0)
+						hasContent = true;
+			}
+			if (!hasContent) {
 
 				var reportModel = ReportModelFactory.Create();
 	
@@ -55,6 +63,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 				doc.LoadXml(xml.ToString());
 				var ar = XmlToArray(doc);
 				file.SetData(ar);
+				file.MakeDirty();
 			}
 			
 			var viewCmd = new CreateDesignerCommand(file);
