@@ -62,6 +62,15 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 			};
 				sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
 			
+			
+			toolboxItem = new ToolboxItem(typeof(BaseDataItem)) {
+				DisplayName = ResourceService.GetString("SharpReport.Toolbar.DataField"),
+				//				tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Column");
+				Bitmap = IconService.GetBitmap("Icons.16x16.SharpQuery.Column")
+			};
+			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));	
+			
+			
 			//Grahics
 			// Line
 			toolboxItem = new ToolboxItem(typeof(BaseLineItem)) {

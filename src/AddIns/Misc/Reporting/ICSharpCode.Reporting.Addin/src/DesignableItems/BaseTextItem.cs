@@ -130,6 +130,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 			}
 		}
 		
+		
 		#endregion
 		
 		#region RighToLeft
