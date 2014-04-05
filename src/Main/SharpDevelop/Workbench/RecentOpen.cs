@@ -83,6 +83,12 @@ namespace ICSharpCode.SharpDevelop
 			recentProjects.Clear();
 			properties.SetList("Projects", recentProjects);
 		}
+
+		public void RemoveRecentProject(FileName name)
+		{
+			recentProjects.Remove(name);
+			properties.SetList("Projects", recentProjects);
+		}
 		
 		public void AddRecentProject(FileName name)
 		{
