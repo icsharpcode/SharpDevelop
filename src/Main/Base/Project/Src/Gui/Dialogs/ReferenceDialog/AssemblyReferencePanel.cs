@@ -28,25 +28,54 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public class AssemblyReferencePanel : Panel, IReferencePanel
 	{
 		ISelectReferenceDialog selectDialog;
+		Button browseButton;
+		Button browseProjectButton;
+		Button browseSolutionButton;
 		
 		public AssemblyReferencePanel(ISelectReferenceDialog selectDialog)
 		{
 			this.selectDialog = selectDialog;
+			AutoSize = true;
 			
-			Button browseButton   = new Button();
+			browseButton   = new Button();
 			browseButton.Location = new Point(10, 10);
 			browseButton.Name = "browseButton"; // requested by HP for UI automation purposes
+			browseButton.Size = new Size(120, 23);
 			
-			browseButton.Text     = StringParser.Parse("${res:Global.BrowseButtonText}");
+			browseButton.Text     = StringParser.Parse("${res:Dialog.SelectReferenceDialog.BrowseLastButton}");
 			browseButton.Click   += new EventHandler(SelectReferenceDialog);
 			browseButton.FlatStyle = FlatStyle.System;
 			Controls.Add(browseButton);
+
+			browseProjectButton   = new Button();
+			browseProjectButton.Location = new Point(150, 10);
+			browseProjectButton.Name = "browseProjectButton"; // requested by HP for UI automation purposes
+			browseProjectButton.Size = new Size(120, 23);
+
+			browseProjectButton.Text     = StringParser.Parse("${res:Dialog.SelectReferenceDialog.BrowseProjectButton}");
+			browseProjectButton.Click   += new EventHandler(SelectReferenceDialog);
+			browseProjectButton.FlatStyle = FlatStyle.System;
+			Controls.Add(browseProjectButton);
+
+			browseSolutionButton   = new Button();
+			browseSolutionButton.Location = new Point(290, 10);
+			browseSolutionButton.Name = "browseSolutionButton"; // requested by HP for UI automation purposes
+			browseSolutionButton.Size = new Size(120, 23);
+
+			browseSolutionButton.Text     = StringParser.Parse("${res:Dialog.SelectReferenceDialog.BrowseSolutionButton}");
+			browseSolutionButton.Click   += new EventHandler(SelectReferenceDialog);
+			browseSolutionButton.FlatStyle = FlatStyle.System;
+			Controls.Add(browseSolutionButton);
 		}
 		
 		void SelectReferenceDialog(object sender, EventArgs e)
 		{
 			using (OpenFileDialog fdiag  = new OpenFileDialog()) {
 				fdiag.AddExtension    = true;
+				fdiag.InitialDirectory = 
+					sender == browseProjectButton ? selectDialog.ConfigureProject.Directory.ToString()
+					: sender == browseSolutionButton ? selectDialog.ConfigureProject.ParentSolution.Directory.ToString()
+					: "";
 				
 				fdiag.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.AssemblyFiles}|*.dll;*.exe|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 				fdiag.Multiselect     = true;

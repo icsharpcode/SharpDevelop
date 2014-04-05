@@ -8175,4 +8175,13 @@ Error while starting:
     <value>This resource is not being used. Its purpose is to test the translation database and has 
 a line break</value>
   </data>
+  <data name="Dialog.SelectReferenceDialog.BrowseLastButton" xml:space="preserve">
+    <value>&amp;Browse Last...</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.BrowseProjectButton" xml:space="preserve">
+    <value>Browse &amp;Project...</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.BrowseSolutionButton" xml:space="preserve">
+    <value>Browse &amp;Solution...</value>
+  </data>
 </root>
