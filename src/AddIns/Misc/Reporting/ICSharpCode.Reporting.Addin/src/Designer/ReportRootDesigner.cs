@@ -37,7 +37,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	/// Description of ReportRootDesigner.
 	/// </summary>
 
-	public class ReportRootDesigner: DocumentDesigner
+	class ReportRootDesigner: DocumentDesigner
 	{
 		ICollection currentSelection;
 		IDesignerHost host;

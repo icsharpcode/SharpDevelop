@@ -19,7 +19,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	/// <summary>
 	/// Description of SectionDesigner.
 	/// </summary>
-	public class SectionDesigner:ParentControlDesigner
+	class SectionDesigner:ParentControlDesigner
 	{
 		BaseSection section;
 		ISelectionService selectionService;

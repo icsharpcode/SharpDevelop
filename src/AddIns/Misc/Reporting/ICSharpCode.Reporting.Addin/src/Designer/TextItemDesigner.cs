@@ -15,7 +15,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	/// <summary>
 	/// Description of TextItemDesigner.
 	/// </summary>
-	public class TextItemDesigner:AbstractDesigner
+	class TextItemDesigner:AbstractDesigner
 	{
 		
 

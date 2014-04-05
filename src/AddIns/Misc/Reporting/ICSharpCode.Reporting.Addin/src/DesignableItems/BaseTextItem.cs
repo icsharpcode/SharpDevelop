@@ -12,6 +12,7 @@ using System.Drawing;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Addin.Designer;
+using ICSharpCode.Reporting.Addin.Dialogs;
 using ICSharpCode.Reporting.Addin.TypeProvider;
 
 namespace ICSharpCode.Reporting.Addin.DesignableItems
@@ -22,6 +23,8 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 	[Designer(typeof(TextItemDesigner))]
 	public class BaseTextItem:AbstractItem
 	{
+		const string datatypeOfTheUnderlyingColumn = "Datatype of the underlying Column";
+
 		
 		string formatString;
 		StringFormat stringFormat;
@@ -146,11 +149,10 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		
 		#region DataType
 		
-//		[Browsable(true),
-//		 Category("Databinding"),
-//		 Description("Datatype of the underlying Column")]
-//		[DefaultValue("System.String")]
-//		[TypeConverter(typeof(DataTypeStringConverter))]
+		
+		[Category("Databinding"),Description(datatypeOfTheUnderlyingColumn)]
+		[DefaultValue("System.String")]
+		[TypeConverter(typeof(DataTypeStringConverter))]
 
 		public string DataType {get;set;}
 		

@@ -21,7 +21,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	/// 
 	
 	
-	public class RootReportModel:RootDesignedComponent
+	class RootReportModel:RootDesignedComponent
 	{
 		
 		

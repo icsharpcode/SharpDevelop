@@ -15,7 +15,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	/// <summary>
 	/// Description of ReportSettingsDesigner.
 	/// </summary>
-	public class ReportSettingsDesigner:ComponentDesigner
+	class ReportSettingsDesigner:ComponentDesigner
 	{
 		static string settingsName = "ReportSettings";
 		public ReportSettingsDesigner()

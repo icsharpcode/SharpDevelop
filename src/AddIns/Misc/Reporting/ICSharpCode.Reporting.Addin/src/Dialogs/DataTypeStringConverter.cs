@@ -15,7 +15,7 @@ namespace ICSharpCode.Reporting.Addin.Dialogs
 	/// <summary>
 	/// Description of DataTypeStringConverter.
 	/// </summary>
-	public class DataTypeStringConverter:StringConverter
+	class DataTypeStringConverter:StringConverter
 	{
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
 		                                                

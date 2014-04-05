@@ -18,7 +18,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	/// <summary>
 	/// Description of LineDesigner.
 	/// </summary>
-	public class LineDesigner:AbstractDesigner
+	class LineDesigner:AbstractDesigner
 	{
 		BaseLineItem baseLine;
 		bool dragging;
