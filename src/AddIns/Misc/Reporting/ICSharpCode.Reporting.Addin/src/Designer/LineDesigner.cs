@@ -97,21 +97,12 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		protected override void OnMouseDragBegin(int x, int y)
 		{
-			System.Console.WriteLine("DragBegib");
 			Point p = this.baseLine.PointToClient(new Point(x, y));
 			overFromPoint = GetHandle(baseLine.FromPoint).Contains(p);
-			this.overToPoint = GetHandle(baseLine.ToPoint).Contains(p);
+			overToPoint = GetHandle(baseLine.ToPoint).Contains(p);
 			if (overFromPoint || overToPoint )
 			{
 				dragging = true;
-//					PropertyDescriptor pd =
-//						TypeDescriptor.GetProperties(this.baseLine)["FromPoint"];
-//					pd.SetValue(this.baseLine, p);
-//				dragDirection = overToPoint;
-				//            Point current = dragDirection ?
-				//                (label.Origin + label.Direction) :
-				//                label.Origin;
-				//            dragOffset = current - new Size(p);
 			}
 			else
 			{
@@ -125,7 +116,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		{
 			if (dragging)
 			{
-				Point p = this.baseLine.PointToClient(new Point(x, y));
+				Point p = baseLine.PointToClient(new Point(x, y));
 				if (overToPoint) {
 					baseLine.ToPoint = p;
 				} else {
@@ -177,7 +168,6 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			base.OnMouseDragEnd(cancel);
 
 		}
-		//
 		
 		#endregion
 		

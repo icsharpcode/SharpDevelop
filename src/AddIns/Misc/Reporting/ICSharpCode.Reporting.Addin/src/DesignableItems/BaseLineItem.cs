@@ -16,24 +16,22 @@ using ICSharpCode.Reporting.Addin.TypeProvider;
 namespace ICSharpCode.Reporting.Addin.DesignableItems
 {
 	[Designer(typeof(LineDesigner))]
-	public class BaseLineItem:AbstractItem
+	public class BaseLineItem:AbstractGraphicItem
 	{
 		Point fromPoint;
 		Point toPoint;
 		LineCap startLineCap;
 		LineCap endLineCap;
 		DashCap dashLineCap;
-		DashStyle dashStyle;
-		float thickness;
 		
+
 		public BaseLineItem()
 		{
-			this.thickness = 1;
-			this.dashStyle = DashStyle.Solid;
 			this.Size = new Size(50,10);
 			TypeDescriptor.AddProvider(new LineItemTypeProvider(), typeof(BaseLineItem));
 			this.SetStartEndPoint();
 		}
+		
 		
 		void SetStartEndPoint ()
 		{
@@ -59,9 +57,9 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
-			using (Pen p = new Pen(this.ForeColor,this.Thickness)) {
-				p.SetLineCap(this.StartLineCap,this.EndLineCap,this.DashLineCap);
-				graphics.DrawLine(p,this.fromPoint,this.toPoint);
+			using (var p = new Pen(ForeColor,Thickness)) {
+				p.SetLineCap(StartLineCap,EndLineCap,DashLineCap);
+				graphics.DrawLine(p,fromPoint,toPoint);
 			}
 		}
 		
@@ -70,13 +68,13 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 			get { return fromPoint; }
 			set {
 				Point x = value;
-				if (!this.ClientRectangle.Contains(x)) {
-					this.fromPoint = new Point(x.X - this.Location.X,
-					                           x.Y - this.Location.Y);
+				if (!ClientRectangle.Contains(x)) {
+					fromPoint = new Point(x.X - Location.X,x.Y - Location.Y);
+					                           
 				} else {
-					this.fromPoint = x;
+					fromPoint = x;
 				}
-				this.Invalidate();
+				Invalidate();
 			}
 		}
 		
@@ -86,8 +84,8 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 			set {
 				Point x = value;
 				if (!ClientRectangle.Contains(x)) {
-					this.toPoint = new Point(x.X - this.Location.X,
-					                         x.Y - this.Location.Y);
+					toPoint = new Point(x.X - Location.X,x.Y - Location.Y);
+					                         
 				}
 				else {
 					toPoint = x;
@@ -97,63 +95,34 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		}
 		
 		
-		
-//		[Browsable(true),
-//		 Category("Appearance"),
-//		 Description("LineStyle")]
-		public DashStyle DashStyle {
-			get { return dashStyle; }
-			set {
-				dashStyle = value;
-				this.Invalidate();
-			}
-		}
-		
-		
-//		[Browsable(true),
-//		 Category("Appearance"),
-//		 Description("Thickness of Line")]
-		public float Thickness {
-			get { return thickness; }
-			set {
-				thickness = value;
-				this.Invalidate();
-			}
-		}
-		
-//		[Browsable(true),
-//		 Category("Appearance"),
-//		 Description("LineCap at Startposition")]
+		[ Category("Appearance")]
 		public LineCap StartLineCap {
 			get { return startLineCap; }
 			set {
 				startLineCap = value;
-				this.Invalidate();
+				Invalidate();
 			}
 		}
 		
-//		[Browsable(true),
-//		 Category("Appearance"),
-//		 Description("Linecap at Endposition")]
+		
+		[ Category("Appearance")]
 		public LineCap EndLineCap {
 			get { return endLineCap; }
 			set {
 				endLineCap = value;
-				this.Invalidate();
+				Invalidate();
 			}
 		}
 		
-//		[Browsable(true),
-//		 Category("Appearance"),
-//		 Description("Dashlinecap")]
+		
+		[Category("Appearance")]
 		public DashCap DashLineCap {
 			get { return dashLineCap; }
 			set {
 				dashLineCap = value;
-				this.Invalidate();
+				Invalidate();
 			}
 		}
-		
-	}
 	
+	}
 }

@@ -76,6 +76,7 @@
   <ItemGroup>
     <Folder Include="Configuration" />
     <Folder Include="src" />
+    <Folder Include="src\DesignableItems\GraphicItems" />
     <Folder Include="src\DesignerBinding" />
     <Folder Include="src\Commands" />
     <Folder Include="src\Designer" />
@@ -93,8 +94,10 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="src\Commands\ViewCommands.cs" />
+    <Compile Include="src\DesignableItems\AbstractGraphicItem.cs" />
     <Compile Include="src\DesignableItems\AbstractItem.cs" />
     <Compile Include="src\DesignableItems\BaseLineItem.cs" />
+    <Compile Include="src\DesignableItems\BaseRectangleItem.cs" />
     <Compile Include="src\DesignableItems\BaseSection.cs" />
     <Compile Include="src\DesignableItems\BaseTextItem.cs" />
     <Compile Include="src\DesignableItems\BaseDataItem.cs" />
@@ -108,6 +111,7 @@
     <Compile Include="src\Designer\AbstractDesigner.cs" />
     <Compile Include="src\Designer\DataItemDesigner.cs" />
     <Compile Include="src\Designer\LineDesigner.cs" />
+    <Compile Include="src\Designer\ContainerDesigner.cs" />
     <Compile Include="src\Designer\ReportRootDesigner.cs" />
     <Compile Include="src\Designer\ReportSettingsDesigner.cs" />
     <Compile Include="src\Designer\RootReportModel.cs" />
@@ -133,6 +137,7 @@
     <Compile Include="src\TypeProvider\AbstractItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\DataItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\LineItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\RectangleItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\SectionItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TextItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TypeProviderHelper.cs" />
