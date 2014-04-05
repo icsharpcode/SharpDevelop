@@ -413,8 +413,8 @@ namespace CSharpBinding.FormattingStrategy
 						// TODO This doesn't handle comments appended to line end!
 						while (bracketLine.PreviousLine != null) {
 							bracketLine = bracketLine.PreviousLine;
-							string lineText = textArea.Document.GetText(bracketLine.Offset, bracketLine.Length).TrimEnd(' ', '\t');
-							if (lineText.EndsWith(";") || lineText.EndsWith("{") || lineText.EndsWith("}")) {
+							string lineText = textArea.Document.GetText(bracketLine.Offset, bracketLine.Length);
+							if (IsLineEndOfStatement(lineText)) {
 								// Previous line is another statement, don't format it
 								break;
 							}
@@ -497,6 +497,36 @@ namespace CSharpBinding.FormattingStrategy
 					}
 					return;
 		}
+		}
+		
+		bool IsLineEndOfStatement(string lineText)
+		{
+			string normalizedLine = null;
+			
+			// Look if there is a comment at the end of line
+			int indexOfSingleLineComment = lineText.LastIndexOf("//");
+			if (indexOfSingleLineComment > -1) {
+				normalizedLine = lineText.Substring(0, indexOfSingleLineComment);
+			} else {
+				normalizedLine = lineText;
+			}
+			
+			normalizedLine = lineText.Trim(' ', '\t');
+			
+			if (normalizedLine.EndsWith("*/")) {
+				int indexOfMultiLineCommentStart = lineText.LastIndexOf("/*");
+				if (indexOfMultiLineCommentStart > -1) {
+					normalizedLine = lineText.Substring(0, indexOfMultiLineCommentStart);
+				}
+			}
+			
+			// Usual statement endings
+			if (normalizedLine.EndsWith(";")
+				|| normalizedLine.EndsWith("{")
+				|| normalizedLine.EndsWith("}"))
+				return true;
+			
+			return false;
 		}
 		
 		/// <summary>
