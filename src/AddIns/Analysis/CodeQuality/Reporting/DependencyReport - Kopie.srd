@@ -265,7 +265,7 @@
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>= Globals!ReportFolder + Globals!ReportName</Text>
+                    <Text>= Globals!ReportFolder + ' - ' + Globals!ReportName</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>
