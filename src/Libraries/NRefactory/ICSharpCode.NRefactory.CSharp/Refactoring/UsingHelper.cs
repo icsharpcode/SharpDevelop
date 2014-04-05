@@ -131,6 +131,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return orderedNodes;
 		}
 
+		/// <summary>
+		/// Sorts the specified usings.
+		/// </summary>
+		public static bool NeedToSortUsingBlock(IEnumerable<AstNode> nodes, BaseRefactoringContext context)
+		{
+			UsingInfo u1 = null;
+			foreach (var node in nodes) {
+				var u2 = new UsingInfo(node, context);
+				if (u1 != null && u2.CompareTo(u1) < 0)
+					return true;
+				u1 = u2;
+			}
+			return false;
+		}
+
 
 		private sealed class UsingInfo : IComparable<UsingInfo>
 		{

@@ -42,6 +42,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (usingNode == null)
 				yield break;
 
+			if (!EnumerateUsingBlocks(context.RootNode).Any(block => UsingHelper.NeedToSortUsingBlock(block, context)))
+				yield break;
+
 			yield return new CodeAction(context.TranslateString("Sort usings"), script =>
 			{
 				var blocks = EnumerateUsingBlocks(context.RootNode);
@@ -50,6 +53,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				{
 					var originalNodes = block.ToArray();
 					var sortedNodes = UsingHelper.SortUsingBlock(originalNodes, context).ToArray();
+					if (sortedNodes.SequenceEqual(originalNodes))
+						continue;
 
 					for (var i = 0; i < originalNodes.Length; ++i)
 						script.Replace(originalNodes[i], sortedNodes[i].Clone());
