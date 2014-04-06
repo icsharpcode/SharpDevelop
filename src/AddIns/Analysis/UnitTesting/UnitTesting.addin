@@ -100,6 +100,10 @@
 			             tooltip="${res:NUnitPad.NUnitPadContent.ReferenceItem}"
 			             class="ICSharpCode.UnitTesting.AddNUnitReferenceCommand"/>
 			<ToolbarItem id = "CollapseSeparator" type = "Separator"/>
+			<ToolbarItem id      = "ExpandAll"
+		             icon        = "Icons.16x16.OpenCollection"
+		             tooltip     = "${res:MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip}"
+		             class       = "ICSharpCode.UnitTesting.ExpandAllTestsCommand"/>
 			<ToolbarItem id      = "Collapse"
 			             icon    = "Icons.16x16.Collection"
 			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
