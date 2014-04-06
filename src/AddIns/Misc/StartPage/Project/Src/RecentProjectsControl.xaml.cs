@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -127,6 +128,20 @@ namespace ICSharpCode.StartPage
 		void newSolutionClick(object sender, RoutedEventArgs e)
 		{
 			new ICSharpCode.SharpDevelop.Project.Commands.CreateNewSolution().Run();
+		}
+		
+		void openContainingFolderClick(object sender, RoutedEventArgs e)
+		{
+			RecentOpenItem item = (RecentOpenItem)lastProjectsListView.SelectedItem;
+			string folder = Path.GetDirectoryName(item.Path);
+			Process.Start("explorer", "\"" + folder + "\"");
+		}
+		
+		void removeRecentProjectClick(object sender, RoutedEventArgs e)
+		{
+			RecentOpenItem item = (RecentOpenItem)lastProjectsListView.SelectedItem;
+			SD.FileService.RecentOpen.RemoveRecentProject(new FileName(item.Path));
+			BuildRecentProjectList();
 		}
 	}
 }

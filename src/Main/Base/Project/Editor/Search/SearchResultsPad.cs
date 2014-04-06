@@ -100,6 +100,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 				activeSearchResult = null;
 			}
 			SD.WinForms.SetContent(contentPlaceholder, null);
+			// clear search pad toolbar items when ClearLastSearchesList() is called
+			toolBar.Items.Clear();
+			foreach (object toolBarItem in defaultToolbarItems) {
+				toolBar.Items.Add(toolBarItem);
+			}
 		}
 		
 		/// <summary>

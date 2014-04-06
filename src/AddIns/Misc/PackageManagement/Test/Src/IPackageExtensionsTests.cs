@@ -32,7 +32,28 @@ namespace PackageManagement.Tests
 		
 		void CreatePackageWithSummary(string summary)
 		{
-			package = new FakePackage() { Summary = summary };
+			package = new FakePackage { Summary = summary };
+		}
+
+		void CreatePackageWithTitle(string title)
+		{
+			package = new FakePackage { Title = title };
+		}
+		
+		void CreatePackageWithNoProjectContent()
+		{
+			package = new FakePackage();
+		}
+		
+		void CreatePackageWithProjectContent()
+		{
+			CreatePackageWithNoProjectContent();
+			package.FrameworkAssembliesList.Add(new FrameworkAssemblyReference("System.Xml"));
+		}
+		
+		void AddDependencyToPackage()
+		{
+			package.AddDependency("Id");
 		}
 		
 		[Test]
@@ -65,6 +86,69 @@ namespace PackageManagement.Tests
 			string result = package.SummaryOrDescription();
 			
 			Assert.AreEqual("description", result);
+		}
+		
+		[Test]
+		public void GetName_PackageHasTitle_ReturnsTitle()
+		{
+			CreatePackageWithTitle("title");
+			
+			string result = package.GetName();
+			
+			Assert.AreEqual("title", result);
+		}
+		
+		[Test]
+		public void GetName_PackageHasNullTitle_ReturnsPackageId()
+		{
+			CreatePackageWithTitle(null);
+			package.Id = "Id";
+			
+			string result = package.GetName();
+			
+			Assert.AreEqual("Id", result);
+		}
+		
+		[Test]
+		public void GetName_PackageHasEmptyStringTitle_ReturnsPackageId()
+		{
+			CreatePackageWithTitle(String.Empty);
+			package.Id = "Id";
+			
+			string result = package.GetName();
+			
+			Assert.AreEqual("Id", result);
+		}
+		
+		[Test]
+		public void IsProjectPackage_PackageHasNoProjectContent_ReturnsFalse()
+		{
+			CreatePackageWithNoProjectContent();
+			
+			bool result = package.IsProjectPackage();
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsProjectPackage_PackageHasProjectContent_ReturnsTrie()
+		{
+			CreatePackageWithProjectContent();
+			
+			bool result = package.IsProjectPackage();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void IsProjectPackage_PackageHasNoProjectContentButHasDependency_ReturnsTrue()
+		{
+			CreatePackageWithNoProjectContent();
+			AddDependencyToPackage();
+			
+			bool result = package.IsProjectPackage();
+			
+			Assert.IsTrue(result);
 		}
 	}
 }

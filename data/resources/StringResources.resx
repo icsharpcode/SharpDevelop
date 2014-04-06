@@ -6972,6 +6972,9 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="StartPage.StartMenu.OpenCombineButton" xml:space="preserve">
     <value>Open solution</value>
   </data>
+  <data name="StartPage.StartMenu.RemoveRecentProject" xml:space="preserve">
+    <value>Remove from recent projects list</value>
+  </data>
   <data name="StartPage.StartPageContentName" xml:space="preserve">
     <value>Start Page</value>
   </data>

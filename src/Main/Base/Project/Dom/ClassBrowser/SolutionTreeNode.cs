@@ -26,17 +26,19 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 	public class SolutionTreeNode : ModelCollectionTreeNode
 	{
 		ISolution solution;
+		ISolutionAssemblyList solutionAssemblyList;
 		
 		public SolutionTreeNode(ISolutionAssemblyList solutionAssemblyList)
 		{
 			if (solutionAssemblyList == null)
 				throw new ArgumentNullException("solutionAssemblyList");
+			this.solutionAssemblyList = solutionAssemblyList;
 			this.solution = solutionAssemblyList.Solution;
 		}
 		
 		protected override object GetModel()
 		{
-			return solution;
+			return solutionAssemblyList;
 		}
 		
 		public override object Text {

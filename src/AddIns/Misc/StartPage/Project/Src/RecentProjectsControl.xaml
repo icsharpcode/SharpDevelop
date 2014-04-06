@@ -24,6 +24,30 @@
 					</TextBlock>
 				</DataTemplate>
 			</ListView.Resources>
+			<ListView.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Setter Property="ContextMenu">
+						<Setter.Value>
+							<ContextMenu>
+								<MenuItem Header="{core:Localize OpenFileTabEventHandler.FileContainingFolderInExplorer}">
+									<MenuItem.Style>
+										<Style TargetType="MenuItem">
+											<EventSetter Event="Click" Handler="openContainingFolderClick" />
+										</Style>
+									</MenuItem.Style>
+								</MenuItem>
+								<MenuItem Header="{core:Localize StartPage.StartMenu.RemoveRecentProject}">
+									<MenuItem.Style>
+										<Style TargetType="MenuItem">
+											<EventSetter Event="Click" Handler="removeRecentProjectClick" />
+										</Style>
+									</MenuItem.Style>
+								</MenuItem>
+							</ContextMenu>
+						</Setter.Value>
+					</Setter>
+				</Style>
+			</ListView.ItemContainerStyle>
 			<ListView.View>
 				<GridView>
 					<core:SortableGridViewColumn

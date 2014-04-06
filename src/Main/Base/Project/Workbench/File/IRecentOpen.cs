@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void ClearRecentFiles();
 		void ClearRecentProjects();
+		void RemoveRecentProject(FileName fileName);
 		void AddRecentFile(FileName fileName);
 		void AddRecentProject(FileName fileName);
 	}

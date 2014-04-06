@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -45,7 +46,8 @@ namespace ICSharpCode.PackageManagement
 
 		public static bool IsProjectPackage(this IPackage package)
 		{
-			return package.HasProjectContent();
+			return package.HasProjectContent() ||
+				package.DependencySets.SelectMany(p => p.Dependencies).Any();
 		}
 	}
 }
