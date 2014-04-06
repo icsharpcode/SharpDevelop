@@ -21,7 +21,7 @@ SharpDevelop can be compiled using the supplied .bat files, or in SharpDevelop i
 ###System Requirements (running SharpDevelop)
 
  - Windows Vista or higher.
- - [.NET 4.5][net45framework]
+ - .NET 4.5
  - [Visual C++ 2008 SP1 Runtime] [vc08sp1runtime]
 
 ###Extended Requirements (building SharpDevelop)
@@ -116,7 +116,8 @@ SharpDevelop can be compiled using the supplied .bat files, or in SharpDevelop i
 * Tomasz Tretkowski
 * Troy Simpson
 
-######Copyright 2014 AlphaSierraPapa for the SharpDevelop team. SharpDevelop is distributed under the MIT license.
+Copyright 2014 AlphaSierraPapa for the SharpDevelop team.
+SharpDevelop is distributed under the MIT license.
 
 [officialwebsite]:http://www.icsharpcode.net/OpenSource/SD/Default.aspx
 [officialforum]:http://community.sharpdevelop.net/forums/
@@ -139,4 +140,3 @@ SharpDevelop can be compiled using the supplied .bat files, or in SharpDevelop i
 [nuget]: https://nuget.codeplex.com/
 [nunit]: http://www.nunit.org/
 [wix]: https://wix.codeplex.com/
-[net45framework]: http://www.microsoft.com/en-au/download/details.aspx?id=30653
