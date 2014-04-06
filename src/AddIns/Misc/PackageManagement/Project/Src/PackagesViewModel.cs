@@ -275,11 +275,6 @@ namespace ICSharpCode.PackageManagement
 			return null;
 		}
 		
-		protected virtual bool IsProjectPackage (IPackage package)
-		{
-			return package.IsProjectPackage();
-		}
-		
 		/// <summary>
 		/// Allows filtering of the packages before paging the results. Call base class method
 		/// to run default filtering.

@@ -21,9 +21,6 @@ using ICSharpCode.PackageManagement;
 
 namespace PackageManagement.Tests.Helpers
 {
-	/// <summary>
-	/// Description of TestablePackagesViewModels.
-	/// </summary>
 	public class TestablePackagesViewModels : PackagesViewModels
 	{
 		public TestablePackagesViewModels(
@@ -31,15 +28,15 @@ namespace PackageManagement.Tests.Helpers
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IThreadSafePackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
-			ITaskFactory taskFactory) : base()
+			ITaskFactory taskFactory)
 		{
 			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, actionRunner);
 			var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
 			
-			AvailablePackagesViewModel = new TestableAvailablePackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			AvailablePackagesViewModel = new AvailablePackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, updatedPackageViewModelFactory, taskFactory);
-			RecentPackagesViewModel = new TestableRecentPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			RecentPackagesViewModel = new RecentPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 		}
 	}
 }

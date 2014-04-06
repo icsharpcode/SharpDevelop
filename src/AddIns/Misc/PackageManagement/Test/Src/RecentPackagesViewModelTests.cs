@@ -27,7 +27,7 @@ namespace PackageManagement.Tests
 	[TestFixture]
 	public class RecentPackagesViewModelTests
 	{
-		TestableRecentPackagesViewModel viewModel;
+		RecentPackagesViewModel viewModel;
 		PackageManagementEvents packageManagementEvents;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		FakeTaskFactory taskFactory;
@@ -43,7 +43,7 @@ namespace PackageManagement.Tests
 			taskFactory = new FakeTaskFactory();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
 			packageManagementEvents = new PackageManagementEvents();
-			viewModel = new TestableRecentPackagesViewModel(
+			viewModel = new RecentPackagesViewModel(
 				new FakePackageManagementSolution(),
 				packageManagementEvents,
 				registeredPackageRepositories,
