@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -105,9 +106,7 @@ namespace AddInScout
 				
 				lvi.SubItems.Add(c.Properties.Contains("class") ? c.Properties["class"] : "");
 				
-				foreach (ICondition condition in c.Conditions) {
-					lvi.SubItems.Add(condition.Name + ", " + condition.Action);
-				}
+				lvi.SubItems.Add(string.Join(";", c.Conditions.Select(a => a.Name + ": " + a.Action)));
 				CodonLV.Items.Add(lvi);
 			}
 		}
