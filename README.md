@@ -26,12 +26,12 @@ SharpDevelop can be compiled using the supplied .bat files, or in SharpDevelop i
 
 ###Extended Requirements (building SharpDevelop)
 
- - [.NET 3.5 SP1][net35sp1]
- - [.NET 4.5 SDK][net45framwork] (part of [Windows SDK 8.0][win8sdk])
+ - .NET 3.5 SP1
+ - .NET 4.5 SDK (part of Windows SDK 8.0)
  - Windows SDK 7.1 (?? not sure if this still is necessary...)
  - Windows SDK 7.0 (optional; C++ compiler needed for profiler)
- - [Windows PowerShell][winpowershell]
- - [SD git repository][sdgit8path] git must be available on your PATH
+ - Windows PowerShell
+ - if you have cloned the SD git repository: git must be available on your PATH
  
 ###Libraries and Integrated tools:
 
@@ -58,38 +58,25 @@ SharpDevelop can be compiled using the supplied .bat files, or in SharpDevelop i
 
 ###Reusable Libraries (developed as part of SharpDevelop):
 
-* [Avalon Edit][avalonedit]
+* AvalonEdit
 * Debugger.Core
-* [ICSharpCode.Core][icsharpcodecore]
-* [ICSharpCode.Decompiler][icsharpcodedecompiler]
-* [NRefactory][nrefactory]
-* [SharpTreeView][sharptreeview]
-* [WPF Designer][wpfdesign]
-
-[avalonedit]: https://github.com/icsharpcode/SharpDevelop/wiki/AvalonEdit
-[icsharpcodecore]: https://github.com/icsharpcode/SharpDevelop/tree/master/src/Main/Core
-[icsharpcodedecompiler]: https://github.com/icsharpcode/SharpDevelop/tree/master/src/Libraries/ICSharpCode.Decompiler
-[nrefactory]: https://github.com/icsharpcode/NRefactory
-[sharptreeview]: ]https://github.com/icsharpcode/SharpDevelop/tree/master/src/Libraries/SharpTreeView
-[wpfdesign]: https://github.com/icsharpcode/SharpDevelop/tree/master/src/AddIns/DisplayBindings/WpfDesign
+* ICSharpCode.Core
+* ICSharpCode.Decompiler
+* NRefactory
+* SharpTreeView
+* WPF Designer
 
 ###SharpDevelop Contributors:
 
 ####Developers
 
-* [Mike Krüger][mkrueger] (Project Founder)
-* [Daniel Grunwald][dgrunwald] (Technical Lead)
-* [Andreas Weizel][Rpinski]
-* [Matt Ward][mrward]
+* Mike Krüger (Project Founder)
+* Daniel Grunwald (Technical Lead)
+* Andreas Weizel
+* Matt Ward
 * David Srbecky (Debugger)
 * Siegfried Pammer
-* [Peter Forstmeier][PeterForstmeier] (SharpDevelop Reports)	
-
-[mkrueger]: https://github.com/mkrueger
-[dgrunwald]: https://github.com/dgrunwald
-[Rpinski]: https://github.com/Rpinski
-[mrward]: https://github.com/mrward
-[PeterForstmeier]: https://github.com/PeterForstmeier
+* Peter Forstmeier (SharpDevelop Reports)	
 
 ####Non-Developers
 
@@ -98,7 +85,7 @@ SharpDevelop can be compiled using the supplied .bat files, or in SharpDevelop i
 
 ####Past Developers (Non-Exhuastive List)
 
-* [Mike Krüger][mkrueger] (Project Founder)
+* Mike Krüger (Project Founder)
 * Alexandre Semenov
 * Andrea Paatz
 * Christian Hornung
@@ -153,7 +140,3 @@ SharpDevelop can be compiled using the supplied .bat files, or in SharpDevelop i
 [nunit]: http://www.nunit.org/
 [wix]: https://wix.codeplex.com/
 [net45framework]: http://www.microsoft.com/en-au/download/details.aspx?id=30653
-[net35sp1]:http://www.microsoft.com/en-au/download/details.aspx?id=22
-[win8sdk]: http://msdn.microsoft.com/en-us/windows/desktop/hh852363.aspx
-[winpowershell]: http://www.microsoft.com/en-us/download/details.aspx?id=34595
-[sd8gitpath]: https://github.com/icsharpcode/SharpDevelop.git
