@@ -292,16 +292,15 @@ namespace CSharpBinding.FormattingStrategy
 		/// <returns><c>True</c>, if code has been formatted, <c>false</c> if auto-formatting is currently forbidden.</returns>
 		private bool FormatCode(ITextEditor textArea, int offset, int length, bool respectAutoFormattingSetting)
 		{
+			if (respectAutoFormattingSetting && !CSharpFormattingOptionsPersistence.AutoFormatting)
+				return false;
+			
 			using (textArea.Document.OpenUndoGroup()) {
 				// In any other case: Simply format selection or whole document
 				var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(SD.ProjectService.CurrentProject);
-				if (!respectAutoFormattingSetting || CSharpFormattingOptionsPersistence.AutoFormatting) {
-					CSharpFormatterHelper.Format(textArea, offset, length, formattingOptions.OptionsContainer);
-					return true;
-				}
+				CSharpFormatterHelper.Format(textArea, offset, length, formattingOptions.OptionsContainer);
+				return true;
 			}
-			
-			return false;
 		}
 		
 		public override void FormatLine(ITextEditor textArea, char ch) // used for comment tag formater/inserter
@@ -309,6 +308,24 @@ namespace CSharpBinding.FormattingStrategy
 			using (textArea.Document.OpenUndoGroup()) {
 				FormatLineInternal(textArea, textArea.Caret.Line, textArea.Caret.Offset, ch);
 			}
+		}
+		
+		bool FormatStatement(ITextEditor textArea, int cursorOffset, int formattingStartOffset)
+		{
+			var line = textArea.Document.GetLineByOffset(formattingStartOffset);
+			int lineOffset = cursorOffset;
+			// Walk up the lines until we arrive at previous statement or block
+			while (line.PreviousLine != null) {
+				line = line.PreviousLine;
+				string lineText = textArea.Document.GetText(line.Offset, line.Length);
+				if (IsLineEndOfStatement(lineText)) {
+					// Previous line is another statement, don't format it
+					break;
+				}
+				lineOffset = line.Offset;
+			}
+			
+			return FormatCode(textArea, lineOffset, cursorOffset - lineOffset, true);
 		}
 		
 		void FormatLineInternal(ITextEditor textArea, int lineNr, int cursorOffset, char ch)
@@ -407,21 +424,7 @@ namespace CSharpBinding.FormattingStrategy
 					var bracketSearchResult = textArea.Language.BracketSearcher.SearchBracket(textArea.Document, cursorOffset);
 					if (bracketSearchResult != null) {
 						// Format the block
-						var bracketLine = textArea.Document.GetLineByOffset(bracketSearchResult.OpeningBracketOffset);
-						int bracketLineOffset = bracketSearchResult.OpeningBracketOffset;
-						// Walk up the lines until we arrive at previous statement or block
-						// TODO This doesn't handle comments appended to line end!
-						while (bracketLine.PreviousLine != null) {
-							bracketLine = bracketLine.PreviousLine;
-							string lineText = textArea.Document.GetText(bracketLine.Offset, bracketLine.Length);
-							if (IsLineEndOfStatement(lineText)) {
-								// Previous line is another statement, don't format it
-								break;
-							}
-							bracketLineOffset = bracketLine.Offset;
-						}
-						
-						if (!FormatCode(textArea, bracketLineOffset, cursorOffset - bracketLineOffset, true)) {
+						if (!FormatStatement(textArea, cursorOffset, bracketSearchResult.OpeningBracketOffset)) {
 							// No auto-formatting seems to be active, at least indent the line
 							IndentLine(textArea, curLine);
 						}
@@ -429,8 +432,10 @@ namespace CSharpBinding.FormattingStrategy
 					break;
 				case ';':
 					// Format this line
-					var lineBeginningOffset = textArea.Document.GetOffset(lineNr, 0);
-					FormatCode(textArea, lineBeginningOffset, cursorOffset - lineBeginningOffset, true);
+					if (!FormatStatement(textArea, cursorOffset, cursorOffset)) {
+						// No auto-formatting seems to be active, at least indent the line
+						IndentLine(textArea, curLine);
+					}
 					break;
 				case '\n':
 					string lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
@@ -511,12 +516,12 @@ namespace CSharpBinding.FormattingStrategy
 				normalizedLine = lineText;
 			}
 			
-			normalizedLine = lineText.Trim(' ', '\t');
+			normalizedLine = normalizedLine.Trim(' ', '\t');
 			
 			if (normalizedLine.EndsWith("*/")) {
-				int indexOfMultiLineCommentStart = lineText.LastIndexOf("/*");
+				int indexOfMultiLineCommentStart = normalizedLine.LastIndexOf("/*");
 				if (indexOfMultiLineCommentStart > -1) {
-					normalizedLine = lineText.Substring(0, indexOfMultiLineCommentStart);
+					normalizedLine = normalizedLine.Substring(0, indexOfMultiLineCommentStart);
 				}
 			}
 			
