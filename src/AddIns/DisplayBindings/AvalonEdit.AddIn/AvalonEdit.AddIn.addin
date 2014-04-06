@@ -1,4 +1,4 @@
-﻿<AddIn name        = "AvalonEdit.AddIn"
+﻿<AddIn name        = "AvalonEdit AddIn"
        author      = "Daniel Grunwald"
        description = "The main text editor for SharpDevelop"
        addInManagerHidden="preinstalled">
