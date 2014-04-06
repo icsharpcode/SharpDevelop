@@ -7,7 +7,7 @@ Copyright 2014 AlphaSierraPapa for the SharpDevelop team.
 SharpDevelop is distributed under the MIT license.
 
 The #develop project started on September 11th, 2000. The project was initiated
-by Mike Krüger. In the course of the project, several contributors joined in.
+by Mike Krï¿½ger. In the course of the project, several contributors joined in.
 If you want to contribute see <https://github.com/icsharpcode/SharpDevelop/wiki/Joining-the-Team>.
 
 Overview
@@ -63,7 +63,7 @@ Reusable Libraries (developed as part of SharpDevelop):
 	WPF Designer
 
 SharpDevelop Contributors:
-	Mike Krüger (Project Founder)
+	Mike Krï¿½ger (Project Founder)
 	Daniel Grunwald (Technical Lead)
 	Andreas Weizel
 	Matt Ward
