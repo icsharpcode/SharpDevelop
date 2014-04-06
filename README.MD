@@ -1,4 +1,4 @@
-#develop (short for SharpDevelop) is a free IDE for .NET programming languages.
+***#develop (short for SharpDevelop)*** is a free IDE for .NET programming languages.
 Website: http://www.icsharpcode.net/OpenSource/SD/Default.aspx
 Forums: http://community.sharpdevelop.net/forums/
 Nightly builds: http://build.sharpdevelop.net/BuildArtefacts
