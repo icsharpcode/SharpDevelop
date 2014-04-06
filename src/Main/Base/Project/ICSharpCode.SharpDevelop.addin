@@ -1655,6 +1655,9 @@
 				<MenuItem id    = "AddReference"
 				          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+				<MenuItem id    = "AddServiceReference"
+				          label = "${res:ProjectComponent.ContextMenu.AddServiceReference}"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
 				<MenuItem id    = "AddWebReference"
 				          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
