@@ -74,6 +74,7 @@
 		<Condition name = "IsTextSelected" action="Disable">
 			<MenuItem id="AddWatchExpression"
 			          insertafter="AddExpressionBreakpoint"
+			          icon = "Icons.16x16.WatchAdd"
 			          label = "${res:MainWindow.Windows.Debug.AddWatchExpression}"
 			          shortcut="Ctrl|F7"
 			          class = "Debugger.AddIn.AddWatchExpressionCommand"/>
