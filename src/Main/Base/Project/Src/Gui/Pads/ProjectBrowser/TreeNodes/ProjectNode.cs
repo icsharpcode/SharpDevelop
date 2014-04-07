@@ -65,20 +65,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.project = project;
 			
 			Text = project.Name;
-			if (project.IsReadOnly) {
-				Text += StringParser.Parse(" (${res:Global.ReadOnly})");
-			}
-			
 			autoClearNodes = false;
 			
 			if (project is MissingProject) {
 				OpenedImage = ClosedImage = "ProjectBrowser.MissingProject";
 				this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/MissingProjectNode";
+				Text += StringParser.Parse(" (${res:Global.ErrorText})");
 			} else if (project is ErrorProject) {
 				OpenedImage = ClosedImage = "ProjectBrowser.ProjectWarning";
 				this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/UnknownProjectNode";
+				Text += StringParser.Parse(" (${res:Global.ErrorText})");
 			} else {
 				OpenedImage = ClosedImage = IconService.GetImageForProjectType(project.Language);
+				if (project.IsReadOnly) {
+					Text += StringParser.Parse(" (${res:Global.ReadOnly})");
+				}
 			}
 			Tag = project;
 			
