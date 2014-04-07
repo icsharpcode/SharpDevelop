@@ -71,11 +71,14 @@
 		          label = "${res:MainWindow.Windows.Debug.AddExpressionBreakpoint}"
 		          shortcut="Shift|F7"
 		          class = "Debugger.AddIn.AddExpressionBreakpointCommand"/>-->
-		<MenuItem id="AddWatchExpression"
-		          insertafter="AddExpressionBreakpoint"
-		          label = "${res:MainWindow.Windows.Debug.AddWatchExpression}"
-		          shortcut="Ctrl|F7"
-		          class = "Debugger.AddIn.AddWatchExpressionCommand"/>
+		<Condition name = "IsTextSelected" action="Disable">
+			<MenuItem id="AddWatchExpression"
+			          insertafter="AddExpressionBreakpoint"
+			          icon = "Icons.16x16.WatchAdd"
+			          label = "${res:MainWindow.Windows.Debug.AddWatchExpression}"
+			          shortcut="Ctrl|F7"
+			          class = "Debugger.AddIn.AddWatchExpressionCommand"/>
+		</Condition>
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/ClassBrowser/Toolbar">
