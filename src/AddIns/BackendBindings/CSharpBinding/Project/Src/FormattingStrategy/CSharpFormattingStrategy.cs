@@ -292,13 +292,19 @@ namespace CSharpBinding.FormattingStrategy
 		/// <returns><c>True</c>, if code has been formatted, <c>false</c> if auto-formatting is currently forbidden.</returns>
 		private bool FormatCode(ITextEditor textArea, int offset, int length, bool respectAutoFormattingSetting)
 		{
+			if ((offset > textArea.Document.TextLength) || ((offset + length) > textArea.Document.TextLength))
+				return false;
 			if (respectAutoFormattingSetting && !CSharpFormattingOptionsPersistence.AutoFormatting)
 				return false;
 			
 			using (textArea.Document.OpenUndoGroup()) {
-				// In any other case: Simply format selection or whole document
 				var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(SD.ProjectService.CurrentProject);
-				CSharpFormatterHelper.Format(textArea, offset, length, formattingOptions.OptionsContainer);
+				try {
+					CSharpFormatterHelper.Format(textArea, offset, length, formattingOptions.OptionsContainer);
+				} catch (Exception) {
+					// Exceptions in formatting might happen if code contains syntax errors, we have to catch them
+					return false;
+				}
 				return true;
 			}
 		}
@@ -313,8 +319,8 @@ namespace CSharpBinding.FormattingStrategy
 		bool FormatStatement(ITextEditor textArea, int cursorOffset, int formattingStartOffset)
 		{
 			var line = textArea.Document.GetLineByOffset(formattingStartOffset);
-			int lineOffset = cursorOffset;
-			// Walk up the lines until we arrive at previous statement or block
+			int lineOffset = line.Offset;
+			// Walk up the lines until we arrive at previous statement, block, comment or preprocessor directive
 			while (line.PreviousLine != null) {
 				line = line.PreviousLine;
 				string lineText = textArea.Document.GetText(line.Offset, line.Length);
@@ -522,11 +528,15 @@ namespace CSharpBinding.FormattingStrategy
 				int indexOfMultiLineCommentStart = normalizedLine.LastIndexOf("/*");
 				if (indexOfMultiLineCommentStart > -1) {
 					normalizedLine = normalizedLine.Substring(0, indexOfMultiLineCommentStart);
+				} else {
+					// Seems to be a multiline comment (no comment start on this line)
+					return true;
 				}
 			}
 			
 			// Usual statement endings
-			if (normalizedLine.EndsWith(";")
+			if (normalizedLine.StartsWith("#")
+				|| normalizedLine.EndsWith(";")
 				|| normalizedLine.EndsWith("{")
 				|| normalizedLine.EndsWith("}"))
 				return true;
