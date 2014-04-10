@@ -152,12 +152,12 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 						// Ensure that we have children
 						nsTreeNode.EnsureLazyChildren();
 						
-						ModelCollectionTreeNode entityTypeNode = null;
+						SharpTreeNode entityTypeNode = null;
 						
 						// Search in namespace node recursively
 						var foundEntityNode = nsTreeNode.FindChildNodeRecursively(
 							node => {
-								var treeNode = node as ModelCollectionTreeNode;
+								var treeNode = node as SharpTreeNode;
 								if (treeNode != null) {
 									var treeNodeTypeModel = treeNode.Model as ITypeDefinitionModel;
 									if (treeNodeTypeModel != null) {
