@@ -42,6 +42,7 @@ namespace CSharpBinding.OptionPanels
 		public CSharpGlobalFormattingOptionPanel()
 			: base(CSharpFormattingOptionsPersistence.GlobalOptions, true)
 		{
+			autoFormattingCheckBox.Visibility = Visibility.Visible;
 		}
 	}
 	
@@ -53,6 +54,7 @@ namespace CSharpBinding.OptionPanels
 		public CSharpSolutionFormattingOptionPanel()
 			: base(CSharpFormattingOptionsPersistence.SolutionOptions, true)
 		{
+			autoFormattingCheckBox.Visibility = Visibility.Collapsed;
 		}
 	}
 	
@@ -83,7 +85,7 @@ namespace CSharpBinding.OptionPanels
 		
 		public override bool SaveOptions()
 		{
-			return persistenceHelper.Save();
+			return persistenceHelper.Save() && base.SaveOptions();
 		}
 	}
 }

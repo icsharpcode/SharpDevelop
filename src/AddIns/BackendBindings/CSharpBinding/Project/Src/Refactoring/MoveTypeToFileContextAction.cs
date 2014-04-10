@@ -36,6 +36,7 @@ using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.SharpDevelop.Workbench;
+using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Parser;
 
 namespace CSharpBinding.Refactoring
@@ -108,7 +109,8 @@ namespace CSharpBinding.Refactoring
 			                                       || ch is UsingAliasDeclaration
 			                                       || ch is ExternAliasDeclaration);
 			StringBuilder newCode = new StringBuilder(header);
-			CSharpOutputVisitor visitor = new CSharpOutputVisitor(new StringWriter(newCode), FormattingOptionsFactory.CreateSharpDevelop());
+			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(compilation.GetProject());
+			CSharpOutputVisitor visitor = new CSharpOutputVisitor(new StringWriter(newCode), formattingOptions.OptionsContainer.GetEffectiveOptions());
 			
 			foreach (var topLevelUsing in topLevelUsings)
 				topLevelUsing.AcceptVisitor(visitor);

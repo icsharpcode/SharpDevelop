@@ -133,44 +133,13 @@ namespace CSharpBinding.OptionPanels
 			set { SetValue(AllowPresetsProperty, value); }
 		}
 		
-		public static readonly DependencyProperty AutoFormattingProperty =
-			DependencyProperty.Register("AutoFormatting", typeof(bool?), typeof(CSharpFormattingEditor),
-				new FrameworkPropertyMetadata());
-		
-		public bool? AutoFormatting {
-			get { return (bool?)GetValue(AutoFormattingProperty); }
-			set { SetValue(AutoFormattingProperty, value); }
-		}
-		
 		static void OnOptionsContainerPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			var editor = o as CSharpFormattingEditor;
 			if (editor != null) {
 				var newContainer = e.NewValue as CSharpFormattingOptionsContainer;
 				if (newContainer != null) {
-					newContainer.PropertyChanged += (sender, eventArgs) => 
-					{
-						if (eventArgs.PropertyName == "AutoFormatting") {
-							// Update AutoFormatting special option
-							if (editor.AutoFormatting != newContainer.AutoFormatting)
-								editor.AutoFormatting = newContainer.AutoFormatting;
-						}
-					};
-					editor.autoFormattingCheckBox.IsThreeState = (newContainer.Parent != null);
-					editor.AutoFormatting = newContainer.AutoFormatting;
 					editor.FillPresetList(newContainer);
-				}
-			}
-		}
-		
-		static void OnAutoFormattingPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-		{
-			var editor = o as CSharpFormattingEditor;
-			if (editor != null) {
-				var container = editor.OptionsContainer;
-				if (container != null) {
-					if (container.AutoFormatting != (bool?) e.NewValue)
-						container.AutoFormatting = (bool?) e.NewValue;
 				}
 			}
 		}

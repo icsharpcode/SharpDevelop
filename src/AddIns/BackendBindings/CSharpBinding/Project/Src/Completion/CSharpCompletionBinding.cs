@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding.Completion
 {
@@ -98,7 +99,8 @@ namespace CSharpBinding.Completion
 				completionContext.ProjectContent,
 				completionContext.TypeResolveContextAtCaret
 			);
-			cce.FormattingPolicy = FormattingOptionsFactory.CreateSharpDevelop();
+			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(completionContext.Compilation.GetProject());
+			cce.FormattingPolicy = formattingOptions.OptionsContainer.GetEffectiveOptions();
 			cce.EolMarker = DocumentUtilities.GetLineTerminator(completionContext.Document, currentLocation.Line);
 			
 			cce.IndentString = editor.Options.IndentationString;

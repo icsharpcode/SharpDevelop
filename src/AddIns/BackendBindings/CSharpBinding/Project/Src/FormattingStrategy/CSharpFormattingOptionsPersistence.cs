@@ -71,6 +71,16 @@ namespace CSharpBinding.FormattingStrategy
 			}
 		}
 		
+		public static bool AutoFormatting
+		{
+			get {
+				return SD.PropertyService.Get("CSharpBinding.Formatting.AutoFormatting", true);
+			}
+			set {
+				SD.PropertyService.Set("CSharpBinding.Formatting.AutoFormatting", value);
+			}
+		}
+		
 		public static CSharpFormattingOptionsPersistence GlobalOptions
 		{
 			get;

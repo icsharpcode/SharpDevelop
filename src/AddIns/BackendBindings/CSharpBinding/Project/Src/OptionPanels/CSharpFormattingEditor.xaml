@@ -297,24 +297,17 @@
 	</UserControl.Resources>
 	
 	<DockPanel>
-		<StackPanel DockPanel.Dock="Top" Orientation="Vertical">
-			<CheckBox
-				Name="autoFormattingCheckBox"
-				Content="{core:Localize CSharpBinding.Formatting.AutoFormat}"
-				IsThreeState="True" IsChecked="{Binding AutoFormatting}"
-				Margin="0,0,0,10"
-				Visibility="Collapsed"/>
-			<Grid
-				Visibility="{Binding Path=AllowPresets, Converter={StaticResource boolToVisibilityConverter}}">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="*" />
-				</Grid.ColumnDefinitions>
-				
-				<Button Grid.Column="0" Content="{core:Localize CSharpBinding.Formatting.ResetTo}" Click="ResetButton_Click" />
-				<ComboBox Name="presetComboBox" Grid.Column="1" Margin="3,0,0,0" ItemsSource="{Binding Presets}" />
-			</Grid>
-		</StackPanel>
+		<Grid
+			Visibility="{Binding Path=AllowPresets, Converter={StaticResource boolToVisibilityConverter}}"
+			DockPanel.Dock="Top">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			
+			<Button Grid.Column="0" Content="{core:Localize CSharpBinding.Formatting.ResetTo}" Click="ResetButton_Click" />
+			<ComboBox Name="presetComboBox" Grid.Column="1" Margin="3,0,0,0" ItemsSource="{Binding Presets}" />
+		</Grid>
 		
 		<sd:RestrictDesiredSize Margin="0,4,0,0">
 			<ScrollViewer VerticalScrollBarVisibility="Auto">

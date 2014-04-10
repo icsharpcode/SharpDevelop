@@ -21,6 +21,7 @@ using System.ComponentModel.Design;
 using System.Threading;
 
 using ICSharpCode.NRefactory.Utils;
+using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Parser;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -118,13 +119,13 @@ namespace CSharpBinding.Refactoring
 		
 		public Script StartScript()
 		{
-			var formattingOptions = FormattingOptionsFactory.CreateSharpDevelop();
+			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(resolver.Compilation.GetProject());
 			if (editor != null)
-				return new EditorScript(editor, this, formattingOptions);
+				return new EditorScript(editor, this, formattingOptions.OptionsContainer.GetEffectiveOptions());
 			else if (document == null || document is ReadOnlyDocument)
 				throw new InvalidOperationException("Cannot start a script in a read-only context");
 			else
-				return new DocumentScript(document, formattingOptions, this.TextEditorOptions);
+				return new DocumentScript(document, formattingOptions.OptionsContainer.GetEffectiveOptions(), this.TextEditorOptions);
 		}
 		
 		public IDocument Document {
