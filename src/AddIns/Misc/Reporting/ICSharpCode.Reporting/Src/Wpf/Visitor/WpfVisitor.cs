@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -59,15 +60,23 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		void PerformList(Canvas myCanvas, System.Collections.Generic.List<IExportColumn> exportedItems)
+		void PerformList(Canvas myCanvas, List<IExportColumn> exportedItems)
 		{
 			foreach (var element in exportedItems) {
 				var container = element as ExportContainer;
 				if (container != null) {
 					var containerCanvas = FixedDocumentCreator.CreateContainer(container);
 					CanvasHelper.SetPosition(containerCanvas,new Point(container.Location.X,container.Location.Y));
-					myCanvas.Children.Add(containerCanvas);
-					PerformList(containerCanvas,container.ExportedItems);
+					if (container is ExportRectangle) {
+						DrawRectangleAsContainer(container);
+						containerCanvas.Children.Add(UIElement);
+						myCanvas.Children.Add(containerCanvas);
+					} else {
+						//						var containerCanvas = FixedDocumentCreator.CreateContainer(container);
+						//					CanvasHelper.SetPosition(containerCanvas,new Point(container.Location.X,container.Location.Y));
+						myCanvas.Children.Add(containerCanvas);
+						PerformList(containerCanvas,container.ExportedItems);
+					}
 				} else {
 					var acceptor = element as IAcceptor;
 					acceptor.Accept(this);
@@ -75,14 +84,16 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				}
 			}
 		}
-		
+
+		void DrawRectangleAsContainer(ExportContainer container)
+		{
+			var rect = container as ExportRectangle;
+			if (rect != null) {
+				Visit(rect);
+			}
+		}
 		
 		public override void Visit(ExportText exportColumn){
-			/*			
-			var textBlock = FixedDocumentCreator.CreateTextBlock((ExportText)exportColumn,ShouldSetBackcolor(exportColumn));
-			CanvasHelper.SetPosition(textBlock,new Point(exportColumn.Location.X,exportColumn.Location.Y));
-			UIElement = textBlock;
-			*/
 			
 			var ft = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
 			var visual = new DrawingVisual();

@@ -16,6 +16,8 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System.Collections.Generic;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -24,10 +26,11 @@ namespace ICSharpCode.Reporting.Items
 	/// <summary>
 	/// Description of BaseRectangleItem.
 	/// </summary>
-	public class BaseRectangleItem:BaseGraphics
+	public class BaseRectangleItem:BaseGraphics,IReportContainer
 	{
 		public BaseRectangleItem()
 		{
+			Items = new List<IPrintableObject>();
 		}
 		
 		
@@ -45,5 +48,9 @@ namespace ICSharpCode.Reporting.Items
 			ex.EndLineCap = EndLineCap;
 			return ex;
 		}
+		
+
+		public List<IPrintableObject> Items {get;private set;}
+			
 	}
 }

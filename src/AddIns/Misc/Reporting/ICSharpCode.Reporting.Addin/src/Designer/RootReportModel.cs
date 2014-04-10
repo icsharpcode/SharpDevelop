@@ -45,8 +45,8 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		void PrintMargin( Graphics graphics)
 		{
 			string header = String.Format(System.Globalization.CultureInfo.CurrentCulture,
-				                "[Size : {0}] [Landscape : {1}]  [Bounds : {2}]",
-				                Page.Size, Landscape, PageMargin);
+				"[Size : {0}] [Landscape : {1}]  [Bounds : {2}]",
+				Page.Size, Landscape, PageMargin);
 			using (var font = DesignerGlobals.DesignerFont){
 				SizeF size = graphics.MeasureString(header,font);
 				graphics.DrawString(header,font,
