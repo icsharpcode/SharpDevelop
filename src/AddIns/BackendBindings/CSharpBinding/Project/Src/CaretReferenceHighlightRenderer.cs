@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows.Media;
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.NRefactory;
@@ -43,6 +44,7 @@ namespace CSharpBinding
 
 		ISymbolReference currentSymbolReference;
 		CancellationTokenSource caretMovementTokenSource;
+		DispatcherTimer timer;
 		List<ISegment> currentReferences;
 
 		Pen borderPen;
@@ -63,6 +65,11 @@ namespace CSharpBinding
 			this.backgroundBrush = new SolidColorBrush(DefaultFillColor);
 			this.borderPen.Freeze();
 			this.backgroundBrush.Freeze();
+			this.timer = new DispatcherTimer {
+				Interval = TimeSpan.FromMilliseconds(500)
+			};
+			timer.Tick += (sender, e) => ResolveAtCaret();
+				
 			editor.Caret.LocationChanged += CaretLocationChanged;
 			textView.VisualLinesChanged += VisualLinesChanged;
 			SD.ParserService.ParseInformationUpdated += ParseInformationUpdated;
@@ -134,6 +141,13 @@ namespace CSharpBinding
 
 		void CaretLocationChanged(object sender, EventArgs e)
 		{
+			timer.Stop();
+			timer.Start();
+		}
+		
+		void ResolveAtCaret()
+		{
+			timer.Stop();
 			if (caretMovementTokenSource != null)
 				caretMovementTokenSource.Cancel();
 			caretMovementTokenSource = new CancellationTokenSource();
