@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -53,6 +54,7 @@ namespace AddInScout
 			CodonLV.Columns.Add("Codon ID", 175,HorizontalAlignment.Left);
 			CodonLV.Columns.Add("Codon Class", 400,HorizontalAlignment.Left);
 			CodonLV.Columns.Add("Codon Condition -> Action on Fail", 600,HorizontalAlignment.Left);
+			CodonLV.Columns.Add("Label", 450, HorizontalAlignment.Left);
 			
 			ExtTextBox.Text = "Extension : ";
 			ExtTextBox.ReadOnly = true;
@@ -105,9 +107,8 @@ namespace AddInScout
 				
 				lvi.SubItems.Add(c.Properties.Contains("class") ? c.Properties["class"] : "");
 				
-				foreach (ICondition condition in c.Conditions) {
-					lvi.SubItems.Add(condition.Name + ", " + condition.Action);
-				}
+				lvi.SubItems.Add(string.Join(";", c.Conditions.Select(a => a.Name + ": " + a.Action)));
+				lvi.SubItems.Add(c.Properties.Contains("label") ? c.Properties["label"] : "");
 				CodonLV.Items.Add(lvi);
 			}
 		}
