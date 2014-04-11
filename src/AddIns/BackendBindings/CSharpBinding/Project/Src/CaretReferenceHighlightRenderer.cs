@@ -141,6 +141,8 @@ namespace CSharpBinding
 
 		void CaretLocationChanged(object sender, EventArgs e)
 		{
+			if (caretMovementTokenSource != null)
+				caretMovementTokenSource.Cancel();
 			timer.Stop();
 			timer.Start();
 		}
@@ -148,8 +150,6 @@ namespace CSharpBinding
 		void ResolveAtCaret()
 		{
 			timer.Stop();
-			if (caretMovementTokenSource != null)
-				caretMovementTokenSource.Cancel();
 			caretMovementTokenSource = new CancellationTokenSource();
 			var rr = SD.ParserService.Resolve(editor.FileName, editor.Caret.Location, editor.Document, cancellationToken: caretMovementTokenSource.Token);
 			SetCurrentSymbol(rr.GetSymbol());
