@@ -147,12 +147,15 @@ namespace CSharpBinding
 			timer.Start();
 		}
 		
-		void ResolveAtCaret()
+		async void ResolveAtCaret()
 		{
 			timer.Stop();
 			caretMovementTokenSource = new CancellationTokenSource();
-			var rr = SD.ParserService.Resolve(editor.FileName, editor.Caret.Location, editor.Document, cancellationToken: caretMovementTokenSource.Token);
-			SetCurrentSymbol(rr.GetSymbol());
+			try {
+				var rr = await SD.ParserService.ResolveAsync(editor.FileName, editor.Caret.Location, editor.Document, cancellationToken: caretMovementTokenSource.Token);
+				SetCurrentSymbol(rr.GetSymbol());
+			} catch (OperationCanceledException) {
+			}
 		}
 
 		IResolveVisitorNavigator InitNavigator(ICompilation compilation)
@@ -199,7 +202,7 @@ namespace CSharpBinding
 		void VisitVisibleNodes(AstNode node, IResolveVisitorNavigator currentNavigator, CSharpAstResolver resolver, int start, int end)
 		{
 			if (!CSharpAstResolver.IsUnresolvableNode(node))
-				currentNavigator.Resolved(node, resolver.Resolve(node, caretMovementTokenSource.Token));
+				currentNavigator.Resolved(node, resolver.Resolve(node));
 			for (var child = node.FirstChild; child != null; child = child.NextSibling) {
 				if (child.StartLocation.Line <= end && child.EndLocation.Line >= start)
 					VisitVisibleNodes(child, currentNavigator, resolver, start, end);
