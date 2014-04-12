@@ -25,23 +25,23 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class ExceptionThrowingRegisteredPackageRepositories : FakeRegisteredPackageRepositories
 	{
-		public Exception ExeptionToThrowWhenActiveRepositoryAccessed { get; set; }
+		public Exception ExceptionToThrowWhenActiveRepositoryAccessed { get; set; }
 		
 		public override IPackageRepository ActiveRepository {
 			get {
-				if (ExeptionToThrowWhenActiveRepositoryAccessed != null) {
-					throw ExeptionToThrowWhenActiveRepositoryAccessed;
+				if (ExceptionToThrowWhenActiveRepositoryAccessed != null) {
+					throw ExceptionToThrowWhenActiveRepositoryAccessed;
 				}
 				return base.ActiveRepository;
 			}
 		}
 		
-		public Exception ExeptionToThrowWhenRecentPackageRepositoryAccessed { get; set; }
+		public Exception ExceptionToThrowWhenRecentPackageRepositoryAccessed { get; set; }
 		
 		public override IRecentPackageRepository RecentPackageRepository {
 			get {
-				if (ExeptionToThrowWhenRecentPackageRepositoryAccessed != null) {
-					throw ExeptionToThrowWhenRecentPackageRepositoryAccessed;
+				if (ExceptionToThrowWhenRecentPackageRepositoryAccessed != null) {
+					throw ExceptionToThrowWhenRecentPackageRepositoryAccessed;
 				}
 				return base.RecentPackageRepository;
 			}

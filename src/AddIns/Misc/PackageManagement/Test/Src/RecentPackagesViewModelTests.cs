@@ -143,7 +143,7 @@ namespace PackageManagement.Tests
 		public void ReadPackages_ExceptionThrownWhenAccessingActiveRepository_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
 			var registeredRepositories = new ExceptionThrowingRegisteredPackageRepositories();
-			registeredRepositories.ExeptionToThrowWhenRecentPackageRepositoryAccessed = 
+			registeredRepositories.ExceptionToThrowWhenRecentPackageRepositoryAccessed = 
 				new Exception("Test");
 			CreateViewModel(registeredRepositories);
 			

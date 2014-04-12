@@ -385,7 +385,7 @@ namespace PackageManagement.Tests
 		public void ReadPackages_ExceptionThrownWhenAccessingActiveRepository_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
 			CreateExceptionThrowingRegisteredPackageRepositories();
-			exceptionThrowingRegisteredPackageRepositories.ExeptionToThrowWhenActiveRepositoryAccessed = 
+			exceptionThrowingRegisteredPackageRepositories.ExceptionToThrowWhenActiveRepositoryAccessed = 
 				new Exception("Test");
 			CreateViewModel(exceptionThrowingRegisteredPackageRepositories);
 			viewModel.ReadPackages();
@@ -620,6 +620,34 @@ namespace PackageManagement.Tests
 				package3
 			};
 			PackageCollectionAssert.AreEqual(expectedPackages, allPackages);
+		}
+		
+		[Test]
+		public void ReadPackages_ActiveRepositoryChangedWhichUsesInvalidUrl_InvalidUrlExceptionIsShownAsErrorMessage()
+		{
+			CreateExceptionThrowingRegisteredPackageRepositories();
+			CreateViewModel(exceptionThrowingRegisteredPackageRepositories);
+			var package = new FakePackage("Test", "0.1.0.0");
+			exceptionThrowingRegisteredPackageRepositories
+				.FakeActiveRepository
+				.FakePackages
+				.Add(package);
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			taskFactory.ClearAllFakeTasks();
+			exceptionThrowingRegisteredPackageRepositories.ExceptionToThrowWhenActiveRepositoryAccessed =
+				new Exception("Invalid url");
+			
+			viewModel.ReadPackages();
+			FakeTask<PackagesForSelectedPageResult> task = taskFactory.FirstFakeTaskCreated;
+			ApplicationException ex = Assert.Throws<ApplicationException>(() => task.ExecuteTaskButNotContinueWith());
+			task.Exception = new AggregateException(ex);
+			task.IsFaulted = true;
+			task.ExecuteContinueWith();
+			
+			Assert.AreEqual("Invalid url", ex.Message);
+			Assert.IsTrue(viewModel.HasError);
+			Assert.AreEqual("Invalid url", viewModel.ErrorMessage);
 		}
 	}
 }
