@@ -159,8 +159,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					loggerChain.HandleError(new BuildError(job.ProjectFileName, ".NET 3.5 SP1 is required to build this project."));
 					tcs.SetResult(false);
 				}
-			} else {
+			} else if (projectMinimumSolutionVersion <= SolutionFormatVersion.VS2010) {
 				BuildWorkerManager.MSBuild40.RunBuildJob(job, loggerChain, OnDone, cancellationToken);
+			} else {
+				BuildWorkerManager.MSBuild120.RunBuildJob(job, loggerChain, OnDone, cancellationToken);
 			}
 			return tcs.Task;
 		}

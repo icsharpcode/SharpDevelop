@@ -258,6 +258,7 @@
     <Content Include="app.config">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+    <None Include="Templates\SharpDevelop.Setup.sln" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj">
@@ -330,7 +331,6 @@
     <Folder Include="Dom\ClassBrowser" />
     <Folder Include="Editor" />
     <Folder Include="Editor\Bookmarks" />
-    <Folder Include="..\Base\Project\Project\TargetFrameworks" />
     <Folder Include="Templates" />
     <Folder Include="Project" />
     <Folder Include="Project\Build" />

@@ -26,12 +26,13 @@ If you want to contribute see ["Joining the team"](https://github.com/icsharpcod
 
 ##Extended Requirements (building #Develop)
 
+ - [Microsoft Build Tools 2013](www.microsoft.com/en-us/download/details.aspx?id=40760)
  - [.NET 3.5 SP1](http://www.microsoft.com/en-au/download/details.aspx?id=22)
- - [.NET 4.5 SDK](http://www.microsoft.com/en-au/download/details.aspx?id=30653) (part of [Windows SDK 8.0](http://msdn.microsoft.com/en-us/windows/desktop/hh852363.aspx))
- - Windows SDK 7.1 (?? not sure if this still is necessary...)
- - Windows SDK 7.0 (optional; C++ compiler needed for profiler)
+ - [.NET 4.5 SDK] (part of [Windows SDK 8.0](http://msdn.microsoft.com/en-us/windows/desktop/hh852363.aspx))
+ - [Windows SDK 7.1](http://www.microsoft.com/downloads/details.aspx?familyid=6B6C21D2-2006-4AFA-9702-529FA782D63B) (?? not sure if this still is necessary...)
+ - [Windows SDK 7.0](http://www.microsoft.com/en-us/download/details.aspx?id=3138) (optional; C++ compiler needed for profiler)
  - [Windows PowerShell](http://www.microsoft.com/en-us/download/details.aspx?id=34595)
- - [SD Git Repository](https://github.com/icsharpcode/SharpDevelop.git)
+ - If you have cloned the SD git repository: git must be available on your PATH
  
 ##Libraries and Integrated tools:
 
@@ -42,7 +43,7 @@ If you want to contribute see ["Joining the team"](https://github.com/icsharpcod
 * [ITextSharp](http://sourceforge.net/projects/itextsharp/)
 * [log4Net](https://github.com/apache/log4net)
 * Mono T4
-* [Mono.Cecil](https://github.com/jbevain/cecil): MIT License (thanks to **Jb Evain**) - 
+* [Mono.Cecil](https://github.com/jbevain/cecil): MIT License (thanks to **Jb Evain**)
 * [Sharp Svn](https://sharpsvn.open.collab.net/)
 * [SQLite](https://sqlite.org/)
 * [WPFToolkit](https://wpf.codeplex.com/)
@@ -58,8 +59,8 @@ If you want to contribute see ["Joining the team"](https://github.com/icsharpcod
 
 ##Reusable Libraries (Part of #Develop):
 
-* [AvalonEdit](https://github.com/icsharpcode/SharpDevelop/wiki/AvalonEdit)
-* Debugger.Core
+* [AvalonEdit](http://avalonedit.net/)
+* [Debugger.Core](https://github.com/icsharpcode/SharpDevelop/tree/master/src/AddIns/Debugger/Debugger.Core)
 * [ICSharpCode.Core](https://github.com/icsharpcode/SharpDevelop/tree/master/src/Main/Core)
 * [ICSharpCode.Decompiler](https://github.com/icsharpcode/SharpDevelop/tree/master/src/Libraries/ICSharpCode.Decompiler)
 * [NRefactory](https://github.com/icsharpcode/NRefactory)

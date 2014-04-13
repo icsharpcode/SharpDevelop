@@ -312,6 +312,12 @@
 								</File>
 								<File Id="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker40.exe.config" />
 							</Component>
+							<Component Id="ICSharpCodeSharpDevelopBuildWorker120Exe" Guid="AD70E129-48C0-4715-9551-BD9B4F610B79" DiskId="1">
+								<File Id="ICSharpCode.SharpDevelop.BuildWorker120.exe" Name="ICSharpCode.SharpDevelop.BuildWorker120.exe" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker120.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.BuildWorker120.exe" AssemblyManifest="ICSharpCode.SharpDevelop.BuildWorker120.exe">
+									<netfx:NativeImage Id="BuildWorker120NGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+								</File>
+								<File Id="ICSharpCode.SharpDevelop.BuildWorker120.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker120.exe.config" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker120.exe.config" />
+							</Component>
 							<Component Id="ICSharpCodeScriptingDll" Guid="62B44EFA-CCB4-4B73-B455-AE3C72B8121F" DiskId="1">
 								<File Id="ICSharpCode.Scripting.dll" Name="ICSharpCode.Scripting.dll" Source="..\..\bin\ICSharpCode.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Scripting.dll" AssemblyManifest="ICSharpCode.Scripting.dll" />
 							</Component>
