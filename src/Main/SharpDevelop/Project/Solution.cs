@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	class Solution : SolutionFolder, ISolution
 	{
 		FileName fileName;
-		FileName globalSettingsFileName;
+		FileName sdSettingsFileName;
 		DirectoryName directory;
 		readonly IProjectChangeWatcher changeWatcher;
 		readonly IFileService fileService;
@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.PlatformNames = new SolutionConfigurationOrPlatformNameCollection(this, true);
 			this.projects = new SynchronizedModelCollection<IProject>(new ProjectModelCollection(this));
 			this.FileName = fileName;
-			this.globalSettingsFileName = new FileName(fileName + ".sdsettings");
+			this.sdSettingsFileName = new FileName(fileName + ".sdsettings");
 			base.Name = fileName.GetFileNameWithoutExtension();
 			
 			this.globalSections = new SynchronizedModelCollection<SolutionSection>(new NullSafeSimpleModelCollection<SolutionSection>());
@@ -281,11 +281,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return preferences; }
 		}
 		
-		Properties globalPreferences = new Properties();
+		Properties sdSettings = new Properties();
 		
 		[Browsable(false)]
-		public Properties GlobalPreferences {
-			get { return globalPreferences; }
+		public Properties SDSettings {
+			get { return sdSettings; }
 		}
 		
 		string GetPreferencesKey()
@@ -297,7 +297,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			try {
 				preferences = SD.PropertyService.LoadExtraProperties(GetPreferencesKey());
-				globalPreferences = Properties.Load(globalSettingsFileName);
+				sdSettings = Properties.Load(sdSettingsFileName);
 			} catch (IOException) {
 			} catch (XmlException) {
 				// ignore errors about inaccessible or malformed files
@@ -321,7 +321,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			try {
 				SD.PropertyService.SaveExtraProperties(GetPreferencesKey(), preferences);
-				globalPreferences.Save(globalSettingsFileName);
+				if (sdSettings.IsDirty) {
+					sdSettings.Save(sdSettingsFileName);
+				}
 			} catch (IOException) {
 				// ignore errors writing to extra properties
 			}
