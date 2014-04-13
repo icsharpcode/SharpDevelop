@@ -126,6 +126,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		IProject startupProject;
 		
+		[Browsable(false)]
 		public IProject StartupProject {
 			get {
 				if (startupProject == null) {
@@ -231,6 +232,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		[Browsable(false)]
 		public IEnumerable<ISolutionItem> AllItems {
 			get {
 				return this.Items.Flatten(i => i is ISolutionFolder ? ((ISolutionFolder)i).Items : null);
@@ -274,12 +276,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Preferences
 		Properties preferences = new Properties();
 		
+		[Browsable(false)]
 		public Properties Preferences {
 			get { return preferences; }
 		}
 		
 		Properties globalPreferences = new Properties();
 		
+		[Browsable(false)]
 		public Properties GlobalPreferences {
 			get { return globalPreferences; }
 		}
@@ -369,6 +373,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region MSBuildProjectCollection
 		readonly Microsoft.Build.Evaluation.ProjectCollection msBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
 		
+		[Browsable(false)]
 		public Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection {
 			get { return msBuildProjectCollection; }
 		}
@@ -467,7 +472,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public event EventHandler ActiveConfigurationChanged = delegate { };
 		
+		[Browsable(false)]
 		public IConfigurationOrPlatformNameCollection ConfigurationNames { get; private set; }
+		[Browsable(false)]
 		public IConfigurationOrPlatformNameCollection PlatformNames { get; private set; }
 		
 		void CreateDefaultConfigurationsIfMissing()
@@ -498,6 +505,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		bool isDirty;
 		
+		[Browsable(false)]
 		public bool IsDirty {
 			get { return isDirty; }
 			set {
