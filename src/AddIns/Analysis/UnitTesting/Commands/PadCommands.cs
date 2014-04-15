@@ -54,6 +54,21 @@ namespace ICSharpCode.UnitTesting
 		}
 	}
 	
+	public class ExpandAllTestsCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (!(this.Owner is SharpTreeView))
+				return;
+			
+			var treeView = (SharpTreeView)this.Owner;
+			if (treeView.Root != null) {
+				foreach (var n in treeView.Root.Descendants())
+					n.IsExpanded = true;
+			}
+		}
+	}
+	
 	public class CollapseAllTestsCommand : AbstractMenuCommand
 	{
 		public override void Run()

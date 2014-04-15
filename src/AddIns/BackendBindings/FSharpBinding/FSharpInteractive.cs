@@ -108,6 +108,7 @@ namespace FSharpBinding
 		string FindFSharpInteractiveInProgramFilesFolder()
 		{
 			var fileNames = new string [] {
+				@"Microsoft SDKs\F#\3.1\Framework\v4.0\Fsi.exe",
 				@"Microsoft SDKs\F#\3.0\Framework\v4.0\Fsi.exe",
 				@"Microsoft F#\v4.0\Fsi.exe"
 			};
