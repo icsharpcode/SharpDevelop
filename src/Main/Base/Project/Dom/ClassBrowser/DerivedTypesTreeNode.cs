@@ -38,17 +38,13 @@ namespace ICSharpCode.SharpDevelop.Dom.ClassBrowser
 				throw new ArgumentNullException("definition");
 			this.definition = definition;
 			this.text = SD.ResourceService.GetString("MainWindow.Windows.ClassBrowser.DerivedTypes");
+			LazyLoading = true;
 		}
-
+		
 		protected override void OnIsVisibleChanged()
 		{
 			base.OnIsVisibleChanged();
-			if (IsVisible) {
-				definition.Updated += OnDefinitionUpdated;
-			} else {
-				definition.Updated -= OnDefinitionUpdated;
-				LazyLoading = true;
-			}
+			definition.Updated += OnDefinitionUpdated;
 		}
 		
 		void OnDefinitionUpdated(object sender, EventArgs e)
