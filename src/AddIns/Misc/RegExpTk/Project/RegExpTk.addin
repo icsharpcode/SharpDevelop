@@ -1,4 +1,4 @@
-<AddIn name        = "Regular expressions toolkit"
+<AddIn name        = "Regular Expressions Toolkit"
        author      = "Markus Palme"
        copyright   = "prj:///doc/copyright.txt"
        description = "Testing toolkit for regular expressions"

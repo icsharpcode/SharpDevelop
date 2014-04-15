@@ -1,4 +1,4 @@
-﻿<AddIn name        = "Profiler.AddIn"
+﻿<AddIn name        = "Profiler AddIn"
        author      = "Siegfried Pammer"
        url         = ""
        description = "Integrates a Profiler with GUI into SharpDevelop"

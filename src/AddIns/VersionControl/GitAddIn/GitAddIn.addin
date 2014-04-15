@@ -1,4 +1,4 @@
-﻿<AddIn name        = "GitAddIn"
+﻿<AddIn name        = "Git AddIn"
        author      = "Daniel Grunwald"
        description = "Git Binding"
        addInManagerHidden = "preinstalled">

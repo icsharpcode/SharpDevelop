@@ -1,4 +1,4 @@
-﻿<AddIn name        = "ILSpyAddIn"
+﻿<AddIn name        = "ILSpy AddIn"
        author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
        description = "Can open ILSpy on a selected class or member."
