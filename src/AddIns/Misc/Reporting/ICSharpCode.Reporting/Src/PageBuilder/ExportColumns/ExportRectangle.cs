@@ -17,36 +17,16 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Drawing.Drawing2D;
-using ICSharpCode.Reporting.Arrange;
-using ICSharpCode.Reporting.Exporter.Visitors;
-using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 {
 	/// <summary>
 	/// Description of ExportRectangle.
 	/// </summary>
-	public class ExportRectangle:ExportContainer,IExportGraphics,IAcceptor
+	public class ExportRectangle:ExportContainer,IExportGraphics
 	{
-		public ExportRectangle() {
-			ExportedItems = new List<IExportColumn>();
-		}
-		
-		public void Accept(IVisitor visitor)
-		{
-			visitor.Visit(this);
-		}
 
-		public List<IExportColumn> ExportedItems {get;private set;}
-				
-		
-//		public override IMeasurementStrategy MeasurementStrategy()
-//		{
-//			throw new NotImplementedException();
-//		}
-		
 		public int Thickness {get;set;}
 		
 		public DashStyle DashStyle {get;set;}

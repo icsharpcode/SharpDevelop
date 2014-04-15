@@ -17,16 +17,17 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using ICSharpCode.Reporting.WpfReportViewer.Visitor.Graphics;
+using System.Windows.Shapes;
 
 namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 {
@@ -54,44 +55,48 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		public override void Visit(ExportContainer exportContainer){
 			
 			sectionCanvas = FixedDocumentCreator.CreateContainer(exportContainer);
-			sectionCanvas.Name = exportContainer.Name;
-			CanvasHelper.SetPosition(sectionCanvas,new Point(exportContainer.Location.X,exportContainer.Location.Y));
-			PerformList(sectionCanvas,exportContainer.ExportedItems);
+			sectionCanvas = RenderSectionContainer(exportContainer);
 		}
+	
 		
-		
-		void PerformList(Canvas myCanvas, List<IExportColumn> exportedItems)
-		{
-			foreach (var element in exportedItems) {
-				var container = element as ExportContainer;
-				if (container != null) {
-					var containerCanvas = FixedDocumentCreator.CreateContainer(container);
-					CanvasHelper.SetPosition(containerCanvas,new Point(container.Location.X,container.Location.Y));
-					if (container is ExportRectangle) {
-						DrawRectangleAsContainer(container);
-						containerCanvas.Children.Add(UIElement);
-						myCanvas.Children.Add(containerCanvas);
-					} else {
-						//						var containerCanvas = FixedDocumentCreator.CreateContainer(container);
-						//					CanvasHelper.SetPosition(containerCanvas,new Point(container.Location.X,container.Location.Y));
-						myCanvas.Children.Add(containerCanvas);
-						PerformList(containerCanvas,container.ExportedItems);
+		Canvas RenderSectionContainer (ExportContainer container) {
+			var canvas = FixedDocumentCreator.CreateContainer(container);
+			foreach (var element in container.ExportedItems) {
+				if (IsContainer(element)) {
+					if (element is ExportRectangle) {
+						var graphContainer = RenderGraphicsContainer((IExportContainer)element);
+						canvas.Children.Add(graphContainer);
 					}
 				} else {
 					var acceptor = element as IAcceptor;
 					acceptor.Accept(this);
-					myCanvas.Children.Add(UIElement);
+					canvas.Children.Add(UIElement);
 				}
 			}
+			canvas.Background = FixedDocumentCreator.ConvertBrush(container.BackColor);
+			return canvas;
 		}
-
-		void DrawRectangleAsContainer(ExportContainer container)
+	
+		
+		bool IsContainer (IExportColumn column) {
+			return (column is ExportContainer)|| (column is ExportRectangle);
+		}
+		
+		
+		Canvas RenderGraphicsContainer(IExportContainer container)
 		{
+			
 			var rect = container as ExportRectangle;
+			var graphCanvas = FixedDocumentCreator.CreateContainer(rect);
+			CanvasHelper.SetPosition(graphCanvas, container.Location.ToWpf());
+			graphCanvas.Background = FixedDocumentCreator.ConvertBrush(container.BackColor);
 			if (rect != null) {
 				Visit(rect);
+				graphCanvas.Children.Add(UIElement);
 			}
+			return graphCanvas;
 		}
+		
 		
 		public override void Visit(ExportText exportColumn){
 			
@@ -128,18 +133,24 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		public override void Visit(ExportRectangle exportRectangle)
 		{
-			var pen = FixedDocumentCreator.CreateWpfPen(exportRectangle);
-			
-			var visual = new DrawingVisual();
-			using (var dc = visual.RenderOpen()){
-				dc.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportRectangle.BackColor),
-				                 pen,
-				                 new Rect(exportRectangle.Location.X,exportRectangle.Location.Y,
-				                          exportRectangle.Size.Width,exportRectangle.Size.Height));
+			var border = new Border();
+			border.BorderThickness = new Thickness(exportRectangle.Thickness);
+			border.BorderBrush = FixedDocumentCreator.ConvertBrush(exportRectangle.ForeColor);
+			border.Background = FixedDocumentCreator.ConvertBrush(exportRectangle.BackColor);
+			border.Width = exportRectangle.Size.Width;
+			border.Height = exportRectangle.Size.Height;
+			CanvasHelper.SetPosition(border, new Point(0,0));
+			var sp = new StackPanel();
+			sp.Orientation = Orientation.Horizontal;
+			foreach (var element in exportRectangle.ExportedItems) {
+				var acceptor = element as IAcceptor;
+					acceptor.Accept(this);
+				sp.Children.Add(UIElement);
 			}
-			var dragingElement = new DrawingElement(visual);
-			UIElement = dragingElement;
+			border.Child = sp;
+			UIElement = border;
 		}
+		
 		
 		public override void Visit(ExportCircle exportCircle)
 		{

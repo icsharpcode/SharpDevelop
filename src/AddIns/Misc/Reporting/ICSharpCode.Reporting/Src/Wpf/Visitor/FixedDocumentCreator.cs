@@ -53,76 +53,12 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		public static Canvas CreateContainer(ExportContainer container)	{
 			var canvas = CreateCanvas(container);
 			var size = container.DesiredSize.ToWpf();
+			CanvasHelper.SetPosition(canvas,new Point(container.Location.X,container.Location.Y));
 			canvas.Measure(size);
 			canvas.Arrange(new Rect(new Point(),size ));
 			canvas.UpdateLayout();
 			return canvas;
 		}
-
-		/*
-		public static TextBlock CreateTextBlock(ExportText exportText,bool setBackcolor){
-			
-			var textBlock = new TextBlock();
-
-			textBlock.Foreground = ConvertBrush(exportText.ForeColor);
-			
-			if (setBackcolor) {
-				textBlock.Background = ConvertBrush(exportText.BackColor);
-			}
-			 
-			SetFont(textBlock,exportText);
-			
-			textBlock.TextWrapping = TextWrapping.Wrap;
-			
-			CheckForNewLine (textBlock,exportText);
-			SetContentAlignment(textBlock,exportText);
-			MeasureTextBlock (textBlock,exportText);
-			return textBlock;
-		}
-		*/
-		
-		/*
-		static void CheckForNewLine(TextBlock textBlock,ExportText exportText) {
-			string [] inlines = exportText.Text.Split(Environment.NewLine.ToCharArray());
-			for (int i = 0; i < inlines.Length; i++) {
-				if (inlines[i].Length > 0) {
-					textBlock.Inlines.Add(new Run(inlines[i]));
-					textBlock.Inlines.Add(new LineBreak());
-				}
-			}
-			var li = textBlock.Inlines.LastInline;
-			textBlock.Inlines.Remove(li);
-		}
-		
-		
-		static void MeasureTextBlock(TextBlock textBlock,ExportText exportText)
-		{
-			var wpfSize = MeasureTextInWpf(exportText);
-			textBlock.Width = wpfSize.Width;
-			textBlock.Height = wpfSize.Height;
-		}	
-		
-		*/
-		
-		/*
-		static Size MeasureTextInWpf(ExportText exportText){
-			
-			if (exportText.CanGrow) {
-				var formattedText = NewMethod(exportText);
-				
-				formattedText.MaxTextWidth = exportText.DesiredSize.Width * 96.0 / 72.0;
-				
-				formattedText.SetFontSize(Math.Floor(exportText.Font.Size  * 96.0 / 72.0));
-				
-				var size = new Size {
-					Width = formattedText.WidthIncludingTrailingWhitespace,
-					Height = formattedText.Height + 6};
-				return size;
-			}
-			return new Size(exportText.Size.Width,exportText.Size.Height);
-		}
-
-		*/
 		
 		
 		public static FormattedText CreateFormattedText(ExportText exportText)
