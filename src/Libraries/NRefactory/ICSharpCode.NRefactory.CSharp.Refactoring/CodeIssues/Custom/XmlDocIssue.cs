@@ -38,25 +38,25 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[IssueDescription("Validate Xml documentation",
-	                   Description = "Validate Xml docs",
-	                   Category = IssueCategories.CompilerWarnings,
-	                   Severity = Severity.Warning)]
+		Description = "Validate Xml docs",
+		Category = IssueCategories.CompilerWarnings,
+		Severity = Severity.Warning)]
 	public class XmlDocIssue : GatherVisitorCodeIssueProvider
 	{
 		protected override IGatherVisitor CreateVisitor(BaseRefactoringContext context)
 		{
 			return new GatherVisitor(context);
 		}
-
+		
 		class GatherVisitor : GatherVisitorBase<XmlDocIssue>
 		{
 			readonly List<Comment> storedXmlComment = new List<Comment>();
-
+			
 			public GatherVisitor(BaseRefactoringContext ctx)
 				: base (ctx)
 			{
 			}
-
+			
 			void InvalideXmlComments()
 			{
 				if (storedXmlComment.Count == 0)
@@ -77,37 +77,37 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				));
 				storedXmlComment.Clear();
 			}
-
+			
 			public override void VisitComment(Comment comment)
 			{
 				if (comment.CommentType == CommentType.Documentation)
 					storedXmlComment.Add(comment);
 			}
-
+			
 			public override void VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration)
 			{
 				InvalideXmlComments();
 				base.VisitNamespaceDeclaration(namespaceDeclaration);
 			}
-
+			
 			public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 			{
 				InvalideXmlComments();
 				base.VisitUsingDeclaration(usingDeclaration);
 			}
-
+			
 			public override void VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration)
 			{
 				InvalideXmlComments();
 				base.VisitUsingAliasDeclaration(usingDeclaration);
 			}
-
+			
 			public override void VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration)
 			{
 				InvalideXmlComments();
 				base.VisitExternAliasDeclaration(externAliasDeclaration);
 			}
-
+			
 			TextLocation TranslateOffset(int offset)
 			{
 				int line = storedXmlComment.First().StartLocation.Line;
@@ -120,7 +120,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				return TextLocation.Empty;
 			}
-
+			
 			void AddXmlIssue(int offset, int length, string str)
 			{
 				var textLocation = TranslateOffset(offset);
@@ -150,14 +150,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				foreach (var cmt in storedXmlComment)
 					xml.Append(cmt.Content + "\n");
 				xml.Append("</root>\n");
-
+				
 				var doc = new AXmlParser().Parse(new StringTextSource(xml.ToString()));
-
+				
 				var stack = new Stack<AXmlObject>();
 				stack.Push(doc);
 				foreach (var err in doc.SyntaxErrors)
 					AddXmlIssue(err.StartOffset - firstline.Length, err.EndOffset - err.StartOffset, err.Description);
-
+				
 				while (stack.Count > 0) {
 					var cur = stack.Pop();
 					var el = cur as AXmlElement;
@@ -183,6 +183,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								var m = member as IParameterizedMember;
 								if (m != null && m.Parameters.Any(p => p.Name == name.Value))
 									break;
+								var dtype = member as ITypeDefinition;
+								if ((dtype != null) && (dtype.Kind == TypeKind.Delegate)) {
+									var invokeMethod = dtype.Methods.FirstOrDefault(method => method.Name == "Invoke");
+									if ((invokeMethod != null) && invokeMethod.Parameters.Any(p => p.Name == name.Value))
+										break;
+								}
 								if (name.Value == "value" && member != null && (member.SymbolKind == SymbolKind.Property || member.SymbolKind == SymbolKind.Indexer || member.SymbolKind == SymbolKind.Event) && el.Name == "paramref")
 									break;
 								AddXmlIssue(name.ValueSegment.Offset - firstline.Length + 1, name.ValueSegment.Length - 2, string.Format(ctx.TranslateString("Parameter '{0}' not found"), name.Value));
@@ -204,7 +210,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 										trctx = trctx.WithUsingScope(state.CurrentUsingScope);
 									var cdc = new CSharpDocumentationComment (emptySource, trctx);
 									var entity = cdc.ResolveCref(cref.Value);
-
+									
 									if (entity == null) {
 										AddXmlIssue(cref.ValueSegment.Offset - firstline.Length + 1, cref.ValueSegment.Length - 2, string.Format(ctx.TranslateString("Cannot find reference '{0}'"), cref.Value));
 									}
@@ -212,15 +218,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 									AddXmlIssue(cref.ValueSegment.Offset - firstline.Length + 1, cref.ValueSegment.Length - 2, string.Format(ctx.TranslateString("Reference parsing error '{0}'."), e.Message));
 								}
 								break;
-
-						}
+								
+					}
 					}
 					foreach (var child in cur.Children)
 						stack.Push(child);
 				}
 				storedXmlComment.Clear();
 			}
-
+			
 			protected virtual void VisitXmlChildren(AstNode node, Action checkDocumentationAction)
 			{
 				AstNode next;
@@ -231,7 +237,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					child = next;
 				}
 				checkDocumentationAction();
-
+				
 				for (; child != null; child = next) {
 					// Store next to allow the loop to continue
 					// if the visitor removes/replaces child.
@@ -240,47 +246,47 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				InvalideXmlComments();
 			}
-
+			
 			protected virtual void VisitXmlChildren(AstNode node)
 			{
 				VisitXmlChildren(node, () => CheckXmlDoc(node));
 			}
-
+			
 			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 			{
 				VisitXmlChildren(typeDeclaration);
 			}
-
+			
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 			{
 				VisitXmlChildren(methodDeclaration);
 			}
-
+			
 			public override void VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration)
 			{
 				VisitXmlChildren(delegateDeclaration);
 			}
-
+			
 			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
 			{
 				VisitXmlChildren(constructorDeclaration);
 			}
-
+			
 			public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
 			{
 				VisitXmlChildren(eventDeclaration);
 			}
-
+			
 			public override void VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration)
 			{
 				VisitXmlChildren(destructorDeclaration);
 			}
-
+			
 			public override void VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration)
 			{
 				VisitXmlChildren(enumMemberDeclaration);
 			}
-
+			
 			public override void VisitEventDeclaration(EventDeclaration eventDeclaration)
 			{
 				VisitXmlChildren(eventDeclaration, () => {
@@ -289,7 +295,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 				});
 			}
-
+			
 			public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 			{
 				VisitXmlChildren(fieldDeclaration, () => {
@@ -298,17 +304,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 				});
 			}
-
+			
 			public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
 			{
 				VisitXmlChildren(indexerDeclaration);
 			}
-
+			
 			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 			{
 				VisitXmlChildren(propertyDeclaration);
 			}
-
+			
 			public override void VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration)
 			{
 				VisitXmlChildren(operatorDeclaration);
