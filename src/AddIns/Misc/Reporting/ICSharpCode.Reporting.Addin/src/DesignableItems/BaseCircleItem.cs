@@ -1,31 +1,32 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Peter Forstmeier
- * Date: 05.04.2014
- * Time: 17:23
+ * Date: 17.04.2014
+ * Time: 19:53
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using ICSharpCode.Reporting.Addin.DesignableItems;
 using ICSharpCode.Reporting.Addin.Designer;
 using ICSharpCode.Reporting.Addin.TypeProvider;
+
 
 namespace ICSharpCode.Reporting.Addin.DesignableItems
 {
 	/// <summary>
-	/// Description of BaseRectangleItem.
+	/// Description of BaseCircleItem.
 	/// </summary>
 	/// 
 	[Designer(typeof(ContainerDesigner))]
-	class BaseRectangleItem:AbstractGraphicItem
+	class BaseCircleItem:AbstractGraphicItem
 	{
-		public BaseRectangleItem()
+		public BaseCircleItem()
 		{
-			TypeDescriptor.AddProvider(new RectangleItemTypeProvider(), typeof(BaseRectangleItem));
+			TypeDescriptor.AddProvider(new CircleItemTypeProvider(), typeof(BaseCircleItem));
 		}
+		
 		
 		public override void Draw(Graphics graphics)
 		{
@@ -39,7 +40,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 				ClientRectangle.Bottom -1);
 			
 			using (var pen = new Pen(ForeColor,Thickness)) {
-				graphics.DrawRectangle(pen,rect);
+				graphics.DrawEllipse(pen,rect);
 			}
 			
 		}

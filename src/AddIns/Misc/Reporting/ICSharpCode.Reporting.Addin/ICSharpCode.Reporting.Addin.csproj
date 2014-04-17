@@ -76,7 +76,6 @@
   <ItemGroup>
     <Folder Include="Configuration" />
     <Folder Include="src" />
-    <Folder Include="src\DesignableItems\GraphicItems" />
     <Folder Include="src\DesignerBinding" />
     <Folder Include="src\Commands" />
     <Folder Include="src\Designer" />
@@ -96,6 +95,7 @@
     <Compile Include="src\Commands\ViewCommands.cs" />
     <Compile Include="src\DesignableItems\AbstractGraphicItem.cs" />
     <Compile Include="src\DesignableItems\AbstractItem.cs" />
+    <Compile Include="src\DesignableItems\BaseCircleItem.cs" />
     <Compile Include="src\DesignableItems\BaseLineItem.cs" />
     <Compile Include="src\DesignableItems\BaseRectangleItem.cs" />
     <Compile Include="src\DesignableItems\BaseSection.cs" />
@@ -135,6 +135,7 @@
     <Compile Include="src\Toolbox\SideTabItemDesigner.cs" />
     <Compile Include="src\Toolbox\ToolboxProvider.cs" />
     <Compile Include="src\TypeProvider\AbstractItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\CircleItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\DataItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\LineItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\RectangleItemTypeProvider.cs" />

@@ -70,23 +70,29 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 			};
 			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));	
 			
-			
-			//Grahics
+		
 			// Line
 			toolboxItem = new ToolboxItem(typeof(BaseLineItem)) {
 				DisplayName = ResourceService.GetString("SharpReport.Toolbar.Line"),
 				Bitmap = IconService.GetBitmap("Icons.16.16.SharpReport.Line")
 			};
-		
 			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));	
 		
 			
-				// Rectangle
+			// Rectangle
 			toolboxItem = new ToolboxItem(typeof(BaseRectangleItem)) {
 				DisplayName = ResourceService.GetString("SharpReport.Toolbar.Rectangle"),
 				Bitmap = RectangleBitmap()
 			};
 			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
+			
+			//Circle
+			toolboxItem = new ToolboxItem(typeof(BaseCircleItem)) {
+				DisplayName = ResourceService.GetString("SharpReport.Toolbar.Circle"),
+				Bitmap = CircleBitmap()
+			};
+			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
+				
 	/*
 			//GroupHeader
 			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.GroupHeader));
@@ -117,13 +123,6 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 
 			//Grahics
 		
-			// Circle
-			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseCircleItem));
-			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.Circle");
-			tb.Bitmap = GlobalValues.CircleBitmap();
-			sideTab.Items.Add(new SideTabItemDesigner(tb));
-			
-		
 			// Image
 			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseImageItem));
 			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.Image");
@@ -142,6 +141,24 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 			}
 			return b;
 		}
+		
+		
+		/// <summary>
+		/// ToolboxIcon for ReportCircle
+		/// </summary>
+		/// <returns>Bitmap</returns>
+		static Bitmap CircleBitmap()
+		{
+			Bitmap b = new Bitmap (19,19);
+			using (Graphics g = Graphics.FromImage (b)){
+				g.DrawEllipse (new Pen(Color.Black, 1),
+				               1,1,
+				               17,17);
+			}
+			return b;
+		}
+		
+		
 		static SideTabItem  CreateToolboxPointer(SideTab sideTab)
 		{
 			var pointer = new SharpDevelopSideTabItem("Pointer") {

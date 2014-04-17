@@ -24,10 +24,8 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	/// <summary>
 	/// Description of ExportRectangle.
 	/// </summary>
-	public class ExportRectangle:ExportContainer,IExportGraphics
+	public class ExportRectangle:GraphicsContainer,IExportGraphics
 	{
-
-		public int Thickness {get;set;}
 		
 		public DashStyle DashStyle {get;set;}
 		

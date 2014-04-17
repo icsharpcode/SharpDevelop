@@ -168,6 +168,7 @@
     <Compile Include="Src\PageBuilder\ExportColumns\ExportRectangle.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportText.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportPage.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\GraphicsContainer.cs" />
     <Compile Include="Src\PageBuilder\FormPageBuilder.cs" />
     <Compile Include="Src\Pdf\PdfExporter.cs" />
     <Compile Include="Src\Pdf\PdfExtensions.cs" />
