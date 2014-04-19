@@ -79,6 +79,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Src\Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Src\Arrange\ArrangeStrategy.cs" />
     <Compile Include="Src\Arrange\MeasurementStrategy.cs" />
     <Compile Include="Src\BaseClasses\AbstractColumn.cs" />
