@@ -36,6 +36,8 @@
 		</GroupBox>
 		<GroupBox Margin="5" Header="{sd:Localize Dialog.Options.IDEOptions.Debugging.WithoutSource}">
 			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode}"
+				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.EnableJustMyCode}" />
 				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.AskForArguments}"
 				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.AskForArguments}" />
 				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.BreakAtBeginning}"

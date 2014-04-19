@@ -16,7 +16,7 @@ namespace ICSharpCode.ILSpyAddIn
 	{
 		public bool Handles(IMethod method)
 		{
-			return true;
+			return !SD.Debugger.Options.EnableJustMyCode;
 		}
 		
 		public bool IsCompilerGenerated(IMethod method)
