@@ -178,22 +178,16 @@ namespace CSharpBinding.FormsDesigner
 				case Accessibility.None:
 				case Accessibility.Private:
 					return MemberAttributes.Private;
-					break;
 				case Accessibility.Public:
 					return MemberAttributes.Public;
-					break;
 				case Accessibility.Protected:
 					return MemberAttributes.Family;
-					break;
 				case Accessibility.Internal:
 					return MemberAttributes.Assembly;
-					break;
 				case Accessibility.ProtectedOrInternal:
 					return MemberAttributes.FamilyOrAssembly;
-					break;
 				case Accessibility.ProtectedAndInternal:
 					return MemberAttributes.FamilyAndAssembly;
-					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
