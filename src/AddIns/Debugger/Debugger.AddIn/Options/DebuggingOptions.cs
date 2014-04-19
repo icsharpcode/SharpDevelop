@@ -24,12 +24,13 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using Debugger;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
 	public enum ShowIntegersAs { Decimal, Hexadecimal, Both };
 	
-	public class DebuggingOptions: Options
+	public class DebuggingOptions: Options, IDebuggerOptions
 	{
 		public static DebuggingOptions Instance {
 			get { return new DebuggingOptions(); }
