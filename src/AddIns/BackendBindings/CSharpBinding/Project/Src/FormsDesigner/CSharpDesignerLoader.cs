@@ -127,6 +127,7 @@ namespace CSharpBinding.FormsDesigner
 			
 			foreach (var field in designerClass.Fields) {
 				var codeField = new CodeMemberField(cv.Convert(field.Type), field.Name);
+				codeField.Attributes = GetAccessibility(field);
 				codeClass.Members.Add(codeField);
 			}
 			var codeNamespace = new CodeNamespace(designerClass.Namespace);
@@ -168,6 +169,33 @@ namespace CSharpBinding.FormsDesigner
 			} catch (Exception ex) {
 				SD.AnalyticsMonitor.TrackException(ex);
 				MessageService.ShowException(ex);
+			}
+		}
+
+		MemberAttributes GetAccessibility(IField field)
+		{
+			switch (field.Accessibility) {
+				case Accessibility.None:
+				case Accessibility.Private:
+					return MemberAttributes.Private;
+					break;
+				case Accessibility.Public:
+					return MemberAttributes.Public;
+					break;
+				case Accessibility.Protected:
+					return MemberAttributes.Family;
+					break;
+				case Accessibility.Internal:
+					return MemberAttributes.Assembly;
+					break;
+				case Accessibility.ProtectedOrInternal:
+					return MemberAttributes.FamilyOrAssembly;
+					break;
+				case Accessibility.ProtectedAndInternal:
+					return MemberAttributes.FamilyAndAssembly;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
 		}
 		
