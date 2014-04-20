@@ -139,39 +139,33 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		{
 			var border = CreateBorder(exportRectangle);
 			CanvasHelper.SetPosition(border, new Point(0,0));
-			var sp = new StackPanel();
-			sp.Orientation = Orientation.Horizontal;
+			var panel = new StackPanel();
+			panel.Orientation = Orientation.Horizontal;
 			foreach (var element in exportRectangle.ExportedItems) {
 				var acceptor = element as IAcceptor;
-					acceptor.Accept(this);
-				sp.Children.Add(UIElement);
+				acceptor.Accept(this);
+				panel.Children.Add(UIElement);
 			}
-			border.Child = sp;
+			border.Child = panel;
 			UIElement = border;
 		}
 		
 		
 		public override void Visit(ExportCircle exportCircle)
 		{
-			var pen = FixedDocumentCreator.CreateWpfPen(exportCircle);
-			var rad = CalcRad(exportCircle.Size);
+			var containerCanvas = new Canvas();
+		
+			var drawingElement = CircleVisual(exportCircle);
 			
-			var visual = new DrawingVisual();
-			using (var dc = visual.RenderOpen()){
-				
-				dc.DrawEllipse(FixedDocumentCreator.ConvertBrush(exportCircle.BackColor),
-				                 pen,
-				                 new Point(exportCircle.Location.X + rad.X,
-				                           exportCircle.Location.Y + rad.Y),
-				                 rad.X,
-				                 rad.Y);
-				                           
-				                 
-			}
-			var dragingElement = new DrawingElement(visual);
-			UIElement = dragingElement;
+			containerCanvas.Children.Add(drawingElement);
+			foreach (var element in exportCircle.ExportedItems) {
+					var acceptor = element as IAcceptor;
+					acceptor.Accept(this);
+					containerCanvas.Children.Add(UIElement);
+				}
+			UIElement = containerCanvas;
 		}
-
+		
 		
 		bool IsGraphicsContainer (IExportColumn column) {
 			return column is GraphicsContainer;
@@ -180,6 +174,22 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		bool IsContainer (IExportColumn column) {
 			return (column is ExportContainer)|| (column is GraphicsContainer);
+		}
+		
+		
+		DrawingElement CircleVisual(GraphicsContainer circle){
+			var pen = FixedDocumentCreator.CreateWpfPen(circle);
+			var rad = CalcRadius(circle.Size);
+			
+			var visual = new DrawingVisual();
+			using (var dc = visual.RenderOpen()){
+				dc.DrawEllipse(FixedDocumentCreator.ConvertBrush(circle.BackColor),
+					pen,
+					new Point( rad.X,rad.Y),	
+					rad.X,
+					rad.Y);                 
+			}
+			return new DrawingElement(visual);
 		}
 		
 		
@@ -202,7 +212,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		static Point CalcRad(System.Drawing.Size size) {
+		static Point CalcRadius(System.Drawing.Size size) {
 			return  new Point(size.Width /2,size.Height /2);
 		}
 		
@@ -212,7 +222,4 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		public FixedPage FixedPage {get; private set;}
 	}
-	
-	
-
 }

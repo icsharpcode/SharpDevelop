@@ -25,22 +25,8 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	/// <summary>
 	/// Description of ExportCircle.
 	/// </summary>
-	public class ExportCircle:GraphicsContainer,IExportGraphics,IAcceptor
+	public class ExportCircle:GraphicsContainer,IExportGraphics
 	{
-		
-		
-		public void Accept(IVisitor visitor)
-		{
-			visitor.Visit(this);
-		}
-		
-		
-		public override ICSharpCode.Reporting.Arrange.IMeasurementStrategy MeasurementStrategy()
-		{
-			throw new NotImplementedException();
-		}
-		
-//		public int Thickness {get;set;}
 		
 		public DashStyle DashStyle {get;set;}
 		

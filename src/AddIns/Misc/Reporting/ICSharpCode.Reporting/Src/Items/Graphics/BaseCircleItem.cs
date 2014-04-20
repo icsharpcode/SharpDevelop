@@ -16,6 +16,8 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System.Collections.Generic;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -24,10 +26,11 @@ namespace ICSharpCode.Reporting.Items
 	/// <summary>
 	/// Description of BaseCircleItem.
 	/// </summary>
-	public class BaseCircleItem:BaseGraphics
+	public class BaseCircleItem:BaseGraphics,IReportContainer
 	{
 		public BaseCircleItem()
 		{
+			Items = new List<IPrintableObject>();
 		}
 		
 		public override IExportColumn CreateExportColumn()
@@ -42,5 +45,7 @@ namespace ICSharpCode.Reporting.Items
 			ex.DashStyle = DashStyle;
 			return ex;
 		}
+		
+		public List<IPrintableObject> Items {get;private set;}
 	}
 }

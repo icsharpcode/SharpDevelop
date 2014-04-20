@@ -76,7 +76,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
 			if (componentChangeService != null)
 			{
-				componentChangeService.ComponentRename += new ComponentRenameEventHandler(OnComponentRename);
+				componentChangeService.ComponentRename += OnComponentRename;
 			}
 		}
 		
