@@ -1,4 +1,4 @@
-<AddIn name        = "CodeCoverageAddIn"
+<AddIn name        = "CodeCoverage AddIn"
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
        description = "Code Coverage AddIn for SharpDevelop using OpenCover"

@@ -1,4 +1,4 @@
-﻿<AddIn name        = "Machine.Specifications Addin"
+﻿<AddIn name        = "Machine.Specifications AddIn"
        author      = "Tomasz Tretkowski"
        url         = ""
        description = "Runner for Machine.Specifications unit tests for SharpDevelop"

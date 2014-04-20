@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	class Solution : SolutionFolder, ISolution
 	{
 		FileName fileName;
-		FileName globalSettingsFileName;
+		FileName sdSettingsFileName;
 		DirectoryName directory;
 		readonly IProjectChangeWatcher changeWatcher;
 		readonly IFileService fileService;
@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.PlatformNames = new SolutionConfigurationOrPlatformNameCollection(this, true);
 			this.projects = new SynchronizedModelCollection<IProject>(new ProjectModelCollection(this));
 			this.FileName = fileName;
-			this.globalSettingsFileName = new FileName(fileName + ".sdsettings");
+			this.sdSettingsFileName = new FileName(fileName + ".sdsettings");
 			base.Name = fileName.GetFileNameWithoutExtension();
 			
 			this.globalSections = new SynchronizedModelCollection<SolutionSection>(new NullSafeSimpleModelCollection<SolutionSection>());
@@ -126,6 +126,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		IProject startupProject;
 		
+		[Browsable(false)]
 		public IProject StartupProject {
 			get {
 				if (startupProject == null) {
@@ -231,6 +232,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		[Browsable(false)]
 		public IEnumerable<ISolutionItem> AllItems {
 			get {
 				return this.Items.Flatten(i => i is ISolutionFolder ? ((ISolutionFolder)i).Items : null);
@@ -274,14 +276,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Preferences
 		Properties preferences = new Properties();
 		
+		[Browsable(false)]
 		public Properties Preferences {
 			get { return preferences; }
 		}
 		
-		Properties globalPreferences = new Properties();
+		Properties sdSettings = new Properties();
 		
-		public Properties GlobalPreferences {
-			get { return globalPreferences; }
+		[Browsable(false)]
+		public Properties SDSettings {
+			get { return sdSettings; }
 		}
 		
 		string GetPreferencesKey()
@@ -293,7 +297,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			try {
 				preferences = SD.PropertyService.LoadExtraProperties(GetPreferencesKey());
-				globalPreferences = Properties.Load(globalSettingsFileName);
+				sdSettings = Properties.Load(sdSettingsFileName);
 			} catch (IOException) {
 			} catch (XmlException) {
 				// ignore errors about inaccessible or malformed files
@@ -317,7 +321,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			try {
 				SD.PropertyService.SaveExtraProperties(GetPreferencesKey(), preferences);
-				globalPreferences.Save(globalSettingsFileName);
+				if (sdSettings.IsDirty) {
+					sdSettings.Save(sdSettingsFileName);
+				}
 			} catch (IOException) {
 				// ignore errors writing to extra properties
 			}
@@ -369,6 +375,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region MSBuildProjectCollection
 		readonly Microsoft.Build.Evaluation.ProjectCollection msBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
 		
+		[Browsable(false)]
 		public Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection {
 			get { return msBuildProjectCollection; }
 		}
@@ -467,7 +474,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public event EventHandler ActiveConfigurationChanged = delegate { };
 		
+		[Browsable(false)]
 		public IConfigurationOrPlatformNameCollection ConfigurationNames { get; private set; }
+		[Browsable(false)]
 		public IConfigurationOrPlatformNameCollection PlatformNames { get; private set; }
 		
 		void CreateDefaultConfigurationsIfMissing()
@@ -498,6 +507,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		bool isDirty;
 		
+		[Browsable(false)]
 		public bool IsDirty {
 			get { return isDirty; }
 			set {

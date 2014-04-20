@@ -114,24 +114,30 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		readonly SolutionItemsCollection items;
 		
+		[Browsable(false)]
 		public IMutableModelCollection<ISolutionItem> Items {
 			get { return items; }
 		}
 		#endregion
 		
+		[ReadOnly(true)]
 		public virtual string Name { get; set; }
 		
+		[Browsable(false)]
 		public ISolutionFolder ParentFolder { get; set; }
 		
+		[Browsable(false)]
 		public ISolution ParentSolution {
 			get { return parentSolution; }
 		}
 		
+		[Browsable(false)]
 		public Guid IdGuid {
 			get { return idGuid; }
 			set { idGuid = value; }
 		}
 		
+		[Browsable(false)]
 		public Guid TypeGuid {
 			get { return ProjectTypeGuids.SolutionFolder; }
 		}

@@ -118,7 +118,7 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			// Load solution settings
 			SolutionOptions = new CSharpFormattingOptionsPersistence(
-				e.Solution.GlobalPreferences,
+				e.Solution.SDSettings,
 				new CSharpFormattingOptionsContainer(GlobalOptions.OptionsContainer)
 				{
 					DefaultText = StringParser.Parse("${res:CSharpBinding.Formatting.SolutionOptionReference}")

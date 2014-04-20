@@ -1,4 +1,4 @@
-<AddIn name        = "WiX binding"
+<AddIn name        = "WiX Binding"
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
        url         = "http://icsharpcode.net"

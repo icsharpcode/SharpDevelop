@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
-    <ProjectGuid>{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F}</ProjectGuid>
+    <ProjectGuid>{6F273DA5-E10C-45A6-9071-7313ECD98C90}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Exe</OutputType>
     <RootNamespace>ICSharpCode.SharpDevelop.BuildWorker</RootNamespace>
-    <AssemblyName>ICSharpCode.SharpDevelop.BuildWorker40</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>ICSharpCode.SharpDevelop.BuildWorker120</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -49,10 +49,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="Microsoft.Build, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.Build.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="Microsoft.Build, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.Build.Framework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -64,15 +62,28 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="BuildJob.cs" />
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\BuildJob.cs">
+      <Link>BuildJob.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\EventSource.cs">
+      <Link>EventSource.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\EventTypes.cs">
+      <Link>EventTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
+      <Link>ExtendedBinaryReader.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\HostProcess.cs">
+      <Link>HostProcess.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\MSBuild40.cs">
+      <Link>MSBuild40.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\Program.cs">
+      <Link>Program.cs</Link>
+    </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="EventSource.cs" />
-    <Compile Include="EventTypes.cs" />
-    <Compile Include="ExtendedBinaryReader.cs" />
-    <Compile Include="HostProcess.cs" />
-    <Compile Include="MSBuild40.cs" />
-    <Compile Include="Program.cs" />
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj">
@@ -80,5 +91,11 @@
       <Name>ICSharpCode.Core</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
 </Project>

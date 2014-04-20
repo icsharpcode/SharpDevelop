@@ -137,6 +137,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		public override IDebuggerOptions Options {
+			get { return DebuggingOptions.Instance; }
+		}
+		
 		public override bool CanDebug(IProject project)
 		{
 			return true;

@@ -33,6 +33,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			};
 			SD.ProjectService.SolutionClosing += OnSolutionClosing;
 		}
+		
+		public virtual IDebuggerOptions Options {
+			get { return DummyDebuggerOptions.Instance; }
+		}
 
 		public virtual void Dispose()
 		{

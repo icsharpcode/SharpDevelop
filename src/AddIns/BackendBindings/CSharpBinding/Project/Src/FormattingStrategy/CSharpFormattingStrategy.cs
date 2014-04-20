@@ -358,8 +358,17 @@ namespace CSharpBinding.FormattingStrategy
 						sb.Append(indentation);
 						sb.Append("/// </summary>");
 						
+						IUnresolvedMethod method = null;
 						if (member is IUnresolvedMethod) {
-							IUnresolvedMethod method = (IUnresolvedMethod)member;
+							method = (IUnresolvedMethod)member;
+						} else if (member is IUnresolvedTypeDefinition) {
+							IUnresolvedTypeDefinition type = (IUnresolvedTypeDefinition) member;
+							if (type.Kind == TypeKind.Delegate) {
+								method = type.Methods.FirstOrDefault(m => m.Name == "Invoke");
+							}
+						}
+						
+						if (method != null) {
 							for (int i = 0; i < method.Parameters.Count; ++i) {
 								sb.Append(terminator);
 								sb.Append(indentation);
@@ -376,8 +385,8 @@ namespace CSharpBinding.FormattingStrategy
 								}
 							}
 						}
-						textArea.Document.Insert(cursorOffset, sb.ToString());
 						
+						textArea.Document.Insert(cursorOffset, sb.ToString());
 						textArea.Caret.Offset = cursorOffset + indentation.Length + "/// ".Length + " <summary>".Length + terminator.Length;
 					}
 				}

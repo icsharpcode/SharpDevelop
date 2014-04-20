@@ -16,7 +16,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -28,12 +30,19 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	public interface IDebuggerService : IDisposable, ITextAreaToolTipProvider
 	{
 		/// <summary>
+		/// Allows (read-only) access to the currently used debugger options from other AddIns.
+		/// </summary>
+		IDebuggerOptions Options {
+			get;
+		}
+		
+		/// <summary>
 		/// Returns true if debugger is loaded.
 		/// </summary>
 		bool IsDebuggerLoaded {
 			get;
 		}
-
+		
 		bool IsDebuggerStarted {
 			get;
 		}
@@ -139,6 +148,23 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		event EventHandler DebugStopped;
 	}
 	
+	/// <summary>
+	/// Abstraction of some debugger options.
+	/// Allows (read-only) access to the currently used debugger options from other AddIns.
+	/// </summary>
+	public interface IDebuggerOptions
+	{
+		bool EnableJustMyCode { get; }
+		bool EnableEditAndContinue { get; }
+		bool SuppressJITOptimization { get; }
+		bool SuppressNGENOptimization { get; }
+		bool StepOverDebuggerAttributes { get; }
+		bool StepOverAllProperties { get; }
+		bool StepOverFieldAccessProperties { get; }
+		IEnumerable<string> SymbolsSearchPaths { get; }
+		bool PauseOnHandledExceptions { get; }
+	}
+	
 	public enum DebuggerFeatures
 	{
 		Start,
@@ -165,34 +191,67 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		}
 	}
 	
-	
+	sealed class DummyDebuggerOptions : IDebuggerOptions
+	{
+		DummyDebuggerOptions() {}
+		
+		public bool EnableJustMyCode {
+			get { return true; }
+		}
+		public bool EnableEditAndContinue {
+			get { return false; }
+		}
+		public bool SuppressJITOptimization {
+			get { return false; }
+		}
+		public bool SuppressNGENOptimization {
+			get { return false; }
+		}
+		public bool StepOverDebuggerAttributes {
+			get { return false; }
+		}
+		public bool StepOverAllProperties {
+			get { return false; }
+		}
+		public bool StepOverFieldAccessProperties {
+			get { return false; }
+		}
+		public IEnumerable<string> SymbolsSearchPaths {
+			get { return Enumerable.Empty<string>(); }
+		}
+		public bool PauseOnHandledExceptions {
+			get { return false; }
+		}
+		
+		public static readonly DummyDebuggerOptions Instance = new DummyDebuggerOptions();
+	}
 	
 	class DebuggerServiceFallback : BaseDebuggerService
 	{
 		Process attachedProcess = null;
-
+		
 		public override bool IsDebugging {
 			get {
 				return attachedProcess != null;
 			}
 		}
-
+		
 		public override bool IsProcessRunning {
 			get {
 				return IsDebugging;
 			}
 		}
-
+		
 		/// <inheritdoc/>
 		public override bool BreakAtBeginning {
 			get; set;
 		}
-
+		
 		public override bool CanDebug(IProject project)
 		{
 			return true;
 		}
-
+		
 		public override bool Supports(DebuggerFeatures feature)
 		{
 			switch (feature) {
@@ -207,7 +266,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					return false;
 				default:
 					throw new ArgumentOutOfRangeException();
-			}
+		}
 		}
 		
 		public override void Start(ProcessStartInfo processStartInfo)
@@ -215,7 +274,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			if (attachedProcess != null) {
 				return;
 			}
-
+			
 			OnDebugStarting(EventArgs.Empty);
 			try {
 				attachedProcess = new Process();
@@ -229,19 +288,19 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				throw new ApplicationException("Can't execute \"" + processStartInfo.FileName + "\"\n");
 			}
 		}
-
+		
 		public override void ShowAttachDialog()
 		{
 		}
-
+		
 		public override void Attach(Process process)
 		{
 		}
-
+		
 		public override void Detach()
 		{
 		}
-
+		
 		void AttachedProcessExited(object sender, EventArgs e)
 		{
 			attachedProcess.Exited -= AttachedProcessExited;
@@ -249,12 +308,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			attachedProcess = null;
 			SD.MainThread.InvokeAsyncAndForget(() => new Action<EventArgs>(OnDebugStopped)(EventArgs.Empty));
 		}
-
+		
 		public override void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{
 			Process.Start(processStartInfo);
 		}
-
+		
 		public override void Stop()
 		{
 			if (attachedProcess != null) {
@@ -265,50 +324,50 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				attachedProcess = null;
 			}
 		}
-
+		
 		// ExecutionControl:
-
+		
 		public override void Break()
 		{
 			throw new NotSupportedException();
 		}
-
+		
 		public override void Continue()
 		{
 			throw new NotSupportedException();
 		}
 		// Stepping:
-
+		
 		public override void StepInto()
 		{
 			throw new NotSupportedException();
 		}
-
+		
 		public override void StepOver()
 		{
 			throw new NotSupportedException();
 		}
-
+		
 		public override void StepOut()
 		{
 			throw new NotSupportedException();
 		}
-
+		
 		public override void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
 		}
-
+		
 		public override bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
 		{
 			return false;
 		}
-
+		
 		public override void Dispose()
 		{
 			Stop();
 			base.Dispose();
 		}
-
+		
 		public override bool IsAttached {
 			get {
 				return false;
