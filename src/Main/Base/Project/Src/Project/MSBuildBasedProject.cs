@@ -1252,9 +1252,6 @@ namespace ICSharpCode.SharpDevelop.Project
 					} else {
 						throw;
 					}
-					if (!(ex.ErrorCode == "MSB4132" && UpgradeToolsVersion(loadInformation))) {
-						throw;
-					}
 				}
 				success = true;
 			} catch (InvalidProjectFileException ex) {
