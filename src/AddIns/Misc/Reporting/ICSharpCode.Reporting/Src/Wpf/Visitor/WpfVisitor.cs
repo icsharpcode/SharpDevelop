@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -117,7 +118,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			}
 			var dragingElement = new DrawingElement(visual);
 			UIElement = dragingElement;
-			
 		}
 
 		
@@ -140,31 +140,29 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			var border = CreateBorder(exportRectangle);
 			border.CornerRadius = new CornerRadius(Convert.ToDouble(exportRectangle.CornerRadius));
 			CanvasHelper.SetPosition(border, new Point(0,0));
-			var panel = new StackPanel();
-			panel.Orientation = Orientation.Horizontal;
-			foreach (var element in exportRectangle.ExportedItems) {
-				var acceptor = element as IAcceptor;
-				acceptor.Accept(this);
-				panel.Children.Add(UIElement);
-			}
-			border.Child = panel;
+			var containerCanvas = CreateItemsInContainer(exportRectangle.ExportedItems);
+			border.Child = containerCanvas;
 			UIElement = border;
 		}
 		
 		
 		public override void Visit(ExportCircle exportCircle)
 		{
-			var containerCanvas = new Canvas();
-		
 			var drawingElement = CircleVisual(exportCircle);
-			
-			containerCanvas.Children.Add(drawingElement);
-			foreach (var element in exportCircle.ExportedItems) {
-					var acceptor = element as IAcceptor;
-					acceptor.Accept(this);
-					containerCanvas.Children.Add(UIElement);
-				}
+			var containerCanvas =  CreateItemsInContainer(exportCircle.ExportedItems);
+			containerCanvas.Children.Insert(0,drawingElement);
 			UIElement = containerCanvas;
+		}
+		
+		
+		Canvas CreateItemsInContainer (List<IExportColumn> items) {
+			var canvas = new Canvas();
+			foreach (var element in items) {
+				var acceptor = element as IAcceptor;
+				acceptor.Accept(this);
+				canvas.Children.Add(UIElement);
+			}
+			return canvas;
 		}
 		
 		
@@ -196,20 +194,21 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		Border CreateBorder(IExportColumn exportColumn)
 		{
-			double bT;
-			var gc = IsGraphicsContainer(exportColumn);
-			if (!IsGraphicsContainer(exportColumn)) {
-				bT = 1;
-			} else {
-				bT = Convert.ToDouble(((GraphicsContainer)exportColumn).Thickness);
-			}
 			var border = new Border();
-			border.BorderThickness = new Thickness(bT);
+			border.BorderThickness =  Thickness(exportColumn);
 			border.BorderBrush = FixedDocumentCreator.ConvertBrush(exportColumn.ForeColor);
 			border.Background = FixedDocumentCreator.ConvertBrush(exportColumn.BackColor);
 			border.Width = exportColumn.Size.Width;
 			border.Height = exportColumn.Size.Height;
 			return border;
+		}
+
+		
+		Thickness Thickness(IExportColumn exportColumn)
+		{
+			double bT;
+			bT = !IsGraphicsContainer(exportColumn) ? 1 : Convert.ToDouble(((GraphicsContainer)exportColumn).Thickness);
+			return new Thickness(bT);
 		}
 		
 		
