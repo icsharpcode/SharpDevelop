@@ -84,6 +84,10 @@ namespace ICSharpCode.UnitTesting
 		public override bool ShowExpander {
 			get { return test.CanExpandNestedTests && base.ShowExpander; }
 		}
+		
+		public override bool CanExpandRecursively {
+			get { return true; }
+		}
 		#endregion
 		
 		#region Icon + Text
