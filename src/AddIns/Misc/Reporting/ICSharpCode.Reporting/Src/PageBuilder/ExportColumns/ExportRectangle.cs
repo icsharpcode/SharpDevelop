@@ -26,6 +26,7 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	/// </summary>
 	public class ExportRectangle:GraphicsContainer,IExportGraphics
 	{
+		public int CornerRadius { get; set; }
 		
 		public DashStyle DashStyle {get;set;}
 		

@@ -31,6 +31,7 @@ namespace ICSharpCode.Reporting.Items
 		public BaseRectangleItem()
 		{
 			Items = new List<IPrintableObject>();
+			CornerRadius = 0;
 		}
 		
 		
@@ -43,13 +44,15 @@ namespace ICSharpCode.Reporting.Items
 			ex.Size = Size;
 			ex.DesiredSize = Size;
 			ex.Thickness = Thickness;
+			ex.CornerRadius = CornerRadius;
 			ex.DashStyle = DashStyle;
 			ex.StartLineCap = StartLineCap;
 			ex.EndLineCap = EndLineCap;
 			return ex;
 		}
 		
-
+		public int CornerRadius { get; set; }
+		
 		public List<IPrintableObject> Items {get;private set;}
 			
 	}

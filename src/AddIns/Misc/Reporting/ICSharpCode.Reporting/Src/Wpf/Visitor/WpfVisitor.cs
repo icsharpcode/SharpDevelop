@@ -138,6 +138,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		public override void Visit(ExportRectangle exportRectangle)
 		{
 			var border = CreateBorder(exportRectangle);
+			border.CornerRadius = new CornerRadius(Convert.ToDouble(exportRectangle.CornerRadius));
 			CanvasHelper.SetPosition(border, new Point(0,0));
 			var panel = new StackPanel();
 			panel.Orientation = Orientation.Horizontal;

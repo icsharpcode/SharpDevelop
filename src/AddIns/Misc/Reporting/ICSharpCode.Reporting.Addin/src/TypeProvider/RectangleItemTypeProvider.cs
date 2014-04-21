@@ -55,8 +55,8 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 			
 			PropertyDescriptor prop = null;
 
-//			prop = props.Find("CornerRadius",true);
-//			allProperties.Add(prop);
+			prop = props.Find("CornerRadius",true);
+			allProperties.Add(prop);
 			
 			prop = props.Find("Controls",true);
 			allProperties.Add(prop);
