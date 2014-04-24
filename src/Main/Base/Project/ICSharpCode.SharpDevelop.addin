@@ -366,7 +366,7 @@
 			          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
 			<MenuItem id    = "AddServiceReference"
-			          label = "Add Service Reference"
+			          label = "${res:ProjectComponent.ContextMenu.AddServiceReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
 			<MenuItem id    = "AddWebReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
@@ -437,7 +437,7 @@
 			          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
 			<MenuItem id    = "AddServiceReference"
-			          label = "Add Service Reference"
+			          label = "${res:ProjectComponent.ContextMenu.AddServiceReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
 			<MenuItem id    = "AddWebReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
@@ -773,7 +773,7 @@
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ServiceReferencesFolderNode">
 		<MenuItem id    = "AddServiceReference"
-		          label = "Add Service Reference"
+		          label = "${res:ProjectComponent.ContextMenu.AddServiceReference}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
 		<Condition name = "Ownerstate" ownerstate = "Missing">
 			<MenuItem id = "RemoveMissing"
@@ -1655,6 +1655,9 @@
 				<MenuItem id    = "AddReference"
 				          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+				<MenuItem id    = "AddServiceReference"
+				          label = "${res:ProjectComponent.ContextMenu.AddServiceReference}"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
 				<MenuItem id    = "AddWebReference"
 				          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>

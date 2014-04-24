@@ -54,7 +54,7 @@ namespace ICSharpCode.UnitTesting
 		string DisplayName { get; }
 		
 		/// <summary>
-		/// Raised when the <see cref="Name"/> property changes.
+		/// Raised when the <see cref="DisplayName"/> property changes.
 		/// </summary>
 		event EventHandler DisplayNameChanged;
 		

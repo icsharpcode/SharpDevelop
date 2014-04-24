@@ -6054,6 +6054,10 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="ProjectComponent.ContextMenu.AddReference" xml:space="preserve">
     <value>Add Reference</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.AddServiceReference" xml:space="preserve">
+    <value>Add Service Reference</value>
+    <comment>Right click context menu option to add a service reference to the project.</comment>
+  </data>
   <data name="ProjectComponent.ContextMenu.AddWebReference" xml:space="preserve">
     <value>Add Web Reference</value>
     <comment>Right click context menu option to add a web reference to the project.</comment>

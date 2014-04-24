@@ -34,6 +34,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Exceptions;
+using ICSharpCode.SharpDevelop.Project.PortableLibrary;
 using MSBuild = Microsoft.Build.Evaluation;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -1243,10 +1244,12 @@ namespace ICSharpCode.SharpDevelop.Project
 						} else {
 							throw;
 						}
+					} else if (ex.ErrorCode == "MSB4019" && ex.BaseMessage.Contains("Microsoft.Portable.") && !ProfileList.IsPortableLibraryInstalled()) {
+						throw new ToolNotFoundProjectLoadException(ex.Message, ex) {
+							Description = CheckPortableLibraryInstalled.CouldNotFindToolsDescription,
+							LinkTarget = CheckPortableLibraryInstalled.DownloadUrl
+						};
 					} else {
-						throw;
-					}
-					if (!(ex.ErrorCode == "MSB4132" && UpgradeToolsVersion(loadInformation))) {
 						throw;
 					}
 				}
