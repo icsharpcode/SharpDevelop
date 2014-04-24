@@ -43,13 +43,25 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Irony">
-      <HintPath>..\Libraries\Irony.dll</HintPath>
+      <HintPath>C:\Users\Peter Forstmeier\Documents\SharpDevelop Projects\ReportTest\packages\Irony.0.9.0\lib\net45\Irony.dll</HintPath>
     </Reference>
     <Reference Include="Irony.Interpreter">
-      <HintPath>..\Libraries\Irony.Interpreter.dll</HintPath>
+      <HintPath>C:\Users\Peter Forstmeier\Documents\SharpDevelop Projects\ReportTest\packages\Irony.Interpreter.0.9.0\lib\net45\Irony.Interpreter.dll</HintPath>
     </Reference>
-    <Reference Include="PdfSharp">
-      <HintPath>..\Libraries\PdfSharp.dll</HintPath>
+    <Reference Include="MigraDoc.DocumentObjectModel-WPF">
+      <HintPath>C:\Users\Peter Forstmeier\Documents\SharpDevelop Projects\ReportTest\packages\PDFsharp-MigraDoc-WPF.1.32.2608.0\lib\net20\MigraDoc.DocumentObjectModel-WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.Rendering-WPF">
+      <HintPath>C:\Users\Peter Forstmeier\Documents\SharpDevelop Projects\ReportTest\packages\PDFsharp-MigraDoc-WPF.1.32.2608.0\lib\net20\MigraDoc.Rendering-WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.RtfRendering-WPF">
+      <HintPath>C:\Users\Peter Forstmeier\Documents\SharpDevelop Projects\ReportTest\packages\PDFsharp-MigraDoc-WPF.1.32.2608.0\lib\net20\MigraDoc.RtfRendering-WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp-WPF">
+      <HintPath>C:\Users\Peter Forstmeier\Documents\SharpDevelop Projects\ReportTest\packages\PDFsharp-MigraDoc-WPF.1.32.2608.0\lib\net20\PdfSharp-WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting-WPF">
+      <HintPath>C:\Users\Peter Forstmeier\Documents\SharpDevelop Projects\ReportTest\packages\PDFsharp-MigraDoc-WPF.1.32.2608.0\lib\net20\PdfSharp.Charting-WPF.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>

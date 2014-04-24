@@ -28,7 +28,6 @@ using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using ICSharpCode.Reporting.WpfReportViewer.Visitor.Graphics;
-using System.Windows.Shapes;
 
 namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 {
@@ -65,8 +64,9 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			foreach (var element in container.ExportedItems) {
 				if (IsContainer(element)) {
 					if (IsGraphicsContainer(element)) {
-						var graphContainer = RenderGraphicsContainer(element);
-						canvas.Children.Add(graphContainer);
+						canvas.Children.Add(RenderGraphicsContainer(element));
+					} else {
+						canvas.Children.Add(RenderRow(element));
 					}
 				} else {
 					var acceptor = element as IAcceptor;
@@ -79,9 +79,15 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 	
 		
+		Canvas RenderRow (IExportColumn column) {
+			var row = column as ExportContainer;
+			var rowCanvas = CreateItemsInContainer(row.ExportedItems);
+			return rowCanvas;
+		}
+		
+		
 		Canvas RenderGraphicsContainer(IExportColumn column)
 		{
-			
 			var graphicsContainer = column as GraphicsContainer;
 			var graphCanvas = FixedDocumentCreator.CreateContainer(graphicsContainer);
 			CanvasHelper.SetPosition(graphCanvas, column.Location.ToWpf());
