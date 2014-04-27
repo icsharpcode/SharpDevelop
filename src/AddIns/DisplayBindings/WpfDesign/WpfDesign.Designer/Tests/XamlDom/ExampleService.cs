@@ -67,5 +67,25 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 			// TODO: add this test, check for correct setting of NameScope
 			//TestHelperLog.Log("ExampleDependencyObject.OnPropertyChanged " + e.Property.Name);
 		}
+		
+		public static readonly DependencyProperty ExampleProperty = DependencyProperty.RegisterAttached(
+			"Example", typeof(string), typeof(ExampleDependencyObject)
+		);
+		
+		public static string GetExample(DependencyObject element)
+		{
+			TestHelperLog.Log("ExampleDependencyObject.GetExample");
+			return (string)element.GetValue(ExampleProperty);
+		}
+		
+		public static void SetExample(DependencyObject element, string value)
+		{
+			TestHelperLog.Log("ExampleDependencyObject.SetExample");
+			element.SetValue(ExampleProperty, value);
+		}
+	}
+	
+	public class DerivedExampleDependencyObject : ExampleDependencyObject
+	{
 	}
 }

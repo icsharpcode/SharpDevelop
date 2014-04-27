@@ -478,6 +478,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					return new XamlDependencyPropertyInfo((DependencyProperty)field.GetValue(null), true);
 				}
 			}
+			
+			if (elementType.BaseType != null) {
+				return TryFindAttachedProperty(elementType.BaseType, propertyName);
+			}
+			
 			return null;
 		}
 		
