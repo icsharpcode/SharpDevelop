@@ -179,6 +179,11 @@ namespace ICSharpCode.WpfDesign.Adorners
 		/// </summary>
 		public static readonly AdornerOrder Foreground = new AdornerOrder(300);
 		
+		/// <summary>
+		/// The adorner is in the before foreground layer.
+		/// </summary>
+		public static readonly AdornerOrder BeforeForeground = new AdornerOrder(400);
+	
 		int i;
 		
 		internal AdornerOrder(int i)
