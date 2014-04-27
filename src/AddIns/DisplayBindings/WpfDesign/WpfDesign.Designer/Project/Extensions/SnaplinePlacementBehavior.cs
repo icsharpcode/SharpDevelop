@@ -178,6 +178,29 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 		
+		private IEnumerable<DesignItem> AllDesignItems(DesignItem designItem = null)
+		{
+			if (designItem == null)
+			{
+				designItem = this.ExtendedItem.Services.DesignPanel.Context.RootItem;
+				yield return designItem;
+				yield return designItem.ContentProperty.Value;
+				designItem = designItem.ContentProperty.Value;
+			}
+			//yield return designItem.ContentProperty.Value;
+			
+			if (designItem.ContentProperty.IsCollection)
+				foreach (var collectionElement in designItem.ContentProperty.CollectionElements)
+				{
+					yield return collectionElement;
+					
+					foreach (var el in AllDesignItems(collectionElement))
+					{
+						yield return el;
+					}
+				}
+		}
+				
 		void BuildMaps(PlacementOperation operation)
 		{
 			horizontalMap = new List<Snapline>();
@@ -188,7 +211,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			AddLines(containerRect, 0, false);
 			
-			foreach (var item in ExtendedItem.ContentProperty.CollectionElements
+			foreach (var item in AllDesignItems() /* ExtendedItem.ContentProperty.CollectionElements */
 				.Except(operation.PlacedItems.Select(f => f.Item)))
 			{
 				var bounds = GetPosition(operation, item);
