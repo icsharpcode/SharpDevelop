@@ -77,8 +77,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		private RotateTransform rotateTransform;
 		private double initialAngle;
 		private DesignItem rtTransform;
-		private double angle;
-
+		
 		private void drag_Rotate_Started(DragListener drag)
 		{
 			_adornerLayer = this.adornerPanel.TryFindParent<AdornerLayer>();
@@ -139,7 +138,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					rtTransform = this.ExtendedItem.Properties[FrameworkElement.RenderTransformProperty].Value;
 				}
 				rtTransform.Properties["Angle"].SetValue(destAngle);
-				this.angle = destAngle * Math.PI / 180.0;
 				
 				_adornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
 			}
@@ -160,9 +158,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			var designerItem = this.ExtendedItem.Component as FrameworkElement;
 			this.rotateTransform = designerItem.RenderTransform as RotateTransform;
-			
-			if (rotateTransform != null)
-				angle = rotateTransform.Angle;
 		}
 		
 		void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
