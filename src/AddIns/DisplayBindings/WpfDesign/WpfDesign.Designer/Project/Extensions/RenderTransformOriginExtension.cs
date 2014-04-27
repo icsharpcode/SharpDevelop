@@ -32,6 +32,7 @@ using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
+	[ExtensionServer(typeof(OnlyOneItemSelectedExtensionServer))]
 	[ExtensionFor(typeof(FrameworkElement))]
 	public class RenderTransformOriginExtension : SelectionAdornerProvider
 	{
