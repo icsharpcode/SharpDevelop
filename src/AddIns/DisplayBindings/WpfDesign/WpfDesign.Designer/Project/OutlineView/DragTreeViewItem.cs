@@ -159,7 +159,10 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
 		{
 			base.OnMouseLeftButtonUp(e);
-			ParentTree.ItemMouseUp(this);
+			
+			if (ParentTree != null) {
+				ParentTree.ItemMouseUp(this);
+			}
 		}
 	}
 }
