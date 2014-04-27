@@ -66,6 +66,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			DragListener drag = new DragListener(rotateThumb);
 			drag.Started += drag_Rotate_Started;
 			drag.Changed += drag_Rotate_Changed;
+			drag.Completed += drag_Rotate_Completed;
 			return rotateThumb;
 		}
 		
@@ -143,6 +144,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 
+		void drag_Rotate_Completed(ICSharpCode.WpfDesign.Designer.Controls.DragListener drag)
+		{
+			operation.Commit();
+		}
+		
 		#endregion
 		
 		protected override void OnInitialized()

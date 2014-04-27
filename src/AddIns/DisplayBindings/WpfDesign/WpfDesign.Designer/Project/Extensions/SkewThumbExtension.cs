@@ -56,6 +56,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		private DesignItem rtTransform;
 		private Thumb thumb1;
 		private Thumb thumb2;
+		PlacementOperation operation;
 		
 		private void dragX_Started(DragListener drag)
 		{
@@ -78,6 +79,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			
 			rtTransform = this.ExtendedItem.Properties[FrameworkElement.RenderTransformProperty].Value;
+			
+			operation = PlacementOperation.Start(extendedItemArray, PlacementType.Resize);
 		}
 		
 		private void dragX_Changed(DragListener drag)
@@ -112,6 +115,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			_adornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
 		}
 		
+		void dragX_Completed(ICSharpCode.WpfDesign.Designer.Controls.DragListener drag)
+		{
+			operation.Commit();
+		}
+		
 		private void dragY_Started(DragListener drag)
 		{
 			_adornerLayer = this.adornerPanel.TryFindParent<AdornerLayer>();
@@ -133,6 +141,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			
 			rtTransform = this.ExtendedItem.Properties[FrameworkElement.RenderTransformProperty].Value;
+			
+			operation = PlacementOperation.Start(extendedItemArray, PlacementType.Resize);
 		}
 		
 		private void dragY_Changed(DragListener drag)
@@ -168,6 +178,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			_adornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
 		}
 		
+		void dragY_Completed(ICSharpCode.WpfDesign.Designer.Controls.DragListener drag)
+		{
+			operation.Commit();
+		}
+		
 		#endregion
 		
 		protected override void OnInitialized()
@@ -200,9 +215,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			DragListener drag1 = new DragListener(thumb1);
 			drag1.Started += dragX_Started;
 			drag1.Changed += dragX_Changed;
+			drag1.Completed += dragX_Completed;
 			DragListener drag2 = new DragListener(thumb2);
 			drag2.Started += dragY_Started;
-			drag2.Changed += dragY_Changed;			
+			drag2.Changed += dragY_Changed;
+			drag2.Completed += dragY_Completed;
 		}
 		
 		void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
