@@ -35,13 +35,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// The drag handle displayed for panels.
 	/// </summary>
 	[ExtensionServer(typeof(PrimarySelectionExtensionServer))]
-	[ExtensionFor(typeof(Panel))]
-	[ExtensionFor(typeof(Image))]
-	[ExtensionFor(typeof(MediaElement))]
-	[ExtensionFor(typeof(ItemsControl))]
-	[ExtensionFor(typeof(Border))]
-	[ExtensionFor(typeof(Viewbox))]
-	[ExtensionFor(typeof(ContentControl))]
+	[ExtensionFor(typeof(FrameworkElement))]
 	public class TopLeftContainerDragHandle : AdornerProvider
 	{
 		/// <summary/>
