@@ -41,6 +41,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
 		PlacementOperation operation;
+		private AdornerLayer _adornerLayer;
 		
 		public RotateThumbExtension()
 		{
@@ -79,6 +80,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		private void drag_Rotate_Started(DragListener drag)
 		{
+			_adornerLayer = this.adornerPanel.TryFindParent<AdornerLayer>();
+
 			var designerItem = this.ExtendedItem.Component as FrameworkElement;
 			this.parent = VisualTreeHelper.GetParent(designerItem) as UIElement;
 			this.centerPoint = designerItem.TranslatePoint(
@@ -136,6 +139,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 				rtTransform.Properties["Angle"].SetValue(destAngle);
 				this.angle = destAngle * Math.PI / 180.0;
+				
+				_adornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
 			}
 		}
 
