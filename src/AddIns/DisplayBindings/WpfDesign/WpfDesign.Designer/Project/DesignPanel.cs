@@ -319,11 +319,20 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 		#endregion
 		
+		PlacementOperation placementOp;
+		int dx = 0;
+		int dy = 0;
+		
 		private void DesignPanel_KeyUp(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
 			{
 				e.Handled = true;
+				
+				if (placementOp != null) {
+					placementOp.Commit();
+					placementOp = null;
+				}
 			}
 		}
 		
@@ -333,19 +342,23 @@ namespace ICSharpCode.WpfDesign.Designer
 			{
 				e.Handled = true;
 
-				var placementOp = PlacementOperation.Start(Context.Services.Selection.SelectedItems, PlacementType.Move);
+				if (placementOp == null) {
+					dx = 0;
+					dy = 0;
+					placementOp = PlacementOperation.Start(Context.Services.Selection.SelectedItems, PlacementType.Move);
+				}
 
 
-				var dx1 = (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
-				var dy1 = (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
-				var dx2 = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
-				var dy2 = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
+				dx += (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
+				dy += (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
+				dx += (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
+				dy += (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
 				foreach (PlacementInformation info in placementOp.PlacedItems)
 				{
 					if (!Keyboard.IsKeyDown(Key.LeftCtrl))
 					{
-						info.Bounds = new Rect(info.OriginalBounds.Left + dx1 + dx2,
-						                       info.OriginalBounds.Top + dy1 + dy2,
+						info.Bounds = new Rect(info.OriginalBounds.Left + dx,
+						                       info.OriginalBounds.Top + dy,
 						                       info.OriginalBounds.Width,
 						                       info.OriginalBounds.Height);
 					}
@@ -353,8 +366,8 @@ namespace ICSharpCode.WpfDesign.Designer
 					{
 						info.Bounds = new Rect(info.OriginalBounds.Left,
 						                       info.OriginalBounds.Top,
-						                       info.OriginalBounds.Width + dx1 + dx2,
-						                       info.OriginalBounds.Height + dy1 + dy2);
+						                       info.OriginalBounds.Width + dx,
+						                       info.OriginalBounds.Height + dy);
 					}
 
 					placementOp.CurrentContainerBehavior.SetPosition(info);
