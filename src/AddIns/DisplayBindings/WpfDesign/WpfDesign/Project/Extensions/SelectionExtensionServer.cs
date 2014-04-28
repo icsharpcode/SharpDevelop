@@ -103,39 +103,51 @@ namespace ICSharpCode.WpfDesign.Extensions
 	}
 	
 	/// <summary>
-	/// Applies an extension to the primary selection if Only One Item is Selected.
+	/// Applies an extension to the primary selection, but only when multiple Items are selected!
 	/// </summary>
-	public class OnlyOneItemSelectedExtensionServer : DefaultExtensionServer
+	public class PrimarySelectionButOnlyWhenMultipleSelectedExtensionServer : PrimarySelectionExtensionServer
 	{
-		DesignItem oldPrimarySelection;
-		bool oldCntBelowTwo = false;
-		
 		/// <summary>
 		/// Is called after the extension server is initialized and the Context property has been set.
 		/// </summary>
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
-			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
-			this.Services.Selection.SelectionChanged += OnPrimarySelectionChanged;
+			this.Services.Selection.SelectionChanged += OnSelectionChanged;
 		}
 		
-		void OnPrimarySelectionChanged(object sender, EventArgs e)
+		void OnSelectionChanged(object sender, EventArgs e)
 		{
-			DesignItem newPrimarySelection = this.Services.Selection.PrimarySelection;
-			
-			if (oldPrimarySelection != newPrimarySelection || oldCntBelowTwo != (this.Services.Selection.SelectedItems.Count < 2))
-			{
-				if (oldPrimarySelection == null) {
-					ReapplyExtensions(new DesignItem[] { newPrimarySelection });
-				} else if (newPrimarySelection == null) {
-					ReapplyExtensions(new DesignItem[] { oldPrimarySelection });
-				} else {
-					ReapplyExtensions(new DesignItem[] { oldPrimarySelection, newPrimarySelection });
-				}
-				oldPrimarySelection = newPrimarySelection;
-				oldCntBelowTwo = this.Services.Selection.SelectedItems.Count < 2;
-			}
+			ReapplyExtensions(this.Services.Selection.SelectedItems);			
+		}
+		
+		/// <summary>
+		/// Gets if the item is in the secondary selection.
+		/// </summary>
+		public override bool ShouldApplyExtensions(DesignItem extendedItem)
+		{
+			return Services.Selection.PrimarySelection == extendedItem && Services.Selection.SelectionCount > 1;
+		}
+	}
+	
+	/// <summary>
+	/// Applies an extension to the primary selection if Only One Item is Selected.
+	/// </summary>
+	public class OnlyOneItemSelectedExtensionServer : PrimarySelectionExtensionServer
+	{
+		/// <summary>
+		/// Is called after the extension server is initialized and the Context property has been set.
+		/// </summary>
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
+			this.Services.Selection.SelectionChanged += OnSelectionChanged;
+		}
+		
+		void OnSelectionChanged(object sender, EventArgs e)
+		{
+			if (this.Services.Selection.SelectedItems.Count > 1)
+				ReapplyExtensions(this.Services.Selection.SelectedItems);
 		}
 		
 		/// <summary>
@@ -143,7 +155,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 		/// </summary>
 		public override bool ShouldApplyExtensions(DesignItem extendedItem)
 		{
-			return (this.Services.Selection.SelectedItems.Count < 2 && this.Services.Selection.PrimarySelection == extendedItem);
+			return Services.Selection.PrimarySelection == extendedItem && Services.Selection.SelectionCount < 2;
 		}
 	}
 	
