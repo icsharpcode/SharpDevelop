@@ -94,8 +94,8 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		
 		public static void OnIsSelectedChanged(DependencyObject s, DependencyPropertyChangedEventArgs e)
 		{
-			var el = s as FrameworkElement;
-			if (el != null)
+			var el = s as DragTreeViewItem;
+			if (el != null && el.IsSelected)
 				el.BringIntoView();
 		}
 
