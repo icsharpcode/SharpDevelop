@@ -184,12 +184,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			{
 				designItem = this.ExtendedItem.Services.DesignPanel.Context.RootItem;
 				yield return designItem;
-				yield return designItem.ContentProperty.Value;
-				designItem = designItem.ContentProperty.Value;
+				if (designItem.ContentProperty.Value != null) {
+					yield return designItem.ContentProperty.Value;
+					designItem = designItem.ContentProperty.Value;
+				}
 			}
-			//yield return designItem.ContentProperty.Value;
 			
-			if (designItem.ContentProperty.IsCollection)
+			if (designItem.ContentProperty != null && designItem.ContentProperty.IsCollection)
 				foreach (var collectionElement in designItem.ContentProperty.CollectionElements)
 				{
 					yield return collectionElement;
@@ -212,13 +213,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			AddLines(containerRect, 0, false);
 			
 			foreach (var item in AllDesignItems() /* ExtendedItem.ContentProperty.CollectionElements */
-				.Except(operation.PlacedItems.Select(f => f.Item)))
-			{
-				var bounds = GetPosition(operation, item);
+				.Except(operation.PlacedItems.Select(f => f.Item))) {
+				if (item != null) {
+					var bounds = GetPosition(operation, item);
 				
-				AddLines(bounds, 0, false);
-				AddLines(bounds, Margin, true);
-				AddBaseline(item, bounds, horizontalMap);
+					AddLines(bounds, 0, false);
+					AddLines(bounds, Margin, true);
+					AddBaseline(item, bounds, horizontalMap);
+				}
 			}
 		}
 		
