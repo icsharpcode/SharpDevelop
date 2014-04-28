@@ -32,6 +32,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// <summary>
 	/// The resize thumb around a component.
 	/// </summary>
+	[ExtensionServer(typeof(OnlyOneItemSelectedExtensionServer))]
 	[ExtensionFor(typeof(FrameworkElement))]
 	public sealed class ResizeThumbExtension : SelectionAdornerProvider
 	{

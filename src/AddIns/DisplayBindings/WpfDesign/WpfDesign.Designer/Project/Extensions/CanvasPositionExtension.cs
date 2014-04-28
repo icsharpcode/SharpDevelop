@@ -28,7 +28,7 @@ using ICSharpCode.WpfDesign.Extensions;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	[ExtensionFor(typeof(FrameworkElement))]
-	[ExtensionServer(typeof(PrimarySelectionExtensionServer))]
+	[ExtensionServer(typeof(OnlyOneItemSelectedExtensionServer))]
 	public class CanvasPositionExtension : AdornerProvider
 	{
 		private MarginHandle[] _handles;

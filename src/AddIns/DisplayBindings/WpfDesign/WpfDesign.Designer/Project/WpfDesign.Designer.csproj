@@ -87,6 +87,8 @@
     </Compile>
     <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
     <Compile Include="Extensions\RightClickContextMenuExtension.cs" />
+    <Compile Include="Extensions\SkewThumbExtension.cs" />
+    <Compile Include="Extensions\TopLeftContainerDragHandleMultipleItems.cs" />
     <Compile Include="PropertyGrid\Editors\FlatCollectionEditor.xaml.cs">
       <DependentUpon>FlatCollectionEditor.xaml</DependentUpon>
       <SubType>Code</SubType>

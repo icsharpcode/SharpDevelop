@@ -221,11 +221,11 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		
 		protected override Size ArrangeOverride(Size finalSize)
 		{
-			foreach (AdornerPanel adorner in this.Children) {
-				adorner.Arrange(new Rect(new Point(0, 0), adorner.DesiredSize));
+			foreach (AdornerPanel adorner in this.Children) {				
 				if (adorner.AdornedElement.IsDescendantOf(_designPanel)) {
 					adorner.RenderTransform = (Transform)adorner.AdornedElement.TransformToAncestor(_designPanel);
 				}
+				adorner.Arrange(new Rect(new Point(0, 0), adorner.DesiredSize));
 			}
 			return finalSize;
 		}

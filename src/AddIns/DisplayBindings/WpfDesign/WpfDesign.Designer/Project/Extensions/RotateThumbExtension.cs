@@ -32,6 +32,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// <summary>
 	/// The resize thumb around a component.
 	/// </summary>
+	[ExtensionServer(typeof(OnlyOneItemSelectedExtensionServer))]
 	[ExtensionFor(typeof(FrameworkElement))]
 	public sealed class RotateThumbExtension : SelectionAdornerProvider
 	{
@@ -41,6 +42,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
 		PlacementOperation operation;
+		private AdornerLayer _adornerLayer;
 		
 		public RotateThumbExtension()
 		{
@@ -64,6 +66,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			DragListener drag = new DragListener(rotateThumb);
 			drag.Started += drag_Rotate_Started;
 			drag.Changed += drag_Rotate_Changed;
+			drag.Completed += drag_Rotate_Completed;
 			return rotateThumb;
 		}
 		
@@ -75,10 +78,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		private RotateTransform rotateTransform;
 		private double initialAngle;
 		private DesignItem rtTransform;
-		private double angle;
-
+		
 		private void drag_Rotate_Started(DragListener drag)
 		{
+			_adornerLayer = this.adornerPanel.TryFindParent<AdornerLayer>();
+
 			var designerItem = this.ExtendedItem.Component as FrameworkElement;
 			this.parent = VisualTreeHelper.GetParent(designerItem) as UIElement;
 			this.centerPoint = designerItem.TranslatePoint(
@@ -135,10 +139,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					rtTransform = this.ExtendedItem.Properties[FrameworkElement.RenderTransformProperty].Value;
 				}
 				rtTransform.Properties["Angle"].SetValue(destAngle);
-				this.angle = destAngle * Math.PI / 180.0;
+				
+				_adornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
 			}
 		}
 
+		void drag_Rotate_Completed(ICSharpCode.WpfDesign.Designer.Controls.DragListener drag)
+		{
+			operation.Commit();
+		}
+		
 		#endregion
 		
 		protected override void OnInitialized()
@@ -154,9 +164,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			var designerItem = this.ExtendedItem.Component as FrameworkElement;
 			this.rotateTransform = designerItem.RenderTransform as RotateTransform;
-			
-			if (rotateTransform != null)
-				angle = rotateTransform.Angle;
 		}
 		
 		void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

@@ -103,6 +103,63 @@ namespace ICSharpCode.WpfDesign.Extensions
 	}
 	
 	/// <summary>
+	/// Applies an extension to the primary selection, but only when multiple Items are selected!
+	/// </summary>
+	public class PrimarySelectionButOnlyWhenMultipleSelectedExtensionServer : PrimarySelectionExtensionServer
+	{
+		/// <summary>
+		/// Is called after the extension server is initialized and the Context property has been set.
+		/// </summary>
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
+			this.Services.Selection.SelectionChanged += OnSelectionChanged;
+		}
+		
+		void OnSelectionChanged(object sender, EventArgs e)
+		{
+			ReapplyExtensions(this.Services.Selection.SelectedItems);			
+		}
+		
+		/// <summary>
+		/// Gets if the item is in the secondary selection.
+		/// </summary>
+		public override bool ShouldApplyExtensions(DesignItem extendedItem)
+		{
+			return Services.Selection.PrimarySelection == extendedItem && Services.Selection.SelectionCount > 1;
+		}
+	}
+	
+	/// <summary>
+	/// Applies an extension to the primary selection if Only One Item is Selected.
+	/// </summary>
+	public class OnlyOneItemSelectedExtensionServer : PrimarySelectionExtensionServer
+	{
+		/// <summary>
+		/// Is called after the extension server is initialized and the Context property has been set.
+		/// </summary>
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
+			this.Services.Selection.SelectionChanged += OnSelectionChanged;
+		}
+		
+		void OnSelectionChanged(object sender, EventArgs e)
+		{
+			if (this.Services.Selection.SelectedItems.Count > 1)
+				ReapplyExtensions(this.Services.Selection.SelectedItems);
+		}
+		
+		/// <summary>
+		/// Gets if the item is the primary selection.
+		/// </summary>
+		public override bool ShouldApplyExtensions(DesignItem extendedItem)
+		{
+			return Services.Selection.PrimarySelection == extendedItem && Services.Selection.SelectionCount < 2;
+		}
+	}
+	
+	/// <summary>
 	/// Applies an extension to the parent of the primary selection.
 	/// </summary>
 	public class PrimarySelectionParentExtensionServer : DefaultExtensionServer
