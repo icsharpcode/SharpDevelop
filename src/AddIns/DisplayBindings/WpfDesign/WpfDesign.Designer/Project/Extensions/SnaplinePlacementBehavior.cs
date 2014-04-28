@@ -180,24 +180,28 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		private IEnumerable<DesignItem> AllDesignItems(DesignItem designItem = null)
 		{
-			if (designItem == null)
+			if (designItem == null && this.ExtendedItem.Services.DesignPanel is DesignPanel)
 			{
 				designItem = this.ExtendedItem.Services.DesignPanel.Context.RootItem;
-				yield return designItem;
-				if (designItem.ContentProperty.Value != null) {
-					yield return designItem.ContentProperty.Value;
-					designItem = designItem.ContentProperty.Value;
+				if (designItem != null) {
+					yield return designItem;
+					if (designItem.ContentProperty.Value != null) {
+						yield return designItem.ContentProperty.Value;
+						designItem = designItem.ContentProperty.Value;
+					}
 				}
 			}
 			
-			if (designItem.ContentProperty != null && designItem.ContentProperty.IsCollection)
+			if (designItem != null && designItem.ContentProperty != null && designItem.ContentProperty.IsCollection)
 				foreach (var collectionElement in designItem.ContentProperty.CollectionElements)
 				{
-					yield return collectionElement;
+					if (collectionElement != null)
+						yield return collectionElement;
 					
 					foreach (var el in AllDesignItems(collectionElement))
 					{
-						yield return el;
+						if (el != null)
+							yield return el;
 					}
 				}
 		}
@@ -365,3 +369,4 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 	}
 }
+	
