@@ -42,6 +42,12 @@
 		<CommandBinding Command="Default:MainWindow.ExitCommand"
 		                Executed="ExitCommand_Executed" />
 	
+		<CommandBinding Command="Default:MainWindow.RunCommand"
+		                Executed="RunCommand_Executed" />
+	
+		<CommandBinding Command="Default:MainWindow.RenderToBitmapCommand"
+		                Executed="RenderToBitmapCommand_Executed" />
+	
 	</Window.CommandBindings>
 	
 	<DockPanel>
@@ -78,8 +84,12 @@
 				<MenuItem Command="Default:MainWindow.RefreshCommand" />
 				<MenuItem Command="Find" />
 			</MenuItem>
+			<MenuItem Header="Test">
+				<MenuItem Command="Default:MainWindow.RunCommand" />
+				<MenuItem Command="Default:MainWindow.RenderToBitmapCommand" />
+			</MenuItem>
 		</Menu>
-		
+				
 		<AvalonDock:DockingManager x:Name="uxDockingManager">
 			<AvalonDock:ResizingPanel>
 				
