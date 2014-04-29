@@ -51,6 +51,13 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 					}
 					type = type.BaseType;
 				}
+				
+				foreach (var t in typeEditors) {
+					if (t.Key.IsAssignableFrom(property.ReturnType)) {
+						return (FrameworkElement)Activator.CreateInstance(t.Value);
+					}
+				}
+				
 				if (editorType == null) {
 					var standardValues = Metadata.GetStandardValues(property.ReturnType);
 					if (standardValues != null) {
