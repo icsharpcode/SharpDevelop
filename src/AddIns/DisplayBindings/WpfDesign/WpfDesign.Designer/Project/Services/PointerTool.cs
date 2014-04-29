@@ -42,7 +42,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		void OnMouseDown(object sender, MouseButtonEventArgs e)
 		{
 			IDesignPanel designPanel = (IDesignPanel)sender;
-			DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true);
+			DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true, HitTestType.ElementSelection);
 			if (result.ModelHit != null) {
 				IHandlePointerToolMouseDown b = result.ModelHit.GetBehavior<IHandlePointerToolMouseDown>();
 				if (b != null) {
