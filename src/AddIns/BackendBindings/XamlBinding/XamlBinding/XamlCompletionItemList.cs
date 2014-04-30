@@ -92,7 +92,7 @@ namespace ICSharpCode.XamlBinding
 						AttributeValue value = MarkupExtensionParser.ParseValue(valuePart);
 						
 						if (value != null && !value.IsString) {
-							var markup = Utils.GetMarkupExtensionAtPosition(value.ExtensionValue, context.Editor.Caret.Offset);
+							var markup = Utils.GetMarkupExtensionAtPosition(value.ExtensionValue, xamlContext.ValueStartOffset);
 							if (markup.NamedArguments.Count > 0 || markup.PositionalArguments.Count > 0) {
 								int oldOffset = context.Editor.Caret.Offset;
 								context.Editor.Caret.Offset = context.StartOffset;

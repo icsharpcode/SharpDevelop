@@ -74,7 +74,11 @@ namespace ICSharpCode.XamlBinding
 					info.TryAddNamedArgument(argumentName, ParseValue(token.Value, token.StartOffset + offset));
 			}
 			
-			 return info;
+			if (info.EndOffset == 0 && token != null) {
+				info.EndOffset = token.EndOffset + offset;
+			}
+			
+			return info;
 		}
 		
 		static void TryAddNamedArgument(this MarkupExtensionInfo info, string name, AttributeValue value)

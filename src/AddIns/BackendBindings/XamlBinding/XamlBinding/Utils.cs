@@ -126,7 +126,7 @@ namespace ICSharpCode.XamlBinding
 			MarkupExtensionInfo tmp = info;
 			
 			foreach (var item in info.PositionalArguments) {
-				if (item.StartOffset < offset && offset < item.EndOffset)
+				if (item.StartOffset < offset && offset <= item.EndOffset)
 					tmp = item.IsString ? tmp : GetMarkupExtensionAtPosition(item.ExtensionValue, offset);
 			}
 			
