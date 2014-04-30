@@ -66,7 +66,11 @@ namespace ICSharpCode.WixBinding
 				ReevaluateIfNecessary();
 			} catch (InvalidProjectFileException ex) {
 				LoggingService.Error(ex);
-				throw new InvalidProjectFileException(StringParser.Parse("${res:ICSharpCode.WixBinding.WixNotInstalled}"));
+				string message = StringParser.Parse("${res:ICSharpCode.WixBinding.WixNotInstalled}");
+				throw new ToolNotFoundProjectLoadException(message) {
+					Description = message,
+					LinkTarget = "http://wixtoolset.org/"
+				};
 			}
 		}
 		
