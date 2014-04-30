@@ -41,8 +41,12 @@ namespace ICSharpCode.XamlBinding
 			if (key == ':' || key == '/')
 				return CompletionItemListKeyResult.NormalKey;
 			
-			if (key == '.' && (context.InAttributeValueOrMarkupExtension && context.Attribute.Name.StartsWith("xmlns")))
+			if (key == '.' && (context.InAttributeValueOrMarkupExtension && context.Attribute.Name.StartsWith("xmlns", StringComparison.Ordinal)))
 				return CompletionItemListKeyResult.NormalKey;
+			
+			// cancel completion if user might want to start a markup extension and value is still empty
+			if (key == '{' && (context.InAttributeValueOrMarkupExtension && string.IsNullOrEmpty(context.RawAttributeValue)))
+				return CompletionItemListKeyResult.Cancel;
 			
 			return base.ProcessInput(key);
 		}

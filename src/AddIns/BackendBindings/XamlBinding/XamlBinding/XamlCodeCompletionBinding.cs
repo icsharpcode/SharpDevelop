@@ -397,7 +397,9 @@ namespace ICSharpCode.XamlBinding
 			if (context.Description == XamlContextDescription.InMarkupExtension && context.AttributeValue != null && !context.AttributeValue.IsString) {
 				if (!XamlBindingOptions.UseExtensionCompletion)
 					return false;
-				XamlCompletionItemList completionList = generator.CreateMarkupExtensionCompletion(context) as XamlCompletionItemList;
+				var completionList = generator.CreateMarkupExtensionCompletion(context) as XamlCompletionItemList;
+				if (completionList == null)
+					return false;
 				string word = context.Editor.GetWordBeforeCaretExtended();
 				if (context.PressedKey != '.' && context.PressedKey != '=' && !word.EndsWith(".", StringComparison.Ordinal) && completionList.PreselectionLength == 0)
 					completionList.PreselectionLength = word.Length;
