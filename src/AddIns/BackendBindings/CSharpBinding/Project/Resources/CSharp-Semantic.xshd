@@ -75,7 +75,7 @@
 		</Span>
 		
 		<Span color="Comment">
-			<Begin color="XmlDoc/DocComment">///</Begin>
+			<Begin color="XmlDoc/DocComment">///(?!/)</Begin>
 			<RuleSet>
 				<Import ruleSet="XmlDoc/DocCommentSet"/>
 				<Import ruleSet="CommentMarkerSet"/>
