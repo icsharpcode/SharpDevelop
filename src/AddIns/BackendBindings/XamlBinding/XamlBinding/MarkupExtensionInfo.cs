@@ -32,6 +32,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public int StartOffset { get; set; }
 		public int EndOffset { get; set; }
+		public bool IsClosed { get; set; }
 		
 		public MarkupExtensionInfo()
 			: this(string.Empty, new List<AttributeValue>(), new Dictionary<string, AttributeValue>(StringComparer.OrdinalIgnoreCase))
@@ -161,6 +162,10 @@ namespace ICSharpCode.XamlBinding
 				
 				return extensionValue.EndOffset;
 			}
+		}
+		
+		public bool IsClosed {
+			get { return IsString || extensionValue.IsClosed; }
 		}
 		
 		public bool IsString {

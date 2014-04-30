@@ -45,6 +45,7 @@ namespace ICSharpCode.XamlBinding
 							break;
 						case MarkupExtensionTokenKind.CloseBrace:
 							info.EndOffset = token.EndOffset + offset;
+							info.IsClosed = true;
 							break;
 						case MarkupExtensionTokenKind.TypeName:
 							info.ExtensionType = token.Value;
