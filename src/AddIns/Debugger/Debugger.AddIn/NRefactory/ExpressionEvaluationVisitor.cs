@@ -490,11 +490,7 @@ namespace Debugger.AddIn
 				}
 				sb.Append("}");
 				return sb.ToString();
-			} else if (val.Type.IsKnownType(KnownTypeCode.Char)) {
-				return "'" + TextWriterTokenWriter.ConvertChar((char)val.PrimitiveValue) + "'";
-			} else if (val.Type.IsKnownType(KnownTypeCode.String)) {
-				return "\"" + TextWriterTokenWriter.ConvertString((string)val.PrimitiveValue) + "\"";
-			} else if (val.Type.IsPrimitiveType()) {
+			} else if (val.Type.IsKnownType(KnownTypeCode.String) || val.Type.IsPrimitiveType()) {
 				return TextWriterTokenWriter.PrintPrimitiveValue(val.PrimitiveValue);
 			} else {
 				return val.InvokeToString(evalThread);
