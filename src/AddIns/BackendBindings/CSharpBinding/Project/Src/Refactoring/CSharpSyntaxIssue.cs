@@ -39,13 +39,26 @@ namespace CSharpBinding.Refactoring
 		{
 			var refactoringContext = context as SDRefactoringContext;
 			if (refactoringContext == null)
-				return Enumerable.Empty<CodeIssue>();
+				yield break;
 			
 			var syntaxTree = context.RootNode as SyntaxTree;
 			if (syntaxTree == null)
-				return Enumerable.Empty<CodeIssue>();
-
-			return syntaxTree.Errors.Select(error => CreateCodeIssue(error, refactoringContext)).Where(issue => issue != null);
+				yield break;
+			
+			int prevLine = 0;
+			foreach (var error in syntaxTree.Errors) {
+				if (error.Region.BeginLine == prevLine)
+					continue; // show at most one error per line
+				prevLine = error.Region.BeginLine;
+				var issue = CreateCodeIssue(error, refactoringContext);
+				if (issue != null)
+					yield return issue;
+			}
+		}
+		
+		static bool IsSpaceOrTab(char c)
+		{
+			return c == ' ' || c == '\t';
 		}
 		
 		CodeIssue CreateCodeIssue(Error error, SDRefactoringContext context)
@@ -55,16 +68,18 @@ namespace CSharpBinding.Refactoring
 			if (begin.Line <= 0 || begin.Line > document.LineCount)
 				return null;
 			
-			// Columns seem to be zero-based, SD expects 1-based columns
-			int offset = document.GetOffset(begin.Line, begin.Column + 1);
+			int offset = document.GetOffset(begin.Line, begin.Column);
+			// the parser sometimes reports errors in the whitespace prior to the invalid token, so search for the next word:
+			while (offset < document.TextLength && IsSpaceOrTab(document.GetCharAt(offset)))
+				offset++;
 			int endOffset = TextUtilities.GetNextCaretPosition(document, offset, System.Windows.Documents.LogicalDirection.Forward, CaretPositioningMode.WordBorderOrSymbol);
 			if (endOffset < 0) endOffset = document.TextLength;
 			int length = endOffset - offset;
-			
-			if (length < 2) {
-				// marker should be at least 2 characters long, but take care that we don't make
-				// it longer than the document
-				length = Math.Min(2, document.TextLength - offset);
+
+			if (length < 1) {
+				// marker should be at least 1 characters long,
+				// but take care that we don't make it longer than the document
+				length = Math.Min(1, document.TextLength - offset);
 			}
 			
 			TextLocation start = document.GetLocation(offset);

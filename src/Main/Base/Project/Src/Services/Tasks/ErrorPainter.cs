@@ -206,10 +206,10 @@ namespace ICSharpCode.SharpDevelop
 				if (endOffset < 0) endOffset = textEditor.Document.TextLength;
 				int length = endOffset - offset;
 				
-				if (length < 2) {
-					// marker should be at least 2 characters long, but take care that we don't make
-					// it longer than the document
-					length = Math.Min(2, textEditor.Document.TextLength - offset);
+				if (length < 1) {
+					// marker should be at least 1 characters long,
+					// but take care that we don't make it longer than the document
+					length = Math.Min(1, textEditor.Document.TextLength - offset);
 				}
 				
 				ITextMarker marker = this.markerService.Create(offset, length);
