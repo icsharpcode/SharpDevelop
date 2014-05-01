@@ -20,6 +20,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
+using System.IO;
 using PdfSharp.Pdf;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
@@ -32,17 +33,47 @@ namespace ICSharpCode.Reporting.Pdf
 	/// </summary>
 	public class PdfExporter:BaseExporter{
 		
-		PdfVisitor visitor;
 		PdfDocument pdfDocument;
-		
 		
 		public PdfExporter(Collection<ExportPage> pages):base(pages){
 		}
 		
+		
+		public void Run (string fileName,bool show) {
+			string file;
+			if (String.IsNullOrEmpty(fileName)) {
+				file = Pages[0].PageInfo.ReportName + ".pdf";
+			}
+			pdfDocument = new PdfDocument();
+			ConvertPagesToPdf();
+			pdfDocument.Save(fileName);
+			if (show) {
+				Process.Start(fileName);	
+			}	
+		}
+		
+	
+		public void Run (Stream stream) {
+			if (stream == null)
+				throw new ArgumentNullException("stream");
+			pdfDocument = new PdfDocument(stream);
+			ConvertPagesToPdf();
+			pdfDocument.Save(stream,false);
+			stream.Seek(0, SeekOrigin.Begin);
+		}
+		
+	
 		public override void Run()
 		{
-			pdfDocument = new PdfDocument();
-			visitor = new PdfVisitor(pdfDocument);
+			var fileName = Pages[0].PageInfo.ReportName + ".pdf";
+			Run(fileName, false);
+			Process.Start(fileName);
+		}
+
+		
+		void ConvertPagesToPdf()
+		{
+			var visitor = new PdfVisitor(pdfDocument);
 			SetDocumentTitle(Pages[0].PageInfo.ReportName);
 			foreach (var page in Pages) {
 				var acceptor = page as IAcceptor;
@@ -50,20 +81,14 @@ namespace ICSharpCode.Reporting.Pdf
 					visitor.Visit(page);
 				}
 			}
-			
-			const string filename = "HelloWorld.pdf";
-			
-			pdfDocument.Save(filename);
-			
-			// ...and start a viewer.
-			
-			Process.Start(filename);
 		}
+		
 		
 		void SetDocumentTitle(string reportName)
 		{
 			pdfDocument.Info.Title = reportName;
 		}
+		
 		
 		public PdfDocument PdfDocument {
 			get { return pdfDocument; }
