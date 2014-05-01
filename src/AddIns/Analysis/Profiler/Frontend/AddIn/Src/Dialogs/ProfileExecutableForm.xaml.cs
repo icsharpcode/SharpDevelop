@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -86,12 +87,17 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 				MessageService.ShowError(StringParser.Parse("${res:AddIns.Profiler.ProfileExecutable.ErrorMessage}"));
 			} catch (FileNotFoundException ex) {
 				MessageService.ShowError(ex.Message);
-			} catch (DirectoryNotFoundException ex2) {
-				MessageService.ShowError(ex2.Message);
-			} catch (UnauthorizedAccessException ex4) {
-				MessageService.ShowError(ex4.Message);
-			} catch (Exception ex3) {
-				MessageService.ShowException(ex3);
+			} catch (DirectoryNotFoundException ex) {
+				MessageService.ShowError(ex.Message);
+			} catch (UnauthorizedAccessException ex) {
+				MessageService.ShowError(ex.Message);
+			} catch (Win32Exception ex) {
+				if ((uint)ex.HResult == 0x80004005)
+					MessageService.ShowError(ex.Message);
+				else
+					MessageService.ShowException(ex);
+			} catch (Exception ex) {
+				MessageService.ShowException(ex);
 			}
 		}
 		
