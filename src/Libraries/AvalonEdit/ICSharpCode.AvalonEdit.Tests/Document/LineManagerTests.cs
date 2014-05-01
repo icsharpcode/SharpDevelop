@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace ICSharpCode.AvalonEdit.Document
@@ -46,10 +47,16 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			document.Text = "Hello,\nWorld!";
 			Assert.AreEqual(2, document.LineCount);
+			var oldLines = document.Lines.ToArray();
 			document.Text = "";
 			Assert.AreEqual("", document.Text);
 			Assert.AreEqual(0, document.TextLength);
 			Assert.AreEqual(1, document.LineCount);
+			Assert.AreSame(oldLines[0], document.Lines.Single());
+			Assert.IsFalse(oldLines[0].IsDeleted);
+			Assert.IsTrue(oldLines[1].IsDeleted);
+			Assert.IsNull(oldLines[0].NextLine);
+			Assert.IsNull(oldLines[1].PreviousLine);
 		}
 		
 		[Test]

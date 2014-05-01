@@ -105,6 +105,13 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			// keep the first document line
 			DocumentLine ls = documentLineTree.GetByNumber(1);
+			// but mark all other lines as deleted, and detach them from the other nodes
+			for (DocumentLine line = ls.NextLine; line != null; line = line.NextLine) {
+				line.isDeleted = true;
+				line.parent = line.left = line.right = null;
+			}
+			// Reset the first line to detach it from the deleted lines
+			ls.ResetLine();
 			SimpleSegment ds = NewLineFinder.NextNewLine(document, 0);
 			List<DocumentLine> lines = new List<DocumentLine>();
 			int lastDelimiterEnd = 0;
@@ -117,7 +124,6 @@ namespace ICSharpCode.AvalonEdit.Document
 				ls = new DocumentLine(document);
 				ds = NewLineFinder.NextNewLine(document, lastDelimiterEnd);
 			}
-			ls.ResetLine();
 			ls.TotalLength = document.TextLength - lastDelimiterEnd;
 			lines.Add(ls);
 			documentLineTree.RebuildTree(lines);
