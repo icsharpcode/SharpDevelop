@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 		<id>AvalonEdit</id>
-		<version>4.4.1.9739</version>
+		<version>4.4.2.9744</version>
 		<authors>Daniel Grunwald</authors>
 		<owners>SharpDevelop</owners>
 		<licenseUrl>http://www.opensource.org/licenses/lgpl-2.1.php</licenseUrl>
