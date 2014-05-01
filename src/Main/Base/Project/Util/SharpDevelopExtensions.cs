@@ -1052,5 +1052,21 @@ namespace ICSharpCode.SharpDevelop
 			return document.GetLineByOffset(offset);
 		}
 		#endregion
+		
+		#region IProject extensions
+		/// <summary>
+		/// Checks if the project's output is a .NET executable that can be run in a 32-bit process.
+		/// </summary>
+		public static bool IsPlatformTarget32BitOrAnyCPU(this IProject project)
+		{
+			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
+			if (msbuildProject != null) {
+				string platformTarget = msbuildProject.GetEvaluatedProperty("PlatformTarget");
+				return string.IsNullOrEmpty(platformTarget) || String.Equals(platformTarget, "x86", StringComparison.OrdinalIgnoreCase)
+					|| String.Equals(platformTarget, "AnyCPU", StringComparison.OrdinalIgnoreCase);
+			}
+			return false;
+		}
+		#endregion
 	}
 }
