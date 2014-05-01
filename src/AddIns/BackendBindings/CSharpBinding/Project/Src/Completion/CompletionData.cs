@@ -87,8 +87,20 @@ namespace CSharpBinding.Completion
 			context.EndOffset = context.StartOffset + this.CompletionText.Length;
 		}
 		
+		object fancyContent;
+		
 		object IFancyCompletionItem.Content {
-			get { return this.DisplayText; }
+			get { 
+				if (fancyContent == null) {
+					fancyContent = CreateFancyContent();
+				}
+				return fancyContent;
+			}
+		}
+		
+		protected virtual object CreateFancyContent()
+		{
+			return DisplayText;
 		}
 		
 		object fancyDescription;

@@ -136,7 +136,7 @@ namespace CSharpBinding.Completion
 		
 		ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
 		{
-			return new CompletionData("TODO: partial completion");
+			return new PartialCompletionData(declarationBegin, m.Resolve(contextAtCaret.CurrentTypeResolveContext), contextAtCaret);
 		}
 		
 		IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData()
@@ -162,7 +162,7 @@ namespace CSharpBinding.Completion
 		
 		ICompletionData ICompletionDataFactory.CreateFormatItemCompletionData(string format, string description, object example)
 		{
-			return new CompletionData("TODO: format item completion");
+			return new FormatItemCompletionData(format, description, example);
 		}
 
 		ICompletionData ICompletionDataFactory.CreateXmlDocCompletionData(string tag, string description, string tagInsertionText)
