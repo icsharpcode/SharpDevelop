@@ -124,7 +124,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			                    		return true; // continue hit testing
 			                    	result = r;
 			                    	return false; // finish hit testing
-			                    });
+			                    }, HitTestType.Default);
 
 			return result;
 		}

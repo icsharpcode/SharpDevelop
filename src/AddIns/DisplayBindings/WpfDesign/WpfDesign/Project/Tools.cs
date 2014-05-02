@@ -99,14 +99,14 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Performs a hit test on the design surface.
 		/// </summary>
-		DesignPanelHitTestResult HitTest(Point mousePosition, bool testAdorners, bool testDesignSurface);
-		
+		DesignPanelHitTestResult HitTest(Point mousePosition, bool testAdorners, bool testDesignSurface, HitTestType hitTestType);
+
 		/// <summary>
 		/// Performs a hit test on the design surface, raising <paramref name="callback"/> for each match.
 		/// Hit testing continues while the callback returns true.
 		/// </summary>
-		void HitTest(Point mousePosition, bool testAdorners, bool testDesignSurface, Predicate<DesignPanelHitTestResult> callback);
-		
+		void HitTest(Point mousePosition, bool testAdorners, bool testDesignSurface, Predicate<DesignPanelHitTestResult> callback, HitTestType hitTestType);
+
 		// The following members were missing in <see cref="IInputElement"/>, but
 		// are supported on the DesignPanel:
 		

@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -93,7 +94,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 				foreach (PropertyDescriptor p in TypeDescriptor.GetProperties(element))
 				{
 					if (!p.IsBrowsable) continue;
-					if (p.IsReadOnly) continue;
+					if (p.IsReadOnly  && !typeof(ICollection).IsAssignableFrom(p.PropertyType)) continue;
 					if (hiddenPropertiesOnWindow.Contains(p.Name)) continue;
 					if (p.Attributes.OfType<ObsoleteAttribute>().Count() != 0) continue;
 					yield return p;
@@ -103,7 +104,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			{
 				foreach(PropertyDescriptor p in TypeDescriptor.GetProperties(element)){
 					if (!p.IsBrowsable) continue;
-					if (p.IsReadOnly) continue;
+					if (p.IsReadOnly  && !typeof(ICollection).IsAssignableFrom(p.PropertyType)) continue;
 					if (p.Attributes.OfType<ObsoleteAttribute>().Count()!=0) continue;
 					yield return p;
 				}
