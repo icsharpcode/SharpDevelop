@@ -69,5 +69,16 @@ namespace ICSharpCode.SharpDevelop
 			}
 			return null;
 		}
+		
+		/// <summary>
+		/// Gets whether the Microsoft Build Tools 2013 (MSBuild 12.0) is installed.
+		/// </summary>
+		public static bool IsBuildTools2013Installed()
+		{
+			// HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\DevDiv\BuildTools\Servicing\12.0
+			using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\DevDiv\BuildTools\Servicing\12.0\MSBuild")) {
+				return key != null && key.GetValue("Install") as int? >= 1;
+			}
+		}
 	}
 }
