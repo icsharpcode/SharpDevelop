@@ -163,6 +163,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularProperty(typeof(Binding), "ElementName");
 			Metadata.AddPopularProperty(typeof(Binding), "Converter");
 			Metadata.AddPopularProperty(typeof(Binding), "XPath");
+			
+			Metadata.AddPopularProperty(typeof(ItemsControl), "Items");
 
 			Metadata.AddValueRange(Block.LineHeightProperty, double.Epsilon, double.MaxValue);
 			Metadata.AddValueRange(Canvas.BottomProperty, double.MinValue, double.MaxValue);
@@ -219,7 +221,7 @@ namespace ICSharpCode.WpfDesign.Designer
 
 			Metadata.HideProperty(typeof(UIElement), "RenderSize");
 			Metadata.HideProperty(FrameworkElement.NameProperty);
-			Metadata.HideProperty(typeof(FrameworkElement), "Resources");
+			//Metadata.HideProperty(typeof(FrameworkElement), "Resources");
 			Metadata.HideProperty(typeof(Window), "Owner");
 
 			//Metadata.DisablePlacement(typeof(Button));

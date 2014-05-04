@@ -159,7 +159,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		void MouseDown(object sender,MouseEventArgs e)
 		{
-			result = designPanel.HitTest(e.GetPosition(designPanel), false, true);
+			result = designPanel.HitTest(e.GetPosition(designPanel), false, true, HitTestType.Default);
 			if(result.ModelHit==ExtendedItem && result.VisualHit is TextBlock) {
 				Start = Mouse.GetPosition(null);
 				Current = Start;
@@ -171,7 +171,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		void MouseMove(object sender, MouseEventArgs e)
 		{
 			Current += e.GetPosition(null) - Start;
-			result = designPanel.HitTest(e.GetPosition(designPanel), false, true);
+			result = designPanel.HitTest(e.GetPosition(designPanel), false, true, HitTestType.Default);
 			if (result.ModelHit == ExtendedItem && result.VisualHit is TextBlock) {
 				if (numClicks > 0) {
 					if (isMouseDown &&
@@ -190,7 +190,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		void MouseUp(object sender,MouseEventArgs e)
 		{
-			result = designPanel.HitTest(e.GetPosition(designPanel), false, true);
+			result = designPanel.HitTest(e.GetPosition(designPanel), false, true, HitTestType.Default);
 			if (result.ModelHit == ExtendedItem && result.VisualHit is TextBlock && numClicks>0){
 				if (!isGettingDragged) {
 					PlaceEditor(result.VisualHit, e);

@@ -71,6 +71,7 @@ namespace CSharpBinding
 			timer.Tick += (sender, e) => ResolveAtCaret();
 				
 			editor.Caret.LocationChanged += CaretLocationChanged;
+			editor.Document.ChangeCompleted += DocumentChanged;
 			textView.VisualLinesChanged += VisualLinesChanged;
 			SD.ParserService.ParseInformationUpdated += ParseInformationUpdated;
 			SD.ParserService.LoadSolutionProjectsThread.Finished += LoadSolutionProjectsThreadFinished;
@@ -79,18 +80,17 @@ namespace CSharpBinding
 
 		public void Dispose()
 		{
+			timer.Stop();
 			this.textView.BackgroundRenderers.Remove(this);
 			editor.Caret.LocationChanged -= CaretLocationChanged;
+			editor.Document.ChangeCompleted -= DocumentChanged;
+			textView.VisualLinesChanged -= VisualLinesChanged;
+			SD.ParserService.ParseInformationUpdated -= ParseInformationUpdated;
+			SD.ParserService.LoadSolutionProjectsThread.Finished -= LoadSolutionProjectsThreadFinished;
 		}
 
 		public void Draw(TextView textView, DrawingContext drawingContext)
 		{
-			var codeEditorOptions = editor.Options as ICodeEditorOptions;
-			if ((codeEditorOptions != null) && !codeEditorOptions.HighlightSymbol) {
-				// User has disabled highlighting of symbols
-				return;
-			}
-			
 			if (currentReferences == null) {
 				if (textView.VisualLines.Count == 0)
 					return;
@@ -130,21 +130,48 @@ namespace CSharpBinding
 				return;
 			currentReferences = null;
 			textView.InvalidateLayer(KnownLayer.Selection);
-
 		}
 
 		void LoadSolutionProjectsThreadFinished(object sender, EventArgs e)
 		{
-			currentReferences = null;
-			textView.InvalidateLayer(KnownLayer.Selection);
+			StartTimer();
 		}
 
 		void CaretLocationChanged(object sender, EventArgs e)
 		{
+			if (currentReferences != null) {
+				int caretOffset = editor.Caret.Offset;
+				if (!currentReferences.Any(r => r.Offset <= caretOffset && caretOffset <= r.EndOffset)) {
+					// If the caret moved outside any highlighted identifier, immediately clear the highlight
+					// as the caret is not on the same symbol as before
+					SetCurrentSymbol(null);
+				}
+			}
+			StartTimer();
+		}
+		
+		void DocumentChanged(object sender, EventArgs e)
+		{
+			// If the document has changed, the current symbol likely also has changed (most edits are at the caret position),
+			// so immediately clear the highlighting.
+			SetCurrentSymbol(null);
+			StartTimer();
+		}
+		
+		void StartTimer()
+		{
 			if (caretMovementTokenSource != null)
 				caretMovementTokenSource.Cancel();
 			timer.Stop();
-			timer.Start();
+			
+			var codeEditorOptions = editor.Options as ICodeEditorOptions;
+			if (codeEditorOptions == null || codeEditorOptions.HighlightSymbol) {
+				// If symbol highlighting is enabled
+				timer.Start();
+			} else {
+				// Clear highlighting if its disabled
+				SetCurrentSymbol(null);
+			}
 		}
 		
 		async void ResolveAtCaret()

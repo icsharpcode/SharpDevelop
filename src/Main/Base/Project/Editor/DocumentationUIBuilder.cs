@@ -239,7 +239,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			var richText = DocumentPrinter.ConvertTextDocumentToRichText(document, highlightingDefinition).ToRichTextModel();
 			richText.SetFontWeight(currentParameterOffset, currentParameterLength, FontWeights.Bold);
 			var block = new Paragraph();
-			block.Inlines.AddRange(new RichText(signature, richText).CreateRuns()); // TODO richText.CreateRuns(document)
+			block.Inlines.AddRange(richText.CreateRuns(document));
 			block.FontFamily = GetCodeFont();
 			block.TextAlignment = TextAlignment.Left;
 			AddBlock(block);

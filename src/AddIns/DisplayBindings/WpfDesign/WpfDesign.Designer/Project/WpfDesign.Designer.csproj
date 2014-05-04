@@ -75,6 +75,9 @@
       <Private>False</Private>
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\..\..\..\..\Libraries\WPFExtendedToolkit\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
@@ -89,9 +92,18 @@
     <Compile Include="Extensions\RightClickContextMenuExtension.cs" />
     <Compile Include="Extensions\SkewThumbExtension.cs" />
     <Compile Include="Extensions\TopLeftContainerDragHandleMultipleItems.cs" />
+    <Compile Include="PropertyGrid\Editors\ColorEditor.xaml.cs">
+      <DependentUpon>ColorEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PropertyGrid\Editors\FlatCollectionEditor.xaml.cs">
       <DependentUpon>FlatCollectionEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PropertyGrid\Editors\OpenCollectionEditor.xaml.cs">
+      <DependentUpon>OpenCollectionEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyGrid\Editors\TimeSpanEditor.xaml.cs">
+      <DependentUpon>TimeSpanEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Translations.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
@@ -251,7 +263,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Extensions\RightClickContextMenu.xaml" />
+    <Page Include="PropertyGrid\Editors\ColorEditor.xaml" />
     <Page Include="PropertyGrid\Editors\FlatCollectionEditor.xaml" />
+    <Page Include="PropertyGrid\Editors\OpenCollectionEditor.xaml" />
+    <Page Include="PropertyGrid\Editors\TimeSpanEditor.xaml" />
     <Page Include="ThumbnailView\ThumbnailView.xaml" />
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>

@@ -79,17 +79,19 @@
     <Compile Include="Src\Completion\CSharpInsightItem.cs" />
     <Compile Include="Src\Completion\CSharpMethodInsight.cs" />
     <Compile Include="Src\Completion\EventCreationCompletionData.cs" />
+    <Compile Include="Src\Completion\FormatItemCompletionData.cs" />
     <Compile Include="Src\Completion\ImportCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideEqualsGetHashCodeCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideToStringCompletionData.cs" />
+    <Compile Include="Src\Completion\PartialCompletionData.cs" />
     <Compile Include="Src\Completion\SegmentTrackingOutputFormatter.cs" />
     <Compile Include="Src\Completion\TypeCompletionData.cs" />
     <Compile Include="Src\Completion\XmlDocCompletionData.cs" />
     <Compile Include="Src\CSharpSemanticHighlighterVisitor.cs">
       <DependentUpon>CSharpSemanticHighlighter.cs</DependentUpon>
     </Compile>
-	<Compile Include="Src\FormattingStrategy\CSharpFormattingOptionsContainer.cs" />
+    <Compile Include="Src\FormattingStrategy\CSharpFormattingOptionsContainer.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingOptionsPersistence.cs" />
     <Compile Include="Src\FormattingStrategy\FormattingOptionBinding.cs" />

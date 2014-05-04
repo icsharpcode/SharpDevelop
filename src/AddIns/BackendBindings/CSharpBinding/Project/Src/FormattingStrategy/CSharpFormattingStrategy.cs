@@ -44,22 +44,29 @@ namespace CSharpBinding.FormattingStrategy
 		#region Smart Indentation
 		public override void IndentLine(ITextEditor editor, IDocumentLine line)
 		{
-			var document = editor.Document;
-			var engine = CreateIndentEngine(document, editor.ToEditorOptions());
-			IndentSingleLine(engine, document, line);
+			int lineNr = line.LineNumber;
+			DocumentAccessor acc = new DocumentAccessor(editor.Document, lineNr, lineNr);
+			
+			CSharpIndentationStrategy indentStrategy = new CSharpIndentationStrategy();
+			indentStrategy.IndentationString = editor.Options.IndentationString;
+			indentStrategy.Indent(acc, false);
+			
+			string t = acc.Text;
+			if (t.Length == 0) {
+				// use AutoIndentation for new lines in comments / verbatim strings.
+				base.IndentLine(editor, line);
+			}
 		}
 		
 		public override void IndentLines(ITextEditor editor, int beginLine, int endLine)
 		{
-			var document = editor.Document;
-			var engine = CreateIndentEngine(document, editor.ToEditorOptions());
-			int currentLine = beginLine;
-			do {
-				var line = document.GetLineByNumber(currentLine);
-				IndentSingleLine(engine, document, line);
-			} while (++currentLine <= endLine);
+			DocumentAccessor acc = new DocumentAccessor(editor.Document, beginLine, endLine);
+			CSharpIndentationStrategy indentStrategy = new CSharpIndentationStrategy();
+			indentStrategy.IndentationString = editor.Options.IndentationString;
+			indentStrategy.Indent(acc, true);
 		}
 		
+		/* NR indent engine (temporarily?) disabled as per #447
 		static void IndentSingleLine(CacheIndentEngine engine, IDocument document, IDocumentLine line)
 		{
 			engine.Update(line.EndOffset);
@@ -83,6 +90,7 @@ namespace CSharpBinding.FormattingStrategy
 			var engine = new CSharpIndentEngine(document, options, formattingOptions.OptionsContainer.GetEffectiveOptions());
 			return new CacheIndentEngine(engine);
 		}
+		*/
 		#endregion
 		
 		#region Private functions

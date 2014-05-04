@@ -57,18 +57,28 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 			this.Owner = Application.Current.MainWindow;
 		}
 		
+		public Type GetItemsSourceType(Type t)
+		{
+			Type tp = t.GetInterfaces().FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>));
+
+			return (tp != null ) ? tp.GetGenericArguments()[0] : null;
+		}
+		
 		public void LoadItemsCollection(DesignItemProperty itemProperty)
 		{
 			_itemProperty = itemProperty;
 			_componentService=_itemProperty.DesignItem.Services.Component;
 			TypeMappings.TryGetValue(_itemProperty.ReturnType, out _type);
+			
+			_type = _type ?? GetItemsSourceType(_itemProperty.ReturnType);
+			
 			if (_type == null) {
-				PropertyGridView.IsEnabled=false;
-				ListBox.IsEnabled=false;
+				//PropertyGridView.IsEnabled=false;
+				//ListBox.IsEnabled=false;
 				AddItem.IsEnabled=false;
-				RemoveItem.IsEnabled=false;
-				MoveUpItem.IsEnabled=false;
-				MoveDownItem.IsEnabled=false;
+				//RemoveItem.IsEnabled=false;
+				//MoveUpItem.IsEnabled=false;
+				//MoveDownItem.IsEnabled=false;
 			}
 			
 			ListBox.ItemsSource = _itemProperty.CollectionElements;

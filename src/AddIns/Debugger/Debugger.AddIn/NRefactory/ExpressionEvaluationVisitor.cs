@@ -88,6 +88,30 @@ namespace Debugger.AddIn
 			this.allowSetValue = allowSetValue;
 		}
 		
+		/// <summary>
+		/// Imports a type into the debugger's type system, and into the current generic context.
+		/// </summary>
+		IType Import(IType type)
+		{
+			IType importedType = debuggerTypeSystem.Import(type);
+			if (importedType != null)
+				return importedType.AcceptVisitor(context.MethodInfo.Substitution);
+			else
+				return null;
+		}
+		
+		/// <summary>
+		/// Imports a type into the debugger's type system, and into the current generic context.
+		/// </summary>
+		IMember Import(IMember member)
+		{
+			IMember importedMember = debuggerTypeSystem.Import(member);
+			if (importedMember != null)
+				return importedMember.Specialize(context.MethodInfo.Substitution);
+			else
+				return null;
+		}
+		
 		public Value Convert(ResolveResult result)
 		{
 			if (result.IsCompileTimeConstant && !result.IsError)
@@ -122,7 +146,7 @@ namespace Debugger.AddIn
 		
 		Value Visit(MemberResolveResult result)
 		{
-			var importedMember = debuggerTypeSystem.Import(result.Member);
+			var importedMember = Import(result.Member);
 			if (importedMember == null)
 				throw new GetValueException("Member not found!");
 			Value target = null;
@@ -136,7 +160,7 @@ namespace Debugger.AddIn
 			}
 			if (!allowMethodInvoke && (importedMember is IMethod))
 				throw new InvalidOperationException("Method invocation not allowed in the current context!");
-			Value val = Value.GetMemberValue(evalThread, target, importedMember.Specialize(context.MethodInfo.Substitution));
+			Value val = Value.GetMemberValue(evalThread, target, importedMember);
 			if (val == null)
 				throw new GetValueException("Member not found!");
 			return val;
@@ -316,7 +340,7 @@ namespace Debugger.AddIn
 		/// </remarks>
 		Value Visit(TypeIsResolveResult result)
 		{
-			var importedType = NullableType.GetUnderlyingType(debuggerTypeSystem.Import(result.TargetType));
+			var importedType = NullableType.GetUnderlyingType(Import(result.TargetType));
 			var val = Convert(result.Input);
 			var conversions = CSharpConversions.Get(debuggerTypeSystem);
 			bool evalResult = false;
@@ -334,7 +358,7 @@ namespace Debugger.AddIn
 		
 		Value Visit(TypeOfResolveResult result)
 		{
-			var type = debuggerTypeSystem.Import(result.ReferencedType);
+			var type = Import(result.ReferencedType);
 			if (type == null)
 				throw new GetValueException("Error: cannot find '{0}'.", result.ReferencedType.FullName);
 			return Eval.TypeOf(evalThread, type);
@@ -402,19 +426,17 @@ namespace Debugger.AddIn
 		
 		Value Visit(InvocationResolveResult result)
 		{
-			var importedMember = debuggerTypeSystem.Import(result.Member);
-			if (importedMember == null)
-				throw new GetValueException("Member not found!");
+			// InvokeMethod() will import the member, so work in the original compilation to find the method to invoke:
 			IMethod usedMethod;
-			if (importedMember is IProperty) {
-				var prop = (IProperty)importedMember;
+			if (result.Member is IProperty) {
+				var prop = (IProperty)result.Member;
 				if (!prop.CanGet)
 					throw new GetValueException("Indexer does not have a getter.");
 				usedMethod = prop.Getter;
-			} else if (importedMember is IMethod) {
+			} else if (result.Member is IMethod) {
 				if (!allowMethodInvoke)
 					throw new InvalidOperationException("Method invocation not allowed in the current context!");
-				usedMethod = (IMethod)importedMember;
+				usedMethod = (IMethod)result.Member;
 			} else
 				throw new GetValueException("Invoked member must be a method or property");
 			Value target = null;
@@ -430,7 +452,7 @@ namespace Debugger.AddIn
 		
 		Value InvokeMethod(Value thisValue, IMethod method, params Value[] arguments)
 		{
-			method = debuggerTypeSystem.Import(method);
+			method = Import(method) as IMethod;
 			if (method == null)
 				throw new GetValueException("Method not found!");
 			return Value.InvokeMethod(evalThread, thisValue, method, arguments);
@@ -468,11 +490,7 @@ namespace Debugger.AddIn
 				}
 				sb.Append("}");
 				return sb.ToString();
-			} else if (val.Type.IsKnownType(KnownTypeCode.Char)) {
-				return "'" + TextWriterTokenWriter.ConvertChar((char)val.PrimitiveValue) + "'";
-			} else if (val.Type.IsKnownType(KnownTypeCode.String)) {
-				return "\"" + TextWriterTokenWriter.ConvertString((string)val.PrimitiveValue) + "\"";
-			} else if (val.Type.IsPrimitiveType()) {
+			} else if (val.Type.IsKnownType(KnownTypeCode.String) || val.Type.IsPrimitiveType()) {
 				return TextWriterTokenWriter.PrintPrimitiveValue(val.PrimitiveValue);
 			} else {
 				return val.InvokeToString(evalThread);

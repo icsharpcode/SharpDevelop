@@ -333,7 +333,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Gets the escape sequence for the specified character.
 		/// </summary>
 		/// <remarks>This method does not convert ' or ".</remarks>
-		public static string ConvertChar(char ch)
+		static string ConvertChar(char ch)
 		{
 			switch (ch) {
 				case '\\':

@@ -26,9 +26,9 @@ If you want to contribute see ["Joining the team"](https://github.com/icsharpcod
 
 ##Extended Requirements (building #Develop)
 
- - [Microsoft Build Tools 2013](www.microsoft.com/en-us/download/details.aspx?id=40760)
+ - [Microsoft Build Tools 2013](http://www.microsoft.com/en-us/download/details.aspx?id=40760)
  - [.NET 3.5 SP1](http://www.microsoft.com/en-au/download/details.aspx?id=22)
- - [.NET 4.5 SDK] (part of [Windows SDK 8.0](http://msdn.microsoft.com/en-us/windows/desktop/hh852363.aspx))
+ - [.NET 4.5 SDK](http://msdn.microsoft.com/en-us/windows/desktop/hh852363.aspx) (part of Windows SDK 8.0)
  - [Windows SDK 7.1](http://www.microsoft.com/downloads/details.aspx?familyid=6B6C21D2-2006-4AFA-9702-529FA782D63B) (?? not sure if this still is necessary...)
  - [Windows SDK 7.0](http://www.microsoft.com/en-us/download/details.aspx?id=3138) (optional; C++ compiler needed for profiler)
  - [Windows PowerShell](http://www.microsoft.com/en-us/download/details.aspx?id=34595)

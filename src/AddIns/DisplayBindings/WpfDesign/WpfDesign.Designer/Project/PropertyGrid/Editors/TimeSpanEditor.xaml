@@ -1,0 +1,6 @@
+﻿<xctk:TimeSpanUpDown x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.TimeSpanEditor"
+                     xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                     Value="{Binding Value}">
+</xctk:TimeSpanUpDown>

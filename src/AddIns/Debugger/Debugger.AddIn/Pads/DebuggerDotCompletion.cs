@@ -60,76 +60,78 @@ namespace Debugger.AddIn.Pads.Controls
 			var file = SD.ParserService.GetExistingUnresolvedFile(context.FileName);
 			if (compilation == null || file == null)
 				return "";
-			var member = file.GetMember(context.Location);
+			var unresolvedMember = file.GetMember(context.Location);
+			if (unresolvedMember == null)
+				return "";
+			var member = unresolvedMember.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 			if (member == null)
 				return "";
 			var builder = new TypeSystemAstBuilder();
-			EntityDeclaration decl = builder.ConvertEntity(member.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)));
-			decl.Name = "__DebuggerStub_" + decl.Name;
-			decl.Modifiers &= (Modifiers.Static);
-			switch (member.SymbolKind) {
-				case SymbolKind.Property:
-					break;
-				case SymbolKind.Indexer:
-					break;
-				case SymbolKind.Event:
-					break;
-				case SymbolKind.Method:
-					GenerateBodyFromContext(builder, context, (MethodDeclaration)decl);
-					break;
-				case SymbolKind.Operator:
-					break;
-				case SymbolKind.Constructor:
-					break;
-				case SymbolKind.Destructor:
-					break;
-				case SymbolKind.Accessor:
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
+			MethodDeclaration decl;
+			if (unresolvedMember is IMethod) {
+				// If it's a method, convert it directly (including parameters + type parameters)
+				decl = (MethodDeclaration)builder.ConvertEntity(member);
+			} else {
+				// Otherwise, create a method anyways, and copy the parameters
+				decl = new MethodDeclaration();
+				if (member is IParameterizedMember) {
+					foreach (var p in ((IParameterizedMember)member).Parameters) {
+						decl.Parameters.Add(builder.ConvertParameter(p));
+					}
+				}
 			}
-			return WrapInType(member.DeclaringTypeDefinition, decl.ToString());
+			decl.Name = "__DebuggerStub__";
+			decl.ReturnType = builder.ConvertType(member.ReturnType);
+			decl.Modifiers = unresolvedMember.IsStatic ? Modifiers.Static : Modifiers.None;
+			// Make the method look like an explicit interface implementation so that it doesn't appear in CC
+			decl.PrivateImplementationType = new SimpleType("__DummyType__");
+			decl.Body = GenerateBodyFromContext(builder, context);
+			return WrapInType(unresolvedMember.DeclaringTypeDefinition, decl).ToString();
 		}
 
-		static void GenerateBodyFromContext(TypeSystemAstBuilder builder, DebuggerCompletionContext context, MethodDeclaration methodDeclaration)
+		static BlockStatement GenerateBodyFromContext(TypeSystemAstBuilder builder, DebuggerCompletionContext context)
 		{
-			methodDeclaration.Body = new BlockStatement();
+			var body = new BlockStatement();
 			foreach (var v in context.Variables)
-				methodDeclaration.Body.Statements.Add(new VariableDeclarationStatement(builder.ConvertType(v.Type), v.Name));
-			methodDeclaration.Body.Statements.Add(new ExpressionStatement(new IdentifierExpression("$__Caret_Point__$")));
+				body.Statements.Add(new VariableDeclarationStatement(builder.ConvertType(v.Type), v.Name));
+			body.Statements.Add(new ExpressionStatement(new IdentifierExpression("$__Caret_Point__$")));
+			return body;
 		}
 
-		static string WrapInType(IUnresolvedTypeDefinition entity, string code)
+		static AstNode WrapInType(IUnresolvedTypeDefinition entity, EntityDeclaration decl)
 		{
 			if (entity == null)
-				return code;
-			code = WrapInType(entity.DeclaringTypeDefinition, GetHeader(entity) + code + "\r\n}");
-			if (entity.DeclaringTypeDefinition == null) {
-				return "namespace " + entity.Namespace + " {\r\n" + code + "\r\n}";
-			}
-			return code;
+				return decl;
+			// Wrap decl in TypeDeclaration
+			decl = new TypeDeclaration {
+				ClassType = GetClassType(entity),
+				Modifiers = Modifiers.Partial,
+				Name = entity.Name,
+				Members = { decl }
+			};
+			if (entity.DeclaringTypeDefinition != null) {
+				// Handle nested types
+				return WrapInType(entity.DeclaringTypeDefinition, decl);
+			} 
+			if (string.IsNullOrEmpty(entity.Namespace))
+				return decl;
+			return new NamespaceDeclaration(entity.Namespace) {
+				Members = {
+					decl
+				}
+			};
 		}
 
-		static string GetHeader(IUnresolvedTypeDefinition entity)
+		static ClassType GetClassType(IUnresolvedTypeDefinition entity)
 		{
-			StringBuilder builder = new StringBuilder();
-			builder.Append("partial ");
 			switch (entity.Kind) {
-				case TypeKind.Class:
-					builder.Append("class ");
-					break;
 				case TypeKind.Interface:
-					builder.Append("interface ");
-					break;
+					return ClassType.Interface;
 				case TypeKind.Struct:
-					builder.Append("struct ");
-					break;
+					return ClassType.Struct;
 				default:
-					throw new NotSupportedException();
+					return ClassType.Class;
 			}
-			builder.Append(entity.Name);
-			builder.AppendLine(" {");
-			return builder.ToString();
 		}
 	}
 

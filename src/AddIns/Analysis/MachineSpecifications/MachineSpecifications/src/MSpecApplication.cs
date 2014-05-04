@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 
@@ -103,7 +104,7 @@ namespace ICSharpCode.MachineSpecifications
 				string runnerDirectory = Path.Combine(assemblyDirectory, @"Tools\Machine.Specifications");
 
 				string executableName = "mspec";
-				if (TargetPlatformIs32Bit(project))
+				if (project.IsPlatformTarget32BitOrAnyCPU())
 					executableName += "-x86";
 				if (!ProjectUsesDotnet20Runtime(project))
 					executableName += "-clr4";
@@ -118,16 +119,6 @@ namespace ICSharpCode.MachineSpecifications
 			var p = project as ICSharpCode.SharpDevelop.Project.Converter.IUpgradableProject;
 			if (p != null && p.CurrentTargetFramework != null) {
 				return p.CurrentTargetFramework.SupportedRuntimeVersion == "v2.0.50727";
-			}
-			return false;
-		}
-
-		bool TargetPlatformIs32Bit(IProject project)
-		{
-			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
-			if (msbuildProject != null) {
-				string platformTarget = msbuildProject.GetEvaluatedProperty("PlatformTarget");
-				return String.Compare(platformTarget, "x86", true) == 0;
 			}
 			return false;
 		}
