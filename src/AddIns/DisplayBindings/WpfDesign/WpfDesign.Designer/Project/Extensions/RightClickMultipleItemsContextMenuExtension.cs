@@ -17,71 +17,38 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
-namespace ICSharpCode.WpfDesign.Designer
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Extensions;
+using ICSharpCode.WpfDesign.Designer;
+
+namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	/// <summary>
-	/// Description of Translations.
+	/// 
 	/// </summary>
-	public class Translations
+	[ExtensionServer(typeof(MultipleSelectedExtensionServer))]
+	[ExtensionFor(typeof(UIElement))]
+	public class RightClickMultipleItemsContextMenuExtension : SelectionAdornerProvider
 	{
-		private static Translations _instance;
-		public static Translations Instance { 
-			get {
-				if (_instance == null)
-					_instance = new Translations();
-				return _instance; 
-			} protected set {
-				_instance = value;
-			}
+		DesignPanel panel;
+		
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
+			
+			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+			panel.ContextMenu = new RightClickMultipleItemsContextMenu(ExtendedItem);
 		}
 		
-		public virtual string SendToFrontText {
-			get {
-				return "Bring to front";
-			}
-		}
-		
-		public virtual string SendForward {
-			get {
-				return "Forward";
-			}
-		}
-		
-		public virtual string SendBackward {
-			get {
-				return "Backward";
-			}
-		}
-		
-		public virtual string SendToBack {
-			get {
-				return "Send to back";
-			}
-		}
-		
-		public virtual string PressAltText {
-			get {
-				return "Press \"Alt\" to Enter Container";
-			}
-		}
-		
-		public virtual string WrapInCanvas {
-			get {
-				return "Wrap in Canvas";
-			}
-		}
-		
-		public virtual string WrapInGrid {
-			get {
-				return "Wrap in Grid";
-			}
-		}
-		
-		public virtual string WrapInBorder {
-			get {
-				return "Wrap in Border";
-			}
+		protected override void OnRemove()
+		{
+			panel.ContextMenu = null;
+			
+			base.OnRemove();
 		}
 	}
 }

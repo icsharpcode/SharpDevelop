@@ -17,71 +17,42 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using ICSharpCode.WpfDesign.PropertyGrid;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 
-namespace ICSharpCode.WpfDesign.Designer
+namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	/// <summary>
-	/// Description of Translations.
-	/// </summary>
-	public class Translations
+	public partial class RightClickMultipleItemsContextMenu
 	{
-		private static Translations _instance;
-		public static Translations Instance { 
-			get {
-				if (_instance == null)
-					_instance = new Translations();
-				return _instance; 
-			} protected set {
-				_instance = value;
-			}
+		private DesignItem designItem;
+		
+		public RightClickMultipleItemsContextMenu(DesignItem designItem)
+		{
+			this.designItem = designItem;
+			
+			InitializeComponent();
 		}
 		
-		public virtual string SendToFrontText {
-			get {
-				return "Bring to front";
-			}
+		void Click_WrapInCanvas(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelTools.WrapItemsNewContainer(this.designItem.Services.Selection.SelectedItems, typeof(Canvas));
 		}
 		
-		public virtual string SendForward {
-			get {
-				return "Forward";
-			}
-		}
-		
-		public virtual string SendBackward {
-			get {
-				return "Backward";
-			}
-		}
-		
-		public virtual string SendToBack {
-			get {
-				return "Send to back";
-			}
-		}
-		
-		public virtual string PressAltText {
-			get {
-				return "Press \"Alt\" to Enter Container";
-			}
-		}
-		
-		public virtual string WrapInCanvas {
-			get {
-				return "Wrap in Canvas";
-			}
-		}
-		
-		public virtual string WrapInGrid {
-			get {
-				return "Wrap in Grid";
-			}
-		}
-		
-		public virtual string WrapInBorder {
-			get {
-				return "Wrap in Border";
-			}
+		void Click_WrapInGrid(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelTools.WrapItemsNewContainer(this.designItem.Services.Selection.SelectedItems, typeof(Grid));
 		}
 	}
 }
