@@ -99,8 +99,10 @@
     <Compile Include="src\DesignableItems\AbstractGraphicItem.cs" />
     <Compile Include="src\DesignableItems\AbstractItem.cs" />
     <Compile Include="src\DesignableItems\BaseCircleItem.cs" />
+    <Compile Include="src\DesignableItems\BaseGroupHeader.cs" />
     <Compile Include="src\DesignableItems\BaseLineItem.cs" />
     <Compile Include="src\DesignableItems\BaseRectangleItem.cs" />
+    <Compile Include="src\DesignableItems\BaseRowItem.cs" />
     <Compile Include="src\DesignableItems\BaseSection.cs" />
     <Compile Include="src\DesignableItems\BaseTextItem.cs" />
     <Compile Include="src\DesignableItems\BaseDataItem.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="src\DesignerBinding\ReportDesignerLoader.cs" />
     <Compile Include="src\Designer\AbstractDesigner.cs" />
     <Compile Include="src\Designer\DataItemDesigner.cs" />
+    <Compile Include="src\Designer\GroupedRowDesigner.cs" />
     <Compile Include="src\Designer\LineDesigner.cs" />
     <Compile Include="src\Designer\ContainerDesigner.cs" />
     <Compile Include="src\Designer\ReportRootDesigner.cs" />
@@ -140,8 +143,10 @@
     <Compile Include="src\TypeProvider\AbstractItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\CircleItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\DataItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\GroupedRowTypeProvider.cs" />
     <Compile Include="src\TypeProvider\LineItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\RectangleItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\RowItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\SectionItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TextItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TypeProviderHelper.cs" />

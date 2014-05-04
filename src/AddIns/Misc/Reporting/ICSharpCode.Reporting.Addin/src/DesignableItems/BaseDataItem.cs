@@ -33,9 +33,6 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		public string ColumnName {get;set;}
 		
 		
-//		[Category("Databinding"), Description(tableName)]
-//		public string BaseTableName {get;set;}
-		
 		[Category("Databinding"), Description(showIfColumnvalueIsEmpty)]
 		public string NullValue {get;set;}
 	}

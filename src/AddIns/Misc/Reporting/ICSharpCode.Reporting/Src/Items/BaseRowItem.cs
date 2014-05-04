@@ -16,6 +16,8 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 namespace ICSharpCode.Reporting.Items
 {
 	/// <summary>
@@ -26,11 +28,20 @@ namespace ICSharpCode.Reporting.Items
 		public BaseRowItem()
 		{
 		}
-	}
-	
-	public class GroupHeader :BaseRowItem
-	{
-		public GroupHeader() {
+		
+		public override IExportColumn CreateExportColumn()
+		{
+			var er = new ExportRow(){
+				Name = this.Name,
+				Size = this.Size,
+				Location = this.Location,
+				CanGrow = this.CanGrow,
+				BackColor = this.BackColor,
+				DesiredSize = this.Size
+			};
+			return er;
 		}
+		
+		
 	}
 }

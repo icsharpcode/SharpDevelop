@@ -93,13 +93,21 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 			};
 			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
 				
-	/*
+	
 			//GroupHeader
-			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.GroupHeader));
-			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.NameSpace");
-			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.GroupHeader");
-			sideTab.Items.Add(new SideTabItemDesigner(tb));
+			toolboxItem = new ToolboxItem(typeof(BaseGroupHeader));
+			toolboxItem.Bitmap = IconService.GetBitmap("Icons.16x16.NameSpace");
+			toolboxItem.DisplayName = ResourceService.GetString("SharpReport.Toolbar.GroupHeader");
 			
+			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
+			
+			
+			// Row
+			toolboxItem = new ToolboxItem(typeof(BaseRowItem));
+			toolboxItem.Bitmap = IconService.GetBitmap("Icons.16x16.SharpQuery.Table");
+			toolboxItem.DisplayName = ResourceService.GetString("SharpReport.Toolbar.DataRow");
+			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
+		/*	
 			
 			//GroupFooter
 			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.GroupFooter));

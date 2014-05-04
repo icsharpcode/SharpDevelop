@@ -58,22 +58,21 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		}
 		
 		
-		public virtual void Visit(ExportText exportColumn)
-		{
+		public virtual void Visit(ExportText exportColumn){
 		}
 		
-		
-		public virtual void Visit(ExportLine exportGraphics)
-		{
-		}
-		
-		public virtual void Visit (ExportRectangle exportRectangle) {
+		public virtual void Visit (ExportRow exportRow) {
 			
 		}
 		
+		public virtual void Visit(ExportLine exportGraphics){
+		}
 		
-		public virtual void Visit (ExportCircle exportCircle) {
-			
+		public virtual void Visit (ExportRectangle exportRectangle) {	
+		}
+		
+		
+		public virtual void Visit (ExportCircle exportCircle) {	
 		}
 		
 		

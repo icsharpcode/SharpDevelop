@@ -46,20 +46,6 @@ namespace ICSharpCode.Reporting.Addin.Designer{
 			toolboxService.SetSelectedToolboxItem(null);
 		}
 		
-//		public override bool CanBeParentedTo(IDesigner parentDesigner)
-//		{
-//			base.CanBeParentedTo(parentDesigner);
-//		}
-		
-		public override bool CanParent(Control control)
-		{
-			return base.CanParent(control);
-		}
-		
-		public override bool CanParent(ControlDesigner controlDesigner)
-		{
-			return base.CanParent(controlDesigner);
-		}
 		
 		void OnSelectionChanged(object sender, EventArgs e){
 			Control.Invalidate( );
@@ -85,7 +71,6 @@ namespace ICSharpCode.Reporting.Addin.Designer{
 			if (componentChangeService != null) {
 				componentChangeService.ComponentRename += OnComponentRename;
 				componentChangeService.ComponentAdding += (sender, e) => {
-			
 				};
 			}
 		}

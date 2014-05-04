@@ -84,7 +84,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			
 			foreach (IGrouping<object, object> grouping in DataSource.GroupedList) {
 				
-				var groupHeader = (BaseRowItem)CurrentSection.Items.Where(p => p.GetType() == typeof(GroupHeader)).FirstOrDefault();
+				var groupHeader = (BaseRowItem)CurrentSection.Items.Where(p => p.GetType() == typeof(BaseGroupHeader)).FirstOrDefault();
 				var sectionContainer = CreateContainerForSection(CurrentPage, pagePosition);
 				
 				DataSource.Fill(groupHeader.Items,grouping.FirstOrDefault());
