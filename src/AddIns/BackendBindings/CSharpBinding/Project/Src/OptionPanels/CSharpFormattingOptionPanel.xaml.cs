@@ -79,7 +79,6 @@ namespace CSharpBinding.OptionPanels
 		public override void LoadOptions()
 		{
 			base.LoadOptions();
-			persistenceHelper.Load();
 			formattingEditor.OptionsContainer = persistenceHelper.StartEditing(); 
 		}
 		
