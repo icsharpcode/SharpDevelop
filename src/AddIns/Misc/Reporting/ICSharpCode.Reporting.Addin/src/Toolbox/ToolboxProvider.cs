@@ -95,7 +95,7 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 				
 	
 			//GroupHeader
-			toolboxItem = new ToolboxItem(typeof(BaseGroupHeader));
+			toolboxItem = new ToolboxItem(typeof(GroupHeader));
 			toolboxItem.Bitmap = IconService.GetBitmap("Icons.16x16.NameSpace");
 			toolboxItem.DisplayName = ResourceService.GetString("SharpReport.Toolbar.GroupHeader");
 			

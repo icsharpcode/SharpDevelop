@@ -30,7 +30,6 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		IReportCreator reportCreator;
 		
 		[Test]
-		[Ignore]
 		public void TestMethod()
 		{
 			reportCreator.BuildExportList();

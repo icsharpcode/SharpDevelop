@@ -54,7 +54,7 @@ namespace ICSharpCode.Reporting.Xml
 
 		protected abstract Type GetTypeByName(string ns, string name);
 
-	    private object ProcessNode(XmlNode node, object parent)
+	    object ProcessNode(XmlNode node, object parent)
 		{
 			object ret=null;
 			if (node is XmlElement)
@@ -62,7 +62,7 @@ namespace ICSharpCode.Reporting.Xml
 				// instantiate the class
 				string ns=node.Prefix;
 				string cname=node.LocalName;
-				
+			
 				Type t=GetTypeByName(ns, cname);
 				
 //				Trace.Assert(t != null, "Type "+cname+" could not be determined.");
@@ -75,8 +75,7 @@ namespace ICSharpCode.Reporting.Xml
 				catch(Exception)
 				{
 					Console.WriteLine("MycroParser:");
-					Console.WriteLine("\t Not found {0}",cname);
-//					Trace.Fail("Type "+cname+" could not be instantiated:\r\n"+e.Message);
+					Console.WriteLine("\t Not found {0} - {0}",cname);
 				}
 
 				// support the ISupportInitialize interface
@@ -197,7 +196,7 @@ namespace ICSharpCode.Reporting.Xml
 			}
 		}
 
-	    private void ProcessAttributes(XmlNode node, object ret, Type type)
+	    void ProcessAttributes(XmlNode node, object ret, Type type)
 		{
 			// process attributes
 			foreach(XmlAttribute attr in node.Attributes)

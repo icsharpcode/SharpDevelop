@@ -13,14 +13,8 @@ namespace ICSharpCode.Reporting.Items
 	/// <summary>
 	/// Description of BaseGroupHeader.
 	/// </summary>
-	public class BaseGroupHeader:BaseRowItem
+	public class GroupHeader:BaseRowItem
 	{
-		public BaseGroupHeader()
-		{
-		}
-		
-		
-		
 		
 		public bool PageBreakOnGroupChange {get;set;}
 	}

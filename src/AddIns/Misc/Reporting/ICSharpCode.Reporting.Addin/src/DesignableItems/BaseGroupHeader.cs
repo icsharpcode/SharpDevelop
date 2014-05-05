@@ -17,12 +17,12 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 	/// Description of BaseGroupHeader.
 	/// </summary>
 	[Designer(typeof(GroupedRowDesigner))]
-	public class BaseGroupHeader:BaseRowItem
+	public class GroupHeader:BaseRowItem
 	{
 		
-		public BaseGroupHeader()
+		public GroupHeader()
 		{
-			TypeDescriptor.AddProvider(new GroupedRowTypeProvider(), typeof(BaseGroupHeader));
+			TypeDescriptor.AddProvider(new GroupedRowTypeProvider(), typeof(GroupHeader));
 		}
 		
 		
