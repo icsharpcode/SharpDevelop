@@ -100,12 +100,14 @@ namespace CSharpBinding.FormattingStrategy
 				string key = project.FileName;
 				if (!projectOptions.ContainsKey(key)) {
 					// Lazily create options container for project
-					projectOptions[key] = new CSharpFormattingOptionsPersistence(
+					var projectFormattingPersistence = new CSharpFormattingOptionsPersistence(
 						csproject.GlobalPreferences,
 						new CSharpFormattingOptionsContainer((SolutionOptions ?? GlobalOptions).OptionsContainer)
 						{
 							DefaultText = StringParser.Parse("${res:CSharpBinding.Formatting.ProjectOptionReference}")
 						});
+					projectFormattingPersistence.Load();
+					projectOptions[key] = projectFormattingPersistence;
 				}
 				
 				return projectOptions[key];
@@ -123,6 +125,7 @@ namespace CSharpBinding.FormattingStrategy
 				{
 					DefaultText = StringParser.Parse("${res:CSharpBinding.Formatting.SolutionOptionReference}")
 				});
+			SolutionOptions.Load();
 		}
 		
 		static void SolutionClosed(object sender, SolutionEventArgs e)

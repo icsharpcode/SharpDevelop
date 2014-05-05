@@ -151,7 +151,7 @@ namespace CSharpBinding.OptionPanels
 			presets["SharpDevelop"] = FormattingOptionsFactory.CreateSharpDevelop;
 			presets["Mono"] = FormattingOptionsFactory.CreateMono;
 			presets["K&R"] = FormattingOptionsFactory.CreateKRStyle;
-			presets["Allman"] = FormattingOptionsFactory.CreateAllman;
+			presets["VisualStudio"] = FormattingOptionsFactory.CreateAllman;
 			presets["Whitesmiths"] = FormattingOptionsFactory.CreateWhitesmiths;
 			presets["GNU"] = FormattingOptionsFactory.CreateGNU;
 			
@@ -163,7 +163,7 @@ namespace CSharpBinding.OptionPanels
 			presetItems.Add(new ComboBoxItem { Content = "SharpDevelop", Tag = "SharpDevelop" });
 			presetItems.Add(new ComboBoxItem { Content = "Mono", Tag = "Mono" });
 			presetItems.Add(new ComboBoxItem { Content = "K&R", Tag = "K&R" });
-			presetItems.Add(new ComboBoxItem { Content = "Allman", Tag = "Allman" });
+			presetItems.Add(new ComboBoxItem { Content = "Visual Studio", Tag = "VisualStudio" });
 			presetItems.Add(new ComboBoxItem { Content = "Whitesmiths", Tag = "Whitesmiths" });
 			presetItems.Add(new ComboBoxItem { Content = "GNU", Tag = "GNU" });
 			presetItems.Add(new ComboBoxItem { Content = "Empty", Tag = "Empty" });

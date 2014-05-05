@@ -51,7 +51,6 @@ namespace CSharpBinding.OptionPanels
 			persistenceHelper = CSharpFormattingOptionsPersistence.GetProjectOptions(project);
 			formattingEditor.OptionsContainer = persistenceHelper.OptionsContainer;
 			formattingEditor.AllowPresets = true;
-			persistenceHelper.Load();
 			persistenceHelper.OptionsContainer.PropertyChanged += ContainerPropertyChanged;
 		}
 		
