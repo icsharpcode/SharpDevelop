@@ -149,6 +149,84 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			AssertLog("");
 		}
 		
+		[Test]
+		public void UndoRedoImplicitList()
+		{
+			UndoRedoListInternal(false);
+		}
+		
+		[Test]
+		public void UndoRedoExplicitList()
+		{
+			UndoRedoListInternal(true);
+		}
+
+		void UndoRedoListInternal(bool useExplicitList)
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			UndoService s = button.Context.Services.GetService<UndoService>();
+			IComponentService component = button.Context.Services.Component;
+			string expectedXamlWithList;
+			
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			
+			using (ChangeGroup g = button.OpenGroup("UndoRedoListInternal test")) {
+				DesignItem containerItem = component.RegisterComponentForDesigner(new ICSharpCode.WpfDesign.Tests.XamlDom.ExampleClassContainer());
+				
+				var otherListProp = containerItem.Properties["OtherList"];
+				
+				if(useExplicitList) {
+					otherListProp.SetValue(new ICSharpCode.WpfDesign.Tests.XamlDom.ExampleClassList());
+					
+					expectedXamlWithList = @"<Button>
+  <Button.Tag>
+    <Controls0:ExampleClassContainer>
+      <Controls0:ExampleClassContainer.OtherList>
+        <Controls0:ExampleClassList>
+          <Controls0:ExampleClass StringProp=""String value"" />
+        </Controls0:ExampleClassList>
+      </Controls0:ExampleClassContainer.OtherList>
+    </Controls0:ExampleClassContainer>
+  </Button.Tag>
+</Button>";
+				}
+				else {
+					expectedXamlWithList = @"<Button>
+  <Button.Tag>
+    <Controls0:ExampleClassContainer>
+      <Controls0:ExampleClassContainer.OtherList>
+        <Controls0:ExampleClass StringProp=""String value"" />
+      </Controls0:ExampleClassContainer.OtherList>
+    </Controls0:ExampleClassContainer>
+  </Button.Tag>
+</Button>";
+				}
+				
+				DesignItem exampleClassItem = component.RegisterComponentForDesigner(new ICSharpCode.WpfDesign.Tests.XamlDom.ExampleClass());
+				exampleClassItem.Properties["StringProp"].SetValue("String value");
+				otherListProp.CollectionElements.Add(exampleClassItem);
+				
+				button.Properties["Tag"].SetValue(containerItem);
+				g.Commit();
+			}
+			
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXamlWithList, button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			
+			s.Undo();
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsTrue(s.CanRedo);
+			AssertCanvasDesignerOutput("<Button>\n</Button>", button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			
+			s.Redo();
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXamlWithList, button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			
+			AssertLog("");
+		}		
 		
 		[Test]
 		public void AddTextBoxToCanvas()
