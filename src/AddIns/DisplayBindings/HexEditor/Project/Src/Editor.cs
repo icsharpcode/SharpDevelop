@@ -115,7 +115,10 @@ namespace HexEditor
 			selection = new SelectionManager(ref buffer);
 			undoStack = new UndoManager();
 			insertmode = true;
-			underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", Settings.DataFont);
+			using (var g = this.CreateGraphics()) {
+				VScrollBar.Width = (int)(VScrollBar.Width * (g.DpiX / 96f));
+				underscorewidth = MeasureStringWidth(g, "_", Settings.DataFont);
+			}
 			underscorewidth3 = underscorewidth * 3;
 			fontheight = GetFontHeight(Settings.DataFont);
 			selregion = new Rectangle[] {};

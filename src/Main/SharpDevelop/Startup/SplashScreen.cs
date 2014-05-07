@@ -104,8 +104,10 @@ namespace ICSharpCode.SharpDevelop.Startup
 					}
 					
 					string param = arg.Substring(markerLength);
-					// work around .NET "feature" that causes trouble with /addindir:"c:\temp\"
-					// http://www.mobzystems.com/code/bugingetcommandlineargs.aspx
+					// The SharpDevelop AddIn project template uses /addindir:"c:\temp\"
+					// but that actually means the last quote is escaped.
+					// This HACK makes this work anyways by replacing the trailing quote
+					// with a backslash:
 					if (param.EndsWith("\"", StringComparison.Ordinal))
 						param = param.Substring(0, param.Length - 1) + "\\";
 					parameterList.Add(param);

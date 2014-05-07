@@ -333,11 +333,14 @@ namespace ICSharpCode.SharpDevelop.Logging
 			this.pictureBox.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox.Name = "pictureBox";
 			this.pictureBox.Size = new System.Drawing.Size(224, 464);
+			this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.pictureBox.TabIndex = 0;
 			this.pictureBox.TabStop = false;
 			// 
 			// ExceptionBox
 			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.ClientSize = new System.Drawing.Size(688, 453);
 			this.Controls.Add(this.closeButton);
 			this.Controls.Add(this.label3);

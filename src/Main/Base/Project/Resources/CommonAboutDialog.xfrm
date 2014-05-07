@@ -11,6 +11,8 @@
 	<StartPosition   value = "CenterScreen"/>
 	<AcceptButton    value = "okButton"/>
 	<CancelButton    value = "okButton"/>
+	<AutoScaleMode   value = "Dpi"/>
+	<AutoScaleDimensions value = "{Width=96, Height=96}"/>
 
 	<Controls>
 		
