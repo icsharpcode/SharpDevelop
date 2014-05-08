@@ -115,7 +115,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (Snap(horizontalInput, horizontalMap, Accuracy, out drawLines, out delta)) {
 				
 				if (operation.Type == PlacementType.Resize) {
-					if (info.ResizeThumbAlignment.Vertical == VerticalAlignment.Top) {
+					if (info.ResizeThumbAlignment != null && info.ResizeThumbAlignment.Value.Vertical == VerticalAlignment.Top) {
 						bounds.Y += delta;
 						bounds.Height = Math.Max(0, bounds.Height - delta);
 					} else {
@@ -138,7 +138,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (Snap(verticalInput, verticalMap, Accuracy, out drawLines, out delta)) {
 				
 				if (operation.Type == PlacementType.Resize) {
-					if (info.ResizeThumbAlignment.Horizontal == HorizontalAlignment.Left) {
+					if (info.ResizeThumbAlignment != null && info.ResizeThumbAlignment.Value.Horizontal == HorizontalAlignment.Left) {
 						bounds.X += delta;
 						bounds.Width = Math.Max(0, bounds.Width - delta);
 					} else {
