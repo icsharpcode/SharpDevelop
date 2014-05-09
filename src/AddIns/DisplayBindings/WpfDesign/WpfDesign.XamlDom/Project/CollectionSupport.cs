@@ -154,5 +154,20 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				new object[] { item },
 				CultureInfo.InvariantCulture);
 		}
+		
+		/// <summary>
+		/// Removes an item instance from the specified collection.
+		/// </summary>
+		internal static void RemoveItem(Type collectionType, object collectionInstance, object item, XamlPropertyValue element)
+		{
+			var dictionary = collectionInstance as IDictionary;
+			var xamlObject = element as XamlObject;
+			
+			if (dictionary != null && xamlObject != null) {
+				dictionary.Remove(xamlObject.GetXamlAttribute("Key"));
+			} else {
+				RemoveItem(collectionType, collectionInstance, item);
+			}
+		}
 	}
 }
