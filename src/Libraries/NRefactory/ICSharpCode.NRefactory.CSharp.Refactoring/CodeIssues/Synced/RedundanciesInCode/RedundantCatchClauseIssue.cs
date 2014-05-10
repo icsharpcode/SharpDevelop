@@ -146,8 +146,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (nextClause != null) {
 						if (nextClause.Type.IsNull && !IsThrowsClause(nextClause))
 							return false;
-						if (!IsThrowsClause(nextClause) && type.GetDefinition ().IsDerivedFrom (ctx.Resolve (nextClause.Type).Type.GetDefinition ()))
-							return false;
+						if (!IsThrowsClause(nextClause)) {
+							var typeDef = type.GetDefinition();
+							if (typeDef == null || typeDef.IsDerivedFrom(ctx.Resolve(nextClause.Type).Type.GetDefinition()))
+								return false;
+						}
 					}
 					n = n.NextSibling;
 				}
