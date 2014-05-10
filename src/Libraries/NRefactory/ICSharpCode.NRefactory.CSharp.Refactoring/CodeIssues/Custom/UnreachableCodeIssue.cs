@@ -133,6 +133,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (statement == null || !AddStatement(statement))
 						base.VisitChildren(node);
 				}
+				
+				static TextLocation GetPrevEnd(AstNode node)
+				{
+					var prev = node.GetPrevNode(n => !(n is NewLineNode));
+					return prev != null ? prev.EndLocation : node.StartLocation;
+				}
+
+				static TextLocation GetNextStart(AstNode node)
+				{
+					var next = node.GetNextNode(n => !(n is NewLineNode));
+					return next != null ? next.StartLocation : node.EndLocation;
+				}
 
 				bool AddStatement(Statement statement)
 				{
@@ -147,7 +159,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 
 
-					var prevEnd = statement.GetPrevNode(n => !(n is NewLineNode)).EndLocation;
+					var prevEnd = GetPrevEnd(statement);
 					TextLocation start;
 					TextLocation end;
 
@@ -159,12 +171,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						collectedStatements.Add(statement);
 						visitor.unreachableNodes.Add(statement);
 						collectedStatements.Add(ife.ElseToken);
-						end = ife.ElseToken.GetNextNode(n => !(n is NewLineNode)).StartLocation;
+						end = GetNextStart(ife.ElseToken);
 					} else if (statement.Role == IfElseStatement.FalseRole) {
 						var ife = (IfElseStatement)statement.Parent;
 						start = ife.ElseToken.StartLocation;
 						collectedStatements.Add(ife.ElseToken);
-						prevEnd = ife.ElseToken.GetPrevNode(n => !(n is NewLineNode)).EndLocation;
+						prevEnd = GetPrevEnd(ife.ElseToken);
 						collectedStatements.Add(statement);
 						visitor.unreachableNodes.Add(statement);
 						end = statement.EndLocation;
