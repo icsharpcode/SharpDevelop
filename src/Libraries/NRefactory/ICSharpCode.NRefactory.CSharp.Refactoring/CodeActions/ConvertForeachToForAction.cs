@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			bool hasIndexAccess;
 			var foreachStatement = GetForeachStatement(context, out hasIndexAccess);
-			if (foreachStatement == null || foreachStatement.EmbeddedStatement == null)
+			if (foreachStatement == null || foreachStatement.EmbeddedStatement.IsNull)
 				yield break;
 			var state = context.GetResolverStateBefore (foreachStatement.EmbeddedStatement);
 			string name = GetName(state, VariableNames);
