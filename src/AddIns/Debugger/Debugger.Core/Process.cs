@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Runtime.InteropServices;
 using ICSharpCode.NRefactory.TypeSystem;
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.CorSym;
@@ -480,17 +481,26 @@ namespace Debugger
 		{
 			AssertPaused();
 			
-			if (threadToRun != null) {
-				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, null);
-				threadToRun.CorThread.SetDebugState(CorDebugThreadState.THREAD_RUN);
-			} else {
-				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_RUN, null);
+			try {
+				if (threadToRun != null) {
+					corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, null);
+					threadToRun.CorThread.SetDebugState(CorDebugThreadState.THREAD_RUN);
+				} else {
+					corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_RUN, null);
+				}
+			
+				NotifyResumed(action);
+				corProcess.Continue(0);
+				// this.TraceMessage("Continue");
+			} catch (COMException ex) {
+				if (ex.HResult == unchecked((int)0x80131301)) {
+					// Process was terminated. (Exception from HRESULT: 0x80131301)
+					// This occurs if a process is killed (e.g. console window of console application closed)
+					// while the application is doing something involving debugger callbacks (Debug.WriteLine calls, or throwing+handling exceptions).
+					
+					// I think we can safely ignore this error.
+				}
 			}
-			
-			NotifyResumed(action);
-			corProcess.Continue(0);
-			// this.TraceMessage("Continue");
-			
 			if (action == DebuggeeStateAction.Clear) {
 				OnResumed();
 			}
