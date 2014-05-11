@@ -60,6 +60,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 	
 		
 		Canvas RenderSectionContainer (ExportContainer container) {
+		
 			var canvas = FixedDocumentCreator.CreateContainer(container);
 			foreach (var element in container.ExportedItems) {
 				if (IsContainer(element)) {
@@ -74,23 +75,17 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			return canvas;
 		}
 
-		void RenderRow(Canvas canvas, IExportContainer element)
+		void RenderRow(Canvas canvas, IExportContainer container)
 		{
-			if (IsGraphicsContainer(element)) {
-				canvas.Children.Add(RenderGraphicsContainer(element));
+			if (IsGraphicsContainer(container)) {
+				canvas.Children.Add(RenderGraphicsContainer(container));
 			} else {
-				canvas.Children.Add(RenderRow((ExportContainer)element));
+				canvas.Children.Add(RenderDataRow((ExportContainer)container));
 			}
 		}
 		
-		public override void Visit(ExportRow exportRow)
-		{
-			Console.WriteLine("Reender ExportRow");
-			base.Visit(exportRow);
-		}
 		
-		
-		Canvas RenderRow (ExportContainer row) {
+		Canvas RenderDataRow (ExportContainer row) {
 			var rowCanvas = FixedDocumentCreator.CreateContainer(row);
 			var childCanvas = CreateItemsInContainer(row.ExportedItems);
 			rowCanvas.Children.Add(childCanvas);

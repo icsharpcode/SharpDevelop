@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections;
 using ICSharpCode.Reporting.Addin.TypeProvider;
 
 
@@ -19,8 +20,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	{
 		
 
-		protected override void PostFilterProperties(System.Collections.IDictionary properties)
-		{
+		protected override void PostFilterProperties(IDictionary properties){
 			TypeProviderHelper.RemoveProperties(properties);
 			base.PostFilterProperties(properties);
 		}

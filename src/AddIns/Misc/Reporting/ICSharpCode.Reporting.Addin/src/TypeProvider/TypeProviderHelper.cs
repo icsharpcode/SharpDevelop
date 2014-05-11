@@ -108,8 +108,8 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 			prop = props.Find("DataType",true);
 			allProperties.Add(prop);
 			
-			prop = props.Find("RTL",true);
-			allProperties.Add(prop);
+//			prop = props.Find("RTL",true);
+//			allProperties.Add(prop);
 		}
 		
 		public static void AddGraphicProperties (List<PropertyDescriptor> allProperties,

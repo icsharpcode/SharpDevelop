@@ -133,7 +133,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 			LoggingService.Debug("ReportDesigner: CreateAndInitServiceContainer...");
 			var serviceContainer = new DefaultServiceContainer();
 			serviceContainer.AddService(typeof(IUIService), new UIService());
-			serviceContainer.AddService(typeof(IToolboxService),new ToolboxService());
+			serviceContainer.AddService(typeof(IToolboxService),new ICSharpCode.Reporting.Addin.Services.ToolboxService());
 			serviceContainer.AddService(typeof(IHelpService), new HelpService());
 			return serviceContainer;
 		}
