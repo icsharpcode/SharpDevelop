@@ -64,6 +64,7 @@ namespace SearchAndReplace
 				
 		public SearchAndReplaceDialog(SearchAndReplaceMode searchAndReplaceMode)
 		{
+			SuspendLayout();
 			this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
 			this.ShowInTaskbar   = false;
 			this.TopMost         = false;
@@ -93,6 +94,10 @@ namespace SearchAndReplace
 			
 			Controls.Add(toolStrip);
 			RightToLeftConverter.ConvertRecursive(this);
+			
+			this.AutoScaleMode = AutoScaleMode.Dpi;
+			this.AutoScaleDimensions = new SizeF(96, 96);
+			ResumeLayout();
 			
 			SetSearchAndReplaceMode();
 			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", false);
@@ -144,12 +149,16 @@ namespace SearchAndReplace
 		
 		void SetSearchAndReplaceMode()
 		{
+			SuspendLayout();
 			searchAndReplacePanel.SearchAndReplaceMode = searchButton.Checked ? SearchAndReplaceMode.Search : SearchAndReplaceMode.Replace;
+			this.AutoScaleMode = AutoScaleMode.Dpi;
+			this.AutoScaleDimensions = new SizeF(96, 96);
 			if (searchButton.Checked) {
 				this.ClientSize      = new Size(430, 335);
 			} else {
 				this.ClientSize      = new Size(430, 385);
 			}
+			ResumeLayout();
 		}
 		
 		/// <summary>

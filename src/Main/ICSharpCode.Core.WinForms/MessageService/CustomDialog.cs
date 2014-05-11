@@ -155,6 +155,8 @@ namespace ICSharpCode.Core.WinForms
 			this.KeyPreview = true;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "CustomDialog";
+			this.AutoScaleMode = AutoScaleMode.Dpi;
+			this.AutoScaleDimensions = new SizeF(96, 96);
 		}
 	}
 }

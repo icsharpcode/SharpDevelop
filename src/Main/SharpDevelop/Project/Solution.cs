@@ -325,6 +325,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					sdSettings.Save(sdSettingsFileName);
 				}
 			} catch (IOException) {
+			} catch (UnauthorizedAccessException) {
 				// ignore errors writing to extra properties
 			}
 		}

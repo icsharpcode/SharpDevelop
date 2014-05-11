@@ -137,7 +137,8 @@ namespace ICSharpCode.IconEditor
 			// 
 			// EditorPanel
 			// 
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.Controls.Add(this.table);
 			this.Controls.Add(this.panel2);
 			this.Name = "EditorPanel";

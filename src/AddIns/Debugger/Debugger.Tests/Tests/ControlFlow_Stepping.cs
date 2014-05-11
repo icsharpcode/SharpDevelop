@@ -129,7 +129,7 @@ namespace Debugger.Tests {
 	
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test]
+		[NUnit.Framework.Test, NUnit.Framework.Ignore("Broken on .NET 4.5.2 due to #472")]
 		public void ControlFlow_Stepping()
 		{
 			StartTest();

@@ -235,7 +235,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 					break;
 				case TargetRuntime.Net_4_0:
 				default:
-					xmlFileName = LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.5.1", name))
+					xmlFileName = LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.5.2", name)) 
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.5.1", name))
 						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.5", name))
 						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.0", name))
 						?? LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v4.0.30319", name));

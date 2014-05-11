@@ -47,6 +47,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.pictureBox.Size = new System.Drawing.Size(48, 52);
 			this.pictureBox.TabIndex = 0;
 			this.pictureBox.TabStop = false;
+			this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			// 
 			// lblExceptionText
 			// 
@@ -113,6 +114,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			// DebuggeeExceptionForm
 			// 
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.ClientSize = new System.Drawing.Size(642, 399);
 			this.Controls.Add(this.btnContinue);
 			this.Controls.Add(this.btnBreak);

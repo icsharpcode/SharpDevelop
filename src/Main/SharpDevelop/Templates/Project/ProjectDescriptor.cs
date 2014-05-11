@@ -426,15 +426,9 @@ namespace ICSharpCode.SharpDevelop.Templates
 				}
 				#endregion
 				
-				#region Create Project
-				try {
-					info.InitializeTypeSystem = false;
-					project = languageinfo.CreateProject(info);
-				} catch (ProjectLoadException ex) {
-					MessageService.ShowError(ex.Message);
-					return false;
-				}
-				#endregion
+				// Create Project
+				info.InitializeTypeSystem = false;
+				project = languageinfo.CreateProject(info);
 				
 				#region Create Project Items, Imports and Files
 				// Add Project items

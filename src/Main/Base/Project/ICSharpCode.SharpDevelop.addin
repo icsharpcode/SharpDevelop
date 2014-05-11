@@ -2081,7 +2081,7 @@
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.IndentSelection" />
 		<MenuItem id = "Reformat"
 		          label = "Reformat"
-		          shortcut = "Control|Alt|F"
+		          shortcut = "Control|Shift|I"
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.ReformatSelection" />
 	</Path>
 	
@@ -2451,5 +2451,6 @@
 		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net40Client" />
 		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net45" />
 		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net451" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net452" />
 	</Path>
 </AddIn>

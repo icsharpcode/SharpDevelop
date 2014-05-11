@@ -53,7 +53,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return null;
 
 			// find existing method
-			var method = (IMethod)((MemberResolveResult)context.Resolve (methodDecl)).Member;
+			var resolveResult = context.Resolve(methodDecl) as MemberResolveResult;
+			if (resolveResult == null)
+				return null;
+			var method = resolveResult.Member as IMethod;
+			if (method == null)
+				return null;
 			var parameters = new List<IParameter> (method.Parameters.Where (param => param.Name != node.Name));
 			if (method.DeclaringType.GetMethods (
 				m => m.Name == method.Name && m.TypeParameters.Count == method.TypeParameters.Count)

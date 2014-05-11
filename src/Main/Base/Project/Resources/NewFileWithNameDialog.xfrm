@@ -4,6 +4,8 @@
     <MinimumSize value="350, 200" />
     <MinimizeBox value="False" />
     <MaximizeBox value="False" />
+    <AutoScaleMode value="Dpi" />
+    <AutoScaleDimensions value="{Width=96, Height=96}" />
     <ShowInTaskbar value="False" />
     <Text value="${res:Dialog.NewFile.DialogName}" />
     <ClientSize value="{Width=542, Height=372}" />
