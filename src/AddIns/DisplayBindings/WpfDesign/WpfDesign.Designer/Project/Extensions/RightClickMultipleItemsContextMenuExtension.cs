@@ -17,29 +17,38 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
+
 using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Designer.Extensions;
+using ICSharpCode.WpfDesign.Extensions;
+using ICSharpCode.WpfDesign.Designer;
 
-namespace ICSharpCode.WpfDesign.Designer.Controls
+namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	public class RotateThumb : ResizeThumb
+	/// <summary>
+	/// 
+	/// </summary>
+	[ExtensionServer(typeof(MultipleSelectedExtensionServer))]
+	[ExtensionFor(typeof(UIElement))]
+	public class RightClickMultipleItemsContextMenuExtension : SelectionAdornerProvider
 	{
-		static RotateThumb()
+		DesignPanel panel;
+		
+		protected override void OnInitialized()
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(RotateThumb), new FrameworkPropertyMetadata(typeof(RotateThumb)));
+			base.OnInitialized();
+			
+			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+			panel.ContextMenu = new RightClickMultipleItemsContextMenu(ExtendedItem);
 		}
-
-		public RotateThumb()
+		
+		protected override void OnRemove()
 		{
-			this.ResizeThumbVisible = true;
+			panel.ContextMenu = null;
+			
+			base.OnRemove();
 		}
 	}
 }

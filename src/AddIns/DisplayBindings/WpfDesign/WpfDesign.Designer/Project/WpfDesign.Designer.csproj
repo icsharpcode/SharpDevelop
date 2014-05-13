@@ -90,6 +90,10 @@
     </Compile>
     <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
     <Compile Include="Extensions\RightClickContextMenuExtension.cs" />
+    <Compile Include="Extensions\RightClickMultipleItemsContextMenuExtension.cs" />
+    <Compile Include="Extensions\RightClickMultipleItemsContextMenu.xaml.cs">
+      <DependentUpon>RightClickMultipleItemsContextMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\SkewThumbExtension.cs" />
     <Compile Include="Extensions\TopLeftContainerDragHandleMultipleItems.cs" />
     <Compile Include="PropertyGrid\Editors\ColorEditor.xaml.cs">
@@ -263,6 +267,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Extensions\RightClickContextMenu.xaml" />
+    <Page Include="Extensions\RightClickMultipleItemsContextMenu.xaml" />
     <Page Include="PropertyGrid\Editors\ColorEditor.xaml" />
     <Page Include="PropertyGrid\Editors\FlatCollectionEditor.xaml" />
     <Page Include="PropertyGrid\Editors\OpenCollectionEditor.xaml" />

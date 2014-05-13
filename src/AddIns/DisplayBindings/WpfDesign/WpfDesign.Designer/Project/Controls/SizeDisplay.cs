@@ -26,25 +26,25 @@ using System.Windows.Controls;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
-    /// <summary>
-    /// Display height of the element.
-    /// </summary>
-    class HeightDisplay : Control
-    {
-        static HeightDisplay()
-        {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(HeightDisplay), new FrameworkPropertyMetadata(typeof(HeightDisplay)));
-        }
-    }
+	/// <summary>
+	/// Display height of the element.
+	/// </summary>
+	class HeightDisplay : Control
+	{
+		static HeightDisplay()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(HeightDisplay), new FrameworkPropertyMetadata(typeof(HeightDisplay)));
+		}
+	}
 
-    /// <summary>
-    /// Display width of the element.
-    /// </summary>
-    class WidthDisplay : Control
-    {
-        static WidthDisplay()
-        {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(WidthDisplay), new FrameworkPropertyMetadata(typeof(WidthDisplay)));
-        }
-    }
+	/// <summary>
+	/// Display width of the element.
+	/// </summary>
+	class WidthDisplay : Control
+	{
+		static WidthDisplay()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(WidthDisplay), new FrameworkPropertyMetadata(typeof(WidthDisplay)));
+		}
+	}
 }

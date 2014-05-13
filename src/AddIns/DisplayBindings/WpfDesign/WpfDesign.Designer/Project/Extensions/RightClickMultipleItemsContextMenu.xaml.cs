@@ -22,24 +22,37 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Designer.Extensions;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using ICSharpCode.WpfDesign.PropertyGrid;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 
-namespace ICSharpCode.WpfDesign.Designer.Controls
+namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	public class RotateThumb : ResizeThumb
+	public partial class RightClickMultipleItemsContextMenu
 	{
-		static RotateThumb()
+		private DesignItem designItem;
+		
+		public RightClickMultipleItemsContextMenu(DesignItem designItem)
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(RotateThumb), new FrameworkPropertyMetadata(typeof(RotateThumb)));
+			this.designItem = designItem;
+			
+			InitializeComponent();
 		}
-
-		public RotateThumb()
+		
+		void Click_WrapInCanvas(object sender, System.Windows.RoutedEventArgs e)
 		{
-			this.ResizeThumbVisible = true;
+			ModelTools.WrapItemsNewContainer(this.designItem.Services.Selection.SelectedItems, typeof(Canvas));
+		}
+		
+		void Click_WrapInGrid(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelTools.WrapItemsNewContainer(this.designItem.Services.Selection.SelectedItems, typeof(Grid));
 		}
 	}
 }

@@ -27,6 +27,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Xps.Serialization;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -137,7 +138,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			catch (Exception)
 			{ }
 		}
-		 
+		
 		internal static Size GetDefaultSize(DesignItem createdItem)
 		{
 			CreateVisualTree(createdItem.View);
@@ -197,6 +198,175 @@ namespace ICSharpCode.WpfDesign.Designer
 			if (newHeight != GetHeight(item.View)) {
 				item.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(newHeight);
 			}
+		}
+		
+		
+		private class ItemPos
+		{
+			public HorizontalAlignment HorizontalAlignment{ get; set; }
+			
+			public VerticalAlignment VerticalAlignment{ get; set; }
+			
+			public double Xmin { get; set; }
+			
+			public double Xmax { get; set; }
+
+			public double Ymin { get; set; }
+			
+			public double Ymax { get; set; }
+			
+			public DesignItem DesignItem { get; set; }
+		}
+		
+		public static void WrapItemsNewContainer(IEnumerable<DesignItem> items, Type containerType)
+		{
+			var collection = items;
+			
+			var _context = collection.First().Context as XamlDesignContext;
+			
+			var oldContainer = collection.First().Parent;
+			
+			if (collection.Any(x => x.Parent != oldContainer))
+				return;
+			
+			var newInstance = Activator.CreateInstance(containerType);
+			DesignItem newPanel = _context.Services.Component.RegisterComponentForDesigner(newInstance);
+			var changeGroup = newPanel.OpenGroup("Wrap in Container");
+			
+			List<ItemPos> itemList = new List<ItemPos>();
+			
+			foreach (var item in collection) {
+				
+				var itemPos = new ItemPos(){ DesignItem = item };
+				itemList.Add(itemPos);
+				
+				if (oldContainer.Component is Canvas) {
+					var canvas = oldContainer.View as Canvas;
+					
+					if (item.Properties.GetAttachedProperty(Canvas.RightProperty) != null && item.Properties.GetAttachedProperty(Canvas.RightProperty).IsSet) {
+						itemPos.HorizontalAlignment = HorizontalAlignment.Right;
+						itemPos.Xmax = canvas.ActualWidth - (double)item.Properties.GetAttachedProperty(Canvas.RightProperty).ValueOnInstance;
+						itemPos.Xmin = itemPos.Xmax - ((FrameworkElement)item.View).ActualWidth;
+					}
+					else if (item.Properties.GetAttachedProperty(Canvas.LeftProperty) != null && item.Properties.GetAttachedProperty(Canvas.LeftProperty).IsSet) {
+						itemPos.HorizontalAlignment = HorizontalAlignment.Left;
+						itemPos.Xmin = (double)item.Properties.GetAttachedProperty(Canvas.LeftProperty).ValueOnInstance;
+						itemPos.Xmax = itemPos.Xmin + ((FrameworkElement)item.View).ActualWidth;
+					} else {
+						itemPos.HorizontalAlignment = HorizontalAlignment.Left;
+						itemPos.Xmax = itemPos.Xmin + ((FrameworkElement)item.View).ActualWidth;
+					}
+					
+					if (item.Properties.GetAttachedProperty(Canvas.BottomProperty) != null && item.Properties.GetAttachedProperty(Canvas.BottomProperty).IsSet) {
+						itemPos.VerticalAlignment = VerticalAlignment.Bottom;
+						itemPos.Ymax = canvas.ActualHeight - (double)item.Properties.GetAttachedProperty(Canvas.BottomProperty).ValueOnInstance;
+						itemPos.Ymin = itemPos.Ymax - ((FrameworkElement)item.View).ActualHeight;
+					}
+					else if (item.Properties.GetAttachedProperty(Canvas.TopProperty) != null && item.Properties.GetAttachedProperty(Canvas.TopProperty).IsSet) {
+						itemPos.VerticalAlignment = VerticalAlignment.Top;
+						itemPos.Ymin = (double)item.Properties.GetAttachedProperty(Canvas.TopProperty).ValueOnInstance;
+						itemPos.Ymax = itemPos.Ymin + ((FrameworkElement)item.View).ActualHeight;
+					} else {
+						itemPos.VerticalAlignment = VerticalAlignment.Top;
+						itemPos.Ymax = itemPos.Ymin + ((FrameworkElement)item.View).ActualHeight;
+					}
+					
+					item.Properties.GetAttachedProperty(Canvas.RightProperty).Reset();
+					item.Properties.GetAttachedProperty(Canvas.LeftProperty).Reset();
+					item.Properties.GetAttachedProperty(Canvas.TopProperty).Reset();
+					item.Properties.GetAttachedProperty(Canvas.BottomProperty).Reset();
+				} else if (oldContainer.Component is Grid) {
+					var grid = oldContainer.View as Grid;
+					
+					if ((HorizontalAlignment)item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).ValueOnInstance == HorizontalAlignment.Right) {
+						itemPos.HorizontalAlignment = HorizontalAlignment.Right;
+						itemPos.Xmax = grid.ActualWidth - ((Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance).Right;
+						itemPos.Xmin = itemPos.Xmax - ((FrameworkElement)item.View).ActualWidth;
+					} else {
+						itemPos.HorizontalAlignment = HorizontalAlignment.Left;
+						itemPos.Xmin = ((Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance).Left;
+						itemPos.Xmax = itemPos.Xmin + ((FrameworkElement)item.View).ActualWidth;
+					}
+					
+					if ((VerticalAlignment)item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).ValueOnInstance == VerticalAlignment.Bottom) {
+						itemPos.VerticalAlignment = VerticalAlignment.Bottom;
+						itemPos.Ymax = grid.ActualHeight - ((Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance).Bottom;
+						itemPos.Ymin = itemPos.Ymax - ((FrameworkElement)item.View).ActualHeight;
+					} else {
+						itemPos.VerticalAlignment = VerticalAlignment.Top;
+						itemPos.Ymin = ((Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance).Top;
+						itemPos.Ymax = itemPos.Ymin + ((FrameworkElement)item.View).ActualHeight;
+					}
+					
+					item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).Reset();
+					item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).Reset();
+					item.Properties.GetProperty(FrameworkElement.MarginProperty).Reset();
+				}
+				
+				var parCol = item.ParentProperty.CollectionElements;
+				parCol.Remove(item);
+			}
+			
+			var xmin = itemList.Min(x => x.Xmin);
+			var xmax = itemList.Max(x => x.Xmax);
+			var ymin = itemList.Min(x => x.Ymin);
+			var ymax = itemList.Max(x => x.Ymax);
+			
+			if (oldContainer.Component is Canvas) {
+				newPanel.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(xmax - xmin);
+				newPanel.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(ymax - ymin);
+				newPanel.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(xmin);
+				newPanel.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(ymin);
+			} else if (oldContainer.Component is Grid) {
+				newPanel.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).SetValue(HorizontalAlignment.Left);
+				newPanel.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).SetValue(VerticalAlignment.Top);
+				newPanel.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(new Thickness(xmin, ymin, 0, 0));
+				newPanel.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(xmax - xmin);
+				newPanel.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(ymax - ymin);
+			}
+			
+			foreach (var item in itemList) {
+				newPanel.ContentProperty.CollectionElements.Add(item.DesignItem);
+				
+				if (newPanel.Component is Canvas) {
+					if (item.HorizontalAlignment == HorizontalAlignment.Right) {
+						item.DesignItem.Properties.GetAttachedProperty(Canvas.RightProperty).SetValue(xmax - item.Xmax);
+					} else {
+						item.DesignItem.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(item.Xmin - xmin);
+					}
+					
+					if (item.VerticalAlignment == VerticalAlignment.Bottom) {
+						item.DesignItem.Properties.GetAttachedProperty(Canvas.BottomProperty).SetValue(ymax - item.Ymax);
+					} else {
+						item.DesignItem.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(item.Ymin - ymin);
+					}
+				} else if (newPanel.Component is Grid) {
+					Thickness thickness = new Thickness(0);
+					if (item.HorizontalAlignment == HorizontalAlignment.Right) {
+						item.DesignItem.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).SetValue(HorizontalAlignment.Right);
+						thickness.Right = xmax - item.Xmax;
+					} else {
+						item.DesignItem.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).SetValue(HorizontalAlignment.Left);
+						thickness.Left = item.Xmin - xmin;
+					}
+					
+					if (item.VerticalAlignment == VerticalAlignment.Bottom) {
+						item.DesignItem.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).SetValue(VerticalAlignment.Bottom);
+						thickness.Bottom = ymax - item.Ymax;
+					} else {
+						item.DesignItem.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).SetValue(VerticalAlignment.Top);
+						thickness.Top = item.Ymin - ymin;
+					}
+					
+					item.DesignItem.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(thickness);
+				}
+			}
+			
+			oldContainer.ContentProperty.CollectionElements.Add(newPanel);
+			
+			changeGroup.Commit();
+			
+			_context.Services.Selection.SetSelectedComponents(new []{ newPanel });
 		}
 	}
 }

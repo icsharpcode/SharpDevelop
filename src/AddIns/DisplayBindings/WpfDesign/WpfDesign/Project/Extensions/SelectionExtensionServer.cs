@@ -118,7 +118,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 		
 		void OnSelectionChanged(object sender, EventArgs e)
 		{
-			ReapplyExtensions(this.Services.Selection.SelectedItems);			
+			ReapplyExtensions(this.Services.Selection.SelectedItems);
 		}
 		
 		/// <summary>
@@ -127,6 +127,34 @@ namespace ICSharpCode.WpfDesign.Extensions
 		public override bool ShouldApplyExtensions(DesignItem extendedItem)
 		{
 			return Services.Selection.PrimarySelection == extendedItem && Services.Selection.SelectionCount > 1;
+		}
+	}
+	
+	/// <summary>
+	/// Applies an extension only when multiple Items are selected!
+	/// </summary>
+	public class MultipleSelectedExtensionServer : DefaultExtensionServer
+	{
+		/// <summary>
+		/// Is called after the extension server is initialized and the Context property has been set.
+		/// </summary>
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
+			this.Services.Selection.SelectionChanged += OnSelectionChanged;
+		}
+		
+		void OnSelectionChanged(object sender, EventArgs e)
+		{
+			ReapplyExtensions(this.Services.Selection.SelectedItems);
+		}
+		
+		/// <summary>
+		/// Gets if the item is in the secondary selection.
+		/// </summary>
+		public override bool ShouldApplyExtensions(DesignItem extendedItem)
+		{
+			return Services.Selection.SelectionCount > 1;
 		}
 	}
 	

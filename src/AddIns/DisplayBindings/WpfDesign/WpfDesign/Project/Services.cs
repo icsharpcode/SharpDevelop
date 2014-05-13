@@ -233,33 +233,33 @@ namespace ICSharpCode.WpfDesign
 	#region IKeyBindingService
 	
 	/// <summary>
-    /// Service that handles all the key bindings in the designer.
-    /// </summary>
-    public interface IKeyBindingService
-    {
-        /// <summary>
-        /// Gets the object to which the bindings are being applied
-        /// </summary>
-        object Owner { get; }
+	/// Service that handles all the key bindings in the designer.
+	/// </summary>
+	public interface IKeyBindingService
+	{
+		/// <summary>
+		/// Gets the object to which the bindings are being applied
+		/// </summary>
+		object Owner { get; }
 
-        /// <summary>
-        /// Register <paramref name="binding"/> with <see cref="Owner"/>.
-        /// </summary>
-        /// <param name="binding">The binding to be applied.</param>
-        void RegisterBinding(KeyBinding binding);
+		/// <summary>
+		/// Register <paramref name="binding"/> with <see cref="Owner"/>.
+		/// </summary>
+		/// <param name="binding">The binding to be applied.</param>
+		void RegisterBinding(KeyBinding binding);
 
-        /// <summary>
-        /// De-register <paramref name="binding"/> with <see cref="Owner"/>.
-        /// </summary>
-        /// <param name="binding">The binding to be applied.</param>
-        void DeregisterBinding(KeyBinding binding);
+		/// <summary>
+		/// De-register <paramref name="binding"/> with <see cref="Owner"/>.
+		/// </summary>
+		/// <param name="binding">The binding to be applied.</param>
+		void DeregisterBinding(KeyBinding binding);
 
-        /// <summary>
-        /// Gets binding for the corresponding gesture otherwise returns null.
-        /// </summary>
-        /// <param name="gesture">The keyboard gesture requested.</param>
-        KeyBinding GetBinding(KeyGesture gesture);
-    }
-    
+		/// <summary>
+		/// Gets binding for the corresponding gesture otherwise returns null.
+		/// </summary>
+		/// <param name="gesture">The keyboard gesture requested.</param>
+		KeyBinding GetBinding(KeyGesture gesture);
+	}
+	
 	#endregion
 }

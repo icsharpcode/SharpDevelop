@@ -65,5 +65,23 @@ namespace ICSharpCode.WpfDesign.Designer
 				return "Press \"Alt\" to Enter Container";
 			}
 		}
+		
+		public virtual string WrapInCanvas {
+			get {
+				return "Wrap in Canvas";
+			}
+		}
+		
+		public virtual string WrapInGrid {
+			get {
+				return "Wrap in Grid";
+			}
+		}
+		
+		public virtual string WrapInBorder {
+			get {
+				return "Wrap in Border";
+			}
+		}
 	}
 }
