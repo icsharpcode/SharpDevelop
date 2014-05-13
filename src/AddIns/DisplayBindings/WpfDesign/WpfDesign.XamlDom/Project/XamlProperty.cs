@@ -254,13 +254,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		void ResetInternal()
 		{
+			bool isExplicitCollection = false;
+			
 			if (propertyValue != null) {
+				isExplicitCollection = IsCollection;
+				
 				propertyValue.RemoveNodeFromParent();
 				propertyValue.ParentProperty = null;
 				propertyValue = null;
 			}
 			if (_propertyElement != null) {
-				_propertyElement.ParentNode.RemoveChild(_propertyElement);
+				Debug.Assert(!isExplicitCollection || _propertyElement.ParentNode == null); 
+				
+				if (!isExplicitCollection) {
+					_propertyElement.ParentNode.RemoveChild(_propertyElement);
+				}
 				_propertyElement = null;
 			}
 		}

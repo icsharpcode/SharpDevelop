@@ -54,7 +54,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			XamlPropertyInfo info = property.propertyInfo;
 			object collection = info.GetValue(property.ParentObject.Instance);
 			if (!CollectionSupport.RemoveItemAt(info.ReturnType, collection, index)) {
-				CollectionSupport.RemoveItem(info.ReturnType, collection, this[index].GetValueFor(info));
+				var propertyValue = this[index];
+				CollectionSupport.RemoveItem(info.ReturnType, collection, propertyValue.GetValueFor(info), propertyValue);
 			}
 			
 			this[index].RemoveNodeFromParent();
