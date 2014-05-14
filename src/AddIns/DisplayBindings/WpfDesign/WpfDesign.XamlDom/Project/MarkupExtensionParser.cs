@@ -97,8 +97,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				char quote = text[pos++];
 				CheckNotEOF();
 				while (!(text[pos] == quote && text[pos-1] != '\\')) {
+					char prev = text[pos-1];
 					char c = text[pos++];
-					if (c != '\\')
+					bool isEscapedBackslash = string.Concat(prev,c)=="\\\\";
+					if (c != '\\' || isEscapedBackslash)
 						b.Append(c);
 					CheckNotEOF();
 				}
