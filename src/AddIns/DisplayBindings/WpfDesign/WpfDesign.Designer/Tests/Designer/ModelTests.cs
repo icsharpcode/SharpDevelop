@@ -668,30 +668,51 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
-		public void AddStringAsResource()
+		public void AddNativeTypeAsResource(object component, string expectedXamlValue)
 		{
 			DesignItem textBlock = CreateCanvasContext("<TextBlock/>");
 			DesignItem canvas = textBlock.Parent;
 			
 			DesignItemProperty canvasResources = canvas.Properties.GetProperty("Resources");
 			
-			DesignItem str = canvas.Services.Component.RegisterComponentForDesigner("stringresource 1");
-			str.Key = "str1";
+			DesignItem componentItem = canvas.Services.Component.RegisterComponentForDesigner(component);
+			componentItem.Key = "res1";
 			
 			Assert.IsTrue(canvasResources.IsCollection);
-			canvasResources.CollectionElements.Add(str);
+			canvasResources.CollectionElements.Add(componentItem);
 			
-			textBlock.Properties[TextBlock.TextProperty].SetValue(new StaticResourceExtension());
-			DesignItemProperty prop = textBlock.Properties[TextBlock.TextProperty];
-			prop.Value.Properties["ResourceKey"].SetValue("str1");
+			DesignItemProperty prop = textBlock.Properties[TextBlock.TagProperty];
+			prop.SetValue(new StaticResourceExtension());
+			prop.Value.Properties["ResourceKey"].SetValue("res1");
+			
+			string typeName = component.GetType().Name;
 			
 			string expectedXaml = "<Canvas.Resources>\n" +
-								  "  <Controls0:String x:Key=\"str1\">stringresource 1</Controls0:String>\n" +
+								  "  <Controls0:" + typeName + " x:Key=\"res1\">" + expectedXamlValue + "</Controls0:" + typeName + ">\n" +
 								  "</Canvas.Resources>\n" +
-								  "<TextBlock Text=\"{StaticResource ResourceKey=str1}\" />";
+								  "<TextBlock Tag=\"{StaticResource ResourceKey=res1}\" />";
 			
 			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context, "xmlns:Controls0=\"clr-namespace:System;assembly=mscorlib\"");
 			AssertLog("");
+		}
+		
+		[Test]
+		public void AddStringAsResource()
+		{
+			AddNativeTypeAsResource("stringresource 1", "stringresource 1");
+		}
+		
+		[Test]
+		public void AddDoubleAsResource()
+		{
+			AddNativeTypeAsResource(0.0123456789d, "0.0123456789");
+		}
+		
+		[Test]
+		public void AddInt32AsResource()
+		{
+			const int i = 123;
+			AddNativeTypeAsResource(i, "123");
 		}
 	}
 	
