@@ -368,8 +368,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		void DesignPanel_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
-			{
+			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down) {
 				e.Handled = true;
 				
 				if (placementOp == null) {
@@ -379,31 +378,37 @@ namespace ICSharpCode.WpfDesign.Designer
 				}
 				
 				
-				dx += (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
-				dy += (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
-				dx += (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
-				dy += (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
+				dx = (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
+				dy = (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
+				dx = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
+				dy = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
+				double left, top;
 				foreach (PlacementInformation info in placementOp.PlacedItems)
 				{
-					if (!Keyboard.IsKeyDown(Key.LeftCtrl))
-					{
-						info.Bounds = new Rect(info.OriginalBounds.Left + dx,
-							info.OriginalBounds.Top + dy,
+                    //Let canvas position preceed bounds definition since there can be a discrepancy between them.
+				    left = IsPropertySet(info.Item.View,Canvas.LeftProperty)?(double)info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).ValueOnInstance: info.OriginalBounds.Left;
+
+                    top = IsPropertySet(info.Item.View, Canvas.TopProperty) ? (double)info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).ValueOnInstance : info.OriginalBounds.Top;
+					if (!Keyboard.IsKeyDown(Key.LeftCtrl)) {
+						info.Bounds = new Rect(left + dx,
+							top + dy,
 							info.OriginalBounds.Width,
 							info.OriginalBounds.Height);
-					}
-					else
-					{
-						info.Bounds = new Rect(info.OriginalBounds.Left,
-							info.OriginalBounds.Top,
+					} else {
+						info.Bounds = new Rect(left,
+							top,
 							info.OriginalBounds.Width + dx,
 							info.OriginalBounds.Height + dy);
 					}
-					
 					placementOp.CurrentContainerBehavior.SetPosition(info);
 				}
 			}
 		}
+		
+		static bool IsPropertySet(UIElement element, DependencyProperty d)
+        {
+            return element.ReadLocalValue(d) != DependencyProperty.UnsetValue;
+        }
 		
 		protected override void OnQueryCursor(QueryCursorEventArgs e)
 		{
