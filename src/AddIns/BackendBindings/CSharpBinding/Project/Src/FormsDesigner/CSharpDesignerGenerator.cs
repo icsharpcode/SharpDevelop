@@ -284,7 +284,7 @@ namespace CSharpBinding.FormsDesigner
 				return false;
 			}
 			
-			return oldType.ReflectionName != newType.BaseType;
+			return oldType.GetDefinition().ReflectionName != newType.BaseType;
 		}
 		
 		string GenerateField(CodeMemberField newField)
