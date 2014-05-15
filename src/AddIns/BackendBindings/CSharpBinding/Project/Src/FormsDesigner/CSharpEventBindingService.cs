@@ -57,6 +57,8 @@ namespace CSharpBinding.FormsDesigner
 		string GetComponentName(IComponent component)
 		{
 			string siteName = component.Site.Name;
+			if (GeneralOptionsPanel.GenerateVisualStudioStyleEventHandlers)
+				return siteName;
 			return Char.ToUpper(siteName[0]) + siteName.Substring(1);
 		}
 		
