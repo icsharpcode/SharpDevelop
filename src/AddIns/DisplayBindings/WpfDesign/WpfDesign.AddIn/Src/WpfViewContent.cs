@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -60,6 +61,19 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
+
+			var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+			_path = Path.GetDirectoryName(compilation.MainAssembly.UnresolvedAssembly.Location);
+			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+		}
+
+		System.Reflection.Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+		{
+			var assemblyName = (new AssemblyName(args.Name));
+			string fileName = Path.Combine(_path, assemblyName.Name) + ".dll";
+			if (File.Exists(fileName))
+				return Assembly.LoadFile(fileName);
+			return null;
 		}
 		
 		static WpfViewContent()
@@ -68,7 +82,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 				ICSharpCode.Core.MessageService.ShowException(e.Exception);
 			};
 		}
-		
+
+		private string _path;
 		DesignSurface designer;
 		List<SDTask> tasks = new List<SDTask>();
 		
@@ -285,6 +300,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public override void Dispose()
 		{
+			AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
 			SD.ProjectService.ProjectItemAdded -= OnReferenceAdded;
 
 			propertyContainer.Clear();
