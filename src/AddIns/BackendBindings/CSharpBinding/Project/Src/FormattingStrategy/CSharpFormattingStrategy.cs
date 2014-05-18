@@ -48,7 +48,7 @@ namespace CSharpBinding.FormattingStrategy
 			DocumentAccessor acc = new DocumentAccessor(editor.Document, lineNr, lineNr);
 			
 			CSharpIndentationStrategy indentStrategy = new CSharpIndentationStrategy();
-			indentStrategy.IndentationString = editor.Options.IndentationString;
+			indentStrategy.IndentationString = GetIndentationString(editor);
 			indentStrategy.Indent(acc, false);
 			
 			string t = acc.Text;
@@ -62,33 +62,64 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			DocumentAccessor acc = new DocumentAccessor(editor.Document, beginLine, endLine);
 			CSharpIndentationStrategy indentStrategy = new CSharpIndentationStrategy();
-			indentStrategy.IndentationString = editor.Options.IndentationString;
+			indentStrategy.IndentationString = GetIndentationString(editor);
 			indentStrategy.Indent(acc, true);
+		}
+		
+		CSharpFormattingOptionsContainer GetOptionsContainerForEditor(ITextEditor editor)
+		{
+			var currentProject = SD.ProjectService.FindProjectContainingFile(editor.FileName);
+			if (currentProject != null) {
+				var persistence = CSharpFormattingOptionsPersistence.GetProjectOptions(currentProject);
+				if (persistence != null) {
+					return persistence.OptionsContainer;
+				}
+			}
+			
+			return null;
+		}
+		
+		string GetIndentationString(ITextEditor editor)
+		{
+			// Get current indentation option values
+			int indentationSize = editor.Options.IndentationSize;
+			bool convertTabsToSpaces = editor.Options.ConvertTabsToSpaces;
+			var container = GetOptionsContainerForEditor(editor);
+			if (container != null) {
+				int? effectiveIndentationSize = container.GetEffectiveIndentationSize();
+				if (effectiveIndentationSize.HasValue)
+					indentationSize = effectiveIndentationSize.Value;
+				bool? effectiveConvertTabsToSpaces = container.GetEffectiveConvertTabsToSpaces();
+				if (effectiveConvertTabsToSpaces.HasValue)
+					convertTabsToSpaces = effectiveConvertTabsToSpaces.Value;
+			}
+			
+			return ICSharpCode.AvalonEdit.TextEditorOptions.GetIndentationString(1, indentationSize, convertTabsToSpaces);
 		}
 		
 		/* NR indent engine (temporarily?) disabled as per #447
 		static void IndentSingleLine(CacheIndentEngine engine, IDocument document, IDocumentLine line)
 		{
-			engine.Update(line.EndOffset);
-			if (engine.NeedsReindent) {
-				var indentation = TextUtilities.GetWhitespaceAfter(document, line.Offset);
-				// replacing the indentation in two steps is necessary to make the caret move accordingly.
-				document.Replace(indentation.Offset, indentation.Length, "");
-				document.Replace(indentation.Offset, 0, engine.ThisLineIndent);
-				engine.ResetEngineToPosition(line.Offset);
-			}
+		engine.Update(line.EndOffset);
+		if (engine.NeedsReindent) {
+		var indentation = TextUtilities.GetWhitespaceAfter(document, line.Offset);
+		// replacing the indentation in two steps is necessary to make the caret move accordingly.
+		document.Replace(indentation.Offset, indentation.Length, "");
+		document.Replace(indentation.Offset, 0, engine.ThisLineIndent);
+		engine.ResetEngineToPosition(line.Offset);
+		}
 		}
 		
 		static CacheIndentEngine CreateIndentEngine(IDocument document, TextEditorOptions options)
 		{
-			IProject currentProject = null;
-			var projectService = SD.GetService<IProjectService>();
-			if (projectService != null) {
-				currentProject = projectService.FindProjectContainingFile(new FileName(document.FileName));
-			}
-			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(currentProject);
-			var engine = new CSharpIndentEngine(document, options, formattingOptions.OptionsContainer.GetEffectiveOptions());
-			return new CacheIndentEngine(engine);
+		IProject currentProject = null;
+		var projectService = SD.GetService<IProjectService>();
+		if (projectService != null) {
+		currentProject = projectService.FindProjectContainingFile(new FileName(document.FileName));
+		}
+		var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(currentProject);
+		var engine = new CSharpIndentEngine(document, options, formattingOptions.OptionsContainer.GetEffectiveOptions());
+		return new CacheIndentEngine(engine);
 		}
 		*/
 		#endregion

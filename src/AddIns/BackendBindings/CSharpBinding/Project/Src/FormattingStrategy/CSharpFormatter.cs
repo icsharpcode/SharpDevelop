@@ -31,7 +31,14 @@ namespace CSharpBinding.FormattingStrategy
 		/// </summary>
 		public static void Format(ITextEditor editor, int offset, int length, CSharpFormattingOptionsContainer optionsContainer)
 		{
-			var formatter = new CSharpFormatter(optionsContainer.GetEffectiveOptions(), editor.ToEditorOptions());
+			TextEditorOptions editorOptions = editor.ToEditorOptions();
+			int? indentationSize = optionsContainer.GetEffectiveIndentationSize();
+			if (indentationSize.HasValue)
+				editorOptions.IndentSize = indentationSize.Value;
+			bool? convertTabsToSpaces = optionsContainer.GetEffectiveConvertTabsToSpaces();
+			if (convertTabsToSpaces.HasValue)
+				editorOptions.TabsToSpaces = convertTabsToSpaces.Value;
+			var formatter = new CSharpFormatter(optionsContainer.GetEffectiveOptions(), editorOptions);
 			formatter.AddFormattingRegion(new DomRegion(editor.Document.GetLocation(offset), editor.Document.GetLocation(offset + length)));
 			var changes = formatter.AnalyzeFormatting(editor.Document, SyntaxTree.Parse(editor.Document));
 			changes.ApplyChanges(offset, length);
