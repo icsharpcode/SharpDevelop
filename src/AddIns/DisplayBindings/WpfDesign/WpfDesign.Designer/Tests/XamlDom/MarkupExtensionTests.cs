@@ -27,6 +27,10 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 	[TestFixture]
 	public class MarkupExtensionTests : TestHelper
 	{
+		private const string PathWithSpaces = @"C:\\Folder A\\SubFolder A\\SubFolder B\\file with spaces.txt";
+		private const string PathWithoutSpaces = @"C:\\FolderA\\SubFolderA\\SubFolderB\\file.txt";
+		private const string PathWithCommasAndSpaces = @"C:\\Folder A\\Sub,Folder,A\\SubFolderB\\file,with,commas and spaces.txt";
+		
 		[Test]
 		public void Test1()
 		{
@@ -84,6 +88,36 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestMarkupExtension("Content=\"{x:Static t:MyStaticClass.StaticString}\"");
 		}
+		
+		[Test]
+		public void TestPathWithSpaces()
+		{
+			TestMarkupExtension("Content=\"{t:String " + PathWithSpaces + "}\"");
+		}
+		
+		[Test]
+		public void TestQuotedPathWithSpaces()
+		{
+			TestMarkupExtension("Content=\"{t:String '" + PathWithSpaces + "'}\"");
+		}
+		
+		[Test]
+		public void TestPathWithoutSpaces()
+		{
+			TestMarkupExtension("Content=\"{t:String " + PathWithoutSpaces + "}\"");
+		}
+		
+		[Test]
+		public void TestQuotedPathWithoutSpaces()
+		{
+			TestMarkupExtension("Content=\"{t:String '" + PathWithoutSpaces + "'}\"");
+		}
+		
+		[Test]
+		public void TestQuotedPathWithCommasAndSpaces()
+		{
+			TestMarkupExtension("Content=\"{t:String '" + PathWithCommasAndSpaces + "'}\"");
+		}
 
 //        [Test]
 //        public void Test10()
@@ -113,6 +147,23 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 	public static class MyStaticClass
 	{
 		public static string StaticString = "a";
+	}
+	
+	public class StringExtension : MarkupExtension
+	{
+		readonly string s;
+		
+		public StringExtension(string s)
+		{
+			TestHelperLog.Log(this.GetType().Name + " " + s);
+			
+			this.s = s;
+		}
+
+		public override object ProvideValue(IServiceProvider serviceProvider)
+		{
+			return s;
+		}
 	}
 
 	public class MyExtension : MarkupExtension
