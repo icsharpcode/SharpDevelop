@@ -176,7 +176,6 @@
     <Compile Include="Src\Helpers\FakePowerShellDetection.cs" />
     <Compile Include="Src\Helpers\FakePowerShellSession.cs" />
     <Compile Include="Src\Helpers\FakePropertyService.cs" />
-    <Compile Include="Src\Helpers\FakeSettingsFactory.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepository.cs" />
     <Compile Include="Src\Helpers\FakeTextEditorOptions.cs" />
     <Compile Include="Src\Helpers\ProjectItemCollectionAssert.cs" />
@@ -195,6 +194,7 @@
     <Compile Include="Src\Scripting\ConsoleHostFileConflictResolverTests.cs" />
     <Compile Include="Src\Scripting\MSBuildProjectImportsMergerTests.cs" />
     <Compile Include="Src\Scripting\MSBuildProjectPropertiesMergerTests.cs" />
+    <Compile Include="Src\SettingsProviderTests.cs" />
     <Compile Include="Src\UpdatedPackagesTests.cs" />
     <Compile Include="Src\UpdatePackagesActionTests.cs" />
     <Compile Include="Src\UpdateSolutionPackagesActionTests.cs" />
