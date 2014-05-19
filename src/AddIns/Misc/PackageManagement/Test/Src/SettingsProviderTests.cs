@@ -66,14 +66,14 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void LoadSettings_SolutionOpen_FileSystemWithRootSetToSolutionDirectoryUsedToLoadSettings()
+		public void LoadSettings_SolutionOpen_FileSystemWithRootSetToSolutionDotNuGetDirectoryUsedToLoadSettings()
 		{
 			string fileName = @"d:\projects\MyProject\MyProject.sln";
 			OpenSolution(fileName);
 			
 			ISettings settings = settingsProvider.LoadSettings();
 			
-			Assert.AreEqual(@"d:\projects\MyProject", fileSystemUsedToLoadSettings.Root);
+			Assert.AreEqual(@"d:\projects\MyProject\.nuget", fileSystemUsedToLoadSettings.Root);
 			Assert.AreEqual(fakeSettings, settings);
 		}
 	}

@@ -45,7 +45,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			ISolution solution = projectService.OpenSolution;
 			if (solution != null) {
-				return solution.Directory;
+				return Path.Combine(solution.Directory, ".nuget");
 			}
 			return null;
 		}
