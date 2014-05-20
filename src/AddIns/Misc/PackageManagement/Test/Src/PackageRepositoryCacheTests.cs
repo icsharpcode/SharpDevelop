@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Packaging;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -52,9 +53,7 @@ namespace PackageManagement.Tests
 		{
 			nuGetPackageSource = new PackageSource("http://nuget.org", "NuGet");
 			fakePackageRepositoryFactory = new FakePackageRepositoryFactory();
-			RegisteredPackageSources packageSources = packageSourcesHelper.Options.PackageSources;
-			IList<RecentPackageInfo> recentPackages = packageSourcesHelper.Options.RecentPackages;
-			cache = new PackageRepositoryCache(fakePackageRepositoryFactory, packageSources, recentPackages);
+			cache = new PackageRepositoryCache(packageSourcesHelper.Options, fakePackageRepositoryFactory);
 		}
 		
 		FakePackageRepository AddFakePackageRepositoryForPackageSource(string source)
@@ -394,6 +393,39 @@ namespace PackageManagement.Tests
 			cache.CreateRepository(nuGetPackageSource.Source);
 			
 			Assert.IsNull(eventArgs);
+		}
+		
+		[Test]
+		public void CreateAggregateRepository_SolutionClosedAndEnabledPackageSourcesChangedAfterCacheCreated_AggregateRepositoryContainsCorrectEnabledPackageRepositories()
+		{
+			CreatePackageSources();
+			packageSourcesHelper.AddTwoPackageSources("Source1", "Source2");
+			CreateCacheUsingPackageSources();
+			FakePackageRepository source1Repo = AddFakePackageRepositoryForPackageSource("Source1");
+			FakePackageRepository source2Repo = AddFakePackageRepositoryForPackageSource("Source2");
+			fakePackageRepositoryFactory.CreateAggregrateRepositoryAction = (repositories) => {
+				return new AggregateRepository (repositories);
+			};
+			var initialAggregateRepository = cache.CreateAggregateRepository() as AggregateRepository;
+			var expectedInitialRepositories = new FakePackageRepository[] {
+				source1Repo,
+				source2Repo
+			};
+			List<IPackageRepository> actualInitialRepositories = initialAggregateRepository.Repositories.ToList();
+			var solution = new SolutionHelper().MSBuildSolution;
+			packageSourcesHelper.Options.ProjectService.FireSolutionClosedEvent(solution);
+			packageSourcesHelper.Options.PackageSources.Clear();
+			packageSourcesHelper.Options.PackageSources.Add(new PackageSource ("Source3"));
+			FakePackageRepository source3Repo = AddFakePackageRepositoryForPackageSource("Source3");
+			var expectedRepositories = new FakePackageRepository[] {
+				source3Repo
+			};
+
+			var aggregateRepository = cache.CreateAggregateRepository() as AggregateRepository;
+			List<IPackageRepository> actualRepositories = aggregateRepository.Repositories.ToList();
+
+			CollectionAssert.AreEqual(expectedInitialRepositories, actualInitialRepositories);
+			CollectionAssert.AreEqual(expectedRepositories, actualRepositories);
 		}
 	}
 }

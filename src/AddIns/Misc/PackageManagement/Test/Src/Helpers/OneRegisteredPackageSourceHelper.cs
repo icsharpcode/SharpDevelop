@@ -26,10 +26,13 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class OneRegisteredPackageSourceHelper
 	{
-		public RegisteredPackageSources RegisteredPackageSources;
 		public TestablePackageManagementOptions Options;
 		public FakeSettings FakeSettings;
 		public PackageSource PackageSource = new PackageSource("http://sharpdevelop.com", "Test Package Source");
+		
+		public RegisteredPackageSources RegisteredPackageSources {
+			get { return Options.PackageSources; }
+		}
 		
 		public OneRegisteredPackageSourceHelper()
 		{
@@ -41,7 +44,6 @@ namespace PackageManagement.Tests.Helpers
 			Properties properties = new Properties();
 			Options = new TestablePackageManagementOptions();
 			FakeSettings = Options.FakeSettings;
-			RegisteredPackageSources = Options.PackageSources;
 			AddOnePackageSource();
 		}
 		
@@ -58,7 +60,7 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public void AddTwoPackageSources()
-		{			
+		{
 			AddOnePackageSource();
 			var packageSource = new PackageSource("http://second.codeplex.com", "second");
 			RegisteredPackageSources.Add(packageSource);

@@ -38,6 +38,13 @@ namespace PackageManagement.Tests.Helpers
 		public Dictionary<string, FakePackageRepository> FakePackageRepositories =
 			new Dictionary<string, FakePackageRepository>();
 	
+		public FakePackageRepositoryFactory()
+		{
+			CreateAggregrateRepositoryAction = (repositories) => {
+				return FakeAggregateRepository;
+			};
+		}
+		
 		public IPackageRepository CreateRepository(string packageSource)
 		{
 			PackageSourcesPassedToCreateRepository.Add(packageSource);
@@ -84,16 +91,17 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public IEnumerable<IPackageRepository> RepositoriesPassedToCreateAggregateRepository;
+		public Func<IEnumerable<IPackageRepository>, IPackageRepository> CreateAggregrateRepositoryAction;
 		
 		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
 		{
 			RepositoriesPassedToCreateAggregateRepository = repositories;
-			return FakeAggregateRepository;
+			return CreateAggregrateRepositoryAction(repositories);
 		}
 		
 		public FakePackageRepository AddFakePackageRepositoryForPackageSource(string source)
 		{
-			var repository = new FakePackageRepository();			
+			var repository = new FakePackageRepository();
 			FakePackageRepositories.Add(source, repository);
 			return repository;
 		}

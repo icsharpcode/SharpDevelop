@@ -27,6 +27,7 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public Properties Properties;
 		public FakeSettings FakeSettings;
+		public FakePackageManagementProjectService ProjectService;
 		
 		public TestablePackageManagementOptions()
 			: this(new Properties(), new FakeSettings(), new FakePackageManagementProjectService())
@@ -41,6 +42,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			this.Properties = properties;
 			this.FakeSettings = fakeSettings;
+			this.ProjectService = projectService;
 		}
 		
 		public static void ChangeSettingsReturnedBySettingsProvider(FakeSettings settings)
