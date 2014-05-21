@@ -115,12 +115,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (Snap(horizontalInput, horizontalMap, Accuracy, out drawLines, out delta)) {
 				
 				if (operation.Type == PlacementType.Resize) {
-					if (info.ResizeThumbAlignment.Vertical == VerticalAlignment.Top) {
-						bounds.Y += delta;
-						bounds.Height = Math.Max(0, bounds.Height - delta);
-					} else {
-						bounds.Height = Math.Max(0, bounds.Height + delta);
+					if (info.ResizeThumbAlignment != null && info.ResizeThumbAlignment.Value.Vertical == VerticalAlignment.Top) {
+						bounds.Y += delta;	
 					}
+					bounds.Height = Math.Max(0, bounds.Height - delta);
 					info.Bounds = bounds;
 				} else {
 					foreach (var item in operation.PlacedItems) {
@@ -138,12 +136,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (Snap(verticalInput, verticalMap, Accuracy, out drawLines, out delta)) {
 				
 				if (operation.Type == PlacementType.Resize) {
-					if (info.ResizeThumbAlignment.Horizontal == HorizontalAlignment.Left) {
-						bounds.X += delta;
-						bounds.Width = Math.Max(0, bounds.Width - delta);
-					} else {
-						bounds.Width = Math.Max(0, bounds.Width + delta);
+					if (info.ResizeThumbAlignment != null && info.ResizeThumbAlignment.Value.Horizontal == HorizontalAlignment.Left) {
+						bounds.X += delta;	
 					}
+					bounds.Width = Math.Max(0, bounds.Width - delta);
 					info.Bounds = bounds;
 				} else {
 					foreach (var item in operation.PlacedItems) {

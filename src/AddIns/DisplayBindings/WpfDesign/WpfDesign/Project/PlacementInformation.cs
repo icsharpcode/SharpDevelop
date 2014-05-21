@@ -75,7 +75,7 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Gets/sets the alignment of the resize thumb used to start the operation.
 		/// </summary>
-		public PlacementAlignment ResizeThumbAlignment { get; set; }
+		public PlacementAlignment? ResizeThumbAlignment { get; set; }
 		
 		/// <inheritdoc/>
 		public override string ToString()

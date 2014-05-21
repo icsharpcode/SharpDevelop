@@ -83,10 +83,12 @@ namespace ICSharpCode.XamlBinding
 					XamlCompletionItem cItem = item as XamlCompletionItem;
 					
 					if (xamlContext.Description == XamlContextDescription.InTag) {
-						context.Editor.Document.Insert(context.EndOffset, "=\"\"");
-						context.CompletionCharHandled = context.CompletionChar == '=';
-						context.Editor.Caret.Offset--;
-						new XamlCodeCompletionBinding().CtrlSpace(context.Editor);
+						if (cItem.Entity.SymbolKind == SymbolKind.Property || cItem.Entity.SymbolKind == SymbolKind.Event) {
+							context.Editor.Document.Insert(context.EndOffset, "=\"\"");
+							context.CompletionCharHandled = context.CompletionChar == '=';
+							context.Editor.Caret.Offset--;
+							new XamlCodeCompletionBinding().CtrlSpace(context.Editor);
+						}
 					} else if (xamlContext.Description == XamlContextDescription.InMarkupExtension && !string.IsNullOrEmpty(xamlContext.RawAttributeValue)) {
 						string valuePart = xamlContext.RawAttributeValue.Substring(0, xamlContext.ValueStartOffset);
 						AttributeValue value = MarkupExtensionParser.ParseValue(valuePart);

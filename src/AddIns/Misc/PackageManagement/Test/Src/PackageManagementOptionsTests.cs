@@ -36,6 +36,8 @@ namespace PackageManagement.Tests
 		Properties properties;
 		PackageManagementOptions options;
 		FakeSettings fakeSettings;
+		SettingsProvider settingsProvider;
+		FakePackageManagementProjectService projectService;
 		
 		void CreateOptions()
 		{
@@ -63,12 +65,26 @@ namespace PackageManagement.Tests
 		void CreateOptions(FakeSettings fakeSettings)
 		{
 			CreateProperties();
-			options = new PackageManagementOptions(properties, fakeSettings);
+			CreateSettingsProvider(fakeSettings);
+			options = new PackageManagementOptions(properties, settingsProvider);
+		}
+		
+		void CreateSettingsProvider(FakeSettings fakeSettings)
+		{
+			projectService = new FakePackageManagementProjectService();
+			settingsProvider = TestablePackageManagementOptions.CreateSettingsProvider(fakeSettings, projectService);
+		}
+		
+		void ChangeSettingsReturnedBySettingsProvider()
+		{
+			fakeSettings = new FakeSettings();
+			TestablePackageManagementOptions.ChangeSettingsReturnedBySettingsProvider(fakeSettings);
 		}
 		
 		void CreateOptions(Properties properties, FakeSettings fakeSettings)
 		{
-			options = new PackageManagementOptions(properties, fakeSettings);
+			CreateSettingsProvider(fakeSettings);
+			options = new PackageManagementOptions(properties, settingsProvider);
 		}
 		
 		void SaveOptions()
@@ -86,6 +102,18 @@ namespace PackageManagement.Tests
 		void EnablePackageRestoreInSettings()
 		{
 			fakeSettings.SetPackageRestoreSetting(true);
+		}
+		
+		void OpenSolution()
+		{
+			var helper = new SolutionHelper(@"d:\projects\MyProject\MySolution.sln");
+			projectService.FireSolutionOpenedEvent(helper.MSBuildSolution);
+		}
+		
+		void CloseSolution()
+		{
+			var helper = new SolutionHelper(@"d:\projects\MyProject\MySolution.sln");
+			projectService.FireSolutionClosedEvent(helper.MSBuildSolution);
 		}
 		
 		[Test]
@@ -464,6 +492,89 @@ namespace PackageManagement.Tests
 			
 			KeyValuePair<string, string> keyValuePair = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection();
 			Assert.AreEqual("False", keyValuePair.Value);
+		}
+		
+		[Test]
+		public void PackageSources_SolutionOpenedAfterInitialPackageSourcesLoaded_ContainsPackageSourceFromSolutionSpecificSettings()
+		{
+			CreateSettings();
+			var packageSource = new PackageSource("http://codeplex.com", "Test");
+			fakeSettings.AddFakePackageSource(packageSource);
+			CreateOptions(fakeSettings);
+			RegisteredPackageSources initialSources = options.PackageSources;
+			var expectedInitialSources = new List<PackageSource>();
+			expectedInitialSources.Add(packageSource);
+			ChangeSettingsReturnedBySettingsProvider();
+			packageSource = new PackageSource("http://codeplex.com", "Test");
+			fakeSettings.AddFakePackageSource(packageSource);
+			var expectedSources = new List<PackageSource>();
+			expectedSources.Add(packageSource);
+			packageSource = new PackageSource("http://nuget.org", "ProjectSource");
+			fakeSettings.AddFakePackageSource(packageSource);
+			expectedSources.Add(packageSource);
+			OpenSolution();
+			
+			RegisteredPackageSources actualSources = options.PackageSources;
+			
+			Assert.AreEqual(expectedInitialSources, initialSources);
+			Assert.AreEqual(expectedSources, actualSources);
+		}
+		
+		[Test]
+		public void PackageSources_SolutionClosedAfterInitialPackageSourcesLoaded_PackageSourcesReloaded()
+		{
+			CreateSettings();
+			var packageSource = new PackageSource("http://codeplex.com", "Test");
+			fakeSettings.AddFakePackageSource(packageSource);
+			var expectedInitialSources = new List<PackageSource>();
+			expectedInitialSources.Add(packageSource);
+			packageSource = new PackageSource("http://nuget.org", "ProjectSource");
+			fakeSettings.AddFakePackageSource(packageSource);
+			expectedInitialSources.Add(packageSource);
+			OpenSolution();
+			CreateOptions(fakeSettings);
+			RegisteredPackageSources initialSources = options.PackageSources;
+			ChangeSettingsReturnedBySettingsProvider();
+			packageSource = new PackageSource("http://codeplex.com", "Test");
+			fakeSettings.AddFakePackageSource(packageSource);
+			var expectedSources = new List<PackageSource>();
+			expectedSources.Add(packageSource);
+			CloseSolution();
+			
+			RegisteredPackageSources actualSources = options.PackageSources;
+			
+			Assert.AreEqual(expectedInitialSources, initialSources);
+			Assert.AreEqual(expectedSources, actualSources);
+		}
+		
+		[Test]
+		public void PackageSources_SolutionClosedAfterInitialPackageSourcesLoaded_ActivePackageSourceReloaded()
+		{
+			CreateSettings();
+			var packageSource = new PackageSource("http://codeplex.com", "Test");
+			fakeSettings.AddFakePackageSource(packageSource);
+			var expectedInitialSources = new List<PackageSource>();
+			expectedInitialSources.Add(packageSource);
+			var initialActivePackageSource = new PackageSource("http://nuget.org", "ProjectSource");
+			fakeSettings.AddFakePackageSource(initialActivePackageSource);
+			fakeSettings.SetFakeActivePackageSource(initialActivePackageSource);
+			expectedInitialSources.Add(initialActivePackageSource);
+			OpenSolution();
+			CreateOptions(fakeSettings);
+			RegisteredPackageSources actualInitialPackageSources = options.PackageSources;
+			PackageSource actualInitialActivePackageSource = options.ActivePackageSource;
+			ChangeSettingsReturnedBySettingsProvider();
+			var expectedActivePackageSource = new PackageSource("http://codeplex.com", "Test");
+			fakeSettings.SetFakeActivePackageSource(expectedActivePackageSource);
+			fakeSettings.AddFakePackageSource(expectedActivePackageSource);
+			CloseSolution();
+			
+			PackageSource actualSource = options.ActivePackageSource;
+			
+			Assert.AreEqual(initialActivePackageSource, actualInitialActivePackageSource);
+			Assert.AreEqual(expectedActivePackageSource, actualSource);
+			Assert.AreEqual(expectedInitialSources, actualInitialPackageSources);
+			Assert.AreEqual(new PackageSource[] { expectedActivePackageSource }, options.PackageSources);
 		}
 	}
 }

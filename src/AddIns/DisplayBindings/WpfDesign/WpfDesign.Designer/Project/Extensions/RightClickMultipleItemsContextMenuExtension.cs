@@ -17,16 +17,38 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using NuGet;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
-namespace ICSharpCode.PackageManagement
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Extensions;
+using ICSharpCode.WpfDesign.Designer;
+
+namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	public class SettingsFactory : ISettingsFactory
+	/// <summary>
+	/// 
+	/// </summary>
+	[ExtensionServer(typeof(MultipleSelectedExtensionServer))]
+	[ExtensionFor(typeof(UIElement))]
+	public class RightClickMultipleItemsContextMenuExtension : SelectionAdornerProvider
 	{
-		public ISettings CreateSettings(string directory)
+		DesignPanel panel;
+		
+		protected override void OnInitialized()
 		{
-			var fileSystem = new PhysicalFileSystem(directory);
-			return new Settings(fileSystem);
+			base.OnInitialized();
+			
+			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+			panel.ContextMenu = new RightClickMultipleItemsContextMenu(ExtendedItem);
+		}
+		
+		protected override void OnRemove()
+		{
+			panel.ContextMenu = null;
+			
+			base.OnRemove();
 		}
 	}
 }
