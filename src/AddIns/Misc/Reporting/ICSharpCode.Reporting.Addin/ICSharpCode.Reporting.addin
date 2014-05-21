@@ -105,17 +105,19 @@
 	</Path>-->
 	
 
-	<!--<Path name="/SharpDevelop/ReportDesigner/ContextMenus/SelectionMenu">
-		<MenuItem id="ViewCode" label="${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}" icon="Icons.16x16.FormsDesigner.ViewCode" class="ICSharpCode.Reports.Addin.Commands.ViewCode" />
-		<MenuItem id="ShowProperties" label="${res:XML.MainMenu.FormatMenu.ShowProperties}" icon="Icons.16x16.Property" class="ICSharpCode.Reports.Addin.Commands.ShowProperties" />
+	<Path name="/SharpDevelop/ReportDesigner/ContextMenus/SelectionMenu">
+		<MenuItem id="ViewCode" label="${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}" icon="Icons.16x16.FormsDesigner.ViewCode" class="ICSharpCode.Reporting.Addin.Commands.ViewCode" />
+
+		<!--	<MenuItem id="ShowProperties" label="${res:XML.MainMenu.FormatMenu.ShowProperties}" icon="Icons.16x16.Property" class="ICSharpCode.Reports.Addin.Commands.ShowProperties" />-->
+		
 		<MenuItem id="PropertySeparator" type="Separator" />
 		<MenuItem id="Cut" label="${res:XML.MainMenu.EditMenu.Cut}" icon="Icons.16x16.CutIcon" command="Cut" />
 		<MenuItem id="Copy" label="${res:XML.MainMenu.EditMenu.Copy}" icon="Icons.16x16.CopyIcon" command="Copy" />
 		<MenuItem id="Paste" label="${res:XML.MainMenu.EditMenu.Paste}" icon="Icons.16x16.PasteIcon" command="Paste" />
 		<MenuItem id="Delete" label="${res:XML.MainMenu.EditMenu.Delete}" icon="Icons.16x16.DeleteIcon" command="Delete" />
 		<MenuItem id="DesignerVerbsSeparator" type="Separator" />
-		<MenuItem id="DesignerVerbsBuilder" type="Builder" class="ICSharpCode.Reports.Addin.Commands.DesignerVerbSubmenuBuilder" />
-	</Path>-->
+		<MenuItem id="DesignerVerbsBuilder" type="Builder" class="ICSharpCode.Reporting.Addin.Commands.DesignerVerbSubmenuBuilder" />
+	</Path>
 	
 
 	<!-- ReportExplorer ContextMenu's -->
