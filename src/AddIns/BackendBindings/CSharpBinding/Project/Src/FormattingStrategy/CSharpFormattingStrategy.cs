@@ -70,7 +70,7 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			var currentProject = SD.ProjectService.FindProjectContainingFile(editor.FileName);
 			if (currentProject != null) {
-				var persistence = CSharpFormattingOptionsPersistence.GetProjectOptions(currentProject);
+				var persistence = CSharpFormattingPolicies.Instance.GetProjectOptions(currentProject);
 				if (persistence != null) {
 					return persistence.OptionsContainer;
 				}
@@ -333,11 +333,11 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			if ((offset > textArea.Document.TextLength) || ((offset + length) > textArea.Document.TextLength))
 				return false;
-			if (respectAutoFormattingSetting && !CSharpFormattingOptionsPersistence.AutoFormatting)
+			if (respectAutoFormattingSetting && !CSharpFormattingPolicies.AutoFormatting)
 				return false;
 			
 			using (textArea.Document.OpenUndoGroup()) {
-				var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(SD.ProjectService.CurrentProject);
+				var formattingOptions = CSharpFormattingPolicies.Instance.GetProjectOptions(SD.ProjectService.CurrentProject);
 				try {
 					CSharpFormatterHelper.Format(textArea, offset, length, formattingOptions.OptionsContainer);
 				} catch (Exception) {

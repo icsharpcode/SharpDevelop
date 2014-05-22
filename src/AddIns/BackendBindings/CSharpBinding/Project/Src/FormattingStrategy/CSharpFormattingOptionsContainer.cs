@@ -324,7 +324,7 @@ namespace CSharpBinding.FormattingStrategy
 				return typeof(int);
 			if (option == ConvertTabsToSpacesPropertyName)
 				return typeof(bool);
-				
+			
 			PropertyInfo propertyInfo = typeof(CSharpFormattingOptions).GetProperty(option);
 			if (propertyInfo != null) {
 				return propertyInfo.PropertyType;
@@ -362,6 +362,19 @@ namespace CSharpBinding.FormattingStrategy
 			}
 			
 			return outputOptions;
+		}
+		
+		public void CustomizeEditorOptions(TextEditorOptions editorOptions)
+		{
+			int? indentationSize = GetEffectiveIndentationSize();
+			if (indentationSize.HasValue) {
+				editorOptions.IndentSize = indentationSize.Value;
+				editorOptions.TabSize = indentationSize.Value;
+				editorOptions.ContinuationIndent = indentationSize.Value;
+			}
+			bool? convertTabsToSpaces = GetEffectiveConvertTabsToSpaces();
+			if (convertTabsToSpaces.HasValue)
+				editorOptions.TabsToSpaces = convertTabsToSpaces.Value;
 		}
 		
 		public void Load(Properties parentProperties)
@@ -407,4 +420,3 @@ namespace CSharpBinding.FormattingStrategy
 		}
 	}
 }
-	

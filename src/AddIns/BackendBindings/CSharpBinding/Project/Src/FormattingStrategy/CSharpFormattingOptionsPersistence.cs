@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.SharpDevelop;
@@ -25,42 +26,41 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace CSharpBinding.FormattingStrategy
 {
-	public class CSharpFormattingOptionsPersistenceInitCommand : SimpleCommand
+	public class CSharpFormattingOptionsPoliciesInitCommand : SimpleCommand
 	{
 		public override void Execute(object parameter)
 		{
 			// Initialize CSharpFormattingOptionsPersistence as early as possible (before solution is opened)
-			CSharpFormattingOptionsPersistence.Initialize();
+			CSharpFormattingPolicies.Instance.Initialize();
 		}
 	}
 	
 	/// <summary>
-	/// Persistence helper for C# formatting options.
+	/// Management class for formatting policies.
 	/// </summary>
-	internal class CSharpFormattingOptionsPersistence
+	internal class CSharpFormattingPolicies
 	{
+		public static readonly CSharpFormattingPolicies Instance = new CSharpFormattingPolicies();
+		
+		public event EventHandler<CSharpFormattingPolicyUpdateEventArgs> FormattingPolicyUpdated;
+		
 		static bool initialized;
-		static Dictionary<string, CSharpFormattingOptionsPersistence> projectOptions;
+		static Dictionary<string, CSharpFormattingPolicy> projectOptions;
 		
-		static CSharpFormattingOptionsPersistence()
-		{
-			Initialize();
-		}
-		
-		public static void Initialize()
+		public void Initialize()
 		{
 			if (initialized)
 				return;
 			
 			initialized = true;
-			projectOptions = new Dictionary<string, CSharpFormattingOptionsPersistence>();
+			projectOptions = new Dictionary<string, CSharpFormattingPolicy>();
 			
 			// Load global settings
-			GlobalOptions = new CSharpFormattingOptionsPersistence(
-				SD.PropertyService.MainPropertiesContainer, new CSharpFormattingOptionsContainer()
-				{
+			GlobalOptions = new CSharpFormattingPolicy(
+				SD.PropertyService.MainPropertiesContainer, new CSharpFormattingOptionsContainer() {
 					DefaultText = StringParser.Parse("${res:CSharpBinding.Formatting.GlobalOptionReference}")
 				});
+			GlobalOptions.FormattingPolicyUpdated += OnFormattingPolicyUpdated;
 			GlobalOptions.Load();
 			
 			// Handlers for solution loading/unloading
@@ -71,8 +71,7 @@ namespace CSharpBinding.FormattingStrategy
 			}
 		}
 		
-		public static bool AutoFormatting
-		{
+		public static bool AutoFormatting {
 			get {
 				return SD.PropertyService.Get("CSharpBinding.Formatting.AutoFormatting", false);
 			}
@@ -81,31 +80,32 @@ namespace CSharpBinding.FormattingStrategy
 			}
 		}
 		
-		public static CSharpFormattingOptionsPersistence GlobalOptions
-		{
+		public CSharpFormattingPolicy GlobalOptions {
 			get;
 			private set;
 		}
 		
-		public static CSharpFormattingOptionsPersistence SolutionOptions
-		{
+		public CSharpFormattingPolicy SolutionOptions {
 			get;
 			private set;
 		}
 		
-		public static CSharpFormattingOptionsPersistence GetProjectOptions(IProject project)
+		public CSharpFormattingPolicy GetProjectOptions(IProject project)
 		{
+			if (projectOptions == null)
+				return null;
+			
 			var csproject = project as CSharpProject;
 			if (csproject != null) {
 				string key = project.FileName;
 				if (!projectOptions.ContainsKey(key)) {
 					// Lazily create options container for project
-					var projectFormattingPersistence = new CSharpFormattingOptionsPersistence(
+					var projectFormattingPersistence = new CSharpFormattingPolicy(
 						csproject.GlobalPreferences,
-						new CSharpFormattingOptionsContainer((SolutionOptions ?? GlobalOptions).OptionsContainer)
-						{
+						new CSharpFormattingOptionsContainer((SolutionOptions ?? GlobalOptions).OptionsContainer) {
 							DefaultText = StringParser.Parse("${res:CSharpBinding.Formatting.ProjectOptionReference}")
 						});
+					projectFormattingPersistence.FormattingPolicyUpdated += OnFormattingPolicyUpdated;
 					projectFormattingPersistence.Load();
 					projectOptions[key] = projectFormattingPersistence;
 				}
@@ -116,34 +116,70 @@ namespace CSharpBinding.FormattingStrategy
 			return SolutionOptions ?? GlobalOptions;
 		}
 		
-		static void SolutionOpened(object sender, SolutionEventArgs e)
+		void SolutionOpened(object sender, SolutionEventArgs e)
 		{
 			// Load solution settings
-			SolutionOptions = new CSharpFormattingOptionsPersistence(
+			SolutionOptions = new CSharpFormattingPolicy(
 				e.Solution.SDSettings,
-				new CSharpFormattingOptionsContainer(GlobalOptions.OptionsContainer)
-				{
+				new CSharpFormattingOptionsContainer(GlobalOptions.OptionsContainer) {
 					DefaultText = StringParser.Parse("${res:CSharpBinding.Formatting.SolutionOptionReference}")
 				});
+			SolutionOptions.FormattingPolicyUpdated += OnFormattingPolicyUpdated;
 			SolutionOptions.Load();
 		}
 		
-		static void SolutionClosed(object sender, SolutionEventArgs e)
+		void SolutionClosed(object sender, SolutionEventArgs e)
 		{
+			SolutionOptions.FormattingPolicyUpdated -= OnFormattingPolicyUpdated;
 			SolutionOptions = null;
 			projectOptions.Clear();
 		}
 		
+		void OnFormattingPolicyUpdated(object sender, CSharpFormattingPolicyUpdateEventArgs e)
+		{
+			if (FormattingPolicyUpdated != null) {
+				FormattingPolicyUpdated(sender, e);
+			}
+		}
+	}
+	
+	/// <summary>
+	/// Contains event data for formatting policy update events.
+	/// </summary>
+	internal class CSharpFormattingPolicyUpdateEventArgs : EventArgs
+	{
+		public CSharpFormattingPolicyUpdateEventArgs(CSharpFormattingOptionsContainer container)
+		{
+			OptionsContainer = container;
+		}
+		
+		/// <summary>
+		/// Returns updated options container.
+		/// </summary>
+		public CSharpFormattingOptionsContainer OptionsContainer
+		{
+			get;
+			private set;
+		}
+	}
+	
+	/// <summary>
+	/// Persistence helper for C# formatting options of a certain policy (e.g. global, solution, project).
+	/// </summary>
+	internal class CSharpFormattingPolicy
+	{
+		public event EventHandler<CSharpFormattingPolicyUpdateEventArgs> FormattingPolicyUpdated;
+		
 		readonly Properties propertiesContainer;
-		CSharpFormattingOptionsContainer optionsContainer;
+		readonly CSharpFormattingOptionsContainer optionsContainer;
 		CSharpFormattingOptionsContainer optionsContainerWorkingCopy;
 		
 		/// <summary>
-		/// Creates a new instance of formatting options persistence helper, using given options to predefine the options container.
+		/// Creates a new instance of formatting options policy, using given options to predefine the options container.
 		/// </summary>
 		/// <param name="propertiesContainer">Properties container to load from and save to.</param>
 		/// <param name="initialContainer">Initial (empty) instance of formatting options container.</param>
-		public CSharpFormattingOptionsPersistence(Properties propertiesContainer, CSharpFormattingOptionsContainer initialContainer)
+		public CSharpFormattingPolicy(Properties propertiesContainer, CSharpFormattingOptionsContainer initialContainer)
 		{
 			if (initialContainer == null)
 				throw new ArgumentNullException("initialContainer");
@@ -153,7 +189,7 @@ namespace CSharpBinding.FormattingStrategy
 		}
 		
 		/// <summary>
-		/// Returns the option container managed by this helper.
+		/// Returns the option container for this policy.
 		/// </summary>
 		public CSharpFormattingOptionsContainer OptionsContainer
 		{
@@ -196,7 +232,15 @@ namespace CSharpBinding.FormattingStrategy
 			
 			// Convert to SD properties
 			optionsContainer.Save(propertiesContainer);
+			OnFormattingPolicyUpdated(this, optionsContainer);
 			return true;
+		}
+		
+		void OnFormattingPolicyUpdated(object sender, CSharpFormattingOptionsContainer container)
+		{
+			if (FormattingPolicyUpdated != null) {
+				FormattingPolicyUpdated(sender, new CSharpFormattingPolicyUpdateEventArgs(container));
+			}
 		}
 	}
 }

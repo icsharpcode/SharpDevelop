@@ -140,6 +140,15 @@ namespace CSharpBinding.OptionPanels
 			set { SetValue(AllowPresetsProperty, value); }
 		}
 		
+		public static readonly DependencyProperty OverrideGlobalIndentationProperty =
+			DependencyProperty.Register("OverrideGlobalIndentation", typeof(bool), typeof(CSharpFormattingEditor),
+			                            new FrameworkPropertyMetadata());
+		
+		public bool OverrideGlobalIndentation {
+			get { return (bool)GetValue(OverrideGlobalIndentationProperty); }
+			set { SetValue(OverrideGlobalIndentationProperty, value); }
+		}
+		
 		static void OnOptionsContainerPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			var editor = o as CSharpFormattingEditor;

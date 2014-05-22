@@ -70,6 +70,13 @@ namespace CSharpBinding
 			codeManipulation = new CodeManipulation(editor);
 			renderer = new CaretReferenceHighlightRenderer(editor);
 			
+			// Patch editor options (indentation) to project-specific settings
+			var optionsContainer = CSharpFormattingPolicies.Instance.GetProjectOptions(
+				SD.ProjectService.FindProjectContainingFile(editor.FileName));
+			CustomizeEditorOptions(optionsContainer.OptionsContainer, editor.Options);
+			CSharpFormattingPolicies.Instance.FormattingPolicyUpdated +=
+				(sender, e) => CustomizeEditorOptions(optionsContainer.OptionsContainer, this.editor.Options);
+
 			if (!editor.ContextActionProviders.IsReadOnly) {
 				contextActionProviders = AddInTree.BuildItems<IContextActionProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
 				editor.ContextActionProviders.AddRange(contextActionProviders);
@@ -88,6 +95,23 @@ namespace CSharpBinding
 			}
 			renderer.Dispose();
 			this.editor = null;
+		}
+		
+		private void CustomizeEditorOptions(CSharpFormattingOptionsContainer container, ITextEditorOptions editorOptions)
+		{
+			if (container == null)
+				return;
+			var textEditorOptions = editorOptions as ICSharpCode.AvalonEdit.TextEditorOptions;
+			if (textEditorOptions == null)
+				return;
+			
+			int? indentationSize = container.GetEffectiveIndentationSize();
+			if (indentationSize.HasValue) {
+				textEditorOptions.IndentationSize = indentationSize.Value;
+			}
+			bool? convertTabsToSpaces = container.GetEffectiveConvertTabsToSpaces();
+			if (convertTabsToSpaces.HasValue)
+				textEditorOptions.ConvertTabsToSpaces = convertTabsToSpaces.Value;
 		}
 	}
 }

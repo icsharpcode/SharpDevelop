@@ -155,7 +155,7 @@ namespace CSharpBinding.FormsDesigner
 			
 			IDocument document = context.GetDocument(fileNameObj);
 			var ctx = SDRefactoringContext.Create(fileNameObj, document);
-			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(compilation.GetProject());
+			var formattingOptions = CSharpFormattingPolicies.Instance.GetProjectOptions(compilation.GetProject());
 			script = new DocumentScript(document, formattingOptions.OptionsContainer.GetEffectiveOptions(), new TextEditorOptions());
 			scripts.Add(fileNameObj, script);
 			return script;

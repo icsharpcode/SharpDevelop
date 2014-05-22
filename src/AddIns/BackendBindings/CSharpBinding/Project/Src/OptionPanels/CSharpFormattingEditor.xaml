@@ -297,7 +297,8 @@
 	</UserControl.Resources>
 	
 	<DockPanel>
-		<Grid DockPanel.Dock="Top">
+		<Grid DockPanel.Dock="Top"
+		      Visibility="{Binding Path=OverrideGlobalIndentation, Converter={StaticResource boolToVisibilityConverter}}">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" MaxWidth="400" />
 				<ColumnDefinition Width="Auto" />

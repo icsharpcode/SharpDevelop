@@ -19,7 +19,7 @@
 		<CheckBox
 			Name="autoFormattingCheckBox"
 			Content="{core:Localize CSharpBinding.Formatting.AutoFormat}"
-			IsChecked="{sd:OptionBinding fstrategy:CSharpFormattingOptionsPersistence.AutoFormatting}"
+			IsChecked="{sd:OptionBinding fstrategy:CSharpFormattingPolicies.AutoFormatting}"
 			Margin="0,0,0,10" />
 		<local:CSharpFormattingEditor x:Name="formattingEditor" Grid.Row="1" Margin="0,0,0,0" />
 	</Grid>
