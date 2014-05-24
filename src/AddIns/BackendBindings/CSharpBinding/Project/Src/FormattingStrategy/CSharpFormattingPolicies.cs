@@ -30,7 +30,7 @@ namespace CSharpBinding.FormattingStrategy
 	{
 		public override void Execute(object parameter)
 		{
-			// Initialize CSharpFormattingOptionsPersistence as early as possible (before solution is opened)
+			// Initialize CSharpFormattingPolicies as early as possible (before solution is opened)
 			CSharpFormattingPolicies.Instance.Initialize();
 		}
 	}
@@ -40,12 +40,28 @@ namespace CSharpBinding.FormattingStrategy
 	/// </summary>
 	internal class CSharpFormattingPolicies
 	{
-		public static readonly CSharpFormattingPolicies Instance = new CSharpFormattingPolicies();
+		static readonly Lazy<CSharpFormattingPolicies> LazyInstance =
+			new Lazy<CSharpFormattingPolicies>(() => new CSharpFormattingPolicies());
+		
+		public static CSharpFormattingPolicies Instance {
+			get { return LazyInstance.Value; }
+		}
 		
 		public event EventHandler<CSharpFormattingPolicyUpdateEventArgs> FormattingPolicyUpdated;
 		
-		static bool initialized;
-		static Dictionary<string, CSharpFormattingPolicy> projectOptions;
+		bool initialized;
+		Dictionary<string, CSharpFormattingPolicy> projectOptions;
+		
+		public CSharpFormattingPolicies()
+		{
+			// Load global settings
+			GlobalOptions = new CSharpFormattingPolicy(
+				SD.PropertyService.MainPropertiesContainer, new CSharpFormattingOptionsContainer() {
+					DefaultText = StringParser.Parse("${res:CSharpBinding.Formatting.GlobalOptionReference}")
+				});
+			GlobalOptions.FormattingPolicyUpdated += OnFormattingPolicyUpdated;
+			GlobalOptions.Load();
+		}
 		
 		public void Initialize()
 		{
@@ -54,14 +70,6 @@ namespace CSharpBinding.FormattingStrategy
 			
 			initialized = true;
 			projectOptions = new Dictionary<string, CSharpFormattingPolicy>();
-			
-			// Load global settings
-			GlobalOptions = new CSharpFormattingPolicy(
-				SD.PropertyService.MainPropertiesContainer, new CSharpFormattingOptionsContainer() {
-					DefaultText = StringParser.Parse("${res:CSharpBinding.Formatting.GlobalOptionReference}")
-				});
-			GlobalOptions.FormattingPolicyUpdated += OnFormattingPolicyUpdated;
-			GlobalOptions.Load();
 			
 			// Handlers for solution loading/unloading
 			var projectService = SD.GetService<IProjectService>();
@@ -92,8 +100,8 @@ namespace CSharpBinding.FormattingStrategy
 		
 		public CSharpFormattingPolicy GetProjectOptions(IProject project)
 		{
-			if (projectOptions == null)
-				return null;
+			if (!initialized)
+				return GlobalOptions;
 			
 			var csproject = project as CSharpProject;
 			if (csproject != null) {

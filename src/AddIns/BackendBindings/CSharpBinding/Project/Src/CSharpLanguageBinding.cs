@@ -73,9 +73,9 @@ namespace CSharpBinding
 			// Patch editor options (indentation) to project-specific settings
 			var optionsContainer = CSharpFormattingPolicies.Instance.GetProjectOptions(
 				SD.ProjectService.FindProjectContainingFile(editor.FileName));
-			CustomizeEditorOptions(optionsContainer.OptionsContainer, editor.Options);
+			CustomizeEditorOptions(optionsContainer.OptionsContainer, editor.Options, this.editor);
 			CSharpFormattingPolicies.Instance.FormattingPolicyUpdated +=
-				(sender, e) => CustomizeEditorOptions(optionsContainer.OptionsContainer, this.editor.Options);
+				(sender, e) => CustomizeEditorOptions(optionsContainer.OptionsContainer, this.editor.Options, this.editor);
 
 			if (!editor.ContextActionProviders.IsReadOnly) {
 				contextActionProviders = AddInTree.BuildItems<IContextActionProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
@@ -97,7 +97,7 @@ namespace CSharpBinding
 			this.editor = null;
 		}
 		
-		private void CustomizeEditorOptions(CSharpFormattingOptionsContainer container, ITextEditorOptions editorOptions)
+		private void CustomizeEditorOptions(CSharpFormattingOptionsContainer container, ITextEditorOptions editorOptions, ITextEditor editor)
 		{
 			if (container == null)
 				return;
@@ -107,11 +107,12 @@ namespace CSharpBinding
 			
 			int? indentationSize = container.GetEffectiveIndentationSize();
 			if (indentationSize.HasValue) {
-				textEditorOptions.IndentationSize = indentationSize.Value;
+//				textEditorOptions.IndentationSize = indentationSize.Value;
 			}
-			bool? convertTabsToSpaces = container.GetEffectiveConvertTabsToSpaces();
-			if (convertTabsToSpaces.HasValue)
-				textEditorOptions.ConvertTabsToSpaces = convertTabsToSpaces.Value;
+//			bool? convertTabsToSpaces = container.GetEffectiveConvertTabsToSpaces();
+//			if (convertTabsToSpaces.HasValue) {
+//				textEditorOptions.ConvertTabsToSpaces = convertTabsToSpaces.Value;
+//			}
 		}
 	}
 }
