@@ -223,7 +223,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					foreach(XamlObject propXamlObject in holder.Properties.Where((prop) => prop.IsSet).Select((prop) => prop.PropertyValue).OfType<XamlObject>()) {
 						XamlObject innerHolder;
 						bool updateResult = propXamlObject.UpdateXmlAttribute(true, out innerHolder);
-						Debug.Assert(updateResult);
+						Debug.Assert(updateResult || innerHolder == null);
 						
 						if (propXamlObject == this)
 							isThisUpdated = true;
