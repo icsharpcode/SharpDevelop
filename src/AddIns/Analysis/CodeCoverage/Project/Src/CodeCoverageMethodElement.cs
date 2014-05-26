@@ -58,6 +58,7 @@ namespace ICSharpCode.CodeCoverage
 
 		public string FileID { get; private set; }
 		public string FileName { get; private set; }
+		public string FileNameExt { get; private set; }
 		public bool IsVisited { get; private set; }
 		public int CyclomaticComplexity { get; private set; }
 		public decimal SequenceCoverage { get; private set; }
@@ -86,9 +87,14 @@ namespace ICSharpCode.CodeCoverage
 
 			this.FileID = GetFileRef();
 			this.FileName = String.Empty;
+			this.FileNameExt = String.Empty;
 			if (!String.IsNullOrEmpty(this.FileID)) {
 				if (results != null) {
 					this.FileName = results.GetFileName(this.FileID);
+					try {
+						this.FileNameExt = Path.GetExtension(this.FileName);
+					}
+					catch {}
 					if (cacheFileName != this.FileName) {
 						cacheFileName = this.FileName;
 						cacheDocument = GetSource (cacheFileName);
@@ -303,23 +309,26 @@ namespace ICSharpCode.CodeCoverage
 						continue; // skip
 					}
 
-					// 1) Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
-					// one do not want or cannot cover by test-case because is handled earlier at same method.
-					// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
-					// 2) Branches within sequence points "{" and "}" are not source branches but compiler generated branches
-					// ie: static methods start sequence point "{" contains compiler generated branches
-					// 3) Exclude Contract class (EnsuresOnThrow/Assert/Assume is inside method body)
-					// 4) Exclude NUnit Assert(.Throws) class
-					const string assert = "Assert";
-					const string contract = "Contract";
-					if (sp.Content == "in" || sp.Content == "{" || sp.Content == "}" ||
-					    sp.Content.StartsWith(assert + ".", StringComparison.Ordinal) ||
-					    sp.Content.StartsWith(assert + " ", StringComparison.Ordinal) ||
-					    sp.Content.StartsWith(contract + ".", StringComparison.Ordinal) ||
-					    sp.Content.StartsWith(contract + " ", StringComparison.Ordinal)
-					   ) {
-						sp.BranchCoverage = true;
-						continue; // skip
+					if (this.FileNameExt == ".cs") {
+						// 0) Only for C#
+						// 1) Generated "in" code for IEnumerables contains hidden "try/catch/finally" branches that
+						// one do not want or cannot cover by test-case because is handled earlier at same method.
+						// ie: NullReferenceException in foreach loop is pre-handled at method entry, ie. by Contract.Require(items!=null)
+						// 2) Branches within sequence points "{" and "}" are not source branches but compiler generated branches
+						// ie: static methods start sequence point "{" contains compiler generated branches
+						// 3) Exclude Contract class (EnsuresOnThrow/Assert/Assume is inside method body)
+						// 4) Exclude NUnit Assert(.Throws) class
+						const string assert = "Assert";
+						const string contract = "Contract";
+						if (sp.Content == "in" || sp.Content == "{" || sp.Content == "}" ||
+						    sp.Content.StartsWith(assert + ".", StringComparison.Ordinal) ||
+						    sp.Content.StartsWith(assert + " ", StringComparison.Ordinal) ||
+						    sp.Content.StartsWith(contract + ".", StringComparison.Ordinal) ||
+						    sp.Content.StartsWith(contract + " ", StringComparison.Ordinal)
+						   ) {
+							sp.BranchCoverage = true;
+							continue; // skip
+						}
 					}
 
 					totalBranchCount += sp.BranchExitsCount;
