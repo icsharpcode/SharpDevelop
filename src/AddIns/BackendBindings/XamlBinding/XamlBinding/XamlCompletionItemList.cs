@@ -83,7 +83,7 @@ namespace ICSharpCode.XamlBinding
 					XamlCompletionItem cItem = item as XamlCompletionItem;
 					
 					if (xamlContext.Description == XamlContextDescription.InTag) {
-						if (cItem.Entity.SymbolKind == SymbolKind.Property || cItem.Entity.SymbolKind == SymbolKind.Event) {
+						if (cItem.Entity == null || cItem.Entity.SymbolKind == SymbolKind.Property || cItem.Entity.SymbolKind == SymbolKind.Event) {
 							context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 							context.CompletionCharHandled = context.CompletionChar == '=';
 							context.Editor.Caret.Offset--;

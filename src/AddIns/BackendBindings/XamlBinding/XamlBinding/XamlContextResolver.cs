@@ -59,6 +59,7 @@ namespace ICSharpCode.XamlBinding
 			string xamlNamespacePrefix = string.Empty;
 			
 			var item = currentData;
+			AXmlElement root = null;
 			
 			while (item != document) {
 				if (item is AXmlElement) {
@@ -78,8 +79,11 @@ namespace ICSharpCode.XamlBinding
 							xamlNamespacePrefix = attr.LocalName;
 					}
 					
-					if (!wasAXmlElement && item.Parent is AXmlDocument)
-						isRoot = true;
+					if (element.Parent is AXmlDocument) {
+						root = element;
+						if (!wasAXmlElement)
+							isRoot = true;
+					}
 					
 					wasAXmlElement = true;
 				}
@@ -91,7 +95,7 @@ namespace ICSharpCode.XamlBinding
 			
 			AXmlElement active = null;
 			AXmlElement parent = null;
-			
+
 			if (currentData is AXmlAttribute) {
 				AXmlAttribute a = currentData as AXmlAttribute;
 				int valueStartOffset = a.ValueSegment.Offset + 1;
@@ -140,6 +144,7 @@ namespace ICSharpCode.XamlBinding
 				Description         = description,
 				ActiveElement       = active,
 				ParentElement       = parent,
+				RootElement         = root,
 				Ancestors           = ancestors.AsReadOnly(),
 				Attribute           = xAttribute,
 				InRoot              = isRoot,
