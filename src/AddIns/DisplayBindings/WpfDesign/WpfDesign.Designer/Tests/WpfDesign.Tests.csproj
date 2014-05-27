@@ -62,6 +62,7 @@
     <Compile Include="Designer\EditOperationTests.cs" />
     <Compile Include="Designer\FocusNavigatorTests.cs" />
     <Compile Include="Designer\MarginHandleTests.cs" />
+    <Compile Include="Designer\MarkupExtensionModelTests.cs" />
     <Compile Include="Designer\MockFocusNavigator.cs" />
     <Compile Include="Designer\ModelTestHelper.cs" />
     <Compile Include="Designer\ModelTests.cs" />

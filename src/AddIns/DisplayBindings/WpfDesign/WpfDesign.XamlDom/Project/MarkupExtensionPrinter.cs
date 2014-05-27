@@ -93,8 +93,20 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				sb.Append("=");
 
 				var value = property.PropertyValue;
-				if (value is XamlTextValue) {
-					sb.Append((value as XamlTextValue).Text);
+				var textValue = value as XamlTextValue;
+				if (textValue != null) {
+					string text = textValue.Text;
+					bool containsSpace = text.Contains(' ');
+					
+					if(containsSpace) {
+						sb.Append('\'');
+					}
+					
+					sb.Append(text.Replace("\\", "\\\\"));
+					
+					if(containsSpace) {
+						sb.Append('\'');
+					}
 				} else if (value is XamlObject) {
 					sb.Append(Print(value as XamlObject));
 				}
