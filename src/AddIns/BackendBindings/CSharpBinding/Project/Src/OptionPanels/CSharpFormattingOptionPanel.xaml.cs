@@ -64,6 +64,7 @@ namespace CSharpBinding.OptionPanels
 	internal partial class CSharpFormattingOptionPanel : OptionPanel
 	{
 		readonly CSharpFormattingOptionsPersistence persistenceHelper;
+		bool isDirty;
 		
 		public CSharpFormattingOptionPanel(CSharpFormattingOptionsPersistence persistenceHelper, bool allowPresets)
 		{
@@ -71,6 +72,7 @@ namespace CSharpBinding.OptionPanels
 				throw new ArgumentNullException("persistenceHelper");
 			
 			this.persistenceHelper = persistenceHelper;
+			this.isDirty = false;
 			InitializeComponent();			
 			
 			formattingEditor.AllowPresets = allowPresets;
@@ -79,12 +81,18 @@ namespace CSharpBinding.OptionPanels
 		public override void LoadOptions()
 		{
 			base.LoadOptions();
-			formattingEditor.OptionsContainer = persistenceHelper.StartEditing(); 
+			formattingEditor.OptionsContainer = persistenceHelper.StartEditing();
+			formattingEditor.OptionsContainer.PropertyChanged += (sender, e) => isDirty = true;
 		}
 		
 		public override bool SaveOptions()
 		{
-			return persistenceHelper.Save() && base.SaveOptions();
+			if (isDirty) {
+				return persistenceHelper.Save() && base.SaveOptions();
+			} else {
+				// Nothing has been changed here, return without action
+				return true;
+			}
 		}
 	}
 }
