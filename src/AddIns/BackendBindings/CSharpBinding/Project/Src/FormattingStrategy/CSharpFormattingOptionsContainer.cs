@@ -127,7 +127,6 @@ namespace CSharpBinding.FormattingStrategy
 			if ((e.PropertyName == "Parent") || (e.PropertyName == null)) {
 				// All properties might have changed -> update everything
 				cachedOptions = CreateCachedOptions();
-//				OnPropertyChanged(e.PropertyName);
 			} else {
 				// Some other property has changed, check if we have our own value for it
 				if (!activeOptions.Contains(e.PropertyName)) {
@@ -136,7 +135,6 @@ namespace CSharpBinding.FormattingStrategy
 					if (propertyInfo != null) {
 						var val = GetEffectiveOption(e.PropertyName);
 						propertyInfo.SetValue(cachedOptions, val);
-//						OnPropertyChanged(e.PropertyName);
 					}
 				}
 			}

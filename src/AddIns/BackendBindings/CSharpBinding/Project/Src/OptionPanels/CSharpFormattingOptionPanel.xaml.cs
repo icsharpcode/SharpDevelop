@@ -82,17 +82,19 @@ namespace CSharpBinding.OptionPanels
 		{
 			base.LoadOptions();
 			formattingEditor.OptionsContainer = persistenceHelper.StartEditing();
-			formattingEditor.OptionsContainer.PropertyChanged += (sender, e) => isDirty = true;
+			formattingEditor.OptionsContainer.PropertyChanged += ContainerPropertyChanged;
+		}
+
+		void ContainerPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			isDirty = true;
 		}
 		
 		public override bool SaveOptions()
 		{
-			if (isDirty) {
-				return persistenceHelper.Save() && base.SaveOptions();
-			} else {
-				// Nothing has been changed here, return without action
-				return true;
-			}
+			// Only save container, if some option really has changed
+			formattingEditor.OptionsContainer.PropertyChanged -= ContainerPropertyChanged;
+			return (!isDirty || persistenceHelper.Save()) && base.SaveOptions();
 		}
 	}
 }
