@@ -60,10 +60,22 @@ namespace ICSharpCode.Reporting.BaseClasses
 			return new Rect(rect.Location.ToWpf(), rect.Size.ToWpf());
 		}
 		
-		public static System.Windows.Media.Color ToWpf(this System.Drawing.Color c)
+		public static Color ToWpf(this System.Drawing.Color c)
 		{
-			return System.Windows.Media.Color.FromArgb(c.A, c.R, c.G, c.B);
+			return Color.FromArgb(c.A, c.R, c.G, c.B);
 		}
+		
+		
+		public static int FromPoints(double value)
+		{
+			return (int)Math.Round(value * 72.0 / 96.0);
+		}
+
+		public static double ToPoints(int value)
+		{
+			return Math.Round(value * 96.0 / 72.0);
+		}
+		
 		
 		#endregion
 		
