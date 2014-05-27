@@ -430,7 +430,7 @@ namespace ICSharpCode.Core
 				if (result == null) {
 					result = new Properties(this);
 					dict[key] = result;
-					result.MakeDirty();
+					isNewContainer = true;
 				}
 			}
 			if (isNewContainer)
