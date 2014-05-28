@@ -380,8 +380,8 @@ namespace ICSharpCode.WpfDesign.Designer
 				
 				dx = (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
 				dy = (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
-				dx = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
-				dy = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : 0;
+				dx = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : (dx != 0 ? dx : 0);
+                dy = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : (dy != 0 ? dy : 0);
 				double left, top;
 				foreach (PlacementInformation info in placementOp.PlacedItems)
 				{
