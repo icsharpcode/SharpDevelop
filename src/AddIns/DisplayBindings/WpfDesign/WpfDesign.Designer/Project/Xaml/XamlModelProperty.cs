@@ -121,6 +121,18 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
+		public override string TextValue
+		{
+			get {
+				var xamlTextValue = _property.PropertyValue as XamlTextValue;
+				if (xamlTextValue != null) {
+					return xamlTextValue.Text;
+				}
+
+				return null;
+			}
+		}
+		
 		// There may be multiple XamlModelProperty instances for the same property,
 		// so this class may not have any mutable fields / events - instead,
 		// we forward all event handlers to the XamlProperty.

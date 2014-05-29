@@ -693,6 +693,29 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context, "xmlns:Controls0=\"clr-namespace:System;assembly=mscorlib\"");
 			AssertLog("");
 		}
+		
+		[Test]
+		public void TestTextValue()
+		{
+			// An invalid path (in this case containing a question mark), or a path to a file that does not exist, will give the same result.
+			// It will cause the typeconverter to fail and no value can be get from neither ValueOnInstance nor Value from the Image.Source DesignItemProperty.
+			// TextValue was added to have a way of getting the xaml value.
+			string sourceTextValue = "file:///C:/Folder/image?.bmp";
+			
+			string xaml = "<Image Source=\"" + sourceTextValue + "\" />";
+			DesignItem image = CreateCanvasContext(xaml);
+			
+			var sourceProp = image.Properties[Image.SourceProperty];
+			
+			Assert.IsNull(sourceProp.ValueOnInstance);
+			Assert.IsNull(sourceProp.Value);
+			Assert.IsNotNull(sourceProp.TextValue);
+			Assert.AreEqual(sourceTextValue, sourceProp.TextValue);
+			
+			string expectedXaml = xaml;
+			AssertCanvasDesignerOutput(expectedXaml, image.Context);
+			AssertLog("");
+		}
 	}
 	
 	public class MyMultiConverter : IMultiValueConverter
