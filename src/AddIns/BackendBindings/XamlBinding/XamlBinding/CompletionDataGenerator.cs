@@ -270,7 +270,8 @@ namespace ICSharpCode.XamlBinding
 			string xamlPrefix = context.XamlNamespacePrefix;
 			string xKey = string.IsNullOrEmpty(xamlPrefix) ? "" : xamlPrefix + ":";
 			
-			list.AddRange(XamlConst.GetAllowedItems(context).Select(item => new XamlCompletionItem(item)));
+			if (context.Description == XamlContextDescription.InTag)
+				list.AddRange(XamlConst.GetAllowedItems(context).Select(item => new XamlCompletionItem(item)));
 			
 			if (string.Equals(lastElement.Prefix, context.XamlNamespacePrefix, StringComparison.OrdinalIgnoreCase) && XamlConst.IsBuiltin(lastElement.LocalName))
 				return list;
