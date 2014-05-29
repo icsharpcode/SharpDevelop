@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<Template author="William MacDonald" version="1.0">
+	
+	<Config
+		  name        = "Component"
+		  icon        = "C#.File.Form"
+		  category    = "C#"
+		  subcategory = "${res:Templates.File.Categories.WindowsApplications}"
+		  defaultname = "Component${Number}.cs"
+		  language    = "C#"/>
+	 
+	<Description>A Component for an application.</Description>
+	
+	<References>
+		<Reference include="System" />
+		<Reference include="System.ComponentModel" />
+	</References>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the component ".cs"
+		${Path}                     -> Full path of the file
+		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
+	 -->
+	<Files>
+		<!-- Designer file must come first, so the design tab is shown correctly -->
+<File name="${Path}/${FileNameWithoutExtension}.Designer.cs" DependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
+namespace ${StandardNamespace}
+{
+	partial class ${ClassName}
+	{
+		/// <summary>
+		/// Designer variable used to keep track of non-visual components.
+		/// </summary>
+		private System.ComponentModel.IContainer components = null;
+		
+		/// <summary>
+		/// Disposes resources used by the Component.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				if (components != null) {
+					components.Dispose();
+				}
+			}
+			base.Dispose(disposing);
+		}
+		
+		/// <summary>
+		/// This method is required for Windows Component designer support.
+		/// Do not change the method contents inside the source code editor. The Forms designer might
+		/// not be able to load this method if it was changed manually.
+		/// </summary>
+        private void InitializeComponent()
+        {
+            components = new System.ComponentModel.Container();
+        }
+	}
+}
+]]></File>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+using System;
+using System.ComponentModel;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+	public partial class ${ClassName} : Component
+	{
+		public ${ClassName}()
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			
+			//
+			// TODO: Add constructor code after the InitializeComponent() call.
+			//
+		}
+
+		public ${ClassName}(IContainer container)
+		{
+			container.Add(this); 
+
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			
+			//
+			// TODO: Add constructor code after the InitializeComponent() call.
+			//
+		}
+	}
+}
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+

@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+<Template author       = "William MacDonald"
+          created      = "05/29/2014"
+          lastModified = "05/29/2014"
+          version      = "1.0">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Windows COM Component Library</Name>
+		<Category>C#</Category>
+		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
+		<Icon>C#.Project.Form</Icon>
+		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "COMComponent1.cs"/>
+	</Actions>
+	
+	<Project language = "C#">
+		<ProjectItems>
+		    <Reference Include="System" />
+		    <Reference Include="System.Drawing" />
+		    <Reference Include="System.Windows.Forms" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<RegisterForComInterop>true</RegisterForComInterop>
+		</PropertyGroup>
+		
+		<Files>
+		<!-- Designer file must come first, so the design tab is shown correctly -->
+<File name="COMComponent1.Designer.cs" DependentUpon="COMComponent1.cs" language="C#"><![CDATA[${StandardHeader.C#}
+namespace ${StandardNamespace}
+{
+	partial class COMComponent1
+	{
+		/// <summary>
+		/// Designer variable used to keep track of non-visual components.
+		/// </summary>
+		private System.ComponentModel.IContainer components = null;
+		
+		/// <summary>
+		/// Disposes resources used by the Component.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				if (components != null) {
+					components.Dispose();
+				}
+			}
+			base.Dispose(disposing);
+		}
+		
+		/// <summary>
+		/// This method is required for Windows Component designer support.
+		/// Do not change the method contents inside the source code editor. The Forms designer might
+		/// not be able to load this method if it was changed manually.
+		/// </summary>
+        private void InitializeComponent()
+        {
+            components = new System.ComponentModel.Container();
+        }
+	}
+}
+]]></File>
+		<File name="COMComponent1.cs" language="C#"><![CDATA[${StandardHeader.C#}
+namespace ${StandardNamespace}
+{
+    using System;
+    using System.ComponentModel;
+    using System.Runtime.InteropServices;
+    
+	/// <summary>
+	/// Description of COMComponent1.
+	/// </summary>
+    [Guid(COMComponent1.guidCOMComponent1),
+    ProgId("${StandardNamespace}.COMComponent1"),
+    ClassInterface(ClassInterfaceType.AutoDispatch),
+    ComSourceInterfaces(typeof(ICOMComponent1Events)),
+    ComDefaultInterface(typeof(ICOMComponent1Wrapper)),
+    ComVisible(true)]
+	public partial class COMComponent1 : Component, ICOMComponent1Wrapper
+	{    
+        public const string guidCOMComponent1 = "${GUID}";
+        public const string guidICOMComponent1Wrapper = "${GUID}";
+        public const string guidICOMComponent1Events = "${GUID}";
+
+        private string name;
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            set
+            {
+                this.name = value;
+            }
+        }
+        
+		public COMComponent1()
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			
+			//
+			// TODO: Add constructor code after the InitializeComponent() call.
+			//
+		}
+
+		public COMComponent1(IContainer container)
+		{
+			container.Add(this); 
+
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			
+			//
+			// TODO: Add constructor code after the InitializeComponent() call.
+			//
+		}
+        
+        public void Open(string info)
+        {
+            System.Console.Out.WriteLine("Open");
+        }
+        
+        public void Close()
+        {
+            if (this.Closing != null)
+            {
+                this.Closing("Done");
+            }
+            
+            System.Console.Out.WriteLine("Close");
+            
+            if (this.Closed != null)
+            {
+                this.Closed();
+            }
+        }
+                
+        public event COMComponent1EventHandler Closing;
+        
+        public event COMComponent1EventHandler2 Closed;
+	}
+}
+]]></File>
+		<File name="ICOMComponent1.cs" DependentUpon="COMComponent1.cs" language="C#"><![CDATA[${StandardHeader.C#}
+namespace ${StandardNamespace}
+{
+    using System;
+    using System.Runtime.InteropServices;
+        
+    public delegate void COMComponent1EventHandler(string status);    
+    
+    public delegate void COMComponent1EventHandler2();
+    
+	/// <summary>
+	/// Description of ICOMComponent1Wrapper.
+	/// </summary>
+    [Guid(COMComponent1.guidICOMComponent1Wrapper),
+    InterfaceType(ComInterfaceType.InterfaceIsIDispatch),
+    ComVisible(true)]
+	public interface ICOMComponent1Wrapper
+	{
+        [DispId(10)]
+        string Name
+        {
+            get;
+            set;
+        }   
+
+        [DispId(30)]
+        void Open(string info);             
+        
+        [DispId(31)]
+        void Close();
+	}
+    
+	/// <summary>
+	/// Description of ICOMComponent1Events.
+	/// </summary>
+    [Guid(COMComponent1.guidICOMComponent1Events),
+    InterfaceType(ComInterfaceType.InterfaceIsIDispatch),
+    ComVisible(true)]
+	public interface ICOMComponent1Events
+	{
+        [DispId(20)]
+        void Closing(string status);
+        
+        [DispId(21)]
+        void Closed();
+	}    
+}
+]]></File>
+
+			<File name="Properties\AssemblyInfo.cs" src="DefaultCOMAssemblyInfo.cs"/>
+		</Files>
+	</Project>
+</Template>
