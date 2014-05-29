@@ -20,6 +20,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
+using System.Xml.Serialization;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -28,33 +33,22 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public static class XamlConst
 	{
-		public const bool EnableXaml2009 = true;
-		
 		// [XAML 2009]
 		public static readonly List<string> XamlBuiltInTypes = new List<string> {
 			"Object", "Boolean", "Char", "String", "Decimal", "Single", "Double",
 			"Int16", "Int32", "Int64", "TimeSpan", "Uri", "Byte", "Array", "List", "Dictionary",
-			// This is no built in type, but a markup extension
 			"Reference"
 		};
 		
 		public static readonly ReadOnlyCollection<string> XamlNamespaceAttributes = new List<string> {
-			"Class", "ClassModifier", "FieldModifier", "Name", "Subclass", "TypeArguments", "Uid", "Key"
-		}.AsReadOnly();
-		
-		public static readonly ReadOnlyCollection<string> RootOnlyElements = new List<string> {
-			"Class", "ClassModifier", "Subclass"
-		}.AsReadOnly();
-		
-		public static readonly ReadOnlyCollection<string> ChildOnlyElements = new List<string> {
-			"FieldModifier"
+			"Class", "ClassModifier", "FieldModifier", "Name", "Subclass", "TypeArguments", "Uid", "Key", "Shared"
 		}.AsReadOnly();
 		
 		/// <summary>
 		/// values: http://schemas.microsoft.com/winfx/2006/xaml/presentation,
 		/// http://schemas.microsoft.com/netfx/2007/xaml/presentation
 		/// </summary>
-		public static readonly string[] WpfXamlNamespaces = new[] {
+		public static readonly string[] WpfXamlNamespaces = {
 			"http://schemas.microsoft.com/winfx/2006/xaml/presentation",
 			"http://schemas.microsoft.com/netfx/2007/xaml/presentation"
 		};
@@ -88,11 +82,86 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		/// <summary>
-		/// Returns true if the given attribute is allowed in the current element.
+		/// Returns the list of allow XAML2009 completion items.
 		/// </summary>
-		public static bool IsAttributeAllowed(bool inRoot, string localName)
+		public static IEnumerable<string> GetAllowedItems(XamlCompletionContext context)
 		{
-			return inRoot ? !ChildOnlyElements.Contains(localName) : !RootOnlyElements.Contains(localName);
+			string xamlPrefix = context.XamlNamespacePrefix;
+			string xKey = string.IsNullOrEmpty(xamlPrefix) ? "" : xamlPrefix + ":";
+			var compilation = SD.ParserService.GetCompilationForFile(context.Editor.FileName);
+			var resolver = new XamlAstResolver(compilation, context.ParseInformation);
+			// TODO : add support for x:Key as attribute element (XAML 2009 only)
+			
+			switch (context.Description) {
+				case XamlContextDescription.AtTag:
+					if (context.ParentElement != null && string.Equals(context.ParentElement.Name, xKey + "Members", StringComparison.OrdinalIgnoreCase)) {
+						yield return xKey + "Member";
+						yield return xKey + "Property";
+					} else if (context.ParentElement == context.RootElement && context.RootElement.Attributes.Any(attr => string.Equals(attr.Name, xKey + "Class", StringComparison.OrdinalIgnoreCase))) {
+						yield return xKey + "Code";
+						yield return xKey + "Members";
+					} else {
+						if (context.ParentElement != null && string.Equals(context.ParentElement.Name, xKey + "Code", StringComparison.OrdinalIgnoreCase))
+							yield break;
+						yield return xKey + "Array";
+						yield return xKey + "Boolean";
+						yield return xKey + "Byte";
+						yield return xKey + "Char";
+						yield return xKey + "Decimal";
+						yield return xKey + "Dictionary";
+						yield return xKey + "Double";
+						yield return xKey + "Int16";
+						yield return xKey + "Int32";
+						yield return xKey + "Int64";
+						yield return xKey + "List";
+						yield return xKey + "Object";
+						yield return xKey + "Reference";
+						yield return xKey + "Single";
+						yield return xKey + "String";
+						yield return xKey + "TimeSpan";
+						yield return xKey + "Uri";
+						if (context.RootElement.Attributes.Any(attr => string.Equals(attr.Name, xKey + "Class", StringComparison.OrdinalIgnoreCase)))
+							yield return xKey + "Members";
+					}
+					break;
+				case XamlContextDescription.InTag:
+					yield return xKey + "Uid";
+					if (context.InRoot) {
+						yield return xKey + "Class";
+						yield return xKey + "ClassModifier";
+						yield return xKey + "Subclass";
+						yield return xKey + "Name";
+					} else {
+						var resourceDictionaryType = compilation.FindType(typeof(ResourceDictionary));
+						if (context.ActiveElement != null && string.Equals(context.ActiveElement.Name, xKey + "Array", StringComparison.OrdinalIgnoreCase)) {
+							yield return "Type";
+						} else if (context.ActiveElement != null && string.Equals(context.ActiveElement.Name, xKey + "Member", StringComparison.OrdinalIgnoreCase)) {
+							yield return "Name";
+						} else if (context.ActiveElement != null && string.Equals(context.ActiveElement.Name, xKey + "Property", StringComparison.OrdinalIgnoreCase)) {
+							yield return "Name";
+							yield return "Type";
+						} else if (context.RootElement.Attributes.Any(attr => string.Equals(attr.Name, xKey + "Class", StringComparison.OrdinalIgnoreCase))) {
+							yield return xKey + "FieldModifier";
+							yield return xKey + "Name";
+						} else {
+							yield return xKey + "Name";
+						}
+						
+						if (context.ParentElement != null) {
+							var rr = resolver.ResolveElement(context.ParentElement);
+							if (rr != null) {
+								if (rr.Type.Equals(resourceDictionaryType)) {
+									yield return xKey + "Key";
+									yield return xKey + "Shared";
+								} else if (rr.Type.TypeParameterCount > 0) {
+									yield return xKey + "TypeArguments";
+								}
+							}
+						}
+					}
+					break;
+			}
+			yield break;
 		}
 	}
 }
