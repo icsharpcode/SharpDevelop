@@ -134,14 +134,15 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 
 		
-		public override void Visit(ExportLine exportGraphics)
+		public override void Visit(ExportLine exportLine)
 		{
-			var pen = FixedDocumentCreator.CreateWpfPen(exportGraphics);
+			var pen = FixedDocumentCreator.CreateWpfPen(exportLine);
 			var visual = new DrawingVisual();
 			using (var dc = visual.RenderOpen()){
 				dc.DrawLine(pen,
-				            new Point(exportGraphics.Location.X, exportGraphics.Location.Y),
-				            new Point(exportGraphics.Location.X + exportGraphics.Size.Width,exportGraphics.Location.Y));
+				            new Point(exportLine.Location.X + exportLine.FromPoint.X, exportLine.Location.Y + exportLine.FromPoint.Y),
+				            new Point(exportLine.Location.X + exportLine.ToPoint.X ,
+				                      exportLine.Location.Y + exportLine.FromPoint.Y));
 			}
 			var dragingElement = new DrawingElement(visual);
 			UIElement = dragingElement;

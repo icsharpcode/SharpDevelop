@@ -71,8 +71,8 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 			prop = props.Find("EndLineCap",true);
 			allProperties.Add(prop);
 			
-			prop = props.Find("dashLineCap",true);
-			allProperties.Add(prop);
+//			prop = props.Find("DashLineCap",true);
+//			allProperties.Add(prop);
 			
 			prop = props.Find("DashStyle",true);
 			allProperties.Add(prop);

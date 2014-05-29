@@ -9,6 +9,7 @@
 using System;
 using System.ComponentModel.Design;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Reporting.Addin.Views;
 
@@ -31,7 +32,7 @@ namespace ICSharpCode.Reporting.Addin.Commands
 		
 		protected static DesignerView ReportDesigner {
 			get {
-				var window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+				var window = SD.Workbench;
 				if (window == null) {
 					return null;
 				}
@@ -67,7 +68,8 @@ namespace ICSharpCode.Reporting.Addin.Commands
 		
 		public override void Run()
 		{
-			var window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+//			var window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			var window = SD.Workbench;
 			if (window == null) {
 				return;
 			}

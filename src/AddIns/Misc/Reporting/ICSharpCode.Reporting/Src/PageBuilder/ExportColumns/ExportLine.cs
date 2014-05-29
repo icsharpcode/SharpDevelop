@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -60,5 +61,9 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		public LineCap StartLineCap {get;set;}
 		
 		public LineCap EndLineCap {get;set;}
+		
+		public Point FromPoint {get;set;}
+		
+		public Point ToPoint {get;set;}
 	}
 }
