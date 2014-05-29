@@ -22,4 +22,3 @@ bin/
 
 /src/AddIns/Misc/PackageManagement/Packages/AvalonEdit/lib
 /packages/
-*.sln.sdsettings
