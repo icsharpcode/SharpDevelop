@@ -39,7 +39,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				ITypeDefinition c = GetClassFromName(selectedItem.FullyQualifiedClassName);
 				if (c != null) {
 					IMember member = GetMemberFromName(c, selectedItem.MethodName, selectedItem.Parameters);
-					if (!member.Region.IsEmpty && !string.IsNullOrEmpty(member.Region.FileName)) {
+					if (member != null && !member.Region.IsEmpty && !string.IsNullOrEmpty(member.Region.FileName)) {
 						FileName fn = new FileName(member.Region.FileName);
 						SD.FileService.JumpToFilePosition(fn, member.Region.BeginLine, member.Region.BeginColumn);
 					}
