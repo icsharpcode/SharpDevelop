@@ -41,16 +41,13 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			if (name == null || c == null)
 				return null;
 			
-			if (name == ".ctor" || name == ".cctor") // Constructor
-				name = name.Replace('.', '#');
-			
-			if (name.StartsWith("get_") || name.StartsWith("set_")) {
+			if (name.StartsWith("get_", StringComparison.Ordinal) || name.StartsWith("set_", StringComparison.Ordinal)) {
 				// Property Getter or Setter
 				name = name.Substring(4);
 				IProperty prop = c.Properties.FirstOrDefault(p => p.Name == name);
 				if (prop != null)
 					return prop;
-			} else if (name.StartsWith("add_") || name.StartsWith("remove_")) {
+			} else if (name.StartsWith("add_", StringComparison.Ordinal) || name.StartsWith("remove_", StringComparison.Ordinal)) {
 				name = name.Substring(4);
 				IEvent ev = c.Events.FirstOrDefault(e => e.Name == name);
 				if (ev != null)

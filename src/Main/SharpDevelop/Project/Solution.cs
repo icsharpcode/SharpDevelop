@@ -194,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (var project in removedItems)
 					project.Dispose();
 				if (startupProjectWasRemoved || (solution.startupProject == null && addedItems.Contains(solution.AutoDetectStartupProject())))
-					solution.StartupProjectChanged(this, EventArgs.Empty);
+					solution.StartupProjectChanged(solution, EventArgs.Empty);
 			}
 		}
 		
