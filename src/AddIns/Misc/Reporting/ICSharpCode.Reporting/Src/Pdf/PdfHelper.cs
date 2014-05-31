@@ -75,6 +75,14 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 		
 		
+		public static XPen CreateDashedPen(IExportGraphics exportRectangle)
+		{
+			var pen = PdfHelper.PdfPen(exportRectangle);
+			pen.DashStyle = PdfHelper.DashStyle(exportRectangle);
+			return pen;
+		}
+		
+		
 		public static XSolidBrush CreateBrush(Color color) {
 			return new XSolidBrush(color);
 		}

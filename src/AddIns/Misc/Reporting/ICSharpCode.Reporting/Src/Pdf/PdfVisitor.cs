@@ -33,7 +33,7 @@ namespace ICSharpCode.Reporting.Pdf
 	class PdfVisitor: AbstractVisitor
 	{
 		readonly PdfDocument pdfDocument;
-		XGraphics gfx;
+		XGraphics xGraphics;
 		XTextFormatter textFormatter;
 		Point containerLocation;
 		
@@ -45,13 +45,14 @@ namespace ICSharpCode.Reporting.Pdf
 		public override void Visit(ExportPage page)
 		{
 			PdfPage = pdfDocument.AddPage();
-			gfx = XGraphics.FromPdfPage(PdfPage);
-			textFormatter  = new XTextFormatter(gfx);
+			xGraphics = XGraphics.FromPdfPage(PdfPage);
+			textFormatter  = new XTextFormatter(xGraphics);
 			base.Visit(page);
 		}
 		
 		
 		public override void Visit(ExportContainer exportContainer){
+
 			foreach (var element in exportContainer.ExportedItems) {
 				if (IsContainer(element)) {
 					var container = element as ExportContainer;
@@ -94,8 +95,8 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		
 		void RenderDataRow (IExportContainer row) {
-			
-			System.Console.WriteLine("renderDataRow at {0} - {1}",containerLocation,row.Location);
+			var r = new Rectangle(containerLocation,row.DisplayRectangle.Size);
+			PdfHelper.FillRectangle(r,row.BackColor,xGraphics);
 			foreach (IAcceptor element in row.ExportedItems) {
 				element.Accept(this);
 			}
@@ -106,7 +107,7 @@ namespace ICSharpCode.Reporting.Pdf
 			var columnLocation = new Point(containerLocation.X + exportText.Location.X,containerLocation.Y + exportText.Location.Y);
 			if (ShouldSetBackcolor(exportText)) {
 				var r = new Rectangle(columnLocation,exportText.DisplayRectangle.Size);
-				PdfHelper.FillRectangle(r,exportText.BackColor,gfx);
+				PdfHelper.FillRectangle(r,exportText.BackColor,xGraphics);
 			}
 			
 			PdfHelper.WriteText(textFormatter,columnLocation, exportText);
@@ -118,40 +119,28 @@ namespace ICSharpCode.Reporting.Pdf
 		{
 			var columnLocation = containerLocation;
 			columnLocation.Offset(exportLine.Location);
-			var pen = PdfHelper.PdfPen(exportLine);
-			pen.DashStyle = PdfHelper.DashStyle(exportLine);
-			pen.LineCap = PdfHelper.LineCap(exportLine);
-			gfx.DrawLine(pen,columnLocation.ToXPoints(),new Point(exportLine.Size.Width,columnLocation.Y).ToXPoints());
+			var pen = PdfHelper.CreateDashedPen(exportLine);
+			xGraphics.DrawLine(pen,columnLocation.ToXPoints(),new Point(exportLine.Size.Width,columnLocation.Y).ToXPoints());
 		}
 		
 		
 		public override void Visit (ExportRectangle exportRectangle) {
-//			var columnLocation = containerLocation;
-			var pen = CreateDashedPen(exportRectangle);
-			gfx.DrawRectangle(pen,
+			var pen = PdfHelper.CreateDashedPen(exportRectangle);
+			xGraphics.DrawRectangle(pen,
 			                  PdfHelper.CreateBrush(exportRectangle.BackColor),
 			                  new XRect(containerLocation.ToXPoints(),
-			                                exportRectangle.Size.ToXSize()));
+			                            exportRectangle.Size.ToXSize()));
 		}
 		
 		
 		public override void Visit(ExportCircle exportCircle){
-//			var columnLocation = containerLocation;
-			var pen = CreateDashedPen(exportCircle);
-			gfx.DrawEllipse(pen,
+			var pen = PdfHelper.CreateDashedPen(exportCircle);
+			xGraphics.DrawEllipse(pen,
 			                PdfHelper.CreateBrush(exportCircle.BackColor) ,
 			                new XRect(containerLocation.ToXPoints(),
 			                          exportCircle.Size.ToXSize()));
 		}
 
-		
-		static XPen CreateDashedPen(IExportGraphics exportRectangle)
-		{
-			var pen = PdfHelper.PdfPen(exportRectangle);
-			pen.DashStyle = PdfHelper.DashStyle(exportRectangle);
-			return pen;
-		}
-		
 		
 		public PdfPage PdfPage {get; private set;}
 	}
