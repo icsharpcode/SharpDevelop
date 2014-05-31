@@ -75,6 +75,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			return canvas;
 		}
 
+		
 		void RenderRow(Canvas canvas, IExportContainer container)
 		{
 			if (IsGraphicsContainer(container)) {
@@ -117,7 +118,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		
 		public override void Visit(ExportText exportColumn){
-			
+		
 			var ft = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
 			var visual = new DrawingVisual();
 			var location = new Point(exportColumn.Location.X,exportColumn.Location.Y);
@@ -177,16 +178,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				canvas.Children.Add(UIElement);
 			}
 			return canvas;
-		}
-		
-		
-		bool IsGraphicsContainer (IExportColumn column) {
-			return column is GraphicsContainer;
-		}
-		
-		
-		bool IsContainer (IExportColumn column) {
-			return (column is ExportContainer)|| (column is GraphicsContainer);
 		}
 		
 		

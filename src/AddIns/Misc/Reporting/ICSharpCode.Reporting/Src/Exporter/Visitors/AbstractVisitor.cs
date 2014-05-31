@@ -20,6 +20,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
 
+using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
@@ -84,5 +85,13 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		protected Collection<ExportPage> Pages {get; private set;}
 		
 		
+		protected bool IsContainer (IExportColumn column) {
+			return (column is ExportContainer)|| (column is GraphicsContainer);
+		}
+		
+		
+		protected bool IsGraphicsContainer (IExportColumn column) {
+			return column is GraphicsContainer;
+		}
 	}
 }
