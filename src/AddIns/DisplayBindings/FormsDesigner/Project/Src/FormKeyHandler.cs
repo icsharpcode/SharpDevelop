@@ -135,18 +135,17 @@ namespace ICSharpCode.FormsDesigner
 					selectionService.SetSelectedComponents(components);
 				}
 				return true;
-			}
-			else if(keyPressed == Keys.Escape) {
-				ISelectionService   selectionService = (ISelectionService)formDesigner.Host.GetService(typeof(ISelectionService));
-            ICollection components = selectionService.GetSelectedComponents();
+			} else if (keyPressed == Keys.Escape) {
+				ISelectionService selectionService = (ISelectionService)formDesigner.Host.GetService(typeof(ISelectionService));
+				ICollection components = selectionService.GetSelectedComponents();
 				if (components.Count == 1) {
-               Control ctrl = components.OfType<Control>().FirstOrDefault();
-               if (ctrl != null && ctrl.Parent != null) {
-                  selectionService.SetSelectedComponents(new IComponent[] { ctrl.Parent }, SelectionTypes.Primary);
-               }
+					Control ctrl = components.OfType<Control>().FirstOrDefault();
+					if (ctrl != null && ctrl.Parent != null) {
+						selectionService.SetSelectedComponents(new IComponent[] { ctrl.Parent }, SelectionTypes.Primary);
+					}
 				}
-            return true;
-         }
+				return true;
+			}
 			
 			return false;
 		}
