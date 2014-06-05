@@ -667,7 +667,6 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			AssertLog("");
 		}
 		
-		[Test]
 		public void AddNativeTypeAsResource(object component, string expectedXamlValue)
 		{
 			DesignItem textBlock = CreateCanvasContext("<TextBlock/>");
