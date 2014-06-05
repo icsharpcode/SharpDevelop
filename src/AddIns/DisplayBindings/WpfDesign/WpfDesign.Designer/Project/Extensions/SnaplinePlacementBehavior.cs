@@ -116,7 +116,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				
 				if (operation.Type == PlacementType.Resize) {
 					if (info.ResizeThumbAlignment != null && info.ResizeThumbAlignment.Value.Vertical == VerticalAlignment.Top) {
-						bounds.Y += delta;	
+						bounds.Y += delta;
+						bounds.Height = Math.Max(0, bounds.Height - delta);
+					} else {
+						bounds.Height = Math.Max(0, bounds.Height + delta);
 					}
 					bounds.Height = Math.Max(0, bounds.Height - delta);
 					info.Bounds = bounds;
@@ -137,7 +140,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				
 				if (operation.Type == PlacementType.Resize) {
 					if (info.ResizeThumbAlignment != null && info.ResizeThumbAlignment.Value.Horizontal == HorizontalAlignment.Left) {
-						bounds.X += delta;	
+						bounds.X += delta;
+						bounds.Width = Math.Max(0, bounds.Width - delta);
+					} else {
+						bounds.Width = Math.Max(0, bounds.Width + delta);
 					}
 					bounds.Width = Math.Max(0, bounds.Width - delta);
 					info.Bounds = bounds;
