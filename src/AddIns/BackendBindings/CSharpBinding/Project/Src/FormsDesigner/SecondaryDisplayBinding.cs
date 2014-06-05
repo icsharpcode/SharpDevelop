@@ -64,7 +64,8 @@ namespace CSharpBinding.FormsDesigner
 			foreach (var baseType in c.GetNonInterfaceBaseTypes()) {
 				var baseTypeName = baseType.FullName;
 				if (baseTypeName == "System.Windows.Forms.Form"
-				    || baseTypeName == "System.Windows.Forms.UserControl")
+				    || baseTypeName == "System.Windows.Forms.UserControl"
+				    || baseTypeName == "System.ComponentModel.Component")
 				{
 					return true;
 				}
