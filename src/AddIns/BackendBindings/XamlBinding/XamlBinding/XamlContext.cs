@@ -94,6 +94,7 @@ namespace ICSharpCode.XamlBinding
 	{
 		public AXmlElement ActiveElement { get; set; }
 		public AXmlElement ParentElement { get; set; }
+		public AXmlElement RootElement { get; set; }
 		public ReadOnlyCollection<AXmlElement> Ancestors { get; set; }
 		public AXmlAttribute Attribute { get; set; }
 		public AttributeValue AttributeValue { get; set; }
@@ -131,6 +132,7 @@ namespace ICSharpCode.XamlBinding
 			this.AttributeValue = context.AttributeValue;
 			this.Description = context.Description;
 			this.ParentElement = context.ParentElement;
+			this.RootElement = context.RootElement;
 			this.ParseInformation = context.ParseInformation;
 			this.RawAttributeValue = context.RawAttributeValue;
 			this.ValueStartOffset = context.ValueStartOffset;

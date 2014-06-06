@@ -24,6 +24,7 @@ using System.ComponentModel.Design;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -132,6 +133,16 @@ namespace ICSharpCode.FormsDesigner
 				
 				if (commandWrapper.RestoreSelection) {
 					selectionService.SetSelectedComponents(components);
+				}
+				return true;
+			} else if (keyPressed == Keys.Escape) {
+				ISelectionService selectionService = (ISelectionService)formDesigner.Host.GetService(typeof(ISelectionService));
+				ICollection components = selectionService.GetSelectedComponents();
+				if (components.Count == 1) {
+					Control ctrl = components.OfType<Control>().FirstOrDefault();
+					if (ctrl != null && ctrl.Parent != null) {
+						selectionService.SetSelectedComponents(new IComponent[] { ctrl.Parent }, SelectionTypes.Primary);
+					}
 				}
 				return true;
 			}

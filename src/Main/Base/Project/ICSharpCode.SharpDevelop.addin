@@ -1961,28 +1961,26 @@
 			          link  = "home://doc/ReadMe.rtf" />
 			<MenuItem id = "Web" label = "${res:XML.MainMenu.HelpMenu.WebMenu}" type="Menu">
 				<MenuItem id = "SharpDevelop" label = "SharpDevelop" type="Menu">
-					<MenuItem id = "Downloads" label = "Downloads" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/Download/" />
+					<MenuItem id = "Downloads" label = "Downloads" icon = "Icons.16x16.WebSearchIcon" link = "http://www.icsharpcode.net/OpenSource/SD/Download/" />
 					<MenuItem id = "Forum" label = "Community Forums" icon = "Icons.16x16.WebSearchIcon" link = "http://community.sharpdevelop.net/forums/" />
-					<MenuItem id = "Announcement" label = "Announcement List" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/AnnouncementList.aspx" />
+					<MenuItem id = "Announcement" label = "Announcements" icon = "Icons.16x16.WebSearchIcon" link = "http://community.sharpdevelop.net/forums/3.aspx" />
 					<MenuItem id = "Mail" label = "Send Us a Mail" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/ContactUs.asp" />
+					<MenuItem id = "Twitter" label = "On Twitter" icon = "Icons.16x16.WebSearchIcon" link = "https://twitter.com/sharpdevelop" />
 				</MenuItem>
 				<MenuItem id = "C#" label = "C#" type="Menu">
 					<MenuItem id = "C# Help" label = "C# Help" icon = "Icons.16x16.WebSearchIcon" link = "http://www.csharphelp.com" />
 					<MenuItem id = "CodeProject" label = "CodeProject" icon = "Icons.16x16.WebSearchIcon" link = "http://www.codeproject.com" />
 					<MenuItem id = "C# Corner" label = "C# Corner" icon = "Icons.16x16.WebSearchIcon" link = "http://www.c-sharpcorner.com" />
-					<MenuItem id = "GotDotNet" label = "GotDotNet" icon = "Icons.16x16.WebSearchIcon" link = "http://www.gotdotnet.com/" />
 				</MenuItem>
 				<MenuItem id = "IntegratedProjects" label = "Integrated Projects" type="Menu">
 					<MenuItem id = "AvalonDock" label = "AvalonDock" icon = "Icons.16x16.WebSearchIcon" link = "http://www.codeplex.com/AvalonDock/" />
 					<MenuItem id = "NUnit" label = "NUnit" icon = "PadIcons.NUnitTest" link = "http://www.nunit.org/" />
 					<MenuItem id = "WiX" label = "WiX" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/wix/" />
 					<MenuItem id = "SHFB" label = "Sandcastle Help File Builder" icon = "Icons.16x16.WebSearchIcon" link = "http://www.codeplex.com/SHFB" />
-					<MenuItem id = "#ZipLib" label = "#ZipLib" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SharpZipLib/" />
 				</MenuItem>
 				<MenuItem id = "NETPlatforms" label = ".NET Platforms" type="Menu">
 					<MenuItem id = "MSNET"  label = "MS .NET" icon = "Icons.16x16.WebSearchIcon" link = "http://msdn.microsoft.com/net" />
 					<MenuItem id = "Mono"   label = "Mono Project" icon = "Icons.16x16.WebSearchIcon" link = "http://www.mono-project.com/" />
-					<MenuItem id = "DotGNU" label = "DotGNU" icon = "Icons.16x16.WebSearchIcon" link = "http://www.dotgnu.org" />
 				</MenuItem>
 			</MenuItem>
 			<MenuItem id = "Separator2" type = "Separator" />

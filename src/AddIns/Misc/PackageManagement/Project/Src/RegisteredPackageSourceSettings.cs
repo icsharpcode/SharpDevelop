@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 
+using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -35,20 +36,32 @@ namespace ICSharpCode.PackageManagement
 			new PackageSource("(Aggregate source)", "All");
 		
 		ISettings settings;
+		ISettingsProvider settingsProvider;
 		PackageSource defaultPackageSource;
 		RegisteredPackageSources packageSources;
 		PackageSource activePackageSource;
 		
-		public RegisteredPackageSourceSettings(ISettings settings)
-			: this(settings, RegisteredPackageSources.DefaultPackageSource)
+		public RegisteredPackageSourceSettings(ISettingsProvider settingsProvider)
+			: this(settingsProvider, RegisteredPackageSources.DefaultPackageSource)
 		{
 		}
 		
-		public RegisteredPackageSourceSettings(ISettings settings, PackageSource defaultPackageSource)
+		public RegisteredPackageSourceSettings(
+			ISettingsProvider settingsProvider,
+			PackageSource defaultPackageSource)
 		{
-			this.settings = settings;
+			this.settingsProvider = settingsProvider;
 			this.defaultPackageSource = defaultPackageSource;
+			
+			settings = settingsProvider.LoadSettings();
+			
 			ReadActivePackageSource();
+			RegisterSolutionEvents();
+		}
+
+		void RegisterSolutionEvents()
+		{
+			settingsProvider.SettingsChanged += SettingsChanged;
 		}
 		
 		void ReadActivePackageSource()
@@ -175,6 +188,21 @@ namespace ICSharpCode.PackageManagement
 		void SaveActivePackageSourceSetting(KeyValuePair<string, string> activePackageSource)
 		{
 			settings.SetValue(ActivePackageSourceSectionName, activePackageSource.Key, activePackageSource.Value);
+		}
+		
+		void SettingsChanged(object sender, EventArgs e)
+		{
+			settings = settingsProvider.LoadSettings();
+			ReadActivePackageSource();
+			ResetPackageSources();
+		}
+		
+		void ResetPackageSources()
+		{
+			if (packageSources != null) {
+				packageSources.CollectionChanged -= PackageSourcesChanged;
+				packageSources = null;
+			}
 		}
 	}
 }

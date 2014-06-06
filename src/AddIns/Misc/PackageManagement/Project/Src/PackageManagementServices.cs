@@ -42,7 +42,7 @@ namespace ICSharpCode.PackageManagement
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
-			packageRepositoryCache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
+			packageRepositoryCache = new PackageRepositoryCache(options);
 			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests(packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
 			

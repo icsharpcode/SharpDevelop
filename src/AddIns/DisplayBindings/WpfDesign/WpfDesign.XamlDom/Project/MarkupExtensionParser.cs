@@ -96,10 +96,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (text[pos] == '"' || text[pos] == '\'') {
 				char quote = text[pos++];
 				CheckNotEOF();
+				int lastBackslashPos = -1;
 				while (!(text[pos] == quote && text[pos-1] != '\\')) {
+					int current = pos;
 					char c = text[pos++];
-					if (c != '\\')
+					//check if string is \\ and that the last backslash is not the previously saved char, ie that \\\\ does not become \\\ but just \\
+					bool isEscapedBackslash = string.Concat(text[current-1],c)=="\\\\" && current-1 != lastBackslashPos;
+					if (c != '\\' || isEscapedBackslash){
 						b.Append(c);
+						if(isEscapedBackslash)
+							lastBackslashPos = current;
+					}
 					CheckNotEOF();
 				}
 				pos++; // consume closing quote

@@ -62,7 +62,7 @@ namespace ICSharpCode.Reporting.Xml
 				// instantiate the class
 				string ns=node.Prefix;
 				string cname=node.LocalName;
-			
+				
 				Type t=GetTypeByName(ns, cname);
 				
 //				Trace.Assert(t != null, "Type "+cname+" could not be determined.");
@@ -119,7 +119,7 @@ namespace ICSharpCode.Reporting.Xml
 			{
 			    if (!(child is XmlElement)) continue;
 			    string pname=child.LocalName;
-			
+	
 			    var pi=t.GetProperty(pname);
 
 			    if (pi==null)

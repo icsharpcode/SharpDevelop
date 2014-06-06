@@ -19,20 +19,23 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.Reporting.Addin.DesignableItems;
 using ICSharpCode.Reporting.Addin.DesignerBinding;
 using ICSharpCode.Reporting.Addin.Services;
 using ICSharpCode.Reporting.Addin.Toolbox;
+using ICSharpCode.Reporting.Addin.UndoRedo;
 
 namespace ICSharpCode.Reporting.Addin.Views
 {
 	/// <summary>
 	/// Description of the view content
 	/// </summary>
-	public class DesignerView : AbstractViewContent,IHasPropertyContainer, IToolsHost
+	public class DesignerView : AbstractViewContent,IHasPropertyContainer, IToolsHost,IUndoHandler,IClipboardHandler
 	{
 		readonly IDesignerGenerator generator;
+		ReportDesignerUndoEngine undoEngine;
 		bool unloading;
 		bool hasUnmergedChanges;
 		bool shouldUpdateSelectableObjects;
@@ -98,9 +101,9 @@ namespace ICSharpCode.Reporting.Addin.Views
 			
 			var selectionService = (ISelectionService)this.designSurface.GetService(typeof(ISelectionService));
 			selectionService.SelectionChanged  += SelectionChangedHandler;
-			/*
+			
 			undoEngine = new ReportDesignerUndoEngine(Host);
-			*/
+		
 			var componentChangeService = (IComponentChangeService)this.designSurface.GetService(typeof(IComponentChangeService));
 			
 			
@@ -228,6 +231,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		#endregion
 		
+		
 		#region IToolsHost
 		
 		object IToolsHost.ToolsContent {
@@ -273,6 +277,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		
 		#endregion
+	
 		
 		#region DesignerEvents
 		
@@ -311,6 +316,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 		{
 			LoggingService.Debug("ReportDesigner: Event > DesignernUnloading...");
 		}
+
 		
 		#endregion
 		
@@ -336,6 +342,130 @@ namespace ICSharpCode.Reporting.Addin.Views
 		
 		#endregion
 		
+		
+		#region IUndoHandler implementation
+		
+		public bool EnableUndo {
+			get {
+				if (undoEngine != null) {
+					return undoEngine.EnableUndo;
+				}
+				return false;
+			}
+		}
+		
+		
+		public bool EnableRedo {
+			get {
+				if (undoEngine != null) {
+					return undoEngine.EnableRedo;
+				}
+				return false;
+			}
+		}
+		
+		
+		public virtual void Undo()
+		{
+			if (undoEngine != null) {
+				undoEngine.Undo();
+			}
+		}
+		
+		
+		public virtual void Redo()
+		{
+			if (undoEngine != null) {
+				undoEngine.Redo();
+			}
+		}
+		
+		#endregion		
+		
+		
+		#region IClipboardHandler implementation
+		
+		
+		public void Cut()
+		{
+			var menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
+			menuCommandService.GlobalInvoke(StandardCommands.Cut);
+		}
+		
+		public void Copy()
+		{
+			var menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
+			menuCommandService.GlobalInvoke(StandardCommands.Copy);
+		}
+		
+		public void Paste()
+		{
+			var menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
+			menuCommandService.GlobalInvoke(StandardCommands.Paste);
+		}
+		
+		public void Delete()
+		{
+			var menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
+			menuCommandService.GlobalInvoke(StandardCommands.Delete);
+		}
+		
+		public void SelectAll()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool EnableCut {
+			get {return IsMenuCommandEnabled(StandardCommands.Cut);}
+		}
+		
+		public bool EnableCopy {
+			get {return IsMenuCommandEnabled(StandardCommands.Copy);}
+		}
+		
+		public bool EnablePaste {
+			get {return IsMenuCommandEnabled(StandardCommands.Paste);}
+		}
+		
+		
+		public bool EnableDelete {
+			get {return IsMenuCommandEnabled(StandardCommands.Delete);}
+		}
+		
+		
+		public bool EnableSelectAll {
+			get {return designSurface != null;}
+		}
+		
+		
+		bool IsMenuCommandEnabled(CommandID commandID)
+		{
+			if (designSurface == null) {
+				return false;
+			}
+			
+			var menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
+			if (menuCommandService == null) {
+				return false;
+			}
+			
+			MenuCommand menuCommand = menuCommandService.FindCommand(commandID);
+			if (menuCommand == null) {
+				return false;
+			}
+			return menuCommand.Enabled;
+		}
+		#endregion		
+		
+		
+		#region Commands
+		
+		public void ShowSourceCode()
+		{
+			WorkbenchWindow.SwitchView(1);
+		}
+		
+		#endregion
 		#region UI
 		
 		void SetupDesignSurface()
@@ -344,6 +474,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 			ctrl.Parent = panel;
 			ctrl.Dock = DockStyle.Fill;
 		}
+
 		
 		
 		void MergeFormChanges()

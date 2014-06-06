@@ -50,8 +50,10 @@ namespace PackageManagement.Tests
 		void CreateOptions()
 		{
 			var properties = new Properties();
+			var projectService = new FakePackageManagementProjectService();
 			fakeSettings = new FakeSettings();
-			options = new PackageManagementOptions(properties, fakeSettings);
+			SettingsProvider settingsProvider = TestablePackageManagementOptions.CreateSettingsProvider(fakeSettings, projectService);
+			options = new PackageManagementOptions(properties, settingsProvider);
 		}
 		
 		void EnablePackageRestoreInOptions()

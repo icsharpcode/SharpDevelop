@@ -43,6 +43,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void FireSolutionClosedEvent(ISolution solution)
 		{
+			OpenSolution = null;
 			if (SolutionClosed != null) {
 				SolutionClosed(this, new SolutionEventArgs(solution));
 			}

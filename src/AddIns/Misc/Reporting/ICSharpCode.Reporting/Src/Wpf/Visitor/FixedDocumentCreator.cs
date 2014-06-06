@@ -63,29 +63,64 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		public static FormattedText CreateFormattedText(ExportText exportText)
 		{
+			FlowDirection flowDirection;
+			
+			var culture = CultureInfo.CurrentCulture;
+			if (culture.TextInfo.IsRightToLeft) {
+				flowDirection = FlowDirection.RightToLeft;
+			} else {
+				flowDirection = FlowDirection.LeftToRight;
+			}
+			
+			var emSize = ExtensionMethodes.ToPoints((int)exportText.Font.SizeInPoints +1);
+			
 			var formattedText = new FormattedText(exportText.Text,
 				CultureInfo.CurrentCulture,
-				FlowDirection.LeftToRight,
+				flowDirection,
 				new Typeface(exportText.Font.FontFamily.Name),
-				exportText.Font.Size,
+				emSize,
 				new SolidColorBrush(exportText.ForeColor.ToWpf()), null, TextFormattingMode.Display);
 			
-			formattedText.MaxTextWidth = exportText.DesiredSize.Width * 96.0 / 72.0;
-			formattedText.SetFontSize(Math.Floor(exportText.Font.Size  * 96.0 / 72.0));
+			formattedText.MaxTextWidth = ExtensionMethodes.ToPoints(exportText.DesiredSize.Width);
 			
-			var td = new TextDecorationCollection()	;
-			CheckUnderline(td,exportText);
-			formattedText.SetTextDecorations(td);
+			ApplyPrintStyles(formattedText,exportText);
+
 			return formattedText;
 		}
 
-		static void CheckUnderline(TextDecorationCollection td, ExportText exportText)
-		{
-			if (exportText.Font.Underline) {
-				td.Add(new TextDecoration{Location = TextDecorationLocation.Underline});
+
+		static void ApplyPrintStyles (FormattedText formattedText,ExportText exportText) {
+			var font = exportText.Font;
+			var textDecorations = new TextDecorationCollection();
+			FontStyle fontStyle;
+			FontWeight fontWeight;
+			
+			if ((font.Style & System.Drawing.FontStyle.Italic) != 0) {
+				fontStyle = FontStyles.Italic;
+			} else {
+				fontStyle = FontStyles.Normal;
 			}
+			
+			formattedText.SetFontStyle(fontStyle);
+			
+			if ((font.Style & System.Drawing.FontStyle.Bold) != 0) {
+				fontWeight = FontWeights.Bold;
+			} else {
+				fontWeight = FontWeights.Normal;
+			}
+			formattedText.SetFontWeight(fontWeight);
+			
+			if ((font.Style & System.Drawing.FontStyle.Underline) != 0) {
+				textDecorations.Add(TextDecorations.Underline);
+			}
+			
+			if ((font.Style & System.Drawing.FontStyle.Strikeout) != 0) {
+				textDecorations.Add(TextDecorations.Strikethrough);
+			}
+			
+			formattedText.SetTextDecorations(textDecorations);
 		}
-		
+			
 		
 		static Canvas CreateCanvas(ExportContainer container){
 			var canvas = new Canvas();
@@ -116,33 +151,9 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			FixedPage.SetTop(element,exportColumn.Location.Y);
 		}
 		
-		/*
-		static void SetFont(TextBlock textBlock,IExportText exportText){
-			textBlock.FontFamily = new FontFamily(exportText.Font.FontFamily.Name);
-
-			//http://www.codeproject.com/Articles/441009/Drawing-Formatted-Text-in-a-Windows-Forms-Applicat
-			
-			textBlock.FontSize = Math.Floor(exportText.Font.Size * 96/72);
-
-			if (exportText.Font.Bold) {
-				textBlock.FontWeight = FontWeights.Bold;
-			}
-			if (exportText.Font.Underline) {
-				CreateUnderline(textBlock,exportText);
-			}
-			
-			if (exportText.Font.Italic) {
-				textBlock.FontStyle = FontStyles.Italic ;
-			}
-			if (exportText.Font.Strikeout) {
-				CreateStrikeout(textBlock,exportText);
-			}
-		}
-		*/
 		
 		static void SetContentAlignment(TextBlock textBlock,ExportText exportText)
 		{
-	//	http://social.msdn.microsoft.com/Forums/vstudio/en-US/e480abb9-a86c-4f78-8955-dddb866bcfef/vertical-text-alignment-in-textblock?forum=wpf	
 	//Vertical alignment not working
 	
 			switch (exportText.ContentAlignment) {
@@ -188,34 +199,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		static void CreateStrikeout (TextBlock textBlock,IExportText exportColumn ){
-			if (textBlock == null)
-				throw new ArgumentNullException("textBlock");
-			if (exportColumn == null)
-				throw new ArgumentNullException("exportColumn");
-			var strikeOut = new TextDecoration();
-			strikeOut.Location = TextDecorationLocation.Strikethrough;
-
-			Pen p = CreateWpfPen(exportColumn);
-			strikeOut.Pen = p ;
-			strikeOut.PenThicknessUnit = TextDecorationUnit.FontRecommended;
-			textBlock.TextDecorations.Add(strikeOut);
-		}
-		
-		/*
-		static void CreateUnderline(TextBlock textBlock,IExportText exportColumn){
-			if (exportColumn == null)
-				throw new ArgumentNullException("exportColumn");
-			if (textBlock == null)
-				throw new ArgumentNullException("textBlock");
-			var underLine = new TextDecoration();
-			Pen p = CreateWpfPen(exportColumn);
-			underLine.Pen = p ;
-			underLine.PenThicknessUnit = TextDecorationUnit.FontRecommended;
-			textBlock.TextDecorations.Add(underLine);
-		}
-		*/
-		
 		public static Pen CreateWpfPen(IReportObject exportColumn){
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
@@ -226,9 +209,9 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			var exportGraphics = exportColumn as IExportGraphics;
 			if (exportGraphics != null) {
 				pen.Thickness = exportGraphics.Thickness;
-				pen.DashStyle = FixedDocumentCreator.DashStyle(exportGraphics);
-				pen.StartLineCap = FixedDocumentCreator.LineCap(exportGraphics.StartLineCap);
-				pen.EndLineCap = FixedDocumentCreator.LineCap(exportGraphics.EndLineCap);
+				pen.DashStyle = DashStyle(exportGraphics);
+				pen.StartLineCap = LineCap(exportGraphics.StartLineCap);
+				pen.EndLineCap = LineCap(exportGraphics.EndLineCap);
 			}
 			return pen;
 		}

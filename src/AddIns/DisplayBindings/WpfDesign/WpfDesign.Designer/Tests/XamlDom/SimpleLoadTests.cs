@@ -98,6 +98,19 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 		
 		[Test]
+		public void ExampleClassWithFilePathStringPropAttribute()
+		{
+			TestLoading(@"
+<t:ExampleClass
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+  StringProp=""C:\Folder A\Sub,Folder,A\SubFolderB\file,with,commas and spaces.txt"">
+</t:ExampleClass>
+			");
+		}
+		
+		[Test]
 		public void ExampleClassUseDefaultProperty()
 		{
 			TestLoading(@"

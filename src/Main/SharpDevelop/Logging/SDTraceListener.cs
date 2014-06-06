@@ -62,47 +62,34 @@ namespace ICSharpCode.SharpDevelop.Logging
 			}
 			if (!dialogIsOpen.Set())
 				return;
-			if (!SD.MainThread.InvokeRequired) {
-				// Use a dispatcher frame that immediately exits after it is pushed
-				// to detect whether dispatcher processing is suspended.
-				DispatcherFrame frame = new DispatcherFrame();
-				frame.Continue = false;
-				try {
-					Dispatcher.PushFrame(frame);
-				} catch (InvalidOperationException) {
-					// Dispatcher processing is suspended.
-					// We currently can't show dialogs on the UI thread; so use a new thread instead.
-					new Thread(() => ShowAssertionDialog(message, detailMessage, stackTrace, false)).Start();
-					return;
-				}
-			}
-			ShowAssertionDialog(message, detailMessage, stackTrace, true);
+			// We might be unable to display a dialog here, e.g. because
+			// we're on the UI thread but dispatcher processing is disabled.
+			// In any case, we don't want to pump messages while the dialog is displaying,
+			// so we create a separate UI thread for the dialog:
+			bool debug = false;
+			var thread = new Thread(() => ShowAssertionDialog(message, detailMessage, stackTrace, ref debug));
+			thread.SetApartmentState(ApartmentState.STA);
+			thread.Start();
+			thread.Join();
+			if (debug)
+				Debugger.Break();
 		}
 		
-		void ShowAssertionDialog(string message, string detailMessage, string stackTrace, bool canDebug)
+		void ShowAssertionDialog(string message, string detailMessage, string stackTrace, ref bool debug)
 		{
 			message = message + Environment.NewLine + detailMessage + Environment.NewLine + stackTrace;
-			List<string> buttonTexts = new List<string> { "Show Stacktrace", "Debug", "Ignore", "Ignore All" };
-			if (!canDebug) {
-				buttonTexts.RemoveAt(1);
-			}
-			CustomDialog inputBox = new CustomDialog("Assertion Failed", message.TakeStartEllipsis(750), -1, 2, buttonTexts.ToArray());
+			string[] buttonTexts = { "Show Stacktrace", "Debug", "Ignore", "Ignore All" };
+			CustomDialog inputBox = new CustomDialog("Assertion Failed", message.TakeStartEllipsis(750), -1, 2, buttonTexts);
 			try {
 				while (true) { // show the dialog repeatedly until an option other than 'Show Stacktrace' is selected
-					if (SD.MainThread.InvokeRequired) {
-						inputBox.ShowDialog();
-					} else {
-						inputBox.ShowDialog(SD.WinForms.MainWin32Window);
-					}
+					inputBox.ShowDialog();
 					int result = inputBox.Result;
-					if (!canDebug && result >= 1)
-						result++;
 					switch (result) {
 						case 0:
 							ExceptionBox.ShowErrorBox(null, message);
 							break; // show the custom dialog again
 						case 1:
-							Debugger.Break();
+							debug = true;
 							return;
 						case 2:
 							return;

@@ -58,7 +58,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 				throw new ArgumentNullException("graphics");
 			}
 			using (var p = new Pen(ForeColor,Thickness)) {
-				p.SetLineCap(StartLineCap,EndLineCap,DashLineCap);
+				p.SetLineCap(StartLineCap,EndLineCap,DashCap.Flat);
 				graphics.DrawLine(p,fromPoint,toPoint);
 			}
 		}
@@ -115,14 +115,14 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		}
 		
 		
-		[Category("Appearance")]
-		public DashCap DashLineCap {
-			get { return dashLineCap; }
-			set {
-				dashLineCap = value;
-				Invalidate();
-			}
-		}
+//		[Category("Appearance")]
+//		public DashCap DashLineCap {
+//			get { return dashLineCap; }
+//			set {
+//				dashLineCap = value;
+//				Invalidate();
+//			}
+//		}
 	
 	}
 }

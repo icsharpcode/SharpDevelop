@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System.Drawing;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -41,7 +42,16 @@ namespace ICSharpCode.Reporting.Items{
 			ex.DashStyle = DashStyle;
 			ex.StartLineCap = StartLineCap;
 			ex.EndLineCap = EndLineCap;
+			ex.FromPoint = FromPoint;
+			ex.ToPoint = ToPoint;
 			return ex;
 		}
+		
+		
+		public Point FromPoint {get;set;}
+		
+		public Point ToPoint {get;set;}
+		
+		
 	}
 }

@@ -43,14 +43,14 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 	
 		
 		#region Propertys
+//		
+//		[Browsable(false)]
+//		public int SectionOffset {get;set;}
 		
-		[Browsable(false)]
-		public int SectionOffset {get;set;}
-		
-		[Browsable(false)]	
-		public int SectionMargin {get;set;}
+//		[Browsable(false)]	
+//		public int SectionMargin {get;set;}
 			
-		public bool PageBreakAfter {get;set;}
+//		public bool PageBreakAfter {get;set;}
 			
 		public bool CanGrow {get;set;}
 			

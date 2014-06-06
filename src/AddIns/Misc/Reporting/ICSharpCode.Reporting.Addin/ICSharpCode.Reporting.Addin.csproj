@@ -84,7 +84,7 @@
     <Folder Include="src\DesignableItems" />
     <Folder Include="src\Factory" />
     <Folder Include="src\Dialogs" />
-    <Folder Include="src\New Folder" />
+    <Folder Include="src\UndoRedo" />
     <Folder Include="src\Wizard" />
     <Folder Include="src\Toolbox" />
     <Folder Include="src\TypeProvider" />
@@ -97,6 +97,8 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="src\Commands\DesignerVerbSubmenuBuilder.cs" />
+    <Compile Include="src\Commands\FormsCommands.cs" />
     <Compile Include="src\Commands\ViewCommands.cs" />
     <Compile Include="src\DesignableItems\AbstractGraphicItem.cs" />
     <Compile Include="src\DesignableItems\AbstractItem.cs" />
@@ -160,6 +162,7 @@
     <Compile Include="src\TypeProvider\SectionItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TextItemTypeProvider.cs" />
     <Compile Include="src\TypeProvider\TypeProviderHelper.cs" />
+    <Compile Include="src\UndoRedo\ReportDesignerUndoEngine.cs" />
     <Compile Include="src\Views\DesignerView.cs" />
     <Compile Include="src\Views\WpfPreview.cs" />
     <Compile Include="src\Views\XmlView.cs" />

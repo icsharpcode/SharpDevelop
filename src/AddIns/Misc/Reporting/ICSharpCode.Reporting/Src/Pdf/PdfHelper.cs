@@ -21,7 +21,6 @@ using System.Drawing;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using PdfSharp.Drawing;
-using System.Drawing.Drawing2D;
 using PdfSharp.Drawing.Layout;
 
 namespace ICSharpCode.Reporting.Pdf
@@ -34,11 +33,11 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		public static void WriteText(XTextFormatter textFormatter,Point columnLocation, ExportText exportColumn)
 		{
-			XFont font = PdfHelper.CreatePdfFont(exportColumn);
+			var font = PdfHelper.CreatePdfFont(exportColumn);
 			var rect = new Rectangle(columnLocation,exportColumn.DesiredSize).ToXRect();
 			textFormatter.DrawString(exportColumn.Text,
 			                         font,
-			                         new XSolidBrush(ToXColor(exportColumn.ForeColor)),
+			                         CreateBrush(exportColumn.ForeColor),
 			                         rect, XStringFormats.TopLeft);
 		}
 		
@@ -73,6 +72,19 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		public static XPen PdfPen(IExportGraphics column) {
 			return new XPen(ToXColor(column.ForeColor),column.Thickness);
+		}
+		
+		
+		public static XPen CreateDashedPen(IExportGraphics exportRectangle)
+		{
+			var pen = PdfHelper.PdfPen(exportRectangle);
+			pen.DashStyle = PdfHelper.DashStyle(exportRectangle);
+			return pen;
+		}
+		
+		
+		public static XSolidBrush CreateBrush(Color color) {
+			return new XSolidBrush(color);
 		}
 		
 		

@@ -122,15 +122,26 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (context.ParseInformation == null)
 				return EmptyList<ICompletionItem>.Instance;
+			
 			List<ICompletionItem> result = new List<ICompletionItem>();
 			AXmlElement last = context.ParentElement;
 			ITextEditor editor = context.Editor;
 			compilation = SD.ParserService.GetCompilationForFile(editor.FileName);
 			IUnresolvedFile file = context.ParseInformation.UnresolvedFile;
-			var items = GetClassesFromContext(context);
+			
+			foreach (string item in XamlConst.GetAllowedItems(context)) {
+				result.Add(new XamlCompletionItem(item));
+			}
+			
 			IType rt = null;
 
 			if (last != null) {
+				if (string.Equals(last.Prefix, context.XamlNamespacePrefix, StringComparison.OrdinalIgnoreCase)) {
+					if (string.Equals(last.LocalName, "Members", StringComparison.OrdinalIgnoreCase))
+						return result;
+					if (string.Equals(last.LocalName, "Code", StringComparison.OrdinalIgnoreCase))
+						return result;
+				}
 				// If we have an element that is not a property or an incomplete
 				// definition => interpret element as a type.
 				XamlResolver resolver = new XamlResolver(compilation);
@@ -172,6 +183,8 @@ namespace ICSharpCode.XamlBinding
 					.ToList();
 			}
 			
+			var items = GetClassesFromContext(context);
+			
 			foreach (var ns in items) {
 				foreach (ITypeDefinition td in ns.Value) {
 					if (td.Kind != TypeKind.Class && (!includeAbstract || td.Kind != TypeKind.Interface))
@@ -197,15 +210,6 @@ namespace ICSharpCode.XamlBinding
 //				if (itemClass != null)
 //					result.Add(new XamlCodeCompletionItem(itemClass, last.Prefix));
 //			}
-			
-			var xamlItems = XamlConst.XamlNamespaceAttributes.AsEnumerable();
-			
-			if (XamlConst.EnableXaml2009)
-				xamlItems = XamlConst.XamlBuiltInTypes.Concat(xamlItems);
-			
-			foreach (string item in xamlItems) {
-				result.Add(new XamlCompletionItem(context.XamlNamespacePrefix + ":" + item));
-			}
 			
 			return result;
 		}
@@ -266,8 +270,11 @@ namespace ICSharpCode.XamlBinding
 			string xamlPrefix = context.XamlNamespacePrefix;
 			string xKey = string.IsNullOrEmpty(xamlPrefix) ? "" : xamlPrefix + ":";
 			
-			if (lastElement.Prefix == context.XamlNamespacePrefix && XamlConst.IsBuiltin(lastElement.LocalName))
-				return EmptyList<ICompletionItem>.Instance;
+			if (context.Description == XamlContextDescription.InTag)
+				list.AddRange(XamlConst.GetAllowedItems(context).Select(item => new XamlCompletionItem(item)));
+			
+			if (string.Equals(lastElement.Prefix, context.XamlNamespacePrefix, StringComparison.OrdinalIgnoreCase) && XamlConst.IsBuiltin(lastElement.LocalName))
+				return list;
 			
 			if (lastElement.LocalName.EndsWith(".", StringComparison.OrdinalIgnoreCase) || context.PressedKey == '.') {
 				if (type.Kind == TypeKind.Unknown)
@@ -279,16 +286,9 @@ namespace ICSharpCode.XamlBinding
 				}
 				AddAttachedProperties(type.GetDefinition(), list);
 			} else {
-				if (type.Kind == TypeKind.Unknown) {
-					list.Add(new XamlCompletionItem(xKey + "Uid"));
-				} else {
+				if (type.Kind != TypeKind.Unknown) {
 					AddAttributes(type, list, includeEvents);
 					list.AddRange(GetListOfAttached(context, null, includeEvents, true));
-					list.AddRange(
-						XamlConst.XamlNamespaceAttributes
-						.Where(localName => XamlConst.IsAttributeAllowed(context.InRoot, localName))
-						.Select(item => new XamlCompletionItem(xKey + item))
-					);
 				}
 			}
 			
@@ -384,11 +384,11 @@ namespace ICSharpCode.XamlBinding
 			ITextEditor editor = context.Editor;
 			compilation = SD.ParserService.GetCompilationForFile(editor.FileName);
 			
+			string xamlPrefix = context.XamlNamespacePrefix;
+			string xKey = string.IsNullOrEmpty(xamlPrefix) ? "" : xamlPrefix + ":";
+			
 			if (type.Name == typeof(System.Nullable<>).Name) {
-				string nullExtensionName = "Null";
-				if (!string.IsNullOrEmpty(context.XamlNamespacePrefix))
-					nullExtensionName = context.XamlNamespacePrefix + ":" + nullExtensionName;
-				yield return new XamlCompletionItem("{" + nullExtensionName + "}");
+				yield return new XamlCompletionItem("{" + xKey + "Null}");
 				type = type.TypeArguments.FirstOrDefault();
 				if (type == null) yield break;
 			}
@@ -396,6 +396,18 @@ namespace ICSharpCode.XamlBinding
 			ITypeDefinition definition = type.GetDefinition();
 			
 			if (definition == null) yield break;
+			
+			definition.IsCollectionType();
+			
+			switch (definition.KnownTypeCode) {
+				case KnownTypeCode.Array:
+				case KnownTypeCode.ICollection:
+				case KnownTypeCode.ICollectionOfT:
+				case KnownTypeCode.IEnumerable:
+				case KnownTypeCode.IEnumerableOfT:
+					yield return new XamlCompletionItem("{" + xKey + "Array}");
+					break;
+			}
 			
 			switch (definition.Kind) {
 				case TypeKind.Class:

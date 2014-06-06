@@ -82,6 +82,12 @@ namespace ICSharpCode.WpfDesign
 		public abstract DesignItem Value { get; }
 		
 		/// <summary>
+		/// Gets the string value of the property. This property returns null if the value is not set,
+		/// or if the value is set to a non-primitive value (i.e. represented by a <see cref="DesignItem"/>, accessible through <see cref="Value"/> property).
+		/// </summary>
+		public abstract string TextValue { get; }
+		
+		/// <summary>
 		/// Is raised when the value of the property changes (by calling <see cref="SetValue"/> or <see cref="Reset"/>).
 		/// </summary>
 		public abstract event EventHandler ValueChanged;

@@ -182,7 +182,7 @@ namespace CSharpBinding.FormsDesigner
 			
 			string newline = DocumentUtilities.GetLineTerminator(script.OriginalDocument, bodyRegion.BeginLine);
 			string indentation = DocumentUtilities.GetIndentation(script.OriginalDocument, bodyRegion.BeginLine);
-			string code = "{" + newline + GenerateInitializeComponents(codeMethod, indentation, newline) + indentation + "}";
+			string code = "{" + newline + GenerateInitializeComponents(codeMethod, indentation, newline) + newline + indentation + "}";
 			
 			int startOffset = script.GetCurrentOffset(bodyRegion.Begin);
 			int endOffset = script.GetCurrentOffset(bodyRegion.End);
@@ -284,7 +284,7 @@ namespace CSharpBinding.FormsDesigner
 				return false;
 			}
 			
-			return oldType.ReflectionName != newType.BaseType;
+			return oldType.GetDefinition().ReflectionName != newType.BaseType;
 		}
 		
 		string GenerateField(CodeMemberField newField)

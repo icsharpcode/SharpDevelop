@@ -398,6 +398,17 @@ namespace ICSharpCode.XamlBinding
 			return thisValue.GetAllBaseTypeDefinitions().Any(t => t.FullName == "System.Collections.IList");
 		}
 		
+		public static bool Implements(this IType thisValue, IType interfaceType)
+		{
+			if (thisValue == null)
+				throw new ArgumentNullException("thisValue");
+			if (interfaceType == null)
+				throw new ArgumentNullException("interfaceType");
+			if (interfaceType.Kind != TypeKind.Interface)
+				throw new ArgumentException("must be TypeKind.Interface", "interfaceType");
+			return thisValue.GetAllBaseTypes().Any(t => t.Equals(interfaceType));
+		}
+		
 		public static bool HasAttached(this ITypeDefinition thisValue, bool lookForProperties, bool lookForEvents)
 		{
 			if (!lookForProperties && !lookForEvents)

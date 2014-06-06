@@ -24,7 +24,7 @@ using ICSharpCode.WpfDesign.Adorners;
 namespace ICSharpCode.WpfDesign
 {
 	/// <summary>
-	/// Describes the result of a <see cref="IDesignPanel.HitTest(Point, bool, bool)"/> call.
+	/// Describes the result of a <see cref="IDesignPanel.HitTest(Point, bool, bool, HitTestType)"/> call.
 	/// </summary>
 	public struct DesignPanelHitTestResult : IEquatable<DesignPanelHitTestResult>
 	{

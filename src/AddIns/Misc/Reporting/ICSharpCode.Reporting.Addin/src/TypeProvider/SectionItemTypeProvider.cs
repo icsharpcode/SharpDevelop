@@ -55,17 +55,17 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 			TypeProviderHelper.AddDefaultProperties(allProperties,props);
 			PropertyDescriptor prop = null;
 			
-			prop = props.Find("SectionOffset",true);
-			allProperties.Add(prop);
+//			prop = props.Find("SectionOffset",true);
+//			allProperties.Add(prop);
 			
-			prop = props.Find("SectionMargin",true);
-			allProperties.Add(prop);
+//			prop = props.Find("SectionMargin",true);
+//			allProperties.Add(prop);
 			
 			prop = props.Find("DrawBorder",true);
 			allProperties.Add(prop);
 			
-			prop = props.Find("PageBreakAfter",true);
-			allProperties.Add(prop);
+//			prop = props.Find("PageBreakAfter",true);
+//			allProperties.Add(prop);
 			
 			prop = props.Find("Controls",true);
 			allProperties.Add(prop);
