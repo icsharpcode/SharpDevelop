@@ -80,8 +80,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		internal void DetachExtensions()
 		{
 			if (extensions != null) {
-				foreach (var extension in extensions)
-					extension.Detach();
+				// Detach extensions in reverse order
+				for (int i = extensions.Count - 1; i >= 0; i--) {
+					extensions[i].Detach();
+				}
 			}
 			
 			// Switch to global options, if no specific options service is registered

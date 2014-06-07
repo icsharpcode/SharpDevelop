@@ -65,6 +65,7 @@ namespace CSharpBinding
 		CodeManipulation codeManipulation;
 		CaretReferenceHighlightRenderer renderer;
 		CodeEditorFormattingOptionsAdapter options;
+		TextEditorOptions originalEditorOptions;
 		
 		public void Attach(ITextEditor editor)
 		{
@@ -92,6 +93,7 @@ namespace CSharpBinding
 				textViewServices.AddService(typeof(ITextEditorOptions), options);
 				
 				// Set TextEditor's options to same object
+				originalEditorOptions = textEditor.Options;
 				textEditor.Options = options;
 			}
 		}
@@ -107,9 +109,9 @@ namespace CSharpBinding
 				if ((optionsService != null) && (optionsService == options))
 					textView.Services.RemoveService(typeof(ITextEditorOptions));
 				
-				// TODO Reset TextEditor options, too?
-				// if ((textEditor.Options != null) && (textEditor.Options == options))
-				// 	textEditor.Options = SD.EditorControlService.GlobalOptions;
+				// Reset TextEditor options, too?
+				 if ((textEditor.Options != null) && (textEditor.Options == options))
+				 	textEditor.Options = originalEditorOptions;
 			}
 			
 			codeManipulation.Dispose();
