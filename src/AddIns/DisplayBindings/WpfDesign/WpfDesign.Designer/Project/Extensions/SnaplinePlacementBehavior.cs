@@ -183,7 +183,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					yield return designItem;
 					if (designItem.ContentProperty.Value != null) {
 						yield return designItem.ContentProperty.Value;
-						designItem = designItem.ContentProperty.Value;
+						designItem = ExtendedItem; //set designitem back to current control after yield
 					}
 				}
 			}
