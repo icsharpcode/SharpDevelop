@@ -99,7 +99,7 @@ namespace CSharpBinding.Completion
 				completionContext.ProjectContent,
 				completionContext.TypeResolveContextAtCaret
 			);
-			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(completionContext.Compilation.GetProject());
+			var formattingOptions = CSharpFormattingPolicies.Instance.GetProjectOptions(completionContext.Compilation.GetProject());
 			cce.FormattingPolicy = formattingOptions.OptionsContainer.GetEffectiveOptions();
 			cce.EolMarker = DocumentUtilities.GetLineTerminator(completionContext.Document, currentLocation.Line);
 			

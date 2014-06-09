@@ -171,7 +171,7 @@ namespace CSharpBinding.Refactoring
 
 				using (StringWriter textWriter = new StringWriter(pList)) {
 					// Output parameter list as string
-					var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(refactoringContext.Compilation.GetProject());
+					var formattingOptions = CSharpFormattingPolicies.Instance.GetProjectOptions(refactoringContext.Compilation.GetProject());
 					CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor(textWriter, formattingOptions.OptionsContainer.GetEffectiveOptions());
 					for (int i = 0; i < parameters.Count; i++) {
 						if (i > 0)
