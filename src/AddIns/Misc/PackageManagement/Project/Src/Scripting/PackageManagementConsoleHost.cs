@@ -295,5 +295,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			return new ConsoleHostFileConflictResolver(packageEvents, fileConflictAction);
 		}
+		
+		public IDisposable CreateLogger(ICmdletLogger logger)
+		{
+			return new PackageManagementConsoleHostLogger(logger, packageEvents);
+		}
 	}
 }

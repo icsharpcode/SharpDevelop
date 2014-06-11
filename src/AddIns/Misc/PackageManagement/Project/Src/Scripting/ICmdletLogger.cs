@@ -17,37 +17,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.Scripting;
-using ICSharpCode.SharpDevelop.Project;
-using NuGet;
+using System.Management.Automation;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
-	public interface IPackageManagementConsoleHost : IDisposable
+	public interface ICmdletLogger
 	{
-		IProject DefaultProject { get; set; }
-		PackageSource ActivePackageSource { get; set; }
-		IScriptingConsole ScriptingConsole { get; set; }
-		IPackageManagementSolution Solution { get; }
-		bool IsRunning { get; }
-		
-		void Clear();
-		void WritePrompt();
-		void Run();
-		void ShutdownConsole();
-		void ExecuteCommand(string command);
-		
-		void SetDefaultRunspace();
-		
-		IConsoleHostFileConflictResolver CreateFileConflictResolver(FileConflictAction fileConflictAction);
-		IDisposable CreateLogger(ICmdletLogger logger);
-		
-		IPackageManagementProject GetProject(string packageSource, string projectName);
-		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
-		PackageSource GetActivePackageSource(string source);
-		
-		IPackageRepository GetPackageRepository(PackageSource packageSource);
+		void WriteError(ErrorRecord error);
+		void WriteLine(string message);
+		void WriteVerbose(string message);
+		void WriteWarning(string message);
 	}
 }

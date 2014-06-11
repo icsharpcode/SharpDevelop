@@ -169,5 +169,21 @@ namespace PackageManagement.Tests.Helpers
 		{
 			FakeFileConflictResolver.AssertWasCalled(resolver => resolver.Dispose());
 		}
+		
+		public IDisposable FakeConsoleHostLogger =
+			MockRepository.GenerateStub<IDisposable>();
+		
+		public void AssertLoggerIsDisposed()
+		{
+			FakeConsoleHostLogger.AssertWasCalled(logger => logger.Dispose());
+		}
+		
+		public ICmdletLogger CmdletLoggerUsedToCreateLogger;
+		
+		public IDisposable CreateLogger(ICmdletLogger logger)
+		{
+			CmdletLoggerUsedToCreateLogger = logger;
+			return FakeConsoleHostLogger;
+		}
 	}
 }

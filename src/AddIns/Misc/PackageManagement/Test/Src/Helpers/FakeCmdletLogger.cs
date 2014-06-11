@@ -17,37 +17,39 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.Scripting;
-using ICSharpCode.SharpDevelop.Project;
-using NuGet;
+using System.Management.Automation;
+using ICSharpCode.PackageManagement.Scripting;
 
-namespace ICSharpCode.PackageManagement.Scripting
+namespace PackageManagement.Tests.Helpers
 {
-	public interface IPackageManagementConsoleHost : IDisposable
+	public class FakeCmdletLogger : ICmdletLogger
 	{
-		IProject DefaultProject { get; set; }
-		PackageSource ActivePackageSource { get; set; }
-		IScriptingConsole ScriptingConsole { get; set; }
-		IPackageManagementSolution Solution { get; }
-		bool IsRunning { get; }
+		public ErrorRecord ErrorRecordLogged;
 		
-		void Clear();
-		void WritePrompt();
-		void Run();
-		void ShutdownConsole();
-		void ExecuteCommand(string command);
+		public void WriteError(ErrorRecord error)
+		{
+			ErrorRecordLogged = error;
+		}
 		
-		void SetDefaultRunspace();
+		public string LineLogged;
 		
-		IConsoleHostFileConflictResolver CreateFileConflictResolver(FileConflictAction fileConflictAction);
-		IDisposable CreateLogger(ICmdletLogger logger);
+		public void WriteLine(string message)
+		{
+			LineLogged = message;
+		}
 		
-		IPackageManagementProject GetProject(string packageSource, string projectName);
-		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
-		PackageSource GetActivePackageSource(string source);
+		public string VerboseMessageLogged;
 		
-		IPackageRepository GetPackageRepository(PackageSource packageSource);
+		public void WriteVerbose(string message)
+		{
+			VerboseMessageLogged = message;
+		}
+		
+		public string WarningMessageLogged;
+		
+		public void WriteWarning(string message)
+		{
+			WarningMessageLogged = message;
+		}
 	}
 }
