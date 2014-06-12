@@ -275,7 +275,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		bool IsNativeType(object instance)
 		{
-			return instance.GetType().Assembly == typeof(String).Assembly;
+			return instance.GetType().Assembly == typeof(String).Assembly || instance.GetType().IsEnum;
 		}
 	}
 }
