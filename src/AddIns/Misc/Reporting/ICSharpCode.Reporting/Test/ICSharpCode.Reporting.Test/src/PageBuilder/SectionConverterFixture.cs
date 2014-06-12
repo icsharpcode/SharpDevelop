@@ -95,7 +95,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			container.Items.Add(item1);
 			container.Items.Add(item2);
 			
-			Bitmap bitmap = new Bitmap(700,1000);
+			var bitmap = new Bitmap(700,1000);
 			graphics = Graphics.FromImage(bitmap);
 		}
 	}
