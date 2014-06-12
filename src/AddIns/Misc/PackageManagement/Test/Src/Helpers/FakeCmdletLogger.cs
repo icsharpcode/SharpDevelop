@@ -17,26 +17,39 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop.Editor;
+using System.Management.Automation;
+using ICSharpCode.PackageManagement.Scripting;
 
-namespace CSharpBinding.FormattingStrategy
+namespace PackageManagement.Tests.Helpers
 {
-	internal class CSharpFormatterHelper
+	public class FakeCmdletLogger : ICmdletLogger
 	{
-		/// <summary>
-		/// Formats the specified part of the document.
-		/// </summary>
-		public static void Format(ITextEditor editor, int offset, int length, CSharpFormattingOptionsContainer optionsContainer)
+		public ErrorRecord ErrorRecordLogged;
+		
+		public void WriteError(ErrorRecord error)
 		{
-			TextEditorOptions editorOptions = editor.ToEditorOptions();
-			optionsContainer.CustomizeEditorOptions(editorOptions);
-			var formatter = new CSharpFormatter(optionsContainer.GetEffectiveOptions(), editorOptions);
-			formatter.AddFormattingRegion(new DomRegion(editor.Document.GetLocation(offset), editor.Document.GetLocation(offset + length)));
-			var changes = formatter.AnalyzeFormatting(editor.Document, SyntaxTree.Parse(editor.Document));
-			changes.ApplyChanges(offset, length);
+			ErrorRecordLogged = error;
+		}
+		
+		public string LineLogged;
+		
+		public void WriteLine(string message)
+		{
+			LineLogged = message;
+		}
+		
+		public string VerboseMessageLogged;
+		
+		public void WriteVerbose(string message)
+		{
+			VerboseMessageLogged = message;
+		}
+		
+		public string WarningMessageLogged;
+		
+		public void WriteWarning(string message)
+		{
+			WarningMessageLogged = message;
 		}
 	}
 }

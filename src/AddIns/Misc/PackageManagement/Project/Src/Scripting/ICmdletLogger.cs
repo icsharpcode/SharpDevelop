@@ -17,26 +17,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop.Editor;
+using System.Management.Automation;
 
-namespace CSharpBinding.FormattingStrategy
+namespace ICSharpCode.PackageManagement.Scripting
 {
-	internal class CSharpFormatterHelper
+	public interface ICmdletLogger
 	{
-		/// <summary>
-		/// Formats the specified part of the document.
-		/// </summary>
-		public static void Format(ITextEditor editor, int offset, int length, CSharpFormattingOptionsContainer optionsContainer)
-		{
-			TextEditorOptions editorOptions = editor.ToEditorOptions();
-			optionsContainer.CustomizeEditorOptions(editorOptions);
-			var formatter = new CSharpFormatter(optionsContainer.GetEffectiveOptions(), editorOptions);
-			formatter.AddFormattingRegion(new DomRegion(editor.Document.GetLocation(offset), editor.Document.GetLocation(offset + length)));
-			var changes = formatter.AnalyzeFormatting(editor.Document, SyntaxTree.Parse(editor.Document));
-			changes.ApplyChanges(offset, length);
-		}
+		void WriteError(ErrorRecord error);
+		void WriteLine(string message);
+		void WriteVerbose(string message);
+		void WriteWarning(string message);
 	}
 }

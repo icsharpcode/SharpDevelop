@@ -25,7 +25,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Cmdlets
 {
-	public abstract class PackageManagementCmdlet : PSCmdlet, ITerminatingCmdlet, IPackageScriptSession, IPackageScriptRunner
+	public abstract class PackageManagementCmdlet : PSCmdlet, ITerminatingCmdlet, IPackageScriptSession, IPackageScriptRunner, ICmdletLogger
 	{
 		IPackageManagementConsoleHost consoleHost;
 		ICmdletTerminatingError terminatingError;
@@ -113,6 +113,11 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			if (script.Exists()) {
 				script.Run(this);
 			}
+		}
+		
+		void ICmdletLogger.WriteLine(string message)
+		{
+			Host.UI.WriteLine(message);
 		}
 	}
 }
