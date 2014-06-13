@@ -366,6 +366,7 @@
     <Compile Include="Workbench\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Workbench\FakeXmlViewContent.cs" />
     <Compile Include="Workbench\FileChangeWatcher.cs" />
+    <Compile Include="Workbench\File\FileHelpers.cs" />
     <Compile Include="Workbench\File\FileService.cs" />
     <Compile Include="Workbench\File\IRecentOpen.cs" />
     <Compile Include="Workbench\ICustomizedCommands.cs" />
