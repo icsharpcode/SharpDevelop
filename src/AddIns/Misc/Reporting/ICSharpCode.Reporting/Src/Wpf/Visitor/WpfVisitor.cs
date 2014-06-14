@@ -120,26 +120,22 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		public override void Visit(ExportText exportColumn){
 		
 			var formattedText = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
-			var visual = new DrawingVisual();
-			
 			var location = new Point(exportColumn.Location.X,exportColumn.Location.Y);
 			
-			using (var dc = visual.RenderOpen()){
+			var visual = new DrawingVisual();
+			using (var drawingContext = visual.RenderOpen()){
 				if (ShouldSetBackcolor(exportColumn)) {
-					dc.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),
+					drawingContext.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),
 						null,
 						new Rect(location,new Size(exportColumn.Size.Width,exportColumn.Size.Height)));
 				}
-				
+//http://stackoverflow.com/questions/4542717/length-of-string-that-will-fit-in-a-specific-width				
 //			http://stackoverflow.com/questions/9264398/how-to-calculate-wpf-textblock-width-for-its-known-font-size-and-characters	
 				
-//				if (exportColumn.ContentAlignment == System.Drawing.ContentAlignment.MiddleCenter) {
-//					location = new Point(location.X + (exportColumn.Size.Width - formattedText.Width) /2,location.Y + (exportColumn.Size.Height - formattedText.Height) / 2);
-//				}
 				var offset = FixedDocumentCreator.CalculateAlignmentOffset(formattedText,exportColumn);
 				var newLoc = new Point(location.X + offset.X,location.Y + offset.Y);
-//				dc.DrawText(formattedText,location);
-				dc.DrawText(formattedText,newLoc);
+
+				drawingContext.DrawText(formattedText,newLoc);
 			}
 			var dragingElement = new DrawingElement(visual);
 			UIElement = dragingElement;

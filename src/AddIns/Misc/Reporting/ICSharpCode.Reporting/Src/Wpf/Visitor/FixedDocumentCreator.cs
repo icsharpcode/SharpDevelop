@@ -66,11 +66,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			FlowDirection flowDirection;
 			
 			var culture = CultureInfo.CurrentCulture;
-			if (culture.TextInfo.IsRightToLeft) {
-				flowDirection = FlowDirection.RightToLeft;
-			} else {
-				flowDirection = FlowDirection.LeftToRight;
-			}
+			flowDirection = culture.TextInfo.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
 			
 			var emSize = ExtensionMethodes.ToPoints((int)exportText.Font.SizeInPoints +1);
 			
@@ -81,8 +77,14 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				emSize,
 				new SolidColorBrush(exportText.ForeColor.ToWpf()), null, TextFormattingMode.Display);
 			
-			formattedText.MaxTextWidth = ExtensionMethodes.ToPoints(exportText.DesiredSize.Width);
+			formattedText.MaxTextWidth = exportText.DesiredSize.Width ;
 			
+//			formattedText.TextAlignment = TextAlignment.Justify;
+			if (!exportText.CanGrow) {
+					formattedText.MaxTextHeight = exportText.Size.Height;
+				} else {
+				formattedText.MaxTextHeight = ExtensionMethodes.ToPoints(exportText.DesiredSize.Height );
+				}
 			ApplyPrintStyles(formattedText,exportText);
 
 			return formattedText;
