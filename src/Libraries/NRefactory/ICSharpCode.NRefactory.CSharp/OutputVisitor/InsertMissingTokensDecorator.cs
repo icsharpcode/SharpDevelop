@@ -61,6 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void WriteToken(Role role, string token)
 		{
 			CSharpTokenNode t = new CSharpTokenNode(locationProvider.Location, (TokenRole)role);
+			t.Role = role;
 			EmptyStatement node = nodes.Peek().LastOrDefault() as EmptyStatement;
 			if (node == null)
 				currentList.Add(t);
