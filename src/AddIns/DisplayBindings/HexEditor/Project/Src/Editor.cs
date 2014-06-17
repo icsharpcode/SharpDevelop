@@ -1413,6 +1413,14 @@ namespace HexEditor
 									this.Delete();
 								}
 								break;
+								// Ctrl-Y is pressed -> redo
+							case 89:
+								Redo();
+								break;
+								// Ctrl-Z is pressed -> undo
+							case 90:
+								Undo();
+								break;
 						}
 						break;
 					}
