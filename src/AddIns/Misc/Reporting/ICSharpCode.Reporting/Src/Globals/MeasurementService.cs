@@ -45,6 +45,7 @@ namespace ICSharpCode.Reporting.Globals
 				}
 				return new Size(item.Size.Width,(int)Math.Ceiling(sizeF.Height));
 			}
+			Console.WriteLine ("measure {0}",item.Size);
 			return item.Size;
 		}
 	}

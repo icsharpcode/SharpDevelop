@@ -58,7 +58,6 @@ namespace ICSharpCode.Reporting.Arrange
 		{
 			var containerRectangle = container.DisplayRectangle;
 			Rectangle elementRectangle = Rectangle.Empty;
-			
 			foreach (var element in container.ExportedItems) {
 				var con = element as IExportContainer;
 				if (con != null) {
@@ -76,9 +75,7 @@ namespace ICSharpCode.Reporting.Arrange
 					containerRectangle = new Rectangle(containerRectangle.Left,
 					                                   containerRectangle.Top ,
 					                                   containerRectangle.Width,
-					                                   element.Location.Y + elementRectangle.Size.Height + 5);
-					                                
-//					containerRectangle = Rectangle.Union(containerRectangle,elementRectangle);
+					                                   element.Location.Y + elementRectangle.Size.Height + 5);					                            
 				}
 			}
 			return containerRectangle.Size;

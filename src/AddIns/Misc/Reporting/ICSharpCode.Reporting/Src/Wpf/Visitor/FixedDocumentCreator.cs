@@ -40,7 +40,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 	static class FixedDocumentCreator
 	{
 		
-		
 		public static FixedPage CreateFixedPage(ExportPage exportPage) {
 			var fixedPage = new FixedPage();
 			fixedPage.Width = exportPage.Size.ToWpf().Width;
@@ -63,10 +62,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		public static FormattedText CreateFormattedText(ExportText exportText)
 		{
-			FlowDirection flowDirection;
-			
 			var culture = CultureInfo.CurrentCulture;
-			flowDirection = culture.TextInfo.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+			var flowDirection = culture.TextInfo.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
 			
 			var emSize = ExtensionMethodes.ToPoints((int)exportText.Font.SizeInPoints +1);
 			
@@ -78,15 +75,16 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				new SolidColorBrush(exportText.ForeColor.ToWpf()), null, TextFormattingMode.Display);
 			
 			formattedText.MaxTextWidth = exportText.DesiredSize.Width ;
+			formattedText.TextAlignment = exportText.TextAlignment;
 			
-//			formattedText.TextAlignment = TextAlignment.Justify;
 			if (!exportText.CanGrow) {
-					formattedText.MaxTextHeight = exportText.Size.Height;
-				} else {
+				formattedText.MaxTextHeight = exportText.Size.Height;
+			} else {
 				formattedText.MaxTextHeight = ExtensionMethodes.ToPoints(exportText.DesiredSize.Height );
-				}
+			}
+			
 			ApplyPrintStyles(formattedText,exportText);
-
+		
 			return formattedText;
 		}
 
@@ -153,6 +151,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			FixedPage.SetTop(element,exportColumn.Location.Y);
 		}
 		
+		/*
 		public static Point CalculateAlignmentOffset (FormattedText formattedText, ExportText exportText) {
 			var offset = new Point(0,0);
 			double y = 0;
@@ -206,7 +205,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			}
 			return new Point(x,y);
 		}
-		
+		*/
 		
 		public static Pen CreateWpfPen(IReportObject exportColumn){
 			if (exportColumn == null)

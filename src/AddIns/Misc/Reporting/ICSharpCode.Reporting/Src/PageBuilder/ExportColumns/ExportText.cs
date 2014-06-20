@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using System.Windows;
 using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
@@ -34,6 +35,7 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		 Font Font {get;set;}
 		 string Text {get;set;}
 		 ContentAlignment ContentAlignment {get;set;}
+		 TextAlignment TextAlignment {get;set;}
 		 string DataType {get;set;}
 		 string FormatString {get;set;}
 	}
@@ -57,7 +59,10 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		
 		public string FormatString {get;set;}
 		
+		[Obsolete ("Use TextAlignment")]
 		public ContentAlignment ContentAlignment {get;set;}
+		
+		public TextAlignment TextAlignment {get;set;}
 		
 		public string DataType {get;set;}
 		

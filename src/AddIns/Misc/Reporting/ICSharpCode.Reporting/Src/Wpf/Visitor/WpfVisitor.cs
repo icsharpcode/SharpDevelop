@@ -60,7 +60,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 	
 		
 		Canvas RenderSectionContainer (ExportContainer container) {
-		
+			Console.WriteLine("--------------");
+		Console.WriteLine("Container {0}",container.Name);
 			var canvas = FixedDocumentCreator.CreateContainer(container);
 			foreach (var element in container.ExportedItems) {
 				if (IsContainer(element)) {
@@ -120,11 +121,13 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		public override void Visit(ExportText exportColumn){
 		
 			var formattedText = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
+
 			var location = new Point(exportColumn.Location.X,exportColumn.Location.Y);
 			
 			var visual = new DrawingVisual();
 			using (var drawingContext = visual.RenderOpen()){
 				if (ShouldSetBackcolor(exportColumn)) {
+					var r = new Rect(location,new Size(exportColumn.Size.Width,exportColumn.Size.Height));
 					drawingContext.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),
 						null,
 						new Rect(location,new Size(exportColumn.Size.Width,exportColumn.Size.Height)));
@@ -132,12 +135,15 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 //http://stackoverflow.com/questions/4542717/length-of-string-that-will-fit-in-a-specific-width				
 //			http://stackoverflow.com/questions/9264398/how-to-calculate-wpf-textblock-width-for-its-known-font-size-and-characters	
 				
-				var offset = FixedDocumentCreator.CalculateAlignmentOffset(formattedText,exportColumn);
-				var newLoc = new Point(location.X + offset.X,location.Y + offset.Y);
-
-				drawingContext.DrawText(formattedText,newLoc);
+//				var offset = FixedDocumentCreator.CalculateAlignmentOffset(formattedText,exportColumn);
+//				var newLoc = new Point(location.X + offset.X,location.Y + offset.Y);
+				
+//				Console.WriteLine(" FT for {0} at {1}",formattedText.Text.Substring(0,5),newLoc);
+//				drawingContext.DrawText(formattedText,newLoc);
+				drawingContext.DrawText(formattedText,location);
 			}
 			var dragingElement = new DrawingElement(visual);
+		
 			UIElement = dragingElement;
 		}
 
