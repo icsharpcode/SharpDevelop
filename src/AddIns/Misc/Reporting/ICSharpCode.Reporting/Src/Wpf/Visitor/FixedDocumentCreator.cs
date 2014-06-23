@@ -151,51 +151,58 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			FixedPage.SetTop(element,exportColumn.Location.Y);
 		}
 		
-		
-		static void SetContentAlignment(TextBlock textBlock,ExportText exportText)
-		{
-	//Vertical alignment not working
-	
+		public static Point CalculateAlignmentOffset (FormattedText formattedText, ExportText exportText) {
+			var offset = new Point(0,0);
+			double y = 0;
+			double x = 0;
+			var textLenDif = exportText.Size.Width - formattedText.Width;
+			var textHeightDif = exportText.Size.Height - formattedText.Height;
+			
 			switch (exportText.ContentAlignment) {
+				// Top	
 				case System.Drawing.ContentAlignment.TopLeft:
-					textBlock.VerticalAlignment = VerticalAlignment.Top;
-					textBlock.TextAlignment = TextAlignment.Left;
 					break;
+					
 				case System.Drawing.ContentAlignment.TopCenter:
-					textBlock.VerticalAlignment = VerticalAlignment.Top;
-					textBlock.TextAlignment = TextAlignment.Center;
+					x = textLenDif / 2;
 					break;
+					
 				case System.Drawing.ContentAlignment.TopRight:
-					textBlock.VerticalAlignment = VerticalAlignment.Top;
-					textBlock.TextAlignment = TextAlignment.Right;
+					x = textLenDif;
 					break;
+					
 					// Middle
 				case System.Drawing.ContentAlignment.MiddleLeft:
-					textBlock.VerticalAlignment = VerticalAlignment.Center;
-					textBlock.TextAlignment = TextAlignment.Left;
+					y = textHeightDif / 2;
 					break;
+					
 				case System.Drawing.ContentAlignment.MiddleCenter:
-					textBlock.VerticalAlignment = VerticalAlignment.Center;
-					textBlock.TextAlignment = TextAlignment.Center;
+					y = textHeightDif / 2;
+					x = textLenDif / 2;
 					break;
+					
 				case System.Drawing.ContentAlignment.MiddleRight:
-					textBlock.VerticalAlignment = VerticalAlignment.Center;
-					textBlock.TextAlignment = TextAlignment.Right;
+					x = textLenDif;;
+					y = textHeightDif / 2;
 					break;
+					
 					//Bottom
 				case System.Drawing.ContentAlignment.BottomLeft:
-					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-					textBlock.TextAlignment = TextAlignment.Left;
+					x = 0;
+					y = textHeightDif;
 					break;
+					
 				case System.Drawing.ContentAlignment.BottomCenter:
-					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-					textBlock.TextAlignment = TextAlignment.Center;
+					x = textLenDif / 2;
+					y = textHeightDif;
 					break;
+					
 				case System.Drawing.ContentAlignment.BottomRight:
-					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-					textBlock.TextAlignment = TextAlignment.Right;
+					x = textLenDif;
+					y  = textHeightDif;
 					break;
 			}
+			return new Point(x,y);
 		}
 		
 		
@@ -217,13 +224,13 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		public static Brush ConvertBrush(System.Drawing.Color color){
+		public static Brush ConvertBrush(System.Drawing.Color color)
+		{
 			var b = new BrushConverter();
-			if (b.IsValid(color.Name)){
+			if (b.IsValid(color.Name)) {
 				return b.ConvertFromString(color.Name) as SolidColorBrush;
-			} else{
-				return b.ConvertFromString("Black") as SolidColorBrush;
 			}
+			return b.ConvertFromString("Black") as SolidColorBrush;
 		}
 		
 		
@@ -269,6 +276,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			}
 			return penLineCap;
 		}
+		
 		
 		public static DashStyle DashStyle (IExportGraphics exportGraphics) {
 			var dashStyle = DashStyles.Solid;

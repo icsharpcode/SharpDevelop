@@ -35,7 +35,7 @@ namespace CSharpBinding.OptionPanels
 	/// </summary>
 	internal partial class CSharpProjectFormattingOptionPanel : ProjectOptionPanel
 	{
-		CSharpFormattingOptionsPersistence persistenceHelper;
+		CSharpFormattingPolicy formattingPolicy;
 		
 		public CSharpProjectFormattingOptionPanel()
 		{
@@ -45,18 +45,19 @@ namespace CSharpBinding.OptionPanels
 		protected override void Load(ICSharpCode.SharpDevelop.Project.MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-			if (persistenceHelper != null) {
-				persistenceHelper.OptionsContainer.PropertyChanged -= ContainerPropertyChanged;
+			if (formattingPolicy != null) {
+				formattingPolicy.OptionsContainer.PropertyChanged -= ContainerPropertyChanged;
 			}
-			persistenceHelper = CSharpFormattingOptionsPersistence.GetProjectOptions(project);
-			formattingEditor.OptionsContainer = persistenceHelper.OptionsContainer;
+			formattingPolicy = CSharpFormattingPolicies.Instance.GetProjectOptions(project);
+			formattingEditor.OptionsContainer = formattingPolicy.OptionsContainer;
 			formattingEditor.AllowPresets = true;
-			persistenceHelper.OptionsContainer.PropertyChanged += ContainerPropertyChanged;
+			formattingEditor.OverrideGlobalIndentation = true;
+			formattingPolicy.OptionsContainer.PropertyChanged += ContainerPropertyChanged;
 		}
 		
 		protected override bool Save(ICSharpCode.SharpDevelop.Project.MSBuildBasedProject project, string configuration, string platform)
 		{
-			bool success = (persistenceHelper != null) && persistenceHelper.Save();
+			bool success = (formattingPolicy != null) && formattingPolicy.Save();
 			return base.Save(project, configuration, platform) && success;
 		}
 

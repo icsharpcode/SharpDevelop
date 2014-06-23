@@ -17,48 +17,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Drawing;
-using System.Reflection;
+using System.Management.Automation;
 
-using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Items;
-using NUnit.Framework;
-
-namespace ICSharpCode.Reporting.Test.Model
+namespace ICSharpCode.PackageManagement.Scripting
 {
-	[TestFixture]
-	public class Report_FromListFixture
+	public interface ICmdletLogger
 	{
-		IReportModel model;
-		
-		[Test]
-		public void ReportHeaderContainsOneItem () {
-			var section = model.ReportHeader;
-			Assert.That(section.Items.Count,Is.EqualTo(1));
-		}
-		
-		
-		[Test]
-		public void PageHeaderContainsOneItem () {
-			var section = model.ReportHeader;
-			Assert.That(section.Items.Count,Is.EqualTo(1));
-		}
-		
-		
-		[Test]
-		public void DetailContainsOneDataItem() {
-			var section = model.DetailSection;
-			Assert.That(section.Items.Count,Is.EqualTo(2));
-		}
-		
-		
-		[SetUp]
-		public void LoadModelFromStream()
-		{
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
-			var rf = new ReportingFactory();
-			model = rf.LoadReportModel(stream);
-		}	
+		void WriteError(ErrorRecord error);
+		void WriteLine(string message);
+		void WriteVerbose(string message);
+		void WriteWarning(string message);
 	}
 }

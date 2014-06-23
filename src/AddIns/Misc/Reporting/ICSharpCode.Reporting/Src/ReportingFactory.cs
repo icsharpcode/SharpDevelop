@@ -60,7 +60,7 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
-		internal ReportModel LoadReportModel (Stream stream)
+		internal IReportModel LoadReportModel (Stream stream)
 		{
 			var doc = new XmlDocument();
 			doc.Load(stream);
@@ -69,7 +69,7 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
-		static ReportModel LoadModel(XmlDocument doc)
+		static IReportModel LoadModel(XmlDocument doc)
 		{
 			var loader = new ModelLoader();
 			object root = loader.Load(doc.DocumentElement);
@@ -78,6 +78,6 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
-		public ReportModel ReportModel {get;private set;}
+		public IReportModel ReportModel {get;private set;}
 	}
 }

@@ -17,48 +17,39 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Drawing;
-using System.Reflection;
+using System.Management.Automation;
+using ICSharpCode.PackageManagement.Scripting;
 
-using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Items;
-using NUnit.Framework;
-
-namespace ICSharpCode.Reporting.Test.Model
+namespace PackageManagement.Tests.Helpers
 {
-	[TestFixture]
-	public class Report_FromListFixture
+	public class FakeCmdletLogger : ICmdletLogger
 	{
-		IReportModel model;
+		public ErrorRecord ErrorRecordLogged;
 		
-		[Test]
-		public void ReportHeaderContainsOneItem () {
-			var section = model.ReportHeader;
-			Assert.That(section.Items.Count,Is.EqualTo(1));
-		}
-		
-		
-		[Test]
-		public void PageHeaderContainsOneItem () {
-			var section = model.ReportHeader;
-			Assert.That(section.Items.Count,Is.EqualTo(1));
-		}
-		
-		
-		[Test]
-		public void DetailContainsOneDataItem() {
-			var section = model.DetailSection;
-			Assert.That(section.Items.Count,Is.EqualTo(2));
-		}
-		
-		
-		[SetUp]
-		public void LoadModelFromStream()
+		public void WriteError(ErrorRecord error)
 		{
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
-			var rf = new ReportingFactory();
-			model = rf.LoadReportModel(stream);
-		}	
+			ErrorRecordLogged = error;
+		}
+		
+		public string LineLogged;
+		
+		public void WriteLine(string message)
+		{
+			LineLogged = message;
+		}
+		
+		public string VerboseMessageLogged;
+		
+		public void WriteVerbose(string message)
+		{
+			VerboseMessageLogged = message;
+		}
+		
+		public string WarningMessageLogged;
+		
+		public void WriteWarning(string message)
+		{
+			WarningMessageLogged = message;
+		}
 	}
 }

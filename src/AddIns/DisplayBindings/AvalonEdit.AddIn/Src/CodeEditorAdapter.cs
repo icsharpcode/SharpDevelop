@@ -38,12 +38,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	sealed class CodeEditorAdapter : CodeCompletionEditorAdapter
 	{
 		readonly CodeEditor codeEditor;
+		ITextEditorOptions options;
 		
 		public CodeEditorAdapter(CodeEditor codeEditor, CodeEditorView textEditor) : base(textEditor)
 		{
 			if (codeEditor == null)
 				throw new ArgumentNullException("codeEditor");
 			this.codeEditor = codeEditor;
+			options = CodeEditorOptions.Instance;
 		}
 		
 		public override FileName FileName {
@@ -78,9 +80,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		internal void DetachExtensions()
 		{
 			if (extensions != null) {
-				foreach (var extension in extensions)
-					extension.Detach();
+				// Detach extensions in reverse order
+				for (int i = extensions.Count - 1; i >= 0; i--) {
+					extensions[i].Detach();
+				}
 			}
+			
+			// Switch to global options, if no specific options service is registered
+			options = this.GetService<ITextEditorOptions>() ?? CodeEditorOptions.Instance;
 		}
 		
 		
@@ -90,6 +97,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				foreach (var extension in extensions)
 					extension.Attach(this);
 			}
+			
+			// If we have any registered ITextEditorOptions service now, use it, otherwise global options
+			options = this.GetService<ITextEditorOptions>() ?? CodeEditorOptions.Instance;
+		}
+		
+		public override ITextEditorOptions Options {
+			get { return options; }
 		}
 		
 		sealed class OptionControlledIndentationStrategy : IndentationStrategyAdapter

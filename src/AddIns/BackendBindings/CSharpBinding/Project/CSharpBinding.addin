@@ -510,7 +510,7 @@
 	
 	<!-- Autostart command for initialization -->
 	<Path name = "/SharpDevelop/Autostart">
-		<Class id    = "CSharpFormattingOptionsPersistenceInitCommand"
-		       class = "CSharpBinding.FormattingStrategy.CSharpFormattingOptionsPersistenceInitCommand"/>
+		<Class id    = "CSharpFormattingOptionsPoliciesInitCommand"
+		       class = "CSharpBinding.FormattingStrategy.CSharpFormattingOptionsPoliciesInitCommand"/>
 	</Path>
 </AddIn>

@@ -17,48 +17,33 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Drawing;
-using System.Reflection;
+using System.IO;
+using ICSharpCode.Core;
 
-using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Items;
-using NUnit.Framework;
-
-namespace ICSharpCode.Reporting.Test.Model
+namespace ICSharpCode.SharpDevelop.Workbench
 {
-	[TestFixture]
-	public class Report_FromListFixture
+	/// <summary>
+	/// Utility/helper methods for IFileService to avoid changing the IFileService interface.
+	/// </summary>
+	public static class FileHelpers
 	{
-		IReportModel model;
-		
-		[Test]
-		public void ReportHeaderContainsOneItem () {
-			var section = model.ReportHeader;
-			Assert.That(section.Items.Count,Is.EqualTo(1));
-		}
-		
-		
-		[Test]
-		public void PageHeaderContainsOneItem () {
-			var section = model.ReportHeader;
-			Assert.That(section.Items.Count,Is.EqualTo(1));
-		}
-		
-		
-		[Test]
-		public void DetailContainsOneDataItem() {
-			var section = model.DetailSection;
-			Assert.That(section.Items.Count,Is.EqualTo(2));
-		}
-		
-		
-		[SetUp]
-		public void LoadModelFromStream()
+		/// <summary>
+		/// Checks that the rename/overwrite operation is possible.
+		/// </summary>
+		public static bool CheckRenameOrReplacePossible(FileRenameEventArgs e, bool replaceAllowed = false)
 		{
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
-			var rf = new ReportingFactory();
-			model = rf.LoadReportModel(stream);
-		}	
+			if (e.IsDirectory && Directory.Exists(e.SourceFile)) {
+				if (!replaceAllowed && Directory.Exists(e.TargetFile)) {
+					SD.MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
+					return false;
+				}
+			} else if (File.Exists(e.SourceFile)) {
+				if (!replaceAllowed && File.Exists(e.TargetFile)) {
+					SD.MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
+					return false;
+				}
+			}
+			return true;
+		}
 	}
 }
