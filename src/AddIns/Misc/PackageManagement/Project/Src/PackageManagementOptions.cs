@@ -95,5 +95,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			properties.SetList(RecentPackagesPropertyName, recentPackages);
 		}
+		
+		public string GetCustomPackagesDirectory()
+		{
+			return registeredPackageSourceSettings.Settings.GetRepositoryPath();
+		}
 	}
 }
