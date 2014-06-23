@@ -24,6 +24,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+using ICSharpCode.NRefactory.Analysis;
 using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -56,20 +57,42 @@ namespace CSharpBinding
 		FindReferences fr = new FindReferences();
 		IList<IFindReferenceSearchScope> searchScopes;
 		IList<string>[] interestingFileNames;
+		Dictionary<string, IList<IFindReferenceSearchScope>> searchScopesPerFile;
 		int workAmount;
 		double workAmountInverse;
 		
 		public CSharpSymbolSearch(IProject project, ISymbol entity)
 		{
 			this.project = project;
-			searchScopes = fr.GetSearchScopes(entity);
 			compilation = SD.ParserService.GetCompilation(project);
+			var relatedSymbols = GetRelatedSymbols(entity);
+			if ((relatedSymbols != null) && relatedSymbols.Any()) {
+				searchScopes = relatedSymbols.SelectMany(e => fr.GetSearchScopes(e)).ToList();
+			} else {
+				searchScopes = fr.GetSearchScopes(entity);
+			}
+			
+			searchScopesPerFile = new Dictionary<string, IList<IFindReferenceSearchScope>>();
 			interestingFileNames = new IList<string>[searchScopes.Count];
 			for (int i = 0; i < searchScopes.Count; i++) {
-				interestingFileNames[i] = fr.GetInterestingFiles(searchScopes[i], compilation).Select(f => f.FileName).ToList();
-				workAmount += interestingFileNames[i].Count;
+				var thisSearchScope = searchScopes[i];
+				var interestingFiles = fr.GetInterestingFiles(thisSearchScope, compilation).Select(f => f.FileName).ToList();
+				foreach (var file in interestingFiles) {
+					if (!searchScopesPerFile.ContainsKey(file))
+						searchScopesPerFile[file] = new List<IFindReferenceSearchScope>();
+					searchScopesPerFile[file].Add(thisSearchScope);
+				}
+				interestingFileNames[i] = interestingFiles.ToList();
+				workAmount += interestingFiles.Count;
 			}
 			workAmountInverse = 1.0 / workAmount;
+		}
+		
+		IEnumerable<ISymbol> GetRelatedSymbols(ISymbol entity)
+		{
+			TypeGraph typeGraph = new TypeGraph(new [] { compilation.MainAssembly });
+			var symbolCollector = new SymbolCollector();
+			return symbolCollector.GetRelatedSymbols(typeGraph, entity);
 		}
 		
 		public double WorkAmount {
@@ -83,40 +106,38 @@ namespace CSharpBinding
 			var cancellationToken = args.ProgressMonitor.CancellationToken;
 			return Task.Run(
 				() => {
-					for (int i = 0; i < searchScopes.Count; i++) {
-						IFindReferenceSearchScope searchScope = searchScopes[i];
-						object progressLock = new object();
-						Parallel.ForEach(
-							interestingFileNames[i],
-							new ParallelOptions {
-								MaxDegreeOfParallelism = Environment.ProcessorCount,
-								CancellationToken = cancellationToken
-							},
-							delegate (string fileName) {
-								try {
-									FindReferencesInFile(args, searchScope, FileName.Create(fileName), callback, cancellationToken);
-								} catch (OperationCanceledException) {
-									throw;
-								} catch (Exception ex) {
-									throw new ApplicationException("Error searching in file '" + fileName + "'", ex);
-								}
-								lock (progressLock)
-									args.ProgressMonitor.Progress += workAmountInverse;
-							});
-					}
+					object progressLock = new object();
+					Parallel.ForEach(
+						searchScopesPerFile.Keys,
+						new ParallelOptions {
+							MaxDegreeOfParallelism = Environment.ProcessorCount,
+							CancellationToken = cancellationToken
+						},
+						delegate (string fileName) {
+							try {
+								FindReferencesInFile(args, searchScopesPerFile[fileName], FileName.Create(fileName), callback, cancellationToken);
+							} catch (OperationCanceledException) {
+								throw;
+							} catch (Exception ex) {
+								throw new ApplicationException("Error searching in file '" + fileName + "'", ex);
+							}
+							lock (progressLock)
+								args.ProgressMonitor.Progress += workAmountInverse;
+						});
 				}, cancellationToken
 			);
 		}
 		
-		void FindReferencesInFile(SymbolSearchArgs args, IFindReferenceSearchScope searchScope, FileName fileName, Action<SearchedFile> callback, CancellationToken cancellationToken)
+		void FindReferencesInFile(SymbolSearchArgs args, IList<IFindReferenceSearchScope> searchScopeList, FileName fileName, Action<SearchedFile> callback, CancellationToken cancellationToken)
 		{
 			ITextSource textSource = args.ParseableFileContentFinder.Create(fileName);
 			if (textSource == null)
 				return;
-			if (searchScope.SearchTerm != null) {
-				if (textSource.IndexOf(searchScope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) < 0)
-					return;
-			}
+			// TODO Reactivate somehow!
+//			if (searchScope.SearchTerm != null) {
+//				if (textSource.IndexOf(searchScope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) < 0)
+//					return;
+//			}
 			
 			var parseInfo = SD.ParserService.Parse(fileName, textSource) as CSharpFullParseInformation;
 			if (parseInfo == null)
@@ -134,7 +155,7 @@ namespace CSharpBinding
 			}
 			
 			fr.FindReferencesInFile(
-				searchScope, unresolvedFile, parseInfo.SyntaxTree, compilation,
+				searchScopeList, unresolvedFile, parseInfo.SyntaxTree, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					if (document == null) {
 						document = new ReadOnlyDocument(textSource, fileName);
@@ -154,8 +175,18 @@ namespace CSharpBinding
 			if (highlighter != null) {
 				highlighter.Dispose();
 			}
-			if (results.Count > 0)
-				callback(new SearchedFile(fileName, results));
+			if (results.Count > 0) {
+				// Remove overlapping results
+				List<SearchResultMatch> fixedResults = new List<SearchResultMatch>();
+				int lastEndOffset = 0;
+				foreach (var result in results.OrderBy(m => m.StartOffset)) {
+					if (result.StartOffset >= lastEndOffset) {
+						fixedResults.Add(result);
+						lastEndOffset = result.EndOffset;
+					}
+				}
+				callback(new SearchedFile(fileName, fixedResults));
+			}
 		}
 		
 		public Task RenameAsync(SymbolRenameArgs args, Action<PatchedFile> callback, Action<Error> errorCallback)
@@ -166,34 +197,32 @@ namespace CSharpBinding
 			return Task.Run(
 				() => {
 					bool isNameValid = Mono.CSharp.Tokenizer.IsValidIdentifier(args.NewName);
-					for (int i = 0; i < searchScopes.Count; i++) {
-						IFindReferenceSearchScope searchScope = searchScopes[i];
-						object progressLock = new object();
-						Parallel.ForEach(
-							interestingFileNames[i],
-							new ParallelOptions {
-								MaxDegreeOfParallelism = Environment.ProcessorCount,
-								CancellationToken = cancellationToken
-							},
-							delegate (string fileName) {
-								RenameReferencesInFile(args, searchScope, FileName.Create(fileName), callback, errorCallback, isNameValid, cancellationToken);
-								lock (progressLock)
-									args.ProgressMonitor.Progress += workAmountInverse;
-							});
-					}
+					object progressLock = new object();
+					Parallel.ForEach(
+						searchScopesPerFile.Keys,
+						new ParallelOptions {
+							MaxDegreeOfParallelism = Environment.ProcessorCount,
+							CancellationToken = cancellationToken
+						},
+						delegate (string fileName) {
+							RenameReferencesInFile(args, searchScopesPerFile[fileName], FileName.Create(fileName), callback, errorCallback, isNameValid, cancellationToken);
+							lock (progressLock)
+								args.ProgressMonitor.Progress += workAmountInverse;
+						});
 				}, cancellationToken
 			);
 		}
 		
-		void RenameReferencesInFile(SymbolRenameArgs args, IFindReferenceSearchScope searchScope, FileName fileName, Action<PatchedFile> callback, Action<Error> errorCallback, bool isNameValid, CancellationToken cancellationToken)
+		void RenameReferencesInFile(SymbolRenameArgs args, IList<IFindReferenceSearchScope> searchScopeList, FileName fileName, Action<PatchedFile> callback, Action<Error> errorCallback, bool isNameValid, CancellationToken cancellationToken)
 		{
 			ITextSource textSource = args.ParseableFileContentFinder.Create(fileName);
 			if (textSource == null)
 				return;
-			if (searchScope.SearchTerm != null) {
-				if (textSource.IndexOf(searchScope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) < 0)
-					return;
-			}
+			// TODO Reactivate somehow!
+//			if (searchScope.SearchTerm != null) {
+//				if (textSource.IndexOf(searchScope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) < 0)
+//					return;
+//			}
 			
 			var parseInfo = SD.ParserService.Parse(fileName, textSource) as CSharpFullParseInformation;
 			if (parseInfo == null)
@@ -213,7 +242,7 @@ namespace CSharpBinding
 			CSharpAstResolver resolver = new CSharpAstResolver(compilation, parseInfo.SyntaxTree, unresolvedFile);
 			
 			fr.RenameReferencesInFile(
-				new[] { searchScope }, args.NewName, resolver,
+				searchScopeList, args.NewName, resolver,
 				delegate (RenameCallbackArguments callbackArgs) {
 					var node = callbackArgs.NodeToReplace;
 					string newCode = callbackArgs.NewNode.ToString();
@@ -249,10 +278,16 @@ namespace CSharpBinding
 				}
 				IDocument changedDocument = new TextDocument(document);
 				var oldVersion = changedDocument.Version;
+				List<SearchResultMatch> fixedResults = new List<SearchResultMatch>();
+				int lastStartOffset = changedDocument.TextLength + 1;
 				foreach (var result in results.OrderByDescending(m => m.StartOffset)) {
-					changedDocument.Replace(result.StartOffset, result.Length, result.NewCode);
+					if (result.EndOffset <= lastStartOffset) {
+						changedDocument.Replace(result.StartOffset, result.Length, result.NewCode);
+						fixedResults.Add(result);
+						lastStartOffset = result.StartOffset;
+					}
 				}
-				callback(new PatchedFile(fileName, results, oldVersion, changedDocument.Version));
+				callback(new PatchedFile(fileName, fixedResults, oldVersion, changedDocument.Version));
 			}
 		}
 	}
