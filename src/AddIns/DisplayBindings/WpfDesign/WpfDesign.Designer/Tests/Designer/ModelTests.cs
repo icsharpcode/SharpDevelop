@@ -640,6 +640,34 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
+		public void AddStaticResourceWhereResourceOnSameElement()
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			DesignItem canvas = button.Parent;
+			
+			DesignItemProperty resProp = button.Properties.GetProperty("Resources");
+			Assert.IsTrue(resProp.IsCollection);
+			DesignItem exampleClassItem = canvas.Services.Component.RegisterComponentForDesigner(new ExampleClass());
+			exampleClassItem.Key = "res1";
+			resProp.CollectionElements.Add(exampleClassItem);
+			
+			button.Properties["Tag"].SetValue(new StaticResourceExtension());
+			button.Properties["Tag"].Value.Properties["ResourceKey"].SetValue("res1");
+			
+			string expectedXaml = "<Button>\n" +
+								  "  <Button.Resources>\n" +
+								  "    <t:ExampleClass x:Key=\"res1\" />\n" +
+								  "  </Button.Resources>\n" +
+								  "  <Button.Tag>\n" +
+								  "    <StaticResourceExtension ResourceKey=\"res1\" />\n" +
+								  "  </Button.Tag>\n" +
+								  "</Button>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
 		public void AddBrushAsResource()
 		{
 			DesignItem checkBox = CreateCanvasContext("<CheckBox/>");
