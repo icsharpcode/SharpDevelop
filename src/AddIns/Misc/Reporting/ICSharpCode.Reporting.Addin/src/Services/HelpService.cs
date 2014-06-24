@@ -64,7 +64,7 @@ namespace ICSharpCode.Reporting.Addin.Services
 		{
 			ShowHelpFromKeyword(generalKeyword);
 		}
-		public void ShowHelp()
+		static public void ShowHelp()
 		{
 //			HelpProvider.ShowHelp(f1Keyword);
 		}

@@ -22,7 +22,6 @@ namespace ICSharpCode.Reporting.Addin.Factory
 	class CreateFormSheetFromModel
 	{
 		
-		
 		public StringWriter ToXml(IReportModel reportModel) {
 			int locY = reportModel.ReportSettings.TopMargin;
 			
@@ -39,7 +38,7 @@ namespace ICSharpCode.Reporting.Addin.Factory
 			return xml;
 		}
 		
-		StringWriter ToXmlInternal(IReportModel model)
+		static StringWriter ToXmlInternal(IReportModel model)
 		{
 			var writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
 			var xml = XmlHelper.CreatePropperWriter(writer);

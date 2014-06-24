@@ -183,7 +183,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		DrawingElement CircleVisual(GraphicsContainer circle){
+		static DrawingElement CircleVisual(GraphicsContainer circle){
 			var pen = FixedDocumentCreator.CreateWpfPen(circle);
 			var rad = CalcRadius(circle.Size);
 			
@@ -199,7 +199,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		Border CreateBorder(IExportColumn exportColumn)
+		static Border CreateBorder(IExportColumn exportColumn)
 		{
 			var border = new Border();
 			border.BorderThickness =  Thickness(exportColumn);
@@ -211,7 +211,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 
 		
-		Thickness Thickness(IExportColumn exportColumn)
+		static Thickness Thickness(IExportColumn exportColumn)
 		{
 			double bT;
 			bT = !IsGraphicsContainer(exportColumn) ? 1 : Convert.ToDouble(((GraphicsContainer)exportColumn).Thickness);

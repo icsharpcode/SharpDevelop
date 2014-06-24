@@ -18,6 +18,7 @@
 
 using System;
 using System.Data;
+using System.Globalization;
 
 namespace ICSharpCode.Reporting.Globals
 {
@@ -28,8 +29,7 @@ namespace ICSharpCode.Reporting.Globals
 	{
 		public static DbType DbTypeFromStringRepresenation(string type)
 		{
-			switch (type.ToLower())
-			{
+			switch (type.ToLower(CultureInfo.CurrentCulture)){
 				case "int":
 					return DbType.Int16;
 				case "int16":
