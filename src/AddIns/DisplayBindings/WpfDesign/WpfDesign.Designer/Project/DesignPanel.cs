@@ -377,28 +377,35 @@ namespace ICSharpCode.WpfDesign.Designer
 					placementOp = PlacementOperation.Start(Context.Services.Selection.SelectedItems, PlacementType.Move);
 				}
 				
+				switch (e.Key) {
+					case Key.Left:
+						dx += Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1;
+						break;
+					case Key.Up:
+						dy += Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1;
+						break;
+					case Key.Right:
+						dx += Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1;
+						break;
+					case Key.Down:
+						dy += Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1;
+						break;
+				}
 				
-				dx = (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
-				dy = (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
-				dx = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : (dx != 0 ? dx : 0);
-                dy = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : (dy != 0 ? dy : 0);
-				double left, top;
 				foreach (PlacementInformation info in placementOp.PlacedItems)
 				{
-                    //Let canvas position preceed bounds definition since there can be a discrepancy between them.
-				    left = IsPropertySet(info.Item.View,Canvas.LeftProperty)?(double)info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).ValueOnInstance: info.OriginalBounds.Left;
-
-                    top = IsPropertySet(info.Item.View, Canvas.TopProperty) ? (double)info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).ValueOnInstance : info.OriginalBounds.Top;
+					var bounds = info.OriginalBounds;
+					
 					if (!Keyboard.IsKeyDown(Key.LeftCtrl)) {
-						info.Bounds = new Rect(left + dx,
-							top + dy,
-							info.OriginalBounds.Width,
-							info.OriginalBounds.Height);
+						info.Bounds = new Rect(bounds.Left + dx,
+							bounds.Top + dy,
+							bounds.Width,
+							bounds.Height);
 					} else {
-						info.Bounds = new Rect(left,
-							top,
-							info.OriginalBounds.Width + dx,
-							info.OriginalBounds.Height + dy);
+						info.Bounds = new Rect(bounds.Left,
+							bounds.Top,
+							bounds.Width + dx,
+							bounds.Height + dy);
 					}
 					placementOp.CurrentContainerBehavior.SetPosition(info);
 				}
