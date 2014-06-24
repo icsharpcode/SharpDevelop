@@ -92,10 +92,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return true;
 			foreach(var token in tokens)
 			{
-				if(bigText.Contains(token))
-					return true;
+				if(bigText.IndexOf(token, StringComparison.OrdinalIgnoreCase)<0)
+					return false;
 			}
-			return false;
+			return true;
 		}
 		
 		void Search()
