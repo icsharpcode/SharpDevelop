@@ -44,9 +44,9 @@ namespace ICSharpCode.Reporting.Xml
 	public abstract class MycroParser
 	{
 		public MycroParser() {
-			Console.WriteLine("Mycroparser");
-			Console.WriteLine();
 		}
+		
+		
 		public object Load(XmlElement element)
 		{
 			return ProcessNode(element, null);
