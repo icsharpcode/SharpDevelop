@@ -133,11 +133,11 @@ namespace CSharpBinding
 			ITextSource textSource = args.ParseableFileContentFinder.Create(fileName);
 			if (textSource == null)
 				return;
-			// TODO Reactivate somehow!
-//			if (searchScope.SearchTerm != null) {
-//				if (textSource.IndexOf(searchScope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) < 0)
-//					return;
-//			}
+			if (searchScopeList != null) {
+				if (!searchScopeList.Any(
+					scope => (scope.SearchTerm == null) || (textSource.IndexOf(scope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) >= 0)))
+					return;
+			}
 			
 			var parseInfo = SD.ParserService.Parse(fileName, textSource) as CSharpFullParseInformation;
 			if (parseInfo == null)
@@ -218,11 +218,11 @@ namespace CSharpBinding
 			ITextSource textSource = args.ParseableFileContentFinder.Create(fileName);
 			if (textSource == null)
 				return;
-			// TODO Reactivate somehow!
-//			if (searchScope.SearchTerm != null) {
-//				if (textSource.IndexOf(searchScope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) < 0)
-//					return;
-//			}
+			if (searchScopeList != null) {
+				if (!searchScopeList.Any(
+					scope => (scope.SearchTerm == null) || (textSource.IndexOf(scope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) >= 0)))
+					return;
+			}
 			
 			var parseInfo = SD.ParserService.Parse(fileName, textSource) as CSharpFullParseInformation;
 			if (parseInfo == null)
