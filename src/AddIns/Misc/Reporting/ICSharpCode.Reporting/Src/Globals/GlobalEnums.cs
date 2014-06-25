@@ -25,7 +25,7 @@ namespace ICSharpCode.Reporting.Globals
 	/// </summary>
 	public sealed class GlobalEnums
 	{
-		GlobalEnums() {
+		private GlobalEnums() {
 		}
 	
 		public enum ReportSection {
