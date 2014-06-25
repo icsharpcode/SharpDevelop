@@ -27,6 +27,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public class ProjectReferencePanel : ListView, IReferencePanel
 	{
 		ISelectReferenceDialog selectDialog;
+		TextBox filterTextBox;
 		
 		public ProjectReferencePanel(ISelectReferenceDialog selectDialog)
 		{
@@ -48,6 +49,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ItemActivate += delegate { AddReference(); };
 			PopulateListView();
+			
+			
+			Panel upperPanel = new Panel { Dock = DockStyle.Top, Height = 20 };
+			filterTextBox = new TextBox { Width = 150, Dock = DockStyle.Right };
+			filterTextBox.TextChanged += delegate { Search(); };
+				
+			upperPanel.Controls.Add(filterTextBox);
+			
+			this.Controls.Add(upperPanel);
 		}
 		
 		public void AddReference()
@@ -60,6 +70,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					new ProjectReferenceProjectItem(selectDialog.ConfigureProject, project)
 				);
 			}
+			filterTextBox.Text = "";
 		}
 		
 		void PopulateListView()
@@ -69,6 +80,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			foreach (IProject project in ProjectService.OpenSolution.Projects.OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)) {
+				ListViewItem newItem = new ListViewItem(new string[] { project.Name, project.Directory });
+				newItem.Tag = project;
+				Items.Add(newItem);
+			}
+		}
+		
+		static bool ContainsAnyOfTokens(string bigText, string[] tokens)
+		{
+			if(tokens.Length==0)
+				return true;
+			foreach(var token in tokens)
+			{
+				if(bigText.IndexOf(token, StringComparison.OrdinalIgnoreCase)<0)
+					return false;
+			}
+			return true;
+		}
+		
+		void Search()
+		{
+			Items.Clear();
+			var tokens = filterTextBox.Text.Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries);
+			
+			foreach (IProject project in ProjectService.OpenSolution.Projects.
+			         Where(pr=>ContainsAnyOfTokens(pr.Name, tokens))
+			         .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
+			        ) {
 				ListViewItem newItem = new ListViewItem(new string[] { project.Name, project.Directory });
 				newItem.Tag = project;
 				Items.Add(newItem);
