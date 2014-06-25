@@ -35,8 +35,6 @@ namespace ICSharpCode.Reporting
 	
 	public class ReportingFactory
 	{
-		
-		
 		public IReportCreator ReportCreator (Stream stream,IEnumerable list)
 		{
 			ReportModel = LoadReportModel (stream);

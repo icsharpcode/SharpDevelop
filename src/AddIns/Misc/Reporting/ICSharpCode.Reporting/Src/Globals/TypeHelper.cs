@@ -25,7 +25,7 @@ namespace ICSharpCode.Reporting.Globals
 	/// <summary>
 	/// Description of TypeHelper.
 	/// </summary>
-	class TypeHelper
+	static class TypeHelper
 	{
 		public static DbType DbTypeFromStringRepresenation(string type)
 		{

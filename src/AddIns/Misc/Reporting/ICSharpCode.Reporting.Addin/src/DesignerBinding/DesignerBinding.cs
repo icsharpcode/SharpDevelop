@@ -47,9 +47,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 			if (file.IsDirty) {
 
 				var reportModel = ReportModelFactory.Create();
-	
-				var reportFactory = new CreateFormSheetFromModel();
-				var xml = reportFactory.ToXml(reportModel);
+				var xml = CreateFormSheetFromModel.ToXml(reportModel);
 				
 				var doc = new XmlDocument();
 				doc.LoadXml(xml.ToString());

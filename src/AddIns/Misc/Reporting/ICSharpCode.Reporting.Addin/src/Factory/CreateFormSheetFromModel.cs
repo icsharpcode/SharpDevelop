@@ -19,10 +19,10 @@ namespace ICSharpCode.Reporting.Addin.Factory
 	/// <summary>
 	/// Description of CreateFormSheetReport.
 	/// </summary>
-	class CreateFormSheetFromModel
+	static class CreateFormSheetFromModel
 	{
 		
-		public StringWriter ToXml(IReportModel reportModel) {
+		public static StringWriter ToXml(IReportModel reportModel) {
 			int locY = reportModel.ReportSettings.TopMargin;
 			
 				foreach (var section in reportModel.SectionCollection)

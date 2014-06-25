@@ -33,7 +33,7 @@ namespace ICSharpCode.Reporting.DataSource
 	
 	public class PropertyMemberAccessor : IMemberAccessor
     {
-        private readonly PropertyInfo _prop;
+        readonly PropertyInfo _prop;
 
         public PropertyMemberAccessor(PropertyInfo prop)
         {
