@@ -80,5 +80,12 @@ namespace ICSharpCode.FiletypeRegisterer
 			}
 			return true;
 		}
+		
+		void fileTypesListBox_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+		{
+			if (fileTypesListBox.IndexFromPoint(e.X, e.Y) == ListBox.NoMatches) {
+				fileTypesListBox.SelectedIndex = -1;
+			}
+		}
 	}
 }
