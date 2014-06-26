@@ -25,7 +25,7 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new LineItemTypeDescriptor(td, instance);
+			return new LineItemTypeDescriptor(td);
 		}
 	}
 	
@@ -35,7 +35,7 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 	{
 
 		
-		public LineItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
+		public LineItemTypeDescriptor(ICustomTypeDescriptor parent)
 			: base(parent)
 		{
 
@@ -50,8 +50,8 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		
 		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
 		{
-			PropertyDescriptorCollection props = base.GetProperties(attributes);
-			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
+			var props = base.GetProperties(attributes);
+			var allProperties = new List<PropertyDescriptor>();
 			
 			TypeProviderHelper.AddDefaultProperties(allProperties,props);
 			
@@ -70,9 +70,6 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 			
 			prop = props.Find("EndLineCap",true);
 			allProperties.Add(prop);
-			
-//			prop = props.Find("DashLineCap",true);
-//			allProperties.Add(prop);
 			
 			prop = props.Find("DashStyle",true);
 			allProperties.Add(prop);

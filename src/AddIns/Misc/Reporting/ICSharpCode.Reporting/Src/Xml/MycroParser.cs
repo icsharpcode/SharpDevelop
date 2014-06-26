@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Reflection;
 
@@ -223,7 +224,7 @@ namespace ICSharpCode.Reporting.Xml
 	    static void SetPropertyToString(object obj, PropertyInfo pi, string value)
 		{
 			// it's string, so use a type converter.
-			TypeConverter tc=TypeDescriptor.GetConverter(pi.PropertyType);
+			var tc=TypeDescriptor.GetConverter(pi.PropertyType);
 			try
 			{
 				if (tc.CanConvertFrom(typeof(string)))
@@ -236,9 +237,9 @@ namespace ICSharpCode.Reporting.Xml
 			}
 			catch(Exception e)
 			{
-				String s = String.Format("Property setter for {0} failed {1}\r\n",pi.Name,
+				var s = String.Format(CultureInfo.CurrentCulture,"Property setter for {0} failed {1}\r\n",pi.Name,
 				                         e.Message);
-				System.Console.WriteLine("MycroParser : {0}",s);
+				Console.WriteLine("MycroParser : {0}",s);
 			}
 		}
 		

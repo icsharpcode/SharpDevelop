@@ -16,7 +16,7 @@ namespace ICSharpCode.Reporting.Addin.Globals
 	/// </summary>
 	class StringWriterWithEncoding:System.IO.StringWriter
 	{
-		private readonly Encoding encoding;
+		readonly Encoding encoding;
 		
 		public StringWriterWithEncoding(Encoding encoding)
 		{

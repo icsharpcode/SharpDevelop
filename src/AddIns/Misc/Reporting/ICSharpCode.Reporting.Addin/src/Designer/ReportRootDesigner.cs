@@ -24,6 +24,7 @@ using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Drawing.Printing;
+using System.Globalization;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using ICSharpCode.Core;
@@ -217,7 +218,6 @@ namespace ICSharpCode.Reporting.Addin.Designer
 			if (section != null) {
 				sections.Add(section);
 				section.SizeChanged += new EventHandler( OnSectionSizeChanged);
-				Console.Write("reportRootDesigner:OnComponentAdded");
 				foreach (Control ctrl in section.Controls) {
 					AddToHost(ctrl);
 					host.Container.Add(ctrl);
@@ -240,7 +240,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		private void OnComponentChanged(object sender, ComponentChangedEventArgs ce)
 		{
 			LoggingService.InfoFormatted("RootDesigner:OnComponentChanged");
-			String str = String.Format("RootDesigner:OnComponentChanged <{0}> from <{1}> to <{2}>",ce.Component.ToString(),ce.OldValue,ce.NewValue);
+			var str = String.Format(CultureInfo.CurrentCulture,"RootDesigner:OnComponentChanged <{0}> from <{1}> to <{2}>",ce.Component.ToString(),ce.OldValue,ce.NewValue);
 			LoggingService.InfoFormatted(str);
 
 			var section = ce.Component as BaseSection;

@@ -20,6 +20,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Xml;
 using System.Xml.XPath;
@@ -118,7 +119,7 @@ namespace ICSharpCode.Reporting.Addin.XML
 						// Special case--we're going to assume that the child is a class instance
 						// not associated with the parent object
 //						Trace.Fail("Unsupported property: "+pname);
-						System.Console.WriteLine("Unsupported property: "+pname);
+						Console.WriteLine("Unsupported property: "+pname);
 						continue;
 					}
 
@@ -134,8 +135,8 @@ namespace ICSharpCode.Reporting.Addin.XML
 						{
 							object propObject=pi.GetValue(parent, null);
 							object obj=ProcessNode(grandChild, propObject);
-							System.Windows.Forms.Control parentControl = parent as System.Windows.Forms.Control;
-							System.Windows.Forms.Control childControl = obj as System.Windows.Forms.Control;
+							var parentControl = parent as System.Windows.Forms.Control;
+							var childControl = obj as System.Windows.Forms.Control;
 							// we have the Items Section
 							if ((parentControl != null) && (childControl != null)){
 								parentControl.Controls.Add(childControl);
@@ -228,8 +229,7 @@ namespace ICSharpCode.Reporting.Addin.XML
 			{
 				if (tc.CanConvertFrom(typeof(string)))
 				{
-					object val=tc.ConvertFromInvariantString(value);
-//			Console.WriteLine("\tRDP -> SetPropertyToString {0} - {1}",pi.Name,value.ToString());		
+					object val=tc.ConvertFromInvariantString(value);	
 					pi.SetValue(obj, val, null);
 				} else if (pi.PropertyType == typeof(Type)) {
 					pi.SetValue(obj, Type.GetType(value), null);
@@ -237,9 +237,9 @@ namespace ICSharpCode.Reporting.Addin.XML
 			}
 			catch(Exception e)
 			{
-				String s = String.Format("Property setter for {0} failed {1}\r\n",pi.Name,
+				var s = String.Format(CultureInfo.CurrentCulture,"Property setter for {0} failed {1}\r\n",pi.Name,
 				                         e.Message);
-				System.Console.WriteLine("MycroParser : {0}",s);
+				Console.WriteLine("MycroParser : {0}",s);
 			}
 		}
 	}

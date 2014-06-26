@@ -26,19 +26,17 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new TextItemTypeDescriptor(td, instance);
+			return new TextItemTypeDescriptor(td);
 		}
 	}
 	
 	
 	class TextItemTypeDescriptor : CustomTypeDescriptor
 	{
-//		BaseTextItem instance;
 		
-		public TextItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
+		public TextItemTypeDescriptor(ICustomTypeDescriptor parent)
 			: base(parent)
 		{
-//			instance = instance as BaseTextItem;
 		}
 
 		

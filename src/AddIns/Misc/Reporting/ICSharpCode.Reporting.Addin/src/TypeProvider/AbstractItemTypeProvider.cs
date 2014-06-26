@@ -22,26 +22,20 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		{
 		}
 		
-//		public AbstractItemTypeProvider(TypeDescriptionProvider parent): base(parent)
-//		{
-//		}
-
 		
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType, instance);
-			return new AbstractItemTypeDescriptor(td, instance);
+			return new AbstractItemTypeDescriptor(td);
 		}
 	}
 	
-	internal class AbstractItemTypeDescriptor : CustomTypeDescriptor
+	class AbstractItemTypeDescriptor : CustomTypeDescriptor
 	{
-//		private AbstractItem _instance;
 		
-		public AbstractItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
+		public AbstractItemTypeDescriptor(ICustomTypeDescriptor parent)
 			: base(parent)
 		{
-//			_instance = instance as AbstractItem;
 		}
 
 		
@@ -54,8 +48,8 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		
 		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
 		{
-			PropertyDescriptorCollection props = base.GetProperties(attributes);
-			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
+			var props = base.GetProperties(attributes);
+			var allProperties = new List<PropertyDescriptor>();
 
 			foreach (PropertyDescriptor p in props)
 			{
