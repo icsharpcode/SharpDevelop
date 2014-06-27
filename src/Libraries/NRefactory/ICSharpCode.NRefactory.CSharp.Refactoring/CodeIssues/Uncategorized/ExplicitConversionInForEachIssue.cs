@@ -25,10 +25,10 @@ using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Incorrect element type in foreach over generic collection",
-	                  Description= "Detects hidden explicit conversions in foreach loops.",
-	                  Category = IssueCategories.CodeQualityIssues,
-	                  Severity = Severity.Warning)]
+//	[IssueDescription("Incorrect element type in foreach over generic collection",
+//	                  Description= "Detects hidden explicit conversions in foreach loops.",
+//	                  Category = IssueCategories.CodeQualityIssues,
+//	                  Severity = Severity.Warning)]
 	public class ExplicitConversionInForEachIssue : GatherVisitorCodeIssueProvider
 	{
 		protected override IGatherVisitor CreateVisitor(BaseRefactoringContext context)

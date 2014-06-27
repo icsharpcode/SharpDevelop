@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 
 				// Restrict to locations outside of blacklisted node types
-				var firstBlackListedNode = path.Where(node => moveTargetBlacklist.Contains(node.GetType())).FirstOrDefault();
+				var firstBlackListedNode = path.FirstOrDefault(node => moveTargetBlacklist.Contains(node.GetType()));
 				if (firstBlackListedNode != null) {
 					path = GetPath(rootNode, firstBlackListedNode.Parent);
 					anchorNode = firstBlackListedNode;

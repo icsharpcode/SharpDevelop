@@ -93,8 +93,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 			if (node.Parent is ObjectCreateExpression && node.Role == Roles.Type) {
 				node = node.Parent;
+			} else if (node is ThisReferenceExpression && node.Parent is IndexerExpression) {
+				node = node.Parent;
 			}
-			
+
 			InvocationExpression parentInvocation = null;
 			if ((node is IdentifierExpression || node is MemberReferenceExpression || node is PointerReferenceExpression) && node.Role != Roles.Argument) {
 				// we also need to resolve the invocation
