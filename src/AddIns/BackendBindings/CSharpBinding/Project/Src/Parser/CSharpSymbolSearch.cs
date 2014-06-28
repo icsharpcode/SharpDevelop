@@ -131,7 +131,7 @@ namespace CSharpBinding
 			if (textSource == null)
 				return;
 			if (searchScopeList != null) {
-				if (!searchScopeList.Any(
+				if (!searchScopeList.DistinctBy(scope => scope.SearchTerm ?? String.Empty).Any(
 					scope => (scope.SearchTerm == null) || (textSource.IndexOf(scope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) >= 0)))
 					return;
 			}
@@ -216,7 +216,7 @@ namespace CSharpBinding
 			if (textSource == null)
 				return;
 			if (searchScopeList != null) {
-				if (!searchScopeList.Any(
+				if (!searchScopeList.DistinctBy(scope => scope.SearchTerm ?? String.Empty).Any(
 					scope => (scope.SearchTerm == null) || (textSource.IndexOf(scope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) >= 0)))
 					return;
 			}
