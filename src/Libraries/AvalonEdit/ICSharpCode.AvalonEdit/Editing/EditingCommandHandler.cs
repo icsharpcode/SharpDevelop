@@ -342,7 +342,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 			} catch (ExternalException) {
 				// Apparently this exception sometimes happens randomly.
 				// The MS controls just ignore it, so we'll do the same.
-				return false;
 			}
 			
 			string text = textArea.Selection.GetText();
