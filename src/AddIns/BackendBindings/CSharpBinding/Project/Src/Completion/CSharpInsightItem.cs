@@ -72,7 +72,7 @@ namespace CSharpBinding.Completion
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			var stringBuilder = new StringBuilder();
 			var formatter = new ParameterHighlightingOutputFormatter(stringBuilder, highlightedParameterIndex);
-			ambience.ConvertSymbol(Method, formatter, CSharpFormattingOptionsPersistence.GlobalOptions.OptionsContainer.GetEffectiveOptions());
+			ambience.ConvertSymbol(Method, formatter, CSharpFormattingPolicies.Instance.GlobalOptions.OptionsContainer.GetEffectiveOptions());
 			
 			var documentation = XmlDocumentationElement.Get(Method);
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;

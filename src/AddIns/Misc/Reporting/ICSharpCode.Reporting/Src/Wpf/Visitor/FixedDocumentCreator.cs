@@ -40,7 +40,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 	static class FixedDocumentCreator
 	{
 		
-		
 		public static FixedPage CreateFixedPage(ExportPage exportPage) {
 			var fixedPage = new FixedPage();
 			fixedPage.Width = exportPage.Size.ToWpf().Width;
@@ -63,14 +62,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		public static FormattedText CreateFormattedText(ExportText exportText)
 		{
-			FlowDirection flowDirection;
-			
 			var culture = CultureInfo.CurrentCulture;
-			if (culture.TextInfo.IsRightToLeft) {
-				flowDirection = FlowDirection.RightToLeft;
-			} else {
-				flowDirection = FlowDirection.LeftToRight;
-			}
+			var flowDirection = culture.TextInfo.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
 			
 			var emSize = ExtensionMethodes.ToPoints((int)exportText.Font.SizeInPoints +1);
 			
@@ -81,10 +74,17 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				emSize,
 				new SolidColorBrush(exportText.ForeColor.ToWpf()), null, TextFormattingMode.Display);
 			
-			formattedText.MaxTextWidth = ExtensionMethodes.ToPoints(exportText.DesiredSize.Width);
+			formattedText.MaxTextWidth = exportText.DesiredSize.Width ;
+			formattedText.TextAlignment = exportText.TextAlignment;
+			
+			if (!exportText.CanGrow) {
+				formattedText.MaxTextHeight = exportText.Size.Height;
+			} else {
+				formattedText.MaxTextHeight = ExtensionMethodes.ToPoints(exportText.DesiredSize.Height );
+			}
 			
 			ApplyPrintStyles(formattedText,exportText);
-
+		
 			return formattedText;
 		}
 
@@ -151,53 +151,61 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			FixedPage.SetTop(element,exportColumn.Location.Y);
 		}
 		
-		
-		static void SetContentAlignment(TextBlock textBlock,ExportText exportText)
-		{
-	//Vertical alignment not working
-	
+		/*
+		public static Point CalculateAlignmentOffset (FormattedText formattedText, ExportText exportText) {
+			var offset = new Point(0,0);
+			double y = 0;
+			double x = 0;
+			var textLenDif = exportText.Size.Width - formattedText.Width;
+			var textHeightDif = exportText.Size.Height - formattedText.Height;
+			
 			switch (exportText.ContentAlignment) {
+				// Top	
 				case System.Drawing.ContentAlignment.TopLeft:
-					textBlock.VerticalAlignment = VerticalAlignment.Top;
-					textBlock.TextAlignment = TextAlignment.Left;
 					break;
+					
 				case System.Drawing.ContentAlignment.TopCenter:
-					textBlock.VerticalAlignment = VerticalAlignment.Top;
-					textBlock.TextAlignment = TextAlignment.Center;
+					x = textLenDif / 2;
 					break;
+					
 				case System.Drawing.ContentAlignment.TopRight:
-					textBlock.VerticalAlignment = VerticalAlignment.Top;
-					textBlock.TextAlignment = TextAlignment.Right;
+					x = textLenDif;
 					break;
+					
 					// Middle
 				case System.Drawing.ContentAlignment.MiddleLeft:
-					textBlock.VerticalAlignment = VerticalAlignment.Center;
-					textBlock.TextAlignment = TextAlignment.Left;
+					y = textHeightDif / 2;
 					break;
+					
 				case System.Drawing.ContentAlignment.MiddleCenter:
-					textBlock.VerticalAlignment = VerticalAlignment.Center;
-					textBlock.TextAlignment = TextAlignment.Center;
+					y = textHeightDif / 2;
+					x = textLenDif / 2;
 					break;
+					
 				case System.Drawing.ContentAlignment.MiddleRight:
-					textBlock.VerticalAlignment = VerticalAlignment.Center;
-					textBlock.TextAlignment = TextAlignment.Right;
+					x = textLenDif;;
+					y = textHeightDif / 2;
 					break;
+					
 					//Bottom
 				case System.Drawing.ContentAlignment.BottomLeft:
-					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-					textBlock.TextAlignment = TextAlignment.Left;
+					x = 0;
+					y = textHeightDif;
 					break;
+					
 				case System.Drawing.ContentAlignment.BottomCenter:
-					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-					textBlock.TextAlignment = TextAlignment.Center;
+					x = textLenDif / 2;
+					y = textHeightDif;
 					break;
+					
 				case System.Drawing.ContentAlignment.BottomRight:
-					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-					textBlock.TextAlignment = TextAlignment.Right;
+					x = textLenDif;
+					y  = textHeightDif;
 					break;
 			}
+			return new Point(x,y);
 		}
-		
+		*/
 		
 		public static Pen CreateWpfPen(IReportObject exportColumn){
 			if (exportColumn == null)
@@ -217,13 +225,13 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		public static Brush ConvertBrush(System.Drawing.Color color){
+		public static Brush ConvertBrush(System.Drawing.Color color)
+		{
 			var b = new BrushConverter();
-			if (b.IsValid(color.Name)){
+			if (b.IsValid(color.Name)) {
 				return b.ConvertFromString(color.Name) as SolidColorBrush;
-			} else{
-				return b.ConvertFromString("Black") as SolidColorBrush;
 			}
+			return b.ConvertFromString("Black") as SolidColorBrush;
 		}
 		
 		
@@ -269,6 +277,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			}
 			return penLineCap;
 		}
+		
 		
 		public static DashStyle DashStyle (IExportGraphics exportGraphics) {
 			var dashStyle = DashStyles.Solid;

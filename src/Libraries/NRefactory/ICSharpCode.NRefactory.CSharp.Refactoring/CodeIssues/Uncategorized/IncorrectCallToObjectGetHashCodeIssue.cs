@@ -30,11 +30,11 @@ using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Call resolves to Object.GetHashCode, which is reference based",
-	                   Description = "Finds calls to Object.GetHashCode inside overridden GetHashCode.",
-	                   Category = IssueCategories.CodeQualityIssues,
-	                   Severity = Severity.Warning,
-                       AnalysisDisableKeyword = "BaseObjectGetHashCodeCallInGetHashCode")]
+//	[IssueDescription("Call resolves to Object.GetHashCode, which is reference based",
+//	                   Description = "Finds calls to Object.GetHashCode inside overridden GetHashCode.",
+//	                   Category = IssueCategories.CodeQualityIssues,
+//	                   Severity = Severity.Warning,
+//                       AnalysisDisableKeyword = "BaseObjectGetHashCodeCallInGetHashCode")]
 	public class IncorrectCallToObjectGetHashCodeIssue : GatherVisitorCodeIssueProvider
 	{
 		protected override IGatherVisitor CreateVisitor(BaseRefactoringContext context)

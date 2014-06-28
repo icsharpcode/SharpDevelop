@@ -40,7 +40,7 @@ namespace CSharpBinding.OptionPanels
 	internal class CSharpGlobalFormattingOptionPanel : CSharpFormattingOptionPanel
 	{
 		public CSharpGlobalFormattingOptionPanel()
-			: base(CSharpFormattingOptionsPersistence.GlobalOptions, true)
+			: base(CSharpFormattingPolicies.Instance.GlobalOptions, true, false)
 		{
 			autoFormattingCheckBox.Visibility = Visibility.Visible;
 		}
@@ -52,7 +52,7 @@ namespace CSharpBinding.OptionPanels
 	internal class CSharpSolutionFormattingOptionPanel : CSharpFormattingOptionPanel
 	{
 		public CSharpSolutionFormattingOptionPanel()
-			: base(CSharpFormattingOptionsPersistence.SolutionOptions, true)
+			: base(CSharpFormattingPolicies.Instance.SolutionOptions, true, true)
 		{
 			autoFormattingCheckBox.Visibility = Visibility.Collapsed;
 		}
@@ -63,25 +63,26 @@ namespace CSharpBinding.OptionPanels
 	/// </summary>
 	internal partial class CSharpFormattingOptionPanel : OptionPanel
 	{
-		readonly CSharpFormattingOptionsPersistence persistenceHelper;
+		readonly CSharpFormattingPolicy formattingPolicy;
 		bool isDirty;
 		
-		public CSharpFormattingOptionPanel(CSharpFormattingOptionsPersistence persistenceHelper, bool allowPresets)
+		public CSharpFormattingOptionPanel(CSharpFormattingPolicy persistenceHelper, bool allowPresets, bool overrideGlobalIndentation)
 		{
 			if (persistenceHelper == null)
 				throw new ArgumentNullException("persistenceHelper");
 			
-			this.persistenceHelper = persistenceHelper;
+			this.formattingPolicy = persistenceHelper;
 			this.isDirty = false;
 			InitializeComponent();			
 			
 			formattingEditor.AllowPresets = allowPresets;
+			formattingEditor.OverrideGlobalIndentation = overrideGlobalIndentation;
 		}
 		
 		public override void LoadOptions()
 		{
 			base.LoadOptions();
-			formattingEditor.OptionsContainer = persistenceHelper.StartEditing();
+			formattingEditor.OptionsContainer = formattingPolicy.StartEditing();
 			formattingEditor.OptionsContainer.PropertyChanged += ContainerPropertyChanged;
 		}
 
@@ -94,7 +95,7 @@ namespace CSharpBinding.OptionPanels
 		{
 			// Only save container, if some option really has changed
 			formattingEditor.OptionsContainer.PropertyChanged -= ContainerPropertyChanged;
-			return (!isDirty || persistenceHelper.Save()) && base.SaveOptions();
+			return (!isDirty || formattingPolicy.Save()) && base.SaveOptions();
 		}
 	}
 }

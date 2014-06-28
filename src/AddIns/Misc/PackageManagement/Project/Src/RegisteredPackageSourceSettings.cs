@@ -204,5 +204,9 @@ namespace ICSharpCode.PackageManagement
 				packageSources = null;
 			}
 		}
+		
+		public ISettings Settings {
+			get { return settings; }
+		}
 	}
 }

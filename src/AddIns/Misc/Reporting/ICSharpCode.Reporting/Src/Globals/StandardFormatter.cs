@@ -53,7 +53,7 @@ namespace ICSharpCode.Reporting.Globals
 		
 //		private static string FormatItem (string valueToFormat,string format,
 //		                         TypeCode typeCode,string nullValue)
-		private static string FormatItem (string valueToFormat,string format,
+		static string FormatItem (string valueToFormat,string format,
 		                         TypeCode typeCode)	
 		{
 			string retValue = String.Empty;
@@ -90,7 +90,7 @@ namespace ICSharpCode.Reporting.Globals
 		}
 		
 		
-		private static string FormatBool (string toFormat)
+		static string FormatBool (string toFormat)
 		{
 			if (CheckValue(toFormat)) {
 				bool b = bool.Parse (toFormat);
@@ -99,7 +99,8 @@ namespace ICSharpCode.Reporting.Globals
 			return toFormat;
 		}
 	
-		private static string FormatIntegers(string toFormat, string format)
+		
+		static string FormatIntegers(string toFormat, string format)
 		{
 			string str = String.Empty;
 			if (CheckValue (toFormat)) {
@@ -113,7 +114,7 @@ namespace ICSharpCode.Reporting.Globals
 		}
 		
 		
-		private static string FormatDecimal(string toFormat, string format)
+		static string FormatDecimal(string toFormat, string format)
 		{
 			string str = String.Empty;
 			if (CheckValue (toFormat)) {
@@ -135,7 +136,7 @@ namespace ICSharpCode.Reporting.Globals
 		
 //		http://stackoverflow.com/questions/4710455/i-need-code-to-validate-any-time-in-c-sharp-in-hhmmss-format
 		
-		private static string FormatDate(string toFormat, string format)
+		static string FormatDate(string toFormat, string format)
 		{
 			DateTime date;
 			if (DateTime.TryParse(toFormat, out date))
@@ -157,7 +158,7 @@ namespace ICSharpCode.Reporting.Globals
 		}
 		
 		
-		private static bool CheckValue (string toFormat)
+		static bool CheckValue (string toFormat)
 		{
 			if (String.IsNullOrEmpty(toFormat)) {
 				return false;

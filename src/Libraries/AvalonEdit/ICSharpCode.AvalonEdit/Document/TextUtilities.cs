@@ -19,7 +19,9 @@
 using System;
 using System.Globalization;
 using System.Windows.Documents;
+#if NREFACTORY
 using ICSharpCode.NRefactory.Editor;
+#endif
 
 namespace ICSharpCode.AvalonEdit.Document
 {

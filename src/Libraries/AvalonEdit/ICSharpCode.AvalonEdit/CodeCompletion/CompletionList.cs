@@ -380,11 +380,15 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		static bool CamelCaseMatch(string text, string query)
 		{
+			// We take the first letter of the text regardless of whether or not it's upper case so we match
+			// against camelCase text as well as PascalCase text ("cct" matches "camelCaseText")
+			var theFirstLetterOfEachWord = text.Take(1).Concat(text.Skip(1).Where(char.IsUpper));
+			
 			int i = 0;
-			foreach (char upper in text.Where(c => char.IsUpper(c))) {
+			foreach (var letter in theFirstLetterOfEachWord) {
 				if (i > query.Length - 1)
 					return true;	// return true here for CamelCase partial match ("CQ" matches "CodeQualityAnalysis")
-				if (char.ToUpper(query[i], CultureInfo.InvariantCulture) != upper)
+				if (char.ToUpperInvariant(query[i]) != char.ToUpperInvariant(letter))
 					return false;
 				i++;
 			}

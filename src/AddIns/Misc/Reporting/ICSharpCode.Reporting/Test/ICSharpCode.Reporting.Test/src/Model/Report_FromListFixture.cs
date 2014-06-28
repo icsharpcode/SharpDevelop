@@ -20,6 +20,7 @@ using System;
 using System.Drawing;
 using System.Reflection;
 
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using NUnit.Framework;
 
@@ -28,7 +29,7 @@ namespace ICSharpCode.Reporting.Test.Model
 	[TestFixture]
 	public class Report_FromListFixture
 	{
-		private ReportModel model;
+		IReportModel model;
 		
 		[Test]
 		public void ReportHeaderContainsOneItem () {

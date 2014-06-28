@@ -60,7 +60,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 	
 		
 		Canvas RenderSectionContainer (ExportContainer container) {
-		
 			var canvas = FixedDocumentCreator.CreateContainer(container);
 			foreach (var element in container.ExportedItems) {
 				if (IsContainer(element)) {
@@ -119,16 +118,19 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		
 		public override void Visit(ExportText exportColumn){
 		
-			var ft = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
-			var visual = new DrawingVisual();
+			var formattedText = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
+
 			var location = new Point(exportColumn.Location.X,exportColumn.Location.Y);
-			using (var dc = visual.RenderOpen()){
+			
+			var visual = new DrawingVisual();
+			using (var drawingContext = visual.RenderOpen()){
 				if (ShouldSetBackcolor(exportColumn)) {
-					dc.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),
+					var r = new Rect(location,new Size(exportColumn.Size.Width,exportColumn.Size.Height));
+					drawingContext.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),
 						null,
 						new Rect(location,new Size(exportColumn.Size.Width,exportColumn.Size.Height)));
 				}
-				dc.DrawText(ft,location);
+				drawingContext.DrawText(formattedText,location);
 			}
 			var dragingElement = new DrawingElement(visual);
 			UIElement = dragingElement;
@@ -181,7 +183,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		DrawingElement CircleVisual(GraphicsContainer circle){
+		static DrawingElement CircleVisual(GraphicsContainer circle){
 			var pen = FixedDocumentCreator.CreateWpfPen(circle);
 			var rad = CalcRadius(circle.Size);
 			
@@ -197,7 +199,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		Border CreateBorder(IExportColumn exportColumn)
+		static Border CreateBorder(IExportColumn exportColumn)
 		{
 			var border = new Border();
 			border.BorderThickness =  Thickness(exportColumn);
@@ -209,7 +211,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 
 		
-		Thickness Thickness(IExportColumn exportColumn)
+		static Thickness Thickness(IExportColumn exportColumn)
 		{
 			double bT;
 			bT = !IsGraphicsContainer(exportColumn) ? 1 : Convert.ToDouble(((GraphicsContainer)exportColumn).Thickness);

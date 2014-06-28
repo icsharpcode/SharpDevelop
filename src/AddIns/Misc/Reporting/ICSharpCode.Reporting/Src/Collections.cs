@@ -52,9 +52,6 @@ namespace ICSharpCode.Reporting
 	
 	public class GroupColumnCollection: SortColumnCollection
 	{
-		public GroupColumnCollection()
-		{
-		}
 		
 		public new AbstractColumn Find (string columnName)
 		{
@@ -67,12 +64,7 @@ namespace ICSharpCode.Reporting
 	}
 	
 	
-	public class ParameterCollection: Collection<BasicParameter>{
-		
-		public ParameterCollection()
-		{			
-		}
-		
+	public class ParameterCollection: Collection<BasicParameter>{		
 		
 		public BasicParameter Find (string parameterName)
 		{
@@ -85,7 +77,7 @@ namespace ICSharpCode.Reporting
 		
 		public static CultureInfo Culture
 		{
-			get { return System.Globalization.CultureInfo.CurrentCulture; }
+			get { return CultureInfo.CurrentCulture; }
 		}
 		
 		

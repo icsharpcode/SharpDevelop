@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Debugger.Interop;
@@ -265,7 +266,7 @@ namespace Debugger
 		public void Detach()
 		{
 			// Detach all processes.
-			foreach(Process process in this.Processes) {
+			foreach(Process process in this.Processes.ToArray()) {
 				if (process == null || process.HasExited)
 					continue;
 				process.Detach();

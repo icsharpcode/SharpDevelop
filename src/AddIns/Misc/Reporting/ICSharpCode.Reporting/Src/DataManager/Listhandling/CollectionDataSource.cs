@@ -44,7 +44,6 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 	{
 		readonly DataCollection<object> baseList;
 		readonly ReportSettings reportSettings;
-//		readonly Type elementType;
 		readonly PropertyDescriptorCollection listProperties;
 
 	
@@ -61,24 +60,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			this.listProperties = this.baseList.GetItemProperties(null);
 			OrderGroup = OrderGroup.AsIs;
 		}
-		
-		
-		[Obsolete("use public CollectionDataSource(IEnumerable list, ReportSettings reportSettings")]
-		public CollectionDataSource(IEnumerable list, Type elementType, ReportSettings reportSettings)
-		{
-			if (list == null)
-				throw new ArgumentNullException("list");
-			if (reportSettings == null)
-				throw new ArgumentNullException("reportSettings");
-			
-			baseList = CreateBaseList(list);
-			CurrentList = baseList;
-			this.reportSettings = reportSettings;
-			this.listProperties = this.baseList.GetItemProperties(null);
-			OrderGroup = OrderGroup.AsIs;
-		}
-		
-		
+	
 		
 		public Collection<AbstractColumn> AvailableFields {
 			get {
@@ -176,7 +158,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		public void Fill (List<IPrintableObject> collection, object current) {
 			Current = current;
-						foreach (var element in collection) {
+			foreach (var element in collection) {
 				var container = element as ReportContainer;
 				if (container != null) {
 					FillFromList(container.Items);

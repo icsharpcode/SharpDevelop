@@ -109,6 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 ");
 		}
 
+		[Ignore("Issue was disabled.")]
 		[Test]
 		public void TestResharperDisableRestore()
 		{

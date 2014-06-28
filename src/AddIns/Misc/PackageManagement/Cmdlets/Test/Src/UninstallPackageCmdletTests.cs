@@ -237,8 +237,22 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			IPackageScriptRunner scriptRunner = uninstallPackageAction.PackageScriptRunner;
-						
+		
 			Assert.AreEqual(cmdlet, scriptRunner);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_ConsoleHostLoggerIsDisposed()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			
+			RunCmdlet();
+			
+			fakeConsoleHost.AssertLoggerIsDisposed();
+			Assert.AreEqual(cmdlet, fakeConsoleHost.CmdletLoggerUsedToCreateLogger);
 		}
 	}
 }

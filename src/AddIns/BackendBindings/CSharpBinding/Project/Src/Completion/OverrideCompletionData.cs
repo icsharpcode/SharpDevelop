@@ -98,7 +98,7 @@ namespace CSharpBinding.Completion
 			
 			var document = context.Editor.Document;
 			StringWriter w = new StringWriter();
-			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(contextAtCaret.Compilation.GetProject());
+			var formattingOptions = CSharpFormattingPolicies.Instance.GetProjectOptions(contextAtCaret.Compilation.GetProject());
 			var segmentDict = SegmentTrackingOutputFormatter.WriteNode(
 				w, entityDeclaration, formattingOptions.OptionsContainer.GetEffectiveOptions(), context.Editor.Options);
 			

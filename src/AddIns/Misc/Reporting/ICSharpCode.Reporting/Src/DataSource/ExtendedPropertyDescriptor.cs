@@ -20,6 +20,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
+using ICSharpCode.Reporting.DataManager;
 
 namespace ICSharpCode.Reporting.DataSource
 {
@@ -30,7 +31,7 @@ namespace ICSharpCode.Reporting.DataSource
 	{
 	
 		Type componentType;
-		Type propertyType;
+		readonly Type propertyType;
 		PropertyInfo prop;
 
 		public ExtendedPropertyDescriptor (string name, Type componentType, Type propertyType)

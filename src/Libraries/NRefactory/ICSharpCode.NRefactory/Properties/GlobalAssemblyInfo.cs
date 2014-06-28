@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyCompany("ICSharpCode")]
 [assembly: AssemblyProduct("SharpDevelop/MonoDevelop")]
-[assembly: AssemblyCopyright("Copyright 2010-2013 AlphaSierraPapa and Xamarin Inc.")]
+[assembly: AssemblyCopyright("Copyright 2010-2014 AlphaSierraPapa and Xamarin Inc.")]
 
 // This sets the default COM visibility of types in the assembly to invisible.
 // If you need to expose a type to COM, use [ComVisible(true)] on that type.
@@ -42,4 +42,4 @@ using System.Runtime.InteropServices;
 // [AssemblyFileVersion] is the version of the NuGet package,
 // Versions with breaking changes / new features should increment the 'minor' (2nd) number.
 // Bugfix releases should increment the 'build' (3rd) number.
-[assembly: AssemblyFileVersion("5.3.0")]
+[assembly: AssemblyFileVersion("5.4.0")]

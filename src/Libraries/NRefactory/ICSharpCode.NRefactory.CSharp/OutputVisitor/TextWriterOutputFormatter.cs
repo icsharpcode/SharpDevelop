@@ -321,7 +321,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		static string ConvertCharLiteral(char ch)
+		/// <summary>
+		/// Gets the escape sequence for the specified character within a char literal.
+		/// Does not include the single quotes surrounding the char literal.
+		/// </summary>
+		public static string ConvertCharLiteral(char ch)
 		{
 			if (ch == '\'') {
 				return "\\'";

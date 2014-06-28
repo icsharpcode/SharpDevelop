@@ -24,8 +24,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using ICSharpCode.Reporting.DataSource;
 
-namespace ICSharpCode.Reporting.DataSource
+namespace ICSharpCode.Reporting.DataManager
 {
 	/// <summary>
 	/// Description of DataCollection.

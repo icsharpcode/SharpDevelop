@@ -17,23 +17,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.ObjectModel;
-using ICSharpCode.Reporting.BaseClasses;
-using ICSharpCode.Reporting.DataManager.Listhandling;
+using System.Management.Automation;
 
-namespace ICSharpCode.Reporting.DataSource.Comparer
+namespace ICSharpCode.PackageManagement.Scripting
 {
-	/// <summary>
-	/// Description of GroupComparer.
-	/// </summary>
-	public  class GroupComparer :SortComparer
+	public interface ICmdletLogger
 	{
-		
-		public GroupComparer (Collection<AbstractColumn> owner, int listIndex, object[] values):base(owner,listIndex,values)
-		{
-			IndexList = new IndexList();
-		}
-		
-		public IndexList IndexList {get;private set;}
+		void WriteError(ErrorRecord error);
+		void WriteLine(string message);
+		void WriteVerbose(string message);
+		void WriteWarning(string message);
 	}
 }

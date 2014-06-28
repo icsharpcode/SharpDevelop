@@ -44,9 +44,9 @@ namespace ICSharpCode.Reporting.Xml
 	public abstract class MycroParser
 	{
 		public MycroParser() {
-			Console.WriteLine("Mycroparser");
-			Console.WriteLine();
 		}
+		
+		
 		public object Load(XmlElement element)
 		{
 			return ProcessNode(element, null);
@@ -196,7 +196,7 @@ namespace ICSharpCode.Reporting.Xml
 			}
 		}
 
-	    void ProcessAttributes(XmlNode node, object ret, Type type)
+	   static  void ProcessAttributes(XmlNode node, object ret, Type type)
 		{
 			// process attributes
 			foreach(XmlAttribute attr in node.Attributes)

@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
+using System.Xml.XPath;
 using ICSharpCode.Reporting.Xml;
 
 
@@ -102,8 +103,7 @@ namespace ICSharpCode.Reporting.Addin.XML
 			Type t=parent.GetType();
 
 			// children of a class must always be properties
-			foreach(XmlNode child in node.ChildNodes)
-			{
+			foreach(XmlNode child in node.ChildNodes){
 				if (child is XmlElement)
 				{
 					string pname=child.LocalName;
@@ -220,7 +220,7 @@ namespace ICSharpCode.Reporting.Addin.XML
 			}
 		}
 		
-		void SetPropertyToString(object obj, PropertyInfo pi, string value)
+		static void SetPropertyToString(object obj, PropertyInfo pi, string value)
 		{
 			// it's string, so use a type converter.
 			TypeConverter tc=TypeDescriptor.GetConverter(pi.PropertyType);

@@ -22,9 +22,9 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		{
 		}
 		
-		public AbstractItemTypeProvider(TypeDescriptionProvider parent): base(parent)
-		{
-		}
+//		public AbstractItemTypeProvider(TypeDescriptionProvider parent): base(parent)
+//		{
+//		}
 
 		
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)

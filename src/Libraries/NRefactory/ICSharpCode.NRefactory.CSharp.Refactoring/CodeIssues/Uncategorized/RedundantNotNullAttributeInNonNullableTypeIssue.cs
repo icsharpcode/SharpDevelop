@@ -33,10 +33,10 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Use of NotNullAttribute in non-nullable type is redundant.",
-		Description = "Detects unnecessary usages of the NotNullAttribute.",
-		Category = IssueCategories.RedundanciesInDeclarations,
-		Severity = Severity.Warning)]
+//	[IssueDescription("Use of NotNullAttribute in non-nullable type is redundant.",
+//		Description = "Detects unnecessary usages of the NotNullAttribute.",
+//		Category = IssueCategories.RedundanciesInDeclarations,
+//		Severity = Severity.Warning)]
 	public class RedundantNotNullAttributeInNonNullableTypeIssue : GatherVisitorCodeIssueProvider
 	{
 		protected override IGatherVisitor CreateVisitor(BaseRefactoringContext context)

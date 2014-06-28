@@ -640,6 +640,34 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
+		public void AddStaticResourceWhereResourceOnSameElement()
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			DesignItem canvas = button.Parent;
+			
+			DesignItemProperty resProp = button.Properties.GetProperty("Resources");
+			Assert.IsTrue(resProp.IsCollection);
+			DesignItem exampleClassItem = canvas.Services.Component.RegisterComponentForDesigner(new ExampleClass());
+			exampleClassItem.Key = "res1";
+			resProp.CollectionElements.Add(exampleClassItem);
+			
+			button.Properties["Tag"].SetValue(new StaticResourceExtension());
+			button.Properties["Tag"].Value.Properties["ResourceKey"].SetValue("res1");
+			
+			string expectedXaml = "<Button>\n" +
+								  "  <Button.Resources>\n" +
+								  "    <t:ExampleClass x:Key=\"res1\" />\n" +
+								  "  </Button.Resources>\n" +
+								  "  <Button.Tag>\n" +
+								  "    <StaticResourceExtension ResourceKey=\"res1\" />\n" +
+								  "  </Button.Tag>\n" +
+								  "</Button>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
 		public void AddBrushAsResource()
 		{
 			DesignItem checkBox = CreateCanvasContext("<CheckBox/>");
@@ -667,31 +695,91 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			AssertLog("");
 		}
 		
-		[Test]
-		public void AddStringAsResource()
+		public void AddNativeTypeAsResource(object component, string expectedXamlValue)
+		{
+			AddTypeAsResource(component, expectedXamlValue, "Controls0:", new string[] { "xmlns:Controls0=\"clr-namespace:System;assembly=mscorlib\""} );
+		}
+		
+		public void AddTypeAsResource(object component, string expectedXamlValue, string typePrefix, String[] additionalXmlns)
 		{
 			DesignItem textBlock = CreateCanvasContext("<TextBlock/>");
 			DesignItem canvas = textBlock.Parent;
 			
 			DesignItemProperty canvasResources = canvas.Properties.GetProperty("Resources");
 			
-			DesignItem str = canvas.Services.Component.RegisterComponentForDesigner("stringresource 1");
-			str.Key = "str1";
+			DesignItem componentItem = canvas.Services.Component.RegisterComponentForDesigner(component);
+			componentItem.Key = "res1";
 			
 			Assert.IsTrue(canvasResources.IsCollection);
-			canvasResources.CollectionElements.Add(str);
+			canvasResources.CollectionElements.Add(componentItem);
 			
-			textBlock.Properties[TextBlock.TextProperty].SetValue(new StaticResourceExtension());
-			DesignItemProperty prop = textBlock.Properties[TextBlock.TextProperty];
-			prop.Value.Properties["ResourceKey"].SetValue("str1");
+			DesignItemProperty prop = textBlock.Properties[TextBlock.TagProperty];
+			prop.SetValue(new StaticResourceExtension());
+			prop.Value.Properties["ResourceKey"].SetValue("res1");
+			
+			string typeName = component.GetType().Name;
 			
 			string expectedXaml = "<Canvas.Resources>\n" +
-								  "  <Controls0:String x:Key=\"str1\">stringresource 1</Controls0:String>\n" +
+								  "  <" + typePrefix + typeName + " x:Key=\"res1\">" + expectedXamlValue + "</" + typePrefix + typeName + ">\n" +
 								  "</Canvas.Resources>\n" +
-								  "<TextBlock Text=\"{StaticResource ResourceKey=str1}\" />";
+								  "<TextBlock Tag=\"{StaticResource ResourceKey=res1}\" />";
 			
-			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context, "xmlns:Controls0=\"clr-namespace:System;assembly=mscorlib\"");
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context, additionalXmlns);
 			AssertLog("");
+		}
+		
+		[Test]
+		public void TestTextValue()
+		{
+			// An invalid path (in this case containing a question mark), or a path to a file that does not exist, will give the same result.
+			// It will cause the typeconverter to fail and no value can be get from neither ValueOnInstance nor Value from the Image.Source DesignItemProperty.
+			// TextValue was added to have a way of getting the xaml value.
+			string sourceTextValue = "file:///C:/Folder/image?.bmp";
+			
+			string xaml = "<Image Source=\"" + sourceTextValue + "\" />";
+			DesignItem image = CreateCanvasContext(xaml);
+			
+			var sourceProp = image.Properties[Image.SourceProperty];
+			
+			Assert.IsNull(sourceProp.ValueOnInstance);
+			Assert.IsNull(sourceProp.Value);
+			Assert.IsNotNull(sourceProp.TextValue);
+			Assert.AreEqual(sourceTextValue, sourceProp.TextValue);
+			
+			string expectedXaml = xaml;
+			AssertCanvasDesignerOutput(expectedXaml, image.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void AddStringAsResource()
+		{
+			AddNativeTypeAsResource("stringresource 1", "stringresource 1");
+		}
+		
+		[Test]
+		public void AddDoubleAsResource()
+		{
+			AddNativeTypeAsResource(0.0123456789d, "0.0123456789");
+		}
+		
+		[Test]
+		public void AddInt32AsResource()
+		{
+			const int i = 123;
+			AddNativeTypeAsResource(i, "123");
+		}
+		
+		[Test]
+		public void AddWpfEnumAsResource()
+		{
+			AddTypeAsResource(VerticalAlignment.Center, "Center", "", new string[0]);
+		}
+		
+		[Test]
+		public void AddCustomEnumAsResource()
+		{
+			AddTypeAsResource(MyEnum.One, "One", "t:", new string[0]);
 		}
 	}
 	
@@ -716,5 +804,10 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			get { return stringProp; }
 			set { stringProp = value; }
 		}
+	}
+	
+	public enum MyEnum
+	{
+		One, Two
 	}
 }

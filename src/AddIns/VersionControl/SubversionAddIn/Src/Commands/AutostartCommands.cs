@@ -389,6 +389,10 @@ namespace ICSharpCode.Svn.Commands
 			if (!AddInOptions.AutomaticallyRenameFiles) return;
 			string fullSource = Path.GetFullPath(e.SourceFile);
 			if (!CanBeVersionControlledFile(fullSource)) return;
+			if (!FileHelpers.CheckRenameOrReplacePossible(e)) {
+				e.Cancel = true;
+				return;
+			}
 			try {
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
 					SvnMessageView.HandleNotifications(client);

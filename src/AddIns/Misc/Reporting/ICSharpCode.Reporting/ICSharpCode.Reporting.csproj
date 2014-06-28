@@ -91,13 +91,8 @@
     <Compile Include="Src\BaseClasses\TextDrawer.cs" />
     <Compile Include="Src\Collections.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\DataManager\DataCollection.cs" />
     <Compile Include="Src\DataManager\Listhandling\CollectionDataSource.cs" />
-    <Compile Include="Src\DataManager\Listhandling\IndexList.cs" />
-    <Compile Include="Src\DataSource\Comparer\BaseComparer.cs" />
-    <Compile Include="Src\DataSource\Comparer\GroupComparer.cs" />
-    <Compile Include="Src\DataSource\Comparer\SortComparer.cs" />
-    <Compile Include="Src\DataSource\Comparer\SortExtension.cs" />
-    <Compile Include="Src\DataSource\DataCollection.cs" />
     <Compile Include="Src\DataSource\ExtendedPropertyDescriptor.cs" />
     <Compile Include="Src\DataSource\ExtendedTypeDescriptor.cs" />
     <Compile Include="Src\DataSource\FieldMemberAccessor.cs" />
@@ -196,7 +191,6 @@
     <Compile Include="Src\Xml\MycroParser.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Src\DataSource\Comparer" />
     <Folder Include="Src\Exporter\Visitors" />
     <Folder Include="Src\Expressions\Irony" />
     <Folder Include="Src\Expressions\Irony\Ast" />

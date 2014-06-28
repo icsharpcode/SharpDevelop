@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -82,7 +83,32 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public ResolveResult ResolveSnippet(ParseInformation parseInfo, TextLocation location, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken)
 		{
-			return null;
+			var decompiledParseInfo = parseInfo as ILSpyFullParseInformation;
+			if (decompiledParseInfo == null)
+				throw new ArgumentException("ParseInfo does not have SyntaxTree");
+			CSharpAstResolver contextResolver = new CSharpAstResolver(compilation, decompiledParseInfo.SyntaxTree, null);
+			var node = decompiledParseInfo.SyntaxTree.GetNodeAt(location);
+			CSharpResolver context;
+			if (node != null)
+				context = contextResolver.GetResolverStateAfter(node, cancellationToken);
+			else
+				context = new CSharpResolver(compilation);
+			CSharpParser parser = new CSharpParser();
+			var expr = parser.ParseExpression(codeSnippet);
+			if (parser.HasErrors)
+				return new ErrorResolveResult(SpecialType.UnknownType, PrintErrorsAsString(parser.Errors), TextLocation.Empty);
+			CSharpAstResolver snippetResolver = new CSharpAstResolver(context, expr);
+			return snippetResolver.Resolve(expr, cancellationToken);
+		}
+		
+		string PrintErrorsAsString(IEnumerable<Error> errors)
+		{
+			StringBuilder builder = new StringBuilder();
+			
+			foreach (var error in errors)
+				builder.AppendLine(error.Message);
+			
+			return builder.ToString();
 		}
 		
 		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<SearchResultMatch> callback, CancellationToken cancellationToken)

@@ -142,9 +142,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return;
 			}
 			foreach (var ctorParameter in ctorParameterTypes.Resolve(context)) {
-				ResolveResult arg = reader.ReadFixedArg(ctorParameter);
-				positionalArguments.Add(arg);
-				if (arg.IsError) {
+				ResolveResult arg;
+				bool isError;
+				try {
+					arg = reader.ReadFixedArg (ctorParameter);
+					positionalArguments.Add(arg);
+					isError = arg.IsError;
+				} catch (Exception ex) {
+					Debug.WriteLine("Crash during blob decoding: " + ex);
+					isError = true;
+				}
+				if (isError) {
 					// After a decoding error, we must stop decoding the blob because
 					// we might have read too few bytes due to the error.
 					// Just fill up the remaining arguments with ErrorResolveResult:
@@ -153,11 +161,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					return;
 				}
 			}
-			ushort numNamed = reader.ReadUInt16();
-			for (int i = 0; i < numNamed; i++) {
-				var namedArg = reader.ReadNamedArg(attributeType);
-				if (namedArg.Key != null)
-					namedArguments.Add(namedArg);
+			try {
+				ushort numNamed = reader.ReadUInt16();
+				for (int i = 0; i < numNamed; i++) {
+					var namedArg = reader.ReadNamedArg(attributeType);
+					if (namedArg.Key != null)
+						namedArguments.Add(namedArg);
+				}
+			} catch (Exception ex) {
+				Debug.WriteLine("Crash during blob decoding: " + ex);
 			}
 		}
 	}

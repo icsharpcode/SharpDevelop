@@ -19,11 +19,10 @@ namespace ICSharpCode.Reporting.Addin.Factory
 	/// <summary>
 	/// Description of CreateFormSheetReport.
 	/// </summary>
-	class CreateFormSheetFromModel
+	static class CreateFormSheetFromModel
 	{
 		
-		
-		public StringWriter ToXml(IReportModel reportModel) {
+		public static StringWriter ToXml(IReportModel reportModel) {
 			int locY = reportModel.ReportSettings.TopMargin;
 			
 				foreach (var section in reportModel.SectionCollection)
@@ -39,7 +38,7 @@ namespace ICSharpCode.Reporting.Addin.Factory
 			return xml;
 		}
 		
-		StringWriter ToXmlInternal(IReportModel model)
+		static StringWriter ToXmlInternal(IReportModel model)
 		{
 			var writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
 			var xml = XmlHelper.CreatePropperWriter(writer);

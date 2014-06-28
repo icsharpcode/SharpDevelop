@@ -25,12 +25,11 @@ namespace ICSharpCode.PackageManagement
 {
 	public class SolutionPackageRepositoryPath
 	{
-		string packagesRelativeDirectory;
 		ISolution solution;
 		DefaultPackagePathResolver pathResolver;
 		
 		public SolutionPackageRepositoryPath(IProject project)
-			: this(project, new PackageManagementOptions())
+			: this(project, PackageManagementServices.Options)
 		{
 		}
 		
@@ -41,14 +40,18 @@ namespace ICSharpCode.PackageManagement
 		
 		public SolutionPackageRepositoryPath(ISolution solution, PackageManagementOptions options)
 		{
-			packagesRelativeDirectory = options.PackagesDirectory;
 			this.solution = solution;
-			GetSolutionPackageRepositoryPath();
+			PackageRepositoryPath = GetSolutionPackageRepositoryPath(options);
 		}
 		
-		void GetSolutionPackageRepositoryPath()
+		string GetSolutionPackageRepositoryPath(PackageManagementOptions options)
 		{
-			PackageRepositoryPath = Path.Combine(solution.Directory, packagesRelativeDirectory);
+			string customPath = options.GetCustomPackagesDirectory ();
+			if (!String.IsNullOrEmpty (customPath)) {
+				return customPath;
+			}
+
+			return Path.Combine (solution.Directory, options.PackagesDirectory);
 		}
 		
 		public string PackageRepositoryPath { get; private set; }

@@ -80,6 +80,17 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 				base.OnLostKeyboardFocus(e);
 				this.IsOpen = false;
 			}
+			
+			protected override void OnMouseLeave(MouseEventArgs e)
+			{
+				base.OnMouseLeave(e);
+				// When the mouse is over the popup, it is possible for SharpDevelop to be minimized,
+				// or moved into the background, and yet the popup stays open.
+				// We don't have a good method here to check whether the mouse moved back into the text area
+				// or somewhere else, so we'll just close the popup.
+				if (CloseWhenMouseMovesAway)
+					this.IsOpen = false;
+			}
 		}
 		
 		object CreateTooltip(IType type)

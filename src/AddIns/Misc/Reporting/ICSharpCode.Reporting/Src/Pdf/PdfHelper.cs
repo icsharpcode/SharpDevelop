@@ -35,6 +35,7 @@ namespace ICSharpCode.Reporting.Pdf
 		{
 			var font = PdfHelper.CreatePdfFont(exportColumn);
 			var rect = new Rectangle(columnLocation,exportColumn.DesiredSize).ToXRect();
+			textFormatter.Alignment = XParagraphAlignment(exportColumn);
 			textFormatter.DrawString(exportColumn.Text,
 			                         font,
 			                         CreateBrush(exportColumn.ForeColor),
@@ -90,7 +91,21 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		public static XLineCap LineCap (IExportGraphics column) {
 			return XLineCap.Round;
-			
+		}
+		
+		
+		public static XParagraphAlignment XParagraphAlignment (ExportText exportColumn) {
+			switch (exportColumn.TextAlignment) {
+				case System.Windows.TextAlignment.Left:
+					return PdfSharp.Drawing.Layout.XParagraphAlignment.Left;
+				case System.Windows.TextAlignment.Center:
+					return PdfSharp.Drawing.Layout.XParagraphAlignment.Center;
+				case System.Windows.TextAlignment.Right:
+					return PdfSharp.Drawing.Layout.XParagraphAlignment.Center;
+				case System.Windows.TextAlignment.Justify:
+					return PdfSharp.Drawing.Layout.XParagraphAlignment.Justify;
+			}
+			return PdfSharp.Drawing.Layout.XParagraphAlignment.Left;
 		}
 		
 		

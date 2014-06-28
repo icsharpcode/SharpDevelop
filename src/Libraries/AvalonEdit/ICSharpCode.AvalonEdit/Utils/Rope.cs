@@ -23,7 +23,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
-using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {

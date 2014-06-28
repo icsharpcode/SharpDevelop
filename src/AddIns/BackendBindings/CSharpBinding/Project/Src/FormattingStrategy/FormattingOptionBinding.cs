@@ -22,6 +22,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using ICSharpCode.NRefactory.CSharp;
+using CSharpBinding.OptionPanels;
 
 namespace CSharpBinding.FormattingStrategy
 {
@@ -32,11 +33,8 @@ namespace CSharpBinding.FormattingStrategy
 	{
 		public static readonly DependencyProperty ContainerProperty =
 			DependencyProperty.RegisterAttached("Container", typeof(CSharpFormattingOptionsContainer),
-			                                    typeof(FormattingOptionBinding),
-			                                    new FrameworkPropertyMetadata());
-		public static readonly DependencyProperty OptionProperty =
-			DependencyProperty.RegisterAttached("Option", typeof(string), typeof(FormattingOptionBinding),
-			                                    new FrameworkPropertyMetadata(OnOptionPropertyChanged));
+				typeof(FormattingOptionBinding),
+				new FrameworkPropertyMetadata((o, e) => UpdateOptionBinding(o)));
 		
 		public static CSharpFormattingOptionsContainer GetContainer(Selector element)
 		{
@@ -48,21 +46,26 @@ namespace CSharpBinding.FormattingStrategy
 			element.SetValue(ContainerProperty, container);
 		}
 		
-		public static string GetOption(Selector element)
+		public static readonly DependencyProperty FormattingOptionProperty =
+			DependencyProperty.RegisterAttached("FormattingOption", typeof(FormattingOption),
+				typeof(FormattingOptionBinding),
+				new FrameworkPropertyMetadata((o, e) => UpdateOptionBinding(o)));
+		
+		public static FormattingOption GetFormattingOption(Selector element)
 		{
-			return (string) element.GetValue(OptionProperty);
+			return (FormattingOption) element.GetValue(FormattingOptionProperty);
 		}
 		
-		public static void SetOption(Selector element, string option)
+		public static void SetFormattingOption(Selector element, FormattingOption container)
 		{
-			element.SetValue(OptionProperty, option);
+			element.SetValue(FormattingOptionProperty, container);
 		}
 		
-		static void OnOptionPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+		static void UpdateOptionBinding(DependencyObject o)
 		{
-			string option = e.NewValue as string;
 			ComboBox comboBox = o as ComboBox;
 			CSharpFormattingOptionsContainer container = GetContainer(comboBox);
+			FormattingOption option = GetFormattingOption(comboBox);
 			if ((option != null) && (comboBox != null) && (container != null)) {
 				if (container != null) {
 					if (container.Parent != null) {
@@ -72,17 +75,24 @@ namespace CSharpBinding.FormattingStrategy
 							Tag = null
 						});
 						comboBox.SelectedIndex = 0;
+					} else if (option.AlwaysAllowDefault) {
+						// Also add "default" entry, but without changeable text by container
+						comboBox.Items.Add(new ComboBoxItem {
+							Content = "(default)",
+							Tag = null
+						});
+						comboBox.SelectedIndex = 0;
 					}
 					
-					Type optionType = container.GetOptionType(option);
+					Type optionType = container.GetOptionType(option.Option);
 					FillComboValues(comboBox, optionType);
-					UpdateComboBoxValue(container, option, comboBox);
+					UpdateComboBoxValue(container, option.Option, comboBox);
 					
 					comboBox.SelectionChanged += ComboBox_SelectionChanged;
 					container.PropertyChanged += (sender, eventArgs) =>
 					{
-						if ((eventArgs.PropertyName == null) || (eventArgs.PropertyName == option))
-							UpdateComboBoxValue(container, option, comboBox);
+						if ((eventArgs.PropertyName == null) || (eventArgs.PropertyName == option.Option))
+							UpdateComboBoxValue(container, option.Option, comboBox);
 					};
 				}
 			}
@@ -98,13 +108,13 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			ComboBox comboBox = sender as ComboBox;
 			if (comboBox != null) {
-				string option = GetOption(comboBox);
+				FormattingOption option = GetFormattingOption(comboBox);
 				CSharpFormattingOptionsContainer container = GetContainer(comboBox);
 				if ((container != null) && (option != null)) {
 					ComboBoxItem selectedItem = comboBox.SelectedItem as ComboBoxItem;
 					if (selectedItem != null) {
 						// Set option to appropriate value
-						container.SetOption(option, selectedItem.Tag);
+						container.SetOption(option.Option, selectedItem.Tag);
 					}
 				}
 			}
@@ -140,11 +150,10 @@ namespace CSharpBinding.FormattingStrategy
 		
 		static void FillIntComboValues(ComboBox comboBox)
 		{
-			comboBox.Items.Add(new ComboBoxItem { Content = "0", Tag = 0 });
-			comboBox.Items.Add(new ComboBoxItem { Content = "1", Tag = 1 });
-			comboBox.Items.Add(new ComboBoxItem { Content = "2", Tag = 2 });
-			comboBox.Items.Add(new ComboBoxItem { Content = "3", Tag = 3 });
-			comboBox.Items.Add(new ComboBoxItem { Content = "4", Tag = 4 });
+			for (int i = 0; i < 11; i++)
+			{
+				comboBox.Items.Add(new ComboBoxItem { Content = i.ToString(), Tag = i });
+			}
 		}
 		
 		static void FillBraceStyleComboValues(ComboBox comboBox)

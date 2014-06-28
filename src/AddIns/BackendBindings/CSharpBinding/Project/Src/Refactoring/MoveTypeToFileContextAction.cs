@@ -109,7 +109,7 @@ namespace CSharpBinding.Refactoring
 			                                       || ch is UsingAliasDeclaration
 			                                       || ch is ExternAliasDeclaration);
 			StringBuilder newCode = new StringBuilder(header);
-			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(compilation.GetProject());
+			var formattingOptions = CSharpFormattingPolicies.Instance.GetProjectOptions(compilation.GetProject());
 			CSharpOutputVisitor visitor = new CSharpOutputVisitor(new StringWriter(newCode), formattingOptions.OptionsContainer.GetEffectiveOptions());
 			
 			foreach (var topLevelUsing in topLevelUsings)

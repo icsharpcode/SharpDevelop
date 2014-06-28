@@ -19,6 +19,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 
@@ -72,9 +73,9 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		{
 			string message;
 			if (generator.ViewContent.PrimaryFile.IsDirty) {
-				message = String.Format("Create Report <{0}> ...",Path.GetFileName(this.generator.ViewContent.PrimaryFile.FileName));
+				message = String.Format(CultureInfo.CurrentCulture,"Create Report <{0}> ...",Path.GetFileName(generator.ViewContent.PrimaryFile.FileName));
 			} else {
-				message = String.Format("Load  Report <{0}> ...",Path.GetFileName(this.generator.ViewContent.PrimaryFile.FileName));
+				message = String.Format(CultureInfo.CurrentCulture,"Load  Report <{0}> ...",Path.GetFileName(generator.ViewContent.PrimaryFile.FileName));
 			}
 			SD.StatusBar.SetMessage(message);
 		}

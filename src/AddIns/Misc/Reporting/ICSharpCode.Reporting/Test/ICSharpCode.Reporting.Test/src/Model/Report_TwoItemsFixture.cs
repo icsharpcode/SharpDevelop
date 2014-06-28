@@ -20,6 +20,7 @@ using System;
 using System.Drawing;
 using System.Reflection;
 
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using NUnit.Framework;
 
@@ -29,7 +30,7 @@ namespace ICSharpCode.Reporting.Test.Model
 	public class ReportTwoItemsFixture
 	{
 
-		private ReportModel model;
+		IReportModel model;
 		
 		[Test]
 		public void LoadModelWithItems()

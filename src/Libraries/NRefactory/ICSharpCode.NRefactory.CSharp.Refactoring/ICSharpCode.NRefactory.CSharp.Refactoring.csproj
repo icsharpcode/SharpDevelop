@@ -427,6 +427,10 @@
     <Compile Include="CodeIssues\Custom\CompilerErrors\ExpressionIsNeverOfProvidedTypeIssue.cs" />
     <Compile Include="CodeIssues\Custom\RedundantAssignmentIssue.cs" />
     <Compile Include="CodeIssues\Custom\UnreachableCodeIssue.cs" />
+    <Compile Include="CodeIssues\Synced\PracticesAndImprovements\ReplaceWithSingleCallToMinIssue.cs" />
+    <Compile Include="CodeIssues\Synced\PracticesAndImprovements\ReplaceWithSingleCallToMaxIssue.cs" />
+    <Compile Include="CodeIssues\Synced\PracticesAndImprovements\ReplaceWithSingleCallToAverageIssue.cs" />
+    <Compile Include="CodeIssues\Synced\PracticesAndImprovements\ReplaceWithSingleCallToSumIssue.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

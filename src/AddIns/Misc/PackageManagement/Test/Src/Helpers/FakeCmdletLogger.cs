@@ -17,26 +17,39 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Linq;
-namespace ICSharpCode.Reporting.DataSource.Comparer
+using System.Management.Automation;
+using ICSharpCode.PackageManagement.Scripting;
+
+namespace PackageManagement.Tests.Helpers
 {
-	/// <summary>
-	/// Description of SortExtension.
-	/// </summary>
-	internal static class SortExtension
+	public class FakeCmdletLogger : ICmdletLogger
 	{
+		public ErrorRecord ErrorRecordLogged;
 		
-		public static IOrderedQueryable<BaseComparer> AscendingOrder(this IQueryable<BaseComparer> source )
-		{  
-			
-			return source.OrderBy(x => x.ObjectArray[0]);
+		public void WriteError(ErrorRecord error)
+		{
+			ErrorRecordLogged = error;
 		}
 		
-		public static IOrderedQueryable<BaseComparer> DescendingOrder(this IQueryable<BaseComparer> source )
-		{  
-			
-			return source.OrderByDescending(x => x.ObjectArray[0]);
+		public string LineLogged;
+		
+		public void WriteLine(string message)
+		{
+			LineLogged = message;
+		}
+		
+		public string VerboseMessageLogged;
+		
+		public void WriteVerbose(string message)
+		{
+			VerboseMessageLogged = message;
+		}
+		
+		public string WarningMessageLogged;
+		
+		public void WriteWarning(string message)
+		{
+			WarningMessageLogged = message;
 		}
 	}
-	
 }

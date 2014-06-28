@@ -28,9 +28,9 @@ namespace ICSharpCode.Reporting.DataSource
 	/// </summary>
 	class ExtendedTypeDescriptor
 	{
-		private static Hashtable collections = new Hashtable();
+		static Hashtable collections = new Hashtable();
 
-		private static bool IsAllowedProperty(string name)
+		static bool IsAllowedProperty(string name)
 		{
 			return true; // alle erlaubt
 		}
@@ -57,7 +57,7 @@ namespace ICSharpCode.Reporting.DataSource
 				}
 			}
 
-			PropertyDescriptor[] descriptors = new PropertyDescriptor[l];
+			var descriptors = new PropertyDescriptor[l];
 			
 			int j = 0;
 			foreach(PropertyInfo pinfo in allProps)
@@ -67,7 +67,7 @@ namespace ICSharpCode.Reporting.DataSource
 					descriptors[j++] = new ExtendedPropertyDescriptor(pinfo.Name, memberType, pinfo.PropertyType);
 				}		
 			}								 
-			PropertyDescriptorCollection result = new PropertyDescriptorCollection(descriptors);
+			var result = new PropertyDescriptorCollection(descriptors);
 			collections.Add(memberType, result);
 			return result;			
 		}

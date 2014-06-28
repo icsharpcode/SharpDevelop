@@ -93,7 +93,7 @@
     </Compile>
     <Compile Include="Src\FormattingStrategy\CSharpFormattingOptionsContainer.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
-    <Compile Include="Src\FormattingStrategy\CSharpFormattingOptionsPersistence.cs" />
+    <Compile Include="Src\FormattingStrategy\CSharpFormattingPolicies.cs" />
     <Compile Include="Src\FormattingStrategy\FormattingOptionBinding.cs" />
     <Compile Include="Src\FormsDesigner\CSharpDesignerGenerator.cs" />
     <Compile Include="Src\FormsDesigner\CSharpDesignerLoader.cs" />

@@ -55,6 +55,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		protected virtual void FreezeInternal()
 		{
 			attributes = FreezableHelper.FreezeListAndElements(attributes);
+			constraints = FreezableHelper.FreezeList(constraints);
 		}
 		
 		public DefaultUnresolvedTypeParameter(SymbolKind ownerType, int index, string name = null)

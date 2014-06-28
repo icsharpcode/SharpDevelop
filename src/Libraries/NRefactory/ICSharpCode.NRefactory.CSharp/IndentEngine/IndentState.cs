@@ -516,10 +516,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			var parent = Parent as BracesBodyState;
 			if (parent == null || parent.LastBlockIndent == null || !Engine.EnableCustomIndentLevels)
 			{
-				if (!Engine.formattingOptions.IndentBlocksInsideExpressions) {
-					NextLineIndent.RemoveAlignment();
-					NextLineIndent.PopIf(IndentType.Continuation);
-				}
+				NextLineIndent.RemoveAlignment();
+				NextLineIndent.PopIf(IndentType.Continuation);
 			}
 			else
 			{
@@ -545,7 +543,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void OnExit()
 		{
-			if (Parent is BracesBodyState)
+			if (Parent is BracesBodyState && !((BracesBodyState)Parent).IsRightHandExpression)
 			{
 				((BracesBodyState)Parent).OnStatementExit();
 			}
@@ -878,8 +876,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		void AddIndentation(Body body)
 		{
+			var isExpression = Parent is ParenthesesBodyState || Parent is SquareBracketsBodyState ||
+				(Parent is BracesBodyState && ((BracesBodyState)Parent).IsRightHandExpression);
+			if (isExpression && Engine.formattingOptions.IndentBlocksInsideExpressions && Engine.isLineStart)
+			{
+				AddIndentation(BraceStyle.NextLineShifted);
+			}
+
 			BraceStyle style;
-			if (TryGetBraceStyle (body, out style)) {
+			if (TryGetBraceStyle(body, out style))
+			{
 				AddIndentation(style);
 			} else {
 				NextLineIndent.Push(IndentType.Empty);
@@ -973,6 +979,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (ch == ClosedBracket)
 			{
 				ExitState();
+				if (Parent is BracesBodyState)
+					Parent.OnExit();
 			}
 
 			base.Push(ch);
@@ -1031,9 +1039,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			base.CheckKeyword(keyword);
 		}
 
+
 		public override void OnExit()
 		{
-			Parent.OnExit();
+			//Parent.OnExit();
 		}
 
 		public override IndentState Clone(CSharpIndentEngine engine)

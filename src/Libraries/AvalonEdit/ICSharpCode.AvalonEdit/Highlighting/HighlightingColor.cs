@@ -23,8 +23,7 @@ using System.Security.Permissions;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {

@@ -516,7 +516,19 @@ class MyClass : Base { public override int Method (int Param) {} }";
 			rule.GetErrorMessage(new TestRefactoringContext (null, TextLocation.Empty, null), "pascalCase_12_____12323", out suggestedNames); 
 			Assert.IsTrue(suggestedNames.Contains("PascalCase_12_12323"));
 		}
-
+		
+		/// <summary>
+		/// Bug in Xamarin Studio "Warning: no known errors"
+		/// </summary>
+		[Test]
+		public void TestCase70925()
+		{
+			var rule = new NamingRule(AffectedEntity.Field);
+			rule.NamingStyle = NamingStyle.PascalCase;
+			System.Collections.Generic.IList<string> suggestedNames;
+			rule.GetErrorMessage(new TestRefactoringContext (null, TextLocation.Empty, null), "_taskStatus", out suggestedNames); 
+			Assert.IsTrue(suggestedNames.Contains("TaskStatus"));
+		}
 	}
 }
 

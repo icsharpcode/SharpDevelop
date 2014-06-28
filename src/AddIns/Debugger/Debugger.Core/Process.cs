@@ -527,8 +527,16 @@ namespace Debugger
 			System.Threading.Thread.Sleep(0);
 			
 			// Stop&terminate - both must be called
-			corProcess.Stop(uint.MaxValue);
-			corProcess.Terminate(0);
+			try {
+				corProcess.Stop(uint.MaxValue);
+				corProcess.Terminate(0);
+			} catch (COMException ex) {
+				if (ex.ErrorCode == unchecked((int)0x80131301)) {
+					// COMException (0x80131301): Process was terminated.
+				} else {
+					throw;
+				}
+			}
 			this.TerminateCommandIssued = true;
 			
 			// Do not mark the process as exited

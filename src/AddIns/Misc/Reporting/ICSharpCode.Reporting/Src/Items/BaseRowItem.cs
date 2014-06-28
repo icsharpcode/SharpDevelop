@@ -41,7 +41,5 @@ namespace ICSharpCode.Reporting.Items
 			};
 			return er;
 		}
-		
-		
 	}
 }
