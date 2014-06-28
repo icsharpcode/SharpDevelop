@@ -21,9 +21,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+#if NREFACTORY
 using ICSharpCode.NRefactory.Editor;
+#else
+using ICSharpCode.AvalonEdit.Document;
+#endif
 using ICSharpCode.AvalonEdit.Utils;
-using SpanStack = ICSharpCode.NRefactory.Utils.ImmutableStack<ICSharpCode.AvalonEdit.Highlighting.HighlightingSpan>;
+using SpanStack = ICSharpCode.AvalonEdit.Utils.ImmutableStack<ICSharpCode.AvalonEdit.Highlighting.HighlightingSpan>;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {

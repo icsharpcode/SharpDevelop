@@ -408,7 +408,7 @@ namespace ICSharpCode.AvalonEdit
 			TextEditor editor = d as TextEditor;
 			if (editor != null) {
 				if ((bool)e.NewValue)
-					editor.TextArea.ReadOnlySectionProvider = ReadOnlyDocument.Instance;
+					editor.TextArea.ReadOnlySectionProvider = ReadOnlySectionDocument.Instance;
 				else
 					editor.TextArea.ReadOnlySectionProvider = NoReadOnlySections.Instance;
 				
@@ -905,7 +905,7 @@ namespace ICSharpCode.AvalonEdit
 			if (start < 0 || start > documentLength)
 				throw new ArgumentOutOfRangeException("start", start, "Value must be between 0 and " + documentLength);
 			if (length < 0 || start + length > documentLength)
-				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + (documentLength - length));
+				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + (documentLength - start));
 			textArea.Selection = SimpleSelection.Create(textArea, start, start + length);
 			textArea.Caret.Offset = start + length;
 		}
@@ -944,9 +944,9 @@ namespace ICSharpCode.AvalonEdit
 		{
 			using (StreamReader reader = FileReader.OpenStream(stream, this.Encoding ?? Encoding.UTF8)) {
 				this.Text = reader.ReadToEnd();
-				this.Encoding = reader.CurrentEncoding; // assign encoding after ReadToEnd() so that the StreamReader can autodetect the encoding
+				SetCurrentValue(EncodingProperty, reader.CurrentEncoding); // assign encoding after ReadToEnd() so that the StreamReader can autodetect the encoding
 			}
-			this.IsModified = false;
+			SetCurrentValue(IsModifiedProperty, Boxes.False);
 		}
 		
 		/// <summary>
@@ -997,7 +997,7 @@ namespace ICSharpCode.AvalonEdit
 				document.WriteTextTo(writer);
 			writer.Flush();
 			// do not close the stream
-			this.IsModified = false;
+			SetCurrentValue(IsModifiedProperty, Boxes.False);
 		}
 		
 		/// <summary>

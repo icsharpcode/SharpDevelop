@@ -265,18 +265,10 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public virtual string GetIndentationString(int column)
 		{
-			return GetIndentationString(column, IndentationSize, ConvertTabsToSpaces);
-		}
-		
-		/// <summary>
-		/// Gets text required to indent from the specified <paramref name="column"/> to the next indentation level,
-		/// considering given <paramref name="indentationSize"/> and <paramref name="convertTabsToSpaces"/> settings.
-		/// </summary>
-		public static string GetIndentationString(int column, int indentationSize, bool convertTabsToSpaces)
-		{
 			if (column < 1)
 				throw new ArgumentOutOfRangeException("column", column, "Value must be at least 1.");
-			if (convertTabsToSpaces) {
+			int indentationSize = this.IndentationSize;
+			if (ConvertTabsToSpaces) {
 				return new string(' ', indentationSize - ((column - 1) % indentationSize));
 			} else {
 				return "\t";

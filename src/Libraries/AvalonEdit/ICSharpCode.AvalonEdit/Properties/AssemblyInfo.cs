@@ -50,6 +50,13 @@ using System.Windows.Markup;
 	// app, or any theme specific resource dictionaries)
 )]
 
+[assembly: System.Runtime.InteropServices.ComVisible(false)]
+[assembly: AssemblyCompany("ic#code")]
+[assembly: AssemblyProduct("SharpDevelop")]
+[assembly: AssemblyCopyright("2000-2014 AlphaSierraPapa for the SharpDevelop Team")]
+[assembly: AssemblyVersion("5.0.1")]
+[assembly: NeutralResourcesLanguage("en-US")]
+
 [assembly: XmlnsPrefix("http://icsharpcode.net/sharpdevelop/avalonedit", "avalonedit")]
 
 [assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/avalonedit", "ICSharpCode.AvalonEdit")]
@@ -57,3 +64,8 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/avalonedit", "ICSharpCode.AvalonEdit.Rendering")]
 [assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/avalonedit", "ICSharpCode.AvalonEdit.Highlighting")]
 [assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/avalonedit", "ICSharpCode.AvalonEdit.Search")]
+
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2243:AttributeStringLiteralsShouldParseCorrectly",
+	Justification = "AssemblyInformationalVersion does not need to be a parsable version")]
+
+namespace ICSharpCode.NRefactory.Editor {}

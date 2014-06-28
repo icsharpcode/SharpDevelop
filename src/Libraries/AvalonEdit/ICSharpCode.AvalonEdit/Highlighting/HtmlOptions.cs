@@ -18,7 +18,11 @@
 
 using System;
 using System.IO;
+#if DOTNET4
 using System.Net;
+#else
+using System.Web;
+#endif
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -60,7 +64,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (color == null)
 				throw new ArgumentNullException("color");
 			writer.Write(" style=\"");
+			#if DOTNET4
 			WebUtility.HtmlEncode(color.ToCss(), writer);
+			#else
+			HttpUtility.HtmlEncode(color.ToCss(), writer);
+			#endif
 			writer.Write('"');
 		}
 		
