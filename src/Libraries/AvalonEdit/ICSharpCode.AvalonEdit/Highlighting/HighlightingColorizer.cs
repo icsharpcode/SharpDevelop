@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
@@ -231,7 +232,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (color == null)
 				return true;
 			return color.Background == null && color.Foreground == null
-				&& color.FontStyle == null && color.FontWeight == null;
+				&& color.FontStyle == null && color.FontWeight == null
+				&& color.Underline == null;
 		}
 		
 		/// <summary>
@@ -254,7 +256,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				if (b != null)
 					element.BackgroundBrush = b;
 			}
-			if (color.FontStyle != null || color.FontWeight != null) {
+			if (color.FontStyle != null || color.FontWeight != null || color.Underline != null) {
 				Typeface tf = element.TextRunProperties.Typeface;
 				element.TextRunProperties.SetTypeface(new Typeface(
 					tf.FontFamily,
@@ -263,6 +265,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					tf.Stretch
 				));
 			}
+			if(color.Underline ?? false)
+               element.TextRunProperties.SetTextDecorations(TextDecorations.Underline);           
 		}
 		
 		/// <summary>

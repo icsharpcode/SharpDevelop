@@ -38,6 +38,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		string name;
 		FontWeight? fontWeight;
 		FontStyle? fontStyle;
+		bool? underline;
 		HighlightingBrush foreground;
 		HighlightingBrush background;
 		bool frozen;
@@ -83,6 +84,20 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				fontStyle = value;
 			}
 		}
+		
+		/// <summary>
+      ///  Gets/sets the underline flag. Null if the underline status does not change the font style.
+      /// </summary>
+      public bool? Underline {
+      	get {
+				return underline;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				underline = value;
+			}
+      }    
 		
 		/// <summary>
 		/// Gets/sets the foreground color applied by the highlighting.
