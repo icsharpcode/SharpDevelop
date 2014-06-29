@@ -50,6 +50,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		public FontWeight? FontWeight { get; set; }
 		
 		/// <summary>
+		/// Gets/sets the underline flag
+		/// </summary>
+		public bool Underline { get; set; }
+		
+		/// <summary>
 		/// Gets/sets the font style.
 		/// </summary>
 		public FontStyle? FontStyle { get; set; }
@@ -81,6 +86,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			if (info.GetBoolean("HasStyle"))
 				this.FontStyle = (FontStyle?)new FontStyleConverter().ConvertFromInvariantString(info.GetString("Style"));
 			this.ExampleText = info.GetString("ExampleText");
+			this.Underline = info.GetBoolean("Underline");
 		}
 		
 		/// <summary>
@@ -99,6 +105,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			info.AddValue("Foreground", this.Foreground);
 			info.AddValue("Background", this.Background);
 			info.AddValue("HasWeight", this.FontWeight.HasValue);
+			if (this.Underline)
+            info.AddValue("Underline", this.Underline);			
 			if (this.FontWeight.HasValue)
 				info.AddValue("Weight", this.FontWeight.Value.ToOpenTypeWeight());
 			info.AddValue("HasStyle", this.FontStyle.HasValue);

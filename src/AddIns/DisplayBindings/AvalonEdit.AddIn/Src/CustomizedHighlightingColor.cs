@@ -43,6 +43,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public bool Bold { get; set; }
 		public bool Italic { get; set; }
+		public bool Underline { get; set; }
 		public Color? Foreground { get; set; }
 		public Color? Background { get; set; }
 		

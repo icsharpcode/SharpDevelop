@@ -267,7 +267,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						Background = CreateBrush(customization.Background),
 						Foreground = CreateBrush(customization.Foreground),
 						FontWeight = customization.Bold ? FontWeights.Bold : FontWeights.Normal,
-						FontStyle = customization.Italic ? FontStyles.Italic : FontStyles.Normal
+						FontStyle = customization.Italic ? FontStyles.Italic : FontStyles.Normal,
+						Underline = customization.Underline
 					};
 				}
 			}

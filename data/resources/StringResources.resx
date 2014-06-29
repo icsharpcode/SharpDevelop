@@ -1729,6 +1729,9 @@ Examples: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Italic</value>
   </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Underline" xml:space="preserve">
+    <value>Underlined</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
     <value>Export highlighting colors</value>
   </data>
