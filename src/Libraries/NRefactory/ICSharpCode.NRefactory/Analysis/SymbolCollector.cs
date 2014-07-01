@@ -129,10 +129,13 @@ namespace ICSharpCode.NRefactory.Analysis
 				}
 
 				if (member.DeclaringType.Kind == TypeKind.Interface) {
-					foreach (var derivedType in g.GetNode (member.DeclaringTypeDefinition).DerivedTypes) {
-						var mem = SearchMember (derivedType.TypeDefinition, member);
-						if (mem != null)
-							symbols.Add (mem);
+					var declaringTypeNode = g.GetNode(member.DeclaringTypeDefinition);
+					if (declaringTypeNode != null) {
+						foreach (var derivedType in declaringTypeNode.DerivedTypes) {
+							var mem = SearchMember (derivedType.TypeDefinition, member);
+							if (mem != null)
+								symbols.Add (mem);
+						}
 					}
 				}
 

@@ -18,7 +18,9 @@
 
 using System;
 using System.Collections.Generic;
+#if NREFACTORY
 using ICSharpCode.NRefactory.Editor;
+#endif
 using NUnit.Framework;
 
 namespace ICSharpCode.AvalonEdit.Document

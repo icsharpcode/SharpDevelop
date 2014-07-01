@@ -29,7 +29,9 @@ using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
+#if NREFACTORY
 using ICSharpCode.NRefactory.Editor;
+#endif
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -340,7 +342,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 			} catch (ExternalException) {
 				// Apparently this exception sometimes happens randomly.
 				// The MS controls just ignore it, so we'll do the same.
-				return false;
 			}
 			
 			string text = textArea.Selection.GetText();

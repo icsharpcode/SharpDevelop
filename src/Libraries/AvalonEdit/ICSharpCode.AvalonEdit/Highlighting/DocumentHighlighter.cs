@@ -20,12 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
-using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.Utils;
-using SpanStack = ICSharpCode.NRefactory.Utils.ImmutableStack<ICSharpCode.AvalonEdit.Highlighting.HighlightingSpan>;
+using SpanStack = ICSharpCode.AvalonEdit.Utils.ImmutableStack<ICSharpCode.AvalonEdit.Highlighting.HighlightingSpan>;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -74,6 +72,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			InvalidateHighlighting();
 		}
 		
+		#if NREFACTORY
 		/// <summary>
 		/// Creates a new DocumentHighlighter instance.
 		/// </summary>
@@ -88,6 +87,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			this.engine = new HighlightingEngine(definition.MainRuleSet);
 			InvalidateHighlighting();
 		}
+		#endif
 		
 		/// <summary>
 		/// Disposes the document highlighter.

@@ -51,3 +51,5 @@ using NUnit.Framework;
 
 // Run unit tests on STA thread.
 [assembly: RequiresSTA]
+
+namespace ICSharpCode.NRefactory.Editor {}

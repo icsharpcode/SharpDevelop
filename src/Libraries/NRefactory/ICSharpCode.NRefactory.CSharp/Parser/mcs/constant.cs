@@ -528,7 +528,7 @@ namespace Mono.CSharp {
 			return Value ? 1 : 0;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -579,7 +579,7 @@ namespace Mono.CSharp {
 			Value = v;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -679,7 +679,7 @@ namespace Mono.CSharp {
 			Value = v;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode ((ushort) Value);
 		}
@@ -807,7 +807,7 @@ namespace Mono.CSharp {
 			Value = v;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -910,7 +910,7 @@ namespace Mono.CSharp {
 			Value = v;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -1023,7 +1023,7 @@ namespace Mono.CSharp {
 			Value = v;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -1132,7 +1132,7 @@ namespace Mono.CSharp {
 			Value = v;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -1308,7 +1308,7 @@ namespace Mono.CSharp {
 			Value = v;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -1425,7 +1425,7 @@ namespace Mono.CSharp {
 			Value = v;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -1556,7 +1556,7 @@ namespace Mono.CSharp {
 			Value = v;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -1680,7 +1680,7 @@ namespace Mono.CSharp {
 			return base.ConvertImplicitly (type);
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -1809,7 +1809,7 @@ namespace Mono.CSharp {
 			Value = v;
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			enc.Encode (Value);
 		}
@@ -2094,7 +2094,7 @@ namespace Mono.CSharp {
 			ec.Emit (OpCodes.Ldstr, Value);
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			// cast to object
 			if (type != targetType)
@@ -2159,7 +2159,7 @@ namespace Mono.CSharp {
 			return base.CreateExpressionTree (ec);
 		}
 
-		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
+		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType, TypeSpec parameterType)
 		{
 			switch (targetType.BuiltinType) {
 			case BuiltinTypeSpec.Type.Object:
@@ -2180,7 +2180,7 @@ namespace Mono.CSharp {
 				break;
 			}
 
-			base.EncodeAttributeValue (rc, enc, targetType);
+			base.EncodeAttributeValue (rc, enc, targetType, parameterType);
 		}
 
 		public override void Emit (EmitContext ec)
@@ -2320,6 +2320,11 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public override bool ContainsEmitWithAwait ()
+		{
+			return side_effect.ContainsEmitWithAwait ();
+		}
+
 		public override object GetValue ()
 		{
 			return value.GetValue ();
@@ -2345,6 +2350,11 @@ namespace Mono.CSharp {
 		{
 			side_effect.EmitSideEffect (ec);
 			value.EmitSideEffect (ec);
+		}
+
+		public override void FlowAnalysis (FlowAnalysisContext fc)
+		{
+			side_effect.FlowAnalysis (fc);
 		}
 
 		public override bool IsDefaultValue {

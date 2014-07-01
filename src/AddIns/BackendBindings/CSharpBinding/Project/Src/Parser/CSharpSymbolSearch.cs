@@ -52,14 +52,13 @@ namespace CSharpBinding
 	/// </summary>
 	public class CSharpSymbolSearch : ISymbolSearch
 	{
-		IProject project;
-		ICompilation compilation;
-		FindReferences fr = new FindReferences();
-		IList<IFindReferenceSearchScope> searchScopes;
-		IList<string>[] interestingFileNames;
-		Dictionary<string, IList<IFindReferenceSearchScope>> searchScopesPerFile;
-		int workAmount;
-		double workAmountInverse;
+		readonly IProject project;
+		readonly ICompilation compilation;
+		readonly FindReferences fr = new FindReferences();
+		readonly IList<IFindReferenceSearchScope> searchScopes;
+		readonly Dictionary<string, IList<IFindReferenceSearchScope>> searchScopesPerFile;
+		readonly int workAmount;
+		readonly double workAmountInverse;
 		
 		public CSharpSymbolSearch(IProject project, ISymbol entity)
 		{
@@ -73,17 +72,15 @@ namespace CSharpBinding
 			}
 			
 			searchScopesPerFile = new Dictionary<string, IList<IFindReferenceSearchScope>>();
-			interestingFileNames = new IList<string>[searchScopes.Count];
 			for (int i = 0; i < searchScopes.Count; i++) {
 				var thisSearchScope = searchScopes[i];
-				var interestingFiles = fr.GetInterestingFiles(thisSearchScope, compilation).Select(f => f.FileName).ToList();
+				var interestingFiles = fr.GetInterestingFiles(thisSearchScope, compilation).Select(f => f.FileName);
 				foreach (var file in interestingFiles) {
 					if (!searchScopesPerFile.ContainsKey(file))
 						searchScopesPerFile[file] = new List<IFindReferenceSearchScope>();
 					searchScopesPerFile[file].Add(thisSearchScope);
+					workAmount++;
 				}
-				interestingFileNames[i] = interestingFiles.ToList();
-				workAmount += interestingFiles.Count;
 			}
 			workAmountInverse = 1.0 / workAmount;
 		}
@@ -134,7 +131,7 @@ namespace CSharpBinding
 			if (textSource == null)
 				return;
 			if (searchScopeList != null) {
-				if (!searchScopeList.Any(
+				if (!searchScopeList.DistinctBy(scope => scope.SearchTerm ?? String.Empty).Any(
 					scope => (scope.SearchTerm == null) || (textSource.IndexOf(scope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) >= 0)))
 					return;
 			}
@@ -219,7 +216,7 @@ namespace CSharpBinding
 			if (textSource == null)
 				return;
 			if (searchScopeList != null) {
-				if (!searchScopeList.Any(
+				if (!searchScopeList.DistinctBy(scope => scope.SearchTerm ?? String.Empty).Any(
 					scope => (scope.SearchTerm == null) || (textSource.IndexOf(scope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) >= 0)))
 					return;
 			}

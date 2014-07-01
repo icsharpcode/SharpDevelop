@@ -104,9 +104,11 @@ namespace ICSharpCode.SharpDevelop.Services
 					return;
 				int start = index;
 				// find start of current line
-				while (--start > 0 && fullText[start - 1] != '\n');
+				while (start > 0 && fullText[start - 1] != '\n')
+					start--;
 				// find end of current line
-				while (++index < fullText.Length && fullText[index] != '\n');
+				while (index < fullText.Length && fullText[index] != '\n')
+					index++;
 				
 				string textLine = fullText.Substring(start, index - start);
 				

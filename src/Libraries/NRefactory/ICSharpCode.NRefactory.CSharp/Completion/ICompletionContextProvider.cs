@@ -124,6 +124,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		bool IsInsideType (IUnresolvedEntity currentType, TextLocation location)
 		{
+			if (currentType.Region.IsEmpty)
+				return false;
 			int startOffset = document.GetOffset (currentType.Region.Begin);
 			int endOffset = document.GetOffset (location);
 			//bool foundEndBracket = false;

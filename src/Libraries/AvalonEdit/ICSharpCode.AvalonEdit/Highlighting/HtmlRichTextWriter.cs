@@ -19,7 +19,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+#if DOTNET4
 using System.Net;
+#else
+using System.Web;
+#endif
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
@@ -132,7 +136,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					needIndentation = true;
 					break;
 				default:
+					#if DOTNET4
 					WebUtility.HtmlEncode(c.ToString(), htmlWriter);
+					#else
+					HttpUtility.HtmlEncode(c.ToString(), htmlWriter);
+					#endif
 					break;
 			}
 			// If we just handled a space by setting hasSpace = true,
@@ -173,7 +181,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (value.Length == 0)
 				return;
 			WriteIndentationAndSpace();
+			#if DOTNET4
 			WebUtility.HtmlEncode(value, htmlWriter);
+			#else
+			HttpUtility.HtmlEncode(value, htmlWriter);
+			#endif
 		}
 		
 		/// <inheritdoc/>
@@ -244,7 +256,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		public override void BeginHyperlinkSpan(Uri uri)
 		{
 			WriteIndentationAndSpace();
-			htmlWriter.Write("<a href=\"" + WebUtility.HtmlEncode(uri.ToString()) + "\">");
+			#if DOTNET4
+			string link = WebUtility.HtmlEncode(uri.ToString());
+			#else
+			string link = HttpUtility.HtmlEncode(uri.ToString());
+			#endif
+			htmlWriter.Write("<a href=\"" + link + "\">");
 			endTagStack.Push("</a>");
 		}
 	}
