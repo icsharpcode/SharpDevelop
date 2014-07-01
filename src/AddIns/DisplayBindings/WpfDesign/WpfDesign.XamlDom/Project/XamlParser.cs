@@ -726,6 +726,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				
 				XamlParser parser = new XamlParser();
 				parser.settings = settings;
+				parser.errorSink = (IXamlErrorSink)settings.ServiceProvider.GetService(typeof(IXamlErrorSink));
 				parser.document = root.OwnerDocument;
 				var xamlObject = parser.ParseObject(element as XmlElement);
 				if (xamlObject != null)
