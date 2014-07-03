@@ -123,7 +123,6 @@ Q:  What is the difference between NRefactory and Roslyn?
 	- NRefactory does not have VB support.
 	- NRefactory cannot compile code to IL; it's not a full compiler, just a frontend.
 	- NRefactory C# AST is mutable and supports pattern matching; Roslyn is immutable and does not have built-in pattern matching.
-	- NRefactory is Open Source, if you somehow can't get at the information you need, you can modify the code.
 
 Q:	What is the difference between types and type definitions?
 

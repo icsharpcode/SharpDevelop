@@ -19,7 +19,9 @@
 using System;
 using System.IO;
 using System.Text;
+#if NREFACTORY
 using ICSharpCode.NRefactory.Editor;
+#endif
 
 namespace ICSharpCode.AvalonEdit.Document
 {

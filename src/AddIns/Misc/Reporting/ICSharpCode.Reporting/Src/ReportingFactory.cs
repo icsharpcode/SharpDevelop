@@ -35,8 +35,6 @@ namespace ICSharpCode.Reporting
 	
 	public class ReportingFactory
 	{
-		
-		
 		public IReportCreator ReportCreator (Stream stream,IEnumerable list)
 		{
 			ReportModel = LoadReportModel (stream);
@@ -53,7 +51,7 @@ namespace ICSharpCode.Reporting
 		}
 		
 
-		public IReportCreator ReportCreator (ReportModel reportModel) {
+		public IReportCreator ReportCreator (IReportModel reportModel) {
 			ReportModel = reportModel;
 			var builder = new FormPageBuilder(ReportModel);
 			return builder;

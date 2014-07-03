@@ -27,8 +27,6 @@ namespace ICSharpCode.Reporting.Xml
 	public class ModelLoader: MycroParser
 	{
 		public ModelLoader() {
-			Console.WriteLine("ICSharpCode.Reporting.Xml.ModelLoader");
-			Console.WriteLine();
 		}
 		protected override Type GetTypeByName(string ns, string name)
 		{

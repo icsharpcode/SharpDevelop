@@ -19,7 +19,6 @@
 using System;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder;
 
 namespace ICSharpCode.Reporting.Factories

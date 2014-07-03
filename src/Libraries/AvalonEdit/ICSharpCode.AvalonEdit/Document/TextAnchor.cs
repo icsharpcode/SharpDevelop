@@ -20,6 +20,7 @@ using System;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Document
 {

@@ -38,7 +38,7 @@ namespace ICSharpCode.FiletypeRegisterer
 			}
 			base.Dispose(disposing);
 		}
-		
+
 		/// <summary>
 		/// This method is required for Windows Forms designer support.
 		/// Do not change the method contents inside the source code editor. The Forms designer might
@@ -53,24 +53,25 @@ namespace ICSharpCode.FiletypeRegisterer
 			// captionLabel
 			// 
 			this.captionLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.captionLabel.Location = new System.Drawing.Point(3, 0);
 			this.captionLabel.Name = "captionLabel";
 			this.captionLabel.Size = new System.Drawing.Size(328, 23);
 			this.captionLabel.TabIndex = 0;
 			this.captionLabel.Text = "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.Ca" +
-			"ptionLabel}";
+	"ptionLabel}";
 			// 
 			// fileTypesListBox
 			// 
 			this.fileTypesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.fileTypesListBox.IntegralHeight = false;
 			this.fileTypesListBox.Location = new System.Drawing.Point(3, 26);
 			this.fileTypesListBox.Name = "fileTypesListBox";
 			this.fileTypesListBox.Size = new System.Drawing.Size(328, 299);
 			this.fileTypesListBox.TabIndex = 1;
+			this.fileTypesListBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.fileTypesListBox_MouseClick);
 			// 
 			// RegisterFiletypesPanel
 			// 
@@ -79,6 +80,7 @@ namespace ICSharpCode.FiletypeRegisterer
 			this.Name = "RegisterFiletypesPanel";
 			this.Size = new System.Drawing.Size(334, 328);
 			this.ResumeLayout(false);
+
 		}
 		private System.Windows.Forms.CheckedListBox fileTypesListBox;
 		private System.Windows.Forms.Label captionLabel;

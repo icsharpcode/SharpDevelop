@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 
 using System.ComponentModel;
+using System.Reflection;
 using System.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -83,9 +84,9 @@ namespace CSharpBinding
 			// Create instance of options adapter and register it as service
 			var formattingPolicy = CSharpFormattingPolicies.Instance.GetProjectOptions(
 				SD.ProjectService.FindProjectContainingFile(editor.FileName));
-			options = new CodeEditorFormattingOptionsAdapter(editor.Options, formattingPolicy.OptionsContainer);
 			var textEditor = editor.GetService<TextEditor>();
 			if (textEditor != null) {
+				options = new CodeEditorFormattingOptionsAdapter(textEditor.Options, editor.Options, formattingPolicy.OptionsContainer);
 				var textViewServices = textEditor.TextArea.TextView.Services;
 				
 				// Unregister any previous ITextEditorOptions instance from editor, if existing, register our impl.
@@ -94,7 +95,7 @@ namespace CSharpBinding
 				
 				// Set TextEditor's options to same object
 				originalEditorOptions = textEditor.Options;
-				textEditor.Options = options;
+				textEditor.Options = options.TextEditorOptions;
 			}
 		}
 		
@@ -110,7 +111,7 @@ namespace CSharpBinding
 					textView.Services.RemoveService(typeof(ITextEditorOptions));
 				
 				// Reset TextEditor options, too?
-				 if ((textEditor.Options != null) && (textEditor.Options == options))
+				 if ((textEditor.Options != null) && (textEditor.Options == options.TextEditorOptions))
 				 	textEditor.Options = originalEditorOptions;
 			}
 			
@@ -128,225 +129,144 @@ namespace CSharpBinding
 		}
 	}
 	
-	class CodeEditorFormattingOptionsAdapter : TextEditorOptions, ITextEditorOptions, ICodeEditorOptions
+	class CodeEditorFormattingOptionsAdapter : ITextEditorOptions, INotifyPropertyChanged
 	{
 		CSharpFormattingOptionsContainer container;
-		readonly ITextEditorOptions globalOptions;
-		readonly ICodeEditorOptions globalCodeEditorOptions;
+		readonly TextEditorOptions avalonEditOptions;
+		readonly TextEditorOptions originalAvalonEditOptions;
+		readonly ITextEditorOptions originalSDOptions;
 		
-		public CodeEditorFormattingOptionsAdapter(ITextEditorOptions globalOptions, CSharpFormattingOptionsContainer container)
+		public CodeEditorFormattingOptionsAdapter(TextEditorOptions originalAvalonEditOptions, ITextEditorOptions originalSDOptions, CSharpFormattingOptionsContainer container)
 		{
-			if (globalOptions == null)
-				throw new ArgumentNullException("globalOptions");
+			if (originalAvalonEditOptions == null)
+				throw new ArgumentNullException("originalAvalonEditOptions");
+			if (originalSDOptions == null)
+				throw new ArgumentNullException("originalSDOptions");
 			if (container == null)
 				throw new ArgumentNullException("container");
 			
-			this.globalOptions = globalOptions;
-			this.globalCodeEditorOptions = globalOptions as ICodeEditorOptions;
+			this.originalAvalonEditOptions = originalAvalonEditOptions;
+			this.avalonEditOptions = new TextEditorOptions(originalAvalonEditOptions);
+			this.originalSDOptions = originalSDOptions;
 			this.container = container;
 			
+			// Update overridden options once
+			UpdateOverriddenProperties();
+			
 			CSharpFormattingPolicies.Instance.FormattingPolicyUpdated += OnFormattingPolicyUpdated;
-			globalOptions.PropertyChanged += OnGlobalOptionsPropertyChanged;
+			this.originalAvalonEditOptions.PropertyChanged += OnOrigAvalonOptionsPropertyChanged;
+			this.originalSDOptions.PropertyChanged += OnSDOptionsPropertyChanged;
 		}
 		
 		void OnFormattingPolicyUpdated(object sender, CSharpBinding.FormattingStrategy.CSharpFormattingPolicyUpdateEventArgs e)
 		{
+			// Update editor options from changed policy
+			UpdateOverriddenProperties();
+			
 			OnPropertyChanged("IndentationSize");
+			OnPropertyChanged("IndentationString");
 			OnPropertyChanged("ConvertTabsToSpaces");
 		}
+		
+		void UpdateOverriddenProperties()
+		{
+			avalonEditOptions.IndentationSize = container.GetEffectiveIndentationSize() ?? originalSDOptions.IndentationSize;
+			avalonEditOptions.ConvertTabsToSpaces = container.GetEffectiveConvertTabsToSpaces() ?? originalSDOptions.ConvertTabsToSpaces;
+		}
 
-		void OnGlobalOptionsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void OnOrigAvalonOptionsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if ((e.PropertyName != "IndentationSize") && (e.PropertyName != "IndentationString") && (e.PropertyName != "ConvertTabsToSpaces")) {
+				// Update values in our own TextEditorOptions instance
+				PropertyInfo propertyInfo = typeof(TextEditorOptions).GetProperty(e.PropertyName);
+				if (propertyInfo != null) {
+					propertyInfo.SetValue(avalonEditOptions, propertyInfo.GetValue(originalAvalonEditOptions));
+				}
+			} else {
+				UpdateOverriddenProperties();
+			}
+			OnPropertyChanged(e.PropertyName);
+		}
+
+		void OnSDOptionsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			OnPropertyChanged(e.PropertyName);
 		}
 		
-		#region ITextEditorOptions implementation
-
-		public override int IndentationSize {
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		void OnPropertyChanged(string propertyName)
+		{
+			if (PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		public TextEditorOptions TextEditorOptions
+		{
 			get {
-				return container.GetEffectiveIndentationSize() ?? globalOptions.IndentationSize;
+				return avalonEditOptions;
 			}
 		}
 
-		public override bool ConvertTabsToSpaces {
+		#region Overridden properties
+		
+		public int IndentationSize {
 			get {
-				return container.GetEffectiveConvertTabsToSpaces() ?? globalOptions.ConvertTabsToSpaces;
+				// Get value from own TextEditorOptions instance
+				return avalonEditOptions.IndentationSize;
 			}
 		}
+
+		public string IndentationString {
+			get {
+				// Get value from own TextEditorOptions instance
+				return avalonEditOptions.IndentationString;
+			}
+		}
+
+		public bool ConvertTabsToSpaces {
+			get {
+				// Get value from own TextEditorOptions instance
+				return avalonEditOptions.ConvertTabsToSpaces;
+			}
+		}
+		
+		#endregion
+		
+		#region Rest of ITextEditorOptions implementation
 
 		public bool AutoInsertBlockEnd {
 			get {
-				return globalOptions.AutoInsertBlockEnd;
+				return originalSDOptions.AutoInsertBlockEnd;
 			}
 		}
 
 		public int VerticalRulerColumn {
 			get {
-				return globalOptions.VerticalRulerColumn;
+				return originalSDOptions.VerticalRulerColumn;
 			}
 		}
 
 		public bool UnderlineErrors {
 			get {
-				return globalOptions.UnderlineErrors;
+				return originalSDOptions.UnderlineErrors;
 			}
 		}
 
 		public string FontFamily {
 			get {
-				return globalOptions.FontFamily;
+				return originalSDOptions.FontFamily;
 			}
 		}
 
 		public double FontSize {
 			get {
-				return globalOptions.FontSize;
+				return originalSDOptions.FontSize;
 			}
 		}
 
 		#endregion
 
-		public override bool AllowScrollBelowDocument {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.AllowScrollBelowDocument : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.AllowScrollBelowDocument = value;
-				}
-			}
-		}
-
-		public bool ShowLineNumbers {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.ShowLineNumbers : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.ShowLineNumbers = value;
-				}
-			}
-		}
-
-		public bool EnableChangeMarkerMargin {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.EnableChangeMarkerMargin : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.EnableChangeMarkerMargin = value;
-				}
-			}
-		}
-
-		public bool WordWrap {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.WordWrap : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.WordWrap = value;
-				}
-			}
-		}
-
-		public bool CtrlClickGoToDefinition {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.CtrlClickGoToDefinition : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.CtrlClickGoToDefinition = value;
-				}
-			}
-		}
-
-		public bool MouseWheelZoom {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.MouseWheelZoom : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.MouseWheelZoom = value;
-				}
-			}
-		}
-
-		public bool HighlightBrackets {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.HighlightBrackets : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.HighlightBrackets = value;
-				}
-			}
-		}
-
-		public bool HighlightSymbol {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.HighlightSymbol : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.HighlightSymbol = value;
-				}
-			}
-		}
-
-		public bool EnableAnimations {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.EnableAnimations : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.EnableAnimations = value;
-				}
-			}
-		}
-
-		public bool UseSmartIndentation {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.UseSmartIndentation : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.UseSmartIndentation = value;
-				}
-			}
-		}
-
-		public bool EnableFolding {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.EnableFolding : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.EnableFolding = value;
-				}
-			}
-		}
-
-		public bool EnableQuickClassBrowser {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.EnableQuickClassBrowser : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.EnableQuickClassBrowser = value;
-				}
-			}
-		}
-
-		public bool ShowHiddenDefinitions {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.ShowHiddenDefinitions : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.ShowHiddenDefinitions = value;
-				}
-			}
-		}
 	}
 }

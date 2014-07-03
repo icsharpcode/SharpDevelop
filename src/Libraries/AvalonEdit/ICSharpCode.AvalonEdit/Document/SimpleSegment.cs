@@ -20,7 +20,9 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using ICSharpCode.AvalonEdit.Utils;
+#if NREFACTORY
 using ICSharpCode.NRefactory.Editor;
+#endif
 
 namespace ICSharpCode.AvalonEdit.Document
 {

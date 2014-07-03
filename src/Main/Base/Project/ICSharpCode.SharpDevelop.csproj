@@ -140,6 +140,7 @@
     <Compile Include="Editor\Bookmarks\IBookmarkMargin.cs" />
     <Compile Include="Editor\Bookmarks\SDBookmark.cs" />
     <Compile Include="Editor\Bookmarks\SDMarkerBookmark.cs" />
+    <Compile Include="Editor\CodeCompletion\Images\CompletionImage.cs" />
     <Compile Include="Editor\CodeCompletion\SnippetCompletionData.cs" />
     <Compile Include="Editor\ContextActions\ContextActionsPopupViewModel.cs" />
     <Compile Include="Editor\ContextActions\ContextActionViewModel.cs" />
@@ -380,6 +381,31 @@
     <Compile Include="Workbench\ViewContentEventArgs.cs" />
     <Compile Include="Workbench\ViewContentServiceAttribute.cs" />
     <Compile Include="Workbench\WorkbenchSingleton.cs" />
+    <Resource Include="Editor\CodeCompletion\Images\Class.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Constructor.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Delegate.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Enum.png" />
+    <Resource Include="Editor\CodeCompletion\Images\EnumValue.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Event.png" />
+    <Resource Include="Editor\CodeCompletion\Images\ExtensionMethod.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Field.png" />
+    <Resource Include="Editor\CodeCompletion\Images\FieldReadOnly.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Indexer.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Interface.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Literal.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Method.png" />
+    <Resource Include="Editor\CodeCompletion\Images\NameSpace.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Operator.png" />
+    <Resource Include="Editor\CodeCompletion\Images\OverlayInternal.png" />
+    <Resource Include="Editor\CodeCompletion\Images\OverlayPrivate.png" />
+    <Resource Include="Editor\CodeCompletion\Images\OverlayProtected.png" />
+    <Resource Include="Editor\CodeCompletion\Images\OverlayProtectedInternal.png" />
+    <Resource Include="Editor\CodeCompletion\Images\OverlayStatic.png" />
+    <Resource Include="Editor\CodeCompletion\Images\PInvokeMethod.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Property.png" />
+    <Resource Include="Editor\CodeCompletion\Images\StaticClass.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Struct.png" />
+    <Resource Include="Editor\CodeCompletion\Images\VirtualMethod.png" />
     <None Include="ICSharpCode.SharpDevelop.addin" />
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.Designer.cs">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
@@ -854,6 +880,7 @@
   <ItemGroup>
     <Folder Include="Designer" />
     <Folder Include="Dom\ClassBrowser" />
+    <Folder Include="Editor\CodeCompletion\Images" />
     <Folder Include="Editor\ContextActions" />
     <Folder Include="Debugging" />
     <Folder Include="Project\TargetFrameworks" />

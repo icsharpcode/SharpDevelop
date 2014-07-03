@@ -21,8 +21,9 @@ namespace ICSharpCode.Reporting.Factories
 		public static ReportModel Create() 
 		{
 			var reportModel = new ReportModel();
-			foreach (var sec in Enum.GetValues(typeof(GlobalEnums.ReportSection))) {
-				reportModel.SectionCollection.Add (SectionFactory.Create(sec.ToString()));
+			
+			foreach (var section in Enum.GetValues(typeof(GlobalEnums.ReportSection))) {
+				reportModel.SectionCollection.Add (SectionFactory.Create(section.ToString()));
 			}
 			
 			foreach (var section in reportModel.SectionCollection) {

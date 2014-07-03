@@ -17,22 +17,16 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.Items;
-using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Factories
 {
 	/// <summary>
 	/// Description of ExportColumnFactory.
 	/// </summary>
-	internal class ExportColumnFactory
+	class ExportColumnFactory
 	{
-		public ExportColumnFactory()
-		{
-		}
 		
 		public static IExportColumn CreateItem (IPrintableObject item) {
 			var export = item.CreateExportColumn();

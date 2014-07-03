@@ -34,6 +34,7 @@ namespace ICSharpCode.AvalonEdit
 			try {
 				var window = new Window();
 				window.Content = new TextEditor();
+				window.ShowActivated = false;
 				window.Show();
 			} catch (Exception ex) {
 				error = ex;

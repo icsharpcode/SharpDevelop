@@ -161,9 +161,8 @@ namespace ICSharpCode.SharpDevelop
 		{
 			Type serviceType = typeof(T);
 			lock (services) {
-				object instance;
-				if (services.TryGetValue(serviceType, out instance)) {
-					return Task.FromResult((T)instance);
+				if (services.ContainsKey(serviceType)) {
+					return Task.FromResult((T)GetService(serviceType));
 				} else {
 					object taskCompletionSource;
 					if (taskCompletionSources.TryGetValue(serviceType, out taskCompletionSource)) {

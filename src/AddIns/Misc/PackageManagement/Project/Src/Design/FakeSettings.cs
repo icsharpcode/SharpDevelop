@@ -18,6 +18,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
@@ -36,6 +38,8 @@ namespace ICSharpCode.PackageManagement.Design
 		public Dictionary<string, IList<KeyValuePair<string, string>>> Sections
 			= new Dictionary<string, IList<KeyValuePair<string, string>>>();
 			
+		public const string ConfigSectionName = "config";
+		
 		public FakeSettings()
 		{
 			Sections.Add(RegisteredPackageSourceSettings.PackageSourcesSectionName, PackageSources);
@@ -200,7 +204,11 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public string GetValue(string section, string key, bool isPath)
 		{
-			throw new NotImplementedException();
+			if (Sections.ContainsKey(section)) {
+				var matchedSection = Sections[section];
+				return matchedSection.FirstOrDefault(item => item.Key == key).Value;
+			}
+			return null;
 		}
 		
 		public IList<KeyValuePair<string, string>> GetValues(string section, bool isPath)
@@ -211,6 +219,13 @@ namespace ICSharpCode.PackageManagement.Design
 		public IList<SettingValue> GetSettingValues(string section, bool isPath)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public void SetRepositoryPathSetting(string fullPath)
+		{
+			var items = new List<KeyValuePair<string, string>> ();
+			items.Add (new KeyValuePair<string, string>("repositoryPath", fullPath));
+			Sections.Add(ConfigSectionName, items);
 		}
 	}
 }

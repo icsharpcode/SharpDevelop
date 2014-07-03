@@ -126,7 +126,10 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			projectInstance.Build("ResolveAssemblyReferences", new [] { new ConsoleLogger(LoggerVerbosity.Minimal) });
 			var items = projectInstance.GetItems("_ResolveAssemblyReferenceResolvedFiles");
 			string baseDirectory = Path.GetDirectoryName(this.FileName);
-			return items.Select(i => Path.Combine(baseDirectory, i.GetMetadataValue("Identity")));
+			var result = items.Select(i => Path.Combine(baseDirectory, i.GetMetadataValue("Identity"))).ToList();
+			if (!result.Any(t => t.Contains("mscorlib") || t.Contains("System.Runtime")))
+				result.Add(typeof(object).Assembly.Location);
+			return result;
 		}
 		
 		static bool? GetBoolProperty(Microsoft.Build.Evaluation.Project p, string propertyName)

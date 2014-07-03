@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Editor.ContextActions;
 using ICSharpCode.SharpDevelop.Refactoring;
 

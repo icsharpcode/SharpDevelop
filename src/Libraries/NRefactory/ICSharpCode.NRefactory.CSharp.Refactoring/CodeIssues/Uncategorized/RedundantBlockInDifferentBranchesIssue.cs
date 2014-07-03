@@ -29,11 +29,11 @@ using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("RedundantBlockInDifferentBranches",
-	                  Description = "Blocks in if/else can be simplified to any of the branches if they have the same block.",
-	                  Category = IssueCategories.RedundanciesInCode,
-	                  Severity = Severity.Hint,
-	                  AnalysisDisableKeyword = "RedundantBlockInDifferentBranches")]
+//	[IssueDescription("RedundantBlockInDifferentBranches",
+//	                  Description = "Blocks in if/else can be simplified to any of the branches if they have the same block.",
+//	                  Category = IssueCategories.RedundanciesInCode,
+//	                  Severity = Severity.Hint,
+//	                  AnalysisDisableKeyword = "RedundantBlockInDifferentBranches")]
 	public class RedundantBlockInDifferentBranchesIssue : GatherVisitorCodeIssueProvider
 	{
 		

@@ -18,18 +18,18 @@
 
 using System;
 using System.Data;
+using System.Globalization;
 
 namespace ICSharpCode.Reporting.Globals
 {
 	/// <summary>
 	/// Description of TypeHelper.
 	/// </summary>
-	class TypeHelper
+	static class TypeHelper
 	{
 		public static DbType DbTypeFromStringRepresenation(string type)
 		{
-			switch (type.ToLower())
-			{
+			switch (type.ToLower(CultureInfo.CurrentCulture)){
 				case "int":
 					return DbType.Int16;
 				case "int16":

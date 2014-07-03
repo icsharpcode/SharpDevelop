@@ -34,21 +34,16 @@ namespace ICSharpCode.Reporting.Expressions
 //	http://blog.miraclespain.com/archive/2009/Oct-07.html	
 //		
 		readonly Collection<ExportPage> pages;
-		readonly ReportSettings reportSettings;
 		readonly CollectionDataSource dataSource;
 		
-		public ExpressionRunner(Collection<ExportPage> pages,ReportSettings reportSettings,CollectionDataSource dataSource)
-		{
+		public ExpressionRunner(Collection<ExportPage> pages,ReportSettings reportSettings,CollectionDataSource dataSource){
 			this.pages = pages;
 			this.dataSource = dataSource;
-			this.reportSettings = reportSettings;
 			Visitor = new ExpressionVisitor(reportSettings);
 		}
 		
 		
-		public  void Run()
-		{
-//			Visitor = new ExpressionVisitor (reportSettings);
+		public  void Run(){
 			if (dataSource != null) {
 				if (dataSource.SortedList != null) {
 					Visitor.SetCurrentDataSource(dataSource.SortedList);

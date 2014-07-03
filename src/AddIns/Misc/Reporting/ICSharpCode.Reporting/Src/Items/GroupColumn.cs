@@ -33,7 +33,7 @@ namespace ICSharpCode.Reporting.Items
 		
 		public GroupColumn(string columnName,int groupLevel, ListSortDirection sortDirection):base(columnName,sortDirection)
 		{
-			if (GroupLevel < 0) {
+			if (groupLevel < 0) {
 				throw new ArgumentException("groupLevel");
 			}
 			this.GroupLevel = groupLevel;

@@ -90,6 +90,7 @@ namespace CSharpBinding.Completion
 			this.ProjectContent = projectContent;
 			this.TypeResolveContextAtCaret = parseInfo.UnresolvedFile.GetTypeResolveContext(compilation, caretLocation);
 			this.CompletionContextProvider = new DefaultCompletionContextProvider(document, parseInfo.UnresolvedFile);
+			this.CompletionContextProvider.ConditionalSymbols.AddRange(parseInfo.SyntaxTree.ConditionalSymbols);
 		}
 	}
 }

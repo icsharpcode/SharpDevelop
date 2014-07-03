@@ -36,10 +36,10 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription ("Duplicated ToList() or ToArray() call",
-	                   Description = "Duplicated call to ToList() or ToArray()",
-	                   Category = IssueCategories.RedundanciesInCode,
-	                   Severity = Severity.Warning)]
+//	[IssueDescription ("Duplicated ToList() or ToArray() call",
+//	                   Description = "Duplicated call to ToList() or ToArray()",
+//	                   Category = IssueCategories.RedundanciesInCode,
+//	                   Severity = Severity.Warning)]
 	public class DuplicatedLinqToListOrArrayIssue : GatherVisitorCodeIssueProvider
 	{
 		const string MemberTarget = "target";

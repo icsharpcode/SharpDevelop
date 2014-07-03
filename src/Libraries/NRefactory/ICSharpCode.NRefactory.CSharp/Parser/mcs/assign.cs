@@ -334,7 +334,7 @@ namespace Mono.CSharp {
 						
 			if (source == null) {
 				ok = false;
-				source = EmptyExpression.Null;
+				source = ErrorExpression.Instance;
 			}
 
 			target = target.ResolveLValue (ec, source);
@@ -569,6 +569,9 @@ namespace Mono.CSharp {
 			{
 				flags |= Options.FieldInitializerScope | Options.ConstructorScope;
 				this.ctor_block = constructorContext.CurrentBlock.Explicit;
+
+				if (ctor_block.IsCompilerGenerated)
+					CurrentBlock = ctor_block;
 			}
 
 			public override ExplicitBlock ConstructorBlock {
@@ -594,6 +597,12 @@ namespace Mono.CSharp {
 
 		public int AssignmentOffset { get; private set; }
 
+		public FieldBase Field {
+			get {
+				return mc;
+			}
+		}
+
 		public override Location StartLocation {
 			get {
 				return loc;
@@ -606,8 +615,8 @@ namespace Mono.CSharp {
 			if (source == null)
 				return null;
 
-			var bc = (BlockContext) rc;
 			if (resolved == null) {
+				var bc = (BlockContext) rc;
 				var ctx = new FieldInitializerContext (mc, bc);
 				resolved = base.DoResolve (ctx) as ExpressionStatement;
 				AssignmentOffset = ctx.AssignmentInfoOffset - bc.AssignmentInfoOffset;
@@ -657,6 +666,33 @@ namespace Mono.CSharp {
 		public override bool IsSideEffectFree {
 			get {
 				return source.IsSideEffectFree;
+			}
+		}
+	}
+
+	class PrimaryConstructorAssign : SimpleAssign
+	{
+		readonly Field field;
+		readonly Parameter parameter;
+
+		public PrimaryConstructorAssign (Field field, Parameter parameter)
+			: base (null, null, parameter.Location)
+		{
+			this.field = field;
+			this.parameter = parameter;
+		}
+
+		protected override Expression DoResolve (ResolveContext rc)
+		{
+			target = new FieldExpr (field, loc);
+			source = rc.CurrentBlock.ParametersBlock.GetParameterInfo (parameter).CreateReferenceExpression (rc, loc);
+			return base.DoResolve (rc);
+		}
+
+		public override void EmitStatement (EmitContext ec)
+		{
+			using (ec.With (BuilderContext.Options.OmitDebugInfo, true)) {
+				base.EmitStatement (ec);
 			}
 		}
 	}
