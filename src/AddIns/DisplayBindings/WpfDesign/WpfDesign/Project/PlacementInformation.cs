@@ -28,9 +28,9 @@ namespace ICSharpCode.WpfDesign
 	{
 		/// <summary>
 		/// The designer rounds bounds to this number of digits to avoid floating point errors.
-		/// Value: 1
+		/// Value: 0
 		/// </summary>
-		public const int BoundsPrecision = 1;
+		public const int BoundsPrecision = 0;
 		
 		Rect originalBounds, bounds;
 		readonly DesignItem item;
