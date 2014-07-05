@@ -278,7 +278,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public ResolveResult Resolve(FileName fileName, TextLocation location, ITextSource fileContent, ICompilation compilation, CancellationToken cancellationToken)
 		{
 			var entry = GetFileEntry(fileName, true);
-			if (entry.parser == null)
+			if (entry.parser == null || location.IsEmpty)
 				return ErrorResolveResult.UnknownError;
 			IProject project = compilation != null ? compilation.GetProject() : null;
 			var parseInfo = entry.Parse(fileContent, project, cancellationToken);
@@ -334,7 +334,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public Task<ResolveResult> ResolveAsync(FileName fileName, TextLocation location, ITextSource fileContent, ICompilation compilation, CancellationToken cancellationToken)
 		{
 			var entry = GetFileEntry(fileName, true);
-			if (entry.parser == null)
+			if (entry.parser == null || location.IsEmpty)
 				return Task.FromResult<ResolveResult>(ErrorResolveResult.UnknownError);
 			IProject project = compilation != null ? compilation.GetProject() : null;
 			return entry.ParseAsync(fileContent, project, cancellationToken).ContinueWith(
