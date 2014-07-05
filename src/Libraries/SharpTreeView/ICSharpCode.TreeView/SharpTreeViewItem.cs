@@ -118,7 +118,8 @@ namespace ICSharpCode.TreeView
 
 		protected override void OnContextMenuOpening(ContextMenuEventArgs e)
 		{
-			Node.ShowContextMenu(e);
+			if (Node != null)
+				Node.ShowContextMenu(e);
 		}
 		
 		#endregion
