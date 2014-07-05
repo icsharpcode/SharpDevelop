@@ -633,7 +633,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			if (CurrentStackFrame == null)
 				return;
-			if (e.InDocument)
+			if (!e.InDocument)
 				return;
 			var resolveResult = SD.ParserService.Resolve(e.Editor, e.LogicalPosition, CurrentStackFrame.AppDomain.Compilation);
 			if (resolveResult == null)
