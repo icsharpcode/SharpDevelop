@@ -363,7 +363,6 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseIsOperatorIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseMethodAnyIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseMethodIsInstanceOfTypeIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseOfMemberOfNullReference" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ValueParameterNotUsedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.XmlDocIssue" />
 	</Path>
