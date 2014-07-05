@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public virtual ICodeCompletionBinding CreateCompletionBinding(FileName fileName, TextLocation currentLocation, ITextSource fileContent)
+		public virtual ICodeCompletionBinding CreateCompletionBinding(string expressionToComplete, FileName fileName, TextLocation location, ICodeContext context)
 		{
 			throw new NotSupportedException();
 		}

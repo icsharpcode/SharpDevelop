@@ -91,6 +91,7 @@
     <Compile Include="Src\CSharpSemanticHighlighterVisitor.cs">
       <DependentUpon>CSharpSemanticHighlighter.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\CSharpTextEditorExtension.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingOptionsContainer.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingPolicies.cs" />

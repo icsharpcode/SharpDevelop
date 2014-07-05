@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
@@ -62,8 +63,8 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Creates a completion binding which works with a fileName and a location as context.
+		/// Creates a completion binding for a given expression and context.
 		/// </summary>
-		ICodeCompletionBinding CreateCompletionBinding(FileName fileName, TextLocation currentLocation, ITextSource fileContent);
+		ICodeCompletionBinding CreateCompletionBinding(string expressionToComplete, FileName fileName, TextLocation location, ICodeContext context);
 	}
 }

@@ -20,13 +20,18 @@ using System;
 using System.Collections.Generic;
 
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Project;
 using CSharpBinding.Completion;
 using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Refactoring;
@@ -50,223 +55,98 @@ namespace CSharpBinding
 			this.container.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), new Microsoft.CSharp.CSharpCodeProvider());
 		}
 		
-		public override ICodeCompletionBinding CreateCompletionBinding(FileName fileName, TextLocation currentLocation, ICSharpCode.NRefactory.Editor.ITextSource fileContent)
+		public override ICodeCompletionBinding CreateCompletionBinding(string expressionToComplete, FileName fileName, TextLocation location, ICodeContext context)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			return new CSharpCompletionBinding(fileName, currentLocation, fileContent);
-		}
-	}
-	
-	public class CSharpTextEditorExtension : ITextEditorExtension
-	{
-		ITextEditor editor;
-		IssueManager inspectionManager;
-		IList<IContextActionProvider> contextActionProviders;
-		CodeManipulation codeManipulation;
-		CaretReferenceHighlightRenderer renderer;
-		CodeEditorFormattingOptionsAdapter options;
-		TextEditorOptions originalEditorOptions;
-		
-		public void Attach(ITextEditor editor)
-		{
-			this.editor = editor;
-			inspectionManager = new IssueManager(editor);
-			codeManipulation = new CodeManipulation(editor);
-			renderer = new CaretReferenceHighlightRenderer(editor);
-			
-			// Patch editor options (indentation) to project-specific settings
-			if (!editor.ContextActionProviders.IsReadOnly) {
-				contextActionProviders = AddInTree.BuildItems<IContextActionProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
-				editor.ContextActionProviders.AddRange(contextActionProviders);
-			}
-			
-			// Create instance of options adapter and register it as service
-			var formattingPolicy = CSharpFormattingPolicies.Instance.GetProjectOptions(
-				SD.ProjectService.FindProjectContainingFile(editor.FileName));
-			var textEditor = editor.GetService<TextEditor>();
-			if (textEditor != null) {
-				options = new CodeEditorFormattingOptionsAdapter(textEditor.Options, editor.Options, formattingPolicy.OptionsContainer);
-				var textViewServices = textEditor.TextArea.TextView.Services;
-				
-				// Unregister any previous ITextEditorOptions instance from editor, if existing, register our impl.
-				textViewServices.RemoveService(typeof(ITextEditorOptions));
-				textViewServices.AddService(typeof(ITextEditorOptions), options);
-				
-				// Set TextEditor's options to same object
-				originalEditorOptions = textEditor.Options;
-				textEditor.Options = options.TextEditorOptions;
-			}
+			if (context == null)
+				throw new ArgumentNullException("context");
+			string content = GeneratePartialClassContextStub(fileName, location, context);
+			const string caretPoint = "$__Caret_Point__$;";
+			int caretOffset = content.IndexOf(caretPoint, StringComparison.Ordinal) + expressionToComplete.Length;
+			SD.Log.DebugFormatted("context used for dot completion: {0}", content.Replace(caretPoint, "$" + expressionToComplete + "|$"));
+			var doc = new ReadOnlyDocument(content.Replace(caretPoint, expressionToComplete));
+			return new CSharpCompletionBinding(fileName, doc.GetLocation(caretOffset), doc.CreateSnapshot());
 		}
 		
-		public void Detach()
+		static string GeneratePartialClassContextStub(FileName fileName, TextLocation location, ICodeContext context)
 		{
-			var textEditor = editor.GetService<TextEditor>();
-			if (textEditor != null) {
-				var textView = textEditor.TextArea.TextView;
-				
-				// Unregister our ITextEditorOptions instance from editor
-				var optionsService = textView.GetService<ITextEditorOptions>();
-				if ((optionsService != null) && (optionsService == options))
-					textView.Services.RemoveService(typeof(ITextEditorOptions));
-				
-				// Reset TextEditor options, too?
-				 if ((textEditor.Options != null) && (textEditor.Options == options.TextEditorOptions))
-				 	textEditor.Options = originalEditorOptions;
-			}
-			
-			codeManipulation.Dispose();
-			if (inspectionManager != null) {
-				inspectionManager.Dispose();
-				inspectionManager = null;
-			}
-			if (contextActionProviders != null) {
-				editor.ContextActionProviders.RemoveAll(contextActionProviders.Contains);
-			}
-			renderer.Dispose();
-			options = null;
-			this.editor = null;
-		}
-	}
-	
-	class CodeEditorFormattingOptionsAdapter : ITextEditorOptions, INotifyPropertyChanged
-	{
-		CSharpFormattingOptionsContainer container;
-		readonly TextEditorOptions avalonEditOptions;
-		readonly TextEditorOptions originalAvalonEditOptions;
-		readonly ITextEditorOptions originalSDOptions;
-		
-		public CodeEditorFormattingOptionsAdapter(TextEditorOptions originalAvalonEditOptions, ITextEditorOptions originalSDOptions, CSharpFormattingOptionsContainer container)
-		{
-			if (originalAvalonEditOptions == null)
-				throw new ArgumentNullException("originalAvalonEditOptions");
-			if (originalSDOptions == null)
-				throw new ArgumentNullException("originalSDOptions");
-			if (container == null)
-				throw new ArgumentNullException("container");
-			
-			this.originalAvalonEditOptions = originalAvalonEditOptions;
-			this.avalonEditOptions = new TextEditorOptions(originalAvalonEditOptions);
-			this.originalSDOptions = originalSDOptions;
-			this.container = container;
-			
-			// Update overridden options once
-			UpdateOverriddenProperties();
-			
-			CSharpFormattingPolicies.Instance.FormattingPolicyUpdated += OnFormattingPolicyUpdated;
-			this.originalAvalonEditOptions.PropertyChanged += OnOrigAvalonOptionsPropertyChanged;
-			this.originalSDOptions.PropertyChanged += OnSDOptionsPropertyChanged;
-		}
-		
-		void OnFormattingPolicyUpdated(object sender, CSharpBinding.FormattingStrategy.CSharpFormattingPolicyUpdateEventArgs e)
-		{
-			// Update editor options from changed policy
-			UpdateOverriddenProperties();
-			
-			OnPropertyChanged("IndentationSize");
-			OnPropertyChanged("IndentationString");
-			OnPropertyChanged("ConvertTabsToSpaces");
-		}
-		
-		void UpdateOverriddenProperties()
-		{
-			avalonEditOptions.IndentationSize = container.GetEffectiveIndentationSize() ?? originalSDOptions.IndentationSize;
-			avalonEditOptions.ConvertTabsToSpaces = container.GetEffectiveConvertTabsToSpaces() ?? originalSDOptions.ConvertTabsToSpaces;
-		}
-
-		void OnOrigAvalonOptionsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			if ((e.PropertyName != "IndentationSize") && (e.PropertyName != "IndentationString") && (e.PropertyName != "ConvertTabsToSpaces")) {
-				// Update values in our own TextEditorOptions instance
-				PropertyInfo propertyInfo = typeof(TextEditorOptions).GetProperty(e.PropertyName);
-				if (propertyInfo != null) {
-					propertyInfo.SetValue(avalonEditOptions, propertyInfo.GetValue(originalAvalonEditOptions));
-				}
+			var compilation = SD.ParserService.GetCompilationForFile(fileName);
+			var file = SD.ParserService.GetExistingUnresolvedFile(fileName);
+			if (compilation == null || file == null)
+				return "";
+			var unresolvedMember = file.GetMember(location);
+			if (unresolvedMember == null)
+				return "";
+			var member = unresolvedMember.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+			if (member == null)
+				return "";
+			var builder = new TypeSystemAstBuilder();
+			MethodDeclaration decl;
+			if (unresolvedMember is IMethod) {
+				// If it's a method, convert it directly (including parameters + type parameters)
+				decl = (MethodDeclaration)builder.ConvertEntity(member);
 			} else {
-				UpdateOverriddenProperties();
+				// Otherwise, create a method anyways, and copy the parameters
+				decl = new MethodDeclaration();
+				if (member is IParameterizedMember) {
+					foreach (var p in ((IParameterizedMember)member).Parameters) {
+						decl.Parameters.Add(builder.ConvertParameter(p));
+					}
+				}
 			}
-			OnPropertyChanged(e.PropertyName);
+			decl.Name = "__DebuggerStub__";
+			decl.ReturnType = builder.ConvertType(member.ReturnType);
+			decl.Modifiers = unresolvedMember.IsStatic ? Modifiers.Static : Modifiers.None;
+			// Make the method look like an explicit interface implementation so that it doesn't appear in CC
+			decl.PrivateImplementationType = new SimpleType("__DummyType__");
+			decl.Body = GenerateBodyFromContext(builder, context.LocalVariables.ToArray());
+			return WrapInType(unresolvedMember.DeclaringTypeDefinition, decl).ToString();
 		}
 
-		void OnSDOptionsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		static BlockStatement GenerateBodyFromContext(TypeSystemAstBuilder builder, IVariable[] variables)
 		{
-			OnPropertyChanged(e.PropertyName);
+			var body = new BlockStatement();
+			foreach (var v in variables)
+				body.Statements.Add(new VariableDeclarationStatement(builder.ConvertType(v.Type), v.Name));
+			body.Statements.Add(new ExpressionStatement(new IdentifierExpression("$__Caret_Point__$")));
+			return body;
 		}
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		void OnPropertyChanged(string propertyName)
+
+		static AstNode WrapInType(IUnresolvedTypeDefinition entity, EntityDeclaration decl)
 		{
-			if (PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
+			if (entity == null)
+				return decl;
+			// Wrap decl in TypeDeclaration
+			decl = new TypeDeclaration {
+				ClassType = GetClassType(entity),
+				Modifiers = Modifiers.Partial,
+				Name = entity.Name,
+				Members = { decl }
+			};
+			if (entity.DeclaringTypeDefinition != null) {
+				// Handle nested types
+				return WrapInType(entity.DeclaringTypeDefinition, decl);
+			} 
+			if (string.IsNullOrEmpty(entity.Namespace))
+				return decl;
+			return new NamespaceDeclaration(entity.Namespace) {
+				Members = {
+					decl
+				}
+			};
 		}
-		
-		public TextEditorOptions TextEditorOptions
+
+		static ClassType GetClassType(IUnresolvedTypeDefinition entity)
 		{
-			get {
-				return avalonEditOptions;
+			switch (entity.Kind) {
+				case TypeKind.Interface:
+					return ClassType.Interface;
+				case TypeKind.Struct:
+					return ClassType.Struct;
+				default:
+					return ClassType.Class;
 			}
 		}
-
-		#region Overridden properties
-		
-		public int IndentationSize {
-			get {
-				// Get value from own TextEditorOptions instance
-				return avalonEditOptions.IndentationSize;
-			}
-		}
-
-		public string IndentationString {
-			get {
-				// Get value from own TextEditorOptions instance
-				return avalonEditOptions.IndentationString;
-			}
-		}
-
-		public bool ConvertTabsToSpaces {
-			get {
-				// Get value from own TextEditorOptions instance
-				return avalonEditOptions.ConvertTabsToSpaces;
-			}
-		}
-		
-		#endregion
-		
-		#region Rest of ITextEditorOptions implementation
-
-		public bool AutoInsertBlockEnd {
-			get {
-				return originalSDOptions.AutoInsertBlockEnd;
-			}
-		}
-
-		public int VerticalRulerColumn {
-			get {
-				return originalSDOptions.VerticalRulerColumn;
-			}
-		}
-
-		public bool UnderlineErrors {
-			get {
-				return originalSDOptions.UnderlineErrors;
-			}
-		}
-
-		public string FontFamily {
-			get {
-				return originalSDOptions.FontFamily;
-			}
-		}
-
-		public double FontSize {
-			get {
-				return originalSDOptions.FontSize;
-			}
-		}
-
-		#endregion
-
 	}
 }

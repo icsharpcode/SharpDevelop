@@ -17,17 +17,19 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.SharpDevelop.Project;
-using CSharpBinding.Parser;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using CSharpBinding.Parser;
 
 namespace CSharpBinding.Completion
 {
@@ -35,7 +37,7 @@ namespace CSharpBinding.Completion
 	{
 		public readonly ITextEditor Editor;
 		public readonly IDocument Document;
-		public readonly CSharpFullParseInformation ParseInformation;
+		public readonly IList<string> ConditionalSymbols;
 		public readonly ICompilation Compilation;
 		public readonly IProjectContent ProjectContent;
 		public readonly CSharpTypeResolveContext TypeResolveContextAtCaret;
@@ -56,7 +58,7 @@ namespace CSharpBinding.Completion
 			if (projectContent == null)
 				return null;
 			
-			return new CSharpCompletionContext(editor, parseInfo, compilation, projectContent, editor.Document, editor.Caret.Location);
+			return new CSharpCompletionContext(editor, parseInfo.SyntaxTree.ConditionalSymbols, compilation, projectContent, editor.Document, parseInfo.UnresolvedFile, editor.Caret.Location);
 		}
 		
 		public static CSharpCompletionContext Get(ITextEditor editor, ITextSource fileContent, TextLocation currentLocation, FileName fileName)
@@ -64,33 +66,50 @@ namespace CSharpBinding.Completion
 			IDocument document = new ReadOnlyDocument(fileContent);
 			
 			// Don't require the very latest parse information, an older cached version is OK.
-			var parseInfo = SD.ParserService.Parse(fileName, document) as CSharpFullParseInformation;
+			var parseInfo = SD.ParserService.GetCachedParseInformation(fileName) as CSharpFullParseInformation;
+			if (parseInfo == null) {
+				parseInfo = SD.ParserService.Parse(fileName) as CSharpFullParseInformation;
+			}
 			if (parseInfo == null)
 				return null;
 			
-			ICompilation compilation = SD.ParserService.GetCompilationForFile(fileName);
-			var projectContent = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
+			
+			var project = SD.ProjectService.FindProjectContainingFile(fileName)as CSharpProject;
+			if (project == null)
+				return null;
+			
+			var solutionSnapshot = SD.ParserService.GetCurrentSolutionSnapshot();
+			var projectContent = solutionSnapshot.GetProjectContent(project);
 			if (projectContent == null)
 				return null;
 			
-			return new CSharpCompletionContext(editor, parseInfo, compilation, projectContent, document, currentLocation);
+			CSharpParser parser = new CSharpParser(project.CompilerSettings);
+			parser.GenerateTypeSystemMode = false;
+			
+			SyntaxTree cu = parser.Parse(fileContent, Path.GetRandomFileName() + ".cs");
+			cu.Freeze();
+			
+			CSharpUnresolvedFile unresolvedFile = cu.ToTypeSystem();
+			ICompilation compilation = projectContent.AddOrUpdateFiles(unresolvedFile).CreateCompilation(solutionSnapshot);
+			
+			return new CSharpCompletionContext(editor, parseInfo.SyntaxTree.ConditionalSymbols, compilation, projectContent, document, unresolvedFile, currentLocation);
 		}
 		
-		private CSharpCompletionContext(ITextEditor editor, CSharpFullParseInformation parseInfo, ICompilation compilation, IProjectContent projectContent, IDocument document, TextLocation caretLocation)
+		private CSharpCompletionContext(ITextEditor editor, IList<string> conditionalSymbols, ICompilation compilation, IProjectContent projectContent, IDocument document, CSharpUnresolvedFile unresolvedFile, TextLocation caretLocation)
 		{
 			Debug.Assert(editor != null);
-			Debug.Assert(parseInfo != null);
+			Debug.Assert(unresolvedFile != null);
 			Debug.Assert(compilation != null);
 			Debug.Assert(projectContent != null);
 			Debug.Assert(document != null);
 			this.Editor = editor;
 			this.Document = document;
-			this.ParseInformation = parseInfo;
+			this.ConditionalSymbols = conditionalSymbols;
 			this.Compilation = compilation;
 			this.ProjectContent = projectContent;
-			this.TypeResolveContextAtCaret = parseInfo.UnresolvedFile.GetTypeResolveContext(compilation, caretLocation);
-			this.CompletionContextProvider = new DefaultCompletionContextProvider(document, parseInfo.UnresolvedFile);
-			this.CompletionContextProvider.ConditionalSymbols.AddRange(parseInfo.SyntaxTree.ConditionalSymbols);
+			this.TypeResolveContextAtCaret = unresolvedFile.GetTypeResolveContext(compilation, caretLocation);
+			this.CompletionContextProvider = new DefaultCompletionContextProvider(document, unresolvedFile);
+			this.CompletionContextProvider.ConditionalSymbols.AddRange(conditionalSymbols);
 		}
 	}
 }
