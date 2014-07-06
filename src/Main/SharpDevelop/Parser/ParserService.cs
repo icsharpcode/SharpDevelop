@@ -174,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		internal void RemoveEntry(ParserServiceEntry entry)
 		{
-			Debug.Assert(Monitor.IsEntered(entry));
+			Debug.Assert(entry.rwLock.IsWriteLockHeld);
 			lock (fileEntryDict) {
 				ParserServiceEntry entryAtKey;
 				if (fileEntryDict.TryGetValue(entry.fileName, out entryAtKey)) {
@@ -190,7 +190,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		internal void RegisterForCacheExpiry(ParserServiceEntry entry)
 		{
 			// This method should not be called within any locks
-			Debug.Assert(!Monitor.IsEntered(entry));
+			Debug.Assert(!(entry.rwLock.IsReadLockHeld || entry.rwLock.IsUpgradeableReadLockHeld || entry.rwLock.IsWriteLockHeld));
 			ParserServiceEntry expiredItem = null;
 			lock (cacheExpiryQueue) {
 				cacheExpiryQueue.Remove(entry); // remove entry from queue if it's already enqueued
