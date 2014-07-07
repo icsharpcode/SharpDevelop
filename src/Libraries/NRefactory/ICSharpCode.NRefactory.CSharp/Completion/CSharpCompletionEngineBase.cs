@@ -340,12 +340,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				this.text = text;
 			}
 
-			public void Parse(Action<char> act = null)
+			/// <summary>
+			/// Parsing all text and calling act delegate on almost every character.
+			/// Skipping begining of comments, begining of verbatim strings and escaped characters.
+			/// </summary>
+			/// <param name="act">Return true to abort parsing. Integer argument represent offset in text.</param>
+			/// <returns>True if aborted.</returns>
+			public bool Parse(Func<char, int, bool> act = null)
 			{
-				Parse(0, text.Length, act);
+				return Parse(0, text.Length, act);
 			}
 
-			public void Parse(int start, int length, Action<char> act = null)
+
+			/// <summary>
+			/// Parsing text from start to start+length and calling act delegate on almost every character.
+			/// Skipping begining of comments, begining of verbatim strings and escaped characters.
+			/// </summary>
+			/// <param name="start">Start offset.</param>
+			/// <param name="length">Lenght to parse.</param>
+			/// <param name="act">Return true to abort parsing. Integer argument represent offset in text.</param>
+			/// <returns>True if aborted.</returns>
+			public bool Parse(int start, int length, Func<char, int, bool> act = null)
 			{
 				for (int i = start; i < length; i++) {
 					char ch = text [i];
@@ -416,9 +431,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							break;
 					}
 					if (act != null)
-						act(ch);
+					if (act (ch, i))
+						return true;
 					IsFistNonWs &= ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
 				}
+				return false;
 			}
 		}
 
@@ -677,7 +694,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					while (o >= "try".Length) {
 						char ch = memberText [o];
 						if (!char.IsWhiteSpace (ch)) {
-							if (ch == 'y' && memberText [o - 1] == 'r' && memberText [o - 2] == 't') {
+								if (ch == 'y' && memberText [o - 1] == 'r' && memberText [o - 2] == 't' && (o - 3 < 0 || !char.IsLetterOrDigit(memberText [o - 3]))) {
 								wrapper.Append ("} catch {}");
 								didAppendCatch = true;
 							}

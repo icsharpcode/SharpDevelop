@@ -94,7 +94,8 @@ namespace ICSharpCode.GitAddIn
 		/// </summary>
 		public static string FindGit()
 		{
-			string[] paths = Environment.GetEnvironmentVariable("PATH").Split(';');
+			string pathVariable = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+			string[] paths = pathVariable.Split(new char[]{';'}, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string path in paths) {
 				try {
 					string exe = Path.Combine(path, "git.exe");

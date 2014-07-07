@@ -17,17 +17,33 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using ICSharpCode.Reporting.DataSource.Comparer;
+using System.IO;
+using ICSharpCode.Core;
 
-namespace ICSharpCode.Reporting.DataManager.Listhandling
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
-	/// Description of IndexList.
+	/// Utility/helper methods for IFileService to avoid changing the IFileService interface.
 	/// </summary>
-	public class IndexList :List<BaseComparer> 
+	public static class FileHelpers
 	{
-
-		public int CurrentPosition {get;set;}
+		/// <summary>
+		/// Checks that the rename/overwrite operation is possible.
+		/// </summary>
+		public static bool CheckRenameOrReplacePossible(FileRenameEventArgs e, bool replaceAllowed = false)
+		{
+			if (e.IsDirectory && Directory.Exists(e.SourceFile)) {
+				if (!replaceAllowed && Directory.Exists(e.TargetFile)) {
+					SD.MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
+					return false;
+				}
+			} else if (File.Exists(e.SourceFile)) {
+				if (!replaceAllowed && File.Exists(e.TargetFile)) {
+					SD.MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
+					return false;
+				}
+			}
+			return true;
+		}
 	}
 }

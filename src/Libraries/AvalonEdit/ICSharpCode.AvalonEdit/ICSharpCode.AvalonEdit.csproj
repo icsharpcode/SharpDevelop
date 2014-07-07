@@ -3,52 +3,73 @@
   <PropertyGroup>
     <ProjectGuid>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">Net40</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.AvalonEdit</RootNamespace>
     <AssemblyName>ICSharpCode.AvalonEdit</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>ICSharpCode.AvalonEdit.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1020;-Microsoft.Design#CA1033;-Microsoft.Performance#CA1805;-Microsoft.Performance#CA1810</CodeAnalysisRules>
-    <OutputPath>..\..\..\..\bin\</OutputPath>
-    <DocumentationFile>..\..\..\..\bin\ICSharpCode.AvalonEdit.xml</DocumentationFile>
     <NoWarn>1607</NoWarn>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>Full</DebugType>
-    <Optimize>False</Optimize>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE;DOTNET4</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>PdbOnly</DebugType>
-    <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE;DOTNET4</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'Net35' ">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'Net40' ">
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <DefineConstants>DOTNET4</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'WithNRefactory' ">
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DefineConstants>DOTNET4;NREFACTORY</DefineConstants>
+    <AssemblyOriginatorKeyFile>..\..\NRefactory\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>bin\Debug\ICSharpCode.AvalonEdit.xml</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <DebugType>Full</DebugType>
+    <DefineDebug/>
+    <DefineTrace/>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>bin\Release\ICSharpCode.AvalonEdit.xml</DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DebugType>Full</DebugType>
+    <DefineTrace/>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <ProjectReference Include="..\..\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj" Condition="$(DefineConstants.Contains('NREFACTORY'))">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <Reference Include="Microsoft.CSharp">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -67,6 +88,7 @@
     <Reference Include="System.Printing">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Web" Condition="!$(DefineConstants.Contains('DOTNET4'))" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -86,9 +108,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="AvalonEditCommands.cs" />
     <Compile Include="CodeCompletion\CompletionListBox.cs" />
     <Compile Include="CodeCompletion\CompletionWindowBase.cs" />
@@ -97,7 +116,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CodeCompletion\ICompletionData.cs" />
-    <Compile Include="CodeCompletion\Images\CompletionImage.cs" />
     <Compile Include="CodeCompletion\InsightWindow.cs" />
     <Compile Include="CodeCompletion\IOverloadProvider.cs" />
     <Compile Include="CodeCompletion\OverloadInsightWindow.cs" />
@@ -106,7 +124,10 @@
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
     <Compile Include="Document\DocumentTextWriter.cs" />
+    <Compile Include="Document\IDocument.cs" />
     <Compile Include="Document\ILineTracker.cs" />
+    <Compile Include="Document\ITextAnchor.cs" />
+    <Compile Include="Document\ITextSource.cs" />
     <Compile Include="Document\SimpleSegment.cs" />
     <Compile Include="Document\RopeTextSource.cs" />
     <Compile Include="Document\IUndoableOperation.cs">
@@ -120,6 +141,7 @@
     <Compile Include="Document\TextDocumentWeakEventManager.cs">
       <DependentUpon>TextDocument.cs</DependentUpon>
     </Compile>
+    <Compile Include="Document\TextLocation.cs" />
     <Compile Include="Document\TextSegmentCollection.cs" />
     <Compile Include="Document\TextAnchor.cs" />
     <Compile Include="Document\TextAnchorNode.cs">
@@ -129,6 +151,7 @@
       <DependentUpon>TextAnchor.cs</DependentUpon>
     </Compile>
     <Compile Include="Document\TextSegment.cs" />
+    <Compile Include="Document\TextSourceVersionProvider.cs" />
     <Compile Include="Document\TextUtilities.cs" />
     <Compile Include="Document\UndoOperationGroup.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
@@ -355,6 +378,7 @@
     </Compile>
     <Compile Include="TextViewPosition.cs" />
     <Compile Include="Utils\Boxes.cs" />
+    <Compile Include="Utils\CallbackOnDispose.cs" />
     <Compile Include="Utils\CharRope.cs" />
     <Compile Include="Utils\CompressingTreeList.cs" />
     <Compile Include="Utils\Constants.cs" />
@@ -364,6 +388,8 @@
     <Compile Include="Utils\Empty.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\FileReader.cs" />
+    <Compile Include="Utils\IFreezable.cs" />
+    <Compile Include="Utils\ImmutableStack.cs" />
     <Compile Include="Utils\NullSafeCollection.cs" />
     <Compile Include="Utils\ObserveAddRemoveCollection.cs" />
     <Compile Include="Utils\PlainRichTextWriter.cs" />
@@ -413,49 +439,8 @@
     <EmbeddedResource Include="Highlighting\Resources\CSS-Mode.xshd" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>ICSharpCode.Core</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Search\next.png" />
     <Resource Include="Search\prev.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CodeCompletion\Images" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="CodeCompletion\Images\Class.png" />
-    <Resource Include="CodeCompletion\Images\Constructor.png" />
-    <Resource Include="CodeCompletion\Images\Delegate.png" />
-    <Resource Include="CodeCompletion\Images\Enum.png" />
-    <Resource Include="CodeCompletion\Images\EnumValue.png" />
-    <Resource Include="CodeCompletion\Images\Event.png" />
-    <Resource Include="CodeCompletion\Images\ExtensionMethod.png" />
-    <Resource Include="CodeCompletion\Images\Field.png" />
-    <Resource Include="CodeCompletion\Images\FieldReadOnly.png" />
-    <Resource Include="CodeCompletion\Images\Indexer.png" />
-    <Resource Include="CodeCompletion\Images\Interface.png" />
-    <Resource Include="CodeCompletion\Images\Literal.png" />
-    <Resource Include="CodeCompletion\Images\Method.png" />
-    <Resource Include="CodeCompletion\Images\NameSpace.png" />
-    <Resource Include="CodeCompletion\Images\Operator.png" />
-    <Resource Include="CodeCompletion\Images\OverlayInternal.png" />
-    <Resource Include="CodeCompletion\Images\OverlayPrivate.png" />
-    <Resource Include="CodeCompletion\Images\OverlayProtected.png" />
-    <Resource Include="CodeCompletion\Images\OverlayProtectedInternal.png" />
-    <Resource Include="CodeCompletion\Images\OverlayStatic.png" />
-    <Resource Include="CodeCompletion\Images\PInvokeMethod.png" />
-    <Resource Include="CodeCompletion\Images\Property.png" />
-    <Resource Include="CodeCompletion\Images\StaticClass.png" />
-    <Resource Include="CodeCompletion\Images\Struct.png" />
-    <Resource Include="CodeCompletion\Images\VirtualMethod.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Highlighting\Resources\PowerShell.xshd" />

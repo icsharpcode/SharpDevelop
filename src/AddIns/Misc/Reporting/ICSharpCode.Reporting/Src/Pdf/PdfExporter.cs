@@ -40,9 +40,8 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		
 		public void Run (string fileName,bool show) {
-			string file;
 			if (String.IsNullOrEmpty(fileName)) {
-				file = Pages[0].PageInfo.ReportName + ".pdf";
+				fileName = Pages[0].PageInfo.ReportName + ".pdf";
 			}
 			pdfDocument = new PdfDocument();
 			ConvertPagesToPdf();

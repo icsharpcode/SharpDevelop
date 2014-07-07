@@ -89,11 +89,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public override void EnterContainer(PlacementOperation operation)
 		{
 			base.EnterContainer(operation);
-			foreach (var info in operation.PlacedItems) {
-				info.Item.Properties[FrameworkElement.MarginProperty].Reset();
-				info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].Reset();
-				info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].Reset();
-			}
+			
 			_rectangle.Visibility = Visibility.Visible;
 		}
 

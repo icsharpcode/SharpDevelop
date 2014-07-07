@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Windows;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Addin.Designer;
@@ -31,18 +32,18 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		StringFormat stringFormat;
 		StringTrimming stringTrimming;
 		ContentAlignment contentAlignment;
-		
+		TextAlignment textAlignment;
 		
 		public BaseTextItem(){
 			DefaultSize = GlobalValues.PreferedSize;
 			Size = GlobalValues.PreferedSize;
 			BackColor = Color.White;
 			contentAlignment = ContentAlignment.TopLeft;
+			textAlignment = TextAlignment.Left;
 			TypeDescriptor.AddProvider(new TextItemTypeProvider(), typeof(BaseTextItem));
 		}
 		
 		
-//		[EditorBrowsableAttribute()]
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e){
 			base.OnPaint(e);
 			Draw(e.Graphics);
@@ -64,7 +65,8 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 				designTrimmimg = stringTrimming;
 			}
 			
-			stringFormat = TextDrawer.BuildStringFormat(designTrimmimg, contentAlignment);
+//			stringFormat = TextDrawer.BuildStringFormat(designTrimmimg, contentAlignment);
+			stringFormat = TextDrawer.BuildStringFormat(designTrimmimg, textAlignment);
 			using (var textBrush = new SolidBrush(ForeColor)) {
 				TextDrawer.DrawString(graphics, Text, Font, textBrush, ClientRectangle, stringFormat);
 			}		
@@ -119,10 +121,9 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		}
 		
 		
-		
 		[Category("Appearance")]
 		[EditorAttribute(typeof(ContentAlignmentEditor),
-			typeof(UITypeEditor) )]
+		                 typeof(UITypeEditor) )]
 		public ContentAlignment ContentAlignment {
 			get { return contentAlignment; }
 			set {
@@ -132,18 +133,15 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		}
 		
 		
+		[Category("Appearance")]
+		public TextAlignment TextAlignment {
+			get { return textAlignment;}
+			set {textAlignment = value;
+				Invalidate();}
+		}
+		
 		#endregion
 		
-//		#region RighToLeft
-//		
-//		[Category("Appearance")]
-//		public  System.Windows.Forms.RightToLeft RTL
-//		{
-//			get { return base.RightToLeft; }
-//			set { base.RightToLeft = value; }
-//		}
-//
-//		#endregion
 		
 		#region DataType
 		
@@ -158,10 +156,10 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		#region Expression
 		
 		[Browsable(true),
-			Category("Expression"),
-			Description("Enter a valid Expression")]
+		 Category("Expression"),
+		 Description("Enter a valid Expression")]
 		[EditorAttribute(typeof(ExpressionEditor),
-			typeof(UITypeEditor) )]
+		                 typeof(UITypeEditor) )]
 		public string Expression {get;set;}
 		
 		#endregion

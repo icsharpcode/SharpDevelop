@@ -22,9 +22,8 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		Point toPoint;
 		LineCap startLineCap;
 		LineCap endLineCap;
-		DashCap dashLineCap;
+	
 		
-
 		public BaseLineItem()
 		{
 			this.Size = new Size(50,10);
@@ -42,8 +41,6 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		}
 		
 		
-		
-//		[System.ComponentModel.EditorBrowsableAttribute()]
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 		{
 			e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
@@ -113,16 +110,5 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 				Invalidate();
 			}
 		}
-		
-		
-//		[Category("Appearance")]
-//		public DashCap DashLineCap {
-//			get { return dashLineCap; }
-//			set {
-//				dashLineCap = value;
-//				Invalidate();
-//			}
-//		}
-	
 	}
 }

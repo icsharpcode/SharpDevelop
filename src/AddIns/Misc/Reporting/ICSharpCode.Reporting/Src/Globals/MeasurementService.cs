@@ -28,7 +28,6 @@ namespace ICSharpCode.Reporting.Globals
 	static class MeasurementService
 	{
 		
-		
 		public static Size Measure (IExportText item,Graphics graphics) {
 			if (!item.CanGrow) {
 				return item.Size;

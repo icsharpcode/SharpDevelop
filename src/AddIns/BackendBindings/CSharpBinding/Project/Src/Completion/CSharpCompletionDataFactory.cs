@@ -148,7 +148,7 @@ namespace CSharpBinding.Completion
 		
 		IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData()
 		{
-			return completionContext.ParseInformation.SyntaxTree.ConditionalSymbols.Select(def => new CompletionData(def));
+			return completionContext.ConditionalSymbols.Select(def => new CompletionData(def));
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName, bool addForTypeCreation)

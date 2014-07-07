@@ -50,7 +50,9 @@ namespace CSharpBinding.Completion
 		public void Show()
 		{
 			window = editor.ShowInsightWindow(items);
-			window.StartOffset = startOffset;
+			// Set startOffset so that window always appears below the caret line
+			var startLocation = editor.Document.GetLocation(startOffset);
+			window.StartOffset = editor.Document.GetOffset(editor.Caret.Line, startLocation.Column);
 			// closing the window at the end of the parameter list is handled by the CaretPositionChanged event
 			window.EndOffset = editor.Document.TextLength;
 			if (initiallySelectedItem != null)

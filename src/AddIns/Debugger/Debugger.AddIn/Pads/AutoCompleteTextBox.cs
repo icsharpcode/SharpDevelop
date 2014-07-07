@@ -64,7 +64,8 @@ namespace Debugger.AddIn.Pads.Controls
 			set { SetValue(IsEditableProperty, value); }
 		}
 
-		public DebuggerCompletionContext DebugContext { get; set; }
+		public FileName ContextFileName { get; set; }
+		public TextLocation ContextTextLocation { get; set; }
 		
 		static void TextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
@@ -127,20 +128,15 @@ namespace Debugger.AddIn.Pads.Controls
 		void editor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
 		{
 			if (e.Text == ".") {
-				DebuggerCompletionContext context = null;
 				StackFrame frame = WindowsDebugger.CurrentStackFrame;
-				if (frame == null) {
-					if (DebugContext != null) {
-						context = DebugContext;
-					}
-				} else {
-					context = new DebuggerCompletionContext(frame);
+				if (frame != null) {
+					ContextFileName = new FileName(frame.NextStatement.Filename);
+					ContextTextLocation = new TextLocation(frame.NextStatement.StartLine, frame.NextStatement.StartColumn);
 				}
-				if (context == null) return;
-				var binding = DebuggerDotCompletion.PrepareDotCompletion(editor.Text.Substring(0, editor.CaretOffset), context);
+				if (ContextFileName == null) return;
+				var binding = DebuggerDotCompletion.PrepareDotCompletion(editor.Text.Substring(0, editor.CaretOffset), ContextFileName, ContextTextLocation, SD.ParserService.ResolveContext(ContextFileName, ContextTextLocation));
 				if (binding == null) return;
 				binding.HandleKeyPressed(editorAdapter, '.');
-				SD.ParserService.ParseFileAsync(context.FileName).FireAndForget();
 			} else {
 				// TODO : implement automated error checking CSharpParser.ParseExpression does not report useful error messages.
 //				Error[] errors;

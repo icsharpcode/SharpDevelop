@@ -30,20 +30,12 @@ using CSharpBinding.FormattingStrategy;
 namespace CSharpBinding.OptionPanels
 {
 	/// <summary>
-	/// Marker interface for group or option container.
-	/// It doesn't need to have any members.
-	/// </summary>
-	internal interface IFormattingItemContainer
-	{
-	}
-	
-	/// <summary>
 	/// Represents a container item for other container items in formatting editor list
 	/// </summary>
 	[ContentProperty("Children")]
-	internal class FormattingGroupContainer : DependencyObject, IFormattingItemContainer
+	internal class FormattingGroupContainer : DependencyObject
 	{
-		readonly ObservableCollection<IFormattingItemContainer> children = new ObservableCollection<IFormattingItemContainer>();
+		readonly ObservableCollection<DependencyObject> children = new ObservableCollection<DependencyObject>();
 		
 		public static readonly DependencyProperty TextProperty =
 			DependencyProperty.Register("Text", typeof(string), typeof(FormattingGroupContainer),
@@ -54,7 +46,7 @@ namespace CSharpBinding.OptionPanels
 			set { SetValue(TextProperty, value); }
 		}
 		
-		public ObservableCollection<IFormattingItemContainer> Children
+		public ObservableCollection<DependencyObject> Children
 		{
 			get {
 				return children;
@@ -66,7 +58,7 @@ namespace CSharpBinding.OptionPanels
 	/// Represents a container for formatting options.
 	/// </summary>
 	[ContentProperty("Children")]
-	internal class FormattingOptionContainer : DependencyObject, IFormattingItemContainer
+	internal class FormattingOptionContainer : DependencyObject
 	{
 		readonly ObservableCollection<FormattingOption> children = new ObservableCollection<FormattingOption>();
 		
@@ -91,7 +83,22 @@ namespace CSharpBinding.OptionPanels
 			set { SetValue(TextProperty, value); }
 		}
 		
+//		public static readonly DependencyProperty AlwaysAllowDefaultProperty =
+//			DependencyProperty.Register("AlwaysAllowDefault", typeof(bool), typeof(FormattingOption),
+//			                            new FrameworkPropertyMetadata());
+//		
+//		public bool AlwaysAllowDefault {
+//			get { return (bool)GetValue(AlwaysAllowDefaultProperty); }
+//			set { SetValue(AlwaysAllowDefaultProperty, value); }
+//		}
+		
 		public string Option
+		{
+			get;
+			set;
+		}
+		
+		public bool AlwaysAllowDefault
 		{
 			get;
 			set;
@@ -131,6 +138,15 @@ namespace CSharpBinding.OptionPanels
 		public bool AllowPresets {
 			get { return (bool)GetValue(AllowPresetsProperty); }
 			set { SetValue(AllowPresetsProperty, value); }
+		}
+		
+		public static readonly DependencyProperty OverrideGlobalIndentationProperty =
+			DependencyProperty.Register("OverrideGlobalIndentation", typeof(bool), typeof(CSharpFormattingEditor),
+			                            new FrameworkPropertyMetadata());
+		
+		public bool OverrideGlobalIndentation {
+			get { return (bool)GetValue(OverrideGlobalIndentationProperty); }
+			set { SetValue(OverrideGlobalIndentationProperty, value); }
 		}
 		
 		static void OnOptionsContainerPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -197,7 +213,7 @@ namespace CSharpBinding.OptionPanels
 			}
 		}
 		
-		public ObservableCollection<IFormattingItemContainer> RootChildren
+		public ObservableCollection<DependencyObject> RootChildren
 		{
 			get {
 				// rootEntries object is only the root container, its children should be shown directly

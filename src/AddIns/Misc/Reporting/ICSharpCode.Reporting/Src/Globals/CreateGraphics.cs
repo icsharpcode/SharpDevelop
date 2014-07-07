@@ -24,13 +24,13 @@ namespace ICSharpCode.Reporting.Globals
 	/// <summary>
 	/// Description of CreateGraphics.
 	/// </summary>
-	internal class CreateGraphics
+	static class CreateGraphics
 	{
 		public static Graphics FromSize (Size size){
-			if (size == null) {
+			if (size == Size.Empty) {
 				throw new ArgumentNullException("size");
 			}
-			Bitmap bitmap = new Bitmap(size.Width,size.Height);
+			var bitmap = new Bitmap(size.Width,size.Height);
 			var graphics = Graphics.FromImage(bitmap);
 			return graphics;
 		}

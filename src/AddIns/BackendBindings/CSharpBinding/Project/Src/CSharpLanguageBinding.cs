@@ -19,11 +19,19 @@
 using System;
 using System.Collections.Generic;
 
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Project;
 using CSharpBinding.Completion;
 using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Refactoring;
@@ -47,47 +55,98 @@ namespace CSharpBinding
 			this.container.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), new Microsoft.CSharp.CSharpCodeProvider());
 		}
 		
-		public override ICodeCompletionBinding CreateCompletionBinding(FileName fileName, TextLocation currentLocation, ICSharpCode.NRefactory.Editor.ITextSource fileContent)
+		public override ICodeCompletionBinding CreateCompletionBinding(string expressionToComplete, FileName fileName, TextLocation location, ICodeContext context)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			return new CSharpCompletionBinding(fileName, currentLocation, fileContent);
-		}
-	}
-	
-	public class CSharpTextEditorExtension : ITextEditorExtension
-	{
-		ITextEditor editor;
-		IssueManager inspectionManager;
-		IList<IContextActionProvider> contextActionProviders;
-		CodeManipulation codeManipulation;
-		CaretReferenceHighlightRenderer renderer;
-		
-		public void Attach(ITextEditor editor)
-		{
-			this.editor = editor;
-			inspectionManager = new IssueManager(editor);
-			codeManipulation = new CodeManipulation(editor);
-			renderer = new CaretReferenceHighlightRenderer(editor);
-			
-			if (!editor.ContextActionProviders.IsReadOnly) {
-				contextActionProviders = AddInTree.BuildItems<IContextActionProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
-				editor.ContextActionProviders.AddRange(contextActionProviders);
-			}
+			if (context == null)
+				throw new ArgumentNullException("context");
+			string content = GeneratePartialClassContextStub(fileName, location, context);
+			const string caretPoint = "$__Caret_Point__$;";
+			int caretOffset = content.IndexOf(caretPoint, StringComparison.Ordinal) + expressionToComplete.Length;
+			SD.Log.DebugFormatted("context used for dot completion: {0}", content.Replace(caretPoint, "$" + expressionToComplete + "|$"));
+			var doc = new ReadOnlyDocument(content.Replace(caretPoint, expressionToComplete));
+			return new CSharpCompletionBinding(fileName, doc.GetLocation(caretOffset), doc.CreateSnapshot());
 		}
 		
-		public void Detach()
+		static string GeneratePartialClassContextStub(FileName fileName, TextLocation location, ICodeContext context)
 		{
-			codeManipulation.Dispose();
-			if (inspectionManager != null) {
-				inspectionManager.Dispose();
-				inspectionManager = null;
+			var compilation = SD.ParserService.GetCompilationForFile(fileName);
+			var file = SD.ParserService.GetExistingUnresolvedFile(fileName);
+			if (compilation == null || file == null)
+				return "";
+			var unresolvedMember = file.GetMember(location);
+			if (unresolvedMember == null)
+				return "";
+			var member = unresolvedMember.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+			if (member == null)
+				return "";
+			var builder = new TypeSystemAstBuilder();
+			MethodDeclaration decl;
+			if (unresolvedMember is IMethod) {
+				// If it's a method, convert it directly (including parameters + type parameters)
+				decl = (MethodDeclaration)builder.ConvertEntity(member);
+			} else {
+				// Otherwise, create a method anyways, and copy the parameters
+				decl = new MethodDeclaration();
+				if (member is IParameterizedMember) {
+					foreach (var p in ((IParameterizedMember)member).Parameters) {
+						decl.Parameters.Add(builder.ConvertParameter(p));
+					}
+				}
 			}
-			if (contextActionProviders != null) {
-				editor.ContextActionProviders.RemoveAll(contextActionProviders.Contains);
+			decl.Name = "__DebuggerStub__";
+			decl.ReturnType = builder.ConvertType(member.ReturnType);
+			decl.Modifiers = unresolvedMember.IsStatic ? Modifiers.Static : Modifiers.None;
+			// Make the method look like an explicit interface implementation so that it doesn't appear in CC
+			decl.PrivateImplementationType = new SimpleType("__DummyType__");
+			decl.Body = GenerateBodyFromContext(builder, context.LocalVariables.ToArray());
+			return WrapInType(unresolvedMember.DeclaringTypeDefinition, decl).ToString();
+		}
+
+		static BlockStatement GenerateBodyFromContext(TypeSystemAstBuilder builder, IVariable[] variables)
+		{
+			var body = new BlockStatement();
+			foreach (var v in variables)
+				body.Statements.Add(new VariableDeclarationStatement(builder.ConvertType(v.Type), v.Name));
+			body.Statements.Add(new ExpressionStatement(new IdentifierExpression("$__Caret_Point__$")));
+			return body;
+		}
+
+		static AstNode WrapInType(IUnresolvedTypeDefinition entity, EntityDeclaration decl)
+		{
+			if (entity == null)
+				return decl;
+			// Wrap decl in TypeDeclaration
+			decl = new TypeDeclaration {
+				ClassType = GetClassType(entity),
+				Modifiers = Modifiers.Partial,
+				Name = entity.Name,
+				Members = { decl }
+			};
+			if (entity.DeclaringTypeDefinition != null) {
+				// Handle nested types
+				return WrapInType(entity.DeclaringTypeDefinition, decl);
+			} 
+			if (string.IsNullOrEmpty(entity.Namespace))
+				return decl;
+			return new NamespaceDeclaration(entity.Namespace) {
+				Members = {
+					decl
+				}
+			};
+		}
+
+		static ClassType GetClassType(IUnresolvedTypeDefinition entity)
+		{
+			switch (entity.Kind) {
+				case TypeKind.Interface:
+					return ClassType.Interface;
+				case TypeKind.Struct:
+					return ClassType.Struct;
+				default:
+					return ClassType.Class;
 			}
-			renderer.Dispose();
-			this.editor = null;
 		}
 	}
 }

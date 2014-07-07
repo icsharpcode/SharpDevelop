@@ -18,6 +18,9 @@
 
 using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -71,7 +74,33 @@ namespace ICSharpCode.PackageManagement
 			
 			var runner = new ProcessRunner();
 			runner.WorkingDirectory = Path.GetDirectoryName(solution.FileName);
-			runner.RunInOutputPadAsync(outputMessagesView.OutputCategory, commandLine.Command, commandLine.Arguments).FireAndForget();
+			runner.RunInOutputPadAsync(outputMessagesView.OutputCategory, commandLine.Command, commandLine.Arguments)
+				.ContinueWith(task => OnNuGetPackageRestoreComplete(task));
+		}
+		
+		void OnNuGetPackageRestoreComplete(Task<int> task)
+		{
+			if (task.Exception != null) {
+				LoggingService.Debug(task.Exception.ToString());
+				outputMessagesView.AppendLine(task.Exception.Message);
+			} else {
+				ForceGenerationOfRepositoriesConfigFile();
+			}
+		}
+		
+		/// <summary>
+		/// Create a Package Manager for each project to force a new repositories.config file
+		/// to be generated with references to all projects that have NuGet packages.
+		/// </summary>
+		void ForceGenerationOfRepositoriesConfigFile()
+		{
+			try {
+				var repository = PackageManagementServices.RegisteredPackageRepositories.CreateAggregateRepository();
+				var projects = solution.GetProjects(repository).ToList();
+			} catch (Exception ex) {
+				LoggingService.Debug(ex.ToString());
+				outputMessagesView.AppendLine(ex.Message);
+			}
 		}
 	}
 }

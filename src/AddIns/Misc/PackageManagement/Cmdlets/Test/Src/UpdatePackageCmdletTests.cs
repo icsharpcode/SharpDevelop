@@ -832,5 +832,19 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, "Test2");
 		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_ConsoleHostLoggerIsDisposed()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			
+			RunCmdlet();
+			
+			fakeConsoleHost.AssertLoggerIsDisposed();
+			Assert.AreEqual(cmdlet, fakeConsoleHost.CmdletLoggerUsedToCreateLogger);
+		}
 	}
 }

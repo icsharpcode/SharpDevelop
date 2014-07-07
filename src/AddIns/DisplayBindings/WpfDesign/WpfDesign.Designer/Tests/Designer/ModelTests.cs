@@ -640,6 +640,34 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
+		public void AddStaticResourceWhereResourceOnSameElement()
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			DesignItem canvas = button.Parent;
+			
+			DesignItemProperty resProp = button.Properties.GetProperty("Resources");
+			Assert.IsTrue(resProp.IsCollection);
+			DesignItem exampleClassItem = canvas.Services.Component.RegisterComponentForDesigner(new ExampleClass());
+			exampleClassItem.Key = "res1";
+			resProp.CollectionElements.Add(exampleClassItem);
+			
+			button.Properties["Tag"].SetValue(new StaticResourceExtension());
+			button.Properties["Tag"].Value.Properties["ResourceKey"].SetValue("res1");
+			
+			string expectedXaml = "<Button>\n" +
+								  "  <Button.Resources>\n" +
+								  "    <t:ExampleClass x:Key=\"res1\" />\n" +
+								  "  </Button.Resources>\n" +
+								  "  <Button.Tag>\n" +
+								  "    <StaticResourceExtension ResourceKey=\"res1\" />\n" +
+								  "  </Button.Tag>\n" +
+								  "</Button>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
 		public void AddBrushAsResource()
 		{
 			DesignItem checkBox = CreateCanvasContext("<CheckBox/>");
@@ -669,6 +697,11 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		
 		public void AddNativeTypeAsResource(object component, string expectedXamlValue)
 		{
+			AddTypeAsResource(component, expectedXamlValue, "Controls0:", new string[] { "xmlns:Controls0=\"clr-namespace:System;assembly=mscorlib\""} );
+		}
+		
+		public void AddTypeAsResource(object component, string expectedXamlValue, string typePrefix, String[] additionalXmlns)
+		{
 			DesignItem textBlock = CreateCanvasContext("<TextBlock/>");
 			DesignItem canvas = textBlock.Parent;
 			
@@ -687,11 +720,11 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			string typeName = component.GetType().Name;
 			
 			string expectedXaml = "<Canvas.Resources>\n" +
-								  "  <Controls0:" + typeName + " x:Key=\"res1\">" + expectedXamlValue + "</Controls0:" + typeName + ">\n" +
+								  "  <" + typePrefix + typeName + " x:Key=\"res1\">" + expectedXamlValue + "</" + typePrefix + typeName + ">\n" +
 								  "</Canvas.Resources>\n" +
 								  "<TextBlock Tag=\"{StaticResource ResourceKey=res1}\" />";
 			
-			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context, "xmlns:Controls0=\"clr-namespace:System;assembly=mscorlib\"");
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context, additionalXmlns);
 			AssertLog("");
 		}
 		
@@ -736,6 +769,18 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			const int i = 123;
 			AddNativeTypeAsResource(i, "123");
 		}
+		
+		[Test]
+		public void AddWpfEnumAsResource()
+		{
+			AddTypeAsResource(VerticalAlignment.Center, "Center", "", new string[0]);
+		}
+		
+		[Test]
+		public void AddCustomEnumAsResource()
+		{
+			AddTypeAsResource(MyEnum.One, "One", "t:", new string[0]);
+		}
 	}
 	
 	public class MyMultiConverter : IMultiValueConverter
@@ -759,5 +804,10 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			get { return stringProp; }
 			set { stringProp = value; }
 		}
+	}
+	
+	public enum MyEnum
+	{
+		One, Two
 	}
 }

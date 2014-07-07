@@ -59,7 +59,9 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		protected override void ProcessRecord()
 		{
 			ThrowErrorIfProjectNotOpen();
-			UninstallPackage();
+			using (IDisposable logger = ConsoleHost.CreateLogger(this)) {
+				UninstallPackage();
+			}
 		}
 		
 		void UninstallPackage()

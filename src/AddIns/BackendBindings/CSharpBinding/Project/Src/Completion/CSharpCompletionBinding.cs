@@ -24,10 +24,8 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Completion;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -99,7 +97,7 @@ namespace CSharpBinding.Completion
 				completionContext.ProjectContent,
 				completionContext.TypeResolveContextAtCaret
 			);
-			var formattingOptions = CSharpFormattingOptionsPersistence.GetProjectOptions(completionContext.Compilation.GetProject());
+			var formattingOptions = CSharpFormattingPolicies.Instance.GetProjectOptions(completionContext.Compilation.GetProject());
 			cce.FormattingPolicy = formattingOptions.OptionsContainer.GetEffectiveOptions();
 			cce.EolMarker = DocumentUtilities.GetLineTerminator(completionContext.Document, currentLocation.Line);
 			

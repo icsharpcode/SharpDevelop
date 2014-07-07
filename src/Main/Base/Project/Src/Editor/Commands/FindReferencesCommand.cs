@@ -53,6 +53,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		public override void Run(ResolveResult symbol)
 		{
 			var entity = GetSymbol(symbol);
+			if ((entity is IMember) && ((entity.SymbolKind == SymbolKind.Constructor) || (entity.SymbolKind == SymbolKind.Destructor))) {
+				// Don't rename constructors/destructors, rename their declaring type instead
+				entity = ((IMember) entity).DeclaringType.GetDefinition();
+			}
 			if (entity != null) {
 				var project = GetProjectFromSymbol(entity);
 				if (project != null) {

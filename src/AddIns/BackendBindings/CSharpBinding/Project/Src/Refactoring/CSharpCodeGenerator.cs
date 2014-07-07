@@ -86,7 +86,10 @@ namespace CSharpBinding.Refactoring
 			var node = context.RootNode.GetNodeAt<EntityDeclaration>(last.Region.Begin);
 			var resolver = context.GetResolverStateAfter(node);
 			var builder = new TypeSystemAstBuilder(resolver);
-			var delegateDecl = builder.ConvertEntity(eventDefinition.ReturnType.GetDefinition()) as DelegateDeclaration;
+			var invokeMethod = eventDefinition.ReturnType.GetDelegateInvokeMethod();
+			if (invokeMethod == null) return;
+			var importedMethod = resolver.Compilation.Import(invokeMethod);
+			var delegateDecl = builder.ConvertEntity(importedMethod) as MethodDeclaration;
 			if (delegateDecl == null) return;
 			var throwStmt = new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")));
 			var decl = new MethodDeclaration() {
@@ -96,7 +99,7 @@ namespace CSharpBinding.Refactoring
 					throwStmt
 				}
 			};
-			var param = delegateDecl.Parameters.Select(p => p.Clone()).OfType<ParameterDeclaration>().ToArray();
+			var param = delegateDecl.Parameters.Select(p => p.Clone()).ToArray();
 			decl.Parameters.AddRange(param);
 			
 			using (Script script = context.StartScript()) {
