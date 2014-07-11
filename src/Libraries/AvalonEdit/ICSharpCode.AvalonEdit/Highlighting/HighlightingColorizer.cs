@@ -256,7 +256,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				if (b != null)
 					element.BackgroundBrush = b;
 			}
-			if (color.FontStyle != null || color.FontWeight != null || color.Underline != null) {
+			if (color.FontStyle != null || color.FontWeight != null) {
 				Typeface tf = element.TextRunProperties.Typeface;
 				element.TextRunProperties.SetTypeface(new Typeface(
 					tf.FontFamily,
