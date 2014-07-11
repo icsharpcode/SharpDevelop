@@ -106,7 +106,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			info.AddValue("Background", this.Background);
 			info.AddValue("HasWeight", this.FontWeight.HasValue);
 			if (this.Underline)
-            info.AddValue("Underline", this.Underline);			
+				info.AddValue("Underline", this.Underline);			
 			if (this.FontWeight.HasValue)
 				info.AddValue("Weight", this.FontWeight.Value.ToOpenTypeWeight());
 			info.AddValue("HasStyle", this.FontStyle.HasValue);
