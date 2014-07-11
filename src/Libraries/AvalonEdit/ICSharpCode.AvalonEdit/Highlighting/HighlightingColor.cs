@@ -88,8 +88,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
       ///  Gets/sets the underline flag. Null if the underline status does not change the font style.
       /// </summary>
-      public bool? Underline {
-      	get {
+		public bool? Underline {
+			get {
 				return underline;
 			}
 			set {
