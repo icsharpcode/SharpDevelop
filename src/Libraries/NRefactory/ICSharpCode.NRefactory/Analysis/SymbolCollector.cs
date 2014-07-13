@@ -120,12 +120,10 @@ namespace ICSharpCode.NRefactory.Analysis
 			case SymbolKind.Method: {
 				var member = (IMember)m;
 				List<ISymbol> symbols = new List<ISymbol> ();
-				if (member.ImplementedInterfaceMembers.Count > 0) {
-					foreach (var m2 in member.ImplementedInterfaceMembers) {
-						symbols.AddRange (GetRelatedSymbols (g, m2));
-					}
-				} else {
+				if (!member.IsExplicitInterfaceImplementation)
 					symbols.Add (member);
+				foreach (var m2 in member.ImplementedInterfaceMembers) {
+					symbols.AddRange (GetRelatedSymbols (g, m2));
 				}
 
 				if (member.DeclaringType.Kind == TypeKind.Interface) {
