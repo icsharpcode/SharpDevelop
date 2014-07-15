@@ -61,8 +61,10 @@ namespace ICSharpCode.UnitTesting
 		
 		public void Dispose()
 		{
-			reader.Dispose();
-			namedPipe.Dispose();
+			if (reader != null)
+				reader.Dispose();
+			if (namedPipe != null)
+				namedPipe.Dispose();
 		}
 		
 		public event EventHandler<TestFinishedEventArgs> TestFinished;

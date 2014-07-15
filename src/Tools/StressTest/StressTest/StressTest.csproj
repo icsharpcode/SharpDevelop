@@ -98,9 +98,6 @@
   <ItemGroup>
     <Page Include="UserControl.xaml" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="ProfilingSessions\Session20100225_205054.sdps" />
-  </ItemGroup>
   <PropertyGroup>
     <StartArguments>/addindir:"$(MsBuildProjectDirectory)\$(OutputPath)"</StartArguments>
   </PropertyGroup>

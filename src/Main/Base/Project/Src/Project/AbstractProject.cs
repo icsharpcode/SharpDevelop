@@ -188,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				try {
 					FileAttributes attributes = File.GetAttributes(FileName);
 					return ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly);
-				} catch (FileNotFoundException) {
+				} catch (UnauthorizedAccessException) {
 					return false;
 				} catch (IOException) {
 					// directory not found, network path not available, etc.
