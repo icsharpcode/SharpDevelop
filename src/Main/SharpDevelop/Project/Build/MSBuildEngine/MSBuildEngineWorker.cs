@@ -313,6 +313,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				error.IsWarning = isWarning;
 				error.Subcategory = subcategory;
 				error.HelpKeyword = helpKeyword;
+				error.ParentProject = engine.Project;
 				engine.loggerChain.HandleError(error);
 			}
 			

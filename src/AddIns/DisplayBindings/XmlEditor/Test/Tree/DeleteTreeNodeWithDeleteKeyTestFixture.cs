@@ -36,7 +36,7 @@ namespace XmlEditor.Tests.Tree
 		public void DeleteKeyPressed()
 		{
 			using (DerivedXmlTreeViewControl treeView = new DerivedXmlTreeViewControl()) {
-				treeView.DeleteKeyPressed += TreeViewDeleteKeyPressed;
+				treeView.TreeViewKeyPressed += TreeViewDeleteKeyPressed;
 				treeView.CallProcessCmdKey(Keys.Delete);
 			}
 			Assert.IsTrue(deleteKeyPressEventFired);

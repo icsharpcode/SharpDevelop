@@ -87,7 +87,7 @@ namespace CSharpBinding
 		
 		IEnumerable<ISymbol> GetRelatedSymbols(ISymbol entity)
 		{
-			TypeGraph typeGraph = new TypeGraph(new [] { compilation.MainAssembly });
+			var typeGraph = new Lazy<TypeGraph>(() => new TypeGraph(new [] { compilation.MainAssembly }));
 			var symbolCollector = new SymbolCollector();
 			return symbolCollector.GetRelatedSymbols(typeGraph, entity);
 		}

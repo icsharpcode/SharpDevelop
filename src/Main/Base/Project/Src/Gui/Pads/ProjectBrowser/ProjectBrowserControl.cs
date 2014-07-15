@@ -17,8 +17,11 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -249,37 +252,58 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				inSelectFile = true;
 				lastSelectionTarget = fileName;
-				TreeNode node = FindFileNode(fileName);
-				
-				if (node != null) {
-					// Expand to node
-					TreeNode parent = node.Parent;
-					while (parent != null) {
-						parent.Expand();
-						parent = parent.Parent;
-					}
-					//node = FindFileNode(fileName);
-					treeView.SelectedNode = node;
-				} else {
-					// Node for this file does not exist yet (the tree view is lazy loaded)
-					SelectDeepestOpenNodeForPath(fileName);
-				}
+				LoadAndExpandToNode(new FileName(fileName));
 			} finally {
 				inSelectFile = false;
 			}
 		}
 
 		#region SelectDeepestOpenNode internals
-//
-//		SolutionNode RootSolutionNode {
-//			get {
-//				if (treeView.Nodes != null && treeView.Nodes.Count>0) {
-//					return treeView.Nodes[0] as SolutionNode;
-//				}
-//				return null;
-//			}
-//		}
-//
+
+		void LoadAndExpandToNode(FileName fileName)
+		{
+			IProject project = null;
+			if (!SD.ProjectService.IsSolutionOrProjectFile(fileName)) {
+				project = SD.ProjectService.FindProjectContainingFile(fileName);
+			}
+			Stack<ISolutionItem> itemsToExpand = new Stack<ISolutionItem>();
+			ISolutionItem item = project;
+			if (project == null) {
+				item = SD.ProjectService.CurrentSolution.AllItems
+					.OfType<ISolutionFileItem>().FirstOrDefault(i => i.FileName.Equals(fileName));
+			}
+			while (item != null) {
+				itemsToExpand.Push(item);
+				item = item.ParentFolder;
+			}
+			AbstractProjectBrowserTreeNode current = null;
+			var currentChildren = treeView.Nodes;
+			while (itemsToExpand.Any()) {
+				var currentItem = itemsToExpand.Pop();
+				current = currentChildren.OfType<AbstractProjectBrowserTreeNode>().FirstOrDefault(n => n.Tag == currentItem);
+				if (current == null) break;
+				current.Expand();
+				currentChildren = current.Nodes;
+			}
+			if (project != null) {
+				var fileItem = project.FindFile(fileName);
+				var virtualPath = fileItem.VirtualName;
+				if (!string.IsNullOrWhiteSpace(fileItem.DependentUpon)) {
+					int index = virtualPath.LastIndexOf('\\') + 1;
+					virtualPath = virtualPath.Insert(index, fileItem.DependentUpon + "\\");
+				}
+				string[] relativePath = virtualPath.Split('\\');
+				for (int i = 0; i < relativePath.Length; i++) {
+					current = currentChildren.OfType<AbstractProjectBrowserTreeNode>()
+						.FirstOrDefault(n => n.Text.Equals(relativePath[i], StringComparison.OrdinalIgnoreCase));
+					if (current == null) break;
+					current.Expand();
+					currentChildren = current.Nodes;
+				}
+			}
+			treeView.SelectedNode = current;
+		}
+
 		void SelectDeepestOpenNodeForPath(string fileName)
 		{
 			TreeNode node = FindDeepestOpenNodeForPath(fileName);
