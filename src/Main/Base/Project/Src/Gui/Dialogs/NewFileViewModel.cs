@@ -111,13 +111,15 @@ namespace ICSharpCode.SharpDevelop.Gui
             set { _searchFor = value; }
         }
 
+        public string FileName { get; set; }
+
         public string Description
         {
             get
             {
                 return SelectedItem == null
                     ? string.Empty
-                    : SelectedItem.Template.Description;
+                    : SelectedItem.Description;
 
             }
             set { }

@@ -9,7 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.Core;
@@ -90,7 +92,29 @@ namespace ICSharpCode.SharpDevelop.Gui
             return node;
         }
 	    private void okButtonClick(object sender, RoutedEventArgs e)
-	    {
+        {
+
+            var selectedTemplate = ViewModel.SelectedItem;
+            var fileName = ViewModel.FileName;
+
+            var standardNamespace = "DefaultNamespace";
+
+            var localizedTypeDescriptor = selectedTemplate.Template.CreateCustomizationObject();
+            var options = new FileTemplateOptions
+            {
+                ClassName =
+                    GenerateValidClassOrNamespaceName(Path.GetFileNameWithoutExtension(ViewModel.FileName), false),
+                FileName = FileName.Create(fileName),
+                IsUntitled = ViewModel.AllowUntitledFiles,
+                Namespace = standardNamespace,
+                CustomizationObject = localizedTypeDescriptor,
+                Project = ViewModel.Project
+            };
+
+	        var result = selectedTemplate.Template.Create(options);
+            DialogResult = true;
+            if (result != null)
+                selectedTemplate.Template.RunActions(result);
             Close();
 	    }
 
@@ -98,6 +122,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 	    {
             Close();
 	    }
+	    
+	    internal static string GenerateValidClassOrNamespaceName(string className, bool allowDot)
+		{
+			if (className == null)
+				throw new ArgumentNullException("className");
+			className = className.Trim();
+			if (className.Length == 0)
+				return string.Empty;
+			StringBuilder nameBuilder = new StringBuilder();
+			if (className[0] != '_' && !char.IsLetter(className, 0))
+				nameBuilder.Append('_');
+			for (int idx = 0; idx < className.Length; ++idx) {
+				if (Char.IsLetterOrDigit(className[idx]) || className[idx] == '_') {
+					nameBuilder.Append(className[idx]);
+				} else if (className[idx] == '.' && allowDot) {
+					nameBuilder.Append('.');
+				} else {
+					nameBuilder.Append('_');
+				}
+            }
+            return nameBuilder.ToString();
+        }
+			
 		void CategoryTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
 			ViewModel.SelectedCategory = (NewFileCategory)categoryTreeView.SelectedItem;

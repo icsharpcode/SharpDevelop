@@ -78,7 +78,7 @@
         			<ColumnDefinition />
         		</Grid.ColumnDefinitions>
         		<TextBlock Text="File name: " VerticalAlignment="Center" />
-	            <TextBox Grid.Column="1" Text="{Binding ItemFileName}" x:Name="fileNameTextBox" />
+	            <TextBox Grid.Column="1" Text="{Binding FileName}" x:Name="fileNameTextBox" />
 	        </Grid>
         	<widgets:UniformGridWithSpacing Columns="2" HorizontalAlignment="Right" Margin="0,4,12,12">
                 <Button
