@@ -22,7 +22,7 @@
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions  >
-            <Grid  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition  />
@@ -30,7 +30,9 @@
                 <TextBlock Text="Categories" />
                 <TreeView Grid.Row="1" 
                           ItemsSource="{Binding Categories}"
-                          x:Name="categoryTreeView">
+                          x:Name="categoryTreeView"
+                          SelectedItemChanged="CategoryTreeView_SelectedItemChanged"
+                          >
 
                     <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Children}">
@@ -39,9 +41,9 @@
                     </TreeView.ItemTemplate>
 
                 </TreeView>
-            </Grid>
-            <GridSplitter Grid.Column="1" Width="5" />
-            <Grid Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+            </Grid> 
+            <GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
+            <Grid Grid.Column="2" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -50,10 +52,15 @@
                     <TextBlock Text="Search:" VerticalAlignment="Center" />
                     <TextBox Text="{Binding SearchFor}" Margin="2" Width="100"></TextBox>
                 </StackPanel>
-                <ListBox Grid.Row="1" ItemsSource="{Binding Templates}">
+                <ListBox Grid.Row="1" ItemsSource="{Binding SelectedTemplates}"
+            		SelectedItem="{Binding SelectedItem}"
+            	>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding DisplayName}"></TextBlock>
+                            <StackPanel>
+                                <Label Content="{Binding DisplayName}" FontWeight="Bold" />
+                                <Label Content="{Binding Description}" />
+                            </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
@@ -61,8 +68,16 @@
         </Grid>
 
         <StackPanel Grid.Row="2">
-            <TextBlock Text="{Binding Description}" ></TextBlock>
-            <widgets:UniformGridWithSpacing Columns="2" HorizontalAlignment="Right" Margin="0,4,12,12">
+            <Label Content="{Binding Description}" />
+            <Grid>
+        		<Grid.ColumnDefinitions>
+        			<ColumnDefinition Width="Auto" />
+        			<ColumnDefinition />
+        		</Grid.ColumnDefinitions>
+        		<TextBlock Text="File name: " VerticalAlignment="Center" />
+	            <TextBox Grid.Column="1" Text="{Binding ItemFileName}" x:Name="fileNameTextBox" />
+	        </Grid>
+        	<widgets:UniformGridWithSpacing Columns="2" HorizontalAlignment="Right" Margin="0,4,12,12">
                 <Button
 				Content="{core:Localize Global.OKButtonText}"
 				IsDefault="True"

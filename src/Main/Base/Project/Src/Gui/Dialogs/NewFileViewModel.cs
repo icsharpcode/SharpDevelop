@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Templates;
 using ICSharpCode.SharpDevelop.Widgets;
@@ -18,16 +19,71 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
     public class NewFileViewModel : ViewModelBase
     {
+        #region Backing properties
+        private NewFileCategory _selectedCategory;
+        private string _searchFor;
+        private ObservableCollection<NewFileTemplateItem> _allTemplate;
+        private NewFileTemplateItem _selectedItem;
+
+        #endregion
+
         public NewFileViewModel()
         {
-            AllTemplate = new ObservableCollection<NewFileTemplateItem>();
-            Templates = new ObservableCollection<NewFileCategory>()
-            {
-                new NewFileCategory("Empty file")
-            };
-            Icons= new Dictionary<IImage, int>();
+            _allTemplate = new ObservableCollection<NewFileTemplateItem>();
+           
+            Icons = new Dictionary<IImage, int>();
             Categories = new ObservableCollection<NewFileCategory>();
+
+            AllFileTemplates = new NewFileCategory("All");
+            Categories.Add(AllFileTemplates);
         }
+
+        public NewFileCategory AllFileTemplates { get; set; }
+
+        public NewFileCategory SelectedCategory
+        {
+            get { return _selectedCategory; }
+            set
+            {
+                _selectedCategory = value;
+                OnPropertyChanged();
+            }
+        }
+
+        
+        public ObservableCollection<NewFileTemplateItem> SelectedTemplates
+        {
+            get
+            {
+                UpdatedSelection();
+                return _allTemplate;
+            }
+        }
+
+        public void UpdatedSelection()
+        {
+            _allTemplate.Clear();
+            var selectedCategory = _selectedCategory;
+            if (selectedCategory != null)
+            {
+                foreach (var item in selectedCategory.Templates)
+                {
+                    _allTemplate.Add(item);
+                }
+            }
+        }
+
+        public NewFileTemplateItem SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                _selectedItem = value;
+                OnPropertyChanged();
+                OnPropertyChanged("Description");
+            }
+        }
+
         public IProject Project
         {
             get;
@@ -48,14 +104,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 
         public FileTemplateResult Result { get; set; }
 
-        public string SearchFor { get; set; }
-        public string Description { get; set; }
-        public ObservableCollection<NewFileTemplateItem> AllTemplate { get; set; }
+        public string SearchFor
+        {
+            get { return _searchFor; }
+            set { _searchFor = value; }
+        }
 
-		public Dictionary<IImage, int> Icons {
-			get;
-			set;
-		}
+        public string Description
+        {
+            get
+            {
+                return SelectedItem == null
+                    ? string.Empty
+                    : SelectedItem.Template.Description;
+
+            }
+            set { }
+        }
+
+
+        public Dictionary<IImage, int> Icons
+        {
+            get;
+            set;
+        }
 
         public ObservableCollection<NewFileCategory> Categories { get; set; }
 

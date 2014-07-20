@@ -41,6 +41,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ViewModel.Project = project;
 			ViewModel.BasePath = basePath;
 			ViewModel.AllowUntitledFiles = basePath == null;
+			if(ViewModel.AllowUntitledFiles)
+			{
+				categoryTreeView.Focus();
+			}
+			else
+			{
+				fileNameTextBox.Focus();
+			}
+				
 		    InitializeTemplates(templateCategories, ViewModel.Categories);
 		}
 		
@@ -74,7 +83,8 @@ namespace ICSharpCode.SharpDevelop.Gui
                 {
                     ViewModel.Icons[titem.Template.Icon] = 0; // "create template icon"
                 }
-                ViewModel.AllTemplate.Add(titem);
+                ViewModel.AllFileTemplates.Templates.Add(titem);
+                ViewModel.SelectedTemplates.Add(titem);
                 node.Templates.Add(titem);
             }
             return node;
@@ -88,5 +98,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 	    {
             Close();
 	    }
+		void CategoryTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			ViewModel.SelectedCategory = (NewFileCategory)categoryTreeView.SelectedItem;
+            ViewModel.UpdatedSelection();
+		}
 	}
 }
