@@ -4,13 +4,13 @@
 	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
-	Title="ICSharpCode.SharpDevelop.Gui" 
+	Title="${res:Dialog.NewFile.DialogName}" 
     WindowStartupLocation="CenterScreen"    
-        Height="300" Width="500">
+        Height="400" Width="600">
 	<Window.DataContext>
         <gui:NewFileViewModel />
     </Window.DataContext>
-	<Grid>
+	<Grid Margin="4">
 		<Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
@@ -18,7 +18,7 @@
 		</Grid.RowDefinitions>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="250" />
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions  >
@@ -31,6 +31,7 @@
                 <TreeView Grid.Row="1" 
                           ItemsSource="{Binding Categories}"
                           x:Name="categoryTreeView"
+                          HorizontalAlignment="Stretch"
                           SelectedItemChanged="CategoryTreeView_SelectedItemChanged"
                           >
 
@@ -50,20 +51,33 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock Text="Search:" VerticalAlignment="Center" />
-                    <TextBox Text="{Binding SearchFor}" Margin="2" Width="100"></TextBox>
+                    <TextBox Text="{Binding SearchFor}" x:Name="SearchTextBox" Margin="2" Width="100" TextChanged="OnUpdateSearch" />
                 </StackPanel>
                 <ListBox Grid.Row="1" ItemsSource="{Binding SelectedTemplates}"
             		SelectedItem="{Binding SelectedItem}"
             	>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                        	<StackPanel Orientation="Horizontal">
+                        	<Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 	                        	<Image Source="{Binding Picture}" Width="32" />
-                        		<StackPanel>
+                        		<StackPanel 
+                        			Grid.Column="1"
+                        			HorizontalAlignment="Stretch"
+                        		>
 	                                <Label Content="{Binding DisplayName}" FontWeight="Bold" />
 	                                <Label Content="{Binding Description}" />
 	                            </StackPanel>
-							</StackPanel>
+                                <Label Grid.Column="2"
+                                       Foreground="DarkGray"
+                                       HorizontalAlignment="Right"
+                                       
+                                       Content="{Binding CategoryDescription}"/>
+							</Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

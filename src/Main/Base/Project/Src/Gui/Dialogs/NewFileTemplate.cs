@@ -6,14 +6,16 @@ using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-    public class NewFileTemplateItem : ViewModelBase
+    public class NewFileTemplate : ViewModelBase
     {
-        public NewFileTemplateItem(FileTemplate template)
+        public NewFileTemplate(FileTemplate template, string categoryDescription)
         {
             Template = template;
+            CategoryDescription = categoryDescription;
         }
 
         public FileTemplate Template { get; private set; }
+        public string CategoryDescription { get; set; }
         public string DisplayName { get { return Template.DisplayName; } }
         public string Description { get { 
         		return StringParser.Parse(Template.Description); 

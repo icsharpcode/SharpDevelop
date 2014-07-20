@@ -297,7 +297,7 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\NewFileCategory.cs" />
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
-    <Compile Include="Src\Gui\Dialogs\NewFileTemplateItem.cs" />
+    <Compile Include="Src\Gui\Dialogs\NewFileTemplate.cs" />
     <Compile Include="Src\Gui\Dialogs\NewFileViewModel.cs" />
     <Compile Include="Src\Gui\Dialogs\NewFileWindow.xaml.cs">
       <DependentUpon>NewFileWindow.xaml</DependentUpon>
