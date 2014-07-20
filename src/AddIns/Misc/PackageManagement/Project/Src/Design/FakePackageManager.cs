@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement.Design
 {
@@ -54,7 +55,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public FakeFileSystem FakeFileSystem = new FakeFileSystem();
 		
-		public IPackageRepository LocalRepository { get; set; }
+		public ISharedPackageRepository LocalRepository { get; set; }
 		public ILogger Logger { get; set; }
 		public IPackageRepository SourceRepository { get; set; }
 		public ISharpDevelopProjectManager ProjectManager { get; set; }
@@ -63,7 +64,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public FakePackageManager()
 		{
-			ProjectManager = FakeProjectManager;
+//			ProjectManager = FakeProjectManager;
 			SourceRepository = FakeSourceRepository;
 		}
 		
@@ -78,12 +79,12 @@ namespace ICSharpCode.PackageManagement.Design
 			IsRefreshProjectBrowserCalledWhenUninstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
 		}
 		
-		public void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
-		{
-			throw new NotImplementedException();
-		}
+//		public void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
+//		{
+//			throw new NotImplementedException();
+//		}
 		
-		public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
+		public IEnumerable<PackageAction> PackageOperationsPassedToInstallPackage;
 		
 		public void InstallPackage(IPackage package, InstallPackageAction installAction)
 		{
@@ -96,12 +97,12 @@ namespace ICSharpCode.PackageManagement.Design
 			IsRefreshProjectBrowserCalledWhenInstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
 		}
 		
-		public List<PackageOperation> PackageOperationsToReturnFromGetInstallPackageOperations = new List<PackageOperation>();
+		public List<PackageAction> PackageOperationsToReturnFromGetInstallPackageOperations = new List<PackageAction>();
 		public IPackage PackagePassedToGetInstallPackageOperations;
 		public bool IgnoreDependenciesPassedToGetInstallPackageOperations;
 		public bool AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
 		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
+		public IEnumerable<PackageAction> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
 			PackagePassedToGetInstallPackageOperations = package;
 			IgnoreDependenciesPassedToGetInstallPackageOperations = installAction.IgnoreDependencies;
@@ -110,7 +111,7 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public IPackage PackagePassedToUpdatePackage;
-		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
+		public IEnumerable<PackageAction> PackageOperationsPassedToUpdatePackage;
 		public bool UpdateDependenciesPassedToUpdatePackage;
 		
 		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
@@ -136,66 +137,66 @@ namespace ICSharpCode.PackageManagement.Design
 				throw new NotImplementedException();
 			}
 		}
-		
-		public void UpdatePackage(IPackage newPackage, bool updateDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UpdatePackage(string packageId, IVersionSpec versionSpec, bool updateDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void InstallPackage(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UpdatePackage(IPackage newPackage, bool updateDependencies, bool allowPrereleaseVersions)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UpdatePackage(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UpdatePackage(string packageId, IVersionSpec versionSpec, bool updateDependencies, bool allowPrereleaseVersions)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UninstallPackage(string packageId, SemanticVersion version, bool forceRemove, bool removeDependencies)
-		{
-			throw new NotImplementedException();
-		}
+//		
+//		public void UpdatePackage(IPackage newPackage, bool updateDependencies)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void UpdatePackage(string packageId, IVersionSpec versionSpec, bool updateDependencies)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void InstallPackage(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void UpdatePackage(IPackage newPackage, bool updateDependencies, bool allowPrereleaseVersions)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void UpdatePackage(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void UpdatePackage(string packageId, IVersionSpec versionSpec, bool updateDependencies, bool allowPrereleaseVersions)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void UninstallPackage(string packageId, SemanticVersion version, bool forceRemove, bool removeDependencies)
+//		{
+//			throw new NotImplementedException();
+//		}
 		
 		public void UpdatePackages(UpdatePackagesAction updateAction)
 		{
 			UpdatePackagesActionsPassedToUpdatePackages = updateAction;
 		}
 		
-		public List<PackageOperation> PackageOperationsToReturnFromGetUpdatePackageOperations = new List<PackageOperation>();
+		public List<PackageAction> PackageOperationsToReturnFromGetUpdatePackageOperations = new List<PackageAction>();
 		public IUpdatePackageSettings SettingsPassedToGetUpdatePackageOperations;
 		public IEnumerable<IPackage> PackagesPassedToGetUpdatePackageOperations;
 		
-		public IEnumerable<PackageOperation> GetUpdatePackageOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings)
+		public IEnumerable<PackageAction> GetUpdatePackageOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings)
 		{
 			SettingsPassedToGetUpdatePackageOperations = settings;
 			PackagesPassedToGetUpdatePackageOperations = packages;
 			return PackageOperationsToReturnFromGetUpdatePackageOperations;
 		}
 		
-		public List<PackageOperation> PackageOperationsPassedToRunPackageOperations;
+		public List<PackageAction> PackageOperationsPassedToRunPackageOperations;
 		
-		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
+		public void RunPackageOperations(IEnumerable<PackageAction> operations)
 		{
 			PackageOperationsPassedToRunPackageOperations = operations.ToList();
 		}
@@ -208,12 +209,12 @@ namespace ICSharpCode.PackageManagement.Design
 			PackagePassedToUpdatePackageReference = package;
 			SettingsPassedToUpdatePackageReference = settings;
 		}
-		
-		public void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions, bool ignoreWalkInfo)
-		{
-			throw new NotImplementedException();
-		}
-		
+//		
+//		public void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions, bool ignoreWalkInfo)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
 		public DependencyVersion DependencyVersion {
 			get {
 				throw new NotImplementedException();
@@ -222,14 +223,45 @@ namespace ICSharpCode.PackageManagement.Design
 				throw new NotImplementedException();
 			}
 		}
+//		
+//		public bool WhatIf {
+//			get {
+//				throw new NotImplementedException();
+//			}
+//			set {
+//				throw new NotImplementedException();
+//			}
+//		}
 		
-		public bool WhatIf {
+		// NuGet 3.0 - follows
+		
+		public bool BindingRedirectEnabled {
 			get {
 				throw new NotImplementedException();
 			}
 			set {
 				throw new NotImplementedException();
 			}
+		}
+		
+		public void Execute(PackageOperation operation)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool IsProjectLevel(IPackage package)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void AddBindingRedirects(IProjectManager projectManager)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public IPackage LocatePackageToUninstall(IProjectManager projectManager, string id, SemanticVersion version)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

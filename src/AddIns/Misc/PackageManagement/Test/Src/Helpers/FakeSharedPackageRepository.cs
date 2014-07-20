@@ -58,5 +58,20 @@ namespace PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException();
 		}
+		
+		public void RegisterRepository(PackageReferenceFile packageReferenceFile)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UnregisterRepository(PackageReferenceFile packageReferenceFile)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public IEnumerable<IPackageRepository> LoadProjectRepositories()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -36,7 +37,7 @@ namespace ICSharpCode.PackageManagement
 		public bool UpdateDependencies { get; set; }
 		public bool UpdateIfPackageDoesNotExistInProject { get; set; }
 		
-		protected override IEnumerable<PackageOperation> GetPackageOperations()
+		protected override IEnumerable<PackageAction> GetPackageOperations()
 		{
 			var installAction = Project.CreateInstallPackageAction();
 			installAction.AllowPrereleaseVersions = AllowPrereleaseVersions;

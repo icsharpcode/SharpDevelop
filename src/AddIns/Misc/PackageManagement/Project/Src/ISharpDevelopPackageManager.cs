@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -30,11 +31,11 @@ namespace ICSharpCode.PackageManagement
 		void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction);
 		void UpdatePackage(IPackage package, UpdatePackageAction updateAction);
 		void UpdatePackages(UpdatePackagesAction updateAction);
-		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings);
+		//void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings);
 		
-		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
-		IEnumerable<PackageOperation> GetUpdatePackageOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings);
+		IEnumerable<PackageAction> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
+		IEnumerable<PackageAction> GetUpdatePackageOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings);
 		
-		void RunPackageOperations(IEnumerable<PackageOperation> operations);
+		void RunPackageOperations(IEnumerable<PackageAction> operations);
 	}
 }

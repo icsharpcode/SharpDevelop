@@ -20,22 +20,23 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace PackageManagement.Tests.Helpers
 {
 	public static class PackageOperationHelper
 	{
-		public static PackageOperation CreateInstallOperationWithFile(string fileName)
+		public static PackageAction CreateInstallOperationWithFile(string fileName)
 		{
 			var package = new FakePackage();
 			package.AddFile(fileName);
 			
-			return new PackageOperation(package, PackageAction.Install);
+			return new FakePackageAction(package, PackageActionType.Install);
 		}
 		
-		public static List<PackageOperation> CreateListWithOneInstallOperationWithFile(string fileName)
+		public static List<PackageAction> CreateListWithOneInstallOperationWithFile(string fileName)
 		{
-			PackageOperation operation = CreateInstallOperationWithFile(fileName);
+			PackageAction operation = CreateInstallOperationWithFile(fileName);
 			var operations = new List<PackageOperation>();
 			operations.Add(operation);
 			return operations;

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -35,7 +36,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool IgnoreDependencies { get; set; }
 		
-		protected override IEnumerable<PackageOperation> GetPackageOperations()
+		protected override IEnumerable<PackageAction> GetPackageOperations()
 		{
 			return Project.GetInstallPackageOperations(Package, this);
 		}

@@ -19,14 +19,15 @@
 using System;
 using System.Collections.Generic;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class PackageFilesForOperations
 	{
-		IEnumerable<PackageOperation> operations;
+		IEnumerable<PackageAction> operations;
 		
-		public PackageFilesForOperations(IEnumerable<PackageOperation> operations)
+		public PackageFilesForOperations(IEnumerable<PackageAction> operations)
 		{
 			this.operations = operations;
 		}
@@ -43,7 +44,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<PackageFiles> GetPackageFilesForEachOperation()
 		{
-			foreach (PackageOperation operation in operations) {
+			foreach (PackageAction operation in operations) {
 				yield return new PackageFiles(operation.Package);
 			}
 		}

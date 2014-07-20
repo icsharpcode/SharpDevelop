@@ -23,6 +23,8 @@ using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NuGet;
+using NuGet.Resolver;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement.Design
 {
@@ -79,7 +81,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public bool IgnoreDependenciesPassedToGetInstallPackageOperations;
 		public bool AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
 		
-		public virtual IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
+		public virtual IEnumerable<PackageAction> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
 			PackagePassedToGetInstallPackageOperations = package;
 			IgnoreDependenciesPassedToGetInstallPackageOperations = installAction.IgnoreDependencies;
@@ -91,7 +93,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public ILogger Logger { get; set; }
 		
 		public IPackage PackagePassedToInstallPackage;
-		public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
+		public IEnumerable<PackageAction> PackageOperationsPassedToInstallPackage;
 		public bool IgnoreDependenciesPassedToInstallPackage;
 		public bool AllowPrereleaseVersionsPassedToInstallPackage;
 		
@@ -106,7 +108,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public FakePackageOperation AddFakeInstallOperation()
 		{
 			var package = new FakePackage("MyPackage");
-			var operation = new FakePackageOperation(package, PackageAction.Install);
+			var operation = new FakePackageOperation(package, PackageActionType.Install);
 			FakeInstallOperations.Add(operation);
 			return operation;
 		}
@@ -114,7 +116,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public FakePackageOperation AddFakeUninstallOperation()
 		{
 			var package = new FakePackage("MyPackage");
-			var operation = new FakePackageOperation(package, PackageAction.Uninstall);
+			var operation = new FakePackageOperation(package, PackageActionType.Uninstall);
 			FakeInstallOperations.Add(operation);
 			return operation;
 		}
@@ -137,7 +139,7 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public IPackage PackagePassedToUpdatePackage;
-		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
+		public IEnumerable<PackageAction> PackageOperationsPassedToUpdatePackage;
 		public bool UpdateDependenciesPassedToUpdatePackage;
 		public bool AllowPrereleaseVersionsPassedToUpdatePackage;
 		public bool IsUpdatePackageCalled;
@@ -249,10 +251,10 @@ namespace ICSharpCode.PackageManagement.Design
 		public UpdatePackagesAction UpdatePackagesActionPassedToGetUpdatePackagesOperations;
 		public IUpdatePackageSettings SettingsPassedToGetUpdatePackagesOperations;
 		public List<IPackage> PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations;
-		public List<PackageOperation> PackageOperationsToReturnFromGetUpdatePackagesOperations =
-			new List<PackageOperation>();
+		public List<PackageAction> PackageOperationsToReturnFromGetUpdatePackagesOperations =
+			new List<PackageAction>();
 		
-		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
+		public IEnumerable<PackageAction> GetUpdatePackagesOperations(
 			IEnumerable<IPackage> packages,
 			IUpdatePackageSettings settings)
 		{
@@ -261,7 +263,7 @@ namespace ICSharpCode.PackageManagement.Design
 			return PackageOperationsToReturnFromGetUpdatePackagesOperations;
 		}
 		
-		public void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations)
+		public void RunPackageOperations(IEnumerable<PackageAction> expectedOperations)
 		{
 		}
 		

@@ -24,17 +24,22 @@ namespace ICSharpCode.PackageManagement
 	public class SharpDevelopProjectManager : ProjectManager, ISharpDevelopProjectManager
 	{
 		public SharpDevelopProjectManager(
-			IPackageRepository sourceRepository,
+			IPackageManager packageManager,
 			IPackagePathResolver pathResolver,
 			IProjectSystem project,
 			IPackageRepository localRepository)
-			: base(sourceRepository, pathResolver, project, localRepository)
+			: base(packageManager, pathResolver, project, localRepository)
 		{
 		}
 		
 		public bool IsInstalled(string packageId)
 		{
 			return LocalRepository.Exists(packageId);
+		}
+		
+		public bool IsInstalled(IPackage package)
+		{
+			return LocalRepository.Exists(package);
 		}
 		
 		public bool HasOlderPackageInstalled(IPackage package)

@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement.Design
 			throw new NotImplementedException();
 		}
 		
-		public void AddReference(string referencePath, Stream stream)
+		public void AddReference(string referencePath)
 		{
 			throw new NotImplementedException();
 		}

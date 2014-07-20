@@ -18,18 +18,20 @@
 
 using System;
 using NuGet;
+using NuGet.Resolver;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement.Design
 {
-	public class FakePackageOperation : PackageOperation
+	public class FakePackageOperation : PackageAction
 	{
 		public FakePackageOperation()
-			: this(new FakePackage("MyPackage"), PackageAction.Install)
+			: this(new FakePackage("MyPackage"), PackageActionType.Install)
 		{
 		}
 		
-		public FakePackageOperation(FakePackage package, PackageAction action)
-			: base(package, action)
+		public FakePackageOperation(FakePackage package, PackageActionType action)
+			: base(action, package)
 		{
 			this.FakePackage = package;
 		}

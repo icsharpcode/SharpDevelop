@@ -22,6 +22,7 @@ using System.Linq;
 
 using ICSharpCode.PackageManagement.EnvDTE;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -45,21 +46,21 @@ namespace ICSharpCode.PackageManagement
 		IQueryable<IPackage> GetPackages();
 		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		
-		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
-		IEnumerable<PackageOperation> GetUpdatePackagesOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings);
+		IEnumerable<PackageAction> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
+		IEnumerable<PackageAction> GetUpdatePackagesOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings);
 		
 		void InstallPackage(IPackage package, InstallPackageAction installAction);
 		void UpdatePackage(IPackage package, UpdatePackageAction updateAction);
 		void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction);
 		void UpdatePackages(UpdatePackagesAction action);
 		
-		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings);
+//		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings);
 		
 		InstallPackageAction CreateInstallPackageAction();
 		UninstallPackageAction CreateUninstallPackageAction();
 		UpdatePackageAction CreateUpdatePackageAction();
 		UpdatePackagesAction CreateUpdatePackagesAction();
 		
-		void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations);
+		void RunPackageOperations(IEnumerable<PackageAction> expectedOperations);
 	}
 }

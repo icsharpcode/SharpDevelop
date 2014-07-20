@@ -44,49 +44,49 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public TestableProjectManager()
-			: base(new FakePackageRepository(),
+			: base(new FakePackageManager(),
 				new FakePackagePathResolver(),
 				new FakeProjectSystem(),
 				new FakePackageRepository())
 		{
 		}
 		
-		public override void AddPackageReference(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
-		{
-			var package = new FakePackage();
-			package.Id = packageId;
-			package.Version = version;
-			PackagePassedToAddPackageReference = package;
-			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
-			AllowPrereleaseVersionsPassedToAddPackageReference = allowPrereleaseVersions;
-		}
+//		public override void AddPackageReference(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
+//		{
+//			var package = new FakePackage();
+//			package.Id = packageId;
+//			package.Version = version;
+//			PackagePassedToAddPackageReference = package;
+//			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
+//			AllowPrereleaseVersionsPassedToAddPackageReference = allowPrereleaseVersions;
+//		}
 		
-		public override void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
-		{
-			PackagePassedToAddPackageReference = package;
-			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
-			AllowPrereleaseVersionsPassedToAddPackageReference = allowPrereleaseVersions;
-		}
+//		public override void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+//		{
+//			PackagePassedToAddPackageReference = package;
+//			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
+//			AllowPrereleaseVersionsPassedToAddPackageReference = allowPrereleaseVersions;
+//		}
 		
-		public override void RemovePackageReference(IPackage package, bool force, bool removeDependencies)
-		{
-			PackagePassedToRemovePackageReference = package;
-			ForcePassedToRemovePackageReference = force;
-			RemoveDependenciesPassedToRemovePackageReference = removeDependencies;
-		}
-		
-		public override void UpdatePackageReference(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
-		{
-			var package = new FakePackage();
-			package.Id = packageId;
-			package.Version = version;
-			
-			PackagePassedToUpdatePackageReference = package;
-			UpdateDependenciesPassedToUpdatePackageReference = updateDependencies;
-			AllowPrereleaseVersionsPassedToUpdatePackageReference = allowPrereleaseVersions;
-			
-			PackagesPassedToUpdatePackageReference.Add(package);
-		}
+//		public override void RemovePackageReference(IPackage package, bool force, bool removeDependencies)
+//		{
+//			PackagePassedToRemovePackageReference = package;
+//			ForcePassedToRemovePackageReference = force;
+//			RemoveDependenciesPassedToRemovePackageReference = removeDependencies;
+//		}
+//		
+//		public override void UpdatePackageReference(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
+//		{
+//			var package = new FakePackage();
+//			package.Id = packageId;
+//			package.Version = version;
+//			
+//			PackagePassedToUpdatePackageReference = package;
+//			UpdateDependenciesPassedToUpdatePackageReference = updateDependencies;
+//			AllowPrereleaseVersionsPassedToUpdatePackageReference = allowPrereleaseVersions;
+//			
+//			PackagesPassedToUpdatePackageReference.Add(package);
+//		}
 		
 		public FakePackage AddFakePackageToProjectLocalRepository(string packageId, string version)
 		{

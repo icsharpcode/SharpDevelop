@@ -21,13 +21,14 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class UpdateSolutionPackagesAction : IUpdatePackagesAction
 	{
 		List<IPackageFromRepository> packages = new List<IPackageFromRepository>();
-		List<PackageOperation> operations = new List<PackageOperation>();
+		List<PackageAction> operations = new List<PackageAction>();
 		List<IPackageManagementProject> projects;
 		IPackageManagementEvents packageManagementEvents;
 		
@@ -46,7 +47,7 @@ namespace ICSharpCode.PackageManagement
 		public bool AllowPrereleaseVersions { get; set; }
 		public ILogger Logger { get; set; }
 		
-		public IEnumerable<PackageOperation> Operations {
+		public IEnumerable<PackageAction> Operations {
 			get { return operations; }
 		}
 		
@@ -60,7 +61,7 @@ namespace ICSharpCode.PackageManagement
 			return files.HasAnyPackageScripts();
 		}
 		
-		public void AddOperations(IEnumerable<PackageOperation> operations)
+		public void AddOperations(IEnumerable<PackageAction> operations)
 		{
 			this.operations.AddRange(operations);
 		}
@@ -94,7 +95,7 @@ namespace ICSharpCode.PackageManagement
 		void ExecuteCore()
 		{
 			RunPackageOperations();
-			UpdatePackageReferences();
+			//UpdatePackageReferences();
 			packageManagementEvents.OnParentPackagesUpdated(Packages);
 		}
 		
@@ -119,16 +120,16 @@ namespace ICSharpCode.PackageManagement
 			return projects;
 		}
 		
-		void UpdatePackageReferences()
-		{
-			foreach (IPackageManagementProject project in GetProjects()) {
-				foreach (IPackageFromRepository package in packages) {
-					if (project.HasOlderPackageInstalled(package)) {
-						project.UpdatePackageReference(package, this);
-					}
-				}
-			}
-		}
+//		void UpdatePackageReferences()
+//		{
+//			foreach (IPackageManagementProject project in GetProjects()) {
+//				foreach (IPackageFromRepository package in packages) {
+//					if (project.HasOlderPackageInstalled(package)) {
+//						project.UpdatePackageReference(package, this);
+//					}
+//				}
+//			}
+//		}
 		
 		protected virtual RunAllProjectPackageScriptsAction CreateRunPackageScriptsAction(
 			IPackageScriptRunner scriptRunner,

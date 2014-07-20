@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -43,7 +44,7 @@ namespace PackageManagement.Tests.Helpers
 			throw ExceptionToThrowWhenCreateUninstallPackageActionCalled;
 		}
 		
-		public override IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
+		public override IEnumerable<PackageAction> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
 			if (ExceptionToThrowWhenGetInstallPackageOperationsCalled != null) {
 				throw ExceptionToThrowWhenGetInstallPackageOperationsCalled;

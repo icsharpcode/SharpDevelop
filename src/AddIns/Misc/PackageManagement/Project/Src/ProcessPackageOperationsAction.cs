@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -31,7 +32,7 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public IEnumerable<PackageOperation> Operations { get; set; }
+		public IEnumerable<PackageAction> Operations { get; set; }
 
 		public override bool HasPackageScriptsToRun()
 		{
@@ -53,7 +54,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		protected virtual IEnumerable<PackageOperation> GetPackageOperations()
+		protected virtual IEnumerable<PackageAction> GetPackageOperations()
 		{
 			return null;
 		}

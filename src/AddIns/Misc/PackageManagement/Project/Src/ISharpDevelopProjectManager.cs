@@ -25,6 +25,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackagePathResolver PathResolver { get; }
 		bool IsInstalled(string packageId);
+		bool IsInstalled(IPackage package);
 		bool HasOlderPackageInstalled(IPackage package);
 	}
 }

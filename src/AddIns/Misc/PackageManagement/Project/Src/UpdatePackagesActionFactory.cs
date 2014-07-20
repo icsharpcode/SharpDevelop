@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -53,13 +54,13 @@ namespace ICSharpCode.PackageManagement
 			action.AddPackages(packages);
 			action.Logger = logger;
 			
-			IEnumerable<PackageOperation> operations = GetPackageOperations(action);
+			IEnumerable<PackageAction> operations = GetPackageOperations(action);
 			action.AddOperations(operations);
 			
 			return action;
 		}
 		
-		IEnumerable<PackageOperation> GetPackageOperations(IUpdatePackagesAction action)
+		IEnumerable<PackageAction> GetPackageOperations(IUpdatePackagesAction action)
 		{
 			return project.GetUpdatePackagesOperations(packages, action);
 		}

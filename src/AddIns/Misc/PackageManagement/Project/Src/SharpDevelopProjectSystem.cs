@@ -81,7 +81,7 @@ namespace ICSharpCode.PackageManagement
 			return project.GetEvaluatedProperty(propertyName);
 		}
 		
-		public void AddReference(string referencePath, Stream stream)
+		public void AddReference(string referencePath)
 		{
 			ReferenceProjectItem assemblyReference = CreateReference(referencePath);
 			AddReferenceToProject(assemblyReference);

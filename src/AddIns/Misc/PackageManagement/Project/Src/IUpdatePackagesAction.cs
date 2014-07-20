@@ -19,15 +19,16 @@
 using System;
 using System.Collections.Generic;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
 	public interface IUpdatePackagesAction : IPackageAction, IUpdatePackageSettings
 	{
-		IEnumerable<PackageOperation> Operations { get; }
+		IEnumerable<PackageAction> Operations { get; }
 		ILogger Logger { get; set; }
 		
 		void AddPackages(IEnumerable<IPackageFromRepository> packages);
-		void AddOperations(IEnumerable<PackageOperation> operations);
+		void AddOperations(IEnumerable<PackageAction> operations);
 	}
 }

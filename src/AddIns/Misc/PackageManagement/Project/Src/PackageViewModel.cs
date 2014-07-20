@@ -22,6 +22,8 @@ using System.Linq;
 using System.Windows.Input;
 using ICSharpCode.PackageManagement;
 using NuGet;
+using NuGet.Resolver;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -34,7 +36,7 @@ namespace ICSharpCode.PackageManagement
 		PackageManagementSelectedProjects selectedProjects;
 		IPackageManagementEvents packageManagementEvents;
 		IPackageFromRepository package;
-		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
+		IEnumerable<PackageAction> packageOperations = new PackageAction[0];
 		PackageViewModelOperationLogger logger;
 		readonly IPackageActionRunner actionRunner;
 		IPackageViewModelParent parent;
@@ -267,7 +269,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void GetInstallOperationsForSelectedProjects(IEnumerable<IPackageManagementSelectedProject> projects)
 		{
-			packageOperations = new PackageOperation[0];
+			packageOperations = new PackageAction[0];
 			
 			IPackageManagementSelectedProject firstSelectedProject = projects.FirstOrDefault(project => project.IsSelected);
 			
@@ -297,8 +299,8 @@ namespace ICSharpCode.PackageManagement
 		IList<IPackage> GetPackagesToBeInstalled()
 		{
 			var packages = new List<IPackage>();
-			foreach (PackageOperation operation in packageOperations) {
-				if (operation.Action == PackageAction.Install) {
+			foreach (PackageAction operation in packageOperations) {
+				if (operation.ActionType == PackageActionType.Install) {
 					packages.Add(operation.Package);
 				}
 			}
@@ -342,13 +344,20 @@ namespace ICSharpCode.PackageManagement
 			InstallPackageAction installAction,
 			IPackageFromRepository installPackage)
 		{
-			var resolverFactory = new PackageOperationsResolverFactory();
-			var resolver = resolverFactory.CreateInstallPackageOperationResolver(
-				solutionRepository.Repository, 
-				installPackage.Repository, 
-				logger, 
-				installAction);
-			packageOperations = resolver.ResolveOperations(installPackage);
+			var resolver = new ActionResolver {
+				Logger = logger,
+				IgnoreDependencies = installAction.IgnoreDependencies,
+				DependencyVersion = DependencyVersion.Lowest,
+				AllowPrereleaseVersions = installAction.AllowPrereleaseVersions
+			};
+			resolver.AddOperation(NuGet.PackageAction.Install, package, null);
+//			var resolverFactory = new PackageOperationsResolverFactory();
+//			var resolver = resolverFactory.CreateInstallPackageOperationResolver(
+//				solutionRepository.Repository, 
+//				installPackage.Repository, 
+//				logger, 
+//				installAction);
+//			packageOperations = resolver.ResolveOperations(installPackage);
 		}
 
 		void InstallPackageIntoSolution(
@@ -356,17 +365,17 @@ namespace ICSharpCode.PackageManagement
 			InstallPackageAction installAction,
 			IPackageFromRepository installPackage)
 		{
-			var packageManager = new PackageManager(
-				installPackage.Repository, 
-				solutionRepository.PackagePathResolver, 
-				solutionRepository.FileSystem, 
-				solutionRepository.Repository);
-			
-			packageManager.InstallPackage(
-				installPackage.Id, 
-				installPackage.Version, 
-				installAction.IgnoreDependencies, 
-				installAction.AllowPrereleaseVersions);
+//			var packageManager = new PackageManager(
+//				installPackage.Repository, 
+//				solutionRepository.PackagePathResolver, 
+//				solutionRepository.FileSystem, 
+//				solutionRepository.Repository);
+//			
+//			packageManager.InstallPackage(
+//				installPackage.Id, 
+//				installPackage.Version, 
+//				installAction.IgnoreDependencies, 
+//				installAction.AllowPrereleaseVersions);
 		}
 
 		protected virtual void TryUpdatingPackageInSolution()
@@ -400,13 +409,13 @@ namespace ICSharpCode.PackageManagement
 			UpdatePackageAction updateAction,
 			IPackageFromRepository updatePackage)
 		{
-			var resolverFactory = new PackageOperationsResolverFactory();
-			var resolver = resolverFactory.CreateUpdatePackageOperationResolver(
-				solutionRepository.Repository, 
-				updatePackage.Repository, 
-				logger, 
-				updateAction);
-			packageOperations = resolver.ResolveOperations(updatePackage);
+//			var resolverFactory = new PackageOperationsResolverFactory();
+//			var resolver = resolverFactory.CreateUpdatePackageOperationResolver(
+//				solutionRepository.Repository, 
+//				updatePackage.Repository, 
+//				logger, 
+//				updateAction);
+//			packageOperations = resolver.ResolveOperations(updatePackage);
 		}
 
 		void UpdateSolutionLevelPackage(
@@ -414,16 +423,16 @@ namespace ICSharpCode.PackageManagement
 			UpdatePackageAction updateAction,
 			IPackageFromRepository updatePackage)
 		{
-			var packageManager = new PackageManager(
-				updatePackage.Repository, 
-				solutionRepository.PackagePathResolver, 
-				solutionRepository.FileSystem, 
-				solutionRepository.Repository);
-			
-			packageManager.UpdatePackage(
-				updatePackage.Id, 
-				updateAction.UpdateDependencies, 
-				updateAction.AllowPrereleaseVersions);
+//			var packageManager = new PackageManager(
+//				updatePackage.Repository, 
+//				solutionRepository.PackagePathResolver, 
+//				solutionRepository.FileSystem, 
+//				solutionRepository.Repository);
+//			
+//			packageManager.UpdatePackage(
+//				updatePackage.Id, 
+//				updateAction.UpdateDependencies, 
+//				updateAction.AllowPrereleaseVersions);
 		}
 
 		void TryInstallingPackageIntoProject()
@@ -444,7 +453,7 @@ namespace ICSharpCode.PackageManagement
 			InstallPackageIntoProject(packageOperations);
 		}
 		
-		void InstallPackageIntoProject(IEnumerable<PackageOperation> installOperations)
+		void InstallPackageIntoProject(IEnumerable<PackageAction> installOperations)
 		{
 			IPackageManagementProject project = GetSingleProjectSelected();
 			ProcessPackageOperationsAction action = CreateInstallPackageAction(project);
@@ -505,17 +514,18 @@ namespace ICSharpCode.PackageManagement
 		protected void TryUninstallingPackageFromSolution(IPackage removePackage)
 		{
 			try {
-				var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
-				var packageManager = new PackageManager(
-					solutionPackageRepository.Repository, 
-					solutionPackageRepository.PackagePathResolver, 
-					solutionPackageRepository.FileSystem);
-				
-				packageManager.UninstallPackage(removePackage);
-				
-				solutionPackageRepository.Repository.RemovePackage(removePackage);
-				
-				packageManagementEvents.OnParentPackageUninstalled(removePackage);
+				throw new NotImplementedException("UninstallingPackageFromSolution");
+//				var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
+//				var packageManager = new PackageManager(
+//					solutionPackageRepository.Repository, 
+//					solutionPackageRepository.PackagePathResolver, 
+//					solutionPackageRepository.FileSystem);
+//				
+//				packageManager.UninstallPackage(removePackage);
+//				
+//				solutionPackageRepository.Repository.RemovePackage(removePackage);
+//				
+//				packageManagementEvents.OnParentPackageUninstalled(removePackage);
 				
 			} catch (Exception ex) {
 				ReportError(ex);

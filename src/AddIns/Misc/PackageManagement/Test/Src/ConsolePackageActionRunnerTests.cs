@@ -23,6 +23,7 @@ using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -51,7 +52,7 @@ namespace PackageManagement.Tests
 		{
 			var project = new FakePackageManagementProject();
 			var action = new FakeInstallPackageAction(project);
-			action.Operations = new PackageOperation[0];
+			action.Operations = new PackageAction[0];
 			return action;
 		}
 		

@@ -23,22 +23,22 @@ namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakeProjectManager : ISharpDevelopProjectManager
 	{
-		public FakePackageRepository FakeLocalRepository {
-			get { return LocalRepository as FakePackageRepository; }
-			set { LocalRepository = value; }
-		}
-		
-		public FakePackageRepository FakeSourceRepository {
-			get { return SourceRepository as FakePackageRepository; }
-			set { SourceRepository = value; }
-		}
-		
+//		public FakePackageRepository FakeLocalRepository {
+//			get { return LocalRepository as FakePackageRepository; }
+//			set { LocalRepository = value; }
+//		}
+//		
+//		public FakePackageRepository FakeSourceRepository {
+//			get { return SourceRepository as FakePackageRepository; }
+//			set { SourceRepository = value; }
+//		}
+//		
 		public bool IsInstalledReturnValue;
 		
 		public FakeProjectManager()
 		{
-			LocalRepository = new FakePackageRepository();
-			SourceRepository = new FakePackageRepository();
+//			LocalRepository = new FakePackageRepository();
+//			SourceRepository = new FakePackageRepository();
 		}
 		
 		public event EventHandler<PackageOperationEventArgs> PackageReferenceAdded;
@@ -66,7 +66,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IPackageRepository LocalRepository { get; set; }
 		public ILogger Logger { get; set; }
-		public IPackageRepository SourceRepository { get; set; }
+//		public IPackageRepository SourceRepository { get; set; }
 		public IPackagePathResolver PathResolver { get; set; }
 
 		public IProjectSystem Project {
@@ -76,11 +76,11 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public FakeProjectSystem FakeProjectSystem = new FakeProjectSystem();
 		
-		public void RemovePackageReference(string packageId, bool forceRemove, bool removeDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
+//		public void RemovePackageReference(string packageId, bool forceRemove, bool removeDependencies)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
 		public IPackage PackagePassedToIsInstalled;
 		
 		public bool IsInstalled(IPackage package)
@@ -88,14 +88,14 @@ namespace ICSharpCode.PackageManagement.Design
 			PackagePassedToIsInstalled = package;
 			return IsInstalledReturnValue;
 		}
-		
-		public string PackageIdPassedToIsInstalled;
-		
-		public bool IsInstalled(string packageId)
-		{
-			PackageIdPassedToIsInstalled = packageId;
-			return IsInstalledReturnValue;
-		}
+//		
+//		public string PackageIdPassedToIsInstalled;
+//		
+//		public bool IsInstalled(string packageId)
+//		{
+//			PackageIdPassedToIsInstalled = packageId;
+//			return IsInstalledReturnValue;
+//		}
 		
 		public void FirePackageReferenceAdded(IPackage package)
 		{
@@ -106,32 +106,32 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			OnPackageReferenceRemoving(package);
 		}
-		
-		public void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void RemovePackageReference(IPackage package, bool forceRemove, bool removeDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void AddPackageReference(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UpdatePackageReference(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UpdatePackageReference(string packageId, IVersionSpec versionSpec, bool updateDependencies, bool allowPrereleaseVersions)
-		{
-			throw new NotImplementedException();
-		}
-		
+//		
+//		public void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void RemovePackageReference(IPackage package, bool forceRemove, bool removeDependencies)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void AddPackageReference(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void UpdatePackageReference(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
+//		public void UpdatePackageReference(string packageId, IVersionSpec versionSpec, bool updateDependencies, bool allowPrereleaseVersions)
+//		{
+//			throw new NotImplementedException();
+//		}
+//		
 		public IPackage PackagePassedToHasOlderPackageInstalled;
 		public bool HasOlderPackageInstalledReturnValue;
 		
@@ -140,8 +140,39 @@ namespace ICSharpCode.PackageManagement.Design
 			PackagePassedToHasOlderPackageInstalled = package;
 			return HasOlderPackageInstalledReturnValue;
 		}
+//		
+//		public DependencyVersion DependencyVersion {
+//			get {
+//				throw new NotImplementedException();
+//			}
+//			set {
+//				throw new NotImplementedException();
+//			}
+//		}
+//		
+//		public bool WhatIf {
+//			get {
+//				throw new NotImplementedException();
+//			}
+//			set {
+//				throw new NotImplementedException();
+//			}
+//		}
+//		
+//		public void UpdatePackageReference(IPackage remotePackage, bool updateDependencies, bool allowPrereleaseVersions)
+//		{
+//			throw new NotImplementedException();
+//		}
 		
-		public DependencyVersion DependencyVersion {
+		// NuGet 3.0 - follows
+		
+		public IPackageManager PackageManager {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IPackageConstraintProvider ConstraintProvider {
 			get {
 				throw new NotImplementedException();
 			}
@@ -150,16 +181,12 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public bool WhatIf {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
+		public bool IsInstalled(string packageId)
+		{
+			throw new NotImplementedException();
 		}
 		
-		public void UpdatePackageReference(IPackage remotePackage, bool updateDependencies, bool allowPrereleaseVersions)
+		public void Execute(PackageOperation operation)
 		{
 			throw new NotImplementedException();
 		}

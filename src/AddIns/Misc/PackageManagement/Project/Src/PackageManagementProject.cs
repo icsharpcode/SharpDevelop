@@ -23,6 +23,7 @@ using System.Linq;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -99,7 +100,7 @@ namespace ICSharpCode.PackageManagement
 			return projectManager.LocalRepository.GetPackages();
 		}
 		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
+		public IEnumerable<PackageAction> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
 			return packageManager.GetInstallPackageOperations(package, installAction);
 		}
@@ -157,14 +158,14 @@ namespace ICSharpCode.PackageManagement
 			return new UpdatePackagesAction(this, packageManagementEvents);
 		}
 		
-		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
+		public IEnumerable<PackageAction> GetUpdatePackagesOperations(
 			IEnumerable<IPackage> packages,
 			IUpdatePackageSettings settings)
 		{
 			return packageManager.GetUpdatePackageOperations(packages, settings);
 		}
 		
-		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
+		public void RunPackageOperations(IEnumerable<PackageAction> operations)
 		{
 			packageManager.RunPackageOperations(operations);
 		}
@@ -173,10 +174,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			return projectManager.HasOlderPackageInstalled(package);
 		}
-		
-		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
-		{
-			packageManager.UpdatePackageReference(package, settings);
-		}
+//		
+//		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
+//		{
+//			packageManager.UpdatePackageReference(package, settings);
+//		}
 	}
 }

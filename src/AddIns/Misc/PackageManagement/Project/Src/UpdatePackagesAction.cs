@@ -20,13 +20,14 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
+using PackageAction = NuGet.Resolver.PackageAction;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class UpdatePackagesAction : IUpdatePackagesAction
 	{
 		List<IPackage> packages = new List<IPackage>();
-		List<PackageOperation> operations = new List<PackageOperation>();
+		List<PackageAction> operations = new List<PackageAction>();
 		IPackageManagementEvents packageManagementEvents;
 		
 		public UpdatePackagesAction(
@@ -45,7 +46,7 @@ namespace ICSharpCode.PackageManagement
 			get { return packages; }
 		}
 		
-		public IEnumerable<PackageOperation> Operations {
+		public IEnumerable<PackageAction> Operations {
 			get { return operations; }
 		}
 		
@@ -59,7 +60,7 @@ namespace ICSharpCode.PackageManagement
 			return files.HasAnyPackageScripts();
 		}
 		
-		public void AddOperations(IEnumerable<PackageOperation> operations)
+		public void AddOperations(IEnumerable<PackageAction> operations)
 		{
 			this.operations.AddRange(operations);
 		}
