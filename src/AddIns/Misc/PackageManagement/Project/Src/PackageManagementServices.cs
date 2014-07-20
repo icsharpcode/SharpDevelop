@@ -19,6 +19,7 @@
 using System;
 using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
+using NuGet.ShimV3;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -38,6 +39,7 @@ namespace ICSharpCode.PackageManagement
 		static readonly PackageActionRunner packageActionRunner;
 		static readonly PackageRepositoryCache packageRepositoryCache;
 		static readonly UserAgentGeneratorForRepositoryRequests userAgentGenerator;
+		static readonly ShimControllerProvider shimControllerProvider;
 		
 		static PackageManagementServices()
 		{
@@ -56,6 +58,7 @@ namespace ICSharpCode.PackageManagement
 			var consolePackageActionRunner = new ConsolePackageActionRunner(ConsoleHost, packageActionsToRun);
 			packageActionRunner = new PackageActionRunner(consolePackageActionRunner, packageManagementEvents);
 			
+			shimControllerProvider = new ShimControllerProvider();
 			InitializeCredentialProvider();
 		}
 		
@@ -66,6 +69,8 @@ namespace ICSharpCode.PackageManagement
 			var credentialProvider = new SettingsCredentialProvider(new SharpDevelopCredentialProvider(), packageSourceProvider);
 			
 			HttpClient.DefaultCredentialProvider = credentialProvider;
+			
+			shimControllerProvider.Controller.Enable(packageSourceProvider);
 		}
 		
 		public static PackageManagementOptions Options {
