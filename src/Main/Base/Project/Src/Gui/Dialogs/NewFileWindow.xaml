@@ -57,10 +57,13 @@
             	>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel>
-                                <Label Content="{Binding DisplayName}" FontWeight="Bold" />
-                                <Label Content="{Binding Description}" />
-                            </StackPanel>
+                        	<StackPanel Orientation="Horizontal">
+	                        	<Image Source="{Binding Picture}" Width="32" />
+                        		<StackPanel>
+	                                <Label Content="{Binding DisplayName}" FontWeight="Bold" />
+	                                <Label Content="{Binding Description}" />
+	                            </StackPanel>
+							</StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

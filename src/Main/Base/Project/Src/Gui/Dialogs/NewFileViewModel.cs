@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Templates;
@@ -102,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Gui
             set;
         }
 
-        public FileTemplateResult Result { get; set; }
+        public FileTemplateResult Result { get;set; }
 
         public string SearchFor
         {
