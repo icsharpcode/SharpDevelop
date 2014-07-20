@@ -55,14 +55,15 @@
                 </StackPanel>
                 <ListBox Grid.Row="1" ItemsSource="{Binding SelectedTemplates}"
             		SelectedItem="{Binding SelectedItem}"
+                	Grid.IsSharedSizeScope="True"
             	>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                        	<Grid HorizontalAlignment="Stretch">
+                        	<Grid >
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column1" />
+                                    <ColumnDefinition SharedSizeGroup="Column2" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Column3" />
                                 </Grid.ColumnDefinitions>
 	                        	<Image Source="{Binding Picture}" Width="32" />
                         		<StackPanel 
@@ -74,8 +75,7 @@
 	                            </StackPanel>
                                 <Label Grid.Column="2"
                                        Foreground="DarkGray"
-                                       HorizontalAlignment="Right"
-                                       
+                                       HorizontalAlignment="Right"                                       
                                        Content="{Binding CategoryDescription}"/>
 							</Grid>
                         </DataTemplate>
