@@ -170,15 +170,6 @@ namespace CSharpBinding
 					settings.ConditionalSymbols.Add(symbol.Trim());
 				}
 			}
-			
-			if (GetBoolProperty("DefineDebug") == true) {
-				settings.ConditionalSymbols.Add("DEBUG");
-			}
-			
-			if (GetBoolProperty("DefineTrace") == true) {
-				settings.ConditionalSymbols.Add("TRACE");
-			}
-			
 			settings.Freeze();
 			compilerSettings = settings;
 			return settings;
