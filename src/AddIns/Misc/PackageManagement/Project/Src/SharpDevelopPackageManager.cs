@@ -230,10 +230,9 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteUninstall(IPackage package)
 		{
-			// Not working...
-//			if (IsPackageReferencedByOtherProjects(package)) {
-//				base.ExecuteUninstall(package);
-//			}
+			if (!IsPackageReferencedByOtherProjects(package)) {
+				base.ExecuteUninstall(package);
+			}
 		}
 	}
 }
