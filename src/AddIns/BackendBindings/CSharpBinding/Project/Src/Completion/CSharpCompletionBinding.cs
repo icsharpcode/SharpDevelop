@@ -127,7 +127,7 @@ namespace CSharpBinding.Completion
 			
 			DefaultCompletionItemList list = new DefaultCompletionItemList();
 			list.Items.AddRange(FilterAndAddTemplates(editor, completionData.Cast<ICompletionItem>().ToList()));
-			if (list.Items.Count > 0) {
+			if (list.Items.Count > 0 && (ctrlSpace || cce.AutoCompleteEmptyMatch)) {
 				list.SortItems();
 				list.PreselectionLength = caretOffset - startPos;
 				list.PostselectionLength = Math.Max(0, startPos + triggerWordLength - caretOffset);
