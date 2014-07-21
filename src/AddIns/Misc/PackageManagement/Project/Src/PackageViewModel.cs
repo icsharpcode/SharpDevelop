@@ -326,7 +326,13 @@ namespace ICSharpCode.PackageManagement
 				installAction.IgnoreDependencies = false;
 				installAction.AllowPrereleaseVersions = parent.IncludePrerelease;
 				
-				GetInstallOperationsForSolutionPackage(solutionRepository, installAction, package);
+				var packageManager = new PackageManager(
+					package.Repository,
+					solutionRepository.PackagePathResolver,
+					solutionRepository.FileSystem,
+					solutionRepository.Repository);
+				
+				GetInstallOperationsForSolutionPackage(packageManager, solutionRepository, installAction, package);
 				
 				if (LicensesAccepted()) {
 					InstallPackageIntoSolution(solutionRepository, installAction, package);
@@ -340,6 +346,7 @@ namespace ICSharpCode.PackageManagement
 		}
 
 		void GetInstallOperationsForSolutionPackage(
+			IPackageManager packageManager,
 			ISolutionPackageRepository solutionRepository, 
 			InstallPackageAction installAction,
 			IPackageFromRepository installPackage)
@@ -350,14 +357,15 @@ namespace ICSharpCode.PackageManagement
 				DependencyVersion = DependencyVersion.Lowest,
 				AllowPrereleaseVersions = installAction.AllowPrereleaseVersions
 			};
-			resolver.AddOperation(NuGet.PackageAction.Install, package, null);
+			var projectManager = new NullProjectManager(packageManager);
+			resolver.AddOperation(NuGet.PackageAction.Install, package, projectManager);
 //			var resolverFactory = new PackageOperationsResolverFactory();
 //			var resolver = resolverFactory.CreateInstallPackageOperationResolver(
 //				solutionRepository.Repository, 
 //				installPackage.Repository, 
 //				logger, 
 //				installAction);
-//			packageOperations = resolver.ResolveOperations(installPackage);
+			packageOperations = resolver.ResolveActions();
 		}
 
 		void InstallPackageIntoSolution(
@@ -365,17 +373,10 @@ namespace ICSharpCode.PackageManagement
 			InstallPackageAction installAction,
 			IPackageFromRepository installPackage)
 		{
-//			var packageManager = new PackageManager(
-//				installPackage.Repository, 
-//				solutionRepository.PackagePathResolver, 
-//				solutionRepository.FileSystem, 
-//				solutionRepository.Repository);
-//			
-//			packageManager.InstallPackage(
-//				installPackage.Id, 
-//				installPackage.Version, 
-//				installAction.IgnoreDependencies, 
-//				installAction.AllowPrereleaseVersions);
+			var executor = new ActionExecutor {
+				Logger = logger
+			};
+			executor.Execute(packageOperations);
 		}
 
 		protected virtual void TryUpdatingPackageInSolution()
@@ -386,7 +387,13 @@ namespace ICSharpCode.PackageManagement
 				updateAction.Package = package;
 				updateAction.AllowPrereleaseVersions = parent.IncludePrerelease;
 				
-				GetUpdateOperationsForSolutionPackage(solutionRepository, updateAction, package);
+				var packageManager = new PackageManager(
+					package.Repository,
+					solutionRepository.PackagePathResolver,
+					solutionRepository.FileSystem,
+					solutionRepository.Repository);
+
+				GetUpdateOperationsForSolutionPackage(packageManager, solutionRepository, updateAction, package);
 				
 				if (LicensesAccepted()) {
 					UpdateSolutionLevelPackage(solutionRepository, updateAction, package);
@@ -405,6 +412,7 @@ namespace ICSharpCode.PackageManagement
 		}
 
 		void GetUpdateOperationsForSolutionPackage(
+			IPackageManager packageManager,
 			ISolutionPackageRepository solutionRepository, 
 			UpdatePackageAction updateAction,
 			IPackageFromRepository updatePackage)
@@ -415,20 +423,24 @@ namespace ICSharpCode.PackageManagement
 //				updatePackage.Repository, 
 //				logger, 
 //				updateAction);
-//			packageOperations = resolver.ResolveOperations(updatePackage);
+			var resolver = new ActionResolver {
+				Logger = logger,
+				AllowPrereleaseVersions = updateAction.AllowPrereleaseVersions,
+				IgnoreDependencies = !updateAction.UpdateDependencies
+			};
+			resolver.AddOperation(NuGet.PackageAction.Update, package, new NullProjectManager(packageManager));
+			packageOperations = resolver.ResolveActions();
 		}
 
 		void UpdateSolutionLevelPackage(
-			ISolutionPackageRepository solutionRepository, 
+			ISolutionPackageRepository solutionRepository,
 			UpdatePackageAction updateAction,
 			IPackageFromRepository updatePackage)
 		{
-//			var packageManager = new PackageManager(
-//				updatePackage.Repository, 
-//				solutionRepository.PackagePathResolver, 
-//				solutionRepository.FileSystem, 
-//				solutionRepository.Repository);
-//			
+			var executor = new ActionExecutor {
+				Logger = logger
+			};
+			executor.Execute(packageOperations);
 //			packageManager.UpdatePackage(
 //				updatePackage.Id, 
 //				updateAction.UpdateDependencies, 
@@ -514,18 +526,29 @@ namespace ICSharpCode.PackageManagement
 		protected void TryUninstallingPackageFromSolution(IPackage removePackage)
 		{
 			try {
-				throw new NotImplementedException("UninstallingPackageFromSolution");
-//				var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
-//				var packageManager = new PackageManager(
-//					solutionPackageRepository.Repository, 
-//					solutionPackageRepository.PackagePathResolver, 
-//					solutionPackageRepository.FileSystem);
-//				
+				var solutionPackageRepository = PackageManagementServices.Solution.CreateSolutionPackageRepository();
+				var packageManager = new PackageManager(
+					solutionPackageRepository.Repository,
+					solutionPackageRepository.PackagePathResolver,
+					solutionPackageRepository.FileSystem);
+				
+				var resolver = new ActionResolver {
+					Logger = logger,
+					DependencyVersion = DependencyVersion.Lowest,
+					ForceRemove = false,
+					RemoveDependencies = false
+				};
+				resolver.AddOperation(NuGet.PackageAction.Uninstall, removePackage, new NullProjectManager(packageManager));
+				packageOperations = resolver.ResolveActions();
+				var executor = new ActionExecutor {
+					Logger = logger
+				};
+				executor.Execute(packageOperations);
 //				packageManager.UninstallPackage(removePackage);
 //				
 //				solutionPackageRepository.Repository.RemovePackage(removePackage);
 //				
-//				packageManagementEvents.OnParentPackageUninstalled(removePackage);
+				packageManagementEvents.OnParentPackageUninstalled(removePackage);
 				
 			} catch (Exception ex) {
 				ReportError(ex);
