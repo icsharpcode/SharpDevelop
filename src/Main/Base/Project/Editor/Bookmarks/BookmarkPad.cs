@@ -65,6 +65,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 			get { return (SDBookmark)this.control.listView.SelectedItem; }
 		}
 		
+		public IEnumerable<SDBookmark> SelectedItems {
+			get { return this.control.listView.SelectedItems.OfType<SDBookmark>(); }
+		}
+		
 		protected BookmarkPadBase()
 		{
 			this.control = new BookmarkPadContent();
@@ -86,11 +90,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 			};
 			
 			this.control.listView.KeyDown += delegate(object sender, System.Windows.Input.KeyEventArgs e) {
-				SDBookmark bm = this.control.listView.SelectedItem as SDBookmark;
-				if (bm == null) return;
+				var selectedItems = this.SelectedItems.ToList();
+				if (!selectedItems.Any())
+					return;
 				switch (e.Key) {
 					case System.Windows.Input.Key.Delete:
-						SD.BookmarkManager.RemoveMark(bm);
+						foreach (var selectedItem in selectedItems) {
+							SD.BookmarkManager.RemoveMark(selectedItem);
+						}
 						break;
 				}
 			};

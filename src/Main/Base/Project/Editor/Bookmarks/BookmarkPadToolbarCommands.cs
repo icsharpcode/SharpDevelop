@@ -67,8 +67,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		public override void Run()
 		{
 			BookmarkPadBase pad = (BookmarkPadBase)this.Owner;
-			if (pad.SelectedItem != null) {
-				SD.BookmarkManager.RemoveMark(pad.SelectedItem);
+			var selectedItems = pad.SelectedItems.ToList();
+			if (selectedItems.Any()) {
+				foreach (var selectedItem in selectedItems) {
+					SD.BookmarkManager.RemoveMark(selectedItem);
+				}
 			}
 		}
 	}
