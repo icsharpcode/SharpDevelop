@@ -22,7 +22,7 @@ namespace ICSharpCode.Reporting.Factories
 		{
 			var reportModel = new ReportModel();
 			
-			foreach (var section in Enum.GetValues(typeof(GlobalEnums.ReportSection))) {
+			foreach (var section in Enum.GetValues(typeof(ReportSection))) {
 				reportModel.SectionCollection.Add (SectionFactory.Create(section.ToString()));
 			}
 			

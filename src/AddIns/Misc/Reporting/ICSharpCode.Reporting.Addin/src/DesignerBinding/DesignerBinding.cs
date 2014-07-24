@@ -13,10 +13,10 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Items;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.Reporting.Addin.Commands;
 using ICSharpCode.Reporting.Addin.Factory;
+using ICSharpCode.Reporting.Addin.ReportWizard;
 
 namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 	
@@ -45,6 +45,21 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			if (file.IsDirty) {
+				var cmd = new ReportWizardCommand(file);
+				cmd.Run();
+				if (cmd.Canceled) {
+					LoggingService.Info("reportWizard canceled");
+					return null;
+				}
+			}
+
+			var viewCmd = new CreateDesignerCommand(file);
+			viewCmd.Run();
+			LoggingService.Info("return DesignerView");
+			return viewCmd.DesignerView;
+			
+			/*
+			if (file.IsDirty) {
 
 				var reportModel = ReportModelFactory.Create();
 				var xml = CreateFormSheetFromModel.ToXml(reportModel);
@@ -55,10 +70,8 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 				file.SetData(ar);
 			}
 			
-			var viewCmd = new CreateDesignerCommand(file);
-			viewCmd.Run();
-			LoggingService.Info("return DesignerView");
-			return viewCmd.DesignerView;
+			
+			*/
 		}
 
 		static byte[] XmlToArray(XmlDocument doc)

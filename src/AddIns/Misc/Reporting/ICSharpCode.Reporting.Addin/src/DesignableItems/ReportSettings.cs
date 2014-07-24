@@ -34,9 +34,9 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 //			this.GraphicsUnit = GraphicsUnit.Pixel;
 //			this.Padding = new Padding(5);
 //			this.DefaultFont = GlobalValues.DefaultFont;
-			this.ReportType = GlobalEnums.ReportType.FormSheet;
+			this.ReportType = ReportType.FormSheet;
 //			
-			this.DataModel = GlobalEnums.PushPullModel.FormSheet;
+			this.DataModel = PushPullModel.FormSheet;
 //			
 //			this.CommandType =  System.Data.CommandType.Text;
 //			this.ConnectionString = String.Empty;
@@ -130,11 +130,11 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		public bool Landscape {get;set;}
 		
 //		[Category("Data")]
-		public GlobalEnums.PushPullModel DataModel {get;set;}
+		public PushPullModel DataModel {get;set;}
 		
 		
 //		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.ReportType ReportType {get;set;}
+		public ReportType ReportType {get;set;}
 		
 		
 //		[Category("Parameters")]

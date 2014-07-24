@@ -65,9 +65,9 @@ namespace ICSharpCode.Reporting.Items
 //			this.GraphicsUnit = GraphicsUnit.Pixel;
 //			this.Padding = new Padding(5);
 //			this.DefaultFont = GlobalValues.DefaultFont;
-			ReportType = GlobalEnums.ReportType.FormSheet;
+			ReportType = ReportType.FormSheet;
 //			
-			this.DataModel = GlobalEnums.PushPullModel.FormSheet;
+			this.DataModel = PushPullModel.FormSheet;
 //			
 //			this.CommandType =  System.Data.CommandType.Text;
 //			this.ConnectionString = String.Empty;
@@ -125,11 +125,11 @@ namespace ICSharpCode.Reporting.Items
 		
 		
 		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.ReportType ReportType {get;set;}
+		public ReportType ReportType {get;set;}
 		
 		
 		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.PushPullModel DataModel {get;set;}
+		public PushPullModel DataModel {get;set;}
 		
 		#endregion
 		
