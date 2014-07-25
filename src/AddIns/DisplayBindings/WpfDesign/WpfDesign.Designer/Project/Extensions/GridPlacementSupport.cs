@@ -218,28 +218,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				margin.Bottom = GetRowOffset(bottomRowIndex + 1) - info.Bounds.Bottom;
 			info.Item.Properties[FrameworkElement.MarginProperty].SetValue(margin);
 			
-			var widthIsSet = info.Item.Properties[FrameworkElement.WidthProperty].IsSet;
-			var heightIsSet = info.Item.Properties[FrameworkElement.HeightProperty].IsSet;
-			if (!widthIsSet)
-			{
-				if (ha == HorizontalAlignment.Stretch)
-					info.Item.Properties[FrameworkElement.WidthProperty].Reset();
-				else
-					info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
-			}
-			else {
+			if (ha == HorizontalAlignment.Stretch)
+				info.Item.Properties[FrameworkElement.WidthProperty].Reset();
+			else
 				info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
-			}
-			if (!heightIsSet)
-			{
-				if (va == VerticalAlignment.Stretch)
-					info.Item.Properties[FrameworkElement.HeightProperty].Reset();
-				else
-					info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
-			}
-			else {
+			
+			if (va == VerticalAlignment.Stretch)
+				info.Item.Properties[FrameworkElement.HeightProperty].Reset();
+			else
 				info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
-			}
 		}
 		
 		public override void LeaveContainer(PlacementOperation operation)
