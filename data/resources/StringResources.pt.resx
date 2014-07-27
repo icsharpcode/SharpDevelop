@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Este recurso não é utilizado. A sua finalidade é testar a base de dados de traduções</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>Sobre</value>
   </data>
@@ -5845,8 +5848,5 @@ O erro no início foi:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Desfazer comentário</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Este recurso não é utilizado. A sua finalidade é testar a base de dados de traduções</value>
   </data>
 </root>
