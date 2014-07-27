@@ -90,6 +90,7 @@
     </Compile>
     <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
     <Compile Include="Extensions\RightClickContextMenuExtension.cs" />
+    <Compile Include="OutlineView\OutlineNodeBase.cs" />
     <Compile Include="Extensions\RightClickMultipleItemsContextMenuExtension.cs" />
     <Compile Include="Extensions\RightClickMultipleItemsContextMenu.xaml.cs">
       <DependentUpon>RightClickMultipleItemsContextMenu.xaml</DependentUpon>
