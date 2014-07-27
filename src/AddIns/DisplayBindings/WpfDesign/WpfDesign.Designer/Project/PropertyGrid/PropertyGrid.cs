@@ -35,7 +35,20 @@ using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 {
-	public class PropertyGrid : INotifyPropertyChanged
+	public interface IPropertyGrid
+	{
+		IEnumerable<DesignItem> SelectedItems { get; set; }
+		Dictionary<MemberDescriptor, PropertyNode> NodeFromDescriptor { get; }
+		DesignItem SingleItem { get; }
+		string Name { get; set; }
+		string OldName { get; }
+		bool IsNameCorrect { get; set; }
+		bool ReloadActive { get; }
+		event EventHandler AggregatePropertiesUpdated;
+		event PropertyChangedEventHandler PropertyChanged;
+	}
+	
+	public class PropertyGrid : INotifyPropertyChanged, IPropertyGrid
 	{
 		public PropertyGrid()
 		{
@@ -54,7 +67,8 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		Category attachedCategory = new Category("Attached");
 
 		Dictionary<MemberDescriptor, PropertyNode> nodeFromDescriptor = new Dictionary<MemberDescriptor, PropertyNode>();
-
+		public Dictionary<MemberDescriptor, PropertyNode> NodeFromDescriptor { get { return nodeFromDescriptor; } }
+		public event EventHandler AggregatePropertiesUpdated;
 		public CategoriesCollection Categories { get; private set; }
 		public PropertyNodeCollection Events { get; private set; }
 
@@ -220,6 +234,8 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				}
 			} finally {
 				reloadActive = false;
+				if (AggregatePropertiesUpdated != null)
+					AggregatePropertiesUpdated(this, EventArgs.Empty);
 			}
 		}
 
