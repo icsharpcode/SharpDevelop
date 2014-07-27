@@ -42,7 +42,6 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyGridView), new FrameworkPropertyMetadata(typeof(PropertyGridView)));
 		}
 		
-		
 		public PropertyGridView() : this(null)
 		{
 		}

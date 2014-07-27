@@ -227,7 +227,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				
 				if (selectedItems == null || selectedItems.Count == 0) return;
 				if (selectedItems.Count == 1) SingleItem = selectedItems[0];
-	
+				
 				foreach (var md in GetDescriptors()) {
 					if (PassesFilter(md.Name))
 						AddNode(md);
