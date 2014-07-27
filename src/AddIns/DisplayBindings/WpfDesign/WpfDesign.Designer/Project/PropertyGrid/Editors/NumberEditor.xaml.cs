@@ -94,7 +94,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 
 			var range = Metadata.GetValueRange(PropertyNode.FirstProperty);
 			if (range == null) {
-				range = new NumberRange() { Min = 0, Max = double.MaxValue };
+				range = new NumberRange() { Min = double.MinValue, Max = double.MaxValue };
 			}
 
 			if (range.Min == double.MinValue) {
