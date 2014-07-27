@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Cette ressource n'est pas utilisée. Son but est de tester la base de données de traduction.</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>A propos</value>
   </data>
@@ -206,7 +209,7 @@
   </data>
   <data name="AddInManager.NoAddInsInstalled" xml:space="preserve">
     <value>Vous n'avez aucun AddIn installé.
-Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddIn' et choisissez le fichier téléchargé pour l'installer.</value>
+Téléchargez un AddIn depuis Internet, cliquez ensuite sur 'Installer un AddIn' et choisissez le fichier téléchargé pour l'installer.</value>
   </data>
   <data name="AddInManager.OpenWebsite" xml:space="preserve">
     <value>Ouvrir le site Web</value>
@@ -287,17 +290,11 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
     <value>Voir le contrat de license</value>
   </data>
   <data name="AddInManager2.DisableDependentWarning" xml:space="preserve">
-    <value>Les Add-Ins installés suivant sont dépendant de "{0}":
-
-{1}
-
+    <value>Les Add-Ins installés suivant sont dépendant de "{0}": {1}
 Ils ne fonctionneront plus si vous désactivez cet Add-In! Souhaitez-vous continuer?</value>
   </data>
   <data name="AddInManager2.InstallDependentMessage" xml:space="preserve">
-    <value>Package "{0}" nécessite au moins une dépendance:
-
-{1}
-
+    <value>Package "{0}" nécessite au moins une dépendance: {1}
 L'application va essayer de les télécharger et de les installer. Souhaitez-vous continuer?</value>
   </data>
   <data name="AddInManager2.InvalidPackage" xml:space="preserve">
@@ -314,8 +311,8 @@ L'application va essayer de les télécharger et de les installer. Souhaitez-vou
 Si vous ne le souhaitez pas, veuillez cliquer "Je décline".</value>
   </data>
   <data name="AddInManager2.LicenseAcceptance.Explanation.Packages" xml:space="preserve">
-    <value>En cliquant "J'accepte", vous êtes d'accord pour la license des packages suivant.
-Si vous ne le souhaitez pas, veuillez cliquer "Je décline".</value>
+    <value>En cliquant sur "J'accepte", vous êtes d'accord pour la license des packages suivant.
+Si vous ne le souhaitez pas, veuillez cliquer sur "Je décline".</value>
   </data>
   <data name="AddInManager2.LicenseAcceptance.Introduction.Package" xml:space="preserve">
     <value>Le package suivant nécessite que vous acceptiez sa license:</value>
@@ -357,10 +354,7 @@ Si vous ne le souhaitez pas, veuillez cliquer "Je décline".</value>
     <value>Dépots</value>
   </data>
   <data name="AddInManager2.RemoveDependentWarning" xml:space="preserve">
-    <value>Les Add-Ins installés suivant sont dépendants de "{0}":
-
-{1}
-
+    <value>Les Add-Ins installés suivant sont dépendants de "{0}": {1}
 Ils ne fonctionneront plus si vous désinstallez cet Add-In! Souhaitez-vous continuer?</value>
   </data>
   <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
@@ -538,7 +532,7 @@ Ils ne fonctionneront plus si vous désinstallez cet Add-In! Souhaitez-vous cont
     <value>Session de profilage SharpDevelop</value>
   </data>
   <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
-    <value>Ce projet ne peut pas démarrer, exécutable introuvable, assurez-vous que le projet et toutes ses dépendances sont construites.</value>
+    <value>Ce projet ne peut pas démarrer, l'exécutable est introuvable. Assurez-vous que le projet et toutes ses dépendances sont compilées correctement!</value>
   </data>
   <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
     <value>Aucun projet n'est démarrable. Arrêt...</value>
@@ -1026,7 +1020,7 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
     <value>Sauvegarder en UTF-8</value>
   </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
-    <value>Le projet est configuré comme dll et aucune commande a exécuter n'a été spécifiée. Vous pouvez spécifier une commande a exécuter dans les options du projet.</value>
+    <value>Le projet est configuré comme DLL et aucune commande a exécuter n'a été spécifiée. Vous pouvez spécifier une commande a exécuter dans les options du projet.</value>
   </data>
   <data name="BackendBindings.ExecutionManager.NoSingleFileCompilation" xml:space="preserve">
     <value>Compiler un fichier seul n'est pas possible, veuillez créer un projet!</value>
@@ -1636,7 +1630,8 @@ Pour créer ou manipuler un objet ActiveX/COM, déplcaer une classe depuis TypeL
     <value>Aller à la ligne</value>
   </data>
   <data name="Dialog.Goto.IntroText" xml:space="preserve">
-    <value>Veuillez entrer une expression à atteindre. Vous pouvez donner un numéro de ligne, un nom de classe ou de fichier ("120", "MainClass" "Main.cs, 120" par exemple).</value>
+    <value>Veuillez entrer une expression à atteindre. Vous pouvez donner un numéro de ligne, un nom de classe ou de fichier.
+Exemples: "120", "MainClass" "Main.cs, 120".</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Background" xml:space="preserve">
     <value>Couleur de l'arrière-plan</value>
@@ -2348,6 +2343,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
     <value>Accolades en surbrillance</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightCurrentLineCheckBox" xml:space="preserve">
+    <value>Surligner la ligne actuelle</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
     <value>Surligner symboles</value>
   </data>
@@ -2758,7 +2756,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.ProjectOptions.StorageLocationHelp" xml:space="preserve">
     <value>Le petit button devant chaque option de configuration vous permet de choisir l'endroit où est enregistré la configuration.
-'Configuration-specific' signigie que la configuration est appliqué au type de Projet (Debug/Release).
+'Configuration-specific' signifie que la configuration est appliquée au type de Projet (Debug/Release).
 'Platform-specific' signifie que la configuration peut avoir une valeur différente par plateforme.
 Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file au lieu du projet, permettant à chaque développeur d'utiliser une valeur différente sans entrer en conflit avec le système de gestion du code source.</value>
   </data>
@@ -3442,7 +3440,6 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   </data>
   <data name="ICSharpCode.NAntAddIn.AbstractRunNAntCommand.NAntExeNotFoundMessage" xml:space="preserve">
     <value>Impossible de trouver NAnt '{0}'.
-
 Configurez le chemin vers NAnt dans les options de SharpDevelop.</value>
   </data>
   <data name="ICSharpCode.NAntAddIn.AbstractRunNAntCommand.NAntStoppedMessage" xml:space="preserve">
@@ -3596,10 +3593,10 @@ Configurez le chemin vers NAnt dans les options de SharpDevelop.</value>
     <value>Envoyer vers la console Ruby</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
-    <value>Chargement du fichier ${FileNameWithoutPath} depuis ${Path}. Controler les droits et l'existence du fichier.</value>
+    <value>Chargement du fichier ${FileNameWithoutPath} depuis ${Path}. Controlez les droits et l'existence du fichier.</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantSaveFileStandardText" xml:space="preserve">
-    <value>Enregistrement impossible du fichier  ${FileNameWithoutPath} sous ${Path}. Choisir un autre nom de fichier ou controler si le répertoire existe ainsi que les droits d'écriture pour le chemin et le fichier. (Peut être un problème de protection en écriture)</value>
+    <value>Enregistrement impossible du fichier ${FileNameWithoutPath} sous ${Path}. Choisissez un autre nom de fichier ou controlez si le répertoire existe ainsi que les droits d'écriture pour le chemin et le fichier.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.BrowserDisplayBinding.Browser" xml:space="preserve">
     <value>Navigateur</value>
@@ -3632,7 +3629,7 @@ Configurez le chemin vers NAnt dans les options de SharpDevelop.</value>
     <value>&lt;Par défaut&gt;</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.ResetToDefaultsQuestion" xml:space="preserve">
-    <value>Etes-vous sûr de vouloir charger la configuration par défaut de l'espace de travail? Note: Ceci n'affectera pas vos layouts personnalisés.</value>
+    <value>Etes-vous sûr de vouloir charger la configuration par défaut de l'espace de travail ? Note: Ceci n'affectera pas vos layouts personnalisés.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert" xml:space="preserve">
     <value>Conversion</value>
@@ -3713,7 +3710,7 @@ Configurez le chemin vers NAnt dans les options de SharpDevelop.</value>
     <value>Le fichier est introuvable.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ReloadFile.ReloadFileQuestion" xml:space="preserve">
-    <value>Etes vous sûr que vous voulez recharger le fichier ?
+    <value>Etes-vous sûr que vous voulez recharger le fichier ?
 Toutes les modifications seront perdues.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.RunCompile.LanguageBindingCantCompileFileError" xml:space="preserve">
@@ -3985,7 +3982,7 @@ Toutes les modifications seront perdues.</value>
     <value>L'ajout de ce composant conduirait à une dépendance cyclique.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Hosts.DefaultDesignerHost.ExceptionDuringComponentCreationError" xml:space="preserve">
-    <value>Exception lors de la création d'un composant pour le Form Designer (un composant a levé une exception dans son constructeur). CELA N'AFFECTE EN RIEN VOTRE CODE SOURCE.</value>
+    <value>Exception lors de la création d'un composant pour le Form Designer (un composant a levé une exception dans son constructeur). CELA N'AFFECTE PAS VOTRE CODE SOURCE.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors" xml:space="preserve">
     <value>Impossible de charger le concepteur. Vérifier les erreurs de syntaxe du code source et si toutes les références sont disponibles.</value>
@@ -4476,7 +4473,7 @@ Allez dans 'Outils/Options-&gt;Style Visuel pour changer l'ambiance actuelle.</v
     <value>Impossible de trouver le dialogue id '{0}' dans le document.</value>
   </data>
   <data name="ICSharpCode.WixBinding.ExtensionBinding.InvalidExtension" xml:space="preserve">
-    <value>Une extension doit être de la forme: Classe, Assembly
+    <value>Une extension doit être de la forme: Classe, Nom d'Assembly
 
 Par exemple: Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension</value>
   </data>
@@ -6092,6 +6089,15 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
     <value>Classes dérivant de ${Name}</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRing" xml:space="preserve">
+    <value>Presse-papiers circulaire</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
+    <value>Coller depuis le presse-papier circulaire...</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingEmpty" xml:space="preserve">
+    <value>Le presse-papier circulaire est vide</value>
+  </data>
   <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
     <value>Convertir en propriété automatique</value>
   </data>
@@ -6566,6 +6572,12 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>li. ${Line} col. ${Column} car. ${Character}</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextMulti" xml:space="preserve">
+    <value>longueur ${Rows} * ${Cols} (${Total})</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextSingle" xml:space="preserve">
+    <value>longueur ${Length}</value>
   </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Divers</value>
@@ -7540,7 +7552,7 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Compiler projet actif ou buffer (si pas de projet ouvert) (Sauvegarde auto.)</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion" xml:space="preserve">
-    <value>Une session de déboguage est en cours, voulez vous l'arrêter pour reconstruire le projet?</value>
+    <value>Une session de déboguage est en cours, voulez-vous l'arrêter pour reconstruire le projet?</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.StopDebuggingTitle" xml:space="preserve">
     <value>Arrêter le déboguage</value>
@@ -7713,8 +7725,5 @@ Erreur lors du démarrage:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Partie non commentée</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Cette ressource n'est pas utilisée. Son but est de tester la base de donnée de traduction.</value>
   </data>
 </root>

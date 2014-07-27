@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Эта строка нигде не используется. Она нужна для тестирования базы данных переводов, а также в ней есть
+перенос строки</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>О Менеджере Плагинов</value>
   </data>
@@ -6647,9 +6651,5 @@ SharpDevelop 2 иначе компилировал ресурсы: имя рес
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Раскомментировать</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Эта строка нигде не используется. Она нужна для тестирования базы данных переводов, а также в ней есть
-перенос строки</value>
   </data>
 </root>

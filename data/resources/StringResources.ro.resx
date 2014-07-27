@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Această resursă nu este utilzată. Scopul ei este de a testa traducerile şi conţine un retur de car
+</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>Despre</value>
   </data>
@@ -3793,9 +3797,5 @@ Eroare la pornire:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Regiune necomentată</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Această resursă nu este utilzată. Scopul ei este de a testa traducerile şi conţine un retur de car
-</value>
   </data>
 </root>
