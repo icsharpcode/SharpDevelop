@@ -125,8 +125,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		{
 			if (string.IsNullOrEmpty(name))
 				return false;
-			
-			if ((language.CodeDomProvider == null) || !language.CodeDomProvider.IsValidIdentifier(name))
+
+			if ((language.CodeDomProvider == null) || (!language.CodeDomProvider.IsValidIdentifier(name) &&
+			                                           !language.CodeDomProvider.IsValidIdentifier(language.CodeGenerator.EscapeIdentifier(name))))
 				return false;
 			
 			return true;
