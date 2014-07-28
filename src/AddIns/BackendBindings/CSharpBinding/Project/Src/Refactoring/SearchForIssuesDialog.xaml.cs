@@ -43,7 +43,7 @@ namespace CSharpBinding.Refactoring
 		{
 			InitializeComponent();
 			FixCheckBox_Unchecked(null, null);
-			treeView.Root = new RootTreeNode(IssueManager.IssueProviders);
+			treeView.Root = new RootTreeNode(IssueManager.IssueProviders, TreeNodeCheckedChanged);
 			searchInRBG.SelectedValue = SearchForIssuesTarget.WholeSolution;
 			LoadPreviousSelectionFromSettings();
 		}
@@ -75,7 +75,15 @@ namespace CSharpBinding.Refactoring
 				return fixCheckBox.IsChecked == true;
 			}
 		}
-		
+
+		void TreeNodeCheckedChanged()
+		{
+			if (treeView.Root == null) return;
+			fixCheckBox.IsEnabled = !treeView.Root.DescendantsAndSelf()
+				.OfType<IssueTreeNode>()
+				.Any(n => n.IsChecked == true && !n.Provider.Attribute.SupportsAutoFix);
+		}
+
 		void searchButton_Click(object sender, RoutedEventArgs e)
 		{
 			DialogResult = true;
@@ -109,12 +117,16 @@ namespace CSharpBinding.Refactoring
 		
 		sealed class RootTreeNode : BaseTreeNode
 		{
-			internal RootTreeNode(IEnumerable<IssueManager.IssueProvider> providers)
+			readonly Action checkedChanged;
+
+			internal RootTreeNode(IEnumerable<IssueManager.IssueProvider> providers, Action checkedChanged)
 			{
 				this.Children.AddRange(providers.Where(p => p.Attribute != null)
-				                       .GroupBy(p => p.Attribute.Category, (key, g) => new CategoryTreeNode(key, g)));
+				                       .GroupBy(p => p.Attribute.Category, (key, g) => new CategoryTreeNode(key, g, checkedChanged)));
 				this.IsChecked = false;
 				this.IsExpanded = true;
+				this.checkedChanged = checkedChanged;
+				this.PropertyChanged += OnPropertyChanged;
 			}
 			
 			public override string Key {
@@ -128,17 +140,26 @@ namespace CSharpBinding.Refactoring
 			public override bool IsCheckable {
 				get { return true; }
 			}
+
+			void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+			{
+				if (checkedChanged != null && e.PropertyName == "IsChecked")
+					checkedChanged();
+			}
 		}
 		
 		sealed class CategoryTreeNode : BaseTreeNode
 		{
 			readonly string categoryName;
+			readonly Action checkedChanged;
 			
-			internal CategoryTreeNode(string categoryName, IEnumerable<IssueManager.IssueProvider> providers)
+			internal CategoryTreeNode(string categoryName, IEnumerable<IssueManager.IssueProvider> providers, Action checkedChanged)
 			{
 				this.categoryName = categoryName;
-				this.Children.AddRange(providers.Select(p => new IssueTreeNode(p)));
+				this.Children.AddRange(providers.Select(p => new IssueTreeNode(p, checkedChanged)));
 				this.IsExpanded = true;
+				this.checkedChanged = checkedChanged;
+				this.PropertyChanged += OnPropertyChanged;
 			}
 			
 			public override string Key {
@@ -152,17 +173,26 @@ namespace CSharpBinding.Refactoring
 			public override bool IsCheckable {
 				get { return true; }
 			}
+
+			void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+			{
+				if (checkedChanged != null && e.PropertyName == "IsChecked")
+					checkedChanged();
+			}
 		}
 		
 		sealed class IssueTreeNode : BaseTreeNode
 		{
 			internal readonly IssueManager.IssueProvider Provider;
 			readonly IssueDescriptionAttribute attribute;
+			readonly Action checkedChanged;
 			
-			internal IssueTreeNode(IssueManager.IssueProvider provider)
+			internal IssueTreeNode(IssueManager.IssueProvider provider, Action checkedChanged)
 			{
 				this.Provider = provider;
 				this.attribute = provider.Attribute;
+				this.checkedChanged = checkedChanged;
+				this.PropertyChanged += OnPropertyChanged;
 			}
 			
 			public override string Key {
@@ -179,6 +209,12 @@ namespace CSharpBinding.Refactoring
 			
 			public override object ToolTip {
 				get { return attribute.Description; }
+			}
+
+			void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+			{
+				if (checkedChanged != null && e.PropertyName == "IsChecked")
+					checkedChanged();
 			}
 		}
 	}

@@ -153,9 +153,9 @@ namespace ICSharpCode.XamlDesigner
 			}
 		}
 
-		OutlineNode outlineRoot;
+		IOutlineNode outlineRoot;
 
-		public OutlineNode OutlineRoot {
+		public IOutlineNode OutlineRoot {
 			get {
 				return outlineRoot;
 			}

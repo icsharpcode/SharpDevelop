@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Resurssia ei käytetä. Sen tarkoituksena on testata suomennosta ja rivinvaihtoa.</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>About SharpDevelop, finnish lang dev: Pekka Herala domain: sivustot.net</value>
   </data>
@@ -5653,8 +5656,5 @@ Työkalusarja, joka rakentaa Windows asennuspaketteja XML-lähdekoodilla. Sarja 
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Kommentti valinta</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Resurssia ei käytetä. Sen tarkoituksena on testata suomennosta ja rivinvaihtoa.</value>
   </data>
 </root>

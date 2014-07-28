@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Este recurso no es utilizado. Su propósito es probar la base de datos de traducción y tiene
+un retorno de línea.</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>Acerca de</value>
   </data>
@@ -1538,6 +1542,30 @@ Para crear/manipular un objeto ActiveX/COM, arrastre una clase de un Control/Bib
   <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
     <value>Análisis de Calidad de Código</value>
   </data>
+  <data name="CSharpBinding.Formatting.AutoFormat" xml:space="preserve">
+    <value>Formatear código automáticamente</value>
+  </data>
+  <data name="CSharpBinding.Formatting.DefaultOptionReference" xml:space="preserve">
+    <value>(predeterminado)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.GlobalOptionReference" xml:space="preserve">
+    <value>(global)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.NoPresetSelectedMessage" xml:space="preserve">
+    <value>No se seleccionó un formato preestablecido!</value>
+  </data>
+  <data name="CSharpBinding.Formatting.PresetOverwriteQuestion" xml:space="preserve">
+    <value>¿Esta seguro/a que quiere restablecer todas las opciones de formato previamente definidas?</value>
+  </data>
+  <data name="CSharpBinding.Formatting.ProjectOptionReference" xml:space="preserve">
+    <value>(proyecto)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.ResetTo" xml:space="preserve">
+    <value>Restablecer a:</value>
+  </data>
+  <data name="CSharpBinding.Formatting.SolutionOptionReference" xml:space="preserve">
+    <value>(solución)</value>
+  </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Inserta una referencia a un método explicito; presione tabulador o enter otra vez para insertar una nueva porción de método.</value>
   </data>
@@ -1980,6 +2008,15 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountBeforeNumber" xml:space="preserve">
     <value>Guardar</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTarget" xml:space="preserve">
+    <value>Enlaces en tooltips deben ir en</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDefinition" xml:space="preserve">
+    <value>Definición en código</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDocumentation" xml:space="preserve">
+    <value>Documentación (si esta disponible)</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.UseDataUsageCache" xml:space="preserve">
     <value>Pre-seleccionar miembros usados recientemente</value>
   </data>
@@ -2352,6 +2389,9 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
     <value>Resaltar &amp;corchetes</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightCurrentLineCheckBox" xml:space="preserve">
+    <value>Resaltar la línea actual</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
     <value>Resaltar símbolos</value>
   </data>
@@ -2612,6 +2652,9 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   </data>
   <data name="Dialog.ProjectOptions.BuildOptions.VBOptionsDefaultValues" xml:space="preserve">
     <value>Valores predeterminados de VB:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CodeFormatting" xml:space="preserve">
+    <value>Formato de Código</value>
   </data>
   <data name="Dialog.ProjectOptions.Configuration" xml:space="preserve">
     <value>&amp;Configuración</value>
@@ -3317,8 +3360,14 @@ También puede elegir guardar la opción en el archivo .user en lugar de en el a
   <data name="ICSharpCode.CodeCoverage.CodeNotCovered" xml:space="preserve">
     <value>Código No Cubierto</value>
   </data>
+  <data name="ICSharpCode.CodeCoverage.CodePartCovered" xml:space="preserve">
+    <value>Código Parcialmente Cubierto</value>
+  </data>
   <data name="ICSharpCode.CodeCoverage.Column" xml:space="preserve">
     <value>Columna</value>
+  </data>
+  <data name="ICSharpCode.CodeCoverage.Content" xml:space="preserve">
+    <value>Contenido</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.DisplayOptions" xml:space="preserve">
     <value>Opciones de Vista</value>
@@ -4297,6 +4346,9 @@ Utilice solamente letras, dígitos, espacio, '.' ó '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
     <value>La solución ha sido cambiada externamente.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionFormattingOptions.Title" xml:space="preserve">
+    <value>Opciones de Formato de Soluciones</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Convertir &amp;proyectos seleccionados a:</value>
@@ -5689,6 +5741,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.AddReference" xml:space="preserve">
     <value>Agregar referencia</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.AddServiceReference" xml:space="preserve">
+    <value>Agregar Referencia a Servicio</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.AddWebReference" xml:space="preserve">
     <value>Agregar Referencia Web</value>
   </data>
@@ -6096,6 +6151,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
     <value>Clases derivadas de ${Name}</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
+    <value>Pegar desde el anillo del portapapeles...</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingEmpty" xml:space="preserve">
+    <value>El anillo del portapapeles esta vacío</value>
   </data>
   <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
     <value>Convertir a propiedad automática</value>
@@ -6560,6 +6621,9 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   <data name="StartPage.StartMenu.OpenCombineButton" xml:space="preserve">
     <value>Abrir solución</value>
   </data>
+  <data name="StartPage.StartMenu.RemoveRecentProject" xml:space="preserve">
+    <value>Quitar de la lista de proyectos recientes</value>
+  </data>
   <data name="StartPage.StartPageContentName" xml:space="preserve">
     <value>Página de Inicio</value>
   </data>
@@ -6571,6 +6635,12 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   </data>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>ln ${Line} col ${Column} car ${Character}</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextMulti" xml:space="preserve">
+    <value>len ${Rows} * ${Cols} (${Total})</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextSingle" xml:space="preserve">
+    <value>len ${Length}</value>
   </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Varios</value>
@@ -7718,9 +7788,5 @@ Error al iniciar:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Descomentar región</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Este recurso no es utilizado. Su propósito es probar la base de datos de traducción y tiene
-un retorno de línea.</value>
   </data>
 </root>

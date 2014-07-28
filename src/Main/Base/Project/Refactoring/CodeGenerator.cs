@@ -83,6 +83,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return newName;
 		}
 		
+		public virtual string EscapeIdentifier(string identifier)
+		{
+			throw new NotSupportedException("Feature not supported!");
+		}
+		
 		public virtual void AddField(ITypeDefinition declaringType, Accessibility accessibility, IType fieldType, string name)
 		{
 			throw new NotSupportedException("Feature not supported!");

@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Ten zasób nie jest używany. Jego przeznaczeniem jest testowanie bazy tłumaczeń i posiada
+łamanie wiersza</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>O Menadżerze Dodatków</value>
   </data>
@@ -5660,9 +5664,5 @@ Błąd podczas uruchamiania:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Odkomentuj region</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Ten zasób nie jest używany. Jego przeznaczeniem jest testowanie bazy tłumaczeń i posiada
-łamanie wiersza</value>
   </data>
 </root>

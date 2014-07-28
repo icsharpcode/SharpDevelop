@@ -211,5 +211,10 @@ namespace CSharpBinding.Refactoring
 				script.ChangeModifier(entityDeclaration, entityDeclaration.Modifiers | Modifiers.Virtual);
 			}
 		}
+		
+		public override string EscapeIdentifier(string identifier)
+		{
+			return "@" + identifier;
+		}
 	}
 }

@@ -226,7 +226,7 @@ namespace CSharpBinding.Refactoring
 				cancellationToken.ThrowIfCancellationRequested();
 				var issues = provider.GetIssues(context).ToList();
 				// Fix issues, if possible:
-				if (issues.Any(i => i.Actions.Count > 0)) {
+				if (provider.Attribute.SupportsAutoFix && issues.Any(i => i.Actions.Count > 0)) {
 					using (var script = context.StartScript()) {
 						foreach (var issue in issues) {
 							if (issue.Actions.Count > 0) {

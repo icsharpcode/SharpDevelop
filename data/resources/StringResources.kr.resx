@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>ちょっとくらいのわがままは、大目に見てね。</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>정보</value>
   </data>
@@ -6262,8 +6265,5 @@ SharpDevelop 2는 리소스를 다른 방법으로 컴파일합니다: 리소스
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>이 부분의 주석 해제</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>ちょっとくらいのわがままは、大目に見てね。</value>
   </data>
 </root>

@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Ez az erőforrás nincs használva. Célja a fordító adatbázis tesztelése.
+Valamint soremelést tartalmaz.</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>About</value>
   </data>
@@ -5078,9 +5082,5 @@ Hiba az indításkor:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Megjegyzésből ki</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Ez az erőforrás nincs használva. Célja a fordító adatbázis tesztelése.
-Valamint soremelést tartalmaz.</value>
   </data>
 </root>

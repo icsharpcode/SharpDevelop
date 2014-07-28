@@ -127,8 +127,6 @@ namespace HexEditor.Util
 		{
 			Editor c = (Editor)this.parent;
 			
-			Application.DoEvents();
-			
 			if (c.ProgressBar != null) {
 				if (percentage >= 100) {
 					if (c.InvokeRequired)

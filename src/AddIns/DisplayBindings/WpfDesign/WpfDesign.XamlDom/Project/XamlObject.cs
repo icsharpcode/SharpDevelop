@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -548,11 +549,35 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	{
 		public override object ProvideValue()
 		{
-			var target = XamlObject.Instance as Binding;
+			var target = XamlObject.Instance as BindingBase;
+			Debug.Assert(target != null);
 			//TODO: XamlObject.Clone()
-			var b = new Binding();
+			var b = CopyBinding(target);
+			return b.ProvideValue(XamlObject.ServiceProvider);
+		}
+		
+		BindingBase CopyBinding(BindingBase target)
+		{
+			BindingBase b;
+			if (target != null) {
+				b = (BindingBase)Activator.CreateInstance(target.GetType());
+			} else {
+				b = new Binding();
+			}
+			
 			foreach (PropertyDescriptor pd in TypeDescriptor.GetProperties(target)) {
-				if (pd.IsReadOnly) continue;
+				if (pd.IsReadOnly) {
+					if (pd.Name.Equals("Bindings", StringComparison.Ordinal)) {
+						var bindings = (Collection<BindingBase>)pd.GetValue(target);
+						var newBindings = (Collection<BindingBase>)pd.GetValue(b);
+
+						foreach (var binding in bindings) {
+							newBindings.Add(CopyBinding(binding));
+						}
+					}
+
+					continue;
+				}
 				try {
 					var val1 = pd.GetValue(b);
 					var val2 = pd.GetValue(target);
@@ -560,7 +585,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					pd.SetValue(b, val2);
 				} catch {}
 			}
-			return b.ProvideValue(XamlObject.ServiceProvider);
+			
+			return b;
 		}
 	}
 
