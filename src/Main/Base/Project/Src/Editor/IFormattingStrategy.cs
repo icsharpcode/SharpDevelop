@@ -154,10 +154,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 							editor.Select(region.EndOffset, selectionLength);
 							region = FindSelectedCommentRegion(editor, blockStart, blockEnd);
 						} else {
-							region = null; 
+							region = null;
 						}
 					} while(region != null);
-				
+					
 				} else {
 					editor.Document.Insert(endOffset, blockEnd);
 					editor.Document.Insert(startOffset, blockStart);
@@ -187,8 +187,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 			
 			if (commentStartOffset >= 0) {
 				commentEndOffset = selectedText.IndexOf(commentEnd, commentStartOffset + commentStart.Length - editor.SelectionStart);
-			} else {
-				commentEndOffset = selectedText.IndexOf(commentEnd);
+			}
+			
+			// Try to search end of comment in whole selection
+			bool startAfterEnd = false;
+			int commentEndOffsetWholeText = selectedText.IndexOf(commentEnd);
+			if ((commentEndOffsetWholeText >= 0) && (commentEndOffsetWholeText < (commentStartOffset - editor.SelectionStart))) {
+				// There seems to be an end offset before the start offset in selection
+				commentStartOffset = -1;
+				startAfterEnd = true;
+				commentEndOffset = commentEndOffsetWholeText;
 			}
 			
 			if (commentEndOffset >= 0) {
@@ -205,7 +213,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 					offset = document.TextLength;
 				}
 				string text = document.GetText(0, offset);
-				commentStartOffset = text.LastIndexOf(commentStart);
+				if (startAfterEnd) {
+					commentStartOffset = text.LastIndexOf(commentStart, editor.SelectionStart);
+				} else {
+					commentStartOffset = text.LastIndexOf(commentStart);
+				}
 				if (commentStartOffset >= 0) {
 					// Find end of comment before comment start.
 					commentEndBeforeStartOffset = text.IndexOf(commentEnd, commentStartOffset, editor.SelectionStart - commentStartOffset);

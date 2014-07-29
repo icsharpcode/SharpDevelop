@@ -1,0 +1,1 @@
+resget --url "http://translation.sharpdevelop.net/resources/" --format "resx" --branch 500 --targetDir "%~dp0\..\..\..\data\resources" --overwrite true

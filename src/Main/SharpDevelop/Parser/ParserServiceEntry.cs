@@ -54,6 +54,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 		List<ProjectEntry> entries = new List<ProjectEntry> { default(ProjectEntry) };
 		ITextSourceVersion currentVersion;
 		
+		// Lock ordering: runningAsyncParseLock, rwLock, lock(parserService.fileEntryDict)
+		// (to avoid deadlocks, the locks may only be acquired in this order)
+		internal readonly ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+		
 		public ParserServiceEntry(ParserService parserService, FileName fileName)
 		{
 			this.parserService = parserService;
@@ -68,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		int FindIndexForProject(IProject parentProject)
 		{
+			Debug.Assert(rwLock.IsReadLockHeld || rwLock.IsUpgradeableReadLockHeld || rwLock.IsWriteLockHeld);
 			if (parentProject == null)
 				return 0;
 			for (int i = 0; i < entries.Count; i++) {
@@ -81,7 +86,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public void AddOwnerProject(IProject project, bool isLinkedFile)
 		{
 			Debug.Assert(project != null);
-			lock (this) {
+			rwLock.EnterWriteLock();
+			try {
 				if (FindIndexForProject(project) >= 0)
 					throw new InvalidOperationException("The project alreadys owns the file");
 				ProjectEntry newEntry = new ProjectEntry(project, null, null);
@@ -92,6 +98,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 				} else {
 					entries.Insert(0, newEntry);
 				}
+			} finally {
+				rwLock.ExitWriteLock();
 			}
 		}
 		
@@ -100,7 +108,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 			Debug.Assert(project != null);
 			ProjectEntry oldEntry;
 			bool removedLastOwner = false;
-			lock (this) {
+			rwLock.EnterWriteLock();
+			try {
 				int index = FindIndexForProject(project);
 				if (index < 0)
 					throw new InvalidOperationException("The project does not own the file");
@@ -111,6 +120,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 				} else {
 					entries.RemoveAt(index);
 				}
+			} finally {
+				rwLock.ExitWriteLock();
 			}
 			if (oldEntry.UnresolvedFile != null) {
 				project.OnParseInformationUpdated(new ParseInformationEventArgs(project, oldEntry.UnresolvedFile, null));
@@ -128,6 +139,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </summary>
 		int CompareVersions(ITextSourceVersion newVersion)
 		{
+			Debug.Assert(rwLock.IsReadLockHeld || rwLock.IsUpgradeableReadLockHeld || rwLock.IsWriteLockHeld);
 			if (currentVersion != null && newVersion != null && currentVersion.BelongsToSameDocumentAs(newVersion))
 				return currentVersion.CompareAge(newVersion);
 			else
@@ -137,7 +149,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#region Expire Cache + GetExistingUnresolvedFile + GetCachedParseInformation
 		public void ExpireCache()
 		{
-			lock (this) {
+			rwLock.EnterWriteLock();
+			try {
 				if (PrimaryProject == null) {
 					parserService.RemoveEntry(this);
 				} else {
@@ -148,12 +161,15 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 				// force re-parse on next ParseFile() call even if unchanged
 				this.currentVersion = null;
+			} finally {
+				rwLock.ExitWriteLock();
 			}
 		}
 		
 		public IUnresolvedFile GetExistingUnresolvedFile(ITextSourceVersion version, IProject parentProject)
 		{
-			lock (this) {
+			rwLock.EnterReadLock();
+			try {
 				if (version != null && CompareVersions(version) != 0) {
 					return null;
 				}
@@ -161,12 +177,15 @@ namespace ICSharpCode.SharpDevelop.Parser
 				if (index < 0)
 					return null;
 				return entries[index].UnresolvedFile;
+			} finally {
+				rwLock.ExitReadLock();
 			}
 		}
 		
 		public ParseInformation GetCachedParseInformation(ITextSourceVersion version, IProject parentProject)
 		{
-			lock (this) {
+			rwLock.EnterReadLock();
+			try {
 				if (version != null && CompareVersions(version) != 0) {
 					return null;
 				}
@@ -174,6 +193,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 				if (index < 0)
 					return null;
 				return entries[index].CachedParseInformation;
+			} finally {
+				rwLock.ExitReadLock();
 			}
 		}
 		#endregion
@@ -218,7 +239,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 			
 			ProjectEntry result;
-			lock (this) {
+			rwLock.EnterUpgradeableReadLock();
+			try {
 				int index = FindIndexForProject(parentProject);
 				int versionComparison = CompareVersions(fileContent.Version);
 				if (versionComparison > 0 || index < 0) {
@@ -253,24 +275,32 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 				
 				// Only if all parse runs succeeded, register the parse information.
-				currentVersion = fileContent.Version;
-				for (int i = 0; i < entries.Count; i++) {
-					if (fullParseInformationRequested || (entries[i].CachedParseInformation != null && results[i].NewParseInformation.IsFullParseInformation))
-						entries[i] = new ProjectEntry(entries[i].Project, results[i].NewUnresolvedFile, results[i].NewParseInformation);
-					else
-						entries[i] = new ProjectEntry(entries[i].Project, results[i].NewUnresolvedFile, null);
-					if (entries[i].Project != null)
-						entries[i].Project.OnParseInformationUpdated(results[i]);
-					parserService.RaiseParseInformationUpdated(results[i]);
+				rwLock.EnterWriteLock();
+				try {
+					currentVersion = fileContent.Version;
+					for (int i = 0; i < entries.Count; i++) {
+						if (fullParseInformationRequested || (entries[i].CachedParseInformation != null && results[i].NewParseInformation.IsFullParseInformation))
+							entries[i] = new ProjectEntry(entries[i].Project, results[i].NewUnresolvedFile, results[i].NewParseInformation);
+						else
+							entries[i] = new ProjectEntry(entries[i].Project, results[i].NewUnresolvedFile, null);
+						if (entries[i].Project != null)
+							entries[i].Project.OnParseInformationUpdated(results[i]);
+						parserService.RaiseParseInformationUpdated(results[i]);
+					}
+					result = entries[index];
+				} finally {
+					rwLock.ExitWriteLock();
 				}
-				result = entries[index];
-			}  // exit lock
+			} finally {
+				rwLock.ExitUpgradeableReadLock();
+			}
 			parserService.RegisterForCacheExpiry(this);
 			return result;
 		}
 
 		ParseInformation ParseWithExceptionHandling(ITextSource fileContent, bool fullParseInformationRequested, IProject project, CancellationToken cancellationToken)
 		{
+			Debug.Assert(rwLock.IsUpgradeableReadLockHeld && !rwLock.IsWriteLockHeld);
 			#if DEBUG
 			if (Debugger.IsAttached)
 				return parser.Parse(fileName, fileContent, fullParseInformationRequested, project, cancellationToken);
@@ -285,6 +315,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#endregion
 		
 		#region ParseAsync
+		/// <summary>lock object for protecting the runningAsyncParse* fields</summary>
+		object runningAsyncParseLock = new object();
 		Task<ProjectEntry> runningAsyncParseTask;
 		ITextSourceVersion runningAsyncParseFileContentVersion;
 		IProject runningAsyncParseProject;
@@ -324,19 +356,24 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			Task<ProjectEntry> task;
-			lock (this) {
+			lock (runningAsyncParseLock) {
 				if (fileContent != null) {
 					// Optimization:
 					// don't start a background task if fileContent was specified and up-to-date parse info is available
-					int index = FindIndexForProject(parentProject);
-					int versionComparison = CompareVersions(fileContent.Version);
-					if (versionComparison == 0 && index >= 0) {
-						// Ensure we have parse info for the specified project (entry.UnresolvedFile is null for newly registered projects)
-						// If full parse info is requested, ensure we have full parse info.
-						if (entries[index].UnresolvedFile != null && !(requestFullParseInformation && entries[index].CachedParseInformation == null)) {
-							// We already have the requested version parsed, just return it:
-							return Task.FromResult(entries[index]);
+					rwLock.EnterReadLock();
+					try {
+						int index = FindIndexForProject(parentProject);
+						int versionComparison = CompareVersions(fileContent.Version);
+						if (versionComparison == 0 && index >= 0) {
+							// Ensure we have parse info for the specified project (entry.UnresolvedFile is null for newly registered projects)
+							// If full parse info is requested, ensure we have full parse info.
+							if (entries[index].UnresolvedFile != null && !(requestFullParseInformation && entries[index].CachedParseInformation == null)) {
+								// We already have the requested version parsed, just return it:
+								return Task.FromResult(entries[index]);
+							}
 						}
+					} finally {
+						rwLock.ExitReadLock();
 					}
 					// Optimization:
 					// if an equivalent task is already running, return that one instead
@@ -356,7 +393,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 							}
 							return DoParse(fileContent, parentProject, requestFullParseInformation, cancellationToken);
 						} finally {
-							lock (this) {
+							lock (runningAsyncParseLock) {
 								runningAsyncParseTask = null;
 								runningAsyncParseFileContentVersion = null;
 								runningAsyncParseProject = null;
@@ -383,7 +420,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 				throw new ArgumentNullException("unresolvedFile");
 			FreezableHelper.Freeze(unresolvedFile);
 			var newParseInfo = new ParseInformation(unresolvedFile, null, false);
-			lock (this) {
+			rwLock.EnterWriteLock();
+			try {
 				int index = FindIndexForProject(project);
 				if (index >= 0) {
 					currentVersion = null;
@@ -392,6 +430,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 					project.OnParseInformationUpdated(args);
 					parserService.RaiseParseInformationUpdated(args);
 				}
+			} finally {
+				rwLock.ExitWriteLock();
 			}
 		}
 	}

@@ -24,10 +24,8 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Completion;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -129,7 +127,7 @@ namespace CSharpBinding.Completion
 			
 			DefaultCompletionItemList list = new DefaultCompletionItemList();
 			list.Items.AddRange(FilterAndAddTemplates(editor, completionData.Cast<ICompletionItem>().ToList()));
-			if (list.Items.Count > 0) {
+			if (list.Items.Count > 0 && (ctrlSpace || cce.AutoCompleteEmptyMatch)) {
 				list.SortItems();
 				list.PreselectionLength = caretOffset - startPos;
 				list.PostselectionLength = Math.Max(0, startPos + triggerWordLength - caretOffset);

@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Extracts source code file reference from NUnit output. (stacktrace format)
 		/// </summary>
 		/// <param name="lineText">The text line to parse.</param>
-		/// <param name="multiline">The <paramref name="line"/> text is multilined.</param>
+		/// <param name="multiline">The <paramref name="lineText"/> text is multilined.</param>
 		/// <returns>A <see cref="FileLineReference"/> if the line of text contains a
 		/// file reference otherwise <see langword="null"/></returns>
 		public static FileLineReference GetNUnitOutputFileLineReference(string lineText, bool multiline)
@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			FileLineReference result = null;
 			
 			if (lineText != null) {
-				Match match = Regex.Match(lineText, @"\b(\w:[/\\].*?):line\s(\d+)?\r?$", regexOptions);
+				Match match = Regex.Match(lineText, GetStackFrameRegex(), regexOptions);
 				while (match.Success) {
 					try	{
 						int line = Convert.ToInt32(match.Groups[2].Value);
@@ -109,6 +109,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			return result;
+		}
+
+		static readonly System.Reflection.MethodInfo GetResourceString = typeof(Environment)
+			.GetMethod("GetResourceString", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic,
+			           null, new[] { typeof(string) }, null);
+		
+		static string GetStackFrameRegex()
+		{
+			string line = "in {0}:line {1}";
+			
+			if (GetResourceString != null) {
+				line = (string)GetResourceString.Invoke(null, new[] { "StackTrace_InFileLineNumber" });
+			}
+			
+			return line.Replace("{0}", @"(\w:[/\\].*?)").Replace("{1}", @"(\d+)");
 		}
 		
 		/// <summary>

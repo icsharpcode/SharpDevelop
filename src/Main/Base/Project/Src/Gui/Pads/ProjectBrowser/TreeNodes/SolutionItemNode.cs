@@ -51,6 +51,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.solution = item.ParentSolution;
 			this.item = item;
 			this.Text = Path.GetFileName(FileName);
+			this.Tag = item;
 			SetIcon(IconService.GetImageForFile(FileName));
 		}
 		

@@ -86,10 +86,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void ShowDotCompletion(StackFrame frame, string currentText)
 		{
-			var binding = DebuggerDotCompletion.PrepareDotCompletion(currentText, new DebuggerCompletionContext(frame));
+			var fileName = new ICSharpCode.Core.FileName(frame.NextStatement.Filename);
+			var textLocation = new TextLocation(frame.NextStatement.StartLine, frame.NextStatement.StartColumn);
+			var binding = DebuggerDotCompletion.PrepareDotCompletion(currentText, fileName, textLocation, SD.ParserService.ResolveContext(fileName, textLocation));
 			if (binding == null) return;
 			binding.HandleKeyPressed(console.TextEditor, '.');
-			SD.ParserService.ParseFileAsync(new ICSharpCode.Core.FileName(frame.NextStatement.Filename)).FireAndForget();
 		}
 		
 		protected override ToolBar BuildToolBar()

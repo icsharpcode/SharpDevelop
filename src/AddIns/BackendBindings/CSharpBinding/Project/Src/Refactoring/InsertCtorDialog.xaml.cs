@@ -63,9 +63,14 @@ namespace CSharpBinding.Refactoring
 			
 			var typeResolveContext = refactoringContext.GetTypeResolveContext();
 			if (typeResolveContext == null) {
+				parameterList = EmptyList<PropertyOrFieldWrapper>.Instance;
 				return;
 			}
 			var resolvedCurrent = typeResolveContext.CurrentTypeDefinition;
+			if (resolvedCurrent == null) {
+				parameterList = EmptyList<PropertyOrFieldWrapper>.Instance;
+				return;
+			}
 			
 			parameterList = CreateCtorParams(resolvedCurrent).ToList();
 			this.varList.ItemsSource = parameterList;
@@ -74,23 +79,17 @@ namespace CSharpBinding.Refactoring
 				Visibility = System.Windows.Visibility.Visible;
 		}
 		
-		IEnumerable<PropertyOrFieldWrapper> CreateCtorParams(IType sourceType)
+		IEnumerable<PropertyOrFieldWrapper> CreateCtorParams(ITypeDefinition sourceType)
 		{
 			int i = 0;
 			
-			foreach (var f in sourceType.GetFields().Where(field => !field.IsConst
-			                                               && field.IsStatic == sourceType.GetDefinition().IsStatic
-			                                               && field.DeclaringType.FullName == sourceType.FullName
-			                                               && field.ReturnType != null)) {
+			foreach (var f in sourceType.Fields.Where(f => !f.IsStatic)) {
 				yield return new PropertyOrFieldWrapper(f) { Index = i };
 				i++;
 			}
 			
-			foreach (var p in sourceType.GetProperties().Where(prop => prop.CanSet && !prop.IsIndexer
-			                                                   && prop.IsAutoImplemented()
-			                                                   && prop.IsStatic == sourceType.GetDefinition().IsStatic
-			                                                   && prop.DeclaringType.FullName == sourceType.FullName
-			                                                   && prop.ReturnType != null)) {
+			foreach (var p in sourceType.Properties.Where(prop => !prop.IsStatic && prop.CanSet 
+			                                              && !prop.IsIndexer && prop.IsAutoImplemented())) {
 				yield return new PropertyOrFieldWrapper(p) { Index = i };
 				i++;
 			}

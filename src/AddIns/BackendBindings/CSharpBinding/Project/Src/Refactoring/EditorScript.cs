@@ -24,6 +24,7 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -32,6 +33,10 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Commands;
+using ICSharpCode.SharpDevelop.Editor.Dialogs;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace CSharpBinding.Refactoring
@@ -100,6 +105,11 @@ namespace CSharpBinding.Refactoring
 			}
 			
 			return tcs.Task;
+		}
+		
+		public override void Rename(ISymbol symbol, string name = null)
+		{
+			RenameSymbolCommand.RunRename(symbol, name);
 		}
 		
 		public override Task<Script> InsertWithCursor(string operation, InsertPosition defaultPosition, IList<AstNode> nodes)

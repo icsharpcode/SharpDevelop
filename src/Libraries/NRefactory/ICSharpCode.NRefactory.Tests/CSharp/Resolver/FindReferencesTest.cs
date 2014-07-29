@@ -469,7 +469,7 @@ namespace Foo
 		{
 			var sym = GetSymbol(compilation, fullyQualifiedName);
 			Assert.NotNull(sym);
-			var graph = new TypeGraph(compilation.Assemblies);
+			var graph = new Lazy<TypeGraph>(() => new TypeGraph(compilation.Assemblies));
 			var col = new SymbolCollector();
 			col.IncludeOverloads = includeOverloads;
 			col.GroupForRenaming = true;

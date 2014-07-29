@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Denne ressursen er ikke i bruk. Formålet er å teste oversettingsdatabasen, og har 
+et linjeskift</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>Om</value>
   </data>
@@ -7046,9 +7050,5 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Fjern kommentarer</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Denne ressursen er ikke i bruk. Formålet er å teste oversettingsdatabasen, og har 
-et linjeskift</value>
   </data>
 </root>

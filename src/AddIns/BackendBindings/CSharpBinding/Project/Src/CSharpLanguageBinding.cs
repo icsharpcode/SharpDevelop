@@ -20,12 +20,18 @@ using System;
 using System.Collections.Generic;
 
 using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Project;
 using CSharpBinding.Completion;
 using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Refactoring;
@@ -49,303 +55,97 @@ namespace CSharpBinding
 			this.container.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), new Microsoft.CSharp.CSharpCodeProvider());
 		}
 		
-		public override ICodeCompletionBinding CreateCompletionBinding(FileName fileName, TextLocation currentLocation, ICSharpCode.NRefactory.Editor.ITextSource fileContent)
+		public override ICodeCompletionBinding CreateCompletionBinding(string expressionToComplete, FileName fileName, TextLocation location, ICodeContext context)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			return new CSharpCompletionBinding(fileName, currentLocation, fileContent);
-		}
-	}
-	
-	public class CSharpTextEditorExtension : ITextEditorExtension
-	{
-		ITextEditor editor;
-		IssueManager inspectionManager;
-		IList<IContextActionProvider> contextActionProviders;
-		CodeManipulation codeManipulation;
-		CaretReferenceHighlightRenderer renderer;
-		CodeEditorFormattingOptionsAdapter options;
-		TextEditorOptions originalEditorOptions;
-		
-		public void Attach(ITextEditor editor)
-		{
-			this.editor = editor;
-			inspectionManager = new IssueManager(editor);
-			codeManipulation = new CodeManipulation(editor);
-			renderer = new CaretReferenceHighlightRenderer(editor);
-			
-			// Patch editor options (indentation) to project-specific settings
-			if (!editor.ContextActionProviders.IsReadOnly) {
-				contextActionProviders = AddInTree.BuildItems<IContextActionProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
-				editor.ContextActionProviders.AddRange(contextActionProviders);
-			}
-			
-			// Create instance of options adapter and register it as service
-			var formattingPolicy = CSharpFormattingPolicies.Instance.GetProjectOptions(
-				SD.ProjectService.FindProjectContainingFile(editor.FileName));
-			options = new CodeEditorFormattingOptionsAdapter(editor.Options, formattingPolicy.OptionsContainer);
-			var textEditor = editor.GetService<TextEditor>();
-			if (textEditor != null) {
-				var textViewServices = textEditor.TextArea.TextView.Services;
-				
-				// Unregister any previous ITextEditorOptions instance from editor, if existing, register our impl.
-				textViewServices.RemoveService(typeof(ITextEditorOptions));
-				textViewServices.AddService(typeof(ITextEditorOptions), options);
-				
-				// Set TextEditor's options to same object
-				originalEditorOptions = textEditor.Options;
-				textEditor.Options = options;
-			}
+			if (context == null)
+				throw new ArgumentNullException("context");
+			string content = GeneratePartialClassContextStub(fileName, location, context);
+			const string caretPoint = "$__Caret_Point__$;";
+			int caretOffset = content.IndexOf(caretPoint, StringComparison.Ordinal) + expressionToComplete.Length;
+			SD.Log.DebugFormatted("context used for dot completion: {0}", content.Replace(caretPoint, "$" + expressionToComplete + "|$"));
+			var doc = new ReadOnlyDocument(content.Replace(caretPoint, expressionToComplete));
+			return new CSharpCompletionBinding(fileName, doc.GetLocation(caretOffset), doc.CreateSnapshot());
 		}
 		
-		public void Detach()
+		static string GeneratePartialClassContextStub(FileName fileName, TextLocation location, ICodeContext context)
 		{
-			var textEditor = editor.GetService<TextEditor>();
-			if (textEditor != null) {
-				var textView = textEditor.TextArea.TextView;
-				
-				// Unregister our ITextEditorOptions instance from editor
-				var optionsService = textView.GetService<ITextEditorOptions>();
-				if ((optionsService != null) && (optionsService == options))
-					textView.Services.RemoveService(typeof(ITextEditorOptions));
-				
-				// Reset TextEditor options, too?
-				 if ((textEditor.Options != null) && (textEditor.Options == options))
-				 	textEditor.Options = originalEditorOptions;
+			var compilation = SD.ParserService.GetCompilationForFile(fileName);
+			var file = SD.ParserService.GetExistingUnresolvedFile(fileName);
+			if (compilation == null || file == null)
+				return "";
+			var unresolvedMember = file.GetMember(location);
+			if (unresolvedMember == null)
+				return "";
+			var member = unresolvedMember.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+			if (member == null)
+				return "";
+			var builder = new TypeSystemAstBuilder();
+			MethodDeclaration decl;
+			if (unresolvedMember is IMethod) {
+				// If it's a method, convert it directly (including parameters + type parameters)
+				decl = (MethodDeclaration)builder.ConvertEntity(member);
+			} else {
+				// Otherwise, create a method anyways, and copy the parameters
+				decl = new MethodDeclaration();
+				if (member is IParameterizedMember) {
+					foreach (var p in ((IParameterizedMember)member).Parameters) {
+						decl.Parameters.Add(builder.ConvertParameter(p));
+					}
+				}
 			}
-			
-			codeManipulation.Dispose();
-			if (inspectionManager != null) {
-				inspectionManager.Dispose();
-				inspectionManager = null;
-			}
-			if (contextActionProviders != null) {
-				editor.ContextActionProviders.RemoveAll(contextActionProviders.Contains);
-			}
-			renderer.Dispose();
-			options = null;
-			this.editor = null;
+			decl.Name = "__DebuggerStub__";
+			decl.ReturnType = builder.ConvertType(member.ReturnType);
+			decl.Modifiers = unresolvedMember.IsStatic ? Modifiers.Static : Modifiers.None;
+			// Make the method look like an explicit interface implementation so that it doesn't appear in CC
+			decl.PrivateImplementationType = new SimpleType("__DummyType__");
+			decl.Body = GenerateBodyFromContext(builder, context.LocalVariables.ToArray());
+			return WrapInType(unresolvedMember.DeclaringTypeDefinition, decl).ToString();
 		}
-	}
-	
-	class CodeEditorFormattingOptionsAdapter : TextEditorOptions, ITextEditorOptions, ICodeEditorOptions
-	{
-		CSharpFormattingOptionsContainer container;
-		readonly ITextEditorOptions globalOptions;
-		readonly ICodeEditorOptions globalCodeEditorOptions;
-		
-		public CodeEditorFormattingOptionsAdapter(ITextEditorOptions globalOptions, CSharpFormattingOptionsContainer container)
+
+		static BlockStatement GenerateBodyFromContext(TypeSystemAstBuilder builder, IVariable[] variables)
 		{
-			if (globalOptions == null)
-				throw new ArgumentNullException("globalOptions");
-			if (container == null)
-				throw new ArgumentNullException("container");
-			
-			this.globalOptions = globalOptions;
-			this.globalCodeEditorOptions = globalOptions as ICodeEditorOptions;
-			this.container = container;
-			
-			CSharpFormattingPolicies.Instance.FormattingPolicyUpdated += OnFormattingPolicyUpdated;
-			globalOptions.PropertyChanged += OnGlobalOptionsPropertyChanged;
+			var body = new BlockStatement();
+			foreach (var v in variables)
+				body.Statements.Add(new VariableDeclarationStatement(builder.ConvertType(v.Type), v.Name));
+			body.Statements.Add(new ExpressionStatement(new IdentifierExpression("$__Caret_Point__$")));
+			return body;
 		}
-		
-		void OnFormattingPolicyUpdated(object sender, CSharpBinding.FormattingStrategy.CSharpFormattingPolicyUpdateEventArgs e)
+
+		static AstNode WrapInType(IUnresolvedTypeDefinition entity, EntityDeclaration decl)
 		{
-			OnPropertyChanged("IndentationSize");
-			OnPropertyChanged("ConvertTabsToSpaces");
+			if (entity == null)
+				return decl;
+			// Wrap decl in TypeDeclaration
+			decl = new TypeDeclaration {
+				ClassType = GetClassType(entity),
+				Modifiers = Modifiers.Partial,
+				Name = entity.Name,
+				Members = { decl }
+			};
+			if (entity.DeclaringTypeDefinition != null) {
+				// Handle nested types
+				return WrapInType(entity.DeclaringTypeDefinition, decl);
+			} 
+			if (string.IsNullOrEmpty(entity.Namespace))
+				return decl;
+			return new NamespaceDeclaration(entity.Namespace) {
+				Members = {
+					decl
+				}
+			};
 		}
 
-		void OnGlobalOptionsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		static ClassType GetClassType(IUnresolvedTypeDefinition entity)
 		{
-			OnPropertyChanged(e.PropertyName);
-		}
-		
-		#region ITextEditorOptions implementation
-
-		public override int IndentationSize {
-			get {
-				return container.GetEffectiveIndentationSize() ?? globalOptions.IndentationSize;
-			}
-		}
-
-		public override bool ConvertTabsToSpaces {
-			get {
-				return container.GetEffectiveConvertTabsToSpaces() ?? globalOptions.ConvertTabsToSpaces;
-			}
-		}
-
-		public bool AutoInsertBlockEnd {
-			get {
-				return globalOptions.AutoInsertBlockEnd;
-			}
-		}
-
-		public int VerticalRulerColumn {
-			get {
-				return globalOptions.VerticalRulerColumn;
-			}
-		}
-
-		public bool UnderlineErrors {
-			get {
-				return globalOptions.UnderlineErrors;
-			}
-		}
-
-		public string FontFamily {
-			get {
-				return globalOptions.FontFamily;
-			}
-		}
-
-		public double FontSize {
-			get {
-				return globalOptions.FontSize;
-			}
-		}
-
-		#endregion
-
-		public override bool AllowScrollBelowDocument {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.AllowScrollBelowDocument : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.AllowScrollBelowDocument = value;
-				}
-			}
-		}
-
-		public bool ShowLineNumbers {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.ShowLineNumbers : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.ShowLineNumbers = value;
-				}
-			}
-		}
-
-		public bool EnableChangeMarkerMargin {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.EnableChangeMarkerMargin : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.EnableChangeMarkerMargin = value;
-				}
-			}
-		}
-
-		public bool WordWrap {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.WordWrap : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.WordWrap = value;
-				}
-			}
-		}
-
-		public bool CtrlClickGoToDefinition {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.CtrlClickGoToDefinition : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.CtrlClickGoToDefinition = value;
-				}
-			}
-		}
-
-		public bool MouseWheelZoom {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.MouseWheelZoom : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.MouseWheelZoom = value;
-				}
-			}
-		}
-
-		public bool HighlightBrackets {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.HighlightBrackets : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.HighlightBrackets = value;
-				}
-			}
-		}
-
-		public bool HighlightSymbol {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.HighlightSymbol : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.HighlightSymbol = value;
-				}
-			}
-		}
-
-		public bool EnableAnimations {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.EnableAnimations : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.EnableAnimations = value;
-				}
-			}
-		}
-
-		public bool UseSmartIndentation {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.UseSmartIndentation : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.UseSmartIndentation = value;
-				}
-			}
-		}
-
-		public bool EnableFolding {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.EnableFolding : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.EnableFolding = value;
-				}
-			}
-		}
-
-		public bool EnableQuickClassBrowser {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.EnableQuickClassBrowser : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.EnableQuickClassBrowser = value;
-				}
-			}
-		}
-
-		public bool ShowHiddenDefinitions {
-			get {
-				return (globalCodeEditorOptions != null) ? globalCodeEditorOptions.ShowHiddenDefinitions : default(bool);
-			}
-			set {
-				if (globalCodeEditorOptions != null) {
-					globalCodeEditorOptions.ShowHiddenDefinitions = value;
-				}
+			switch (entity.Kind) {
+				case TypeKind.Interface:
+					return ClassType.Interface;
+				case TypeKind.Struct:
+					return ClassType.Struct;
+				default:
+					return ClassType.Class;
 			}
 		}
 	}

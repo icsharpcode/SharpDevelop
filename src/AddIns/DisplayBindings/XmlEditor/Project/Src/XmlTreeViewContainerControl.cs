@@ -667,11 +667,20 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Deletes the selected node.
+		/// Handles a keyboard press event in tree view.
 		/// </summary>
-		protected void XmlElementTreeViewDeleteKeyPressed(object source, EventArgs e)
+		protected void XmlElementTreeViewKeyPressed(object source, XmlTreeViewKeyPressedEventArgs e)
 		{
-			Delete();
+			if (e.KeyData == Keys.Delete)
+				Delete();
+			else if (e.KeyData == (Keys.Control | Keys.C))
+				Copy();
+			else if (e.KeyData == (Keys.Control | Keys.X))
+				Cut();
+			else if (e.KeyData == (Keys.Control | Keys.V))
+				Paste();
+			else if (e.KeyData == (Keys.Control | Keys.A))
+				SelectAll();
 		}
 		
 		#region Forms Designer generated code
@@ -738,7 +747,7 @@ namespace ICSharpCode.XmlEditor
 			this.xmlElementTreeView.Size = new System.Drawing.Size(185, 326);
 			this.xmlElementTreeView.TabIndex = 0;
 			this.xmlElementTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.XmlElementTreeViewAfterSelect);
-			this.xmlElementTreeView.DeleteKeyPressed += new System.EventHandler(this.XmlElementTreeViewDeleteKeyPressed);
+			this.xmlElementTreeView.TreeViewKeyPressed += this.XmlElementTreeViewKeyPressed;
 			// 
 			// attributesGrid
 			// 

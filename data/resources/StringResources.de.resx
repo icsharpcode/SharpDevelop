@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>6e61ff43-0241-47da-95bd-2ab6cd6d60f7</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>Über...</value>
   </data>
@@ -7720,8 +7723,5 @@ Fehler beim Starten:
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Kommentar entfernen</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>6e61ff43-0241-47da-95bd-2ab6cd6d60f7</value>
   </data>
 </root>

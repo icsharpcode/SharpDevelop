@@ -122,6 +122,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
+		void ProgramListBoxDoubleClicked(object sender, EventArgs e)
+		{
+			okButton.PerformClick();
+		}
+		
 		void RemoveButtonClick(object sender, EventArgs e)
 		{
 			SD.DisplayBindingService.RemoveExternalProcessDisplayBinding((ExternalProcessDisplayBinding)SelectedBinding.GetLoadedBinding());

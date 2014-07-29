@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>该资源不被使用.它仅仅用来测试翻译数据库.</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>关于</value>
   </data>
@@ -7240,8 +7243,5 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>设为非注释区</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>该资源不被使用.它仅仅用来测试翻译数据库.</value>
   </data>
 </root>

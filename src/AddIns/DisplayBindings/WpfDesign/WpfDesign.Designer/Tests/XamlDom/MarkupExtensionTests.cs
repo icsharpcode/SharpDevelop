@@ -17,6 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using NUnit.Framework;
 using System.Windows.Markup;
 using ICSharpCode.WpfDesign.XamlDom;
@@ -118,6 +121,79 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestMarkupExtension("Content=\"{t:String '" + PathWithCommasAndSpaces + "'}\"");
 		}
+		
+		[Test]
+		public void TestMultiBinding()
+		{			
+			string xaml = @"
+<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @""">
+  <TextBox>
+    <MultiBinding>
+      <MultiBinding.Converter>
+        <t:MyMultiConverter />
+      </MultiBinding.Converter>
+      <Binding Path=""SomeProperty"" />
+    </MultiBinding>
+  </TextBox>
+</Window>";
+			
+			TestLoading(xaml);
+			
+			TestWindowMultiBinding((Window)XamlReader.Parse(xaml));
+			
+			var doc = XamlParser.Parse(new StringReader(xaml));
+			
+			TestWindowMultiBinding((Window)doc.RootInstance);
+		}
+		
+
+		void TestWindowMultiBinding(Window w)
+		{
+			var textBox = (TextBox)w.Content;
+			
+			var expr = BindingOperations.GetMultiBindingExpression(textBox, TextBox.TextProperty);
+			Assert.IsNotNull(expr);
+
+			var converter = expr.ParentMultiBinding.Converter as MyMultiConverter;
+			Assert.IsNotNull(converter);
+			
+			Assert.AreEqual(expr.ParentMultiBinding.Bindings.Count, 1);
+		}
+		
+		[Test]
+		public void TestPriorityBinding()
+		{			
+			string xaml = @"
+<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @""">
+  <TextBox>
+    <PriorityBinding>
+      <Binding Path=""SomeProperty"" />
+      <Binding Path=""OtherProperty"" />
+    </PriorityBinding>
+  </TextBox>
+</Window>";
+			
+			TestLoading(xaml);
+			
+			TestWindowPriorityBinding((Window)XamlReader.Parse(xaml));
+			
+			var doc = XamlParser.Parse(new StringReader(xaml));
+			
+			TestWindowPriorityBinding((Window)doc.RootInstance);
+		}
+		
+		
+		void TestWindowPriorityBinding(Window w)
+		{
+			var textBox = (TextBox)w.Content;
+			
+			var expr = BindingOperations.GetPriorityBindingExpression(textBox, TextBox.TextProperty);
+			Assert.IsNotNull(expr);
+			
+			Assert.AreEqual(expr.ParentPriorityBinding.Bindings.Count, 2);
+		}
 
 //        [Test]
 //        public void Test10()
@@ -176,5 +252,20 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			return null;
 		}
+	}
+	
+	public class MyMultiConverter : IMultiValueConverter
+	{
+		#region IMultiValueConverter implementation
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			return System.Windows.DependencyProperty.UnsetValue;
+		}
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+		#endregion
+		
 	}
 }

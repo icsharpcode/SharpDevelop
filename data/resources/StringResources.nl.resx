@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Deze bron is niet in gebruik. Het doel is om vertalingsdatabase te testen en heeft een 'line break'</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>Info...</value>
   </data>
@@ -2649,6 +2652,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.ProjectOptions.BuildOptions.VBOptionsDefaultValues" xml:space="preserve">
     <value>Standaard waarden voor VB Opties:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CodeFormatting" xml:space="preserve">
+    <value>Code formatteren</value>
   </data>
   <data name="Dialog.ProjectOptions.Configuration" xml:space="preserve">
     <value>Instellingen</value>
@@ -5730,6 +5736,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ProjectComponent.ContextMenu.AddReference" xml:space="preserve">
     <value>Voeg referentie toe</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.AddServiceReference" xml:space="preserve">
+    <value>Service referentie toevoegen</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.AddWebReference" xml:space="preserve">
     <value>Web referentie toevoegen</value>
   </data>
@@ -6607,6 +6616,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="StartPage.StartMenu.OpenCombineButton" xml:space="preserve">
     <value>Oplossing openen</value>
+  </data>
+  <data name="StartPage.StartMenu.RemoveRecentProject" xml:space="preserve">
+    <value>Verwijder van de lijst met recente projecten</value>
   </data>
   <data name="StartPage.StartPageContentName" xml:space="preserve">
     <value>Startpagina</value>
@@ -7773,8 +7785,5 @@ Startfout:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Regiocommentaar verwijderen</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Deze bron is niet in gebruik. Het doel is om vertalingsdatabase te testen en heeft een 'line break'</value>
   </data>
 </root>

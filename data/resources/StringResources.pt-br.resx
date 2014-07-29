@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Este recurso não está sendo utilizado. O seu proposito é testar o banco de dados de traduções e tem uma quebra de linha</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>Sobre</value>
   </data>
@@ -227,6 +230,33 @@
   </data>
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato de arquivo desconhecido.</value>
+  </data>
+  <data name="AddInManager2.AddInsView.InstallFromArchive" xml:space="preserve">
+    <value>Instalar do arquivo...</value>
+  </data>
+  <data name="AddInManager2.AddInsView.Repository" xml:space="preserve">
+    <value>Repositorio:</value>
+  </data>
+  <data name="AddInManager2.AddInsView.Search" xml:space="preserve">
+    <value>Pesquisar:</value>
+  </data>
+  <data name="AddInManager2.AddInsView.ShowPreinstalledAddIns" xml:space="preserve">
+    <value>Mostrar adicionais instalados</value>
+  </data>
+  <data name="AddInManager2.CannotRemoveAddInManager" xml:space="preserve">
+    <value>Você não pode desinstalar o Gerenciador de Adicionais porque você precisa dele para reinstalar os adicionais!</value>
+  </data>
+  <data name="AddInManager2.DefaultRepository" xml:space="preserve">
+    <value>Repositório de adicionais do SharpDevelop</value>
+  </data>
+  <data name="AddInManager2.Details.CreatedBy" xml:space="preserve">
+    <value>Criado por:</value>
+  </data>
+  <data name="AddInManager2.Details.Dependencies" xml:space="preserve">
+    <value>Dependências:</value>
+  </data>
+  <data name="AddInManager2.Details.DownloadCount" xml:space="preserve">
+    <value>Baixados:</value>
   </data>
   <data name="AddIns.AvalonEdit.InconsistentNewlines.Description" xml:space="preserve">
     <value>Esse arquivo contem novas linhas inconsistentes.</value>
@@ -6198,8 +6228,5 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Desfazer comentário</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Este recurso não está sendo utilizado. O seu proposito é testar o banco de dados de traduções e tem uma quebra de linha</value>
   </data>
 </root>
