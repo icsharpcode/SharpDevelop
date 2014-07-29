@@ -19,16 +19,15 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 	/// </summary>
 	public partial class ReportWizard : Window
 	{
-		ReportWizardContext context;
-		BaseSettingsPage baseSettingsPage;
+		readonly ReportWizardContext context;
+		readonly BaseSettingsPage baseSettingsPage;
 		
 		public ReportWizard(ReportWizardContext context)
 		{
 			InitializeComponent();
 			this.context = context;
 			baseSettingsPage = new BaseSettingsPage();
-			_wizard.Items.Insert(2,baseSettingsPage);
-			
+			_wizard.Items.Insert(1,baseSettingsPage);
 		}
 		
 		
@@ -44,17 +43,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 	
 		void _wizard_Finish(object sender, RoutedEventArgs e)
 		{
-			var x = _wizard.Items;
-			
-			foreach (var element in this._wizard.Items) {
-				var isHasContext = element is IHasContext;
-				if (isHasContext) {
-					
-					var hasContext = (IHasContext) element;
-					Console.WriteLine(" {0} - {1}",hasContext.PageNumber,element.ToString());
-				}
-			}
-			
 			context.PageOneContext = baseSettingsPage.Context;
 		
 		}

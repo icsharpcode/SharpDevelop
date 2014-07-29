@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 

@@ -38,11 +38,15 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 				   	LoggingService.Info("ReportWizard - CreateReport");   
 				var rg = new ReportGenerator(wizardViewModel);
 				
+				rg.Generate();
+				ReportModel = rg.ReportModel;
 				} else {
 				Canceled = true;
 			}
 		}
 		
 		public bool Canceled {get; private set;}
+		
+		public IReportModel ReportModel {get;private set;}
 	}
 }

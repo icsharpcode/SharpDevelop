@@ -79,7 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
-    <Folder Include="src\New Folder" />
     <Folder Include="src" />
     <Folder Include="src\DesignerBinding" />
     <Folder Include="src\Commands" />

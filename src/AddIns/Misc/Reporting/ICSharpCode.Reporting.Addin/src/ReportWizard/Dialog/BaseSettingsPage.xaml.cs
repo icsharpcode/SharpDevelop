@@ -8,6 +8,7 @@
  */
 using System;
 using System.Windows;
+using ICSharpCode.Reporting.Globals;
 using Xceed.Wpf.Toolkit;
 using ICSharpCode.Reporting.Addin.ReportWizard.ViewModels;
 
@@ -23,6 +24,8 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 		public BaseSettingsPage()
 		{
 			InitializeComponent();
+			_DataModel.SelectedItem = PushPullModel.FormSheet;
+			_ReportType.SelectedItem = ReportType.FormSheet;
 			this.context = new PageOneContext(); 
 		}
 		
@@ -38,21 +41,11 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 		}
 		
 		
-		void  WizardPage_Enter(object sender, RoutedEventArgs e)
-		{
-			
-			     Console.Write("Create Context for PageOne");
-		}
-		
-		void WizardPage_Leave(object sender, RoutedEventArgs e)
-		{
-//			NewMethod();
-		}
-
 		void UpdateContext()
 		{
-//			context.FormSheet = this._FormSheet.IsChecked == true;
-//			context.PushModel = this._PushModel.IsChecked == true;
+
+			context.DataModel = (PushPullModel) _DataModel.SelectedItem;
+			context.ReportType = (ReportType) _ReportType.SelectedItem;
 			context.ReportName = this._ReportName.Text;
 			context.FileName = this._Filename.Text;
 			context.Legal = _Legal.IsChecked == true;

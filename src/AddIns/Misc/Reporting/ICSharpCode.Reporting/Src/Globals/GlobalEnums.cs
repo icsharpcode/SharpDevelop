@@ -20,69 +20,35 @@ using System;
 
 namespace ICSharpCode.Reporting.Globals
 {
-	/// <summary>
-	/// Description of GlobalEnums.
-	/// </summary>
 	
 	///<summary>Technics to get the data
-		/// Push : report get's a ready filld dataset or something tah implements IList
-		/// Pull : report has to fill data by themself
-		/// FormSheet : FormSheet report, just labels and images are allowed
-		/// </summary>
-		/// 
+	/// Push : report get's a ready filld dataset or something tah implements IList
+	/// Pull : report has to fill data by themself
+	/// FormSheet : FormSheet report, just labels and images are allowed
+	/// </summary>
+
 	public enum PushPullModel {
-			PushData,
-			PullData,
-			FormSheet
+		PushData,
+		PullData,
+		FormSheet
 	}
-		
+	
 	/// <summary>
-		/// FormSheet means a blank form with Labels, Lines and Checkboxes
-		/// DataReport handles all Reports with Data
-		/// </summary>
+	/// FormSheet means a blank form with Labels, Lines and Checkboxes
+	/// DataReport handles all Reports with Data
+	/// </summary>
 	public enum ReportType {
-			FormSheet,
-			DataReport,
+		FormSheet,
+		DataReport,
 	}
 
 	
-public enum ReportSection {
-			ReportHeader,
-			ReportPageHeader,
-			ReportDetail,
-			ReportPageFooter,
-			ReportFooter
-		}
-		
-	public sealed class GlobalEnums
-	{
-		private GlobalEnums() {
-		}
-	
-		
-		
-		///<summary>Technics to get the data
-		/// Push : report get's a ready filld dataset or something tah implements IList
-		/// Pull : report has to fill data by themself
-		/// FormSheet : FormSheet report, just labels and images are allowed
-		/// </summary>
-		/// 
-//		public enum PushPullModel {
-//			PushData,
-//			PullData,
-//			FormSheet
-//		}
-		
-		
-		/// <summary>
-		/// FormSheet means a blank form with Labels, Lines and Checkboxes
-		/// DataReport handles all Reports with Data
-		/// </summary>
-//		public enum ReportType {
-//			FormSheet,
-//			DataReport,
-//		}
-		
-		
+	public enum ReportSection {
+		ReportHeader,
+		ReportPageHeader,
+		ReportDetail,
+		ReportPageFooter,
+		ReportFooter
 	}
+	
 }

@@ -47,8 +47,17 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 			if (file.IsDirty) {
 				var cmd = new ReportWizardCommand(file);
 				cmd.Run();
-				if (cmd.Canceled) {
+				if (!cmd.Canceled) {
 					LoggingService.Info("reportWizard canceled");
+					//return null;
+					var reportModel = cmd.ReportModel;
+					
+					var xml = CreateFormSheetFromModel.ToXml(reportModel);
+					var doc = new XmlDocument();
+					doc.LoadXml(xml.ToString());
+					var ar = XmlToArray(doc);
+					file.SetData(ar);
+				} else {
 					return null;
 				}
 			}
@@ -71,7 +80,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 			}
 			
 			
-			*/
+			 */
 		}
 
 		static byte[] XmlToArray(XmlDocument doc)

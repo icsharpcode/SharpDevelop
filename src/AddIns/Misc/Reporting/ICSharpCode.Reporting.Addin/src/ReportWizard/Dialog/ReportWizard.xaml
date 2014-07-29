@@ -20,14 +20,15 @@
 		
 		<xctk:WizardPage PageType="Interior"
 		                 Title="Page 1"
-		                 Description="This is the first page in the process." />
-		<xctk:WizardPage PageType="Interior"
+		                 Description="This is the first page in the process."
+		                 CanFinish="True" />
+	<!--	<xctk:WizardPage PageType="Interior"
 		                 Title="Page 2"
 		                 Description="This is the second page in the process" />
 		<xctk:WizardPage PageType="Interior"
 		                 Title="Last Page"
 		                 Description="This is the last page in the process"
-		                 CanFinish="True" />
+		                 CanFinish="True" />-->
 	</xctk:Wizard>
 
 </Window>
