@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			var fileName = new ICSharpCode.Core.FileName(frame.NextStatement.Filename);
 			var textLocation = new TextLocation(frame.NextStatement.StartLine, frame.NextStatement.StartColumn);
-			var binding = DebuggerDotCompletion.PrepareDotCompletion(currentText, fileName, textLocation, SD.ParserService.ResolveContext(fileName, textLocation));
+			var binding = DebuggerDotCompletion.PrepareDotCompletion(currentText, SD.ParserService.ResolveContext(fileName, textLocation));
 			if (binding == null) return;
 			binding.HandleKeyPressed(console.TextEditor, '.');
 		}

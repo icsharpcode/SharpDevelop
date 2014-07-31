@@ -41,12 +41,10 @@ namespace Debugger.AddIn.Pads.Controls
 			return !errors.Any();
 		}
 		
-		public static ICodeCompletionBinding PrepareDotCompletion(string expressionToComplete, FileName fileName, TextLocation location, ICodeContext context)
+		public static ICodeCompletionBinding PrepareDotCompletion(string expressionToComplete, ICodeContext context)
 		{
-			var lang = SD.LanguageService.GetLanguageByFileName(fileName);
-			if (lang == null)
-				return null;
-			return lang.CreateCompletionBinding(expressionToComplete, fileName, location, context);
+			return SD.LanguageService.GetLanguageByExtension(".cs")
+				.CreateCompletionBinding(expressionToComplete, context);
 		}
 	}
 }

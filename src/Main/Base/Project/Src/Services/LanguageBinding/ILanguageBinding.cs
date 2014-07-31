@@ -65,6 +65,6 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Creates a completion binding for a given expression and context.
 		/// </summary>
-		ICodeCompletionBinding CreateCompletionBinding(string expressionToComplete, FileName fileName, TextLocation location, ICodeContext context);
+		ICodeCompletionBinding CreateCompletionBinding(string expressionToComplete, ICodeContext context);
 	}
 }

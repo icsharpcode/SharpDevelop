@@ -130,7 +130,7 @@
 		</ComplexCondition>
 	</Path>
 	
-	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding id = "RazorCSharp" extensions = ".cshtml" class = "ICSharpCode.AspNet.Mvc.Completion.RazorCSharpCompletionBinding"/>
 	</Path>
 
