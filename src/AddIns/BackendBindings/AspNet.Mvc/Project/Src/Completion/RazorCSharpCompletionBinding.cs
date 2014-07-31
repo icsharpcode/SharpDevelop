@@ -18,9 +18,12 @@
 
 using System;
 using System.IO;
+using System.Web.Razor;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
@@ -82,7 +85,7 @@ namespace ICSharpCode.AspNet.Mvc.Completion
 			
 			var currentTypeDefinition = new DefaultUnresolvedTypeDefinition(project.RootNamespace, Path.GetFileNameWithoutExtension(editor.FileName));
 			ITypeReference baseTypeReference = new GetClassTypeReference("System.Web.Mvc", "WebViewPage", 1);
-			baseTypeReference = new ParameterizedTypeReference(baseTypeReference, new[] { KnownTypeReference.Object });
+			baseTypeReference = new ParameterizedTypeReference(baseTypeReference, new[] { FindModelType(editor) });
 			currentTypeDefinition.BaseTypes.Add(baseTypeReference);
 			
 			var currentMethod = new DefaultUnresolvedMethod(currentTypeDefinition, "__ContextStub__");
@@ -107,10 +110,34 @@ namespace ICSharpCode.AspNet.Mvc.Completion
 			}
 			
 			var context = new CSharpTypeResolveContext(compilation.MainAssembly,
-				              currentFile.RootUsingScope.Resolve(compilation),
-				              currentResolvedTypeDef,
-				              currentMethod.CreateResolved(resolveContext.WithCurrentTypeDefinition(currentResolvedTypeDef)));
+			                                           currentFile.RootUsingScope.Resolve(compilation),
+			                                           currentResolvedTypeDef,
+			                                           currentMethod.CreateResolved(resolveContext.WithCurrentTypeDefinition(currentResolvedTypeDef)));
 			return new CSharpResolver(context);
+		}
+
+		ITypeReference FindModelType(ITextEditor editor)
+		{
+			ParserResults results = ParseTemplate(editor.Document);
+			string typeName = GetModelTypeName(results);
+			if (string.IsNullOrWhiteSpace(typeName))
+				return KnownTypeReference.Object;
+			return new CSharpParser().ParseTypeReference(typeName)
+				.ToTypeReference(NameLookupMode.BaseTypeReference);
+		}
+		
+		ParserResults ParseTemplate(ITextSource textBuffer)
+		{
+			var host = new RazorEngineHost(new CSharpRazorCodeLanguage());
+			var engine = new RazorTemplateEngine(host);
+			return engine.ParseTemplate(textBuffer.CreateReader());
+		}
+		
+		string GetModelTypeName(ParserResults results)
+		{
+			var visitor = new RazorCSharpParserModelTypeVisitor();
+			results.Document.Accept(visitor);
+			return visitor.ModelTypeName;
 		}
 	}
 	
