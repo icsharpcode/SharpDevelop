@@ -234,6 +234,8 @@ namespace Debugger
 			try {
 				uint validLine = symDoc.FindClosestLine((uint)line);
 				symMethods = symReader.GetMethodsFromDocumentPosition(symDoc, validLine, (uint)column);
+				if (validLine > 0)
+					line = (int)validLine;
 			} catch {
 				yield break; //Not found
 			}
@@ -250,35 +252,14 @@ namespace Debugger
 		
 		SequencePoint FindNearestMatchingSequencePoint(SequencePoint[] seqPoints, int line, int column)
 		{
-			// value is nearest offset in lines;
-			// negative numbers: (Start|End)Line is same as line, value is offset in columns
-			int nearestOffset = 0;
-			SequencePoint bestMatch = null;
 			for (int i = 0; i < seqPoints.Length; i++) {
 				var s = seqPoints[i];
 				if (s.ContainsLocation(line, column))
-					return seqPoints[i];
-				
-				if (bestMatch == null) {
-					bestMatch = s;
-					nearestOffset = GetOffsetValue(s, line, column);
-				} else {
-					int newOffset = GetOffsetValue(s, line, column);
-					if ((newOffset < 0 && nearestOffset < 0 && newOffset > nearestOffset) || (newOffset < nearestOffset)) {
-						bestMatch = s;
-						nearestOffset = newOffset;
-					}
-				}
+					return s;
+				if (s.StartLine > line)
+					return s;
 			}
-			
-			return bestMatch;
-		}
-
-		static int GetOffsetValue(SequencePoint s, int line, int column)
-		{
-			if (line == s.StartLine || s.EndLine == line)
-				return -Math.Min(Math.Abs(s.StartColumn - column), Math.Abs(s.EndColumn - column));
-			return Math.Min(Math.Abs(s.StartLine - line), Math.Abs(s.EndLine - line));
+			return null;
 		}
 		
 		public IEnumerable<ILRange> GetIgnoredILRanges(IMethod method)
