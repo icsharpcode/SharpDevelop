@@ -34,10 +34,6 @@ namespace HexEditor.View
 			get { return hexEditControl.HasSomethingSelected; }
 		}
 		
-		public bool EditorFocused {
-			get { return hexEditControl.Focused; }
-		}
-		
 		public bool CanUndo {
 			get { return hexEditControl.CanUndo; }
 		}
