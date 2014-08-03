@@ -211,7 +211,6 @@ namespace ICSharpCode.Core.Presentation
 		{
 			Codon codon = descriptor.Codon;
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Command";
-			bool createCommand = codon.Properties["loadclasslazy"] == "false";
 			
 			switch (type) {
 				case "Separator":
@@ -220,7 +219,7 @@ namespace ICSharpCode.Core.Presentation
 					return new MenuCheckBox(context.InputBindingOwner, codon, descriptor.Parameter, descriptor.Conditions);
 				case "Item":
 				case "Command":
-					return new MenuCommand(context.InputBindingOwner, codon, descriptor.Parameter, createCommand, context.ActivationMethod, descriptor.Conditions);
+					return new MenuCommand(context.InputBindingOwner, codon, descriptor.Parameter, context.ActivationMethod, descriptor.Conditions);
 				case "Menu":
 					var item = new CoreMenuItem(codon, descriptor.Parameter, descriptor.Conditions) {
 						ItemsSource = new object[1],
