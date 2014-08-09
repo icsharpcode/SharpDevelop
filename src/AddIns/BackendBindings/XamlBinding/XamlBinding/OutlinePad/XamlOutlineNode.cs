@@ -24,6 +24,8 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.TreeView;
+using ICSharpCode.NRefactory.Xml;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -47,13 +49,20 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		public ITextAnchor Marker { get; set; }
+		public override object ToolTip {
+			get { return this.GetSourceText(); }
+		}
+		
+		public ITextAnchor StartMarker { get; set; }
 		public ITextAnchor EndMarker { get; set; }
 		public ITextEditor Editor { get; set; }
+		public AXmlElement XmlNodeItem { get; set; }
+		public TextLocation StartLocation { get; set; }
+		public TextLocation EndLocation { get; set; }
 		
 		public string GetMarkupText()
 		{
-			return Editor.Document.GetText(Marker.Offset, EndMarker.Offset - Marker.Offset);
+			return Editor.Document.GetText(StartMarker.Offset, EndMarker.Offset - StartMarker.Offset);
 		}
 		
 		protected override IDataObject GetDataObject(SharpTreeNode[] nodes)
@@ -96,6 +105,13 @@ namespace ICSharpCode.XamlBinding
 //			}
 //		}
 		
+		public string GetSourceText() {
+			if (StartMarker.IsDeleted || EndMarker.IsDeleted)
+				return string.Empty;
+			
+			return Editor.Document.GetText(StartMarker.Offset, EndMarker.Offset - StartMarker.Offset);
+		}
+		
 		public override bool CanDelete(SharpTreeNode[] nodes)
 		{
 			return nodes.OfType<XamlOutlineNode>().All(n => n.Parent != null);
@@ -115,7 +131,7 @@ namespace ICSharpCode.XamlBinding
 		
 		void DeleteCore()
 		{
-			Editor.Document.Remove(Marker.Offset, EndMarker.Offset - Marker.Offset);
+			Editor.Document.Remove(StartMarker.Offset, EndMarker.Offset - StartMarker.Offset);
 		}
 		
 		public override object Text {

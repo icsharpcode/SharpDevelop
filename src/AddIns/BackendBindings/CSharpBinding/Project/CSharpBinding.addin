@@ -33,6 +33,17 @@
 		</Condition>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Pads/OutlinePad/ContextMenu/NodeActions">
+		<MenuItem id = "RemoveNode"
+		          label = "Remove"
+		          icon = "Icons.16x16.DeleteIcon"
+		          class = "CSharpBinding.OutlinePad.RemoveNodeCommand"/>
+		<MenuItem id = "SelectRegion"
+		          label = "Mark text"
+		          icon = ""
+		          class = "CSharpBinding.OutlinePad.SelectRegionCommand"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
 		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
 		<String id="csc" text = "csc"/>

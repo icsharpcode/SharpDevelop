@@ -136,6 +136,14 @@ namespace ICSharpCode.TreeView
 			get { return Parent != null ? Parent.Level + 1 : 0; }
 		}
 		
+		public virtual FontWeight FontWeight {
+			get { return FontWeights.Normal; }
+		}
+		
+		public virtual FontStyle FontStyle {
+			get { return FontStyles.Normal; }
+		}
+		
 		public bool IsRoot
 		{
 			get { return Parent == null; }

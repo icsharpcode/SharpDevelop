@@ -330,6 +330,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			// so it will always invalidate the next visual line when a folded line is constructed
 			// and the highlighting stack has changed.
 			
+			if (fromLineNumber > textView.Document.LineCount || toLineNumber > textView.Document.LineCount)
+ 				return;
+			
 			if (fromLineNumber == toLineNumber) {
 				textView.Redraw(textView.Document.GetLineByNumber(fromLineNumber));
 			} else {

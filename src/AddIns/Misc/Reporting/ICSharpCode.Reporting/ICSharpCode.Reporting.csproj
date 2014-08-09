@@ -198,7 +198,6 @@
     <Folder Include="Src\Interfaces" />
     <Folder Include="Src\Globals" />
     <Folder Include="Src" />
-    <Folder Include="Src" />
     <Folder Include="Src\Interfaces\Export" />
     <Folder Include="Src\Interfaces\Data" />
     <Folder Include="Src\Items" />

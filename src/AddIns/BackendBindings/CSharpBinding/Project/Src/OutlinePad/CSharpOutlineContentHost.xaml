@@ -1,0 +1,13 @@
+﻿<DockPanel x:Class="CSharpBinding.OutlinePad.CSharpOutlineContentHost"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:treeview="http://icsharpcode.net/sharpdevelop/treeview"
+>
+	<treeview:SharpTreeView
+		x:Name="treeView"
+		AllowDrop="True"
+		AllowDropOrder="True"
+		MouseDoubleClick="TreeViewMouseDoubleClick"
+		MouseLeftButtonUp="TreeView_MouseLeftButtonUp"
+	/>
+</DockPanel>

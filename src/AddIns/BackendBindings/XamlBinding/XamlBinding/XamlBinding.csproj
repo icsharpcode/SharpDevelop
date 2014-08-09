@@ -66,6 +66,12 @@
   <ItemGroup>
     <Compile Include="AttachedMemberResolveResult.cs" />
     <Compile Include="CompletionDataGenerator.cs" />
+    <Compile Include="OutlinePad\ExtensionMethods.cs" />
+    <Compile Include="OutlinePad\XamlOutlineContentHost.xaml.cs">
+      <DependentUpon>XamlOutlineContentHost.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OutlinePad\XamlOutlineNode.cs" />
     <Compile Include="XamlAstResolver.cs" />
     <Compile Include="XamlCodeCompletionBinding.cs" />
     <Compile Include="XamlCompletionItem.cs" />
@@ -109,11 +115,6 @@
     <Compile Include="MarkupExtensionParseException.cs">
     </Compile>
     <Compile Include="XamlLanguageBinding.cs" />
-    <Compile Include="XamlOutlineContentHost.xaml.cs">
-      <DependentUpon>XamlOutlineContentHost.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="XamlOutlineNode.cs" />
     <Compile Include="XamlParser.cs" />
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
@@ -172,10 +173,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="OutlinePad" />
     <Folder Include="Options" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Options\CodeCompletion.xaml" />
-    <Page Include="XamlOutlineContentHost.xaml" />
+    <Page Include="OutlinePad\XamlOutlineContentHost.xaml" />
   </ItemGroup>
 </Project>

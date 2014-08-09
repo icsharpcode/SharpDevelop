@@ -7,5 +7,7 @@
 		x:Name="treeView"
 		AllowDrop="True"
 		AllowDropOrder="True"
-		MouseDoubleClick="TreeViewMouseDoubleClick" />
+		MouseDoubleClick="TreeViewMouseDoubleClick"
+		MouseLeftButtonUp="TreeView_MouseLeftButtonUp"	
+	/>
 </DockPanel>

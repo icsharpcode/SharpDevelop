@@ -182,6 +182,8 @@
                         <Border Background="{TemplateBinding Background}">
                             <Default:SharpTreeNodeView Name="nodeView"
                                                        Foreground="{Binding Foreground}"
+                            						   FontWeight="{Binding Weight}"
+                            						   FontStyle="{Binding Style}"
                                                        HorizontalAlignment="Left" />
                         </Border>
                     </Border>

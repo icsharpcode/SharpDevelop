@@ -24,10 +24,14 @@ using System.Reflection;
 using ICSharpCode.AvalonEdit;
 using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Refactoring;
+using CSharpBinding.OutlinePad;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.AvalonEdit.Rendering;
+
 namespace CSharpBinding
 {
 	public class CSharpTextEditorExtension : ITextEditorExtension
@@ -46,6 +50,8 @@ namespace CSharpBinding
 
 		TextEditorOptions originalEditorOptions;
 
+		CSharpOutlineContentHost contentHost;
+		
 		public void Attach(ITextEditor editor)
 		{
 			this.editor = editor;
@@ -58,6 +64,7 @@ namespace CSharpBinding
 				contextActionProviders = AddInTree.BuildItems<IContextActionProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
 				editor.ContextActionProviders.AddRange(contextActionProviders);
 			}
+			
 			
 			// Create instance of options adapter and register it as service
 			var formattingPolicy = CSharpFormattingPolicies.Instance.GetProjectOptions(SD.ProjectService.FindProjectContainingFile(editor.FileName));
@@ -74,6 +81,17 @@ namespace CSharpBinding
 				// Set TextEditor's options to same object
 				originalEditorOptions = textEditor.Options;
 				textEditor.Options = options.TextEditorOptions;
+				
+				// add the outline pad
+				var textView = textEditor.TextArea.TextView;
+				if (textView != null) {
+					if (SD.Workbench != null) {		
+						// add the CSharpOutlineContentHost, which manages the tree view
+						contentHost = new CSharpOutlineContentHost(editor);
+						textView.Services.AddService(typeof(IOutlineContentHost), contentHost);
+					}
+					textView.Services.AddService(typeof(CSharpTextEditorExtension), this);				
+				}
 			}
 		}
 
@@ -82,13 +100,25 @@ namespace CSharpBinding
 			var textEditor = editor.GetService<TextEditor>();
 			if (textEditor != null) {
 				var textView = textEditor.TextArea.TextView;
+				
 				// Unregister our ITextEditorOptions instance from editor
 				var optionsService = textView.GetService<ITextEditorOptions>();
 				if ((optionsService != null) && (optionsService == options))
 					textView.Services.RemoveService(typeof(ITextEditorOptions));
+				
 				// Reset TextEditor options, too?
 				if ((textEditor.Options != null) && (textEditor.Options == options.TextEditorOptions))
 					textEditor.Options = originalEditorOptions;
+				
+				// remove the outline pad
+				if (textView != null) {
+					if (contentHost != null) {
+						textView.Services.RemoveService(typeof(IOutlineContentHost));
+						contentHost.Dispose();
+						contentHost = null;
+					}
+					textView.Services.RemoveService(typeof(CSharpTextEditorExtension));
+				}
 			}
 			
 			codeManipulation.Dispose();

@@ -1,0 +1,16 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="src\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\IndentEngine\IndentState.cs">
+    <Files>
+      <File FileName="src\AddIns\BackendBindings\CSharpBinding\Project\Src\OutlinePad\AstNodeHelper.cs" Line="35" Column="51" />
+      <File FileName="src\AddIns\BackendBindings\CSharpBinding\Project\Src\OutlinePad\CSharpOutlineContentHost.xaml.cs" Line="49" Column="3" />
+      <File FileName="src\AddIns\BackendBindings\CSharpBinding\Project\Src\OutlinePad\CSharpOutlineContentHost.xaml" Line="8" Column="8" />
+      <File FileName="src\AddIns\BackendBindings\CSharpBinding\Project\Src\OutlinePad\CSharpOutlineNode.cs" Line="121" Column="5" />
+      <File FileName="src\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\IndentEngine\IndentState.cs" Line="1703" Column="5" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
