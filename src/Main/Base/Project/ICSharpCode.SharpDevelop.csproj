@@ -171,6 +171,7 @@
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor\ToolTipService.cs" />
+    <Compile Include="Editor\ToolTipUtils.cs" />
     <Compile Include="Editor\XmlDocFormatter.cs" />
     <Compile Include="Parser\CombinedAssemblySearcher.cs" />
     <Compile Include="Parser\DefaultAssemblySearcher.cs" />
