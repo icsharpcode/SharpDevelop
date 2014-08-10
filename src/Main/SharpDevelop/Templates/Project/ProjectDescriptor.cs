@@ -514,6 +514,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 						file.SetProjectItemProperties(projectFile);
 						
 						project.Items.Add(projectFile);
+						FileService.FireFileCreated(fileName, false);
 					}
 				}
 				
@@ -535,6 +536,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 				project.ProjectLoaded();
 				
 				SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectCreated(new ProjectEventArgs(project));
+				FileService.FireFileCreated(project.FileName, false);
 				templateResults.NewProjects.Add(project);
 				success = true;
 				return true;
