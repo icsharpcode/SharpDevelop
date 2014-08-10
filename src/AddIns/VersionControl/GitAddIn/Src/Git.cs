@@ -18,6 +18,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -79,14 +80,24 @@ namespace ICSharpCode.GitAddIn
 			return relFileName.Replace('\\', '/');
 		}
 		
-		public static Task<int> RunGitAsync(string workingDir, params string[] arguments)
+		static SemaphoreSlim gitMutex = new SemaphoreSlim(1);
+		
+		public static async Task<int> RunGitAsync(string workingDir, params string[] arguments)
 		{
 			string git = FindGit();
 			if (git == null)
-				return Task.FromResult(9009);
-			ProcessRunner p = new ProcessRunner();
-			p.WorkingDirectory = workingDir;
-			return p.RunInOutputPadAsync(GitMessageView.Category, git, arguments);
+				return 9009;
+			// Wait until other git calls have finished running
+			// This prevents git from failing due to a locked index when several files
+			// are added concurrently
+			await gitMutex.WaitAsync();
+			try {
+				ProcessRunner p = new ProcessRunner();
+				p.WorkingDirectory = workingDir;
+				await p.RunInOutputPadAsync(GitMessageView.Category, git, arguments);
+			} finally {
+				gitMutex.Release();
+			}
 		}
 		
 		/// <summary>
