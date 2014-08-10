@@ -94,7 +94,7 @@ namespace ICSharpCode.GitAddIn
 			try {
 				ProcessRunner p = new ProcessRunner();
 				p.WorkingDirectory = workingDir;
-				await p.RunInOutputPadAsync(GitMessageView.Category, git, arguments);
+				return await p.RunInOutputPadAsync(GitMessageView.Category, git, arguments);
 			} finally {
 				gitMutex.Release();
 			}
