@@ -59,7 +59,7 @@ namespace ICSharpCode.GitAddIn
 			string wcRoot = FindWorkingCopyRoot(fileName);
 			if (wcRoot == null)
 				return Task.FromResult(false);
-			return RunGitAsync(wcRoot, "add", AdaptFileName(wcRoot, fileName));
+			return RunGitAsync(wcRoot, "add", "--intent-to-add", AdaptFileName(wcRoot, fileName));
 		}
 		
 		public static Task RemoveAsync(string fileName, bool indexOnly)
