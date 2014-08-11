@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -132,21 +133,21 @@ namespace CSharpBinding.Refactoring
 			
 			switch (defaultPosition) {
 				case InsertPosition.Start:
-					layer.CurrentInsertionPoint = 0;
+					layer.CurrentInsertionPointIndex = 0;
 					break;
 				case InsertPosition.End:
-					layer.CurrentInsertionPoint = insertionPoints.Count - 1;
+					layer.CurrentInsertionPointIndex = insertionPoints.Count - 1;
 					break;
 				case InsertPosition.Before:
 					for (int i = 0; i < insertionPoints.Count; i++) {
 						if (insertionPoints[i].Location < loc)
-							layer.CurrentInsertionPoint = i;
+							layer.CurrentInsertionPointIndex = i;
 					}
 					break;
 				case InsertPosition.After:
 					for (int i = 0; i < insertionPoints.Count; i++) {
 						if (insertionPoints[i].Location > loc) {
-							layer.CurrentInsertionPoint = i;
+							layer.CurrentInsertionPointIndex = i;
 							break;
 						}
 					}
@@ -174,11 +175,20 @@ namespace CSharpBinding.Refactoring
 						}
 
 						int offset = currentScript.GetCurrentOffset(args.InsertionPoint.Location);
-						int indentLevel = currentScript.GetIndentLevelAt(offset);
+						int indentLevel = currentScript.GetIndentLevelAt(Math.Max(0, offset - 1));
 						
 						foreach (var node in nodes.Reverse()) {
 							var output = currentScript.OutputNode(indentLevel, node);
-							int delta = args.InsertionPoint.Insert(target, output.Text);
+							var text = output.Text;
+							var insertionPoint = args.InsertionPoint;
+							if (node is EnumMemberDeclaration) {
+								insertionPoint.LineAfter = NewLineInsertion.Eol;
+								insertionPoint.LineBefore = NewLineInsertion.None;
+								if (args.InsertionPoint != layer.InsertionPoints.Last()) {
+									text += ",";
+								}
+							}
+							int delta = insertionPoint.Insert(target, text);
 							output.RegisterTrackedSegments(currentScript, delta + offset);
 						}
 						currentScript.FormatText(nodes);
@@ -239,19 +249,6 @@ namespace CSharpBinding.Refactoring
 			var layer = new InsertionCursorLayer(area, operation, insertionPoints);
 			area.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)area.TextView.InvalidateVisual);
 			
-			if (declaringType.Kind == TypeKind.Enum) {
-				foreach (var node in nodes.Reverse()) {
-					int indentLevel = GetIndentLevelAt(area.Document.GetOffset(declaringType.BodyRegion.Begin));
-					var output = OutputNode(indentLevel, node);
-					var point = insertionPoints[0];
-					var offset = area.Document.GetOffset(point.Location);
-					var text = output.Text + ",";
-					var delta = point.Insert(area.Document, text);
-					output.RegisterTrackedSegments(script, delta + offset);
-				}
-				tcs.SetResult(script);
-				return tcs.Task;
-			}
 			InsertWithCursorOnLayer(script, layer, tcs, nodes, area.Document);
 			return tcs.Task;
 		}
