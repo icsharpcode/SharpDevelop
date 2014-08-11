@@ -4,25 +4,41 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:ICSharpCode.Reporting.Addin.ReportWizard.Dialog"
         Title="{Binding Title}"
-        Height="600" Width="600">
+        Height="600" Width="800">
 	
 	<xctk:Wizard x:Name="_wizard" FinishButtonClosesWindow="True"
 	             Next="_wizard_Next"
+	             NextButtonVisibility="Visible"
+	             CancelButtonVisibility="Visible"
 	             PageChanged="_wizard_PageChanged"
 	             Finish="_wizard_Finish"
 	             CanHelp="False">
+		<local:WelcomePage></local:WelcomePage>
 		
+		<local:BaseSettingsPage></local:BaseSettingsPage>
+		
+		<local:PushDataReport></local:PushDataReport>
+		
+		<!--<xctk:WizardPage PageType="Interior"
+		                 Title="dritte Seite"
+		                 Description="this Page will guide you to creating an DataDriven Report"
+		                 CanCancel="true"
+		                 CanFinish="True"
+		/>-->
+		
+		
+		<!--
 		<xctk:WizardPage PageType="Exterior" Title="Welcome to Reporting Wizard"
-		                 Description="This Wizard will walk you though how to do something." />
+		                 Description="This Wizard will walk you though how to do something.">
 		
-	<!-- !	<local:BaseSettingsPage ></local:BaseSettingsPage> -->
+		<Image Name="_image"></Image>
+		</xctk:WizardPage>-->
+		
+		<!-- !	<local:BaseSettingsPage ></local:BaseSettingsPage> -->
 		
 		
-		<xctk:WizardPage PageType="Interior"
-		                 Title="Page 1"
-		                 Description="This is the first page in the process."
-		                 CanFinish="True" />
-	<!--	<xctk:WizardPage PageType="Interior"
+		
+		<!--	<xctk:WizardPage PageType="Interior"
 		                 Title="Page 2"
 		                 Description="This is the second page in the process" />
 		<xctk:WizardPage PageType="Interior"

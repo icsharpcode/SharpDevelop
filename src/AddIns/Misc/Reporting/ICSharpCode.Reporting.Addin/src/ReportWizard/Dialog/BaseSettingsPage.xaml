@@ -4,11 +4,17 @@
                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                  xmlns:System="clr-namespace:System;assembly=mscorlib"
                  xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
-                 
+                 Name="Base"
                  Title="Base Settings"
                  Description="Basic Settings and Layout"
+                 PageType="Interior"
                  Background="LightGray"
-                 CanFinish="true">
+                 CanFinish="true"
+                 CanSelectNextPage="false">
+	
+	<xctk:WizardPage.ExteriorPanelContent >
+		<Image Name="_image" Stretch="Fill"></Image>
+	</xctk:WizardPage.ExteriorPanelContent>
 	
 	<xctk:WizardPage.Resources>
 		<ObjectDataProvider x:Key="pushpullEnum" MethodName="GetValues"
@@ -26,7 +32,7 @@
 		</ObjectDataProvider>
 	</xctk:WizardPage.Resources>
 	
-	<Grid >
+	<Grid ShowGridLines="True" >
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"> </RowDefinition>
 			<RowDefinition Height="Auto"></RowDefinition>
@@ -40,34 +46,37 @@
 			<RowDefinition Height="Auto"></RowDefinition>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition MinWidth="80"></ColumnDefinition>
 			<ColumnDefinition></ColumnDefinition>
 			<ColumnDefinition></ColumnDefinition>
 			<ColumnDefinition></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 		
-		<Label Content="DataModel :"></Label>
+		<Label Content="DataModel :" Grid.Column="1"></Label>
 		<ComboBox Name="_DataModel" Margin="10,5,0,5"
-		          Grid.Column="1"
+		          Grid.Column="2"
+		          SelectionChanged="_DataModel_SelectionChanged"
 		          ItemsSource="{Binding Source={StaticResource pushpullEnum}}">
 		</ComboBox>
 		
-		<Label Content="ReportType :" Margin="0,5,0,5" Grid.Row="2"></Label>
+		<Label Content="ReportType :" Margin="0,5,0,5" Grid.Column="1" Grid.Row="2"></Label>
 		<ComboBox Name="_ReportType" Margin="10,5,0,5"
-		          Grid.Row="2" Grid.Column="1"
+		          Grid.Row="2" Grid.Column="2"
 		          ItemsSource="{Binding Source={StaticResource reportTypeEnum}}">
 		</ComboBox>
 		
 		
-		<Label Content="Report Name :" Margin="0,5,0,5" Grid.Row="4"></Label>
-		<TextBox Name="_ReportName" Margin="10,5,0,5"  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"></TextBox>
+		<Label Content="Report Name :" Margin="0,5,0,5" Grid.Column="1" Grid.Row="4"></Label>
+		<TextBox Name="_ReportName" Margin="10,5,0,5"  Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3"></TextBox>
 		
-		<Label Content="Filename :" Margin="0,5,0,5" Grid.Row="5"></Label>
-		<TextBox Name="_Filename" Margin="10,5,0,5" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"></TextBox>
+		<Label Content="Filename :" Margin="0,5,0,5" Grid.Column="1" Grid.Row="5"></Label>
+		<TextBox Name="_Filename" Margin="10,5,0,5" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3"></TextBox>
 		
-		<Label Content="Page Layout :" Grid.Row="6"  Margin="0,5,0,5"></Label>
-		<RadioButton Name="_Legal" GroupName="PageLayout" Content="Legal" IsChecked="true" Grid.Row="7"  Margin="0,5,0,5" ></RadioButton>
-		<RadioButton Name="_Landscape" GroupName="PageLayout" Content="Landscape"  Grid.Row="7" Grid.Column="1" Margin="0,5,0,5"></RadioButton>
+		
+		<Label Content="Page Layout :" Grid.Column="1" Grid.Row="6"  Margin="0,5,0,5"></Label>
+		<RadioButton Name="_Legal" GroupName="PageLayout" Content="Legal" IsChecked="true" Grid.Column="1" Grid.Row="7"  Margin="0,5,0,5" ></RadioButton>
+		<RadioButton Name="_Landscape" GroupName="PageLayout" Content="Landscape"  Grid.Row="7" Grid.Column="2" Margin="0,5,0,5"></RadioButton>
+	
 	</Grid>
 
 </xctk:WizardPage>

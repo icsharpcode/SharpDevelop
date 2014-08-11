@@ -150,14 +150,23 @@
       <DependentUpon>BaseSettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\ReportWizard\Dialog\PushDataReport.xaml.cs">
+      <DependentUpon>PushDataReport.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\ReportWizard\Dialog\ReportWizard.xaml.cs">
       <DependentUpon>ReportWizard.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\Dialog\WelcomePage.xaml.cs">
+      <DependentUpon>WelcomePage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\ReportWizard\ReportGenerator.cs" />
     <Compile Include="src\ReportWizard\ReportWizardCommand.cs" />
     <Compile Include="src\ReportWizard\ViewModels\PageOneContext.cs" />
     <Compile Include="src\ReportWizard\ViewModels\ReportWizardContext.cs" />
+    <Compile Include="src\ReportWizard\WizardHelper.cs" />
     <Compile Include="src\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="src\Services\DesignerSerializationService.cs" />
     <Compile Include="src\Services\MenuCommandService.cs" />
@@ -230,7 +239,9 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="src\ReportWizard\Dialog\BaseSettingsPage.xaml" />
+    <Page Include="src\ReportWizard\Dialog\PushDataReport.xaml" />
     <Page Include="src\ReportWizard\Dialog\ReportWizard.xaml" />
+    <Page Include="src\ReportWizard\Dialog\WelcomePage.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

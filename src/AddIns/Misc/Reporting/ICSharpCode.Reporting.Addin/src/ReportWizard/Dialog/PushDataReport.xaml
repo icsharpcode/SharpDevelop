@@ -1,0 +1,33 @@
+﻿<xctk:WizardPage x:Class="ICSharpCode.Reporting.Addin.ReportWizard.Dialog.PushDataReport"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                 xmlns:System="clr-namespace:System;assembly=mscorlib"
+                 
+                 xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
+                 Name="PushData"
+                 Title="SharpDevelop Reporting"
+                 Description="Welcome to Sharpdevelop Reporting Wizard"
+                 PageType="Interior"
+                 NextButtonVisibility="Visible"
+                 CancelButtonVisibility="Visible">
+	
+	<Grid ShowGridLines="True">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="200"></RowDefinition>
+		</Grid.RowDefinitions>
+	
+		<DataGrid  Name="_DataGrid"
+		          ItemsSource="{Binding}"
+		          CanUserAddRows="True"
+		          CanUserDeleteRows="True"
+		
+		          AutoGenerateColumns="False" Grid.Row="1" Margin="30,10,30,5">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="ColumnName" Binding="{Binding ColumnName}" Width="150"></DataGridTextColumn>
+				<DataGridTextColumn Header="DataType" Binding="{Binding DataTypeName}" Width="150"></DataGridTextColumn>
+			</DataGrid.Columns>
+		</DataGrid>
+	</Grid>
+</xctk:WizardPage>

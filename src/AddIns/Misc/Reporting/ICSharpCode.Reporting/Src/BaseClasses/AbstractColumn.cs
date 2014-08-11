@@ -26,8 +26,8 @@ namespace ICSharpCode.Reporting.BaseClasses
 	/// </summary>
 	public  class AbstractColumn
 	{
-		private Type dataType;
-		private string dataTypeName;
+		Type dataType;
+		string dataTypeName;
 		
 		public AbstractColumn() {
 			this.dataType = typeof(System.String);
@@ -53,7 +53,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 			}
 		}
 		
-		[XmlIgnoreAttribute]
+//		[XmlIgnoreAttribute]
 		public Type DataType {
 			get {
 				return dataType;

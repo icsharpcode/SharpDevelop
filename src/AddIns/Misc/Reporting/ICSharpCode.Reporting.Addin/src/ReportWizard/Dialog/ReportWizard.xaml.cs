@@ -7,7 +7,12 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows;
+using System.Windows.Media.Imaging;
+using ICSharpCode.SharpDevelop;
 using Xceed.Wpf.Toolkit;
 using ICSharpCode.Reporting.Addin.ReportWizard.ViewModels;
 using System.Linq;
@@ -27,18 +32,18 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 			InitializeComponent();
 			this.context = context;
 			baseSettingsPage = new BaseSettingsPage();
-			_wizard.Items.Insert(1,baseSettingsPage);
 		}
 		
 		
 		void _wizard_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
 		{
+			Console.WriteLine(" _wizard_Next {0}",((Wizard)sender).CurrentPage.Name);
 		}
 	
 		
 		void _wizard_PageChanged(object sender, RoutedEventArgs e)
 		{
-	
+			Console.WriteLine("_wizard_PageChanged {0}",((Wizard)sender).CurrentPage.Name);
 		}
 	
 		void _wizard_Finish(object sender, RoutedEventArgs e)
@@ -46,6 +51,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 			context.PageOneContext = baseSettingsPage.Context;
 		
 		}
-		
+  
 	}
 }
