@@ -61,38 +61,24 @@ namespace CSharpBinding.Completion
 			return new CSharpCompletionContext(editor, parseInfo.SyntaxTree.ConditionalSymbols, compilation, projectContent, editor.Document, parseInfo.UnresolvedFile, editor.Caret.Location);
 		}
 		
-		public static CSharpCompletionContext Get(ITextEditor editor, ITextSource fileContent, TextLocation currentLocation, FileName fileName)
+		public static CSharpCompletionContext Get(ITextEditor editor, ICodeContext context, TextLocation currentLocation, ITextSource fileContent)
 		{
 			IDocument document = new ReadOnlyDocument(fileContent);
 			
-			// Don't require the very latest parse information, an older cached version is OK.
-			var parseInfo = SD.ParserService.GetCachedParseInformation(fileName) as CSharpFullParseInformation;
-			if (parseInfo == null) {
-				parseInfo = SD.ParserService.Parse(fileName) as CSharpFullParseInformation;
-			}
-			if (parseInfo == null)
-				return null;
-			
-			
-			var project = SD.ProjectService.FindProjectContainingFile(fileName)as CSharpProject;
-			if (project == null)
-				return null;
-			
-			var solutionSnapshot = SD.ParserService.GetCurrentSolutionSnapshot();
-			var projectContent = solutionSnapshot.GetProjectContent(project);
+			var projectContent = context.Compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
 			if (projectContent == null)
 				return null;
 			
-			CSharpParser parser = new CSharpParser(project.CompilerSettings);
+			CSharpParser parser = new CSharpParser();
 			parser.GenerateTypeSystemMode = false;
 			
 			SyntaxTree cu = parser.Parse(fileContent, Path.GetRandomFileName() + ".cs");
 			cu.Freeze();
 			
 			CSharpUnresolvedFile unresolvedFile = cu.ToTypeSystem();
-			ICompilation compilation = projectContent.AddOrUpdateFiles(unresolvedFile).CreateCompilation(solutionSnapshot);
+			ICompilation compilation = projectContent.AddOrUpdateFiles(unresolvedFile).CreateCompilation(SD.ParserService.GetCurrentSolutionSnapshot());
 			
-			return new CSharpCompletionContext(editor, parseInfo.SyntaxTree.ConditionalSymbols, compilation, projectContent, document, unresolvedFile, currentLocation);
+			return new CSharpCompletionContext(editor, EmptyList<string>.Instance, compilation, projectContent, document, unresolvedFile, currentLocation);
 		}
 		
 		private CSharpCompletionContext(ITextEditor editor, IList<string> conditionalSymbols, ICompilation compilation, IProjectContent projectContent, IDocument document, CSharpUnresolvedFile unresolvedFile, TextLocation caretLocation)

@@ -136,6 +136,13 @@ namespace ICSharpCode.FormsDesigner
 			toolboxService.SetSelectedToolboxItem(null);
 		}
 		
+		static ICompilation GetCompilationForCurrentProject()
+		{
+			IProject project = SD.ProjectService.CurrentProject;
+			if (project == null) return null;
+			return SD.ParserService.GetCompilation(project);
+		}
+		
 		static void SelectedToolUsedHandler(object sender, EventArgs e)
 		{
 			SD.Log.Debug("SelectedToolUsedHandler");
@@ -148,7 +155,7 @@ namespace ICSharpCode.FormsDesigner
 					if (selectedItem != null && selectedItem.TypeName != null) {
 						SD.Log.Debug("Checking for reference to CustomComponent: " + selectedItem.TypeName);
 						// Check current project has the custom component first.
-						ICompilation currentCompilation = SD.ParserService.GetCompilationForCurrentProject();
+						ICompilation currentCompilation = GetCompilationForCurrentProject();
 						var typeName = new FullTypeName(selectedItem.TypeName);
 						if (currentCompilation != null && currentCompilation.FindType(typeName).Kind == TypeKind.Unknown) {
 							// Check other projects in the solution.

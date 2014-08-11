@@ -32,13 +32,10 @@ namespace ICSharpCode.Core.Presentation
 	{
 		readonly string ActivationMethod;
 		
-		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand, string activationMethod, IReadOnlyCollection<ICondition> conditions) : base(codon, caller, conditions)
+		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, string activationMethod, IReadOnlyCollection<ICondition> conditions) : base(codon, caller, conditions)
 		{
 			this.ActivationMethod = activationMethod;
-			if (createCommand)
-				this.Command = CommandWrapper.CreateCommand(codon, conditions);
-			else
-				this.Command = CommandWrapper.CreateLazyCommand(codon, conditions);
+			this.Command = CommandWrapper.CreateLazyCommand(codon, conditions);
 			this.CommandParameter = caller;
 			
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {

@@ -134,14 +134,9 @@
     <Compile Include="Src\AddMvcViewToProjectViewModel.cs" />
     <Compile Include="Src\BooleanToVisibilityConverter.cs" />
     <Compile Include="Src\CloseDialogBehaviour.cs" />
-    <Compile Include="Src\Completion\RazorCompilationUnit.cs" />
     <Compile Include="Src\Completion\RazorCSharpCompletionBinding.cs" />
-    <Compile Include="Src\Completion\RazorCSharpDotCompletionDataProvider.cs" />
-    <Compile Include="Src\Completion\RazorCSharpExpressionFinder.cs" />
     <Compile Include="Src\Completion\RazorCSharpModelTypeLocater.cs" />
-    <Compile Include="Src\Completion\RazorCSharpParser.cs" />
     <Compile Include="Src\Completion\RazorCSharpParserModelTypeVisitor.cs" />
-    <Compile Include="Src\Completion\RazorCSharpResolver.cs" />
     <Compile Include="Src\CurrentAppDomain.cs" />
     <Compile Include="Src\CurrentAppDomainFactory.cs" />
     <Compile Include="Src\Folding\CharacterReader.cs" />
@@ -283,6 +278,11 @@
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

@@ -453,6 +453,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 				AddBlock(para);
 			}
 			inlineCollection.Add(inline);
+			ignoreWhitespace = false;
 		}
 		
 		public void AddBlock(Block block)

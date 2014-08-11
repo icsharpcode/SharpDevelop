@@ -19,6 +19,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Windows.Controls;
 using ICSharpCode.SharpDevelop;
 using CSharpBinding.Parser;
 using CSharpBinding.Refactoring;
@@ -35,46 +36,27 @@ namespace CSharpBinding.Completion
 	/// </summary>
 	class EventCreationCompletionData : CompletionData
 	{
-		IEvent eventDefinition;
-		string varName;
-		IType delegateType;
-		string parameterList;
-		IUnresolvedMember callingMember;
-		IUnresolvedTypeDefinition declaringType;
-		CSharpResolver contextAtCaret;
+		readonly string handlerName;
+		readonly ITypeReference delegateTypeReference;
+		readonly bool isStatic;
 
-		public EventCreationCompletionData(string varName, IType delegateType, IEvent evt, string parameterList, IUnresolvedMember callingMember, IUnresolvedTypeDefinition declaringType, CSharpResolver contextAtCaret)
+		public EventCreationCompletionData(string handlerName, IType delegateType, IEvent evt, string parameterList, IUnresolvedMember callingMember, IUnresolvedTypeDefinition declaringType, CSharpResolver contextAtCaret)
 		{
-			if (string.IsNullOrEmpty(varName)) {
-				this.DisplayText = "<Create handler for " + (evt != null ? evt.Name : "") + ">";
+			if (string.IsNullOrEmpty(handlerName)) {
+				handlerName = (evt != null ? evt.Name : "Handle");
 			}
-			else {
-				this.DisplayText = "Handle" + char.ToUpper(varName[0]) + varName.Substring(1) + (evt != null ? evt.Name : "");
-			}
-			
-			this.varName = varName;
-			this.eventDefinition = evt;
-			this.delegateType = delegateType;
-			this.parameterList = parameterList;
-			this.callingMember = callingMember;
-			this.declaringType = declaringType;
-			this.contextAtCaret = contextAtCaret;
+			this.handlerName = handlerName;
+			this.DisplayText = "<Create " + handlerName + ">";
+			this.delegateTypeReference = delegateType.ToTypeReference();
+			this.isStatic = callingMember != null && callingMember.IsStatic;
 		}
 
 		public override void Complete(CompletionContext context)
 		{
-			var invokeSignature = delegateType.GetMethods(m => m.Name == "Invoke").Single();
 			var refactoringContext = SDRefactoringContext.Create(context.Editor, CancellationToken.None);
+			var delegateType = delegateTypeReference.Resolve(refactoringContext.Compilation);
+			var invokeSignature = delegateType.GetMethods(m => m.Name == "Invoke").Single();
 			var builder = refactoringContext.CreateTypeSystemAstBuilder();
-			string handlerName;
-			bool isStatic;
-			if (eventDefinition != null) {
-				handlerName = eventDefinition.Name;
-				isStatic = eventDefinition.IsStatic;
-			} else {
-				handlerName = varName;
-				isStatic = callingMember.IsStatic;
-			}
 			
 			var throwStatement = new ThrowStatement();
 			var decl = new MethodDeclaration {
