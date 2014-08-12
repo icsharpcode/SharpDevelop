@@ -173,19 +173,31 @@ namespace CSharpBinding.Refactoring
 						    args.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count > 1) {
 							args.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
 						}
+						
+						var insertionPoint = args.InsertionPoint;
+						if (nodes.All(n => n is EnumMemberDeclaration)) {
+							insertionPoint.LineAfter = NewLineInsertion.Eol;
+							insertionPoint.LineBefore = NewLineInsertion.None;
+						}
 
-						int offset = currentScript.GetCurrentOffset(args.InsertionPoint.Location);
+						int offset = currentScript.GetCurrentOffset(insertionPoint.Location);
 						int indentLevel = currentScript.GetIndentLevelAt(Math.Max(0, offset - 1));
 						
 						foreach (var node in nodes.Reverse()) {
 							var output = currentScript.OutputNode(indentLevel, node);
 							var text = output.Text;
-							var insertionPoint = args.InsertionPoint;
 							if (node is EnumMemberDeclaration) {
-								insertionPoint.LineAfter = NewLineInsertion.Eol;
-								insertionPoint.LineBefore = NewLineInsertion.None;
-								if (args.InsertionPoint != layer.InsertionPoints.Last()) {
+								if (insertionPoint != layer.InsertionPoints.Last()) {
 									text += ",";
+								} else {
+									var parentEnum = currentScript.context.RootNode.GetNodeAt(insertionPoint.Location, n => (n is TypeDeclaration) && ((TypeDeclaration)n).ClassType == ClassType.Enum) as TypeDeclaration;
+									if (parentEnum != null) {
+										var lastMember = parentEnum.Members.LastOrDefault();
+										if (lastMember != null) {
+											var segment = currentScript.GetSegment(lastMember);
+											currentScript.InsertText(segment.EndOffset, ",");
+										}
+									}
 								}
 							}
 							int delta = insertionPoint.Insert(target, text);
