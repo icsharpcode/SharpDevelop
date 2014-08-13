@@ -39,6 +39,8 @@ namespace ICSharpCode.PackageManagement.Design
 			FakeUninstallPackageAction = new FakeUninstallPackageAction(this);
 			
 			this.Name = name;
+			
+			ConstraintProvider = NullConstraintProvider.Instance;
 		}
 		
 		private FakeInstallPackageAction FakeInstallPackageAction;
@@ -232,6 +234,11 @@ namespace ICSharpCode.PackageManagement.Design
 			FakeSourceRepository.AddFakePackage(packageId);
 		}
 		
+		public FakePackage AddFakePackageToSourceRepository(string packageId, string version)
+		{
+			return FakeSourceRepository.AddFakePackageWithVersion(packageId, version);
+		}
+		
 		public void UpdatePackages(UpdatePackagesAction action)
 		{
 		}
@@ -274,5 +281,7 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			throw new NotImplementedException();
 		}
+		
+		public IPackageConstraintProvider ConstraintProvider { get; set; }
 	}
 }
