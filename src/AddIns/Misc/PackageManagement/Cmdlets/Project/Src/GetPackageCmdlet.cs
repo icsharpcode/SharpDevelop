@@ -200,7 +200,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			if (project != null) {
 				return new UpdatedPackages(project, repository);
 			}
-			return new UpdatedPackages(GetPackagesInstalledIntoAnyProject(), repository);
+			return new UpdatedPackages(GetPackagesInstalledIntoAnyProject(), repository, NullConstraintProvider.Instance);
 		}
 		
 		IQueryable<IPackage> GetPackagesInstalledIntoAnyProject()
