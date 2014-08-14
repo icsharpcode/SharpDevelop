@@ -23,43 +23,65 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 	/// </summary>
 	public class ReportGenerator
 	{
-		ReportWizardContext context;
-	
-		
-		public ReportGenerator(ReportWizardContext context)
+		const int gap = 10;
+
+		public ReportGenerator()
 		{
-			if (context == null)
-				throw new ArgumentNullException("context");
-			this.context = context;
 			ReportModel = ReportModelFactory.Create();
 		}
 		
 		
-		public void  Generate() {
-			PageOneGenerate();
-			CreateReportHeader();
-		}
-
-		void PageOneGenerate()
-		{
-			var pageOne = (PageOneContext)context.PageOneContext;
-			var reportSettings = ReportModel.ReportSettings;
-			reportSettings.DataModel = pageOne.DataModel;
-			reportSettings.FileName = pageOne.FileName;
-			if (pageOne.Legal) {
-				reportSettings.Landscape = false;
-			} else {
-				reportSettings.Landscape = true;
-			}
-			reportSettings.ReportName = pageOne.ReportName;
-			reportSettings.ReportType = pageOne.ReportType;
+		public void  Generate(ReportWizardContext context) {
+			if (context == null)
+				throw new ArgumentNullException("context");
+			GenerateBaseSettings(context);
+			GeneratePushModel(context);
+			CreateReportHeader(context);
 		}
 
 		
-		void CreateReportHeader()
-		{
+		void GenerateBaseSettings (ReportWizardContext context)	{
+			var pageOneContext = (PageOneContext)context.PageOneContext;
+			var reportSettings = ReportModel.ReportSettings;
+			reportSettings.DataModel = pageOneContext.DataModel;
+			reportSettings.FileName = pageOneContext.FileName;
+			reportSettings.Landscape = !pageOneContext.Legal;
+			reportSettings.ReportName = pageOneContext.ReportName;
+			reportSettings.ReportType = pageOneContext.ReportType;
+		}
+
+		
+		void GeneratePushModel(ReportWizardContext context){
+			var pushModelContext = (PushModelContext)context.PushModelContext;
+			var xLocation = 5;
+			foreach (var element in pushModelContext.Items) {
+				var dataItem = new BaseDataItem(){
+					Name = element.ColumnName,
+					Text = element.ColumnName,
+					ColumnName = element.ColumnName,
+					DataType = element.DataTypeName
+				};
+				
+				var location = new Point(xLocation,4);
+				dataItem.Location = location;
+				dataItem.Size = GlobalValues.PreferedSize;
+				xLocation = xLocation + GlobalValues.PreferedSize.Width + gap;
+				Console.WriteLine("Create dataItem  with  {0} - {1}items",dataItem.Location,dataItem.Size);
+				ReportModel.DetailSection.Items.Add(dataItem);
+			}
+		}
+		
+		
+		void CreateReportHeader(ReportWizardContext context){
+			var pageOneContext = (PageOneContext)context.PageOneContext;
 			var headerText = new BaseTextItem();
-			headerText.Text = "Header";
+			
+			if (String.IsNullOrEmpty(pageOneContext.ReportName)) {
+				headerText.Text = GlobalValues.DefaultReportName;
+			} else {
+				headerText.Text = pageOneContext.ReportName;
+			}
+			
 			headerText.Size = GlobalValues.PreferedSize;
 			var printableWith = ReportModel.ReportSettings.PageSize.Width - ReportModel.ReportSettings.LeftMargin - ReportModel.ReportSettings.RightMargin;
 			var x = (int)(printableWith - headerText.Size.Width) / 2;

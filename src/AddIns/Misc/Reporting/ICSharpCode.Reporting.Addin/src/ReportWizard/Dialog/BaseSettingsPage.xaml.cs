@@ -44,8 +44,8 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 				return context;}
 		}
 		
-		public int PageNumber {
-			get {return 1;}
+		public WizardPageType ReportPageType {
+			get {return WizardPageType.BaseSettingsPage;}
 		}
 		
 		

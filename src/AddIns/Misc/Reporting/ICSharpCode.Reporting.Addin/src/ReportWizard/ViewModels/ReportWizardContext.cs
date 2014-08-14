@@ -35,5 +35,16 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.ViewModels
 				pageOneContext = value;
 			}
 		}
+		
+		IWizardContext pushModelContext;
+
+		public IWizardContext PushModelContext {
+			get {
+				return pushModelContext;
+			}
+			set {
+				pushModelContext = value;
+			}
+		}
 	}
 }

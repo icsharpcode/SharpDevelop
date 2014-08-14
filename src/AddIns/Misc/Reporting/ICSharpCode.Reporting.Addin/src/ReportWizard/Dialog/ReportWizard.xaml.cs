@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using ICSharpCode.SharpDevelop;
 using Xceed.Wpf.Toolkit;
+using ICSharpCode.Reporting.Addin.ReportWizard.Dialog;
 using ICSharpCode.Reporting.Addin.ReportWizard.ViewModels;
 using System.Linq;
 
@@ -48,9 +49,29 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 	
 		void _wizard_Finish(object sender, RoutedEventArgs e)
 		{
-			context.PageOneContext = baseSettingsPage.Context;
-		
+			foreach (WizardPage element in _wizard.Items) {
+				var hc = element as IHasContext;
+				if (hc != null) {
+					UpdateContext(hc);
+				}
+			}
 		}
   
+		
+		void UpdateContext(IHasContext hc)
+		{
+			
+			switch (hc.ReportPageType) {
+					case WizardPageType.BaseSettingsPage:{
+						context.PageOneContext = hc.Context;
+						break;
+					}
+					
+					case WizardPageType.PushModelPage: {
+						context.PushModelContext = hc.Context;
+						break;
+					}
+			}
+		}
 	}
 }

@@ -36,9 +36,9 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			reportWizard.ShowDialog();
 			if (reportWizard.DialogResult.HasValue && reportWizard.DialogResult.Value){
 				   	LoggingService.Info("ReportWizard - CreateReport");   
-				var rg = new ReportGenerator(wizardViewModel);
+				var rg = new ReportGenerator();
 				
-				rg.Generate();
+				rg.Generate(wizardViewModel);
 				ReportModel = rg.ReportModel;
 				} else {
 				Canceled = true;

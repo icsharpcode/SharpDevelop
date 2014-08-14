@@ -9,7 +9,7 @@
                  Title="SharpDevelop Reporting"
                  Description="Welcome to Sharpdevelop Reporting Wizard"
                  PageType="Interior"
-                 NextButtonVisibility="Visible"
+               CanFinish="true"
                  CancelButtonVisibility="Visible">
 	
 	<Grid ShowGridLines="True">
@@ -22,7 +22,7 @@
 		          ItemsSource="{Binding}"
 		          CanUserAddRows="True"
 		          CanUserDeleteRows="True"
-		
+		          
 		          AutoGenerateColumns="False" Grid.Row="1" Margin="30,10,30,5">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="ColumnName" Binding="{Binding ColumnName}" Width="150"></DataGridTextColumn>

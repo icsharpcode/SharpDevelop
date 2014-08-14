@@ -165,8 +165,10 @@
     <Compile Include="src\ReportWizard\ReportGenerator.cs" />
     <Compile Include="src\ReportWizard\ReportWizardCommand.cs" />
     <Compile Include="src\ReportWizard\ViewModels\PageOneContext.cs" />
+    <Compile Include="src\ReportWizard\ViewModels\PushModelContext.cs" />
     <Compile Include="src\ReportWizard\ViewModels\ReportWizardContext.cs" />
     <Compile Include="src\ReportWizard\WizardHelper.cs" />
+    <Compile Include="src\ReportWizard\WizardPageType.cs" />
     <Compile Include="src\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="src\Services\DesignerSerializationService.cs" />
     <Compile Include="src\Services\MenuCommandService.cs" />

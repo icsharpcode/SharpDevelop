@@ -13,6 +13,7 @@
 	             PageChanged="_wizard_PageChanged"
 	             Finish="_wizard_Finish"
 	             CanHelp="False">
+		
 		<local:WelcomePage></local:WelcomePage>
 		
 		<local:BaseSettingsPage></local:BaseSettingsPage>

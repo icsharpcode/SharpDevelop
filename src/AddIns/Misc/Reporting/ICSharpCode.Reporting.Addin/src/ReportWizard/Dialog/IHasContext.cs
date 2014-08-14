@@ -17,6 +17,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 	public interface IHasContext
 	{
 		IWizardContext Context {get;}
-		int PageNumber {get;}
+		
+		WizardPageType ReportPageType {get;}
 	}
 }
