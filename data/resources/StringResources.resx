@@ -3789,6 +3789,10 @@ Please configure the NAnt executable's location in the SharpDevelop Options.</va
     <value>Could not find type definition at the cursor position.</value>
     <comment>Error message when using Search&gt;Find Base Classes when the cursor is not on a type reference.</comment>
   </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrMemberUnderCursorError" xml:space="preserve">
+    <value>Could not find type definition or type member at the cursor position.</value>
+    <comment>Error message when using Search&gt;Find Base Classes when the cursor is not on a type reference or type member.</comment>
+  </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Send Line to Ruby Console</value>
   </data>
@@ -6473,6 +6477,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="SharpDevelop.Refactoring.BaseClassesOf" xml:space="preserve">
     <value>Base classes of ${Name}</value>
   </data>
+  <data name="SharpDevelop.Refactoring.BaseMembersOf" xml:space="preserve">
+    <value>Base members of ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
     <value>The operation cannot be performed because your source code contains errors:</value>
   </data>
@@ -6524,6 +6531,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="SharpDevelop.Refactoring.FindBaseClassesCommand" xml:space="preserve">
     <value>Find base classes</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindBaseClassesOrMembersCommand" xml:space="preserve">
+    <value>Find base symbols</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Find &amp;derived classes</value>
