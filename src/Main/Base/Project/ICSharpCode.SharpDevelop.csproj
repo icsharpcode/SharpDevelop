@@ -140,6 +140,9 @@
     <Compile Include="Editor\Bookmarks\IBookmarkMargin.cs" />
     <Compile Include="Editor\Bookmarks\SDBookmark.cs" />
     <Compile Include="Editor\Bookmarks\SDMarkerBookmark.cs" />
+    <Compile Include="Editor\CodeCompletion\CodeCompletionOptionPanel.xaml.cs">
+      <DependentUpon>CodeCompletionOptionPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Editor\CodeCompletion\Images\CompletionImage.cs" />
     <Compile Include="Editor\CodeCompletion\SnippetCompletionData.cs" />
     <Compile Include="Editor\ContextActions\ContextActionsPopupViewModel.cs" />
@@ -228,7 +231,6 @@
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\DeclaringTypeSubMenuBuilder.cs" />
@@ -890,7 +892,7 @@
     <Folder Include="Project\Configuration" />
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
-    <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />
+    <Page Include="Editor\CodeCompletion\CodeCompletionOptionPanel.xaml" />
     <Page Include="Src\Editor\Dialogs\RenameSymbolDialog.xaml" />
     <Page Include="Src\Gui\Components\FontSelector.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
