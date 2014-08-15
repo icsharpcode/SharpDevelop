@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	/// </summary>
 	public abstract class AbstractViewContentHandlingLoadErrors : AbstractViewContent
 	{
-		ContentPresenter contentControl = new ContentPresenter();
+		readonly ContentPresenter contentControl = new ContentPresenter();
 		object userContent;
 		
 		protected AbstractViewContentHandlingLoadErrors()
