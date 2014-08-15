@@ -18,17 +18,16 @@
 
 using System;
 using System.Windows;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
-	/// Interaction logic for CodeCompletionPanelXaml.xaml
+	/// Interaction logic for CodeCompletionOptionPanel.xaml
 	/// </summary>
-	public partial class CodeCompletionPanel : OptionPanel
+	public partial class CodeCompletionOptionPanel : OptionPanel
 	{
-		public CodeCompletionPanel()
+		public CodeCompletionOptionPanel()
 		{
 			InitializeComponent();
 			this.DataContext = this;
