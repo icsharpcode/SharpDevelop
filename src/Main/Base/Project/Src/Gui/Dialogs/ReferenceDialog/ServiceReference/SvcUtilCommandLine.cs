@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public class SvcUtilCommandLine
 	{
-		StringBuilder argumentBuilder = new StringBuilder();
+		List<string> arguments = new List<string>();
 		
 		public SvcUtilCommandLine(ServiceReferenceGeneratorOptions options)
 		{
@@ -32,7 +32,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		}
 		
 		public string Command { get; set; }
-		public string Arguments { get; private set; }
+		
+		public string[] GetArguments()
+		{
+			return arguments.ToArray();
+		}
 		
 		void GenerateCommandLine(ServiceReferenceGeneratorOptions options)
 		{
@@ -48,8 +52,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			AppendIfNotEmpty("/ct:", options.GetDictionaryCollectionTypeDescription());
 			AppendAssemblyReferences(options.Assemblies);
 			AppendIfNotEmpty(options.Url);
-			
-			this.Arguments = argumentBuilder.ToString();
 		}
 		
 		void AppendIfTrue(string argument, bool flag)
@@ -62,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		void AppendIfNotEmpty(string argumentName, string argumentValue)
 		{
 			if (!String.IsNullOrEmpty(argumentValue)) {
-				Append(argumentName + GetQuotedArgument(argumentValue));
+				Append(argumentName + argumentValue);
 			}
 		}
 		
@@ -75,29 +77,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void Append(string argument)
 		{
-			argumentBuilder.Append(argument);
-			argumentBuilder.Append(' ');
-		}
-		
-		public override string ToString()
-		{
-			return String.Format(
-				"{0} {1}",
-				GetQuotedCommand(),
-				Arguments);
-		}
-		
-		string GetQuotedCommand()
-		{
-			return GetQuotedArgument(Command);
-		}
-		
-		string GetQuotedArgument(string argument)
-		{
-			if (ContainsSpaceCharacter(argument)) {
-				return String.Format("\"{0}\"", argument);
-			}
-			return argument;
+			arguments.Add(argument);
 		}
 		
 		bool ContainsSpaceCharacter(string text)

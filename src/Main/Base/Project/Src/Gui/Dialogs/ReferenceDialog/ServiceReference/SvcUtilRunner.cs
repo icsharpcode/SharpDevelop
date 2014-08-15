@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			var commandLine = new SvcUtilCommandLine(Options);
 			commandLine.Command = GetSvcUtilPath();
 			using (ProcessRunner processRunner = new ProcessRunner()) {
-				this.ExitCode = await processRunner.RunInOutputPadAsync(SvcUtilMessageView.Category, commandLine.Command, ProcessRunner.CommandLineToArgumentArray(commandLine.Arguments));
+				this.ExitCode = await processRunner.RunInOutputPadAsync(SvcUtilMessageView.Category, commandLine.Command, commandLine.GetArguments());
 			}
 			if (ProcessExited != null) {
 				ProcessExited(this, new EventArgs());
