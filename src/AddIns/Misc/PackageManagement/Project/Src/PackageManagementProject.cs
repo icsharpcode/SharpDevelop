@@ -178,5 +178,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			packageManager.UpdatePackageReference(package, settings);
 		}
+		
+		public IPackageConstraintProvider ConstraintProvider {
+			get {
+				var constraintProvider = projectManager.LocalRepository as IPackageConstraintProvider;
+				if (constraintProvider != null) {
+					return constraintProvider;
+				}
+				return NullConstraintProvider.Instance;
+			}
+		}
 	}
 }

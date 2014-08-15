@@ -787,5 +787,32 @@ namespace PackageManagement.Tests
 			
 			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, null);
 		}
+		
+		[Test]
+		public void ReadPackages_TwoPackagesInSourceRepositoryAndTwoNewerPackageVersionAvailableAndProjectHasConstraint_NewerPackageVersionThatMeetsConstraintIsDisplayed()
+		{
+			CreateViewModel();
+			var versionSpec = new VersionSpec();
+			versionSpec.MinVersion = new SemanticVersion("1.0");
+			versionSpec.IsMinInclusive = true;
+			versionSpec.MaxVersion = new SemanticVersion("2.0");
+			versionSpec.IsMaxInclusive = true;
+			var constraintProvider = new DefaultConstraintProvider();
+			constraintProvider.AddConstraint("Test", versionSpec);
+			solution.FakeProjectToReturnFromGetProject.ConstraintProvider = constraintProvider;
+			AddPackageToLocalRepository("Test", "1.0.0.0");
+			AddPackageToActiveRepository("Test", "1.0.0.0");
+			FakePackage expectedPackage = AddPackageToActiveRepository("Test", "2.0.0.0");
+			AddPackageToActiveRepository("Test", "3.0.0.0");
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				expectedPackage
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
 	}
 }

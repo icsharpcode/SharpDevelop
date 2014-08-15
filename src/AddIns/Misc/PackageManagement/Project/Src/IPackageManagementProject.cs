@@ -38,6 +38,8 @@ namespace ICSharpCode.PackageManagement
 		
 		Project ConvertToDTEProject();
 		
+		IPackageConstraintProvider ConstraintProvider { get; }
+		
 		bool IsPackageInstalled(IPackage package);
 		bool IsPackageInstalled(string packageId);
 		bool HasOlderPackageInstalled(IPackage package);

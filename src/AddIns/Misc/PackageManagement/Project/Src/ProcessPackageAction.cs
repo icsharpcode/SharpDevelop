@@ -134,9 +134,12 @@ namespace ICSharpCode.PackageManagement
 		
 		void FindPackage()
 		{
-			Package = Project
-				.SourceRepository
-				.FindPackage(PackageId, PackageVersion, AllowPrereleaseVersions, allowUnlisted: false);
+			Package = Project.SourceRepository.FindPackage(
+					PackageId,
+					PackageVersion,
+					Project.ConstraintProvider,
+					AllowPrereleaseVersions,
+					allowUnlisted: false);
 		}
 		
 		void ThrowPackageNotFoundError(string packageId)

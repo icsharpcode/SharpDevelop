@@ -78,7 +78,7 @@ namespace ICSharpCode.PackageManagement
 			try {
 				IPackageRepository repository = RegisteredPackageRepositories.ActiveRepository;
 				IQueryable<IPackage> installedPackages = GetInstalledPackages(repository);
-				updatedPackages = new UpdatedPackages(installedPackages, repository);
+				updatedPackages = new UpdatedPackages(installedPackages, repository, selectedProjects.GetConstraintProvider(repository));
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}

@@ -24,6 +24,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
@@ -31,6 +32,7 @@ using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+
 namespace CSharpBinding.Refactoring
 {
 	class InsertionCursorLayer : Canvas, IDisposable
@@ -41,9 +43,10 @@ namespace CSharpBinding.Refactoring
 
 		readonly TextArea editor;
 
-		public int CurrentInsertionPoint {
-			get;
-			set;
+		public int CurrentInsertionPointIndex { get; set; }
+		
+		public InsertionPoint[] InsertionPoints {
+			get { return insertionPoints; }
 		}
 
 		int insertionPointNextToMouse = -1;
@@ -73,8 +76,8 @@ namespace CSharpBinding.Refactoring
 
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			DrawLineForInsertionPoint(CurrentInsertionPoint, markerPen, drawingContext);
-			if (insertionPointNextToMouse > -1 && insertionPointNextToMouse != CurrentInsertionPoint)
+			DrawLineForInsertionPoint(CurrentInsertionPointIndex, markerPen, drawingContext);
+			if (insertionPointNextToMouse > -1 && insertionPointNextToMouse != CurrentInsertionPointIndex)
 				DrawLineForInsertionPoint(insertionPointNextToMouse, tempMarkerPen, drawingContext);
 			SetGroupBoxPosition();
 			// HACK: why OnRender() override? we could just use Line objects instead
@@ -128,7 +131,7 @@ namespace CSharpBinding.Refactoring
 				else {
 					insertionPointNextToMouse = FindNextInsertionPoint(e.GetPosition(this));
 					if (insertionPointNextToMouse >= 0)
-						CurrentInsertionPoint = insertionPointNextToMouse;
+						CurrentInsertionPointIndex = insertionPointNextToMouse;
 					InvalidateVisual();
 				}
 				e.Handled = true;
@@ -181,9 +184,9 @@ namespace CSharpBinding.Refactoring
 			{
 				return (sender, e) =>  {
 					if (up)
-						layer.CurrentInsertionPoint = Math.Max(0, layer.CurrentInsertionPoint - 1);
+						layer.CurrentInsertionPointIndex = Math.Max(0, layer.CurrentInsertionPointIndex - 1);
 					else
-						layer.CurrentInsertionPoint = Math.Min(layer.insertionPoints.Length - 1, layer.CurrentInsertionPoint + 1);
+						layer.CurrentInsertionPointIndex = Math.Min(layer.insertionPoints.Length - 1, layer.CurrentInsertionPointIndex + 1);
 					layer.InvalidateVisual();
 					layer.ScrollToInsertionPoint();
 				};
@@ -192,9 +195,9 @@ namespace CSharpBinding.Refactoring
 			ExecutedRoutedEventHandler MoveMarkerPage(bool up)
 			{
 				return (sender, e) =>  {
-					TextLocation current = layer.insertionPoints[layer.CurrentInsertionPoint].Location;
+					TextLocation current = layer.insertionPoints[layer.CurrentInsertionPointIndex].Location;
 					double currentVPos = layer.editor.TextView.GetVisualTopByDocumentLine(current.Line);
-					int newIndex = layer.CurrentInsertionPoint;
+					int newIndex = layer.CurrentInsertionPointIndex;
 					double newVPos;
 					do {
 						if (up) {
@@ -214,7 +217,7 @@ namespace CSharpBinding.Refactoring
 						newVPos = layer.editor.TextView.GetVisualTopByDocumentLine(layer.insertionPoints[newIndex].Location.Line);
 					}
 					while (Math.Abs(currentVPos - newVPos) < layer.editor.ActualHeight);
-					layer.CurrentInsertionPoint = newIndex;
+					layer.CurrentInsertionPointIndex = newIndex;
 					layer.InvalidateVisual();
 					layer.ScrollToInsertionPoint();
 				};
@@ -224,9 +227,9 @@ namespace CSharpBinding.Refactoring
 			{
 				return (sender, e) =>  {
 					if (up)
-						layer.CurrentInsertionPoint = 0;
+						layer.CurrentInsertionPointIndex = 0;
 					else
-						layer.CurrentInsertionPoint = layer.insertionPoints.Length - 1;
+						layer.CurrentInsertionPointIndex = layer.insertionPoints.Length - 1;
 					layer.InvalidateVisual();
 					layer.ScrollToInsertionPoint();
 				};
@@ -247,14 +250,14 @@ namespace CSharpBinding.Refactoring
 
 		internal void ScrollToInsertionPoint()
 		{
-			var location = insertionPoints[CurrentInsertionPoint].Location;
+			var location = insertionPoints[CurrentInsertionPointIndex].Location;
 			editor.GetService<TextEditor>().ScrollTo(location.Line, location.Column);
 			SetGroupBoxPosition();
 		}
 
 		void SetGroupBoxPosition()
 		{
-			var boxPosition = GetLinePosition(CurrentInsertionPoint) + new Vector(editor.TextView.ActualWidth * 0.6 - 5, -groupBox.ActualHeight / 2.0);
+			var boxPosition = GetLinePosition(CurrentInsertionPointIndex) + new Vector(editor.TextView.ActualWidth * 0.6 - 5, -groupBox.ActualHeight / 2.0);
 			Canvas.SetTop(groupBox, boxPosition.Y);
 			Canvas.SetLeft(groupBox, boxPosition.X);
 		}
@@ -267,7 +270,7 @@ namespace CSharpBinding.Refactoring
 		void FireExited(bool success)
 		{
 			if (Exited != null) {
-				Exited(this, new InsertionCursorEventArgs(insertionPoints[CurrentInsertionPoint], success));
+				Exited(this, new InsertionCursorEventArgs(insertionPoints[CurrentInsertionPointIndex], success));
 			}
 		}
 
