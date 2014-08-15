@@ -26,26 +26,12 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 	public partial class ReportWizard : Window
 	{
 		readonly ReportWizardContext context;
-		readonly BaseSettingsPage baseSettingsPage;
-		
 		public ReportWizard(ReportWizardContext context)
 		{
 			InitializeComponent();
 			this.context = context;
-			baseSettingsPage = new BaseSettingsPage();
 		}
 		
-		
-		void _wizard_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
-		{
-			Console.WriteLine(" _wizard_Next {0}",((Wizard)sender).CurrentPage.Name);
-		}
-	
-		
-		void _wizard_PageChanged(object sender, RoutedEventArgs e)
-		{
-			Console.WriteLine("_wizard_PageChanged {0}",((Wizard)sender).CurrentPage.Name);
-		}
 	
 		void _wizard_Finish(object sender, RoutedEventArgs e)
 		{

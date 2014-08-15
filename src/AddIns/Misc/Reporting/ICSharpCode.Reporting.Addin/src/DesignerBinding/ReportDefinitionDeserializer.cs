@@ -61,7 +61,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			
 			foreach (XmlNode sectionNode in sectionList) {
 				try {
-					object o = this.Load(sectionNode as XmlElement,null);
+					var o = this.Load(sectionNode as XmlElement,null);
 					var section = o as ICSharpCode.Reporting.Addin.DesignableItems.BaseSection;
 					host.Container.Add(section);
 				} catch (Exception e) {
@@ -85,8 +85,6 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		{
 			var a = Assembly.GetExecutingAssembly();
 			Type t = a.GetType("ICSharpCode.Reporting.Addin.DesignableItems" + "." + name);
-//			Type t = typeof(BaseSection).Assembly.GetType(typeof(BaseSection).Namespace + "." + name);
-				
 			return t;
 		}
 	}

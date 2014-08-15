@@ -66,7 +66,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 				dataItem.Location = location;
 				dataItem.Size = GlobalValues.PreferedSize;
 				xLocation = xLocation + GlobalValues.PreferedSize.Width + gap;
-				Console.WriteLine("Create dataItem  with  {0} - {1}items",dataItem.Location,dataItem.Size);
 				ReportModel.DetailSection.Items.Add(dataItem);
 			}
 		}

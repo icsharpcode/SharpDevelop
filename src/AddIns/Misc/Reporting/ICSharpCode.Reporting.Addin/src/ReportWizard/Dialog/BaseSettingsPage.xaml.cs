@@ -7,14 +7,9 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using ICSharpCode.Reporting.Globals;
-using ICSharpCode.SharpDevelop;
 using Xceed.Wpf.Toolkit;
 using ICSharpCode.Reporting.Addin.ReportWizard.ViewModels;
 
@@ -30,11 +25,13 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 		public BaseSettingsPage()
 		{
 			InitializeComponent();
+			
+			_DataModel.SelectedItem = PushPullModel.FormSheet;
 			_DataModel.SelectedItem = PushPullModel.FormSheet;
 			_ReportType.SelectedItem = ReportType.FormSheet;
-			this.context = new PageOneContext();
-			this._DataModel.SelectedItem = PushPullModel.FormSheet;
 			_image.Source = WizardHelper.GetWizardIcon();
+			_Legal.IsChecked = true;
+			this.context = new PageOneContext();
 		}
     
 		
@@ -50,7 +47,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 		
 		
 		void UpdateContext(){
-
+Console.WriteLine("Legal at bbbb {0}",_Legal.IsChecked);
 			context.DataModel = (PushPullModel) _DataModel.SelectedItem;
 			context.ReportType = (ReportType) _ReportType.SelectedItem;
 			context.ReportName = this._ReportName.Text;

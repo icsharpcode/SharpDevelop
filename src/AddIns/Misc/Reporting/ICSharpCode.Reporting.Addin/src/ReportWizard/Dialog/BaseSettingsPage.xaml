@@ -32,7 +32,7 @@
 		</ObjectDataProvider>
 	</xctk:WizardPage.Resources>
 	
-	<Grid ShowGridLines="True" >
+	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"> </RowDefinition>
 			<RowDefinition Height="Auto"></RowDefinition>
@@ -74,7 +74,8 @@
 		
 		
 		<Label Content="Page Layout :" Grid.Column="1" Grid.Row="6"  Margin="0,5,0,5"></Label>
-		<RadioButton Name="_Legal" GroupName="PageLayout" Content="Legal" IsChecked="true" Grid.Column="1" Grid.Row="7"  Margin="0,5,0,5" ></RadioButton>
+		
+		<RadioButton Name="_Legal" GroupName="PageLayout" Content="Legal" Grid.Column="1" Grid.Row="7"  Margin="0,5,0,5" ></RadioButton>
 		<RadioButton Name="_Landscape" GroupName="PageLayout" Content="Landscape"  Grid.Row="7" Grid.Column="2" Margin="0,5,0,5"></RadioButton>
 	
 	</Grid>

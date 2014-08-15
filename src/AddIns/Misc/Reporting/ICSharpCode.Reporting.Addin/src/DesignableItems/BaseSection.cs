@@ -25,10 +25,10 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		{
 			FrameColor = Color.Black;
 			TypeDescriptor.AddProvider(new SectionItemTypeProvider(), typeof(BaseSection));
+			var s = Size;
 		}
 		
 		
-//		[EditorBrowsableAttribute()]
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 		{
 			base.OnPaint(e);

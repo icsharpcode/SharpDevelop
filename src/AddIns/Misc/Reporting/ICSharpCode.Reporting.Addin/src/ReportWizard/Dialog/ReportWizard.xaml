@@ -7,10 +7,8 @@
         Height="600" Width="800">
 	
 	<xctk:Wizard x:Name="_wizard" FinishButtonClosesWindow="True"
-	             Next="_wizard_Next"
 	             NextButtonVisibility="Visible"
 	             CancelButtonVisibility="Visible"
-	             PageChanged="_wizard_PageChanged"
 	             Finish="_wizard_Finish"
 	             CanHelp="False">
 		
