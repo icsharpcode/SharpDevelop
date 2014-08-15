@@ -195,6 +195,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		{
 		}
 		
+		public virtual bool DisplaysTooltip {
+			get { return false; }
+		}
+		
 		public virtual object CreateTooltipContent()
 		{
 			return null;
