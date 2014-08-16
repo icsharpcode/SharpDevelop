@@ -47,7 +47,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 		
 		
 		void UpdateContext(){
-Console.WriteLine("Legal at bbbb {0}",_Legal.IsChecked);
 			context.DataModel = (PushPullModel) _DataModel.SelectedItem;
 			context.ReportType = (ReportType) _ReportType.SelectedItem;
 			context.ReportName = this._ReportName.Text;
@@ -57,17 +56,33 @@ Console.WriteLine("Legal at bbbb {0}",_Legal.IsChecked);
 		}
 		
 		
-		void _DataModel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e){
+		void _DataModel_SelectionChanged(object sender, SelectionChangedEventArgs e){
 			var cbo = (ComboBox) sender;
 			
-			if (((PushPullModel)cbo.SelectedItem) == PushPullModel.FormSheet) {
-				this.CanFinish = true;
-				this.CanSelectNextPage = false;
-				this._ReportType.SelectedItem = ReportType.FormSheet;
-			} else {
-				this._ReportType.SelectedItem = ReportType.DataReport;
-				this.CanFinish = false;
-				this.CanSelectNextPage = true;
+			var pushPullModel = (PushPullModel)cbo.SelectedItem;
+			
+			switch (pushPullModel) {
+					case PushPullModel.PushData: {
+						this._ReportType.SelectedItem = ReportType.DataReport;
+						this.CanFinish = false;
+						this.CanSelectNextPage = true;
+						NextPage = new PushDataReport();
+						NextPage.PreviousPage = this;
+						break;
+					}
+					
+					case PushPullModel.PullData: {
+						CanSelectNextPage = true;
+						NextPage = new PullModelPage();
+						NextPage.PreviousPage = this;
+						break;
+					}
+					
+					case PushPullModel.FormSheet: {
+						this.CanFinish = true;
+						this._ReportType.SelectedItem = ReportType.FormSheet;
+						break;
+					}
 			}
 		}
 	}

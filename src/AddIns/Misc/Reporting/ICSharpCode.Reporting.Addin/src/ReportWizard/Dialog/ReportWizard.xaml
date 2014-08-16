@@ -16,7 +16,7 @@
 		
 		<local:BaseSettingsPage></local:BaseSettingsPage>
 		
-		<local:PushDataReport></local:PushDataReport>
+	<!--	<local:PushDataReport></local:PushDataReport>-->
 		
 		<!--<xctk:WizardPage PageType="Interior"
 		                 Title="dritte Seite"

@@ -15,6 +15,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 	/// </summary>
 	public enum WizardPageType {
 		BaseSettingsPage,
-		PushModelPage
+		PushModelPage,
+		PullModelPage
 	}
 }

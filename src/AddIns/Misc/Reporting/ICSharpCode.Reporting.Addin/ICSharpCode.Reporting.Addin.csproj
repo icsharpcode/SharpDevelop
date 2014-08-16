@@ -150,6 +150,10 @@
       <DependentUpon>BaseSettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\ReportWizard\Dialog\PullModelPage.xaml.cs">
+      <DependentUpon>PullModelPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\ReportWizard\Dialog\PushDataReport.xaml.cs">
       <DependentUpon>PushDataReport.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -241,6 +245,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="src\ReportWizard\Dialog\BaseSettingsPage.xaml" />
+    <Page Include="src\ReportWizard\Dialog\PullModelPage.xaml" />
     <Page Include="src\ReportWizard\Dialog\PushDataReport.xaml" />
     <Page Include="src\ReportWizard\Dialog\ReportWizard.xaml" />
     <Page Include="src\ReportWizard\Dialog\WelcomePage.xaml" />
