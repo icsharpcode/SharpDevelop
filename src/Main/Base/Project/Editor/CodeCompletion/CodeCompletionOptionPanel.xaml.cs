@@ -42,11 +42,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			this.UseDataUsageCache = CodeCompletionOptions.DataUsageCacheEnabled;
 			DataUsageCacheItemCount = CodeCompletionOptions.DataUsageCacheItemCount;
 			UseTooltips = CodeCompletionOptions.TooltipsEnabled;
-			useDebugTooltipsOnly.IsChecked =  CodeCompletionOptions.TooltipsOnlyWhenDebugging;
-			completeWhenTyping.IsChecked = CodeCompletionOptions.CompleteWhenTyping;
-			useKeywordCompletionCheckBox.IsChecked = CodeCompletionOptions.KeywordCompletionEnabled;
 			UseInsight = CodeCompletionOptions.InsightEnabled;
-			refreshInsightOnComma.IsChecked = CodeCompletionOptions.InsightRefreshOnComma;
 		}
 		
 		
@@ -54,13 +50,9 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		{
 			CodeCompletionOptions.EnableCodeCompletion = this.EnableCodeCompletion;
 			CodeCompletionOptions.DataUsageCacheEnabled = this.UseDataUsageCache;
-			CodeCompletionOptions.DataUsageCacheItemCount =  DataUsageCacheItemCount;
-			CodeCompletionOptions.TooltipsEnabled =  UseTooltips;
-			CodeCompletionOptions.TooltipsOnlyWhenDebugging = (bool)useDebugTooltipsOnly.IsChecked;
-			CodeCompletionOptions.CompleteWhenTyping = (bool)completeWhenTyping.IsChecked;
-			CodeCompletionOptions.KeywordCompletionEnabled = (bool)useKeywordCompletionCheckBox.IsChecked;
+			CodeCompletionOptions.DataUsageCacheItemCount = DataUsageCacheItemCount;
+			CodeCompletionOptions.TooltipsEnabled = UseTooltips;
 			CodeCompletionOptions.InsightEnabled = UseInsight;
-			CodeCompletionOptions.InsightRefreshOnComma = (bool)refreshInsightOnComma.IsChecked;
 			return base.SaveOptions();
 		}
 		
@@ -72,8 +64,10 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		public bool EnableCodeCompletion {
 			get { return enableCodeCompletion; }
-			set { enableCodeCompletion = value;
-				base.RaisePropertyChanged(() => EnableCodeCompletion);}
+			set {
+				enableCodeCompletion = value;
+				base.RaisePropertyChanged(() => EnableCodeCompletion);
+			}
 		}
 		
 		
@@ -81,33 +75,40 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		public bool UseDataUsageCache {
 			get { return useDataUsageCache; }
-			set { useDataUsageCache = value;
-				base.RaisePropertyChanged(() => UseDataUsageCache);}
+			set {
+				useDataUsageCache = value;
+				base.RaisePropertyChanged(() => UseDataUsageCache);
+			}
 		}
 		
 		private int dataUsageCacheItemCount;
 		
 		public int DataUsageCacheItemCount {
 			get { return dataUsageCacheItemCount; }
-			set { dataUsageCacheItemCount = value;
-				base.RaisePropertyChanged(() => DataUsageCacheItemCount);}
+			set {
+				dataUsageCacheItemCount = value;
+				base.RaisePropertyChanged(() => DataUsageCacheItemCount);
+			}
 		}
-		
 		
 		private bool useTooltips;
 		
 		public bool UseTooltips {
 			get { return useTooltips; }
-			set { useTooltips = value;
-				base.RaisePropertyChanged(() => UseTooltips);}
+			set {
+				useTooltips = value;
+				base.RaisePropertyChanged(() => UseTooltips);
+			}
 		}
 		
 		private bool useInsight;
 		
 		public bool UseInsight {
 			get { return useInsight; }
-			set { useInsight = value;
-				base.RaisePropertyChanged(() => UseInsight);}
+			set {
+				useInsight = value;
+				base.RaisePropertyChanged(() => UseInsight);
+			}
 		}
 		
 		#endregion

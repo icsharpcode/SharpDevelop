@@ -115,6 +115,7 @@ namespace CSharpBinding.Completion
 			} else {
 				startPos = caretOffset;
 				if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
+					if (!CodeCompletionOptions.CompleteWhenTyping) return false;
 					if (startPos > 1 && char.IsLetterOrDigit (completionContext.Document.GetCharAt (startPos - 2)))
 						return false;
 					completionData = cce.GetCompletionData(startPos, false);
@@ -137,7 +138,7 @@ namespace CSharpBinding.Completion
 				return true;
 			}
 			
-			if (!ctrlSpace) {
+			if (CodeCompletionOptions.InsightEnabled && !ctrlSpace) {
 				// Method Insight
 				var pce = new CSharpParameterCompletionEngine(
 					completionContext.Document,

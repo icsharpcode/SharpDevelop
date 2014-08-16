@@ -63,14 +63,14 @@ namespace ICSharpCode.SharpDevelop
 			set { properties.Set("TooltipsOnlyWhenDebugging", value); }
 		}
 		
-		public static bool KeywordCompletionEnabled {
-			get { return properties.Get("KeywordCompletionEnabled", true); }
-			set { properties.Set("KeywordCompletionEnabled", value); }
-		}
-		
 		public static bool CompleteWhenTyping {
 			get { return properties.Get("CompleteWhenTyping", true); }
 			set { properties.Set("CompleteWhenTyping", value); }
+		}
+		
+		public static bool CommitOnTabEnterOnly {
+			get { return properties.Get("CommitOnTabEnterOnly", false); }
+			set { properties.Set("CommitOnTabEnterOnly", value); }
 		}
 		
 		public static bool InsightEnabled {
@@ -86,6 +86,16 @@ namespace ICSharpCode.SharpDevelop
 		public static TooltipLinkTarget TooltipLinkTarget {
 			get { return properties.Get("TooltipLinkTarget", TooltipLinkTarget.Documentation); }
 			set { properties.Set("TooltipLinkTarget", value); }
+		}
+		
+		public static string CompletionCharList {
+			get { return properties.Get("CompletionCharList", @"{}[]().,:;+-*/%&|^!~=<>?@#'""\"); }
+			set { properties.Set("CompletionCharList", value); }
+		}
+		
+		public static bool CommitOnChar(char key)
+		{
+			return CompletionCharList.IndexOf(key) >= 0;
 		}
 	}
 	
