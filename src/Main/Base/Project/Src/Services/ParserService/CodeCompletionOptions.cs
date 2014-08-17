@@ -78,11 +78,6 @@ namespace ICSharpCode.SharpDevelop
 			set { properties.Set("InsightEnabled", value); }
 		}
 		
-		public static bool InsightRefreshOnComma {
-			get { return properties.Get("InsightRefreshOnComma", true); }
-			set { properties.Set("InsightRefreshOnComma", value); }
-		}
-		
 		public static TooltipLinkTarget TooltipLinkTarget {
 			get { return properties.Get("TooltipLinkTarget", TooltipLinkTarget.Documentation); }
 			set { properties.Set("TooltipLinkTarget", value); }

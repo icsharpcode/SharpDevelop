@@ -8192,4 +8192,13 @@ Error while starting:
     <value>This resource is not being used. Its purpose is to test the translation database and has 
 a line break</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLabel" xml:space="preserve">
+    <value>Tooltip settings</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.CommitOnCharacters" xml:space="preserve">
+    <value>Insert selected code completion entry by typing the following characters:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.CommitOnTabEnterOnly" xml:space="preserve">
+    <value>Only insert selected code completion entry by typing &lt;Tab&gt; or &lt;Enter&gt;.</value>
+  </data>
 </root>

@@ -6,22 +6,17 @@
                  xmlns:sd="clr-namespace:ICSharpCode.SharpDevelop"
                  xmlns:widgets="clr-namespace:ICSharpCode.SharpDevelop.Widgets;assembly=ICSharpCode.SharpDevelop.Widgets">
 	<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
-		<TextBlock
-			Text="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.MainOption}"
-			TextWrapping="Wrap"
-			VerticalAlignment="Center" />
-		
-		<CheckBox
-			VerticalAlignment="Center"
-			Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox}"
-			IsChecked="{Binding EnableCodeCompletion}" />
-		
 		<GroupBox
-			Margin="5"
-			Header="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.DetailSettings}"
-			IsEnabled="{Binding EnableCodeCompletion}">
+			Margin="5">
+			<GroupBox.Header>
+				<CheckBox
+					VerticalAlignment="Center"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox}"
+					IsChecked="{core:OptionBinding sd:CodeCompletionOptions.EnableCodeCompletion}"
+					x:Name="checkEnableCodeCompletion" />
+			</GroupBox.Header>
 			
-			<widgets:StackPanelWithSpacing SpaceBetweenItems="10">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="10" IsEnabled="{Binding IsChecked, ElementName=checkEnableCodeCompletion}">
 				<TextBlock
 					Text="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.LanguageDependend}"
 					TextWrapping="Wrap"/>
@@ -33,6 +28,35 @@
 				<CheckBox
 					IsChecked="{core:OptionBinding sd:CodeCompletionOptions.CommitOnTabEnterOnly}"
 					Content="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.CommitOnTabEnterOnly}"/>
+				
+				<TextBlock
+					Text="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.CommitOnCharacters}"
+					TextWrapping="Wrap"/>
+				
+				<TextBox
+					Text="{core:OptionBinding sd:CodeCompletionOptions.CompletionCharList}"/>
+				
+				<CheckBox Content="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.UseDataUsageCache}"
+				          x:Name="checkUseDataUsageCache"
+				          IsChecked="{core:OptionBinding sd:CodeCompletionOptions.DataUsageCacheEnabled}"/>
+				
+				<widgets:StackPanelWithSpacing SpaceBetweenItems="4" Margin="30,0,0,0"
+					Orientation="Horizontal" IsEnabled="{Binding IsChecked, ElementName=checkUseDataUsageCache}">
+					
+					<Label Content="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountBeforeNumber}"/>
+					
+					<widgets:NumericUpDown MinWidth="50"
+						Minimum="50" Maximum="10000" SmallChange="50"
+						Value="{core:OptionBinding sd:CodeCompletionOptions.DataUsageCacheItemCount}"/>
+					
+					<Label Content="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountAfterNumber}"/>
+					
+					<Button
+						Style="{x:Static core:GlobalStyles.ButtonStyle}"
+						Content="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.ClearCache}"
+						Click="Button_Click"/>
+				
+				</widgets:StackPanelWithSpacing>
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 		
@@ -40,27 +64,23 @@
 			<widgets:StackPanelWithSpacing SpaceBetweenItems="10">
 				<CheckBox
 					Content="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.UseTooltips}"
-					IsChecked="{Binding UseTooltips}" />
+					x:Name="checkUseTooltips"
+					IsChecked="{core:OptionBinding sd:CodeCompletionOptions.TooltipsEnabled}" />
 				
 				<CheckBox
 					Margin="30,0,0,0"
 					IsChecked="{core:OptionBinding sd:CodeCompletionOptions.TooltipsOnlyWhenDebugging}"
 					Content="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.UseDebugTooltipsOnly}"
-					IsEnabled="{Binding UseTooltips}" />
+					IsEnabled="{Binding IsChecked, ElementName=checkUseTooltips}" />
 				
 				<CheckBox
 					VerticalAlignment="Center"
+					x:Name="checkUseInsight"
 					Content="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.UseInsight}"
-					IsChecked="{Binding UseInsight}" />
-				
-				<CheckBox
-					Margin="30,0,0,0"
-					IsChecked="{core:OptionBinding sd:CodeCompletionOptions.InsightRefreshOnComma}"
-					Content="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.RefreshInsightOnComma}"
-					IsEnabled="{Binding UseInsight}" />
+					IsChecked="{core:OptionBinding sd:CodeCompletionOptions.InsightEnabled}" />
 				
 				<StackPanel Grid.Row="9" Orientation="Horizontal" Margin="0,10">
-					<TextBlock Text="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTarget}" Margin="0,2,2,0" />
+					<TextBlock Text="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTarget}" Margin="0,2,5,0" />
 					
 					<ComboBox
 						sd:EnumBinding.EnumType="{x:Type sd:TooltipLinkTarget}"
