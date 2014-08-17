@@ -39,6 +39,12 @@ namespace ICSharpCode.XamlBinding.Tests
 	[RequiresSTA]
 	public class CodeCompletionTests : TextEditorBasedTests
 	{
+		[SetUp]
+		public void SetUp()
+		{
+			CodeCompletionOptions.DataUsageCacheEnabled = false;
+		}
+		
 		#region CtrlSpace
 		[Test]
 		public void CtrlSpaceTest01()
