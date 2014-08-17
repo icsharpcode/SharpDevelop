@@ -66,7 +66,6 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		public DefaultCompletionItem(string text)
 		{
 			this.Text = text;
-			Priority = CodeCompletionDataUsageCache.GetPriority(Text, true);
 		}
 		
 		public virtual void Complete(CompletionContext context)

@@ -31,12 +31,6 @@ namespace ICSharpCode.XamlBinding.Tests
 	[RequiresSTA]
 	public class CodeInsertionTests : TextEditorBasedTests
 	{
-		[SetUp]
-		public void SetUp()
-		{
-			CodeCompletionOptions.DataUsageCacheEnabled = false;
-		}
-		
 		#region TextInsertionTests		
 		[Test]
 		public void CtrlSpaceClosingAttributeValueWithEqualsInsertionTest()

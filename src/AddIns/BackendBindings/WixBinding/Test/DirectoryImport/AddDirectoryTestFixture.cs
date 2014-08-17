@@ -51,7 +51,6 @@ namespace WixBinding.Tests.DirectoryImport
 		public void SetUpFixture()
 		{
 			base.InitFixture();
-			CodeCompletionOptions.DataUsageCacheEnabled = false;
 			editor.AddDirectory(directory);
 			
 			WixNamespaceManager nsManager = new WixNamespaceManager(editor.Document.NameTable);
