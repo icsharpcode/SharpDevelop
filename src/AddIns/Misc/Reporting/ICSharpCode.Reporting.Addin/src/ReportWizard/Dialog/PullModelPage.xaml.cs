@@ -39,6 +39,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 		public WizardPageType ReportPageType {
 			get { return WizardPageType.PullModelPage;}
 		}
+		
 		#endregion
 	}
 }

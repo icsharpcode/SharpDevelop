@@ -10,13 +10,17 @@
 	             NextButtonVisibility="Visible"
 	             CancelButtonVisibility="Visible"
 	             Finish="_wizard_Finish"
-	             CanHelp="False">
+	             CanHelp="False"
+	             PageChanged="_wizard_PageChanged"
+	             Next="_wizard_Next">
 		
-		<local:WelcomePage></local:WelcomePage>
+		<local:WelcomePage ></local:WelcomePage>
 		
-		<local:BaseSettingsPage></local:BaseSettingsPage>
+		<local:BaseSettingsPage x:Name="BaseSettings"></local:BaseSettingsPage>
 		
-	<!--	<local:PushDataReport></local:PushDataReport>-->
+		<local:PushDataReport PreviousPage="{Binding ElementName=BaseSettings}"></local:PushDataReport>
+		
+		<local:PullModelPage PreviousPage="{Binding ElementName=BaseSettings}"></local:PullModelPage>
 		
 		<!--<xctk:WizardPage PageType="Interior"
 		                 Title="dritte Seite"
@@ -24,26 +28,6 @@
 		                 CanCancel="true"
 		                 CanFinish="True"
 		/>-->
-		
-		
-		<!--
-		<xctk:WizardPage PageType="Exterior" Title="Welcome to Reporting Wizard"
-		                 Description="This Wizard will walk you though how to do something.">
-		
-		<Image Name="_image"></Image>
-		</xctk:WizardPage>-->
-		
-		<!-- !	<local:BaseSettingsPage ></local:BaseSettingsPage> -->
-		
-		
-		
-		<!--	<xctk:WizardPage PageType="Interior"
-		                 Title="Page 2"
-		                 Description="This is the second page in the process" />
-		<xctk:WizardPage PageType="Interior"
-		                 Title="Last Page"
-		                 Description="This is the last page in the process"
-		                 CanFinish="True" />-->
 	</xctk:Wizard>
 
 </Window>

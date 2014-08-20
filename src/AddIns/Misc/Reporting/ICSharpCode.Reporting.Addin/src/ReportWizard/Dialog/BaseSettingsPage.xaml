@@ -4,7 +4,6 @@
                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                  xmlns:System="clr-namespace:System;assembly=mscorlib"
                  xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
-                 Name="Base"
                  Title="Base Settings"
                  Description="Basic Settings and Layout"
                  PageType="Interior"

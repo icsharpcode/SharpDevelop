@@ -12,6 +12,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using ICSharpCode.Reporting.Globals;
 using ICSharpCode.SharpDevelop;
 using Xceed.Wpf.Toolkit;
 using ICSharpCode.Reporting.Addin.ReportWizard.Dialog;
@@ -46,7 +47,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 		
 		void UpdateContext(IHasContext hc)
 		{
-			
 			switch (hc.ReportPageType) {
 					case WizardPageType.BaseSettingsPage:{
 						context.PageOneContext = hc.Context;
@@ -58,6 +58,40 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 						break;
 					}
 			}
+		}
+		
+		
+		void _wizard_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
+		{
+			var current = this._wizard.CurrentPage;
+			if (current.Name.Equals("BaseSettings")) {
+				var hasContext = current as IHasContext;
+				if (hasContext != null) {
+					var pushPullModel = ((PageOneContext)hasContext.Context).DataModel;
+					switch (pushPullModel) {
+							case PushPullModel.PushData: {
+								current.NextPage = (WizardPage)_wizard.Items[2];
+								break;
+							}
+							
+							case PushPullModel.PullData: {
+								current.NextPage = (WizardPage)_wizard.Items[3];
+								break;
+							}
+							
+							case PushPullModel.FormSheet: {
+								break;
+							}
+					}
+				}
+			}
+			
+			Console.WriteLine("CurrentPage {0}",current.Name);
+			
+		}
+		void _wizard_PageChanged(object sender, RoutedEventArgs e)
+		{
+			var x = _wizard.CurrentPage;
 		}
 	}
 }

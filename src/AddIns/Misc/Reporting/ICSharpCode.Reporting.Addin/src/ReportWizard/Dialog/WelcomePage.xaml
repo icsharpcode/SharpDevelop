@@ -13,6 +13,9 @@
                  CancelButtonVisibility="Visible">
 	
 	<Grid>
-		<Image Name="_image" Margin="0,8,0,0" ></Image>
+		<Border  BorderThickness="3" Margin="10,10,10,10">
+			<Image Name="_image" Margin="0,8,0,0" ></Image>
+		</Border>
+	
 	</Grid>
 </xctk:WizardPage>

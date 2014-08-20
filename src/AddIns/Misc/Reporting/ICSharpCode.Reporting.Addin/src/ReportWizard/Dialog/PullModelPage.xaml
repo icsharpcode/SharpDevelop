@@ -4,14 +4,14 @@
                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                  xmlns:System="clr-namespace:System;assembly=mscorlib"
                  xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
-				CanSelectPreviousPage="true"
+                 Description="Create PullData Report"
+                 CanSelectPreviousPage="true"
                  CanSelectNextPage="false"
                  CanCancel="true"
-				CanFinish="false"
-				PageType="Interior"
->
+                 CanFinish="false"
+                 PageType="Interior">
 	<Grid>
-	<TextBlock Text="Pull Model not available at the moment" FontSize="16"
- HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+		<TextBlock Text="Pull Model not available at the moment" FontSize="16"
+		           HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
 	</Grid>
 </xctk:WizardPage>

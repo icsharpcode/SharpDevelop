@@ -25,8 +25,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 		public BaseSettingsPage()
 		{
 			InitializeComponent();
-			
-			_DataModel.SelectedItem = PushPullModel.FormSheet;
 			_DataModel.SelectedItem = PushPullModel.FormSheet;
 			_ReportType.SelectedItem = ReportType.FormSheet;
 			_image.Source = WizardHelper.GetWizardIcon();
@@ -60,30 +58,29 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 			var cbo = (ComboBox) sender;
 			
 			var pushPullModel = (PushPullModel)cbo.SelectedItem;
-			
+	
 			switch (pushPullModel) {
 					case PushPullModel.PushData: {
 						this._ReportType.SelectedItem = ReportType.DataReport;
 						this.CanFinish = false;
-						this.CanSelectNextPage = true;
-						NextPage = new PushDataReport();
-						NextPage.PreviousPage = this;
+						this.CanSelectNextPage = true;				
 						break;
 					}
 					
 					case PushPullModel.PullData: {
 						CanSelectNextPage = true;
-						NextPage = new PullModelPage();
-						NextPage.PreviousPage = this;
+						this.CanFinish = false;
 						break;
 					}
 					
 					case PushPullModel.FormSheet: {
 						this.CanFinish = true;
+						CanSelectNextPage = false;
 						this._ReportType.SelectedItem = ReportType.FormSheet;
 						break;
 					}
 			}
+			
 		}
 	}
 }
