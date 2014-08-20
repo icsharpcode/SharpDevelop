@@ -180,7 +180,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				var returnTypeRR = ctx.Resolve(varDecl.Type);
-				if (returnTypeRR.Type.IsReferenceType.HasValue && returnTypeRR.Type.IsReferenceType.Value)
+				if (!IsValidConstType(returnTypeRR.Type))
 					return;
 
 				var variable = varDecl.Variables.First();

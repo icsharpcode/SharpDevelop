@@ -138,16 +138,20 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		/// <inheritdoc/>
 		public virtual CompletionItemListKeyResult ProcessInput(char key)
 		{
-			if (key == ' ' && this.InsertSpace) {
-				this.InsertSpace = false; // insert space only once
-				return CompletionItemListKeyResult.BeforeStartKey;
-			} else if (char.IsLetterOrDigit(key) || key == '_') {
-				this.InsertSpace = false; // don't insert space if user types normally
+			if (char.IsLetterOrDigit(key) || key == '_') {
+				InsertSpace = false; // don't insert space if user types normally
 				return CompletionItemListKeyResult.NormalKey;
-			} else {
-				// do not reset insertSpace when doing an insertion!
-				return CompletionItemListKeyResult.InsertionKey;
 			}
+			if (key == ' ' && InsertSpace) {
+				InsertSpace = false;
+				// insert space only once
+				return CompletionItemListKeyResult.BeforeStartKey;
+			}
+			if (CodeCompletionOptions.CommitOnTabEnterOnly || !CodeCompletionOptions.CommitOnChar(key)) {
+				return CompletionItemListKeyResult.Cancel;
+			}
+			// do not reset insertSpace when doing an insertion!
+			return CompletionItemListKeyResult.InsertionKey;
 		}
 		
 		/// <inheritdoc/>

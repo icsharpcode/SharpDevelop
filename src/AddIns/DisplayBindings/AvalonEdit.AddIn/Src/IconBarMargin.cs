@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -286,7 +287,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			int line = GetLineFromMousePosition(e);
 			if (line < 1) return;
-			IBookmark bm = GetBookmarkFromLine(line);
+			IBookmark bm = manager.Bookmarks
+				.Where(m => m.LineNumber == line && m.DisplaysTooltip)
+				.OrderBy(m => m.ZOrder)
+				.FirstOrDefault();
 			if (bm == null) return;
 			object content = bm.CreateTooltipContent();
 			popupToolTip = content as Popup;
@@ -301,7 +305,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				e.Handled = true;
 				popupToolTip.IsOpen = true;
 				distanceToPopupLimit = double.PositiveInfinity; // reset limit; we'll re-calculate it on the next mouse movement
-			} else {
+			} else if (content != null) {
 				if (toolTip == null) {
 					toolTip = new ToolTip();
 					toolTip.Closed += ToolTipClosed;

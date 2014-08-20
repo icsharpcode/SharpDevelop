@@ -32,7 +32,6 @@ namespace ResourceEditor
 {
 	public class ResourceEditorDisplayBinding : IDisplayBinding
 	{
-		// IDisplayBinding interface
 		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true; // definition in .addin does extension-based filtering
@@ -54,9 +53,6 @@ namespace ResourceEditor
 		}
 	}
 	
-	/// <summary>
-	/// This class describes the main functionality of a language codon
-	/// </summary>
 	public class ResourceEditWrapper : AbstractViewContentHandlingLoadErrors, IClipboardHandler
 	{
 		ResourceEditorControl resourceEditor = new ResourceEditorControl();
@@ -73,14 +69,16 @@ namespace ResourceEditor
 
 		void SetDirty(object sender, EventArgs e)
 		{
-			this.PrimaryFile.MakeDirty();
+			PrimaryFile.MakeDirty();
+			SD.WinForms.InvalidateCommands();
 		}
 		
 		public ResourceEditWrapper(OpenedFile file)
 		{
 			this.TabPageText = "Resource editor";
-			base.UserContent = resourceEditor;
-			resourceEditor.ResourceList.Changed += new EventHandler(SetDirty);
+			UserContent = resourceEditor;
+			resourceEditor.ResourceList.Changed += SetDirty;
+			resourceEditor.ResourceList.ItemSelectionChanged += (sender, e) => SD.WinForms.InvalidateCommands();
 			this.Files.Add(file);
 		}
 		
@@ -104,7 +102,7 @@ namespace ResourceEditor
 		public bool EnableCut
 		{
 			get {
-				if (resourceEditor.ResourceList.IsEditing || !resourceEditor.ResourceList.Focused) {
+				if (resourceEditor.ResourceList.IsEditing) {
 					return false;
 				}
 				return resourceEditor.ResourceList.SelectedItems.Count > 0;
@@ -114,7 +112,7 @@ namespace ResourceEditor
 		public bool EnableCopy
 		{
 			get {
-				if (resourceEditor.ResourceList.IsEditing || !resourceEditor.ResourceList.Focused) {
+				if (resourceEditor.ResourceList.IsEditing) {
 					return false;
 				}
 				return resourceEditor.ResourceList.SelectedItems.Count > 0;
@@ -124,7 +122,7 @@ namespace ResourceEditor
 		public bool EnablePaste
 		{
 			get {
-				if (resourceEditor.ResourceList.IsEditing || !resourceEditor.ResourceList.Focused) {
+				if (resourceEditor.ResourceList.IsEditing) {
 					return false;
 				}
 				return true;
@@ -134,7 +132,7 @@ namespace ResourceEditor
 		public bool EnableDelete
 		{
 			get {
-				if (resourceEditor.ResourceList.IsEditing || !resourceEditor.ResourceList.Focused) {
+				if (resourceEditor.ResourceList.IsEditing) {
 					return false;
 				}
 				return resourceEditor.ResourceList.SelectedItems.Count > 0;
@@ -144,7 +142,7 @@ namespace ResourceEditor
 		public bool EnableSelectAll
 		{
 			get {
-				if (resourceEditor.ResourceList.IsEditing || !resourceEditor.ResourceList.Focused) {
+				if (resourceEditor.ResourceList.IsEditing) {
 					return false;
 				}
 				return true;
@@ -241,33 +239,17 @@ namespace ResourceEditor
 		
 		public void Delete()
 		{
-			if (resourceEditor.ResourceList.WriteProtected) {
+			var resourceList = resourceEditor.ResourceList;
+			if (resourceList.WriteProtected || resourceList.SelectedItems.Count == 0)
 				return;
-			}
-			
-			if (resourceEditor.ResourceList.SelectedItems.Count==0) return; // nothing to do
-			DialogResult rc;
-			
-			try {
-				
-				rc=MessageBox.Show(ResourceService.GetString("ResourceEditor.DeleteEntry.Confirm"),ResourceService.GetString("ResourceEditor.DeleteEntry.Title"),MessageBoxButtons.OKCancel);
-			}
-			catch {
-				// when something happens - like resource is missing - try to use default message
-				rc = MessageBox.Show("Do you really want to delete?","Delete-Warning!",MessageBoxButtons.OKCancel);
-			}
-			
-			if (rc != DialogResult.OK) {
+			if (!SD.MessageService.AskQuestion("${res:ResourceEditor.DeleteEntry.Confirm}", "${res:ResourceEditor.DeleteEntry.Title}"))
 				return;
-			}
 			
-			foreach (ListViewItem item in resourceEditor.ResourceList.SelectedItems) {
-				//// not clear why this check is present here - seems to be extra
-				////if (item.Text != null) {
-				resourceEditor.ResourceList.Resources.Remove(item.Text);
-				resourceEditor.ResourceList.Items.Remove(item);
+			foreach (ListViewItem item in resourceList.SelectedItems) {
+				resourceList.Resources.Remove(item.Text);
+				resourceList.Items.Remove(item);
 				// and set dirty flag
-				resourceEditor.ResourceList.OnChanged();
+				resourceList.OnChanged();
 			}
 		}
 		

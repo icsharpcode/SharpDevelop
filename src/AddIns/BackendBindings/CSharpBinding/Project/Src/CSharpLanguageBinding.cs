@@ -74,7 +74,7 @@ namespace CSharpBinding
 				return "";
 			var builder = new TypeSystemAstBuilder();
 			MethodDeclaration decl;
-			if (member is IMethod) {
+			if (member.SymbolKind == SymbolKind.Method) {
 				// If it's a method, convert it directly (including parameters + type parameters)
 				decl = (MethodDeclaration)builder.ConvertEntity(member);
 			} else {

@@ -2178,7 +2178,7 @@
 		<OptionPanel id = "CodeCompletion"
 		             insertafter="Behavior"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
-		             class = "ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionPanel"/>
+		             class = "ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionOptionPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">

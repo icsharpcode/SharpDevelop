@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Internal.ConditionEvaluators
 				string typesList = condition.Properties["type"];
 				if (typesList != null) {
 					foreach (string type in typesList.Split(',')) {
-						switch (type) {
+						switch (type.Trim()) {
 							case "*":
 								// Wildcard -> allow any type
 								return true;

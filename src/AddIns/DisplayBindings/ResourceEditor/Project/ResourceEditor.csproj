@@ -54,7 +54,7 @@
     <Compile Include="Src\Commands\EditCommentCommand.cs" />
     <Compile Include="Src\Commands\RenameEntryCommand.cs" />
     <Compile Include="Src\Commands\SaveEntryAsCommand.cs" />
-    <Compile Include="Src\DisplayDefinition.cs" />
+    <Compile Include="Src\ResourceEditorDisplayBinding.cs" />
     <Compile Include="Src\ResourceEdit\AbstractImageView.cs">
       <SubType>Component</SubType>
     </Compile>

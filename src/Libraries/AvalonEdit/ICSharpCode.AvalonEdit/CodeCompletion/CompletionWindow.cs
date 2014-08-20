@@ -17,13 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 
@@ -67,6 +64,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		
 		#region ToolTip handling
+		public bool ShowDocumentationTooltips { get; set; }
+		
 		void toolTip_Closed(object sender, RoutedEventArgs e)
 		{
 			// Clear content after tooltip is closed.
@@ -78,6 +77,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		void completionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			if (!ShowDocumentationTooltips) {
+				toolTip.IsOpen = false;
+				return;
+			}
+			
 			var item = completionList.SelectedItem;
 			if (item == null)
 				return;

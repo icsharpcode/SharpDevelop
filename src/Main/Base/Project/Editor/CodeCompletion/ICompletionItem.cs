@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		public virtual string Description { get; set; }
 		public virtual IImage Image { get; set; }
 		
-		public virtual double Priority { get { return 0; } }
+		public virtual double Priority { get; protected set; }
 		
 		public DefaultCompletionItem(string text)
 		{

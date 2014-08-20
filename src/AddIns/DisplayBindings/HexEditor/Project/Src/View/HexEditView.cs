@@ -136,12 +136,12 @@ namespace HexEditor.View
 		void DocumentChanged(object sender, EventArgs e)
 		{
 			if (PrimaryFile != null) PrimaryFile.MakeDirty();
-			CommandManager.InvalidateRequerySuggested();
+			SD.WinForms.InvalidateCommands();
 		}
 
 		void SelectionChanged(object sender, System.EventArgs e)
 		{
-			CommandManager.InvalidateRequerySuggested();
+			SD.WinForms.InvalidateCommands();
 		}
 	}
 }

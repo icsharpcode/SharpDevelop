@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ResourceEditor
 {
@@ -39,7 +40,7 @@ namespace ResourceEditor
 		
 		protected ListViewViewState internalState = ListViewViewState.Nothing;
 
-		public System.Enum InternalState {
+		public Enum InternalState {
 			get {
 				return internalState;
 			}
@@ -55,14 +56,14 @@ namespace ResourceEditor
 		public ResourceEditorControl()
 		{
 			InitializeComponent();
-			resourceList.SelectedIndexChanged += new EventHandler(resourceListSelectionChanged);
+			resourceList.SelectedIndexChanged += ResourceListSelectionChanged;
 		}
 		
-		void resourceListSelectionChanged(object sender, EventArgs e)
+		void ResourceListSelectionChanged(object sender, EventArgs e)
 		{
 			if(resourceList.SelectedItems.Count == 0) {
 				internalState = ListViewViewState.Nothing;
-				showResource(null);
+				ShowResource(null);
 			} else {
 				internalState = ListViewViewState.ItemsSelected;
 			}
@@ -72,7 +73,7 @@ namespace ResourceEditor
 			}
 			object key = resourceList.SelectedItems[0].Text;
 			ResourceItem item = (ResourceItem)resourceList.Resources[key.ToString()];
-			showResource(item);
+			ShowResource(item);
 		}
 		
 		void InitializeComponent()
@@ -92,17 +93,17 @@ namespace ResourceEditor
 			Controls.Add(splitter);
 			Controls.Add(resourceList);
 			
-			this.Resize += new EventHandler(initializeLayout);
+			this.Resize += InitializeLayout;
 		}
 		
-		void initializeLayout(object sender, EventArgs e)
+		void InitializeLayout(object sender, EventArgs e)
 		{
 			resourceList.Height = Convert.ToInt32(0.75 * Height);
 		}
 		
-		void showView(Control viewer)
+		void ShowView(Control viewer)
 		{
-			// remvoe old view if there is one
+			// remove old view if there is one
 			if(panel.Controls.Count == 1) {
 				Control control = panel.Controls[0];
 				panel.Controls.Remove(control);
@@ -114,41 +115,41 @@ namespace ResourceEditor
 				panel.Controls.Add(viewer);
 				currentView = (IResourceView)viewer;
 				currentView.WriteProtected = resourceList.WriteProtected;
-				currentView.ResourceChanged += new ResourceChangedEventHandler(viewResourceChanged);
+				currentView.ResourceChanged += ViewResourceChanged;
 			}
 		}
 		
-		void viewResourceChanged(object sender, ResourceEventArgs e)
+		void ViewResourceChanged(object sender, ResourceEventArgs e)
 		{
 			resourceList.SetResourceValue(e.ResourceName, e.ResourceValue);
 		}
 		
-		void showResource(ResourceItem item)
+		void ShowResource(ResourceItem item)
 		{
 			if(item == null) {
-				showView(null);
+				ShowView(null);
 				return;
 			}
 			if (item.ResourceValue is Icon) {
 				IconView iv = new IconView(item);
-				showView(iv);
+				ShowView(iv);
 			} else if(item.ResourceValue is Bitmap) {
 				BitmapView bv = new BitmapView(item);
-				showView(bv);
+				ShowView(bv);
 			} else if(item.ResourceValue is Cursor) {
 				CursorView cv = new CursorView(item);
-				showView(cv);
+				ShowView(cv);
 			} else if(item.ResourceValue is string) {
 				TextView tv = new TextView(item);
-				showView(tv);
+				ShowView(tv);
 			} else if(item.ResourceValue is byte[]) {
 				BinaryView bv = new BinaryView(item);
-				showView(bv);
+				ShowView(bv);
 			} else if(item.ResourceValue is bool) {
 				BooleanView bv = new BooleanView(item);
-				showView(bv);
+				ShowView(bv);
 			} else {
-				showView(null);
+				ShowView(null);
 			}
 		}
 

@@ -18,10 +18,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Workbench
@@ -206,21 +203,65 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				string fileName = file.FileName;
 				if (!File.Exists(fileName))
 					return;
-				
-				string message = StringParser.Parse(
-					"${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}",
-					new StringTagPair("File", Path.GetFullPath(fileName))
-				);
-				if ((AutoLoadExternalChangesOption && file.IsDirty == false)
-				    || MessageService.AskQuestion(message, StringParser.Parse("${res:MainWindow.DialogName}")))
-				{
+
+				if (AutoLoadExternalChangesOption && !file.IsDirty) {
 					if (File.Exists(fileName)) {
 						file.ReloadFromDisk();
 					}
 				} else {
-					file.MakeDirty();
+					QueueFileForReloadDialog(file);
 				}
 			}
 		}
+		
+		#region Reload Queue
+		static readonly HashSet<OpenedFile> queue = new HashSet<OpenedFile>();
+		static volatile bool currentlyReloading;
+		
+		static void QueueFileForReloadDialog(OpenedFile file)
+		{
+			if (file == null)
+				throw new ArgumentNullException("file");
+			lock (queue) {
+				queue.Add(file);
+			}
+		}
+		
+		public static void AskForReload()
+		{
+			if (currentlyReloading) return;
+			currentlyReloading = true;
+			try {
+				lock (queue) {
+					foreach (var file in queue) {
+						string fileName = file.FileName;
+						if (!File.Exists(fileName))
+							continue;
+						string message = StringParser.Parse(
+							"${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}",
+							new StringTagPair("File", Path.GetFullPath(fileName))
+						);
+						if (SD.MessageService.AskQuestion(message, StringParser.Parse("${res:MainWindow.DialogName}"))) {
+							if (File.Exists(fileName)) {
+								file.ReloadFromDisk();
+							}
+						} else {
+							file.MakeDirty();
+						}
+					}
+					queue.Clear();
+				}
+			} finally {
+				currentlyReloading = false;
+			}
+		}
+
+		public static void CancelReloadQueue()
+		{
+			lock (queue) {
+				queue.Clear();
+			}
+		}
+		#endregion
 	}
 }
