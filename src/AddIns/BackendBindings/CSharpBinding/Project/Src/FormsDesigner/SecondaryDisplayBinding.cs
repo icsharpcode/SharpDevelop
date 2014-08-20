@@ -55,6 +55,13 @@ namespace CSharpBinding.FormsDesigner
 			}
 			return null;
 		}
+		
+		public static IField GetLastField(ITypeDefinition c, string fileNmae)
+		{
+			if (c == null)
+				return null;
+			return c.Fields.LastOrDefault(field => field.BodyRegion.FileName == fileNmae);
+		}
 
 		public static bool BaseClassIsFormOrControl(ITypeDefinition c)
 		{

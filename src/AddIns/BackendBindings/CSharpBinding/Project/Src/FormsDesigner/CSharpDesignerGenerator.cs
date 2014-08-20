@@ -297,9 +297,9 @@ namespace CSharpBinding.FormsDesigner
 		
 		void CreateField(CodeMemberField newField)
 		{
-			// insert new field below InitializeComponents()
-
-			var bodyRegion = initializeComponents.BodyRegion;
+			// insert new field below the last field or InitializeComponents()
+			var field = FormsDesignerSecondaryDisplayBinding.GetLastField(formClass, initializeComponents.BodyRegion.FileName);
+			var bodyRegion = field != null ? field.BodyRegion : initializeComponents.BodyRegion;
 			DocumentScript script = GetScript(bodyRegion.FileName);
 			string newline = DocumentUtilities.GetLineTerminator(script.OriginalDocument, bodyRegion.BeginLine);
 			string indentation = DocumentUtilities.GetIndentation(script.OriginalDocument, bodyRegion.BeginLine);
