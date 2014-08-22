@@ -6,14 +6,13 @@
                  xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
                  Title="Base Settings"
                  Description="Basic Settings and Layout"
-                 PageType="Interior"
-                 Background="LightGray"
+            	 PageType="Interior"
                  CanFinish="true"
                  CanSelectNextPage="false">
 	
-	<xctk:WizardPage.ExteriorPanelContent >
-		<Image Name="_image" Stretch="Fill"></Image>
-	</xctk:WizardPage.ExteriorPanelContent>
+	<!--<xctk:WizardPage.ExteriorPanelContent >
+		<Image Name="_image" Stretch="Fill"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+	</xctk:WizardPage.ExteriorPanelContent>-->
 	
 	<xctk:WizardPage.Resources>
 		<ObjectDataProvider x:Key="pushpullEnum" MethodName="GetValues"

@@ -14,20 +14,14 @@
 	             PageChanged="_wizard_PageChanged"
 	             Next="_wizard_Next">
 		
-		<local:WelcomePage ></local:WelcomePage>
+		<local:WelcomePage x:Name="WelcomePage"></local:WelcomePage>
 		
-		<local:BaseSettingsPage x:Name="BaseSettings"></local:BaseSettingsPage>
+		<local:BaseSettingsPage x:Name="BaseSettingsPage" PreviousPage="{Binding ElementName=WelcomePage}" ></local:BaseSettingsPage>
 		
-		<local:PushDataReport PreviousPage="{Binding ElementName=BaseSettings}"></local:PushDataReport>
+		<local:PushDataReport PreviousPage="{Binding ElementName=BaseSettingsPage}"></local:PushDataReport>
 		
-		<local:PullModelPage PreviousPage="{Binding ElementName=BaseSettings}"></local:PullModelPage>
+		<local:PullModelPage PreviousPage="{Binding ElementName=BaseSettingsPage}"></local:PullModelPage>
 		
-		<!--<xctk:WizardPage PageType="Interior"
-		                 Title="dritte Seite"
-		                 Description="this Page will guide you to creating an DataDriven Report"
-		                 CanCancel="true"
-		                 CanFinish="True"
-		/>-->
 	</xctk:Wizard>
 
 </Window>

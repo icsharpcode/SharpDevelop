@@ -7,7 +7,6 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.Reporting.Globals;
 using Xceed.Wpf.Toolkit;
@@ -26,8 +25,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 		{
 			InitializeComponent();
 			_DataModel.SelectedItem = PushPullModel.FormSheet;
-			_ReportType.SelectedItem = ReportType.FormSheet;
-			_image.Source = WizardHelper.GetWizardIcon();
+			_ReportType.SelectedItem = ReportType.FormSheet;	
 			_Legal.IsChecked = true;
 			this.context = new PageOneContext();
 		}

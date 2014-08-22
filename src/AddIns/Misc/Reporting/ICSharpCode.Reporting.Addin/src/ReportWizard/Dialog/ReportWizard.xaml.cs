@@ -7,13 +7,8 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using ICSharpCode.Reporting.Globals;
-using ICSharpCode.SharpDevelop;
 using Xceed.Wpf.Toolkit;
 using ICSharpCode.Reporting.Addin.ReportWizard.Dialog;
 using ICSharpCode.Reporting.Addin.ReportWizard.ViewModels;
@@ -85,10 +80,9 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 					}
 				}
 			}
-			
-			Console.WriteLine("CurrentPage {0}",current.Name);
-			
 		}
+		
+		
 		void _wizard_PageChanged(object sender, RoutedEventArgs e)
 		{
 			var x = _wizard.CurrentPage;

@@ -34,11 +34,27 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 		public void  Generate(ReportWizardContext context) {
 			if (context == null)
 				throw new ArgumentNullException("context");
-			GenerateBaseSettings(context);
-			GeneratePushModel(context);
-			CreateReportHeader(context);
+			
+			var poc = (PageOneContext)context.PageOneContext;
+			if (IsDataReport(poc)) {
+				CreateDataReport (context);
+			} else {
+				CreateFormSheetReport(context);
+			}
 		}
 
+		void CreateFormSheetReport(ReportWizardContext context)
+		{
+			GenerateBaseSettings(context);
+			CreateReportHeader(context);
+		}
+		
+		void CreateDataReport(ReportWizardContext context)
+		{
+			GenerateBaseSettings(context);
+			CreateReportHeader(context);
+			GeneratePushModel(context);
+		}
 		
 		void GenerateBaseSettings (ReportWizardContext context)	{
 			var pageOneContext = (PageOneContext)context.PageOneContext;
@@ -50,6 +66,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			reportSettings.ReportType = pageOneContext.ReportType;
 		}
 
+		
 		
 		void GeneratePushModel(ReportWizardContext context){
 			var pushModelContext = (PushModelContext)context.PushModelContext;
@@ -83,14 +100,17 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			
 			headerText.Size = GlobalValues.PreferedSize;
 			var printableWith = ReportModel.ReportSettings.PageSize.Width - ReportModel.ReportSettings.LeftMargin - ReportModel.ReportSettings.RightMargin;
-			var x = (int)(printableWith - headerText.Size.Width) / 2;
 			
+			var x = (int)(printableWith - headerText.Size.Width) / 2;
 			headerText.Location = new Point(x,4);
 			ReportModel.ReportHeader.Items.Add(headerText);
-			Console.WriteLine("");
-			Console.WriteLine("Createreportheader Size {0}",ReportModel.ReportHeader.Size);
+			
 		}
-		
+
+		static bool IsDataReport(PageOneContext poc)
+		{
+			return poc.ReportType.Equals(ReportType.DataReport);
+		}
 		
 		public IReportModel ReportModel {get;private set;}
 	}

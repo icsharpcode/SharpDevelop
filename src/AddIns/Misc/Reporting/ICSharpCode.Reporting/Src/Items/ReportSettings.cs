@@ -82,14 +82,15 @@ namespace ICSharpCode.Reporting.Items
 
 			SortColumnsCollection = new SortColumnCollection();
 			GroupColumnsCollection = new GroupColumnCollection();
-//			this.sqlParameters = new SqlParameterCollection();
 			ParameterCollection = new ParameterCollection();
+//			this.sqlParameters = new SqlParameterCollection();
+			
 //			this.NoDataMessage = "No Data for this Report";
 		}
 		
 		#region BaseSettings
 		
-		private string reportName;
+		string reportName;
 		
 		[Category("Base Settings")]
 		[DefaultValueAttribute ("")]
@@ -154,7 +155,7 @@ namespace ICSharpCode.Reporting.Items
 		public int RightMargin  {get;set;}
 			
 		
-		private Size pageSize;
+		Size pageSize;
 		
 		[Category("Page Settings")]
 		public Size PageSize {
@@ -177,13 +178,7 @@ namespace ICSharpCode.Reporting.Items
 		
 		#region
 		
-		
 //		[Category("Data")]
-		
-		
-		
-		
-		
 		
 //		[Category("Parameters")]
 //		[EditorAttribute ( typeof(ParameterCollectionEditor),
