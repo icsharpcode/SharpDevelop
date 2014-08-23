@@ -11,7 +11,7 @@ using System.Drawing;
 using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
-
+using ICSharpCode.Reporting.BaseClasses;
 
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.Addin.ReportWizard.ViewModels;
@@ -35,8 +35,8 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			if (context == null)
 				throw new ArgumentNullException("context");
 			
-			var poc = (PageOneContext)context.PageOneContext;
-			if (IsDataReport(poc)) {
+			
+			if (IsDataReport(context)) {
 				CreateDataReport (context);
 			} else {
 				CreateFormSheetReport(context);
@@ -90,25 +90,28 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 		
 		void CreateReportHeader(ReportWizardContext context){
 			var pageOneContext = (PageOneContext)context.PageOneContext;
+			
 			var headerText = new BaseTextItem();
 			
-			if (String.IsNullOrEmpty(pageOneContext.ReportName)) {
-				headerText.Text = GlobalValues.DefaultReportName;
-			} else {
-				headerText.Text = pageOneContext.ReportName;
-			}
+			headerText.Text = String.IsNullOrEmpty(pageOneContext.ReportName) ? GlobalValues.DefaultReportName : pageOneContext.ReportName;
 			
-			headerText.Size = GlobalValues.PreferedSize;
-			var printableWith = ReportModel.ReportSettings.PageSize.Width - ReportModel.ReportSettings.LeftMargin - ReportModel.ReportSettings.RightMargin;
-			
-			var x = (int)(printableWith - headerText.Size.Width) / 2;
-			headerText.Location = new Point(x,4);
+			var xLoc = (ReportModel.ReportSettings.PrintableWidth() - headerText.Size.Width) / 2;
+			headerText.Location = new Point(xLoc,4);
 			ReportModel.ReportHeader.Items.Add(headerText);
 			
+			xLoc = ReportModel.ReportSettings.PrintableWidth() - GlobalValues.PreferedSize.Width - 20;
+		
+			var dateText = new BaseTextItem(){
+				Text ="= Today.Today",
+				Location = new Point(xLoc ,10)
+			};
+			ReportModel.ReportHeader.Items.Add(dateText);
 		}
 
-		static bool IsDataReport(PageOneContext poc)
+		
+		static bool IsDataReport(ReportWizardContext context)
 		{
+			var poc = (PageOneContext)context.PageOneContext;
 			return poc.ReportType.Equals(ReportType.DataReport);
 		}
 		

@@ -6,7 +6,7 @@
                  xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
                  Name="PushData"
                  Title="SharpDevelop Reporting"
-                 Description="Create Columns for a PusData Report"
+          
                  PageType="Interior"
                  CanFinish="true"
                  CancelButtonVisibility="Visible"
@@ -14,20 +14,28 @@
             	  CanSelectNextPage="false">
 	
 	<Grid >
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="150"></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		
 		<Grid.RowDefinitions>
 			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
 			<RowDefinition Height="200"></RowDefinition>
 		</Grid.RowDefinitions>
+		<TextBlock Text="Create Columns for PushData Reporting" FontSize="15" Grid.Column ="1"></TextBlock>
+		
+		<ComboBox Name="_cboTypes" Visibility="Hidden" Grid.Row="1" SelectionChanged="_cboTypes_SelectionChanged" ></ComboBox>
 		
 		<DataGrid  Name="_DataGrid"
 		          ItemsSource="{Binding}"
 		          CanUserAddRows="True"
 		          CanUserDeleteRows="True"
-		          
-		          AutoGenerateColumns="False" Grid.Row="1" Margin="30,10,30,5">
+		          AutoGenerateColumns="False" Grid.Row="1" Grid.RowSpan="2" Margin="30,10,30,5" Width="400" Grid.Column="1">
 			<DataGrid.Columns>
-				<DataGridTextColumn Header="ColumnName" Binding="{Binding ColumnName}" Width="150"></DataGridTextColumn>
-				<DataGridTextColumn Header="DataType" Binding="{Binding DataTypeName}" Width="150"></DataGridTextColumn>
+				<DataGridTextColumn Header="ColumnName" Binding="{Binding ColumnName}" Width="200"></DataGridTextColumn>
+				<DataGridComboBoxColumn Header="DataType" x:Name="cboType" SelectedItemBinding="{Binding DataTypeName}" Width="*"></DataGridComboBoxColumn>
 			</DataGrid.Columns>
 		</DataGrid>
 	</Grid>

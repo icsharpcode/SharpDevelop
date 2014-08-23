@@ -56,12 +56,12 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 			var cbo = (ComboBox) sender;
 			
 			var pushPullModel = (PushPullModel)cbo.SelectedItem;
-	
+			
 			switch (pushPullModel) {
 					case PushPullModel.PushData: {
 						this._ReportType.SelectedItem = ReportType.DataReport;
 						this.CanFinish = false;
-						this.CanSelectNextPage = true;				
+						this.CanSelectNextPage = true;
 						break;
 					}
 					

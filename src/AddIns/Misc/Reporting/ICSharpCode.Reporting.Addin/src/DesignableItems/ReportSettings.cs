@@ -145,5 +145,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		public SortColumnCollection SortColumnsCollection {get;private set;}
 		
 		public GroupColumnCollection GroupColumnsCollection {get;private set;}
+		
+		
 	}
 }

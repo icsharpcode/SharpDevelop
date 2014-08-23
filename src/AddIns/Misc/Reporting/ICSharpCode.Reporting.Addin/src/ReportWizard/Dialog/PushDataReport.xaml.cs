@@ -8,9 +8,12 @@
  */
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.Reporting.BaseClasses;
 using Xceed.Wpf.Toolkit;
+using ICSharpCode.Reporting.Addin.Globals;
 using ICSharpCode.Reporting.Addin.ReportWizard.ViewModels;
+using System.Linq;
 
 namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 {
@@ -20,21 +23,59 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 	public partial class PushDataReport : WizardPage,IHasContext
 	{
 		List<AbstractColumn> items;
+		List<IUnresolvedTypeDefinition> types;
+		
 		PushModelContext context;
 		
 		public PushDataReport()
 		{
 			InitializeComponent();
 			items = new List<AbstractColumn>();
+			types = new List<IUnresolvedTypeDefinition>();
 			_DataGrid.ItemsSource = items;
 			this.context = new PushModelContext();
 			var data = new AbstractColumn("MyColumn",typeof(string));
 			items.Add(data);
+			cboType.ItemsSource = GlobalLists.DataTypeList();
+			var definitions = GetTypeDefinitions();
+			
+			if (definitions != null) {
+				_cboTypes.Visibility = System.Windows.Visibility.Visible;
+				_cboTypes.ItemsSource = definitions;
+				_cboTypes.SelectedIndex = 0;
+			}
+			
 		}
 
-		
-		void UpdateContext()
+		static IEnumerable<ITypeDefinition> GetTypeDefinitions()
 		{
+			var currentProject = SharpDevelop.SD.ProjectService.CurrentProject;
+			var compilation = SharpDevelop.SD.ParserService.GetCompilation(currentProject);
+			var definitions = compilation.MainAssembly.TopLevelTypeDefinitions.Where(x => x.Properties.Any());
+			return definitions;
+		}
+		
+		
+		#region Combo
+		
+		void _cboTypes_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e){
+		
+			var s = (ITypeDefinition)e.AddedItems[0];
+			var l = CreateItemsSource(s);
+			if (l.Count > 0) {
+				_DataGrid.ItemsSource = l;
+			}
+		}
+
+		static List<AbstractColumn>  CreateItemsSource(ITypeDefinition s){
+			return s.Properties.Select(p => new AbstractColumn(){
+				                        	ColumnName = p.Name,
+				                        	DataTypeName = p.ReturnType.ReflectionName
+				                        }).ToList();
+		}
+		#endregion
+		
+		void UpdateContext(){
 			context.Items = (List<AbstractColumn>)_DataGrid.ItemsSource;
 		}
 		
@@ -51,6 +92,8 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 		public WizardPageType ReportPageType {
 			get {return WizardPageType.PushModelPage;}	
 		}
+		
+		
 
 		#endregion
 	}
