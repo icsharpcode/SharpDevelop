@@ -45,6 +45,15 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			Assert.That(s.Text.Contains("Page"));
 		}
 		
+		[Test]
+		public void CanEvaluateComplexStatement () {
+			reportCreator.BuildExportList();
+			var page = reportCreator.Pages[0];
+			var sec = (ExportContainer)page.ExportedItems[4];
+			var s = (ExportText)sec.ExportedItems[0];
+			Assert.That (s.Text.Contains("1"));
+			Assert.That(s.Text.Contains("Page"));
+		}
 		
 		[Test]
 		public void CanEvaluateTotalPages () {

@@ -47,6 +47,9 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			var pi = thread.GetPageInfo();
 			
 			var test = globalNode.AsString.ToLower();
+			if (test.Contains(":")) {
+				Console.WriteLine("");
+			}
 			if ( test == "pagenumber") {
 				return pi.PageNumber;
 			} else if (test == "pages") {

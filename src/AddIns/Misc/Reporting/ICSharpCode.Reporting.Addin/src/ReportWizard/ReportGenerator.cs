@@ -55,7 +55,8 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			GenerateBaseSettings(context);
 			CreateReportHeader(context);
 			CreatePageHeader(context);
-			GeneratePushModel(context);
+			CreateDetailsSection(context);
+			CreatePageFooter (context);
 		}
 		
 		void GenerateBaseSettings (ReportWizardContext context)	{
@@ -70,7 +71,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 
 		
 		
-		void GeneratePushModel(ReportWizardContext context){
+		void CreateDetailsSection(ReportWizardContext context){
 			var pushModelContext = (PushModelContext)context.PushModelContext;
 			foreach (var element in pushModelContext.Items) {
 				var dataItem = new BaseDataItem(){
@@ -130,6 +131,19 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			ReportModel.PageHeader.Items.Add(line);
 			
 		}
+// 
+		void CreatePageFooter(ReportWizardContext context)
+		{
+			var pageOneContext = (PageOneContext)context.PageOneContext;
+			var lineNrField = new BaseTextItem() {
+				Text = "='Page : ' + Globals!PageNumber + ' of ' + Globals!Pages + ' Page(s)'",
+				Name = "LineNumber",
+				Location = new Point(300,10),
+				Size = new Size (GlobalValues.PreferedSize.Width * 2,GlobalValues.PreferedSize.Height)
+			};
+			ReportModel.PageFooter.Items.Add(lineNrField);
+		}
+		
 		
 		void AdjustItems (List<IPrintableObject> list,int startValue ) {
 		
