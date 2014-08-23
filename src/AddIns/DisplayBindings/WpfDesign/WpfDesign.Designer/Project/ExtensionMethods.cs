@@ -80,7 +80,20 @@ namespace ICSharpCode.WpfDesign.Designer
 				execute();
 				e.Handled = true;
 			};
-			element.CommandBindings.Add(cb);
+			
+			bool replace = false;
+
+            for (int i = 0; i < element.CommandBindings.Count; i++)
+            {
+                if (element.CommandBindings[i].Command.Equals(cb.Command))
+                {
+                    element.CommandBindings[i] = cb;
+                    replace = true;
+                }
+            }
+            if (!replace)
+                element.CommandBindings.Add(cb);
+
 		}
 	}
 }
