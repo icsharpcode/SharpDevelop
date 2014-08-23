@@ -45,6 +45,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			Assert.That(s.Text.Contains("Page"));
 		}
 		
+		
 		[Test]
 		public void CanEvaluateComplexStatement () {
 			reportCreator.BuildExportList();
@@ -53,6 +54,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.InterationTests
 			var s = (ExportText)sec.ExportedItems[0];
 			Assert.That (s.Text.Contains("1"));
 			Assert.That(s.Text.Contains("Page"));
+			Assert.That(s.Text.Contains("Pages"));
 		}
 		
 		[Test]

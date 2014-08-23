@@ -56,7 +56,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			CreateReportHeader(context);
 			CreatePageHeader(context);
 			CreateDetailsSection(context);
-			CreatePageFooter (context);
+			CreatePageFooter ();
 		}
 		
 		void GenerateBaseSettings (ReportWizardContext context)	{
@@ -131,10 +131,9 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			ReportModel.PageHeader.Items.Add(line);
 			
 		}
-// 
-		void CreatePageFooter(ReportWizardContext context)
+
+		void CreatePageFooter()
 		{
-			var pageOneContext = (PageOneContext)context.PageOneContext;
 			var lineNrField = new BaseTextItem() {
 				Text = "='Page : ' + Globals!PageNumber + ' of ' + Globals!Pages + ' Page(s)'",
 				Name = "LineNumber",

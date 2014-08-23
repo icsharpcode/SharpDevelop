@@ -45,7 +45,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			if (file.IsDirty) {
-				var cmd = new ReportWizardCommand(file);
+				var cmd = new ReportWizardCommand();
 				cmd.Run();
 				if (!cmd.Canceled) {
 					LoggingService.Info("reportWizard canceled");

@@ -23,15 +23,12 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 	public partial class PushDataReport : WizardPage,IHasContext
 	{
 		List<AbstractColumn> items;
-		List<IUnresolvedTypeDefinition> types;
-		
 		PushModelContext context;
 		
 		public PushDataReport()
 		{
 			InitializeComponent();
 			items = new List<AbstractColumn>();
-			types = new List<IUnresolvedTypeDefinition>();
 			_DataGrid.ItemsSource = items;
 			this.context = new PushModelContext();
 			var data = new AbstractColumn("MyColumn",typeof(string));

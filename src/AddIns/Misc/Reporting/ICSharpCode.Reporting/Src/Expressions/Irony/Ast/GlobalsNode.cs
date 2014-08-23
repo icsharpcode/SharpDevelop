@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using Irony.Ast;
@@ -63,7 +64,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			} 
 			
 			else {
-				return String.Format("Syntaxerror in Globals <{0}>",globalNode.AsString);
+				return String.Format(CultureInfo.CurrentCulture,"Syntaxerror in Globals <{0}>",globalNode.AsString);
 			}
 		}
 	}

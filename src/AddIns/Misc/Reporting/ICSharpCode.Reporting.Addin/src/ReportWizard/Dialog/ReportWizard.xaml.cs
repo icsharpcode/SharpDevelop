@@ -22,6 +22,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 	public partial class ReportWizard : Window
 	{
 		readonly ReportWizardContext context;
+		
 		public ReportWizard(ReportWizardContext context)
 		{
 			InitializeComponent();
@@ -80,12 +81,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 					}
 				}
 			}
-		}
-		
-		
-		void _wizard_PageChanged(object sender, RoutedEventArgs e)
-		{
-			var x = _wizard.CurrentPage;
 		}
 	}
 }

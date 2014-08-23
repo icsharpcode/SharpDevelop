@@ -4,9 +4,7 @@
                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                  xmlns:System="clr-namespace:System;assembly=mscorlib"
                  xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
-                 Name="PushData"
                  Title="SharpDevelop Reporting"
-          
                  PageType="Interior"
                  CanFinish="true"
                  CancelButtonVisibility="Visible"

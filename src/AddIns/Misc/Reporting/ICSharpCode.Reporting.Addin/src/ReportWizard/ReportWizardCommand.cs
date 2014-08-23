@@ -20,13 +20,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 	/// </summary>
 	class ReportWizardCommand: AbstractMenuCommand
 	{
-		readonly OpenedFile file;
-		
-		public ReportWizardCommand (OpenedFile file) {
-			if (file == null)
-				throw new ArgumentNullException("file");
-			this.file = file;
-		}
 		
 		public override void Run()
 		{

@@ -10,10 +10,6 @@
                  CanFinish="true"
                  CanSelectNextPage="false">
 	
-	<!--<xctk:WizardPage.ExteriorPanelContent >
-		<Image Name="_image" Stretch="Fill"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
-	</xctk:WizardPage.ExteriorPanelContent>-->
-	
 	<xctk:WizardPage.Resources>
 		<ObjectDataProvider x:Key="pushpullEnum" MethodName="GetValues"
 			ObjectType="{x:Type System:Enum}">

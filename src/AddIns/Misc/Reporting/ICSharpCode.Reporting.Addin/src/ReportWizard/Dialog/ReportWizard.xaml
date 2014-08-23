@@ -11,7 +11,6 @@
 	             CancelButtonVisibility="Visible"
 	             Finish="_wizard_Finish"
 	             CanHelp="False"
-	             PageChanged="_wizard_PageChanged"
 	             Next="_wizard_Next">
 		
 		<local:WelcomePage x:Name="WelcomePage"></local:WelcomePage>

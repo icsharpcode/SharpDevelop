@@ -19,32 +19,10 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.ViewModels
 	/// </summary>
 	public class ReportWizardContext:IWizardContext
 	{			
-		
-		
-		public string Title {
-			get{ return "das ist der Title";}
-		}
-		
-		IWizardContext pageOneContext;
 
-		public IWizardContext PageOneContext {
-			get {
-				return pageOneContext;
-			}
-			set {
-				pageOneContext = value;
-			}
-		}
+		public IWizardContext PageOneContext {get;set;}
 		
-		IWizardContext pushModelContext;
-
-		public IWizardContext PushModelContext {
-			get {
-				return pushModelContext;
-			}
-			set {
-				pushModelContext = value;
-			}
-		}
+		public IWizardContext PushModelContext {get;set;}
+		
 	}
 }
