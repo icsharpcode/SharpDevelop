@@ -298,7 +298,12 @@ namespace CSharpBinding.FormsDesigner
 		void CreateField(CodeMemberField newField)
 		{
 			// insert new field below the last field or InitializeComponents()
-			var field = FormsDesignerSecondaryDisplayBinding.GetLastField(formClass, initializeComponents.BodyRegion.FileName);
+			IField field = null;
+			if (formClass != null) {
+				field = formClass.Fields.LastOrDefault(f => string.Equals(f.Region.FileName,
+				                                                          initializeComponents.Region.FileName,
+				                                                          StringComparison.OrdinalIgnoreCase));
+			}
 			var bodyRegion = field != null ? field.BodyRegion : initializeComponents.BodyRegion;
 			DocumentScript script = GetScript(bodyRegion.FileName);
 			string newline = DocumentUtilities.GetLineTerminator(script.OriginalDocument, bodyRegion.BeginLine);
