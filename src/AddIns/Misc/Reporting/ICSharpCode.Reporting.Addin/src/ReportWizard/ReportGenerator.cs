@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Globals;
@@ -24,7 +25,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 	public class ReportGenerator
 	{
 		const int gap = 10;
-
+		const int startLocation = 5;
 		public ReportGenerator()
 		{
 			ReportModel = ReportModelFactory.Create();
@@ -53,6 +54,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 		{
 			GenerateBaseSettings(context);
 			CreateReportHeader(context);
+			CreatePageHeader(context);
 			GeneratePushModel(context);
 		}
 		
@@ -70,7 +72,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 		
 		void GeneratePushModel(ReportWizardContext context){
 			var pushModelContext = (PushModelContext)context.PushModelContext;
-			var xLocation = 5;
 			foreach (var element in pushModelContext.Items) {
 				var dataItem = new BaseDataItem(){
 					Name = element.ColumnName,
@@ -78,13 +79,9 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 					ColumnName = element.ColumnName,
 					DataType = element.DataTypeName
 				};
-				
-				var location = new Point(xLocation,4);
-				dataItem.Location = location;
-				dataItem.Size = GlobalValues.PreferedSize;
-				xLocation = xLocation + GlobalValues.PreferedSize.Width + gap;
 				ReportModel.DetailSection.Items.Add(dataItem);
 			}
+			AdjustItems(ReportModel.DetailSection.Items,startLocation);
 		}
 		
 		
@@ -105,9 +102,43 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 				Text ="= Today.Today",
 				Location = new Point(xLoc ,10)
 			};
+			
 			ReportModel.ReportHeader.Items.Add(dateText);
 		}
 
+		
+		void CreatePageHeader(ReportWizardContext context)
+		{
+			var pushModelContext = (PushModelContext)context.PushModelContext;
+			foreach (var element in pushModelContext.Items) {
+				var dataItem = new BaseTextItem(){
+					Name = element.ColumnName,
+					Text = element.ColumnName
+				};
+				ReportModel.PageHeader.Items.Add(dataItem);
+			}
+			
+			AdjustItems(ReportModel.PageHeader.Items,startLocation);
+			
+			var line = new BaseLineItem(){
+				Location = new Point(2,35),
+				FromPoint = new Point(1,1),
+				ToPoint = new Point(ReportModel.ReportSettings.PrintableWidth() -10,1),
+				Size = new Size (ReportModel.ReportSettings.PrintableWidth() -5,5)
+			};
+			
+			ReportModel.PageHeader.Items.Add(line);
+			
+		}
+		
+		void AdjustItems (List<IPrintableObject> list,int startValue ) {
+		
+			var xLocation = startValue;
+			foreach (var element in list) {
+				element.Location =  new Point(xLocation,6);
+				xLocation = xLocation + GlobalValues.PreferedSize.Width + gap;
+			}
+		}
 		
 		static bool IsDataReport(ReportWizardContext context)
 		{
