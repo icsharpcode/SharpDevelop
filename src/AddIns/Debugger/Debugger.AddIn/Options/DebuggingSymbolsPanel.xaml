@@ -5,6 +5,6 @@
 	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop">
 	
 	<Grid>
-		<gui:StringListEditorXaml x:Name="editor" BrowseForDirectory="True"></gui:StringListEditorXaml>
+		<gui:StringListEditor x:Name="editor" ShowBrowse="True" />
 	</Grid>
 </optionpanels:OptionPanel>
