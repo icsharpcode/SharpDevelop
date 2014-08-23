@@ -137,6 +137,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			dockPanel.Children.Insert(dockPanel.Children.Count - 2, statusBar);
 			
 			Core.WinForms.MenuService.ExecuteCommand = ExecuteCommand;
+			Core.WinForms.MenuService.CanExecuteCommand = CanExecuteCommand;
 			UpdateMenu();
 			
 			AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(OnRequestNavigate));
@@ -160,14 +161,25 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			ServiceSingleton.GetRequiredService<IAnalyticsMonitor>()
 				.TrackFeature(command.GetType().FullName, "Menu");
-			var routedCommand = command as System.Windows.Input.RoutedCommand;
+			var routedCommand = command as RoutedCommand;
 			if (routedCommand != null) {
-				var target = System.Windows.Input.FocusManager.GetFocusedElement(this);
+				var target = FocusManager.GetFocusedElement(this);
 				if (routedCommand.CanExecute(caller, target))
 					routedCommand.Execute(caller, target);
 			} else {
 				if (command.CanExecute(caller))
 					command.Execute(caller);
+			}
+		}
+		
+		bool CanExecuteCommand(ICommand command, object caller)
+		{
+			var routedCommand = command as RoutedCommand;
+			if (routedCommand != null) {
+				var target = FocusManager.GetFocusedElement(this);
+				return routedCommand.CanExecute(caller, target);
+			} else {
+				return command.CanExecute(caller);
 			}
 		}
 		
