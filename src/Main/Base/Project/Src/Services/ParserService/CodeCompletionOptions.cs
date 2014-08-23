@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		public static string CompletionCharList {
-			get { return properties.Get("CompletionCharList", @"{}[]().,:;+-*/%&|^!~=<>?@#'""\"); }
+			get { return properties.Get("CompletionCharList", @" {}[]().,:;+-*/%&|^!~=<>?@#'""\"); }
 			set { properties.Set("CompletionCharList", value); }
 		}
 		

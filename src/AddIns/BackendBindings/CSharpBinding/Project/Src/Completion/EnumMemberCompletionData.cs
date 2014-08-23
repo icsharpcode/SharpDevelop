@@ -17,37 +17,36 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
-using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-
 namespace CSharpBinding.Completion
 {
-	class EntityCompletionData : CompletionData, IEntityCompletionData
+	class EnumMemberCompletionData : CompletionData
 	{
-		readonly IEntity entity;
-		
-		public IEntity Entity {
-			get { return entity; }
-		}
-		
-		public EntityCompletionData(IEntity entity) : base(entity.Name)
+		IType enumType;
+
+		IEntity member;
+
+		public EnumMemberCompletionData(IType enumType, IEntity member, TypeSystemAstBuilder builder) : base(enumType.Name + "." + member.Name)
 		{
-			this.entity = entity;
-			this.Image = ClassBrowserIconService.GetIcon(entity);
-			// don't set this.Description -- we use CreateFancyDescription() instead,
-			// and accessing entity.Documentation in the constructor is too slow
+			this.enumType = enumType;
+			this.member = member;
+			this.Image = ClassBrowserIconService.Const;
+			this.CompletionText = builder.ConvertType(enumType).ToString() + "." + member.Name;
 		}
-		
+
 		protected override object CreateFancyDescription()
 		{
 			return new FlowDocumentScrollViewer {
-				Document = XmlDocFormatter.CreateTooltip(entity, entity is ITypeDefinition),
+				Document = XmlDocFormatter.CreateTooltip(member, false),
 				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
 			};
 		}
 	}
 }
+
+

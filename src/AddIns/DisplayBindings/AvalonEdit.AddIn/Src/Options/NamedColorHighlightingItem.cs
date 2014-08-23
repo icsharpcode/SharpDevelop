@@ -68,6 +68,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		public bool Underline {
+			get {
+				return color.Underline == true;
+			}
+			set {
+				throw new NotSupportedException();
+			}
+		}
+		
 		public Color Foreground {
 			get {
 				Color? c = color.Foreground != null ? color.Foreground.GetColor(null) : null;
@@ -161,7 +170,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 							marker.ForegroundColor = item.Foreground;
 							marker.FontStyle = item.Italic ? FontStyles.Italic : FontStyles.Normal;
 							marker.FontWeight = item.Bold ? FontWeights.Bold : FontWeights.Normal;
-						});
+							if(item.Underline)
+							{
+								marker.MarkerColor = item.Foreground;
+								marker.MarkerTypes = TextMarkerTypes.NormalUnderline;
+							}
+					});
 				}
 			} else {
 				exampleTextArea.Document.Text = exampleText;
