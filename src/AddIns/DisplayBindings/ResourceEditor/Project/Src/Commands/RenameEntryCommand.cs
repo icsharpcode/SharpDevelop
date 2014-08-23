@@ -19,6 +19,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ResourceEditor.ViewModels;
 
 namespace ResourceEditor
 {
@@ -26,11 +27,12 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
+			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
 			
-			if(editor.ResourceList.SelectedItems.Count != 0) {
-				editor.ResourceList.SelectedItems[0].BeginEdit();
-			}
+			// TODO Reactivate this
+//			if(editor.ResourceList.SelectedItems.Count != 0) {
+//				editor.ResourceList.SelectedItems[0].BeginEdit();
+//			}
 		}
 	}
 }

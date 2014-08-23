@@ -1,0 +1,128 @@
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using ICSharpCode.Core.Presentation;
+using ResourceEditor.ViewModels;
+
+namespace ResourceEditor.Views
+{
+	/// <summary>
+	/// Interaction logic for ResourceEditorView.xaml
+	/// </summary>
+	public partial class ResourceEditorView : UserControl, IResourceEditorView
+	{
+		readonly CollectionViewSource itemCollectionViewSource;
+		
+		public event EventHandler SelectionChanged;
+		
+		public ResourceEditorView()
+		{
+			InitializeComponent();
+			itemCollectionViewSource = (CollectionViewSource)this.Resources["resourceItemListViewSource"];
+		}
+		
+		public IList SelectedItems {
+			get {
+				return resourceItemsListView.SelectedItems;
+			}
+		}
+		
+		public void SetItemView(IResourceItemView view)
+		{
+			resourceItemViewGrid.Children.Clear();
+			view.UIControl.Visibility = Visibility.Visible;
+			resourceItemViewGrid.Children.Add(view.UIControl);
+		}
+		
+		public Predicate<ResourceEditor.ViewModels.ResourceItem> FilterPredicate {
+			get;
+			set;
+		}
+
+		void ListView_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			MenuService.ShowContextMenu(this, null, "/SharpDevelop/ResourceEditor/ResourceList/ContextMenu");
+		}
+		
+		void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+//			// Update SelectedItems collection
+//			foreach (var item in e.RemovedItems.OfType<ResourceEditor.ViewModels.ResourceItem>()) {
+//				SelectedItems.Remove(item);
+//			}
+//			foreach (var item in e.AddedItems.OfType<ResourceEditor.ViewModels.ResourceItem>()) {
+//				SelectedItems.Add(item);
+//			}
+			if (SelectionChanged != null) {
+				SelectionChanged(this, new EventArgs());
+			}
+		}
+		
+		void CollectionViewSource_Filter(object sender, FilterEventArgs e)
+		{
+			if (FilterPredicate == null) {
+				// No filtering without predicate
+				e.Accepted = true;
+				return;
+			}
+			
+			var resourceItem = e.Item as ResourceEditor.ViewModels.ResourceItem;
+			if (resourceItem == null) {
+				// Away with non-ResourceItems (shouldn't happen anyway)
+				e.Accepted = false;
+				return;
+			}
+			e.Accepted = FilterPredicate(resourceItem);
+		}
+		
+		void FilterTextBox_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Enter) {
+				// Apply filter text on Enter key
+				UpdateFilter();
+			} else if (e.Key == Key.Escape) {
+				// Clear the filter text on Esc key
+				searchTermTextBox.Clear();
+				UpdateFilter();
+			}
+		}
+		
+		void UpdateFilterButton_Click(object sender, RoutedEventArgs e)
+		{
+			UpdateFilter();
+		}
+		
+		void UpdateFilter()
+		{
+			// Update CollectionViewSource to re-evaluate filter predicate
+			itemCollectionViewSource.View.Refresh();
+		}
+	}
+}

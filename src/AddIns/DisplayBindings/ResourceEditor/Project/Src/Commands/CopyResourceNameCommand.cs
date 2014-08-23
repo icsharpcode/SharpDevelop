@@ -21,6 +21,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ResourceEditor.ViewModels;
 
 namespace ResourceEditor
 {
@@ -28,11 +29,12 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
+			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
 			
-			if(editor.ResourceList.SelectedItems.Count > 0) {
-				Clipboard.SetText(editor.ResourceList.SelectedItems[0].Text);
-			}
+			// TODO Reactivate this
+//			if(editor.ResourceList.SelectedItems.Count > 0) {
+//				Clipboard.SetText(editor.ResourceList.SelectedItems[0].Text);
+//			}
 		}
 	}
 }

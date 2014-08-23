@@ -17,20 +17,39 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Input;
 
-namespace ResourceEditor
+namespace ResourceEditor.Views
 {
-		
-	class SelectAllCommand : AbstractMenuCommand
+	/// <summary>
+	/// Base interface for resource editor main views.
+	/// </summary>
+	public interface IResourceEditorView
 	{
-		public override void Run()
+		CommandBindingCollection CommandBindings {
+			get;
+		}
+		
+		event EventHandler SelectionChanged;
+		IList SelectedItems {
+			get;
+		}
+		
+		void SetItemView(IResourceItemView view);
+		
+		object DataContext {
+			get;
+			set;
+		}
+		
+		Predicate<ResourceEditor.ViewModels.ResourceItem> FilterPredicate
 		{
-			ResourceEditWrapper editor = (ResourceEditWrapper)SD.Workbench.ActiveViewContent;
-			
-			editor.SelectAll();
+			get;
+			set;
 		}
 	}
-	
 }

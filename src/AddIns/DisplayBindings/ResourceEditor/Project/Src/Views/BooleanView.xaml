@@ -1,0 +1,7 @@
+﻿<UserControl x:Class="ResourceEditor.Views.BooleanView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid>
+		
+	</Grid>
+</UserControl>

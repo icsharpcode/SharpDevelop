@@ -16,30 +16,18 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+using System;
+using System.Windows;
+
+namespace ResourceEditor.Views
 {
-	class EditCommentCommand : AbstractMenuCommand
+	/// <summary>
+	/// Interface for resource item views.
+	/// </summary>
+	public interface IResourceItemView
 	{
-		public override void Run()
-		{
-			ResourceEditorViewModel editor = ((ResourceEditViewContent) SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			// TODO Reactivate this
-//			if (editor.ResourceList.SelectedItems.Count != 0) {
-//				var item = editor.ResourceList.SelectedItems[0].SubItems[3];
-//				string resourceName = editor.ResourceList.SelectedItems[0].Text;
-//				string newValue = SD.MessageService.ShowInputBox("${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}",
-//				                                                "${res:ResourceEditor.ResourceEdit.ContextMenu.EditCommentText}",
-//				                                                item.Text);
-//				if (newValue != null && newValue != item.Text) {
-//					editor.ResourceList.SetCommentValue(resourceName, newValue);
-//				}
-//			}
-		}
+		ResourceEditor.ViewModels.ResourceItem ResourceItem { get; set; }
+		FrameworkElement UIControl { get; }
 	}
 }

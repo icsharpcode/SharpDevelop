@@ -17,29 +17,25 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ResourceEditor.ViewModels;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 
-namespace ResourceEditor
+namespace ResourceEditor.Views
 {
-	class EditCommentCommand : AbstractMenuCommand
+	/// <summary>
+	/// Interaction logic for BooleanView.xaml
+	/// </summary>
+	public partial class BooleanView : UserControl
 	{
-		public override void Run()
+		public BooleanView()
 		{
-			ResourceEditorViewModel editor = ((ResourceEditViewContent) SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			// TODO Reactivate this
-//			if (editor.ResourceList.SelectedItems.Count != 0) {
-//				var item = editor.ResourceList.SelectedItems[0].SubItems[3];
-//				string resourceName = editor.ResourceList.SelectedItems[0].Text;
-//				string newValue = SD.MessageService.ShowInputBox("${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}",
-//				                                                "${res:ResourceEditor.ResourceEdit.ContextMenu.EditCommentText}",
-//				                                                item.Text);
-//				if (newValue != null && newValue != item.Text) {
-//					editor.ResourceList.SetCommentValue(resourceName, newValue);
-//				}
-//			}
+			InitializeComponent();
 		}
 	}
 }

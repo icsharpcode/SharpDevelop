@@ -17,14 +17,14 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Drawing;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using Microsoft.Win32;
+using ResourceEditor.ViewModels;
 
 namespace ResourceEditor
 {
@@ -32,47 +32,49 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
+			ResourceEditorViewModel editor = ((ResourceEditViewContent) SD.Workbench.ActiveViewContent).ResourceEditor;
 			
-			if(editor.ResourceList.WriteProtected) {
-				return;
-			}
+			// TODO Reactivate this
+//			if (editor.ResourceList.WriteProtected) {
+//				return;
+//			}
 			
-			using (OpenFileDialog fdiag = new OpenFileDialog()) {
-				fdiag.AddExtension   = true;
-				fdiag.Filter         = StringParser.Parse("${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-				fdiag.Multiselect    = true;
-				fdiag.CheckFileExists = true;
-				
-				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
-					foreach (string filename in fdiag.FileNames) {
-						string oresname = Path.ChangeExtension(Path.GetFileName(filename), null);
-						if (oresname == "") oresname = "new";
-						
-						string resname = oresname;
-						
-						int i = 0;
-					TestName:
-						if (editor.ResourceList.Resources.ContainsKey(resname)) {
-							if (i == 10) {
-								continue;
-							}
-							i++;
-							resname = oresname + "_" + i.ToString();
-							goto TestName;
-						}
-						
-						object tmp = loadResource(filename);
-						if (tmp == null) {
-							continue;
-						}
-						editor.ResourceList.Resources.Add(resname, new ResourceItem(resname, tmp));
-						
-					}
-					editor.ResourceList.InitializeListView();
-				}
-			}
-			editor.ResourceList.OnChanged();
+//			using (OpenFileDialog fdiag = new OpenFileDialog()) {
+//				fdiag.AddExtension = true;
+//				fdiag.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+//				fdiag.Multiselect = true;
+//				fdiag.CheckFileExists = true;
+//				
+//				if (fdiag.ShowDialog()) {
+//					foreach (string filename in fdiag.FileNames) {
+//						string oresname = Path.ChangeExtension(Path.GetFileName(filename), null);
+//						if (oresname == "")
+//							oresname = "new";
+//						
+//						string resname = oresname;
+//						
+//						int i = 0;
+//						TestName:
+//						if (editor.ResourceList.Resources.ContainsKey(resname)) {
+//							if (i == 10) {
+//								continue;
+//							}
+//							i++;
+//							resname = oresname + "_" + i.ToString();
+//							goto TestName;
+//						}
+//						
+//						object tmp = loadResource(filename);
+//						if (tmp == null) {
+//							continue;
+//						}
+//						editor.ResourceList.Resources.Add(resname, new ResourceItem(resname, tmp));
+//						
+//					}
+//					editor.ResourceList.InitializeListView();
+//				}
+//			}
+//			editor.ResourceList.OnChanged();
 		}
 		
 		object loadResource(string name)
@@ -80,21 +82,22 @@ namespace ResourceEditor
 			switch (Path.GetExtension(name).ToUpperInvariant()) {
 				case ".CUR":
 					try {
-						return new Cursor(name);
+						return new System.Windows.Forms.Cursor(name);
 					} catch {
 						return null;
 					}
 				case ".ICO":
 					try {
-						return new Icon(name);
+						return new System.Drawing.Icon(name);
 					} catch {
 						return null;
 					}
 				default:
 					// try to read a bitmap
 					try {
-						return new Bitmap(name);
-					} catch {}
+						return new System.Drawing.Bitmap(name);
+					} catch {
+					}
 					
 					// try to read a serialized object
 					try {
@@ -104,8 +107,11 @@ namespace ResourceEditor
 							object o = c.Deserialize(r);
 							r.Close();
 							return o;
-						} catch { r.Close(); }
-					} catch { }
+						} catch {
+							r.Close();
+						}
+					} catch {
+					}
 					
 					// try to read a byte array :)
 					try {
@@ -115,7 +121,7 @@ namespace ResourceEditor
 						d = r.ReadBytes((int) s.Length);
 						s.Close();
 						return d;
-					} catch(Exception) {
+					} catch (Exception) {
 						
 						
 						string message = ResourceService.GetString("ResourceEditor.Messages.CantLoadResource");

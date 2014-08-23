@@ -17,29 +17,34 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ResourceEditor.ViewModels;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
 
 namespace ResourceEditor
 {
-	class EditCommentCommand : AbstractMenuCommand
+	/// <summary>
+	/// Bitmap conversion extensions for WinForms -> WPF
+	/// </summary>
+	public static class BitmapExtensions
 	{
-		public override void Run()
+		[DllImport("gdi32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool DeleteObject(IntPtr hObject);
+		
+		public static BitmapSource ToBitmapSource(this System.Drawing.Bitmap bitmap)
 		{
-			ResourceEditorViewModel editor = ((ResourceEditViewContent) SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			// TODO Reactivate this
-//			if (editor.ResourceList.SelectedItems.Count != 0) {
-//				var item = editor.ResourceList.SelectedItems[0].SubItems[3];
-//				string resourceName = editor.ResourceList.SelectedItems[0].Text;
-//				string newValue = SD.MessageService.ShowInputBox("${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}",
-//				                                                "${res:ResourceEditor.ResourceEdit.ContextMenu.EditCommentText}",
-//				                                                item.Text);
-//				if (newValue != null && newValue != item.Text) {
-//					editor.ResourceList.SetCommentValue(resourceName, newValue);
-//				}
-//			}
+			BitmapSource bs;
+			IntPtr hBitmap = bitmap.GetHbitmap();
+			try {
+				bs = Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero,
+					Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+				bs.Freeze();
+			} finally {
+				DeleteObject(hBitmap);
+			}
+			return bs;
 		}
 	}
 }
