@@ -662,9 +662,11 @@ namespace ICSharpCode.FormsDesigner
 			this.DesignerCodeFile.IsDirty = isDirty;
 		}
 
+		/// <remarks>if lineNumber = 0 no jump is performed, but the active view content changes.</remarks>
 		public void ShowSourceCode(int lineNumber = 0)
 		{
 			this.WorkbenchWindow.ActiveViewContent = this.PrimaryViewContent;
+			if (lineNumber <= 0) return;
 			ITextEditor editor = this.primaryViewContent.GetService<ITextEditor>();
 			if (editor != null) {
 				editor.JumpTo(lineNumber, 1);

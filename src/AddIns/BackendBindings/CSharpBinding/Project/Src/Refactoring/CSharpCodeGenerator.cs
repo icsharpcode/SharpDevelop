@@ -105,13 +105,10 @@ namespace CSharpBinding.Refactoring
 			using (Script script = context.StartScript()) {
 				// FIXME : will not work properly if there are no members.
 				if (last == match) {
-					throw new NotImplementedException();
-					// TODO InsertWithCursor not implemented!
-					//script.InsertWithCursor("Insert event handler", Script.InsertPosition.End, decl).RunSynchronously();
+					script.InsertWithCursor("Insert event handler", Script.InsertPosition.End, decl).FireAndForget();
 				} else {
-					// TODO does not jump correctly...
 					script.InsertAfter(node, decl);
-					editor.JumpTo(throwStmt.StartLocation.Line, throwStmt.StartLocation.Column);
+					script.Select(throwStmt);
 				}
 			}
 		}
