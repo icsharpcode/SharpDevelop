@@ -84,6 +84,7 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
+    <Compile Include="Extensions\PartialPanelSelectionHandler.cs" />
     <Compile Include="Extensions\RightClickContextMenu.xaml.cs">
       <DependentUpon>RightClickContextMenu.xaml</DependentUpon>
       <SubType>Code</SubType>
