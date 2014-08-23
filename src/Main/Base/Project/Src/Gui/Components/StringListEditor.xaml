@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UserControl
-	x:Class="ICSharpCode.SharpDevelop.Gui.StringListEditorXaml"
+	x:Class="ICSharpCode.SharpDevelop.Gui.StringListEditor"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
@@ -37,7 +37,7 @@
 			<Button x:Name="addButton"
 				IsEnabled="False"
 				Click="AddButton_Click"
-				Content="{core:Localize Dialog.ProjectOptions.ReferencePaths.AddPath}"
+				Content="{Binding AddButtonText}"
 				Style="{x:Static core:GlobalStyles.ButtonStyle}">
 			</Button>
 		

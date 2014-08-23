@@ -26,14 +26,14 @@ using ICSharpCode.Core.Presentation;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// Interaction logic for StringListEditorXaml.xaml
+	/// Interaction logic for StringListEditor.xaml
 	/// </summary>
-	public partial class StringListEditorXaml : UserControl
+	public partial class StringListEditor : UserControl
 	{
-		bool browseForDirectory;
+		bool showBrowse;
 		public event EventHandler ListChanged;
 		
-		public StringListEditorXaml()
+		public StringListEditor()
 		{
 			InitializeComponent();
 			moveUpButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowUp") };
@@ -44,16 +44,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public string TitleText {get;set;}
 		
+		public string AddButtonText { get; set; }
+		
 		public string ListCaption {get;set;}
 		
 		
-		public bool BrowseForDirectory {
+		public bool ShowBrowse {
 			get {
-				return browseForDirectory;
+				return showBrowse;
 			}
 			set {
-				browseForDirectory = value;
-				if (browseForDirectory) {
+				showBrowse = value;
+				if (showBrowse) {
 					browseButton.Visibility = Visibility.Visible;
 				} else {
 					browseButton.Visibility = Visibility.Hidden;

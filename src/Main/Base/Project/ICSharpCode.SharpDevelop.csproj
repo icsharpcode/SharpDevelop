@@ -279,8 +279,8 @@
     <Compile Include="Src\Gui\Components\StringListEditorDialog.xaml.cs">
       <DependentUpon>StringListEditorDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\Gui\Components\StringListEditorXaml.xaml.cs">
-      <DependentUpon>StringListEditorXaml.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Components\StringListEditor.xaml.cs">
+      <DependentUpon>StringListEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\CustomFocusManager.cs" />
@@ -896,7 +896,7 @@
     <Page Include="Src\Editor\Dialogs\RenameSymbolDialog.xaml" />
     <Page Include="Src\Gui\Components\FontSelector.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
-    <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />
+    <Page Include="Src\Gui\Components\StringListEditor.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml" />

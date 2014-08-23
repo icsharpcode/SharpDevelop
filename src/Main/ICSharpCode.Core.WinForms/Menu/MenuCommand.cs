@@ -100,7 +100,8 @@ namespace ICSharpCode.Core.WinForms
 					} catch (ResourceNotFoundException) {}
 				}
 				Visible = GetVisible();
-				Enabled = command != null && command.CanExecute(caller);
+				command = CommandWrapper.Unwrap(command);
+				Enabled = command != null && MenuService.CanExecuteCommand(command, caller);
 			}
 		}
 		

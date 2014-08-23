@@ -23,9 +23,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using ICSharpCode.NRefactory.CSharp;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.NRefactory.Documentation;
@@ -43,44 +45,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (invocationExpression == null)
 				yield break;
 
-			var resolveResult = context.Resolve(invocationExpression) as InvocationResolveResult;
+			var resolveResult = context.Resolve(invocationExpression) as CSharpInvocationResolveResult;
 			if (resolveResult == null) {
 				yield break;
 			}
-
+			
 			var method = (IMethod)resolveResult.Member;
-
-			bool foundOptionalParameter = false;
-			foreach (var parameter in method.Parameters) {
-				if (parameter.IsParams) {
-					yield break;
-				}
-
-				if (parameter.IsOptional) {
-					foundOptionalParameter = true;
-					break;
+			bool[] parameterIsSpecified = new bool[method.Parameters.Count];
+			var argumentToParameterMap = resolveResult.GetArgumentToParameterMap();
+			if (argumentToParameterMap != null) {
+				foreach (int paramIndex in argumentToParameterMap)
+					parameterIsSpecified[paramIndex] = true;
+			} else {
+				for (int i = 0; i < Math.Min(resolveResult.Arguments.Count, parameterIsSpecified.Length); i++) {
+					parameterIsSpecified[i] = true;
 				}
 			}
-
-			if (!foundOptionalParameter) {
-				yield break;
+			var missingParameters = new List<IParameter>();
+			for (int i = 0; i < method.Parameters.Count; i++) {
+				if (!parameterIsSpecified[i] && method.Parameters[i].IsOptional)
+					missingParameters.Add(method.Parameters[i]);
 			}
-
-			//Basic sanity checks done, now see if there are any missing optional arguments
-			var missingParameters = new List<IParameter>(method.Parameters);
-			if (resolveResult.Arguments.Count != invocationExpression.Arguments.Count) {
-				//Extension method
-				missingParameters.RemoveAt (0);
-			}
-			foreach (var argument in invocationExpression.Arguments) {
-				var namedArgument = argument as NamedArgumentExpression;
-				if (namedArgument == null) {
-					missingParameters.RemoveAt(0);
-				} else {
-					missingParameters.RemoveAll(parameter => parameter.Name == namedArgument.Name);
-				}
-			}
-
+			
 			foreach (var parameterToAdd in missingParameters) {
 				//Add specific parameter
 				yield return new CodeAction(string.Format(context.TranslateString("Add optional parameter \"{0}\""),

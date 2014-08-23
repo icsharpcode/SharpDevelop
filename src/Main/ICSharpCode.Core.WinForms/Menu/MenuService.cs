@@ -28,6 +28,7 @@ namespace ICSharpCode.Core.WinForms
 	public static class MenuService
 	{
 		public static Action<System.Windows.Input.ICommand, object> ExecuteCommand;
+		public static Func<System.Windows.Input.ICommand, object, bool> CanExecuteCommand;
 		
 		public static void AddItemsToMenu(ToolStripItemCollection collection, object owner, string addInTreePath)
 		{

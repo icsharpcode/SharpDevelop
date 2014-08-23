@@ -24,6 +24,6 @@ Namespace EnvDTE
 		
 		Function Item(index As Object) As CodeElement
 		
-		Function GetEnumerator() As IEnumerator
+		Shadows Function GetEnumerator() As IEnumerator
 	End Interface
 End Namespace
