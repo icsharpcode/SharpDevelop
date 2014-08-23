@@ -70,7 +70,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		
 		public bool Underline {
 			get {
-				return color.Underline;
+				return color.Underline == true;
 			}
 			set {
 				throw new NotSupportedException();
