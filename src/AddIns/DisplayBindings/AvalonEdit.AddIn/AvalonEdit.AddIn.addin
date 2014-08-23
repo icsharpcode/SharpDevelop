@@ -151,6 +151,7 @@
 		
 		<MenuItem id = "FindBaseClassesOrMembers"
 		          label = "${res:SharpDevelop.Refactoring.FindBaseClassesOrMembersCommand}"
+		          shortcut="Control+F6"
 		          icon="Icons.16x16.Interface"
 		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindBaseClassesOrMembers"/>
 	</Path>

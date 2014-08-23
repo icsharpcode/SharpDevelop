@@ -40,8 +40,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 				MakePopupWithBaseClasses((ITypeDefinition)entityUnderCaret).OpenAtCaretAndFocus();
 				return;
 			}
-			if (entityUnderCaret is IMember) {
-				MakePopupWithBaseMembers((IMember)entityUnderCaret).OpenAtCaretAndFocus();
+			var member = entityUnderCaret as IMember;
+			if (member != null) {
+				if ((member.SymbolKind == SymbolKind.Constructor) || (member.SymbolKind == SymbolKind.Destructor)) {
+					MakePopupWithBaseClasses(member.DeclaringTypeDefinition).OpenAtCaretAndFocus();
+				} else {
+					MakePopupWithBaseMembers(member).OpenAtCaretAndFocus();
+				}
 				return;
 			}
 			MessageService.ShowError("${res:ICSharpCode.Refactoring.NoClassOrMemberUnderCursorError}");
@@ -67,12 +72,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		static ContextActionsPopup MakePopupWithBaseMembers(IMember member)
 		{
 			var baseClassList = member.DeclaringTypeDefinition.GetAllBaseTypeDefinitions().Where(
-				baseClass => baseClass != member.DeclaringTypeDefinition).ToList();
+				                    baseClass => baseClass != member.DeclaringTypeDefinition).ToList();
 			var popupViewModel = new ContextActionsPopupViewModel {
 				Title = MenuService.ConvertLabel(StringParser.Parse(
 					"${res:SharpDevelop.Refactoring.BaseMembersOf}",
 					new StringTagPair("Name", member.FullName))
-				                                )};
+				)
+			};
 			popupViewModel.Actions = BuildBaseMemberListViewModel(member);
 			return new ContextActionsPopup { Actions = popupViewModel };
 		}
