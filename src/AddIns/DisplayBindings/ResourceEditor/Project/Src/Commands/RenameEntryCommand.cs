@@ -21,18 +21,14 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+namespace ResourceEditor.Commands
 {
-	class RenameEntryCommand : AbstractMenuCommand
+	class RenameEntryCommand : SimpleCommand
 	{
-		public override void Run()
+		public override void Execute(object parameter)
 		{
 			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			// TODO Reactivate this
-//			if(editor.ResourceList.SelectedItems.Count != 0) {
-//				editor.ResourceList.SelectedItems[0].BeginEdit();
-//			}
+			editor.StartEditing();
 		}
 	}
 }

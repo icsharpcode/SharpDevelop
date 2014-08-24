@@ -46,6 +46,7 @@ namespace ResourceEditor.ViewModels
 		string comment;
 		ResourceItemEditorType resourceType;
 		ResourceEditorViewModel resourceEditor;
+		bool isEditing;
 		
 		public ResourceItem(ResourceEditorViewModel resourceEditor, string name, object resourceValue)
 		{
@@ -112,6 +113,16 @@ namespace ResourceEditor.ViewModels
 			}
 		}
 		
+		public bool IsEditing {
+			get {
+				return isEditing;
+			}
+			set {
+				isEditing = value;
+				OnPropertyChanged("IsEditing");
+			}
+		}
+		
 		ResourceItemEditorType GetResourceTypeFromValue(object val)
 		{
 			if (this.ResourceValue == null) {
@@ -148,6 +159,7 @@ namespace ResourceEditor.ViewModels
 			set {
 				comment = value;
 				OnPropertyChanged("Comment");
+				resourceEditor.MakeDirty();
 			}
 		}
 

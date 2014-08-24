@@ -26,11 +26,11 @@ using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+namespace ResourceEditor.Commands
 {
-	class AddNewFileCommand : AbstractMenuCommand
+	class AddNewFileCommand : SimpleCommand
 	{
-		public override void Run()
+		public override void Execute(object parameter)
 		{
 			ResourceEditorViewModel editor = ((ResourceEditViewContent) SD.Workbench.ActiveViewContent).ResourceEditor;
 			

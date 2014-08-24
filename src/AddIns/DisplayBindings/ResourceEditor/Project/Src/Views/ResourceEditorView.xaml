@@ -56,7 +56,32 @@
 							</Style>
 						</Image.Style>
 					</Image>
-					<TextBlock Grid.Column="1" Text="{Binding Name}" />
+					<TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+						<TextBlock.Style>
+							<Style TargetType="TextBlock">
+								<Setter Property="Visibility" Value="Collapsed" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding IsEditing}" Value="False">
+										<Setter Property="Visibility" Value="Visible" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</TextBlock.Style>
+					</TextBlock>
+					<TextBox Grid.Column="1"
+					         Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+					         HorizontalScrollBarVisibility="Hidden">
+						<TextBox.Style>
+							<Style TargetType="TextBox">
+								<Setter Property="Visibility" Value="Collapsed" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding IsEditing}" Value="True">
+										<Setter Property="Visibility" Value="Visible" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</TextBox.Style>
+					</TextBox>
 				</StackPanel>
 			</Border>
 		</DataTemplate>
@@ -115,7 +140,9 @@
 			Grid.Row="1"
 			ItemsSource="{Binding Source={StaticResource resourceItemListViewSource}}"
 			ItemContainerStyle="{StaticResource listViewItemStyle}"
-			MouseRightButtonUp="ListView_MouseRightButtonUp">
+			MouseRightButtonUp="ListView_MouseRightButtonUp"
+			KeyUp="ResourceItemsListView_KeyUp"
+			SelectionChanged="ListView_SelectionChanged">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn

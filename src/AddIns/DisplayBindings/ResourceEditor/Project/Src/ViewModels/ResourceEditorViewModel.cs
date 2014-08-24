@@ -60,6 +60,8 @@ namespace ResourceEditor.ViewModels
 		readonly ObservableCollection<ResourceItem> metadataItems;
 		readonly Dictionary<ResourceItemEditorType, IResourceItemView> itemViews;
 		bool longUpdateRunning;
+		ResourceItem editedResourceItem;
+		string originalNameOfEditedItem;
 		
 		IResourceEditorView view;
 		
@@ -109,7 +111,9 @@ namespace ResourceEditor.ViewModels
 			}
 			set {
 				if (view != null) {
-					view.SelectionChanged += View_SelectionChanged;
+					view.SelectionChanged -= View_SelectionChanged;
+					view.EditingFinished -= View_EditingFinished;
+					view.EditingCancelled -= View_EditingCancelled;
 					ResourceItems.CollectionChanged -= ResourceItems_CollectionChanged;
 				}
 				
@@ -129,6 +133,8 @@ namespace ResourceEditor.ViewModels
 						return true;
 					};
 					view.SelectionChanged += View_SelectionChanged;
+					view.EditingFinished += View_EditingFinished;
+					view.EditingCancelled += View_EditingCancelled;
 					ResourceItems.CollectionChanged += ResourceItems_CollectionChanged;
 				}
 			}
@@ -188,6 +194,43 @@ namespace ResourceEditor.ViewModels
 		public void MakeDirty()
 		{
 			OnChangedDirtyState(true);
+		}
+		
+		public void StartEditing()
+		{
+			if (editedResourceItem != null) {
+				editedResourceItem.IsEditing = false;
+				editedResourceItem = null;
+				originalNameOfEditedItem = null;
+			}
+			
+			// Start editing currently selected item
+			var firstSelectedItem = SelectedItems.OfType<ResourceItem>().FirstOrDefault();
+			if (firstSelectedItem != null) {
+				editedResourceItem = firstSelectedItem;
+				originalNameOfEditedItem = editedResourceItem.Name;
+				firstSelectedItem.IsEditing = true;
+			}
+		}
+
+		void View_EditingFinished(object sender, EventArgs e)
+		{
+			if (editedResourceItem != null) {
+				editedResourceItem.IsEditing = false;
+				editedResourceItem = null;
+				originalNameOfEditedItem = null;
+				MakeDirty();
+			}
+		}
+
+		void View_EditingCancelled(object sender, EventArgs e)
+		{
+			if (editedResourceItem != null) {
+				editedResourceItem.IsEditing = false;
+				editedResourceItem.Name = originalNameOfEditedItem;
+				editedResourceItem = null;
+				originalNameOfEditedItem = null;
+			}
 		}
 		
 		void StartUpdate()

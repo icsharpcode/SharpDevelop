@@ -22,11 +22,11 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+namespace ResourceEditor.Commands
 {
-	class AddStringCommand : AbstractMenuCommand
+	class AddStringCommand : SimpleCommand
 	{
-		public override void Run()
+		public override void Execute(object parameter)
 		{
 			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
 			

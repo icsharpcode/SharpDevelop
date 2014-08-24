@@ -39,6 +39,10 @@ namespace ResourceEditor.Views
 			get;
 		}
 		
+		event EventHandler EditingStarted;
+		event EventHandler EditingFinished;
+		event EventHandler EditingCancelled;
+		
 		void SetItemView(IResourceItemView view);
 		
 		object DataContext {
@@ -46,8 +50,7 @@ namespace ResourceEditor.Views
 			set;
 		}
 		
-		Predicate<ResourceEditor.ViewModels.ResourceItem> FilterPredicate
-		{
+		Predicate<ResourceEditor.ViewModels.ResourceItem> FilterPredicate {
 			get;
 			set;
 		}

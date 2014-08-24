@@ -23,11 +23,11 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+namespace ResourceEditor.Commands
 {
-	class CopyResourceNameCommand : AbstractMenuCommand
+	class CopyResourceNameCommand : SimpleCommand
 	{
-		public override void Run()
+		public override void Execute(object parameter)
 		{
 			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
 			

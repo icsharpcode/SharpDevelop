@@ -19,77 +19,72 @@
 using System;
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using Microsoft.Win32;
 using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+namespace ResourceEditor.Commands
 {
-	class SaveEntryAsCommand : AbstractMenuCommand
+	class SaveEntryAsCommand : SimpleCommand
 	{
-		public override void Run()
+		public override void Execute(object parameter)
 		{
 			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
 			
-			// TODO Reactivate this
-//			ResourceList list = editor.ResourceList;
-//			
-//			if(list.SelectedItems.Count != 1) {
-//				return;
-//			}
-//			
-//			string key = list.SelectedItems[0].Text;
-//			if(! list.Resources.ContainsKey(key)) {
-//				return;
-//			}
-//			
-//			ResourceItem item = list.Resources[key];
-//			SaveFileDialog sdialog 	= new SaveFileDialog();
-//			sdialog.AddExtension = true;
-//			sdialog.FileName = key;
-//			
-//			if (item.ResourceValue is Bitmap) {
-//				sdialog.Filter 		= StringParser.Parse("${res:SharpDevelop.FileFilter.ImageFiles} (*.png)|*.png");
-//				sdialog.DefaultExt 	= ".png";
-//			} else if (item.ResourceValue is Icon) {
-//				sdialog.Filter 		= StringParser.Parse("${res:SharpDevelop.FileFilter.Icons}|*.ico");
-//				sdialog.DefaultExt 	= ".ico";
-//			} else if (item.ResourceValue is Cursor) {
-//				sdialog.Filter 		= StringParser.Parse("${res:SharpDevelop.FileFilter.CursorFiles} (*.cur)|*.cur");
-//				sdialog.DefaultExt 	= ".cur";
-//			} else if (item.ResourceValue is byte[]){
-//				sdialog.Filter      = StringParser.Parse("${res:SharpDevelop.FileFilter.BinaryFiles} (*.*)|*.*");
-//				sdialog.DefaultExt  = ".bin";
-//			} else {
-//				return;
-//			}
-//			
-//			DialogResult dr = sdialog.ShowDialog(SD.WinForms.MainWin32Window);
-//			sdialog.Dispose();
-//			if (dr != DialogResult.OK) {
-//				return;
-//			}
-//			
-//			try {
-//				if (item.ResourceValue is Icon) {
-//					FileStream fstr = new FileStream(sdialog.FileName, FileMode.Create);
-//					((Icon)item.ResourceValue).Save(fstr);
-//					fstr.Close();
-//				} else if(item.ResourceValue is Image) {
-//					Image img = (Image)item.ResourceValue;
-//					img.Save(sdialog.FileName);
-//				} else {
-//					FileStream fstr = new FileStream(sdialog.FileName, FileMode.Create);
-//					BinaryWriter wr = new BinaryWriter(fstr);
-//					wr.Write((byte[])item.ResourceValue);
-//					fstr.Close();
-//				}
-//			} catch(Exception ex) {
-//				MessageBox.Show(ex.Message, "Can't save resource to " + sdialog.FileName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-//			}
+			if (editor.SelectedItems.Count != 1) {
+				return;
+			}
+			
+			ResourceItem firstSelectedItem = (editor.SelectedItems[0] as ResourceItem);
+			if (firstSelectedItem == null) {
+				return;
+			}
+			
+			var sdialog = new Microsoft.Win32.SaveFileDialog();
+			sdialog.AddExtension = true;
+			sdialog.FileName = firstSelectedItem.Name;
+			
+			if (firstSelectedItem.ResourceValue is System.Drawing.Bitmap) {
+				sdialog.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.ImageFiles} (*.png)|*.png");
+				sdialog.DefaultExt = ".png";
+			} else if (firstSelectedItem.ResourceValue is System.Drawing.Icon) {
+				sdialog.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.Icons}|*.ico");
+				sdialog.DefaultExt = ".ico";
+			} else if (firstSelectedItem.ResourceValue is System.Windows.Forms.Cursor) {
+				sdialog.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.CursorFiles} (*.cur)|*.cur");
+				sdialog.DefaultExt = ".cur";
+			} else if (firstSelectedItem.ResourceValue is byte[]) {
+				sdialog.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.BinaryFiles} (*.*)|*.*");
+				sdialog.DefaultExt = ".bin";
+			} else {
+				return;
+			}
+			
+			bool? dr = sdialog.ShowDialog();
+			if (dr.HasValue && dr.Value) {
+				return;
+			}
+			
+			try {
+				if (firstSelectedItem.ResourceValue is Icon) {
+					FileStream fstr = new FileStream(sdialog.FileName, FileMode.Create);
+					((Icon)firstSelectedItem.ResourceValue).Save(fstr);
+					fstr.Close();
+				} else if (firstSelectedItem.ResourceValue is Image) {
+					Image img = (Image)firstSelectedItem.ResourceValue;
+					img.Save(sdialog.FileName);
+				} else {
+					FileStream fstr = new FileStream(sdialog.FileName, FileMode.Create);
+					BinaryWriter wr = new BinaryWriter(fstr);
+					wr.Write((byte[])firstSelectedItem.ResourceValue);
+					fstr.Close();
+				}
+			} catch (Exception ex) {
+				SD.MessageService.ShowWarning("Can't save resource to " + sdialog.FileName + ": " + ex.Message);
+			}
 		}
 	}
 }

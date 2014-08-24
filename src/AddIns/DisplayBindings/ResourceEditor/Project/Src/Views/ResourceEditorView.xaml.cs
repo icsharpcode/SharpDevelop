@@ -41,6 +41,9 @@ namespace ResourceEditor.Views
 		readonly CollectionViewSource itemCollectionViewSource;
 		
 		public event EventHandler SelectionChanged;
+		public event EventHandler EditingStarted;
+		public event EventHandler EditingFinished;
+		public event EventHandler EditingCancelled;
 		
 		public ResourceEditorView()
 		{
@@ -73,13 +76,6 @@ namespace ResourceEditor.Views
 		
 		void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-//			// Update SelectedItems collection
-//			foreach (var item in e.RemovedItems.OfType<ResourceEditor.ViewModels.ResourceItem>()) {
-//				SelectedItems.Remove(item);
-//			}
-//			foreach (var item in e.AddedItems.OfType<ResourceEditor.ViewModels.ResourceItem>()) {
-//				SelectedItems.Add(item);
-//			}
 			if (SelectionChanged != null) {
 				SelectionChanged(this, new EventArgs());
 			}
@@ -123,6 +119,21 @@ namespace ResourceEditor.Views
 		{
 			// Update CollectionViewSource to re-evaluate filter predicate
 			itemCollectionViewSource.View.Refresh();
+		}
+		
+		void ResourceItemsListView_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Enter) {
+				if (EditingFinished != null) {
+					EditingFinished(this, new EventArgs());
+				}
+			} else if (e.Key == Key.Escape) {
+				if (EditingCancelled != null) {
+					EditingCancelled(this, new EventArgs());
+				}
+			}
+			
+			e.Handled = false;
 		}
 	}
 }
