@@ -31,6 +31,7 @@ namespace CSharpBinding.FormsDesigner
 		CSharpFullParseInformation GetPrimaryFileParseInformation();
 		ICompilation GetCompilation();
 		IDocument GetDocument(FileName fileName);
+		/// <remarks>if lineNumber = 0 no jump is performed, but the active view content changes.</remarks>
 		void ShowSourceCode(int lineNumber = 0);
 	}
 }

@@ -19,7 +19,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.RegularExpressions;
+using ICSharpCode.NRefactory.TypeSystem;
 using Debugger.Interop;
 using Debugger.Interop.CorDebug;
 
@@ -540,19 +544,62 @@ namespace Debugger
 			
 			ExceptionType exceptionType = (ExceptionType)_exceptionType;
 			bool pauseOnHandled = !process.Evaluating && process.Options != null && process.Options.PauseOnHandledExceptions;
+			Thread thread = process.GetThread(pThread);
 			
-			if (exceptionType == ExceptionType.Unhandled || (pauseOnHandled && exceptionType == ExceptionType.CatchHandlerFound)) {
+			if (exceptionType == ExceptionType.Unhandled || (pauseOnHandled && exceptionType == ExceptionType.CatchHandlerFound && BreakOnException(thread))) {
 				
 				// Multiple exceptions can happen at the same time on multiple threads
 				// (I have managed to create a test application to trigger it)
-				Thread thread = process.GetThread(pThread);
 				thread.CurrentExceptionType = exceptionType;
 				RequestPause(thread).ExceptionsThrown.Add(thread);
 			}
 			
 			ExitCallback();
 		}
+		
+		Regex filterRegex;
+		
+		static string ConvertWildcardsToRegex(string searchPattern)
+		{
+			if (string.IsNullOrEmpty(searchPattern))
+				return "";
+			
+			StringBuilder builder = new StringBuilder();
+			
+			foreach (char ch in searchPattern) {
+				switch (ch) {
+					case '?':
+						builder.Append(".");
+						break;
+					case '*':
+						builder.Append(".*");
+						break;
+					default:
+						builder.Append(Regex.Escape(ch.ToString()));
+						break;
+				}
+			}
+			
+			return builder.ToString();
+		}
 
+		bool BreakOnException(Thread thread)
+		{
+			IType exceptionType = thread.CurrentException.Type;
+			
+			if (filterRegex == null) {
+				var exceptionFilterList = thread.Process.Options.ExceptionFilterList.Where(i => i.IsActive).Select(s => "(" + ConvertWildcardsToRegex(s.Expression) + ")");
+				filterRegex = new Regex(string.Join("|", exceptionFilterList), RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+			}
+			
+			foreach (var baseType in exceptionType.GetNonInterfaceBaseTypes()) {
+				if (filterRegex.IsMatch(baseType.ReflectionName))
+					return true;
+			}
+			
+			return false;
+		}
+		
 		public void ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
 		{
 			EnterCallback("ExceptionUnwind", pThread);

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -217,10 +218,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			get { return false; }
 		}
 		public IEnumerable<string> SymbolsSearchPaths {
-			get { return Enumerable.Empty<string>(); }
+			get { return EmptyList<string>.Instance; }
 		}
 		public bool PauseOnHandledExceptions {
 			get { return false; }
+		}
+		public IEnumerable<string> ExceptionFilterList {
+			get { return EmptyList<string>.Instance; }
 		}
 		
 		public static readonly DummyDebuggerOptions Instance = new DummyDebuggerOptions();

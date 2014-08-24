@@ -46,13 +46,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				throw new ArgumentNullException("optionPanels");
 			InitializeComponent();
 			
-			ICSharpCode.SharpDevelop.Gui.FormLocationHelper.ApplyWindow(this, "TreeViewOptionsDialog.WindowBounds", true);
+			FormLocationHelper.ApplyWindow(this, "TreeViewOptionsDialog.WindowBounds", true);
 			
 			var list = optionPanels.Select(op => new OptionPanelNode(op, this)).ToList();
 			treeView.ItemsSource = list;
-			if (list.Count > 0) {
-				list[0].IsSelected = true;
-			}
 		}
 		
 		void okButtonClick(object sender, RoutedEventArgs e)
@@ -71,9 +68,42 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Close();
 		}
 		
+		protected override void OnSourceInitialized(EventArgs e)
+		{
+			base.OnSourceInitialized(e);
+			string[] lastOpenedPanelID = SD.PropertyService.Get("TreeViewOptionsDialog.LastOpenedPanelID", "UIOptions/SelectCulture").Split('/');
+			
+			OptionPanelNode lastOpenedPanelNode = null;
+			for (int i = 0; i < lastOpenedPanelID.Length; i++) {
+				IEnumerable<OptionPanelNode> currentList;
+				if (lastOpenedPanelNode == null) {
+					currentList = (IEnumerable<OptionPanelNode>)treeView.ItemsSource;
+				} else {
+					currentList = lastOpenedPanelNode.Children;
+				}
+				var nextNode = currentList.FirstOrDefault(op => lastOpenedPanelID[i].Equals(op.ID, StringComparison.Ordinal));
+				if (nextNode == null)
+					break;
+				lastOpenedPanelNode = nextNode;
+			}
+			if (lastOpenedPanelNode != null)
+				lastOpenedPanelNode.IsSelected = true;
+		}
+		
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
+			var selectedPanelNode = treeView.SelectedItem as OptionPanelNode;
+			string openedPanelID = "";
+			while (selectedPanelNode != null) {
+				if (openedPanelID.Length > 0)
+					openedPanelID = "/" + openedPanelID;
+				openedPanelID = selectedPanelNode.ID + openedPanelID;
+				selectedPanelNode = selectedPanelNode.Parent;
+			}
+			if (openedPanelID == "")
+				openedPanelID = "UIOptions/SelectCulture";
+			SD.PropertyService.Set("TreeViewOptionsDialog.LastOpenedPanelID", openedPanelID);
 			foreach (IDisposable op in optionPanels.OfType<IDisposable>()) {
 				op.Dispose();
 			}
@@ -128,10 +158,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.dialog = parent.dialog;
 			}
 			
+			public string ID {
+				get { return OptionPanelDescriptor.ID; }
+			}
+			
 			public string Title {
-				get {
-					return OptionPanelDescriptor.Label;
-				}
+				get { return OptionPanelDescriptor.Label; }
 			}
 			
 			IOptionPanel optionPanel;

@@ -18,58 +18,32 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Options
 {
 	/// <summary>
-	/// Interaction logic for DebuggingOptionsPanel.xaml
+	/// Interaction logic for ChooseExceptionsDialog.xaml
 	/// </summary>
-	public partial class DebuggingOptionsPanel : OptionPanel
+	public partial class ChooseExceptionsDialog : Window
 	{
-		IList<ExceptionFilterEntry> exceptionFilterList;
-		
-		public DebuggingOptionsPanel()
+		public ChooseExceptionsDialog(IEnumerable<ExceptionFilterEntry> entries)
 		{
 			InitializeComponent();
-		}
-		
-		public override bool SaveOptions()
-		{
-			bool result = base.SaveOptions();
-			if (WindowsDebugger.CurrentDebugger != null)
-				WindowsDebugger.CurrentDebugger.ReloadOptions();
-			DebuggingOptions.Instance.ExceptionFilterList = exceptionFilterList;
-			return result;
-		}
-		
-		public override void LoadOptions()
-		{
-			base.LoadOptions();
-			exceptionFilterList = DebuggingOptions.Instance.ExceptionFilterList.ToList();
 			
-			if (exceptionFilterList.Count == 0) {
-				exceptionFilterList.Add(new ExceptionFilterEntry("*"));
-			}
+			FormLocationHelper.ApplyWindow(this, "Debugger.ChooseExceptionsDialog", true);
+			
+			ExceptionFilterList = new ObservableCollection<ExceptionFilterEntry>(entries);
+			dataGrid.ItemsSource = ExceptionFilterList;
 		}
+
+		public IList<ExceptionFilterEntry> ExceptionFilterList { get; set; }
 		
-		void ChooseExceptionsClick(object sender, RoutedEventArgs e)
+		void Button_Click(object sender, RoutedEventArgs e)
 		{
-			var dialog = new ChooseExceptionsDialog(exceptionFilterList);
-			if (dialog.ShowDialog() == true) {
-				exceptionFilterList = dialog.ExceptionFilterList;
-			}
+			DialogResult = true;
 		}
 	}
 }

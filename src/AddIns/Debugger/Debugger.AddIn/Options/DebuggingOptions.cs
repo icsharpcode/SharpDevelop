@@ -85,6 +85,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			set { PS.Set<bool>("Debugger.PauseOnHandledExceptions", value); }
 		}
 		
+		public override IEnumerable<ExceptionFilterEntry> ExceptionFilterList {
+			get { return PS.GetList<ExceptionFilterEntry>("Debugger.ExceptionFilterList"); }
+			set { PS.SetList<ExceptionFilterEntry>("Debugger.ExceptionFilterList", value); }
+		}
+		
 		public bool AskForArguments {
 			get { return PS.Get<bool>("Debugger.AskForArguments", false); }
 			set { PS.Set<bool>("Debugger.AskForArguments", value); }
