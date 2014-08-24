@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Debugger
 {
@@ -32,5 +33,57 @@ namespace Debugger
 		public virtual bool StepOverFieldAccessProperties { get; set; }
 		public virtual IEnumerable<string> SymbolsSearchPaths { get; set; }
 		public virtual bool PauseOnHandledExceptions { get; set; }
+		public virtual IEnumerable<ExceptionFilterEntry> ExceptionFilterList { get; set; }
+	}
+	
+	[Serializable]
+	public class ExceptionFilterEntry : INotifyPropertyChanged
+	{
+		string expression;
+		bool isActive;
+		
+		public ExceptionFilterEntry()
+		{
+			this.IsActive = true;
+		}
+		
+		public ExceptionFilterEntry(string expression)
+		{
+			this.IsActive = true;
+			this.Expression = expression;
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected virtual void OnPropertyChanged(string propertyName)
+		{
+			var propertyChanged = PropertyChanged;
+			if (propertyChanged != null)
+				propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public string Expression {
+			get {
+				return expression;
+			}
+			set {
+				if (expression != value) {
+					expression = value;
+					OnPropertyChanged("Expression");
+				}
+			}
+		}
+
+		public bool IsActive {
+			get {
+				return isActive;
+			}
+			set {
+				if (isActive != value) {
+					isActive = value;
+					OnPropertyChanged("IsActive");
+				}
+			}
+		}
 	}
 }
