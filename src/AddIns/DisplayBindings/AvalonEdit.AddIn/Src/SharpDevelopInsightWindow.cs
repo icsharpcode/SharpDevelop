@@ -94,17 +94,24 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void OnClosed(object sender, EventArgs e)
 		{
-			activeAdapter.OnClosed();
+			if (activeAdapter != null)
+				activeAdapter.OnClosed();
 		}
 		
 		void caret_PositionChanged(object sender, EventArgs e)
 		{
-			activeAdapter.OnCaretPositionChanged(e);
+			// It is possible that the insight window is not initialized correctly
+			// due to an exception, and then caret_PositionChanged is called in a finally block
+			// during exception handling.
+			// Check for a null adapter to avoid a NullReferenceException that hides the first exception.
+			if (activeAdapter != null)
+				activeAdapter.OnCaretPositionChanged(e);
 		}
 		
 		void document_Changed(object sender, DocumentChangeEventArgs e)
 		{
-			activeAdapter.OnDocumentChanged(e);
+			if (activeAdapter != null)
+				activeAdapter.OnDocumentChanged(e);
 		}
 	}
 	

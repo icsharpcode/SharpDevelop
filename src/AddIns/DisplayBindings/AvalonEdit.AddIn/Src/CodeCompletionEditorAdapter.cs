@@ -78,7 +78,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public override IInsightWindow ActiveInsightWindow {
-			get { return textEditor.ActiveInsightWindow.activeAdapter; }
+			get {
+				if (textEditor.ActiveInsightWindow != null)
+					return textEditor.ActiveInsightWindow.activeAdapter;
+				else
+					return null;
+			}
 		}
 		
 		public override ICompletionListWindow ActiveCompletionWindow {
