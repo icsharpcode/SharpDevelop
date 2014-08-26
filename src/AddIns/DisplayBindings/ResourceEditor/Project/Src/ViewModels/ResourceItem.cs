@@ -20,6 +20,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Resources;
+using System.Windows;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop;
 
@@ -39,66 +40,45 @@ namespace ResourceEditor.ViewModels
 		Binary
 	}
 	
-	public class ResourceItem : INotifyPropertyChanged
+	public class ResourceItem : DependencyObject
 	{
-		string name;
-		object resourceValue;
-		string comment;
 		ResourceItemEditorType resourceType;
 		ResourceEditorViewModel resourceEditor;
-		bool isEditing;
+		string nameBeforeEditing;
 		
 		public ResourceItem(ResourceEditorViewModel resourceEditor, string name, object resourceValue)
 		{
 			this.resourceEditor = resourceEditor;
-			this.name = name;
-			this.resourceValue = resourceValue;
+			this.Name = name;
+			this.ResourceValue = resourceValue;
 			this.resourceType = GetResourceTypeFromValue(resourceValue);
 		}
 		
 		public ResourceItem(ResourceEditorViewModel resourceEditor, string name, object resourceValue, string comment)
 		{
 			this.resourceEditor = resourceEditor;
-			this.name = name;
-			this.resourceValue = resourceValue;
+			this.Name = name;
+			this.ResourceValue = resourceValue;
 			this.resourceType = GetResourceTypeFromValue(resourceValue);
-			this.comment = comment;
+			this.Comment = comment;
 		}
 
-		#region INotifyPropertyChanged implementation
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		void OnPropertyChanged(string propertyName)
-		{
-			if (PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		#endregion
+		public static readonly DependencyProperty NameProperty =
+			DependencyProperty.Register("Name", typeof(string), typeof(ResourceItem),
+				new FrameworkPropertyMetadata());
 		
 		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-				OnPropertyChanged("Name");
-			}
+			get { return (string)GetValue(NameProperty); }
+			set { SetValue(NameProperty, value); }
 		}
 		
+		public static readonly DependencyProperty ResourceValueProperty =
+			DependencyProperty.Register("ResourceValue", typeof(object), typeof(ResourceItem),
+				new FrameworkPropertyMetadata());
+		
 		public object ResourceValue {
-			get {
-				return resourceValue;
-			}
-			set {
-				resourceValue = value;
-				OnPropertyChanged("ResourceValue");
-				OnPropertyChanged("ResourceType");
-				OnPropertyChanged("Content");
-				resourceEditor.MakeDirty();
-			}
+			get { return (object)GetValue(ResourceValueProperty); }
+			set { SetValue(ResourceValueProperty, value); }
 		}
 		
 		public string DisplayedResourceType {
@@ -113,13 +93,39 @@ namespace ResourceEditor.ViewModels
 			}
 		}
 		
+		public static readonly DependencyProperty IsEditingProperty =
+			DependencyProperty.Register("IsEditing", typeof(bool), typeof(ResourceItem),
+				new FrameworkPropertyMetadata());
+		
 		public bool IsEditing {
-			get {
-				return isEditing;
-			}
-			set {
-				isEditing = value;
-				OnPropertyChanged("IsEditing");
+			get { return (bool)GetValue(IsEditingProperty); }
+			set { SetValue(IsEditingProperty, value); }
+		}
+		
+		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged(e);
+	
+			if (e.Property == IsEditingProperty) {
+				bool previouslyEditing = (bool)e.OldValue;
+				bool isEditing = (bool)e.NewValue;
+				if (!previouslyEditing && isEditing) {
+					// Save initial name to compare it later on cancellation
+					nameBeforeEditing = Name;
+				} else if (previouslyEditing && !isEditing) {
+					// Make dirty, if name has changed after finishing edit
+					if (nameBeforeEditing != Name) {
+						// Check if new name is valid
+						if (!String.IsNullOrEmpty(Name) && !resourceEditor.ContainsResourceName(Name)) {
+							resourceEditor.MakeDirty();
+						} else {
+							// New name was not valid, revert it to the value before editing
+							Name = nameBeforeEditing;
+						}
+					}
+				}
+			} else {
+				resourceEditor.MakeDirty();
 			}
 		}
 		
@@ -152,15 +158,13 @@ namespace ResourceEditor.ViewModels
 			}
 		}
 		
+		public static readonly DependencyProperty CommentProperty =
+			DependencyProperty.Register("Comment", typeof(string), typeof(ResourceItem),
+				new FrameworkPropertyMetadata());
+		
 		public string Comment {
-			get {
-				return comment;
-			}
-			set {
-				comment = value;
-				OnPropertyChanged("Comment");
-				resourceEditor.MakeDirty();
-			}
+			get { return (string)GetValue(CommentProperty); }
+			set { SetValue(CommentProperty, value); }
 		}
 
 		public override string ToString()

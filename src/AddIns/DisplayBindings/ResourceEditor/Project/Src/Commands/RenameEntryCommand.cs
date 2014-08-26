@@ -23,12 +23,13 @@ using ResourceEditor.ViewModels;
 
 namespace ResourceEditor.Commands
 {
-	class RenameEntryCommand : SimpleCommand
+	class RenameEntryCommand : ResourceItemCommand
 	{
-		public override void Execute(object parameter)
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
 		{
-			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
-			editor.StartEditing();
+			var editor = ResourceEditor;
+			if (editor != null)
+				editor.StartEditing();
 		}
 	}
 }

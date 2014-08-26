@@ -8,6 +8,12 @@
 		</Grid.RowDefinitions>
 		
 		<Button Grid.Row="0" Content="{Binding UpdateLinkText}" Margin="2,2,2,2" HorizontalAlignment="Left" Click="Button_Click" />
-		<Image Name="imagePreview" Grid.Row="1" Source="{Binding DisplayedImage}" Stretch="None" />
+		<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="0,0,0,0">
+			<Image
+				Name="imagePreview"
+				Source="{Binding DisplayedImage}"
+				Stretch="None"
+				HorizontalAlignment="Center" VerticalAlignment="Center" />
+		</ScrollViewer>
 	</Grid>
 </UserControl>

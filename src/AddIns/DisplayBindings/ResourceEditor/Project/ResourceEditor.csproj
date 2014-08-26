@@ -63,37 +63,9 @@
     <Compile Include="Src\Commands\CopyResourceNameCommand.cs" />
     <Compile Include="Src\Commands\EditCommentCommand.cs" />
     <Compile Include="Src\Commands\RenameEntryCommand.cs" />
+    <Compile Include="Src\Commands\ResourceItemCommand.cs" />
     <Compile Include="Src\Commands\SaveEntryAsCommand.cs" />
     <Compile Include="Src\ResourceEditorDisplayBinding.cs" />
-    <Compile Include="Src\ResourceEdit\AbstractImageView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\ResourceEdit\BinaryView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\ResourceEdit\BitmapView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\ResourceEdit\BooleanView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\ResourceEdit\CursorView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\ResourceEdit\IconView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\ResourceEdit\IResourceView.cs" />
-    <Compile Include="Src\ResourceEdit\ResourceEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\ResourceEdit\ResourceItem.cs" />
-    <Compile Include="Src\ResourceEdit\ResourceList.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\ResourceEdit\TextView.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Src\ViewModels\ResourceEditorViewModel.cs" />
     <Compile Include="Src\ViewModels\ResourceItem.cs" />
     <Compile Include="Src\Views\BinaryView.xaml.cs">
@@ -106,6 +78,10 @@
     </Compile>
     <Compile Include="Src\Views\ImageViewBase.xaml.cs">
       <DependentUpon>ImageViewBase.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Views\InPlaceEditLabel.xaml.cs">
+      <DependentUpon>InPlaceEditLabel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Views\IResourceEditorView.cs" />
@@ -166,6 +142,7 @@
     <Page Include="Src\Views\BinaryView.xaml" />
     <Page Include="Src\Views\BooleanView.xaml" />
     <Page Include="Src\Views\ImageViewBase.xaml" />
+    <Page Include="Src\Views\InPlaceEditLabel.xaml" />
     <Page Include="Src\Views\ResourceEditorView.xaml" />
     <Page Include="Src\Views\TextView.xaml" />
   </ItemGroup>

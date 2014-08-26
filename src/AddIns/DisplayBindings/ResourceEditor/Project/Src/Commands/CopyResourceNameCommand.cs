@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -25,16 +26,14 @@ using ResourceEditor.ViewModels;
 
 namespace ResourceEditor.Commands
 {
-	class CopyResourceNameCommand : SimpleCommand
+	class CopyResourceNameCommand : ResourceItemCommand
 	{
-		public override void Execute(object parameter)
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
 		{
-			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			// TODO Reactivate this
-//			if(editor.ResourceList.SelectedItems.Count > 0) {
-//				Clipboard.SetText(editor.ResourceList.SelectedItems[0].Text);
-//			}
+			var firstSelectedItem = resourceItems.First();
+			if (firstSelectedItem != null) {
+				Clipboard.SetText(firstSelectedItem.Name);
+			}
 		}
 	}
 }

@@ -20,6 +20,7 @@ using System;
 using System.Drawing;
 using System.IO;
 
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -28,20 +29,22 @@ using ResourceEditor.ViewModels;
 
 namespace ResourceEditor.Commands
 {
-	class SaveEntryAsCommand : SimpleCommand
+	class SaveEntryAsCommand : ResourceItemCommand
 	{
-		public override void Execute(object parameter)
+		public override System.Collections.Generic.IEnumerable<ResourceItemEditorType> AllowedTypes {
+			get {
+				return new ResourceItemEditorType[] {
+					ResourceItemEditorType.Bitmap,
+					ResourceItemEditorType.Icon,
+					ResourceItemEditorType.Cursor,
+					ResourceItemEditorType.Binary
+				};
+			}
+		}
+		
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
 		{
-			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			if (editor.SelectedItems.Count != 1) {
-				return;
-			}
-			
-			ResourceItem firstSelectedItem = (editor.SelectedItems[0] as ResourceItem);
-			if (firstSelectedItem == null) {
-				return;
-			}
+			var firstSelectedItem = resourceItems.First();
 			
 			var sdialog = new Microsoft.Win32.SaveFileDialog();
 			sdialog.AddExtension = true;
@@ -64,22 +67,22 @@ namespace ResourceEditor.Commands
 			}
 			
 			bool? dr = sdialog.ShowDialog();
-			if (dr.HasValue && dr.Value) {
+			if (!dr.HasValue || !dr.Value) {
 				return;
 			}
 			
 			try {
 				if (firstSelectedItem.ResourceValue is Icon) {
 					FileStream fstr = new FileStream(sdialog.FileName, FileMode.Create);
-					((Icon)firstSelectedItem.ResourceValue).Save(fstr);
+					((Icon) firstSelectedItem.ResourceValue).Save(fstr);
 					fstr.Close();
 				} else if (firstSelectedItem.ResourceValue is Image) {
-					Image img = (Image)firstSelectedItem.ResourceValue;
+					Image img = (Image) firstSelectedItem.ResourceValue;
 					img.Save(sdialog.FileName);
 				} else {
 					FileStream fstr = new FileStream(sdialog.FileName, FileMode.Create);
 					BinaryWriter wr = new BinaryWriter(fstr);
-					wr.Write((byte[])firstSelectedItem.ResourceValue);
+					wr.Write((byte[]) firstSelectedItem.ResourceValue);
 					fstr.Close();
 				}
 			} catch (Exception ex) {

@@ -24,33 +24,29 @@ using ResourceEditor.ViewModels;
 
 namespace ResourceEditor.Commands
 {
-	class AddStringCommand : SimpleCommand
+	class AddStringCommand : ResourceItemCommand
 	{
-		public override void Execute(object parameter)
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
 		{
-			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			// TODO Reactivate this
 //			if(editor.ResourceList.WriteProtected) {
 //				return;
 //			}
 //			
-//			int count = 1;
-//			string newNameBase = " new string entry ";
-//			string newName = newNameBase + count.ToString();
-//			string type = "System.String";
-//			
-//			while(editor.ResourceList.Resources.ContainsKey(newName)) {
-//				count++;
-//				newName = newNameBase + count.ToString();
-//			}
-//			
-//			ResourceItem item = new ResourceItem(newName, "");
-//			editor.ResourceList.Resources.Add(newName, item);
-//			ListViewItem lv = new ListViewItem(new string[] { newName, type, "" }, item.ImageIndex);
-//			editor.ResourceList.Items.Add(lv);
-//			editor.ResourceList.OnChanged();
-//			lv.BeginEdit();
+			var editor = ResourceEditor;
+			int count = 1;
+			string newNameBase = " new string entry ";
+			string newName = newNameBase + count;
+			
+			while (editor.ContainsResourceName(newName)) {
+				count++;
+				newName = newNameBase + count;
+			}
+			
+			ResourceItem item = new ResourceItem(editor, newName, "");
+			editor.ResourceItems.Add(item);
+			editor.SelectedItems.Clear();
+			editor.SelectedItems.Add(item);
+			editor.StartEditing();
 		}
 	}
 }

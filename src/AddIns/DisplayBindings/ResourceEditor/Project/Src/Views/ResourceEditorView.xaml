@@ -26,7 +26,12 @@
 		
 		<DataTemplate x:Key="resourceItemNameTemplate" DataType="{x:Type resvm:ResourceItem}">
 			<Border BorderBrush="LightGray" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
-				<StackPanel Orientation="Horizontal" Margin="6,2,6,2">
+				<Grid Margin="6,2,6,2">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					
 					<Image Grid.Column="0" Width="16" Height="16" VerticalAlignment="Top" Margin="0,0,3,0">
 						<Image.Style>
 							<Style TargetType="Image">
@@ -56,33 +61,14 @@
 							</Style>
 						</Image.Style>
 					</Image>
-					<TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-						<TextBlock.Style>
-							<Style TargetType="TextBlock">
-								<Setter Property="Visibility" Value="Collapsed" />
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding IsEditing}" Value="False">
-										<Setter Property="Visibility" Value="Visible" />
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</TextBlock.Style>
-					</TextBlock>
-					<TextBox Grid.Column="1"
-					         Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Stretch"
-					         HorizontalScrollBarVisibility="Hidden">
-						<TextBox.Style>
-							<Style TargetType="TextBox">
-								<Setter Property="Visibility" Value="Collapsed" />
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding IsEditing}" Value="True">
-										<Setter Property="Visibility" Value="Visible" />
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</TextBox.Style>
-					</TextBox>
-				</StackPanel>
+					<resv:InPlaceEditLabel Grid.Column="1"
+						Text="{Binding Name, Mode=TwoWay}"
+						VerticalAlignment="Top"
+						Margin="0,0,0,0"
+						MinWidth="300"
+						IsEditing="{Binding IsEditing, Mode=TwoWay}">
+					</resv:InPlaceEditLabel>
+				</Grid>
 			</Border>
 		</DataTemplate>
 		
@@ -100,7 +86,7 @@
 		
 		<DataTemplate x:Key="resourceItemCommentTemplate" DataType="{x:Type resvm:ResourceItem}">
 			<Border BorderBrush="LightGray" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
-				<TextBlock Text="{Binding Comment}" Margin="6,2,6,2" />
+				<TextBlock Text="{Binding Comment}" Margin="6,2,6,2" MinWidth="300" />
 			</Border>
 		</DataTemplate>
 	</UserControl.Resources>

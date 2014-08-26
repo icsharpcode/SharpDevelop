@@ -72,7 +72,7 @@ namespace ResourceEditor.ViewModels
 				new FrameworkPropertyMetadata());
 		
 		public string SearchTerm {
-			get { return (string)GetValue(SearchTermProperty); }
+			get { return (string) GetValue(SearchTermProperty); }
 			set { SetValue(SearchTermProperty, value); }
 		}
 		
@@ -100,6 +100,16 @@ namespace ResourceEditor.ViewModels
 			}
 		}
 		
+		/// <summary>
+		/// Checks whether a resource name is existing in currently open file.
+		/// </summary>
+		/// <param name="name">Resource name to check.</param>
+		/// <returns><c>True</c> if name exists, <c>false</c> otherwise.</returns>
+		public bool ContainsResourceName(string name)
+		{
+			return resourceItemNames.Contains(name);
+		}
+		
 		public void AddItemView(ResourceItemEditorType itemType, IResourceItemView view)
 		{
 			itemViews[itemType] = view;
@@ -112,6 +122,7 @@ namespace ResourceEditor.ViewModels
 			set {
 				if (view != null) {
 					view.SelectionChanged -= View_SelectionChanged;
+					view.EditingStarted -= View_EditingStarted;					
 					view.EditingFinished -= View_EditingFinished;
 					view.EditingCancelled -= View_EditingCancelled;
 					ResourceItems.CollectionChanged -= ResourceItems_CollectionChanged;
@@ -133,6 +144,7 @@ namespace ResourceEditor.ViewModels
 						return true;
 					};
 					view.SelectionChanged += View_SelectionChanged;
+					view.EditingStarted += View_EditingStarted;
 					view.EditingFinished += View_EditingFinished;
 					view.EditingCancelled += View_EditingCancelled;
 					ResourceItems.CollectionChanged += ResourceItems_CollectionChanged;
@@ -198,11 +210,11 @@ namespace ResourceEditor.ViewModels
 		
 		public void StartEditing()
 		{
-			if (editedResourceItem != null) {
-				editedResourceItem.IsEditing = false;
-				editedResourceItem = null;
-				originalNameOfEditedItem = null;
-			}
+//			if (editedResourceItem != null) {
+//				editedResourceItem.IsEditing = false;
+//				editedResourceItem = null;
+//				originalNameOfEditedItem = null;
+//			}
 			
 			// Start editing currently selected item
 			var firstSelectedItem = SelectedItems.OfType<ResourceItem>().FirstOrDefault();
@@ -213,24 +225,29 @@ namespace ResourceEditor.ViewModels
 			}
 		}
 
+		void View_EditingStarted(object sender, EventArgs e)
+		{
+			StartEditing();
+		}
+		
 		void View_EditingFinished(object sender, EventArgs e)
 		{
-			if (editedResourceItem != null) {
-				editedResourceItem.IsEditing = false;
-				editedResourceItem = null;
-				originalNameOfEditedItem = null;
-				MakeDirty();
-			}
+//			if (editedResourceItem != null) {
+//				editedResourceItem.IsEditing = false;
+//				editedResourceItem = null;
+//				originalNameOfEditedItem = null;
+//				MakeDirty();
+//			}
 		}
 
 		void View_EditingCancelled(object sender, EventArgs e)
 		{
-			if (editedResourceItem != null) {
-				editedResourceItem.IsEditing = false;
-				editedResourceItem.Name = originalNameOfEditedItem;
-				editedResourceItem = null;
-				originalNameOfEditedItem = null;
-			}
+//			if (editedResourceItem != null) {
+//				editedResourceItem.IsEditing = false;
+//				editedResourceItem.Name = originalNameOfEditedItem;
+//				editedResourceItem = null;
+//				originalNameOfEditedItem = null;
+//			}
 		}
 		
 		void StartUpdate()
@@ -258,13 +275,13 @@ namespace ResourceEditor.ViewModels
 					rx.UseResXDataNodes = true;
 					IDictionaryEnumerator n = rx.GetEnumerator();
 					while (n.MoveNext()) {
-						ResXDataNode node = (ResXDataNode)n.Value;
+						ResXDataNode node = (ResXDataNode) n.Value;
 						resourceItems.Add(new ResourceItem(this, node.Name, node.GetValue(typeResolver), node.Comment));
 					}
 					
 					n = rx.GetMetadataEnumerator();
 					while (n.MoveNext()) {
-						ResXDataNode node = (ResXDataNode)n.Value;
+						ResXDataNode node = (ResXDataNode) n.Value;
 						metadataItems.Add(new ResourceItem(this, node.Name, node.GetValue(typeResolver)));
 					}
 					
@@ -390,12 +407,12 @@ namespace ResourceEditor.ViewModels
 				return;
 			
 			if (dob.GetDataPresent(typeof(Hashtable).FullName)) {
-				Hashtable tmphash = (Hashtable)dob.GetData(typeof(Hashtable));
+				Hashtable tmphash = (Hashtable) dob.GetData(typeof(Hashtable));
 				foreach (DictionaryEntry entry in tmphash) {
 					object resourceValue = GetClonedResource(entry.Value);
 					ResourceItem item;
 					
-					if (!resourceItemNames.Contains((string)entry.Key)) {
+					if (!resourceItemNames.Contains((string) entry.Key)) {
 						item = new ResourceItem(this, entry.Key.ToString(), resourceValue);
 					} else {
 						int count = 1;

@@ -24,20 +24,16 @@ using ResourceEditor.ViewModels;
 
 namespace ResourceEditor.Commands
 {
-	class EditCommentCommand : SimpleCommand
+	class EditCommentCommand : ResourceItemCommand
 	{
-		public override void Execute(object parameter)
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
 		{
-			ResourceEditorViewModel editor = ((ResourceEditViewContent)SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			if (editor.SelectedItems.Count != 0) {
-				var selectedItem = editor.SelectedItems.OfType<ResourceEditor.ViewModels.ResourceItem>().FirstOrDefault();
-				string newValue = SD.MessageService.ShowInputBox("${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}",
-					                  "${res:ResourceEditor.ResourceEdit.ContextMenu.EditCommentText}",
-					                  selectedItem.Comment);
-				if (newValue != null && newValue != selectedItem.Comment) {
-					selectedItem.Comment = newValue;
-				}
+			var selectedItem = resourceItems.First();
+			string newValue = SD.MessageService.ShowInputBox("${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}",
+				                   "${res:ResourceEditor.ResourceEdit.ContextMenu.EditCommentText}",
+				                   selectedItem.Comment);
+			if (newValue != null && newValue != selectedItem.Comment) {
+				selectedItem.Comment = newValue;
 			}
 		}
 	}
