@@ -28,6 +28,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -60,13 +61,14 @@ namespace Debugger.AddIn.Options
 			exceptionFilterList = DebuggingOptions.Instance.ExceptionFilterList.ToList();
 			
 			if (exceptionFilterList.Count == 0) {
-				exceptionFilterList.Add(new ExceptionFilterEntry("*"));
+				exceptionFilterList.Add(new ExceptionFilterEntry("System.Exception"));
 			}
 		}
 		
 		void ChooseExceptionsClick(object sender, RoutedEventArgs e)
 		{
 			var dialog = new ChooseExceptionsDialog(exceptionFilterList);
+			dialog.Owner = SD.Workbench.MainWindow;
 			if (dialog.ShowDialog() == true) {
 				exceptionFilterList = dialog.ExceptionFilterList;
 			}
