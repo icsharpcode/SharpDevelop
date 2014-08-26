@@ -557,7 +557,7 @@ namespace Debugger
 			ExitCallback();
 		}
 		
-		Regex filterRegex;
+		Dictionary<string, bool> exceptionFilter;
 		
 		static string ConvertWildcardsToRegex(string searchPattern)
 		{
@@ -587,17 +587,18 @@ namespace Debugger
 		{
 			IType exceptionType = thread.CurrentException.Type;
 			
-			if (filterRegex == null) {
-				var exceptionFilterList = thread.Process.Options.ExceptionFilterList.Where(i => i.IsActive).Select(s => "(" + ConvertWildcardsToRegex(s.Expression) + ")");
-				filterRegex = new Regex(string.Join("|", exceptionFilterList), RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+			if (exceptionFilter == null) {
+				exceptionFilter = thread.Process.Options.ExceptionFilterList
+					.ToDictionary(e => e.Expression, e => e.IsActive, StringComparer.OrdinalIgnoreCase);
 			}
 			
-			foreach (var baseType in exceptionType.GetNonInterfaceBaseTypes()) {
-				if (filterRegex.IsMatch(baseType.ReflectionName))
-					return true;
+			foreach (var baseType in exceptionType.GetNonInterfaceBaseTypes().Reverse()) {
+				bool isActive;
+				if (exceptionFilter.TryGetValue(baseType.ReflectionName, out isActive))
+					return isActive;
 			}
 			
-			return false;
+			return true;
 		}
 		
 		public void ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)

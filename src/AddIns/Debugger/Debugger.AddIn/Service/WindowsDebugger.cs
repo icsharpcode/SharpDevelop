@@ -533,12 +533,8 @@ namespace ICSharpCode.SharpDevelop.Services
 					// Do not intercept handled expetions
 					stacktrace += exceptionThread.GetStackTrace(formatSymbols, formatNoSymbols);
 				}
-				
-				string title = isUnhandled ? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled}") : StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Handled}");
-				string type = string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Message}"), exception.Type);
-				Bitmap icon = WinFormsResourceService.GetBitmap(isUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
-				
-				if (DebuggeeExceptionForm.Show(e.Process, title, type, stacktrace, icon, isUnhandled)) {
+								
+				if (DebuggeeExceptionForm.Show(e.Process, exception.Type.FullName, stacktrace, isUnhandled)) {
 					breakProcess = true;
 					// The dialog box is allowed to kill the process
 					if (e.Process.HasExited) {

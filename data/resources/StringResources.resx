@@ -8211,9 +8211,12 @@ a line break</value>
     <value>Break on</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.ExceptionFilter.ColumnExpression" xml:space="preserve">
-    <value>Exception name expression (wildcards are allowed)</value>
+    <value>Full exception name</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.ChooseExceptions" xml:space="preserve">
     <value>Choose exceptions</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.BreakOnHandled" xml:space="preserve">
+    <value>Break on handled ${ExceptionName}</value>
   </data>
 </root>
