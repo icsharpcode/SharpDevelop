@@ -17,16 +17,14 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Windows.Forms;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
+using System.Linq;
 using ResourceEditor.ViewModels;
 
 namespace ResourceEditor.Commands
 {
 	class AddStringCommand : ResourceItemCommand
 	{
-		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceItem> resourceItems)
 		{
 //			if(editor.ResourceList.WriteProtected) {
 //				return;
@@ -34,7 +32,7 @@ namespace ResourceEditor.Commands
 //			
 			var editor = ResourceEditor;
 			int count = 1;
-			string newNameBase = " new string entry ";
+			string newNameBase = "New string entry ";
 			string newName = newNameBase + count;
 			
 			while (editor.ContainsResourceName(newName)) {
@@ -42,7 +40,13 @@ namespace ResourceEditor.Commands
 				newName = newNameBase + count;
 			}
 			
+			var selectedItem = GetSelectedItems().FirstOrDefault();
 			ResourceItem item = new ResourceItem(editor, newName, "");
+			item.IsNew = true;
+			if (selectedItem != null)
+				item.SortingCriteria = selectedItem.Name;
+			else
+				item.SortingCriteria = item.Name;
 			editor.ResourceItems.Add(item);
 			editor.SelectedItems.Clear();
 			editor.SelectedItems.Add(item);

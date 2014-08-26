@@ -29,70 +29,6 @@ using ResourceEditor.ViewModels;
 namespace ResourceEditor.Views
 {
 	/// <summary>
-	/// TextBox implementation for in-place editing of resource item fields.
-	/// </summary>
-	public class InPlaceEditTextBox : TextBox
-	{
-		string textBeforeEditing;
-		
-		public static readonly DependencyProperty IsEditingProperty =
-			DependencyProperty.Register("IsEditing", typeof(bool), typeof(InPlaceEditTextBox),
-				new FrameworkPropertyMetadata());
-		
-		public bool IsEditing {
-			get { return (bool) GetValue(IsEditingProperty); }
-			set { SetValue(IsEditingProperty, value); }
-		}
-		
-		public InPlaceEditTextBox() : base()
-		{
-			this.Visibility = Visibility.Collapsed;
-		}
-		
-		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
-		{
-			base.OnPropertyChanged(e);
-			
-			if (e.Property == IsEditingProperty) {
-				if ((bool) e.NewValue) {
-					this.Visibility = Visibility.Visible;
-				} else {
-					this.Visibility = Visibility.Collapsed;
-				}
-			}
-			if (e.Property == VisibilityProperty) {
-				if ((Visibility) e.NewValue == Visibility.Visible) {
-					// Auto-select whole text as soon as TextBox becomes visible
-					this.Focus();
-					this.SelectAll();
-					textBeforeEditing = this.Text;
-				}
-			}
-		}
-		
-		protected override void OnKeyUp(KeyEventArgs e)
-		{
-			base.OnKeyUp(e);
-			
-			if (e.Key == Key.Enter) {
-				IsEditing = false;
-			} else if (e.Key == Key.Escape) {
-				// Cancel editing and restore original text
-				this.Text = textBeforeEditing;
-				IsEditing = false;
-			}
-		}
-		
-		protected override void OnLostFocus(RoutedEventArgs e)
-		{
-			base.OnLostFocus(e);
-			
-			// When losing focus, also stop editing
-			IsEditing = false;
-		}
-	}
-	
-	/// <summary>
 	/// Interaction logic for ResourceEditorView.xaml
 	/// </summary>
 	public partial class ResourceEditorView : UserControl, IResourceEditorView
@@ -123,7 +59,7 @@ namespace ResourceEditor.Views
 			resourceItemViewGrid.Children.Add(view.UIControl);
 		}
 		
-		public Predicate<ResourceEditor.ViewModels.ResourceItem> FilterPredicate {
+		public Predicate<ResourceItem> FilterPredicate {
 			get;
 			set;
 		}
@@ -148,7 +84,7 @@ namespace ResourceEditor.Views
 				return;
 			}
 			
-			var resourceItem = e.Item as ResourceEditor.ViewModels.ResourceItem;
+			var resourceItem = e.Item as ResourceItem;
 			if (resourceItem == null) {
 				// Away with non-ResourceItems (shouldn't happen anyway)
 				e.Accepted = false;
@@ -182,15 +118,6 @@ namespace ResourceEditor.Views
 		
 		void ResourceItemsListView_KeyUp(object sender, KeyEventArgs e)
 		{
-			/*if (e.Key == Key.Enter) {
-				if (EditingFinished != null) {
-					EditingFinished(this, new EventArgs());
-				}
-			} else if (e.Key == Key.Escape) {
-				if (EditingCancelled != null) {
-					EditingCancelled(this, new EventArgs());
-				}
-			} else*/
 			if (e.Key == Key.F2) {
 				if (EditingStarted != null) {
 					EditingStarted(this, new EventArgs());

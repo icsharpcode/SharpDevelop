@@ -67,7 +67,7 @@ namespace ResourceEditor.Commands
 		/// </summary>
 		/// <param name="resourceItems">List of selected resource items. Will always contain at least one element.</param>
 		/// <returns><c>True</c>, when command can be executed, <c>false</c> otherwise.</returns>
-		public virtual bool CanExecuteWithResourceItems(IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
+		public virtual bool CanExecuteWithResourceItems(IEnumerable<ResourceItem> resourceItems)
 		{
 			return true;
 		}
@@ -86,7 +86,7 @@ namespace ResourceEditor.Commands
 		/// Executes command for the given set of selected resource items.
 		/// </summary>
 		/// <param name="resourceItems">List of selected resource items. Will always contain at least one element.</param>
-		public virtual void ExecuteWithResourceItems(IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
+		public virtual void ExecuteWithResourceItems(IEnumerable<ResourceItem> resourceItems)
 		{
 		}
 		
@@ -96,12 +96,12 @@ namespace ResourceEditor.Commands
 			}
 		}
 		
-		IEnumerable<ResourceEditor.ViewModels.ResourceItem> GetSelectedItems()
+		protected IEnumerable<ResourceItem> GetSelectedItems()
 		{
 			var editor = ResourceEditor;
 			if (editor != null)
-				return editor.SelectedItems.OfType<ResourceEditor.ViewModels.ResourceItem>() ?? new ResourceEditor.ViewModels.ResourceItem[0];
-			return new ResourceEditor.ViewModels.ResourceItem[0];
+				return editor.SelectedItems.OfType<ResourceItem>() ?? new ResourceItem[0];
+			return new ResourceItem[0];
 		}
 	}
 }

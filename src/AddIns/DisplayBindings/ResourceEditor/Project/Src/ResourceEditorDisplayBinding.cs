@@ -66,16 +66,14 @@ namespace ResourceEditor
 			resourceEditor.View = resourceEditorView;
 			
 			// Register different resource item viewers
-			resourceEditor.AddItemView(ResourceItemEditorType.String, new Views.TextView());
-			resourceEditor.AddItemView(ResourceItemEditorType.Bitmap, new Views.ImageViewBase());
+			resourceEditor.AddItemView(ResourceItemEditorType.String, new TextView());
+			resourceEditor.AddItemView(ResourceItemEditorType.Bitmap, new ImageViewBase());
 			resourceEditor.DirtyStateChanged += (sender, e) => {
 				if (e.IsDirty)
 					SetDirty(sender, new EventArgs());
 			};
 			
 			UserContent = resourceEditorView;
-//			resourceEditor.ResourceList.Changed += SetDirty;
-//			resourceEditor.ResourceList.ItemSelectionChanged += (sender, e) => SD.WinForms.InvalidateCommands();
 			this.Files.Add(file);
 		}
 		
@@ -92,13 +90,6 @@ namespace ResourceEditor
 		void SetDirty(object sender, EventArgs e)
 		{
 			PrimaryFile.MakeDirty();
-//			SD.WinForms.InvalidateCommands();
-		}
-		
-		public override void Dispose()
-		{
-			base.Dispose();
-//			resourceEditor.Dispose();
 		}
 		
 		protected override void LoadInternal(OpenedFile file, Stream stream)

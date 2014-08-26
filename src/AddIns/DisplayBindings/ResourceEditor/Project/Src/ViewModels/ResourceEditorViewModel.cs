@@ -72,7 +72,7 @@ namespace ResourceEditor.ViewModels
 				new FrameworkPropertyMetadata());
 		
 		public string SearchTerm {
-			get { return (string) GetValue(SearchTermProperty); }
+			get { return (string)GetValue(SearchTermProperty); }
 			set { SetValue(SearchTermProperty, value); }
 		}
 		
@@ -139,7 +139,7 @@ namespace ResourceEditor.ViewModels
 					view.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, (s, e) => SelectAll(), (s, e) => e.CanExecute = EnableSelectAll));
 					
 					view.FilterPredicate = resourceItem => {
-						if (SearchTerm != null)
+						if (!resourceItem.IsNew && (SearchTerm != null))
 							return resourceItem.Name.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0;
 						return true;
 					};
@@ -275,13 +275,13 @@ namespace ResourceEditor.ViewModels
 					rx.UseResXDataNodes = true;
 					IDictionaryEnumerator n = rx.GetEnumerator();
 					while (n.MoveNext()) {
-						ResXDataNode node = (ResXDataNode) n.Value;
+						ResXDataNode node = (ResXDataNode)n.Value;
 						resourceItems.Add(new ResourceItem(this, node.Name, node.GetValue(typeResolver), node.Comment));
 					}
 					
 					n = rx.GetMetadataEnumerator();
 					while (n.MoveNext()) {
-						ResXDataNode node = (ResXDataNode) n.Value;
+						ResXDataNode node = (ResXDataNode)n.Value;
 						metadataItems.Add(new ResourceItem(this, node.Name, node.GetValue(typeResolver)));
 					}
 					
@@ -407,12 +407,12 @@ namespace ResourceEditor.ViewModels
 				return;
 			
 			if (dob.GetDataPresent(typeof(Hashtable).FullName)) {
-				Hashtable tmphash = (Hashtable) dob.GetData(typeof(Hashtable));
+				Hashtable tmphash = (Hashtable)dob.GetData(typeof(Hashtable));
 				foreach (DictionaryEntry entry in tmphash) {
 					object resourceValue = GetClonedResource(entry.Value);
 					ResourceItem item;
 					
-					if (!resourceItemNames.Contains((string) entry.Key)) {
+					if (!resourceItemNames.Contains((string)entry.Key)) {
 						item = new ResourceItem(this, entry.Key.ToString(), resourceValue);
 					} else {
 						int count = 1;

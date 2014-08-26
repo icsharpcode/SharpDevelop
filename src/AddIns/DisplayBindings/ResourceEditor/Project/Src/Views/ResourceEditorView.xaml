@@ -15,7 +15,7 @@
 			Source="{Binding ResourceItems}"
 			Filter="CollectionViewSource_Filter">
 			<CollectionViewSource.SortDescriptions>
-				<scm:SortDescription PropertyName="Name"/>
+				<scm:SortDescription PropertyName="SortingCriteria"/>
 			</CollectionViewSource.SortDescriptions>
 		</CollectionViewSource>
 		
@@ -62,11 +62,11 @@
 						</Image.Style>
 					</Image>
 					<resv:InPlaceEditLabel Grid.Column="1"
-						Text="{Binding Name, Mode=TwoWay}"
+						Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						VerticalAlignment="Top"
 						Margin="0,0,0,0"
 						MinWidth="300"
-						IsEditing="{Binding IsEditing, Mode=TwoWay}">
+						IsEditing="{Binding Path=IsEditing, Mode=TwoWay}">
 					</resv:InPlaceEditLabel>
 				</Grid>
 			</Border>

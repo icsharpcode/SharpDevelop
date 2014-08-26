@@ -17,14 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace ResourceEditor.Views
 {
@@ -34,6 +29,7 @@ namespace ResourceEditor.Views
 	public partial class InPlaceEditLabel : UserControl
 	{
 		string textBeforeEditing;
+		bool selectAllText;
 		
 		public InPlaceEditLabel()
 		{
@@ -66,18 +62,38 @@ namespace ResourceEditor.Views
 		{
 			base.OnPropertyChanged(e);
 			
-			if (e.Property == IsEditingProperty) {
+			if (e.Property.Name == IsEditingProperty.Name) {
 				if ((bool)e.NewValue) {
 					editingTextBox.Visibility = Visibility.Visible;
 					readOnlyTextBlock.Visibility = Visibility.Collapsed;
-					editingTextBox.Focus();
 					textBeforeEditing = this.Text;
-					editingTextBox.SelectAll();
+					
+					if (editingTextBox.Text == this.Text) {
+						SelectAllText();
+					} else {
+						// This is a workaround for the case when TextBox.Text property is updated after this code,
+						// so we can still select everything as soon as Text property is updated.
+						selectAllText = true;
+					}
 				} else {
 					editingTextBox.Visibility = Visibility.Collapsed;
 					readOnlyTextBlock.Visibility = Visibility.Visible;
 				}
 			}
+		}
+		
+		void EditingTextBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			if (selectAllText) {
+				SelectAllText();
+				selectAllText = false;
+			}
+		}
+		
+		void SelectAllText()
+		{
+			editingTextBox.Focus();
+			editingTextBox.SelectAll();
 		}
 		
 		protected override void OnKeyUp(KeyEventArgs e)
@@ -90,16 +106,6 @@ namespace ResourceEditor.Views
 				// Cancel editing and restore original text
 				this.Text = textBeforeEditing;
 				IsEditing = false;
-			}
-		}
-		
-		void EditingTextBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-		{
-			if ((bool)e.NewValue) {
-				// Auto-select whole text as soon as TextBox becomes visible
-//				editingTextBox.Focus();
-//				editingTextBox.SelectAll();
-//				textBeforeEditing = this.Text;
 			}
 		}
 		

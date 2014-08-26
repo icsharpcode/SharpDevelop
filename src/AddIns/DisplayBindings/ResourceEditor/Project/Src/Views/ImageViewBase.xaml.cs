@@ -17,15 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using ICSharpCode.SharpDevelop;
 using ResourceEditor.ViewModels;
 
@@ -36,7 +29,7 @@ namespace ResourceEditor.Views
 	/// </summary>
 	public partial class ImageViewBase : UserControl, IResourceItemView
 	{
-		ResourceEditor.ViewModels.ResourceItem resourceItem;
+		ResourceItem resourceItem;
 		
 		public ImageViewBase()
 		{
@@ -68,7 +61,7 @@ namespace ResourceEditor.Views
 			}
 		}
 		
-		public ResourceEditor.ViewModels.ResourceItem ResourceItem {
+		public ResourceItem ResourceItem {
 			get {
 				return resourceItem;
 			}

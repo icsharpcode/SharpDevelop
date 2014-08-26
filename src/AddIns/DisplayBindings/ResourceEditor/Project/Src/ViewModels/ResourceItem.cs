@@ -72,6 +72,15 @@ namespace ResourceEditor.ViewModels
 			set { SetValue(NameProperty, value); }
 		}
 		
+		public static readonly DependencyProperty SortingCriteriaProperty =
+			DependencyProperty.Register("SortingCriteria", typeof(string), typeof(ResourceItem),
+				new FrameworkPropertyMetadata());
+		
+		public string SortingCriteria {
+			get { return (string)GetValue(SortingCriteriaProperty); }
+			set { SetValue(SortingCriteriaProperty, value); }
+		}
+		
 		public static readonly DependencyProperty ResourceValueProperty =
 			DependencyProperty.Register("ResourceValue", typeof(object), typeof(ResourceItem),
 				new FrameworkPropertyMetadata());
@@ -102,11 +111,16 @@ namespace ResourceEditor.ViewModels
 			set { SetValue(IsEditingProperty, value); }
 		}
 		
+		public bool IsNew {
+			get;
+			set;
+		}
+		
 		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
 	
-			if (e.Property == IsEditingProperty) {
+			if (e.Property.Name == IsEditingProperty.Name) {
 				bool previouslyEditing = (bool)e.OldValue;
 				bool isEditing = (bool)e.NewValue;
 				if (!previouslyEditing && isEditing) {
@@ -117,14 +131,18 @@ namespace ResourceEditor.ViewModels
 					if (nameBeforeEditing != Name) {
 						// Check if new name is valid
 						if (!String.IsNullOrEmpty(Name) && !resourceEditor.ContainsResourceName(Name)) {
+							SortingCriteria = Name;
 							resourceEditor.MakeDirty();
 						} else {
 							// New name was not valid, revert it to the value before editing
 							Name = nameBeforeEditing;
 						}
 					}
+					IsNew = false;
 				}
 			} else {
+				if (e.Property.Name == NameProperty.Name)
+					SortingCriteria = Name;
 				resourceEditor.MakeDirty();
 			}
 		}
