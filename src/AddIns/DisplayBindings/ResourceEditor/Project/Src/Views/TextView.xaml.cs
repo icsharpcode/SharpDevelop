@@ -17,23 +17,39 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Linq;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ResourceEditor.ViewModels;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 
-namespace ResourceEditor.Commands
+namespace ResourceEditor.Views
 {
-	class EditCommentCommand : ResourceItemCommand
+	/// <summary>
+	/// Interaction logic for TextView.xaml
+	/// </summary>
+	public partial class TextView : UserControl, IResourceItemView
 	{
-		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
+		public TextView()
 		{
-			var selectedItem = resourceItems.First();
-			string newValue = SD.MessageService.ShowInputBox("${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}",
-				                   "${res:ResourceEditor.ResourceEdit.ContextMenu.EditCommentText}",
-				                   selectedItem.Comment);
-			if (newValue != null && newValue != selectedItem.Comment) {
-				selectedItem.Comment = newValue;
+			InitializeComponent();
+		}
+
+		public FrameworkElement UIControl {
+			get {
+				return this;
+			}
+		}
+
+		public ResourceEditor.ViewModels.ResourceItem ResourceItem {
+			get {
+				return DataContext as ViewModels.ResourceItem;
+			}
+			set {
+				DataContext = value;
 			}
 		}
 	}

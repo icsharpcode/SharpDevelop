@@ -20,35 +20,33 @@ using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+namespace ResourceEditor.Commands
 {
-	class AddStringCommand : AbstractMenuCommand
+	class AddStringCommand : ResourceItemCommand
 	{
-		public override void Run()
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			if(editor.ResourceList.WriteProtected) {
-				return;
-			}
-			
+//			if(editor.ResourceList.WriteProtected) {
+//				return;
+//			}
+//			
+			var editor = ResourceEditor;
 			int count = 1;
 			string newNameBase = " new string entry ";
-			string newName = newNameBase + count.ToString();
-			string type = "System.String";
+			string newName = newNameBase + count;
 			
-			while(editor.ResourceList.Resources.ContainsKey(newName)) {
+			while (editor.ContainsResourceName(newName)) {
 				count++;
-				newName = newNameBase + count.ToString();
+				newName = newNameBase + count;
 			}
 			
-			ResourceItem item = new ResourceItem(newName, "");
-			editor.ResourceList.Resources.Add(newName, item);
-			ListViewItem lv = new ListViewItem(new string[] { newName, type, "" }, item.ImageIndex);
-			editor.ResourceList.Items.Add(lv);
-			editor.ResourceList.OnChanged();
-			lv.BeginEdit();
+			ResourceItem item = new ResourceItem(editor, newName, "");
+			editor.ResourceItems.Add(item);
+			editor.SelectedItems.Clear();
+			editor.SelectedItems.Add(item);
+			editor.StartEditing();
 		}
 	}
 }

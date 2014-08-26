@@ -17,86 +17,83 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Drawing;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using Microsoft.Win32;
+using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+namespace ResourceEditor.Commands
 {
-	class AddNewFileCommand : AbstractMenuCommand
+	class AddNewFileCommand : ResourceItemCommand
 	{
-		public override void Run()
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceItem> resourceItems)
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
+//			if (editor.ResourceList.WriteProtected) {
+//				return;
+//			}
 			
-			if(editor.ResourceList.WriteProtected) {
-				return;
-			}
-			
-			using (OpenFileDialog fdiag = new OpenFileDialog()) {
-				fdiag.AddExtension   = true;
-				fdiag.Filter         = StringParser.Parse("${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-				fdiag.Multiselect    = true;
-				fdiag.CheckFileExists = true;
+			var editor = ResourceEditor;
+			OpenFileDialog fdiag = new OpenFileDialog();
+			fdiag.AddExtension = true;
+			fdiag.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+			fdiag.Multiselect = true;
+			fdiag.CheckFileExists = true;
 				
-				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
-					foreach (string filename in fdiag.FileNames) {
-						string oresname = Path.ChangeExtension(Path.GetFileName(filename), null);
-						if (oresname == "") oresname = "new";
+			if ((bool)fdiag.ShowDialog()) {
+				foreach (string filename in fdiag.FileNames) {
+					string oresname = Path.ChangeExtension(Path.GetFileName(filename), null);
+					if (oresname == "")
+						oresname = "new";
 						
-						string resname = oresname;
+					string resname = oresname;
 						
-						int i = 0;
+					int i = 0;
 					TestName:
-						if (editor.ResourceList.Resources.ContainsKey(resname)) {
-							if (i == 10) {
-								continue;
-							}
-							i++;
-							resname = oresname + "_" + i.ToString();
-							goto TestName;
-						}
-						
-						object tmp = loadResource(filename);
-						if (tmp == null) {
+					if (editor.ContainsResourceName(resname)) {
+						if (i == 10) {
 							continue;
 						}
-						editor.ResourceList.Resources.Add(resname, new ResourceItem(resname, tmp));
-						
+						i++;
+						resname = oresname + "_" + i;
+						goto TestName;
 					}
-					editor.ResourceList.InitializeListView();
+						
+					object tmp = LoadResource(filename);
+					if (tmp == null) {
+						continue;
+					}
+					editor.ResourceItems.Add(new ResourceItem(editor, resname, tmp));
 				}
 			}
-			editor.ResourceList.OnChanged();
 		}
 		
-		object loadResource(string name)
+		object LoadResource(string name)
 		{
 			switch (Path.GetExtension(name).ToUpperInvariant()) {
 				case ".CUR":
 					try {
-						return new Cursor(name);
+						return new System.Windows.Forms.Cursor(name);
 					} catch {
 						return null;
 					}
 				case ".ICO":
 					try {
-						return new Icon(name);
+						return new System.Drawing.Icon(name);
 					} catch {
 						return null;
 					}
 				default:
-					// try to read a bitmap
+					// Try to read a bitmap
 					try {
-						return new Bitmap(name);
-					} catch {}
+						return new System.Drawing.Bitmap(name);
+					} catch {
+					}
 					
-					// try to read a serialized object
+					// Try to read a serialized object
 					try {
 						Stream r = File.Open(name, FileMode.Open);
 						try {
@@ -104,20 +101,21 @@ namespace ResourceEditor
 							object o = c.Deserialize(r);
 							r.Close();
 							return o;
-						} catch { r.Close(); }
-					} catch { }
+						} catch {
+							r.Close();
+						}
+					} catch {
+					}
 					
-					// try to read a byte array :)
+					// Try to read a byte array
 					try {
 						FileStream s = new FileStream(name, FileMode.Open);
 						BinaryReader r = new BinaryReader(s);
-						Byte[] d = new Byte[(int) s.Length];
-						d = r.ReadBytes((int) s.Length);
+						Byte[] d = new Byte[(int)s.Length];
+						d = r.ReadBytes((int)s.Length);
 						s.Close();
 						return d;
-					} catch(Exception) {
-						
-						
+					} catch (Exception) {
 						string message = ResourceService.GetString("ResourceEditor.Messages.CantLoadResource");
 						MessageService.ShowWarning(message + " " + name + ".");
 					}

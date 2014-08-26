@@ -17,24 +17,42 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Linq;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ResourceEditor.ViewModels;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Input;
 
-namespace ResourceEditor.Commands
+namespace ResourceEditor.Views
 {
-	class EditCommentCommand : ResourceItemCommand
+	/// <summary>
+	/// Base interface for resource editor main views.
+	/// </summary>
+	public interface IResourceEditorView
 	{
-		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
-		{
-			var selectedItem = resourceItems.First();
-			string newValue = SD.MessageService.ShowInputBox("${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}",
-				                   "${res:ResourceEditor.ResourceEdit.ContextMenu.EditCommentText}",
-				                   selectedItem.Comment);
-			if (newValue != null && newValue != selectedItem.Comment) {
-				selectedItem.Comment = newValue;
-			}
+		CommandBindingCollection CommandBindings {
+			get;
+		}
+		
+		event EventHandler SelectionChanged;
+		IList SelectedItems {
+			get;
+		}
+		
+		event EventHandler EditingStarted;
+		event EventHandler EditingFinished;
+		event EventHandler EditingCancelled;
+		
+		void SetItemView(IResourceItemView view);
+		
+		object DataContext {
+			get;
+			set;
+		}
+		
+		Predicate<ResourceEditor.ViewModels.ResourceItem> FilterPredicate {
+			get;
+			set;
 		}
 	}
 }

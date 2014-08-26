@@ -27,6 +27,8 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
+using ResourceEditor.ViewModels;
+using ResourceEditor.Views;
 
 namespace ResourceEditor
 {
@@ -39,7 +41,7 @@ namespace ResourceEditor
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			return new ResourceEditWrapper(file);
+			return new ResourceEditViewContent(file);
 		}
 		
 		public bool IsPreferredBindingForFile(FileName fileName)
@@ -53,211 +55,60 @@ namespace ResourceEditor
 		}
 	}
 	
-	public class ResourceEditWrapper : AbstractViewContentHandlingLoadErrors, IClipboardHandler
+	public class ResourceEditViewContent : AbstractViewContentHandlingLoadErrors
 	{
-		ResourceEditorControl resourceEditor = new ResourceEditorControl();
+		readonly ResourceEditorViewModel resourceEditor = new ResourceEditorViewModel();
+		readonly ResourceEditorView resourceEditorView = new ResourceEditorView();
 		
-		public ResourceEditorControl ResourceEditor {
-			get { return resourceEditor; }
+		public ResourceEditViewContent(OpenedFile file)
+		{
+			this.TabPageText = "Resource editor";
+			resourceEditor.View = resourceEditorView;
+			
+			// Register different resource item viewers
+			resourceEditor.AddItemView(ResourceItemEditorType.String, new Views.TextView());
+			resourceEditor.AddItemView(ResourceItemEditorType.Bitmap, new Views.ImageViewBase());
+			resourceEditor.DirtyStateChanged += (sender, e) => {
+				if (e.IsDirty)
+					SetDirty(sender, new EventArgs());
+			};
+			
+			UserContent = resourceEditorView;
+//			resourceEditor.ResourceList.Changed += SetDirty;
+//			resourceEditor.ResourceList.ItemSelectionChanged += (sender, e) => SD.WinForms.InvalidateCommands();
+			this.Files.Add(file);
 		}
 		
+		public ResourceEditorViewModel ResourceEditor {
+			get { return resourceEditor; }
+		}
+
 		public override bool IsReadOnly {
 			get {
 				return false;
 			}
 		}
-
+		
 		void SetDirty(object sender, EventArgs e)
 		{
 			PrimaryFile.MakeDirty();
-			SD.WinForms.InvalidateCommands();
-		}
-		
-		public ResourceEditWrapper(OpenedFile file)
-		{
-			this.TabPageText = "Resource editor";
-			UserContent = resourceEditor;
-			resourceEditor.ResourceList.Changed += SetDirty;
-			resourceEditor.ResourceList.ItemSelectionChanged += (sender, e) => SD.WinForms.InvalidateCommands();
-			this.Files.Add(file);
+//			SD.WinForms.InvalidateCommands();
 		}
 		
 		public override void Dispose()
 		{
 			base.Dispose();
-			resourceEditor.Dispose();
+//			resourceEditor.Dispose();
 		}
 		
 		protected override void LoadInternal(OpenedFile file, Stream stream)
 		{
-			resourceEditor.ResourceList.LoadFile(file.FileName, stream);
+			resourceEditor.LoadFile(file.FileName, stream);
 		}
 		
 		protected override void SaveInternal(OpenedFile file, Stream stream)
 		{
-			resourceEditor.ResourceList.SaveFile(file.FileName, stream);
-		}
-		
-		
-		public bool EnableCut
-		{
-			get {
-				if (resourceEditor.ResourceList.IsEditing) {
-					return false;
-				}
-				return resourceEditor.ResourceList.SelectedItems.Count > 0;
-			}
-		}
-		
-		public bool EnableCopy
-		{
-			get {
-				if (resourceEditor.ResourceList.IsEditing) {
-					return false;
-				}
-				return resourceEditor.ResourceList.SelectedItems.Count > 0;
-			}
-		}
-		
-		public bool EnablePaste
-		{
-			get {
-				if (resourceEditor.ResourceList.IsEditing) {
-					return false;
-				}
-				return true;
-			}
-		}
-		
-		public bool EnableDelete
-		{
-			get {
-				if (resourceEditor.ResourceList.IsEditing) {
-					return false;
-				}
-				return resourceEditor.ResourceList.SelectedItems.Count > 0;
-			}
-		}
-		
-		public bool EnableSelectAll
-		{
-			get {
-				if (resourceEditor.ResourceList.IsEditing) {
-					return false;
-				}
-				return true;
-			}
-		}
-		
-		public void Cut()
-		{
-			if (resourceEditor.ResourceList.WriteProtected || resourceEditor.ResourceList.SelectedItems.Count < 1)
-				return;
-			
-			Hashtable tmphash = new Hashtable();
-			foreach (ListViewItem item in resourceEditor.ResourceList.SelectedItems) {
-				tmphash.Add(item.Text, resourceEditor.ResourceList.Resources[item.Text].ResourceValue);
-				resourceEditor.ResourceList.Resources.Remove(item.Text);
-				resourceEditor.ResourceList.Items.Remove(item);
-			}
-			resourceEditor.ResourceList.OnChanged();
-			SD.Clipboard.SetDataObject(tmphash);
-		}
-		
-		public void Copy()
-		{
-			if (resourceEditor.ResourceList.SelectedItems.Count < 1) {
-				return;
-			}
-			
-			Hashtable tmphash = new Hashtable();
-			foreach (ListViewItem item in resourceEditor.ResourceList.SelectedItems) {
-				object resourceValue = GetClonedResource(resourceEditor.ResourceList.Resources[item.Text].ResourceValue);
-				tmphash.Add(item.Text, resourceValue); // copy a clone to clipboard
-			}
-			SD.Clipboard.SetDataObject(tmphash);
-		}
-		
-		public void Paste()
-		{
-			if (resourceEditor.ResourceList.WriteProtected) {
-				return;
-			}
-			
-			IDataObject dob = Clipboard.GetDataObject();
-			if (dob == null)
-				return;
-			
-			if (dob.GetDataPresent(typeof(Hashtable).FullName)) {
-				Hashtable tmphash = (Hashtable)dob.GetData(typeof(Hashtable));
-				foreach (DictionaryEntry entry in tmphash) {
-					
-					object resourceValue = GetClonedResource(entry.Value);
-					ResourceItem item;
-					
-					if (!resourceEditor.ResourceList.Resources.ContainsKey((string)entry.Key)) {
-						item  = new ResourceItem(entry.Key.ToString(), resourceValue);
-					} else {
-						int count = 1;
-						string newNameBase = entry.Key.ToString() + " ";
-						string newName = newNameBase + count.ToString();
-						
-						while(resourceEditor.ResourceList.Resources.ContainsKey(newName)) {
-							count++;
-							newName = newNameBase + count.ToString();
-						}
-						item = new ResourceItem(newName, resourceValue);
-					}
-					resourceEditor.ResourceList.Resources.Add(item.Name, item);
-					resourceEditor.ResourceList.OnChanged();
-				}
-				resourceEditor.ResourceList.InitializeListView();
-			}
-		}
-
-		/// <summary>
-		/// Clones a resource if the <paramref name="resource"/>
-		/// is cloneable.
-		/// </summary>
-		/// <param name="resource">A resource to clone.</param>
-		/// <returns>A cloned resource if the object implements
-		/// the ICloneable interface, otherwise the
-		/// <paramref name="resource"/> object.</returns>
-		object GetClonedResource(object resource)
-		{
-			object clonedResource = null;
-			
-			ICloneable cloneableResource = resource as ICloneable;
-			if (cloneableResource != null) {
-				clonedResource = cloneableResource.Clone();
-			} else {
-				clonedResource = resource;
-			}
-			
-			return clonedResource;
-		}
-		
-		public void Delete()
-		{
-			var resourceList = resourceEditor.ResourceList;
-			if (resourceList.WriteProtected || resourceList.SelectedItems.Count == 0)
-				return;
-			if (!SD.MessageService.AskQuestion("${res:ResourceEditor.DeleteEntry.Confirm}", "${res:ResourceEditor.DeleteEntry.Title}"))
-				return;
-			
-			foreach (ListViewItem item in resourceList.SelectedItems) {
-				resourceList.Resources.Remove(item.Text);
-				resourceList.Items.Remove(item);
-				// and set dirty flag
-				resourceList.OnChanged();
-			}
-		}
-		
-		public void SelectAll()
-		{
-			foreach (ListViewItem i in resourceEditor.ResourceList.Items) {
-				i.Selected=true;
-			}
+			resourceEditor.SaveFile(file.FileName, stream);
 		}
 	}
 }

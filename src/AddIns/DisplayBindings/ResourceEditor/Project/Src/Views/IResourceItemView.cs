@@ -16,21 +16,18 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 
-namespace ResourceEditor
+using System;
+using System.Windows;
+
+namespace ResourceEditor.Views
 {
-		
-	class SelectAllCommand : AbstractMenuCommand
+	/// <summary>
+	/// Interface for resource item views.
+	/// </summary>
+	public interface IResourceItemView
 	{
-		public override void Run()
-		{
-			ResourceEditWrapper editor = (ResourceEditWrapper)SD.Workbench.ActiveViewContent;
-			
-			editor.SelectAll();
-		}
+		ResourceEditor.ViewModels.ResourceItem ResourceItem { get; set; }
+		FrameworkElement UIControl { get; }
 	}
-	
 }
