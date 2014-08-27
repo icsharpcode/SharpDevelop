@@ -111,6 +111,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					entry.IsActive = false;
 				}
 				process.Debugger.Options.ExceptionFilterList = list;
+				process.Debugger.ReloadOptions();
 			}
 			base.OnClosing(e);
 		}

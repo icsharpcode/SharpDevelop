@@ -302,6 +302,8 @@ namespace Debugger
 				bool isPaused = process.IsPaused;
 				if (!isPaused)
 					process.Break();
+				
+				process.CallbackInterface.ReloadOptions();
 
 				// We need to be paused for this
 				foreach(Module module in process.Modules) {

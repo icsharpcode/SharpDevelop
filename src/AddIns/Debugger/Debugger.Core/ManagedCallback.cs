@@ -141,6 +141,11 @@ namespace Debugger
 			isInCallback = false;
 		}
 		
+		public void ReloadOptions()
+		{
+			exceptionFilter = null;
+		}
+		
 		#region Program folow control
 		
 		public void StepComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugStepper pStepper, CorDebugStepReason reason)
