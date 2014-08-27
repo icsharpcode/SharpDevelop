@@ -558,30 +558,6 @@ namespace Debugger
 		}
 		
 		Dictionary<string, bool> exceptionFilter;
-		
-		static string ConvertWildcardsToRegex(string searchPattern)
-		{
-			if (string.IsNullOrEmpty(searchPattern))
-				return "";
-			
-			StringBuilder builder = new StringBuilder();
-			
-			foreach (char ch in searchPattern) {
-				switch (ch) {
-					case '?':
-						builder.Append(".");
-						break;
-					case '*':
-						builder.Append(".*");
-						break;
-					default:
-						builder.Append(Regex.Escape(ch.ToString()));
-						break;
-				}
-			}
-			
-			return builder.ToString();
-		}
 
 		bool BreakOnException(Thread thread)
 		{
