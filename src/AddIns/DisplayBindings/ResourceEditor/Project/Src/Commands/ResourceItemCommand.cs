@@ -40,6 +40,15 @@ namespace ResourceEditor.Commands
 		}
 		
 		/// <summary>
+		/// Defines whether this command is active when nothing is selected.
+		/// </summary>
+		public virtual bool EmptySelectionAllowed {
+			get {
+				return false;
+			}
+		}
+		
+		/// <summary>
 		/// Returns list of resource item types for which this command may be enabled or <c>null</c> to allow any type.
 		/// </summary>
 		public virtual IEnumerable<ResourceItemEditorType> AllowedTypes {
@@ -54,7 +63,7 @@ namespace ResourceEditor.Commands
 				return false;
 			
 			var selectedResourceItems = GetSelectedItems();
-			if (!selectedResourceItems.Any())
+			if (!EmptySelectionAllowed && !selectedResourceItems.Any())
 				return false;
 			if (!SupportsMultiSelections && (selectedResourceItems.Count() > 1))
 				return false;
@@ -75,7 +84,7 @@ namespace ResourceEditor.Commands
 		public override void Execute(object parameter)
 		{
 			var selectedResourceItems = GetSelectedItems();
-			if (!selectedResourceItems.Any())
+			if (!EmptySelectionAllowed && !selectedResourceItems.Any())
 				return;
 			if (!SupportsMultiSelections && (selectedResourceItems.Count() > 1))
 				return;

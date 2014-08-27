@@ -192,6 +192,11 @@ namespace ResourceEditor.ViewModels
 					view.SetItemView(null);
 				}
 			}
+			
+			// When selection is changed, reset any new item marked with IsNew to pass the filter
+			foreach (var newItem in ResourceItems.Where(ri => ri.IsNew)) {
+				newItem.IsNew = false;
+			}
 		}
 		
 		void OnChangedDirtyState(bool isDirty)
@@ -206,14 +211,13 @@ namespace ResourceEditor.ViewModels
 			OnChangedDirtyState(true);
 		}
 		
+		public void SelectItem(ResourceItem item)
+		{
+			view.SelectItem(item);
+		}
+		
 		public void StartEditing()
 		{
-//			if (editedResourceItem != null) {
-//				editedResourceItem.IsEditing = false;
-//				editedResourceItem = null;
-//				originalNameOfEditedItem = null;
-//			}
-			
 			// Start editing currently selected item
 			var firstSelectedItem = SelectedItems.OfType<ResourceItem>().FirstOrDefault();
 			if (firstSelectedItem != null) {
@@ -226,26 +230,6 @@ namespace ResourceEditor.ViewModels
 		void View_EditingStarted(object sender, EventArgs e)
 		{
 			StartEditing();
-		}
-		
-		void View_EditingFinished(object sender, EventArgs e)
-		{
-//			if (editedResourceItem != null) {
-//				editedResourceItem.IsEditing = false;
-//				editedResourceItem = null;
-//				originalNameOfEditedItem = null;
-//				MakeDirty();
-//			}
-		}
-
-		void View_EditingCancelled(object sender, EventArgs e)
-		{
-//			if (editedResourceItem != null) {
-//				editedResourceItem.IsEditing = false;
-//				editedResourceItem.Name = originalNameOfEditedItem;
-//				editedResourceItem = null;
-//				originalNameOfEditedItem = null;
-//			}
 		}
 		
 		void StartUpdate()

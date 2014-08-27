@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using ResourceEditor.ViewModels;
 
 namespace ResourceEditor.Views
 {
@@ -39,6 +40,8 @@ namespace ResourceEditor.Views
 			get;
 		}
 		
+		void SelectItem(ResourceItem item);
+		
 		event EventHandler EditingStarted;
 		
 		void SetItemView(IResourceItemView view);
@@ -48,7 +51,7 @@ namespace ResourceEditor.Views
 			set;
 		}
 		
-		Predicate<ResourceEditor.ViewModels.ResourceItem> FilterPredicate {
+		Predicate<ResourceItem> FilterPredicate {
 			get;
 			set;
 		}

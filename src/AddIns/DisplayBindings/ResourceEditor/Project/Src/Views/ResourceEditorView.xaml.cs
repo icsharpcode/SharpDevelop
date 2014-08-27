@@ -50,6 +50,13 @@ namespace ResourceEditor.Views
 			}
 		}
 		
+		public void SelectItem(ResourceItem item)
+		{
+			SelectedItems.Clear();
+			SelectedItems.Add(item);
+			resourceItemsListView.ScrollIntoView(item);
+		}
+		
 		public void SetItemView(IResourceItemView view)
 		{
 			resourceItemViewGrid.Children.Clear();

@@ -21,8 +21,6 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 using ResourceEditor.ViewModels;
 
@@ -30,12 +28,14 @@ namespace ResourceEditor.Commands
 {
 	class AddNewFileCommand : ResourceItemCommand
 	{
+		public override bool EmptySelectionAllowed {
+			get {
+				return true;
+			}
+		}
+		
 		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceItem> resourceItems)
 		{
-//			if (editor.ResourceList.WriteProtected) {
-//				return;
-//			}
-			
 			var editor = ResourceEditor;
 			OpenFileDialog fdiag = new OpenFileDialog();
 			fdiag.AddExtension = true;
@@ -67,9 +67,9 @@ namespace ResourceEditor.Commands
 						continue;
 					}
 					var newResourceItem = new ResourceItem(editor, resname, tmp);
+					newResourceItem.IsNew = true;
 					editor.ResourceItems.Add(newResourceItem);
-					editor.SelectedItems.Clear();
-					editor.SelectedItems.Add(newResourceItem);
+					editor.SelectItem(newResourceItem);
 				}
 			}
 		}

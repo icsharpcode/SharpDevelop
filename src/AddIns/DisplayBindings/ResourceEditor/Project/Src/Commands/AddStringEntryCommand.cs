@@ -24,12 +24,14 @@ namespace ResourceEditor.Commands
 {
 	class AddStringCommand : ResourceItemCommand
 	{
+		public override bool EmptySelectionAllowed {
+			get {
+				return true;
+			}
+		}
+		
 		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceItem> resourceItems)
 		{
-//			if(editor.ResourceList.WriteProtected) {
-//				return;
-//			}
-//			
 			var editor = ResourceEditor;
 			int count = 1;
 			string newNameBase = "New string entry ";
@@ -48,8 +50,7 @@ namespace ResourceEditor.Commands
 			else
 				item.SortingCriteria = item.Name;
 			editor.ResourceItems.Add(item);
-			editor.SelectedItems.Clear();
-			editor.SelectedItems.Add(item);
+			editor.SelectItem(item);
 			editor.StartEditing();
 		}
 	}
