@@ -53,8 +53,10 @@ namespace ResourceEditor.Views
 		public void SetItemView(IResourceItemView view)
 		{
 			resourceItemViewGrid.Children.Clear();
-			view.UIControl.Visibility = Visibility.Visible;
-			resourceItemViewGrid.Children.Add(view.UIControl);
+			if (view != null) {
+				view.UIControl.Visibility = Visibility.Visible;
+				resourceItemViewGrid.Children.Add(view.UIControl);
+			}
 		}
 		
 		public Predicate<ResourceItem> FilterPredicate {
