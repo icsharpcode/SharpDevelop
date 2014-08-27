@@ -123,8 +123,6 @@ namespace ResourceEditor.ViewModels
 				if (view != null) {
 					view.SelectionChanged -= View_SelectionChanged;
 					view.EditingStarted -= View_EditingStarted;					
-					view.EditingFinished -= View_EditingFinished;
-					view.EditingCancelled -= View_EditingCancelled;
 					ResourceItems.CollectionChanged -= ResourceItems_CollectionChanged;
 				}
 				
@@ -145,8 +143,6 @@ namespace ResourceEditor.ViewModels
 					};
 					view.SelectionChanged += View_SelectionChanged;
 					view.EditingStarted += View_EditingStarted;
-					view.EditingFinished += View_EditingFinished;
-					view.EditingCancelled += View_EditingCancelled;
 					ResourceItems.CollectionChanged += ResourceItems_CollectionChanged;
 				}
 			}
@@ -192,6 +188,8 @@ namespace ResourceEditor.ViewModels
 					var itemView = itemViews[selectedItem.ResourceType];
 					itemView.ResourceItem = selectedItem;
 					view.SetItemView(itemView);
+				} else {
+					view.SetItemView(null);
 				}
 			}
 		}

@@ -42,15 +42,15 @@ namespace ResourceEditor.Commands
 			fdiag.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 			fdiag.Multiselect = true;
 			fdiag.CheckFileExists = true;
-				
+			
 			if ((bool)fdiag.ShowDialog()) {
 				foreach (string filename in fdiag.FileNames) {
 					string oresname = Path.ChangeExtension(Path.GetFileName(filename), null);
 					if (oresname == "")
 						oresname = "new";
-						
+					
 					string resname = oresname;
-						
+					
 					int i = 0;
 					TestName:
 					if (editor.ContainsResourceName(resname)) {
@@ -61,12 +61,15 @@ namespace ResourceEditor.Commands
 						resname = oresname + "_" + i;
 						goto TestName;
 					}
-						
+					
 					object tmp = LoadResource(filename);
 					if (tmp == null) {
 						continue;
 					}
-					editor.ResourceItems.Add(new ResourceItem(editor, resname, tmp));
+					var newResourceItem = new ResourceItem(editor, resname, tmp);
+					editor.ResourceItems.Add(newResourceItem);
+					editor.SelectedItems.Clear();
+					editor.SelectedItems.Add(newResourceItem);
 				}
 			}
 		}

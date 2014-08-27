@@ -68,6 +68,7 @@ namespace ResourceEditor
 			// Register different resource item viewers
 			resourceEditor.AddItemView(ResourceItemEditorType.String, new TextView());
 			resourceEditor.AddItemView(ResourceItemEditorType.Bitmap, new ImageViewBase());
+			resourceEditor.AddItemView(ResourceItemEditorType.Icon, new ImageViewBase());
 			resourceEditor.DirtyStateChanged += (sender, e) => {
 				if (e.IsDirty)
 					SetDirty(sender, new EventArgs());

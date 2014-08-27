@@ -17,9 +17,11 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ResourceEditor
@@ -45,6 +47,16 @@ namespace ResourceEditor
 				DeleteObject(hBitmap);
 			}
 			return bs;
+		}
+		
+		public static ImageSource ToImageSource(this Icon icon)
+		{
+			ImageSource imageSource = Imaging.CreateBitmapSourceFromHIcon(
+				                          icon.Handle,
+				                          Int32Rect.Empty,
+				                          BitmapSizeOptions.FromEmptyOptions());
+
+			return imageSource;
 		}
 	}
 }

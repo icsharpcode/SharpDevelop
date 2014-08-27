@@ -37,8 +37,6 @@ namespace ResourceEditor.Views
 		
 		public event EventHandler SelectionChanged;
 		public event EventHandler EditingStarted;
-		public event EventHandler EditingFinished;
-		public event EventHandler EditingCancelled;
 		
 		public ResourceEditorView()
 		{

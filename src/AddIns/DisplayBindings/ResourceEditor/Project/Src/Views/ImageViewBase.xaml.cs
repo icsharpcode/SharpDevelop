@@ -77,6 +77,13 @@ namespace ResourceEditor.Views
 								UpdateLinkText = SD.ResourceService.GetString("ResourceEditor.BitmapView.UpdateBitmap");
 							}
 							break;
+						case ResourceItemEditorType.Icon:
+							var gdiIcon = resourceItem.ResourceValue as System.Drawing.Icon;
+							if (gdiIcon != null) {
+								DisplayedImage = gdiIcon.ToImageSource();
+								UpdateLinkText = SD.ResourceService.GetString("ResourceEditor.BitmapView.UpdateBitmap");
+							}
+							break;
 					}
 				}
 			}

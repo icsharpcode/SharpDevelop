@@ -40,7 +40,7 @@ namespace ResourceEditor.ViewModels
 		Binary
 	}
 	
-	public class ResourceItem : DependencyObject
+	public class ResourceItem : DependencyObject, INotifyPropertyChanged
 	{
 		ResourceItemEditorType resourceType;
 		ResourceEditorViewModel resourceEditor;
@@ -50,6 +50,7 @@ namespace ResourceEditor.ViewModels
 		{
 			this.resourceEditor = resourceEditor;
 			this.Name = name;
+			this.SortingCriteria = name;
 			this.ResourceValue = resourceValue;
 			this.resourceType = GetResourceTypeFromValue(resourceValue);
 		}
@@ -58,11 +59,25 @@ namespace ResourceEditor.ViewModels
 		{
 			this.resourceEditor = resourceEditor;
 			this.Name = name;
+			this.SortingCriteria = name;
 			this.ResourceValue = resourceValue;
 			this.resourceType = GetResourceTypeFromValue(resourceValue);
 			this.Comment = comment;
 		}
 
+		#region INotifyPropertyChanged implementation
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		void RaisePropertyChanged(string name)
+		{
+			if (PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(name));
+			}
+		}
+		
+		#endregion
+		
 		public static readonly DependencyProperty NameProperty =
 			DependencyProperty.Register("Name", typeof(string), typeof(ResourceItem),
 				new FrameworkPropertyMetadata());
@@ -120,6 +135,10 @@ namespace ResourceEditor.ViewModels
 		{
 			base.OnPropertyChanged(e);
 	
+			if (e.Property.Name == ResourceValueProperty.Name) {
+				// Update content property as well
+				RaisePropertyChanged("Content");
+			}
 			if (e.Property.Name == IsEditingProperty.Name) {
 				bool previouslyEditing = (bool)e.OldValue;
 				bool isEditing = (bool)e.NewValue;

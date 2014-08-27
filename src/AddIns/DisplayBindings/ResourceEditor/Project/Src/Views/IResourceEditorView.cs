@@ -40,8 +40,6 @@ namespace ResourceEditor.Views
 		}
 		
 		event EventHandler EditingStarted;
-		event EventHandler EditingFinished;
-		event EventHandler EditingCancelled;
 		
 		void SetItemView(IResourceItemView view);
 		
