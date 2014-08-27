@@ -32,26 +32,7 @@ namespace ResourceEditor.Commands
 		
 		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceItem> resourceItems)
 		{
-			var editor = ResourceEditor;
-			int count = 1;
-			string newNameBase = "New string entry ";
-			string newName = newNameBase + count;
-			
-			while (editor.ContainsResourceName(newName)) {
-				count++;
-				newName = newNameBase + count;
-			}
-			
-			var selectedItem = GetSelectedItems().FirstOrDefault();
-			ResourceItem item = new ResourceItem(editor, newName, "");
-			item.IsNew = true;
-			if (selectedItem != null)
-				item.SortingCriteria = selectedItem.Name;
-			else
-				item.SortingCriteria = item.Name;
-			editor.ResourceItems.Add(item);
-			editor.SelectItem(item);
-			editor.StartEditing();
+			ResourceEditor.AddStringEntry();
 		}
 	}
 }

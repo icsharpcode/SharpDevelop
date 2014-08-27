@@ -36,7 +36,8 @@ namespace ResourceEditor.Views
 		readonly CollectionViewSource itemCollectionViewSource;
 		
 		public event EventHandler SelectionChanged;
-		public event EventHandler EditingStarted;
+		public event EventHandler EditingStartRequested;
+		public event EventHandler AddingNewItemRequested;
 		
 		public ResourceEditorView()
 		{
@@ -126,8 +127,13 @@ namespace ResourceEditor.Views
 		void ResourceItemsListView_KeyUp(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.F2) {
-				if (EditingStarted != null) {
-					EditingStarted(this, new EventArgs());
+				if (EditingStartRequested != null) {
+					EditingStartRequested(this, new EventArgs());
+				}
+			}
+			if (e.Key == Key.Insert) {
+				if (AddingNewItemRequested != null) {
+					AddingNewItemRequested(this, new EventArgs());
 				}
 			}
 			

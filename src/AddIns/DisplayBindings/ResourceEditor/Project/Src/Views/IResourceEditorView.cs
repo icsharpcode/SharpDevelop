@@ -42,7 +42,8 @@ namespace ResourceEditor.Views
 		
 		void SelectItem(ResourceItem item);
 		
-		event EventHandler EditingStarted;
+		event EventHandler EditingStartRequested;
+		event EventHandler AddingNewItemRequested;
 		
 		void SetItemView(IResourceItemView view);
 		

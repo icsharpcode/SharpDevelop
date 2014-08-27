@@ -128,19 +128,26 @@
 			ItemContainerStyle="{StaticResource listViewItemStyle}"
 			MouseRightButtonUp="ListView_MouseRightButtonUp"
 			KeyUp="ResourceItemsListView_KeyUp"
-			SelectionChanged="ListView_SelectionChanged">
+			SelectionChanged="ListView_SelectionChanged"
+			VirtualizingStackPanel.IsVirtualizing="True"
+			core:SortableGridViewColumn.SortMode="Automatic"
+			core:GridViewColumnAutoSize.AutoWidth="40%;15%;30%;15%">
 			<ListView.View>
-				<GridView>
-					<GridViewColumn
+				<GridView AllowsColumnReorder="False">
+					<core:SortableGridViewColumn
+						SortBy="SortingCriteria"
 						Header="{core:Localize Global.Name}"
 						CellTemplate="{StaticResource resourceItemNameTemplate}" />
-					<GridViewColumn
+					<core:SortableGridViewColumn
+						SortBy="ResourceType"
 						Header="{core:Localize ResourceEditor.ResourceEdit.TypeColumn}"
 						CellTemplate="{StaticResource resourceItemTypeTemplate}" />
-					<GridViewColumn
+					<core:SortableGridViewColumn
+						SortBy="Content"
 						Header="{core:Localize ResourceEditor.ResourceEdit.ContentColumn}"
 						CellTemplate="{StaticResource resourceItemContentTemplate}" />
-					<GridViewColumn
+					<core:SortableGridViewColumn
+						SortBy="Comment"
 						Header="{core:Localize ResourceEditor.ResourceEdit.CommentColumn}"
 						CellTemplate="{StaticResource resourceItemCommentTemplate}" />
 				</GridView>

@@ -100,6 +100,11 @@ namespace ResourceEditor.ViewModels
 			}
 		}
 		
+		public IEnumerable<ResourceItem> GetSelectedItems()
+		{
+			return SelectedItems.OfType<ResourceItem>() ?? new ResourceItem[0];
+		}
+		
 		/// <summary>
 		/// Checks whether a resource name is existing in currently open file.
 		/// </summary>
@@ -122,7 +127,8 @@ namespace ResourceEditor.ViewModels
 			set {
 				if (view != null) {
 					view.SelectionChanged -= View_SelectionChanged;
-					view.EditingStarted -= View_EditingStarted;					
+					view.EditingStartRequested -= View_EditingStartRequested;
+					view.AddingNewItemRequested -= View_AddingNewItemRequested;
 					ResourceItems.CollectionChanged -= ResourceItems_CollectionChanged;
 				}
 				
@@ -142,7 +148,8 @@ namespace ResourceEditor.ViewModels
 						return true;
 					};
 					view.SelectionChanged += View_SelectionChanged;
-					view.EditingStarted += View_EditingStarted;
+					view.EditingStartRequested += View_EditingStartRequested;
+					view.AddingNewItemRequested += View_AddingNewItemRequested;
 					ResourceItems.CollectionChanged += ResourceItems_CollectionChanged;
 				}
 			}
@@ -227,8 +234,36 @@ namespace ResourceEditor.ViewModels
 			}
 		}
 
-		void View_EditingStarted(object sender, EventArgs e)
+		void View_EditingStartRequested(object sender, EventArgs e)
 		{
+			StartEditing();
+		}
+
+		void View_AddingNewItemRequested(object sender, EventArgs e)
+		{
+			AddStringEntry();
+		}
+		
+		public void AddStringEntry()
+		{
+			int count = 1;
+			string newNameBase = "New string entry ";
+			string newName = newNameBase + count;
+			
+			while (ContainsResourceName(newName)) {
+				count++;
+				newName = newNameBase + count;
+			}
+			
+			var selectedItem = GetSelectedItems().FirstOrDefault();
+			ResourceItem item = new ResourceItem(this, newName, "");
+			item.IsNew = true;
+			if (selectedItem != null)
+				item.SortingCriteria = selectedItem.Name;
+			else
+				item.SortingCriteria = item.Name;
+			ResourceItems.Add(item);
+			SelectItem(item);
 			StartEditing();
 		}
 		
@@ -352,8 +387,6 @@ namespace ResourceEditor.ViewModels
 		
 		public void Cut()
 		{
-			//			if (resourceEditor.ResourceList.WriteProtected || resourceEditor.ResourceList.SelectedItems.Count < 1)
-			//				return;
 			if (SelectedItems.Count == 0)
 				return;
 			
@@ -380,10 +413,6 @@ namespace ResourceEditor.ViewModels
 		
 		public void Paste()
 		{
-			//			if (resourceEditor.ResourceList.WriteProtected) {
-			//				return;
-			//			}
-			
 			IDataObject dob = Clipboard.GetDataObject();
 			if (dob == null)
 				return;
@@ -408,7 +437,7 @@ namespace ResourceEditor.ViewModels
 						item = new ResourceItem(this, newName, resourceValue);
 					}
 					resourceItems.Add(item);
-					// TODO Set selection to new element?
+					SelectItem(item);
 				}
 			}
 		}
@@ -437,15 +466,18 @@ namespace ResourceEditor.ViewModels
 		
 		public void Delete()
 		{
-//			if (resourceList.WriteProtected || resourceList.SelectedItems.Count == 0)
-//				return;
-			
 			if (SelectedItems.Count > 0) {
 				if (!SD.MessageService.AskQuestion("${res:ResourceEditor.DeleteEntry.Confirm}", "${res:ResourceEditor.DeleteEntry.Title}"))
 					return;
 
-				foreach (var item in SelectedItems.OfType<ResourceItem>().ToList()) {
-					resourceItems.Remove(item);
+				if (SelectedItems.Count == resourceItems.Count) {
+					// Little performance improvement for the case "Select All" + "Delete"
+					SelectedItems.Clear();
+					resourceItems.Clear();
+				} else {
+					foreach (var item in SelectedItems.OfType<ResourceItem>().ToList()) {
+						resourceItems.Remove(item);
+					}
 				}
 			}
 		}

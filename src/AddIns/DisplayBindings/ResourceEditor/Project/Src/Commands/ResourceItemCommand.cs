@@ -109,7 +109,7 @@ namespace ResourceEditor.Commands
 		{
 			var editor = ResourceEditor;
 			if (editor != null)
-				return editor.SelectedItems.OfType<ResourceItem>() ?? new ResourceItem[0];
+				return editor.GetSelectedItems();
 			return new ResourceItem[0];
 		}
 	}
