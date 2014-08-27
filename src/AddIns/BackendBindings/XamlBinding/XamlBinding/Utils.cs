@@ -144,7 +144,8 @@ namespace ICSharpCode.XamlBinding
 			return tmp;
 		}
 		
-		public static string LookForTargetTypeValue(XamlContext context, out bool isExplicit, params string[] elementName) {
+		public static string LookForTargetTypeValue(XamlContext context, out bool isExplicit, params string[] elementName)
+		{
 			var ancestors = context.Ancestors;
 			
 			isExplicit = false;
