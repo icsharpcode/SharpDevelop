@@ -367,7 +367,7 @@ namespace Debugger.MetaData
 			
 			backingFieldToken = 0;
 			
-			if (this.ParameterCount != 0) return;
+			if (this.IsVirtual || this.ParameterCount != 0) return;
 			
 			ICorDebugCode corCode;
 			try {
