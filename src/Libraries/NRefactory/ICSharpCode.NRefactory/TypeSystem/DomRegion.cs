@@ -151,10 +151,29 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				(line != BeginLine || column >= BeginColumn) &&
 				(line != EndLine   || column <= EndColumn);
 		}
-		
+
 		public bool IsInside(TextLocation location)
 		{
 			return IsInside(location.Line, location.Column);
+		}
+
+		/// <remarks>
+		/// Returns true, if the given coordinates (line, column) are in the region.
+		/// This method assumes that for an unknown end the end line is == -1
+		/// </remarks>
+		public bool Contains(int line, int column)
+		{
+			if (IsEmpty)
+				return false;
+			return line >= BeginLine &&
+				(line <= EndLine   || EndLine == -1) &&
+				(line != BeginLine || column >= BeginColumn) &&
+				(line != EndLine   || column < EndColumn);
+		}
+
+		public bool Contains(TextLocation location)
+		{
+			return Contains(location.Line, location.Column);
 		}
 
 		public bool IntersectsWith (DomRegion region)
