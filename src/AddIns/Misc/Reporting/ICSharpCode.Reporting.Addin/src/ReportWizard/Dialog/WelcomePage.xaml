@@ -4,8 +4,9 @@
                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                  xmlns:System="clr-namespace:System;assembly=mscorlib"
                  xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
-                 Title="SharpDevelop Reporting"
-                  PageType="Exterior"
+                 xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+                 Title="{core:Localize SharpReport.Wizard.Welcome}"
+                 PageType="Exterior"
                  NextButtonVisibility="Visible"
                  CancelButtonVisibility="Visible">
 	
@@ -18,6 +19,6 @@
 			<RowDefinition Height="Auto"></RowDefinition>
 		</Grid.RowDefinitions>
 		
-		<TextBlock Text="Welcome to SharpDevelop ReportWizard" FontSize="20"></TextBlock>
+		<TextBlock Text="{core:Localize Templates.SharpReport.NewReport}" FontSize="20"></TextBlock>
 	</Grid>
 </xctk:WizardPage>

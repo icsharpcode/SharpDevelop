@@ -4,8 +4,9 @@
                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                  xmlns:System="clr-namespace:System;assembly=mscorlib"
                  xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
-                 Title="Base Settings"
-                 Description="Basic Settings and Layout"
+                 xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+                 Title="{core:Localize SharpReport.Wizard.BaseSettings}"
+                 Description="{core:Localize SharpReport.Wizard.BaseSettings.Description}"
             	 PageType="Interior"
                  CanFinish="true"
                  CanSelectNextPage="false">
@@ -46,7 +47,7 @@
 			<ColumnDefinition></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 		
-		<Label Content="DataModel :" Grid.Column="1"></Label>
+		<Label Content="{core:Localize SharpReport.Wizard.BaseSettings.ReportType}" Grid.Column="1"></Label>
 		<ComboBox Name="_DataModel" Margin="10,5,0,5"
 		          Grid.Column="2"
 		          SelectionChanged="_DataModel_SelectionChanged"
@@ -60,14 +61,14 @@
 		</ComboBox>
 		
 		
-		<Label Content="Report Name :" Margin="0,5,0,5" Grid.Column="1" Grid.Row="4"></Label>
+		<Label Content="{core:Localize SharpReport.Wizard.BaseSettings.ReportName}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="4"></Label>
 		<TextBox Name="_ReportName" Margin="10,5,0,5"  Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3"></TextBox>
 		
-		<Label Content="Filename :" Margin="0,5,0,5" Grid.Column="1" Grid.Row="5"></Label>
+		<Label Content="{core:Localize SharpReport.Wizard.BaseSettings.FileName}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="5"></Label>
 		<TextBox Name="_Filename" Margin="10,5,0,5" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3"></TextBox>
 		
 		
-		<Label Content="Page Layout :" Grid.Column="1" Grid.Row="6"  Margin="0,5,0,5"></Label>
+		<Label Content="{core:Localize SharpReport.Wizard.PageLayout}" Grid.Column="1" Grid.Row="6"  Margin="0,5,0,5"></Label>
 		
 		<RadioButton Name="_Legal" GroupName="PageLayout" Content="Legal" Grid.Column="1" Grid.Row="7"  Margin="0,5,0,5" ></RadioButton>
 		<RadioButton Name="_Landscape" GroupName="PageLayout" Content="Landscape"  Grid.Row="7" Grid.Column="2" Margin="0,5,0,5"></RadioButton>

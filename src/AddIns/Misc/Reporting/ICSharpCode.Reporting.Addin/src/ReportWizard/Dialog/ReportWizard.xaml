@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:ICSharpCode.Reporting.Addin.ReportWizard.Dialog"
-        Title="{Binding Title}"
         Height="600" Width="800">
 	
 	<xctk:Wizard x:Name="_wizard" FinishButtonClosesWindow="True"
@@ -12,6 +11,9 @@
 	             Finish="_wizard_Finish"
 	             CanHelp="False"
 	             Next="_wizard_Next">
+		
+
+<!--xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"-->
 		
 		<local:WelcomePage x:Name="WelcomePage"></local:WelcomePage>
 		

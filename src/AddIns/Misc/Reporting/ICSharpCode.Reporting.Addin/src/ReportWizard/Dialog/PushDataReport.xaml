@@ -4,14 +4,15 @@
                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                  xmlns:System="clr-namespace:System;assembly=mscorlib"
                  xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
-                 Title="SharpDevelop Reporting"
+                 xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+                 Title="{core:Localize SharpReport.Wizard.BaseSettings.ReportModel.Push}"
                  PageType="Interior"
                  CanFinish="true"
                  CancelButtonVisibility="Visible"
                  CanSelectPreviousPage="true"
             	  CanSelectNextPage="false">
 	
-	<Grid >
+	<Grid ShowGridLines="true" >
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="150"></ColumnDefinition>
 			<ColumnDefinition></ColumnDefinition>
@@ -22,7 +23,9 @@
 			<RowDefinition Height="Auto"></RowDefinition>
 			<RowDefinition Height="200"></RowDefinition>
 		</Grid.RowDefinitions>
-		<TextBlock Text="Create Columns for PushData Reporting" FontSize="15" Grid.Column ="1"></TextBlock>
+		
+		<TextBlock Text="{core:Localize SharpReport.Wizard.PushModel.SelectProject}" FontSize="15" ></TextBlock>
+		<TextBlock Text="{core:Localize SharpReport.Wizard.PushModel.AvailableFields}" FontSize="15" Grid.Column ="1" Margin="30,0,0,0"></TextBlock>
 		
 		<ComboBox Name="_cboTypes" Visibility="Hidden" Grid.Row="1" SelectionChanged="_cboTypes_SelectionChanged" ></ComboBox>
 		
@@ -38,3 +41,29 @@
 		</DataGrid>
 	</Grid>
 </xctk:WizardPage>
+
+<!--http://stackoverflow.com/questions/17114603/checkbox-with-datagrid-wpf
+http://www.scottlogic.com/blog/2008/11/26/multiselect-datagrid-with-checkboxes.html
+-->
+
+<!--<DataGrid ItemsSource="{Binding Path=TestItems}" AutoGenerateColumns="False" Name="MyDataGrid"
+              CanUserAddRows="False">
+        <DataGrid.Columns>
+            <DataGridCheckBoxColumn Binding="{Binding IsSelected}" Width="50" >
+                <DataGridCheckBoxColumn.HeaderTemplate>
+                    <DataTemplate x:Name="dtAllChkBx">
+                        <CheckBox Name="cbxAll" Content="All" IsChecked="{Binding Path=DataContext.AllSelected,RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                    </DataTemplate>
+                </DataGridCheckBoxColumn.HeaderTemplate>
+            </DataGridCheckBoxColumn>
+            <DataGridTemplateColumn Header="Name" Width="SizeToCells" IsReadOnly="True">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+        </DataGrid.Columns>
+    </DataGrid>
+</StackPanel>-->
+

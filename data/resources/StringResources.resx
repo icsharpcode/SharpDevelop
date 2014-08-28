@@ -6713,7 +6713,8 @@ The resources files have been renamed/moved accordingly.</value>
     <value>Section Visible</value>
   </data>
   <data name="SharpReport.ContextMenu.Settings" xml:space="preserve">
-    <value>Base Settings</value>
+    <value>Base Settings
+</value>
   </data>
   <data name="SharpReport.Design" xml:space="preserve">
     <value>Design</value>
@@ -6735,10 +6736,6 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="SharpReport.DesignView.Toolbar.Printer" xml:space="preserve">
     <value>Send report to printer</value>
-  </data>
-  <data name="Sharpreport.Error.NoPrinter" xml:space="preserve">
-    <value>To run SharpDevelop Reports you need at least one(1) installed Printer</value>
-    <comment>Errormessage when no printer is installed</comment>
   </data>
   <data name="SharpReport.Error.NoReport" xml:space="preserve">
     <value>This is not a valid report created with 'SharpReport'.</value>
@@ -6853,19 +6850,13 @@ The resources files have been renamed/moved accordingly.</value>
     <value>Label</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings" xml:space="preserve">
-    <value>Base settings</value>
+    <value>Basic Report Settings</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings,ReportType" xml:space="preserve">
     <value>Report Type</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.FileName" xml:space="preserve">
-    <value>File Name</value>
-  </data>
-  <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
-    <value>Graphics Unit</value>
-  </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Basic report settings</value>
+    <value>File Name :</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Report Model</value>
@@ -6880,7 +6871,7 @@ The resources files have been renamed/moved accordingly.</value>
     <value>Push Data</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportName" xml:space="preserve">
-    <value>Report Name</value>
+    <value>Report Name :</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportType" xml:space="preserve">
     <value>Report Type</value>
@@ -6908,9 +6899,6 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="SharpReport.Wizard.PullModel.CommandText.ToolTip" xml:space="preserve">
     <value>[Delete this text and enter a valid Sql String]</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel" xml:space="preserve">
-    <value>Push Data Model</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Available Fields</value>
@@ -7510,7 +7498,7 @@ The resources files have been renamed/moved accordingly.</value>
     <value>WPF Navigation Application</value>
   </data>
   <data name="Templates.SharpReport.NewReport" xml:space="preserve">
-    <value>Create a new report using the Report Wizard</value>
+    <value>Create a new Report using the Report Wizard</value>
   </data>
   <data name="XML.FormsDesigner.SideBar.CustomizeSidebar" xml:space="preserve">
     <value>Configure Sidebar...</value>
@@ -8215,5 +8203,17 @@ a line break</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.ChooseExceptions" xml:space="preserve">
     <value>Choose exceptions</value>
+  </data>
+  <data name="SharpReport.Wizard.BaseSettings.Description" xml:space="preserve">
+    <value>Base Settings and Page Layout</value>
+  </data>
+  <data name="SharpReport.Wizard.PageLayout" xml:space="preserve">
+    <value>Page Layout :</value>
+  </data>
+  <data name="SharpReport.Wizard.Welcome" xml:space="preserve">
+    <value>Welcome to the SharpDevelop ReportWizard</value>
+  </data>
+  <data name="SharpReport.Wizard.PushModel.SelectProject" xml:space="preserve">
+    <value>Select a Project</value>
   </data>
 </root>

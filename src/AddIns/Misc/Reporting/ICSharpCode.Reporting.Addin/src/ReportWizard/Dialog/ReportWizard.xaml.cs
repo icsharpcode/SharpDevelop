@@ -60,7 +60,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 		void _wizard_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
 		{
 			var current = this._wizard.CurrentPage;
-			if (current.Name.Equals("BaseSettings")) {
+			if (current.Name.Equals("BaseSettingsPage")) {
 				var hasContext = current as IHasContext;
 				if (hasContext != null) {
 					var pushPullModel = ((PageOneContext)hasContext.Context).DataModel;

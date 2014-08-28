@@ -94,4 +94,40 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 
 		#endregion
 	}
+	
+	/*
+	private void PopulateTestItems()
+        {
+            TestItems = new ObservableCollection<TestItem>();
+            for (int i = 0; i < 5; i++)
+            {
+                TestItem ti = new TestItem();
+                ti.Name = "TestItem" + i;
+                ti.IsSelected = true;
+                TestItems.Add(ti);
+            }
+        }
+
+        private bool _AllSelected;
+        public bool AllSelected
+        {
+            get { return _AllSelected; }
+            set
+            {
+                _AllSelected = value;
+                TestItems.ToList().ForEach(x => x.IsSelected = value);
+                NotifyPropertyChanged(m => m.AllSelected);
+            }
+        }
+
+    private ObservableCollection<TestItem> _TestItems;
+    public ObservableCollection<TestItem> TestItems
+    {
+        get { return _TestItems; }
+        set
+        {
+            _TestItems = value;
+            NotifyPropertyChanged(m => m.TestItems);
+        }
+    }*/
 }
