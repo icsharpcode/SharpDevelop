@@ -29,10 +29,6 @@
 		</GroupBox>
 		<GroupBox Margin="5" Header="{sd:Localize Global.Advanced}">
 			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
-				<!--
-				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue}"
-				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.EnableEditAndContinue}" />
-				-->
 				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.SuppressJITOptimization}"
 				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.SuppressJITOptimization}" />
 				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.SuppressNGENOptimization}"

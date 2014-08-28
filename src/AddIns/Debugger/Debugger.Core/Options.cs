@@ -25,7 +25,6 @@ namespace Debugger
 	public class Options
 	{
 		public virtual bool EnableJustMyCode { get; set; }
-		public virtual bool EnableEditAndContinue { get; set; }
 		public virtual bool SuppressJITOptimization { get; set; }
 		public virtual bool SuppressNGENOptimization { get; set; }
 		public virtual bool StepOverDebuggerAttributes { get; set; }

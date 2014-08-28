@@ -45,11 +45,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			set { PS.Set<bool>("Debugger.EnableJustMyCode", value); }
 		}
 		
-		public override bool EnableEditAndContinue {
-			get { return PS.Get<bool>("Debugger.EnableEditAndContinue", true); }
-			set { PS.Set<bool>("Debugger.EnableEditAndContinue", value); }
-		}
-		
 		public override bool SuppressJITOptimization {
 			get { return PS.Get<bool>("Debugger.SuppressJITOptimization", true); }
 			set { PS.Set<bool>("Debugger.SuppressJITOptimization", value); }
