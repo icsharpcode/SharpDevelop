@@ -377,33 +377,6 @@
 				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>
 				<ComponentRef Id="PythonBindingSdTestPy"/>
 				<ComponentRef Id="PythonBindingSdTestRunnerPy"/>
-				
-				<ComponentRef Id="IrExe"/>
-				<ComponentRef Id="IronRubyDll"/>
-				<ComponentRef Id="IronRubyLibrariesDll"/>
-				<ComponentRef Id="IronRubyLicenseApacheHtml"/>
-				<ComponentRef Id="RubyBindingAddin"/>
-				<ComponentRef Id="RubyBindingDll"/>
-				<ComponentRef Id="RubyChironExe"/>
-				<ComponentRef Id="RubyChironExeConfig"/>
-				<ComponentRef Id="RubyMicrosoftDynamicDll"/>
-				<ComponentRef Id="RubyMicrosoftScriptingDll"/>
-				<ComponentRef Id="RubyMicrosoftScriptingMetadataDll"/>
-				<ComponentRef Id="RubyEmptyClassFileTemplate"/>
-				<ComponentRef Id="RubyConsoleProjectTemplate"/>
-				<ComponentRef Id="RubyEmptyFormFileTemplate"/>
-				<ComponentRef Id="RubyEmptyFileTemplate"/>
-				<ComponentRef Id="RubyEmptyUserControlFileTemplate"/>
-				<ComponentRef Id="RubyFormsProjectTemplate"/>
-				<ComponentRef Id="RubyLibraryProjectTemplate"/>
-				<ComponentRef Id="RubySilverlightApplicationProjectTemplate"/>
-				<ComponentRef Id="RubyWPFApplicationProjectTemplate"/>
-				<ComponentRef Id="RubyWPFWindowFileTemplate"/>
-				<ComponentRef Id="RubyBindingSdSelectedTestsFileRb"/>
-				<ComponentRef Id="RubyBindingSdTestRb"/>
-				<ComponentRef Id="RubyBindingSdTestResultRb"/>
-				<ComponentRef Id="RubyBindingSdTestResultWriterRb"/>
-				<ComponentRef Id="RubyBindingSdTestRunnerRb"/>
 				-->
 				
 				<ComponentRef Id="FSharpBindingDll"/>
