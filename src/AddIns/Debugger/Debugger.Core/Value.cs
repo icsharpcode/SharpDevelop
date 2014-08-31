@@ -319,11 +319,17 @@ namespace Debugger
 			if (this.Type.IsKnownType(KnownTypeCode.String)) {
 				this.SetValue(evalThread, Eval.NewString(evalThread, value.ToString()));
 			} else {
-				if (!this.Type.IsPrimitiveType())
+				if (!Type.IsPrimitiveType() && Type.Kind != TypeKind.Enum)
 					throw new DebuggerException("Value is not a primitive type");
 				if (value == null)
 					throw new DebuggerException("Can not set primitive value to null");
-				CorGenericValue.SetValue(this.Type.GetDefinition().KnownTypeCode, value);
+				KnownTypeCode knownTypeCode;
+				var typeDefinition = this.Type.GetDefinition();
+				if (this.Type.Kind == TypeKind.Enum)
+					knownTypeCode = typeDefinition.EnumUnderlyingType.GetDefinition().KnownTypeCode;
+				else
+					knownTypeCode = typeDefinition.KnownTypeCode;
+				CorGenericValue.SetValue(knownTypeCode, value);
 			}
 		}
 		
