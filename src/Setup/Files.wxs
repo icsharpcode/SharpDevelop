@@ -426,11 +426,11 @@
 									</Component>
 								</Directory>
 								<Component Guid="D8322576-2925-4F43-ACB0-05369DC5FC67" Id="StringResourceFiles" DiskId="1">
-									<File Source="..\..\data\resources\StringResources.tr.resources" Id="StringResources.tr.resources" Name="StringResources.tr.resources" />
 									<File Source="..\..\data\resources\StringResources.cz.resources" Id="StringResources.cz.resources" Name="StringResources.cz.resources" />
 									<File Source="..\..\data\resources\StringResources.de.resources" Id="StringResources.de.resources" Name="StringResources.de.resources" />
 									<File Source="..\..\data\resources\StringResources.es.resources" Id="StringResources.es.resources" Name="StringResources.es.resources" />
 									<File Source="..\..\data\resources\StringResources.es-mx.resources" Id="StringResources.es_mx.resources" Name="StringResources.es-mx.resources" />
+									<File Source="..\..\data\resources\StringResources.fi.resources" Id="StringResources.fi.resources" Name="StringResources.fi.resources" />
 									<File Source="..\..\data\resources\StringResources.fr.resources" Id="StringResources.fr.resources" Name="StringResources.fr.resources" />
 									<File Source="..\..\data\resources\StringResources.hu.resources" Id="StringResources.hu.resources" Name="StringResources.hu.resources" />
 									<File Source="..\..\data\resources\StringResources.it.resources" Id="StringResources.it.resources" Name="StringResources.it.resources" />
