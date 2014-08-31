@@ -326,7 +326,7 @@ namespace ICSharpCode.Core.Presentation
 		public static WinForms.Keys ToKeys(this Key key)
 		{
 			WinForms.Keys result;
-			if (Enum.TryParse(key.ToString(), out result))
+			if (Enum.TryParse(key.ToString(), true, out result))
 				return result;
 			return WinForms.Keys.None;
 		}
