@@ -434,16 +434,17 @@
 									<File Source="..\..\data\resources\StringResources.fr.resources" Id="StringResources.fr.resources" Name="StringResources.fr.resources" />
 									<File Source="..\..\data\resources\StringResources.hu.resources" Id="StringResources.hu.resources" Name="StringResources.hu.resources" />
 									<File Source="..\..\data\resources\StringResources.it.resources" Id="StringResources.it.resources" Name="StringResources.it.resources" />
+									<File Id="StringResources.jp.resources" Name="StringResources.jp.resources" Source="..\..\data\resources\StringResources.jp.resources" />
 									<File Source="..\..\data\resources\StringResources.kr.resources" Id="StringResources.kr.resources" Name="StringResources.kr.resources" />
 									<File Source="..\..\data\resources\StringResources.nl.resources" Id="StringResources.nl.resources" Name="StringResources.nl.resources" />
 									<File Source="..\..\data\resources\StringResources.no.resources" Id="StringResources.no.resources" Name="StringResources.no.resources" />
 									<File Source="..\..\data\resources\StringResources.pl.resources" Id="StringResources.pl.resources" Name="StringResources.pl.resources" />
-									<File Source="..\..\data\resources\StringResources.pt-br.resources" Id="StringResources.pt_br.resources" Name="StringResources.pt-br.resources" />
-									<File Source="..\..\data\resources\StringResources.ro.resources" Id="StringResources.ro.resources" Name="StringResources.ro.resources" />
-									<File Source="..\..\data\resources\StringResources.se.resources" Id="StringResources.se.resources" Name="StringResources.se.resources" />
-									<File Id="StringResources.zh.resources" Name="StringResources.zh.resources" Source="..\..\data\resources\StringResources.zh.resources" />
 									<File Id="StringResources.pt.resources" Name="StringResources.pt.resources" Source="..\..\data\resources\StringResources.pt.resources" />
+									<File Source="..\..\data\resources\StringResources.pt-br.resources" Id="StringResources.pt_br.resources" Name="StringResources.pt-br.resources" />
+									<File Source="..\..\data\resources\StringResources.se.resources" Id="StringResources.se.resources" Name="StringResources.se.resources" />
+									<File Source="..\..\data\resources\StringResources.tr.resources" Id="StringResources.tr.resources" Name="StringResources.tr.resources" />
 									<File Id="StringResources.ru.resources" Name="StringResources.ru.resources" Source="..\..\data\resources\StringResources.ru.resources" />
+									<File Id="StringResources.zh.resources" Name="StringResources.zh.resources" Source="..\..\data\resources\StringResources.zh.resources" />
 								</Component>
 							</Directory>
 							<Directory Id="SchemasFolder" Name="schemas">
