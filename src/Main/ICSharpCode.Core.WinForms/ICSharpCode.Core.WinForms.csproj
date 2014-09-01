@@ -63,19 +63,29 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Menu\IStatusUpdate.cs" />
-    <Compile Include="Menu\Menu.cs" />
+    <Compile Include="Menu\Menu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Menu\MenuCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Menu\MenuCommand.cs" />
-    <Compile Include="Menu\MenuSeparator.cs" />
+    <Compile Include="Menu\MenuCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Menu\MenuSeparator.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Menu\MenuService.cs" />
     <Compile Include="MessageService\CustomDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MessageService\IDialogMessageService.cs" />
-    <Compile Include="MessageService\InputBox.cs" />
-    <Compile Include="MessageService\SaveErrorChooseDialog.cs" />
+    <Compile Include="MessageService\InputBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageService\SaveErrorChooseDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MessageService\SaveErrorInformDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -84,11 +94,15 @@
     <Compile Include="ToolBar\ToolBarCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ToolBar\ToolBarCommand.cs" />
+    <Compile Include="ToolBar\ToolBarCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ToolBar\ToolBarDropDownButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ToolBar\ToolBarLabel.cs" />
+    <Compile Include="ToolBar\ToolBarLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ToolBar\ToolBarSeparator.cs">
       <SubType>Component</SubType>
     </Compile>

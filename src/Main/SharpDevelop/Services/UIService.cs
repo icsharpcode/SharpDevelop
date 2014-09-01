@@ -16,6 +16,8 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+//#define EXPERIMENTAL_NEW_FILE
+			
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +51,17 @@ namespace ICSharpCode.SharpDevelop
 			#if DEBUG
 			SD.Templates.UpdateTemplates();
 			#endif
+			#if EXPERIMENTAL_NEW_FILE
+            var nfdWpf = new NewFileWindow(project, directory, templates ?? SD.Templates.TemplateCategories);
+		    if (nfdWpf.ShowDialog() ?? false)
+		    {
+		        return nfdWpf.ViewModel.Result;
+		    }
+		    else
+		    {
+		        return null;
+		    }
+		    #endif
 			using (NewFileDialog nfd = new NewFileDialog(project, directory, templates ?? SD.Templates.TemplateCategories)) {
 				if (nfd.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK)
 					return nfd.result;
