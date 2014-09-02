@@ -201,6 +201,9 @@ namespace ICSharpCode.SharpDevelop.Services
 					} else {
 						throw;
 					}
+				} finally {
+					// starting a process by "stepping into main" should only break once and not always.
+					BreakAtBeginning = false;
 				}
 			}
 		}
