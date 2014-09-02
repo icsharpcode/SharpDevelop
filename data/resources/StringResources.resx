@@ -6331,7 +6331,7 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="ResourceEditor.BitmapView.UpdateBitmap" xml:space="preserve">
     <value>Update bitmap ...</value>
-    <comment>Text for the link label that make it possible to update the stored bitmap</comment>
+    <comment>Text for the button that makes it possible to update the stored bitmap</comment>
   </data>
   <data name="ResourceEditor.DeleteEntry.Confirm" xml:space="preserve">
     <value>Do you really want to delete the selected resource(s)?</value>
@@ -8236,5 +8236,18 @@ a line break</value>
   </data>
   <data name="MainWindow.Windows.TaskList.CurrentClass" xml:space="preserve">
     <value>Class/Module</value>
+  </data>
+  <data name="ResourceEditor.BitmapView.UpdateIcon" xml:space="preserve">
+    <value>Update icon ...</value>
+    <comment>Text for the button that makes it possible to update the stored icon</comment>
+  </data>
+  <data name="ResourceEditor.Messages.CantLoadResourceFromFile" xml:space="preserve">
+    <value>Can't load resource from file: {0}</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.AddBooleanEntry" xml:space="preserve">
+    <value>Add &amp;boolean entry</value>
+  </data>
+  <data name="ResourceEditor.Filter" xml:space="preserve">
+    <value>Filter:</value>
   </data>
 </root>

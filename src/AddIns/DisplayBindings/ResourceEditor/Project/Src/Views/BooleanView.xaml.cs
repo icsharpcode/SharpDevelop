@@ -17,25 +17,49 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
+using ResourceEditor.ViewModels;
 
 namespace ResourceEditor.Views
 {
 	/// <summary>
 	/// Interaction logic for BooleanView.xaml
 	/// </summary>
-	public partial class BooleanView : UserControl
+	public partial class BooleanView : UserControl, IResourceItemView
 	{
+		ResourceItem resourceItem;
+		
 		public BooleanView()
 		{
 			InitializeComponent();
+		}
+
+		#region IResourceItemView implementation
+
+		public ResourceItem ResourceItem {
+			get {
+				return resourceItem;
+			}
+			set {
+				resourceItem = value;
+				trueValueRadioButton.IsChecked = (resourceItem.ResourceValue as bool?) ?? false;
+				falseValueRadioButton.IsChecked = !trueValueRadioButton.IsChecked;
+			}
+		}
+
+		public FrameworkElement UIControl {
+			get {
+				return this;
+			}
+		}
+
+		#endregion
+		
+		void RadioButtonValueChanged(object sender, RoutedEventArgs e)
+		{
+			// Update value of resource item
+			resourceItem.ResourceValue = trueValueRadioButton.IsChecked;
 		}
 	}
 }

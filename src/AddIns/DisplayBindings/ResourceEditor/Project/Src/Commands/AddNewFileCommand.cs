@@ -21,6 +21,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using Microsoft.Win32;
 using ResourceEditor.ViewModels;
 
@@ -80,13 +81,15 @@ namespace ResourceEditor.Commands
 				case ".CUR":
 					try {
 						return new System.Windows.Forms.Cursor(name);
-					} catch {
+					} catch (Exception ex) {
+						SD.MessageService.ShowWarningFormatted("${res:ResourceEditor.Messages.CantLoadResourceFromFile}", ex.Message);
 						return null;
 					}
 				case ".ICO":
 					try {
 						return new System.Drawing.Icon(name);
-					} catch {
+					} catch (Exception ex) {
+						SD.MessageService.ShowWarningFormatted("${res:ResourceEditor.Messages.CantLoadResourceFromFile}", ex.Message);
 						return null;
 					}
 				default:
@@ -118,9 +121,8 @@ namespace ResourceEditor.Commands
 						d = r.ReadBytes((int)s.Length);
 						s.Close();
 						return d;
-					} catch (Exception) {
-						string message = ResourceService.GetString("ResourceEditor.Messages.CantLoadResource");
-						MessageService.ShowWarning(message + " " + name + ".");
+					} catch (Exception ex) {
+						SD.MessageService.ShowWarningFormatted("${res:ResourceEditor.Messages.CantLoadResourceFromFile}", ex.Message);
 					}
 					break;
 			}

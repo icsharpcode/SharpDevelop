@@ -134,7 +134,7 @@ namespace ResourceEditor.ViewModels
 		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
-	
+			
 			if (e.Property.Name == ResourceValueProperty.Name) {
 				// Update content property as well
 				RaisePropertyChanged("Content");
@@ -148,13 +148,18 @@ namespace ResourceEditor.ViewModels
 				} else if (previouslyEditing && !isEditing) {
 					// Make dirty, if name has changed after finishing edit
 					if (nameBeforeEditing != Name) {
-						// Check if new name is valid
-						if (!String.IsNullOrEmpty(Name) && !resourceEditor.ContainsResourceName(Name)) {
+						// New name
+						if (String.IsNullOrEmpty(Name)) {
+							// Empty name is not valid -> revert silently
+							Name = nameBeforeEditing;
+						} else if (resourceEditor.ContainsResourceName(Name)) {
+							// Resource names must be unique -> revert and show message
+							SD.MessageService.ShowWarning("${res:ResourceEditor.ResourceList.KeyAlreadyDefinedWarning}");
+							Name = nameBeforeEditing;
+						} else {
+							// New name seems to be valid
 							SortingCriteria = Name;
 							resourceEditor.MakeDirty();
-						} else {
-							// New name was not valid, revert it to the value before editing
-							Name = nameBeforeEditing;
 						}
 					}
 					IsNew = false;
@@ -263,13 +268,21 @@ namespace ResourceEditor.ViewModels
 					case ResourceItemEditorType.Bitmap:
 						try {
 							newValue = new Bitmap(fileDialog.FileName);
-						} catch {
-							SD.MessageService.ShowWarning("Can't load bitmap file.");
+						} catch (Exception ex) {
+							SD.MessageService.ShowWarningFormatted("${res:ResourceEditor.Messages.CantLoadResourceFromFile}", ex.Message);
+							return false;
+						}
+						break;
+					case ResourceItemEditorType.Icon:
+						try {
+							newValue = new Icon(fileDialog.FileName);
+						} catch (Exception ex) {
+							SD.MessageService.ShowWarningFormatted("${res:ResourceEditor.Messages.CantLoadResourceFromFile}", ex.Message);
 							return false;
 						}
 						break;
 				}
-					
+				
 				if (newValue != null) {
 					ResourceValue = newValue;
 					return true;

@@ -42,7 +42,7 @@ namespace ResourceEditor.Views
 		public ResourceEditorView()
 		{
 			InitializeComponent();
-			itemCollectionViewSource = (CollectionViewSource) this.Resources["resourceItemListViewSource"];
+			itemCollectionViewSource = (CollectionViewSource)this.Resources["resourceItemListViewSource"];
 		}
 		
 		public IList SelectedItems {
@@ -135,6 +135,9 @@ namespace ResourceEditor.Views
 				if (AddingNewItemRequested != null) {
 					AddingNewItemRequested(this, new EventArgs());
 				}
+			}
+			if ((e.Key == Key.F) && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
+				searchTermTextBox.Focus();
 			}
 			
 			e.Handled = false;

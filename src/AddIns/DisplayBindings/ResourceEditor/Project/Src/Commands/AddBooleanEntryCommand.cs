@@ -22,7 +22,7 @@ using ResourceEditor.ViewModels;
 
 namespace ResourceEditor.Commands
 {
-	class AddStringEntryCommand : ResourceItemCommand
+	class AddBooleanEntryCommand : ResourceItemCommand
 	{
 		public override bool EmptySelectionAllowed {
 			get {
@@ -32,7 +32,7 @@ namespace ResourceEditor.Commands
 		
 		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceItem> resourceItems)
 		{
-			ResourceEditor.AddStringEntry();
+			ResourceEditor.AddBooleanEntry();
 		}
 	}
 }

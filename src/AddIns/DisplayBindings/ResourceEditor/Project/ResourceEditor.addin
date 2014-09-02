@@ -30,8 +30,11 @@
 	<Path name="/SharpDevelop/ResourceEditor/ResourceList/ContextMenu">
 		<MenuItem id="AddStringEntry"
 		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddStringEntry}"
-		          class="ResourceEditor.Commands.AddStringCommand"
+		          class="ResourceEditor.Commands.AddStringEntryCommand"
 		          shortcut = "Insert" />
+		<MenuItem id="AddBooleanEntry"
+		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddBooleanEntry}"
+		          class="ResourceEditor.Commands.AddBooleanEntryCommand" />
 		
 		<MenuItem id="AddFile"
 		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddFiles}"

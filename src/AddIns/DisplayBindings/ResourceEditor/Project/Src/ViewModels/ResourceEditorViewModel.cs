@@ -267,6 +267,29 @@ namespace ResourceEditor.ViewModels
 			StartEditing();
 		}
 		
+		public void AddBooleanEntry()
+		{
+			int count = 1;
+			string newNameBase = "New boolean entry ";
+			string newName = newNameBase + count;
+			
+			while (ContainsResourceName(newName)) {
+				count++;
+				newName = newNameBase + count;
+			}
+			
+			var selectedItem = GetSelectedItems().FirstOrDefault();
+			ResourceItem item = new ResourceItem(this, newName, false);
+			item.IsNew = true;
+			if (selectedItem != null)
+				item.SortingCriteria = selectedItem.Name;
+			else
+				item.SortingCriteria = item.Name;
+			ResourceItems.Add(item);
+			SelectItem(item);
+			StartEditing();
+		}
+		
 		void StartUpdate()
 		{
 			// When loading many items at once, temporarily unbind view from model

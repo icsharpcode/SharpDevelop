@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\BitmapExtensions.cs" />
+    <Compile Include="Src\Commands\AddBooleanEntryCommand.cs" />
     <Compile Include="Src\Commands\AddNewFileCommand.cs" />
     <Compile Include="Src\Commands\AddStringEntryCommand.cs" />
     <Compile Include="Src\Commands\CopyResourceNameCommand.cs" />

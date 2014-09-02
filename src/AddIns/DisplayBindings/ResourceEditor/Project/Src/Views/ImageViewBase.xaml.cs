@@ -81,7 +81,7 @@ namespace ResourceEditor.Views
 							var gdiIcon = resourceItem.ResourceValue as System.Drawing.Icon;
 							if (gdiIcon != null) {
 								DisplayedImage = gdiIcon.ToImageSource();
-								UpdateLinkText = SD.ResourceService.GetString("ResourceEditor.BitmapView.UpdateBitmap");
+								UpdateLinkText = SD.ResourceService.GetString("ResourceEditor.BitmapView.UpdateIcon");
 							}
 							break;
 					}

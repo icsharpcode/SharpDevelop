@@ -106,7 +106,7 @@
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 			
-			<TextBlock Grid.Column="0" Text="Filter:" Margin="3,2,5,2" VerticalAlignment="Center" />
+			<TextBlock Grid.Column="0" Text="{core:Localize ResourceEditor.Filter}" Margin="3,2,5,2" VerticalAlignment="Center" />
 			<TextBox
 				Grid.Column="1"
 				Name="searchTermTextBox"
