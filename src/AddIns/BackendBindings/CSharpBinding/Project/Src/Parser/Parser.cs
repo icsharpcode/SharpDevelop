@@ -101,7 +101,7 @@ namespace CSharpBinding.Parser
 					int endOffset;
 					int searchOffset = 0;
 					// HACK: workaround for parser bug: uses \n instead of \r\n in comment.Content
-					string commentContent = document.GetText(commentStartOffset, commentEndOffset - commentStartOffset + 1);
+					string commentContent = document.GetText(commentStartOffset, Math.Min(commentEndOffset - commentStartOffset + 1, commentEndOffset - commentStartOffset));
 					do {
 						int start = commentStartOffset + searchOffset;
 						int absoluteOffset = document.IndexOf(match, start, document.TextLength - start, StringComparison.Ordinal);
