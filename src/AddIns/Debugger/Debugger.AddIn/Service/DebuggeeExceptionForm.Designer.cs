@@ -117,9 +117,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			this.chkBreakOnHandled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.chkBreakOnHandled.Location = new System.Drawing.Point(4, 350);
+			this.chkBreakOnHandled.AutoSize = true;
+			this.chkBreakOnHandled.Location = new System.Drawing.Point(4, 357);
 			this.chkBreakOnHandled.Name = "chkBreakOnHandled";
-			this.chkBreakOnHandled.Size = new System.Drawing.Size(635, 24);
+			this.chkBreakOnHandled.Size = new System.Drawing.Size(80, 17);
 			this.chkBreakOnHandled.TabIndex = 6;
 			this.chkBreakOnHandled.Text = "checkBox1";
 			this.chkBreakOnHandled.UseVisualStyleBackColor = true;
@@ -141,6 +142,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.Resize += new System.EventHandler(this.FormResize);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		private System.Windows.Forms.Button btnContinue;
