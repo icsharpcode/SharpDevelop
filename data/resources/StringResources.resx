@@ -8250,4 +8250,8 @@ a line break</value>
   <data name="ResourceEditor.Filter" xml:space="preserve">
     <value>Filter:</value>
   </data>
+  <data name="ResourceEditor.BitmapView.UpdateCursor" xml:space="preserve">
+    <value>Update cursor ...</value>
+    <comment>Text for the button that makes it possible to update the stored cursor</comment>
+  </data>
 </root>

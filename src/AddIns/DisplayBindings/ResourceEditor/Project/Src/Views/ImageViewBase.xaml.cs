@@ -84,6 +84,13 @@ namespace ResourceEditor.Views
 								UpdateLinkText = SD.ResourceService.GetString("ResourceEditor.BitmapView.UpdateIcon");
 							}
 							break;
+						case ResourceItemEditorType.Cursor:
+							var gdiCursor = resourceItem.ResourceValue as System.Windows.Forms.Cursor;
+							if (gdiCursor != null) {
+								DisplayedImage = gdiCursor.ToImageSource();
+								UpdateLinkText = SD.ResourceService.GetString("ResourceEditor.BitmapView.UpdateCursor");
+							}
+							break;
 					}
 				}
 			}

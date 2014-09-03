@@ -281,6 +281,14 @@ namespace ResourceEditor.ViewModels
 							return false;
 						}
 						break;
+					case ResourceItemEditorType.Cursor:
+						try {
+							newValue = new Cursor(fileDialog.FileName);
+						} catch (Exception ex) {
+							SD.MessageService.ShowWarningFormatted("${res:ResourceEditor.Messages.CantLoadResourceFromFile}", ex.Message);
+							return false;
+						}
+						break;
 				}
 				
 				if (newValue != null) {

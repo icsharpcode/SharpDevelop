@@ -69,6 +69,7 @@ namespace ResourceEditor
 			resourceEditor.AddItemView(ResourceItemEditorType.String, new TextView());
 			resourceEditor.AddItemView(ResourceItemEditorType.Bitmap, new ImageViewBase());
 			resourceEditor.AddItemView(ResourceItemEditorType.Icon, new ImageViewBase());
+			resourceEditor.AddItemView(ResourceItemEditorType.Cursor, new ImageViewBase());
 			resourceEditor.AddItemView(ResourceItemEditorType.Binary, new BinaryView());
 			resourceEditor.AddItemView(ResourceItemEditorType.Boolean, new BooleanView());
 			resourceEditor.DirtyStateChanged += (sender, e) => {

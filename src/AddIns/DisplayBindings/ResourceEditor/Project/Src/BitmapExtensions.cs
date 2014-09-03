@@ -58,5 +58,17 @@ namespace ResourceEditor
 
 			return imageSource;
 		}
+		
+		public static ImageSource ToImageSource(this System.Windows.Forms.Cursor cursor)
+		{
+			int width = cursor.Size.Width;
+			int height = cursor.Size.Height;
+			using (System.Drawing.Bitmap b = new System.Drawing.Bitmap(width, height)) {
+				using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(b)) {
+					cursor.Draw(g, new System.Drawing.Rectangle(0, 0, width, height));
+					return b.ToBitmapSource();
+				}
+			}
+		}
 	}
 }
