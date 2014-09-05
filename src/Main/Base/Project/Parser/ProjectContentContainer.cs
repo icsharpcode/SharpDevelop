@@ -9,7 +9,6 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -45,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		// time necessary for loading references, in relation to time for a single C# file
 		const int LoadingReferencesWorkAmount = 15;
 		
-		readonly string cacheFileName;
+		string cacheFileName;
 		
 		#region Constructor + Dispose
 		public ProjectContentContainer(MSBuildBasedProject project, IProjectContent initialProjectContent)
@@ -59,8 +58,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 			
 			SD.ProjectService.ProjectItemAdded += OnProjectItemAdded;
 			SD.ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
-			SD.AssemblyParserService.AssemblyRefreshed += OnAssemblyRefreshed;
 			
+			var parserService = SD.ParserService;
 			List<FileName> filesToParse = new List<FileName>();
 			foreach (var file in project.Items.OfType<FileProjectItem>()) {
 				if (IsParseableFile(file)) {
@@ -79,8 +78,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			SD.ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
 			SD.ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
-			SD.AssemblyParserService.AssemblyRefreshed -= OnAssemblyRefreshed;
-			
 			IProjectContent pc;
 			bool serializeOnDispose;
 			lock (lockObj) {
@@ -316,6 +313,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		void ParseFiles(List<FileName> filesToParse, IProgressMonitor progressMonitor)
 		{
+			IParserService parserService = SD.ParserService;
 			IProjectContent cachedPC = TryReadFromCache(cacheFileName);
 			ParseableFileContentFinder finder = new ParseableFileContentFinder();
 			
@@ -393,6 +391,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		void DoReparseCode(List<FileName> filesToParse, IProgressMonitor progressMonitor)
 		{
+			IParserService parserService = SD.ParserService;
 			ParseableFileContentFinder finder = new ParseableFileContentFinder();
 			double fileCountInverse = 1.0 / filesToParse.Count;
 			object progressLock = new object();
@@ -425,7 +424,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			progressMonitor.Progress += assemblyResolvingProgress;
 			progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 			
-			List<FileName> assemblyFiles = new List<FileName>();
+			List<string> assemblyFiles = new List<string>();
 			List<IAssemblyReference> newReferences = new List<IAssemblyReference>();
 			
 			foreach (var reference in referenceItems) {
@@ -437,10 +436,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			
-			foreach (var file in assemblyFiles) {
+			foreach (string file in assemblyFiles) {
 				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 				if (File.Exists(file)) {
+<<<<<<< HEAD
 					var pc = SD.AssemblyParserService.GetAssembly(file, false, progressMonitor.CancellationToken);
+=======
+					var pc = SD.AssemblyParserService.GetAssembly(FileName.Create(file), progressMonitor.CancellationToken);
+>>>>>>> parent of a46af4b... Implement "Refresh reference"
 					if (pc != null) {
 						newReferences.Add(pc);
 					}
@@ -467,18 +470,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 						DoResolveReferences(monitor);
 					},
 					"Loading " + project.Name + "...", LoadingReferencesWorkAmount);
-			}
-		}
-		
-		void OnAssemblyRefreshed(object sender, RefreshAssemblyEventArgs e)
-		{
-			lock (lockObj) {
-				int index = Array.IndexOf(this.references, e.OldAssembly);
-				if (index >= 0 && e.NewAssembly != null) {
-					this.references[index] = e.NewAssembly;
-					projectContent = projectContent.RemoveAssemblyReferences(e.OldAssembly).AddAssemblyReferences(e.NewAssembly);
-					SD.ParserService.InvalidateCurrentSolutionSnapshot();
-				}
 			}
 		}
 		#endregion

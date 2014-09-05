@@ -162,6 +162,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			DependencyProperty.RegisterAttached("DesignHeight", typeof(double), typeof(DesignTimeProperties));
 		
 		#endregion
+<<<<<<< HEAD
 		
 		#region LayoutRounding
 		public static bool GetLayoutRounding(DependencyObject obj)
@@ -178,5 +179,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			DependencyProperty.RegisterAttached("LayoutRounding", typeof(bool), typeof(DesignTimeProperties));
 		
 		#endregion
+=======
+>>>>>>> parent of 77bb8e4... Layout Rounding Design Time Property
 	}
 }

@@ -303,6 +303,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		#endregion
+<<<<<<< HEAD
 		
 		#region Refresh
 		public event EventHandler<RefreshAssemblyEventArgs> AssemblyRefreshed;
@@ -353,5 +354,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			
 			return null;
 		}
+=======
+>>>>>>> parent of a46af4b... Implement "Refresh reference"
 	}
 }

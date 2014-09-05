@@ -226,7 +226,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node != null) {
 				ReferenceProjectItem item = node.ReferenceProjectItem;
 				if (item != null) {
-					SD.AssemblyParserService.RefreshAssembly(item.FileName);
+					#warning Reimplement RefreshReference
+					throw new NotImplementedException();
+					//AssemblyParserService.RefreshProjectContentForReference(item);
 				}
 			}
 		}

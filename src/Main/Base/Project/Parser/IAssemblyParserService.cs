@@ -41,6 +41,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// May return <c>null</c> if on-disk caching is disabled.
 		/// </summary>
 		string DomPersistencePath { get; }
+<<<<<<< HEAD
 		
 		/// <summary>
 		/// Refreshes the specified assembly.
@@ -106,5 +107,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				return newAssembly;
 			}
 		}
+=======
+>>>>>>> parent of a46af4b... Implement "Refresh reference"
 	}
 }
