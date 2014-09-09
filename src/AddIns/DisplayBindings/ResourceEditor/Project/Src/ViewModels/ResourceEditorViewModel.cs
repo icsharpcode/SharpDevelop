@@ -143,8 +143,14 @@ namespace ResourceEditor.ViewModels
 					view.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, (s, e) => SelectAll(), (s, e) => e.CanExecute = EnableSelectAll));
 					
 					view.FilterPredicate = resourceItem => {
-						if (!resourceItem.IsNew && (SearchTerm != null))
-							return resourceItem.Name.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0;
+						if (!resourceItem.IsNew && (SearchTerm != null)) {
+							bool isMatch = resourceItem.Name.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0
+								|| ((resourceItem.Content ?? "").IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0)
+								|| ((resourceItem.Comment ?? "").IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
+							if (isMatch)
+								resourceItem.Highlight(SearchTerm);
+							return isMatch;
+						}
 						return true;
 					};
 					view.SelectionChanged += View_SelectionChanged;

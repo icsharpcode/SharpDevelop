@@ -63,6 +63,7 @@
 					</Image>
 					<resv:InPlaceEditLabel Grid.Column="1"
 						Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						DisplayText="{Binding DisplayName}"
 						VerticalAlignment="Top"
 						Margin="0,0,0,0"
 						MinWidth="300"
@@ -74,19 +75,19 @@
 		
 		<DataTemplate x:Key="resourceItemTypeTemplate" DataType="{x:Type resvm:ResourceItem}">
 			<Border BorderBrush="LightGray" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
-				<TextBlock Text="{Binding DisplayedResourceType}" Margin="6,2,6,2" />
+				<resv:RichTextBlock Content="{Binding DisplayedResourceType}" Margin="6,2,6,2" />
 			</Border>
 		</DataTemplate>
 		
 		<DataTemplate x:Key="resourceItemContentTemplate" DataType="{x:Type resvm:ResourceItem}">
 			<Border BorderBrush="LightGray" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
-				<TextBlock Text="{Binding Content}" Margin="6,2,6,2" />
+				<resv:RichTextBlock Content="{Binding RichContent}" Margin="6,2,6,2" />
 			</Border>
 		</DataTemplate>
 		
 		<DataTemplate x:Key="resourceItemCommentTemplate" DataType="{x:Type resvm:ResourceItem}">
 			<Border BorderBrush="LightGray" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
-				<TextBlock Text="{Binding Comment}" Margin="6,2,6,2" MinWidth="300" />
+				<resv:RichTextBlock Content="{Binding RichComment}" Margin="6,2,6,2" MinWidth="300" />
 			</Border>
 		</DataTemplate>
 	</UserControl.Resources>

@@ -92,6 +92,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Views\ResourceItemIcons.cs" />
+    <Compile Include="Src\Views\RichTextBlock.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Views\TextView.xaml.cs">
       <DependentUpon>TextView.xaml</DependentUpon>
       <SubType>Code</SubType>

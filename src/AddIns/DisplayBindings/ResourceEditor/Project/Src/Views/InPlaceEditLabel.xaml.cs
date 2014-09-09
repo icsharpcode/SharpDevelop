@@ -19,6 +19,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace ResourceEditor.Views
@@ -36,7 +37,6 @@ namespace ResourceEditor.Views
 			InitializeComponent();
 			editingTextBox.Visibility = Visibility.Collapsed;
 			readOnlyTextBlock.Visibility = Visibility.Visible;
-			readOnlyTextBlock.DataContext = this;
 			editingTextBox.DataContext = this;
 		}
 		
@@ -47,6 +47,26 @@ namespace ResourceEditor.Views
 		public string Text {
 			get { return (string)GetValue(TextProperty); }
 			set { SetValue(TextProperty, value); }
+		}
+		
+		public static readonly DependencyProperty DisplayTextProperty =
+			DependencyProperty.Register("DisplayText", typeof(object), typeof(InPlaceEditLabel),
+			                            new FrameworkPropertyMetadata(OnDisplayTextChanged));
+		
+		static void OnDisplayTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+		{
+			var textBlock = ((InPlaceEditLabel)obj).readOnlyTextBlock;
+			if (e.NewValue is Span) {
+				textBlock.Inlines.Clear();
+				textBlock.Inlines.Add((Span)e.NewValue);
+			} else {
+				textBlock.Text = e.NewValue.ToString();
+			}
+		}
+		
+		public object DisplayText {
+			get { return (object)GetValue(DisplayTextProperty); }
+			set { SetValue(DisplayTextProperty, value); }
 		}
 		
 		public static readonly DependencyProperty IsEditingProperty =

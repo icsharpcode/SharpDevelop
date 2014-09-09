@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Resources;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop;
 
@@ -45,6 +46,7 @@ namespace ResourceEditor.ViewModels
 		ResourceItemEditorType resourceType;
 		ResourceEditorViewModel resourceEditor;
 		string nameBeforeEditing;
+		string highlightText;
 		
 		public ResourceItem(ResourceEditorViewModel resourceEditor, string name, object resourceValue)
 		{
@@ -80,11 +82,25 @@ namespace ResourceEditor.ViewModels
 		
 		public static readonly DependencyProperty NameProperty =
 			DependencyProperty.Register("Name", typeof(string), typeof(ResourceItem),
-				new FrameworkPropertyMetadata());
+				new FrameworkPropertyMetadata(NamePropertyChanged));
+		
+		static void NamePropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+		{
+			((ResourceItem)obj).Highlight(((ResourceItem)obj).highlightText);
+		}
 		
 		public string Name {
 			get { return (string)GetValue(NameProperty); }
 			set { SetValue(NameProperty, value); }
+		}
+		
+		public static readonly DependencyProperty DisplayNameProperty =
+			DependencyProperty.Register("DisplayName", typeof(object), typeof(ResourceItem),
+			                            new FrameworkPropertyMetadata());
+		
+		public object DisplayName {
+			get { return (object)GetValue(DisplayNameProperty); }
+			set { SetValue(DisplayNameProperty, value); }
 		}
 		
 		public static readonly DependencyProperty SortingCriteriaProperty =
@@ -102,7 +118,7 @@ namespace ResourceEditor.ViewModels
 		
 		public object ResourceValue {
 			get { return (object)GetValue(ResourceValueProperty); }
-			set { SetValue(ResourceValueProperty, value); }
+			set { SetValue(ResourceValueProperty, value); Highlight(highlightText); }
 		}
 		
 		public string DisplayedResourceType {
@@ -135,9 +151,16 @@ namespace ResourceEditor.ViewModels
 		{
 			base.OnPropertyChanged(e);
 			
+			if (e.Property.Name == DisplayNameProperty.Name
+			    || e.Property.Name == RichContentProperty.Name
+			    || e.Property.Name == RichCommentProperty.Name) {
+				return;
+			}
+			
 			if (e.Property.Name == ResourceValueProperty.Name) {
 				// Update content property as well
 				RaisePropertyChanged("Content");
+				Highlight(highlightText);
 			}
 			if (e.Property.Name == IsEditingProperty.Name) {
 				bool previouslyEditing = (bool)e.OldValue;
@@ -200,13 +223,31 @@ namespace ResourceEditor.ViewModels
 			}
 		}
 		
+		public static readonly DependencyProperty RichContentProperty =
+			DependencyProperty.Register("RichContent", typeof(object), typeof(ResourceItem),
+			                            new FrameworkPropertyMetadata());
+		
+		public object RichContent {
+			get { return (object)GetValue(RichContentProperty); }
+			set { SetValue(RichContentProperty, value); }
+		}
+		
 		public static readonly DependencyProperty CommentProperty =
 			DependencyProperty.Register("Comment", typeof(string), typeof(ResourceItem),
-				new FrameworkPropertyMetadata());
+				new FrameworkPropertyMetadata(""));
 		
 		public string Comment {
 			get { return (string)GetValue(CommentProperty); }
 			set { SetValue(CommentProperty, value); }
+		}
+		
+		public static readonly DependencyProperty RichCommentProperty =
+			DependencyProperty.Register("RichComment", typeof(object), typeof(ResourceItem),
+			                            new FrameworkPropertyMetadata());
+		
+		public object RichComment {
+			get { return (object)GetValue(RichCommentProperty); }
+			set { SetValue(RichCommentProperty, value); }
 		}
 
 		public override string ToString()
@@ -298,6 +339,43 @@ namespace ResourceEditor.ViewModels
 			}
 			
 			return false;
+		}
+		
+		public void Highlight(string text)
+		{
+			this.highlightText = text;
+			if (string.IsNullOrEmpty(text)) {
+				DisplayName = Name;
+				RichContent = Content;
+				RichComment = Comment;
+			} else {
+				DisplayName = CreateSpan(Name, text);
+				RichContent = CreateSpan(Content ?? "", text);
+				RichComment = CreateSpan(Comment ?? "", text);
+			}
+			RaisePropertyChanged("DisplayName");
+			RaisePropertyChanged("RichContent");
+			RaisePropertyChanged("RichComment");
+		}
+
+		Span CreateSpan(string text, string matchText)
+		{
+			int startIndex = 0;
+			int match;
+			var span = new Span();
+			do {
+				match = text.IndexOf(matchText, startIndex, StringComparison.OrdinalIgnoreCase);
+				if (match > -1) {
+					span.Inlines.Add(new Run(text.Substring(startIndex, match - startIndex)));
+					span.Inlines.Add(new Span(new Run(text.Substring(match, matchText.Length))) {
+						Background = System.Windows.Media.Brushes.Yellow
+					});
+				} else {
+					span.Inlines.Add(new Run(text.Substring(startIndex, text.Length - startIndex)));
+				}
+				startIndex = match + matchText.Length;
+			} while (match > -1);
+			return span;
 		}
 	}
 }
