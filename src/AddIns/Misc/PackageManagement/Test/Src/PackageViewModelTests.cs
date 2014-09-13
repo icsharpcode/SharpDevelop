@@ -1531,5 +1531,30 @@ namespace PackageManagement.Tests
 			
 			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Install, "MyPackage");
 		}
+		
+		[Test]
+		public void AddOrManagePackage_SolutionSelectedAndContainsOnlyOneProject_UserPromptedToSelectOneProject()
+		{
+			CreateFakeSolution();
+			AddProjectToSolution();
+			fakeSolution.FakeMSBuildProjects[0].Name = "MyProject";
+			fakeSolution.NoProjectsSelected();
+			fakeSolution.AddFakeProjectToReturnFromGetProject("MyProject");
+			CreateViewModel(fakeSolution);
+			UserCancelsProjectSelection();
+			
+			viewModel.AddOrManagePackage();
+			
+			IEnumerable<IPackageManagementSelectedProject> selectedProjects = 
+				fakePackageManagementEvents.SelectedProjectsPassedToOnSelectProjects;
+			
+			var expectedSelectedProjects = new List<IPackageManagementSelectedProject>();
+			expectedSelectedProjects.Add(new FakeSelectedProject("MyProject"));
+			
+			var nullReferenceException = new NullReferenceException();
+			Assert.IsFalse(fakeLogger.FormattedMessagesLoggedContainsText(nullReferenceException.Message));
+			Assert.IsNotNull(selectedProjects);
+			SelectedProjectCollectionAssert.AreEqual(expectedSelectedProjects, selectedProjects);
+		}
 	}
 }
