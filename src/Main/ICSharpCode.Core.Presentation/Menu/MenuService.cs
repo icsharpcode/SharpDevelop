@@ -266,13 +266,13 @@ namespace ICSharpCode.Core.Presentation
 			string text = KeyCodeConversion.KeyToUnicode(kg.Key.ToKeys());
 			if (text != null && !text.Any(ch => char.IsWhiteSpace(ch))) {
 				if ((kg.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt)
-					text = "Alt+" + text;
+					text = StringParser.Format("${res:Global.Shortcuts.Alt}+{0}", text);
 				if ((kg.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
-					text = "Shift+" + text;
+					text = StringParser.Format("${res:Global.Shortcuts.Shift}+{0}", text);
 				if ((kg.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
-					text = "Ctrl+" + text;
+					text = StringParser.Format("${res:Global.Shortcuts.Ctrl}+{0}", text);
 				if ((kg.Modifiers & ModifierKeys.Windows) == ModifierKeys.Windows)
-					text = "Win+" + text;
+					text = StringParser.Format("${res:Global.Shortcuts.Win}+{0}", text);
 				return text;
 			}
 			return old;

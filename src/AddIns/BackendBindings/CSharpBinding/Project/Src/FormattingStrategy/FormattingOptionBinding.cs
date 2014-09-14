@@ -22,6 +22,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.SharpDevelop;
 using CSharpBinding.OptionPanels;
 
 namespace CSharpBinding.FormattingStrategy
@@ -143,9 +144,8 @@ namespace CSharpBinding.FormattingStrategy
 		
 		static void FillBoolComboValues(ComboBox comboBox)
 		{
-			// TODO Add located resources!
-			comboBox.Items.Add(new ComboBoxItem { Content = "Yes", Tag = true });
-			comboBox.Items.Add(new ComboBoxItem { Content = "No", Tag = false });
+			comboBox.Items.Add(new ComboBoxItem { Content = SD.ResourceService.GetString("Global.Yes"), Tag = true });
+			comboBox.Items.Add(new ComboBoxItem { Content = SD.ResourceService.GetString("Global.No"), Tag = false });
 		}
 		
 		static void FillIntComboValues(ComboBox comboBox)

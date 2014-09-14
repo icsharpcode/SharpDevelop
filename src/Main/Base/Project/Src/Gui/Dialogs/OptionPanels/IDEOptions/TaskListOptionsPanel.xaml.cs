@@ -26,11 +26,11 @@ using ICSharpCode.SharpDevelop.Parser;
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	/// <summary>
-	/// Interaction logic for TaskListXaml.xaml
+	/// Interaction logic for TaskListOptionsPanel.xaml
 	/// </summary>
-	public partial class TaskListXaml : OptionPanel
+	public partial class TaskListOptionsPanel : OptionPanel
 	{
-		public TaskListXaml()
+		public TaskListOptionsPanel()
 		{
 			InitializeComponent();
 			foreach (var token in SD.ParserService.TaskListTokens) {

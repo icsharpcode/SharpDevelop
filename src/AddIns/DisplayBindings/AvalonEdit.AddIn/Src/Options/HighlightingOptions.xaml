@@ -48,7 +48,7 @@
 				          Content="{core:Localize Dialog.HighlightingEditor.ColorDlg.Underline}"/>
 				<Button Name="resetButton" IsEnabled="{Binding IsCustomized}" HorizontalAlignment="Left"
 				        Click="ResetButtonClick" Style="{x:Static core:GlobalStyles.ButtonStyle}" Margin="0,4"
-				        Content="Reset" />
+				        Content="{core:Localize Global.Reset}" />
 				<Label Content="{core:StringParse ${res:Dialog.HighlightingEditor.SampleText}:}" />
 				<core:RestrictDesiredSize Height="50" MinWidth="200">
 					<avalonedit:TextEditor Name="textEditor" IsReadOnly="True" />

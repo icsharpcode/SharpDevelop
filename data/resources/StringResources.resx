@@ -8254,4 +8254,46 @@ a line break</value>
     <value>Update cursor ...</value>
     <comment>Text for the button that makes it possible to update the stored cursor</comment>
   </data>
+  <data name="XML.MainMenu.SearchMenu.SearchForIssues" xml:space="preserve">
+    <value>Search For Issues...</value>
+  </data>
+  <data name="Dialog.SearchForIssues.AutoFix" xml:space="preserve">
+    <value>Automatically fix issues if possible</value>
+  </data>
+  <data name="Dialog.Options.ServicesReferencesText" xml:space="preserve">
+    <value>Service References</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.Reformat" xml:space="preserve">
+    <value>Reformat</value>
+  </data>
+  <data name="Global.Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CustomTool.RunOnBuild" xml:space="preserve">
+    <value>Run on Build</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CustomTool.Filenames" xml:space="preserve">
+    <value>Filenames:</value>
+  </data>
+  <data name="Debugger.Visualizers.ColumnPickerLabel" xml:space="preserve">
+    <value>Columns:</value>
+  </data>
+  <data name="Global.Shortcuts.Ctrl" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="Global.Shortcuts.Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Global.Shortcuts.Alt" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="Global.Shortcuts.Win" xml:space="preserve">
+    <value>Win</value>
+  </data>
+  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
+    <value>Clear console</value>
+  </data>
+  <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
+    <value>Delete history</value>
+  </data>
 </root>
