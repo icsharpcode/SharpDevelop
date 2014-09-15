@@ -60,7 +60,7 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 				DisplayName = ResourceService.GetString("SharpReport.Toolbar.TextBox"),
 				Bitmap = IconService.GetBitmap("Icons.16.16.SharpReport.Textbox")
 			};
-				sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
+			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
 			
 			//DataItem
 			toolboxItem = new ToolboxItem(typeof(BaseDataItem)) {
@@ -68,16 +68,16 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 				//				tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Column");
 				Bitmap = IconService.GetBitmap("Icons.16x16.SharpQuery.Column")
 			};
-			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));	
+			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
 			
-		
+			
 			// Line
 			toolboxItem = new ToolboxItem(typeof(BaseLineItem)) {
 				DisplayName = ResourceService.GetString("SharpReport.Toolbar.Line"),
 				Bitmap = IconService.GetBitmap("Icons.16.16.SharpReport.Line")
 			};
-			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));	
-		
+			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
+			
 			
 			// Rectangle
 			toolboxItem = new ToolboxItem(typeof(BaseRectangleItem)) {
@@ -92,8 +92,8 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 				Bitmap = CircleBitmap()
 			};
 			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
-				
-	
+			
+			
 			//GroupHeader
 			toolboxItem = new ToolboxItem(typeof(GroupHeader));
 			toolboxItem.Bitmap = IconService.GetBitmap("Icons.16x16.NameSpace");
@@ -107,7 +107,7 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 			toolboxItem.Bitmap = IconService.GetBitmap("Icons.16x16.SharpQuery.Table");
 			toolboxItem.DisplayName = ResourceService.GetString("SharpReport.Toolbar.DataRow");
 			sideTab.Items.Add(new SideTabItemDesigner(toolboxItem));
-		/*	
+			/*
 			
 			//GroupFooter
 			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.GroupFooter));
@@ -126,7 +126,7 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Table");
 			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseTableItem));
 			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.Table");
-			sideTab.Items.Add(new SideTabItemDesigner(tb));	
+			sideTab.Items.Add(new SideTabItemDesigner(tb));
 			
 
 			//Grahics
@@ -136,7 +136,7 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.Image");
 			tb.Bitmap = WinFormsResourceService.GetIcon("Icons.16x16.ResourceEditor.bmp").ToBitmap();
 			sideTab.Items.Add(new SideTabItemDesigner(tb));
-			*/
+			 */
 			return sideTab;
 		}
 		

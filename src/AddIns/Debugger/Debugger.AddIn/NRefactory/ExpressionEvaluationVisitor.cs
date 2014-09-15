@@ -114,8 +114,12 @@ namespace Debugger.AddIn
 		
 		public Value Convert(ResolveResult result)
 		{
-			if (result.IsCompileTimeConstant && !result.IsError)
-				return Eval.CreateValue(evalThread, result.ConstantValue);
+			if (result.IsCompileTimeConstant && !result.IsError) {
+				var type = Import(result.Type);
+				if (type == null)
+					throw new GetValueException("Error: cannot find '{0}'.", result.Type.FullName);
+				return Eval.CreateValue(evalThread, result.ConstantValue, type);
+			}
 			return Visit((dynamic)result);
 		}
 		

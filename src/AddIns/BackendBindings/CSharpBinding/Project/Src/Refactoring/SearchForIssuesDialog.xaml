@@ -11,7 +11,7 @@
         WindowStartupLocation="CenterOwner"
         Closing="Window_Closing"
         MinHeight="250" MinWidth="200"
-        Height="450" Width="400" Title="Search For Issues">
+        Height="450" Width="400" Title="{core:Localize XML.MainMenu.SearchMenu.SearchForIssues}">
 	<Grid Margin="6">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
@@ -24,15 +24,15 @@
 			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
 		<StackPanel Orientation="Horizontal">
-			<Label Content="Search In:" />
+			<Label Content="{core:Localize Dialog.NewProject.SearchReplace.SearchIn}" />
 			<widgets:RadioButtonGroup Name="searchInRBG" Margin="0,6,0,0" sd:EnumBinding.EnumType="local:SearchForIssuesTarget" />
 		</StackPanel>
 		<Label Content="Issues:" Grid.Row="1" HorizontalAlignment="Left" />
 		<tv:SharpTreeView Name="treeView" Grid.Row="2" Margin="4,0,4,4" />
 		<CheckBox Name="fixCheckBox" Grid.Row="3" Margin="8,0,0,0" Checked="FixCheckBox_Checked" Unchecked="FixCheckBox_Unchecked"
-		          HorizontalAlignment="Left" Content="Automatically fix issues if possible" />
+		          HorizontalAlignment="Left" Content="{core:Localize Dialog.SearchForIssues.AutoFix}" />
 		<StackPanel Grid.Row="4" Margin="4" HorizontalAlignment="Right" Orientation="Horizontal">
-			<Button Content="Search" Style="{x:Static core:GlobalStyles.ButtonStyle}" Name="searchButton" IsDefault="True" Click="searchButton_Click" Margin="0,0,5,0" />
+			<Button Content="{core:Localize MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}" Style="{x:Static core:GlobalStyles.ButtonStyle}" Name="searchButton" IsDefault="True" Click="searchButton_Click" Margin="0,0,5,0" />
 			<Button Content="{core:Localize Global.CloseButtonText}" Style="{x:Static core:GlobalStyles.ButtonStyle}" IsCancel="True" />
 		</StackPanel>
 	</Grid>

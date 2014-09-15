@@ -622,6 +622,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			VisitChildren (namedExpression);
 		}
 
+		public virtual void VisitErrorNode(AstNode errorNode)
+		{
+			VisitChildren(errorNode);
+		}
+
 		public virtual void VisitPatternPlaceholder(AstNode placeholder, PatternMatching.Pattern pattern)
 		{
 			VisitChildren (placeholder);
@@ -1223,7 +1228,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return VisitChildren (namedExpression);
 		}
-		
+
+		public virtual T VisitErrorNode(AstNode errorNode)
+		{
+			return VisitChildren(errorNode);
+		}
+
 		public virtual T VisitPatternPlaceholder(AstNode placeholder, PatternMatching.Pattern pattern)
 		{
 			return VisitChildren (placeholder);
@@ -1825,7 +1835,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return VisitChildren (namedExpression, data);
 		}
-		
+
+		public virtual S VisitErrorNode(AstNode errorNode, T data)
+		{
+			return VisitChildren(errorNode, data);
+		}
+
 		public virtual S VisitPatternPlaceholder(AstNode placeholder, PatternMatching.Pattern pattern, T data)
 		{
 			return VisitChildren (placeholder, data);

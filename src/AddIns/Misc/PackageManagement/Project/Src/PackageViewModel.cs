@@ -219,7 +219,7 @@ namespace ICSharpCode.PackageManagement
 
 		public void AddOrManagePackage()
 		{
-			if (selectedProjects.HasMultipleProjects()) {
+			if (!selectedProjects.HasSingleProjectSelected()) {
 				if (IsProjectPackage(package)) {
 					ManagePackage();
 				} else {

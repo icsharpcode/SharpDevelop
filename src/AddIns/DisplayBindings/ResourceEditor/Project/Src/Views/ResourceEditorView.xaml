@@ -1,0 +1,167 @@
+﻿<UserControl x:Class="ResourceEditor.Views.ResourceEditorView"
+             xmlns:resvm="clr-namespace:ResourceEditor.ViewModels"
+             xmlns:resv="clr-namespace:ResourceEditor.Views"
+             xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:sys="clr-namespace:System;assembly=System"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	
+	<UserControl.Resources>
+		<resv:ResourceItemIcons x:Key="resourceItemIcons" />
+		
+		<CollectionViewSource
+			x:Key="resourceItemListViewSource"
+			Source="{Binding ResourceItems}"
+			Filter="CollectionViewSource_Filter">
+			<CollectionViewSource.SortDescriptions>
+				<scm:SortDescription PropertyName="SortingCriteria"/>
+			</CollectionViewSource.SortDescriptions>
+		</CollectionViewSource>
+		
+		<Style x:Key="listViewItemStyle" TargetType="{x:Type ListViewItem}">
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="VerticalContentAlignment" Value="Stretch" />
+		</Style>
+		
+		<DataTemplate x:Key="resourceItemNameTemplate" DataType="{x:Type resvm:ResourceItem}">
+			<Border BorderBrush="LightGray" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
+				<Grid Margin="6,2,6,2">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					
+					<Image Grid.Column="0" Width="16" Height="16" VerticalAlignment="Top" Margin="0,0,3,0">
+						<Image.Style>
+							<Style TargetType="Image">
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding ResourceType}" Value="String">
+										<Setter Property="Source" Value="{Binding Source={StaticResource resourceItemIcons}, Path=StringResourceIcon}" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding ResourceType}" Value="Boolean">
+										<Setter Property="Source" Value="{Binding Source={StaticResource resourceItemIcons}, Path=BooleanResourceIcon}" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding ResourceType}" Value="Bitmap">
+										<Setter Property="Source" Value="{Binding Source={StaticResource resourceItemIcons}, Path=BitmapResourceIcon}" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding ResourceType}" Value="Icon">
+										<Setter Property="Source" Value="{Binding Source={StaticResource resourceItemIcons}, Path=IconResourceIcon}" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding ResourceType}" Value="Cursor">
+										<Setter Property="Source" Value="{Binding Source={StaticResource resourceItemIcons}, Path=CursorResourceIcon}" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding ResourceType}" Value="Binary">
+										<Setter Property="Source" Value="{Binding Source={StaticResource resourceItemIcons}, Path=BinaryResourceIcon}" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding ResourceType}" Value="Unknown">
+										<Setter Property="Source" Value="{Binding Source={StaticResource resourceItemIcons}, Path=UnknownResourceIcon}" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Image.Style>
+					</Image>
+					<resv:InPlaceEditLabel Grid.Column="1"
+						Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						DisplayText="{Binding DisplayName}"
+						VerticalAlignment="Top"
+						Margin="0,0,0,0"
+						MinWidth="300"
+						IsEditing="{Binding Path=IsEditing, Mode=TwoWay}">
+					</resv:InPlaceEditLabel>
+				</Grid>
+			</Border>
+		</DataTemplate>
+		
+		<DataTemplate x:Key="resourceItemTypeTemplate" DataType="{x:Type resvm:ResourceItem}">
+			<Border BorderBrush="LightGray" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
+				<resv:RichTextBlock Content="{Binding DisplayedResourceType}" Margin="6,2,6,2" />
+			</Border>
+		</DataTemplate>
+		
+		<DataTemplate x:Key="resourceItemContentTemplate" DataType="{x:Type resvm:ResourceItem}">
+			<Border BorderBrush="LightGray" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
+				<resv:RichTextBlock Content="{Binding RichContent}" Margin="6,2,6,2" />
+			</Border>
+		</DataTemplate>
+		
+		<DataTemplate x:Key="resourceItemCommentTemplate" DataType="{x:Type resvm:ResourceItem}">
+			<Border BorderBrush="LightGray" BorderThickness="0,0,1,1" Margin="-6,-2,-6,-2">
+				<resv:RichTextBlock Content="{Binding RichComment}" Margin="6,2,6,2" MinWidth="300" />
+			</Border>
+		</DataTemplate>
+	</UserControl.Resources>
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height=".2*" />
+		</Grid.RowDefinitions>
+		
+		<Grid Grid.Row="0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			
+			<TextBlock Grid.Column="0" Text="{core:Localize ResourceEditor.Filter}" Margin="3,2,5,2" VerticalAlignment="Center" />
+			<TextBox
+				Grid.Column="1"
+				Name="searchTermTextBox"
+				Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+				Margin="0,2,3,2"
+				VerticalAlignment="Center"
+				KeyUp="FilterTextBox_KeyUp" />
+			<Button
+				Grid.Column="2"
+				Click="UpdateFilterButton_Click"
+				Margin="0,2,3,2"
+				Content="{core:Localize Global.UpdateButtonText}" />
+		</Grid>
+		
+		<ListView
+			Name="resourceItemsListView"
+			Grid.Row="1"
+			ItemsSource="{Binding Source={StaticResource resourceItemListViewSource}}"
+			ItemContainerStyle="{StaticResource listViewItemStyle}"
+			MouseRightButtonUp="ListView_MouseRightButtonUp"
+			KeyUp="ResourceItemsListView_KeyUp"
+			SelectionChanged="ListView_SelectionChanged"
+			VirtualizingStackPanel.IsVirtualizing="True"
+			core:SortableGridViewColumn.SortMode="Automatic"
+			core:GridViewColumnAutoSize.AutoWidth="40%;15%;30%;15%">
+			<ListView.View>
+				<GridView AllowsColumnReorder="False">
+					<core:SortableGridViewColumn
+						SortBy="SortingCriteria"
+						Header="{core:Localize Global.Name}"
+						CellTemplate="{StaticResource resourceItemNameTemplate}" />
+					<core:SortableGridViewColumn
+						SortBy="ResourceType"
+						Header="{core:Localize ResourceEditor.ResourceEdit.TypeColumn}"
+						CellTemplate="{StaticResource resourceItemTypeTemplate}" />
+					<core:SortableGridViewColumn
+						SortBy="Content"
+						Header="{core:Localize ResourceEditor.ResourceEdit.ContentColumn}"
+						CellTemplate="{StaticResource resourceItemContentTemplate}" />
+					<core:SortableGridViewColumn
+						SortBy="Comment"
+						Header="{core:Localize ResourceEditor.ResourceEdit.CommentColumn}"
+						CellTemplate="{StaticResource resourceItemCommentTemplate}" />
+				</GridView>
+			</ListView.View>
+		</ListView>
+		
+		<GridSplitter
+			Grid.Row="2"
+			Height="5"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"/>
+		
+		<Grid Grid.Row="3" Name="resourceItemViewGrid"></Grid>
+	</Grid>
+
+</UserControl>

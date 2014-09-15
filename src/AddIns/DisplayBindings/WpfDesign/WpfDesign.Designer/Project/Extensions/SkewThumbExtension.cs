@@ -98,7 +98,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			else
 			{
-				if (rtTransform == null)
+				if ((rtTransform == null) || !(rtTransform.Component is SkewTransform))
 				{
 					if (!this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).IsSet) {
 						this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(0.5,0.5));

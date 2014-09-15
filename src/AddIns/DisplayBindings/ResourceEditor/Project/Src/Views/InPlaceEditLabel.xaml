@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="ResourceEditor.Views.InPlaceEditLabel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:resv="clr-namespace:ResourceEditor.Views"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid Margin="0,0,0,0">
+		<TextBlock Name="readOnlyTextBlock" VerticalAlignment="Top" Margin="0,0,0,0" />
+		<TextBox
+			Name="editingTextBox"
+			Text="{Binding Text}"
+			VerticalAlignment="Top"
+			Margin="0,0,0,0"
+			TextChanged="EditingTextBox_TextChanged"
+			LostFocus="EditingTextBox_LostFocus" />
+	</Grid>
+</UserControl>

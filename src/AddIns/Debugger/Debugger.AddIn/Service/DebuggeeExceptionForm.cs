@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using Debugger;
 using ICSharpCode.Core;
@@ -30,16 +31,18 @@ namespace ICSharpCode.SharpDevelop.Services
 	internal sealed partial class DebuggeeExceptionForm
 	{
 		Process process;
+		string exceptionType;
 		
 		public bool Break { get; set; }
 		
-		DebuggeeExceptionForm(Process process)
+		DebuggeeExceptionForm(Process process, string exceptionType)
 		{
 			InitializeComponent();
 			
 			this.Break = true;
 			
 			this.process = process;
+			this.exceptionType = exceptionType;
 			
 			this.process.Exited += ProcessHandler;
 			this.process.Resumed += ProcessHandler;
@@ -75,20 +78,42 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.process.Resumed -= ProcessHandler;
 		}
 		
-		public static bool Show(Process process, string title, string type, string stacktrace, Bitmap icon, bool isUnhandled)
+		public static bool Show(Process process, string exceptionType, string stacktrace, bool isUnhandled)
 		{
-			DebuggeeExceptionForm form = new DebuggeeExceptionForm(process);
-			form.Text = title;
+			DebuggeeExceptionForm form = new DebuggeeExceptionForm(process, exceptionType);
+			string type = string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Message}"), exceptionType);
+			Bitmap icon = WinFormsResourceService.GetBitmap(isUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
+
+			form.Text = isUnhandled ? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled}") : StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Handled}");
 			form.pictureBox.Image = icon;
 			form.lblExceptionText.Text = type;
 			form.exceptionView.Text = stacktrace;
 			form.btnContinue.Enabled = !isUnhandled;
+			form.chkBreakOnHandled.Visible = !isUnhandled;
+			form.chkBreakOnHandled.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.BreakOnHandled}", new StringTagPair("ExceptionName", exceptionType));
+			form.chkBreakOnHandled.Checked = true;
 			
 			// Showing the form as dialg seems like a resonable thing in the presence of potentially multiple
 			// concurent debugger evetns
 			form.ShowDialog(SD.WinForms.MainWin32Window);
 			
 			return form.Break;
+		}
+		
+		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+		{
+			if (chkBreakOnHandled.Visible && !chkBreakOnHandled.Checked) {
+				var list = process.Debugger.Options.ExceptionFilterList.ToList();
+				var entry = list.FirstOrDefault(item => item.Expression.Equals(exceptionType, StringComparison.OrdinalIgnoreCase));
+				if (entry == null) {
+					list.Add(new ExceptionFilterEntry(exceptionType) { IsActive = false });
+				} else {
+					entry.IsActive = false;
+				}
+				process.Debugger.Options.ExceptionFilterList = list;
+				process.Debugger.ReloadOptions();
+			}
+			base.OnClosing(e);
 		}
 		
 		void ExceptionViewDoubleClick(object sender, EventArgs e)

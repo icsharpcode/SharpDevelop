@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 using CSharpBinding.Refactoring;
 
 namespace CSharpBinding.FormsDesigner
@@ -147,7 +148,8 @@ namespace CSharpBinding.FormsDesigner
 			var primary = loader.GetPrimaryTypeDefinition();
 			var evtHandler = primary.GetMethods(m => m.Name == methodName, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
 			if (evtHandler == null) {
-				generator.InsertEventHandler(primary, methodName, evt, true);
+				var insertionType = GeneralOptionsPanel.InsertTodoComment ? InsertEventHandlerBodyKind.TodoComment : InsertEventHandlerBodyKind.Nothing;
+				generator.InsertEventHandler(primary, methodName, evt, true, insertionType);
 			} else {
 				CSharpBinding.Parser.CSharpFullParseInformation parseInfo;
 				var node = evtHandler.GetDeclaration(out parseInfo) as MethodDeclaration;

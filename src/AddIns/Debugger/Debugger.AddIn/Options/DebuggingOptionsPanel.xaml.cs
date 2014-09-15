@@ -19,15 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -60,13 +53,14 @@ namespace Debugger.AddIn.Options
 			exceptionFilterList = DebuggingOptions.Instance.ExceptionFilterList.ToList();
 			
 			if (exceptionFilterList.Count == 0) {
-				exceptionFilterList.Add(new ExceptionFilterEntry("*"));
+				exceptionFilterList.Add(new ExceptionFilterEntry("System.Exception"));
 			}
 		}
 		
 		void ChooseExceptionsClick(object sender, RoutedEventArgs e)
 		{
 			var dialog = new ChooseExceptionsDialog(exceptionFilterList);
+			dialog.Owner = Window.GetWindow(this);
 			if (dialog.ShowDialog() == true) {
 				exceptionFilterList = dialog.ExceptionFilterList;
 			}

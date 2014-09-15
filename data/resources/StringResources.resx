@@ -6331,7 +6331,7 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="ResourceEditor.BitmapView.UpdateBitmap" xml:space="preserve">
     <value>Update bitmap ...</value>
-    <comment>Text for the link label that make it possible to update the stored bitmap</comment>
+    <comment>Text for the button that makes it possible to update the stored bitmap</comment>
   </data>
   <data name="ResourceEditor.DeleteEntry.Confirm" xml:space="preserve">
     <value>Do you really want to delete the selected resource(s)?</value>
@@ -6713,8 +6713,7 @@ The resources files have been renamed/moved accordingly.</value>
     <value>Section Visible</value>
   </data>
   <data name="SharpReport.ContextMenu.Settings" xml:space="preserve">
-    <value>Base Settings
-</value>
+    <value>Base Settings</value>
   </data>
   <data name="SharpReport.Design" xml:space="preserve">
     <value>Design</value>
@@ -6736,6 +6735,10 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="SharpReport.DesignView.Toolbar.Printer" xml:space="preserve">
     <value>Send report to printer</value>
+  </data>
+  <data name="Sharpreport.Error.NoPrinter" xml:space="preserve">
+    <value>To run SharpDevelop Reports you need at least one(1) installed Printer</value>
+    <comment>Errormessage when no printer is installed</comment>
   </data>
   <data name="SharpReport.Error.NoReport" xml:space="preserve">
     <value>This is not a valid report created with 'SharpReport'.</value>
@@ -6850,13 +6853,19 @@ The resources files have been renamed/moved accordingly.</value>
     <value>Label</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings" xml:space="preserve">
-    <value>Basic Report Settings</value>
+    <value>Base settings</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings,ReportType" xml:space="preserve">
-    <value>Report Type</value>
+    <value>Report Type :</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.FileName" xml:space="preserve">
     <value>File Name :</value>
+  </data>
+  <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
+    <value>Graphics Unit</value>
+  </data>
+  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
+    <value>Basic report settings</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Report Model</value>
@@ -6874,7 +6883,7 @@ The resources files have been renamed/moved accordingly.</value>
     <value>Report Name :</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportType" xml:space="preserve">
-    <value>Report Type</value>
+    <value>Report Type :</value>
   </data>
   <data name="SharpReport.Wizard.Layout.Column" xml:space="preserve">
     <value>Select the GroupColumn</value>
@@ -6899,6 +6908,9 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="SharpReport.Wizard.PullModel.CommandText.ToolTip" xml:space="preserve">
     <value>[Delete this text and enter a valid Sql String]</value>
+  </data>
+  <data name="SharpReport.Wizard.PushModel" xml:space="preserve">
+    <value>Push Data Model</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Available Fields</value>
@@ -7498,7 +7510,7 @@ The resources files have been renamed/moved accordingly.</value>
     <value>WPF Navigation Application</value>
   </data>
   <data name="Templates.SharpReport.NewReport" xml:space="preserve">
-    <value>Create a new Report using the Report Wizard</value>
+    <value>Create a new report using the Report Wizard</value>
   </data>
   <data name="XML.FormsDesigner.SideBar.CustomizeSidebar" xml:space="preserve">
     <value>Configure Sidebar...</value>
@@ -8199,21 +8211,101 @@ a line break</value>
     <value>Break on</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.ExceptionFilter.ColumnExpression" xml:space="preserve">
-    <value>Exception name expression (wildcards are allowed)</value>
+    <value>Full exception name</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.ChooseExceptions" xml:space="preserve">
     <value>Choose exceptions</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Description" xml:space="preserve">
-    <value>Base Settings and Page Layout</value>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.BreakOnHandled" xml:space="preserve">
+    <value>Break on handled ${ExceptionName}</value>
   </data>
-  <data name="SharpReport.Wizard.PageLayout" xml:space="preserve">
-    <value>Page Layout :</value>
+  <data name="MainWindow.Windows.TaskList.Solution" xml:space="preserve">
+    <value>Solution</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.AllOpenedFiles" xml:space="preserve">
+    <value>All opened files</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.CurrentFile" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Namespace" xml:space="preserve">
+    <value>Namespace</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.CurrentClass" xml:space="preserve">
+    <value>Class/Module</value>
+  </data>
+  <data name="ResourceEditor.BitmapView.UpdateIcon" xml:space="preserve">
+    <value>Update icon ...</value>
+    <comment>Text for the button that makes it possible to update the stored icon</comment>
+  </data>
+  <data name="ResourceEditor.Messages.CantLoadResourceFromFile" xml:space="preserve">
+    <value>Can't load resource from file: {0}</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.AddBooleanEntry" xml:space="preserve">
+    <value>Add &amp;boolean entry</value>
+  </data>
+  <data name="ResourceEditor.Filter" xml:space="preserve">
+    <value>Filter:</value>
+  </data>
+  <data name="ResourceEditor.BitmapView.UpdateCursor" xml:space="preserve">
+    <value>Update cursor ...</value>
+    <comment>Text for the button that makes it possible to update the stored cursor</comment>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.SearchForIssues" xml:space="preserve">
+    <value>Search For Issues...</value>
+  </data>
+  <data name="Dialog.SearchForIssues.AutoFix" xml:space="preserve">
+    <value>Automatically fix issues if possible</value>
+  </data>
+  <data name="Dialog.Options.ServicesReferencesText" xml:space="preserve">
+    <value>Service References</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.Reformat" xml:space="preserve">
+    <value>Reformat</value>
+  </data>
+  <data name="Global.Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CustomTool.RunOnBuild" xml:space="preserve">
+    <value>Run on Build</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CustomTool.Filenames" xml:space="preserve">
+    <value>Filenames:</value>
+  </data>
+  <data name="Debugger.Visualizers.ColumnPickerLabel" xml:space="preserve">
+    <value>Columns:</value>
+  </data>
+  <data name="Global.Shortcuts.Ctrl" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="Global.Shortcuts.Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Global.Shortcuts.Alt" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="Global.Shortcuts.Win" xml:space="preserve">
+    <value>Win</value>
+  </data>
+  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
+    <value>Clear console</value>
+  </data>
+  <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
+    <value>Delete history</value>
   </data>
   <data name="SharpReport.Wizard.Welcome" xml:space="preserve">
-    <value>Welcome to the SharpDevelop ReportWizard</value>
+    <value>Welcome to the SharpReport Wizard</value>
+  </data>
+  <data name="SharpReport.Wizard.BaseSettings.Description" xml:space="preserve">
+    <value>Basic report settings</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.SelectProject" xml:space="preserve">
-    <value>Select a Project</value>
+    <value>Classes in selected Projecct</value>
+  </data>
+  <data name="SharpReport.Wizard.PageLayout" xml:space="preserve">
+    <value>Page Layout </value>
   </data>
 </root>

@@ -43,6 +43,7 @@ namespace Debugger
 		/// <summary> Is this method in form 'return this.field;'? </summary>
 		public static uint GetBackingFieldToken(this IMethod method)
 		{
+			if (method.IsVirtual || method.Parameters.Count != 0) return 0;
 			return backingFieldToken.GetValue(method.UnresolvedMember, delegate {
 				ICorDebugCode corCode;
 				try {

@@ -38,7 +38,6 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace CSharpBinding.Parser
 {
@@ -51,38 +50,6 @@ namespace CSharpBinding.Parser
 			return Path.GetExtension(fileName).Equals(".CS", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		/*
-		void RetrieveRegions(ISyntaxTree cu, ICSharpCode.NRefactory.Parser.SpecialTracker tracker)
-		{
-			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i) {
-				ICSharpCode.NRefactory.PreprocessingDirective directive = tracker.CurrentSpecials[i] as ICSharpCode.NRefactory.PreprocessingDirective;
-				if (directive != null) {
-					if (directive.Cmd == "#region") {
-						int deep = 1;
-						for (int j = i + 1; j < tracker.CurrentSpecials.Count; ++j) {
-							ICSharpCode.NRefactory.PreprocessingDirective nextDirective = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.PreprocessingDirective;
-							if (nextDirective != null) {
-								switch (nextDirective.Cmd) {
-									case "#region":
-										++deep;
-										break;
-									case "#endregion":
-										--deep;
-										if (deep == 0) {
-											cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim(), DomRegion.FromLocation(directive.StartPosition, nextDirective.EndPosition)));
-											goto end;
-										}
-										break;
-								}
-							}
-						}
-						end: ;
-					}
-				}
-			}
-		}
-		 */
-		
 		public ITextSource GetFileContent(FileName fileName)
 		{
 			return SD.FileService.GetFileContent(fileName);
@@ -94,7 +61,6 @@ namespace CSharpBinding.Parser
 			var csharpProject = parentProject as CSharpProject;
 			
 			CSharpParser parser = new CSharpParser(csharpProject != null ? csharpProject.CompilerSettings : null);
-			parser.GenerateTypeSystemMode = !fullParseInformationRequested;
 			
 			SyntaxTree cu = parser.Parse(fileContent, fileName);
 			cu.Freeze();
@@ -135,7 +101,7 @@ namespace CSharpBinding.Parser
 					int endOffset;
 					int searchOffset = 0;
 					// HACK: workaround for parser bug: uses \n instead of \r\n in comment.Content
-					string commentContent = document.GetText(commentStartOffset, commentEndOffset - commentStartOffset + 1);
+					string commentContent = document.GetText(commentStartOffset, Math.Min(commentEndOffset - commentStartOffset + 1, commentEndOffset - commentStartOffset));
 					do {
 						int start = commentStartOffset + searchOffset;
 						int absoluteOffset = document.IndexOf(match, start, document.TextLength - start, StringComparison.Ordinal);

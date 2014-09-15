@@ -38,13 +38,18 @@ namespace CSharpBinding
 	{
 		public static TextEditorOptions ToEditorOptions(this ITextEditor editor)
 		{
+			return ToEditorOptions(editor.Options);
+		}
+		
+		public static TextEditorOptions ToEditorOptions(this ITextEditorOptions options)
+		{
 			return new TextEditorOptions {
-				TabsToSpaces = editor.Options.ConvertTabsToSpaces,
-				TabSize = editor.Options.IndentationSize,
-				IndentSize = editor.Options.IndentationSize,
-				ContinuationIndent = editor.Options.IndentationSize,
-				LabelIndent = -editor.Options.IndentationSize,
-				WrapLineLength = editor.Options.VerticalRulerColumn,
+				TabsToSpaces = options.ConvertTabsToSpaces,
+				TabSize = options.IndentationSize,
+				IndentSize = options.IndentationSize,
+				ContinuationIndent = options.IndentationSize,
+				LabelIndent = -options.IndentationSize,
+				WrapLineLength = options.VerticalRulerColumn
 			};
 		}
 		

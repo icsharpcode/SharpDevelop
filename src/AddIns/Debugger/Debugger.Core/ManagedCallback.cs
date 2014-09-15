@@ -141,6 +141,11 @@ namespace Debugger
 			isInCallback = false;
 		}
 		
+		public void ReloadOptions()
+		{
+			exceptionFilter = null;
+		}
+		
 		#region Program folow control
 		
 		public void StepComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugStepper pStepper, CorDebugStepReason reason)
@@ -557,47 +562,24 @@ namespace Debugger
 			ExitCallback();
 		}
 		
-		Regex filterRegex;
-		
-		static string ConvertWildcardsToRegex(string searchPattern)
-		{
-			if (string.IsNullOrEmpty(searchPattern))
-				return "";
-			
-			StringBuilder builder = new StringBuilder();
-			
-			foreach (char ch in searchPattern) {
-				switch (ch) {
-					case '?':
-						builder.Append(".");
-						break;
-					case '*':
-						builder.Append(".*");
-						break;
-					default:
-						builder.Append(Regex.Escape(ch.ToString()));
-						break;
-				}
-			}
-			
-			return builder.ToString();
-		}
+		Dictionary<string, bool> exceptionFilter;
 
 		bool BreakOnException(Thread thread)
 		{
 			IType exceptionType = thread.CurrentException.Type;
 			
-			if (filterRegex == null) {
-				var exceptionFilterList = thread.Process.Options.ExceptionFilterList.Where(i => i.IsActive).Select(s => "(" + ConvertWildcardsToRegex(s.Expression) + ")");
-				filterRegex = new Regex(string.Join("|", exceptionFilterList), RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+			if (exceptionFilter == null) {
+				exceptionFilter = thread.Process.Options.ExceptionFilterList
+					.ToDictionary(e => e.Expression, e => e.IsActive, StringComparer.OrdinalIgnoreCase);
 			}
 			
-			foreach (var baseType in exceptionType.GetNonInterfaceBaseTypes()) {
-				if (filterRegex.IsMatch(baseType.ReflectionName))
-					return true;
+			foreach (var baseType in exceptionType.GetNonInterfaceBaseTypes().Reverse()) {
+				bool isActive;
+				if (exceptionFilter.TryGetValue(baseType.ReflectionName, out isActive))
+					return isActive;
 			}
 			
-			return false;
+			return true;
 		}
 		
 		public void ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)

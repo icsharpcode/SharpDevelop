@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using Debugger.AddIn.Visualizers;
@@ -320,17 +321,66 @@ namespace Debugger.AddIn.TreeModel
 					ienumerableType.Name,
 					ienumerableType.ReflectionName,
 					string.Empty,
-					() => {
-						// Note that this will bind to the current content forever and it will not reeveluate
-						Value list = CreateListFromIEnumerable(ienumerableTypeCopy, GetValue()).GetPermanentReferenceOfHeapValue();
-						return GetIListChildren(() => list);
-					}
+					() => LazyEvaluateIEnumerableOfT(ienumerableType, GetValue())
 				);
 			}
 			
 			foreach(TreeNode node in GetMembers(publicInstance)) {
 				yield return node;
 			}
+		}
+		
+		IEnumerable<TreeNode> LazyEvaluateIEnumerableOfT(ParameterizedType targetType, Value value)
+		{
+			var enumerableType = targetType.Compilation.FindType(KnownTypeCode.IEnumerableOfT).GetDefinition();
+			var enumeratorType = targetType.Compilation.FindType(KnownTypeCode.IEnumeratorOfT).GetDefinition();
+			var substitution = new TypeParameterSubstitution(targetType.TypeArguments, EmptyList<IType>.Instance);
+			IMethod getEnumerator = enumerableType.GetMethods(m => m.Name == "GetEnumerator", GetMemberOptions.IgnoreInheritedMembers)
+				.First(m => m.ReturnType.GetDefinition().Equals(enumeratorType))
+				.Specialize(substitution);
+			IMethod moveNext = enumeratorType.GetMethods(m => m.Name == "MoveNext").First();
+			IProperty current = enumeratorType.GetProperties(p => p.Name == "Current").First();
+			
+			Value enumerator;
+			GetValueException lastError;
+			enumerator = EvaluateOrError(() => Debugger.Value.InvokeMethod(WindowsDebugger.EvalThread, value, getEnumerator), out lastError);
+			if (lastError != null) {
+				yield return new TreeNode(null, "(error)", lastError.Message, string.Empty, null);
+				yield break;
+			}
+			int currentIndex = -1;
+			var moveNextResult = EvaluateOrError(() => Debugger.Value.InvokeMethod(WindowsDebugger.EvalThread, enumerator, moveNext), out lastError);
+			while (lastError == null && (bool)moveNextResult.PrimitiveValue) {
+				currentIndex++;
+				var currentValue = EvaluateOrError(() => enumerator.GetPropertyValue(WindowsDebugger.EvalThread, current), out lastError);
+				yield return new ValueNode(ClassBrowserIconService.Field, "[" + currentIndex + "]", () => currentValue);
+				moveNextResult = EvaluateOrError(() => Debugger.Value.InvokeMethod(WindowsDebugger.EvalThread, enumerator, moveNext), out lastError);
+			}
+			
+			if (lastError != null) {
+				yield return new TreeNode(null, "(error)", lastError.Message, string.Empty, null);
+				yield break;
+			}
+			
+			if (currentIndex < 0)
+				yield return new TreeNode("(empty)", null);
+		}
+		
+		Value EvaluateOrError(Func<Value> expression, out GetValueException error)
+		{
+			error = null;
+			Debugger.Value value;
+			try {
+				value = expression();
+			} catch (GetValueException ex) {
+				error = ex;
+				return null;
+			}
+			if (value.Type.GetNonInterfaceBaseTypes().Any(t => t.IsKnownType(KnownTypeCode.Exception))) {
+				error = new GetValueException(value.GetPropertyValue(WindowsDebugger.EvalThread, "Message").AsString());
+				return null;
+			}
+			return value;
 		}
 		
 		IEnumerable<TreeNode> GetMembers(IEnumerable<IMember> members)

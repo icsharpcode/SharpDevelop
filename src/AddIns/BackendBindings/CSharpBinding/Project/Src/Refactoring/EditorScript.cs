@@ -81,6 +81,16 @@ namespace CSharpBinding.Refactoring
 			editor.Select(startOffset, endOffset - startOffset);
 		}
 		
+		public override void Select(int startOffset, int endOffset)
+		{
+			editor.Select(Math.Min(startOffset, endOffset), Math.Abs(endOffset - startOffset));
+		}
+		
+		public override void Select(TextLocation start, TextLocation end)
+		{
+			Select(editor.Document.GetOffset(start), editor.Document.GetOffset(end));
+		}
+		
 		public override Task Link(params AstNode[] nodes)
 		{
 			var segs = nodes.Select(node => GetSegment(node)).ToArray();

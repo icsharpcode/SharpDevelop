@@ -156,7 +156,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	public interface IDebuggerOptions
 	{
 		bool EnableJustMyCode { get; }
-		bool EnableEditAndContinue { get; }
 		bool SuppressJITOptimization { get; }
 		bool SuppressNGENOptimization { get; }
 		bool StepOverDebuggerAttributes { get; }
@@ -198,9 +197,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public bool EnableJustMyCode {
 			get { return true; }
-		}
-		public bool EnableEditAndContinue {
-			get { return false; }
 		}
 		public bool SuppressJITOptimization {
 			get { return false; }

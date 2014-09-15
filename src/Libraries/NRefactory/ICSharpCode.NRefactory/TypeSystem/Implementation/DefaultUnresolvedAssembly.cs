@@ -344,10 +344,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				ITypeReference typeRef;
 				if (unresolvedAssembly.typeDefinitions.TryGetValue(topLevelTypeName, out td))
 					return GetTypeDefinition(td);
-				else if (unresolvedAssembly.typeForwarders.TryGetValue(topLevelTypeName, out typeRef))
-					return typeRef.Resolve(compilation.TypeResolveContext).GetDefinition();
-				else
-					return null;
+				if (unresolvedAssembly.typeForwarders.TryGetValue(topLevelTypeName, out typeRef)) {
+					// Protect against cyclic type forwarders:
+					using (var busyLock = BusyManager.Enter(typeRef)) {
+						if (busyLock.Success)
+							return typeRef.Resolve(compilation.TypeResolveContext).GetDefinition();
+					}
+				}
+				return null;
 			}
 			
 			ITypeDefinition GetTypeDefinition(IUnresolvedTypeDefinition unresolved)

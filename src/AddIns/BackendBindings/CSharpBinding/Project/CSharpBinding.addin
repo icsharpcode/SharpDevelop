@@ -165,7 +165,7 @@
 	
 	<Path path = "/SharpDevelop/Workbench/MainMenu/Search">
 		<MenuItem id = "SearchForIssues"
-		          label="Search For Issues..."
+		          label="${res:XML.MainMenu.SearchMenu.SearchForIssues}"
 		          class="CSharpBinding.Refactoring.SearchForIssuesCommand"/>
 	</Path>
 	

@@ -147,6 +147,15 @@ namespace ICSharpCode.NRefactory.CSharp
 					needsIndent = true;
 					isAtStartOfLine = true;
 					break;
+				case CommentType.MultiLineDocumentation:
+					textWriter.Write("/**");
+					textWriter.Write(content);
+					textWriter.Write("*/");
+					column += 3;
+					UpdateEndLocation(content, ref line, ref column);
+					column += 2;
+					isAtStartOfLine = false;
+					break;
 				default:
 					textWriter.Write(content);
 					column += content.Length;
