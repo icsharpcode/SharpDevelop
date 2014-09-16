@@ -12,9 +12,9 @@
                  CanSelectPreviousPage="true"
             	  CanSelectNextPage="false">
 	
-	<Grid ShowGridLines="true" >
+	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="150"></ColumnDefinition>
+			<ColumnDefinition Width="Auto"></ColumnDefinition>
 			<ColumnDefinition></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 		
@@ -24,16 +24,16 @@
 			<RowDefinition Height="200"></RowDefinition>
 		</Grid.RowDefinitions>
 		
-		<TextBlock Text="{core:Localize SharpReport.Wizard.PushModel.SelectProject}" FontSize="15" ></TextBlock>
-		<TextBlock Text="{core:Localize SharpReport.Wizard.PushModel.AvailableFields}" FontSize="15" Grid.Column ="1" Margin="30,0,0,0"></TextBlock>
+		<TextBlock Text="{core:Localize SharpReport.Wizard.PushModel.SelectProject}"
+		           Grid.ColumnSpan="2" FontSize="15" ></TextBlock>
+		<ComboBox Name="_cboTypes" Visibility="Hidden" Grid.Row="1" SelectionChanged="_cboTypes_SelectionChanged" MinWidth="100" ></ComboBox>
 		
-		<ComboBox Name="_cboTypes" Visibility="Hidden" Grid.Row="1" SelectionChanged="_cboTypes_SelectionChanged" ></ComboBox>
-		
+		<TextBlock Text="{core:Localize SharpReport.Wizard.PushModel.AvailableFields}" FontSize="15" Grid.Column ="1" Margin="15,0,0,0"></TextBlock>
 		<DataGrid  Name="_DataGrid"
 		          ItemsSource="{Binding}"
 		          CanUserAddRows="True"
 		          CanUserDeleteRows="True"
-		          AutoGenerateColumns="False" Grid.Row="1" Grid.RowSpan="2" Margin="30,10,30,5" Width="400" Grid.Column="1">
+		          AutoGenerateColumns="False" Grid.Row="2" Grid.RowSpan="2" Margin="5,10,30,5" Width="400" Grid.Column="1">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="ColumnName" Binding="{Binding ColumnName}" Width="200"></DataGridTextColumn>
 				<DataGridComboBoxColumn Header="DataType" x:Name="cboType" SelectedItemBinding="{Binding DataTypeName}" Width="*"></DataGridComboBoxColumn>

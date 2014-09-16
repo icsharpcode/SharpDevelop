@@ -6864,9 +6864,6 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Graphics Unit</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Basic report settings</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Report Model</value>
   </data>
@@ -6914,17 +6911,6 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Available Fields</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Path to Schema (.xsd) File</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Save Result (Schema and Data)</value>
-    <comment>Save displayed Data to *.xsd File</comment>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Save Result (Schema only)</value>
-    <comment>Save only the Schema to *.xsd File</comment>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Show Query result</value>
@@ -8303,7 +8289,7 @@ a line break</value>
     <value>Basic report settings</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.SelectProject" xml:space="preserve">
-    <value>Classes in selected Projecct</value>
+    <value>Classes in selected Project</value>
   </data>
   <data name="SharpReport.Wizard.PageLayout" xml:space="preserve">
     <value>Page Layout </value>

@@ -60,19 +60,21 @@
 		          ItemsSource="{Binding Source={StaticResource reportTypeEnum}}">
 		</ComboBox>
 		
-		
 		<Label Content="{core:Localize SharpReport.Wizard.BaseSettings.ReportName}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="4"></Label>
 		<TextBox Name="_ReportName" Margin="10,5,0,5"  Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3"></TextBox>
 		
 		<Label Content="{core:Localize SharpReport.Wizard.BaseSettings.FileName}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="5"></Label>
 		<TextBox Name="_Filename" Margin="10,5,0,5" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3"></TextBox>
 		
-		
-		<Label Content="{core:Localize SharpReport.Wizard.PageLayout}" Grid.Column="1" Grid.Row="6"  Margin="0,5,0,5"></Label>
-		
-		<RadioButton Name="_Legal" GroupName="PageLayout" Content="Legal" Grid.Column="1" Grid.Row="7"  Margin="0,5,0,5" ></RadioButton>
-		<RadioButton Name="_Landscape" GroupName="PageLayout" Content="Landscape"  Grid.Row="7" Grid.Column="2" Margin="0,5,0,5"></RadioButton>
-	
+		<GroupBox Grid.Row="6"  Grid.Column="1" Margin="0,5,0,5" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" BorderThickness="2">
+			<GroupBox.Header>
+			<Label Content="{core:Localize SharpReport.Wizard.PageLayout}"></Label>
+			</GroupBox.Header>
+			<StackPanel Orientation="Horizontal">
+				<RadioButton Name="_Legal" GroupName="PageLayout" Content="Legal"   Margin="10,5,0,5" ></RadioButton>
+				<RadioButton Name="_Landscape" GroupName="PageLayout" Content="Landscape"  Grid.Column="2" Margin="30,5,0,5"></RadioButton>
+			</StackPanel>
+		</GroupBox>
 	</Grid>
 
 </xctk:WizardPage>
