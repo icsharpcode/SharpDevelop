@@ -35,7 +35,6 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		
 		public static XmlDocument LoadXmlFromStream(Stream stream)
 		{
-			Console.Write("LoadXml");
 			if (stream == null)
 				throw new ArgumentNullException("stream");
 			var xmlDocument = new XmlDocument();

@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Items;
 
@@ -27,8 +28,7 @@ namespace ICSharpCode.Reporting.Factories
 			}
 			
 			foreach (var section in reportModel.SectionCollection) {
-					section.Size = new Size(reportModel.ReportSettings.PageSize.Width - reportModel.ReportSettings.LeftMargin - reportModel.ReportSettings.RightMargin,
-						GlobalValues.DefaultSectionHeight);
+				section.Size = new Size(reportModel.ReportSettings.PrintableWidth(),GlobalValues.DefaultSectionHeight);
 			}
 			
 			return reportModel;
