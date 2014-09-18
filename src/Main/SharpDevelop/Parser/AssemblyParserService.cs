@@ -391,7 +391,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				return GetAssemblyModel(fileName, includeInternalMembers);
 			} catch (BadImageFormatException) {
 				SD.MessageService.ShowWarningFormatted("${res:ICSharpCode.SharpDevelop.Dom.AssemblyInvalid}", Path.GetFileName(fileName));
-			} catch (FileNotFoundException) {
+			} catch (IOException) {
 				SD.MessageService.ShowWarningFormatted("${res:ICSharpCode.SharpDevelop.Dom.AssemblyNotAccessible}", fileName);
 			}
 			

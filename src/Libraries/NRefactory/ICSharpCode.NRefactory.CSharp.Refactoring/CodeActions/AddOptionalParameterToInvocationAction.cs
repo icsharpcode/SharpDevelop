@@ -54,8 +54,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			bool[] parameterIsSpecified = new bool[method.Parameters.Count];
 			var argumentToParameterMap = resolveResult.GetArgumentToParameterMap();
 			if (argumentToParameterMap != null) {
-				foreach (int paramIndex in argumentToParameterMap)
-					parameterIsSpecified[paramIndex] = true;
+				foreach (int paramIndex in argumentToParameterMap) {
+					if (paramIndex >= 0)
+						parameterIsSpecified[paramIndex] = true;
+				}
 			} else {
 				for (int i = 0; i < Math.Min(resolveResult.Arguments.Count, parameterIsSpecified.Length); i++) {
 					parameterIsSpecified[i] = true;
