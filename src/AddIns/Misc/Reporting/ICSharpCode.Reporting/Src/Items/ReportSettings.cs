@@ -162,11 +162,10 @@ namespace ICSharpCode.Reporting.Items
 			get {
 				if (!Landscape) {
 					return pageSize;
-				} else {
-					return new Size(pageSize.Height,pageSize.Width);
 				}
-				 }
-			set { pageSize = value; }
+				return new Size(pageSize.Height, pageSize.Width);
+			}
+//			set { pageSize = value; }
 		}
 		
 		

@@ -80,7 +80,6 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			foreach (var component in viewContent.Host.Container.Components) {
 				var section = component as BaseSection;
 				if (section != null) {
-//					reportDesignerWriter.Save(component,xml);
 					reportDesignerWriter.Save(section,xml);
 				}
 			}

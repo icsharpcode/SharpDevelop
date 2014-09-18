@@ -46,20 +46,20 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 
 		void CreateFormSheetReport(ReportWizardContext context)
 		{
-			GenerateBaseSettings(context);
+			ReportModel.ReportSettings = GenerateBaseSettings(context);
 			CreateReportHeader(context);
 		}
 		
 		void CreateDataReport(ReportWizardContext context)
 		{
-			GenerateBaseSettings(context);
+			ReportModel.ReportSettings = GenerateBaseSettings(context);
 			CreateReportHeader(context);
 			CreatePageHeader(context);
 			CreateDetailsSection(context);
 			CreatePageFooter ();
 		}
 		
-		void GenerateBaseSettings (ReportWizardContext context)	{
+		ReportSettings GenerateBaseSettings (ReportWizardContext context)	{
 			var pageOneContext = (PageOneContext)context.PageOneContext;
 			var reportSettings = ReportModel.ReportSettings;
 			reportSettings.DataModel = pageOneContext.DataModel;
@@ -67,6 +67,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			reportSettings.Landscape = !pageOneContext.Legal;
 			reportSettings.ReportName = pageOneContext.ReportName;
 			reportSettings.ReportType = pageOneContext.ReportType;
+			return reportSettings;
 		}
 
 		
