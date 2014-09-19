@@ -143,6 +143,7 @@
     <Compile Include="src\Dialogs\IStringBasedEditorDialog.cs" />
     <Compile Include="src\Factory\CreateFormSheetFromModel.cs" />
     <Compile Include="src\Globals\DesignerGlobals.cs" />
+    <Compile Include="src\Globals\DesignerHelper.cs" />
     <Compile Include="src\Globals\GlobalLists.cs" />
     <Compile Include="src\Globals\StringWriterWithEncoding.cs" />
     <Compile Include="src\ReportWizard\Dialog\IHasContext.cs" />

@@ -9,12 +9,13 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.BaseClasses;
 
 using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.Addin.Globals;
 using ICSharpCode.Reporting.Addin.ReportWizard.ViewModels;
 
 namespace ICSharpCode.Reporting.Addin.ReportWizard
@@ -44,11 +45,13 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			}
 		}
 
+		
 		void CreateFormSheetReport(ReportWizardContext context)
 		{
 			ReportModel.ReportSettings = GenerateBaseSettings(context);
 			CreateReportHeader(context);
 		}
+		
 		
 		void CreateDataReport(ReportWizardContext context)
 		{
@@ -58,6 +61,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			CreateDetailsSection(context);
 			CreatePageFooter ();
 		}
+		
 		
 		ReportSettings GenerateBaseSettings (ReportWizardContext context)	{
 			var pageOneContext = (PageOneContext)context.PageOneContext;
@@ -70,7 +74,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			return reportSettings;
 		}
 
-		
 		
 		void CreateDetailsSection(ReportWizardContext context){
 			var pushModelContext = (PushModelContext)context.PushModelContext;
@@ -90,16 +93,15 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 		void CreateReportHeader(ReportWizardContext context){
 			var pageOneContext = (PageOneContext)context.PageOneContext;
 			
-			var headerText = new BaseTextItem();
+			var centerLocation = DesignerHelper.AlignCenter(ReportModel.ReportSettings.PrintableWidth(),GlobalValues.PreferedSize.Width);
+			var headerText = new BaseTextItem(){
+				Text = String.IsNullOrEmpty(pageOneContext.ReportName) ? GlobalValues.DefaultReportName : pageOneContext.ReportName,
+				Location = new Point(centerLocation,10)
+			};
 			
-			headerText.Text = String.IsNullOrEmpty(pageOneContext.ReportName) ? GlobalValues.DefaultReportName : pageOneContext.ReportName;
-			
-			var xLoc = (ReportModel.ReportSettings.PrintableWidth() - headerText.Size.Width) / 2;
-			headerText.Location = new Point(xLoc,4);
 			ReportModel.ReportHeader.Items.Add(headerText);
 			
-			xLoc = ReportModel.ReportSettings.PrintableWidth() - GlobalValues.PreferedSize.Width - 20;
-		
+			var xLoc = DesignerHelper.AlignRight( ReportModel.ReportSettings.PrintableWidth(),GlobalValues.PreferedSize.Width) - 5;
 			var dateText = new BaseTextItem(){
 				Text ="= Today.Today",
 				Location = new Point(xLoc ,10)
@@ -133,14 +135,17 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			
 		}
 
+		
 		void CreatePageFooter()
 		{
+			
 			var lineNrField = new BaseTextItem() {
 				Text = "='Page : ' + Globals!PageNumber + ' of ' + Globals!Pages + ' Page(s)'",
 				Name = "LineNumber",
-				Location = new Point(300,10),
 				Size = new Size (GlobalValues.PreferedSize.Width * 2,GlobalValues.PreferedSize.Height)
 			};
+			var xLoc = DesignerHelper.AlignRight( ReportModel.ReportSettings.PrintableWidth(),lineNrField.Size.Width) - 5;
+			lineNrField.Location = new Point(xLoc,10);
 			ReportModel.PageFooter.Items.Add(lineNrField);
 		}
 		
@@ -159,6 +164,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			var poc = (PageOneContext)context.PageOneContext;
 			return poc.ReportType.Equals(ReportType.DataReport);
 		}
+		
 		
 		public IReportModel ReportModel {get;private set;}
 	}
