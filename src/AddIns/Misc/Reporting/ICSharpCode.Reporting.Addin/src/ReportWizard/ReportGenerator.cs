@@ -82,37 +82,19 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 				Location = new Point(5,5),
 				Size = new Size(ReportModel.ReportSettings.PrintableWidth() - 10,GlobalValues.PreferedSize.Height * 2)
 			};
-			
-			foreach (var element in pushModelContext.Items) {
-				var dataItem = new BaseDataItem(){
-					Name = element.ColumnName,
-					Text = element.ColumnName,
-					ColumnName = element.ColumnName,
-					DataType = element.DataTypeName
-				};
-				row.Items.Add(dataItem);
-			}
-				
-			AdjustItems(row.Items,startLocation);
+			var list = CreateItems(pushModelContext);
+			row.Items.AddRange(list); 
 			ReportModel.DetailSection.Items.Add(row);
 		}
 		
 		
 		void CreateDetailsSection(ReportWizardContext context){
 			var pushModelContext = (PushModelContext)context.PushModelContext;
-			foreach (var element in pushModelContext.Items) {
-				var dataItem = new BaseDataItem(){
-					Name = element.ColumnName,
-					Text = element.ColumnName,
-					ColumnName = element.ColumnName,
-					DataType = element.DataTypeName
-				};
-				ReportModel.DetailSection.Items.Add(dataItem);
-			}
-			AdjustItems(ReportModel.DetailSection.Items,startLocation);
+			var list = CreateItems(pushModelContext);
+			ReportModel.DetailSection.Items.AddRange(list);
 		}
 		
-		
+	
 		void CreateReportHeader(ReportWizardContext context){
 			var pageOneContext = (PageOneContext)context.PageOneContext;
 			
@@ -173,7 +155,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 		}
 		
 		
-		void AdjustItems (List<IPrintableObject> list,int startValue ) {
+		static void AdjustItems (List<IPrintableObject> list,int startValue ) {
 		
 			var xLocation = startValue;
 			foreach (var element in list) {
@@ -181,6 +163,23 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 				xLocation = xLocation + GlobalValues.PreferedSize.Width + gap;
 			}
 		}
+		
+		
+		static List<IPrintableObject> CreateItems(PushModelContext context) {
+			var list = new List<IPrintableObject>();
+			foreach (var element in context.Items) {
+				var dataItem = new BaseDataItem(){
+					Name = element.ColumnName,
+					Text = element.ColumnName,
+					ColumnName = element.ColumnName,
+					DataType = element.DataTypeName
+				};
+				list.Add(dataItem);
+			}
+			AdjustItems(list,startLocation);
+			return list;
+		}
+		
 		
 		static bool IsDataReport(ReportWizardContext context)
 		{

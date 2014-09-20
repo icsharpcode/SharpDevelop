@@ -17,8 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Drawing;
-using ICSharpCode.Reporting.Interfaces;
 
 namespace ICSharpCode.Reporting.Items
 {
