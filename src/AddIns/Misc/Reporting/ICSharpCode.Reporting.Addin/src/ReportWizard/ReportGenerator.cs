@@ -58,7 +58,8 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			ReportModel.ReportSettings = GenerateBaseSettings(context);
 			CreateReportHeader(context);
 			CreatePageHeader(context);
-			CreateDetailsSection(context);
+			//CreateDetailsSection(context);
+			CreateDetailsWithRow(context);
 			CreatePageFooter ();
 		}
 		
@@ -74,6 +75,28 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			return reportSettings;
 		}
 
+		
+		void CreateDetailsWithRow (ReportWizardContext context) {
+			var pushModelContext = (PushModelContext)context.PushModelContext;
+			var row = new BaseRowItem(){
+				Location = new Point(5,5),
+				Size = new Size(ReportModel.ReportSettings.PrintableWidth() - 10,GlobalValues.PreferedSize.Height * 2)
+			};
+			
+			foreach (var element in pushModelContext.Items) {
+				var dataItem = new BaseDataItem(){
+					Name = element.ColumnName,
+					Text = element.ColumnName,
+					ColumnName = element.ColumnName,
+					DataType = element.DataTypeName
+				};
+				row.Items.Add(dataItem);
+			}
+				
+			AdjustItems(row.Items,startLocation);
+			ReportModel.DetailSection.Items.Add(row);
+		}
+		
 		
 		void CreateDetailsSection(ReportWizardContext context){
 			var pushModelContext = (PushModelContext)context.PushModelContext;
