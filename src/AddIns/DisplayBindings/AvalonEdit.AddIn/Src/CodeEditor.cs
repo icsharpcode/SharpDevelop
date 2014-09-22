@@ -59,8 +59,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		
 		QuickClassBrowser quickClassBrowser;
-		readonly CodeEditorView primaryTextEditor;
-		readonly CodeEditorAdapter primaryTextEditorAdapter;
+		private CodeEditorView primaryTextEditor;
+		private CodeEditorView secondaryTextEditor;
+		private CodeEditorAdapter primaryTextEditorAdapter;
 		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
 		readonly IChangeWatcher changeWatcher;
@@ -71,8 +72,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return primaryTextEditor; }
 		}
 		
+		public CodeEditorView SecondaryTextEditor{
+			get{ return secondaryTextEditor; }
+		}
+		
 		public CodeEditorView ActiveTextEditor {
-			get { return primaryTextEditor; }
+		    get
+		    {
+                // we return the editor that has keyboard focus in it.
+		        if (secondaryTextEditor != null && secondaryTextEditor.IsKeyboardFocusWithin)
+		            return secondaryTextEditor;
+
+		        return primaryTextEditor;
+		    }
 		}
 		
 		TextDocument document;
@@ -130,23 +142,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (changeWatcher != null) {
 						changeWatcher.Initialize(this.Document, value);
 					}
-					UpdateSyntaxHighlighting(value);
+					
+					UpdateSyntaxHighlighting(PrimaryTextEditor, value);
+					
+					
 					FetchParseInformation();
 				}
 			}
 		}
 		
-		void UpdateSyntaxHighlighting(FileName fileName)
+		void UpdateSyntaxHighlighting(CodeEditorView editorView, FileName fileName)
 		{
-			var oldHighlighter = primaryTextEditor.GetService<IHighlighter>();
+			var oldHighlighter = editorView.GetService<IHighlighter>();
 			
 			var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 			var highlighter = SD.EditorControlService.CreateHighlighter(document);
 
-			primaryTextEditor.SyntaxHighlighting = highlighting;
-			primaryTextEditor.TextArea.TextView.LineTransformers.RemoveAll(t => t is HighlightingColorizer);
-			primaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
-			primaryTextEditor.UpdateCustomizedHighlighting();
+			editorView.SyntaxHighlighting = highlighting;
+			editorView.TextArea.TextView.LineTransformers.RemoveAll(t => t is HighlightingColorizer);
+			editorView.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
+			editorView.UpdateCustomizedHighlighting();
 
 			// Dispose the old highlighter; necessary to avoid memory leaks as
 			// semantic highlighters might attach to global parser events.
@@ -294,18 +309,27 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
         private void OnRequestSecondaryView(RequestSecondaryViewEventArgs e)
         {
-            e.Container = CreateTextEditor();
+			secondaryTextEditor = CreateTextEditor(); 
+			UpdateSyntaxHighlighting(secondaryTextEditor, FileName);
+			e.Container = secondaryTextEditor;
             e.Handled = true;
         }
 
         private void OnDisposeOfSecondaryView(DisposeSecondaryViewEventArgs e)
         {
-            if (e.Container == null)
+			var container = e.Container;
+            if (container == null)
                 return;
 
             // if the primary editor is being disposed of, the user chose to keep the secondary,
             // swap the editors.
-
+            if (container == PrimaryTextEditor && SecondaryTextEditor != null) {
+            	primaryTextEditor = secondaryTextEditor;
+            	primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
+            	Debug.Assert(primaryTextEditorAdapter != null);
+            }
+            
+            secondaryTextEditor = null;
             e.Handled = true;
         }
 		
@@ -748,6 +772,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				changeWatcher.Dispose();
 			this.Document = null;
 			DisposeTextEditor(primaryTextEditor);
+			
+			//TODO: dispose of secondary editor is necessary
+			if (secondaryTextEditor != null) {
+				DisposeTextEditor(secondaryTextEditor);
+			}
 		}
 	}
 }
