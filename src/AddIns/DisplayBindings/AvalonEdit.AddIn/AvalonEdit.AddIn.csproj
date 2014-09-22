@@ -112,8 +112,11 @@
     <Compile Include="Src\ContextActions\FindBaseClasses.cs" />
     <Compile Include="Src\ContextActions\FindDerivedClassesOrOverrides.cs" />
     <Compile Include="Src\ContextActions\GoToEntityAction.cs" />
+    <Compile Include="Src\EditorSplitContainer.cs" />
+    <Compile Include="Src\EditorSplitContainerCommands.cs" />
     <Compile Include="Src\EnhancedScrollBar.cs" />
     <Compile Include="Src\HiddenDefinitionRenderer.cs" />
+    <Compile Include="Src\SpliterGrip.cs" />
     <Compile Include="Src\SyntaxHighlighting\CustomizingHighlighter.cs" />
     <Compile Include="Src\SyntaxHighlighting\FixedHighlighter.cs" />
     <Compile Include="Src\SyntaxHighlighting\MultiHighlighter.cs" />
@@ -217,6 +220,7 @@
       <DependentUpon>SharpDevelopCompletionWindow.cs</DependentUpon>
     </Page>
     <Page Include="themes\generic.xaml" />
+    <Page Include="themes\SpliterGrip.xaml" />
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>

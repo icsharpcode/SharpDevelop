@@ -65,6 +65,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly TextMarkerService textMarkerService;
 		readonly IChangeWatcher changeWatcher;
 		ErrorPainter errorPainter;
+		private EditorSplitContainer _splitContainer;
 		
 		public CodeEditorView PrimaryTextEditor {
 			get { return primaryTextEditor; }
@@ -161,6 +162,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		const double minRowHeight = 40;
 		
+		static CodeEditor()
+		{
+			InitEventHandlers();
+		}
+			
 		public CodeEditor()
 		{
 			CodeEditorOptions.Instance.PropertyChanged += CodeEditorOptions_Instance_PropertyChanged;
@@ -187,9 +193,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.ColumnDefinitions.Add(new ColumnDefinition());
 			this.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 			this.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star), MinHeight = minRowHeight });
-			SetRow(primaryTextEditor, 1);
 			
-			this.Children.Add(primaryTextEditor);
+			_splitContainer = new EditorSplitContainer
+			{
+				PrimaryView = primaryTextEditor
+			};
+			SetRow(_splitContainer, 1);
+			
+			this.Children.Add(_splitContainer);
 		}
 		
 		void CodeEditorOptions_Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -249,6 +260,56 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			return codeEditorView;
 		}
+		
+		#region "EditorSplitContainer integration"
+		
+		private static void InitEventHandlers()
+        {
+            EventManager.RegisterClassHandler(
+                typeof (CodeEditor),
+                EditorSplitContainer.RequestSecondaryViewEvent,
+                new RequestSecondaryViewEventHandler(
+                    (sender, args) =>
+                    {
+                        var codeEditor = sender as CodeEditor;
+                        if (codeEditor == null)
+                            return;
+
+                        codeEditor.OnRequestSecondaryView(args);
+                    }));
+
+            EventManager.RegisterClassHandler(
+                typeof (CodeEditor),
+                EditorSplitContainer.DisposeSecondaryViewEvent,
+                new DisposeSecondaryViewEventHandler(
+                    (sender, args) =>
+                    {
+                        var codeEditor = sender as CodeEditor;
+                        if (codeEditor == null)
+                            return;
+
+                        codeEditor.OnDisposeOfSecondaryView(args);
+                    }));
+        }
+
+        private void OnRequestSecondaryView(RequestSecondaryViewEventArgs e)
+        {
+            e.Container = CreateTextEditor();
+            e.Handled = true;
+        }
+
+        private void OnDisposeOfSecondaryView(DisposeSecondaryViewEventArgs e)
+        {
+            if (e.Container == null)
+                return;
+
+            // if the primary editor is being disposed of, the user chose to keep the secondary,
+            // swap the editors.
+
+            e.Handled = true;
+        }
+		
+		#endregion
 		
 		void textEditor_TextArea_TextCopied(object sender, TextEventArgs e)
 		{
