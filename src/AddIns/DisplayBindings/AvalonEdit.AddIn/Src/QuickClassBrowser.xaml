@@ -31,7 +31,7 @@
 		          DropDownClosed="ComboBox_DropDownClosed"/>
 		<ComboBox Name="membersComboBox"
 		          Grid.Column="1"
-		          Margin="0,0,4,1"
+		          Margin="0,0,0,1"
 		          ItemTemplate="{StaticResource comboBoxItemTemplate}"
 		          SelectionChanged="membersComboBoxSelectionChanged"
 		          DropDownClosed="ComboBox_DropDownClosed"/>
