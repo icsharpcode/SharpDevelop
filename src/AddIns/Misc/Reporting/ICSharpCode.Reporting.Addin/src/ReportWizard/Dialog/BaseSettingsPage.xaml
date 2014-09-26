@@ -19,12 +19,12 @@
 			</ObjectDataProvider.MethodParameters>
 		</ObjectDataProvider>
 		
-		<ObjectDataProvider x:Key="reportTypeEnum" MethodName="GetValues"
+	<!--	<ObjectDataProvider x:Key="reportTypeEnum" MethodName="GetValues"
 			ObjectType="{x:Type System:Enum}">
 			<ObjectDataProvider.MethodParameters>
 				<x:Type TypeName="sdr:ReportType"/>
 			</ObjectDataProvider.MethodParameters>
-		</ObjectDataProvider>
+		</ObjectDataProvider>-->
 	</xctk:WizardPage.Resources>
 	
 	<Grid>
@@ -54,11 +54,11 @@
 		          ItemsSource="{Binding Source={StaticResource pushpullEnum}}">
 		</ComboBox>
 		
-		<Label Content="ReportType :" Margin="0,5,0,5" Grid.Column="1" Grid.Row="2"></Label>
+		<!--<Label Content="ReportType :" Margin="0,5,0,5" Grid.Column="1" Grid.Row="2"></Label>
 		<ComboBox Name="_ReportType" Margin="10,5,0,5"
 		          Grid.Row="2" Grid.Column="2"
 		          ItemsSource="{Binding Source={StaticResource reportTypeEnum}}">
-		</ComboBox>
+		</ComboBox>-->
 		
 		<Label Content="{core:Localize SharpReport.Wizard.BaseSettings.ReportName}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="4"></Label>
 		<TextBox Name="_ReportName" Margin="10,5,0,5"  Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3"></TextBox>

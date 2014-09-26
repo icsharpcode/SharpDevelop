@@ -34,7 +34,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 //			this.GraphicsUnit = GraphicsUnit.Pixel;
 //			this.Padding = new Padding(5);
 //			this.DefaultFont = GlobalValues.DefaultFont;
-			this.ReportType = ReportType.FormSheet;
+//			this.ReportType = ReportType.FormSheet;
 //			
 			this.DataModel = PushPullModel.FormSheet;
 //			
@@ -93,9 +93,9 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		}
 		
 		
-		[Browsable(true), Category("Base Settings")]
-		public ReportType ReportType {get;set;}
-		
+//		[Browsable(true), Category("Base Settings")]
+//		public ReportType ReportType {get;set;}
+//		
 		
 		[Category("Page Settings")]
 		public int BottomMargin {get;set;}

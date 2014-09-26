@@ -65,7 +65,7 @@ namespace ICSharpCode.Reporting.Items
 //			this.GraphicsUnit = GraphicsUnit.Pixel;
 //			this.Padding = new Padding(5);
 //			this.DefaultFont = GlobalValues.DefaultFont;
-			ReportType = ReportType.FormSheet;
+//			ReportType = ReportType.FormSheet;
 //			
 			this.DataModel = PushPullModel.FormSheet;
 //			
@@ -124,10 +124,10 @@ namespace ICSharpCode.Reporting.Items
 			}
 		}
 		
-		
-		[Browsable(true), Category("Base Settings")]
-		public ReportType ReportType {get;set;}
-		
+//		
+//		[Browsable(true), Category("Base Settings")]
+//		public ReportType ReportType {get;set;}
+//		
 		
 		[Browsable(true), Category("Base Settings")]
 		public PushPullModel DataModel {get;set;}

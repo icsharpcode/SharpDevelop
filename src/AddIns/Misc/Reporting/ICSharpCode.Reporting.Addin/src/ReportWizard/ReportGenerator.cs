@@ -71,7 +71,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 			reportSettings.FileName = pageOneContext.FileName;
 			reportSettings.Landscape = !pageOneContext.Legal;
 			reportSettings.ReportName = pageOneContext.ReportName;
-			reportSettings.ReportType = pageOneContext.ReportType;
+//			reportSettings.ReportType = pageOneContext.ReportType;
 			return reportSettings;
 		}
 
@@ -184,7 +184,8 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 		static bool IsDataReport(ReportWizardContext context)
 		{
 			var poc = (PageOneContext)context.PageOneContext;
-			return poc.ReportType.Equals(ReportType.DataReport);
+//			return poc.ReportType.Equals(ReportType.DataReport);
+			return poc.DataModel != PushPullModel.FormSheet;
 		}
 		
 		

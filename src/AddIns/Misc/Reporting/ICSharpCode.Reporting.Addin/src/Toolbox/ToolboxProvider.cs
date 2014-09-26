@@ -157,13 +157,13 @@ namespace ICSharpCode.Reporting.Addin.Toolbox
 		/// <returns>Bitmap</returns>
 		static Bitmap CircleBitmap()
 		{
-			Bitmap b = new Bitmap (19,19);
-			using (Graphics g = Graphics.FromImage (b)){
+			var bmp = new Bitmap (19,19);
+			using (var g = Graphics.FromImage (bmp)){
 				g.DrawEllipse (new Pen(Color.Black, 1),
 				               1,1,
 				               17,17);
 			}
-			return b;
+			return bmp;
 		}
 		
 		

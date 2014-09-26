@@ -25,7 +25,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 		{
 			InitializeComponent();
 			_DataModel.SelectedItem = PushPullModel.FormSheet;
-			_ReportType.SelectedItem = ReportType.FormSheet;	
+//			_ReportType.SelectedItem = ReportType.FormSheet;	
 			_Legal.IsChecked = true;
 			this.context = new PageOneContext();
 		}
@@ -44,7 +44,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 		
 		void UpdateContext(){
 			context.DataModel = (PushPullModel) _DataModel.SelectedItem;
-			context.ReportType = (ReportType) _ReportType.SelectedItem;
+//			context.ReportType = (ReportType) _ReportType.SelectedItem;
 			context.ReportName = this._ReportName.Text;
 			context.FileName = this._Filename.Text;
 			context.Legal = _Legal.IsChecked == true;
@@ -59,7 +59,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 			
 			switch (pushPullModel) {
 					case PushPullModel.PushData: {
-						this._ReportType.SelectedItem = ReportType.DataReport;
+//						this._ReportType.SelectedItem = ReportType.DataReport;
 						this.CanFinish = false;
 						this.CanSelectNextPage = true;
 						break;
@@ -74,7 +74,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog{
 					case PushPullModel.FormSheet: {
 						this.CanFinish = true;
 						CanSelectNextPage = false;
-						this._ReportType.SelectedItem = ReportType.FormSheet;
+//						this._ReportType.SelectedItem = ReportType.FormSheet;
 						break;
 					}
 			}

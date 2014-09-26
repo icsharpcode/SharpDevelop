@@ -8294,4 +8294,7 @@ a line break</value>
   <data name="SharpReport.Wizard.PageLayout" xml:space="preserve">
     <value>Page Layout </value>
   </data>
+  <data name="SharpReport.Wizard.PushModel.NoProject" xml:space="preserve">
+    <value>No project selected, please enter FieldNames</value>
+  </data>
 </root>

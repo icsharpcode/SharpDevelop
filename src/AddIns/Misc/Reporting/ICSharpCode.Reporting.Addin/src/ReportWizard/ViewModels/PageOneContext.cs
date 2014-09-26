@@ -18,7 +18,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.ViewModels
 	public class PageOneContext:IWizardContext
 	{
 		public PushPullModel DataModel {get;set;}
-		public ReportType ReportType {get;set;}
+//		public ReportType ReportType {get;set;}
 		public string ReportName {get;set;}
 		public string FileName {get;set;}
 		public bool Legal {get;set;}

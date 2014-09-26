@@ -37,12 +37,12 @@ namespace ICSharpCode.Reporting.Globals
 	/// FormSheet means a blank form with Labels, Lines and Checkboxes
 	/// DataReport handles all Reports with Data
 	/// </summary>
-	public enum ReportType {
+	/*public enum ReportType {
 		FormSheet,
 		DataReport,
 	}
 
-	
+	*/
 	public enum ReportSection {
 		ReportHeader,
 		ReportPageHeader,
