@@ -131,8 +131,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						continue;
 
 					bool needsExplicitly = explicitly;
-					alreadyImplemented = implementingType.GetMembers().Any(m => m.ImplementedInterfaceMembers.Any(im => IsImplementation (im, ev)));
+					alreadyImplemented = false;
+					
+					foreach (var cmet in implementingType.GetMembers ()) {
+						alreadyImplemented |= cmet.ImplementedInterfaceMembers.Any(m => IsImplementation (m, ev));
+
+						if (CompareMembers(ev, cmet)) {
+							if (!needsExplicitly && !cmet.ReturnType.Equals(ev.ReturnType))
+								needsExplicitly = true;
+							else
+								alreadyImplemented |= !needsExplicitly /*|| cmet.InterfaceImplementations.Any (impl => impl.InterfaceType.Equals (interfaceType))*/;
+						}
+					}
 				
+					if (toImplement.Where(t => t.Item1 is IEvent).Any(t => CompareMembers(ev, (IEvent)t.Item1)))
+						needsExplicitly = true;
 					if (!alreadyImplemented) {
 						toImplement.Add(new Tuple<IMember, bool>(ev, needsExplicitly));
 					} else {
