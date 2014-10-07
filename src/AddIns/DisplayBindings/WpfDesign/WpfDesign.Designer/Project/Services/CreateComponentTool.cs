@@ -123,6 +123,8 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					moveLogic.DesignPanel.IsAdornerLayerHitTestVisible = true;
 					moveLogic = null;
 					changeGroup.Commit();
+
+					e.Handled = true;
 				}
 			} catch (Exception x) {
 				DragDropExceptionHandler.RaiseUnhandledException(x);
