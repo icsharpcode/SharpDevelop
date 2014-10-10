@@ -8350,4 +8350,7 @@ Press Esc to cancel this operation.</value>
   <data name="SharpReport.Wizard.PushModel.NoProject" xml:space="preserve">
     <value>No project selected, please enter FieldNames</value>
   </data>
+  <data name="CSharpBinding.Refactoring.EventCreation.EventHandlerText" xml:space="preserve">
+    <value>&lt;Create ${HandlerName}&gt;</value>
+  </data>
 </root>

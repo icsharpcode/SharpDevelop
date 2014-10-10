@@ -19,15 +19,15 @@
 using System;
 using System.Linq;
 using System.Threading;
-using System.Windows.Controls;
-using ICSharpCode.SharpDevelop;
-using CSharpBinding.Parser;
-using CSharpBinding.Refactoring;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using CSharpBinding.Parser;
+using CSharpBinding.Refactoring;
 
 namespace CSharpBinding.Completion
 {
@@ -46,7 +46,7 @@ namespace CSharpBinding.Completion
 				handlerName = (evt != null ? evt.Name : "Handle");
 			}
 			this.handlerName = handlerName;
-			this.DisplayText = "<Create " + handlerName + ">";
+			this.DisplayText = StringParser.Parse("${res:CSharpBinding.Refactoring.EventCreation.EventHandlerText}", new[] { new StringTagPair("HandlerName", handlerName) });
 			this.delegateTypeReference = delegateType.ToTypeReference();
 			this.isStatic = callingMember != null && callingMember.IsStatic;
 		}
