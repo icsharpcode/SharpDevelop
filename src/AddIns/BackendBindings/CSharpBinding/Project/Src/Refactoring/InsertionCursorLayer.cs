@@ -281,7 +281,7 @@ namespace CSharpBinding.Refactoring
 			var content = new StackPanel {
 				Children =  {
 					new TextBlock {
-						Text = "Use Up/Down to move to another location.\r\n" + "Press Enter to select the location.\r\n" + "Press Esc to cancel this operation."
+						Text = SD.ResourceService.GetString("CSharpBinding.Refactoring.InsertWithCursor.Description")
 					}
 				}
 			};

@@ -2094,11 +2094,6 @@
 			             icon = "Icons.16x16.CommentRegion"
 			             tooltip = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
 			             class = "ICSharpCode.SharpDevelop.Editor.Commands.CommentRegion"/>
-			<!--				<ToolbarItem id = "Uncomment"
-				             icon = "Icons.16x16.UnCommentRegion"
-				             tooltip = "${res:XML.TextAreaContextMenu.UncommentSelection}"
-				             class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.UncommentRegion"/> -->
-			
 			<ToolbarItem id = "SearchSeparator2" type = "Separator"/>
 			<ToolbarItem id = "ToggleBookmark"
 			             icon = "Bookmarks.ToggleMark"

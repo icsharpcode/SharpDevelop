@@ -20,13 +20,13 @@
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
 				id="ManagePackages"
-				label="Manage Packages..."
+				label="${res:AddIns.PackageManagement.Menu.ManagePackages}"
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 			<MenuItem
 				id="RestorePackages"
-				label="Restore Packages"
+				label="${res:AddIns.PackageManagement.Menu.RestorePackages}"
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.RestorePackagesCommand"/>
@@ -38,13 +38,13 @@
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
 				id="ManagePackages"
-				label="Manage Packages..."
+				label="${res:AddIns.PackageManagement.Menu.ManagePackages}"
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 			<MenuItem
 				id="RestorePackages"
-				label="Restore Packages"
+				label="${res:AddIns.PackageManagement.Menu.RestorePackages}"
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.RestorePackagesCommand"/>
@@ -56,13 +56,13 @@
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
 				id="ManagePackages"
-				label="Manage Packages..."
+				label="${res:AddIns.PackageManagement.Menu.ManagePackages}"
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 			<MenuItem
 				id="RestorePackages"
-				label="Restore Packages"
+				label="${res:AddIns.PackageManagement.Menu.RestorePackages}"
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.RestorePackagesCommand"/>
@@ -74,13 +74,13 @@
 		<Condition name="WriteableSolution" action="Disable">
 			<MenuItem
 				id="ManagePackagesForSolution"
-				label="Manage Packages..."
+				label="${res:AddIns.PackageManagement.Menu.ManagePackages}"
 				insertafter="CombineAddMenu"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 			<MenuItem
 				id="RestorePackagesForSolution"
-				label="Restore Packages"
+				label="${res:AddIns.PackageManagement.Menu.RestorePackages}"
 				insertafter="CombineAddMenu"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.RestorePackagesCommand"/>
@@ -91,16 +91,16 @@
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog">
 		<OptionPanel
 			id="PackageManagement"
-			label="Package Management"
+			label="${res:AddIns.PackageManagement.Options.Title}"
 			insertafter="Debugging"
 			insertbefore="TextEditorOptions">
 			<OptionPanel
 				id="PackageManagementOptions"
-				label="General"
+				label="${res:Dialog.Options.IDEOptions.General}"
 				class="ICSharpCode.PackageManagement.PackageManagementOptionsView"/>
 			<OptionPanel
 				id="PackageSources"
-				label="Package Sources"
+				label="${res:AddIns.PackageManagement.Options.PackageSources}"
 				class="ICSharpCode.PackageManagement.RegisteredPackageSourcesView"/>
 		</OptionPanel>
 	</Path>
@@ -110,7 +110,7 @@
 		<Pad
 			id="PackageManagementConsole"
 			category="Tools"
-			title="Package Management Console"
+			title="${res:AddIns.PackageManagement.ConsolePad.Title}"
 			icon="PadIcons.Output"
 			defaultPosition="Bottom, Hidden"
 			class="ICSharpCode.PackageManagement.Scripting.PackageManagementConsolePad"/>

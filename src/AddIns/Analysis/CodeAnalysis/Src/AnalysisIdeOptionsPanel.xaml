@@ -7,12 +7,11 @@
 	<GroupBox Header="{core:Localize ICSharpCode.CodeAnalysis.IdeOptions.FxCopPath}">
 		<StackPanel>
 			<TextBlock Margin="3,5,3,20" x:Name="status"
-			           HorizontalAlignment="Center" TextWrapping="Wrap"
-			           Text="(showing current FxCop path)"></TextBlock>
+			           HorizontalAlignment="Center" TextWrapping="Wrap" />
 			<Button Content="{core:Localize ICSharpCode.CodeAnalysis.IdeOptions.FindFxCopPath}"
 			        HorizontalAlignment="Center"
 			        Click="FindFxCopPath_Click"
-			        Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
+			        Style="{x:Static core:GlobalStyles.ButtonStyle}" />
 		</StackPanel>
 	</GroupBox>
 </gui:OptionPanel>

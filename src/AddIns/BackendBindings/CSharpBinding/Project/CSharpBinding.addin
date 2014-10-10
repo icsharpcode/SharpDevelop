@@ -148,11 +148,11 @@
 		             insertafter = "Highlighting"
 		             label = "C#">
 			<OptionPanel id="Issues"
-			             label="Code inspection"
+			             label="${res:Dialog.Options.IDEOptions.CodingOptions.CodeIssues.Title}"
 			             class="CSharpBinding.Refactoring.IssueOptions"/>
 			<ContextActionOptionPanel id="ContextActions" path="/SharpDevelop/ViewContent/TextEditor/C#/ContextActions"/>
 			<OptionPanel id="Formatting"
-			             label="Formatting"
+			             label="${res:Dialog.Options.IDEOptions.CodingOptions.CodeFormatting.Title}"
 			             class="CSharpBinding.OptionPanels.CSharpGlobalFormattingOptionPanel"/>
 		</OptionPanel>
 	</Path>
