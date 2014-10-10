@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return;
 			if (globalDisableCount > 0)
 				return;
-			if (DetectExternalChangesOption == false)
+			if (!DetectExternalChangesOption)
 				return;
 			
 			string fileName = file.FileName;

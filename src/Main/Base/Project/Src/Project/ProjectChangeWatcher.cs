@@ -100,7 +100,8 @@ namespace ICSharpCode.SharpDevelop.Project
 
 			if (!enabled || FileChangeWatcher.AllChangeWatchersDisabled)
 				return;
-
+			if (!FileChangeWatcher.DetectExternalChangesOption)
+				return;
 			if (string.IsNullOrEmpty(fileName))
 				return;
 			if (FileUtility.IsUrl(fileName))
