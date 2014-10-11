@@ -407,11 +407,14 @@ namespace ICSharpCode.WpfDesign.Designer
 							bounds.Width,
 							bounds.Height);
 					} else {
-						info.Bounds = new Rect(bounds.Left,
-							bounds.Top,
-							bounds.Width + dx,
-							bounds.Height + dy);
+						if (info.OriginalBounds.Width + dx >= 0 && info.OriginalBounds.Height + dy >= 0)  {
+							info.Bounds = new Rect(info.OriginalBounds.Left,
+							                       info.OriginalBounds.Top,
+							                       info.OriginalBounds.Width + dx,
+							                       info.OriginalBounds.Height + dy);
+						}
 					}
+					
 					placementOp.CurrentContainerBehavior.SetPosition(info);
 				}
 			}
