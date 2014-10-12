@@ -589,8 +589,11 @@ namespace Debugger.Tests
 		
 		protected static bool IsDotnet45Installed()
 		{
-			Version dotnet45Beta = new Version(4, 0, 30319, 17379);
-			return Environment.Version >= dotnet45Beta;
+			//Version dotnet45Beta = new Version(4, 0, 30319, 17379);
+			//return Environment.Version >= dotnet45Beta;
+			// SharpDevelop 5.0 requires .NET 4.5, and the detection with Environment.Version is no longer reliable
+			// (see https://github.com/icsharpcode/SharpDevelop/issues/581)
+			return true;
 		}
 	}
 }
