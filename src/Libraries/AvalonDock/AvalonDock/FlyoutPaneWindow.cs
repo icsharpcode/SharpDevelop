@@ -509,7 +509,7 @@ namespace AvalonDock
                 Point ptMouse = PointToScreen(new Point());
                 //Debug.WriteLine(string.Format("{0}-{1}", pt.X, pt.Y));
 
-                Rect rectWindow = new Rect(ptMouse.X, ptMouse.Y, Width, Height);
+                Rect rectWindow = new Rect(ptMouse, this.TransformToDeviceDPI(new Size(Width, Height)));
                 return rectWindow.Contains(new Point(pt.X,pt.Y));
             }
         }
