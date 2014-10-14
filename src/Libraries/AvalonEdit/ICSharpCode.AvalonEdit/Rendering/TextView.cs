@@ -245,9 +245,36 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			OnOptionChanged(new PropertyChangedEventArgs(null));
 		}
 		#endregion
+
+		#region Line Height Properties
+		/// <summary>
+		/// Padding around lines, in WPF Pixel units
+		/// </summary>
+		public static readonly DependencyProperty ExtraLineHeightProperty =
+			DependencyProperty.Register("ExtraLineHeight", typeof(double), typeof(TextView),
+						    new FrameworkPropertyMetadata(OnExtraLineHeightChanged));
+
+		/// <summary>
+		/// Gets/Sets the options used by the text editor.
+		/// </summary>
+		public double ExtraLineHeight {
+			get { return (double)GetValue(ExtraLineHeightProperty); }
+			set { SetValue(ExtraLineHeightProperty, value); }
+		}
+
+		static void OnExtraLineHeightChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
+		{
+			((TextView)dp).OnExtraLineHeightChanged((double)e.OldValue, (double)e.NewValue);
+		}
 		
-		#region ElementGenerators+LineTransformers Properties
-		readonly ObserveAddRemoveCollection<VisualLineElementGenerator> elementGenerators;
+		void OnExtraLineHeightChanged(double oldValue, double newValue)
+		{
+			Redraw();
+		}
+		#endregion
+
+        	#region ElementGenerators+LineTransformers Properties
+        	readonly ObserveAddRemoveCollection<VisualLineElementGenerator> elementGenerators;
 		
 		/// <summary>
 		/// Gets a collection where element generators can be registered.

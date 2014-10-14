@@ -282,6 +282,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			Height = 0;
 			foreach (TextLine line in textLines)
 				Height += line.Height;
+
+			Height += textView.ExtraLineHeight;
 		}
 		
 		/// <summary>
