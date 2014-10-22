@@ -106,7 +106,7 @@ namespace ICSharpCode.ILSpyAddIn
 			return symbols.LocalVariables.Where(v => v.OriginalVariable != null).Select(
 				v => new Debugger.ILLocalVariable() {
 					Index = v.OriginalVariable.Index,
-					Type = loader.ReadTypeReference(v.Type).Resolve(context),
+					Type = loader.ReadTypeReference(v.Type).Resolve(context).AcceptVisitor(method.Substitution),
 					Name = v.Name,
 					IsCompilerGenerated = false,
 					ILRanges = new [] { new ILRange(0, int.MaxValue) }

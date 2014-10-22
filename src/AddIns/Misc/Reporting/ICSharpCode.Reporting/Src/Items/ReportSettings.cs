@@ -65,9 +65,9 @@ namespace ICSharpCode.Reporting.Items
 //			this.GraphicsUnit = GraphicsUnit.Pixel;
 //			this.Padding = new Padding(5);
 //			this.DefaultFont = GlobalValues.DefaultFont;
-			ReportType = GlobalEnums.ReportType.FormSheet;
+//			ReportType = ReportType.FormSheet;
 //			
-			this.DataModel = GlobalEnums.PushPullModel.FormSheet;
+			this.DataModel = PushPullModel.FormSheet;
 //			
 //			this.CommandType =  System.Data.CommandType.Text;
 //			this.ConnectionString = String.Empty;
@@ -82,14 +82,15 @@ namespace ICSharpCode.Reporting.Items
 
 			SortColumnsCollection = new SortColumnCollection();
 			GroupColumnsCollection = new GroupColumnCollection();
-//			this.sqlParameters = new SqlParameterCollection();
 			ParameterCollection = new ParameterCollection();
+//			this.sqlParameters = new SqlParameterCollection();
+			
 //			this.NoDataMessage = "No Data for this Report";
 		}
 		
 		#region BaseSettings
 		
-		private string reportName;
+		string reportName;
 		
 		[Category("Base Settings")]
 		[DefaultValueAttribute ("")]
@@ -123,13 +124,13 @@ namespace ICSharpCode.Reporting.Items
 			}
 		}
 		
+//		
+//		[Browsable(true), Category("Base Settings")]
+//		public ReportType ReportType {get;set;}
+//		
 		
 		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.ReportType ReportType {get;set;}
-		
-		
-		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.PushPullModel DataModel {get;set;}
+		public PushPullModel DataModel {get;set;}
 		
 		#endregion
 		
@@ -154,18 +155,17 @@ namespace ICSharpCode.Reporting.Items
 		public int RightMargin  {get;set;}
 			
 		
-		private Size pageSize;
+		Size pageSize;
 		
 		[Category("Page Settings")]
 		public Size PageSize {
 			get {
 				if (!Landscape) {
 					return pageSize;
-				} else {
-					return new Size(pageSize.Height,pageSize.Width);
 				}
-				 }
-			set { pageSize = value; }
+				return new Size(pageSize.Height, pageSize.Width);
+			}
+//			set { pageSize = value; }
 		}
 		
 		
@@ -177,13 +177,7 @@ namespace ICSharpCode.Reporting.Items
 		
 		#region
 		
-		
 //		[Category("Data")]
-		
-		
-		
-		
-		
 		
 //		[Category("Parameters")]
 //		[EditorAttribute ( typeof(ParameterCollectionEditor),

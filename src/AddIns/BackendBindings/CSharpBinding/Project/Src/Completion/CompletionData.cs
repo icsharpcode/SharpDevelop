@@ -78,13 +78,14 @@ namespace CSharpBinding.Completion
 		public IImage Image { get; set; }
 		
 		public virtual double Priority {
-			get { return 0; }
+			get { return CodeCompletionDataUsageCache.GetPriority(DisplayText, true); }
 		}
 		
 		public virtual void Complete(CompletionContext context)
 		{
 			context.Editor.Document.Replace(context.StartOffset, context.Length, this.CompletionText);
 			context.EndOffset = context.StartOffset + this.CompletionText.Length;
+			CodeCompletionDataUsageCache.IncrementUsage(DisplayText);
 		}
 		
 		object fancyContent;

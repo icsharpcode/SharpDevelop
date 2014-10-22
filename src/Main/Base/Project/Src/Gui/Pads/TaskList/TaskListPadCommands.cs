@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.Core;
@@ -25,12 +26,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class SelectScopeComboBox : ComboBox
 	{
-		// TODO Translate!
-		static readonly string[] viewTypes = new string[] {"Solution", "Project", "All open files", "File", "Namespace", "Class/Module"};
+		static readonly string[] viewTypes = {"${res:MainWindow.Windows.TaskList.Solution}", "${res:MainWindow.Windows.TaskList.Project}", "${res:MainWindow.Windows.TaskList.AllOpenedFiles}", "${res:MainWindow.Windows.TaskList.CurrentFile}", "${res:MainWindow.Windows.TaskList.Namespace}", "${res:MainWindow.Windows.TaskList.CurrentClass}"};
 		
 		public SelectScopeComboBox()
 		{
-			this.ItemsSource = viewTypes;
+			this.ItemsSource = viewTypes.Select(s => StringParser.Parse(s));
 			this.SelectedIndex = 0;
 		}
 		

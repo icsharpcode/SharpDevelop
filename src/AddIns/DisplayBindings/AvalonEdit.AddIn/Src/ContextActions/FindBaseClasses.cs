@@ -31,16 +31,25 @@ using ICSharpCode.SharpDevelop.Editor.ContextActions;
 
 namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
-	public class FindBaseClasses : ResolveResultMenuCommand
+	public class FindBaseClassesOrMembers : ResolveResultMenuCommand
 	{
 		public override void Run(ResolveResult symbol)
 		{
 			IEntity entityUnderCaret = GetSymbol(symbol) as IEntity;
 			if (entityUnderCaret is ITypeDefinition) {
 				MakePopupWithBaseClasses((ITypeDefinition)entityUnderCaret).OpenAtCaretAndFocus();
-			} else {
-				MessageService.ShowError("${res:ICSharpCode.Refactoring.NoClassUnderCursorError}");
+				return;
 			}
+			var member = entityUnderCaret as IMember;
+			if (member != null) {
+				if ((member.SymbolKind == SymbolKind.Constructor) || (member.SymbolKind == SymbolKind.Destructor)) {
+					MakePopupWithBaseClasses(member.DeclaringTypeDefinition).OpenAtCaretAndFocus();
+				} else {
+					MakePopupWithBaseMembers(member).OpenAtCaretAndFocus();
+				}
+				return;
+			}
+			MessageService.ShowError("${res:ICSharpCode.Refactoring.NoClassOrMemberUnderCursorError}");
 		}
 		
 		static ContextActionsPopup MakePopupWithBaseClasses(ITypeDefinition @class)
@@ -49,14 +58,55 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			var popupViewModel = new ContextActionsPopupViewModel();
 			popupViewModel.Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.BaseClassesOf}", new StringTagPair("Name", @class.Name)));
-			popupViewModel.Actions = BuildListViewModel(baseClassList);
+			popupViewModel.Actions = BuildBaseClassListViewModel(baseClassList);
 			return new ContextActionsPopup { Actions = popupViewModel };
 		}
 		
-		static ObservableCollection<ContextActionViewModel> BuildListViewModel(IEnumerable<ITypeDefinition> classList)
+		static ObservableCollection<ContextActionViewModel> BuildBaseClassListViewModel(IEnumerable<ITypeDefinition> classList)
 		{
 			return new ObservableCollection<ContextActionViewModel>(
 				classList.Select(@class => GoToEntityAction.MakeViewModel(@class, null)));
 		}
+		
+		#region Base (overridden) members
+		static ContextActionsPopup MakePopupWithBaseMembers(IMember member)
+		{
+			var baseClassList = member.DeclaringTypeDefinition.GetAllBaseTypeDefinitions().Where(
+				                    baseClass => baseClass != member.DeclaringTypeDefinition).ToList();
+			var popupViewModel = new ContextActionsPopupViewModel {
+				Title = MenuService.ConvertLabel(StringParser.Parse(
+					"${res:SharpDevelop.Refactoring.BaseMembersOf}",
+					new StringTagPair("Name", member.FullName))
+				)
+			};
+			popupViewModel.Actions = BuildBaseMemberListViewModel(member);
+			return new ContextActionsPopup { Actions = popupViewModel };
+		}
+		
+		static ObservableCollection<ContextActionViewModel> BuildBaseMemberListViewModel(IMember member)
+		{
+			var c = new ObservableCollection<ContextActionViewModel>();
+			ObservableCollection<ContextActionViewModel> lastBase = c;
+			
+			IMember thisMember = member;
+			while (thisMember != null) {
+				IMember baseMember = InheritanceHelper.GetBaseMembers(thisMember, true).FirstOrDefault();
+				if (baseMember != null) {
+					// Only allow this base member, if overriding a virtual/abstract member of a class
+					// or implementing a member of an interface.
+					if ((baseMember.DeclaringTypeDefinition.Kind == TypeKind.Interface) || (baseMember.IsOverridable && thisMember.IsOverride)) {
+						var newChild = new ObservableCollection<ContextActionViewModel>();
+						lastBase.Add(GoToEntityAction.MakeViewModel(baseMember, newChild));
+						lastBase = newChild;
+					} else {
+						thisMember = null;
+					}
+				}
+				thisMember = baseMember;
+			}
+			
+			return c;
+		}
+		#endregion
 	}
 }

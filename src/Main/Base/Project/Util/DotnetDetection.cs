@@ -46,8 +46,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static bool IsDotnet45Installed()
 		{
-			Version dotnet45Beta = new Version(4, 0, 30319, 17379);
-			return Environment.Version >= dotnet45Beta;
+			return GetDotnet4Release() >= 378389;
 		}
 		
 		/// <summary>
@@ -67,6 +66,10 @@ namespace ICSharpCode.SharpDevelop
 			return GetDotnet4Release() >= 379893;
 		}
 		
+		/// <summary>
+		/// Gets the .NET 4.x release number.
+		/// The numbers are documented on http://msdn.microsoft.com/en-us/library/hh925568.aspx
+		/// </summary>
 		static int? GetDotnet4Release()
 		{
 			using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")) {

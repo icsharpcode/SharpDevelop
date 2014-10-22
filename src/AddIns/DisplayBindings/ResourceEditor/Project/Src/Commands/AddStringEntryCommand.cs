@@ -17,38 +17,22 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Windows.Forms;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
+using System.Linq;
+using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+namespace ResourceEditor.Commands
 {
-	class AddStringCommand : AbstractMenuCommand
+	class AddStringEntryCommand : ResourceItemCommand
 	{
-		public override void Run()
+		public override bool EmptySelectionAllowed {
+			get {
+				return true;
+			}
+		}
+		
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceItem> resourceItems)
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			if(editor.ResourceList.WriteProtected) {
-				return;
-			}
-			
-			int count = 1;
-			string newNameBase = " new string entry ";
-			string newName = newNameBase + count.ToString();
-			string type = "System.String";
-			
-			while(editor.ResourceList.Resources.ContainsKey(newName)) {
-				count++;
-				newName = newNameBase + count.ToString();
-			}
-			
-			ResourceItem item = new ResourceItem(newName, "");
-			editor.ResourceList.Resources.Add(newName, item);
-			ListViewItem lv = new ListViewItem(new string[] { newName, type, "" }, item.ImageIndex);
-			editor.ResourceList.Items.Add(lv);
-			editor.ResourceList.OnChanged();
-			lv.BeginEdit();
+			ResourceEditor.AddStringEntry();
 		}
 	}
 }

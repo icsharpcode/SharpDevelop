@@ -66,7 +66,7 @@ namespace CSharpBinding.Refactoring
 			AddAttribute(target.Region, attribute, "return");
 		}
 		
-		public override void InsertEventHandler(ITypeDefinition target, string name, IEvent eventDefinition, bool jumpTo)
+		public override void InsertEventHandler(ITypeDefinition target, string name, IEvent eventDefinition, bool jumpTo, InsertEventHandlerBodyKind bodyKind = InsertEventHandlerBodyKind.ThrowNotImplementedException)
 		{
 			IUnresolvedTypeDefinition match = null;
 			
@@ -103,15 +103,30 @@ namespace CSharpBinding.Refactoring
 			decl.Parameters.AddRange(param);
 			
 			using (Script script = context.StartScript()) {
-				// FIXME : will not work properly if there are no members.
+				int eolLen = 0;
 				if (last == match) {
-					throw new NotImplementedException();
-					// TODO InsertWithCursor not implemented!
-					//script.InsertWithCursor("Insert event handler", Script.InsertPosition.End, decl).RunSynchronously();
+					eolLen = 2;
+					script.AddTo((TypeDeclaration)node, decl);
 				} else {
-					// TODO does not jump correctly...
 					script.InsertAfter(node, decl);
-					editor.JumpTo(throwStmt.StartLocation.Line, throwStmt.StartLocation.Column);
+				}
+				switch (bodyKind) {
+					case InsertEventHandlerBodyKind.TodoComment:
+						Comment comment = new Comment(" TODO: Implement " + name);
+						script.Replace(throwStmt, comment);
+						script.Select(comment);
+						break;
+					case InsertEventHandlerBodyKind.Nothing:
+						var segment = script.GetSegment(throwStmt);
+						if (script is DocumentScript && eolLen > 0) {
+							eolLen = ((DocumentScript)script).CurrentDocument.GetLineByOffset(segment.Offset).DelimiterLength;
+						}
+						script.RemoveText(segment.Offset, segment.Length - eolLen);
+						script.Select(segment.Offset, segment.Offset);
+						break;
+					case InsertEventHandlerBodyKind.ThrowNotImplementedException:
+						script.Select(throwStmt);
+						break;
 				}
 			}
 		}

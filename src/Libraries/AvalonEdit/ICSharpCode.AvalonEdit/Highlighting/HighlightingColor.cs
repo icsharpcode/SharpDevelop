@@ -38,6 +38,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		string name;
 		FontWeight? fontWeight;
 		FontStyle? fontStyle;
+		bool? underline;
 		HighlightingBrush foreground;
 		HighlightingBrush background;
 		bool frozen;
@@ -81,6 +82,20 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				if (frozen)
 					throw new InvalidOperationException();
 				fontStyle = value;
+			}
+		}
+		
+		/// <summary>
+		///  Gets/sets the underline flag. Null if the underline status does not change the font style.
+		/// </summary>
+		public bool? Underline {
+			get {
+				return underline;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				underline = value;
 			}
 		}
 		
@@ -131,6 +146,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				this.FontWeight = System.Windows.FontWeight.FromOpenTypeWeight(info.GetInt32("Weight"));
 			if (info.GetBoolean("HasStyle"))
 				this.FontStyle = (FontStyle?)new FontStyleConverter().ConvertFromInvariantString(info.GetString("Style"));
+			if (info.GetBoolean("HasUnderline"))
+				this.Underline = info.GetBoolean("Underline");
 			this.Foreground = (HighlightingBrush)info.GetValue("Foreground", typeof(HighlightingBrush));
 			this.Background = (HighlightingBrush)info.GetValue("Background", typeof(HighlightingBrush));
 		}
@@ -154,6 +171,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			info.AddValue("HasStyle", this.FontStyle.HasValue);
 			if (this.FontStyle.HasValue)
 				info.AddValue("Style", this.FontStyle.Value.ToString());
+			info.AddValue("HasUnderline", this.Underline.HasValue);
+			if (this.Underline.HasValue)
+				info.AddValue("Underline", this.Underline.Value);
 			info.AddValue("Foreground", this.Foreground);
 			info.AddValue("Background", this.Background);
 		}
@@ -179,6 +199,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (FontStyle != null) {
 				b.Append("font-style: ");
 				b.Append(FontStyle.Value.ToString().ToLowerInvariant());
+				b.Append("; ");
+			}
+			if (Underline != null)
+			{
+				b.Append("text-decoration: ");
+				b.Append(Underline.Value ? "underline" : "none");
 				b.Append("; ");
 			}
 			return b.ToString();
@@ -232,7 +258,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			if (other == null)
 				return false;
-			return this.name == other.name && this.fontWeight == other.fontWeight && this.fontStyle == other.fontStyle && object.Equals(this.foreground, other.foreground) && object.Equals(this.background, other.background);
+			return this.name == other.name && this.fontWeight == other.fontWeight
+				&& this.fontStyle == other.fontStyle && this.underline == other.underline
+				&& object.Equals(this.foreground, other.foreground) && object.Equals(this.background, other.background);
 		}
 		
 		/// <inheritdoc/>
@@ -267,11 +295,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				this.foreground = color.foreground;
 			if (color.background != null)
 				this.background = color.background;
+			if (color.underline != null)
+				this.underline = color.underline;
 		}
 		
 		internal bool IsEmptyForMerge {
 			get {
-				return fontWeight == null && fontStyle == null && foreground == null && background == null;
+				return fontWeight == null && fontStyle == null && underline == null
+					&& foreground == null && background == null;
 			}
 		}
 	}

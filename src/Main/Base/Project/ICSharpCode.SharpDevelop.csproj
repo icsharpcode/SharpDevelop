@@ -140,6 +140,9 @@
     <Compile Include="Editor\Bookmarks\IBookmarkMargin.cs" />
     <Compile Include="Editor\Bookmarks\SDBookmark.cs" />
     <Compile Include="Editor\Bookmarks\SDMarkerBookmark.cs" />
+    <Compile Include="Editor\CodeCompletion\CodeCompletionOptionPanel.xaml.cs">
+      <DependentUpon>CodeCompletionOptionPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Editor\CodeCompletion\Images\CompletionImage.cs" />
     <Compile Include="Editor\CodeCompletion\SnippetCompletionData.cs" />
     <Compile Include="Editor\ContextActions\ContextActionsPopupViewModel.cs" />
@@ -171,6 +174,7 @@
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor\ToolTipService.cs" />
+    <Compile Include="Editor\ToolTipUtils.cs" />
     <Compile Include="Editor\XmlDocFormatter.cs" />
     <Compile Include="Parser\CombinedAssemblySearcher.cs" />
     <Compile Include="Parser\DefaultAssemblySearcher.cs" />
@@ -227,7 +231,6 @@
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\DeclaringTypeSubMenuBuilder.cs" />
@@ -276,8 +279,8 @@
     <Compile Include="Src\Gui\Components\StringListEditorDialog.xaml.cs">
       <DependentUpon>StringListEditorDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\Gui\Components\StringListEditorXaml.xaml.cs">
-      <DependentUpon>StringListEditorXaml.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Components\StringListEditor.xaml.cs">
+      <DependentUpon>StringListEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\CustomFocusManager.cs" />
@@ -441,8 +444,8 @@
       <DependentUpon>SelectStylePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml.cs">
-      <DependentUpon>TaskListOptionsl.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsPanel.xaml.cs">
+      <DependentUpon>TaskListOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml.cs">
@@ -889,16 +892,16 @@
     <Folder Include="Project\Configuration" />
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
-    <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />
+    <Page Include="Editor\CodeCompletion\CodeCompletionOptionPanel.xaml" />
     <Page Include="Src\Editor\Dialogs\RenameSymbolDialog.xaml" />
     <Page Include="Src\Gui\Components\FontSelector.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
-    <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />
+    <Page Include="Src\Gui\Components\StringListEditor.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.xaml" />
-    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildAdvanced.xaml" />

@@ -35,6 +35,23 @@ namespace ICSharpCode.Reporting
 	
 	public class ReportingFactory
 	{
+		
+		public  IReportCreator ReportCreator (string fileName,IEnumerable list) {
+			if (String.IsNullOrEmpty(fileName)) {
+				throw new ArgumentNullException("fileName");
+			}
+			var doc = new XmlDocument();
+			try {
+				doc.Load(fileName);
+			} catch (Exception e) {
+				throw e;
+			}
+			
+			ReportModel = LoadModel(doc);
+			var builder = new DataPageBuilder(ReportModel,list);
+			return builder;
+		}
+		
 		public IReportCreator ReportCreator (Stream stream,IEnumerable list)
 		{
 			ReportModel = LoadReportModel (stream);
@@ -42,7 +59,7 @@ namespace ICSharpCode.Reporting
 			return builder;
 		}
 		
-
+		
 		public IReportCreator ReportCreator (Stream stream)
 		{
 			ReportModel = LoadReportModel (stream);

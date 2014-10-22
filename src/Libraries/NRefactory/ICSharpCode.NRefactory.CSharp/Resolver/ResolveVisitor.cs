@@ -809,10 +809,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CSharpResolver oldResolver = resolver;
 			try {
-				IMember member;
+				IMember member = null;
 				if (unresolvedFile != null) {
 					member = GetMemberFromLocation(memberDeclaration);
-				} else {
+				}
+				if (member == null) {
 					// Re-discover the method:
 					SymbolKind symbolKind = memberDeclaration.SymbolKind;
 					var parameterTypes = TypeSystemConvertVisitor.GetParameterTypes(memberDeclaration.GetChildrenByRole(Roles.Parameter), InterningProvider.Dummy);
@@ -3960,7 +3961,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			return null;
 		}
-		
+
+		ResolveResult IAstVisitor<ResolveResult>.VisitErrorNode(AstNode errorNode)
+		{
+			return null;
+		}
+
 		ResolveResult IAstVisitor<ResolveResult>.VisitPatternPlaceholder(AstNode placeholder, ICSharpCode.NRefactory.PatternMatching.Pattern pattern)
 		{
 			return null;

@@ -28,7 +28,7 @@ namespace ICSharpCode.Reporting.DataSource
 	/// </summary>
 	class ExtendedTypeDescriptor
 	{
-		static Hashtable collections = new Hashtable();
+		static readonly Hashtable collections = new Hashtable();
 
 		static bool IsAllowedProperty(string name)
 		{

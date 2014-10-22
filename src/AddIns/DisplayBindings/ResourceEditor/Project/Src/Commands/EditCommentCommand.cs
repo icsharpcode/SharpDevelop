@@ -17,25 +17,23 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+namespace ResourceEditor.Commands
 {
-	class EditCommentCommand : AbstractMenuCommand
+	class EditCommentCommand : ResourceItemCommand
 	{
-		public override void Run()
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
-			if (editor.ResourceList.SelectedItems.Count != 0) {
-				var item = editor.ResourceList.SelectedItems[0].SubItems[3];
-				string resourceName = editor.ResourceList.SelectedItems[0].Text;
-				string newValue = SD.MessageService.ShowInputBox("${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}",
-				                                                "${res:ResourceEditor.ResourceEdit.ContextMenu.EditCommentText}",
-				                                                item.Text);
-				if (newValue != null && newValue != item.Text) {
-					editor.ResourceList.SetCommentValue(resourceName, newValue);
-				}
+			var selectedItem = resourceItems.First();
+			string newValue = SD.MessageService.ShowInputBox("${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}",
+				                   "${res:ResourceEditor.ResourceEdit.ContextMenu.EditCommentText}",
+				                   selectedItem.Comment);
+			if (newValue != null && newValue != selectedItem.Comment) {
+				selectedItem.Comment = newValue;
 			}
 		}
 	}

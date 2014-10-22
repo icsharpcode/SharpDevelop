@@ -149,20 +149,21 @@
 		          icon="Icons.16x16.Class"
 		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindDerivedClassesOrOverrides"/>
 		
-		<MenuItem id = "FindBaseClasses"
-		          label = "${res:SharpDevelop.Refactoring.FindBaseClassesCommand}"
+		<MenuItem id = "FindBaseClassesOrMembers"
+		          label = "${res:SharpDevelop.Refactoring.FindBaseClassesOrMembersCommand}"
+		          shortcut="Control+F6"
 		          icon="Icons.16x16.Interface"
-		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindBaseClasses"/>
+		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindBaseClassesOrMembers"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/EntityContextMenu">
-		<Condition name="SymbolTypeAtCaret" type="type" action="Exclude">
+		<Condition name="SymbolTypeAtCaret" type="type,member" action="Exclude">
 			<Include id="FindDerivedOrOverridesClasses"
 			         insertafter="FindReferences"
 			         item="/SharpDevelop/Workbench/MainMenu/Search/FindDerivedOrOverridesClasses" />
-			<Include id="FindBaseClasses"
+			<Include id="FindBaseClassesOrMembers"
 			         insertafter="FindDerivedOrOverridesClasses"
-			         item="/SharpDevelop/Workbench/MainMenu/Search/FindBaseClasses" />
+			         item="/SharpDevelop/Workbench/MainMenu/Search/FindBaseClassesOrMembers" />
 		</Condition>
 	</Path>
 	

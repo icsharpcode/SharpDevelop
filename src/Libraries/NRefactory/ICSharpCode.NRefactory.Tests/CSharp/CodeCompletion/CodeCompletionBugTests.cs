@@ -6350,6 +6350,35 @@ class Foo<T1> where T1 : new()
 		}
 
 
+		/// <summary>
+		///	Bug 21902 - Completion does not recognise new context for member access on parameter
+		/// </summary>
+		[Test]
+		public void TestBug21902 ()
+		{
+
+			CombinedProviderTest(
+				@"using System;
+using System.Collections.Generic;
+
+class C
+{
+    public List<int> Prop;
+}
+
+class MainClass
+{
+    public static void Main ()
+    {
+    }
+
+    void Foo (C c)
+    {
+        $c.Prop = new $
+    }
+}
+", provider => Assert.IsNotNull(provider.Find("List<int>")));
+		}
 
 	}
 }

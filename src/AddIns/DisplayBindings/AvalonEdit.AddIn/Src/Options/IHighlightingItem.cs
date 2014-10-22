@@ -43,6 +43,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		/// </summary>
 		bool Italic { get; set; }
 		
+		/// <summary>
+		/// Gets/Sets whether the element uses an underlined font.
+		/// </summary>
+		bool Underline { get; set; }
+		
 		Color Foreground { get; set; }
 		bool UseDefaultForeground { get; set; }
 		Color Background { get; set; }

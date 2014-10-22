@@ -26,7 +26,7 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new SectionItemDescriptor(td, instance);
+			return new SectionItemDescriptor(td);
 		}
 	}
 	
@@ -35,7 +35,7 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 	{
 
 		
-		public SectionItemDescriptor(ICustomTypeDescriptor parent, object instance)
+		public SectionItemDescriptor(ICustomTypeDescriptor parent)
 			: base(parent)
 		{
 		}

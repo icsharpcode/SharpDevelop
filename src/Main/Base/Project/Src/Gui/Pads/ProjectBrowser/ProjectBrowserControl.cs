@@ -297,7 +297,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					current = currentChildren.OfType<AbstractProjectBrowserTreeNode>()
 						.FirstOrDefault(n => n.Text.Equals(relativePath[i], StringComparison.OrdinalIgnoreCase));
 					if (current == null) break;
-					current.Expand();
+					if (i + 1 < relativePath.Length) current.Expand();
 					currentChildren = current.Nodes;
 				}
 			}

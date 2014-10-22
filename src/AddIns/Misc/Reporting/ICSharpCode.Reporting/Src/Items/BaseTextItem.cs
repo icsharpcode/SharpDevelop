@@ -45,6 +45,7 @@ namespace ICSharpCode.Reporting.Items
 		public BaseTextItem(){
 			Name = "BaseTextItem";
 			Font = GlobalValues.DefaultFont;
+			Size = GlobalValues.PreferedSize;
 		}
 
 		

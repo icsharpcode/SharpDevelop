@@ -48,6 +48,14 @@ namespace Debugger
 			                     this.StartLine, this.StartColumn,
 			                     this.EndLine, this.EndColumn);
 		}
+		
+		public bool ContainsLocation(int line, int column = 0)
+		{
+			if (column == 0)
+				return line >= StartLine && line <= EndLine;
+			return (StartLine < line || (StartLine == line && StartColumn <= column))
+				&& (line < EndLine || (line == EndLine && column <= EndColumn));
+		}
 	}
 	
 	public struct ILRange
@@ -185,14 +193,14 @@ namespace Debugger
 			var realSeqPoints = sequencePoints.Where(p => p.StartLine != 0xFEEFEE);
 			
 			// Find point for which (ilstart <= iloffset < ilend) or fallback to the next valid sequence point
-			var sequencePoint = realSeqPoints.FirstOrDefault(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To)) ??
-				realSeqPoints.FirstOrDefault(p => iloffset <= p.ILOffset);
+			var sequencePoint = realSeqPoints.FirstOrDefault(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To))
+				?? realSeqPoints.FirstOrDefault(p => iloffset <= p.ILOffset);
 			
 			if (sequencePoint != null) {
 				// VB.NET sometimes produces temporary files which it then deletes
 				// (eg 17d14f5c-a337-4978-8281-53493378c1071.vb)
 				string name = Path.GetFileName(sequencePoint.Filename);
-				if (name.Length == 40 && name.EndsWith(".vb")) {
+				if (name.Length == 40 && name.EndsWith(".vb", StringComparison.OrdinalIgnoreCase)) {
 					if (name.Substring(0, name.Length - 3).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F') || (c == '-'))) {
 						return null;
 					}
@@ -226,23 +234,32 @@ namespace Debugger
 			try {
 				uint validLine = symDoc.FindClosestLine((uint)line);
 				symMethods = symReader.GetMethodsFromDocumentPosition(symDoc, validLine, (uint)column);
+				if (validLine > 0)
+					line = (int)validLine;
 			} catch {
 				yield break; //Not found
 			}
 			
 			foreach (ISymUnmanagedMethod symMethod in symMethods) {
 				var corFunction = module.CorModule.GetFunctionFromToken(symMethod.GetToken());
-				int codesize = (int)corFunction.GetILCode().GetSize();
-				var seqPoints = symMethod.GetSequencePoints(codesize).Where(s => s.StartLine != 0xFEEFEE);
-				SequencePoint seqPoint = null;
-				if (column != 0) {
-					seqPoint = seqPoints.FirstOrDefault(s => (s.StartLine < line || (s.StartLine == line && s.StartColumn <= column)) &&
-					                                    (line < s.EndLine || (line == s.EndLine && column <= s.EndColumn)));
-				}
-				seqPoint = seqPoint ?? seqPoints.FirstOrDefault(s => line <= s.StartLine);
+				int codeSize = (int)corFunction.GetILCode().GetSize();
+				var seqPoints = symMethod.GetSequencePoints(codeSize).Where(s => s.StartLine != 0xFEEFEE).OrderBy(s => s.StartLine).ToArray();
+				SequencePoint seqPoint = FindNearestMatchingSequencePoint(seqPoints, line, column);
 				if (seqPoint != null)
 					yield return seqPoint;
 			}
+		}
+		
+		SequencePoint FindNearestMatchingSequencePoint(SequencePoint[] seqPoints, int line, int column)
+		{
+			for (int i = 0; i < seqPoints.Length; i++) {
+				var s = seqPoints[i];
+				if (s.ContainsLocation(line, column))
+					return s;
+				if (s.StartLine > line)
+					return s;
+			}
+			return null;
 		}
 		
 		public IEnumerable<ILRange> GetIgnoredILRanges(IMethod method)

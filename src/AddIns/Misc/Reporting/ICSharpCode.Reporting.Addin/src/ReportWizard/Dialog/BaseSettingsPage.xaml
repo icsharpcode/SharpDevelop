@@ -1,0 +1,80 @@
+<xctk:WizardPage x:Class="ICSharpCode.Reporting.Addin.ReportWizard.Dialog.BaseSettingsPage"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                 xmlns:System="clr-namespace:System;assembly=mscorlib"
+                 xmlns:sdr="clr-namespace:ICSharpCode.Reporting.Globals;assembly=ICSharpCode.Reporting"
+                 xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+                 Title="{core:Localize SharpReport.Wizard.BaseSettings}"
+                 Description="{core:Localize SharpReport.Wizard.BaseSettings.Description}"
+            	 PageType="Interior"
+                 CanFinish="true"
+                 CanSelectNextPage="false">
+	
+	<xctk:WizardPage.Resources>
+		<ObjectDataProvider x:Key="pushpullEnum" MethodName="GetValues"
+			ObjectType="{x:Type System:Enum}">
+			<ObjectDataProvider.MethodParameters>
+				<x:Type TypeName="sdr:PushPullModel"/>
+			</ObjectDataProvider.MethodParameters>
+		</ObjectDataProvider>
+		
+	<!--	<ObjectDataProvider x:Key="reportTypeEnum" MethodName="GetValues"
+			ObjectType="{x:Type System:Enum}">
+			<ObjectDataProvider.MethodParameters>
+				<x:Type TypeName="sdr:ReportType"/>
+			</ObjectDataProvider.MethodParameters>
+		</ObjectDataProvider>-->
+	</xctk:WizardPage.Resources>
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"> </RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition MinWidth="80"></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		
+		<Label Content="{core:Localize SharpReport.Wizard.BaseSettings.ReportType}" Grid.Column="1"></Label>
+		<ComboBox Name="_DataModel" Margin="10,5,0,5"
+		          Grid.Column="2"
+		          SelectionChanged="_DataModel_SelectionChanged"
+		          ItemsSource="{Binding Source={StaticResource pushpullEnum}}">
+		</ComboBox>
+		
+		<!--<Label Content="ReportType :" Margin="0,5,0,5" Grid.Column="1" Grid.Row="2"></Label>
+		<ComboBox Name="_ReportType" Margin="10,5,0,5"
+		          Grid.Row="2" Grid.Column="2"
+		          ItemsSource="{Binding Source={StaticResource reportTypeEnum}}">
+		</ComboBox>-->
+		
+		<Label Content="{core:Localize SharpReport.Wizard.BaseSettings.ReportName}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="4"></Label>
+		<TextBox Name="_ReportName" Margin="10,5,0,5"  Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3"></TextBox>
+		
+		<Label Content="{core:Localize SharpReport.Wizard.BaseSettings.FileName}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="5"></Label>
+		<TextBox Name="_Filename" Margin="10,5,0,5" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3"></TextBox>
+		
+		<GroupBox Grid.Row="6"  Grid.Column="1" Margin="0,5,0,5" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" BorderThickness="2">
+			<GroupBox.Header>
+			<Label Content="{core:Localize SharpReport.Wizard.PageLayout}"></Label>
+			</GroupBox.Header>
+			<StackPanel Orientation="Horizontal">
+				<RadioButton Name="_Legal" GroupName="PageLayout" Content="Legal"   Margin="10,5,0,5" ></RadioButton>
+				<RadioButton Name="_Landscape" GroupName="PageLayout" Content="Landscape"  Grid.Column="2" Margin="30,5,0,5"></RadioButton>
+			</StackPanel>
+		</GroupBox>
+	</Grid>
+
+</xctk:WizardPage>

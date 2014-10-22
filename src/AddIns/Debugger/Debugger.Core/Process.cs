@@ -315,7 +315,8 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// Indentification of the state of the debugee. This value changes whenever the state of the debugee significatntly changes
+		/// Numeric value to identify the debuggee state during a pause session.
+		/// This value changes whenever the state of the debuggee significantly changes.
 		/// </summary>
 		public long DebuggeeState {
 			get { return debuggeeState; }
@@ -337,7 +338,7 @@ namespace Debugger
 			AssertPaused();
 			pauseSession = 0;
 			if (action == DebuggeeStateAction.Clear) {
-				if (debuggeeState == 0) throw new DebuggerException("Debugee state already cleared");
+				if (debuggeeState == 0) throw new DebuggerException("Debuggee state already cleared");
 				debuggeeState = 0;
 			}
 		}
@@ -385,7 +386,7 @@ namespace Debugger
 				if (Exited != null) {
 					Exited(this, new DebuggerEventArgs() { Process = this });
 				}
-				// Expire pause seesion first
+				// Expire pause session first
 				if (IsPaused) {
 					NotifyResumed(DebuggeeStateAction.Clear);
 				}
@@ -469,7 +470,7 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// Resume execution and run all threads not marked by the user as susspended.
+		/// Resume execution and run all threads not marked by the user as suspended.
 		/// </summary>
 		public void AsyncContinue()
 		{

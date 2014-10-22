@@ -16,7 +16,6 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// created on 08.08.2003 at 13:02
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;

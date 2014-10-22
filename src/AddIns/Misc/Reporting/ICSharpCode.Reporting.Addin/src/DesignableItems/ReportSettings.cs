@@ -34,18 +34,18 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 //			this.GraphicsUnit = GraphicsUnit.Pixel;
 //			this.Padding = new Padding(5);
 //			this.DefaultFont = GlobalValues.DefaultFont;
-			this.ReportType = GlobalEnums.ReportType.FormSheet;
+//			this.ReportType = ReportType.FormSheet;
 //			
-			this.DataModel = GlobalEnums.PushPullModel.FormSheet;
+			this.DataModel = PushPullModel.FormSheet;
 //			
 //			this.CommandType =  System.Data.CommandType.Text;
 //			this.ConnectionString = String.Empty;
 //			this.CommandText = String.Empty;
 //			
-//			this.TopMargin = GlobalValues.DefaultPageMargin.Left;
-//			this.BottomMargin = GlobalValues.DefaultPageMargin.Bottom;
-//			this.LeftMargin = GlobalValues.DefaultPageMargin.Left;
-//			this.RightMargin = GlobalValues.DefaultPageMargin.Right;
+			this.TopMargin = GlobalValues.DefaultPageMargin.Left;
+			this.BottomMargin = GlobalValues.DefaultPageMargin.Bottom;
+			this.LeftMargin = GlobalValues.DefaultPageMargin.Left;
+			this.RightMargin = GlobalValues.DefaultPageMargin.Right;
 //			
 //			this.availableFields = new AvailableFieldsCollection();
 //			this.groupingsCollection = new GroupColumnCollection();
@@ -57,10 +57,9 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		}
 		
 		
-		private string reportName;
+		string reportName;
 		
-//		[Category("Base Settings")]
-//		[DefaultValueAttribute ("")]
+		[Category("Base Settings")]
 		public string ReportName
 		{
 			get {
@@ -76,8 +75,9 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 			}
 		}
 		
-		private string fileName;
-//		[Category("Base Settings")]
+		
+		string fileName;
+		[Category("Base Settings")]
 //		[XmlIgnoreAttribute]
 		public string FileName
 		{
@@ -93,25 +93,28 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		}
 		
 		
-//		[Category("Page Settings")]
+//		[Browsable(true), Category("Base Settings")]
+//		public ReportType ReportType {get;set;}
+//		
+		
+		[Category("Page Settings")]
 		public int BottomMargin {get;set;}
 			
 		
-//		[Category("Page Settings")]
+		[Category("Page Settings")]
 		public int TopMargin  {get;set;}
 		
 		
-		
-//		[Category("Page Settings")]
+		[Category("Page Settings")]
 		public int LeftMargin {get;set;}
 		
 		
-		
-//		[Category("Page Settings")]
+		[Category("Page Settings")]
 		public int RightMargin  {get;set;}
 			
-		private Size pageSize;
+		Size pageSize;
 		
+		[Category("Page Settings")]
 		public Size PageSize {
 			get {
 				if (!Landscape) {
@@ -123,18 +126,14 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 			set { pageSize = value; }
 		}
 		
-//		[Category("Page Settings")]
-//		public Size PageSize {get;set;}
+
 		
-//		[Category("Page Settings")]
+		[Category("Page Settings")]
 		public bool Landscape {get;set;}
 		
-//		[Category("Data")]
-		public GlobalEnums.PushPullModel DataModel {get;set;}
+		[Category("Data")]
+		public PushPullModel DataModel {get;set;}
 		
-		
-//		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.ReportType ReportType {get;set;}
 		
 		
 //		[Category("Parameters")]
@@ -146,5 +145,7 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		public SortColumnCollection SortColumnsCollection {get;private set;}
 		
 		public GroupColumnCollection GroupColumnsCollection {get;private set;}
+		
+		
 	}
 }

@@ -43,23 +43,13 @@ namespace ICSharpCode.Core.WinForms
 		}
 		
 		public MenuCommand(Codon codon, object caller, IReadOnlyCollection<ICondition> conditions)
-			: this(codon, caller, false, conditions)
-		{
-			
-		}
-		
-		public MenuCommand(Codon codon, object caller, bool createCommand, IReadOnlyCollection<ICondition> conditions)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller        = caller;
 			this.codon         = codon;
 			this.conditions  = conditions;
 			
-			if (createCommand) {
-				this.command = CommandWrapper.CreateCommand(codon, conditions);
-			} else {
-				this.command = CommandWrapper.CreateLazyCommand(codon, conditions);
-			}
+			this.command = CommandWrapper.CreateLazyCommand(codon, conditions);
 			
 			UpdateText();
 		}
@@ -110,7 +100,8 @@ namespace ICSharpCode.Core.WinForms
 					} catch (ResourceNotFoundException) {}
 				}
 				Visible = GetVisible();
-				Enabled = command != null && command.CanExecute(caller);
+				command = CommandWrapper.Unwrap(command);
+				Enabled = command != null && MenuService.CanExecuteCommand(command, caller);
 			}
 		}
 		

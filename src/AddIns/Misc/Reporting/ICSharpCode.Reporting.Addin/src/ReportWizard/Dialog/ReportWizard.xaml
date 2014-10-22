@@ -1,0 +1,28 @@
+<Window x:Class="ICSharpCode.Reporting.Addin.ReportWizard.Dialog.ReportWizard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:ICSharpCode.Reporting.Addin.ReportWizard.Dialog"
+        Height="600" Width="800">
+	
+	<xctk:Wizard x:Name="_wizard" FinishButtonClosesWindow="True"
+	             NextButtonVisibility="Visible"
+	             CancelButtonVisibility="Visible"
+	             Finish="_wizard_Finish"
+	             CanHelp="False"
+	             Next="_wizard_Next">
+		
+
+<!--xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"-->
+		
+		<local:WelcomePage x:Name="WelcomePage"></local:WelcomePage>
+		
+		<local:BaseSettingsPage x:Name="BaseSettingsPage" PreviousPage="{Binding ElementName=WelcomePage}" ></local:BaseSettingsPage>
+		
+		<local:PushDataReport PreviousPage="{Binding ElementName=BaseSettingsPage}"></local:PushDataReport>
+		
+		<local:PullModelPage PreviousPage="{Binding ElementName=BaseSettingsPage}"></local:PullModelPage>
+		
+	</xctk:Wizard>
+
+</Window>

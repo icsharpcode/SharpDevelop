@@ -35,6 +35,7 @@
 		<xsd:attribute name="background" type="xsd:string" use="optional" />
 		<xsd:attribute name="fontWeight" type="FontWeight" use="optional" />
 		<xsd:attribute name="fontStyle" type="FontStyle" use="optional" />
+		<xsd:attribute name="underline" type="xsd:boolean" use="optional" />
 		<xsd:anyAttribute namespace="##other" processContents="lax" />
 	</xsd:attributeGroup>
 	

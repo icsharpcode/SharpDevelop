@@ -1729,6 +1729,9 @@ Examples: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Italic</value>
   </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Underline" xml:space="preserve">
+    <value>Underlined</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
     <value>Export highlighting colors</value>
   </data>
@@ -3788,6 +3791,10 @@ Please configure the NAnt executable's location in the SharpDevelop Options.</va
   <data name="ICSharpCode.Refactoring.NoClassUnderCursorError" xml:space="preserve">
     <value>Could not find type definition at the cursor position.</value>
     <comment>Error message when using Search&gt;Find Base Classes when the cursor is not on a type reference.</comment>
+  </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrMemberUnderCursorError" xml:space="preserve">
+    <value>Could not find type definition or type member at the cursor position.</value>
+    <comment>Error message when using Search&gt;Find Base Classes when the cursor is not on a type reference or type member.</comment>
   </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Send Line to Ruby Console</value>
@@ -6324,7 +6331,7 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="ResourceEditor.BitmapView.UpdateBitmap" xml:space="preserve">
     <value>Update bitmap ...</value>
-    <comment>Text for the link label that make it possible to update the stored bitmap</comment>
+    <comment>Text for the button that makes it possible to update the stored bitmap</comment>
   </data>
   <data name="ResourceEditor.DeleteEntry.Confirm" xml:space="preserve">
     <value>Do you really want to delete the selected resource(s)?</value>
@@ -6473,6 +6480,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="SharpDevelop.Refactoring.BaseClassesOf" xml:space="preserve">
     <value>Base classes of ${Name}</value>
   </data>
+  <data name="SharpDevelop.Refactoring.BaseMembersOf" xml:space="preserve">
+    <value>Base members of ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
     <value>The operation cannot be performed because your source code contains errors:</value>
   </data>
@@ -6524,6 +6534,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="SharpDevelop.Refactoring.FindBaseClassesCommand" xml:space="preserve">
     <value>Find base classes</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindBaseClassesOrMembersCommand" xml:space="preserve">
+    <value>Find base symbols</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Find &amp;derived classes</value>
@@ -6843,16 +6856,13 @@ The resources files have been renamed/moved accordingly.</value>
     <value>Base settings</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings,ReportType" xml:space="preserve">
-    <value>Report Type</value>
+    <value>Report Type :</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.FileName" xml:space="preserve">
-    <value>File Name</value>
+    <value>File Name :</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Graphics Unit</value>
-  </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Basic report settings</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Report Model</value>
@@ -6867,10 +6877,10 @@ The resources files have been renamed/moved accordingly.</value>
     <value>Push Data</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportName" xml:space="preserve">
-    <value>Report Name</value>
+    <value>Report Name :</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportType" xml:space="preserve">
-    <value>Report Type</value>
+    <value>Report Type :</value>
   </data>
   <data name="SharpReport.Wizard.Layout.Column" xml:space="preserve">
     <value>Select the GroupColumn</value>
@@ -6901,17 +6911,6 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Available Fields</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Path to Schema (.xsd) File</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Save Result (Schema and Data)</value>
-    <comment>Save displayed Data to *.xsd File</comment>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Save Result (Schema only)</value>
-    <comment>Save only the Schema to *.xsd File</comment>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Show Query result</value>
@@ -8181,5 +8180,177 @@ Error while starting:
   <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
     <value>This resource is not being used. Its purpose is to test the translation database and has 
 a line break</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLabel" xml:space="preserve">
+    <value>Tooltip settings</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.CommitOnCharacters" xml:space="preserve">
+    <value>Insert selected code completion entry by typing the following characters:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.CommitOnTabEnterOnly" xml:space="preserve">
+    <value>Only insert selected code completion entry by typing &lt;Tab&gt; or &lt;Enter&gt;.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ExceptionFilterTitle" xml:space="preserve">
+    <value>Choose exceptions you want the debugger to break on</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ExceptionFilter.ColumnIsActive" xml:space="preserve">
+    <value>Break on</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ExceptionFilter.ColumnExpression" xml:space="preserve">
+    <value>Full exception name</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ChooseExceptions" xml:space="preserve">
+    <value>Choose exceptions</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.BreakOnHandled" xml:space="preserve">
+    <value>Break on handled ${ExceptionName}</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Solution" xml:space="preserve">
+    <value>Solution</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.AllOpenedFiles" xml:space="preserve">
+    <value>All opened files</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.CurrentFile" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Namespace" xml:space="preserve">
+    <value>Namespace</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.CurrentClass" xml:space="preserve">
+    <value>Class/Module</value>
+  </data>
+  <data name="ResourceEditor.BitmapView.UpdateIcon" xml:space="preserve">
+    <value>Update icon ...</value>
+    <comment>Text for the button that makes it possible to update the stored icon</comment>
+  </data>
+  <data name="ResourceEditor.Messages.CantLoadResourceFromFile" xml:space="preserve">
+    <value>Can't load resource from file: {0}</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.AddBooleanEntry" xml:space="preserve">
+    <value>Add &amp;boolean entry</value>
+  </data>
+  <data name="ResourceEditor.Filter" xml:space="preserve">
+    <value>Filter:</value>
+  </data>
+  <data name="ResourceEditor.BitmapView.UpdateCursor" xml:space="preserve">
+    <value>Update cursor ...</value>
+    <comment>Text for the button that makes it possible to update the stored cursor</comment>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.SearchForIssues" xml:space="preserve">
+    <value>Search For Issues...</value>
+  </data>
+  <data name="Dialog.SearchForIssues.AutoFix" xml:space="preserve">
+    <value>Automatically fix issues if possible</value>
+  </data>
+  <data name="Dialog.Options.ServicesReferencesText" xml:space="preserve">
+    <value>Service References</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.Reformat" xml:space="preserve">
+    <value>Reformat</value>
+  </data>
+  <data name="Global.Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CustomTool.RunOnBuild" xml:space="preserve">
+    <value>Run on Build</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CustomTool.Filenames" xml:space="preserve">
+    <value>Filenames:</value>
+  </data>
+  <data name="Debugger.Visualizers.ColumnPickerLabel" xml:space="preserve">
+    <value>Columns:</value>
+  </data>
+  <data name="Global.Shortcuts.Ctrl" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="Global.Shortcuts.Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Global.Shortcuts.Alt" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="Global.Shortcuts.Win" xml:space="preserve">
+    <value>Win</value>
+  </data>
+  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
+    <value>Clear console</value>
+  </data>
+  <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
+    <value>Delete history</value>
+  </data>
+  <data name="MainWindow.Windows.OutputWindow.TextTooLong" xml:space="preserve">
+    <value>&lt;Text was truncated because it was too long&gt;</value>
+  </data>
+  <data name="MainWindow.CompilerMessages.BuildingProjectIsNotSupported" xml:space="preserve">
+    <value>Building project ${Name} is not supported.</value>
+  </data>
+  <data name="Dialog.AddServiceReference.ServicesLabel" xml:space="preserve">
+    <value>Services:</value>
+  </data>
+  <data name="Dialog.AddServiceReference.OperationsLabel" xml:space="preserve">
+    <value>Operations:</value>
+  </data>
+  <data name="AddIns.PackageManagement.Menu.ManagePackages" xml:space="preserve">
+    <value>Manage Packages...</value>
+  </data>
+  <data name="AddIns.PackageManagement.Menu.RestorePackages" xml:space="preserve">
+    <value>Restore Packages</value>
+  </data>
+  <data name="AddIns.PackageManagement.Options.Title" xml:space="preserve">
+    <value>Package Management</value>
+  </data>
+  <data name="AddIns.PackageManagement.Options.PackageSources" xml:space="preserve">
+    <value>Package Sources</value>
+  </data>
+  <data name="AddIns.PackageManagement.ConsolePad.Title" xml:space="preserve">
+    <value>Package Management Console</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodingOptions.CodeIssues.Title" xml:space="preserve">
+    <value>Code inspection</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodingOptions.CodeFormatting.Title" xml:space="preserve">
+    <value>Formatting</value>
+  </data>
+  <data name="CSharpBinding.Refactoring.InsertWithCursor.Description" xml:space="preserve">
+    <value>Use Up/Down to move to another location.
+Press Enter to select the location.
+Press Esc to cancel this operation.</value>
+  </data>
+  <data name="Dialog.AdvancedService.ClientHeader" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="Dialog.AdvancedService.Client.GenerateAsyncOperations" xml:space="preserve">
+    <value>Generate asynchronous operations</value>
+  </data>
+  <data name="Dialog.AdvancedService.Client.AccessLevel.Public" xml:space="preserve">
+    <value>Public</value>
+  </data>
+  <data name="Dialog.AdvancedService.Client.AccessLevel.Internal" xml:space="preserve">
+    <value>Internal</value>
+  </data>
+  <data name="Dialog.AdvancedService.Client.AccessLevelLabel" xml:space="preserve">
+    <value>Access level for generated classes:</value>
+  </data>
+  <data name="SharpReport.Wizard.Welcome" xml:space="preserve">
+    <value>Welcome to the SharpReport Wizard</value>
+  </data>
+  <data name="SharpReport.Wizard.BaseSettings.Description" xml:space="preserve">
+    <value>Basic report settings</value>
+  </data>
+  <data name="SharpReport.Wizard.PushModel.SelectProject" xml:space="preserve">
+    <value>Classes in selected Project</value>
+  </data>
+  <data name="SharpReport.Wizard.PageLayout" xml:space="preserve">
+    <value>Page Layout </value>
+  </data>
+  <data name="SharpReport.Wizard.PushModel.NoProject" xml:space="preserve">
+    <value>No project selected, please enter FieldNames</value>
+  </data>
+  <data name="CSharpBinding.Refactoring.EventCreation.EventHandlerText" xml:space="preserve">
+    <value>&lt;Create ${HandlerName}&gt;</value>
   </data>
 </root>

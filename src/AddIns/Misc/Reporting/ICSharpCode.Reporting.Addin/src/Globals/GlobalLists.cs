@@ -28,7 +28,7 @@ namespace ICSharpCode.Reporting.Addin.Globals
 			"System.DateTime",
 			"System.TimeSpan",
 			"System.Decimal",
-			"System.Int"};
+			"System.Int32"};
 		
 		#endregion
 		

@@ -759,5 +759,27 @@ namespace PackageManagement.Tests
 			Assert.AreEqual(package, fakePackageManager.PackagePassedToUpdatePackageReference);
 			Assert.AreEqual(updatePackagesAction, fakePackageManager.SettingsPassedToUpdatePackageReference);
 		}
+	
+		[Test]
+		public void ConstraintProvider_LocalRepositoryDoesNotImplementIConstraintProvider_ReturnsNullConstraintProviderInstance ()
+		{
+			CreateProject ();
+
+			IPackageConstraintProvider provider = project.ConstraintProvider;
+
+			Assert.AreEqual (NullConstraintProvider.Instance, provider);
+		}
+
+		[Test]
+		public void ConstraintProvider_LocalRepositoryImplementsIConstraintProvider_ReturnsLocalRepository ()
+		{
+			CreateProject ();
+			var localRepository = new FakePackageRepositoryWithConstraintProvider ();
+			fakeProjectManager.FakeLocalRepository = localRepository;
+
+			IPackageConstraintProvider provider = project.ConstraintProvider;
+
+			Assert.AreEqual (localRepository, provider);
+		}
 	}
 }

@@ -208,7 +208,7 @@ namespace ICSharpCode.Reporting.DataManager
 		}
 		
 		[DebuggerStepThrough]
-		IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return list.GetEnumerator();
 		}

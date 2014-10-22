@@ -64,7 +64,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		{
 			var culture = CultureInfo.CurrentCulture;
 			var flowDirection = culture.TextInfo.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
-			
 			var emSize = ExtensionMethodes.ToPoints((int)exportText.Font.SizeInPoints +1);
 			
 			var formattedText = new FormattedText(exportText.Text,

@@ -22,6 +22,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -30,17 +31,101 @@ using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
+	class SharpDevelopInsightWindow : OverloadInsightWindow
+	{
+		public SharpDevelopInsightWindow(TextArea textArea) : base(textArea)
+		{
+			this.Style = ICSharpCode.Core.Presentation.GlobalStyles.WindowStyle;
+			AttachEvents();
+		}
+		
+		internal SharpDevelopInsightWindowAdapter activeAdapter;
+
+		public void SetActiveAdapter(SharpDevelopInsightWindowAdapter adapter, bool isNewWindow)
+		{
+			if (activeAdapter != null) {
+				// tell the previous adapter that its window was closed,
+				// but actually reuse the window for the new adapter
+				activeAdapter.OnClosed();
+			}
+			activeAdapter = adapter;
+			this.Provider = adapter.Provider;
+			if (!isNewWindow) {
+				// reset insight window to initial state
+				CloseAutomatically = true;
+				StartOffset = EndOffset = this.TextArea.Caret.Offset;
+				Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(SetPositionToStartOffset));
+			}
+		}
+		
+		void SetPositionToStartOffset()
+		{
+			if (document != null && this.StartOffset != this.TextArea.Caret.Offset) {
+				SetPosition(new TextViewPosition(document.GetLocation(this.StartOffset)));
+			} else {
+				SetPosition(this.TextArea.Caret.Position);
+			}
+		}
+		
+		TextDocument document;
+		Caret caret;
+		
+		void AttachEvents()
+		{
+			document = this.TextArea.Document;
+			caret = this.TextArea.Caret;
+			if (document != null)
+				document.Changed += document_Changed;
+			if (caret != null)
+				caret.PositionChanged += caret_PositionChanged;
+			this.Closed += OnClosed;
+		}
+
+		/// <inheritdoc/>
+		protected override void DetachEvents()
+		{
+			if (document != null)
+				document.Changed -= document_Changed;
+			if (caret != null)
+				caret.PositionChanged -= caret_PositionChanged;
+			this.Closed -= OnClosed;
+			base.DetachEvents();
+		}
+		
+		void OnClosed(object sender, EventArgs e)
+		{
+			if (activeAdapter != null)
+				activeAdapter.OnClosed();
+		}
+		
+		void caret_PositionChanged(object sender, EventArgs e)
+		{
+			// It is possible that the insight window is not initialized correctly
+			// due to an exception, and then caret_PositionChanged is called in a finally block
+			// during exception handling.
+			// Check for a null adapter to avoid a NullReferenceException that hides the first exception.
+			if (activeAdapter != null)
+				activeAdapter.OnCaretPositionChanged(e);
+		}
+		
+		void document_Changed(object sender, DocumentChangeEventArgs e)
+		{
+			if (activeAdapter != null)
+				activeAdapter.OnDocumentChanged(e);
+		}
+	}
+	
 	/// <summary>
 	/// Adapter between AvalonEdit InsightWindow and SharpDevelop IInsightWindow interface.
 	/// </summary>
-	public class SharpDevelopInsightWindow : OverloadInsightWindow, IInsightWindow
+	class SharpDevelopInsightWindowAdapter : IInsightWindow
 	{
 		sealed class SDItemProvider : IOverloadProvider
 		{
-			readonly SharpDevelopInsightWindow insightWindow;
+			readonly SharpDevelopInsightWindowAdapter insightWindow;
 			int selectedIndex;
 			
-			public SDItemProvider(SharpDevelopInsightWindow insightWindow)
+			public SDItemProvider(SharpDevelopInsightWindowAdapter insightWindow)
 			{
 				this.insightWindow = insightWindow;
 				insightWindow.items.CollectionChanged += insightWindow_items_CollectionChanged;
@@ -103,16 +188,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		readonly ObservableCollection<IInsightItem> items = new ObservableCollection<IInsightItem>();
+		SharpDevelopInsightWindow insightWindow;
+		readonly SDItemProvider provider;
 		
-		public SharpDevelopInsightWindow(TextArea textArea) : base(textArea)
+		internal IOverloadProvider Provider {
+			get { return provider; }
+		}
+		
+		internal SharpDevelopInsightWindowAdapter(SharpDevelopInsightWindow insightWindow)
 		{
-			this.Provider = new SDItemProvider(this);
-			this.Provider.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
+			this.insightWindow = insightWindow;
+			provider = new SDItemProvider(this);
+			provider.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
 				if (e.PropertyName == "SelectedIndex")
 					OnSelectedItemChanged(EventArgs.Empty);
 			};
-			this.Style = ICSharpCode.Core.Presentation.GlobalStyles.WindowStyle;
-			AttachEvents();
 		}
 		
 		public IList<IInsightItem> Items {
@@ -121,54 +211,27 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public IInsightItem SelectedItem {
 			get {
-				int index = this.Provider.SelectedIndex;
+				int index = provider.SelectedIndex;
 				if (index < 0 || index >= items.Count)
 					return null;
 				else
 					return items[index];
 			}
 			set {
-				this.Provider.SelectedIndex = items.IndexOf(value);
+				provider.SelectedIndex = items.IndexOf(value);
 				OnSelectedItemChanged(EventArgs.Empty);
 			}
 		}
 		
-		TextDocument document;
-		Caret caret;
 		IInsightItem oldSelectedItem;
 		
-		void AttachEvents()
-		{
-			document = this.TextArea.Document;
-			caret = this.TextArea.Caret;
-			if (document != null)
-				document.Changed += document_Changed;
-			if (caret != null)
-				caret.PositionChanged += caret_PositionChanged;
-		}
+		public event EventHandler<TextChangeEventArgs> DocumentChanged;
 
-		void caret_PositionChanged(object sender, EventArgs e)
-		{
-			OnCaretPositionChanged(e);
-		}
-		
-		/// <inheritdoc/>
-		protected override void DetachEvents()
-		{
-			if (document != null)
-				document.Changed -= document_Changed;
-			if (caret != null)
-				caret.PositionChanged -= caret_PositionChanged;
-			base.DetachEvents();
-		}
-		
-		void document_Changed(object sender, DocumentChangeEventArgs e)
+		internal void OnDocumentChanged(DocumentChangeEventArgs e)
 		{
 			if (DocumentChanged != null)
 				DocumentChanged(this, e);
 		}
-		
-		public event EventHandler<TextChangeEventArgs> DocumentChanged;
 		
 		public event EventHandler SelectedItemChanged;
 		
@@ -186,8 +249,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void SelectedItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			var provider = Provider as SDItemProvider;
-			if (provider == null) return;
 			switch (e.PropertyName) {
 				case "Header":
 					provider.OnPropertyChanged("CurrentHeader");
@@ -199,11 +260,76 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public event EventHandler CaretPositionChanged;
-		
-		protected virtual void OnCaretPositionChanged(EventArgs e)
+
+		internal void OnCaretPositionChanged(EventArgs e)
 		{
 			if (CaretPositionChanged != null) {
 				CaretPositionChanged(this, e);
+			}
+		}
+
+		public event EventHandler Closed;
+
+		internal void OnClosed()
+		{
+			if (Closed != null)
+				Closed(this, EventArgs.Empty);
+			insightWindow = null;
+		}
+		
+		public void Close()
+		{
+			if (insightWindow != null)
+				insightWindow.Close();
+		}
+
+		public double Width {
+			get {
+				return insightWindow != null ? insightWindow.Width : 0;
+			}
+			set {
+				if (insightWindow != null)
+					insightWindow.Width = value;
+			}
+		}
+
+		public double Height {
+			get {
+				return insightWindow != null ? insightWindow.Height : 0;
+			}
+			set {
+				if (insightWindow != null)
+					insightWindow.Height = value;
+			}
+		}
+
+		public bool CloseAutomatically {
+			get {
+				return insightWindow != null && insightWindow.CloseAutomatically;
+			}
+			set {
+				if (insightWindow != null)
+					insightWindow.CloseAutomatically = value;
+			}
+		}
+
+		public int StartOffset {
+			get {
+				return insightWindow != null ? insightWindow.StartOffset : 0;
+			}
+			set {
+				if (insightWindow != null)
+					insightWindow.StartOffset = value;
+			}
+		}
+
+		public int EndOffset {
+			get {
+				return insightWindow != null ? insightWindow.EndOffset : 0;
+			}
+			set {
+				if (insightWindow != null)
+					insightWindow.EndOffset = value;
 			}
 		}
 	}

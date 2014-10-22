@@ -55,35 +55,26 @@ namespace CSharpBinding
 			this.container.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), new Microsoft.CSharp.CSharpCodeProvider());
 		}
 		
-		public override ICodeCompletionBinding CreateCompletionBinding(string expressionToComplete, FileName fileName, TextLocation location, ICodeContext context)
+		public override ICodeCompletionBinding CreateCompletionBinding(string expressionToComplete, ICodeContext context)
 		{
-			if (fileName == null)
-				throw new ArgumentNullException("fileName");
 			if (context == null)
 				throw new ArgumentNullException("context");
-			string content = GeneratePartialClassContextStub(fileName, location, context);
+			string content = GeneratePartialClassContextStub(context);
 			const string caretPoint = "$__Caret_Point__$;";
 			int caretOffset = content.IndexOf(caretPoint, StringComparison.Ordinal) + expressionToComplete.Length;
 			SD.Log.DebugFormatted("context used for dot completion: {0}", content.Replace(caretPoint, "$" + expressionToComplete + "|$"));
 			var doc = new ReadOnlyDocument(content.Replace(caretPoint, expressionToComplete));
-			return new CSharpCompletionBinding(fileName, doc.GetLocation(caretOffset), doc.CreateSnapshot());
+			return new CSharpCompletionBinding(context, doc.GetLocation(caretOffset), doc.CreateSnapshot());
 		}
 		
-		static string GeneratePartialClassContextStub(FileName fileName, TextLocation location, ICodeContext context)
+		static string GeneratePartialClassContextStub(ICodeContext context)
 		{
-			var compilation = SD.ParserService.GetCompilationForFile(fileName);
-			var file = SD.ParserService.GetExistingUnresolvedFile(fileName);
-			if (compilation == null || file == null)
-				return "";
-			var unresolvedMember = file.GetMember(location);
-			if (unresolvedMember == null)
-				return "";
-			var member = unresolvedMember.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+			var member = context.CurrentMember;
 			if (member == null)
 				return "";
 			var builder = new TypeSystemAstBuilder();
 			MethodDeclaration decl;
-			if (unresolvedMember is IMethod) {
+			if (member.SymbolKind == SymbolKind.Method) {
 				// If it's a method, convert it directly (including parameters + type parameters)
 				decl = (MethodDeclaration)builder.ConvertEntity(member);
 			} else {
@@ -97,11 +88,11 @@ namespace CSharpBinding
 			}
 			decl.Name = "__DebuggerStub__";
 			decl.ReturnType = builder.ConvertType(member.ReturnType);
-			decl.Modifiers = unresolvedMember.IsStatic ? Modifiers.Static : Modifiers.None;
+			decl.Modifiers = member.IsStatic ? Modifiers.Static : Modifiers.None;
 			// Make the method look like an explicit interface implementation so that it doesn't appear in CC
 			decl.PrivateImplementationType = new SimpleType("__DummyType__");
 			decl.Body = GenerateBodyFromContext(builder, context.LocalVariables.ToArray());
-			return WrapInType(unresolvedMember.DeclaringTypeDefinition, decl).ToString();
+			return WrapInType(context.CurrentTypeDefinition, decl).ToString();
 		}
 
 		static BlockStatement GenerateBodyFromContext(TypeSystemAstBuilder builder, IVariable[] variables)
@@ -113,7 +104,7 @@ namespace CSharpBinding
 			return body;
 		}
 
-		static AstNode WrapInType(IUnresolvedTypeDefinition entity, EntityDeclaration decl)
+		static AstNode WrapInType(ITypeDefinition entity, EntityDeclaration decl)
 		{
 			if (entity == null)
 				return decl;
@@ -137,7 +128,7 @@ namespace CSharpBinding
 			};
 		}
 
-		static ClassType GetClassType(IUnresolvedTypeDefinition entity)
+		static ClassType GetClassType(ITypeDefinition entity)
 		{
 			switch (entity.Kind) {
 				case TypeKind.Interface:

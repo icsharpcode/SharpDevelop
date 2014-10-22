@@ -45,11 +45,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			set { PS.Set<bool>("Debugger.EnableJustMyCode", value); }
 		}
 		
-		public override bool EnableEditAndContinue {
-			get { return PS.Get<bool>("Debugger.EnableEditAndContinue", true); }
-			set { PS.Set<bool>("Debugger.EnableEditAndContinue", value); }
-		}
-		
 		public override bool SuppressJITOptimization {
 			get { return PS.Get<bool>("Debugger.SuppressJITOptimization", true); }
 			set { PS.Set<bool>("Debugger.SuppressJITOptimization", value); }
@@ -83,6 +78,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		public override bool PauseOnHandledExceptions {
 			get { return PS.Get<bool>("Debugger.PauseOnHandledExceptions", false); }
 			set { PS.Set<bool>("Debugger.PauseOnHandledExceptions", value); }
+		}
+		
+		public override IEnumerable<ExceptionFilterEntry> ExceptionFilterList {
+			get { return PS.GetList<ExceptionFilterEntry>("Debugger.ExceptionFilterList"); }
+			set { PS.SetList<ExceptionFilterEntry>("Debugger.ExceptionFilterList", value); }
 		}
 		
 		public bool AskForArguments {

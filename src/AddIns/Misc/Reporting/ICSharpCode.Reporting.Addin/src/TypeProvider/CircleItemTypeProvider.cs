@@ -26,7 +26,7 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new CircleItemTypeDescriptor(td, instance);
+			return new CircleItemTypeDescriptor(td);
 		}
 	}
 	
@@ -34,7 +34,7 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 	class CircleItemTypeDescriptor : CustomTypeDescriptor
 	{
 	
-		public CircleItemTypeDescriptor(ICustomTypeDescriptor parent, object instance): base(parent)
+		public CircleItemTypeDescriptor(ICustomTypeDescriptor parent): base(parent)
 		{
 		}
 
@@ -48,7 +48,7 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
 		{
 			PropertyDescriptorCollection props = base.GetProperties(attributes);
-			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
+			var allProperties = new List<PropertyDescriptor>();
 			
 			TypeProviderHelper.AddDefaultProperties(allProperties,props);
 			TypeProviderHelper.AddGraphicProperties(allProperties,props);

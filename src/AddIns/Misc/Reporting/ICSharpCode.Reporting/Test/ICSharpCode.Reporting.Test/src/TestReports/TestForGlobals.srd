@@ -4,26 +4,16 @@
         <ReportSettings>
             <ReportName>Report1</ReportName>
             <ReportType>FormSheet</ReportType>
+            <DataModel>FormSheet</DataModel>
             <BottomMargin>50</BottomMargin>
             <TopMargin>50</TopMargin>
             <LeftMargin>50</LeftMargin>
             <RightMargin>50</RightMargin>
             <PageSize>827, 1169</PageSize>
             <Landscape>False</Landscape>
-            <GraphicsUnit>Millimeter</GraphicsUnit>
-            <Padding>5, 5, 5, 5</Padding>
-            <AvailableFieldsCollection />
+            <ParameterCollection />
             <SortColumnsCollection />
             <GroupColumnsCollection />
-            <ParameterCollection />
-            <SqlParameters />
-            <ConnectionString />
-            <CommandText />
-            <CommandType>Text</CommandType>
-            <DataModel>FormSheet</DataModel>
-            <NoDataMessage>No Data for this Report</NoDataMessage>
-            <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
-            <UseStandardPrinter>True</UseStandardPrinter>
         </ReportSettings>
     </ReportSettings>
     <SectionCollection>
@@ -31,10 +21,7 @@
             <Location>50, 50</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
-            <SectionOffset>0</SectionOffset>
-            <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
-            <PageBreakAfter>False</PageBreakAfter>
             <Items>
                 <BaseTextItem>
                     <Location>383, 17</Location>
@@ -43,9 +30,9 @@
                     <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
+                    <TextAlignment>Left</TextAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
-                    <RTL>No</RTL>
                     <Text>= 'ReportFileName : ' + Globals!reportfilename</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
@@ -59,10 +46,10 @@
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
+                    <TextAlignment>Left</TextAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <DataType>System.String</DataType>
-                    <RTL>No</RTL>
                     <Text>= 'ReportFolder :' + Globals!ReportFolder</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
@@ -77,10 +64,7 @@
             <Location>50, 125</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
-            <SectionOffset>0</SectionOffset>
-            <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
-            <PageBreakAfter>False</PageBreakAfter>
             <Items>
                 <BaseTextItem>
                     <Location>16, 4</Location>
@@ -89,9 +73,9 @@
                     <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
+                    <TextAlignment>Left</TextAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
-                    <RTL>No</RTL>
                     <Text>='Pages ' + Globals!Pages</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
@@ -106,10 +90,7 @@
             <Location>50, 200</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
-            <SectionOffset>0</SectionOffset>
-            <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
-            <PageBreakAfter>False</PageBreakAfter>
             <Items>
                 <BaseTextItem>
                     <Location>16, 4</Location>
@@ -118,9 +99,9 @@
                     <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
+                    <TextAlignment>Left</TextAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
-                    <RTL>No</RTL>
                     <Text>= 'ReportName : ' + Globals!ReportName</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
@@ -135,10 +116,7 @@
             <Location>50, 275</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
-            <SectionOffset>0</SectionOffset>
-            <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
-            <PageBreakAfter>False</PageBreakAfter>
             <Items>
                 <BaseTextItem>
                     <Location>16, 4</Location>
@@ -147,9 +125,9 @@
                     <Font>Segoe UI, 9pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
+                    <TextAlignment>Left</TextAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
-                    <RTL>No</RTL>
                     <Text>=Globals!SyntaxError</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
@@ -163,10 +141,10 @@
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
+                    <TextAlignment>Left</TextAlignment>
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <DataType>System.String</DataType>
-                    <RTL>No</RTL>
                     <Text>='Page ' + Globals!PageNumber</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
@@ -181,11 +159,25 @@
             <Location>50, 350</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
-            <SectionOffset>0</SectionOffset>
-            <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
-            <PageBreakAfter>False</PageBreakAfter>
-            <Items />
+            <Items>
+                <BaseTextItem>
+                    <Location>16, 16</Location>
+                    <Size>393, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Segoe UI, 9pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <TextAlignment>Left</TextAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <Text>='Page : ' + Globals!PageNumber + 'Pages :' + Globals!Pages</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>ControlText</ForeColor>
+                    <Name>BaseTextItem2147483646</Name>
+                </BaseTextItem>
+            </Items>
             <FrameColor>Black</FrameColor>
             <Name>ReportFooter</Name>
         </BaseSection>

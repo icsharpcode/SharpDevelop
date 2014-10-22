@@ -103,6 +103,8 @@ namespace HexEditor.View
 				preview.FontWeight = FontWeights.Bold;
 			else
 				preview.FontWeight = FontWeights.Normal;
+			if (font.Underline)
+				preview.TextDecorations = TextDecorations.Underline;
 		}
 	}
 }

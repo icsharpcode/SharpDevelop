@@ -347,64 +347,6 @@
 				<ComponentRef Id="AppConfigFileTemplate"/>
 				
 				<ComponentRef Id="ICSharpCodeScriptingDll"/>
-				<!--
-				<ComponentRef Id="PythonConsoleProjectTemplate"/>
-				<ComponentRef Id="PythonEmptyClassTemplate"/>
-				<ComponentRef Id="PythonEmptyFormTemplate"/>
-				<ComponentRef Id="PythonEmptyUserControlTemplate"/>
-				<ComponentRef Id="PythonEmptyFileTemplate"/>
-				<ComponentRef Id="PythonFormsProjectTemplate"/>
-				<ComponentRef Id="PythonLibraryProjectTemplate"/>
-				<ComponentRef Id="PythonSilverlightApplicationProjectTemplate"/>
-				<ComponentRef Id="PythonWPFApplicationProjectTemplate"/>
-				<ComponentRef Id="PythonWPFWindowFileTemplate"/>
-				<ComponentRef Id="IpyExe"/>
-				<ComponentRef Id="IronPythonModulesDll"/>
-				<ComponentRef Id="IronPythonDll"/>
-				<ComponentRef Id="IronPythonWpfDll"/>
-				<ComponentRef Id="IronPythonLicenseRtf"/>
-				<ComponentRef Id="PythonChironExe"/>
-				<ComponentRef Id="PythonChironExeConfig"/>
-				<ComponentRef Id="MicrosoftDynamicDll"/>
-				<ComponentRef Id="MicrosoftScriptingDll"/>
-				<ComponentRef Id="MicrosoftScriptingMetadataDll"/>
-				<ComponentRef Id="PythonBuildTasksDll"/>
-				<ComponentRef Id="PythonBindingAddin"/>
-				<ComponentRef Id="PythonBindingDll"/>
-				<ComponentRef Id="PythonBindingLibRunpyPy"/>
-				<ComponentRef Id="PythonBindingLibSitePy"/>
-				<ComponentRef Id="PythonBindingLibFuturePy"/>
-				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>
-				<ComponentRef Id="PythonBindingSdTestPy"/>
-				<ComponentRef Id="PythonBindingSdTestRunnerPy"/>
-				
-				<ComponentRef Id="IrExe"/>
-				<ComponentRef Id="IronRubyDll"/>
-				<ComponentRef Id="IronRubyLibrariesDll"/>
-				<ComponentRef Id="IronRubyLicenseApacheHtml"/>
-				<ComponentRef Id="RubyBindingAddin"/>
-				<ComponentRef Id="RubyBindingDll"/>
-				<ComponentRef Id="RubyChironExe"/>
-				<ComponentRef Id="RubyChironExeConfig"/>
-				<ComponentRef Id="RubyMicrosoftDynamicDll"/>
-				<ComponentRef Id="RubyMicrosoftScriptingDll"/>
-				<ComponentRef Id="RubyMicrosoftScriptingMetadataDll"/>
-				<ComponentRef Id="RubyEmptyClassFileTemplate"/>
-				<ComponentRef Id="RubyConsoleProjectTemplate"/>
-				<ComponentRef Id="RubyEmptyFormFileTemplate"/>
-				<ComponentRef Id="RubyEmptyFileTemplate"/>
-				<ComponentRef Id="RubyEmptyUserControlFileTemplate"/>
-				<ComponentRef Id="RubyFormsProjectTemplate"/>
-				<ComponentRef Id="RubyLibraryProjectTemplate"/>
-				<ComponentRef Id="RubySilverlightApplicationProjectTemplate"/>
-				<ComponentRef Id="RubyWPFApplicationProjectTemplate"/>
-				<ComponentRef Id="RubyWPFWindowFileTemplate"/>
-				<ComponentRef Id="RubyBindingSdSelectedTestsFileRb"/>
-				<ComponentRef Id="RubyBindingSdTestRb"/>
-				<ComponentRef Id="RubyBindingSdTestResultRb"/>
-				<ComponentRef Id="RubyBindingSdTestResultWriterRb"/>
-				<ComponentRef Id="RubyBindingSdTestRunnerRb"/>
-				-->
 				
 				<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	

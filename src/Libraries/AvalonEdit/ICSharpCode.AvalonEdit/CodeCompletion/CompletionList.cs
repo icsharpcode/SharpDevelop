@@ -200,6 +200,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				if (listBox == null && value != null)
 					ApplyTemplate();
 				listBox.SelectedItem = value;
+				listBox.ScrollIntoView(value);
 			}
 		}
 		

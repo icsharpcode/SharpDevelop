@@ -68,7 +68,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		{
 			var rf = new ReportingFactory();
 			var model = rf.LoadReportModel(stream);
-			Assert.That(model.ReportSettings.DataModel,Is.EqualTo(GlobalEnums.PushPullModel.FormSheet));
+			Assert.That(model.ReportSettings.DataModel,Is.EqualTo(PushPullModel.FormSheet));
 		}
 		
 		

@@ -9,8 +9,9 @@
 using System;
 using System.Drawing;
 using System.IO;
+using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Addin.DesignableItems;
 using ICSharpCode.Reporting.Addin.Globals;
 using ICSharpCode.Reporting.Addin.XML;
 
@@ -28,8 +29,7 @@ namespace ICSharpCode.Reporting.Addin.Factory
 				foreach (var section in reportModel.SectionCollection)
 				{
 					section.Location = new Point(reportModel.ReportSettings.LeftMargin,locY);
-					section.Size = new Size(reportModel.ReportSettings.PageSize.Width - reportModel.ReportSettings.LeftMargin - reportModel.ReportSettings.RightMargin,
-						70);
+					section.Size = new Size(reportModel.ReportSettings.PrintableWidth(),GlobalValues.DefaultSectionHeight + 10);
 					locY = locY + section.Size.Height + DesignerGlobals.GabBetweenSection;
 				}
 	

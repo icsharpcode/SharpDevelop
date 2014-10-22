@@ -294,7 +294,7 @@ Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installier
 
 {1}
 
-Sie werden nicht mehr funktionieren nachdem dieses AddIn deaktiviert wurde! Sind Sie sicher, dass Sie fortfahren möchten?</value>
+Sie werden nicht mehr funktionieren, nachdem dieses AddIn deaktiviert wurde! Sind Sie sicher, dass Sie fortfahren möchten?</value>
   </data>
   <data name="AddInManager2.InstallDependentMessage" xml:space="preserve">
     <value>Das Paket "{0}" benötigt noch mindestens ein zusätzliches Paket:
@@ -332,6 +332,9 @@ Wenn Sie den Lizenzbedingungen nicht zustimmen, klicken Sie auf "Ablehnen".</val
   <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
     <value>Hinzufügen</value>
   </data>
+  <data name="AddInManager2.OptionPanel.AutoCheckForUpdates" xml:space="preserve">
+    <value>Automatisch nach Updates suchen</value>
+  </data>
   <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
     <value>Nach unten</value>
   </data>
@@ -349,6 +352,9 @@ Wenn Sie den Lizenzbedingungen nicht zustimmen, klicken Sie auf "Ablehnen".</val
   </data>
   <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
     <value>AddIns</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.General" xml:space="preserve">
+    <value>Allgemein</value>
   </data>
   <data name="AddInManager2.OptionPanel.Tree.Repositories" xml:space="preserve">
     <value>Quellen</value>
@@ -1201,9 +1207,7 @@ Ein Ausführungskommando kann in den Projektoptionen eingestellt werden.</value>
     <value>Ink</value>
   </data>
   <data name="ComponentInspector.EventLogList.NoEventsBeingLoggedMessage" xml:space="preserve">
-    <value>Sie protokollieren keine Ereignisse.
-
-Wählen Sie ein Objekt oder ein Ereignis im Objekte-Panel und klicken Sie mit der rechten Maustaste oder benutzen Sie das "Aktion"-Menü um mit dem Protokollieren von Ereignissen zu beginnen.</value>
+    <value>Sie protokollieren keine Ereignisse. Wählen Sie ein Objekt oder ein Ereignis im Objekte-Panel und klicken Sie mit der rechten Maustaste oder benutzen Sie das "Aktion"-Menü um mit dem Protokollieren von Ereignissen zu beginnen.</value>
   </data>
   <data name="ComponentInspector.EventLogList.ParametersColumnHeader" xml:space="preserve">
     <value>Parameter</value>
@@ -1534,6 +1538,30 @@ Um ActiveX/COM-Objekte zu generieren, ziehen sie eine Klasse aus einer Typbiblio
   <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
     <value>Code-Qualitätsanalyse</value>
   </data>
+  <data name="CSharpBinding.Formatting.AutoFormat" xml:space="preserve">
+    <value>Code automatisch formatieren</value>
+  </data>
+  <data name="CSharpBinding.Formatting.DefaultOptionReference" xml:space="preserve">
+    <value>(Standard)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.GlobalOptionReference" xml:space="preserve">
+    <value>(Global)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.NoPresetSelectedMessage" xml:space="preserve">
+    <value>Keine Formatierungsvoreinstellung ausgewählt!</value>
+  </data>
+  <data name="CSharpBinding.Formatting.PresetOverwriteQuestion" xml:space="preserve">
+    <value>Sind Sie sicher, dass Sie alle Formatierungseinstellungen zurücksetzen wollen?</value>
+  </data>
+  <data name="CSharpBinding.Formatting.ProjectOptionReference" xml:space="preserve">
+    <value>(Projekt)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.ResetTo" xml:space="preserve">
+    <value>Zurücksetzen auf:</value>
+  </data>
+  <data name="CSharpBinding.Formatting.SolutionOptionReference" xml:space="preserve">
+    <value>(Projektmappe)</value>
+  </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Füge Reference zu Methode ein; drücke Tab oder Enter zweimal, um eine neue Methode anzulegen.</value>
   </data>
@@ -1649,6 +1677,9 @@ Beispiele: "120", "MainClass", "Main.cs, 120".</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Kursiv</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Underline" xml:space="preserve">
+    <value>Unterstrichen</value>
   </data>
   <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
     <value>Hervorhebungsfarben exportieren</value>
@@ -1954,6 +1985,12 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.ClearCache" xml:space="preserve">
     <value>Cache leeren</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.CommitOnCharacters" xml:space="preserve">
+    <value>Den gewählten Code completion-Eintrag bei Eingabe der folgenden Zeichen einfügen:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.CommitOnTabEnterOnly" xml:space="preserve">
+    <value>Den gewählten Code completion-Eintrag nur bei &lt;Tab&gt; oder &lt;Enter&gt; einfügen.</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.CompleteWhenTyping" xml:space="preserve">
     <value>Zeige Code Completion, wenn ein Buchstabe eingegeben wird</value>
   </data>
@@ -1974,6 +2011,18 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountBeforeNumber" xml:space="preserve">
     <value>Speichere</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLabel" xml:space="preserve">
+    <value>Tooltip-Einstellungen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTarget" xml:space="preserve">
+    <value>Links in Tooltips führen zur</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDefinition" xml:space="preserve">
+    <value>Definition im Code</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDocumentation" xml:space="preserve">
+    <value>Dokumentation (falls verfügbar)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.UseDataUsageCache" xml:space="preserve">
     <value>Häufig benutzte Einträge bevorzugt markieren</value>
@@ -2029,11 +2078,23 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
     <value>Auf erster Anweisung des Programmes anhalten.</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ChooseExceptions" xml:space="preserve">
+    <value>Ausnahmen auswählen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
     <value>Decompiler aktivieren</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue" xml:space="preserve">
     <value>Bearbeiten und Fortfahren (EnC) aktivieren</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ExceptionFilter.ColumnExpression" xml:space="preserve">
+    <value>Voller Name der Ausnahme</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ExceptionFilter.ColumnIsActive" xml:space="preserve">
+    <value>Unterbrechen bei</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ExceptionFilterTitle" xml:space="preserve">
+    <value>Wählen Sie Ausnahmen aus, bei denen der Debugger anhalten soll</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
     <value>Ausnahmen</value>
@@ -2347,6 +2408,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
     <value>&amp;Passende Klammer markieren</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightCurrentLineCheckBox" xml:space="preserve">
+    <value>Aktuelle Zeile hervorheben</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
     <value>Symbole hervorheben</value>
   </data>
@@ -2607,6 +2671,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   </data>
   <data name="Dialog.ProjectOptions.BuildOptions.VBOptionsDefaultValues" xml:space="preserve">
     <value>Standardwerte für VB Optionen:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CodeFormatting" xml:space="preserve">
+    <value>Codeformatierung</value>
   </data>
   <data name="Dialog.ProjectOptions.Configuration" xml:space="preserve">
     <value>Konfiguration</value>
@@ -3314,6 +3381,9 @@ Bitte einen anderen Dateinamen wählen.</value>
   <data name="ICSharpCode.CodeCoverage.CodeNotCovered" xml:space="preserve">
     <value>Nicht abgedeckter Code</value>
   </data>
+  <data name="ICSharpCode.CodeCoverage.CodePartCovered" xml:space="preserve">
+    <value>Code teilweise abgedeckt</value>
+  </data>
   <data name="ICSharpCode.CodeCoverage.Column" xml:space="preserve">
     <value>Spalte</value>
   </data>
@@ -3585,6 +3655,9 @@ Bitte stellen Sie den Pfad zur NAnt-Anwendung in den SharpDevelop-Optionen ein.<
   </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Konnte Typ '{0}' nicht finden. Fehlt eine Assembly-Referenz?</value>
+  </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrMemberUnderCursorError" xml:space="preserve">
+    <value>Es konnte keine Typ- oder Member-Definition an der Cursor-Position gefunden werden.</value>
   </data>
   <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
     <value>Das gewählte Element ist keine Klasse oder überschreibbares Mitglied, daher können keine Symbole angezeigt werden.</value>
@@ -4304,6 +4377,9 @@ Grund: Der Wert zu dem zurückgesetzt werden soll ist ungültig weil sich eine a
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
     <value>Die Projektmappe wurde extern geändert.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionFormattingOptions.Title" xml:space="preserve">
+    <value>Formatierungsoptionen der Projektmappe</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Neue &amp;Compilerversion:</value>
@@ -5026,6 +5102,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC" xml:space="preserve">
     <value>Assembly aus GAC öffnen...</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenInClassBrowser" xml:space="preserve">
+    <value>Im Klassenbrowser anzeigen</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.SearchButton.ToolTip" xml:space="preserve">
     <value>Suche nach Klassenname</value>
   </data>
@@ -5043,6 +5122,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.CompilerMessageView.ToggleWordWrapButton.ToolTip" xml:space="preserve">
     <value>Zeilenumbruch aktivieren/deaktivieren</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.AddWatchExpression" xml:space="preserve">
+    <value>Ausdruck zur Überwachung hinzufügen</value>
   </data>
   <data name="MainWindow.Windows.Debug.Breakpoints" xml:space="preserve">
     <value>Haltepunkte</value>
@@ -5145,6 +5227,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Break" xml:space="preserve">
     <value>Unterbrechen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.BreakOnHandled" xml:space="preserve">
+    <value>Unterbrechen bei behandelter ${ExceptionName}</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Continue" xml:space="preserve">
     <value>Fortsetzen</value>
@@ -5689,6 +5774,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.AddReference" xml:space="preserve">
     <value>Referenz hinzufügen</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.AddServiceReference" xml:space="preserve">
+    <value>Service-Referenz hinzufügen</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.AddWebReference" xml:space="preserve">
     <value>Web Referenz hinzufügen</value>
   </data>
@@ -6086,6 +6174,9 @@ Bitte einen anderen verwenden.</value>
   <data name="SharpDevelop.Refactoring.BaseClassesOf" xml:space="preserve">
     <value>Basisklassen von ${Name}</value>
   </data>
+  <data name="SharpDevelop.Refactoring.BaseMembersOf" xml:space="preserve">
+    <value>Basis-Member von ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
     <value>Die Operation kann nicht ausgeführt werden, weil Ihr Sourcecode Fehler enthält:</value>
   </data>
@@ -6097,6 +6188,12 @@ Bitte einen anderen verwenden.</value>
   </data>
   <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
     <value>Klassen, die von ${Name} erben</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
+    <value>Aus Zwischenablagering</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingEmpty" xml:space="preserve">
+    <value>Der Zwischenablagering ist leer</value>
   </data>
   <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
     <value>In automatische Eigenschaft konvertieren</value>
@@ -6127,6 +6224,9 @@ Bitte einen anderen verwenden.</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindBaseClassesCommand" xml:space="preserve">
     <value>Finde Basisklassen</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindBaseClassesOrMembersCommand" xml:space="preserve">
+    <value>Finde Basissymbole</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Abgeleitete Typen finden</value>
@@ -6234,7 +6334,7 @@ Bitte einen anderen verwenden.</value>
     <value>Alle bekannten Projektformate</value>
   </data>
   <data name="SharpDevelop.Solution.CannotLoadOldSolution" xml:space="preserve">
-    <value>Diese Version von SharpDevelop kann keine Projekte, die mit Visual Studio .NET 2003 (oder früher) erstellt wurden.
+    <value>Diese Version von SharpDevelop kann keine Projekte laden, die mit Visual Studio .NET 2003 (oder früher) erstellt wurden.
 Versuchen Sie das Projekt mit SharpDevelop 3.2 zu konvertieren, oder erstellen Sie ein neues Projekt und fügen Sie ihm die existierenden Quellcodedateien hinzu.</value>
   </data>
   <data name="SharpDevelop.Solution.CannotSave.IOException" xml:space="preserve">
@@ -6563,6 +6663,9 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="StartPage.StartMenu.OpenCombineButton" xml:space="preserve">
     <value>Projektmappe öffnen</value>
   </data>
+  <data name="StartPage.StartMenu.RemoveRecentProject" xml:space="preserve">
+    <value>Aus der Liste der kürzlich verwendeten Projekte entfernen</value>
+  </data>
   <data name="StartPage.StartPageContentName" xml:space="preserve">
     <value>Startseite</value>
   </data>
@@ -6574,6 +6677,12 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>Z ${Line} S ${Column} Zei ${Character}</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextMulti" xml:space="preserve">
+    <value>Lg ${Rows} * ${Cols} (${Total})</value>
+  </data>
+  <data name="StatusBarService.SelectionStatusBarPanelTextSingle" xml:space="preserve">
+    <value>Lg ${Length}</value>
   </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Sonstiges</value>

@@ -232,7 +232,9 @@ namespace Debugger
 		{
 			var info = GetInfo(method.ParentAssembly);
 			var variableTypes = info.GetLocalVariableTypes(method.UnresolvedMember);
-			return variableTypes[index].Resolve(new SimpleTypeResolveContext(method));
+			return variableTypes[index]
+				.Resolve(new SimpleTypeResolveContext(method))
+				.AcceptVisitor(method.Substitution);
 		}
 		#endregion
 		

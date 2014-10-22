@@ -22,7 +22,7 @@
 			<ColumnDefinition Width="70"></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 		
-		<local:StringListEditorXaml x:Name="stringListEditor" Grid.ColumnSpan="3" VerticalAlignment="Stretch"></local:StringListEditorXaml>
+		<local:StringListEditor x:Name="stringListEditor" Grid.ColumnSpan="3" VerticalAlignment="Stretch" />
 		
 		<Button  Margin="0,3,5,3" Grid.Row="1" Grid.Column="1" IsDefault="True"  Click="Button_Click" Content="{core:Localize Global.OKButtonText}"></Button>
 		<Button  Margin="0,3,5,3" Grid.Row="1" Grid.Column="2" IsCancel="True"  Content="{core:Localize Global.CancelButtonText}"></Button>

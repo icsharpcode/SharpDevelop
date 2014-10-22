@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="ICSharpCode.SharpDevelop.Gui.StringListEditor"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<Grid>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition ></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition ></ColumnDefinition>
+			<ColumnDefinition Width="60"></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		
+		<Label Content="{Binding TitleText}"></Label>
+			
+		<TextBox x:Name="editTextBox" Grid.Row="1" Margin="5,3,5,3"
+			TextChanged="EditTextBox_TextChanged">
+		</TextBox>
+			
+		
+		<Button x:Name="browseButton" Grid.Column="1" Grid.Row="1" Margin="5,3,5,3"
+			Content="..."
+			Visibility="Hidden"
+			Click="BrowseButtonClick">
+		</Button>
+			
+		<widgets:StackPanelWithSpacing Orientation="Horizontal" Grid.Row="2" Margin="5,3,5,3" SpaceBetweenItems="5">
+			
+			<Button x:Name="addButton"
+				IsEnabled="False"
+				Click="AddButton_Click"
+				Content="{Binding AddButtonText}"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}">
+			</Button>
+		
+			<Button x:Name="updateButton"
+				IsEnabled="False"
+				Click="UpdateButton_Click"
+				Content="{core:Localize Global.UpdateButtonText}"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}">
+			</Button>
+			
+			<Button x:Name="removeButton" Margin="5,3,5,3"
+				Visibility="Hidden"
+				Content="{core:Localize Global.DeleteButtonText}"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}">
+			</Button>
+		
+		</widgets:StackPanelWithSpacing>
+		
+		<Label Grid.Row="3"
+		       Content="{Binding ListCaption}">
+		</Label>
+			
+		<ListBox x:Name="listBox"  Grid.Row="4" Margin="5,3,5,3"
+		         SelectionChanged="ListBox_SelectionChanged">
+		</ListBox>
+		
+		<widgets:StackPanelWithSpacing Orientation="Vertical" Grid.Row="4" Grid.Column="1" SpaceBetweenItems="5">
+			<Button  x:Name="moveUpButton" Margin="5,3,5,0" Click="MoveUpButtonClick"></Button>
+			<Button  x:Name="moveDownButton" Margin="5,0,5,0" Click="MoveDownButtonClick"></Button>
+			<Button  x:Name="deleteButton" Margin="5,0,5,0" Click="RemoveButtonClick"></Button>
+		</widgets:StackPanelWithSpacing>
+	</Grid>
+</UserControl>

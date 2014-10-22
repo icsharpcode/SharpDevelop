@@ -17,8 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Drawing;
-using ICSharpCode.Reporting.Interfaces;
 
 namespace ICSharpCode.Reporting.Items
 {
@@ -26,7 +24,7 @@ namespace ICSharpCode.Reporting.Items
 	/// Description of BaseSection.
 	/// </summary>
 	
-	public class BaseSection:ReportContainer,IReportContainer
+	public class BaseSection:ReportContainer
 	{
 		
 

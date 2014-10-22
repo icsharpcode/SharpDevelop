@@ -150,7 +150,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			bool showExternalMethods = DebuggingOptions.Instance.ShowExternalMethods;
 			var symSource = WindowsDebugger.PdbSymbolSource;
-			bool hasSymbols = symSource.Handles(frame.MethodInfo) && !symSource.IsCompilerGenerated(frame.MethodInfo);
+			bool hasSymbols = symSource.Handles(frame.MethodInfo)
+				&& !symSource.IsCompilerGenerated(frame.MethodInfo)
+				&& frame.NextStatement != null && !string.IsNullOrWhiteSpace(frame.NextStatement.Filename);
 			if (showExternalMethods || hasSymbols) {
 				// Show the method in the list
 				previousItemIsExternalMethod = false;

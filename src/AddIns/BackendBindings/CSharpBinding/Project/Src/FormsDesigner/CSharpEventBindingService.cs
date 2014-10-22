@@ -24,10 +24,14 @@ using System.Reflection;
 using System.Windows.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Gui.OptionPanels;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 using CSharpBinding.Refactoring;
 
 namespace CSharpBinding.FormsDesigner
@@ -144,18 +148,28 @@ namespace CSharpBinding.FormsDesigner
 			var primary = loader.GetPrimaryTypeDefinition();
 			var evtHandler = primary.GetMethods(m => m.Name == methodName, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
 			if (evtHandler == null) {
-				generator.InsertEventHandler(primary, methodName, evt, true);
-			}
-			else {
+				var insertionType = GeneralOptionsPanel.InsertTodoComment ? InsertEventHandlerBodyKind.TodoComment : InsertEventHandlerBodyKind.Nothing;
+				generator.InsertEventHandler(primary, methodName, evt, true, insertionType);
+			} else {
 				CSharpBinding.Parser.CSharpFullParseInformation parseInfo;
 				var node = evtHandler.GetDeclaration(out parseInfo) as MethodDeclaration;
+				var fileName = new FileName(evtHandler.Region.FileName);
+				var fileContentFinder = new ParseableFileContentFinder();
+				
 				if (node != null && !node.Body.IsNull) {
 					var location = node.Body.FirstChild.StartLocation;
 					var firstStatement = node.Body.Children.OfType<Statement>().FirstOrDefault();
-					if (firstStatement != null)
+					
+					if (firstStatement == null) {
+						var fileContent = fileContentFinder.Create(fileName);
+						var document = new ReadOnlyDocument(fileContent);
+						var offset = document.GetOffset(new TextLocation(location.Line + 1, 1));
+						var length = DocumentUtilities.GetWhitespaceAfter(fileContent, offset).Length;
+						location = new TextLocation(location.Line + 1, length + 1);
+					} else {
 						location = firstStatement.StartLocation;
-					// TODO : does not jump correctly...
-					SD.FileService.JumpToFilePosition(new FileName(evtHandler.Region.FileName), location.Line, location.Column);
+					}
+					SD.FileService.JumpToFilePosition(fileName, location.Line, location.Column);
 				}
 			}
 		}

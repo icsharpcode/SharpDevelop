@@ -570,7 +570,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		public bool RenameFile(string oldName, string newName, bool isDirectory)
 		{
-			if (FileUtility.IsEqualFileName(oldName, newName))
+			if (string.Equals(FileUtility.NormalizePath(oldName),
+				    FileUtility.NormalizePath(newName),
+				    StringComparison.Ordinal))
 				return false;
 			FileChangeWatcher.DisableAllChangeWatchers();
 			try {
@@ -580,12 +582,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					return false;
 				if (!eargs.OperationAlreadyDone) {
 					try {
-						if (FileHelpers.CheckRenameOrReplacePossible(eargs)) {
-							if (isDirectory) {
-								Directory.Move(oldName, newName);
-							} else {
-								File.Move(oldName, newName);
-							}
+						if (isDirectory) {
+							Directory.Move(oldName, newName);
+						} else {
+							File.Move(oldName, newName);
 						}
 					} catch (Exception e) {
 						if (isDirectory) {

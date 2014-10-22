@@ -18,10 +18,8 @@
 
 using System;
 using System.IO;
-using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using System.Windows.Input;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -34,7 +32,8 @@ namespace HexEditor.View
 		public HexEditView(OpenedFile file)
 		{
 			hexEditContainer = new HexEditContainer();
-			hexEditContainer.hexEditControl.DocumentChanged += new EventHandler(DocumentChanged);
+			hexEditContainer.hexEditControl.DocumentChanged += DocumentChanged;
+			hexEditContainer.hexEditControl.Selection.SelectionChanged += SelectionChanged;
 			
 			this.Files.Add(file);
 			
@@ -67,23 +66,23 @@ namespace HexEditor.View
 		
 		#region IClipboardHandler
 		public bool EnableCut {
-			get { return hexEditContainer.HasSomethingSelected & hexEditContainer.EditorFocused; }
+			get { return hexEditContainer.HasSomethingSelected; }
 		}
 		
 		public bool EnableCopy {
-			get { return hexEditContainer.HasSomethingSelected & hexEditContainer.EditorFocused; }
+			get { return hexEditContainer.HasSomethingSelected; }
 		}
 		
 		public bool EnablePaste {
-			get { return hexEditContainer.EditorFocused; }
+			get { return true; }
 		}
 		
 		public bool EnableDelete {
-			get { return hexEditContainer.HasSomethingSelected & hexEditContainer.EditorFocused; }
+			get { return hexEditContainer.HasSomethingSelected; }
 		}
 		
 		public bool EnableSelectAll {
-			get { return hexEditContainer.EditorFocused; }
+			get { return true; }
 		}
 		
 		public void Cut()
@@ -137,10 +136,12 @@ namespace HexEditor.View
 		void DocumentChanged(object sender, EventArgs e)
 		{
 			if (PrimaryFile != null) PrimaryFile.MakeDirty();
+			SD.WinForms.InvalidateCommands();
 		}
-		
-		public override bool IsDirty {
-			get { return base.IsDirty; }
+
+		void SelectionChanged(object sender, System.EventArgs e)
+		{
+			SD.WinForms.InvalidateCommands();
 		}
 	}
 }

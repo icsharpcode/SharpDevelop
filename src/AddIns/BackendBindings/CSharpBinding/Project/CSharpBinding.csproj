@@ -78,6 +78,7 @@
     <Compile Include="Src\Completion\CSharpCompletionContext.cs" />
     <Compile Include="Src\Completion\CSharpInsightItem.cs" />
     <Compile Include="Src\Completion\CSharpMethodInsight.cs" />
+    <Compile Include="Src\Completion\EnumMemberCompletionData.cs" />
     <Compile Include="Src\Completion\EventCreationCompletionData.cs" />
     <Compile Include="Src\Completion\FormatItemCompletionData.cs" />
     <Compile Include="Src\Completion\ImportCompletionData.cs" />

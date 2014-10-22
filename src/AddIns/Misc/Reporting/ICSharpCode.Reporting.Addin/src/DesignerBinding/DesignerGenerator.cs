@@ -78,9 +78,9 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			
 			// we look only for Sections
 			foreach (var component in viewContent.Host.Container.Components) {
-				var b = component as BaseSection;
-				if (b != null) {
-					reportDesignerWriter.Save(component,xml);
+				var section = component as BaseSection;
+				if (section != null) {
+					reportDesignerWriter.Save(section,xml);
 				}
 			}
 			//SectionCollection

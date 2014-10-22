@@ -292,17 +292,11 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					}
 					start = new TextLocation(line, col);
 				}
-				col++;
 				if (ch == '}' &&!start.IsEmpty) {
-					char next = i + 1 < expr.LiteralValue.Length ? expr.LiteralValue [i + 1] : '\0';
-					if (next == '}') {
-						i++;
-						col += 2;
-						continue;
-					}
-					Colorize(start, new TextLocation(line, col), stringFormatItemColor);
+					Colorize(start, new TextLocation(line, col + 1), stringFormatItemColor);
 					start = TextLocation.Empty;
 				}
+				col++;
 			}
 
 		}

@@ -44,6 +44,17 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static ICommand CreateLazyCommand(Codon codon, IReadOnlyCollection<ICondition> conditions)
 		{
+			if (codon.Properties["loadclasslazy"] == "false") {
+				// if lazy loading was explicitly disabled, create the actual command now
+				return CreateCommand(codon, conditions);
+			}
+			if (codon.Properties.Contains("command") && !codon.Properties.Contains("loadclasslazy")) {
+				// If we're using the 'command=' syntax, this is most likely a built-in command
+				// where lazy loading isn't useful (and hurts if CanExecute is used).
+				// Don't use lazy loading unless loadclasslazy is set explicitly.
+				return CreateCommand(codon, conditions);
+			}
+			// Create the wrapper that lazily loads the actual command.
 			return new CommandWrapper(codon, conditions);
 		}
 		

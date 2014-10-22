@@ -73,6 +73,9 @@
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\..\..\..\Libraries\WPFExtendedToolkit\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
@@ -84,8 +87,10 @@
     <Folder Include="src\DesignableItems" />
     <Folder Include="src\Factory" />
     <Folder Include="src\Dialogs" />
+    <Folder Include="src\ReportWizard\Dialog" />
+    <Folder Include="src\ReportWizard\ViewModels" />
     <Folder Include="src\UndoRedo" />
-    <Folder Include="src\Wizard" />
+    <Folder Include="src\ReportWizard" />
     <Folder Include="src\Toolbox" />
     <Folder Include="src\TypeProvider" />
     <Folder Include="src\XML" />
@@ -138,8 +143,37 @@
     <Compile Include="src\Dialogs\IStringBasedEditorDialog.cs" />
     <Compile Include="src\Factory\CreateFormSheetFromModel.cs" />
     <Compile Include="src\Globals\DesignerGlobals.cs" />
+    <Compile Include="src\Globals\DesignerHelper.cs" />
     <Compile Include="src\Globals\GlobalLists.cs" />
     <Compile Include="src\Globals\StringWriterWithEncoding.cs" />
+    <Compile Include="src\ReportWizard\Dialog\IHasContext.cs" />
+    <Compile Include="src\ReportWizard\Dialog\BaseSettingsPage.xaml.cs">
+      <DependentUpon>BaseSettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\Dialog\PullModelPage.xaml.cs">
+      <DependentUpon>PullModelPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\Dialog\PushDataReport.xaml.cs">
+      <DependentUpon>PushDataReport.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\Dialog\ReportWizard.xaml.cs">
+      <DependentUpon>ReportWizard.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\Dialog\WelcomePage.xaml.cs">
+      <DependentUpon>WelcomePage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\ReportGenerator.cs" />
+    <Compile Include="src\ReportWizard\ReportWizardCommand.cs" />
+    <Compile Include="src\ReportWizard\ViewModels\PageOneContext.cs" />
+    <Compile Include="src\ReportWizard\ViewModels\PushModelContext.cs" />
+    <Compile Include="src\ReportWizard\ViewModels\ReportWizardContext.cs" />
+    <Compile Include="src\ReportWizard\WizardHelper.cs" />
+    <Compile Include="src\ReportWizard\WizardPageType.cs" />
     <Compile Include="src\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="src\Services\DesignerSerializationService.cs" />
     <Compile Include="src\Services\MenuCommandService.cs" />
@@ -180,6 +214,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -189,6 +228,10 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
@@ -209,6 +252,13 @@
     <EmbeddedResource Include="src\Dialogs\EditorDialog.resx">
       <DependentUpon>EditorDialog.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="src\ReportWizard\Dialog\BaseSettingsPage.xaml" />
+    <Page Include="src\ReportWizard\Dialog\PullModelPage.xaml" />
+    <Page Include="src\ReportWizard\Dialog\PushDataReport.xaml" />
+    <Page Include="src\ReportWizard\Dialog\ReportWizard.xaml" />
+    <Page Include="src\ReportWizard\Dialog\WelcomePage.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

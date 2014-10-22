@@ -86,8 +86,7 @@ namespace CSharpBinding.Completion
 		
 		ICompletionData ICompletionDataFactory.CreateMemberCompletionData(IType type, IEntity member)
 		{
-			string typeName = builder.ConvertType(type).ToString();
-			return new CompletionData(typeName + "." + member.Name);
+			return new EnumMemberCompletionData(type, member, builder);
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateLiteralCompletionData(string title, string description, string insertText)
