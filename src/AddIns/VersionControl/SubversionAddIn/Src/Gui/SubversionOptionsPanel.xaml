@@ -1,0 +1,25 @@
+﻿<gui:OptionPanel x:Class="ICSharpCode.Svn.Gui.SubversionOptionsPanel"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+                 xmlns:local="clr-namespace:ICSharpCode.Svn"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<widgets:StackPanelWithSpacing SpaceBetweenItems="10">
+		<CheckBox
+			Content="{core:Localize AddIns.Subversion.Options.UseHistoryDisplayBinding}"
+			IsChecked="{core:OptionBinding local:AddInOptions.UseHistoryDisplayBinding}" />
+		<CheckBox
+			Content="{core:Localize AddIns.Subversion.Options.RenameInsideSubversion}"
+			IsChecked="{core:OptionBinding local:AddInOptions.AutomaticallyRenameFiles}" />
+		<CheckBox
+			Content="{core:Localize AddIns.Subversion.Options.AutoDelete}"
+			IsChecked="{core:OptionBinding local:AddInOptions.AutomaticallyDeleteFiles}" />
+		<CheckBox
+			Content="{core:Localize AddIns.Subversion.Options.ReloadProjectAfterChanges}"
+			IsChecked="{core:OptionBinding local:AddInOptions.AutomaticallyReloadProject}" />
+		<CheckBox
+			Content="{core:Localize AddIns.Subversion.Options.AutoAdd}"
+			IsChecked="{core:OptionBinding local:AddInOptions.AutomaticallyAddFiles}" />
+	</widgets:StackPanelWithSpacing>
+</gui:OptionPanel>
