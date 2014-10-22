@@ -49,12 +49,14 @@ namespace ICSharpCode.GitAddIn
 		
 		async void AddFile(string fileName)
 		{
+			if (!AddInOptions.AutomaticallyAddFiles) return;
 			await Git.AddAsync(fileName);
 			ClearStatusCacheAndEnqueueFile(fileName);
 		}
 		
 		async void RemoveFile(string fileName)
 		{
+			if (!AddInOptions.AutomaticallyDeleteFiles) return;
 			if (GitStatusCache.GetFileStatus(fileName) == GitStatus.Added) {
 				await Git.RemoveAsync(fileName, true);
 				ClearStatusCacheAndEnqueueFile(fileName);
@@ -63,7 +65,8 @@ namespace ICSharpCode.GitAddIn
 		
 		async void RenameFile(string sourceFileName, string targetFileName)
 		{
-			await Git.AddAsync(targetFileName);
+			if (AddInOptions.AutomaticallyAddFiles)
+				await Git.AddAsync(targetFileName);
 			ClearStatusCacheAndEnqueueFile(targetFileName);
 			RemoveFile(sourceFileName);
 		}

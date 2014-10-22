@@ -105,6 +105,12 @@ namespace ICSharpCode.GitAddIn
 		/// </summary>
 		public static string FindGit()
 		{
+			if (AddInOptions.PathToGit != null) {
+				if (File.Exists(AddInOptions.PathToGit))
+					return AddInOptions.PathToGit;
+				return null;
+			}
+			
 			string pathVariable = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
 			string[] paths = pathVariable.Split(new char[]{';'}, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string path in paths) {
@@ -127,6 +133,14 @@ namespace ICSharpCode.GitAddIn
 			if (File.Exists(gitExe))
 				return gitExe;
 			return null;
+		}
+		
+		/// <summary>
+		/// Checks whether 'git.exe' is available at the given path.
+		/// </summary>
+		public static bool IsGitPath(string path)
+		{
+			return File.Exists(Path.Combine(path, "git.exe"));
 		}
 		
 		/*

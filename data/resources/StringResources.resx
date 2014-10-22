@@ -8353,4 +8353,25 @@ Press Esc to cancel this operation.</value>
   <data name="CSharpBinding.Refactoring.EventCreation.EventHandlerText" xml:space="preserve">
     <value>&lt;Create ${HandlerName}&gt;</value>
   </data>
+  <data name="AddIns.Git.Options.Title" xml:space="preserve">
+    <value>Git Options</value>
+  </data>
+  <data name="AddIns.Git.NoPathFoundStatus" xml:space="preserve">
+    <value>No Git installation found.</value>
+  </data>
+  <data name="AddIns.Git.PathAutoDetectStatus" xml:space="preserve">
+    <value>(automatically detected)</value>
+  </data>
+  <data name="AddIns.Git.DirectoryDoesNotContainGit" xml:space="preserve">
+    <value>'git.exe' was not found in the selected directory!</value>
+  </data>
+  <data name="AddIns.Git.Options.FindGitPath" xml:space="preserve">
+    <value>Select Git path</value>
+  </data>
+  <data name="AddIns.Git.Options.ResetGitPath" xml:space="preserve">
+    <value>Reset Git path</value>
+  </data>
+  <data name="AddIns.Git.Options.GitPath" xml:space="preserve">
+    <value>Git Path</value>
+  </data>
 </root>
