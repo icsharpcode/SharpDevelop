@@ -41,12 +41,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public partial class TreeViewOptionsDialog : Window
 	{
 		public TreeViewOptionsDialog(IEnumerable<IOptionPanelDescriptor> optionPanels)
+			: this(optionPanels, DefaultDialogName)
+		{
+		}
+		
+		public TreeViewOptionsDialog(IEnumerable<IOptionPanelDescriptor> optionPanels, string dialogName)
 		{
 			if (optionPanels == null)
 				throw new ArgumentNullException("optionPanels");
+			this.dialogName = dialogName;
+			
 			InitializeComponent();
 			
-			FormLocationHelper.ApplyWindow(this, "TreeViewOptionsDialog.WindowBounds", true);
+			FormLocationHelper.ApplyWindow(this, WindowBoundsSetting, true);
 			
 			var list = optionPanels.Select(op => new OptionPanelNode(op, this)).ToList();
 			treeView.ItemsSource = list;
@@ -68,16 +75,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Close();
 		}
 		
+		public const string DefaultDialogName = "TreeViewOptionsDialog";
+		string dialogName;
+		
+		string LastOpenedPanelIDSetting
+		{
+			get { return dialogName + ".LastOpenedPanelID"; }
+		}
+		
+		string WindowBoundsSetting
+		{
+			get { return dialogName + ".WindowBounds"; }
+		}
+		
 		protected override void OnSourceInitialized(EventArgs e)
 		{
 			base.OnSourceInitialized(e);
-			string[] lastOpenedPanelID = SD.PropertyService.Get("TreeViewOptionsDialog.LastOpenedPanelID", "UIOptions/SelectCulture").Split('/');
+			string[] lastOpenedPanelID = SD.PropertyService.Get(LastOpenedPanelIDSetting, "UIOptions/SelectCulture").Split('/');
 			
+			var topLevelList = (IEnumerable<OptionPanelNode>)treeView.ItemsSource;
 			OptionPanelNode lastOpenedPanelNode = null;
 			for (int i = 0; i < lastOpenedPanelID.Length; i++) {
 				IEnumerable<OptionPanelNode> currentList;
 				if (lastOpenedPanelNode == null) {
-					currentList = (IEnumerable<OptionPanelNode>)treeView.ItemsSource;
+					currentList = topLevelList;
 				} else {
 					currentList = lastOpenedPanelNode.Children;
 				}
@@ -86,8 +107,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 					break;
 				lastOpenedPanelNode = nextNode;
 			}
-			if (lastOpenedPanelNode != null)
+			if (lastOpenedPanelNode != null) {
 				lastOpenedPanelNode.IsSelected = true;
+			} else {
+				// If even default panel is not available, activate first item on first level
+				var firstPanel = topLevelList.FirstOrDefault();
+				if (firstPanel != null) {
+					firstPanel.IsSelected = true;
+				}
+			}
 		}
 		
 		protected override void OnClosed(EventArgs e)
@@ -103,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			if (openedPanelID == "")
 				openedPanelID = "UIOptions/SelectCulture";
-			SD.PropertyService.Set("TreeViewOptionsDialog.LastOpenedPanelID", openedPanelID);
+			SD.PropertyService.Set(LastOpenedPanelIDSetting, openedPanelID);
 			foreach (IDisposable op in optionPanels.OfType<IDisposable>()) {
 				op.Dispose();
 			}

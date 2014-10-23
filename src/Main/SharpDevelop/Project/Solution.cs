@@ -545,7 +545,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 			{
 				var treeNode = AddInTree.GetTreeNode("/SharpDevelop/Dialogs/SolutionFormattingOptionsDialog", false);
-				bool? result = ICSharpCode.SharpDevelop.Commands.OptionsCommand.ShowTreeOptions(
+				bool? result = ICSharpCode.SharpDevelop.Commands.OptionsCommand.ShowTreeOptions("SolutionFormattingOptionsDialog",
 					StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.SolutionFormattingOptions.Title}"),
 					treeNode);
 				if ((bool) result) {
