@@ -147,6 +147,6 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Occurs when an element is dropped on the design panel.
 		/// </summary>
-		event DragEventHandler Drop;
+		event DragEventHandler Drop;      
 	}
 }

@@ -17,41 +17,46 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor;
+using ICSharpCode.WpfDesign.PropertyGrid;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	[ExtensionServer(typeof(OnlyOneItemSelectedExtensionServer))]
-	[ExtensionFor(typeof(UIElement))]
-	public sealed class RightClickContextMenuExtension : PrimarySelectionAdornerProvider
+	public partial class TextBlockRightClickContextMenu
 	{
-		DesignPanel panel;
-	    ContextMenu contextMenu;
-		
-		protected override void OnInitialized()
-		{
-			base.OnInitialized();
+		private DesignItem designItem;
 
-		    contextMenu = new RightClickContextMenu(ExtendedItem);
-			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
-			panel.AddContextMenu(contextMenu);
-		}
-		
-		protected override void OnRemove()
+        public TextBlockRightClickContextMenu(DesignItem designItem)
 		{
-            panel.RemoveContextMenu(contextMenu);
+			this.designItem = designItem;
 			
-			base.OnRemove();
+			InitializeComponent();
 		}
+
+        void Click_EditFormatedText(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Window()
+            {
+                Content = new FormatedTextEditor(designItem),
+                Width = 400,
+                Height = 200,
+                WindowStyle = WindowStyle.ToolWindow,
+                Owner = ((DesignPanel) designItem.Context.Services.DesignPanel).TryFindParent<Window>(),                 
+            };
+
+            dlg.ShowDialog();
+        }		
 	}
 }

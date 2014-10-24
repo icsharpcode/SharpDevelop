@@ -85,12 +85,16 @@
     </Compile>
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
     <Compile Include="Extensions\PartialPanelSelectionHandler.cs" />
+    <Compile Include="Extensions\TextBlockRightClickContextMenu.xaml.cs">
+      <DependentUpon>TextBlockRightClickContextMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\RightClickContextMenu.xaml.cs">
       <DependentUpon>RightClickContextMenu.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
     <Compile Include="Extensions\RightClickContextMenuExtension.cs" />
+    <Compile Include="Extensions\TextBlockRightClickContextMenuExtension.cs" />
     <Compile Include="OutlineView\OutlineNodeBase.cs" />
     <Compile Include="Extensions\RightClickMultipleItemsContextMenuExtension.cs" />
     <Compile Include="Extensions\RightClickMultipleItemsContextMenu.xaml.cs">
@@ -104,6 +108,9 @@
     <Compile Include="PropertyGrid\Editors\FlatCollectionEditor.xaml.cs">
       <DependentUpon>FlatCollectionEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PropertyGrid\Editors\FormatedTextEditor\FormatedTextEditor.xaml.cs">
+      <DependentUpon>FormatedTextEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="PropertyGrid\Editors\OpenCollectionEditor.xaml.cs">
       <DependentUpon>OpenCollectionEditor.xaml</DependentUpon>
@@ -268,10 +275,17 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Extensions\TextBlockRightClickContextMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Extensions\RightClickContextMenu.xaml" />
     <Page Include="Extensions\RightClickMultipleItemsContextMenu.xaml" />
     <Page Include="PropertyGrid\Editors\ColorEditor.xaml" />
     <Page Include="PropertyGrid\Editors\FlatCollectionEditor.xaml" />
+    <Page Include="PropertyGrid\Editors\FormatedTextEditor\FormatedTextEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="PropertyGrid\Editors\OpenCollectionEditor.xaml" />
     <Page Include="PropertyGrid\Editors\TimeSpanEditor.xaml" />
     <Page Include="ThumbnailView\ThumbnailView.xaml" />
@@ -379,9 +393,7 @@
   <ItemGroup>
     <Resource Include="Images\group2.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ThumbnailView" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Images\Icons.16x16.Properties.Events.png" />
     <Resource Include="Images\Icons.16x16.WpfOutline.Eye.png" />

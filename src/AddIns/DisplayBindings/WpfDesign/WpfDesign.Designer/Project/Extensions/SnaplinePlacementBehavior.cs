@@ -235,23 +235,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		void AddLines(Rect r, double inflate, bool requireOverlap, List<Snapline> h, List<Snapline> v, PlacementAlignment? filter)
 		{
-			Rect r2 = r;
-			r2.Inflate(inflate, inflate);
+            if (r != Rect.Empty)
+            {
+			    Rect r2 = r;
+			    r2.Inflate(inflate, inflate);
 			
-			if (filter == null || filter.Value.Vertical == VerticalAlignment.Top)
-				h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top - 1, Start = r.Left, End = r.Right });
-			if (filter == null || filter.Value.Vertical == VerticalAlignment.Bottom)
-				h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Bottom - 1, Start = r.Left, End = r.Right });
-			if (filter == null || filter.Value.Horizontal == HorizontalAlignment.Left)
-				v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left - 1, Start = r.Top, End = r.Bottom });
-			if (filter == null || filter.Value.Horizontal == HorizontalAlignment.Right)
-				v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Right - 1, Start = r.Top, End = r.Bottom });
+			    if (filter == null || filter.Value.Vertical == VerticalAlignment.Top)
+				    h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top - 1, Start = r.Left, End = r.Right });
+			    if (filter == null || filter.Value.Vertical == VerticalAlignment.Bottom)
+		    		h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Bottom - 1, Start = r.Left, End = r.Right });
+	    		if (filter == null || filter.Value.Horizontal == HorizontalAlignment.Left)
+    				v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left - 1, Start = r.Top, End = r.Bottom });
+			    if (filter == null || filter.Value.Horizontal == HorizontalAlignment.Right)
+				    v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Right - 1, Start = r.Top, End = r.Bottom });
 			
-			if (filter == null)
-			{
-				h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top + Math.Abs((r2.Top - r2.Bottom) / 2), Start = r.Left, End = r.Right });
-				v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left + Math.Abs((r2.Left - r2.Right) / 2), Start = r.Top, End = r.Bottom });
-			}
+			    if (filter == null)
+			    {
+				    h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top + Math.Abs((r2.Top - r2.Bottom) / 2), Start = r.Left, End = r.Right });
+				    v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left + Math.Abs((r2.Left - r2.Right) / 2), Start = r.Top, End = r.Bottom });
+			    }
+            }
 		}
 		
 		void AddBaseline(DesignItem item, Rect bounds, List<Snapline> list)

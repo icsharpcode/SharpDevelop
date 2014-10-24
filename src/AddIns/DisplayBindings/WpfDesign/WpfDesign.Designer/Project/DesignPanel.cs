@@ -17,11 +17,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -443,5 +447,48 @@ namespace ICSharpCode.WpfDesign.Designer
 			PropertyChangedEventHandler handler = PropertyChanged;
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
-	}
+
+        #region ContextMenu
+
+        private Dictionary<ContextMenu, List<object>> contextMenusAndEntries = new Dictionary<ContextMenu, List<object>>();
+
+	    public void AddContextMenu(ContextMenu contextMenu)
+	    {
+	        contextMenusAndEntries.Add(contextMenu, new List<object>(contextMenu.Items.Cast<object>()));
+            contextMenu.Items.Clear();
+
+	        UpdateContextMenu();
+	    }
+
+        public void RemoveContextMenu(ContextMenu contextMenu)
+	    {
+            contextMenusAndEntries.Remove(contextMenu);
+            
+            UpdateContextMenu();
+        }
+
+	    private void UpdateContextMenu()
+	    {
+            if (contextMenusAndEntries.Count == 0)
+	            this.ContextMenu = null;
+
+	        if (this.ContextMenu == null)
+	            this.ContextMenu = new ContextMenu();
+	       
+            this.ContextMenu.Items.Clear();
+
+            foreach (var entries in contextMenusAndEntries.Values)
+            {
+                if (this.ContextMenu.Items.Count > 0)
+                    this.ContextMenu.Items.Add(new Separator());
+
+	            foreach (var entry in entries)
+	            {
+	                ContextMenu.Items.Add(entry);
+	            }
+	        }	        
+	    }
+
+        #endregion
+    }
 }
