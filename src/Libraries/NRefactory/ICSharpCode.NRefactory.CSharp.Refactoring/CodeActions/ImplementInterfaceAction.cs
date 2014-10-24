@@ -132,8 +132,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 					bool needsExplicitly = explicitly;
 					var implementingMember = implementingType.GetInterfaceImplementation(ev);
-					alreadyImplemented = (implementingMember != null) &&
-						(GetAccessibilityLevel(implementingMember) <= GetAccessibilityLevel(ev));
+					alreadyImplemented = (implementingMember != null);
 					if (!alreadyImplemented) {
 						toImplement.Add(new Tuple<IMember, bool>(ev, needsExplicitly));
 					} else {
@@ -150,8 +149,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					alreadyImplemented = false;
 					
 					var implementingMethod = implementingType.GetInterfaceImplementation(method);
-					alreadyImplemented = (implementingMethod != null) &&
-						(GetAccessibilityLevel(implementingMethod) <= GetAccessibilityLevel(method));
+					alreadyImplemented = (implementingMethod != null);
 					if (alreadyImplemented) {
 						if (!needsExplicitly && !implementingMethod.ReturnType.Equals(method.ReturnType)) {
 							needsExplicitly = true;
@@ -179,8 +177,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					bool needsExplicitly = explicitly;
 					
 					var implementingProp = implementingType.GetInterfaceImplementation(prop);
-					alreadyImplemented = (implementingProp != null) &&
-						(GetAccessibilityLevel(implementingProp) <= GetAccessibilityLevel(prop));
+					alreadyImplemented = (implementingProp != null);
 					if (alreadyImplemented) {
 						if (!needsExplicitly && !implementingProp.ReturnType.Equals(prop.ReturnType)) {
 							needsExplicitly = true;
@@ -197,26 +194,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 				}
 			return toImplement;
-		}
-		
-		static int GetAccessibilityLevel(IHasAccessibility member)
-		{
-			if (member.Accessibility == Accessibility.None)
-				return 0;
-			if (member.IsPublic)
-				return 1;
-			if (member.IsInternal)
-				return 2;
-			if (member.IsProtectedOrInternal)
-				return 3;
-			if (member.IsProtectedAndInternal)
-				return 4;
-			if (member.IsProtected)
-				return 5;
-			if (member.IsPrivate)
-				return 6;
-			
-			return 7;
 		}
 		
 		internal static bool CompareMembers(IMember interfaceMethod, IMember typeMethod)
