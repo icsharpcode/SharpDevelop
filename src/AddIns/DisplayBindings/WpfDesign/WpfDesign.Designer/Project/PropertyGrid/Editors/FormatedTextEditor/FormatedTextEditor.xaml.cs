@@ -1,20 +1,28 @@
-﻿using System;
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
 {
@@ -29,7 +37,20 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
         {
             InitializeComponent();
 
-            this.designItem = designItem;            
+            this.designItem = designItem;
+
+            IEnumerable<Inline> inlines = null;
+            var tb = ((TextBlock) designItem.Component);
+
+            inlines = tb.Inlines.Select(x => CloneInline(x)).ToList();
+            
+            var paragraph = richTextBox.Document.Blocks.First() as Paragraph;
+            paragraph.Inlines.AddRange(inlines);
+            
+            richTextBox.Document.Blocks.Add(paragraph);
+
+            richTextBox.Foreground = tb.Foreground;
+            richTextBox.Background = tb.Background;
         }
 
         private void GetDesignItems(TextElementCollection<Block> blocks, List<DesignItem> list)
@@ -48,8 +69,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
 
                     foreach (var inline in ((Paragraph) block).Inlines)
                     {
-                        //yield return inline;
-                        list.Add(CloneInline(inline));
+                        list.Add(InlineToDesignItem(inline));
                     }
                 }
                 else if (block is Section)
@@ -61,9 +81,34 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
             }
         }
 
-        private DesignItem CloneInline(Inline inline)
+        private Inline CloneInline(Inline inline)
         {
-            DesignItem d = d = designItem.Services.Component.RegisterComponentForDesigner(inline);
+            Inline retVal = null;
+            if (inline is LineBreak)
+                retVal = new LineBreak();
+            else if (inline is Span)
+                retVal = new Span();
+            else if (inline is Run)
+            {
+                retVal = new Run(((Run) inline).Text);
+            }
+
+            retVal.Background = inline.Background;
+            retVal.Foreground = inline.Foreground;
+            retVal.FontFamily = inline.FontFamily;
+            retVal.FontSize = inline.FontSize;
+            retVal.FontStretch = inline.FontStretch;
+            retVal.FontStyle = inline.FontStyle;
+            retVal.FontWeight = inline.FontWeight;
+            retVal.TextEffects = inline.TextEffects;
+            retVal.TextDecorations = inline.TextDecorations;
+
+            return retVal;
+        }
+
+        private DesignItem InlineToDesignItem(Inline inline)
+        {
+            DesignItem d = d = designItem.Services.Component.RegisterComponentForDesigner(CloneInline(inline));
             if (inline is Run)
             {
                 var run = inline as Run;
@@ -96,9 +141,23 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
                 d.Properties.GetProperty(TextElement.FontStyleProperty).SetValue(inline.FontStyle);
             if (inline.ReadLocalValue(TextElement.FontWeightProperty) != DependencyProperty.UnsetValue)
                 d.Properties.GetProperty(TextElement.FontWeightProperty).SetValue(inline.FontWeight);
-            if (inline.ReadLocalValue(TextElement.TextEffectsProperty) != DependencyProperty.UnsetValue)
-                d.Properties.GetProperty(TextElement.TextEffectsProperty).SetValue(inline.TextEffects);
+            if (inline.TextDecorations.Count > 0)
+            {
+                d.Properties.GetProperty("TextDecorations").SetValue(new TextDecorationCollection());
+                var tdColl = d.Properties.GetProperty("TextDecorations");
 
+                foreach (var td in inline.TextDecorations)
+                {
+                    var newTd = designItem.Services.Component.RegisterComponentForDesigner(new TextDecoration());
+                    if (inline.ReadLocalValue(TextDecoration.LocationProperty) != DependencyProperty.UnsetValue)
+                        newTd.Properties.GetProperty(TextDecoration.LocationProperty).SetValue(td.Location);
+                    if (inline.ReadLocalValue(TextDecoration.PenProperty) != DependencyProperty.UnsetValue)
+                        newTd.Properties.GetProperty(TextDecoration.PenProperty).SetValue(td.Pen);
+
+                    tdColl.CollectionElements.Add(newTd);
+                }
+            }
+           
             return d;
         }
 
@@ -119,7 +178,6 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
             
             foreach (var inline in inlines)
             {
-
                 inlinesProperty.CollectionElements.Add(inline);
             }
 

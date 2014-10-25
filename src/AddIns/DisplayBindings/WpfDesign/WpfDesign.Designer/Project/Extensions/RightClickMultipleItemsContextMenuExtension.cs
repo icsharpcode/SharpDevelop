@@ -18,6 +18,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -34,21 +35,23 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	[ExtensionFor(typeof(UIElement))]
 	public class RightClickMultipleItemsContextMenuExtension : SelectionAdornerProvider
 	{
-		DesignPanel panel;
-		
-		protected override void OnInitialized()
+        DesignPanel panel;
+        ContextMenu contextMenu;
+
+        protected override void OnInitialized()
 		{
 			base.OnInitialized();
-			
-			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
-			panel.ContextMenu = new RightClickMultipleItemsContextMenu(ExtendedItem);
-		}
+
+            contextMenu = new RightClickMultipleItemsContextMenu(ExtendedItem);
+            panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+            panel.AddContextMenu(contextMenu);
+        }
 		
 		protected override void OnRemove()
 		{
-			panel.ContextMenu = null;
-			
-			base.OnRemove();
+            panel.RemoveContextMenu(contextMenu);
+
+            base.OnRemove();
 		}
 	}
 }

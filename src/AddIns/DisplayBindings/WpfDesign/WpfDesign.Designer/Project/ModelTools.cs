@@ -122,27 +122,33 @@ namespace ICSharpCode.WpfDesign.Designer
 		internal static void CreateVisualTree(this UIElement element)
 		{
 			try {
-				var fixedDoc = new FixedDocument();
-				var pageContent = new PageContent();
-				var fixedPage = new FixedPage();
-				fixedPage.Children.Add(element);
-				(pageContent as IAddChild).AddChild(fixedPage);
-				fixedDoc.Pages.Add(pageContent);
+                element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                element.Arrange(new Rect(element.DesiredSize));
 
-				var f = new XpsSerializerFactory();
-				var w = f.CreateSerializerWriter(new MemoryStream());
-				w.Write(fixedDoc);
+                //var fixedDoc = new FixedDocument();
+                //var pageContent = new PageContent();
+                //var fixedPage = new FixedPage();
+                //fixedPage.Children.Add(element);
+                //(pageContent as IAddChild).AddChild(fixedPage);
+                //fixedDoc.Pages.Add(pageContent);
 
-				fixedPage.Children.Remove(element);
-			}
-			catch (Exception)
+                //var f = new XpsSerializerFactory();
+                //var w = f.CreateSerializerWriter(new MemoryStream());
+                //w.Write(fixedDoc);
+
+                //fixedPage.Children.Remove(element);
+            }
+            catch (Exception)
 			{ }
 		}
 		
 		internal static Size GetDefaultSize(DesignItem createdItem)
 		{
 			CreateVisualTree(createdItem.View);
-			
+
+		    if (createdItem.View.GetType() == typeof (TextBlock))
+		        return new Size(double.NaN, double.NaN);
+
 			var s = Metadata.GetDefaultSize(createdItem.ComponentType, false);
 
 			if (double.IsNaN(s.Width) && createdItem.View.DesiredSize.Width > 0)
@@ -193,10 +199,16 @@ namespace ICSharpCode.WpfDesign.Designer
 		public static void Resize(DesignItem item, double newWidth, double newHeight)
 		{
 			if (newWidth != GetWidth(item.View)) {
-				item.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(newWidth);
+                if(double.IsNaN(newWidth))
+                    item.Properties.GetProperty(FrameworkElement.WidthProperty).Reset();
+                else
+                    item.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(newWidth);
 			}
 			if (newHeight != GetHeight(item.View)) {
-				item.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(newHeight);
+                if (double.IsNaN(newHeight))
+                    item.Properties.GetProperty(FrameworkElement.HeightProperty).Reset();
+                else
+                    item.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(newHeight);
 			}
 		}
 		
