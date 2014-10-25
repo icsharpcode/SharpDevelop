@@ -182,6 +182,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				runSelectItemWhenDropDownClosed = false;
 				DoSelectItem(runSelectItemWhenDropDownClosedLocation);
 			}
+			if (sender == classComboBox) {
+				classComboBoxSelectionChanged(sender, null);
+			}
+			if (sender == membersComboBox) {
+				membersComboBoxSelectionChanged(sender, null);
+			}
 		}
 		
 		void AddClasses(IEnumerable<IUnresolvedTypeDefinition> classes, ICompilation compilation)
