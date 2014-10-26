@@ -87,7 +87,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (item.View == null)
 				return Rect.Empty;
 			var p = item.View.TranslatePoint(new Point(), operation.CurrentContainer.View);
-			return new Rect(p, item.View.RenderSize);
+            //Fixes, Empty Image Resized to 0
+            //return new Rect(p, item.View.RenderSize);
+		    var size = item.View.RenderSize;
+		    if (item.View is FrameworkElement)
+		        size = new Size(((FrameworkElement) item.View).Width, ((FrameworkElement) item.View).Height);
+		    return new Rect(p, size);
 		}
 
 		public virtual void BeforeSetPosition(PlacementOperation operation)

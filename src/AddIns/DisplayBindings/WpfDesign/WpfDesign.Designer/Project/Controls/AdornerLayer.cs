@@ -225,7 +225,19 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				if (adorner.AdornedElement.IsDescendantOf(_designPanel)) {
 					adorner.RenderTransform = (Transform)adorner.AdornedElement.TransformToAncestor(_designPanel);
 				}
-				adorner.Arrange(new Rect(new Point(0, 0), adorner.DesiredSize));
+
+                //Fix Adorner Display of Image (or maybe other components...)
+
+                var size = adorner.DesiredSize;
+                if (size.Height==0 && size.Width==0 && adorner.AdornedElement is FrameworkElement)
+                    size = new Size(((FrameworkElement)adorner.AdornedElement).Width, ((FrameworkElement)adorner.AdornedElement).Height);
+
+			    if (double.IsNaN(size.Width))
+			        size.Width = 0;
+                if (double.IsNaN(size.Height))
+                    size.Height = 0;
+
+                adorner.Arrange(new Rect(new Point(0, 0), size));
 			}
 			return finalSize;
 		}

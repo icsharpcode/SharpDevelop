@@ -467,6 +467,12 @@ namespace ICSharpCode.WpfDesign.Designer
             UpdateContextMenu();
         }
 
+	    public void ClearContextMenu()
+	    {
+            contextMenusAndEntries.Clear();
+	        ContextMenu = null;
+	    }
+
 	    private void UpdateContextMenu()
 	    {
             if (contextMenusAndEntries.Count == 0)

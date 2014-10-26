@@ -145,8 +145,10 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularProperty(TreeViewItem.IsSelectedProperty);
 			Metadata.AddPopularProperty(Border.PaddingProperty);
 			Metadata.AddPopularProperty(Shape.StretchProperty);
-			
-			Metadata.AddPopularProperty(Grid.RowProperty);
+            Metadata.AddPopularProperty(Control.VerticalContentAlignmentProperty);
+            Metadata.AddPopularProperty(Control.HorizontalContentAlignmentProperty);
+
+            Metadata.AddPopularProperty(Grid.RowProperty);
 			Metadata.AddPopularProperty(Grid.RowSpanProperty);
 			Metadata.AddPopularProperty(Grid.ColumnProperty);
 			Metadata.AddPopularProperty(Grid.ColumnSpanProperty);
@@ -259,28 +261,30 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(Viewport3D));
 			Metadata.AddPopularControl(typeof(WrapPanel));
 
+            //Basic Metadata Size of double.NaN, means no Size should be set.
+            Metadata.AddDefaultSize(typeof(TextBlock), new Size(double.NaN, double.NaN));
+            Metadata.AddDefaultSize(typeof(CheckBox), new Size(double.NaN, double.NaN));
+            Metadata.AddDefaultSize(typeof(Image), new Size(double.NaN, double.NaN));
+
             Metadata.AddDefaultSize(typeof(UIElement), new Size(120, 100));
             Metadata.AddDefaultSize(typeof(ContentControl), new Size(120, 20));
             Metadata.AddDefaultSize(typeof(Button), new Size(75, 23));
+            Metadata.AddDefaultSize(typeof(ToggleButton), new Size(75, 23));
 
-            var s1 = new Size(120, 20);
-            Metadata.AddDefaultSize(typeof(Slider), s1);
-            Metadata.AddDefaultSize(typeof(TextBox), s1);
-            Metadata.AddDefaultSize(typeof(PasswordBox), s1);
-            Metadata.AddDefaultSize(typeof(ComboBox), s1);
-            Metadata.AddDefaultSize(typeof(ProgressBar), s1);
+            Metadata.AddDefaultSize(typeof(Slider), new Size(120, 20));
+            Metadata.AddDefaultSize(typeof(TextBox), new Size(120, 20));
+            Metadata.AddDefaultSize(typeof(PasswordBox), new Size(120, 20));
+            Metadata.AddDefaultSize(typeof(ComboBox), new Size(120, 20));
+            Metadata.AddDefaultSize(typeof(ProgressBar), new Size(120, 20));
 
-            Metadata.AddDefaultSize(typeof(ToolBar), s1);
-            Metadata.AddDefaultSize(typeof(Menu), s1);
+            Metadata.AddDefaultSize(typeof(ToolBar), new Size(120, 20));
+            Metadata.AddDefaultSize(typeof(Menu), new Size(120, 20));
             
-            var s2=new Size(120,120);
-            Metadata.AddDefaultSize(typeof(InkCanvas),s2);
-            Metadata.AddDefaultSize(typeof(Image),s2);
-            Metadata.AddDefaultSize(typeof(TreeView),s2);
+            Metadata.AddDefaultSize(typeof(InkCanvas), new Size(120, 120));
+            Metadata.AddDefaultSize(typeof(TreeView), new Size(120, 120));
             
-            var s3=new Size(130,120);
-            Metadata.AddDefaultSize(typeof(Label),s3);
-            Metadata.AddDefaultSize(typeof(Expander),s3);
+            Metadata.AddDefaultSize(typeof(Label), new Size(130, 120));
+            Metadata.AddDefaultSize(typeof(Expander), new Size(130, 120));
 		}
 	}
 }

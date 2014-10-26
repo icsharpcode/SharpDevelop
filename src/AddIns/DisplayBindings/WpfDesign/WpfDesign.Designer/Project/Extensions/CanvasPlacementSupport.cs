@@ -81,8 +81,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 
 			var p = new Point(x, y);
-			return new Rect(p, child.RenderSize);
-		}
+            //Fixes, Empty Image Resized to 0
+            //return new Rect(p, child.RenderSize);
+            var size = item.View.RenderSize;
+            if (item.View is FrameworkElement)
+                size = new Size(((FrameworkElement)item.View).Width, ((FrameworkElement)item.View).Height);
+            return new Rect(p, size);
+        }
 		
 		public override void SetPosition(PlacementInformation info)
 		{

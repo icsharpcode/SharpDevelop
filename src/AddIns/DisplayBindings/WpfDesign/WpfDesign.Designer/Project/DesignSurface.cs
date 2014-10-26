@@ -155,8 +155,9 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			_designContext = context;
 			_designPanel.Context = context;
+		    _designPanel.ClearContextMenu();
 
-			if (context.RootItem != null) {
+            if (context.RootItem != null) {
 				_sceneContainer.Child = context.RootItem.View;
 			}
 			

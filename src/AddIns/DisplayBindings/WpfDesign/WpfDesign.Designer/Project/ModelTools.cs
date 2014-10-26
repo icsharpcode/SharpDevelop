@@ -121,22 +121,20 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		internal static void CreateVisualTree(this UIElement element)
 		{
-			try {
-                element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                element.Arrange(new Rect(element.DesiredSize));
+			try
+			{
+                var fixedDoc = new FixedDocument();
+                var pageContent = new PageContent();
+                var fixedPage = new FixedPage();
+                fixedPage.Children.Add(element);
+                (pageContent as IAddChild).AddChild(fixedPage);
+                fixedDoc.Pages.Add(pageContent);
+                
+                var f = new XpsSerializerFactory();
+                var w = f.CreateSerializerWriter(new MemoryStream());
+                w.Write(fixedDoc);
 
-                //var fixedDoc = new FixedDocument();
-                //var pageContent = new PageContent();
-                //var fixedPage = new FixedPage();
-                //fixedPage.Children.Add(element);
-                //(pageContent as IAddChild).AddChild(fixedPage);
-                //fixedDoc.Pages.Add(pageContent);
-
-                //var f = new XpsSerializerFactory();
-                //var w = f.CreateSerializerWriter(new MemoryStream());
-                //w.Write(fixedDoc);
-
-                //fixedPage.Children.Remove(element);
+                fixedPage.Children.Remove(element);
             }
             catch (Exception)
 			{ }
@@ -144,34 +142,29 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		internal static Size GetDefaultSize(DesignItem createdItem)
 		{
-			CreateVisualTree(createdItem.View);
+			var defS = Metadata.GetDefaultSize(createdItem.ComponentType, false);
+		    if (defS != null)
+		        return defS.Value;
 
-		    if (createdItem.View.GetType() == typeof (TextBlock))
-		        return new Size(double.NaN, double.NaN);
+            CreateVisualTree(createdItem.View);
 
-			var s = Metadata.GetDefaultSize(createdItem.ComponentType, false);
+            var s = createdItem.View.DesiredSize;
+		    
+		    var newS = Metadata.GetDefaultSize(createdItem.ComponentType, true);
 
-			if (double.IsNaN(s.Width) && createdItem.View.DesiredSize.Width > 0)
-			{
-				s.Width = createdItem.View.DesiredSize.Width;
-			}
-			if (double.IsNaN(s.Height) && createdItem.View.DesiredSize.Height > 0)
-			{
-				s.Height = createdItem.View.DesiredSize.Height;
-			}
+		    if (newS.HasValue)
+		    {
+		        if (!(s.Width > 0) && newS.Value.Width > 0)
+		            s.Width = newS.Value.Width;
 
-			var newS = Metadata.GetDefaultSize(createdItem.ComponentType, true);
+		        if (!(s.Height > 0) && newS.Value.Height > 0)
+		            s.Height = newS.Value.Height;
+		    }
 
-			if (!(s.Width > 0))
-				s.Width = newS.Width;
-
-			if (!(s.Height > 0))
-				s.Height = newS.Height;
-
-			if (double.IsNaN(s.Width)) {
+		    if (double.IsNaN(s.Width) && GetWidth(createdItem.View) > 0) {
 				s.Width = GetWidth(createdItem.View);
 			}
-			if (double.IsNaN(s.Height)) {
+			if (double.IsNaN(s.Height) && GetWidth(createdItem.View) > 0) {
 				s.Height = GetHeight(createdItem.View);
 			}
 
@@ -230,11 +223,19 @@ namespace ICSharpCode.WpfDesign.Designer
 			public DesignItem DesignItem { get; set; }
 		}
 
-	    private static ItemPos GetItemPos(DesignItem designItem)
+	    private static ItemPos GetItemPos(IPlacementBehavior placementBehavior, DesignItem designItem)
 	    {
             var itemPos = new ItemPos() {DesignItem = designItem};
 
-	        if (designItem.Parent.Component is Canvas)
+            var pos = placementBehavior.GetPosition(null, designItem);
+	        itemPos.Xmin = pos.X;
+	        itemPos.Xmax = pos.X + pos.Width;
+            itemPos.Ymin = pos.Y;
+            itemPos.Ymax = pos.Y + pos.Height;
+
+            return itemPos;
+
+            if (designItem.Parent.Component is Canvas)
 	        {
 	            var canvas = designItem.Parent.View as Canvas;
 
@@ -341,26 +342,31 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			var _context = collection.First().Context as XamlDesignContext;
 			
-			var oldContainer = collection.First().Parent;
+			var container = collection.First().Parent;
 			
-			if (collection.Any(x => x.Parent != oldContainer))
+			if (collection.Any(x => x.Parent != container))
 				return;
-			
-			var newInstance = Activator.CreateInstance(containerType);
+
+            //Change Code to use the Placment Operation!
+	        var placement = container.Extensions.OfType<IPlacementBehavior>().FirstOrDefault();
+	        if (placement == null)
+	            return;
+
+            var newInstance = Activator.CreateInstance(containerType);
 			DesignItem newPanel = _context.Services.Component.RegisterComponentForDesigner(newInstance);
 			var changeGroup = newPanel.OpenGroup("Wrap in Container");
 			
 			List<ItemPos> itemList = new List<ItemPos>();
 			
 			foreach (var item in collection) {
-				itemList.Add(GetItemPos(item));
-				
-				if (oldContainer.Component is Canvas) {
+				itemList.Add(GetItemPos(placement, item));
+			    //var pos = placement.GetPosition(null, item);
+				if (container.Component is Canvas) {
 					item.Properties.GetAttachedProperty(Canvas.RightProperty).Reset();
 					item.Properties.GetAttachedProperty(Canvas.LeftProperty).Reset();
 					item.Properties.GetAttachedProperty(Canvas.TopProperty).Reset();
 					item.Properties.GetAttachedProperty(Canvas.BottomProperty).Reset();
-				} else if (oldContainer.Component is Grid) {
+				} else if (container.Component is Grid) {
 					item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).Reset();
 					item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).Reset();
 					item.Properties.GetProperty(FrameworkElement.MarginProperty).Reset();
@@ -374,21 +380,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			var xmax = itemList.Max(x => x.Xmax);
 			var ymin = itemList.Min(x => x.Ymin);
 			var ymax = itemList.Max(x => x.Ymax);
-			
-			if (oldContainer.Component is Canvas) {
-				newPanel.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(xmax - xmin);
-				newPanel.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(ymax - ymin);
-				newPanel.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(xmin);
-				newPanel.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(ymin);
-			} else if (oldContainer.Component is Grid) {
-				newPanel.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).SetValue(HorizontalAlignment.Left);
-				newPanel.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).SetValue(VerticalAlignment.Top);
-				newPanel.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(new Thickness(xmin, ymin, 0, 0));
-				newPanel.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(xmax - xmin);
-				newPanel.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(ymax - ymin);
-			}
-			
-			foreach (var item in itemList) {
+
+            foreach (var item in itemList) {
 				newPanel.ContentProperty.CollectionElements.Add(item.DesignItem);
 				
 				if (newPanel.Component is Canvas) {
@@ -425,9 +418,16 @@ namespace ICSharpCode.WpfDesign.Designer
 				}
 			}
 			
-			oldContainer.ContentProperty.CollectionElements.Add(newPanel);
-			
-			changeGroup.Commit();
+            PlacementOperation operation = PlacementOperation.TryStartInsertNewComponents(
+                container,
+                new[] { newPanel },
+                new[] { new Rect(xmin, ymin, xmax - xmin, ymax - ymin).Round() },
+                PlacementType.AddItem
+                );
+            
+            operation.Commit();
+
+            changeGroup.Commit();
 			
 			_context.Services.Selection.SetSelectedComponents(new []{ newPanel });
 		}
@@ -443,12 +443,16 @@ namespace ICSharpCode.WpfDesign.Designer
             if (collection.Any(x => x.Parent != container))
                 return;
 
+            var placement = container.Extensions.OfType<IPlacementBehavior>().FirstOrDefault();
+            if (placement == null)
+                return;
+
             var changeGroup = container.OpenGroup("Arrange Elements");
 
             List<ItemPos> itemList = new List<ItemPos>();
             foreach (var item in collection)
             {
-                itemList.Add(GetItemPos(item));
+                itemList.Add(GetItemPos(placement, item));
             }
 
             var xmin = itemList.Min(x => x.Xmin);
