@@ -17,41 +17,42 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.PropertyGrid;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	[ExtensionServer(typeof(PrimarySelectionButOnlyWhenMultipleSelectedExtensionServer))]
-	[ExtensionFor(typeof(UIElement))]
-	public class RightClickMultipleItemsContextMenuExtension : SelectionAdornerProvider
+	public partial class WrapItemsContextMenu
     {
-        DesignPanel panel;
-        ContextMenu contextMenu;
-
-        protected override void OnInitialized()
-		{
-			base.OnInitialized();
-
-            contextMenu = new RightClickMultipleItemsContextMenu(ExtendedItem);
-            panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
-            panel.AddContextMenu(contextMenu);
-        }
+		private DesignItem designItem;
 		
-		protected override void OnRemove()
+		public WrapItemsContextMenu(DesignItem designItem)
 		{
-            panel.RemoveContextMenu(contextMenu);
-
-            base.OnRemove();
+			this.designItem = designItem;
+			
+			InitializeComponent();
+		}
+		
+		void Click_WrapInCanvas(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelTools.WrapItemsNewContainer(this.designItem.Services.Selection.SelectedItems, typeof(Canvas));
+		}
+		
+		void Click_WrapInGrid(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelTools.WrapItemsNewContainer(this.designItem.Services.Selection.SelectedItems, typeof(Grid));
 		}
 	}
 }

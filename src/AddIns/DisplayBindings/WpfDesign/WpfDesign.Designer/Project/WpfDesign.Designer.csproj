@@ -83,6 +83,7 @@
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ArrangeDirection.cs" />
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
     <Compile Include="Extensions\PartialPanelSelectionHandler.cs" />
     <Compile Include="Extensions\TextBlockRightClickContextMenu.xaml.cs">
@@ -95,10 +96,14 @@
     <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
     <Compile Include="Extensions\RightClickContextMenuExtension.cs" />
     <Compile Include="Extensions\TextBlockRightClickContextMenuExtension.cs" />
+    <Compile Include="Extensions\ArrangeItemsContextMenuExtension.cs" />
+    <Compile Include="Extensions\ArrangeItemsContextMenu.xaml.cs">
+      <DependentUpon>ArrangeItemsContextMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OutlineView\OutlineNodeBase.cs" />
-    <Compile Include="Extensions\RightClickMultipleItemsContextMenuExtension.cs" />
-    <Compile Include="Extensions\RightClickMultipleItemsContextMenu.xaml.cs">
-      <DependentUpon>RightClickMultipleItemsContextMenu.xaml</DependentUpon>
+    <Compile Include="Extensions\WrapItemsContextMenuExtension.cs" />
+    <Compile Include="Extensions\WrapItemsContextMenu.xaml.cs">
+      <DependentUpon>WrapItemsContextMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Extensions\SkewThumbExtension.cs" />
     <Compile Include="Extensions\TopLeftContainerDragHandleMultipleItems.cs" />
@@ -279,7 +284,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Extensions\RightClickContextMenu.xaml" />
-    <Page Include="Extensions\RightClickMultipleItemsContextMenu.xaml" />
+    <Page Include="Extensions\ArrangeItemsContextMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Extensions\WrapItemsContextMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="PropertyGrid\Editors\ColorEditor.xaml" />
     <Page Include="PropertyGrid\Editors\FlatCollectionEditor.xaml" />
     <Page Include="PropertyGrid\Editors\FormatedTextEditor\FormatedTextEditor.xaml">
@@ -424,5 +434,8 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\grid.png" />
   </ItemGroup>
 </Project>

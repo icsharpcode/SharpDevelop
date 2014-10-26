@@ -66,8 +66,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				
 				minX = minX < relativeLocation.X ? minX : relativeLocation.X;
 				minY = minY < relativeLocation.Y ? minY : relativeLocation.Y;
-				maxX = maxX > relativeLocation.X + ((FrameworkElement)this.ExtendedItem.View).ActualWidth ? maxX : relativeLocation.X + ((FrameworkElement)this.ExtendedItem.View).ActualWidth;
-				maxY = maxY > relativeLocation.Y + ((FrameworkElement)this.ExtendedItem.View).ActualHeight ? maxY : relativeLocation.Y + ((FrameworkElement)this.ExtendedItem.View).ActualHeight;
+				maxX = maxX > relativeLocation.X + ((FrameworkElement)di.View).ActualWidth ? maxX : relativeLocation.X + ((FrameworkElement)di.View).ActualWidth;
+				maxY = maxY > relativeLocation.Y + ((FrameworkElement)di.View).ActualHeight ? maxY : relativeLocation.Y + ((FrameworkElement)di.View).ActualHeight;
 			}
 			
 			Rectangle rect2 = new Rectangle() {

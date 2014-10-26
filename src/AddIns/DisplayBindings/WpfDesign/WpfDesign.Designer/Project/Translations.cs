@@ -92,6 +92,52 @@ namespace ICSharpCode.WpfDesign.Designer
             }
         }
 
-        
+        public virtual string ArrangeLeft
+        {
+            get
+            {
+                return "Arrange Left";
+            }
+        }
+
+        public virtual string ArrangeHorizontalMiddle
+        {
+            get
+            {
+                return "Horizontal centered";
+            }
+        }
+
+        public virtual string ArrangeRight
+        {
+            get
+            {
+                return "Arrange Right";
+            }
+        }
+
+        public virtual string ArrangeTop
+        {
+            get
+            {
+                return "Arrange Top";
+            }
+        }
+
+        public virtual string ArrangeVerticalMiddle
+        {
+            get
+            {
+                return "Vertical centered";
+            }
+        }
+
+        public virtual string ArrangeBottom
+        {
+            get
+            {
+                return "Arrange Bottom";
+            }
+        }
     }
 }

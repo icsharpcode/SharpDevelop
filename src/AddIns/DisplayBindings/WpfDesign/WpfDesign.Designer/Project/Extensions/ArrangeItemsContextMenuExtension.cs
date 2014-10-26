@@ -17,42 +17,42 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ICSharpCode.WpfDesign.PropertyGrid;
-using ICSharpCode.WpfDesign.Designer.Xaml;
+
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Extensions;
+using ICSharpCode.WpfDesign.Designer;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	public partial class RightClickMultipleItemsContextMenu
-	{
-		private DesignItem designItem;
-		
-		public RightClickMultipleItemsContextMenu(DesignItem designItem)
+	/// <summary>
+	/// 
+	/// </summary>
+	[ExtensionServer(typeof(PrimarySelectionButOnlyWhenMultipleSelectedExtensionServer))]
+	[ExtensionFor(typeof(UIElement))]
+    [Extension(Order = 30)]
+    public class ArrangeItemsContextMenuExtension : SelectionAdornerProvider
+    {
+        DesignPanel panel;
+        ContextMenu contextMenu;
+
+        protected override void OnInitialized()
 		{
-			this.designItem = designItem;
-			
-			InitializeComponent();
-		}
+			base.OnInitialized();
+
+            contextMenu = new ArrangeItemsContextMenu(ExtendedItem);
+            panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+            panel.AddContextMenu(contextMenu);
+        }
 		
-		void Click_WrapInCanvas(object sender, System.Windows.RoutedEventArgs e)
+		protected override void OnRemove()
 		{
-			ModelTools.WrapItemsNewContainer(this.designItem.Services.Selection.SelectedItems, typeof(Canvas));
-		}
-		
-		void Click_WrapInGrid(object sender, System.Windows.RoutedEventArgs e)
-		{
-			ModelTools.WrapItemsNewContainer(this.designItem.Services.Selection.SelectedItems, typeof(Grid));
+            panel.RemoveContextMenu(contextMenu);
+
+            base.OnRemove();
 		}
 	}
 }
