@@ -450,11 +450,11 @@ namespace ICSharpCode.WpfDesign.Designer
 
         #region ContextMenu
 
-        private Dictionary<ContextMenu, List<object>> contextMenusAndEntries = new Dictionary<ContextMenu, List<object>>();
+        private Dictionary<ContextMenu, Tuple<int,List<object>>> contextMenusAndEntries = new Dictionary<ContextMenu, Tuple<int,List<object>>>();
 
 	    public void AddContextMenu(ContextMenu contextMenu)
 	    {
-	        contextMenusAndEntries.Add(contextMenu, new List<object>(contextMenu.Items.Cast<object>()));
+	        contextMenusAndEntries.Add(contextMenu, new Tuple<int, List<object>>(contextMenusAndEntries.Count, new List<object>(contextMenu.Items.Cast<object>())));
             contextMenu.Items.Clear();
 
 	        UpdateContextMenu();
@@ -477,16 +477,16 @@ namespace ICSharpCode.WpfDesign.Designer
 	       
             this.ContextMenu.Items.Clear();
 
-            foreach (var entries in contextMenusAndEntries.Values)
-            {
-                if (this.ContextMenu.Items.Count > 0)
-                    this.ContextMenu.Items.Add(new Separator());
+	        foreach (var entries in contextMenusAndEntries.Values.OrderBy(x => x.Item1).Select(x => x.Item2))
+	        {
+	            if (this.ContextMenu.Items.Count > 0)
+	                this.ContextMenu.Items.Add(new Separator());
 
 	            foreach (var entry in entries)
 	            {
 	                ContextMenu.Items.Add(entry);
 	            }
-	        }	        
+	        }
 	    }
 
         #endregion

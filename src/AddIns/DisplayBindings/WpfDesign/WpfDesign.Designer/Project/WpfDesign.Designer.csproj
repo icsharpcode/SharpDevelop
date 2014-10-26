@@ -393,7 +393,22 @@
   <ItemGroup>
     <Resource Include="Images\group2.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\edit-bold.png" />
+    <Resource Include="Images\edit-color.png" />
+    <Resource Include="Images\edit-italic.png" />
+    <Resource Include="Images\edit-strike.png" />
+    <Resource Include="Images\layers-alignment-bottom.png" />
+    <Resource Include="Images\layers-alignment-center.png" />
+    <Resource Include="Images\layers-alignment-left.png" />
+    <Resource Include="Images\layers-alignment-middle.png" />
+    <Resource Include="Images\layers-alignment-right.png" />
+    <Resource Include="Images\layers-alignment.png" />
+    <Resource Include="Images\layers-arrange-back.png" />
+    <Resource Include="Images\layers-arrange.png" />
+    <Resource Include="Images\layers-stack-arrange-back.png" />
+    <Resource Include="Images\layers-stack-arrange.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Icons.16x16.Properties.Events.png" />
     <Resource Include="Images\Icons.16x16.WpfOutline.Eye.png" />
@@ -406,5 +421,8 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\lock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\edit.png" />
   </ItemGroup>
 </Project>

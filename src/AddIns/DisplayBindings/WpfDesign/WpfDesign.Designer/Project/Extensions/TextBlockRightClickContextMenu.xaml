@@ -3,5 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:Translation="clr-namespace:ICSharpCode.WpfDesign.Designer"
              >   
-    <MenuItem Header="EditFormatedText" Click="Click_EditFormatedText" />
+    <MenuItem Header="{Binding FormatedTextEditor, Source={x:Static Translation:Translations.Instance}}" Click="Click_EditFormatedText">
+        <MenuItem.Icon>
+            <Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/edit.png" />
+        </MenuItem.Icon>
+    </MenuItem>
 </ContextMenu>

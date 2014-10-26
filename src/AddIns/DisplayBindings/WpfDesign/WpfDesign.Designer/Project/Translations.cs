@@ -83,5 +83,15 @@ namespace ICSharpCode.WpfDesign.Designer
 				return "Wrap in Border";
 			}
 		}
-	}
+
+        public virtual string FormatedTextEditor
+        {
+            get
+            {
+                return "Formated Text Editor";
+            }
+        }
+
+        
+    }
 }
