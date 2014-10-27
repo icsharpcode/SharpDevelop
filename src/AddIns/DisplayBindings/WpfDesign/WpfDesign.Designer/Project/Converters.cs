@@ -159,8 +159,38 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 			return value;
 		}
 	}
-	
-	public class FormatDoubleConverter : IValueConverter
+
+    public class ControlToRealWidthConverter : IMultiValueConverter
+    {
+        public static readonly ControlToRealWidthConverter Instance = new ControlToRealWidthConverter();
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return PlacementOperation.GetRealElementSize((UIElement)values[0]).Width;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ControlToRealHeightConverter : IMultiValueConverter
+    {
+        public static readonly ControlToRealHeightConverter Instance = new ControlToRealHeightConverter();
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return PlacementOperation.GetRealElementSize((UIElement)values[0]).Height;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class FormatDoubleConverter : IValueConverter
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly FormatDoubleConverter Instance=new FormatDoubleConverter();

@@ -37,25 +37,37 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	{
 		AdornerPanel adornerPanel;
 		AdornerPanel cachedAdornerPanel;
-		
-		protected override void OnInitialized()
+        Border border;
+        
+        protected override void OnInitialized()
 		{
 			base.OnInitialized();
 
-		    UpdateAdorner();
-		}
+            this.ExtendedItem.PropertyChanged += OnPropertyChanged;
 
-		void UpdateAdorner()
+            UpdateAdorner();
+        }
+
+        protected override void OnRemove()
+        {
+            this.ExtendedItem.PropertyChanged -= OnPropertyChanged;
+            base.OnRemove();
+        }
+
+        void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (sender == null || e.PropertyName == "Width" || e.PropertyName == "Height")
+            {
+               ((DesignPanel) this.ExtendedItem.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
+            }
+        }
+
+        void UpdateAdorner()
 		{
 			var element = ExtendedItem.Component as UIElement;
 			if (element != null) {
-				//if (element.IsVisible) {
 					CreateAdorner();					
-                //}
-                //else {
-                //    RemoveAdorner();
-                //}
-			}
+                }
 		}
 		
 		private void CreateAdorner()
@@ -65,7 +77,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (cachedAdornerPanel == null) {
 					cachedAdornerPanel = new AdornerPanel();
 					cachedAdornerPanel.Order = AdornerOrder.Background;
-					var border = new Border();
+					border = new Border();
 					border.BorderThickness = new Thickness(1);
 					border.BorderBrush = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
 				    border.Background = Brushes.Transparent;
@@ -87,15 +99,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
                 e.Handled = true;
                 this.ExtendedItem.Services.Selection.SetSelectedComponents(new DesignItem[] {this.ExtendedItem},
                     SelectionTypes.Auto);
+                ((DesignPanel) this.ExtendedItem.Services.DesignPanel).Focus();
             }
         }
-		
-		private void RemoveAdorner()
-		{
-			if (adornerPanel != null) {
-				Adorners.Remove(adornerPanel);
-				adornerPanel = null;
-			}
-		}
 	}
 }

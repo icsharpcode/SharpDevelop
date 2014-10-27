@@ -219,10 +219,19 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		//Set custom HitTestFilterCallbak
 		public HitTestFilterCallback CustomHitTestFilterBehavior { get; set; }
-		/// <summary>
-		/// Gets/Sets the design context.
-		/// </summary>
-		public DesignContext Context {
+
+        public AdornerLayer AdornerLayer
+	    {
+	        get
+	        {
+	            return _adornerLayer;
+	        }
+	    }
+
+	    /// <summary>
+        /// Gets/Sets the design context.
+        /// </summary>
+        public DesignContext Context {
 			get { return _context; }
 			set { _context = value; }
 		}

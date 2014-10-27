@@ -32,7 +32,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	/// <summary>
 	/// A control that displays adorner panels.
 	/// </summary>
-	sealed class AdornerLayer : Panel
+	public sealed class AdornerLayer : Panel
 	{
 		#region AdornerPanelCollection
 		internal sealed class AdornerPanelCollection : ICollection<AdornerPanel>, IReadOnlyCollection<AdornerPanel>
@@ -218,26 +218,24 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			}
 			return new Size(0, 0);
 		}
-		
+
 		protected override Size ArrangeOverride(Size finalSize)
 		{
 			foreach (AdornerPanel adorner in this.Children) {				
-				if (adorner.AdornedElement.IsDescendantOf(_designPanel)) {
-					adorner.RenderTransform = (Transform)adorner.AdornedElement.TransformToAncestor(_designPanel);
+				if (adorner.AdornedElement.IsDescendantOf(_designPanel))
+				{
+				    var rt = (MatrixTransform) adorner.AdornedElement.TransformToAncestor(_designPanel);
+                    if (adorner.AdornedDesignItem != null && adorner.AdornedDesignItem.Parent != null && adorner.AdornedDesignItem.Parent.View is Canvas && adorner.AdornedElement.RenderSize.Height == 0 && adorner.AdornedElement.RenderSize.Width == 0)
+                    {
+                        var xOffset = rt.Matrix.OffsetX - (((FrameworkElement)adorner.AdornedElement).Width / 2);
+                        var yOffset = rt.Matrix.OffsetY - (((FrameworkElement)adorner.AdornedElement).Height / 2);
+                        rt = new MatrixTransform(new Matrix(rt.Matrix.M11, rt.Matrix.M12, rt.Matrix.M21, rt.Matrix.M22, xOffset, yOffset));
+                    }
+
+                    adorner.RenderTransform = rt;
 				}
 
-                //Fix Adorner Display of Image (or maybe other components...)
-
-                var size = adorner.DesiredSize;
-                //if (size.Height==0 && size.Width==0 && adorner.AdornedElement is FrameworkElement)
-                //    size = new Size(((FrameworkElement)adorner.AdornedElement).Width, ((FrameworkElement)adorner.AdornedElement).Height);
-
-                //if (double.IsNaN(size.Width))
-                //    size.Width = 0;
-                //if (double.IsNaN(size.Height))
-                //    size.Height = 0;
-
-                adorner.Arrange(new Rect(new Point(0, 0), size));
+                adorner.Arrange(new Rect(new Point(0, 0), adorner.DesiredSize));
 			}
 			return finalSize;
 		}

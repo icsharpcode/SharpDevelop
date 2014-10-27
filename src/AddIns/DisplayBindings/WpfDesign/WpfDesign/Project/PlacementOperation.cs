@@ -213,8 +213,20 @@ namespace ICSharpCode.WpfDesign
         public static Size GetRealElementSize(UIElement element)
         {
             var size = element.RenderSize;
-            if (element is FrameworkElement && !double.IsNaN(((FrameworkElement)element).Width) && !double.IsNaN(((FrameworkElement)element).Height))
-                size = new Size(((FrameworkElement)element).Width, ((FrameworkElement)element).Height);
+            if (element is FrameworkElement && !double.IsNaN(((FrameworkElement)element).Width))
+                size.Width = ((FrameworkElement)element).Width;
+            if (element is FrameworkElement && !double.IsNaN(((FrameworkElement)element).Height))
+                size.Height = ((FrameworkElement)element).Height;
+
+            if (element is FrameworkElement && size.Width < ((FrameworkElement)element).MinWidth)
+                size.Width = ((FrameworkElement)element).MinWidth;
+            if (element is FrameworkElement && size.Height < ((FrameworkElement)element).MinHeight)
+                size.Height = ((FrameworkElement)element).Height;
+
+            if (element is FrameworkElement && size.Width == 0)
+                size.Width = element.DesiredSize.Width;
+            if (element is FrameworkElement && size.Height == 0)
+                size.Height = element.DesiredSize.Height;
 
             return size;
         }

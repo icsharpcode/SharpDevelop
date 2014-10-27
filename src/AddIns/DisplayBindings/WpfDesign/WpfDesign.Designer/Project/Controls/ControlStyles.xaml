@@ -2,7 +2,7 @@
 	<!--
 		This file contains the default styles used by the Controls in ICSharpCode.WpfDesign.Designer.Controls
 	-->
-	<Converters:LevelConverter x:Key="FormatDoubleConverter" />
+    <Converters:LevelConverter x:Key="FormatDoubleConverter" />
 	<ControlConvertors:HandleLengthWithOffset x:Key="HandleLengthWithOffset" />
 	<SolidColorBrush Color="#FF474747" x:Key="HandleBrush" />
 	<Style TargetType="{x:Type Controls:PanelMoveAdorner}">
@@ -333,8 +333,17 @@
 							<RowDefinition Height="5" />
 						</Grid.RowDefinitions>
 						<Path SnapsToDevicePixels="True" Grid.Row="0" Stroke="#AC0000" StrokeThickness="1.0" Data="M0,0 L1,0 M0.75,0 L0.75,1" Stretch="Fill" />
-						<TextBlock Text="{Binding Path=ActualHeight, Converter={x:Static Converters:FormatDoubleConverter.Instance}}" HorizontalAlignment="Center" Margin="8,0,0,1" Padding="1,1,1,1" FontSize="10" Grid.Row="1">
-							<TextBlock.LayoutTransform>
+						<TextBlock HorizontalAlignment="Center" Margin="8,0,0,1" Padding="1,1,1,1" FontSize="10" Grid.Row="1">
+							<TextBlock.Text>
+                                <MultiBinding Converter="{x:Static Converters:ControlToRealHeightConverter.Instance}" StringFormat="0"> 
+                                    <MultiBinding.Bindings> 
+                                        <Binding />
+                                        <Binding Path="ActualHeight" UpdateSourceTrigger="PropertyChanged" /> 
+                                        <Binding Path="Height" UpdateSourceTrigger="PropertyChanged" /> 
+                                    </MultiBinding.Bindings> 
+                                </MultiBinding> 
+                            </TextBlock.Text>
+                            <TextBlock.LayoutTransform>
 								<RotateTransform Angle="270" CenterX="0.5" CenterY="0.5" />
 							</TextBlock.LayoutTransform>
 						</TextBlock>
@@ -355,7 +364,17 @@
 							<ColumnDefinition Width="5" />
 						</Grid.ColumnDefinitions>
 						<Path Grid.Column="0" Stroke="#AC0000" StrokeThickness="1" Data="M0,0 L0,1 M0,0.75 L1,0.75" Stretch="Fill" SnapsToDevicePixels="True" />
-						<TextBlock Text="{Binding Path=ActualWidth,  Converter={x:Static Converters:FormatDoubleConverter.Instance}}" HorizontalAlignment="Center" Margin="0,8,0,0" Padding="1,1,1,1" FontSize="10" Grid.Column="1" />
+						<TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" Padding="1,1,1,1" FontSize="10" Grid.Column="1">
+							<TextBlock.Text>
+                                <MultiBinding Converter="{x:Static Converters:ControlToRealWidthConverter.Instance}" StringFormat="0"> 
+                                    <MultiBinding.Bindings> 
+                                        <Binding />
+                                        <Binding Path="ActualWidth" UpdateSourceTrigger="PropertyChanged" /> 
+                                        <Binding Path="Width" UpdateSourceTrigger="PropertyChanged" />                                         
+                                    </MultiBinding.Bindings> 
+                                </MultiBinding> 
+                            </TextBlock.Text>
+                        </TextBlock>
 						<Path Grid.Column="2" Stroke="#AC0000" StrokeThickness="1" Data="M0,0.75 L3,0.75 M3,0 L3,1 " Stretch="Fill" SnapsToDevicePixels="True" />
 					</Grid>
 				</ControlTemplate>

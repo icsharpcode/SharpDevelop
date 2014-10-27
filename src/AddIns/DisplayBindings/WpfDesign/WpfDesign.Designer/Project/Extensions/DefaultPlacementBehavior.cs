@@ -79,8 +79,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void EndPlacement(PlacementOperation operation)
 		{
-			InfoTextEnterArea.Stop(ref infoTextEnterArea);			
-		}
+			InfoTextEnterArea.Stop(ref infoTextEnterArea);
+
+		    this.ExtendedItem.Services.Selection.SetSelectedComponents(null);
+		    this.ExtendedItem.Services.Selection.SetSelectedComponents(operation.PlacedItems.Select(x => x.Item).ToList());
+        }
 
 		public virtual Rect GetPosition(PlacementOperation operation, DesignItem item)
 		{
@@ -89,7 +92,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var p = item.View.TranslatePoint(new Point(), operation.CurrentContainer.View);
             //Fixes, Empty Image Resized to 0
             //return new Rect(p, item.View.RenderSize);
-           
+
 		    return new Rect(p, PlacementOperation.GetRealElementSize(item.View));
 		}
 
@@ -187,7 +190,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				foreach (var info in operation.PlacedItems) {
 					SetPosition(info);
 				}
-			}
+			}	    
 		}
 	}
 }

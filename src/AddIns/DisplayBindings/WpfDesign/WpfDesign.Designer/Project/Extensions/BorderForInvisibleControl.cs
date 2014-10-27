@@ -39,8 +39,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	{
 		AdornerPanel adornerPanel;
 		AdornerPanel cachedAdornerPanel;
-		
-		protected override void OnInitialized()
+        
+        protected override void OnInitialized()
 		{
 			base.OnInitialized();
 
@@ -58,9 +58,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					element.IsVisibleChanged += (s, e) => UpdateAdorner();
 				}
 			}
-		}
+        }
 
-		void UpdateAdorner()
+        void UpdateAdorner()
 		{
 			var element = ExtendedItem.Component as UIElement;
 			if (element != null) {

@@ -228,16 +228,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				AdornerPanel.SetPlacement(thumb1,
 					new RelativePlacement(HorizontalAlignment.Center, VerticalAlignment.Top) {
 						YOffset = 0,
-						XOffset = -1 * ((FrameworkElement)ExtendedItem.View).ActualWidth / 4
+						XOffset = -1 * PlacementOperation.GetRealElementSize(ExtendedItem.View).Width / 4
 					});
 				
 				AdornerPanel.SetPlacement(thumb2,
 					new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Center) {
-						YOffset = -1 * ((FrameworkElement)ExtendedItem.View).ActualHeight / 4,
+						YOffset = -1 * PlacementOperation.GetRealElementSize(ExtendedItem.View).Height / 4,
 						XOffset = 0
 					});
-			}
-		}
+
+                ((DesignPanel)this.ExtendedItem.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
+           }
+        }
 		
 		protected override void OnRemove()
 		{
