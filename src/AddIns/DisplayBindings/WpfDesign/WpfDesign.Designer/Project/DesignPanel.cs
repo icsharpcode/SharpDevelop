@@ -102,8 +102,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			return result;
 		}
-		
-		/// <summary>
+
+	    /// <summary>
 		/// Performs a hit test on the design surface, raising <paramref name="callback"/> for each match.
 		/// Hit testing continues while the callback returns true.
 		/// </summary>
@@ -119,7 +119,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			HitTestFilterCallback filterBehavior = CustomHitTestFilterBehavior ?? FilterHitTestInvisibleElements;
 			CustomHitTestFilterBehavior = null;
 			hitTestElements.Clear();
-			
+
 			if (testAdorners) {
 
 				RunHitTest(

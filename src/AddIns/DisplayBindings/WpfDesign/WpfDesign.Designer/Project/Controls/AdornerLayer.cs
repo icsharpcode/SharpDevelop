@@ -229,13 +229,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
                 //Fix Adorner Display of Image (or maybe other components...)
 
                 var size = adorner.DesiredSize;
-                if (size.Height==0 && size.Width==0 && adorner.AdornedElement is FrameworkElement)
-                    size = new Size(((FrameworkElement)adorner.AdornedElement).Width, ((FrameworkElement)adorner.AdornedElement).Height);
+                //if (size.Height==0 && size.Width==0 && adorner.AdornedElement is FrameworkElement)
+                //    size = new Size(((FrameworkElement)adorner.AdornedElement).Width, ((FrameworkElement)adorner.AdornedElement).Height);
 
-			    if (double.IsNaN(size.Width))
-			        size.Width = 0;
-                if (double.IsNaN(size.Height))
-                    size.Height = 0;
+                //if (double.IsNaN(size.Width))
+                //    size.Width = 0;
+                //if (double.IsNaN(size.Height))
+                //    size.Height = 0;
 
                 adorner.Arrange(new Rect(new Point(0, 0), size));
 			}

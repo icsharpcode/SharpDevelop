@@ -50,7 +50,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
             richTextBox.Document.Blocks.Add(paragraph);
 
             richTextBox.Foreground = tb.Foreground;
-            richTextBox.Background = tb.Background;
+            richTextBox.Background = tb.Background;        
         }
 
         private void GetDesignItems(TextElementCollection<Block> blocks, List<DesignItem> list)
@@ -189,6 +189,23 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             this.TryFindParent<Window>().Close();
+        }
+
+        private void StrikeThroughButton_Click(object sender, RoutedEventArgs e)
+        {
+            TextRange range = new TextRange(richTextBox.Selection.Start, richTextBox.Selection.End);
+
+            TextDecorationCollection tdc = (TextDecorationCollection) richTextBox.Selection.GetPropertyValue(Inline.TextDecorationsProperty);
+
+            if (tdc == null || !tdc.Equals(TextDecorations.Strikethrough))
+            {
+                tdc = TextDecorations.Strikethrough;
+            }
+            else
+            {
+                tdc = null;
+            }
+            range.ApplyPropertyValue(Inline.TextDecorationsProperty, tdc);
         }
     }
 }

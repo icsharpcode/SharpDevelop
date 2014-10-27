@@ -154,10 +154,10 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		    if (newS.HasValue)
 		    {
-		        if (!(s.Width > 0) && newS.Value.Width > 0)
+		        if (!(s.Width > 5) && newS.Value.Width > 0)
 		            s.Width = newS.Value.Width;
 
-		        if (!(s.Height > 0) && newS.Value.Height > 0)
+		        if (!(s.Height > 5) && newS.Value.Height > 0)
 		            s.Height = newS.Value.Height;
 		    }
 
@@ -187,7 +187,7 @@ namespace ICSharpCode.WpfDesign.Designer
 				return element.RenderSize.Height;
 			else
 				return v;
-		}
+		}       
 
 		public static void Resize(DesignItem item, double newWidth, double newHeight)
 		{

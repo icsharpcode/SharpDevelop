@@ -85,6 +85,7 @@
     </Compile>
     <Compile Include="ArrangeDirection.cs" />
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
+    <Compile Include="Extensions\BorderForImageControl.cs" />
     <Compile Include="Extensions\PartialPanelSelectionHandler.cs" />
     <Compile Include="Extensions\TextBlockRightClickContextMenu.xaml.cs">
       <DependentUpon>TextBlockRightClickContextMenu.xaml</DependentUpon>
@@ -437,5 +438,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\grid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\edit-underline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\paint-can-color.png" />
   </ItemGroup>
 </Project>

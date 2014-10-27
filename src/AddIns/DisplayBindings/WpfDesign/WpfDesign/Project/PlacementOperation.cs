@@ -204,7 +204,21 @@ namespace ICSharpCode.WpfDesign
 			
 			this.changeGroup = items[0].Context.OpenGroup(type.ToString(), items);
 		}
-		
+
+        /// <summary>
+        /// The Size wich the Element really should have (even if its smaller Rendered (like emtpy Image!))
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static Size GetRealElementSize(UIElement element)
+        {
+            var size = element.RenderSize;
+            if (element is FrameworkElement && !double.IsNaN(((FrameworkElement)element).Width) && !double.IsNaN(((FrameworkElement)element).Height))
+                size = new Size(((FrameworkElement)element).Width, ((FrameworkElement)element).Height);
+
+            return size;
+        }
+
 		/// <summary>
 		/// Gets the placement behavior associated with the specified items.
 		/// </summary>

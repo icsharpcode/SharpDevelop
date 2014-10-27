@@ -89,10 +89,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var p = item.View.TranslatePoint(new Point(), operation.CurrentContainer.View);
             //Fixes, Empty Image Resized to 0
             //return new Rect(p, item.View.RenderSize);
-		    var size = item.View.RenderSize;
-		    if (item.View is FrameworkElement)
-		        size = new Size(((FrameworkElement) item.View).Width, ((FrameworkElement) item.View).Height);
-		    return new Rect(p, size);
+           
+		    return new Rect(p, PlacementOperation.GetRealElementSize(item.View));
 		}
 
 		public virtual void BeforeSetPosition(PlacementOperation operation)
@@ -101,7 +99,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void SetPosition(PlacementInformation info)
 		{
-			ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
+		    if (info.Operation.Type != PlacementType.Move)
+		        ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
 		}
 
 		public virtual bool CanLeaveContainer(PlacementOperation operation)
@@ -163,7 +162,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					return false;
 				}
 			}
-			
+
+		    if (ExtendedItem.ContentProperty.ReturnType == typeof(string))
+		        return false;
+
 			if (!ExtendedItem.ContentProperty.IsSet)
 				return true;
 			

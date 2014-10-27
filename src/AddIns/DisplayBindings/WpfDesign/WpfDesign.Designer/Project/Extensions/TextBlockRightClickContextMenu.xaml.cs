@@ -50,7 +50,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
             var dlg = new Window()
             {
                 Content = new FormatedTextEditor(designItem),
-                Width = 400,
+                Width = 440,
                 Height = 200,
                 WindowStyle = WindowStyle.ToolWindow,
                 Owner = ((DesignPanel) designItem.Context.Services.DesignPanel).TryFindParent<Window>(),                 

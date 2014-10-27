@@ -279,6 +279,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		void DrawLine(double x1, double y1, double x2, double y2)
 		{
+		    if (double.IsInfinity(x1) || double.IsNaN(x1) || double.IsInfinity(y1) || double.IsNaN(y1) ||
+		        double.IsInfinity(x2) || double.IsNaN(x2) || double.IsInfinity(y2) || double.IsNaN(y2))
+		        return;
+
 			var line1 = new Line() {
 				X1 = x1,
 				Y1 = y1,
