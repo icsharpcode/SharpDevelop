@@ -26,186 +26,186 @@ using ICSharpCode.WpfDesign.Designer.Xaml;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
 {
-    /// <summary>
-    /// Interaktionslogik für FormatedTextEditor.xaml
-    /// </summary>
-    public partial class FormatedTextEditor
-    {
-        private DesignItem designItem;
+	/// <summary>
+	/// Interaktionslogik für FormatedTextEditor.xaml
+	/// </summary>
+	public partial class FormatedTextEditor
+	{
+		private DesignItem designItem;
 
-        public FormatedTextEditor(DesignItem designItem)
-        {
-            InitializeComponent();
+		public FormatedTextEditor(DesignItem designItem)
+		{
+			InitializeComponent();
 
-            this.designItem = designItem;
+			this.designItem = designItem;
 
-            IEnumerable<Inline> inlines = null;
-            var tb = ((TextBlock) designItem.Component);
+			IEnumerable<Inline> inlines = null;
+			var tb = ((TextBlock) designItem.Component);
 
-            inlines = tb.Inlines.Select(x => CloneInline(x)).ToList();
-            
-            var paragraph = richTextBox.Document.Blocks.First() as Paragraph;
-            paragraph.Inlines.AddRange(inlines);
-            
-            richTextBox.Document.Blocks.Add(paragraph);
+			inlines = tb.Inlines.Select(x => CloneInline(x)).ToList();
+			
+			var paragraph = richTextBox.Document.Blocks.First() as Paragraph;
+			paragraph.Inlines.AddRange(inlines);
+			
+			richTextBox.Document.Blocks.Add(paragraph);
 
-            richTextBox.Foreground = tb.Foreground;
-            richTextBox.Background = tb.Background;        
-        }
+			richTextBox.Foreground = tb.Foreground;
+			richTextBox.Background = tb.Background;
+		}
 
-        private void GetDesignItems(TextElementCollection<Block> blocks, List<DesignItem> list)
-        {
-            bool first = true;
+		private void GetDesignItems(TextElementCollection<Block> blocks, List<DesignItem> list)
+		{
+			bool first = true;
 
-            foreach (var block in blocks)
-            {
-                if (block is Paragraph)
-                {
-                    if (!first)
-                    {
-                        list.Add(designItem.Services.Component.RegisterComponentForDesigner(new LineBreak()));
-                        list.Add(designItem.Services.Component.RegisterComponentForDesigner(new LineBreak()));
-                    }
+			foreach (var block in blocks)
+			{
+				if (block is Paragraph)
+				{
+					if (!first)
+					{
+						list.Add(designItem.Services.Component.RegisterComponentForDesigner(new LineBreak()));
+						list.Add(designItem.Services.Component.RegisterComponentForDesigner(new LineBreak()));
+					}
 
-                    foreach (var inline in ((Paragraph) block).Inlines)
-                    {
-                        list.Add(InlineToDesignItem(inline));
-                    }
-                }
-                else if (block is Section)
-                {
-                    GetDesignItems(((Section)block).Blocks, list);                    
-                }
+					foreach (var inline in ((Paragraph) block).Inlines)
+					{
+						list.Add(InlineToDesignItem(inline));
+					}
+				}
+				else if (block is Section)
+				{
+					GetDesignItems(((Section)block).Blocks, list);
+				}
 
-                first = false;
-            }
-        }
+				first = false;
+			}
+		}
 
-        private Inline CloneInline(Inline inline)
-        {
-            Inline retVal = null;
-            if (inline is LineBreak)
-                retVal = new LineBreak();
-            else if (inline is Span)
-                retVal = new Span();
-            else if (inline is Run)
-            {
-                retVal = new Run(((Run) inline).Text);
-            }
+		private Inline CloneInline(Inline inline)
+		{
+			Inline retVal = null;
+			if (inline is LineBreak)
+				retVal = new LineBreak();
+			else if (inline is Span)
+				retVal = new Span();
+			else if (inline is Run)
+			{
+				retVal = new Run(((Run) inline).Text);
+			}
 
-            retVal.Background = inline.Background;
-            retVal.Foreground = inline.Foreground;
-            retVal.FontFamily = inline.FontFamily;
-            retVal.FontSize = inline.FontSize;
-            retVal.FontStretch = inline.FontStretch;
-            retVal.FontStyle = inline.FontStyle;
-            retVal.FontWeight = inline.FontWeight;
-            retVal.TextEffects = inline.TextEffects;
-            retVal.TextDecorations = inline.TextDecorations;
+			retVal.Background = inline.Background;
+			retVal.Foreground = inline.Foreground;
+			retVal.FontFamily = inline.FontFamily;
+			retVal.FontSize = inline.FontSize;
+			retVal.FontStretch = inline.FontStretch;
+			retVal.FontStyle = inline.FontStyle;
+			retVal.FontWeight = inline.FontWeight;
+			retVal.TextEffects = inline.TextEffects;
+			retVal.TextDecorations = inline.TextDecorations;
 
-            return retVal;
-        }
+			return retVal;
+		}
 
-        private DesignItem InlineToDesignItem(Inline inline)
-        {
-            DesignItem d = d = designItem.Services.Component.RegisterComponentForDesigner(CloneInline(inline));
-            if (inline is Run)
-            {
-                var run = inline as Run;
+		private DesignItem InlineToDesignItem(Inline inline)
+		{
+			DesignItem d = d = designItem.Services.Component.RegisterComponentForDesigner(CloneInline(inline));
+			if (inline is Run)
+			{
+				var run = inline as Run;
 
-                if (run.ReadLocalValue(Run.TextProperty) != DependencyProperty.UnsetValue)
-                {
-                    d.Properties.GetProperty(Run.TextProperty).SetValue(run.Text);
-                }                
-            }
-            else if (inline is Span)
-            { }
-            else if (inline is LineBreak)
-            { }
-            else
-            {
-                return null;
-            }
+				if (run.ReadLocalValue(Run.TextProperty) != DependencyProperty.UnsetValue)
+				{
+					d.Properties.GetProperty(Run.TextProperty).SetValue(run.Text);
+				}
+			}
+			else if (inline is Span)
+			{ }
+			else if (inline is LineBreak)
+			{ }
+			else
+			{
+				return null;
+			}
 
-            if (inline.ReadLocalValue(TextElement.BackgroundProperty) != DependencyProperty.UnsetValue)
-                d.Properties.GetProperty(TextElement.BackgroundProperty).SetValue(inline.Background);
-            if (inline.ReadLocalValue(TextElement.ForegroundProperty) != DependencyProperty.UnsetValue)
-                d.Properties.GetProperty(TextElement.ForegroundProperty).SetValue(inline.Foreground);
-            if (inline.ReadLocalValue(TextElement.FontFamilyProperty) != DependencyProperty.UnsetValue)
-                d.Properties.GetProperty(TextElement.FontFamilyProperty).SetValue(inline.FontFamily);
-            if (inline.ReadLocalValue(TextElement.FontSizeProperty) != DependencyProperty.UnsetValue)
-                d.Properties.GetProperty(TextElement.FontSizeProperty).SetValue(inline.FontSize);
-            if (inline.ReadLocalValue(TextElement.FontStretchProperty) != DependencyProperty.UnsetValue)
-                d.Properties.GetProperty(TextElement.FontStretchProperty).SetValue(inline.FontStretch);
-            if (inline.ReadLocalValue(TextElement.FontStyleProperty) != DependencyProperty.UnsetValue)
-                d.Properties.GetProperty(TextElement.FontStyleProperty).SetValue(inline.FontStyle);
-            if (inline.ReadLocalValue(TextElement.FontWeightProperty) != DependencyProperty.UnsetValue)
-                d.Properties.GetProperty(TextElement.FontWeightProperty).SetValue(inline.FontWeight);
-            if (inline.TextDecorations.Count > 0)
-            {
-                d.Properties.GetProperty("TextDecorations").SetValue(new TextDecorationCollection());
-                var tdColl = d.Properties.GetProperty("TextDecorations");
+			if (inline.ReadLocalValue(TextElement.BackgroundProperty) != DependencyProperty.UnsetValue)
+				d.Properties.GetProperty(TextElement.BackgroundProperty).SetValue(inline.Background);
+			if (inline.ReadLocalValue(TextElement.ForegroundProperty) != DependencyProperty.UnsetValue)
+				d.Properties.GetProperty(TextElement.ForegroundProperty).SetValue(inline.Foreground);
+			if (inline.ReadLocalValue(TextElement.FontFamilyProperty) != DependencyProperty.UnsetValue)
+				d.Properties.GetProperty(TextElement.FontFamilyProperty).SetValue(inline.FontFamily);
+			if (inline.ReadLocalValue(TextElement.FontSizeProperty) != DependencyProperty.UnsetValue)
+				d.Properties.GetProperty(TextElement.FontSizeProperty).SetValue(inline.FontSize);
+			if (inline.ReadLocalValue(TextElement.FontStretchProperty) != DependencyProperty.UnsetValue)
+				d.Properties.GetProperty(TextElement.FontStretchProperty).SetValue(inline.FontStretch);
+			if (inline.ReadLocalValue(TextElement.FontStyleProperty) != DependencyProperty.UnsetValue)
+				d.Properties.GetProperty(TextElement.FontStyleProperty).SetValue(inline.FontStyle);
+			if (inline.ReadLocalValue(TextElement.FontWeightProperty) != DependencyProperty.UnsetValue)
+				d.Properties.GetProperty(TextElement.FontWeightProperty).SetValue(inline.FontWeight);
+			if (inline.TextDecorations.Count > 0)
+			{
+				d.Properties.GetProperty("TextDecorations").SetValue(new TextDecorationCollection());
+				var tdColl = d.Properties.GetProperty("TextDecorations");
 
-                foreach (var td in inline.TextDecorations)
-                {
-                    var newTd = designItem.Services.Component.RegisterComponentForDesigner(new TextDecoration());
-                    if (inline.ReadLocalValue(TextDecoration.LocationProperty) != DependencyProperty.UnsetValue)
-                        newTd.Properties.GetProperty(TextDecoration.LocationProperty).SetValue(td.Location);
-                    if (inline.ReadLocalValue(TextDecoration.PenProperty) != DependencyProperty.UnsetValue)
-                        newTd.Properties.GetProperty(TextDecoration.PenProperty).SetValue(td.Pen);
+				foreach (var td in inline.TextDecorations)
+				{
+					var newTd = designItem.Services.Component.RegisterComponentForDesigner(new TextDecoration());
+					if (inline.ReadLocalValue(TextDecoration.LocationProperty) != DependencyProperty.UnsetValue)
+						newTd.Properties.GetProperty(TextDecoration.LocationProperty).SetValue(td.Location);
+					if (inline.ReadLocalValue(TextDecoration.PenProperty) != DependencyProperty.UnsetValue)
+						newTd.Properties.GetProperty(TextDecoration.PenProperty).SetValue(td.Pen);
 
-                    tdColl.CollectionElements.Add(newTd);
-                }
-            }
-           
-            return d;
-        }
+					tdColl.CollectionElements.Add(newTd);
+				}
+			}
+			
+			return d;
+		}
 
-        private void Ok_Click(object sender, RoutedEventArgs e)
-        {
-            var changeGroup = designItem.OpenGroup("Formated Text");
+		private void Ok_Click(object sender, RoutedEventArgs e)
+		{
+			var changeGroup = designItem.OpenGroup("Formated Text");
 
-            designItem.Properties.GetProperty(TextBlock.TextProperty).Reset();
+			designItem.Properties.GetProperty(TextBlock.TextProperty).Reset();
 
-            var inlinesProperty = designItem.Properties.GetProperty("Inlines");
-            inlinesProperty.CollectionElements.Clear();
+			var inlinesProperty = designItem.Properties.GetProperty("Inlines");
+			inlinesProperty.CollectionElements.Clear();
 
-            var doc = richTextBox.Document;
-            richTextBox.Document = new FlowDocument();
+			var doc = richTextBox.Document;
+			richTextBox.Document = new FlowDocument();
 
-            var inlines = new List<DesignItem>();
-            GetDesignItems(doc.Blocks, inlines);
-            
-            foreach (var inline in inlines)
-            {
-                inlinesProperty.CollectionElements.Add(inline);
-            }
+			var inlines = new List<DesignItem>();
+			GetDesignItems(doc.Blocks, inlines);
+			
+			foreach (var inline in inlines)
+			{
+				inlinesProperty.CollectionElements.Add(inline);
+			}
 
-            changeGroup.Commit();
+			changeGroup.Commit();
 
-            this.TryFindParent<Window>().Close();
-        }
+			this.TryFindParent<Window>().Close();
+		}
 
-        private void Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            this.TryFindParent<Window>().Close();
-        }
+		private void Cancel_Click(object sender, RoutedEventArgs e)
+		{
+			this.TryFindParent<Window>().Close();
+		}
 
-        private void StrikeThroughButton_Click(object sender, RoutedEventArgs e)
-        {
-            TextRange range = new TextRange(richTextBox.Selection.Start, richTextBox.Selection.End);
+		private void StrikeThroughButton_Click(object sender, RoutedEventArgs e)
+		{
+			TextRange range = new TextRange(richTextBox.Selection.Start, richTextBox.Selection.End);
 
-            TextDecorationCollection tdc = (TextDecorationCollection) richTextBox.Selection.GetPropertyValue(Inline.TextDecorationsProperty);
+			TextDecorationCollection tdc = (TextDecorationCollection) richTextBox.Selection.GetPropertyValue(Inline.TextDecorationsProperty);
 
-            if (tdc == null || !tdc.Equals(TextDecorations.Strikethrough))
-            {
-                tdc = TextDecorations.Strikethrough;
-            }
-            else
-            {
-                tdc = null;
-            }
-            range.ApplyPropertyValue(Inline.TextDecorationsProperty, tdc);
-        }
-    }
+			if (tdc == null || !tdc.Equals(TextDecorations.Strikethrough))
+			{
+				tdc = TextDecorations.Strikethrough;
+			}
+			else
+			{
+				tdc = null;
+			}
+			range.ApplyPropertyValue(Inline.TextDecorationsProperty, tdc);
+		}
+	}
 }

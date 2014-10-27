@@ -221,21 +221,21 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 
 		protected override Size ArrangeOverride(Size finalSize)
 		{
-			foreach (AdornerPanel adorner in this.Children) {				
+			foreach (AdornerPanel adorner in this.Children) {
 				if (adorner.AdornedElement.IsDescendantOf(_designPanel))
 				{
-				    var rt = (MatrixTransform) adorner.AdornedElement.TransformToAncestor(_designPanel);
-                    if (adorner.AdornedDesignItem != null && adorner.AdornedDesignItem.Parent != null && adorner.AdornedDesignItem.Parent.View is Canvas && adorner.AdornedElement.RenderSize.Height == 0 && adorner.AdornedElement.RenderSize.Width == 0)
-                    {
-                        var xOffset = rt.Matrix.OffsetX - (((FrameworkElement)adorner.AdornedElement).Width / 2);
-                        var yOffset = rt.Matrix.OffsetY - (((FrameworkElement)adorner.AdornedElement).Height / 2);
-                        rt = new MatrixTransform(new Matrix(rt.Matrix.M11, rt.Matrix.M12, rt.Matrix.M21, rt.Matrix.M22, xOffset, yOffset));
-                    }
+					var rt = (MatrixTransform) adorner.AdornedElement.TransformToAncestor(_designPanel);
+					if (adorner.AdornedDesignItem != null && adorner.AdornedDesignItem.Parent != null && adorner.AdornedDesignItem.Parent.View is Canvas && adorner.AdornedElement.RenderSize.Height == 0 && adorner.AdornedElement.RenderSize.Width == 0)
+					{
+						var xOffset = rt.Matrix.OffsetX - (((FrameworkElement)adorner.AdornedElement).Width / 2);
+						var yOffset = rt.Matrix.OffsetY - (((FrameworkElement)adorner.AdornedElement).Height / 2);
+						rt = new MatrixTransform(new Matrix(rt.Matrix.M11, rt.Matrix.M12, rt.Matrix.M21, rt.Matrix.M22, xOffset, yOffset));
+					}
 
-                    adorner.RenderTransform = rt;
+					adorner.RenderTransform = rt;
 				}
 
-                adorner.Arrange(new Rect(new Point(0, 0), adorner.DesiredSize));
+				adorner.Arrange(new Rect(new Point(0, 0), adorner.DesiredSize));
 			}
 			return finalSize;
 		}

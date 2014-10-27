@@ -145,10 +145,10 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularProperty(TreeViewItem.IsSelectedProperty);
 			Metadata.AddPopularProperty(Border.PaddingProperty);
 			Metadata.AddPopularProperty(Shape.StretchProperty);
-            Metadata.AddPopularProperty(Control.VerticalContentAlignmentProperty);
-            Metadata.AddPopularProperty(Control.HorizontalContentAlignmentProperty);
+			Metadata.AddPopularProperty(Control.VerticalContentAlignmentProperty);
+			Metadata.AddPopularProperty(Control.HorizontalContentAlignmentProperty);
 
-            Metadata.AddPopularProperty(Grid.RowProperty);
+			Metadata.AddPopularProperty(Grid.RowProperty);
 			Metadata.AddPopularProperty(Grid.RowSpanProperty);
 			Metadata.AddPopularProperty(Grid.ColumnProperty);
 			Metadata.AddPopularProperty(Grid.ColumnSpanProperty);
@@ -232,14 +232,14 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(Border));
 			Metadata.AddPopularControl(typeof(Canvas));
 			Metadata.AddPopularControl(typeof(CheckBox));
-			Metadata.AddPopularControl(typeof(ComboBox));	
+			Metadata.AddPopularControl(typeof(ComboBox));
 			Metadata.AddPopularControl(typeof(DataGrid));
 			Metadata.AddPopularControl(typeof(DockPanel));
 			Metadata.AddPopularControl(typeof(Expander));
 			Metadata.AddPopularControl(typeof(Grid));
 			Metadata.AddPopularControl(typeof(GroupBox));
-			Metadata.AddPopularControl(typeof(Image));			
-			Metadata.AddPopularControl(typeof(InkCanvas));			
+			Metadata.AddPopularControl(typeof(Image));
+			Metadata.AddPopularControl(typeof(InkCanvas));
 			Metadata.AddPopularControl(typeof(Label));
 			Metadata.AddPopularControl(typeof(ListBox));
 			Metadata.AddPopularControl(typeof(ListView));
@@ -251,7 +251,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(RichTextBox));
 			Metadata.AddPopularControl(typeof(StackPanel));
 			Metadata.AddPopularControl(typeof(ScrollViewer));
-			Metadata.AddPopularControl(typeof(Slider));			
+			Metadata.AddPopularControl(typeof(Slider));
 			Metadata.AddPopularControl(typeof(TabControl));
 			Metadata.AddPopularControl(typeof(TextBlock));
 			Metadata.AddPopularControl(typeof(TextBox));
@@ -261,30 +261,30 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(Viewport3D));
 			Metadata.AddPopularControl(typeof(WrapPanel));
 
-            //Basic Metadata Size of double.NaN, means no Size should be set.
-            Metadata.AddDefaultSize(typeof(TextBlock), new Size(double.NaN, double.NaN));
-            Metadata.AddDefaultSize(typeof(CheckBox), new Size(double.NaN, double.NaN));
-            Metadata.AddDefaultSize(typeof(Image), new Size(double.NaN, double.NaN));
+			//Basic Metadata Size of double.NaN, means no Size should be set.
+			Metadata.AddDefaultSize(typeof(TextBlock), new Size(double.NaN, double.NaN));
+			Metadata.AddDefaultSize(typeof(CheckBox), new Size(double.NaN, double.NaN));
+			Metadata.AddDefaultSize(typeof(Image), new Size(double.NaN, double.NaN));
 
-            Metadata.AddDefaultSize(typeof(UIElement), new Size(120, 100));
-            Metadata.AddDefaultSize(typeof(ContentControl), new Size(120, 20));
-            Metadata.AddDefaultSize(typeof(Button), new Size(75, 23));
-            Metadata.AddDefaultSize(typeof(ToggleButton), new Size(75, 23));
+			Metadata.AddDefaultSize(typeof(UIElement), new Size(120, 100));
+			Metadata.AddDefaultSize(typeof(ContentControl), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(Button), new Size(75, 23));
+			Metadata.AddDefaultSize(typeof(ToggleButton), new Size(75, 23));
 
-            Metadata.AddDefaultSize(typeof(Slider), new Size(120, 20));
-            Metadata.AddDefaultSize(typeof(TextBox), new Size(120, 20));
-            Metadata.AddDefaultSize(typeof(PasswordBox), new Size(120, 20));
-            Metadata.AddDefaultSize(typeof(ComboBox), new Size(120, 20));
-            Metadata.AddDefaultSize(typeof(ProgressBar), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(Slider), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(TextBox), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(PasswordBox), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(ComboBox), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(ProgressBar), new Size(120, 20));
 
-            Metadata.AddDefaultSize(typeof(ToolBar), new Size(120, 20));
-            Metadata.AddDefaultSize(typeof(Menu), new Size(120, 20));
-            
-            Metadata.AddDefaultSize(typeof(InkCanvas), new Size(120, 120));
-            Metadata.AddDefaultSize(typeof(TreeView), new Size(120, 120));
-            
-            Metadata.AddDefaultSize(typeof(Label), new Size(130, 120));
-            Metadata.AddDefaultSize(typeof(Expander), new Size(130, 120));
+			Metadata.AddDefaultSize(typeof(ToolBar), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(Menu), new Size(120, 20));
+			
+			Metadata.AddDefaultSize(typeof(InkCanvas), new Size(120, 120));
+			Metadata.AddDefaultSize(typeof(TreeView), new Size(120, 120));
+			
+			Metadata.AddDefaultSize(typeof(Label), new Size(130, 120));
+			Metadata.AddDefaultSize(typeof(Expander), new Size(130, 120));
 		}
 	}
 }

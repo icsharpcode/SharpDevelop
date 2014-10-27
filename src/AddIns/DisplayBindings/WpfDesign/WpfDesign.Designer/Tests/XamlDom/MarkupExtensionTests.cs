@@ -71,7 +71,6 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 
 		[Test]
-		[Ignore]
 		public void Test7()
 		{
 			TestMarkupExtension("Background=\"{DynamicResource {x:Static SystemColors.ControlBrushKey}}\"");

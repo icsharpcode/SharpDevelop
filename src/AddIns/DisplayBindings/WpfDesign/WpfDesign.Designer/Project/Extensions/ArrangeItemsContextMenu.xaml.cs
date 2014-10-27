@@ -17,25 +17,12 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ICSharpCode.WpfDesign.PropertyGrid;
-using ICSharpCode.WpfDesign.Designer.Xaml;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	public partial class ArrangeItemsContextMenu
-    {
+	{
 		private DesignItem designItem;
 		
 		public ArrangeItemsContextMenu(DesignItem designItem)
@@ -50,29 +37,29 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.Left);
 		}
 
-        void Click_ArrangeHorizontalCentered(object sender, System.Windows.RoutedEventArgs e)
-        {
-            ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.HorizontalMiddle);
-        }
+		void Click_ArrangeHorizontalCentered(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.HorizontalMiddle);
+		}
 
-        void Click_ArrangeRight(object sender, System.Windows.RoutedEventArgs e)
-        {
-            ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.Right);
-        }
+		void Click_ArrangeRight(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.Right);
+		}
 
-        void Click_ArrangeTop(object sender, System.Windows.RoutedEventArgs e)
-        {
-            ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.Top);
-        }
+		void Click_ArrangeTop(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.Top);
+		}
 
-        void Click_ArrangeVerticalCentered(object sender, System.Windows.RoutedEventArgs e)
-        {
-            ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.VerticalMiddle);
-        }
+		void Click_ArrangeVerticalCentered(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.VerticalMiddle);
+		}
 
-        void Click_ArrangeBottom(object sender, System.Windows.RoutedEventArgs e)
-        {
-            ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.Bottom);
-        }
-    }
+		void Click_ArrangeBottom(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelTools.ArrangeItems(this.designItem.Services.Selection.SelectedItems, ArrangeDirection.Bottom);
+		}
+	}
 }

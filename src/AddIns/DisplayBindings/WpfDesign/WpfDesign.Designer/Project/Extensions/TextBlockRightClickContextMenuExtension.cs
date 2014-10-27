@@ -17,39 +17,37 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-    [ExtensionServer(typeof (OnlyOneItemSelectedExtensionServer))]
-    [ExtensionFor(typeof (TextBlock))]
-    [Extension(Order = 10)]
-    public class TextBlockRightClickContextMenuExtension : PrimarySelectionAdornerProvider
-    {
-        DesignPanel panel;
-        ContextMenu contextMenu;
+	[ExtensionServer(typeof (OnlyOneItemSelectedExtensionServer))]
+	[ExtensionFor(typeof (TextBlock))]
+	[Extension(Order = 10)]
+	public class TextBlockRightClickContextMenuExtension : PrimarySelectionAdornerProvider
+	{
+		DesignPanel panel;
+		ContextMenu contextMenu;
 
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
 
-            contextMenu = new TextBlockRightClickContextMenu(ExtendedItem);
-            panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
-            panel.AddContextMenu(contextMenu);            
-        }
+			contextMenu = new TextBlockRightClickContextMenu(ExtendedItem);
+			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+			if (panel != null)
+				panel.AddContextMenu(contextMenu);
+		}
 
-        protected override void OnRemove()
-        {
-            panel.RemoveContextMenu(contextMenu);
+		protected override void OnRemove()
+		{
+			if (panel != null)
+				panel.RemoveContextMenu(contextMenu);
 
-            base.OnRemove();
-        }
-    }
+			base.OnRemove();
+		}
+	}
 }

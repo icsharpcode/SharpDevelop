@@ -19,9 +19,6 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
-
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.Designer;
@@ -33,26 +30,28 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// </summary>
 	[ExtensionServer(typeof(PrimarySelectionButOnlyWhenMultipleSelectedExtensionServer))]
 	[ExtensionFor(typeof(UIElement))]
-    [Extension(Order = 50)]
-    public class WrapItemsContextMenuExtension : SelectionAdornerProvider
-    {
-        DesignPanel panel;
-        ContextMenu contextMenu;
+	[Extension(Order = 50)]
+	public class WrapItemsContextMenuExtension : SelectionAdornerProvider
+	{
+		DesignPanel panel;
+		ContextMenu contextMenu;
 
-        protected override void OnInitialized()
+		protected override void OnInitialized()
 		{
 			base.OnInitialized();
 
-            contextMenu = new WrapItemsContextMenu(ExtendedItem);
-            panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
-            panel.AddContextMenu(contextMenu);
-        }
+			contextMenu = new WrapItemsContextMenu(ExtendedItem);
+			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+			if (panel != null)
+				panel.AddContextMenu(contextMenu);
+		}
 		
 		protected override void OnRemove()
 		{
-            panel.RemoveContextMenu(contextMenu);
+			if (panel != null)
+				panel.RemoveContextMenu(contextMenu);
 
-            base.OnRemove();
+			base.OnRemove();
 		}
 	}
 }

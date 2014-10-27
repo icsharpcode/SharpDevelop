@@ -62,27 +62,27 @@ namespace ICSharpCode.WpfDesign.Designer
 		void RunHitTest(Visual reference, Point point, HitTestFilterCallback filterCallback, HitTestResultCallback resultCallback)
 		{
 			VisualTreeHelper.HitTest(reference, filterCallback, resultCallback,
-				new PointHitTestParameters(point));
+			                         new PointHitTestParameters(point));
 		}
 		
 		HitTestFilterBehavior FilterHitTestInvisibleElements(DependencyObject potentialHitTestTarget)
 		{
 			UIElement element = potentialHitTestTarget as UIElement;
-						
+			
 			if (element != null) {
 				if (!(element.IsHitTestVisible && element.Visibility == Visibility.Visible)) {
 					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
 				}
 				
 				var designItem = Context.Services.Component.GetDesignItem(element) as XamlDesignItem;
-			
+				
 				if (designItem != null && designItem.IsDesignTimeLocked) {
 					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
-				}			
+				}
 			}
 			
 			hitTestElements.Add(element);
-						
+			
 			return HitTestFilterBehavior.Continue;
 		}
 		
@@ -95,15 +95,15 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			DesignPanelHitTestResult result = DesignPanelHitTestResult.NoHit;
 			HitTest(mousePosition, testAdorners, testDesignSurface,
-				delegate(DesignPanelHitTestResult r) {
-					result = r;
-					return false;
-				}, hitTestType);
+			        delegate(DesignPanelHitTestResult r) {
+			        	result = r;
+			        	return false;
+			        }, hitTestType);
 			
 			return result;
 		}
 
-	    /// <summary>
+		/// <summary>
 		/// Performs a hit test on the design surface, raising <paramref name="callback"/> for each match.
 		/// Hit testing continues while the callback returns true.
 		/// </summary>
@@ -156,8 +156,8 @@ namespace ICSharpCode.WpfDesign.Designer
 							if (hitTestType == HitTestType.ElementSelection)
 							{
 								if (Keyboard.IsKeyDown(Key.LeftAlt))
-								if (lastElement != null && lastElement != _context.RootItem.Component &&
-									hitTestElements.Contains(lastElement))
+									if (lastElement != null && lastElement != _context.RootItem.Component &&
+									    hitTestElements.Contains(lastElement))
 								{
 									var idx = hitTestElements.IndexOf(lastElement) - 1;
 									if (idx >= 0)
@@ -220,18 +220,18 @@ namespace ICSharpCode.WpfDesign.Designer
 		//Set custom HitTestFilterCallbak
 		public HitTestFilterCallback CustomHitTestFilterBehavior { get; set; }
 
-        public AdornerLayer AdornerLayer
-	    {
-	        get
-	        {
-	            return _adornerLayer;
-	        }
-	    }
+		public AdornerLayer AdornerLayer
+		{
+			get
+			{
+				return _adornerLayer;
+			}
+		}
 
-	    /// <summary>
-        /// Gets/Sets the design context.
-        /// </summary>
-        public DesignContext Context {
+		/// <summary>
+		/// Gets/Sets the design context.
+		/// </summary>
+		public DesignContext Context {
 			get { return _context; }
 			set { _context = value; }
 		}
@@ -416,9 +416,9 @@ namespace ICSharpCode.WpfDesign.Designer
 					
 					if (!Keyboard.IsKeyDown(Key.LeftCtrl)) {
 						info.Bounds = new Rect(bounds.Left + dx,
-							bounds.Top + dy,
-							bounds.Width,
-							bounds.Height);
+						                       bounds.Top + dy,
+						                       bounds.Width,
+						                       bounds.Height);
 					} else {
 						if (info.OriginalBounds.Width + dx >= 0 && info.OriginalBounds.Height + dy >= 0)  {
 							info.Bounds = new Rect(info.OriginalBounds.Left,
@@ -434,9 +434,9 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 		
 		static bool IsPropertySet(UIElement element, DependencyProperty d)
-        {
-            return element.ReadLocalValue(d) != DependencyProperty.UnsetValue;
-        }
+		{
+			return element.ReadLocalValue(d) != DependencyProperty.UnsetValue;
+		}
 		
 		protected override void OnQueryCursor(QueryCursorEventArgs e)
 		{
@@ -457,53 +457,53 @@ namespace ICSharpCode.WpfDesign.Designer
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-        #region ContextMenu
+		#region ContextMenu
 
-        private Dictionary<ContextMenu, Tuple<int,List<object>>> contextMenusAndEntries = new Dictionary<ContextMenu, Tuple<int,List<object>>>();
+		private Dictionary<ContextMenu, Tuple<int,List<object>>> contextMenusAndEntries = new Dictionary<ContextMenu, Tuple<int,List<object>>>();
 
-	    public void AddContextMenu(ContextMenu contextMenu)
-	    {
-	        contextMenusAndEntries.Add(contextMenu, new Tuple<int, List<object>>(contextMenusAndEntries.Count, new List<object>(contextMenu.Items.Cast<object>())));
-            contextMenu.Items.Clear();
+		public void AddContextMenu(ContextMenu contextMenu)
+		{
+			contextMenusAndEntries.Add(contextMenu, new Tuple<int, List<object>>(contextMenusAndEntries.Count, new List<object>(contextMenu.Items.Cast<object>())));
+			contextMenu.Items.Clear();
 
-	        UpdateContextMenu();
-	    }
+			UpdateContextMenu();
+		}
 
-        public void RemoveContextMenu(ContextMenu contextMenu)
-	    {
-            contextMenusAndEntries.Remove(contextMenu);
-            
-            UpdateContextMenu();
-        }
+		public void RemoveContextMenu(ContextMenu contextMenu)
+		{
+			contextMenusAndEntries.Remove(contextMenu);
+			
+			UpdateContextMenu();
+		}
 
-	    public void ClearContextMenu()
-	    {
-            contextMenusAndEntries.Clear();
-	        ContextMenu = null;
-	    }
+		public void ClearContextMenu()
+		{
+			contextMenusAndEntries.Clear();
+			ContextMenu = null;
+		}
 
-	    private void UpdateContextMenu()
-	    {
-            if (contextMenusAndEntries.Count == 0)
-	            this.ContextMenu = null;
+		private void UpdateContextMenu()
+		{
+			if (contextMenusAndEntries.Count == 0)
+				this.ContextMenu = null;
 
-	        if (this.ContextMenu == null)
-	            this.ContextMenu = new ContextMenu();
-	       
-            this.ContextMenu.Items.Clear();
+			if (this.ContextMenu == null)
+				this.ContextMenu = new ContextMenu();
+			
+			this.ContextMenu.Items.Clear();
 
-	        foreach (var entries in contextMenusAndEntries.Values.OrderBy(x => x.Item1).Select(x => x.Item2))
-	        {
-	            if (this.ContextMenu.Items.Count > 0)
-	                this.ContextMenu.Items.Add(new Separator());
+			foreach (var entries in contextMenusAndEntries.Values.OrderBy(x => x.Item1).Select(x => x.Item2))
+			{
+				if (this.ContextMenu.Items.Count > 0)
+					this.ContextMenu.Items.Add(new Separator());
 
-	            foreach (var entry in entries)
-	            {
-	                ContextMenu.Items.Add(entry);
-	            }
-	        }
-	    }
+				foreach (var entry in entries)
+				{
+					ContextMenu.Items.Add(entry);
+				}
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

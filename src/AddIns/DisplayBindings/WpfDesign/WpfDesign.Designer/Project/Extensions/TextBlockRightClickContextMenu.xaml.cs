@@ -17,20 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor;
-using ICSharpCode.WpfDesign.PropertyGrid;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -38,25 +27,25 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	{
 		private DesignItem designItem;
 
-        public TextBlockRightClickContextMenu(DesignItem designItem)
+		public TextBlockRightClickContextMenu(DesignItem designItem)
 		{
 			this.designItem = designItem;
 			
 			InitializeComponent();
 		}
 
-        void Click_EditFormatedText(object sender, RoutedEventArgs e)
-        {
-            var dlg = new Window()
-            {
-                Content = new FormatedTextEditor(designItem),
-                Width = 440,
-                Height = 200,
-                WindowStyle = WindowStyle.ToolWindow,
-                Owner = ((DesignPanel) designItem.Context.Services.DesignPanel).TryFindParent<Window>(),                 
-            };
+		void Click_EditFormatedText(object sender, RoutedEventArgs e)
+		{
+			var dlg = new Window()
+			{
+				Content = new FormatedTextEditor(designItem),
+				Width = 440,
+				Height = 200,
+				WindowStyle = WindowStyle.ToolWindow,
+				Owner = ((DesignPanel) designItem.Context.Services.DesignPanel).TryFindParent<Window>(),
+			};
 
-            dlg.ShowDialog();
-        }		
+			dlg.ShowDialog();
+		}
 	}
 }
