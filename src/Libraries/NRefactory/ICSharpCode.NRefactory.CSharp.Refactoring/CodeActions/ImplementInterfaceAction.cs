@@ -117,7 +117,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return m.UnresolvedMember == method.UnresolvedMember;
 		}
-		
+
 		public static List<Tuple<IMember, bool>> CollectMembersToImplement(ITypeDefinition implementingType, IType interfaceType, bool explicitly, out bool interfaceMissing)
 		{
 			//var def = interfaceType.GetDefinition();
@@ -131,8 +131,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						continue;
 
 					bool needsExplicitly = explicitly;
-					var implementingMember = implementingType.GetInterfaceImplementation(ev);
-					alreadyImplemented = (implementingMember != null);
+					alreadyImplemented = false;
+					
+					foreach (var cmet in implementingType.GetMembers ()) {
+						alreadyImplemented |= cmet.ImplementedInterfaceMembers.Any(m => IsImplementation (m, ev));
+
+						if (CompareMembers(ev, cmet)) {
+							if (!needsExplicitly && !cmet.ReturnType.Equals(ev.ReturnType))
+								needsExplicitly = true;
+							else
+								alreadyImplemented |= !needsExplicitly /*|| cmet.InterfaceImplementations.Any (impl => impl.InterfaceType.Equals (interfaceType))*/;
+						}
+					}
+				
+					if (toImplement.Where(t => t.Item1 is IEvent).Any(t => CompareMembers(ev, (IEvent)t.Item1)))
+						needsExplicitly = true;
 					if (!alreadyImplemented) {
 						toImplement.Add(new Tuple<IMember, bool>(ev, needsExplicitly));
 					} else {
@@ -147,18 +160,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						continue;
 					bool needsExplicitly = explicitly;
 					alreadyImplemented = false;
-					
-					var implementingMethod = implementingType.GetInterfaceImplementation(method);
-					alreadyImplemented = (implementingMethod != null);
-					if (alreadyImplemented) {
-						if (!needsExplicitly && !implementingMethod.ReturnType.Equals(method.ReturnType)) {
-							needsExplicitly = true;
-							alreadyImplemented = false;
-						} else {
-							alreadyImplemented = !needsExplicitly;
+
+					foreach (var cmet in implementingType.GetMethods ()) {
+						alreadyImplemented |= cmet.ImplementedInterfaceMembers.Any(m => IsImplementation (m, method));
+
+						if (CompareMembers(method, cmet)) {
+							if (!needsExplicitly && !cmet.ReturnType.Equals(method.ReturnType))
+								needsExplicitly = true;
+							else
+								alreadyImplemented |= !needsExplicitly /*|| cmet.InterfaceImplementations.Any (impl => impl.InterfaceType.Equals (interfaceType))*/;
 						}
 					}
-					
 					if (toImplement.Where(t => t.Item1 is IMethod).Any(t => CompareMembers(method, (IMethod)t.Item1)))
 						needsExplicitly = true;
 					if (!alreadyImplemented) {
@@ -175,18 +187,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						continue;
 
 					bool needsExplicitly = explicitly;
-					
-					var implementingProp = implementingType.GetInterfaceImplementation(prop);
-					alreadyImplemented = (implementingProp != null);
-					if (alreadyImplemented) {
-						if (!needsExplicitly && !implementingProp.ReturnType.Equals(prop.ReturnType)) {
-							needsExplicitly = true;
-							alreadyImplemented = false;
-						} else {
-							alreadyImplemented = !needsExplicitly;
+					alreadyImplemented = implementingType.GetMembers().Any(m => m.ImplementedInterfaceMembers.Any(im => IsImplementation (im, prop)));
+
+					foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
+						if (t.Kind == TypeKind.Interface) {
+							foreach (var cprop in t.Properties) {
+								if (cprop.Name == prop.Name && cprop.IsShadowing) {
+									if (!needsExplicitly && !cprop.ReturnType.Equals(prop.ReturnType))
+										needsExplicitly = true;
+								}
+							}
+							continue;
+						}
+						foreach (var cprop in t.Properties) {
+							if (cprop.Name == prop.Name) {
+								if (!needsExplicitly && !cprop.ReturnType.Equals(prop.ReturnType))
+									needsExplicitly = true;
+								else
+									alreadyImplemented |= !needsExplicitly/* || cprop.InterfaceImplementations.Any (impl => impl.InterfaceType.Resolve (ctx).Equals (interfaceType))*/;
+							}
 						}
 					}
-					
 					if (!alreadyImplemented) {
 						toImplement.Add(new Tuple<IMember, bool>(prop, needsExplicitly));
 					} else {

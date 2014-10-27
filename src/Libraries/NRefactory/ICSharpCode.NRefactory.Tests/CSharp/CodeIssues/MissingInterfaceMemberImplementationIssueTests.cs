@@ -187,7 +187,31 @@ public class Foo<T> : FooBase<T>, IEnumerable, IEnumerable<T>
 ");
 		}
 
+		[Test]
+		public void TestIdenticallyImplementedByBaseClass ()
+		{
+			TestWrongContext<MissingInterfaceMemberImplementationIssue>(@"
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
+interface IF
+{
+	void Foo();
+}
+
+public abstract class FooBase
+{
+	public void Foo()
+	{
+	}
+}
+
+public class Foo : FooBase, IF
+{
+}
+");
+		}
 	}
 }
 
