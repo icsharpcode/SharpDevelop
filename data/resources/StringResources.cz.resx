@@ -4998,9 +4998,6 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Grafická jednotka</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Základní nastavení sestavy</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Model sestavy</value>
   </data>
@@ -5033,15 +5030,6 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Dostupná pole</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Cesta ke XML schématu (.xsd)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Uložit výsledek (schéma a data)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Uložit výsledek (pouze schéma)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Zobrazit výsledky dotazu</value>

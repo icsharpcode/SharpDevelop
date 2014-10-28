@@ -6497,9 +6497,6 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Grafik Birim</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Temel rapor ayarları</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Rapor Modeli</value>
   </data>
@@ -6547,15 +6544,6 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Mevcut Alanlar</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>(.xsd) şema dosyası yolu</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Sonuçları Kaydet (Şema ve Veriler)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Sonuçları Kaydet(Sadece şema)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Sorgu Sonucunu Göster</value>

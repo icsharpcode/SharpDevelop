@@ -5842,9 +5842,6 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Grafikkenhet</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Grunnleggende rapportinnstillinger</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Rapportmodell</value>
   </data>
@@ -5877,15 +5874,6 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Tilgjengelige felter</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Sti til skjema (.xsd) fil</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Lagre resultat (skjema og data)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Lagre resultat (kun skjema)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Vis spørreresultater</value>

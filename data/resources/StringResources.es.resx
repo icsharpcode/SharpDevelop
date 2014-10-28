@@ -6523,9 +6523,6 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Unidad Grafica</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Configuración base de reporte</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Modelo de Reporte</value>
   </data>
@@ -6573,15 +6570,6 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Campos Disponibles</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Ruta de archivo de esquema (.xsd)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Guardar Resultado (Esquema y Datos)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Guardar Resultado (Esquema solamente)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Mostrar resultado de la Consulta</value>

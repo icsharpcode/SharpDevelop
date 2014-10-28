@@ -2885,17 +2885,11 @@ Toate modificările se vor pierde.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Modulul Grafic</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Configurare raport simplu</value>
-  </data>
   <data name="SharpReport.Wizard.PullModel.CommandText.ToolTip" xml:space="preserve">
     <value>[Ştergeţi acest text şi introduceţi un şir SQL valid]</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Câmpuri disponibile</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Cale către fişier schemă (.xsd)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Arată Rezultatele Interogării</value>

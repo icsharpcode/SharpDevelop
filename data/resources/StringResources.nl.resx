@@ -6493,9 +6493,6 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Grafische eenheid</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Basis rapport instellingen</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Rapport model</value>
   </data>
@@ -6543,15 +6540,6 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Beschikbare velden</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Pad naar schema (.xsd) bestand</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Resultaat opslaan (Schema en gegevens)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Resultaat opslaan (Alleen schema)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Toon resultaat van de opvraging</value>

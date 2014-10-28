@@ -5110,9 +5110,6 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Unidade Gráfica</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Configurações de relatório básicas</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Modelo de relatório</value>
   </data>
@@ -5139,15 +5136,6 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Campos Disponíveis</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Caminho para o arquivo Schema (.xsd)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Salvar resultado (Schema e Dados)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Salva resultado (apenas o Schema)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Exibir resultado da consulta</value>

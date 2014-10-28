@@ -4589,9 +4589,6 @@ Pliki zasobów zostały odpowiednio nazwane/przeniesione.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Jednostka Graficzna</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Bazowe ustawienia raportu</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Model Raportu</value>
   </data>
@@ -4624,15 +4621,6 @@ Pliki zasobów zostały odpowiednio nazwane/przeniesione.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Dostępne Pola</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Ścieżka do Pliku Schematu Pliku (.xsd)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Zapisz Rezultat (Schemat i Dane)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Zapisz Rezultat (tylko Schemat)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Pokaż rezultat Zapytania</value>

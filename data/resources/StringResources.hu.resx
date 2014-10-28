@@ -4034,9 +4034,6 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Grafikus Egység</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Alap kimutatás beállítások</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Kimutatás Model</value>
   </data>
@@ -4063,15 +4060,6 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Használható Mezők</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>A Séma (.xsd) fájl útvonala</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Eredmény Mentése (Adat és Séma)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Eredmény Mentése (Csak Séma)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Lekérdezési eredmények Mutatása</value>

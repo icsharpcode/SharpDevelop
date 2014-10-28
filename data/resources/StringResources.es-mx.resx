@@ -409,6 +409,12 @@ Dejarán de funcionar después de desinstalar este complemento! ¿Esta seguro de
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostrar Diagrama de Clase</value>
   </data>
+  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
+    <value>Limpiar consola</value>
+  </data>
+  <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
+    <value>Borrar Historial</value>
+  </data>
   <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
     <value>TortoiseGit necesita ser instalado para ejecutar esta acción.</value>
   </data>
@@ -525,6 +531,21 @@ Dejarán de funcionar después de desinstalar este complemento! ¿Esta seguro de
   </data>
   <data name="AddIns.HtmlHelp2.Title" xml:space="preserve">
     <value>Título</value>
+  </data>
+  <data name="AddIns.PackageManagement.ConsolePad.Title" xml:space="preserve">
+    <value>Consola del Administrador de Paquetes</value>
+  </data>
+  <data name="AddIns.PackageManagement.Menu.ManagePackages" xml:space="preserve">
+    <value>Paquetes Administrados...</value>
+  </data>
+  <data name="AddIns.PackageManagement.Menu.RestorePackages" xml:space="preserve">
+    <value>Paquetes Restaurados</value>
+  </data>
+  <data name="AddIns.PackageManagement.Options.PackageSources" xml:space="preserve">
+    <value>Origenes de Paquete</value>
+  </data>
+  <data name="AddIns.PackageManagement.Options.Title" xml:space="preserve">
+    <value>Administrador de paquetes</value>
   </data>
   <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
     <value>Resultado</value>
@@ -1575,6 +1596,17 @@ Para crear/manipular un objeto ActiveX/COM, arrastre una clase de un Control/Bib
   <data name="CSharpBinding.InsertAnonymousMethodWithParameters" xml:space="preserve">
     <value>Inserte un método anónimo con parámetros.</value>
   </data>
+  <data name="CSharpBinding.Refactoring.EventCreation.EventHandlerText" xml:space="preserve">
+    <value>&lt;Crear $[HandlerName]&gt;</value>
+  </data>
+  <data name="CSharpBinding.Refactoring.InsertWithCursor.Description" xml:space="preserve">
+    <value>Use arriba/abajo para moverse a otra ubicación.
+Enter para seleccionar ubicación.
+Esc para cancelar esta operación.</value>
+  </data>
+  <data name="Debugger.Visualizers.ColumnPickerLabel" xml:space="preserve">
+    <value>Columnas</value>
+  </data>
   <data name="Dialog.About.DialogName" xml:space="preserve">
     <value>Acerca de SharpDevelop</value>
   </data>
@@ -1595,6 +1627,27 @@ Para crear/manipular un objeto ActiveX/COM, arrastre una clase de un Control/Bib
   </data>
   <data name="Dialog.About.VersionInfoTabName.VersionColumn" xml:space="preserve">
     <value>Versión</value>
+  </data>
+  <data name="Dialog.AddServiceReference.OperationsLabel" xml:space="preserve">
+    <value>Operaciones:</value>
+  </data>
+  <data name="Dialog.AddServiceReference.ServicesLabel" xml:space="preserve">
+    <value>Servicios:</value>
+  </data>
+  <data name="Dialog.AdvancedService.Client.AccessLevel.Internal" xml:space="preserve">
+    <value>Interno</value>
+  </data>
+  <data name="Dialog.AdvancedService.Client.AccessLevel.Public" xml:space="preserve">
+    <value>Publico</value>
+  </data>
+  <data name="Dialog.AdvancedService.Client.AccessLevelLabel" xml:space="preserve">
+    <value>Nivel de acceso para las clases generadas:</value>
+  </data>
+  <data name="Dialog.AdvancedService.Client.GenerateAsyncOperations" xml:space="preserve">
+    <value>Generar opeaciones asyncronas</value>
+  </data>
+  <data name="Dialog.AdvancedService.ClientHeader" xml:space="preserve">
+    <value>Cliente</value>
   </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentFilesString" xml:space="preserve">
     <value>archivos recientes</value>
@@ -1681,6 +1734,9 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Itálica</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Underline" xml:space="preserve">
+    <value>Subrayado</value>
   </data>
   <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
     <value>Exportar colores de resaltado</value>
@@ -2068,6 +2124,12 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.UseFullTypeNamesCheckBox" xml:space="preserve">
     <value>&amp;Utilizar nombres completos de tipos</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.CodingOptions.CodeFormatting.Title" xml:space="preserve">
+    <value>Formateando</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodingOptions.CodeIssues.Title" xml:space="preserve">
+    <value>Inspeccion de codigo</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.CodingOptionsText" xml:space="preserve">
     <value>Codificación</value>
   </data>
@@ -2080,11 +2142,20 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
     <value>Detenerse en la primera línea de ejecución.</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ChooseExceptions" xml:space="preserve">
+    <value>Seleccionar excepciones</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
     <value>Habilitar decompilador</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue" xml:space="preserve">
     <value>Habilitar Editar y Continuar</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ExceptionFilter.ColumnExpression" xml:space="preserve">
+    <value>Nombre completo de la Excepcion</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ExceptionFilter.ColumnIsActive" xml:space="preserve">
+    <value>Pausa</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
     <value>Excepciones</value>
@@ -2479,6 +2550,9 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
     <value>Seleccione el directorio para crear el ensamblado.</value>
   </data>
+  <data name="Dialog.Options.ServicesReferencesText" xml:space="preserve">
+    <value>Referencia del servicio</value>
+  </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.Title" xml:space="preserve">
     <value>Resaltado</value>
   </data>
@@ -2674,6 +2748,12 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.ProjectOptions.ContinueSwitchConfiguration" xml:space="preserve">
     <value>Al cambiar la configuración se guardarán los valores actuales. ¿Continuar?</value>
   </data>
+  <data name="Dialog.ProjectOptions.CustomTool.Filenames" xml:space="preserve">
+    <value>Nombres de archivo</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CustomTool.RunOnBuild" xml:space="preserve">
+    <value>Ejecutar al compilar</value>
+  </data>
   <data name="Dialog.ProjectOptions.DebugOptions" xml:space="preserve">
     <value>Depurar</value>
   </data>
@@ -2849,6 +2929,9 @@ También puede elegir guardar la opción en el archivo .user en lugar de en el a
   </data>
   <data name="Dialog.Refactoring.IntroduceMethod.UseExisting" xml:space="preserve">
     <value>Usar clase existente:</value>
+  </data>
+  <data name="Dialog.SearchForIssues.AutoFix" xml:space="preserve">
+    <value>Reparar problemas automaticamente, si se puede</value>
   </data>
   <data name="Dialog.SelectReferenceDialog.BrowserTabPage" xml:space="preserve">
     <value>Explorador de ensamblados .NET</value>
@@ -3102,11 +3185,26 @@ También puede elegir guardar la opción en el archivo .user en lugar de en el a
   <data name="Global.ReplaceButtonText" xml:space="preserve">
     <value>Reemplazar</value>
   </data>
+  <data name="Global.Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
   <data name="Global.RetryButtonText" xml:space="preserve">
     <value>Reintentar</value>
   </data>
   <data name="Global.SelectAllButtonText" xml:space="preserve">
     <value>Seleccion&amp;ar Todo</value>
+  </data>
+  <data name="Global.Shortcuts.Alt" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="Global.Shortcuts.Ctrl" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="Global.Shortcuts.Shift" xml:space="preserve">
+    <value>Win</value>
+  </data>
+  <data name="Global.Shortcuts.Win" xml:space="preserve">
+    <value>Win</value>
   </data>
   <data name="Global.SmallIconToolTip" xml:space="preserve">
     <value>Iconos pequeños</value>
@@ -4949,6 +5047,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.CompilerMessages.BuildFinished" xml:space="preserve">
     <value>Generación finalizada correctamente.</value>
   </data>
+  <data name="MainWindow.CompilerMessages.BuildingProjectIsNotSupported" xml:space="preserve">
+    <value>La compilación del projecto $[Name] no esta soportada</value>
+  </data>
   <data name="MainWindow.CompilerMessages.BuildStarted" xml:space="preserve">
     <value>Generación iniciada.</value>
   </data>
@@ -5537,6 +5638,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.OutputWindow.DebugCategory" xml:space="preserve">
     <value>Depurar</value>
   </data>
+  <data name="MainWindow.Windows.OutputWindow.TextTooLong" xml:space="preserve">
+    <value>&lt;El texto se ha recortado debido a que es muy largo&gt;</value>
+  </data>
   <data name="MainWindow.Windows.ProjectScoutLabel" xml:space="preserve">
     <value>Proyectos</value>
   </data>
@@ -5599,6 +5703,24 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.TaskList" xml:space="preserve">
     <value>Lista de Tareas</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.AllOpenedFiles" xml:space="preserve">
+    <value>Todos los archivos abiertos</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.CurrentClass" xml:space="preserve">
+    <value>Clase/Modulo</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.CurrentFile" xml:space="preserve">
+    <value>Archivo</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Namespace" xml:space="preserve">
+    <value>Namespace</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Project" xml:space="preserve">
+    <value>Projecto</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Solution" xml:space="preserve">
+    <value>Solucion</value>
   </data>
   <data name="MainWindow.Windows.ToolbarLabel" xml:space="preserve">
     <value>Herramientas</value>
@@ -6011,14 +6133,26 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ResourceEditor.BitmapView.UpdateBitmap" xml:space="preserve">
     <value>Actualizar bitmap...</value>
   </data>
+  <data name="ResourceEditor.BitmapView.UpdateCursor" xml:space="preserve">
+    <value>Actualizar cursor ...</value>
+  </data>
+  <data name="ResourceEditor.BitmapView.UpdateIcon" xml:space="preserve">
+    <value>Icono de Actualización ...</value>
+  </data>
   <data name="ResourceEditor.DeleteEntry.Confirm" xml:space="preserve">
     <value>¿Realmente desea eliminar los recursos seleccionados?</value>
   </data>
   <data name="ResourceEditor.DeleteEntry.Title" xml:space="preserve">
     <value>Eliminar recursos</value>
   </data>
+  <data name="ResourceEditor.Filter" xml:space="preserve">
+    <value>Filtro:</value>
+  </data>
   <data name="ResourceEditor.Messages.CantLoadResource" xml:space="preserve">
     <value>No se pudo cargar el recurso</value>
+  </data>
+  <data name="ResourceEditor.Messages.CantLoadResourceFromFile" xml:space="preserve">
+    <value>No se puede cargar el recurso desde el archivo : {0}</value>
   </data>
   <data name="ResourceEditor.ResourceCodeGeneratorTool.ClassConflict" xml:space="preserve">
     <value>Error: El generador de recursos de código esta omitiendo el archivo de recurso "{0}" debido a que el la clase generada entraría un conflicto con la clase existente "{1}".</value>
@@ -6031,6 +6165,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ResourceEditor.ResourceEdit.ContentColumn" xml:space="preserve">
     <value>Contenido</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.AddBooleanEntry" xml:space="preserve">
+    <value>Agregar  valor &amp;boolean</value>
   </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.AddFiles" xml:space="preserve">
     <value>Agregar a&amp;rchivos...</value>
@@ -6510,14 +6647,14 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   <data name="SharpReport.Wizard.BaseSettings,ReportType" xml:space="preserve">
     <value>Tipo de Reporte</value>
   </data>
+  <data name="SharpReport.Wizard.BaseSettings.Description" xml:space="preserve">
+    <value>Configuracions basicas del reporte</value>
+  </data>
   <data name="SharpReport.Wizard.BaseSettings.FileName" xml:space="preserve">
     <value>Nombre de Archivo</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Unidad Gráfica</value>
-  </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Configuración básica de reporte</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Modelo de Reporte</value>
@@ -6552,6 +6689,9 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   <data name="SharpReport.Wizard.Layout.TableLayout" xml:space="preserve">
     <value>Diseño de Tabla</value>
   </data>
+  <data name="SharpReport.Wizard.PageLayout" xml:space="preserve">
+    <value>Formato de página</value>
+  </data>
   <data name="SharpReport.Wizard.PullModel" xml:space="preserve">
     <value>Usar Modelo de Datos</value>
   </data>
@@ -6567,17 +6707,17 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Campos Disponibles</value>
   </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Ruta a Esquema de Archivo (.xsd)</value>
+  <data name="SharpReport.Wizard.PushModel.NoProject" xml:space="preserve">
+    <value>No se ha seleccionado un projecto, por favor proporcione la informacion</value>
   </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Guardar Resultado (Esquema y Datos)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Guardar Resultado (Esquema solamente)</value>
+  <data name="SharpReport.Wizard.PushModel.SelectProject" xml:space="preserve">
+    <value>Clases del projecto seleccionado</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Mostrar resultado de la Consulta</value>
+  </data>
+  <data name="SharpReport.Wizard.Welcome" xml:space="preserve">
+    <value>Bienvenido al asistente de SharpReport</value>
   </data>
   <data name="SideBarComponent.ContextMenu.AddTab" xml:space="preserve">
     <value>&amp;Agregar Pestaña</value>
@@ -7689,6 +7829,9 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   <data name="XML.MainMenu.SearchMenu.ReverseIncrementalSearch" xml:space="preserve">
     <value>Invertir Búsqueda Incremental</value>
   </data>
+  <data name="XML.MainMenu.SearchMenu.SearchForIssues" xml:space="preserve">
+    <value>Buscar Problemas...</value>
+  </data>
   <data name="XML.MainMenu.SearchMenu.ToggleBookmark" xml:space="preserve">
     <value>&amp;Alternar marcador</value>
   </data>
@@ -7803,6 +7946,9 @@ Error al iniciar:</value>
   </data>
   <data name="XML.TextAreaContextMenu.Refactoring" xml:space="preserve">
     <value>Refactorizar</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.Reformat" xml:space="preserve">
+    <value>Re formatear</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Descomentar región</value>

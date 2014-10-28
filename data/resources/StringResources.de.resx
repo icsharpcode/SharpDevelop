@@ -408,6 +408,12 @@ Sie werden nicht mehr funktionieren, nachdem dieses AddIn entfernt wurde! Sind S
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagramm anzeigen</value>
   </data>
+  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
+    <value>Konsole löschen</value>
+  </data>
+  <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
+    <value>Verlauf löschen</value>
+  </data>
   <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
     <value>TortoiseGit muss installiert sein, um diese Aktion auszuführen.</value>
   </data>
@@ -1571,6 +1577,9 @@ Um ActiveX/COM-Objekte zu generieren, ziehen sie eine Klasse aus einer Typbiblio
   <data name="CSharpBinding.InsertAnonymousMethodWithParameters" xml:space="preserve">
     <value>Anonyme Methode mit Parametern einfügen.</value>
   </data>
+  <data name="Debugger.Visualizers.ColumnPickerLabel" xml:space="preserve">
+    <value>Spalten:</value>
+  </data>
   <data name="Dialog.About.DialogName" xml:space="preserve">
     <value>Über SharpDevelop</value>
   </data>
@@ -2489,6 +2498,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
     <value>Verzeichnis auswählen in dem die Assembly generiert wird.</value>
   </data>
+  <data name="Dialog.Options.ServicesReferencesText" xml:space="preserve">
+    <value>Service Referenzen</value>
+  </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.Title" xml:space="preserve">
     <value>Hervorhebung</value>
   </data>
@@ -2684,6 +2696,12 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.ProjectOptions.ContinueSwitchConfiguration" xml:space="preserve">
     <value>Ändern der Konfiguration will die aktuellen Werte speichern. Fortfahren?</value>
   </data>
+  <data name="Dialog.ProjectOptions.CustomTool.Filenames" xml:space="preserve">
+    <value>Dateinamen:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CustomTool.RunOnBuild" xml:space="preserve">
+    <value>Beim Erstellen ausführen</value>
+  </data>
   <data name="Dialog.ProjectOptions.DebugOptions" xml:space="preserve">
     <value>Debuggen</value>
   </data>
@@ -2860,6 +2878,9 @@ Sie können die Einstellungen auch in einer .user-Datei anstelle der Projektdate
   </data>
   <data name="Dialog.Refactoring.IntroduceMethod.UseExisting" xml:space="preserve">
     <value>Bestehende Klasse verwenden:</value>
+  </data>
+  <data name="Dialog.SearchForIssues.AutoFix" xml:space="preserve">
+    <value>Probleme automatisch beheben, falls möglich</value>
   </data>
   <data name="Dialog.SelectReferenceDialog.BrowserTabPage" xml:space="preserve">
     <value>.NET Assemblybrowser</value>
@@ -3113,11 +3134,26 @@ Sie können die Einstellungen auch in einer .user-Datei anstelle der Projektdate
   <data name="Global.ReplaceButtonText" xml:space="preserve">
     <value>Ersetzen</value>
   </data>
+  <data name="Global.Reset" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
   <data name="Global.RetryButtonText" xml:space="preserve">
     <value>Wiederholen</value>
   </data>
   <data name="Global.SelectAllButtonText" xml:space="preserve">
     <value>&amp;Alle auswählen</value>
+  </data>
+  <data name="Global.Shortcuts.Alt" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="Global.Shortcuts.Ctrl" xml:space="preserve">
+    <value>Strg</value>
+  </data>
+  <data name="Global.Shortcuts.Shift" xml:space="preserve">
+    <value>Umsch</value>
+  </data>
+  <data name="Global.Shortcuts.Win" xml:space="preserve">
+    <value>Win</value>
   </data>
   <data name="Global.SmallIconToolTip" xml:space="preserve">
     <value>Kleine Icons</value>
@@ -5621,6 +5657,24 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.TaskList" xml:space="preserve">
     <value>Aufgaben</value>
   </data>
+  <data name="MainWindow.Windows.TaskList.AllOpenedFiles" xml:space="preserve">
+    <value>Alle geöffneten Dateien</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.CurrentClass" xml:space="preserve">
+    <value>Klasse/Modul</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.CurrentFile" xml:space="preserve">
+    <value>Datei</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Namespace" xml:space="preserve">
+    <value>Namespace</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Project" xml:space="preserve">
+    <value>Projekt</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList.Solution" xml:space="preserve">
+    <value>Projektmappe</value>
+  </data>
   <data name="MainWindow.Windows.ToolbarLabel" xml:space="preserve">
     <value>Tools</value>
   </data>
@@ -6032,14 +6086,26 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ResourceEditor.BitmapView.UpdateBitmap" xml:space="preserve">
     <value>Ersetze mit anderer Bitmap ...</value>
   </data>
+  <data name="ResourceEditor.BitmapView.UpdateCursor" xml:space="preserve">
+    <value>Cursor aktualisieren ...</value>
+  </data>
+  <data name="ResourceEditor.BitmapView.UpdateIcon" xml:space="preserve">
+    <value>Icon aktualisieren ...</value>
+  </data>
   <data name="ResourceEditor.DeleteEntry.Confirm" xml:space="preserve">
     <value>Möchten Sie wirklich die ausgewählte(n) Ressource(n) löschen?</value>
   </data>
   <data name="ResourceEditor.DeleteEntry.Title" xml:space="preserve">
     <value>Ressource löschen</value>
   </data>
+  <data name="ResourceEditor.Filter" xml:space="preserve">
+    <value>Filter:</value>
+  </data>
   <data name="ResourceEditor.Messages.CantLoadResource" xml:space="preserve">
     <value>Kann Resource nicht laden:</value>
+  </data>
+  <data name="ResourceEditor.Messages.CantLoadResourceFromFile" xml:space="preserve">
+    <value>Kann Ressource nicht aus Datei laden: {0}</value>
   </data>
   <data name="ResourceEditor.ResourceCodeGeneratorTool.ClassConflict" xml:space="preserve">
     <value>Fehler: Ressourcen-Codegenerator überspringt die Ressourcendatei "{0}", weil die generierte Klasse mit der bestehenden Klasse "{1}" kollidieren würde.</value>
@@ -6053,8 +6119,11 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ResourceEditor.ResourceEdit.ContentColumn" xml:space="preserve">
     <value>Inhalt</value>
   </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.AddBooleanEntry" xml:space="preserve">
+    <value>Boolean Eintrag hinzufügen</value>
+  </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.AddFiles" xml:space="preserve">
-    <value>&amp;Files hinzufügen...</value>
+    <value>Dateien hinzu&amp;fügen...</value>
   </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.AddStringEntry" xml:space="preserve">
     <value>String hinzufügen...</value>
@@ -6540,9 +6609,6 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Einheit</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Grundlegende Berichtseinstellungen</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Report-Modell</value>
   </data>
@@ -6590,15 +6656,6 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Verfügbare Felder</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Pfad zur XSD Schemadatei</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Speichern (Schema und Daten)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Speichern (nur Schema)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Abfrageergebnis anzeigen</value>
@@ -7714,6 +7771,9 @@ Soll der Debugger angehalten werden?</value>
   <data name="XML.MainMenu.SearchMenu.ReverseIncrementalSearch" xml:space="preserve">
     <value>Inkrementelle Suche rückwärts</value>
   </data>
+  <data name="XML.MainMenu.SearchMenu.SearchForIssues" xml:space="preserve">
+    <value>Nach Problemen suchen...</value>
+  </data>
   <data name="XML.MainMenu.SearchMenu.ToggleBookmark" xml:space="preserve">
     <value>Lesezeichen s&amp;etzen</value>
   </data>
@@ -7829,6 +7889,9 @@ Fehler beim Starten:
   </data>
   <data name="XML.TextAreaContextMenu.Refactoring" xml:space="preserve">
     <value>Refactoring</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.Reformat" xml:space="preserve">
+    <value>Neu formatieren</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Kommentar entfernen</value>

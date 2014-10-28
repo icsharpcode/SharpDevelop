@@ -4725,9 +4725,6 @@ Os ficheiros de recursos foram renomeados/movidos em conformidade.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Unidade Gráfica</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Parâmetros base do relatório</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Modelo de Relatório</value>
   </data>
@@ -4754,15 +4751,6 @@ Os ficheiros de recursos foram renomeados/movidos em conformidade.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Campos Disponíveis</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Caminho para o Ficheiro de Esquema (.xsd)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Guardar Resultado (Esquema e Dados)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Guardar Resultado (Só esquema)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Mostrar resultado do inquérito</value>

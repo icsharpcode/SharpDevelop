@@ -5101,9 +5101,6 @@ SharpDevelop 2는 리소스를 다른 방법으로 컴파일합니다: 리소스
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>그래픽 단위</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>기본 보고서 설정</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>보고서 모델</value>
   </data>
@@ -5136,15 +5133,6 @@ SharpDevelop 2는 리소스를 다른 방법으로 컴파일합니다: 리소스
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>사용가능한 필드</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>스키마 (.xsd) 파일의 경로</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>결과 저장 (스키마와 데이터)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>결과 저장 (스키마만)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>질의 결과 보이기</value>
