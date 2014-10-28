@@ -72,6 +72,7 @@
     <Compile Include="Designer\OutlineView\SelectionTests.cs" />
     <Compile Include="Designer\PlacementTests.cs" />
     <Compile Include="Designer\SetPropertyTests.cs" />
+    <Compile Include="XamlDom\CollectionTests.cs" />
     <Compile Include="XamlDom\ExampleClass.cs" />
     <Compile Include="XamlDom\ExampleClassContainer.cs" />
     <Compile Include="XamlDom\ExampleService.cs" />
@@ -101,7 +102,5 @@
       <Name>WpfDesign.Designer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Designer\OutlineView" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
