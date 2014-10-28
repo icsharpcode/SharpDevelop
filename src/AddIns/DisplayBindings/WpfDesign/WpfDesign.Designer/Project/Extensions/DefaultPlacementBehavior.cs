@@ -90,9 +90,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (item.View == null)
 				return Rect.Empty;
 			var p = item.View.TranslatePoint(new Point(), operation.CurrentContainer.View);
-            //Fixes, Empty Image Resized to 0
-            //return new Rect(p, item.View.RenderSize);
-
+            
 		    return new Rect(p, PlacementOperation.GetRealElementSize(item.View));
 		}
 
