@@ -28,7 +28,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 	public class SharpDevelopTranslations : Translations
 	{
 		public override string PressAltText {
-			get { return StringParser.Parse("${res:AddIns.WpfDesign.AddIn.PressAltText}"); }
+			get { return StringParser.Parse("${res:ICSharpCode.WpfDesign.AddIn.PressAltText}"); }
 		}
 		
 		public static void Init() {

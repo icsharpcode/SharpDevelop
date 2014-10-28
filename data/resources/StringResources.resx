@@ -8374,4 +8374,7 @@ Press Esc to cancel this operation.</value>
   <data name="AddIns.Git.Options.GitPath" xml:space="preserve">
     <value>Git Path</value>
   </data>
+  <data name="ICSharpCode.WpfDesign.AddIn.PressAltText" xml:space="preserve">
+    <value>Press "Alt" to enter Container</value>
+  </data>
 </root>
