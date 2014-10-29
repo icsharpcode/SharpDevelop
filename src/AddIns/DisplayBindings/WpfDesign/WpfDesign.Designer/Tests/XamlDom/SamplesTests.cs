@@ -140,9 +140,21 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
   </StackPanel>
 </Page>");
 		}
-		
-		[Test]
-		public void Resources2()
+
+        [Test]
+        public void Resources2()
+        {
+            TestLoading(@"<UserControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <UserControl.Resources>
+       <ResourceDictionary />
+   </UserControl.Resources>
+  </UserControl>");
+        }
+
+        [Test]
+		public void Resources3()
 		{
 			TestLoading(@"<UserControl
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

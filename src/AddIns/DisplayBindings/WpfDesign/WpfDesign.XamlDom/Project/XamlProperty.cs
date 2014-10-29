@@ -21,17 +21,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using System.Windows;
-using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
-	/// <summary>
-	/// Describes a property on a <see cref="XamlObject"/>.
-	/// </summary>
-	[DebuggerDisplay("XamlProperty: {PropertyName}")]
+    /// <summary>
+    /// Describes a property on a <see cref="XamlObject"/>.
+    /// </summary>
+    [DebuggerDisplay("XamlProperty: {PropertyName}")]
 	public sealed class XamlProperty
 	{
 		XamlObject parentObject;
@@ -315,13 +313,40 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return this.IsAttached ? this.PropertyTargetType : parentObject.ElementType;
 		}
 		
-		static XmlNode FindChildNode(XmlNode node, string localName, string namespaceURI)
+		static XmlNode FindChildNode(XmlNode node, Type elementType, string propertyName, XamlDocument xamlDocument)
 		{
-			foreach (XmlNode childNode in node.ChildNodes) {
-				if (childNode.LocalName == localName && childNode.NamespaceURI == namespaceURI)
-					return childNode;
-			}
+		    var localName = elementType.Name + "." + propertyName;
+		    var namespaceURI = xamlDocument.GetNamespaceFor(elementType);
 
+            foreach (XmlNode childNode in node.ChildNodes)
+		    {
+		        if (childNode.LocalName == localName && childNode.NamespaceURI == namespaceURI)
+		        {
+		            return childNode;
+		        }
+		    }
+
+		    var type = elementType.BaseType;
+            namespaceURI = xamlDocument.GetNamespaceFor(type);
+
+            while (type != typeof(object))
+		    {
+		        if (type.GetProperty(propertyName) == null)
+		            break;
+
+                localName = type.Name + "." + propertyName;
+
+                foreach (XmlNode childNode in node.ChildNodes)
+		        {
+		            if (childNode.LocalName == localName && childNode.NamespaceURI == namespaceURI)
+		            {
+		                return childNode;
+		            }
+		        }
+
+                type = type.BaseType;
+            }
+		    
 			return null;
 		}
 
@@ -335,7 +360,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (this.IsCollection) {
 				if (IsNodeCollectionForThisProperty(newChildNode)) {
 					Type propertyElementType = GetPropertyElementType();
-					XmlNode parentNode = FindChildNode(parentObject.XmlElement, propertyElementType.Name + "." + this.PropertyName, parentObject.OwnerDocument.GetNamespaceFor(propertyElementType));
+					XmlNode parentNode = FindChildNode(parentObject.XmlElement, propertyElementType, this.PropertyName, parentObject.OwnerDocument);
 
 					if (parentNode == null) {
 						parentNode = CreatePropertyElement();
