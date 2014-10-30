@@ -245,6 +245,36 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 
         [Test]
+        public void ContentControl1()
+        {
+            TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<ContentControl>
+  <Grid />
+</ContentControl>
+</Canvas>
+</Window>");
+        }
+
+        [Test]
+        public void ContentControl2()
+        {
+            TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<ContentControl>
+<ContentControl.Content>
+  <Grid />
+</ContentControl.Content>
+</ContentControl>
+</Canvas>
+</Window>");
+        }
+
+        [Test]
         public void Children1()
         {
             TestLoading(@"<Window
