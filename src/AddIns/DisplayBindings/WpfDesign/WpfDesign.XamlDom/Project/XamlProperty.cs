@@ -352,7 +352,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		bool IsNodeCollectionForThisProperty(XmlNode node)
 		{
-			return _propertyElement == null && this.PropertyName != this.ParentObject.ContentPropertyName && this.ReturnType.IsAssignableFrom(this.ParentObject.OwnerDocument.TypeFinder.GetType(node.NamespaceURI, node.LocalName));
+            //Remove the commented check! This is Possible: BeginStoryboard=>The COntent Property is Storyboard, and the Content Element is also Storyboard!
+			return _propertyElement == null /* && this.PropertyName != this.ParentObject.ContentPropertyName */ && this.ReturnType.IsAssignableFrom(this.ParentObject.OwnerDocument.TypeFinder.GetType(node.NamespaceURI, node.LocalName));
 		}
 		
 		internal void AddChildNodeToProperty(XmlNode newChildNode)

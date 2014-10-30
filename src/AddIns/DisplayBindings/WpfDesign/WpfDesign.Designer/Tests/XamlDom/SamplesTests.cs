@@ -164,6 +164,20 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
    </FrameworkElement.Resources>
   </UserControl>");
 		}
+
+        [Test]
+        public void Resources4()
+        {
+            TestLoading(@"<UserControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <UserControl.Resources>
+        <ResourceDictionary>
+<SolidColorBrush x:Key=""MyBrush"" Color=""Gold""/>
+        </ResourceDictionary>
+   </UserControl.Resources>
+  </UserControl>");
+        }
 		
 		[Test]
 		public void Animation1()
