@@ -101,8 +101,12 @@
     <Compile Include="Extensions\ArrangeItemsContextMenu.xaml.cs">
       <DependentUpon>ArrangeItemsContextMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OutlineView\OutlineNodeBase.cs" />
+    <Compile Include="Extensions\WrapItemContextMenu.xaml.cs">
+      <DependentUpon>WrapItemContextMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\WrapItemsContextMenuExtension.cs" />
+    <Compile Include="OutlineView\OutlineNodeBase.cs" />
+    <Compile Include="Extensions\WrapItemContextMenuExtension.cs" />
     <Compile Include="Extensions\WrapItemsContextMenu.xaml.cs">
       <DependentUpon>WrapItemsContextMenu.xaml</DependentUpon>
     </Compile>
@@ -288,6 +292,9 @@
     <Page Include="Extensions\ArrangeItemsContextMenu.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Extensions\WrapItemContextMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Extensions\WrapItemsContextMenu.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -444,5 +451,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\paint-can-color.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\wrap-option.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\canvas.png" />
   </ItemGroup>
 </Project>

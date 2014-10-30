@@ -284,8 +284,6 @@ namespace ICSharpCode.WpfDesign.Designer
 			var ymax = itemList.Max(x => x.Ymax);
 
 			foreach (var item in itemList) {
-				newPanel.ContentProperty.CollectionElements.Add(item.DesignItem);
-				
 				if (newPanel.Component is Canvas) {
 					if (item.HorizontalAlignment == HorizontalAlignment.Right) {
 						item.DesignItem.Properties.GetAttachedProperty(Canvas.RightProperty).SetValue(xmax - item.Xmax);
@@ -298,6 +296,9 @@ namespace ICSharpCode.WpfDesign.Designer
 					} else {
 						item.DesignItem.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(item.Ymin - ymin);
 					}
+
+                    newPanel.ContentProperty.CollectionElements.Add(item.DesignItem);
+
 				} else if (newPanel.Component is Grid) {
 					Thickness thickness = new Thickness(0);
 					if (item.HorizontalAlignment == HorizontalAlignment.Right) {
@@ -317,6 +318,11 @@ namespace ICSharpCode.WpfDesign.Designer
 					}
 					
 					item.DesignItem.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(thickness);
+
+                    newPanel.ContentProperty.CollectionElements.Add(item.DesignItem);
+
+				} else if (newPanel.Component is Viewbox) {
+                    newPanel.ContentProperty.SetValue(item.DesignItem);
 				}
 			}
 			
