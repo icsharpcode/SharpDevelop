@@ -127,7 +127,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 		
 		[Test]
-		public void Resources()
+		public void Resources1()
 		{
 			TestLoading(@"<Page Name=""root""
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -141,19 +141,19 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 </Page>");
 		}
 
-        [Test]
-        public void Resources2()
-        {
-            TestLoading(@"<UserControl
+		[Test]
+		public void Resources2()
+		{
+			TestLoading(@"<UserControl
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
     <UserControl.Resources>
        <ResourceDictionary />
    </UserControl.Resources>
   </UserControl>");
-        }
+		}
 
-        [Test]
+		[Test]
 		public void Resources3()
 		{
 			TestLoading(@"<UserControl
@@ -165,10 +165,10 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
   </UserControl>");
 		}
 
-        [Test]
-        public void Resources4()
-        {
-            TestLoading(@"<UserControl
+		[Test]
+		public void Resources4()
+		{
+			TestLoading(@"<UserControl
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
     <UserControl.Resources>
@@ -177,8 +177,25 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
         </ResourceDictionary>
    </UserControl.Resources>
   </UserControl>");
-        }
-		
+		}
+
+		[Test]
+		public void Resources5()
+		{
+			TestLoading(@"<UserControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source=""/ICSharpCode.WpfDesign.Tests;component/Test.xaml"" />
+             </ResourceDictionary.MergedDictionaries >
+        </ResourceDictionary>
+   </UserControl.Resources>
+  </UserControl>");
+		}
+
+
 		[Test]
 		public void Animation1()
 		{
@@ -234,7 +251,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		[Test]
 		public void Animation3()
 		{
-			TestLoading(@"<Window 
+			TestLoading(@"<Window
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Canvas>
@@ -258,10 +275,10 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 </Window>");
 		}
 
-        [Test]
-        public void ContentControl1()
-        {
-            TestLoading(@"<Window
+		[Test]
+		public void ContentControl1()
+		{
+			TestLoading(@"<Window
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Canvas>
@@ -270,12 +287,12 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 </ContentControl>
 </Canvas>
 </Window>");
-        }
+		}
 
-        [Test]
-        public void ContentControl2()
-        {
-            TestLoading(@"<Window
+		[Test]
+		public void ContentControl2()
+		{
+			TestLoading(@"<Window
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Canvas>
@@ -286,38 +303,24 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 </ContentControl>
 </Canvas>
 </Window>");
-        }
+		}
 
-        [Test]
-        public void Children1()
-        {
-            TestLoading(@"<Window
+		[Test]
+		public void Children1()
+		{
+			TestLoading(@"<Window
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Canvas>
 <Button />
 </Canvas>
 </Window>");
-        }
+		}
 
-	    [Test]
-	    public void Children2()
-	    {
-	        TestLoading(@"<Window
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-<Canvas>
-<Canvas.Children>
-<Button />
-</Canvas.Children>
-</Canvas>
-</Window>");
-	    }
-
-	    [Test]
-        public void Children3()
-        {
-            TestLoading(@"<Window
+		[Test]
+		public void Children2()
+		{
+			TestLoading(@"<Window
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Canvas>
@@ -326,12 +329,26 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 </Canvas.Children>
 </Canvas>
 </Window>");
-        }
+		}
 
-        [Test]
-        public void ListBox1()
-        {
-            TestLoading(@"<Window
+		[Test]
+		public void Children3()
+		{
+			TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<Canvas.Children>
+<Button />
+</Canvas.Children>
+</Canvas>
+</Window>");
+		}
+
+		[Test]
+		public void ListBox1()
+		{
+			TestLoading(@"<Window
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Canvas>
@@ -341,13 +358,32 @@ bb
 </ListBox>
 </Canvas>
 </Window>");
-        }
+		}
 
+		[Test]
+		public void ListBox2()
+		{
+			TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<ListBox ScrollViewer.VerticalScrollBarVisibility=""Hidden"">
+    <ListBox.ItemContainerStyle>
+        <Style TargetType=""{x:Type ListBoxItem}"">
+            <Setter Property=""Width"" Value=""10"" />
+        </Style>
+    </ListBox.ItemContainerStyle>
+aa
+bb
+</ListBox>
+</Canvas>
+</Window>");
+		}
 
-        [Test]
-        public void CData1()
-        {
-            TestLoading(@"<Window
+		[Test]
+		public void CData1()
+		{
+			TestLoading(@"<Window
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Canvas>
@@ -364,6 +400,6 @@ bb
         </x:Code>
  </Canvas>
 </Window>");
-        }
-    }
+		}
+	}
 }
