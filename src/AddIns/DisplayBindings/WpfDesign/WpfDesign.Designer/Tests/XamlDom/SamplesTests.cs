@@ -140,5 +140,230 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
   </StackPanel>
 </Page>");
 		}
-	}
+
+        [Test]
+        public void Resources2()
+        {
+            TestLoading(@"<UserControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <UserControl.Resources>
+       <ResourceDictionary />
+   </UserControl.Resources>
+  </UserControl>");
+        }
+
+        [Test]
+		public void Resources3()
+		{
+			TestLoading(@"<UserControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <FrameworkElement.Resources>
+       <ResourceDictionary />
+   </FrameworkElement.Resources>
+  </UserControl>");
+		}
+
+        [Test]
+        public void Resources4()
+        {
+            TestLoading(@"<UserControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <UserControl.Resources>
+        <ResourceDictionary>
+<SolidColorBrush x:Key=""MyBrush"" Color=""Gold""/>
+        </ResourceDictionary>
+   </UserControl.Resources>
+  </UserControl>");
+        }
+		
+		[Test]
+		public void Animation1()
+		{
+			TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<Button Width=""100"" Height=""100"" Canvas.Left=""8"" Canvas.Top=""8"">
+  <Button.Triggers>
+    <EventTrigger RoutedEvent=""Button.Loaded"">
+      <BeginStoryboard>
+        <Storyboard>
+          <DoubleAnimation Duration=""0:0:10""
+                           From=""1""
+                           To=""0""
+                           Storyboard.TargetProperty=""Opacity"" />
+        </Storyboard>
+      </BeginStoryboard>
+    </EventTrigger>
+  </Button.Triggers>
+</Button>
+</Canvas>
+</Window>");
+		}
+		
+		[Test]
+		public void Animation2()
+		{
+			//Loaded Property has to be found, because this so also works in WPF
+			
+			TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<Button Width=""100"" Height=""100"" Canvas.Left=""8"" Canvas.Top=""8"">
+  <Button.Triggers>
+    <EventTrigger RoutedEvent=""Loaded"">
+      <BeginStoryboard>
+        <Storyboard>
+          <DoubleAnimation Duration=""0:0:10""
+                           From=""1""
+                           To=""0""
+                           Storyboard.TargetProperty=""Opacity"" />
+        </Storyboard>
+      </BeginStoryboard>
+    </EventTrigger>
+  </Button.Triggers>
+</Button>
+</Canvas>
+</Window>");
+		}
+		
+		[Test]
+		public void Animation3()
+		{
+			TestLoading(@"<Window 
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<Button Width=""100"" Height=""100"" Canvas.Left=""8"" Canvas.Top=""8"">
+  <Button.Triggers>
+    <EventTrigger RoutedEvent=""Button.Loaded"">
+      <BeginStoryboard>
+      <BeginStoryboard.Storyboard>
+        <Storyboard>
+          <DoubleAnimation Duration=""0:0:10""
+                           From=""1""
+                           To=""0""
+                           Storyboard.TargetProperty=""Opacity"" />
+        </Storyboard>
+        </BeginStoryboard.Storyboard>
+      </BeginStoryboard>
+    </EventTrigger>
+  </Button.Triggers>
+</Button>
+</Canvas>
+</Window>");
+		}
+
+        [Test]
+        public void ContentControl1()
+        {
+            TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<ContentControl>
+  <Grid />
+</ContentControl>
+</Canvas>
+</Window>");
+        }
+
+        [Test]
+        public void ContentControl2()
+        {
+            TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<ContentControl>
+<ContentControl.Content>
+  <Grid />
+</ContentControl.Content>
+</ContentControl>
+</Canvas>
+</Window>");
+        }
+
+        [Test]
+        public void Children1()
+        {
+            TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<Button />
+</Canvas>
+</Window>");
+        }
+
+	    [Test]
+	    public void Children2()
+	    {
+	        TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<Canvas.Children>
+<Button />
+</Canvas.Children>
+</Canvas>
+</Window>");
+	    }
+
+	    [Test]
+        public void Children3()
+        {
+            TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<Canvas.Children>
+<Button />
+</Canvas.Children>
+</Canvas>
+</Window>");
+        }
+
+        [Test]
+        public void ListBox1()
+        {
+            TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<ListBox>
+aa
+bb
+</ListBox>
+</Canvas>
+</Window>");
+        }
+
+
+        [Test]
+        public void CData1()
+        {
+            TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<Button>Press</Button>
+<x:Code>
+            <![CDATA[
+
+            public void ButtonOnClick(object sender, RoutedEventArgs args)
+            {
+    Button btn = sender as Button;
+    MessageBox.Show(""Button clicked"", ""Hello"");
+}
+            ]]>
+        </x:Code>
+ </Canvas>
+</Window>");
+        }
+    }
 }

@@ -17,38 +17,16 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Shapes;
 
-using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign.Designer;
-
-namespace ICSharpCode.WpfDesign.Designer.Extensions
+namespace ICSharpCode.WpfDesign.Extensions
 {
 	/// <summary>
-	/// 
+	/// Attribute to specify Properties of the Extension.
 	/// </summary>
-	[ExtensionServer(typeof(MultipleSelectedExtensionServer))]
-	[ExtensionFor(typeof(UIElement))]
-	public class RightClickMultipleItemsContextMenuExtension : SelectionAdornerProvider
+	[AttributeUsage(AttributeTargets.Class, AllowMultiple=false, Inherited=false)]
+	public sealed class ExtensionAttribute : Attribute
 	{
-		DesignPanel panel;
-		
-		protected override void OnInitialized()
-		{
-			base.OnInitialized();
-			
-			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
-			panel.ContextMenu = new RightClickMultipleItemsContextMenu(ExtendedItem);
-		}
-		
-		protected override void OnRemove()
-		{
-			panel.ContextMenu = null;
-			
-			base.OnRemove();
-		}
+	    //The Order in wich the Extensions are used
+        public int Order { get; set; }
 	}
 }

@@ -79,15 +79,19 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void EndPlacement(PlacementOperation operation)
 		{
-			InfoTextEnterArea.Stop(ref infoTextEnterArea);			
-		}
+			InfoTextEnterArea.Stop(ref infoTextEnterArea);
+
+		    this.ExtendedItem.Services.Selection.SetSelectedComponents(null);
+		    this.ExtendedItem.Services.Selection.SetSelectedComponents(operation.PlacedItems.Select(x => x.Item).ToList());
+        }
 
 		public virtual Rect GetPosition(PlacementOperation operation, DesignItem item)
 		{
 			if (item.View == null)
 				return Rect.Empty;
 			var p = item.View.TranslatePoint(new Point(), operation.CurrentContainer.View);
-			return new Rect(p, item.View.RenderSize);
+            
+		    return new Rect(p, PlacementOperation.GetRealElementSize(item.View));
 		}
 
 		public virtual void BeforeSetPosition(PlacementOperation operation)
@@ -96,7 +100,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void SetPosition(PlacementInformation info)
 		{
-			ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
+		    if (info.Operation.Type != PlacementType.Move)
+		        ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
 		}
 
 		public virtual bool CanLeaveContainer(PlacementOperation operation)
@@ -158,7 +163,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					return false;
 				}
 			}
-			
+
+		    if (ExtendedItem.ContentProperty.ReturnType == typeof(string))
+		        return false;
+
 			if (!ExtendedItem.ContentProperty.IsSet)
 				return true;
 			
@@ -180,7 +188,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				foreach (var info in operation.PlacedItems) {
 					SetPosition(info);
 				}
-			}
+			}	    
 		}
 	}
 }

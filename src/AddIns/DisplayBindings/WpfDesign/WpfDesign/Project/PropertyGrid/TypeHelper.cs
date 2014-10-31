@@ -102,6 +102,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			}
 			else
 			{
+				var l=TypeDescriptor.GetProperties(element);
 				foreach(PropertyDescriptor p in TypeDescriptor.GetProperties(element)){
 					if (!p.IsBrowsable) continue;
 					if (p.IsReadOnly  && !typeof(ICollection).IsAssignableFrom(p.PropertyType)) continue;

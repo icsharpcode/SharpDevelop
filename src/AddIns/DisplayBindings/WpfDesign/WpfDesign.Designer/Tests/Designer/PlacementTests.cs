@@ -53,7 +53,6 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
-		[Ignore("Currently bounds calculated using visuals")]
 		public void MoveFixedWidthButton()
 		{
 			DesignItem button = CreateCanvasContext("<Button Width='100' Height='200'/>");
@@ -135,7 +134,6 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
-		[Ignore("Bounds calculated using Visuals")]
 		public void AssertSizeForFixedSize()
 		{
 			Assert.AreEqual(50,_buttonIsGridWithFixedSize.Properties[FrameworkElement.HeightProperty].ValueOnInstance);

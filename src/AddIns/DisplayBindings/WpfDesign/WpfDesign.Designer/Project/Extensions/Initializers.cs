@@ -63,7 +63,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions.Initializers
 			if (textProperty.ValueOnInstance == null || textProperty.ValueOnInstance.ToString() == "")
 			{
 				textProperty.SetValue(item.ComponentType.Name);
-			}
+                item.Properties[FrameworkElement.WidthProperty].Reset();
+                item.Properties[FrameworkElement.HeightProperty].Reset();
+            }
 
 			DesignItemProperty verticalAlignmentProperty = item.Properties["VerticalAlignment"];
 			if (verticalAlignmentProperty.ValueOnInstance == null)

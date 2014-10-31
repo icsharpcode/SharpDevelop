@@ -70,7 +70,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (property.IsAttached == false) {
 				foreach (XamlProperty p in properties) {
 					if (p.IsAttached == false && p.PropertyName == property.PropertyName)
-						Debug.Fail("duplicate property");
+						throw new XamlLoadException("duplicate property");
 				}
 			}
 			#endif

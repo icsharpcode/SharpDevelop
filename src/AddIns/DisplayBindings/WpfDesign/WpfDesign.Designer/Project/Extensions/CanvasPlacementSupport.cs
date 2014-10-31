@@ -70,19 +70,21 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (IsPropertySet(child, Canvas.LeftProperty) || !IsPropertySet(child, Canvas.RightProperty)) {
 				x = GetCanvasProperty(child, Canvas.LeftProperty);
 			} else {
-				x = extendedComponent.ActualWidth - GetCanvasProperty(child, Canvas.RightProperty) - child.RenderSize.Width;
+                x = extendedComponent.ActualWidth - GetCanvasProperty(child, Canvas.RightProperty) - PlacementOperation.GetRealElementSize(child).Width;
 			}
 
 
 			if (IsPropertySet(child, Canvas.TopProperty) || !IsPropertySet(child, Canvas.BottomProperty)) {
 				y = GetCanvasProperty(child, Canvas.TopProperty);
 			} else {
-				y = extendedComponent.ActualHeight - GetCanvasProperty(child, Canvas.BottomProperty) - child.RenderSize.Height;
+                y = extendedComponent.ActualHeight - GetCanvasProperty(child, Canvas.BottomProperty) - PlacementOperation.GetRealElementSize(child).Height;
 			}
 
 			var p = new Point(x, y);
-			return new Rect(p, child.RenderSize);
-		}
+            //Fixes, Empty Image Resized to 0
+            //return new Rect(p, child.RenderSize);
+            return new Rect(p, PlacementOperation.GetRealElementSize(item.View));
+        }
 		
 		public override void SetPosition(PlacementInformation info)
 		{

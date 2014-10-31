@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Markup;
+using System.Xaml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -28,7 +29,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// A service provider that provides the IProvideValueTarget and IXamlTypeResolver services.
 	/// No other services (e.g. from the document's service provider) are offered.
 	/// </summary>
-	public class XamlObjectServiceProvider : IServiceProvider, IProvideValueTarget
+    public class XamlObjectServiceProvider : IServiceProvider, IProvideValueTarget, IXamlSchemaContextProvider, IAmbientProvider
 	{
 		/// <summary>
 		/// Creates a new XamlObjectServiceProvider instance.
@@ -60,6 +61,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (serviceType == typeof(IXamlTypeResolver)) {
 				return Resolver;
 			}
+            if (serviceType == typeof(IXamlSchemaContextProvider)) {
+                return this;
+            }
+            if (serviceType == typeof(IAmbientProvider)) {
+                return this;
+            }
 			return null;
 		}
 
@@ -102,5 +109,58 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		#endregion
-	}
+
+        #region IXamlSchemaContextProvider Members
+
+        private XamlSchemaContext iCsharpXamlSchemaContext;
+
+        //Maybe we new our own XamlSchemaContext?
+        //private class ICsharpXamlSchemaContext : XamlSchemaContext
+        //{
+        //    public override XamlType GetXamlType(Type type)
+        //    {
+        //        return base.GetXamlType(type);
+        //    }
+        //}
+
+	    public XamlSchemaContext SchemaContext
+	    {
+	        get
+	        {
+                return iCsharpXamlSchemaContext = iCsharpXamlSchemaContext ?? new XamlSchemaContext();
+	        }
+	    }
+
+	    #endregion
+
+        #region IAmbientProvider Members
+
+        public AmbientPropertyValue GetFirstAmbientValue(IEnumerable<XamlType> ceilingTypes, params XamlMember[] properties)
+	    {
+	        return null;
+	    }
+
+	    public object GetFirstAmbientValue(params XamlType[] types)
+	    {
+	        return null;
+	    }
+
+	    public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, params XamlMember[] properties)
+	    {
+            return new List<AmbientPropertyValue>();
+	    }
+
+	    public IEnumerable<object> GetAllAmbientValues(params XamlType[] types)
+	    {
+            return new List<object>();
+	    }
+
+	    public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, bool searchLiveStackOnly, IEnumerable<XamlType> types,
+	        params XamlMember[] properties)
+	    {
+	        return new List<AmbientPropertyValue>();
+	    }
+
+        #endregion
+    }
 }

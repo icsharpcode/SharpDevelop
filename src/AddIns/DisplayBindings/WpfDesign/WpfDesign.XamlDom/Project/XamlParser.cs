@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Interop;
@@ -279,7 +280,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					}
 					continue;
 				}
-					
+				
 				ParseObjectAttribute(obj, attribute);
 			}
 			
@@ -326,34 +327,50 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					}
 				}
 			}
-			
-			foreach (XmlNode childNode in elementChildNodes) {
-				XmlElement childElement = childNode as XmlElement;
-				if (childElement != null) {
-					if (childElement.NamespaceURI == XamlConstants.XamlNamespace)
-						continue;
-					
-					if (ObjectChildElementIsPropertyElement(childElement)) {
-						ParseObjectChildElementAsPropertyElement(obj, childElement, defaultProperty);
-						continue;
-					}
+
+			if (collectionType != null && collectionInstance == null && elementChildNodes.Count() == 1)
+			{
+				var firstChild = elementChildNodes.First() as XmlElement;
+				if (ObjectChildElementIsCollectionInstance(firstChild, collectionType))
+				{
+					collectionInstance = ParseObject(firstChild);
+					collectionProperty.PropertyValue = (XamlPropertyValue) collectionInstance;
 				}
-				if (initializeFromTextValueInsteadOfConstructor != null)
-					continue;
-				XamlPropertyValue childValue = ParseValue(childNode);
-				if (childValue != null) {
-					if (collectionProperty != null) {
-						collectionProperty.ParserAddCollectionElement(collectionPropertyElement, childValue);
-						CollectionSupport.AddToCollection(collectionType, collectionInstance, childValue);
-					} else {
-						if (defaultProperty == null)
-							throw new XamlLoadException("This element does not have a default value, cannot assign to it");
+				else
+				{
+					throw new XamlLoadException("Collection Instance is null");
+				}
+			}
+			else
+			{
+				foreach (XmlNode childNode in elementChildNodes) {
+					XmlElement childElement = childNode as XmlElement;
+					if (childElement != null) {
+						if (childElement.NamespaceURI == XamlConstants.XamlNamespace)
+							continue;
 						
-						if (isDefaultValueSet)
-							throw new XamlLoadException("default property may have only one value assigned");
-						
-						obj.AddProperty(new XamlProperty(obj, defaultProperty, childValue));
-						isDefaultValueSet = true;
+						if (ObjectChildElementIsPropertyElement(childElement)) {
+							ParseObjectChildElementAsPropertyElement(obj, childElement, defaultProperty);
+							continue;
+						}
+					}
+					if (initializeFromTextValueInsteadOfConstructor != null)
+						continue;
+					XamlPropertyValue childValue = ParseValue(childNode);
+					if (childValue != null) {
+						if (collectionProperty != null) {
+							collectionProperty.ParserAddCollectionElement(collectionPropertyElement, childValue);
+							CollectionSupport.AddToCollection(collectionType, collectionInstance, childValue);
+						} else {
+							if (defaultProperty == null)
+								throw new XamlLoadException("This element does not have a default value, cannot assign to it");
+							
+							if (isDefaultValueSet)
+								throw new XamlLoadException("default property may have only one value assigned");
+							
+							obj.AddProperty(new XamlProperty(obj, defaultProperty, childValue));
+							isDefaultValueSet = true;
+						}
 					}
 				}
 			}
@@ -581,7 +598,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			return element.LocalName.Contains(".");
 		}
-		
+
+		static bool ObjectChildElementIsCollectionInstance(XmlElement element, Type collectionType)
+		{
+			return element.Name == collectionType.Name;
+		}
+
 		static bool IsElementChildACollectionForProperty(XamlTypeFinder typeFinder, XmlElement element, XamlPropertyInfo propertyInfo)
 		{
 			return element.ChildNodes.Count == 1 && propertyInfo.ReturnType.IsAssignableFrom(FindType(typeFinder, element.FirstChild.NamespaceURI, element.FirstChild.LocalName));

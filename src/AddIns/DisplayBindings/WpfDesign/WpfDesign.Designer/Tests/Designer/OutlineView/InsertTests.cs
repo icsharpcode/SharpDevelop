@@ -241,7 +241,6 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 		}
 
 		[Test]
-		[Ignore]
 		public void CheckStackPanelChildrenCountWhenCopy()
 		{
 			InsertIntoButtonByCopy();
@@ -250,25 +249,23 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 		}
 
 		[Test]
-		[Ignore]
 		public void CheckElementInOutlineWhenCopy()
 		{
 			InsertIntoButtonByCopy();
 			Assert.AreEqual(_gridButtonNode, _outline.Children[0]);
-			Assert.AreEqual(_stackPanelImageNode, _outline.Children[0].Children[0]);
+            Assert.AreEqual(_stackPanelImageNode.DesignItem.ComponentType, _outline.Children[0].Children[0].DesignItem.ComponentType);
 			Assert.AreEqual(_stackPanelNode, _outline.Children[1]);
 			Assert.AreEqual(_stackPanelImageNode, _outline.Children[1].Children[0]);
 		}
 
 		[Test]
-		[Ignore]
 		public void CheckElementInDesignerWhenCopy()
 		{
 			InsertIntoButtonByCopy();
 			Assert.AreEqual(_gridButton, _grid.ContentProperty.CollectionElements[0]);
-			Assert.AreEqual(_stackPanelImage, _grid.ContentProperty.CollectionElements[0].ContentProperty.ValueOnInstance);
-			Assert.AreEqual(_stackPanel, _grid.ContentProperty.CollectionElements[1]);
-			Assert.AreEqual(_stackPanel, _grid.ContentProperty.CollectionElements[1].ContentProperty.CollectionElements[0]);
+            Assert.AreEqual(_stackPanelImage.ComponentType, _grid.ContentProperty.CollectionElements[0].ContentProperty.Value.ComponentType);
+            Assert.AreEqual(_stackPanel.ComponentType, _grid.ContentProperty.CollectionElements[1].ComponentType);
+            Assert.AreEqual(_stackPanelImage, _grid.ContentProperty.CollectionElements[1].ContentProperty.CollectionElements[0]);
 		}
 
 		#endregion

@@ -26,11 +26,11 @@ namespace ICSharpCode.WpfDesign.Designer
 	public class Translations
 	{
 		private static Translations _instance;
-		public static Translations Instance { 
+		public static Translations Instance {
 			get {
 				if (_instance == null)
 					_instance = new Translations();
-				return _instance; 
+				return _instance;
 			} protected set {
 				_instance = value;
 			}
@@ -77,10 +77,72 @@ namespace ICSharpCode.WpfDesign.Designer
 				return "Wrap in Grid";
 			}
 		}
-		
+        
 		public virtual string WrapInBorder {
 			get {
 				return "Wrap in Border";
+			}
+		}
+
+        public virtual string WrapInViewbox {
+			get {
+				return "Wrap in Viewbox";
+			}
+		}
+
+		public virtual string FormatedTextEditor
+		{
+			get
+			{
+				return "Formated Text Editor";
+			}
+		}
+
+		public virtual string ArrangeLeft
+		{
+			get
+			{
+				return "Arrange Left";
+			}
+		}
+
+		public virtual string ArrangeHorizontalMiddle
+		{
+			get
+			{
+				return "Horizontal centered";
+			}
+		}
+
+		public virtual string ArrangeRight
+		{
+			get
+			{
+				return "Arrange Right";
+			}
+		}
+
+		public virtual string ArrangeTop
+		{
+			get
+			{
+				return "Arrange Top";
+			}
+		}
+
+		public virtual string ArrangeVerticalMiddle
+		{
+			get
+			{
+				return "Vertical centered";
+			}
+		}
+
+		public virtual string ArrangeBottom
+		{
+			get
+			{
+				return "Arrange Bottom";
 			}
 		}
 	}

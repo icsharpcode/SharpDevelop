@@ -83,18 +83,32 @@
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ArrangeDirection.cs" />
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
+    <Compile Include="Extensions\BorderForImageControl.cs" />
     <Compile Include="Extensions\PartialPanelSelectionHandler.cs" />
+    <Compile Include="Extensions\TextBlockRightClickContextMenu.xaml.cs">
+      <DependentUpon>TextBlockRightClickContextMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\RightClickContextMenu.xaml.cs">
       <DependentUpon>RightClickContextMenu.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\RenderTransformOriginExtension.cs" />
     <Compile Include="Extensions\RightClickContextMenuExtension.cs" />
+    <Compile Include="Extensions\TextBlockRightClickContextMenuExtension.cs" />
+    <Compile Include="Extensions\ArrangeItemsContextMenuExtension.cs" />
+    <Compile Include="Extensions\ArrangeItemsContextMenu.xaml.cs">
+      <DependentUpon>ArrangeItemsContextMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\WrapItemContextMenu.xaml.cs">
+      <DependentUpon>WrapItemContextMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\WrapItemsContextMenuExtension.cs" />
     <Compile Include="OutlineView\OutlineNodeBase.cs" />
-    <Compile Include="Extensions\RightClickMultipleItemsContextMenuExtension.cs" />
-    <Compile Include="Extensions\RightClickMultipleItemsContextMenu.xaml.cs">
-      <DependentUpon>RightClickMultipleItemsContextMenu.xaml</DependentUpon>
+    <Compile Include="Extensions\WrapItemContextMenuExtension.cs" />
+    <Compile Include="Extensions\WrapItemsContextMenu.xaml.cs">
+      <DependentUpon>WrapItemsContextMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Extensions\SkewThumbExtension.cs" />
     <Compile Include="Extensions\TopLeftContainerDragHandleMultipleItems.cs" />
@@ -104,6 +118,9 @@
     <Compile Include="PropertyGrid\Editors\FlatCollectionEditor.xaml.cs">
       <DependentUpon>FlatCollectionEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PropertyGrid\Editors\FormatedTextEditor\FormatedTextEditor.xaml.cs">
+      <DependentUpon>FormatedTextEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="PropertyGrid\Editors\OpenCollectionEditor.xaml.cs">
       <DependentUpon>OpenCollectionEditor.xaml</DependentUpon>
@@ -268,10 +285,25 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Extensions\TextBlockRightClickContextMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Extensions\RightClickContextMenu.xaml" />
-    <Page Include="Extensions\RightClickMultipleItemsContextMenu.xaml" />
+    <Page Include="Extensions\ArrangeItemsContextMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Extensions\WrapItemContextMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Extensions\WrapItemsContextMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="PropertyGrid\Editors\ColorEditor.xaml" />
     <Page Include="PropertyGrid\Editors\FlatCollectionEditor.xaml" />
+    <Page Include="PropertyGrid\Editors\FormatedTextEditor\FormatedTextEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="PropertyGrid\Editors\OpenCollectionEditor.xaml" />
     <Page Include="PropertyGrid\Editors\TimeSpanEditor.xaml" />
     <Page Include="ThumbnailView\ThumbnailView.xaml" />
@@ -380,7 +412,20 @@
     <Resource Include="Images\group2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ThumbnailView" />
+    <Resource Include="Images\edit-bold.png" />
+    <Resource Include="Images\edit-color.png" />
+    <Resource Include="Images\edit-italic.png" />
+    <Resource Include="Images\edit-strike.png" />
+    <Resource Include="Images\layers-alignment-bottom.png" />
+    <Resource Include="Images\layers-alignment-center.png" />
+    <Resource Include="Images\layers-alignment-left.png" />
+    <Resource Include="Images\layers-alignment-middle.png" />
+    <Resource Include="Images\layers-alignment-right.png" />
+    <Resource Include="Images\layers-alignment.png" />
+    <Resource Include="Images\layers-arrange-back.png" />
+    <Resource Include="Images\layers-arrange.png" />
+    <Resource Include="Images\layers-stack-arrange-back.png" />
+    <Resource Include="Images\layers-stack-arrange.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Icons.16x16.Properties.Events.png" />
@@ -394,5 +439,23 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\lock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\grid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\edit-underline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\paint-can-color.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\wrap-option.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\canvas.png" />
   </ItemGroup>
 </Project>

@@ -226,16 +226,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			if (sender == null || e.PropertyName == "Width" || e.PropertyName == "Height") {
 				AdornerPanel.SetPlacement(thumb1,
-					new RelativePlacement(HorizontalAlignment.Center, VerticalAlignment.Top) {
-						YOffset = 0,
-						XOffset = -1 * ((FrameworkElement)ExtendedItem.View).ActualWidth / 4
-					});
+				                          new RelativePlacement(HorizontalAlignment.Center, VerticalAlignment.Top) {
+				                          	YOffset = 0,
+				                          	XOffset = -1 * PlacementOperation.GetRealElementSize(ExtendedItem.View).Width / 4
+				                          });
 				
 				AdornerPanel.SetPlacement(thumb2,
-					new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Center) {
-						YOffset = -1 * ((FrameworkElement)ExtendedItem.View).ActualHeight / 4,
-						XOffset = 0
-					});
+				                          new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Center) {
+				                          	YOffset = -1 * PlacementOperation.GetRealElementSize(ExtendedItem.View).Height / 4,
+				                          	XOffset = 0
+				                          });
+
+				var designPanel = this.ExtendedItem.Services.DesignPanel as DesignPanel;
+				if (designPanel != null)
+					designPanel.AdornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
 			}
 		}
 		

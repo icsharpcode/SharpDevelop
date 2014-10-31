@@ -220,13 +220,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			if (ha == HorizontalAlignment.Stretch)
 				info.Item.Properties[FrameworkElement.WidthProperty].Reset();
-			else
-				info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
+            //else
+            //    info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
 			
 			if (va == VerticalAlignment.Stretch)
 				info.Item.Properties[FrameworkElement.HeightProperty].Reset();
-			else
-				info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
+            //else
+            //    info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
 		}
 		
 		public override void LeaveContainer(PlacementOperation operation)

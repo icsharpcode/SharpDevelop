@@ -313,7 +313,7 @@ namespace ICSharpCode.WpfDesign
 		/// Gets the default size for new controls of the specified type,
 		/// or new Size(double.NaN, double.NaN) if no default size was registered.
 		/// </summary>
-		public static Size GetDefaultSize(Type t, bool checkBasetype = true)
+		public static Size? GetDefaultSize(Type t, bool checkBasetype = true)
 		{
 			Size s;
 			lock (defaultSizes) {
@@ -324,7 +324,7 @@ namespace ICSharpCode.WpfDesign
 					 t = checkBasetype ? t.BaseType : null;
 				}
 			}
-			return new Size(double.NaN, double.NaN);
+			return null;
 		}
 	}
 

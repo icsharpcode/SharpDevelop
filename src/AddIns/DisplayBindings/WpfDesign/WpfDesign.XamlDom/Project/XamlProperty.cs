@@ -21,10 +21,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using System.Windows;
-using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -139,7 +137,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
-		/// Gets if the property represents the FrameworkElement.Resources property that holds a locally-defined resource dictionary. 
+		/// Gets if the property represents the FrameworkElement.Resources property that holds a locally-defined resource dictionary.
 		/// </summary>
 		public bool IsResources {
 			get { return isResources; }
@@ -264,7 +262,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				propertyValue = null;
 			}
 			if (_propertyElement != null) {
-				Debug.Assert(!isExplicitCollection || _propertyElement.ParentNode == null); 
+				Debug.Assert(!isExplicitCollection || _propertyElement.ParentNode == null);
 				
 				if (!isExplicitCollection) {
 					_propertyElement.ParentNode.RemoveChild(_propertyElement);
@@ -315,19 +313,47 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return this.IsAttached ? this.PropertyTargetType : parentObject.ElementType;
 		}
 		
-		static XmlNode FindChildNode(XmlNode node, string localName, string namespaceURI)
+		static XmlNode FindChildNode(XmlNode node, Type elementType, string propertyName, XamlDocument xamlDocument)
 		{
-			foreach (XmlNode childNode in node.ChildNodes) {
+			var localName = elementType.Name + "." + propertyName;
+			var namespaceURI = xamlDocument.GetNamespaceFor(elementType);
+
+			foreach (XmlNode childNode in node.ChildNodes)
+			{
 				if (childNode.LocalName == localName && childNode.NamespaceURI == namespaceURI)
+				{
 					return childNode;
+				}
 			}
 
+			var type = elementType.BaseType;
+			namespaceURI = xamlDocument.GetNamespaceFor(type);
+
+			while (type != typeof(object))
+			{
+				if (type.GetProperty(propertyName) == null)
+					break;
+
+				localName = type.Name + "." + propertyName;
+
+				foreach (XmlNode childNode in node.ChildNodes)
+				{
+					if (childNode.LocalName == localName && childNode.NamespaceURI == namespaceURI)
+					{
+						return childNode;
+					}
+				}
+
+				type = type.BaseType;
+			}
+			
 			return null;
 		}
 
 		bool IsNodeCollectionForThisProperty(XmlNode node)
 		{
-			return _propertyElement == null && this.PropertyName != this.ParentObject.ContentPropertyName && this.ReturnType.IsAssignableFrom(this.ParentObject.OwnerDocument.TypeFinder.GetType(node.NamespaceURI, node.LocalName));
+			//Remove the commented check! This is Possible: BeginStoryboard=>The COntent Property is Storyboard, and the Content Element is also Storyboard!
+			return _propertyElement == null /* && this.PropertyName != this.ParentObject.ContentPropertyName */ && this.ReturnType.IsAssignableFrom(this.ParentObject.OwnerDocument.TypeFinder.GetType(node.NamespaceURI, node.LocalName));
 		}
 		
 		internal void AddChildNodeToProperty(XmlNode newChildNode)
@@ -335,7 +361,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (this.IsCollection) {
 				if (IsNodeCollectionForThisProperty(newChildNode)) {
 					Type propertyElementType = GetPropertyElementType();
-					XmlNode parentNode = FindChildNode(parentObject.XmlElement, propertyElementType.Name + "." + this.PropertyName, parentObject.OwnerDocument.GetNamespaceFor(propertyElementType));
+					XmlNode parentNode = FindChildNode(parentObject.XmlElement, propertyElementType, this.PropertyName, parentObject.OwnerDocument);
 
 					if (parentNode == null) {
 						parentNode = CreatePropertyElement();
@@ -384,7 +410,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (collection == null) {
 				if (collectionElements.Count == 0 && this.PropertyName != this.ParentObject.ContentPropertyName) {
 					// we have to create the collection element
-                    _propertyElement = CreatePropertyElement();
+					_propertyElement = CreatePropertyElement();
 
 					if (this.IsResources) {
 						parentObject.XmlElement.PrependChild(_propertyElement);
@@ -423,11 +449,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					name = PropertyTargetType.Name + "." + PropertyName;
 
 				string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
-                string prefix = element.GetPrefixOfNamespace(ns);
+				string prefix = element.GetPrefixOfNamespace(ns);
 
 				if (String.IsNullOrEmpty(prefix)) {
-                    prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
-                }
+					prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
+				}
 
 				if (!string.IsNullOrEmpty(prefix)) {
 					element.SetAttribute(name, ns, value);

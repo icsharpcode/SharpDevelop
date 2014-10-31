@@ -90,9 +90,9 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			AdornerPanel parent = this.Parent as AdornerPanel;
 			if (parent != null && parent.AdornedElement != null) {
 				if (checkWidth)
-					this.ResizeThumbVisible = parent.AdornedElement.RenderSize.Width > 14;
+					this.ResizeThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Width > 14;
 				else if (checkHeight)
-					this.ResizeThumbVisible = parent.AdornedElement.RenderSize.Height > 14;
+                    this.ResizeThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Height > 14;
 			}
 			return base.ArrangeOverride(arrangeBounds);
 		}
