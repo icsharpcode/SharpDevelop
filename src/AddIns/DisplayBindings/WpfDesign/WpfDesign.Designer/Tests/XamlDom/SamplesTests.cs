@@ -17,6 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.IO;
+using ICSharpCode.WpfDesign.XamlDom;
 using NUnit.Framework;
 
 namespace ICSharpCode.WpfDesign.Tests.XamlDom
@@ -380,7 +382,18 @@ bb
 </Window>");
 		}
 
-		[Test]
+        [Test]
+        public void Window1()
+        {
+            var xaml= @"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" IsActive=""true"">
+</Window>";
+
+            XamlParser.Parse(new StringReader(xaml));
+        }
+
+        [Test]
 		public void CData1()
 		{
 			TestLoading(@"<Window
