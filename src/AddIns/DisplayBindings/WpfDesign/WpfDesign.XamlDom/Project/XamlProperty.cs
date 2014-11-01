@@ -317,10 +317,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			var localName = elementType.Name + "." + propertyName;
 			var namespaceURI = xamlDocument.GetNamespaceFor(elementType);
+			var clrNamespaceURI = xamlDocument.GetNamespaceFor(elementType, true);
 
 			foreach (XmlNode childNode in node.ChildNodes)
 			{
-				if (childNode.LocalName == localName && childNode.NamespaceURI == namespaceURI)
+				if (childNode.LocalName == localName && (childNode.NamespaceURI == namespaceURI || childNode.NamespaceURI == clrNamespaceURI))
 				{
 					return childNode;
 				}
