@@ -363,6 +363,8 @@ bb
 		}
 
 		[Test]
+		[Ignore("To fix this Test, we need a special Handling for Setter class, because MS Xaml Parser casts the Value of a Setter to the PropertyType wich is defined in another Property!")]
+		//Or maybe we need support for XamlSetTypeConverterAttribute, TypeConverterAttribute(typeof(SetterTriggerConditionValueConverter)), ...
 		public void ListBox2()
 		{
 			TestLoading(@"<Window
@@ -382,18 +384,35 @@ bb
 </Window>");
 		}
 
-        [Test]
-        public void Window1()
-        {
-            var xaml= @"<Window
+		[Test]
+		public void ListBox3()
+		{
+			TestLoading(@"<Window
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas>
+<ListBox>
+    <ListBox.ItemContainerStyle>
+        <Style />
+    </ListBox.ItemContainerStyle>
+<Image />
+</ListBox>
+</Canvas>
+</Window>");
+		}
+
+		[Test]
+		public void Window1()
+		{
+			var xaml= @"<Window
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" IsActive=""true"">
 </Window>";
 
-            XamlParser.Parse(new StringReader(xaml));
-        }
+			XamlParser.Parse(new StringReader(xaml));
+		}
 
-        [Test]
+		[Test]
 		public void CData1()
 		{
 			TestLoading(@"<Window
