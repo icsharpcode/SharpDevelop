@@ -80,6 +80,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				throw new ArgumentNullException("reader");
 			return Parse(XmlReader.Create(reader), settings);
 		}
+
+		private XmlNode currentParsedNode;
 		
 		/// <summary>
 		/// Parses a XAML document using an XmlReader.
@@ -128,7 +130,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				var root = p.ParseObject(document.DocumentElement);
 				p.document.ParseComplete(root);
 			} catch (Exception x) {
-				p.ReportException(x, document.DocumentElement);
+				p.ReportException(x, p.currentParsedNode);
 			}
 
 			return p.document;
@@ -220,12 +222,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (onlyTextNodes && numberOfTextNodes == 1) {
 					foreach (XmlNode childNode in element.ChildNodes) {
 						if (childNode.NodeType == XmlNodeType.Text) {
+							currentParsedNode = childNode;
 							initializeFromTextValueInsteadOfConstructor = (XamlTextValue)ParseValue(childNode);
 						}
 					}
 				}
 			}
-			
+
+			currentParsedNode = element;
+
 			object instance;
 			if (initializeFromTextValueInsteadOfConstructor != null) {
 				instance = TypeDescriptor.GetConverter(elementType).ConvertFromString(
@@ -318,6 +323,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				collectionPropertyElement = element;
 			} else if (defaultProperty != null && defaultProperty.IsCollection && !element.IsEmpty) {
 				foreach (XmlNode childNode in elementChildNodes) {
+					currentParsedNode = childNode;
 					XmlElement childElement = childNode as XmlElement;
 					if (childElement == null || !ObjectChildElementIsPropertyElement(childElement)) {
 						obj.AddProperty(collectionProperty = new XamlProperty(obj, defaultProperty));
@@ -327,6 +333,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					}
 				}
 			}
+
+			currentParsedNode = element;
 
 			if (collectionType != null && collectionInstance == null && elementChildNodes.Count() == 1)
 			{
@@ -344,6 +352,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			else
 			{
 				foreach (XmlNode childNode in elementChildNodes) {
+					currentParsedNode = childNode;
 					XmlElement childElement = childNode as XmlElement;
 					if (childElement != null) {
 						if (childElement.NamespaceURI == XamlConstants.XamlNamespace)
@@ -374,6 +383,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					}
 				}
 			}
+
+			currentParsedNode = element;
 		}
 
 		IEnumerable<XmlNode> GetNormalizedChildNodes(XmlElement element)
@@ -412,10 +423,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		                                                 Justification="We need to continue parsing, and the error is reported to the user.")]
 		XamlPropertyValue ParseValue(XmlNode childNode)
 		{
+			currentParsedNode = childNode;
+
 			try {
-				return ParseValueCore(childNode);
+				return ParseValueCore(currentParsedNode);
 			} catch (Exception x) {
-				ReportException(x, childNode);
+				ReportException(x, currentParsedNode);
 			}
 			return null;
 		}
@@ -647,6 +660,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			
 			foreach (XmlNode childNode in element.ChildNodes) {
+				currentParsedNode = childNode;
 				XamlPropertyValue childValue = ParseValue(childNode);
 				if (childValue != null) {
 					if (propertyInfo.IsCollection) {
@@ -667,7 +681,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					}
 				}
 			}
-			
+
+			currentParsedNode = element;
+
 			currentXmlSpace = oldXmlSpace;
 		}
 
