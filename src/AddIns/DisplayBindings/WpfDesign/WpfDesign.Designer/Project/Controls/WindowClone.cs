@@ -93,15 +93,20 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			get { return owner; }
 			set { owner = value; }
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the resize mode.
 		/// </summary>
-		public ResizeMode ResizeMode {
-			get { return (ResizeMode)GetValue(Window.ResizeModeProperty); }
-			set { SetValue(Window.ResizeModeProperty, value); }
+		public ResizeMode ResizeMode
+		{
+			get { return (ResizeMode)GetValue(ResizeModeProperty); }
+			set { SetValue(ResizeModeProperty, value); }
 		}
-		
+
+		// Using a DependencyProperty as the backing store for ResizeMode.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty ResizeModeProperty =
+			DependencyProperty.Register("ResizeMode", typeof(ResizeMode), typeof(WindowClone), new PropertyMetadata(System.Windows.ResizeMode.CanResize));
+
 		/// <summary>
 		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
 		/// </summary>

@@ -300,7 +300,36 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 			return Enum.Parse(targetType, parameterString);
 		}
 	}
-	
+
+	public class EnumCollapsed : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly EnumCollapsed Instance = new EnumCollapsed();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			if (Enum.IsDefined(value.GetType(), value) == false)
+				return DependencyProperty.UnsetValue;
+
+			object parameterValue = Enum.Parse(value.GetType(), parameterString);
+
+			return parameterValue.Equals(value) ? Visibility.Collapsed : Visibility.Visible;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			return Enum.Parse(targetType, parameterString);
+		}
+	}
+
 	public class InvertedZoomConverter : IValueConverter
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
