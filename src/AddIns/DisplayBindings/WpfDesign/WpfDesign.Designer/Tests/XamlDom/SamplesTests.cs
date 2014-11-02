@@ -16,7 +16,6 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
 using System.IO;
 using ICSharpCode.WpfDesign.XamlDom;
 using NUnit.Framework;
@@ -363,7 +362,7 @@ bb
 		}
 
 		[Test]
-		[Ignore("To fix this Test, we need a special Handling for Setter class, because MS Xaml Parser casts the Value of a Setter to the PropertyType wich is defined in another Property!")]
+		//[Ignore("To fix this Test, we need a special Handling for Setter class, because MS Xaml Parser casts the Value of a Setter to the PropertyType wich is defined in another Property!")]
 		//Or maybe we need support for XamlSetTypeConverterAttribute, TypeConverterAttribute(typeof(SetterTriggerConditionValueConverter)), ...
 		public void ListBox2()
 		{
