@@ -99,7 +99,7 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (value == null || (int)value == 0) {
+			if (value == null || (value is int && (int)value == 0)) {
 				return Visibility.Collapsed;
 			}
 			return Visibility.Visible;
