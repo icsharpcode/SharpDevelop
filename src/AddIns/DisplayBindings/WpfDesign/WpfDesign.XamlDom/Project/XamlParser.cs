@@ -289,9 +289,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				ParseObjectAttribute(obj, attribute);
 			}
 			
-			if (!(obj.Instance is Style)) {
-				ParseObjectContent(obj, element, defaultProperty, initializeFromTextValueInsteadOfConstructor);
-			}
+			ParseObjectContent(obj, element, defaultProperty, initializeFromTextValueInsteadOfConstructor);
 			
 			if (iSupportInitializeInstance != null) {
 				iSupportInitializeInstance.EndInit();

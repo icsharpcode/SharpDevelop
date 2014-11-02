@@ -21,8 +21,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Xml;
 using System.Windows;
+using System.Windows.Markup;
+using System.Xaml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -203,7 +206,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			propertyValue.ParentProperty = this;
 			propertyValue.AddNodeTo(this);
 			UpdateValueOnInstance();
-			
+
 			ParentObject.OnPropertyChanged(this);
 			
 			if (!wasSet) {
@@ -222,13 +225,38 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (PropertyValue != null) {
 				try {
 					ValueOnInstance = PropertyValue.GetValueFor(propertyInfo);
+
+					if (this.parentObject.XamlSetTypeConverter != null)
+						this.ParentObject.XamlSetTypeConverter(this.parentObject.Instance, new XamlSetTypeConverterEventArgs(this.SystemXamlMemberForProperty, null, ((XamlTextValue) propertyValue).Text, this.parentObject.OwnerDocument.GetTypeDescriptorContext(this.parentObject), null));
 				}
 				catch {
 					Debug.WriteLine("UpdateValueOnInstance() failed");
 				}
 			}
 		}
-		
+
+		private XamlMember _systemXamlMemberForProperty = null;
+		public XamlMember SystemXamlMemberForProperty
+		{
+			get
+			{
+				if (_systemXamlMemberForProperty == null)
+					_systemXamlMemberForProperty = new XamlMember(this.PropertyName, SystemXamlTypeForProperty, false);
+				return _systemXamlMemberForProperty;
+			}
+		}
+
+		private XamlType _systemXamlTypeForProperty = null;
+		public XamlType SystemXamlTypeForProperty
+		{
+			get
+			{
+				if (_systemXamlTypeForProperty == null)
+					_systemXamlTypeForProperty = new XamlType(this.PropertyTargetType,
+					                                          this.ParentObject.ServiceProvider.SchemaContext);
+				return _systemXamlTypeForProperty;
+			}
+		}
 		/// <summary>
 		/// Resets the properties value.
 		/// </summary>

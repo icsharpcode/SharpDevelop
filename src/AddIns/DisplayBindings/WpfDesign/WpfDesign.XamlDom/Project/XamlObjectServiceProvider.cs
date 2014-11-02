@@ -141,7 +141,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		public AmbientPropertyValue GetFirstAmbientValue(IEnumerable<XamlType> ceilingTypes, params XamlMember[] properties)
 		{
-			return null;
+			return GetAllAmbientValues(ceilingTypes, properties).FirstOrDefault();
 		}
 
 		public object GetFirstAmbientValue(params XamlType[] types)
@@ -151,7 +151,23 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, params XamlMember[] properties)
 		{
-			return new List<AmbientPropertyValue>();
+			var obj = this.XamlObject.ParentObject;
+
+			while (obj != null)
+			{
+				if (ceilingTypes.Any(x => obj.SystemXamlTypeForProperty.CanAssignTo(x)))
+				{
+					foreach (var pr in obj.Properties)
+					{
+						if (properties.Any(x => x.Name == pr.PropertyName))
+						{
+							yield return new AmbientPropertyValue(pr.SystemXamlMemberForProperty, pr.ValueOnInstance);
+						}
+					}
+				}
+
+				obj = obj.ParentObject;
+			}
 		}
 
 		public IEnumerable<object> GetAllAmbientValues(params XamlType[] types)
@@ -159,8 +175,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return new List<object>();
 		}
 
-		public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, bool searchLiveStackOnly, IEnumerable<XamlType> types,
-		                                                             params XamlMember[] properties)
+		public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, bool searchLiveStackOnly, IEnumerable<XamlType> types, params XamlMember[] properties)
 		{
 			return new List<AmbientPropertyValue>();
 		}
