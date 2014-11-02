@@ -458,4 +458,7 @@
   <ItemGroup>
     <Resource Include="Images\canvas.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons.32x32.EmptyProjectIcon.png" />
+  </ItemGroup>
 </Project>

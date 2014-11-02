@@ -111,6 +111,26 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 		}
 	}
 
+	public class CollapsedWhenNotNull : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly CollapsedWhenNotNull Instance = new CollapsedWhenNotNull();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			if (value != null)
+			{
+				return Visibility.Collapsed;
+			}
+			return Visibility.Visible;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
 	public class FalseWhenNull : IValueConverter
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
@@ -160,37 +180,37 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 		}
 	}
 
-    public class ControlToRealWidthConverter : IMultiValueConverter
-    {
-        public static readonly ControlToRealWidthConverter Instance = new ControlToRealWidthConverter();
+	public class ControlToRealWidthConverter : IMultiValueConverter
+	{
+		public static readonly ControlToRealWidthConverter Instance = new ControlToRealWidthConverter();
 
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            return PlacementOperation.GetRealElementSize((UIElement)values[0]).Width;
-        }
+		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+		{
+			return PlacementOperation.GetRealElementSize((UIElement)values[0]).Width;
+		}
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
 
-    public class ControlToRealHeightConverter : IMultiValueConverter
-    {
-        public static readonly ControlToRealHeightConverter Instance = new ControlToRealHeightConverter();
+	public class ControlToRealHeightConverter : IMultiValueConverter
+	{
+		public static readonly ControlToRealHeightConverter Instance = new ControlToRealHeightConverter();
 
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            return PlacementOperation.GetRealElementSize((UIElement)values[0]).Height;
-        }
+		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+		{
+			return PlacementOperation.GetRealElementSize((UIElement)values[0]).Height;
+		}
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
 
-    public class FormatDoubleConverter : IValueConverter
+	public class FormatDoubleConverter : IValueConverter
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly FormatDoubleConverter Instance=new FormatDoubleConverter();
