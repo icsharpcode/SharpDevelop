@@ -120,11 +120,11 @@
 					<Border Background="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" BorderThickness="1,1,1,1">
 						<DockPanel Margin="4,0,4,4">
 							<DockPanel Height="26" DockPanel.Dock="Top">
-								<Image Width="16" Height="16" Margin="1,0,0,0" Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.32x32.EmptyProjectIcon.png" Visibility="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNotNull.Instance}}" />
-								<Image Width="16" Height="16" Margin="1,0,0,0" Source="{TemplateBinding Window.Icon}" Visibility="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenZero.Instance}}" />
+								<Image Width="16" Height="16" Margin="1,0,0,0" Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.32x32.EmptyProjectIcon.png" Visibility="{Binding Path=(Window.Icon), RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNotNull.Instance}}" />
+								<Image Width="16" Height="16" Margin="1,0,0,0" Source="{TemplateBinding Window.Icon}" Visibility="{Binding Path=(Window.Icon), RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenZero.Instance}}" />
 								<Button Content="r" FontFamily="Marlett" Name="CloseButton" VerticalAlignment="Top" Width="43" Height="17" DockPanel.Dock="Right" />
-								<Button Content="1" FontFamily="Marlett" Name="MinimizeButton" VerticalAlignment="Top" Width="25" Height="17" DockPanel.Dock="Right" Visibility="{Binding ResizeMode, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:EnumCollapsed.Instance}, ConverterParameter=NoResize}" />
-								<Button Content="0" FontFamily="Marlett" Name="MaximiseButton" VerticalAlignment="Top" Width="25" Height="17" DockPanel.Dock="Right" Visibility="{Binding ResizeMode, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:EnumCollapsed.Instance}, ConverterParameter=NoResize}" />
+								<Button Content="1" FontFamily="Marlett" Name="MinimizeButton" VerticalAlignment="Top" Width="25" Height="17" DockPanel.Dock="Right" Visibility="{Binding Path=(Window.ResizeMode), Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:EnumCollapsed.Instance}, ConverterParameter=NoResize}" />
+								<Button Content="0" FontFamily="Marlett" Name="MaximiseButton" VerticalAlignment="Top" Width="25" Height="17" DockPanel.Dock="Right" Visibility="{Binding Path=(Window.ResizeMode), Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:EnumCollapsed.Instance}, ConverterParameter=NoResize}" />
 								<Label Margin="4,0,0,0" Content="{TemplateBinding Window.Title}" />
 							</DockPanel>
 							<Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
