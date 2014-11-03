@@ -227,8 +227,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 					var rt = (MatrixTransform) adorner.AdornedElement.TransformToAncestor(_designPanel);
 					if (adorner.AdornedDesignItem != null && adorner.AdornedDesignItem.Parent != null && adorner.AdornedDesignItem.Parent.View is Canvas && adorner.AdornedElement.RenderSize.Height == 0 && adorner.AdornedElement.RenderSize.Width == 0)
 					{
-						var xOffset = rt.Matrix.OffsetX - (((FrameworkElement)adorner.AdornedElement).Width / 2);
-						var yOffset = rt.Matrix.OffsetY - (((FrameworkElement)adorner.AdornedElement).Height / 2);
+						var width = ((FrameworkElement) adorner.AdornedElement).Width;
+						width = width > 0 ? width : 2.0;
+						var height = ((FrameworkElement)adorner.AdornedElement).Height;
+						height = height > 0 ? height : 2.0;
+						var xOffset = rt.Matrix.OffsetX - (width / 2);
+						var yOffset = rt.Matrix.OffsetY - (height / 2);
 						rt = new MatrixTransform(new Matrix(rt.Matrix.M11, rt.Matrix.M12, rt.Matrix.M21, rt.Matrix.M22, xOffset, yOffset));
 					}
 
