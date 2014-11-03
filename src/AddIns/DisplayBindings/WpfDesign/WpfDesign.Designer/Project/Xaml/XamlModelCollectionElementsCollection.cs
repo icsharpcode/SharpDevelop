@@ -107,7 +107,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		public IEnumerator<DesignItem> GetEnumerator()
 		{
 			foreach (XamlPropertyValue val in property.CollectionElements) {
-				yield return GetItem(val);
+				var item = GetItem(val);
+				if (item != null)
+					yield return item;
 			}
 		}
 		
@@ -121,7 +123,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			if (val is XamlObject) {
 				return context._componentService.GetDesignItem( ((XamlObject)val).Instance );
 			} else {
-				throw new NotImplementedException();
+				return null; //	throw new NotImplementedException();
 			}
 		}
 		

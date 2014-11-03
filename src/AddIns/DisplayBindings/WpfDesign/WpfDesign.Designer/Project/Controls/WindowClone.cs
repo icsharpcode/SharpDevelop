@@ -66,15 +66,17 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			}
 			set { }
 		}
-		
-		/// <summary>
-		/// Specifies the icon to use.
-		/// </summary>
-		public ImageSource Icon {
-			get { return (ImageSource)GetValue(Window.IconProperty); }
-			set { SetValue(Window.IconProperty, value); }
+
+		public ImageSource Icon
+		{
+			get { return (ImageSource)GetValue(IconProperty); }
+			set { SetValue(IconProperty, value); }
 		}
-		
+
+		// Using a DependencyProperty as the backing store for Icon.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty IconProperty =
+			DependencyProperty.Register("Icon", typeof(ImageSource), typeof(WindowClone), new PropertyMetadata(null));
+
 		/// <summary>
 		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
@@ -93,15 +95,20 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			get { return owner; }
 			set { owner = value; }
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the resize mode.
 		/// </summary>
-		public ResizeMode ResizeMode {
-			get { return (ResizeMode)GetValue(Window.ResizeModeProperty); }
-			set { SetValue(Window.ResizeModeProperty, value); }
+		public ResizeMode ResizeMode
+		{
+			get { return (ResizeMode)GetValue(ResizeModeProperty); }
+			set { SetValue(ResizeModeProperty, value); }
 		}
-		
+
+		// Using a DependencyProperty as the backing store for ResizeMode.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty ResizeModeProperty =
+			DependencyProperty.Register("ResizeMode", typeof(ResizeMode), typeof(WindowClone), new PropertyMetadata(System.Windows.ResizeMode.CanResize));
+
 		/// <summary>
 		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
 		/// </summary>

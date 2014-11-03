@@ -22,10 +22,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Markup;
 using System.Xml;
 using System.Windows.Data;
 using System.Windows;
+using System.Xaml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -53,6 +55,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			this.instance = instance;
 
 			this.contentPropertyName = GetContentPropertyName(elementType);
+			XamlSetTypeConverter = GetTypeConverterDelegate(elementType);
 
 			ServiceProvider = new XamlObjectServiceProvider(this);
 			CreateWrapper();
@@ -70,7 +73,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (property.IsAttached == false) {
 				foreach (XamlProperty p in properties) {
 					if (p.IsAttached == false && p.PropertyName == property.PropertyName)
-						throw new XamlLoadException("duplicate property");
+						throw new XamlLoadException("duplicate property:" + property.PropertyName);
 				}
 			}
 			#endif
@@ -183,7 +186,36 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			return null;
 		}
-		
+
+		internal delegate void TypeConverterDelegate(Object targetObject, XamlSetTypeConverterEventArgs eventArgs);
+
+		internal TypeConverterDelegate XamlSetTypeConverter { get; private set; }
+
+		internal static TypeConverterDelegate GetTypeConverterDelegate(Type elementType)
+		{
+			var attrs = elementType.GetCustomAttributes(typeof(XamlSetTypeConverterAttribute), true) as XamlSetTypeConverterAttribute[];
+			if (attrs != null && attrs.Length > 0)
+			{
+				var name = attrs[0].XamlSetTypeConverterHandler;
+				var method=elementType.GetMethod(name, BindingFlags.Static|BindingFlags.Public|BindingFlags.NonPublic);
+
+				return (TypeConverterDelegate) TypeConverterDelegate.CreateDelegate(typeof(TypeConverterDelegate), method);
+			}
+
+			return null;
+		}
+
+		private XamlType _systemXamlTypeForProperty = null;
+		public XamlType SystemXamlTypeForProperty
+		{
+			get
+			{
+				if (_systemXamlTypeForProperty == null)
+					_systemXamlTypeForProperty = new XamlType(this.ElementType, this.ServiceProvider.SchemaContext);
+				return _systemXamlTypeForProperty;
+			}
+		}
+
 		internal override void AddNodeTo(XamlProperty property)
 		{
 			XamlObject holder;
@@ -353,7 +385,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Gets/Sets the name of this XamlObject.
 		/// </summary>
 		public string Name {
-			get 
+			get
 			{
 				string name = GetXamlAttribute("Name");
 				

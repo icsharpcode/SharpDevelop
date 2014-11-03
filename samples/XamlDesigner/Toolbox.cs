@@ -78,7 +78,7 @@ namespace ICSharpCode.XamlDesigner
 
 		static bool IsControl(Type t)
 		{
-			return !t.IsAbstract && !t.IsGenericTypeDefinition && t.IsSubclassOf(typeof(FrameworkElement));
+			return !t.IsAbstract && !t.IsGenericTypeDefinition && t.IsSubclassOf(typeof(UIElement)) && t.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null) != null;
 		}
 	}
 

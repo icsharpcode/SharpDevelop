@@ -13,10 +13,10 @@
 		<Grid>
 			<AvalonEdit:TextEditor
 				x:Name="uxTextEditor"
-				SyntaxHighlighting="XML"
+				SyntaxHighlighting="XML" ShowLineNumbers="True"
 				Visibility="{Binding InXamlMode, Converter={StaticResource CollapsedWhenFalse}}" />
 			<ContentPresenter Content="{Binding DesignSurface}"
-			                  Visibility="{Binding InDesignMode, Converter={StaticResource CollapsedWhenFalse}}"/>
+				Visibility="{Binding InDesignMode, Converter={StaticResource CollapsedWhenFalse}}"/>
 		</Grid>
 	</DockPanel>
 </UserControl>

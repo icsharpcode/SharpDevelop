@@ -133,7 +133,7 @@ namespace ICSharpCode.WpfDesign.Designer.ThumbnailView
 			xOffset = 0;
 			yOffset = 0;
 			
-			if (this.DesignSurface.DesignContext != null)
+			if (this.DesignSurface.DesignContext != null && this.DesignSurface.DesignContext.RootItem != null)
 			{
 				var designedElement = this.DesignSurface.DesignContext.RootItem.Component as FrameworkElement;
 				
