@@ -228,6 +228,18 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 					if (this.parentObject.XamlSetTypeConverter != null)
 						this.ParentObject.XamlSetTypeConverter(this.parentObject.Instance, new XamlSetTypeConverterEventArgs(this.SystemXamlMemberForProperty, null, ((XamlTextValue) propertyValue).Text, this.parentObject.OwnerDocument.GetTypeDescriptorContext(this.parentObject), null));
+
+					if (propertyInfo.DependencyProperty == DesignTimeProperties.DesignWidthProperty) {
+						var widthProperty = this.ParentObject.Properties.FirstOrDefault(x => x.DependencyProperty == FrameworkElement.WidthProperty);
+						if (widthProperty == null || !widthProperty.IsSet)
+							((FrameworkElement) this.ParentObject.Instance).Width = (double) ValueOnInstance;
+					}
+
+					if (propertyInfo.DependencyProperty == DesignTimeProperties.DesignHeightProperty) {
+						var heightProperty = this.ParentObject.Properties.FirstOrDefault(x => x.DependencyProperty == FrameworkElement.HeightProperty);
+						if (heightProperty == null || !heightProperty.IsSet)
+							((FrameworkElement)this.ParentObject.Instance).Width = (double)ValueOnInstance;
+					}
 				}
 				catch {
 					Debug.WriteLine("UpdateValueOnInstance() failed");

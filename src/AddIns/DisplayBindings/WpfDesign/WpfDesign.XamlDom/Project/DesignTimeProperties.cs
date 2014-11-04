@@ -174,7 +174,31 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public static readonly DependencyProperty DesignHeightProperty =
 			DependencyProperty.RegisterAttached("DesignHeight", typeof(double), typeof(DesignTimeProperties));
 		#endregion
-		
+
+		#region LayoutOverrides
+		/// <summary>
+		/// Getter for <see cref="LayoutOverridesProperty"/>
+		/// </summary>
+		public static string GetLayoutOverrides(DependencyObject obj)
+		{
+			return (string)obj.GetValue(LayoutOverridesProperty);
+		}
+
+		/// <summary>
+		/// Setter for <see cref="LayoutOverridesProperty"/>
+		/// </summary>
+		public static void SetLayoutOverrides(DependencyObject obj, string value)
+		{
+			obj.SetValue(LayoutOverridesProperty, value);
+		}
+
+		/// <summary>
+		/// Layout-Overrides
+		/// </summary>
+		public static readonly DependencyProperty LayoutOverridesProperty =
+			DependencyProperty.RegisterAttached("LayoutOverrides", typeof(string), typeof(DesignTimeProperties));
+		#endregion
+
 		#region LayoutRounding
 		/// <summary>
 		/// Getter for <see cref="LayoutRoundingProperty"/>
